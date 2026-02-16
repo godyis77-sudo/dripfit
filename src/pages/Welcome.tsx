@@ -7,7 +7,7 @@ import {
   Heart, Crown, Star
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import heroPreview from '@/assets/hero-measurements.png';
+import heroPreview from '@/assets/hero-body-measurements.jpg';
 import BottomTabBar from '@/components/BottomTabBar';
 
 const inView = {
