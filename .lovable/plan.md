@@ -1,69 +1,51 @@
 
 
-# 📏 BodyMeasure — AI Body Measurement App
+# DripCheck Luxury Aesthetic Refresh
 
 ## Overview
-A mobile app that accurately estimates body measurements from photos. Users hold a ruler visible in frame while taking 3 guided photos. AI vision analyzes the images using the ruler as a scale reference to calculate real measurements — no tape measure or manual input needed.
+Shift from the current bold neon/streetwear palette to a refined, soft luxury aesthetic -- think high-end fashion apps like Zara, COS, or Bottega Veneta. Muted tones, smooth gradients, and elegant typography.
 
----
+## 1. Color Palette Update (src/index.css)
 
-## Core Flow
+Replace the current neon pink/purple/gold with a sophisticated luxury palette:
 
-### 1. Welcome & Instructions Screen
-- Brief explanation of how the app works
-- Visual guide showing the 3 required photo poses
-- Tips for best results (good lighting, fitted clothing, plain background)
+- **Primary**: Soft rose / dusty mauve (`350 30% 60%`) -- elegant, not aggressive
+- **Accent**: Muted lavender (`260 25% 65%`) -- subtle and refined
+- **Gold**: Warm champagne (`38 40% 70%`) -- luxury without being flashy
+- **Background (dark)**: Rich charcoal with warm undertone (`240 10% 8%`)
+- **Cards**: Slightly lighter, with warmth (`240 8% 12%`)
+- **Borders**: Very subtle, barely visible (`240 6% 16%`)
+- **Muted text**: Softer gray with warmth (`240 5% 50%`)
 
-### 2. Guided Photo Capture (3 Photos)
-- **Photo 1 — Front facing**: Stand facing camera, ruler held at waist level
-- **Photo 2 — Side view**: Turn 90°, ruler still visible
-- **Photo 3 — Arms extended**: Face camera with arms straight out to sides, ruler visible
-- Each step shows a silhouette overlay guide so the user knows how to pose
-- Camera capture screen with on-screen instructions for each pose
+Update `--drip-glow`, `--drip-accent`, `--drip-gold` to match.
 
-### 3. AI Analysis
-- Loading screen while AI processes the 3 photos
-- Uses the ruler in each image to establish exact pixel-to-inch scale
-- Identifies body landmarks (shoulders, waist, hips, inseam, wrists, neck) across all 3 views
-- Cross-references front and side views for more accurate circumference estimates (chest, waist, hips)
+Update gradient utilities (`.gradient-drip`, `.gradient-drip-text`) to use the softer rose-to-lavender-to-champagne palette. Reduce glow intensity on `.glow-primary` for a more understated shine.
 
-### 4. Results Screen
-- Displays all measurements in inches and centimeters:
-  - Chest, Waist, Hips, Inseam, Arm length, Shoulder width, Neck, Torso length
-- Clothing size recommendations (S/M/L/XL/XXL) for common brands
-- Option to toggle between inches and centimeters
-- Save measurements to device
-- Share/export measurements as a summary card or text
+## 2. Button Refinement (src/components/ui/button.tsx)
 
-### 5. Saved Measurements
-- View history of past measurement sessions
-- Compare measurements over time
-- Delete old entries
+- Soften border-radius slightly (keep `rounded-2xl` but ensure smooth feel)
+- No harsh box-shadows; use very subtle, diffused shadows instead
+- Smooth `transition-all duration-300 ease-out` for all interactive states
+- Default variant gets the soft gradient instead of a flat color
 
----
+## 3. Welcome Page Polish (src/pages/Welcome.tsx)
 
-## Technical Approach
-- Built with React + Capacitor for native iOS/Android deployment
-- Camera access via Capacitor Camera plugin for photo capture
-- AI vision API (Gemini) analyzes photos for ruler detection and body landmark identification
-- All measurement data stored locally on device for MVP
-- Clean, minimal UI focused on guiding the user through the process
+- **Background blurs**: Reduce opacity further (5-8% instead of 10%) for subtlety
+- **Buttons**: All CTAs get smooth gradient with soft shadow, uniform sizing (h-14), generous padding
+- **Glass cards**: Increase blur, reduce border opacity for a more refined frosted glass
+- **Animations**: Slow down slightly for elegance (0.7s instead of 0.5s fade-ins, gentler spring configs)
+- **Typography**: Let Space Grotesk breathe -- slightly increased letter-spacing on headings
+- **Hover effects**: Gentle scale (1.02 instead of 1.03), slower transitions
 
----
+## 4. Utility Class Updates (src/index.css)
 
-## What's Included in MVP
-- ✅ Guided 3-photo capture flow with pose instructions
-- ✅ Ruler-based calibration for accuracy
-- ✅ AI-powered measurement extraction
-- ✅ Results display with inch/cm toggle
-- ✅ Size recommendations
-- ✅ Save & export measurements
-- ✅ Native mobile app setup (Capacitor)
+- `.glass`: Increase blur to 20px, reduce background opacity further
+- `.glow-primary`: Much softer glow (lower opacity, wider spread)
+- `.glow-accent`: Same treatment -- whisper-soft, not loud
+- Add `.btn-luxury` utility: subtle gradient, smooth shadow, elegant hover state
 
-## Future Enhancements (Post-MVP)
-- User accounts & cloud sync
-- Brand-specific size matching
-- 3D body model visualization
-- Measurement tracking over time with charts
-- Multi-person support
+## Files Changed
+1. **src/index.css** -- Soft luxury color variables, refined utility classes
+2. **src/components/ui/button.tsx** -- Smoother transitions, softer styling defaults
+3. **src/pages/Welcome.tsx** -- Gentler animations, refined card/button styling, reduced glow intensity
 
