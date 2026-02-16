@@ -72,7 +72,7 @@ const Analyze = () => {
       <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
         <AlertCircle className="h-12 w-12 text-destructive mb-4" />
         <h2 className="text-xl font-bold text-foreground mb-2">Analysis Failed</h2>
-        <p className="text-sm text-muted-foreground text-center mb-6">{error}</p>
+        <p className="text-sm font-semibold text-foreground/80 text-center mb-6">{error}</p>
         <Button onClick={() => navigate('/capture', { replace: true })} className="rounded-2xl">
           Try Again
         </Button>
@@ -93,7 +93,7 @@ const Analyze = () => {
         key={messageIndex}
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-sm text-muted-foreground text-center"
+        className="text-sm font-semibold text-foreground/70 text-center"
       >
         {ANALYSIS_MESSAGES[messageIndex]}
       </motion.p>

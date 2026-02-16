@@ -155,7 +155,7 @@ const Community = () => {
               <Sparkles className="h-8 w-8 text-primary-foreground" />
             </div>
             <h2 className="font-display text-lg font-bold mb-2">Be the First to Drip</h2>
-            <p className="text-sm text-muted-foreground max-w-[250px] mb-6">
+             <p className="text-sm font-semibold text-foreground/80 max-w-[250px] mb-6">
               No looks shared yet. Try on an outfit and share it to get community ratings on your style.
             </p>
             <div className="glass rounded-2xl p-4 border border-border/30 w-full mb-6">
@@ -163,19 +163,19 @@ const Community = () => {
               <div className="grid grid-cols-4 gap-2 text-center">
                 <div className="flex flex-col items-center gap-1">
                   <Eye className="h-4 w-4 text-primary" />
-                  <span className="text-[10px] text-foreground/60">Style</span>
-                </div>
-                <div className="flex flex-col items-center gap-1">
-                  <Heart className="h-4 w-4 text-primary" />
-                  <span className="text-[10px] text-foreground/60">Color</span>
-                </div>
-                <div className="flex flex-col items-center gap-1">
-                  <TrendingUp className="h-4 w-4 text-primary" />
-                  <span className="text-[10px] text-foreground/60">Fit</span>
-                </div>
-                <div className="flex flex-col items-center gap-1">
-                  <Zap className="h-4 w-4 text-primary" />
-                  <span className="text-[10px] text-foreground/60">Buy It?</span>
+                     <span className="text-xs font-semibold text-foreground/70">Style</span>
+                 </div>
+                 <div className="flex flex-col items-center gap-1">
+                   <Heart className="h-4 w-4 text-primary" />
+                   <span className="text-xs font-semibold text-foreground/70">Color</span>
+                 </div>
+                 <div className="flex flex-col items-center gap-1">
+                   <TrendingUp className="h-4 w-4 text-primary" />
+                   <span className="text-xs font-semibold text-foreground/70">Fit</span>
+                 </div>
+                 <div className="flex flex-col items-center gap-1">
+                   <Zap className="h-4 w-4 text-primary" />
+                   <span className="text-xs font-semibold text-foreground/70">Buy It?</span>
                 </div>
               </div>
             </div>
@@ -195,7 +195,7 @@ const Community = () => {
                         <p className="text-sm font-medium text-foreground">{post.profile?.display_name || 'Anonymous'}</p>
                         <p className="text-xs text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
                       </div>
-                      {post.caption && <p className="text-sm text-muted-foreground mb-3">{post.caption}</p>}
+                      {post.caption && <p className="text-sm font-medium text-foreground/80 mb-3">{post.caption}</p>}
 
                       {/* Average ratings */}
                       {(post.rating_count ?? 0) > 0 && (

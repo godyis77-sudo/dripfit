@@ -63,7 +63,7 @@ const Results = () => {
 
         {/* Unit toggle */}
         <div className="flex items-center justify-between mb-6 bg-card rounded-2xl p-4 border border-border">
-          <span className="text-sm text-muted-foreground">Show in centimeters</span>
+          <span className="text-sm font-semibold text-foreground/80">Show in centimeters</span>
           <Switch checked={useCm} onCheckedChange={setUseCm} />
         </div>
 
@@ -78,7 +78,7 @@ const Results = () => {
             >
               <Card className="rounded-2xl">
                 <CardContent className="p-4">
-                  <p className="text-xs text-muted-foreground mb-1">{MEASUREMENT_LABELS[key]}</p>
+                  <p className="text-xs font-semibold text-foreground/70 mb-1">{MEASUREMENT_LABELS[key]}</p>
                   <p className="text-2xl font-bold text-foreground">
                     {convert(result[key])}
                     <span className="text-sm font-normal text-muted-foreground ml-1">{unitLabel}</span>
@@ -92,7 +92,7 @@ const Results = () => {
         {/* Size recommendation */}
         <Card className="rounded-2xl mb-6 bg-primary/5 border-primary/20">
           <CardContent className="p-4 text-center">
-            <p className="text-xs text-muted-foreground mb-1">Recommended Size</p>
+            <p className="text-xs font-semibold text-foreground/70 mb-1">Recommended Size</p>
             <p className="text-3xl font-bold text-primary">{result.sizeRecommendation}</p>
           </CardContent>
         </Card>

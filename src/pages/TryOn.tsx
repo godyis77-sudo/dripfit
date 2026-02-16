@@ -178,8 +178,8 @@ const TryOn = () => {
               ) : (
                 <div className="flex flex-col items-center gap-2 text-muted-foreground p-4">
                   <Image className="h-8 w-8" />
-                  <p className="text-xs text-center font-medium">Your Photo</p>
-                  <p className="text-[10px] text-center text-muted-foreground/60">Full body, front facing</p>
+                   <p className="text-sm text-center font-semibold">Your Photo</p>
+                  <p className="text-xs text-center font-medium text-foreground/60">Full body, front facing</p>
                 </div>
               )}
             </CardContent>
@@ -192,8 +192,8 @@ const TryOn = () => {
               ) : (
                 <div className="flex flex-col items-center gap-2 text-muted-foreground p-4">
                   <Shirt className="h-8 w-8" />
-                  <p className="text-xs text-center font-medium">Clothing Item</p>
-                  <p className="text-[10px] text-center text-muted-foreground/60">Photo of the item to try on</p>
+                   <p className="text-sm text-center font-semibold">Clothing Item</p>
+                  <p className="text-xs text-center font-medium text-foreground/60">Photo of the item to try on</p>
                 </div>
               )}
             </CardContent>
@@ -208,7 +208,7 @@ const TryOn = () => {
             className="glass rounded-2xl p-4 border border-border/30 mb-6"
           >
             <h3 className="font-display text-sm font-bold mb-2">How it works</h3>
-            <ol className="space-y-1.5 text-xs text-foreground/60">
+            <ol className="space-y-1.5 text-sm font-medium text-foreground/70">
               <li className="flex gap-2"><span className="text-primary font-bold">1.</span> Upload a full-body photo of yourself</li>
               <li className="flex gap-2"><span className="text-primary font-bold">2.</span> Upload a photo of the clothing item</li>
               <li className="flex gap-2"><span className="text-primary font-bold">3.</span> AI generates you wearing the outfit</li>
@@ -247,7 +247,7 @@ const TryOn = () => {
                 rows={2}
               />
               <div className="flex items-center justify-between bg-card rounded-2xl p-3 border border-border">
-                <span className="text-sm text-muted-foreground">Share to community</span>
+                <span className="text-sm font-semibold text-foreground/80">Share to community</span>
                 <Switch checked={isPublic} onCheckedChange={setIsPublic} />
               </div>
               <Button
@@ -272,7 +272,7 @@ const TryOn = () => {
         {description && !resultImage && (
           <Card className="rounded-2xl">
             <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">{description}</p>
+              <p className="text-sm font-semibold text-foreground/80">{description}</p>
             </CardContent>
           </Card>
         )}

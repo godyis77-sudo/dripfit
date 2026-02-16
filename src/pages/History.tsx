@@ -33,7 +33,7 @@ const History = () => {
         {measurements.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <Ruler className="h-12 w-12 text-muted-foreground/30 mb-4" />
-            <p className="text-muted-foreground">No saved measurements yet</p>
+            <p className="text-sm font-semibold text-foreground/70">No saved measurements yet</p>
             <Button
               className="mt-4 rounded-2xl"
               onClick={() => navigate('/capture')}

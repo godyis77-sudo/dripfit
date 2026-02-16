@@ -128,7 +128,7 @@ const Welcome = () => {
           <h1 className="font-display text-4xl font-bold tracking-wide mb-2 leading-[1.1]">
             Check Your <span className="gradient-drip-text">Drip</span>
           </h1>
-          <p className="text-foreground/60 text-sm leading-relaxed max-w-xs mx-auto">
+          <p className="text-foreground/80 text-sm font-semibold leading-relaxed max-w-xs mx-auto drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">
             AI body measurements & virtual try-on. Know your fit, flex your style.
           </p>
         </motion.div>
@@ -219,7 +219,7 @@ const Welcome = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="text-xs text-foreground/50 mt-2"
+              className="text-sm font-medium text-foreground/70 mt-2"
             >
               {heroSlides[currentSlide].desc}
             </motion.p>
@@ -241,7 +241,7 @@ const Welcome = () => {
               ))}
             </div>
             <h3 className="font-display text-base font-bold mb-2">Community Rated</h3>
-            <p className="text-foreground/55 text-xs leading-relaxed mb-3">
+            <p className="text-foreground/80 text-sm font-semibold leading-relaxed mb-3">
               Share your virtual try-ons and get real feedback on style, color, fit, and "would you buy it?"
             </p>
             <div className="flex items-center justify-center gap-4 text-xs text-foreground/50">
@@ -282,7 +282,7 @@ const Welcome = () => {
                   className="relative flex items-center gap-3 glass rounded-xl p-3 border border-border/30"
                 >
                   <span className="font-display text-xl font-bold gradient-drip-text shrink-0 w-8 text-center relative z-10">{item.step}</span>
-                  <p className="text-xs font-medium flex-1">{item.text}</p>
+                  <p className="text-sm font-semibold flex-1">{item.text}</p>
                   <item.icon className="h-4 w-4 text-foreground/40 shrink-0" />
                 </motion.div>
               ))}
@@ -301,7 +301,7 @@ const Welcome = () => {
           <h2 className="font-display text-xl font-bold mb-2 tracking-wide">
             Ready to Check Your <span className="gradient-drip-text">Drip</span>?
           </h2>
-          <p className="text-foreground/55 text-xs mb-4">Join the community and never second-guess your fit.</p>
+          <p className="text-foreground/80 text-sm font-semibold mb-4">Join the community and never second-guess your fit.</p>
           <Button
             onClick={() => user ? navigate('/capture') : navigate('/auth')}
             className="w-full h-16 text-3xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
