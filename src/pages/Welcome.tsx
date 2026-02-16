@@ -107,35 +107,33 @@ const Welcome = () => {
           transition={{ delay: 0.4, duration: 0.5 }}
           className="w-full max-w-sm space-y-2.5 mb-10"
         >
-          <motion.div whileHover={{ y: -2 }} whileTap={{ y: 1, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+          <motion.div whileHover={{ y: -2 }} whileTap={{ y: 4, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
             <Button
               onClick={() => navigate('/capture')}
-              className="w-full h-14 text-base font-display font-bold uppercase tracking-wide btn-luxury border-0 text-primary-foreground shadow-[0_4px_0_0_hsl(42_40%_48%),0_6px_14px_hsl(0_0%_0%/0.15)]"
+              className="w-full h-16 text-xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
               size="lg"
             >
-              <img src={iconRuler} alt="" className="mr-2 h-6 w-6 object-contain" /> DRIP FIT
+              <img src={iconRuler} alt="" className="mr-2 h-7 w-7 object-contain drop-shadow-[0_1px_1px_hsl(0_0%_0%/0.3)]" /> DRIP FIT
             </Button>
           </motion.div>
 
-          <motion.div whileHover={{ y: -2 }} whileTap={{ y: 1, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+          <motion.div whileHover={{ y: -2 }} whileTap={{ y: 4, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
             <Button
               onClick={() => navigate('/tryon')}
-              variant="outline"
-              className="w-full h-14 text-base font-display font-bold uppercase tracking-wide border-border/40 hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 group"
+              className="w-full h-16 text-xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
               size="lg"
             >
-              <img src={iconOutfit} alt="" className="mr-2 h-6 w-6 object-contain group-hover:drop-shadow-[0_0_4px_hsl(42_45%_62%/0.6)] transition-all" /> GET DRIPPED
+              <img src={iconOutfit} alt="" className="mr-2 h-7 w-7 object-contain drop-shadow-[0_1px_1px_hsl(0_0%_0%/0.3)]" /> GET DRIPPED
             </Button>
           </motion.div>
 
-          <motion.div whileHover={{ y: -2 }} whileTap={{ y: 1, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+          <motion.div whileHover={{ y: -2 }} whileTap={{ y: 4, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
             <Button
               onClick={() => navigate('/community')}
-              variant="outline"
-              className="w-full h-14 text-base font-display font-bold uppercase tracking-wide border-border/40 hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 group"
+              className="w-full h-16 text-xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
               size="lg"
             >
-              <img src={iconCommunity} alt="" className="mr-2 h-6 w-6 object-contain group-hover:drop-shadow-[0_0_4px_hsl(42_45%_62%/0.6)] transition-all" /> DRIP CHECK
+              <img src={iconCommunity} alt="" className="mr-2 h-7 w-7 object-contain drop-shadow-[0_1px_1px_hsl(0_0%_0%/0.3)]" /> DRIP CHECK
             </Button>
           </motion.div>
         </motion.div>
@@ -251,10 +249,10 @@ const Welcome = () => {
           <p className="text-muted-foreground text-xs mb-4">Join the community and never second-guess your fit.</p>
           <Button
             onClick={() => user ? navigate('/capture') : navigate('/auth')}
-            className="w-full h-12 text-sm font-display font-semibold btn-luxury border-0 text-primary-foreground"
+            className="w-full h-16 text-xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
             size="lg"
           >
-            {user ? "Let's Go" : "Get Started Free"} <ArrowRight className="ml-2 h-4 w-4" />
+            {user ? "LET'S GO" : "GET STARTED"} <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </motion.div>
 
