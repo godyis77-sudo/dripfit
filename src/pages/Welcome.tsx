@@ -1,0 +1,91 @@
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
+import { Camera, Ruler, Sparkles } from 'lucide-react';
+
+const steps = [
+  { icon: Ruler, label: 'Hold a ruler visible in frame' },
+  { icon: Camera, label: 'Take 3 guided photos' },
+  { icon: Sparkles, label: 'Get instant measurements' },
+];
+
+const Welcome = () => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-between bg-background px-6 py-12">
+      <div className="flex-1 flex flex-col items-center justify-center max-w-sm w-full">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
+        >
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/10">
+            <Ruler className="h-10 w-10 text-primary" />
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground mb-3">
+            BodyMeasure
+          </h1>
+          <p className="text-muted-foreground text-base leading-relaxed">
+            Get accurate body measurements from photos. No tape measure needed — just a ruler and your camera.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          className="w-full space-y-4 mb-12"
+        >
+          {steps.map((step, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 + i * 0.15 }}
+              className="flex items-center gap-4 rounded-2xl bg-card p-4 border border-border"
+            >
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                <step.icon className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground">{step.label}</p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="rounded-2xl bg-accent/10 border border-accent/20 p-4 mb-8 w-full"
+        >
+          <p className="text-xs text-accent-foreground/70 leading-relaxed">
+            <strong className="text-accent">Tips for best results:</strong> Wear fitted clothing, use good lighting, stand against a plain background, and keep the ruler clearly visible in every photo.
+          </p>
+        </motion.div>
+      </div>
+
+      <div className="w-full max-w-sm space-y-3">
+        <Button
+          onClick={() => navigate('/capture')}
+          className="w-full h-14 text-base font-semibold rounded-2xl"
+          size="lg"
+        >
+          Start Measuring
+        </Button>
+        <Button
+          onClick={() => navigate('/history')}
+          variant="ghost"
+          className="w-full text-muted-foreground"
+        >
+          View Saved Measurements
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+export default Welcome;
