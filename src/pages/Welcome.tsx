@@ -142,22 +142,22 @@ const Welcome = () => {
         >
           <div className="absolute inset-0 -inset-x-8 -inset-y-6 rounded-[2rem] bg-primary/12 blur-3xl" />
           <div
-            className="relative rounded-3xl overflow-hidden border-2 border-primary/25 shadow-[0_0_40px_-5px_hsl(42_45%_62%/0.35)] cursor-pointer"
+            className="relative rounded-3xl overflow-hidden border-2 border-primary/25 shadow-[0_0_40px_-5px_hsl(42_45%_62%/0.35)] cursor-pointer aspect-[3/4]"
             onClick={() => navigate(heroSlides[currentSlide].route)}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            <AnimatePresence mode="wait">
+            <AnimatePresence initial={false}>
               <motion.img
                 key={currentSlide}
                 src={heroSlides[currentSlide].image}
                 alt={heroSlides[currentSlide].label}
-                className="w-full h-auto"
-                initial={{ opacity: 0, x: 40 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -40 }}
-                transition={{ duration: 0.35 }}
+                className="absolute inset-0 w-full h-full object-cover"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
               />
             </AnimatePresence>
             <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
