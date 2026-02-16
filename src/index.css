@@ -139,4 +139,30 @@
     transform: translateY(0px);
     box-shadow: 0 1px 8px -2px hsl(42 45% 62% / 0.25);
   }
+  .btn-3d-drip {
+    background: linear-gradient(180deg, hsl(42 50% 68%), hsl(42 45% 58%));
+    border: none;
+    color: hsl(0 0% 8%);
+    box-shadow:
+      0 6px 0 0 hsl(42 40% 42%),
+      0 8px 16px hsl(0 0% 0% / 0.2),
+      inset 0 1px 0 hsl(42 50% 78% / 0.5);
+    text-shadow: 0 1px 0 hsl(42 50% 78% / 0.5);
+    transition: all 0.15s ease-out;
+  }
+  .btn-3d-drip:hover {
+    background: linear-gradient(180deg, hsl(42 50% 72%), hsl(42 45% 62%));
+    box-shadow:
+      0 6px 0 0 hsl(42 40% 42%),
+      0 10px 24px hsl(0 0% 0% / 0.25),
+      inset 0 1px 0 hsl(42 50% 82% / 0.6);
+    transform: translateY(-2px);
+  }
+  .btn-3d-drip:active {
+    box-shadow:
+      0 2px 0 0 hsl(42 40% 42%),
+      0 3px 8px hsl(0 0% 0% / 0.15),
+      inset 0 1px 0 hsl(42 50% 78% / 0.3);
+    transform: translateY(4px);
+  }
 }
