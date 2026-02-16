@@ -75,51 +75,19 @@ serve(async (req) => {
     }
 
     const aiResponse = await response.json();
-    console.log("AI response structure:", JSON.stringify(aiResponse).substring(0, 500));
-    
     const message = aiResponse.choices?.[0]?.message;
-    const content = message?.content;
     let resultImage: string | null = null;
-    let textContent: string | null = null;
 
-    // Case 1: content is an array of parts (OpenAI multimodal format)
-    if (Array.isArray(content)) {
-      for (const part of content) {
-        if (part.type === "image_url" && part.image_url?.url) {
-          resultImage = part.image_url.url;
-          break;
-        }
-        if (part.type === "text" && part.text) {
-          textContent = (textContent || "") + part.text;
-        }
-      }
-    }
-
-    // Case 2: Check for inline_data in parts (Gemini native format)
-    if (!resultImage && message?.parts) {
-      for (const part of message.parts) {
-        if (part.inline_data) {
-          resultImage = `data:${part.inline_data.mime_type};base64,${part.inline_data.data}`;
-          break;
-        }
-        if (part.text) {
-          textContent = (textContent || "") + part.text;
-        }
-      }
-    }
-
-    // Case 3: content is a string containing base64 image data
-    if (!resultImage && typeof content === "string") {
-      const b64Match = content.match(/data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/);
-      if (b64Match) {
-        resultImage = b64Match[0];
-      } else {
-        textContent = content;
+    // The gateway returns images in message.images array
+    if (message?.images && Array.isArray(message.images) && message.images.length > 0) {
+      const img = message.images[0];
+      if (img?.image_url?.url) {
+        resultImage = img.image_url.url;
       }
     }
 
     if (!resultImage) {
-      console.log("No image found in response. Text:", textContent?.substring(0, 200));
+      const textContent = typeof message?.content === "string" ? message.content : "";
       return new Response(
         JSON.stringify({ 
           description: textContent || "The AI was unable to generate a try-on image. Try with clearer photos.",
