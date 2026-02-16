@@ -14,10 +14,10 @@ import heroPreview from '@/assets/hero-preview.png';
 import BottomTabBar from '@/components/BottomTabBar';
 
 const features = [
-  { icon: Camera, title: "AI Body Scan", desc: "Snap a photo, get instant measurements.", gradient: "from-primary to-accent" },
-  { icon: Shirt, title: "Drip Check", desc: "See how clothes look on you before you buy.", gradient: "from-accent to-drip-gold" },
-  { icon: Users, title: "Community Drip", desc: "Share fits, get rated, discover styles.", gradient: "from-drip-gold to-primary" },
-  { icon: Heart, title: "Real Feedback", desc: "Honest ratings on style, color, and fit.", gradient: "from-primary to-drip-gold" },
+  { icon: Camera, title: "AI Body Scan", desc: "Snap a photo, get instant measurements.", gradient: "from-primary to-accent", path: "/capture" },
+  { icon: Shirt, title: "Drip Check", desc: "See how clothes look on you before you buy.", gradient: "from-accent to-drip-gold", path: "/tryon" },
+  { icon: Users, title: "Community Drip", desc: "Share fits, get rated, discover styles.", gradient: "from-drip-gold to-primary", path: "/community" },
+  { icon: Heart, title: "Real Feedback", desc: "Honest ratings on style, color, and fit.", gradient: "from-primary to-drip-gold", path: "/community" },
 ];
 
 const inView = {
@@ -162,7 +162,8 @@ const Welcome = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08, duration: 0.4 }}
-                className="glass rounded-2xl p-3.5 border border-border/30 group"
+                onClick={() => navigate(feat.path)}
+                className="glass rounded-2xl p-3.5 border border-border/30 group cursor-pointer hover:border-primary/30 transition-colors duration-300"
               >
                 <div className={`h-9 w-9 rounded-xl bg-gradient-to-br ${feat.gradient} flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform duration-300`}>
                   <feat.icon className="h-4.5 w-4.5 text-primary-foreground" />
