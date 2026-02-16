@@ -14,10 +14,9 @@ import heroPreview from '@/assets/hero-preview.png';
 import BottomTabBar from '@/components/BottomTabBar';
 
 const features = [
-  { icon: Camera, title: "DRIP FIT", desc: "Snap a photo, get instant measurements.", gradient: "from-primary to-accent", path: "/capture" },
+  { icon: Camera, title: "DRIP FIT", desc: "Snap a photo, get instant body measurements.", gradient: "from-primary to-accent", path: "/capture" },
   { icon: Shirt, title: "GET DRIPPED", desc: "See how clothes look on you before you buy.", gradient: "from-accent to-drip-gold", path: "/tryon" },
   { icon: Users, title: "DRIP CHECK", desc: "Share fits, get rated, discover styles.", gradient: "from-drip-gold to-primary", path: "/community" },
-  { icon: Heart, title: "Real Feedback", desc: "Honest ratings on style, color, and fit.", gradient: "from-primary to-drip-gold", path: "/community" },
 ];
 
 const inView = {
@@ -111,36 +110,34 @@ const Welcome = () => {
           <motion.div whileHover={{ y: -2 }} whileTap={{ y: 1, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
             <Button
               onClick={() => navigate('/capture')}
-              className="w-full h-14 text-lg font-display font-bold uppercase tracking-wide btn-luxury border-0 text-primary-foreground shadow-[0_4px_0_0_hsl(42_40%_48%),0_6px_14px_hsl(0_0%_0%/0.15)]"
+              className="w-full h-14 text-base font-display font-bold uppercase tracking-wide btn-luxury border-0 text-primary-foreground shadow-[0_4px_0_0_hsl(42_40%_48%),0_6px_14px_hsl(0_0%_0%/0.15)]"
               size="lg"
             >
-              <img src={iconRuler} alt="" className="mr-2 h-7 w-7 object-contain" /> FIT DRIP
+              <img src={iconRuler} alt="" className="mr-2 h-6 w-6 object-contain" /> DRIP FIT
             </Button>
           </motion.div>
 
-          {/* Secondary CTAs with gold hover */}
-          <div className="flex gap-2.5">
-            <motion.div className="flex-1" whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                onClick={() => navigate('/tryon')}
-                variant="outline"
-                className="w-full h-12 text-sm font-display font-bold uppercase tracking-wide border-border/40 hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 group"
-                size="lg"
-              >
-                <img src={iconOutfit} alt="" className="mr-1.5 h-5 w-5 object-contain group-hover:drop-shadow-[0_0_4px_hsl(42_45%_62%/0.6)] transition-all" /> GET DRIPPED
-              </Button>
-            </motion.div>
-            <motion.div className="flex-1" whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                onClick={() => navigate('/community')}
-                variant="outline"
-                className="w-full h-12 text-sm font-display font-bold uppercase tracking-wide border-border/40 hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 group"
-                size="lg"
-              >
-                <img src={iconCommunity} alt="" className="mr-1.5 h-5 w-5 object-contain group-hover:drop-shadow-[0_0_4px_hsl(42_45%_62%/0.6)] transition-all" /> DRIP CHECK
-              </Button>
-            </motion.div>
-          </div>
+          <motion.div whileHover={{ y: -2 }} whileTap={{ y: 1, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+            <Button
+              onClick={() => navigate('/tryon')}
+              variant="outline"
+              className="w-full h-14 text-base font-display font-bold uppercase tracking-wide border-border/40 hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 group"
+              size="lg"
+            >
+              <img src={iconOutfit} alt="" className="mr-2 h-6 w-6 object-contain group-hover:drop-shadow-[0_0_4px_hsl(42_45%_62%/0.6)] transition-all" /> GET DRIPPED
+            </Button>
+          </motion.div>
+
+          <motion.div whileHover={{ y: -2 }} whileTap={{ y: 1, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+            <Button
+              onClick={() => navigate('/community')}
+              variant="outline"
+              className="w-full h-14 text-base font-display font-bold uppercase tracking-wide border-border/40 hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 group"
+              size="lg"
+            >
+              <img src={iconCommunity} alt="" className="mr-2 h-6 w-6 object-contain group-hover:drop-shadow-[0_0_4px_hsl(42_45%_62%/0.6)] transition-all" /> DRIP CHECK
+            </Button>
+          </motion.div>
         </motion.div>
 
         {/* Features Grid — whileInView */}
