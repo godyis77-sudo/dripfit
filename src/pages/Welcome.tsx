@@ -18,7 +18,7 @@ const features = [
   },
   {
     icon: Shirt,
-    title: "Virtual Try-On",
+    title: "Drip Check",
     desc: "See how clothes look on you before you buy.",
     gradient: "from-drip-accent to-drip-gold",
   },
@@ -147,7 +147,7 @@ const Welcome = () => {
               variant="outline"
               className="flex-1 h-12 rounded-2xl border-border/60 font-display"
             >
-              <Shirt className="mr-2 h-5 w-5 text-accent" /> Try-On
+              <Shirt className="mr-2 h-5 w-5 text-accent" /> Drip Check
             </Button>
             <Button
               onClick={() => navigate('/community')}
@@ -229,7 +229,7 @@ const Welcome = () => {
             {[
               { step: "01", text: "Snap a photo with any reference object", icon: Camera },
               { step: "02", text: "AI analyzes your body measurements instantly", icon: Sparkles },
-              { step: "03", text: "Try on any outfit virtually", icon: Shirt },
+              { step: "03", text: "Drip check any outfit virtually", icon: Shirt },
               { step: "04", text: "Share your look & get community feedback", icon: Users },
             ].map((item, i) => (
               <motion.div
