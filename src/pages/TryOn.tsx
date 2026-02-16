@@ -25,6 +25,7 @@ const TryOn = () => {
   const [caption, setCaption] = useState('');
   const [isPublic, setIsPublic] = useState(false);
   const [shared, setShared] = useState(false);
+  const [autoSaved, setAutoSaved] = useState(false);
 
   const handleFileSelect = (setter: (v: string) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -50,6 +51,10 @@ const TryOn = () => {
 
       if (data.resultImage) {
         setResultImage(data.resultImage);
+        // Auto-save to profile (private by default)
+        if (user) {
+          autoSaveToProfile(data.resultImage);
+        }
       } else if (data.description) {
         setDescription(data.description);
       }
@@ -76,28 +81,73 @@ const TryOn = () => {
     return urlData.publicUrl;
   };
 
-  const handleShare = async () => {
-    if (!resultImage || !user) return;
-    setShared(true);
-
+  const autoSaveToProfile = async (resultBase64: string) => {
     try {
       const [userUrl, clothingUrl, resultUrl] = await Promise.all([
         uploadBase64ToStorage(userPhoto!, 'user'),
         uploadBase64ToStorage(clothingPhoto!, 'clothing'),
-        uploadBase64ToStorage(resultImage, 'result'),
+        uploadBase64ToStorage(resultBase64, 'result'),
       ]);
 
       const { error } = await supabase.from('tryon_posts').insert({
-        user_id: user.id,
+        user_id: user!.id,
         user_photo_url: userUrl,
         clothing_photo_url: clothingUrl,
         result_photo_url: resultUrl,
-        caption: caption || null,
-        is_public: isPublic,
+        caption: null,
+        is_public: false,
       });
 
       if (error) throw error;
-      toast({ title: 'Shared!', description: isPublic ? 'Your look is now in the community feed.' : 'Saved to your posts.' });
+      setAutoSaved(true);
+      toast({ title: 'Saved!', description: 'Look saved to your profile for Drip Check feedback.' });
+    } catch (err: any) {
+      console.error('Auto-save failed:', err);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!user) return;
+    setShared(true);
+
+    try {
+      if (autoSaved) {
+        // Post already saved — just update caption and public status
+        // Find the latest post for this user
+        const { data: latestPosts } = await supabase
+          .from('tryon_posts')
+          .select('id')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        if (latestPosts && latestPosts.length > 0) {
+          const { error } = await supabase
+            .from('tryon_posts')
+            .update({ caption: caption || null, is_public: isPublic })
+            .eq('id', latestPosts[0].id);
+          if (error) throw error;
+        }
+      } else {
+        // Fallback: full upload if auto-save didn't run
+        const [userUrl, clothingUrl, resultUrl] = await Promise.all([
+          uploadBase64ToStorage(userPhoto!, 'user'),
+          uploadBase64ToStorage(clothingPhoto!, 'clothing'),
+          uploadBase64ToStorage(resultImage!, 'result'),
+        ]);
+
+        const { error } = await supabase.from('tryon_posts').insert({
+          user_id: user.id,
+          user_photo_url: userUrl,
+          clothing_photo_url: clothingUrl,
+          result_photo_url: resultUrl,
+          caption: caption || null,
+          is_public: isPublic,
+        });
+        if (error) throw error;
+      }
+
+      toast({ title: isPublic ? 'Shared!' : 'Updated!', description: isPublic ? 'Your look is now in the community feed.' : 'Caption updated.' });
     } catch (err: any) {
       setShared(false);
       toast({ title: 'Share failed', description: err.message, variant: 'destructive' });
