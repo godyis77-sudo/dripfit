@@ -144,27 +144,25 @@ const Welcome = () => {
               className="w-full h-16 text-xl font-display font-bold uppercase tracking-wide btn-luxury border-0 text-primary-foreground shadow-[0_4px_0_0_hsl(42_40%_48%),0_6px_14px_hsl(0_0%_0%/0.15)]"
               size="lg"
             >
-              <img src={iconRuler} alt="" className="mr-3 h-8 w-8 object-contain" /> START MEASURING
+              <img src={iconRuler} alt="" className="mr-3 h-8 w-8 object-contain" /> FIT DRIP
             </Button>
           </motion.div>
           <motion.div whileHover={{ y: -2 }} whileTap={{ y: 1, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
             <Button
               onClick={() => navigate('/tryon')}
-              variant="outline"
-              className="w-full h-16 text-xl font-display font-bold uppercase tracking-wide border-border/40 shadow-[0_4px_0_0_hsl(0_0%_0%/0.12),0_6px_14px_hsl(0_0%_0%/0.08)] hover:bg-accent/10"
+              className="w-full h-16 text-xl font-display font-bold uppercase tracking-wide btn-luxury border-0 text-primary-foreground shadow-[0_4px_0_0_hsl(42_40%_48%),0_6px_14px_hsl(0_0%_0%/0.15)]"
               size="lg"
             >
-              <img src={iconOutfit} alt="" className="mr-3 h-8 w-8 object-contain" /> DRIP CHECK
+              <img src={iconOutfit} alt="" className="mr-3 h-8 w-8 object-contain" /> GET DRIPPED
             </Button>
           </motion.div>
           <motion.div whileHover={{ y: -2 }} whileTap={{ y: 1, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
             <Button
               onClick={() => navigate('/community')}
-              variant="outline"
-              className="w-full h-16 text-xl font-display font-bold uppercase tracking-wide border-border/40 shadow-[0_4px_0_0_hsl(0_0%_0%/0.12),0_6px_14px_hsl(0_0%_0%/0.08)] hover:bg-primary/10"
+              className="w-full h-16 text-xl font-display font-bold uppercase tracking-wide btn-luxury border-0 text-primary-foreground shadow-[0_4px_0_0_hsl(42_40%_48%),0_6px_14px_hsl(0_0%_0%/0.15)]"
               size="lg"
             >
-              <img src={iconCommunity} alt="" className="mr-3 h-8 w-8 object-contain" /> COMMUNITY
+              <img src={iconCommunity} alt="" className="mr-3 h-8 w-8 object-contain" /> DRIP CHECK
             </Button>
           </motion.div>
         </motion.div>
