@@ -152,7 +152,7 @@ const Welcome = () => {
           className="w-full max-w-lg mb-10"
         >
           <h2 className="font-display text-lg font-bold text-center mb-5 tracking-wide">
-            Your Drip, <span className="gradient-drip-text">Elevated</span>
+            Check Your <span className="gradient-drip-text">Drip</span>
           </h2>
           <div className="grid grid-cols-2 gap-2.5">
             {features.map((feat, i) => (
