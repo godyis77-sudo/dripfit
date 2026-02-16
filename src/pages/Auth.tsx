@@ -58,7 +58,7 @@ const Auth = () => {
         <Card className="rounded-2xl">
           <CardHeader className="text-center">
             <CardTitle>{isLogin ? 'Welcome Back' : 'Create Account'}</CardTitle>
-            <CardDescription>{isLogin ? 'Sign in to access your measurements' : 'Join the community'}</CardDescription>
+            <CardDescription className="font-semibold text-foreground/70">{isLogin ? 'Sign in to access your measurements' : 'Join the community'}</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">

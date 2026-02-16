@@ -138,7 +138,7 @@ const SizeGuide = () => {
 
         {/* Step 1: Upload size guide */}
         <div className="mb-5">
-          <p className="text-sm font-medium text-foreground mb-2">1. Upload a brand's size chart</p>
+          <p className="text-sm font-bold text-foreground mb-2">1. Upload a brand's size chart</p>
           <Input
             placeholder="Brand name (optional)"
             value={brandName}
@@ -185,13 +185,13 @@ const SizeGuide = () => {
 
         {/* Step 2: Select measurements */}
         <div className="mb-5">
-          <p className="text-sm font-medium text-foreground mb-2">2. Select your measurements</p>
+          <p className="text-sm font-bold text-foreground mb-2">2. Select your measurements</p>
 
           {measurements.length === 0 ? (
             <Card className="rounded-2xl">
               <CardContent className="p-4 text-center">
                 <Ruler className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground mb-3">No measurements yet</p>
+                <p className="text-sm font-semibold text-foreground/70 mb-3">No measurements yet</p>
                 <Button size="sm" className="rounded-2xl" onClick={() => navigate('/capture')}>
                   Take Measurements
                 </Button>
@@ -288,11 +288,11 @@ const SizeGuide = () => {
               <Card className="rounded-2xl mb-4 bg-primary/5 border-primary/20">
                 <CardContent className="p-5 text-center">
                   <CheckCircle2 className="h-8 w-8 text-primary mx-auto mb-2" />
-                  <p className="text-xs text-muted-foreground mb-1">
+                   <p className="text-xs font-semibold text-foreground/70 mb-1">
                     {brandName ? `${brandName} — ` : ''}Recommended Size
                   </p>
                   <p className="text-4xl font-bold text-primary mb-1">{recommendation.recommendedSize}</p>
-                  <p className="text-xs text-muted-foreground capitalize">
+                   <p className="text-xs font-semibold text-foreground/70 capitalize">
                     Confidence: {recommendation.confidence}
                   </p>
                 </CardContent>
@@ -302,7 +302,7 @@ const SizeGuide = () => {
               {recommendation.notes && (
                 <Card className="rounded-2xl mb-4">
                   <CardContent className="p-4">
-                    <p className="text-sm text-foreground">{recommendation.notes}</p>
+                    <p className="text-sm font-semibold text-foreground/80">{recommendation.notes}</p>
                   </CardContent>
                 </Card>
               )}

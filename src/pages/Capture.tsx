@@ -76,7 +76,7 @@ const Capture = () => {
             className="w-full max-w-sm flex flex-col items-center"
           >
             <h2 className="text-2xl font-bold text-foreground mb-2">{config.title}</h2>
-            <p className="text-sm text-muted-foreground text-center mb-6">{config.instruction}</p>
+            <p className="text-sm font-semibold text-foreground/80 text-center mb-6">{config.instruction}</p>
 
             {/* Photo preview or capture area */}
             <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden bg-card border-2 border-dashed border-border mb-4">
@@ -102,7 +102,7 @@ const Capture = () => {
               )}
             </div>
 
-            <p className="text-xs text-muted-foreground text-center bg-muted/50 px-4 py-2 rounded-xl">
+            <p className="text-sm font-medium text-foreground/70 text-center bg-muted/50 px-4 py-2 rounded-xl">
               💡 {config.tip}
             </p>
           </motion.div>
