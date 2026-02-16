@@ -37,7 +37,7 @@ const Welcome = () => {
         >
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg gradient-drip flex items-center justify-center">
-              <Zap className="h-4 w-4 text-primary-foreground" />
+              <Crown className="h-4 w-4 text-primary-foreground" />
             </div>
             <span className="font-display font-bold text-base tracking-wide">DripCheck</span>
           </div>
