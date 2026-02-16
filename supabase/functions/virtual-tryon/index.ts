@@ -42,28 +42,13 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: "google/gemini-3-pro-image-preview",
+        modalities: ["text", "image"],
         messages: [
-          {
-            role: "system",
-            content: `You are a virtual fashion try-on AI. You will receive two images:
-1. A photo of a person (the user)
-2. A photo of a clothing item
-
-Your task: Generate a realistic image of the person wearing the clothing item. 
-- Maintain the person's body proportions, skin tone, and pose
-- Replace or overlay the relevant clothing area with the new garment
-- Make it look natural and realistic
-- Keep the background and non-clothing areas unchanged
-
-Generate the composite image showing the person wearing the clothing.`,
-          },
           {
             role: "user",
             content: [
-              { type: "text", text: "Here is the person's photo and the clothing item. Please generate an image of this person wearing this clothing item." },
-              { type: "text", text: "--- Person Photo ---" },
+              { type: "text", text: "I have two images: the first is a photo of a person, and the second is a clothing item. Generate a new image showing this exact person wearing the clothing item from the second image. Keep the person's face, body, pose, and background exactly the same. Only change their outfit to match the clothing shown in the second image. Output the resulting image." },
               makeImagePart(userPhoto),
-              { type: "text", text: "--- Clothing Item ---" },
               makeImagePart(clothingPhoto),
             ],
           },
