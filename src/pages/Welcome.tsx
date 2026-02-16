@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import {
   Camera, Sparkles, Shirt, Users, LogIn, LogOut,
   Zap, Eye, TrendingUp, ArrowRight,
-  Heart, Crown
+  Heart, Crown, Star
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import iconRuler from '@/assets/icon-ruler.png';
@@ -20,12 +20,17 @@ const features = [
   { icon: Heart, title: "Real Feedback", desc: "Honest ratings on style, color, and fit.", gradient: "from-primary to-drip-gold" },
 ];
 
+const inView = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
 const Welcome = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
 
   return (
-    <div className="relative min-h-screen bg-background overflow-hidden pb-20">
+    <div className="relative min-h-screen bg-background overflow-hidden pb-24">
       {/* Background effects */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-[-10%] left-[-10%] h-[400px] w-[400px] rounded-full bg-primary/8 blur-[120px]" />
@@ -62,7 +67,7 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center max-w-lg mb-5"
+          className="text-center max-w-lg mb-4"
         >
           <motion.div
             initial={{ scale: 0 }}
@@ -81,14 +86,16 @@ const Welcome = () => {
           </p>
         </motion.div>
 
-        {/* Hero Preview Image */}
+        {/* Hero Preview Image with glow backdrop */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, duration: 0.6 }}
-          className="w-full max-w-[200px] mb-6"
+          className="w-full max-w-[200px] mb-6 relative"
         >
-          <div className="relative rounded-3xl overflow-hidden border border-border/20 glow-primary">
+          {/* Gold glow behind phone */}
+          <div className="absolute inset-0 -inset-x-6 -inset-y-4 rounded-[2rem] bg-primary/10 blur-2xl" />
+          <div className="relative rounded-3xl overflow-hidden border-2 border-primary/25 shadow-[0_0_30px_-5px_hsl(42_45%_62%/0.3)]">
             <img src={heroPreview} alt="DripCheck virtual try-on preview" className="w-full h-auto" />
             <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
           </div>
@@ -111,36 +118,37 @@ const Welcome = () => {
             </Button>
           </motion.div>
 
-          {/* Secondary CTAs */}
+          {/* Secondary CTAs with gold hover */}
           <div className="flex gap-2.5">
             <motion.div className="flex-1" whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}>
               <Button
                 onClick={() => navigate('/tryon')}
                 variant="outline"
-                className="w-full h-12 text-sm font-display font-bold uppercase tracking-wide border-border/40 hover:border-primary/40 hover:bg-primary/5"
+                className="w-full h-12 text-sm font-display font-bold uppercase tracking-wide border-border/40 hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 group"
                 size="lg"
               >
-                <img src={iconOutfit} alt="" className="mr-1.5 h-5 w-5 object-contain" /> GET DRIPPED
+                <img src={iconOutfit} alt="" className="mr-1.5 h-5 w-5 object-contain group-hover:drop-shadow-[0_0_4px_hsl(42_45%_62%/0.6)] transition-all" /> GET DRIPPED
               </Button>
             </motion.div>
             <motion.div className="flex-1" whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}>
               <Button
                 onClick={() => navigate('/community')}
                 variant="outline"
-                className="w-full h-12 text-sm font-display font-bold uppercase tracking-wide border-border/40 hover:border-primary/40 hover:bg-primary/5"
+                className="w-full h-12 text-sm font-display font-bold uppercase tracking-wide border-border/40 hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 group"
                 size="lg"
               >
-                <img src={iconCommunity} alt="" className="mr-1.5 h-5 w-5 object-contain" /> DRIP CHECK
+                <img src={iconCommunity} alt="" className="mr-1.5 h-5 w-5 object-contain group-hover:drop-shadow-[0_0_4px_hsl(42_45%_62%/0.6)] transition-all" /> DRIP CHECK
               </Button>
             </motion.div>
           </div>
         </motion.div>
 
-        {/* Features Grid */}
+        {/* Features Grid — whileInView */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6, duration: 0.6 }}
+          variants={inView}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
           className="w-full max-w-lg mb-10"
         >
           <h2 className="font-display text-lg font-bold text-center mb-5 tracking-wide">
@@ -151,8 +159,9 @@ const Welcome = () => {
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 + i * 0.08, duration: 0.5 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08, duration: 0.4 }}
                 className="glass rounded-2xl p-3.5 border border-border/30 group"
               >
                 <div className={`h-9 w-9 rounded-xl bg-gradient-to-br ${feat.gradient} flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform duration-300`}>
@@ -165,14 +174,20 @@ const Welcome = () => {
           </div>
         </motion.div>
 
-        {/* Social Proof */}
+        {/* Community Rated — with stars back */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
+          variants={inView}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
           className="w-full max-w-lg mb-10"
         >
           <div className="glass rounded-2xl p-5 border border-border/30 text-center">
+            <div className="flex items-center justify-center gap-1 mb-3">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="h-4.5 w-4.5 text-drip-gold fill-drip-gold" />
+              ))}
+            </div>
             <h3 className="font-display text-base font-bold mb-2">Community Rated</h3>
             <p className="text-muted-foreground text-xs leading-relaxed mb-3">
               Share your virtual try-ons and get real feedback on style, color, fit, and "would you buy it?"
@@ -186,43 +201,50 @@ const Welcome = () => {
           </div>
         </motion.div>
 
-        {/* How It Works */}
+        {/* How It Works — with connecting line */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9, duration: 0.6 }}
+          variants={inView}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
           className="w-full max-w-lg mb-10"
         >
           <h2 className="font-display text-lg font-bold text-center mb-5 tracking-wide">
             How It <span className="gradient-drip-text">Works</span>
           </h2>
-          <div className="space-y-2.5">
-            {[
-              { step: "01", text: "Snap a photo with any reference object", icon: Camera },
-              { step: "02", text: "AI analyzes your measurements instantly", icon: Sparkles },
-              { step: "03", text: "Drip check any outfit virtually", icon: Shirt },
-              { step: "04", text: "Share & get community feedback", icon: Users },
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 1.0 + i * 0.08, duration: 0.5 }}
-                className="flex items-center gap-3 glass rounded-xl p-3 border border-border/30"
-              >
-                <span className="font-display text-xl font-bold gradient-drip-text shrink-0 w-8">{item.step}</span>
-                <p className="text-xs font-medium flex-1">{item.text}</p>
-                <item.icon className="h-4 w-4 text-muted-foreground shrink-0" />
-              </motion.div>
-            ))}
+          <div className="relative">
+            {/* Connecting line */}
+            <div className="absolute left-[1.35rem] top-4 bottom-4 w-px bg-gradient-to-b from-primary/40 via-primary/20 to-transparent" />
+            <div className="space-y-2.5">
+              {[
+                { step: "01", text: "Snap a photo with any reference object", icon: Camera },
+                { step: "02", text: "AI analyzes your measurements instantly", icon: Sparkles },
+                { step: "03", text: "Drip check any outfit virtually", icon: Shirt },
+                { step: "04", text: "Share & get community feedback", icon: Users },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1, duration: 0.4 }}
+                  className="relative flex items-center gap-3 glass rounded-xl p-3 border border-border/30"
+                >
+                  <span className="font-display text-xl font-bold gradient-drip-text shrink-0 w-8 text-center relative z-10">{item.step}</span>
+                  <p className="text-xs font-medium flex-1">{item.text}</p>
+                  <item.icon className="h-4 w-4 text-muted-foreground shrink-0" />
+                </motion.div>
+              ))}
+            </div>
           </div>
         </motion.div>
 
         {/* Final CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.1, duration: 0.6 }}
+          variants={inView}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
           className="w-full max-w-sm text-center mb-8"
         >
           <h2 className="font-display text-xl font-bold mb-2 tracking-wide">
@@ -238,16 +260,33 @@ const Welcome = () => {
           </Button>
         </motion.div>
 
-        {/* Footer */}
+        {/* Footer with social links */}
         <motion.footer
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.5 }}
-          className="flex items-center gap-2 text-[10px] text-muted-foreground mb-4"
+          variants={inView}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="flex flex-col items-center gap-3 text-muted-foreground mb-4"
         >
-          <Zap className="h-3 w-3 text-primary" />
-          <span className="font-display">DripCheck</span>
-          <span>• AI-Powered Fashion</span>
+          <div className="flex items-center gap-4">
+            <a href="#" className="text-muted-foreground hover:text-primary transition-colors text-[10px] font-display">Instagram</a>
+            <span className="text-border">•</span>
+            <a href="#" className="text-muted-foreground hover:text-primary transition-colors text-[10px] font-display">TikTok</a>
+            <span className="text-border">•</span>
+            <a href="#" className="text-muted-foreground hover:text-primary transition-colors text-[10px] font-display">Twitter</a>
+          </div>
+          <div className="flex items-center gap-2 text-[10px]">
+            <Zap className="h-3 w-3 text-primary" />
+            <span className="font-display">DripCheck</span>
+            <span>• AI-Powered Fashion</span>
+          </div>
+          <div className="flex items-center gap-3 text-[9px]">
+            <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
+            <span className="text-border">•</span>
+            <a href="#" className="hover:text-foreground transition-colors">Terms</a>
+            <span className="text-border">•</span>
+            <span>Made with ❤️</span>
+          </div>
         </motion.footer>
       </div>
 
