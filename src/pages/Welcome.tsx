@@ -14,13 +14,13 @@ const features = [
     icon: Camera,
     title: "AI Body Scan",
     desc: "Snap a photo, get instant measurements. No tape needed.",
-    gradient: "from-primary to-drip-accent",
+    gradient: "from-primary to-accent",
   },
   {
     icon: Shirt,
     title: "Drip Check",
     desc: "See how clothes look on you before you buy.",
-    gradient: "from-drip-accent to-drip-gold",
+    gradient: "from-accent to-drip-gold",
   },
   {
     icon: Users,
@@ -50,9 +50,9 @@ const Welcome = () => {
     <div className="relative min-h-screen bg-background overflow-hidden">
       {/* Background effects */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-[-20%] left-[-10%] h-[500px] w-[500px] rounded-full bg-primary/10 blur-[120px]" />
-        <div className="absolute bottom-[-20%] right-[-10%] h-[400px] w-[400px] rounded-full bg-accent/10 blur-[120px]" />
-        <div className="absolute top-[40%] right-[20%] h-[300px] w-[300px] rounded-full bg-drip-gold/5 blur-[100px]" />
+        <div className="absolute top-[-20%] left-[-10%] h-[500px] w-[500px] rounded-full bg-primary/6 blur-[140px]" />
+        <div className="absolute bottom-[-20%] right-[-10%] h-[400px] w-[400px] rounded-full bg-accent/6 blur-[140px]" />
+        <div className="absolute top-[40%] right-[20%] h-[300px] w-[300px] rounded-full bg-drip-gold/4 blur-[120px]" />
       </div>
 
       <div className="relative z-10 flex flex-col items-center px-6 py-8">
@@ -60,13 +60,14 @@ const Welcome = () => {
         <motion.nav
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
           className="w-full max-w-lg flex items-center justify-between mb-12"
         >
           <div className="flex items-center gap-2">
             <div className="h-9 w-9 rounded-xl gradient-drip flex items-center justify-center">
               <Zap className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="font-display font-bold text-lg tracking-tight">DripCheck</span>
+            <span className="font-display font-bold text-lg tracking-wide">DripCheck</span>
           </div>
           {user ? (
             <Button variant="ghost" size="sm" onClick={() => signOut()} className="text-muted-foreground">
@@ -83,19 +84,19 @@ const Welcome = () => {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center max-w-lg mb-10"
         >
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+            transition={{ type: "spring", stiffness: 150, damping: 18, delay: 0.3 }}
             className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl gradient-drip glow-primary"
           >
             <Crown className="h-10 w-10 text-primary-foreground" />
           </motion.div>
 
-          <h1 className="font-display text-5xl font-bold tracking-tight mb-4 leading-[1.1]">
+          <h1 className="font-display text-5xl font-bold tracking-wide mb-4 leading-[1.1]">
             Check Your{' '}
             <span className="gradient-drip-text">Drip</span>
             <br />
@@ -110,7 +111,7 @@ const Welcome = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.5, duration: 0.7 }}
           className="flex gap-6 mb-12"
         >
           {stats.map((stat, i) => (
@@ -118,7 +119,7 @@ const Welcome = () => {
               key={i}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 + i * 0.1 }}
+              transition={{ delay: 0.6 + i * 0.12, duration: 0.6 }}
               className="text-center"
             >
               <p className="text-2xl font-display font-bold gradient-drip-text">{stat.value}</p>
@@ -131,12 +132,12 @@ const Welcome = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 0.7, duration: 0.7 }}
           className="w-full max-w-sm space-y-3 mb-16"
         >
           <Button
             onClick={() => navigate('/capture')}
-            className="w-full h-14 text-base font-display font-semibold rounded-2xl gradient-drip border-0 text-primary-foreground glow-primary hover:opacity-90 transition-opacity"
+            className="w-full h-14 text-base font-display font-semibold btn-luxury border-0 text-primary-foreground"
             size="lg"
           >
             <Sparkles className="mr-2 h-5 w-5" /> Start Measuring
@@ -145,14 +146,14 @@ const Welcome = () => {
             <Button
               onClick={() => navigate('/tryon')}
               variant="outline"
-              className="flex-1 h-12 rounded-2xl border-border/60 font-display"
+              className="flex-1 h-14 border-border/40 font-display hover:bg-accent/10"
             >
               <Shirt className="mr-2 h-5 w-5 text-accent" /> Drip Check
             </Button>
             <Button
               onClick={() => navigate('/community')}
               variant="outline"
-              className="flex-1 h-12 rounded-2xl border-border/60 font-display"
+              className="flex-1 h-14 border-border/40 font-display hover:bg-primary/10"
             >
               <Users className="mr-2 h-5 w-5 text-primary" /> Community
             </Button>
@@ -163,10 +164,10 @@ const Welcome = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.7 }}
+          transition={{ delay: 0.8, duration: 0.7 }}
           className="w-full max-w-lg mb-16"
         >
-          <h2 className="font-display text-xl font-bold text-center mb-8 tracking-tight">
+          <h2 className="font-display text-xl font-bold text-center mb-8 tracking-wide">
             Your Drip, <span className="gradient-drip-text">Elevated</span>
           </h2>
           <div className="grid grid-cols-2 gap-3">
@@ -175,11 +176,11 @@ const Welcome = () => {
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 + i * 0.1 }}
-                whileHover={{ scale: 1.03, y: -4 }}
-                className="glass rounded-2xl p-4 border border-border/40 cursor-default group"
+                transition={{ delay: 0.9 + i * 0.12, duration: 0.6 }}
+                whileHover={{ scale: 1.02, y: -3, transition: { duration: 0.3 } }}
+                className="glass rounded-2xl p-4 border border-border/30 cursor-default group"
               >
-                <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${feat.gradient} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
+                <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${feat.gradient} flex items-center justify-center mb-3 group-hover:scale-105 transition-transform duration-300`}>
                   <feat.icon className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <h3 className="font-display font-semibold text-sm mb-1">{feat.title}</h3>
@@ -193,10 +194,10 @@ const Welcome = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.9 }}
+          transition={{ delay: 1.0, duration: 0.7 }}
           className="w-full max-w-lg mb-16"
         >
-          <div className="glass rounded-3xl p-6 border border-border/40 text-center">
+          <div className="glass rounded-3xl p-6 border border-border/30 text-center">
             <div className="flex items-center justify-center gap-1 mb-4">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className="h-5 w-5 text-drip-gold fill-drip-gold" />
@@ -219,10 +220,10 @@ const Welcome = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.0 }}
+          transition={{ delay: 1.1, duration: 0.7 }}
           className="w-full max-w-lg mb-16"
         >
-          <h2 className="font-display text-xl font-bold text-center mb-8 tracking-tight">
+          <h2 className="font-display text-xl font-bold text-center mb-8 tracking-wide">
             How It <span className="gradient-drip-text">Works</span>
           </h2>
           <div className="space-y-4">
@@ -236,8 +237,8 @@ const Welcome = () => {
                 key={i}
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 1.1 + i * 0.12 }}
-                className="flex items-center gap-4 glass rounded-2xl p-4 border border-border/40"
+                transition={{ delay: 1.2 + i * 0.12, duration: 0.6 }}
+                className="flex items-center gap-4 glass rounded-2xl p-4 border border-border/30"
               >
                 <span className="font-display text-2xl font-bold gradient-drip-text shrink-0 w-10">{item.step}</span>
                 <p className="text-sm font-medium flex-1">{item.text}</p>
@@ -251,16 +252,16 @@ const Welcome = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.3 }}
+          transition={{ delay: 1.4, duration: 0.7 }}
           className="w-full max-w-sm text-center mb-12"
         >
-          <h2 className="font-display text-2xl font-bold mb-3">
+          <h2 className="font-display text-2xl font-bold mb-3 tracking-wide">
             Ready to Check Your <span className="gradient-drip-text">Drip</span>?
           </h2>
           <p className="text-muted-foreground text-sm mb-6">Join the community and never second-guess your fit again.</p>
           <Button
             onClick={() => user ? navigate('/capture') : navigate('/auth')}
-            className="w-full h-14 text-base font-display font-semibold rounded-2xl gradient-drip border-0 text-primary-foreground glow-primary hover:opacity-90 transition-opacity"
+            className="w-full h-14 text-base font-display font-semibold btn-luxury border-0 text-primary-foreground"
             size="lg"
           >
             {user ? "Let's Go" : "Get Started Free"} <ArrowRight className="ml-2 h-5 w-5" />
@@ -271,7 +272,7 @@ const Welcome = () => {
         <motion.footer
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.4 }}
+          transition={{ delay: 1.5, duration: 0.7 }}
           className="flex items-center gap-2 text-xs text-muted-foreground"
         >
           <Zap className="h-3.5 w-3.5 text-primary" />
