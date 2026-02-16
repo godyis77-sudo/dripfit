@@ -162,9 +162,9 @@ const Welcome = () => {
             </AnimatePresence>
             <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
             {/* Slide label */}
-            <div className="absolute bottom-0 left-0 right-0 text-center px-4 pb-4 pt-8 bg-gradient-to-t from-background/90 via-background/60 to-transparent">
-              <span className="font-display text-base font-bold gradient-drip-text tracking-wider block">{heroSlides[currentSlide].label}</span>
-              <p className="text-xs text-foreground/70 mt-1 leading-relaxed max-w-[200px] mx-auto">{heroSlides[currentSlide].desc}</p>
+            <div className="absolute bottom-0 left-0 right-0 text-center px-4 pb-5 pt-10 bg-gradient-to-t from-background via-background/80 to-transparent">
+              <span className="font-display text-lg font-extrabold gradient-drip-text tracking-wider block drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">{heroSlides[currentSlide].label}</span>
+              <p className="text-sm font-semibold text-foreground/90 mt-1.5 leading-snug max-w-[220px] mx-auto drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">{heroSlides[currentSlide].desc}</p>
             </div>
           </div>
           {/* Nav arrows */}
