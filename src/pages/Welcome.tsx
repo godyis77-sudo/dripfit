@@ -1,14 +1,23 @@
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Camera, Sparkles, Shirt, Users, LogIn, LogOut,
   Zap, Eye, TrendingUp, ArrowRight,
-  Heart, Crown, Star
+  Heart, Crown, Star, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import heroPreview from '@/assets/hero-body-measurements.jpg';
+import heroDripFit from '@/assets/hero-body-measurements.jpg';
+import heroGetDripped from '@/assets/hero-get-dripped.jpg';
+import heroDripCheck from '@/assets/hero-drip-check.jpg';
 import BottomTabBar from '@/components/BottomTabBar';
+
+const heroSlides = [
+  { image: heroDripFit, label: 'DRIP FIT', desc: 'AI body measurements from a single photo', route: '/capture' },
+  { image: heroGetDripped, label: 'GET DRIPPED', desc: 'Virtual try-on — see any outfit on you', route: '/tryon' },
+  { image: heroDripCheck, label: 'DRIP CHECK', desc: 'Community ratings on your style & fit', route: '/community' },
+];
 
 const inView = {
   hidden: { opacity: 0, y: 20 },
@@ -18,6 +27,15 @@ const inView = {
 const Welcome = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const nextSlide = useCallback(() => setCurrentSlide(i => (i + 1) % heroSlides.length), []);
+  const prevSlide = useCallback(() => setCurrentSlide(i => (i - 1 + heroSlides.length) % heroSlides.length), []);
+
+  useEffect(() => {
+    const timer = setInterval(nextSlide, 4000);
+    return () => clearInterval(timer);
+  }, [nextSlide]);
 
   return (
     <div className="relative min-h-screen bg-background overflow-hidden pb-24">
@@ -76,7 +94,7 @@ const Welcome = () => {
           </p>
         </motion.div>
 
-        {/* Hero Preview Image with glow backdrop */}
+        {/* Hero Carousel */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -85,8 +103,41 @@ const Welcome = () => {
         >
           <div className="absolute inset-0 -inset-x-8 -inset-y-6 rounded-[2rem] bg-primary/12 blur-3xl" />
           <div className="relative rounded-3xl overflow-hidden border-2 border-primary/25 shadow-[0_0_40px_-5px_hsl(42_45%_62%/0.35)]">
-            <img src={heroPreview} alt="DripCheck virtual try-on preview showing body measurement annotations" className="w-full h-auto" />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={currentSlide}
+                src={heroSlides[currentSlide].image}
+                alt={heroSlides[currentSlide].label}
+                className="w-full h-auto"
+                initial={{ opacity: 0, x: 40 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -40 }}
+                transition={{ duration: 0.35 }}
+              />
+            </AnimatePresence>
+            <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
+            {/* Slide label */}
+            <div className="absolute bottom-3 left-0 right-0 text-center">
+              <span className="font-display text-sm font-bold gradient-drip-text tracking-wider">{heroSlides[currentSlide].label}</span>
+              <p className="text-[10px] text-foreground/60 mt-0.5">{heroSlides[currentSlide].desc}</p>
+            </div>
+          </div>
+          {/* Nav arrows */}
+          <button onClick={prevSlide} className="absolute left-[-18px] top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full glass border border-border/30 flex items-center justify-center text-foreground/60 hover:text-foreground transition-colors">
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button onClick={nextSlide} className="absolute right-[-18px] top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full glass border border-border/30 flex items-center justify-center text-foreground/60 hover:text-foreground transition-colors">
+            <ChevronRight className="h-4 w-4" />
+          </button>
+          {/* Dots */}
+          <div className="flex justify-center gap-1.5 mt-3">
+            {heroSlides.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentSlide(i)}
+                className={`h-1.5 rounded-full transition-all duration-300 ${i === currentSlide ? 'w-5 bg-primary' : 'w-1.5 bg-foreground/20'}`}
+              />
+            ))}
           </div>
         </motion.div>
 
