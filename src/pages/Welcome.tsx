@@ -10,12 +10,6 @@ import { useAuth } from '@/hooks/useAuth';
 import heroPreview from '@/assets/hero-preview.png';
 import BottomTabBar from '@/components/BottomTabBar';
 
-const features = [
-  { icon: Camera, title: "DRIP FIT", desc: "Snap a photo, get instant body measurements.", gradient: "from-primary to-accent", path: "/capture" },
-  { icon: Shirt, title: "GET DRIPPED", desc: "See how clothes look on you before you buy.", gradient: "from-accent to-drip-gold", path: "/tryon" },
-  { icon: Users, title: "DRIP CHECK", desc: "Share fits, get rated, discover styles.", gradient: "from-drip-gold to-primary", path: "/community" },
-];
-
 const inView = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
@@ -77,7 +71,7 @@ const Welcome = () => {
           <h1 className="font-display text-4xl font-bold tracking-wide mb-2 leading-[1.1]">
             Check Your <span className="gradient-drip-text">Drip</span>
           </h1>
-          <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mx-auto">
+          <p className="text-foreground/60 text-sm leading-relaxed max-w-xs mx-auto">
             AI body measurements & virtual try-on. Know your fit, flex your style.
           </p>
         </motion.div>
@@ -87,13 +81,12 @@ const Welcome = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, duration: 0.6 }}
-          className="w-full max-w-[200px] mb-6 relative"
+          className="w-full max-w-[260px] mb-8 relative"
         >
-          {/* Gold glow behind phone */}
-          <div className="absolute inset-0 -inset-x-6 -inset-y-4 rounded-[2rem] bg-primary/10 blur-2xl" />
-          <div className="relative rounded-3xl overflow-hidden border-2 border-primary/25 shadow-[0_0_30px_-5px_hsl(42_45%_62%/0.3)]">
-            <img src={heroPreview} alt="DripCheck virtual try-on preview" className="w-full h-auto" />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
+          <div className="absolute inset-0 -inset-x-8 -inset-y-6 rounded-[2rem] bg-primary/12 blur-3xl" />
+          <div className="relative rounded-3xl overflow-hidden border-2 border-primary/25 shadow-[0_0_40px_-5px_hsl(42_45%_62%/0.35)]">
+            <img src={heroPreview} alt="DripCheck virtual try-on preview showing body measurement annotations" className="w-full h-auto" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
           </div>
         </motion.div>
 
@@ -107,7 +100,7 @@ const Welcome = () => {
           <motion.div whileHover={{ y: -2 }} whileTap={{ y: 4, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
             <Button
               onClick={() => navigate('/capture')}
-              className="w-full h-16 text-4xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
+              className="w-full h-16 text-3xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
               size="lg"
             >
               DRIP FIT
@@ -117,7 +110,7 @@ const Welcome = () => {
           <motion.div whileHover={{ y: -2 }} whileTap={{ y: 4, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
             <Button
               onClick={() => navigate('/tryon')}
-              className="w-full h-16 text-4xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
+              className="w-full h-16 text-3xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
               size="lg"
             >
               GET DRIPPED
@@ -127,7 +120,7 @@ const Welcome = () => {
           <motion.div whileHover={{ y: -2 }} whileTap={{ y: 4, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
             <Button
               onClick={() => navigate('/community')}
-              className="w-full h-16 text-4xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
+              className="w-full h-16 text-3xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
               size="lg"
             >
               DRIP CHECK
@@ -135,39 +128,7 @@ const Welcome = () => {
           </motion.div>
         </motion.div>
 
-        {/* Features Grid — whileInView */}
-        <motion.div
-          variants={inView}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
-          className="w-full max-w-lg mb-10"
-        >
-          <h2 className="font-display text-lg font-bold text-center mb-5 tracking-wide">
-            Your Drip, <span className="gradient-drip-text">Elevated</span>
-          </h2>
-          <div className="grid grid-cols-2 gap-2.5">
-            {features.map((feat, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08, duration: 0.4 }}
-                onClick={() => navigate(feat.path)}
-                className="glass rounded-2xl p-3.5 border border-border/30 group cursor-pointer hover:border-primary/30 transition-colors duration-300"
-              >
-                <div className={`h-9 w-9 rounded-xl bg-gradient-to-br ${feat.gradient} flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform duration-300`}>
-                  <feat.icon className="h-4.5 w-4.5 text-primary-foreground" />
-                </div>
-                <h3 className="font-display font-semibold text-sm mb-0.5">{feat.title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">{feat.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Community Rated — with stars back */}
+        {/* Community Rated */}
         <motion.div
           variants={inView}
           initial="hidden"
@@ -182,10 +143,10 @@ const Welcome = () => {
               ))}
             </div>
             <h3 className="font-display text-base font-bold mb-2">Community Rated</h3>
-            <p className="text-muted-foreground text-xs leading-relaxed mb-3">
+            <p className="text-foreground/55 text-xs leading-relaxed mb-3">
               Share your virtual try-ons and get real feedback on style, color, fit, and "would you buy it?"
             </p>
-            <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+            <div className="flex items-center justify-center gap-4 text-xs text-foreground/50">
               <span className="flex items-center gap-1"><Eye className="h-3.5 w-3.5 text-primary" /> Style</span>
               <span className="flex items-center gap-1"><Heart className="h-3.5 w-3.5 text-primary" /> Color</span>
               <span className="flex items-center gap-1"><TrendingUp className="h-3.5 w-3.5 text-primary" /> Fit</span>
@@ -194,7 +155,7 @@ const Welcome = () => {
           </div>
         </motion.div>
 
-        {/* How It Works — with connecting line */}
+        {/* How It Works */}
         <motion.div
           variants={inView}
           initial="hidden"
@@ -206,7 +167,6 @@ const Welcome = () => {
             How It <span className="gradient-drip-text">Works</span>
           </h2>
           <div className="relative">
-            {/* Connecting line */}
             <div className="absolute left-[1.35rem] top-4 bottom-4 w-px bg-gradient-to-b from-primary/40 via-primary/20 to-transparent" />
             <div className="space-y-2.5">
               {[
@@ -225,7 +185,7 @@ const Welcome = () => {
                 >
                   <span className="font-display text-xl font-bold gradient-drip-text shrink-0 w-8 text-center relative z-10">{item.step}</span>
                   <p className="text-xs font-medium flex-1">{item.text}</p>
-                  <item.icon className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <item.icon className="h-4 w-4 text-foreground/40 shrink-0" />
                 </motion.div>
               ))}
             </div>
@@ -243,31 +203,24 @@ const Welcome = () => {
           <h2 className="font-display text-xl font-bold mb-2 tracking-wide">
             Ready to Check Your <span className="gradient-drip-text">Drip</span>?
           </h2>
-          <p className="text-muted-foreground text-xs mb-4">Join the community and never second-guess your fit.</p>
+          <p className="text-foreground/55 text-xs mb-4">Join the community and never second-guess your fit.</p>
           <Button
             onClick={() => user ? navigate('/capture') : navigate('/auth')}
-            className="w-full h-16 text-4xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
+            className="w-full h-16 text-3xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
             size="lg"
           >
             {user ? "LET'S GO" : "GET STARTED"} <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </motion.div>
 
-        {/* Footer with social links */}
+        {/* Footer */}
         <motion.footer
           variants={inView}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="flex flex-col items-center gap-3 text-muted-foreground mb-4"
+          className="flex flex-col items-center gap-3 text-foreground/40 mb-4"
         >
-          <div className="flex items-center gap-4">
-            <a href="#" className="text-muted-foreground hover:text-primary transition-colors text-[10px] font-display">Instagram</a>
-            <span className="text-border">•</span>
-            <a href="#" className="text-muted-foreground hover:text-primary transition-colors text-[10px] font-display">TikTok</a>
-            <span className="text-border">•</span>
-            <a href="#" className="text-muted-foreground hover:text-primary transition-colors text-[10px] font-display">Twitter</a>
-          </div>
           <div className="flex items-center gap-2 text-[10px]">
             <Zap className="h-3 w-3 text-primary" />
             <span className="font-display">DripCheck</span>
