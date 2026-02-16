@@ -1,9 +1,10 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Camera, Shirt, Users, User } from 'lucide-react';
+import { Camera, Shirt, Users, User, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 const tabs = [
+  { icon: Home, label: 'Home', path: '/' },
   { icon: Camera, label: 'Scan', path: '/capture' },
   { icon: Shirt, label: 'Try-On', path: '/tryon' },
   { icon: Users, label: 'Community', path: '/community' },
@@ -21,7 +22,7 @@ const BottomTabBar = () => {
       transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.5 }}
       className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/30 glass"
     >
-      <div className="mx-auto flex max-w-lg items-center justify-around px-2 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <div className="mx-auto flex max-w-lg items-center justify-around px-1 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {tabs.map((tab) => {
           const isActive = location.pathname === tab.path;
           return (
@@ -29,7 +30,7 @@ const BottomTabBar = () => {
               key={tab.path}
               onClick={() => navigate(tab.path)}
               className={cn(
-                'flex flex-col items-center gap-0.5 rounded-xl px-4 py-1.5 transition-colors duration-200',
+                'flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 transition-colors duration-200',
                 isActive
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-foreground'
