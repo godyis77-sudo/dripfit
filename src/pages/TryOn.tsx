@@ -117,7 +117,7 @@ const TryOn = () => {
 
         {/* Upload section */}
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <input ref={userPhotoRef} type="file" accept="image/*" capture="environment" onChange={handleFileSelect(setUserPhoto)} className="hidden" />
+          <input ref={userPhotoRef} type="file" accept="image/*" onChange={handleFileSelect(setUserPhoto)} className="hidden" />
           <input ref={clothingPhotoRef} type="file" accept="image/*" onChange={handleFileSelect(setClothingPhoto)} className="hidden" />
 
           <Card className="rounded-2xl cursor-pointer overflow-hidden" onClick={() => userPhotoRef.current?.click()}>
