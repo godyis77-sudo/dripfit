@@ -107,7 +107,7 @@ const Welcome = () => {
           <motion.div whileHover={{ y: -2 }} whileTap={{ y: 4, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
             <Button
               onClick={() => navigate('/capture')}
-              className="w-full h-20 text-4xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
+              className="w-full h-16 text-4xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
               size="lg"
             >
               DRIP FIT
@@ -117,7 +117,7 @@ const Welcome = () => {
           <motion.div whileHover={{ y: -2 }} whileTap={{ y: 4, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
             <Button
               onClick={() => navigate('/tryon')}
-              className="w-full h-20 text-4xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
+              className="w-full h-16 text-4xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
               size="lg"
             >
               GET DRIPPED
@@ -127,7 +127,7 @@ const Welcome = () => {
           <motion.div whileHover={{ y: -2 }} whileTap={{ y: 4, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
             <Button
               onClick={() => navigate('/community')}
-              className="w-full h-20 text-4xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
+              className="w-full h-16 text-4xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
               size="lg"
             >
               DRIP CHECK
@@ -246,7 +246,7 @@ const Welcome = () => {
           <p className="text-muted-foreground text-xs mb-4">Join the community and never second-guess your fit.</p>
           <Button
             onClick={() => user ? navigate('/capture') : navigate('/auth')}
-            className="w-full h-20 text-4xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
+            className="w-full h-16 text-4xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
             size="lg"
           >
             {user ? "LET'S GO" : "GET STARTED"} <ArrowRight className="ml-2 h-5 w-5" />
