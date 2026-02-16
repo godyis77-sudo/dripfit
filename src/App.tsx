@@ -13,6 +13,7 @@ import Auth from "./pages/Auth";
 import TryOn from "./pages/TryOn";
 import Community from "./pages/Community";
 import SizeGuide from "./pages/SizeGuide";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/tryon" element={<TryOn />} />
             <Route path="/community" element={<Community />} />
             <Route path="/size-guide" element={<SizeGuide />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -8,7 +8,7 @@ const tabs = [
   { icon: Camera, label: 'Scan', path: '/capture' },
   { icon: Shirt, label: 'Try-On', path: '/tryon' },
   { icon: Users, label: 'Community', path: '/community' },
-  { icon: User, label: 'Profile', path: '/auth' },
+  { icon: User, label: 'Profile', path: '/profile' },
 ];
 
 const BottomTabBar = () => {

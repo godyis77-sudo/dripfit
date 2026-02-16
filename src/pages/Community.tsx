@@ -155,11 +155,11 @@ const Community = () => {
               <Sparkles className="h-8 w-8 text-primary-foreground" />
             </div>
             <h2 className="font-display text-lg font-bold mb-2">Be the First to Drip</h2>
-             <p className="text-sm font-semibold text-foreground/80 max-w-[250px] mb-6">
-              No looks shared yet. Try on an outfit and share it to get community ratings on your style.
+            <p className="text-sm font-medium text-foreground/70 max-w-[250px] mb-6">
+              Share your virtual try-ons and get real ratings from the community on your style, color, and fit.
             </p>
             <div className="glass rounded-2xl p-4 border border-border/30 w-full mb-6">
-              <h3 className="font-display text-sm font-bold mb-2 text-center">What you'll get rated on</h3>
+              <h3 className="font-display text-sm font-bold mb-3 text-center">Rate looks on</h3>
               <div className="grid grid-cols-4 gap-2 text-center">
                 <div className="flex flex-col items-center gap-1">
                   <Eye className="h-4 w-4 text-primary" />
