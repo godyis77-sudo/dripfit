@@ -14,7 +14,110 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tryon_posts: {
+        Row: {
+          caption: string | null
+          clothing_photo_url: string
+          created_at: string
+          id: string
+          is_public: boolean
+          result_photo_url: string
+          user_id: string
+          user_photo_url: string
+        }
+        Insert: {
+          caption?: string | null
+          clothing_photo_url: string
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          result_photo_url: string
+          user_id: string
+          user_photo_url: string
+        }
+        Update: {
+          caption?: string | null
+          clothing_photo_url?: string
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          result_photo_url?: string
+          user_id?: string
+          user_photo_url?: string
+        }
+        Relationships: []
+      }
+      tryon_ratings: {
+        Row: {
+          buy_score: number
+          color_score: number
+          comment: string | null
+          created_at: string
+          id: string
+          post_id: string
+          rater_user_id: string
+          style_score: number
+          suitability_score: number
+        }
+        Insert: {
+          buy_score: number
+          color_score: number
+          comment?: string | null
+          created_at?: string
+          id?: string
+          post_id: string
+          rater_user_id: string
+          style_score: number
+          suitability_score: number
+        }
+        Update: {
+          buy_score?: number
+          color_score?: number
+          comment?: string | null
+          created_at?: string
+          id?: string
+          post_id?: string
+          rater_user_id?: string
+          style_score?: number
+          suitability_score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tryon_ratings_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "tryon_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
