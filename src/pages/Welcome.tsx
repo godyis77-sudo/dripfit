@@ -135,28 +135,34 @@ const Welcome = () => {
           transition={{ delay: 0.7, duration: 0.7 }}
           className="w-full max-w-sm space-y-3 mb-16"
         >
-          <Button
-            onClick={() => navigate('/capture')}
-            className="w-full h-14 text-base font-display font-semibold btn-luxury border-0 text-primary-foreground"
-            size="lg"
-          >
-            <Sparkles className="mr-2 h-5 w-5" /> Start Measuring
-          </Button>
+          <motion.div whileHover={{ y: -2 }} whileTap={{ y: 1, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+            <Button
+              onClick={() => navigate('/capture')}
+              className="w-full h-14 text-base font-display font-semibold btn-luxury border-0 text-primary-foreground shadow-[0_4px_0_0_hsl(42_40%_48%),0_6px_14px_hsl(0_0%_0%/0.15)]"
+              size="lg"
+            >
+              <Sparkles className="mr-2 h-5 w-5" /> Start Measuring
+            </Button>
+          </motion.div>
           <div className="flex gap-3">
-            <Button
-              onClick={() => navigate('/tryon')}
-              variant="outline"
-              className="flex-1 h-14 border-border/40 font-display hover:bg-accent/10"
-            >
-              <Shirt className="mr-2 h-5 w-5 text-accent" /> Drip Check
-            </Button>
-            <Button
-              onClick={() => navigate('/community')}
-              variant="outline"
-              className="flex-1 h-14 border-border/40 font-display hover:bg-primary/10"
-            >
-              <Users className="mr-2 h-5 w-5 text-primary" /> Community
-            </Button>
+            <motion.div className="flex-1" whileHover={{ y: -2 }} whileTap={{ y: 1, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+              <Button
+                onClick={() => navigate('/tryon')}
+                variant="outline"
+                className="w-full h-14 border-border/40 font-display shadow-[0_4px_0_0_hsl(0_0%_0%/0.12),0_6px_14px_hsl(0_0%_0%/0.08)] hover:bg-accent/10"
+              >
+                <Shirt className="mr-2 h-5 w-5 text-accent" /> Drip Check
+              </Button>
+            </motion.div>
+            <motion.div className="flex-1" whileHover={{ y: -2 }} whileTap={{ y: 1, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+              <Button
+                onClick={() => navigate('/community')}
+                variant="outline"
+                className="w-full h-14 border-border/40 font-display shadow-[0_4px_0_0_hsl(0_0%_0%/0.12),0_6px_14px_hsl(0_0%_0%/0.08)] hover:bg-primary/10"
+              >
+                <Users className="mr-2 h-5 w-5 text-primary" /> Community
+              </Button>
+            </motion.div>
           </div>
         </motion.div>
 
