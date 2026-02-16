@@ -37,10 +37,10 @@ const Welcome = () => {
             <Ruler className="h-10 w-10 text-primary" />
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground mb-3">
-            BodyMeasure
+            DripCheck
           </h1>
           <p className="text-muted-foreground text-base leading-relaxed">
-            Get accurate body measurements from photos. No tape measure needed — just a common reference object and your camera.
+            Check your drip before you buy. AI-powered body measurements & virtual try-on — no tape measure needed.
           </p>
         </motion.div>
 
