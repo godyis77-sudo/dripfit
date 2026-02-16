@@ -39,7 +39,7 @@ const Welcome = () => {
             <div className="h-8 w-8 rounded-lg gradient-drip flex items-center justify-center">
               <Crown className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-display font-bold text-base tracking-wide">DripCheck</span>
+            <span className="font-display font-bold text-base tracking-wide">DRIP FIT</span>
           </div>
           {user ? (
             <Button variant="ghost" size="sm" onClick={() => signOut()} className="text-muted-foreground text-xs">
