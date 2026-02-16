@@ -1,48 +1,23 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Camera, Sparkles, Shirt, Users, LogIn, LogOut,
-  Star, Zap, Eye, TrendingUp, ChevronRight, ArrowRight,
-  MessageCircle, Heart, Crown
+  Zap, Eye, TrendingUp, ArrowRight,
+  Heart, Crown
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import iconRuler from '@/assets/icon-ruler.png';
 import iconOutfit from '@/assets/icon-outfit.png';
 import iconCommunity from '@/assets/icon-community.png';
+import heroPreview from '@/assets/hero-preview.png';
+import BottomTabBar from '@/components/BottomTabBar';
 
 const features = [
-  {
-    icon: Camera,
-    title: "AI Body Scan",
-    desc: "Snap a photo, get instant measurements. No tape needed.",
-    gradient: "from-primary to-accent",
-  },
-  {
-    icon: Shirt,
-    title: "Drip Check",
-    desc: "See how clothes look on you before you buy.",
-    gradient: "from-accent to-drip-gold",
-  },
-  {
-    icon: Users,
-    title: "Community Drip",
-    desc: "Share fits, get rated, discover trending styles.",
-    gradient: "from-drip-gold to-primary",
-  },
-  {
-    icon: MessageCircle,
-    title: "Real Feedback",
-    desc: "Get honest ratings on style, color, and fit from real people.",
-    gradient: "from-primary to-drip-gold",
-  },
-];
-
-const stats = [
-  { value: "AI", label: "Powered Measurements" },
-  { value: "∞", label: "Virtual Try-Ons" },
-  { value: "4", label: "Rating Categories" },
+  { icon: Camera, title: "AI Body Scan", desc: "Snap a photo, get instant measurements.", gradient: "from-primary to-accent" },
+  { icon: Shirt, title: "Drip Check", desc: "See how clothes look on you before you buy.", gradient: "from-accent to-drip-gold" },
+  { icon: Users, title: "Community Drip", desc: "Share fits, get rated, discover styles.", gradient: "from-drip-gold to-primary" },
+  { icon: Heart, title: "Real Feedback", desc: "Honest ratings on style, color, and fit.", gradient: "from-primary to-drip-gold" },
 ];
 
 const Welcome = () => {
@@ -50,169 +25,157 @@ const Welcome = () => {
   const { user, signOut } = useAuth();
 
   return (
-    <div className="relative min-h-screen bg-background overflow-hidden">
+    <div className="relative min-h-screen bg-background overflow-hidden pb-20">
       {/* Background effects */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-[-20%] left-[-10%] h-[500px] w-[500px] rounded-full bg-primary/6 blur-[140px]" />
-        <div className="absolute bottom-[-20%] right-[-10%] h-[400px] w-[400px] rounded-full bg-accent/6 blur-[140px]" />
-        <div className="absolute top-[40%] right-[20%] h-[300px] w-[300px] rounded-full bg-drip-gold/4 blur-[120px]" />
+        <div className="absolute top-[-10%] left-[-10%] h-[400px] w-[400px] rounded-full bg-primary/8 blur-[120px]" />
+        <div className="absolute bottom-[20%] right-[-10%] h-[300px] w-[300px] rounded-full bg-accent/6 blur-[100px]" />
       </div>
 
-      <div className="relative z-10 flex flex-col items-center px-6 py-8">
+      <div className="relative z-10 flex flex-col items-center px-5 pt-4">
         {/* Nav */}
         <motion.nav
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-          className="w-full max-w-lg flex items-center justify-between mb-12"
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-lg flex items-center justify-between mb-6"
         >
           <div className="flex items-center gap-2">
-            <div className="h-9 w-9 rounded-xl gradient-drip flex items-center justify-center">
-              <Zap className="h-5 w-5 text-primary-foreground" />
+            <div className="h-8 w-8 rounded-lg gradient-drip flex items-center justify-center">
+              <Zap className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-display font-bold text-lg tracking-wide">DripCheck</span>
+            <span className="font-display font-bold text-base tracking-wide">DripCheck</span>
           </div>
           {user ? (
-            <Button variant="ghost" size="sm" onClick={() => signOut()} className="text-muted-foreground">
-              <LogOut className="mr-1 h-4 w-4" /> Out
+            <Button variant="ghost" size="sm" onClick={() => signOut()} className="text-muted-foreground text-xs">
+              <LogOut className="mr-1 h-3.5 w-3.5" /> Out
             </Button>
           ) : (
-            <Button variant="ghost" size="sm" onClick={() => navigate('/auth')} className="text-muted-foreground">
-              <LogIn className="mr-1 h-4 w-4" /> Sign In
+            <Button variant="ghost" size="sm" onClick={() => navigate('/auth')} className="text-muted-foreground text-xs">
+              <LogIn className="mr-1 h-3.5 w-3.5" /> Sign In
             </Button>
           )}
         </motion.nav>
 
-        {/* Hero */}
+        {/* Hero — compact */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-center max-w-lg mb-10"
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-lg mb-5"
         >
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 150, damping: 18, delay: 0.3 }}
-            className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl gradient-drip glow-primary"
+            transition={{ type: "spring", stiffness: 200, damping: 18, delay: 0.2 }}
+            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl gradient-drip glow-primary ring-2 ring-primary/20"
           >
-            <Crown className="h-10 w-10 text-primary-foreground" />
+            <Crown className="h-8 w-8 text-primary-foreground" />
           </motion.div>
 
-          <h1 className="font-display text-5xl font-bold tracking-wide mb-4 leading-[1.1]">
-            Check Your{' '}
-            <span className="gradient-drip-text">Drip</span>
-            <br />
-            Before You Buy
+          <h1 className="font-display text-4xl font-bold tracking-wide mb-2 leading-[1.1]">
+            Check Your <span className="gradient-drip-text">Drip</span>
           </h1>
-          <p className="text-muted-foreground text-lg leading-relaxed max-w-sm mx-auto">
-            AI-powered body measurements & virtual try-on. Know your fit, flex your style, get rated by the community.
+          <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mx-auto">
+            AI body measurements & virtual try-on. Know your fit, flex your style.
           </p>
         </motion.div>
 
-        {/* Stats */}
+        {/* Hero Preview Image */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.7 }}
-          className="flex gap-6 mb-12"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          className="w-full max-w-[200px] mb-6"
         >
-          {stats.map((stat, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 + i * 0.12, duration: 0.6 }}
-              className="text-center"
-            >
-              <p className="text-2xl font-display font-bold gradient-drip-text">{stat.value}</p>
-              <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
-            </motion.div>
-          ))}
+          <div className="relative rounded-3xl overflow-hidden border border-border/20 glow-primary">
+            <img src={heroPreview} alt="DripCheck virtual try-on preview" className="w-full h-auto" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
+          </div>
         </motion.div>
 
-        {/* CTA Buttons */}
+        {/* Primary CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.7 }}
-          className="w-full max-w-sm space-y-3 mb-16"
+          transition={{ delay: 0.4, duration: 0.5 }}
+          className="w-full max-w-sm space-y-2.5 mb-10"
         >
           <motion.div whileHover={{ y: -2 }} whileTap={{ y: 1, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
             <Button
               onClick={() => navigate('/capture')}
-              className="w-full h-16 text-xl font-display font-bold uppercase tracking-wide btn-luxury border-0 text-primary-foreground shadow-[0_4px_0_0_hsl(42_40%_48%),0_6px_14px_hsl(0_0%_0%/0.15)]"
+              className="w-full h-14 text-lg font-display font-bold uppercase tracking-wide btn-luxury border-0 text-primary-foreground shadow-[0_4px_0_0_hsl(42_40%_48%),0_6px_14px_hsl(0_0%_0%/0.15)]"
               size="lg"
             >
-              <img src={iconRuler} alt="" className="mr-3 h-8 w-8 object-contain" /> FIT DRIP
+              <img src={iconRuler} alt="" className="mr-2 h-7 w-7 object-contain" /> FIT DRIP
             </Button>
           </motion.div>
-          <motion.div whileHover={{ y: -2 }} whileTap={{ y: 1, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
-            <Button
-              onClick={() => navigate('/tryon')}
-              className="w-full h-16 text-xl font-display font-bold uppercase tracking-wide btn-luxury border-0 text-primary-foreground shadow-[0_4px_0_0_hsl(42_40%_48%),0_6px_14px_hsl(0_0%_0%/0.15)]"
-              size="lg"
-            >
-              <img src={iconOutfit} alt="" className="mr-3 h-8 w-8 object-contain" /> GET DRIPPED
-            </Button>
-          </motion.div>
-          <motion.div whileHover={{ y: -2 }} whileTap={{ y: 1, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
-            <Button
-              onClick={() => navigate('/community')}
-              className="w-full h-16 text-xl font-display font-bold uppercase tracking-wide btn-luxury border-0 text-primary-foreground shadow-[0_4px_0_0_hsl(42_40%_48%),0_6px_14px_hsl(0_0%_0%/0.15)]"
-              size="lg"
-            >
-              <img src={iconCommunity} alt="" className="mr-3 h-8 w-8 object-contain" /> DRIP CHECK
-            </Button>
-          </motion.div>
+
+          {/* Secondary CTAs */}
+          <div className="flex gap-2.5">
+            <motion.div className="flex-1" whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}>
+              <Button
+                onClick={() => navigate('/tryon')}
+                variant="outline"
+                className="w-full h-12 text-sm font-display font-bold uppercase tracking-wide border-border/40 hover:border-primary/40 hover:bg-primary/5"
+                size="lg"
+              >
+                <img src={iconOutfit} alt="" className="mr-1.5 h-5 w-5 object-contain" /> GET DRIPPED
+              </Button>
+            </motion.div>
+            <motion.div className="flex-1" whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}>
+              <Button
+                onClick={() => navigate('/community')}
+                variant="outline"
+                className="w-full h-12 text-sm font-display font-bold uppercase tracking-wide border-border/40 hover:border-primary/40 hover:bg-primary/5"
+                size="lg"
+              >
+                <img src={iconCommunity} alt="" className="mr-1.5 h-5 w-5 object-contain" /> DRIP CHECK
+              </Button>
+            </motion.div>
+          </div>
         </motion.div>
 
         {/* Features Grid */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.7 }}
-          className="w-full max-w-lg mb-16"
+          transition={{ delay: 0.6, duration: 0.6 }}
+          className="w-full max-w-lg mb-10"
         >
-          <h2 className="font-display text-xl font-bold text-center mb-8 tracking-wide">
+          <h2 className="font-display text-lg font-bold text-center mb-5 tracking-wide">
             Your Drip, <span className="gradient-drip-text">Elevated</span>
           </h2>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2.5">
             {features.map((feat, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 + i * 0.12, duration: 0.6 }}
-                whileHover={{ scale: 1.02, y: -3, transition: { duration: 0.3 } }}
-                className="glass rounded-2xl p-4 border border-border/30 cursor-default group"
+                transition={{ delay: 0.7 + i * 0.08, duration: 0.5 }}
+                className="glass rounded-2xl p-3.5 border border-border/30 group"
               >
-                <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${feat.gradient} flex items-center justify-center mb-3 group-hover:scale-105 transition-transform duration-300`}>
-                  <feat.icon className="h-5 w-5 text-primary-foreground" />
+                <div className={`h-9 w-9 rounded-xl bg-gradient-to-br ${feat.gradient} flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform duration-300`}>
+                  <feat.icon className="h-4.5 w-4.5 text-primary-foreground" />
                 </div>
-                <h3 className="font-display font-semibold text-sm mb-1">{feat.title}</h3>
+                <h3 className="font-display font-semibold text-sm mb-0.5">{feat.title}</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">{feat.desc}</p>
               </motion.div>
             ))}
           </div>
         </motion.div>
 
-        {/* Community Vibe Section */}
+        {/* Social Proof */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.0, duration: 0.7 }}
-          className="w-full max-w-lg mb-16"
+          transition={{ delay: 0.8, duration: 0.6 }}
+          className="w-full max-w-lg mb-10"
         >
-          <div className="glass rounded-3xl p-6 border border-border/30 text-center">
-            <div className="flex items-center justify-center gap-1 mb-4">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="h-5 w-5 text-drip-gold fill-drip-gold" />
-              ))}
-            </div>
-            <h3 className="font-display text-lg font-bold mb-2">Community Rated</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-              Share your virtual try-ons and get honest feedback from real people. Rate outfits on style, color matching, fit suitability, and "would you buy it?"
+          <div className="glass rounded-2xl p-5 border border-border/30 text-center">
+            <h3 className="font-display text-base font-bold mb-2">Community Rated</h3>
+            <p className="text-muted-foreground text-xs leading-relaxed mb-3">
+              Share your virtual try-ons and get real feedback on style, color, fit, and "would you buy it?"
             </p>
             <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
               <span className="flex items-center gap-1"><Eye className="h-3.5 w-3.5 text-primary" /> Style</span>
@@ -227,29 +190,29 @@ const Welcome = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.1, duration: 0.7 }}
-          className="w-full max-w-lg mb-16"
+          transition={{ delay: 0.9, duration: 0.6 }}
+          className="w-full max-w-lg mb-10"
         >
-          <h2 className="font-display text-xl font-bold text-center mb-8 tracking-wide">
+          <h2 className="font-display text-lg font-bold text-center mb-5 tracking-wide">
             How It <span className="gradient-drip-text">Works</span>
           </h2>
-          <div className="space-y-4">
+          <div className="space-y-2.5">
             {[
               { step: "01", text: "Snap a photo with any reference object", icon: Camera },
-              { step: "02", text: "AI analyzes your body measurements instantly", icon: Sparkles },
+              { step: "02", text: "AI analyzes your measurements instantly", icon: Sparkles },
               { step: "03", text: "Drip check any outfit virtually", icon: Shirt },
-              { step: "04", text: "Share your look & get community feedback", icon: Users },
+              { step: "04", text: "Share & get community feedback", icon: Users },
             ].map((item, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, x: -30 }}
+                initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 1.2 + i * 0.12, duration: 0.6 }}
-                className="flex items-center gap-4 glass rounded-2xl p-4 border border-border/30"
+                transition={{ delay: 1.0 + i * 0.08, duration: 0.5 }}
+                className="flex items-center gap-3 glass rounded-xl p-3 border border-border/30"
               >
-                <span className="font-display text-2xl font-bold gradient-drip-text shrink-0 w-10">{item.step}</span>
-                <p className="text-sm font-medium flex-1">{item.text}</p>
-                <item.icon className="h-5 w-5 text-muted-foreground shrink-0" />
+                <span className="font-display text-xl font-bold gradient-drip-text shrink-0 w-8">{item.step}</span>
+                <p className="text-xs font-medium flex-1">{item.text}</p>
+                <item.icon className="h-4 w-4 text-muted-foreground shrink-0" />
               </motion.div>
             ))}
           </div>
@@ -257,21 +220,21 @@ const Welcome = () => {
 
         {/* Final CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.4, duration: 0.7 }}
-          className="w-full max-w-sm text-center mb-12"
+          transition={{ delay: 1.1, duration: 0.6 }}
+          className="w-full max-w-sm text-center mb-8"
         >
-          <h2 className="font-display text-2xl font-bold mb-3 tracking-wide">
+          <h2 className="font-display text-xl font-bold mb-2 tracking-wide">
             Ready to Check Your <span className="gradient-drip-text">Drip</span>?
           </h2>
-          <p className="text-muted-foreground text-sm mb-6">Join the community and never second-guess your fit again.</p>
+          <p className="text-muted-foreground text-xs mb-4">Join the community and never second-guess your fit.</p>
           <Button
             onClick={() => user ? navigate('/capture') : navigate('/auth')}
-            className="w-full h-14 text-base font-display font-semibold btn-luxury border-0 text-primary-foreground"
+            className="w-full h-12 text-sm font-display font-semibold btn-luxury border-0 text-primary-foreground"
             size="lg"
           >
-            {user ? "Let's Go" : "Get Started Free"} <ArrowRight className="ml-2 h-5 w-5" />
+            {user ? "Let's Go" : "Get Started Free"} <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </motion.div>
 
@@ -279,14 +242,16 @@ const Welcome = () => {
         <motion.footer
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 0.7 }}
-          className="flex items-center gap-2 text-xs text-muted-foreground"
+          transition={{ delay: 1.2, duration: 0.5 }}
+          className="flex items-center gap-2 text-[10px] text-muted-foreground mb-4"
         >
-          <Zap className="h-3.5 w-3.5 text-primary" />
+          <Zap className="h-3 w-3 text-primary" />
           <span className="font-display">DripCheck</span>
           <span>• AI-Powered Fashion</span>
         </motion.footer>
       </div>
+
+      <BottomTabBar />
     </div>
   );
 };
