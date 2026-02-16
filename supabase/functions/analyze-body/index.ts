@@ -6,13 +6,25 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `You are an expert body measurement AI. You will receive 3 photos of a person:
-1. Front-facing view with a ruler visible
-2. Side view with ruler visible  
-3. Arms extended outward with ruler visible
+const CALIBRATION_SIZES: Record<string, string> = {
+  ruler: "a standard 12-inch (30 cm) ruler",
+  loonie: "a Canadian Loonie coin, which is 26.5 mm (1.043 inches) in diameter",
+  quarter: "a US Quarter coin, which is 24.26 mm (0.955 inches) in diameter",
+  five_dollar_bill: "a Canadian $5 bill, which is 152.4 mm (6 inches) long and 69.85 mm (2.75 inches) tall",
+};
+
+function buildSystemPrompt(calibrationObject: string): string {
+  const objDesc = CALIBRATION_SIZES[calibrationObject] || CALIBRATION_SIZES["ruler"];
+
+  return `You are an expert body measurement AI. You will receive 3 photos of a person:
+1. Front-facing view with a reference object visible
+2. Side view with reference object visible  
+3. Arms extended outward with reference object visible
+
+The reference object in the photos is ${objDesc}.
 
 Your task:
-1. DETECT THE RULER in each image and use it to establish a pixel-to-inch scale ratio.
+1. DETECT THE REFERENCE OBJECT in each image and use its known real-world size to establish a pixel-to-real-unit scale ratio.
 2. IDENTIFY BODY LANDMARKS: shoulders, chest line, natural waist, hip line, crotch/inseam point, wrists, neck base, shoulder tips.
 3. CALCULATE these measurements in inches (rounded to nearest 0.5):
    - chest: circumference at fullest point (use front width × π/2 + side depth × π/2)
@@ -40,6 +52,7 @@ Return ONLY a JSON object with this exact format, no other text:
   },
   "sizeRecommendation": "M"
 }`;
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -47,7 +60,8 @@ serve(async (req) => {
   }
 
   try {
-    const { frontPhoto, sidePhoto, armsOutPhoto } = await req.json();
+    const { frontPhoto, sidePhoto, armsOutPhoto, calibrationObject } = await req.json();
+    const calObj = calibrationObject || "ruler";
 
     if (!frontPhoto || !sidePhoto || !armsOutPhoto) {
       return new Response(
@@ -84,11 +98,11 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "google/gemini-2.5-pro",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: buildSystemPrompt(calObj) },
           {
             role: "user",
             content: [
-              { type: "text", text: "Please analyze these 3 photos and calculate body measurements using the ruler as scale reference." },
+              { type: "text", text: "Please analyze these 3 photos and calculate body measurements using the reference object as scale reference." },
               ...makeImagePart(frontPhoto, "Photo 1: Front View"),
               ...makeImagePart(sidePhoto, "Photo 2: Side View"),
               ...makeImagePart(armsOutPhoto, "Photo 3: Arms Extended"),
