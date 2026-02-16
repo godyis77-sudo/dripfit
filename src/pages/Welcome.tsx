@@ -116,15 +116,6 @@ const Welcome = () => {
           transition={{ duration: 0.6 }}
           className="text-center max-w-lg mb-4"
         >
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 200, damping: 18, delay: 0.2 }}
-            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl gradient-drip glow-primary ring-2 ring-primary/20"
-          >
-            <Crown className="h-8 w-8 text-primary-foreground" />
-          </motion.div>
-
           <h1 className="font-display text-4xl font-bold tracking-wide mb-2 leading-[1.1]">
             Check Your <span className="gradient-drip-text">Drip</span>
           </h1>

@@ -52,7 +52,7 @@ const Capture = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background pb-20">
+    <div className="flex min-h-screen flex-col bg-background pb-24">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 pt-6 pb-2">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
@@ -90,14 +90,14 @@ const Capture = () => {
                 <div className="w-full h-full flex flex-col items-center justify-center gap-4 text-muted-foreground">
                   {/* Silhouette guide */}
                   <div className="relative">
-                    <div className="w-24 h-40 border-2 border-dashed border-primary/30 rounded-full" />
-                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs text-primary/50 whitespace-nowrap">
+                    <div className="w-28 h-44 border-2 border-dashed border-primary/50 rounded-full" />
+                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 text-xs font-semibold text-primary/70 whitespace-nowrap">
                       {step === 'front' && '↑ Face camera'}
                       {step === 'side' && '↑ Turn sideways'}
                       {step === 'armsOut' && '← Arms out →'}
                     </div>
                   </div>
-                  <p className="text-xs">Tap to capture</p>
+                  <p className="text-sm font-medium text-foreground/50 mt-2">Tap to capture</p>
                 </div>
               )}
             </div>
@@ -110,7 +110,7 @@ const Capture = () => {
       </div>
 
       {/* Actions */}
-      <div className="px-6 pb-8 pt-4 space-y-3 max-w-sm mx-auto w-full">
+      <div className="px-6 pb-6 pt-4 space-y-3 max-w-sm mx-auto w-full">
         <input
           ref={fileInputRef}
           type="file"
