@@ -1,21 +1,23 @@
 import { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, ArrowLeft, RotateCcw, Check } from 'lucide-react';
-import { CaptureStep, STEP_CONFIG, PhotoSet } from '@/lib/types';
+import { CaptureStep, getStepConfig, PhotoSet, CalibrationObject } from '@/lib/types';
 
 const STEPS: CaptureStep[] = ['front', 'side', 'armsOut'];
 
 const Capture = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const calibrationObject = (location.state as { calibrationObject?: CalibrationObject })?.calibrationObject || 'ruler';
   const [currentStep, setCurrentStep] = useState(0);
   const [photos, setPhotos] = useState<PhotoSet>({ front: null, side: null, armsOut: null });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const step = STEPS[currentStep];
-  const config = STEP_CONFIG[step];
+  const config = getStepConfig(calibrationObject)[step];
   const progress = ((currentStep + (photos[step] ? 1 : 0)) / 3) * 100;
 
   const handleCapture = () => {
@@ -40,7 +42,7 @@ const Capture = () => {
       setCurrentStep(prev => prev + 1);
     } else {
       // All 3 photos taken — go to analysis
-      navigate('/analyze', { state: { photos } });
+      navigate('/analyze', { state: { photos, calibrationObject } });
     }
   };
 

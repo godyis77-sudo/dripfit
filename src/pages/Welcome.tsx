@@ -1,16 +1,26 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Camera, Ruler, Sparkles } from 'lucide-react';
+import { Camera, Ruler, Sparkles, CircleDollarSign, Banknote, Check } from 'lucide-react';
+import { CalibrationObject, CALIBRATION_OBJECTS } from '@/lib/types';
 
 const steps = [
-  { icon: Ruler, label: 'Hold a ruler visible in frame' },
+  { icon: Ruler, label: 'Hold a reference object visible in frame' },
   { icon: Camera, label: 'Take 3 guided photos' },
   { icon: Sparkles, label: 'Get instant measurements' },
 ];
 
+const objectIcons: Record<CalibrationObject, typeof Ruler> = {
+  ruler: Ruler,
+  loonie: CircleDollarSign,
+  quarter: CircleDollarSign,
+  five_dollar_bill: Banknote,
+};
+
 const Welcome = () => {
   const navigate = useNavigate();
+  const [selectedObject, setSelectedObject] = useState<CalibrationObject>('ruler');
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-between bg-background px-6 py-12">
@@ -19,7 +29,7 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-12"
+          className="text-center mb-8"
         >
           <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/10">
             <Ruler className="h-10 w-10 text-primary" />
@@ -28,8 +38,42 @@ const Welcome = () => {
             BodyMeasure
           </h1>
           <p className="text-muted-foreground text-base leading-relaxed">
-            Get accurate body measurements from photos. No tape measure needed — just a ruler and your camera.
+            Get accurate body measurements from photos. No tape measure needed — just a common reference object and your camera.
           </p>
+        </motion.div>
+
+        {/* Calibration object selector */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="w-full mb-6"
+        >
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Reference object</p>
+          <div className="grid grid-cols-2 gap-2">
+            {(Object.entries(CALIBRATION_OBJECTS) as [CalibrationObject, typeof CALIBRATION_OBJECTS[CalibrationObject]][]).map(([key, obj]) => {
+              const Icon = objectIcons[key];
+              const isSelected = selectedObject === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setSelectedObject(key)}
+                  className={`flex items-center gap-3 rounded-2xl p-3 border-2 transition-all text-left ${
+                    isSelected
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border bg-card hover:border-primary/40'
+                  }`}
+                >
+                  <Icon className={`h-5 w-5 shrink-0 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <div className="min-w-0">
+                    <p className={`text-sm font-medium truncate ${isSelected ? 'text-foreground' : 'text-muted-foreground'}`}>{obj.label}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">{obj.description}</p>
+                  </div>
+                  {isSelected && <Check className="h-4 w-4 text-primary shrink-0 ml-auto" />}
+                </button>
+              );
+            })}
+          </div>
         </motion.div>
 
         <motion.div
@@ -70,7 +114,7 @@ const Welcome = () => {
 
       <div className="w-full max-w-sm space-y-3">
         <Button
-          onClick={() => navigate('/capture')}
+          onClick={() => navigate('/capture', { state: { calibrationObject: selectedObject } })}
           className="w-full h-14 text-base font-semibold rounded-2xl"
           size="lg"
         >

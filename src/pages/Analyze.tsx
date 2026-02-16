@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { PhotoSet, MeasurementResult } from '@/lib/types';
+import { PhotoSet, MeasurementResult, CalibrationObject } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
 
 const ANALYSIS_MESSAGES = [
@@ -17,7 +17,9 @@ const ANALYSIS_MESSAGES = [
 const Analyze = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const photos = (location.state as { photos: PhotoSet })?.photos;
+  const state = location.state as { photos: PhotoSet; calibrationObject?: CalibrationObject } | undefined;
+  const photos = state?.photos;
+  const calibrationObject = state?.calibrationObject || 'ruler';
   const [messageIndex, setMessageIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,6 +45,7 @@ const Analyze = () => {
           frontPhoto: photos!.front,
           sidePhoto: photos!.side,
           armsOutPhoto: photos!.armsOut,
+          calibrationObject,
         },
       });
 
