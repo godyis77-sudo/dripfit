@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { motion } from 'framer-motion';
-import { Save, Share2, ArrowLeft, Check } from 'lucide-react';
+import { Save, Share2, ArrowLeft, Check, Ruler } from 'lucide-react';
 import { MeasurementResult, MEASUREMENT_LABELS } from '@/lib/types';
 import { saveMeasurement } from '@/lib/storage';
 import { useToast } from '@/hooks/use-toast';
@@ -122,6 +122,13 @@ const Results = () => {
             onClick={() => navigate('/capture')}
           >
             Measure Again
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full h-14 rounded-2xl"
+            onClick={() => navigate('/size-guide')}
+          >
+            <Ruler className="mr-2 h-4 w-4" /> Match to Brand Size Guide
           </Button>
         </div>
       </div>
