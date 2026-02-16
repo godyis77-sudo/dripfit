@@ -15,7 +15,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 
 const features = [
   { icon: Camera, title: "DRIP FIT", desc: "Snap a photo, get instant measurements.", gradient: "from-primary to-accent", path: "/capture" },
-  { icon: Shirt, title: "Drip Check", desc: "See how clothes look on you before you buy.", gradient: "from-accent to-drip-gold", path: "/tryon" },
+  { icon: Shirt, title: "GET DRIPPED", desc: "See how clothes look on you before you buy.", gradient: "from-accent to-drip-gold", path: "/tryon" },
   { icon: Users, title: "DRIP CHECK", desc: "Share fits, get rated, discover styles.", gradient: "from-drip-gold to-primary", path: "/community" },
   { icon: Heart, title: "Real Feedback", desc: "Honest ratings on style, color, and fit.", gradient: "from-primary to-drip-gold", path: "/community" },
 ];
