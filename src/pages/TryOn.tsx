@@ -219,29 +219,34 @@ const TryOn = () => {
               </CardContent>
             </Card>
 
-            {user && (
-              <div className="space-y-3">
-                <Textarea
-                  placeholder="Add a caption…"
-                  value={caption}
-                  onChange={e => setCaption(e.target.value)}
-                  className="rounded-xl resize-none"
-                  rows={2}
-                />
-                <div className="flex items-center justify-between bg-card rounded-2xl p-3 border border-border">
-                  <span className="text-sm text-muted-foreground">Share to community</span>
-                  <Switch checked={isPublic} onCheckedChange={setIsPublic} />
-                </div>
-                <Button
-                  className="w-full h-12 rounded-2xl"
-                  onClick={handleShare}
-                  disabled={shared}
-                >
-                  <Share2 className="mr-2 h-4 w-4" />
-                  {shared ? 'Shared!' : isPublic ? 'Share to Community' : 'Save to My Posts'}
-                </Button>
+            <div className="space-y-3">
+              <Textarea
+                placeholder="Add a caption…"
+                value={caption}
+                onChange={e => setCaption(e.target.value)}
+                className="rounded-xl resize-none"
+                rows={2}
+              />
+              <div className="flex items-center justify-between bg-card rounded-2xl p-3 border border-border">
+                <span className="text-sm text-muted-foreground">Share to community</span>
+                <Switch checked={isPublic} onCheckedChange={setIsPublic} />
               </div>
-            )}
+              <Button
+                className="w-full h-12 rounded-2xl"
+                onClick={() => {
+                  if (!user) {
+                    toast({ title: 'Sign in required', description: 'Create an account to share your look.', variant: 'destructive' });
+                    navigate('/auth');
+                    return;
+                  }
+                  handleShare();
+                }}
+                disabled={shared}
+              >
+                <Share2 className="mr-2 h-4 w-4" />
+                {shared ? 'Shared!' : isPublic ? 'Share to Community' : 'Save to My Posts'}
+              </Button>
+            </div>
           </motion.div>
         )}
 
