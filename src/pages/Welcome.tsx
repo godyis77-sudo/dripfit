@@ -7,9 +7,6 @@ import {
   Heart, Crown, Star
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import iconRuler from '@/assets/icon-ruler.png';
-import iconOutfit from '@/assets/icon-outfit.png';
-import iconCommunity from '@/assets/icon-community.png';
 import heroPreview from '@/assets/hero-preview.png';
 import BottomTabBar from '@/components/BottomTabBar';
 
@@ -113,7 +110,7 @@ const Welcome = () => {
               className="w-full h-16 text-xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
               size="lg"
             >
-              <img src={iconRuler} alt="" className="mr-2 h-7 w-7 object-contain drop-shadow-[0_1px_1px_hsl(0_0%_0%/0.3)]" /> DRIP FIT
+              DRIP FIT
             </Button>
           </motion.div>
 
@@ -123,7 +120,7 @@ const Welcome = () => {
               className="w-full h-16 text-xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
               size="lg"
             >
-              <img src={iconOutfit} alt="" className="mr-2 h-7 w-7 object-contain drop-shadow-[0_1px_1px_hsl(0_0%_0%/0.3)]" /> GET DRIPPED
+              GET DRIPPED
             </Button>
           </motion.div>
 
@@ -133,7 +130,7 @@ const Welcome = () => {
               className="w-full h-16 text-xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
               size="lg"
             >
-              <img src={iconCommunity} alt="" className="mr-2 h-7 w-7 object-contain drop-shadow-[0_1px_1px_hsl(0_0%_0%/0.3)]" /> DRIP CHECK
+              DRIP CHECK
             </Button>
           </motion.div>
         </motion.div>
