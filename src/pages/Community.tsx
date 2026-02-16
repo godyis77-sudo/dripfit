@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, Send, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Star, Send, MessageCircle, Shirt, Sparkles, Eye, Heart, TrendingUp, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import BottomTabBar from '@/components/BottomTabBar';
 
 interface Post {
   id: string;
@@ -135,7 +136,7 @@ const Community = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background px-6 py-6">
+    <div className="min-h-screen bg-background px-6 py-6 pb-24">
       <div className="max-w-sm mx-auto">
         <div className="flex items-center gap-3 mb-6">
           <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
@@ -149,11 +150,37 @@ const Community = () => {
             <div className="animate-pulse text-muted-foreground">Loading…</div>
           </div>
         ) : posts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <MessageCircle className="h-12 w-12 text-muted-foreground/30 mb-4" />
-            <p className="text-muted-foreground">No looks shared yet</p>
-            <Button className="mt-4 rounded-2xl" onClick={() => navigate('/tryon')}>
-              Try On Something
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="h-16 w-16 rounded-2xl gradient-drip flex items-center justify-center mb-4">
+              <Sparkles className="h-8 w-8 text-primary-foreground" />
+            </div>
+            <h2 className="font-display text-lg font-bold mb-2">Be the First to Drip</h2>
+            <p className="text-sm text-muted-foreground max-w-[250px] mb-6">
+              No looks shared yet. Try on an outfit and share it to get community ratings on your style.
+            </p>
+            <div className="glass rounded-2xl p-4 border border-border/30 w-full mb-6">
+              <h3 className="font-display text-sm font-bold mb-2 text-center">What you'll get rated on</h3>
+              <div className="grid grid-cols-4 gap-2 text-center">
+                <div className="flex flex-col items-center gap-1">
+                  <Eye className="h-4 w-4 text-primary" />
+                  <span className="text-[10px] text-foreground/60">Style</span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <Heart className="h-4 w-4 text-primary" />
+                  <span className="text-[10px] text-foreground/60">Color</span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                  <span className="text-[10px] text-foreground/60">Fit</span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <Zap className="h-4 w-4 text-primary" />
+                  <span className="text-[10px] text-foreground/60">Buy It?</span>
+                </div>
+              </div>
+            </div>
+            <Button className="rounded-2xl btn-3d-drip border-0 h-12 px-8 font-display font-bold uppercase tracking-wider" onClick={() => navigate('/tryon')}>
+              <Shirt className="mr-2 h-4 w-4" /> Try On Something
             </Button>
           </div>
         ) : (
@@ -231,6 +258,7 @@ const Community = () => {
           </div>
         )}
       </div>
+      <BottomTabBar />
     </div>
   );
 };

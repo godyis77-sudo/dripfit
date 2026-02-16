@@ -8,6 +8,7 @@ import { ArrowLeft, Upload, Camera, Image, Loader2, CheckCircle2, AlertTriangle,
 import { getMeasurements } from '@/lib/storage';
 import { MeasurementResult, MEASUREMENT_LABELS } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
+import BottomTabBar from '@/components/BottomTabBar';
 import { useToast } from '@/hooks/use-toast';
 
 interface SizeBreakdown {
@@ -365,6 +366,7 @@ const SizeGuide = () => {
           )}
         </AnimatePresence>
       </div>
+      <BottomTabBar />
     </div>
   );
 };
