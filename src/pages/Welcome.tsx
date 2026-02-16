@@ -34,9 +34,20 @@ const Welcome = () => {
   const nextSlide = useCallback(() => setCurrentSlide(i => (i + 1) % heroSlides.length), []);
   const prevSlide = useCallback(() => setCurrentSlide(i => (i - 1 + heroSlides.length) % heroSlides.length), []);
 
+  // Pause auto-advance on interaction
+  const interactionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [paused, setPaused] = useState(false);
+
+  const pauseAutoAdvance = useCallback(() => {
+    setPaused(true);
+    if (interactionTimer.current) clearTimeout(interactionTimer.current);
+    interactionTimer.current = setTimeout(() => setPaused(false), 8000);
+  }, []);
+
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     touchStartX.current = e.targetTouches[0].clientX;
-  }, []);
+    pauseAutoAdvance();
+  }, [pauseAutoAdvance]);
 
   const handleTouchEnd = useCallback(() => {
     const diff = touchStartX.current - touchEndX.current;
@@ -49,10 +60,21 @@ const Welcome = () => {
     touchEndX.current = e.targetTouches[0].clientX;
   }, []);
 
+  const handleArrowClick = useCallback((direction: 'prev' | 'next') => {
+    pauseAutoAdvance();
+    direction === 'prev' ? prevSlide() : nextSlide();
+  }, [pauseAutoAdvance, prevSlide, nextSlide]);
+
+  const handleDotClick = useCallback((i: number) => {
+    pauseAutoAdvance();
+    setCurrentSlide(i);
+  }, [pauseAutoAdvance]);
+
   useEffect(() => {
+    if (paused) return;
     const timer = setInterval(nextSlide, 4000);
     return () => clearInterval(timer);
-  }, [nextSlide]);
+  }, [nextSlide, paused]);
 
   return (
     <div className="relative min-h-screen bg-background overflow-hidden pb-24">
@@ -146,10 +168,10 @@ const Welcome = () => {
             </div>
           </div>
           {/* Nav arrows */}
-          <button onClick={prevSlide} className="absolute left-[-18px] top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full glass border border-border/30 flex items-center justify-center text-foreground/60 hover:text-foreground transition-colors">
+          <button onClick={() => handleArrowClick('prev')} className="absolute left-[-18px] top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full glass border border-border/30 flex items-center justify-center text-foreground/60 hover:text-foreground transition-colors">
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <button onClick={nextSlide} className="absolute right-[-18px] top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full glass border border-border/30 flex items-center justify-center text-foreground/60 hover:text-foreground transition-colors">
+          <button onClick={() => handleArrowClick('next')} className="absolute right-[-18px] top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full glass border border-border/30 flex items-center justify-center text-foreground/60 hover:text-foreground transition-colors">
             <ChevronRight className="h-4 w-4" />
           </button>
           {/* Dots */}
@@ -157,7 +179,7 @@ const Welcome = () => {
             {heroSlides.map((_, i) => (
               <button
                 key={i}
-                onClick={() => setCurrentSlide(i)}
+                onClick={() => handleDotClick(i)}
                 className={`h-1.5 rounded-full transition-all duration-300 ${i === currentSlide ? 'w-5 bg-primary' : 'w-1.5 bg-foreground/20'}`}
               />
             ))}
@@ -169,7 +191,7 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.5 }}
-          className="w-full max-w-sm mb-10"
+          className="w-full max-w-sm mb-10 text-center"
         >
           <motion.div whileHover={{ y: -2 }} whileTap={{ y: 4, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
             <Button
@@ -190,6 +212,18 @@ const Welcome = () => {
               </AnimatePresence>
             </Button>
           </motion.div>
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={currentSlide}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="text-xs text-foreground/50 mt-2"
+            >
+              {heroSlides[currentSlide].desc}
+            </motion.p>
+          </AnimatePresence>
         </motion.div>
 
         {/* Community Rated */}

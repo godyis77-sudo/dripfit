@@ -5,6 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, ArrowLeft, RotateCcw, Check } from 'lucide-react';
 import { CaptureStep, getStepConfig, PhotoSet, CalibrationObject } from '@/lib/types';
+import BottomTabBar from '@/components/BottomTabBar';
 
 const STEPS: CaptureStep[] = ['front', 'side', 'armsOut'];
 
@@ -51,7 +52,7 @@ const Capture = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-background pb-20">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 pt-6 pb-2">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
@@ -135,6 +136,7 @@ const Capture = () => {
           </Button>
         )}
       </div>
+      <BottomTabBar />
     </div>
   );
 };

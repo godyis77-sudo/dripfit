@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Camera, Shirt, Users, User, Home, Ruler } from 'lucide-react';
+import { Camera, Shirt, Users, User, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
@@ -7,7 +7,6 @@ const tabs = [
   { icon: Home, label: 'Home', path: '/' },
   { icon: Camera, label: 'Scan', path: '/capture' },
   { icon: Shirt, label: 'Try-On', path: '/tryon' },
-  { icon: Ruler, label: 'Size Guide', path: '/size-guide' },
   { icon: Users, label: 'Community', path: '/community' },
   { icon: User, label: 'Profile', path: '/auth' },
 ];

@@ -9,6 +9,7 @@ import { ArrowLeft, Upload, Shirt, Sparkles, Loader2, Share2, Image } from 'luci
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import BottomTabBar from '@/components/BottomTabBar';
 
 const TryOn = () => {
   const navigate = useNavigate();
@@ -155,7 +156,7 @@ const TryOn = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background px-6 py-6">
+    <div className="min-h-screen bg-background px-6 py-6 pb-24">
       <div className="max-w-sm mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
@@ -177,7 +178,8 @@ const TryOn = () => {
               ) : (
                 <div className="flex flex-col items-center gap-2 text-muted-foreground p-4">
                   <Image className="h-8 w-8" />
-                  <p className="text-xs text-center">Your Photo</p>
+                  <p className="text-xs text-center font-medium">Your Photo</p>
+                  <p className="text-[10px] text-center text-muted-foreground/60">Full body, front facing</p>
                 </div>
               )}
             </CardContent>
@@ -190,12 +192,29 @@ const TryOn = () => {
               ) : (
                 <div className="flex flex-col items-center gap-2 text-muted-foreground p-4">
                   <Shirt className="h-8 w-8" />
-                  <p className="text-xs text-center">Clothing Item</p>
+                  <p className="text-xs text-center font-medium">Clothing Item</p>
+                  <p className="text-[10px] text-center text-muted-foreground/60">Photo of the item to try on</p>
                 </div>
               )}
             </CardContent>
           </Card>
         </div>
+
+        {/* Instructions */}
+        {!userPhoto && !clothingPhoto && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="glass rounded-2xl p-4 border border-border/30 mb-6"
+          >
+            <h3 className="font-display text-sm font-bold mb-2">How it works</h3>
+            <ol className="space-y-1.5 text-xs text-foreground/60">
+              <li className="flex gap-2"><span className="text-primary font-bold">1.</span> Upload a full-body photo of yourself</li>
+              <li className="flex gap-2"><span className="text-primary font-bold">2.</span> Upload a photo of the clothing item</li>
+              <li className="flex gap-2"><span className="text-primary font-bold">3.</span> AI generates you wearing the outfit</li>
+            </ol>
+          </motion.div>
+        )}
 
         {/* Try-On button */}
         <Button
@@ -258,6 +277,7 @@ const TryOn = () => {
           </Card>
         )}
       </div>
+      <BottomTabBar />
     </div>
   );
 };
