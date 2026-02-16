@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Camera, Ruler, Sparkles, CircleDollarSign, Banknote, Check } from 'lucide-react';
+import { Camera, Ruler, Sparkles, CircleDollarSign, Banknote, Check, Shirt, Users, LogIn, LogOut } from 'lucide-react';
 import { CalibrationObject, CALIBRATION_OBJECTS } from '@/lib/types';
+import { useAuth } from '@/hooks/useAuth';
 
 const steps = [
   { icon: Ruler, label: 'Hold a reference object visible in frame' },
@@ -20,6 +21,7 @@ const objectIcons: Record<CalibrationObject, typeof Ruler> = {
 
 const Welcome = () => {
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
   const [selectedObject, setSelectedObject] = useState<CalibrationObject>('ruler');
 
   return (
@@ -121,12 +123,37 @@ const Welcome = () => {
           Start Measuring
         </Button>
         <Button
-          onClick={() => navigate('/history')}
-          variant="ghost"
-          className="w-full text-muted-foreground"
+          onClick={() => navigate('/tryon')}
+          variant="outline"
+          className="w-full h-12 rounded-2xl"
         >
-          View Saved Measurements
+          <Shirt className="mr-2 h-5 w-5" /> Virtual Try-On
         </Button>
+        <Button
+          onClick={() => navigate('/community')}
+          variant="outline"
+          className="w-full h-12 rounded-2xl"
+        >
+          <Users className="mr-2 h-5 w-5" /> Community Looks
+        </Button>
+        <div className="flex gap-3">
+          <Button
+            onClick={() => navigate('/history')}
+            variant="ghost"
+            className="flex-1 text-muted-foreground"
+          >
+            View History
+          </Button>
+          {user ? (
+            <Button variant="ghost" className="flex-1 text-muted-foreground" onClick={() => signOut()}>
+              <LogOut className="mr-2 h-4 w-4" /> Sign Out
+            </Button>
+          ) : (
+            <Button variant="ghost" className="flex-1 text-muted-foreground" onClick={() => navigate('/auth')}>
+              <LogIn className="mr-2 h-4 w-4" /> Sign In
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
