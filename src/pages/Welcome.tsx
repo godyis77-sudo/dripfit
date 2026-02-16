@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,9 +14,9 @@ import heroDripCheck from '@/assets/hero-drip-check.jpg';
 import BottomTabBar from '@/components/BottomTabBar';
 
 const heroSlides = [
-  { image: heroDripFit, label: 'DRIP FIT', desc: 'AI body measurements from a single photo', route: '/capture' },
-  { image: heroGetDripped, label: 'GET DRIPPED', desc: 'Virtual try-on — see any outfit on you', route: '/tryon' },
-  { image: heroDripCheck, label: 'DRIP CHECK', desc: 'Community ratings on your style & fit', route: '/community' },
+  { image: heroDripFit, label: 'DRIP FIT', desc: 'AI body measurements from a single photo', route: '/capture', cta: 'DRIP FIT' },
+  { image: heroGetDripped, label: 'GET DRIPPED', desc: 'Virtual try-on — see any outfit on you', route: '/tryon', cta: 'GET DRIPPED' },
+  { image: heroDripCheck, label: 'DRIP CHECK', desc: 'Community ratings on your style & fit', route: '/community', cta: 'DRIP CHECK' },
 ];
 
 const inView = {
@@ -28,9 +28,26 @@ const Welcome = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   const nextSlide = useCallback(() => setCurrentSlide(i => (i + 1) % heroSlides.length), []);
   const prevSlide = useCallback(() => setCurrentSlide(i => (i - 1 + heroSlides.length) % heroSlides.length), []);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    const diff = touchStartX.current - touchEndX.current;
+    if (Math.abs(diff) > 50) {
+      diff > 0 ? nextSlide() : prevSlide();
+    }
+  }, [nextSlide, prevSlide]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(nextSlide, 4000);
@@ -102,7 +119,13 @@ const Welcome = () => {
           className="w-full max-w-[260px] mb-8 relative"
         >
           <div className="absolute inset-0 -inset-x-8 -inset-y-6 rounded-[2rem] bg-primary/12 blur-3xl" />
-          <div className="relative rounded-3xl overflow-hidden border-2 border-primary/25 shadow-[0_0_40px_-5px_hsl(42_45%_62%/0.35)]">
+          <div
+            className="relative rounded-3xl overflow-hidden border-2 border-primary/25 shadow-[0_0_40px_-5px_hsl(42_45%_62%/0.35)] cursor-pointer"
+            onClick={() => navigate(heroSlides[currentSlide].route)}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
             <AnimatePresence mode="wait">
               <motion.img
                 key={currentSlide}
@@ -141,40 +164,30 @@ const Welcome = () => {
           </div>
         </motion.div>
 
-        {/* Primary CTA */}
+        {/* Contextual CTA */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.5 }}
-          className="w-full max-w-sm space-y-2.5 mb-10"
+          className="w-full max-w-sm mb-10"
         >
           <motion.div whileHover={{ y: -2 }} whileTap={{ y: 4, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
             <Button
-              onClick={() => navigate('/capture')}
+              onClick={() => navigate(heroSlides[currentSlide].route)}
               className="w-full h-16 text-3xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
               size="lg"
             >
-              DRIP FIT
-            </Button>
-          </motion.div>
-
-          <motion.div whileHover={{ y: -2 }} whileTap={{ y: 4, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
-            <Button
-              onClick={() => navigate('/tryon')}
-              className="w-full h-16 text-3xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
-              size="lg"
-            >
-              GET DRIPPED
-            </Button>
-          </motion.div>
-
-          <motion.div whileHover={{ y: -2 }} whileTap={{ y: 4, scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
-            <Button
-              onClick={() => navigate('/community')}
-              className="w-full h-16 text-3xl font-display font-extrabold uppercase tracking-widest btn-3d-drip border-0 rounded-2xl"
-              size="lg"
-            >
-              DRIP CHECK
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={currentSlide}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {heroSlides[currentSlide].cta}
+                </motion.span>
+              </AnimatePresence>
             </Button>
           </motion.div>
         </motion.div>
