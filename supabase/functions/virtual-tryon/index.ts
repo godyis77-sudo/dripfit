@@ -90,35 +90,54 @@ Generate the composite image showing the person wearing the clothing.`,
     }
 
     const aiResponse = await response.json();
-    const content = aiResponse.choices?.[0]?.message?.content;
-
-    // The image model returns inline images - extract base64 or URL
-    // Check for inline_data in parts
-    const parts = aiResponse.choices?.[0]?.message?.parts;
+    console.log("AI response structure:", JSON.stringify(aiResponse).substring(0, 500));
+    
+    const message = aiResponse.choices?.[0]?.message;
+    const content = message?.content;
     let resultImage: string | null = null;
+    let textContent: string | null = null;
 
-    if (parts) {
-      for (const part of parts) {
-        if (part.inline_data) {
-          resultImage = `data:${part.inline_data.mime_type};base64,${part.inline_data.data}`;
+    // Case 1: content is an array of parts (OpenAI multimodal format)
+    if (Array.isArray(content)) {
+      for (const part of content) {
+        if (part.type === "image_url" && part.image_url?.url) {
+          resultImage = part.image_url.url;
           break;
+        }
+        if (part.type === "text" && part.text) {
+          textContent = (textContent || "") + part.text;
         }
       }
     }
 
-    // If content contains a base64 image or URL
-    if (!resultImage && content) {
-      const b64Match = content.match(/data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/);
-      if (b64Match) {
-        resultImage = b64Match[0];
+    // Case 2: Check for inline_data in parts (Gemini native format)
+    if (!resultImage && message?.parts) {
+      for (const part of message.parts) {
+        if (part.inline_data) {
+          resultImage = `data:${part.inline_data.mime_type};base64,${part.inline_data.data}`;
+          break;
+        }
+        if (part.text) {
+          textContent = (textContent || "") + part.text;
+        }
       }
     }
 
-    // If we still don't have an image, return the text content as description
+    // Case 3: content is a string containing base64 image data
+    if (!resultImage && typeof content === "string") {
+      const b64Match = content.match(/data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/);
+      if (b64Match) {
+        resultImage = b64Match[0];
+      } else {
+        textContent = content;
+      }
+    }
+
     if (!resultImage) {
+      console.log("No image found in response. Text:", textContent?.substring(0, 200));
       return new Response(
         JSON.stringify({ 
-          description: content || "The AI was unable to generate a try-on image. Try with clearer photos.",
+          description: textContent || "The AI was unable to generate a try-on image. Try with clearer photos.",
           resultImage: null 
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
