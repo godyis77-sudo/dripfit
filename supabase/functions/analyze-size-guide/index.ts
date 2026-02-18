@@ -65,14 +65,12 @@ Only include measurements that appear in the size chart.`;
     const userMessage = `Here is the size guide image${brandName ? ` for ${brandName}` : ""}. 
 
 My body measurements (in inches):
+- Shoulder: ${measurements.shoulder}
 - Chest: ${measurements.chest}
 - Waist: ${measurements.waist}
 - Hips: ${measurements.hips}
 - Inseam: ${measurements.inseam}
-- Arm Length: ${measurements.armLength}
-- Shoulder Width: ${measurements.shoulderWidth}
-- Neck: ${measurements.neck}
-- Torso Length: ${measurements.torsoLength}
+- Height: ${measurements.height}
 
 Please analyze the size chart and recommend the best size for me.`;
 
