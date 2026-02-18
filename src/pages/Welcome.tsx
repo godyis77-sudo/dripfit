@@ -164,11 +164,11 @@ const Welcome = () => {
                   className="absolute inset-0 pointer-events-none"
                 >
                   {[
-                    { label: 'Shoulder', top: '17%' },
-                    { label: 'Chest', top: '26%' },
-                    { label: 'Waist', top: '38%' },
-                    { label: 'Hip', top: '48%' },
-                    { label: 'Inseam', top: '58%' },
+                    { label: 'Shoulder', top: '13%' },
+                    { label: 'Chest', top: '22%' },
+                    { label: 'Waist', top: '35%' },
+                    { label: 'Hip', top: '44%' },
+                    { label: 'Inseam', top: '54%' },
                   ].map((m, i) => (
                     <motion.div
                       key={m.label}
@@ -188,7 +188,7 @@ const Welcome = () => {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.8, duration: 0.3 }}
                     className="absolute right-3 flex flex-col items-center"
-                    style={{ top: '5%', bottom: '8%' }}
+                    style={{ top: '10%', bottom: '12%' }}
                   >
                     <div className="w-px flex-1 bg-drip-gold/40" />
                     <span className="text-[9px] font-bold text-drip-gold/90 mt-1 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" style={{ writingMode: 'vertical-rl' }}>Height</span>
