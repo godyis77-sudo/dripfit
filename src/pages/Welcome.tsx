@@ -241,37 +241,33 @@ const Welcome = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4, duration: 0.4 }}
-                    className="absolute top-3 right-3 flex items-center gap-0.5 bg-background/60 backdrop-blur-sm rounded-full px-2 py-1"
+                    className="absolute top-3 left-3 right-3 flex items-center gap-1.5"
                   >
-                    {[...Array(5)].map((_, i) => (
+                    <div className="flex items-center gap-0.5 bg-background/60 backdrop-blur-sm rounded-full px-2 py-1">
+                      {[...Array(5)].map((_, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.5 + i * 0.1 }}
+                        >
+                          <Star className="h-2.5 w-2.5 text-drip-gold fill-drip-gold" />
+                        </motion.div>
+                      ))}
+                      <span className="text-[9px] font-bold text-drip-gold ml-1">4.8</span>
+                    </div>
+                    {['🔥', '💯', '✨'].map((emoji, i) => (
                       <motion.div
                         key={i}
                         initial={{ opacity: 0, scale: 0 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.5 + i * 0.1 }}
+                        animate={{ opacity: 1, scale: [0, 1.2, 1] }}
+                        transition={{ delay: 0.7 + i * 0.15, duration: 0.4 }}
+                        className="bg-background/50 backdrop-blur-sm rounded-full h-6 w-6 flex items-center justify-center text-xs"
                       >
-                        <Star className="h-2.5 w-2.5 text-drip-gold fill-drip-gold" />
+                        {emoji}
                       </motion.div>
                     ))}
-                    <span className="text-[9px] font-bold text-drip-gold ml-1">4.8</span>
                   </motion.div>
-                  {/* Floating reaction badges */}
-                  {[
-                    { label: '🔥', top: '20%', left: '8%', delay: 0.6 },
-                    { label: '💯', top: '35%', right: '6%', delay: 0.8 },
-                    { label: '✨', top: '50%', left: '6%', delay: 1.0 },
-                  ].map((badge, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={{ opacity: [0, 1, 0.8], scale: [0, 1.2, 1] }}
-                      transition={{ delay: badge.delay, duration: 0.5 }}
-                      className="absolute bg-background/50 backdrop-blur-sm rounded-full h-6 w-6 flex items-center justify-center text-xs"
-                      style={{ top: badge.top, left: badge.left, right: (badge as any).right }}
-                    >
-                      {badge.label}
-                    </motion.div>
-                  ))}
                 </motion.div>
               )}
             </AnimatePresence>
