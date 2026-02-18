@@ -109,20 +109,6 @@ const Welcome = () => {
           )}
         </motion.nav>
 
-        {/* Hero — compact */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-lg mb-4"
-        >
-          <h1 className="font-display text-4xl font-bold tracking-wide mb-2 leading-[1.1]">
-            Check Your <span className="gradient-drip-text">Drip</span>
-          </h1>
-          <p className="text-foreground/60 text-sm font-medium leading-relaxed max-w-xs mx-auto">
-            AI body measurements & virtual try-on. Know your fit, flex your style.
-          </p>
-        </motion.div>
 
         {/* Hero Carousel */}
         <motion.div
