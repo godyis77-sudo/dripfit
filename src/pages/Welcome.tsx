@@ -325,6 +325,32 @@ const Welcome = () => {
           </motion.div>
         </motion.div>
 
+        {/* Community Rated */}
+        <motion.div
+          variants={inView}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          className="w-full max-w-lg mb-10"
+        >
+          <div className="glass rounded-2xl p-5 border border-border/30 text-center">
+            <div className="flex items-center justify-center gap-1 mb-3">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="h-4.5 w-4.5 text-drip-gold fill-drip-gold" />
+              ))}
+            </div>
+            <h3 className="font-display text-base font-bold mb-2">Community Rated</h3>
+            <p className="text-foreground/70 text-sm font-medium leading-relaxed mb-3">
+              Share your virtual try-ons and get real feedback on style, color, fit, and "would you buy it?"
+            </p>
+            <div className="flex items-center justify-center gap-4 text-xs text-foreground/50">
+              <span className="flex items-center gap-1"><Eye className="h-3.5 w-3.5 text-primary" /> Style</span>
+              <span className="flex items-center gap-1"><Heart className="h-3.5 w-3.5 text-primary" /> Color</span>
+              <span className="flex items-center gap-1"><TrendingUp className="h-3.5 w-3.5 text-primary" /> Fit</span>
+              <span className="flex items-center gap-1"><Zap className="h-3.5 w-3.5 text-primary" /> Buy It?</span>
+            </div>
+          </div>
+        </motion.div>
 
         {/* How It Works */}
         <motion.div
@@ -394,7 +420,7 @@ const Welcome = () => {
         >
           <div className="flex items-center gap-2 text-[10px]">
             <Zap className="h-3 w-3 text-primary" />
-            <span className="font-display">DRIP FIT</span>
+            <span className="font-display">DripCheck</span>
             <span>• AI-Powered Fashion</span>
           </div>
           <div className="flex items-center gap-3 text-[9px]">
