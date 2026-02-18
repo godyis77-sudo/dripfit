@@ -151,6 +151,51 @@ const Welcome = () => {
                 transition={{ duration: 0.4 }}
               />
             </AnimatePresence>
+
+            {/* Measurement overlay for DRIP FIT slide */}
+            <AnimatePresence>
+              {currentSlide === 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="absolute inset-0 pointer-events-none"
+                >
+                  {[
+                    { label: 'Shoulder', top: '18%' },
+                    { label: 'Chest', top: '28%' },
+                    { label: 'Waist', top: '44%' },
+                    { label: 'Hip', top: '55%' },
+                    { label: 'Inseam', top: '68%' },
+                  ].map((m, i) => (
+                    <motion.div
+                      key={m.label}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 + i * 0.1, duration: 0.3 }}
+                      className="absolute left-0 right-0 flex items-center"
+                      style={{ top: m.top }}
+                    >
+                      <span className="text-[10px] font-bold text-drip-gold/90 pl-2 pr-1 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{m.label}</span>
+                      <div className="flex-1 h-px bg-drip-gold/40" />
+                    </motion.div>
+                  ))}
+                  {/* Height vertical line */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.8, duration: 0.3 }}
+                    className="absolute right-3 flex flex-col items-center"
+                    style={{ top: '15%', bottom: '22%' }}
+                  >
+                    <div className="w-px flex-1 bg-drip-gold/40" />
+                    <span className="text-[9px] font-bold text-drip-gold/90 mt-1 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" style={{ writingMode: 'vertical-rl' }}>Height</span>
+                    <div className="w-px flex-1 bg-drip-gold/40" />
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
             <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
             {/* Slide label */}
             <div className="absolute bottom-0 left-0 right-0 text-center px-4 pb-5 pt-10 bg-gradient-to-t from-background via-background/80 to-transparent">
