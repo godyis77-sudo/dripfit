@@ -1,14 +1,12 @@
 export interface MeasurementResult {
   id: string;
   date: string;
+  shoulder: number;
   chest: number;
   waist: number;
   hips: number;
   inseam: number;
-  armLength: number;
-  shoulderWidth: number;
-  neck: number;
-  torsoLength: number;
+  height: number;
   unit: 'in' | 'cm';
   sizeRecommendation: string;
 }
@@ -68,12 +66,10 @@ export const getStepConfig = (object: CalibrationObject): Record<CaptureStep, { 
 };
 
 export const MEASUREMENT_LABELS: Record<string, string> = {
+  shoulder: 'Shoulder',
   chest: 'Chest',
   waist: 'Waist',
   hips: 'Hips',
   inseam: 'Inseam',
-  armLength: 'Arm Length',
-  shoulderWidth: 'Shoulder Width',
-  neck: 'Neck',
-  torsoLength: 'Torso Length',
+  height: 'Height',
 };

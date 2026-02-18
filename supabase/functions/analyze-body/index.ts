@@ -25,30 +25,26 @@ The reference object in the photos is ${objDesc}.
 
 Your task:
 1. DETECT THE REFERENCE OBJECT in each image and use its known real-world size to establish a pixel-to-real-unit scale ratio.
-2. IDENTIFY BODY LANDMARKS: shoulders, chest line, natural waist, hip line, crotch/inseam point, wrists, neck base, shoulder tips.
+2. IDENTIFY BODY LANDMARKS: shoulders, chest line, natural waist, hip line, crotch/inseam point, top of head, floor line.
 3. CALCULATE these measurements in inches (rounded to nearest 0.5):
+   - shoulder: shoulder tip to shoulder tip
    - chest: circumference at fullest point (use front width × π/2 + side depth × π/2)
    - waist: circumference at natural waist (narrowest point of torso)
    - hips: circumference at widest point of hips/buttocks
    - inseam: from crotch to floor
-   - armLength: from shoulder tip to wrist
-   - shoulderWidth: shoulder tip to shoulder tip
-   - neck: circumference at base of neck
-   - torsoLength: from shoulder to natural waist
+   - height: full body height from top of head to floor
 
 4. RECOMMEND a clothing size (XS, S, M, L, XL, XXL) based on standard US sizing.
 
 Return ONLY a JSON object with this exact format, no other text:
 {
   "measurements": {
+    "shoulder": number,
     "chest": number,
     "waist": number,
     "hips": number,
     "inseam": number,
-    "armLength": number,
-    "shoulderWidth": number,
-    "neck": number,
-    "torsoLength": number
+    "height": number
   },
   "sizeRecommendation": "M"
 }`;

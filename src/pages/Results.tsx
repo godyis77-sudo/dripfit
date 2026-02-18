@@ -27,7 +27,7 @@ const Results = () => {
   const convert = (val: number) => useCm ? +(val * CM_RATIO).toFixed(1) : val;
   const unitLabel = useCm ? 'cm' : 'in';
 
-  const measurementKeys = ['chest', 'waist', 'hips', 'inseam', 'armLength', 'shoulderWidth', 'neck', 'torsoLength'] as const;
+  const measurementKeys = ['shoulder', 'chest', 'waist', 'hips', 'inseam', 'height'] as const;
 
   const handleSave = () => {
     saveMeasurement({ ...result, unit: useCm ? 'cm' : 'in' });

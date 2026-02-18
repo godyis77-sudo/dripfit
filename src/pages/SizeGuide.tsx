@@ -94,14 +94,12 @@ const SizeGuide = () => {
         body: {
           sizeGuideImage,
           measurements: {
+            shoulder: selectedMeasurement.shoulder,
             chest: selectedMeasurement.chest,
             waist: selectedMeasurement.waist,
             hips: selectedMeasurement.hips,
             inseam: selectedMeasurement.inseam,
-            armLength: selectedMeasurement.armLength,
-            shoulderWidth: selectedMeasurement.shoulderWidth,
-            neck: selectedMeasurement.neck,
-            torsoLength: selectedMeasurement.torsoLength,
+            height: selectedMeasurement.height,
           },
           brandName: brandName || undefined,
         },
