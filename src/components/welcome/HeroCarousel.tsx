@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Sparkles, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import heroDripFit from '@/assets/hero-preview-1.png';
-import heroGetDripped from '@/assets/hero-preview-2.png';
-import heroDripCheck from '@/assets/hero-preview-3.png';
+import heroDripFit from '@/assets/hero-body-measurements.jpg';
+import heroGetDripped from '@/assets/hero-get-dripped.jpg';
+import heroDripCheck from '@/assets/hero-drip-check.jpg';
 
 const heroSlides = [
   { image: heroDripFit, label: 'DRIP FIT', desc: 'AI body measurements from a single photo', route: '/capture', cta: 'DRIP FIT' },
