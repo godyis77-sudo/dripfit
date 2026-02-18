@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Camera, Sparkles, Shirt, Users, LogIn, LogOut,
   Zap, Eye, TrendingUp, ArrowRight,
-  Heart, Crown, Star, ChevronLeft, ChevronRight
+  Heart, Crown, Star, ChevronLeft, ChevronRight, Star as StarIcon
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import heroDripFit from '@/assets/hero-body-measurements.jpg';
@@ -152,8 +152,9 @@ const Welcome = () => {
               />
             </AnimatePresence>
 
-            {/* Measurement overlay for DRIP FIT slide */}
+            {/* Slide-specific overlays */}
             <AnimatePresence>
+              {/* DRIP FIT — Measurement lines */}
               {currentSlide === 0 && (
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -163,11 +164,11 @@ const Welcome = () => {
                   className="absolute inset-0 pointer-events-none"
                 >
                   {[
-                    { label: 'Shoulder', top: '18%' },
-                    { label: 'Chest', top: '28%' },
-                    { label: 'Waist', top: '44%' },
-                    { label: 'Hip', top: '55%' },
-                    { label: 'Inseam', top: '68%' },
+                    { label: 'Shoulder', top: '13%' },
+                    { label: 'Chest', top: '22%' },
+                    { label: 'Waist', top: '35%' },
+                    { label: 'Hip', top: '44%' },
+                    { label: 'Inseam', top: '54%' },
                   ].map((m, i) => (
                     <motion.div
                       key={m.label}
@@ -187,12 +188,90 @@ const Welcome = () => {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.8, duration: 0.3 }}
                     className="absolute right-3 flex flex-col items-center"
-                    style={{ top: '15%', bottom: '22%' }}
+                    style={{ top: '10%', bottom: '12%' }}
                   >
                     <div className="w-px flex-1 bg-drip-gold/40" />
                     <span className="text-[9px] font-bold text-drip-gold/90 mt-1 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" style={{ writingMode: 'vertical-rl' }}>Height</span>
                     <div className="w-px flex-1 bg-drip-gold/40" />
                   </motion.div>
+                </motion.div>
+              )}
+
+              {/* GET DRIPPED — Sparkle/glow overlay */}
+              {currentSlide === 1 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="absolute inset-0 pointer-events-none"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-primary/5" />
+                  {[
+                    { top: '15%', left: '12%', delay: 0.3, size: 'h-3 w-3' },
+                    { top: '25%', left: '78%', delay: 0.5, size: 'h-2.5 w-2.5' },
+                    { top: '45%', left: '85%', delay: 0.7, size: 'h-2 w-2' },
+                    { top: '60%', left: '8%', delay: 0.4, size: 'h-2 w-2' },
+                    { top: '35%', left: '5%', delay: 0.6, size: 'h-1.5 w-1.5' },
+                  ].map((s, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: [0, 1, 0.6, 1], scale: 1 }}
+                      transition={{ delay: s.delay, duration: 0.6, repeat: Infinity, repeatDelay: 2 + i * 0.5 }}
+                      className="absolute"
+                      style={{ top: s.top, left: s.left }}
+                    >
+                      <Sparkles className={`${s.size} text-drip-gold/70`} />
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+
+              {/* DRIP CHECK — Rating stars overlay */}
+              {currentSlide === 2 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="absolute inset-0 pointer-events-none"
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4, duration: 0.4 }}
+                    className="absolute top-3 right-3 flex items-center gap-0.5 bg-background/60 backdrop-blur-sm rounded-full px-2 py-1"
+                  >
+                    {[...Array(5)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.5 + i * 0.1 }}
+                      >
+                        <Star className="h-2.5 w-2.5 text-drip-gold fill-drip-gold" />
+                      </motion.div>
+                    ))}
+                    <span className="text-[9px] font-bold text-drip-gold ml-1">4.8</span>
+                  </motion.div>
+                  {/* Floating reaction badges */}
+                  {[
+                    { label: '🔥', top: '20%', left: '8%', delay: 0.6 },
+                    { label: '💯', top: '35%', right: '6%', delay: 0.8 },
+                    { label: '✨', top: '50%', left: '6%', delay: 1.0 },
+                  ].map((badge, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: [0, 1, 0.8], scale: [0, 1.2, 1] }}
+                      transition={{ delay: badge.delay, duration: 0.5 }}
+                      className="absolute bg-background/50 backdrop-blur-sm rounded-full h-6 w-6 flex items-center justify-center text-xs"
+                      style={{ top: badge.top, left: badge.left, right: (badge as any).right }}
+                    >
+                      {badge.label}
+                    </motion.div>
+                  ))}
                 </motion.div>
               )}
             </AnimatePresence>
