@@ -34,164 +34,126 @@ const Profile = () => {
   const [savedProfile, setSavedProfile] = useState<BodyScanResult | null>(null);
 
   useEffect(() => {
-    if (!user) {
-      navigate('/auth', { replace: true });
-      return;
-    }
+    if (!user) { navigate('/auth', { replace: true }); return; }
     fetchProfile();
     loadSavedProfile();
   }, [user]);
 
   const fetchProfile = async () => {
     if (!user) return;
-
     const [profileRes, postsRes] = await Promise.all([
       supabase.from('profiles').select('display_name').eq('user_id', user.id).single(),
       supabase.from('tryon_posts').select('id, result_photo_url, caption, is_public, created_at').eq('user_id', user.id).order('created_at', { ascending: false }),
     ]);
-
     if (profileRes.data) setDisplayName(profileRes.data.display_name || user.email?.split('@')[0] || 'User');
     if (postsRes.data) setTryOnPosts(postsRes.data);
     setLoading(false);
   };
 
   const loadSavedProfile = () => {
-    try {
-      const scans = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]');
-      if (scans.length > 0) setSavedProfile(scans[0]);
-    } catch { /* ignore */ }
+    try { const scans = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]'); if (scans.length > 0) setSavedProfile(scans[0]); } catch { /* ignore */ }
   };
 
-  const handleFitChange = (newFit: FitPreference) => {
-    setFit(newFit);
-    setFitPreference(newFit);
-    toast({ title: 'Updated', description: `Default fit set to ${newFit}.` });
-  };
-
-  const handleDeletePhotos = () => {
-    localStorage.removeItem('dripcheck_scans');
-    setSavedProfile(null);
-    toast({ title: 'Deleted', description: 'Saved scan data and photos removed.' });
-  };
-
-  const handleDeleteAccount = () => {
-    toast({ title: 'Contact support', description: 'Account deletion requires contacting support.' });
-  };
-
+  const handleFitChange = (newFit: FitPreference) => { setFit(newFit); setFitPreference(newFit); toast({ title: 'Updated', description: `Default fit: ${newFit}.` }); };
+  const handleDeletePhotos = () => { localStorage.removeItem('dripcheck_scans'); setSavedProfile(null); toast({ title: 'Deleted', description: 'Scan data removed.' }); };
+  const handleDeleteAccount = () => { toast({ title: 'Contact support', description: 'Account deletion requires contacting support.' }); };
   const handleExport = () => {
     const scans = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]');
     const blob = new Blob([JSON.stringify(scans, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'dripfit-data.json';
-    a.click();
+    const a = document.createElement('a'); a.href = url; a.download = 'dripfit-data.json'; a.click();
     URL.revokeObjectURL(url);
-    toast({ title: 'Exported', description: 'Your data has been downloaded.' });
+    toast({ title: 'Exported' });
   };
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/', { replace: true });
-  };
+  const handleSignOut = async () => { await signOut(); navigate('/', { replace: true }); };
 
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-background px-5 pt-6 pb-24">
+    <div className="min-h-screen bg-background px-4 pt-4 pb-20">
       <div className="max-w-sm mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-2xl gradient-drip flex items-center justify-center">
-              <Crown className="h-6 w-6 text-primary-foreground" />
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2.5">
+            <div className="h-10 w-10 rounded-xl gradient-drip flex items-center justify-center">
+              <Crown className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-foreground">{displayName}</h1>
-              <p className="text-xs text-foreground/50">{user.email}</p>
+              <h1 className="text-[15px] font-bold text-foreground leading-tight">{displayName}</h1>
+              <p className="text-[11px] text-muted-foreground">{user.email}</p>
             </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-foreground/50">
+          <Button variant="ghost" size="icon" onClick={handleSignOut} className="text-muted-foreground h-8 w-8 rounded-lg">
             <LogOut className="h-4 w-4" />
           </Button>
         </div>
 
         {/* Tab switcher */}
-        <div className="flex gap-1 bg-card rounded-2xl p-1 mb-6 border border-border/30">
-          <button
-            onClick={() => setActiveTab('tryons')}
-            className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'tryons' ? 'bg-primary text-primary-foreground' : 'text-foreground/50'}`}
-          >
-            <Shirt className="inline h-4 w-4 mr-1.5 -mt-0.5" /> Try-Ons
-          </button>
-          <button
-            onClick={() => setActiveTab('settings')}
-            className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'settings' ? 'bg-primary text-primary-foreground' : 'text-foreground/50'}`}
-          >
-            <Settings className="inline h-4 w-4 mr-1.5 -mt-0.5" /> Settings
-          </button>
+        <div className="flex gap-0.5 bg-card rounded-lg p-0.5 mb-4 border border-border/40">
+          {[
+            { key: 'tryons' as const, icon: Shirt, label: 'Try-Ons' },
+            { key: 'settings' as const, icon: Settings, label: 'Settings' },
+          ].map(t => (
+            <button
+              key={t.key}
+              onClick={() => setActiveTab(t.key)}
+              className={`flex-1 py-2 rounded-md text-[12px] font-bold transition-all ${activeTab === t.key ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`}
+            >
+              <t.icon className="inline h-3.5 w-3.5 mr-1 -mt-0.5" /> {t.label}
+            </button>
+          ))}
         </div>
 
         <AnimatePresence mode="wait">
           {activeTab === 'tryons' ? (
-            <motion.div key="tryons" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}>
+            <motion.div key="tryons" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
               {loading ? (
-                <div className="text-center py-12 text-foreground/40">Loading…</div>
+                <div className="text-center py-10 text-muted-foreground text-[13px]">Loading…</div>
               ) : tryOnPosts.length === 0 ? (
-                <div className="text-center py-12">
-                  <Shirt className="h-10 w-10 text-foreground/20 mx-auto mb-3" />
-                  <p className="text-sm font-semibold text-foreground/60 mb-4">No try-ons yet</p>
-                  <Button className="rounded-2xl" onClick={() => navigate('/tryon')}>
-                    Generate Try-On
-                  </Button>
+                <div className="text-center py-10">
+                  <Shirt className="h-8 w-8 text-muted-foreground/20 mx-auto mb-2" />
+                  <p className="text-[13px] font-semibold text-muted-foreground mb-3">No try-ons yet</p>
+                  <Button className="rounded-lg btn-luxury text-primary-foreground text-sm h-10 px-5" onClick={() => navigate('/tryon')}>Generate Try-On</Button>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2">
                   {tryOnPosts.map(post => (
-                    <motion.div key={post.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-                      <Card className="rounded-2xl overflow-hidden">
+                    <motion.div key={post.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
+                      <div className="rounded-xl overflow-hidden border border-border bg-card">
                         <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
-                        <CardContent className="p-2.5">
-                          <p className="text-[10px] font-medium text-foreground/50">
-                            {new Date(post.created_at).toLocaleDateString()}
-                          </p>
-                          <span className={`text-[10px] font-bold ${post.is_public ? 'text-primary' : 'text-foreground/30'}`}>
+                        <div className="p-2">
+                          <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
+                          <span className={`text-[10px] font-bold ${post.is_public ? 'text-primary' : 'text-muted-foreground/40'}`}>
                             {post.is_public ? 'Public' : 'Private'}
                           </span>
-                        </CardContent>
-                      </Card>
+                        </div>
+                      </div>
                     </motion.div>
                   ))}
                 </div>
               )}
             </motion.div>
           ) : (
-            <motion.div key="settings" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-4">
+            <motion.div key="settings" initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} className="space-y-3">
               {/* Units */}
-              <Card className="rounded-2xl">
-                <CardContent className="p-4 flex items-center justify-between">
-                  <span className="text-sm font-bold text-foreground">Default unit</span>
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className={useCm ? 'text-primary font-bold' : 'text-foreground/50'}>cm</span>
-                    <Switch checked={!useCm} onCheckedChange={v => setUseCm(!v)} />
-                    <span className={!useCm ? 'text-primary font-bold' : 'text-foreground/50'}>in</span>
+              <Card className="rounded-xl">
+                <CardContent className="p-3 flex items-center justify-between">
+                  <span className="text-[13px] font-bold text-foreground">Default unit</span>
+                  <div className="flex items-center gap-1.5 text-[11px]">
+                    <span className={useCm ? 'text-primary font-bold' : 'text-muted-foreground'}>cm</span>
+                    <Switch checked={!useCm} onCheckedChange={v => setUseCm(!v)} className="scale-[0.8]" />
+                    <span className={!useCm ? 'text-primary font-bold' : 'text-muted-foreground'}>in</span>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Fit preference */}
-              <Card className="rounded-2xl">
-                <CardContent className="p-4">
-                  <p className="text-sm font-bold text-foreground mb-3">Default Fit Preference</p>
-                  <div className="flex gap-2">
+              {/* Fit */}
+              <Card className="rounded-xl">
+                <CardContent className="p-3">
+                  <p className="text-[13px] font-bold text-foreground mb-2">Default Fit</p>
+                  <div className="flex gap-1.5">
                     {(['fitted', 'regular', 'relaxed'] as FitPreference[]).map(f => (
-                      <button
-                        key={f}
-                        onClick={() => handleFitChange(f)}
-                        className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all capitalize ${
-                          fit === f ? 'bg-primary text-primary-foreground' : 'bg-card border border-border text-foreground/60'
-                        }`}
-                      >
+                      <button key={f} onClick={() => handleFitChange(f)} className={`flex-1 py-1.5 rounded-md text-[11px] font-bold transition-all capitalize ${fit === f ? 'bg-primary text-primary-foreground' : 'bg-card border border-border text-muted-foreground'}`}>
                         {f}
                       </button>
                     ))}
@@ -199,76 +161,68 @@ const Profile = () => {
                 </CardContent>
               </Card>
 
-              {/* Saved body profile summary */}
-              <Card className="rounded-2xl">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Ruler className="h-4 w-4 text-primary" />
-                    <p className="text-sm font-bold text-foreground">Saved Body Profile</p>
+              {/* Body profile */}
+              <Card className="rounded-xl">
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <Ruler className="h-3.5 w-3.5 text-primary" />
+                    <p className="text-[13px] font-bold text-foreground">Body Profile</p>
                   </div>
                   {savedProfile ? (
                     <div className="space-y-2">
-                      <div className="grid grid-cols-3 gap-2 text-center">
-                        <div>
-                          <p className="text-[10px] text-foreground/50">Size</p>
-                          <p className="text-sm font-bold text-primary">{savedProfile.recommendedSize}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] text-foreground/50">Confidence</p>
-                          <p className="text-sm font-bold text-foreground capitalize">{savedProfile.confidence}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] text-foreground/50">Height</p>
-                          <p className="text-sm font-bold text-foreground">{savedProfile.heightCm} cm</p>
-                        </div>
+                      <div className="grid grid-cols-3 gap-1.5 text-center">
+                        {[
+                          { l: 'Size', v: savedProfile.recommendedSize, cls: 'text-primary' },
+                          { l: 'Confidence', v: savedProfile.confidence, cls: 'text-foreground capitalize' },
+                          { l: 'Height', v: `${savedProfile.heightCm} cm`, cls: 'text-foreground' },
+                        ].map(d => (
+                          <div key={d.l}>
+                            <p className="text-[10px] text-muted-foreground">{d.l}</p>
+                            <p className={`text-[13px] font-bold ${d.cls}`}>{d.v}</p>
+                          </div>
+                        ))}
                       </div>
-                      <Button variant="outline" size="sm" className="w-full rounded-xl text-xs mt-2" onClick={() => navigate('/capture')}>
-                        Re-scan
-                      </Button>
+                      <Button variant="outline" size="sm" className="w-full rounded-lg text-[11px] h-8" onClick={() => navigate('/capture')}>Re-scan</Button>
                     </div>
                   ) : (
                     <div>
-                      <p className="text-sm text-foreground/50 mb-2">No saved scan yet.</p>
-                      <Button variant="outline" size="sm" className="rounded-xl text-xs" onClick={() => navigate('/capture')}>
-                        Start Scan
-                      </Button>
+                      <p className="text-[13px] text-muted-foreground mb-2">No saved scan.</p>
+                      <Button variant="outline" size="sm" className="rounded-lg text-[11px] h-8" onClick={() => navigate('/capture')}>Start Scan</Button>
                     </div>
                   )}
                 </CardContent>
               </Card>
 
-              {/* Preferred retailers */}
-              <Card className="rounded-2xl">
-                <CardContent className="p-4">
-                  <p className="text-sm font-bold text-foreground mb-3">Supported Retailers</p>
-                  <div className="flex flex-wrap gap-1.5">
+              {/* Retailers */}
+              <Card className="rounded-xl">
+                <CardContent className="p-3">
+                  <p className="text-[13px] font-bold text-foreground mb-2">Supported Retailers</p>
+                  <div className="flex flex-wrap gap-1">
                     {SUPPORTED_RETAILERS.map(r => (
-                      <span key={r} className="px-2.5 py-1 rounded-full bg-muted text-[11px] font-semibold text-foreground/60">
-                        {r}
-                      </span>
+                      <span key={r} className="px-2 py-0.5 rounded-md bg-muted text-[10px] font-semibold text-muted-foreground">{r}</span>
                     ))}
                   </div>
                 </CardContent>
               </Card>
 
               {/* Privacy */}
-              <Card className="rounded-2xl">
-                <CardContent className="p-4 space-y-3">
-                  <p className="text-sm font-bold text-foreground">Privacy & Data</p>
-                  <Button variant="outline" className="w-full rounded-xl justify-start" onClick={handleExport}>
-                    <Download className="mr-2 h-4 w-4" /> Export my data
+              <Card className="rounded-xl">
+                <CardContent className="p-3 space-y-2">
+                  <p className="text-[13px] font-bold text-foreground">Privacy & Data</p>
+                  <Button variant="outline" className="w-full rounded-lg justify-start h-9 text-[12px]" onClick={handleExport}>
+                    <Download className="mr-1.5 h-3.5 w-3.5" /> Export my data
                   </Button>
-                  <Button variant="outline" className="w-full rounded-xl justify-start text-destructive/70 hover:text-destructive" onClick={handleDeletePhotos}>
-                    <Trash2 className="mr-2 h-4 w-4" /> Delete saved photos & scans
+                  <Button variant="outline" className="w-full rounded-lg justify-start h-9 text-[12px] text-destructive/70 hover:text-destructive" onClick={handleDeletePhotos}>
+                    <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Delete photos & scans
                   </Button>
-                  <Button variant="outline" className="w-full rounded-xl justify-start text-destructive/70 hover:text-destructive" onClick={handleDeleteAccount}>
-                    <Trash2 className="mr-2 h-4 w-4" /> Delete account & data
+                  <Button variant="outline" className="w-full rounded-lg justify-start h-9 text-[12px] text-destructive/70 hover:text-destructive" onClick={handleDeleteAccount}>
+                    <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Delete account
                   </Button>
                 </CardContent>
               </Card>
 
-              <p className="text-[11px] text-foreground/60 text-center flex items-center justify-center gap-1">
-                <Shield className="h-3 w-3" /> Private by default • delete anytime
+              <p className="text-[10px] text-muted-foreground text-center flex items-center justify-center gap-1">
+                <Shield className="h-3 w-3" /> Private · delete anytime
               </p>
             </motion.div>
           )}

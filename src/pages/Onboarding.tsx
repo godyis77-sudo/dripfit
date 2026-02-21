@@ -21,120 +21,69 @@ const Onboarding = () => {
   const [brandSize, setBrandSize] = useState('');
 
   const handleContinue = () => {
-    if (step === 'fit') {
-      setFitPreference(fit);
-      setStep('calibrate');
-    } else {
-      setOnboarded();
-      navigate('/capture');
-    }
+    if (step === 'fit') { setFitPreference(fit); setStep('calibrate'); }
+    else { setOnboarded(); navigate('/capture'); }
   };
 
-  const handleSkip = () => {
-    setFitPreference(fit);
-    setOnboarded();
-    navigate('/capture');
-  };
+  const handleSkip = () => { setFitPreference(fit); setOnboarded(); navigate('/capture'); };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
-      <div className="w-full max-w-sm">
-        <motion.div
-          key={step}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-        >
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-5">
+      <div className="w-full max-w-[300px]">
+        <motion.div key={step} initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }}>
           {step === 'fit' ? (
             <>
-              <h1 className="font-display text-2xl font-bold text-foreground mb-2">
-                How do you like your fit?
-              </h1>
-              <p className="text-sm text-muted-foreground mb-6">
-                This helps us recommend the right size for you.
-              </p>
-
-              <div className="space-y-3 mb-8">
+              <h1 className="font-display text-xl font-bold text-foreground mb-1.5">How do you like your fit?</h1>
+              <p className="text-[13px] text-muted-foreground mb-5">Helps us recommend the right size.</p>
+              <div className="space-y-2 mb-6">
                 {FIT_OPTIONS.map(opt => (
                   <button
                     key={opt.value}
                     onClick={() => setFit(opt.value)}
-                    className={`w-full text-left p-4 rounded-2xl border-2 transition-all ${
-                      fit === opt.value
-                        ? 'border-primary bg-primary/5'
-                        : 'border-border hover:border-primary/30'
+                    className={`w-full text-left p-3 rounded-xl border-2 transition-all active:scale-[0.98] ${
+                      fit === opt.value ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/30'
                     }`}
                   >
-                    <p className="font-bold text-foreground">{opt.label}</p>
-                    <p className="text-sm text-muted-foreground">{opt.desc}</p>
+                    <p className="font-bold text-[14px] text-foreground">{opt.label}</p>
+                    <p className="text-[12px] text-muted-foreground">{opt.desc}</p>
                   </button>
                 ))}
               </div>
             </>
           ) : (
             <>
-              <h1 className="font-display text-2xl font-bold text-foreground mb-2">
-                What's your usual size?
-              </h1>
-              <p className="text-sm text-muted-foreground mb-6">
-                Optional — helps improve accuracy.
-              </p>
-
-              <div className="flex flex-wrap gap-2 mb-4">
+              <h1 className="font-display text-xl font-bold text-foreground mb-1.5">What's your usual size?</h1>
+              <p className="text-[13px] text-muted-foreground mb-5">Optional — helps improve accuracy.</p>
+              <div className="flex flex-wrap gap-1.5 mb-3">
                 {CALIBRATION_BRANDS.map(b => (
-                  <button
-                    key={b}
-                    onClick={() => setBrand(brand === b ? null : b)}
-                    className={`px-4 py-2 rounded-xl text-sm font-bold border transition-all ${
-                      brand === b
-                        ? 'border-primary bg-primary/10 text-primary'
-                        : 'border-border text-foreground/60 hover:border-primary/30'
-                    }`}
-                  >
+                  <button key={b} onClick={() => setBrand(brand === b ? null : b)} className={`px-3 py-1.5 rounded-lg text-[12px] font-bold border transition-all active:scale-95 ${brand === b ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
                     {b}
                   </button>
                 ))}
               </div>
-
               {brand && (
-                <div className="mb-6">
-                  <p className="text-sm font-medium text-foreground/70 mb-2">
-                    Your typical size in {brand}:
-                  </p>
-                  <div className="flex flex-wrap gap-2">
+                <div className="mb-5">
+                  <p className="text-[12px] text-muted-foreground mb-1.5">Your size in {brand}:</p>
+                  <div className="flex flex-wrap gap-1.5">
                     {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map(s => (
-                      <button
-                        key={s}
-                        onClick={() => setBrandSize(brandSize === s ? '' : s)}
-                        className={`px-4 py-2 rounded-xl text-sm font-bold border transition-all ${
-                          brandSize === s
-                            ? 'border-primary bg-primary/10 text-primary'
-                            : 'border-border text-foreground/60'
-                        }`}
-                      >
+                      <button key={s} onClick={() => setBrandSize(brandSize === s ? '' : s)} className={`px-3 py-1.5 rounded-lg text-[12px] font-bold border transition-all active:scale-95 ${brandSize === s ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'}`}>
                         {s}
                       </button>
                     ))}
                   </div>
                 </div>
               )}
-
-              <Button variant="ghost" className="w-full mb-2 text-muted-foreground" onClick={handleSkip}>
-                Skip for now
-              </Button>
+              <Button variant="ghost" className="w-full mb-2 text-muted-foreground text-[13px]" onClick={handleSkip}>Skip for now</Button>
             </>
           )}
 
-          <Button
-            className="w-full h-14 rounded-2xl btn-3d-drip border-0 font-display font-bold text-lg uppercase tracking-wider"
-            onClick={handleContinue}
-          >
+          <Button className="w-full h-12 rounded-xl btn-3d-drip border-0 font-display font-bold text-base uppercase tracking-wider" onClick={handleContinue}>
             {step === 'fit' ? 'Continue' : 'Start Scan'}
-            <ArrowRight className="ml-2 h-5 w-5" />
+            <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
 
-          <p className="text-[11px] text-muted-foreground text-center mt-4 flex items-center justify-center gap-1">
-            <Shield className="h-3 w-3" /> Private by default • delete anytime
+          <p className="text-[10px] text-muted-foreground text-center mt-3 flex items-center justify-center gap-1">
+            <Shield className="h-3 w-3" /> Private · delete anytime
           </p>
         </motion.div>
       </div>

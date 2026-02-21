@@ -16,31 +16,25 @@ const FitPreferenceToggle = ({ value, onChange }: FitPreferenceToggleProps) => {
   const active = options.find(o => o.value === value)!;
 
   return (
-    <div className="mb-5">
-      <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Fit Preference</p>
-      <div className="relative flex bg-card rounded-xl p-1 border border-border">
+    <div className="mb-4">
+      <p className="section-label mb-1.5">Fit Preference</p>
+      <div className="relative flex bg-card rounded-lg p-0.5 border border-border">
         {options.map(opt => (
           <button
             key={opt.value}
             onClick={() => onChange(opt.value)}
-            className={`relative z-10 flex-1 py-2 text-xs font-semibold rounded-lg transition-colors ${
+            className={`relative z-10 flex-1 py-2 text-[12px] font-semibold rounded-md transition-colors ${
               value === opt.value ? 'text-primary-foreground' : 'text-muted-foreground'
             }`}
           >
             {opt.label}
             {value === opt.value && (
-              <motion.div
-                layoutId="fit-pill"
-                className="absolute inset-0 gradient-drip rounded-lg -z-10"
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-              />
+              <motion.div layoutId="fit-pill" className="absolute inset-0 gradient-drip rounded-md -z-10" transition={{ type: 'spring', stiffness: 400, damping: 30 }} />
             )}
           </button>
         ))}
       </div>
-      <p className="text-[11px] text-muted-foreground mt-1.5 text-center italic">
-        {active.desc}
-      </p>
+      <p className="text-[10px] text-muted-foreground mt-1 text-center italic">{active.desc}</p>
     </div>
   );
 };
