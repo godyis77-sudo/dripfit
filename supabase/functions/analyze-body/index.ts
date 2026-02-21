@@ -6,47 +6,52 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const CALIBRATION_SIZES: Record<string, string> = {
-  ruler: "a standard 12-inch (30 cm) ruler",
-  loonie: "a Canadian Loonie coin, which is 26.5 mm (1.043 inches) in diameter",
-  quarter: "a US Quarter coin, which is 24.26 mm (0.955 inches) in diameter",
-  five_dollar_bill: "a Canadian $5 bill, which is 152.4 mm (6 inches) long and 69.85 mm (2.75 inches) tall",
+const REFERENCE_SIZES: Record<string, string> = {
+  credit_card: "a standard credit card (85.6 × 53.98 mm)",
+  a4_paper: "an A4 sheet of paper (210 × 297 mm)",
+  phone: "a standard smartphone (~150 mm tall)",
+  none: "no reference object",
 };
 
-function buildSystemPrompt(calibrationObject: string): string {
-  const objDesc = CALIBRATION_SIZES[calibrationObject] || CALIBRATION_SIZES["ruler"];
+function buildSystemPrompt(heightCm: number, referenceObject: string, fitPreference: string): string {
+  const refDesc = REFERENCE_SIZES[referenceObject] || REFERENCE_SIZES["none"];
 
-  return `You are an expert body measurement AI. You will receive 3 photos of a person:
-1. Front-facing view with a reference object visible
-2. Side view with reference object visible  
-3. Arms extended outward with reference object visible
+  return `You are an expert body estimation AI. You will receive 2 photos of a person:
+1. Front-facing full-body view
+2. Side view
 
-The reference object in the photos is ${objDesc}.
+The person's actual height is ${heightCm} cm. Use this as the primary scale reference.
+${referenceObject !== "none" ? `A reference object (${refDesc}) may be visible for additional calibration.` : ""}
 
 Your task:
-1. DETECT THE REFERENCE OBJECT in each image and use its known real-world size to establish a pixel-to-real-unit scale ratio.
-2. IDENTIFY BODY LANDMARKS: shoulders, chest line, natural waist, hip line, crotch/inseam point, top of head, floor line.
-3. CALCULATE these measurements in inches (rounded to nearest 0.5):
+1. Use the known height (${heightCm} cm) to establish pixel-to-cm scale.
+2. IDENTIFY body landmarks: shoulders, chest, waist, hip, crotch/inseam, top of head, floor.
+3. ESTIMATE measurement RANGES in centimeters (provide min and max for each):
    - shoulder: shoulder tip to shoulder tip
-   - chest: circumference at fullest point (use front width × π/2 + side depth × π/2)
-   - waist: circumference at natural waist (narrowest point of torso)
-   - hips: circumference at widest point of hips/buttocks
-   - inseam: from crotch to floor
-   - height: full body height from top of head to floor
+   - chest: circumference estimate (front width × π/2 + side depth × π/2)
+   - waist: circumference at natural waist
+   - hips: circumference at widest hip point
+   - inseam: crotch to floor
+4. Assess CONFIDENCE: "high" (clear photos, good lighting, fitted clothes), "medium" (decent but some uncertainty), "low" (poor quality, baggy clothes, partial body)
+5. Based on measurement ranges and "${fitPreference}" fit preference, recommend a US size (XS/S/M/L/XL/XXL).
+6. Provide alternatives: one size down (for fitted) and one size up (for relaxed).
+7. Write a 1-line "why" explanation.
 
-4. RECOMMEND a clothing size (XS, S, M, L, XL, XXL) based on standard US sizing.
+IMPORTANT: Provide ranges, NOT exact numbers. A 2-4 cm range per measurement is expected.
 
-Return ONLY a JSON object with this exact format, no other text:
+Return ONLY a JSON object:
 {
-  "measurements": {
-    "shoulder": number,
-    "chest": number,
-    "waist": number,
-    "hips": number,
-    "inseam": number,
-    "height": number
-  },
-  "sizeRecommendation": "M"
+  "shoulder": { "min": number, "max": number },
+  "chest": { "min": number, "max": number },
+  "waist": { "min": number, "max": number },
+  "hips": { "min": number, "max": number },
+  "inseam": { "min": number, "max": number },
+  "heightCm": ${heightCm},
+  "confidence": "high" | "medium" | "low",
+  "recommendedSize": "M",
+  "fitPreference": "${fitPreference}",
+  "alternatives": { "sizeDown": "S", "sizeUp": "L" },
+  "whyLine": "Based on your chest (96-100cm) and waist (82-86cm), M fits best at Zara/H&M with regular fit."
 }`;
 }
 
@@ -56,12 +61,18 @@ serve(async (req) => {
   }
 
   try {
-    const { frontPhoto, sidePhoto, armsOutPhoto, calibrationObject } = await req.json();
-    const calObj = calibrationObject || "ruler";
+    const { frontPhoto, sidePhoto, heightCm, referenceObject, fitPreference } = await req.json();
 
-    if (!frontPhoto || !sidePhoto || !armsOutPhoto) {
+    if (!frontPhoto || !sidePhoto) {
       return new Response(
-        JSON.stringify({ error: "All 3 photos are required" }),
+        JSON.stringify({ error: "Both front and side photos are required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (!heightCm || heightCm < 120 || heightCm > 230) {
+      return new Response(
+        JSON.stringify({ error: "Valid height (120-230 cm) is required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -69,9 +80,7 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    // Build image content parts from base64
     const makeImagePart = (base64: string, label: string) => {
-      // Strip data:image/...;base64, prefix if present
       const match = base64.match(/^data:(image\/\w+);base64,(.+)$/);
       const mediaType = match ? match[1] : "image/jpeg";
       const data = match ? match[2] : base64;
@@ -94,14 +103,13 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "google/gemini-2.5-pro",
         messages: [
-          { role: "system", content: buildSystemPrompt(calObj) },
+          { role: "system", content: buildSystemPrompt(heightCm, referenceObject || "none", fitPreference || "regular") },
           {
             role: "user",
             content: [
-              { type: "text", text: "Please analyze these 3 photos and calculate body measurements using the reference object as scale reference." },
+              { type: "text", text: `Analyze these 2 photos. My height is ${heightCm} cm. Estimate body measurement ranges.` },
               ...makeImagePart(frontPhoto, "Photo 1: Front View"),
               ...makeImagePart(sidePhoto, "Photo 2: Side View"),
-              ...makeImagePart(armsOutPhoto, "Photo 3: Arms Extended"),
             ],
           },
         ],
@@ -131,7 +139,6 @@ serve(async (req) => {
 
     if (!content) throw new Error("No content in AI response");
 
-    // Parse JSON from response (may be wrapped in markdown code block)
     const jsonMatch = content.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("Could not parse measurements from AI response");
 

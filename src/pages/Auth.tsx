@@ -5,10 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import { Crown, Mail, Lock, User } from 'lucide-react';
+import { Crown, Mail, Lock, User, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import BottomTabBar from '@/components/BottomTabBar';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -48,18 +47,23 @@ const Auth = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6 pb-24">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
       {/* Background effects */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-[20%] left-[50%] -translate-x-1/2 h-[300px] w-[300px] rounded-full bg-primary/8 blur-[120px]" />
       </div>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 w-full max-w-sm">
+        {/* Back button */}
+        <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="mb-4">
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+
         <div className="flex flex-col items-center mb-6">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 200, damping: 18 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 18 }}
             className="h-14 w-14 rounded-2xl gradient-drip glow-primary flex items-center justify-center ring-2 ring-primary/20 mb-3"
           >
             <Crown className="h-7 w-7 text-primary-foreground" />
@@ -69,9 +73,9 @@ const Auth = () => {
 
         <Card className="rounded-2xl border-border/30">
           <CardHeader className="text-center pb-2">
-            <CardTitle className="font-display text-2xl">{isLogin ? 'Welcome Back' : 'Join the Drip'}</CardTitle>
+            <CardTitle className="font-display text-2xl">{isLogin ? 'Welcome Back' : 'Join DripCheck'}</CardTitle>
             <CardDescription className="font-medium text-foreground/60">
-              {isLogin ? 'Sign in to check your drip' : 'Create an account to get started'}
+              {isLogin ? 'Sign in to your account' : 'Create an account to save your data'}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -112,7 +116,7 @@ const Auth = () => {
           </CardContent>
         </Card>
       </motion.div>
-      <BottomTabBar />
+      {/* No bottom nav on auth - focus mode */}
     </div>
   );
 };
