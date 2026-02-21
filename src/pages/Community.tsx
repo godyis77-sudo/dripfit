@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, Send, Shirt, Sparkles, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Star, Send, Shirt, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -29,7 +28,7 @@ interface Post {
 const RATING_LABELS = [
   { key: 'style_score', label: 'Style' },
   { key: 'color_score', label: 'Color' },
-  { key: 'buy_score', label: 'Would Buy?' },
+  { key: 'buy_score', label: 'Buy' },
   { key: 'suitability_score', label: 'Fit' },
 ] as const;
 
@@ -38,10 +37,44 @@ type FilterType = 'trending' | 'new' | 'similar';
 const StarRating = ({ value, onChange }: { value: number; onChange: (v: number) => void }) => (
   <div className="flex gap-0.5">
     {[1, 2, 3, 4, 5].map(n => (
-      <button key={n} onClick={() => onChange(n)} className="p-0.5">
-        <Star className={`h-5 w-5 ${n <= value ? 'fill-primary text-primary' : 'text-foreground/20'}`} />
+      <button key={n} onClick={() => onChange(n)} className="p-0.5 active:scale-110 transition-transform">
+        <Star className={`h-5 w-5 ${n <= value ? 'fill-primary text-primary' : 'text-muted-foreground/30'}`} />
       </button>
     ))}
+  </div>
+);
+
+// Placeholder post cards when no real posts exist
+const PLACEHOLDER_POSTS: Omit<Post, 'user_id' | 'clothing_photo_url'>[] = [
+  {
+    id: 'placeholder-1',
+    result_photo_url: '',
+    caption: 'Casual weekend look',
+    created_at: new Date().toISOString(),
+    profile: { display_name: 'Style Preview' },
+    avg_style: 4.2, avg_color: 3.8, avg_buy: 4.0, avg_suitability: 4.5,
+    rating_count: 12,
+  },
+  {
+    id: 'placeholder-2',
+    result_photo_url: '',
+    caption: 'Office ready fit check',
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    profile: { display_name: 'Fit Check' },
+    avg_style: 3.9, avg_color: 4.1, avg_buy: 3.5, avg_suitability: 4.2,
+    rating_count: 8,
+  },
+];
+
+const PlaceholderImage = ({ caption }: { caption: string }) => (
+  <div className="w-full aspect-[4/5] bg-card flex flex-col items-center justify-center gap-3">
+    <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+      <Shirt className="h-8 w-8 text-primary/60" />
+    </div>
+    <div className="text-center px-6">
+      <p className="text-sm font-medium text-foreground/60">{caption}</p>
+      <p className="text-[11px] text-muted-foreground mt-1">Community try-on preview</p>
+    </div>
   </div>
 );
 
@@ -63,14 +96,12 @@ const Community = () => {
 
   const fetchPosts = async () => {
     setLoading(true);
-    const query = supabase
+    const { data, error } = await supabase
       .from('tryon_posts')
       .select('*')
       .eq('is_public', true)
       .order('created_at', { ascending: false })
       .limit(50);
-
-    const { data, error } = await query;
 
     if (error) {
       console.error(error);
@@ -78,8 +109,14 @@ const Community = () => {
       return;
     }
 
-    const userIds = [...new Set((data || []).map(p => p.user_id))];
-    const postIds = (data || []).map(p => p.id);
+    if (!data || data.length === 0) {
+      setPosts(PLACEHOLDER_POSTS as Post[]);
+      setLoading(false);
+      return;
+    }
+
+    const userIds = [...new Set(data.map(p => p.user_id))];
+    const postIds = data.map(p => p.id);
 
     const [profilesRes, ratingsRes] = await Promise.all([
       userIds.length > 0 ? supabase.from('profiles').select('user_id, display_name').in('user_id', userIds) : { data: [] },
@@ -93,7 +130,7 @@ const Community = () => {
       ratingsByPost.get(r.post_id)!.push(r);
     });
 
-    let enriched = (data || []).map(p => {
+    let enriched = data.map(p => {
       const postRatings = ratingsByPost.get(p.id) || [];
       const count = postRatings.length;
       return {
@@ -146,118 +183,134 @@ const Community = () => {
     setSubmitting(false);
   };
 
+  const isPlaceholder = (post: Post) => post.id.startsWith('placeholder-');
+
   return (
-    <div className="min-h-screen bg-background px-6 py-6 pb-24">
-      <div className="max-w-sm mx-auto">
-        <div className="flex items-center gap-3 mb-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
+    <div className="min-h-screen bg-background pb-24">
+      <div className="max-w-sm mx-auto px-5 pt-5">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-5">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-10 w-10 rounded-xl">
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-xl font-bold text-foreground">Rate Looks</h1>
+          <h1 className="text-lg font-bold text-foreground">Community</h1>
         </div>
 
         {/* Filters */}
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-2 mb-6">
           {(['trending', 'new', 'similar'] as FilterType[]).map(f => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                filter === f ? 'bg-primary text-primary-foreground' : 'bg-card border border-border text-foreground/60'
+              className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all active:scale-95 ${
+                filter === f
+                  ? 'gradient-drip text-primary-foreground'
+                  : 'bg-card border border-border text-muted-foreground'
               }`}
             >
-              {f === 'trending' ? '🔥 Trending' : f === 'new' ? '✨ New' : '👤 Similar Fit'}
+              {f === 'trending' ? 'Trending' : f === 'new' ? 'New' : 'Similar Fit'}
             </button>
           ))}
         </div>
 
         {loading ? (
           <div className="flex justify-center py-20">
-            <div className="animate-pulse text-foreground/50">Loading…</div>
+            <div className="animate-pulse text-muted-foreground text-sm">Loading…</div>
           </div>
         ) : posts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="h-16 w-16 rounded-2xl gradient-drip flex items-center justify-center mb-4">
-              <Sparkles className="h-8 w-8 text-primary-foreground" />
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+              <Sparkles className="h-7 w-7 text-primary" />
             </div>
             <h2 className="font-display text-lg font-bold mb-2">Be the First</h2>
-            <p className="text-sm font-medium text-foreground/60 max-w-[250px] mb-6">
-              Share your virtual try-ons and get real ratings from the community.
+            <p className="text-sm text-muted-foreground max-w-[220px] mb-6">
+              Share your virtual try-on and get real ratings.
             </p>
-            <Button className="rounded-2xl btn-3d-drip border-0 h-12 px-8 font-display font-bold uppercase tracking-wider" onClick={() => navigate('/tryon')}>
-              <Shirt className="mr-2 h-4 w-4" /> Generate Try-On
+            <Button className="rounded-xl btn-luxury text-primary-foreground h-11 px-6 font-bold" onClick={() => navigate('/tryon')}>
+              <Shirt className="mr-2 h-4 w-4" /> Try On Now
             </Button>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-5">
             <AnimatePresence>
               {posts.map(post => (
-                <motion.div key={post.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                  <Card className="rounded-2xl overflow-hidden">
-                    <img src={post.result_photo_url} alt="Try-on look" className="w-full aspect-[3/4] object-cover" />
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="text-sm font-medium text-foreground">{post.profile?.display_name || 'Anonymous'}</p>
-                        <p className="text-xs text-foreground/50">{new Date(post.created_at).toLocaleDateString()}</p>
-                      </div>
-                      {post.caption && <p className="text-sm font-medium text-foreground/70 mb-3">{post.caption}</p>}
+                <motion.div
+                  key={post.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-card border border-border rounded-2xl overflow-hidden"
+                >
+                  {/* Image */}
+                  {isPlaceholder(post) || !post.result_photo_url ? (
+                    <PlaceholderImage caption={post.caption || 'Try-on look'} />
+                  ) : (
+                    <img src={post.result_photo_url} alt="Try-on look" className="w-full aspect-[4/5] object-cover" />
+                  )}
 
-                      {/* Rate Look CTA — above the fold */}
-                      {ratingPost !== post.id && (
-                        <Button
-                          variant="outline"
-                          className="w-full rounded-xl mb-3"
-                          onClick={() => {
-                            if (!user) {
-                              toast({ title: 'Sign in to rate', description: 'Browsing is free — sign in to rate.', variant: 'destructive' });
-                              return;
-                            }
-                            setRatingPost(post.id);
-                          }}
-                        >
-                          <Star className="mr-2 h-4 w-4" /> Rate This Look
-                        </Button>
-                      )}
+                  {/* Content */}
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-semibold text-foreground">{post.profile?.display_name || 'Anonymous'}</p>
+                      <p className="text-[11px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
+                    </div>
 
-                      {(post.rating_count ?? 0) > 0 && (
-                        <div className="grid grid-cols-4 gap-2 mb-2">
-                          {[
-                            { label: 'Style', val: post.avg_style },
-                            { label: 'Color', val: post.avg_color },
-                            { label: 'Buy', val: post.avg_buy },
-                            { label: 'Fit', val: post.avg_suitability },
-                          ].map(r => (
-                            <div key={r.label} className="text-center">
-                              <p className="text-[10px] text-foreground/50">{r.label}</p>
-                              <p className="text-sm font-bold text-foreground">{(r.val ?? 0).toFixed(1)}</p>
-                              <Star className="h-3 w-3 fill-primary text-primary mx-auto" />
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      {(post.rating_count ?? 0) > 0 && (
-                        <p className="text-[10px] text-foreground/50 mb-2">{post.rating_count} rating{post.rating_count !== 1 ? 's' : ''}</p>
-                      )}
+                    {/* Rate CTA */}
+                    {ratingPost !== post.id && !isPlaceholder(post) && (
+                      <Button
+                        variant="outline"
+                        className="w-full rounded-xl h-10 mb-3 text-sm active:scale-95 transition-transform"
+                        onClick={() => {
+                          if (!user) {
+                            toast({ title: 'Sign in to rate', variant: 'destructive' });
+                            return;
+                          }
+                          setRatingPost(post.id);
+                        }}
+                      >
+                        <Star className="mr-2 h-4 w-4" /> Rate This Look
+                      </Button>
+                    )}
 
-                      {ratingPost === post.id && (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3 mt-2 pt-3 border-t border-border">
-                          {RATING_LABELS.map(({ key, label }) => (
-                            <div key={key} className="flex items-center justify-between">
-                              <span className="text-sm text-foreground/60">{label}</span>
-                              <StarRating value={ratings[key]} onChange={v => setRatings(p => ({ ...p, [key]: v }))} />
-                            </div>
-                          ))}
-                          <Textarea placeholder="Add a comment (optional)" value={comment} onChange={e => setComment(e.target.value)} className="rounded-xl resize-none" rows={2} />
-                          <div className="flex gap-2">
-                            <Button variant="outline" className="flex-1 rounded-xl" onClick={() => setRatingPost(null)}>Cancel</Button>
-                            <Button className="flex-1 rounded-xl" onClick={() => handleSubmitRating(post.id)} disabled={submitting}>
-                              <Send className="mr-2 h-4 w-4" /> Submit
-                            </Button>
+                    {/* Ratings summary */}
+                    {(post.rating_count ?? 0) > 0 && (
+                      <div className="flex items-center justify-between bg-background/50 rounded-xl px-3 py-2">
+                        {[
+                          { label: 'Style', val: post.avg_style },
+                          { label: 'Color', val: post.avg_color },
+                          { label: 'Buy', val: post.avg_buy },
+                          { label: 'Fit', val: post.avg_suitability },
+                        ].map(r => (
+                          <div key={r.label} className="text-center">
+                            <p className="text-[10px] text-muted-foreground">{r.label}</p>
+                            <p className="text-sm font-bold text-foreground">{(r.val ?? 0).toFixed(1)}</p>
                           </div>
-                        </motion.div>
-                      )}
-                    </CardContent>
-                  </Card>
+                        ))}
+                        <div className="text-center">
+                          <p className="text-[10px] text-muted-foreground">Ratings</p>
+                          <p className="text-sm font-bold text-muted-foreground">{post.rating_count}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Rating form */}
+                    {ratingPost === post.id && (
+                      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3 pt-3 border-t border-border mt-3">
+                        {RATING_LABELS.map(({ key, label }) => (
+                          <div key={key} className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">{label}</span>
+                            <StarRating value={ratings[key]} onChange={v => setRatings(p => ({ ...p, [key]: v }))} />
+                          </div>
+                        ))}
+                        <Textarea placeholder="Add a comment (optional)" value={comment} onChange={e => setComment(e.target.value)} className="rounded-xl resize-none text-sm" rows={2} />
+                        <div className="flex gap-2">
+                          <Button variant="outline" className="flex-1 rounded-xl h-10" onClick={() => setRatingPost(null)}>Cancel</Button>
+                          <Button className="flex-1 rounded-xl h-10 btn-luxury text-primary-foreground" onClick={() => handleSubmitRating(post.id)} disabled={submitting}>
+                            <Send className="mr-2 h-3.5 w-3.5" /> Submit
+                          </Button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
                 </motion.div>
               ))}
             </AnimatePresence>
