@@ -67,7 +67,7 @@
     --secondary-foreground: 0 0% 95%;
 
     --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 55%;
+    --muted-foreground: 0 0% 62%;
 
     --accent: 42 35% 72%;
     --accent-foreground: 0 0% 4%;
@@ -171,5 +171,10 @@
   /* Section label */
   .section-label {
     @apply text-[11px] font-bold uppercase tracking-widest text-muted-foreground;
+  }
+
+  /* Safe bottom spacing for screens with BottomTabBar */
+  .pb-safe-bottom {
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
   }
 }

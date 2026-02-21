@@ -126,7 +126,7 @@ const TryOn = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 pt-4 pb-20">
+    <div className="min-h-screen bg-background px-4 pt-4 pb-safe-bottom">
       <div className="max-w-sm mx-auto">
         {/* Header */}
         <div className="flex items-center gap-2 mb-4">
@@ -157,14 +157,14 @@ const TryOn = () => {
           {/* Your Photo */}
           <div>
             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Your Photo</p>
-            <button onClick={() => userPhotoRef.current?.click()} className="w-full rounded-xl overflow-hidden border-2 border-dashed border-border bg-card active:scale-[0.97] transition-transform hover:border-primary/30">
+            <button onClick={() => userPhotoRef.current?.click()} className={`w-full rounded-xl overflow-hidden border-2 border-dashed bg-card active:scale-[0.97] transition-all ${userPhoto ? 'border-primary/40' : 'border-border hover:border-primary/30'}`}>
               <div className="aspect-[3/4] flex items-center justify-center">
                 {userPhoto ? (
                   <img src={userPhoto} alt="You" className="w-full h-full object-cover" />
                 ) : (
                   <div className="flex flex-col items-center gap-1.5 text-muted-foreground p-3">
-                    <div className="h-10 w-10 rounded-full border-2 border-dashed border-border flex items-center justify-center">
-                      <User className="h-5 w-5" />
+                    <div className="h-10 w-10 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
+                      <User className="h-5 w-5 text-muted-foreground" />
                     </div>
                     <p className="text-[11px] font-semibold text-foreground">Tap to upload</p>
                     <p className="text-[9px] text-muted-foreground">Full body, front facing</p>
@@ -172,20 +172,21 @@ const TryOn = () => {
                 )}
               </div>
             </button>
-            <p className="text-[9px] text-muted-foreground mt-1 text-center">JPG, PNG, WebP</p>
+            {userPhoto && <p className="text-[9px] text-primary font-medium mt-1 text-center">✓ Uploaded</p>}
+            {!userPhoto && <p className="text-[9px] text-muted-foreground mt-1 text-center">JPG, PNG, WebP</p>}
           </div>
 
           {/* Clothing Item */}
           <div>
             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Clothing Item</p>
-            <button onClick={() => clothingPhotoRef.current?.click()} className="w-full rounded-xl overflow-hidden border-2 border-dashed border-border bg-card active:scale-[0.97] transition-transform hover:border-primary/30">
+            <button onClick={() => clothingPhotoRef.current?.click()} className={`w-full rounded-xl overflow-hidden border-2 border-dashed bg-card active:scale-[0.97] transition-all ${clothingPhoto ? 'border-primary/40' : 'border-border hover:border-primary/30'}`}>
               <div className="aspect-[3/4] flex items-center justify-center">
                 {clothingPhoto ? (
                   <img src={clothingPhoto} alt="Clothing" className="w-full h-full object-cover" />
                 ) : (
                   <div className="flex flex-col items-center gap-1.5 text-muted-foreground p-3">
-                    <div className="h-10 w-10 rounded-full border-2 border-dashed border-border flex items-center justify-center">
-                      <Shirt className="h-5 w-5" />
+                    <div className="h-10 w-10 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
+                      <Shirt className="h-5 w-5 text-muted-foreground" />
                     </div>
                     <p className="text-[11px] font-semibold text-foreground">Tap to upload</p>
                     <p className="text-[9px] text-muted-foreground">Product photo or screenshot</p>
@@ -193,7 +194,8 @@ const TryOn = () => {
                 )}
               </div>
             </button>
-            <p className="text-[9px] text-muted-foreground mt-1 text-center">JPG, PNG, WebP</p>
+            {clothingPhoto && <p className="text-[9px] text-primary font-medium mt-1 text-center">✓ Uploaded</p>}
+            {!clothingPhoto && <p className="text-[9px] text-muted-foreground mt-1 text-center">JPG, PNG, WebP</p>}
           </div>
         </div>
 
@@ -254,7 +256,7 @@ const TryOn = () => {
 
         {/* Generate */}
         <Button
-          className="w-full h-11 rounded-lg text-sm font-bold mb-1.5 btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-40"
+          className="w-full h-11 rounded-lg text-sm font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30"
           onClick={handleTryOn}
           disabled={loading || !canGenerate}
         >
@@ -266,8 +268,13 @@ const TryOn = () => {
         </Button>
 
         {!canGenerate && !loading && (
-          <p className="text-[10px] text-muted-foreground text-center mb-1.5">
+          <p className="text-[10px] text-muted-foreground text-center mt-1.5 mb-1">
             Upload both photos to generate.
+          </p>
+        )}
+        {canGenerate && !loading && (
+          <p className="text-[10px] text-primary font-medium text-center mt-1.5 mb-1">
+            ✓ Ready to generate
           </p>
         )}
 
@@ -279,8 +286,8 @@ const TryOn = () => {
           </p>
         </div>
 
-        <p className="text-[10px] text-muted-foreground text-center flex items-center justify-center gap-1 mb-3">
-          <Shield className="h-3 w-3" /> Private · delete anytime
+        <p className="text-[10px] text-muted-foreground text-center flex items-center justify-center gap-1 mb-2">
+          <Shield className="h-3 w-3" /> Private by default · delete anytime
         </p>
 
         {/* Result */}

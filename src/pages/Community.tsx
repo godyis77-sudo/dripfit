@@ -68,11 +68,11 @@ const PLACEHOLDER_POSTS: Omit<Post, 'user_id' | 'clothing_photo_url'>[] = [
 ];
 
 const PlaceholderImage = ({ caption }: { caption: string }) => (
-  <div className="w-full aspect-[4/5] bg-gradient-to-b from-card to-background flex flex-col items-center justify-center gap-2">
-    <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-      <Shirt className="h-7 w-7 text-primary/40" />
+  <div className="w-full aspect-[4/5] bg-gradient-to-b from-card to-background flex flex-col items-center justify-center gap-1.5">
+    <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+      <Shirt className="h-6 w-6 text-primary/40" />
     </div>
-    <p className="text-[12px] font-medium text-foreground/40">{caption}</p>
+    <p className="text-[11px] font-medium text-muted-foreground">{caption}</p>
   </div>
 );
 
@@ -136,7 +136,7 @@ const Community = () => {
   const isPlaceholder = (post: Post) => post.id.startsWith('placeholder-');
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-safe-bottom">
       <div className="max-w-sm mx-auto px-4 pt-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
@@ -200,7 +200,7 @@ const Community = () => {
             </Button>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             <AnimatePresence>
               {posts.map((post, idx) => (
                 <motion.div key={post.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} className="bg-card border border-border rounded-xl overflow-hidden">
@@ -211,7 +211,7 @@ const Community = () => {
                     <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[4/5] object-cover" />
                   )}
 
-                  <div className="p-3 space-y-2.5">
+                  <div className="p-2.5 space-y-2">
                     {/* Author + date */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -226,7 +226,7 @@ const Community = () => {
                     </div>
 
                     {/* Question prompt */}
-                    <p className="text-[14px] font-bold text-foreground leading-snug">
+                    <p className="text-[13px] font-bold text-foreground leading-snug">
                       {post.caption || getPrompt(idx)}
                     </p>
 
@@ -251,16 +251,16 @@ const Community = () => {
                       })}
                     </div>
 
-                    {/* Score metrics - secondary */}
+                    {/* Score metrics */}
                     {(post.rating_count ?? 0) > 0 && (
-                      <div className="flex items-center gap-2 pt-1">
+                      <div className="flex items-center gap-2.5 pt-0.5">
                         {[
                           { l: 'Style', v: post.avg_style },
                           { l: 'Color', v: post.avg_color },
                           { l: 'Fit', v: post.avg_suitability },
-                          { l: 'Trendy', v: post.avg_buy },
+                          { l: 'Trend', v: post.avg_buy },
                         ].map(r => (
-                          <div key={r.l} className="flex items-center gap-1">
+                          <div key={r.l} className="flex items-center gap-0.5">
                             <span className="text-[9px] text-muted-foreground">{r.l}</span>
                             <span className="text-[10px] font-bold text-foreground">{(r.v ?? 0).toFixed(1)}</span>
                           </div>

@@ -58,7 +58,7 @@ const SizeGuide = () => {
   if (measurements.length > 0 && !selectedMeasurement) setSelectedMeasurement(measurements[0]);
 
   return (
-    <div className="min-h-screen bg-background px-4 pt-4 pb-20">
+    <div className="min-h-screen bg-background px-4 pt-4 pb-safe-bottom">
       <div className="max-w-sm mx-auto">
         <div className="flex items-center justify-between mb-4">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg"><ArrowLeft className="h-4 w-4" /></Button>

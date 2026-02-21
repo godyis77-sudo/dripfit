@@ -129,7 +129,7 @@ const Capture = () => {
           </div>
           <div className="flex justify-between mt-1">
             {FLOW_STEPS.map((s, i) => (
-              <span key={s.key} className={`text-[9px] font-medium ${
+              <span key={s.key} className={`text-[10px] font-semibold ${
                 i <= flowIdx ? 'text-primary' : 'text-muted-foreground'
               }`}>{s.label}</span>
             ))}
@@ -355,8 +355,8 @@ const Capture = () => {
         </AnimatePresence>
       </div>
 
-      {/* Bottom actions */}
-      <div className="px-4 pb-6 pt-2 space-y-2 max-w-sm mx-auto w-full">
+      {/* Bottom actions — sticky above safe area */}
+      <div className="sticky bottom-0 bg-background/90 backdrop-blur-md border-t border-border/40 px-4 pb-4 pt-3 space-y-2 max-w-sm mx-auto w-full">
         {flowStep === 'height' && (
           <Button
             className="w-full h-11 rounded-lg text-sm font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform"

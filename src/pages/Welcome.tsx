@@ -29,7 +29,7 @@ const Welcome = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-background overflow-hidden pb-20">
+    <div className="relative min-h-screen bg-background overflow-hidden pb-safe-bottom">
       {/* Background glows */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-[5%] left-1/2 -translate-x-1/2 h-[320px] w-[320px] rounded-full bg-primary/8 blur-[140px]" />

@@ -22,7 +22,7 @@ const BottomTabBar = () => {
       transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.3 }}
       className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/40 glass"
     >
-      <div className="mx-auto flex max-w-lg items-center justify-around px-2 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <div className="mx-auto flex max-w-lg items-center justify-around px-2 py-2 pb-[max(0.625rem,env(safe-area-inset-bottom))]">
         {tabs.map((tab) => {
           const isActive = location.pathname === tab.path;
           return (
