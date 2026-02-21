@@ -4,10 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
+import { Card, CardContent } from '@/components/ui/card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, ArrowLeft, RotateCcw, Check, Shield, AlertTriangle } from 'lucide-react';
+import { Camera, ArrowLeft, RotateCcw, Check, Shield, AlertTriangle, Ruler } from 'lucide-react';
 import { CaptureStep, STEP_CONFIG, PhotoSet, ReferenceObject, REFERENCE_OBJECTS } from '@/lib/types';
 import { getFitPreference } from '@/lib/session';
+import { trackEvent } from '@/lib/analytics';
 
 const STEPS: CaptureStep[] = ['front', 'side'];
 
@@ -20,7 +23,6 @@ const Capture = () => {
   const [heightIn, setHeightIn] = useState('');
   const [useCm, setUseCm] = useState(false);
   const [refObject, setRefObject] = useState<ReferenceObject>('none');
-  const [showRefOptions, setShowRefOptions] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const step = STEPS[currentStep];
@@ -35,6 +37,7 @@ const Capture = () => {
   };
 
   const heightValid = getHeightCm() >= 120 && getHeightCm() <= 230;
+  const heightTouched = !!(heightCm || heightFt || heightIn);
 
   const handleCapture = () => {
     fileInputRef.current?.click();
@@ -47,6 +50,7 @@ const Capture = () => {
     reader.onloadend = () => {
       const base64 = reader.result as string;
       setPhotos(prev => ({ ...prev, [step]: base64 }));
+      trackEvent(step === 'front' ? 'scan_front_captured' : 'scan_side_captured');
     };
     reader.readAsDataURL(file);
     e.target.value = '';
@@ -56,7 +60,7 @@ const Capture = () => {
     if (currentStep < 1) {
       setCurrentStep(prev => prev + 1);
     } else {
-      // Both photos taken — go to analysis
+      trackEvent('scan_completed');
       navigate('/analyze', {
         state: {
           photos,
@@ -72,8 +76,6 @@ const Capture = () => {
     setPhotos(prev => ({ ...prev, [step]: null }));
   };
 
-  const canAnalyze = currentStep === 1 && photos.side && heightValid;
-
   return (
     <div className="flex min-h-screen flex-col bg-background">
       {/* Header */}
@@ -82,57 +84,23 @@ const Capture = () => {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="flex-1">
-          <p className="text-xs text-muted-foreground">Step {currentStep + 1} of 2</p>
+          <p className="text-xs text-foreground/60">Step {currentStep + 1} of 2</p>
           <Progress value={progress} className="mt-1 h-2" />
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col items-center px-6 pt-4">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={step}
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -30 }}
-            transition={{ duration: 0.3 }}
-            className="w-full max-w-sm flex flex-col items-center"
-          >
-            <h2 className="text-2xl font-bold text-foreground mb-1">{config.title}</h2>
-            <p className="text-sm font-semibold text-foreground/80 text-center mb-4">{config.instruction}</p>
-
-            {/* Photo preview / capture */}
-            <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden bg-card border-2 border-dashed border-border mb-3">
-              {photos[step] ? (
-                <img src={photos[step]!} alt={config.title} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center gap-4 text-muted-foreground">
-                  {/* Pose overlay guide */}
-                  <div className="relative">
-                    <div className={`border-2 border-dashed border-primary/50 ${step === 'front' ? 'w-28 h-44 rounded-full' : 'w-16 h-44 rounded-2xl'}`} />
-                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 text-xs font-semibold text-primary/70 whitespace-nowrap">
-                      {step === 'front' ? '↑ Face camera' : '↑ Turn sideways'}
-                    </div>
-                  </div>
-                  <p className="text-sm font-medium text-foreground/50 mt-2">Tap to capture</p>
-                </div>
-              )}
-            </div>
-
-            <p className="text-sm font-medium text-foreground/70 text-center bg-muted/50 px-4 py-2 rounded-xl mb-3">
-              💡 {config.tip}
-            </p>
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Height input — always visible */}
-        <div className="w-full max-w-sm mb-3">
+      <div className="flex-1 flex flex-col items-center px-6 pt-4 overflow-y-auto">
+        {/* Height input — REQUIRED, shown first */}
+        <div className="w-full max-w-sm mb-4">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-bold text-foreground">Your Height *</p>
+            <p className="text-sm font-bold text-foreground flex items-center gap-1.5">
+              <Ruler className="h-4 w-4 text-primary" /> Your Height <span className="text-destructive">*</span>
+            </p>
             <div className="flex items-center gap-2 text-xs">
-              <span className={!useCm ? 'text-primary font-bold' : 'text-muted-foreground'}>ft/in</span>
+              <span className={!useCm ? 'text-primary font-bold' : 'text-foreground/50'}>ft/in</span>
               <Switch checked={useCm} onCheckedChange={setUseCm} />
-              <span className={useCm ? 'text-primary font-bold' : 'text-muted-foreground'}>cm</span>
+              <span className={useCm ? 'text-primary font-bold' : 'text-foreground/50'}>cm</span>
             </div>
           </div>
           {useCm ? (
@@ -167,45 +135,111 @@ const Capture = () => {
               />
             </div>
           )}
-          {(heightCm || heightFt) && !heightValid && (
+          {heightTouched && !heightValid && (
             <p className="text-xs text-destructive mt-1 flex items-center gap-1">
-              <AlertTriangle className="h-3 w-3" /> Enter a valid height (120–230 cm)
+              <AlertTriangle className="h-3 w-3" /> Enter a valid height (120–230 cm / 4'0"–7'6")
             </p>
+          )}
+          {!heightTouched && (
+            <p className="text-xs text-foreground/50 mt-1">Required before you can take photos.</p>
           )}
         </div>
 
-        {/* Reference object toggle */}
-        <div className="w-full max-w-sm mb-4">
-          <button
-            onClick={() => setShowRefOptions(!showRefOptions)}
-            className="text-xs font-medium text-primary hover:underline"
+        {/* Photo capture area */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={step}
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.3 }}
+            className="w-full max-w-sm flex flex-col items-center"
           >
-            {showRefOptions ? 'Hide' : '+ Add reference object for better accuracy'}
-          </button>
-          {showRefOptions && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              className="overflow-hidden mt-2"
-            >
-              <div className="grid grid-cols-2 gap-2">
-                {(Object.entries(REFERENCE_OBJECTS) as [ReferenceObject, { label: string; description: string }][])
-                  .filter(([key]) => key !== 'none')
-                  .map(([key, val]) => (
-                    <button
-                      key={key}
-                      onClick={() => setRefObject(refObject === key ? 'none' : key)}
-                      className={`text-left p-3 rounded-xl border text-sm transition-all ${
-                        refObject === key ? 'border-primary bg-primary/5' : 'border-border'
-                      }`}
-                    >
-                      <p className="font-bold text-foreground text-xs">{val.label}</p>
-                      <p className="text-[10px] text-muted-foreground">{val.description}</p>
-                    </button>
-                  ))}
-              </div>
-            </motion.div>
-          )}
+            <h2 className="text-2xl font-bold text-foreground mb-1">{config.title}</h2>
+            <p className="text-sm font-semibold text-foreground/70 text-center mb-4">{config.instruction}</p>
+
+            {/* Photo preview / capture with silhouette */}
+            <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden bg-card border-2 border-dashed border-border mb-3">
+              {photos[step] ? (
+                <img src={photos[step]!} alt={config.title} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-muted-foreground relative">
+                  {/* Full-body silhouette guide */}
+                  <svg viewBox="0 0 120 220" className="h-[65%] opacity-20" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    {step === 'front' ? (
+                      <>
+                        {/* Head */}
+                        <ellipse cx="60" cy="22" rx="14" ry="16" />
+                        {/* Neck */}
+                        <line x1="54" y1="38" x2="54" y2="48" />
+                        <line x1="66" y1="38" x2="66" y2="48" />
+                        {/* Shoulders + torso */}
+                        <path d="M54 48 L30 56 L28 58 L30 60 L38 62 L38 100 L42 130 L48 130 L54 100 L54 48" />
+                        <path d="M66 48 L90 56 L92 58 L90 60 L82 62 L82 100 L78 130 L72 130 L66 100 L66 48" />
+                        {/* Hips + legs */}
+                        <path d="M42 130 L38 180 L34 210 L46 210 L50 180 L54 130" />
+                        <path d="M78 130 L82 180 L86 210 L74 210 L70 180 L66 130" />
+                      </>
+                    ) : (
+                      <>
+                        {/* Side view head */}
+                        <ellipse cx="60" cy="22" rx="12" ry="16" />
+                        {/* Neck */}
+                        <line x1="56" y1="38" x2="56" y2="48" />
+                        <line x1="64" y1="38" x2="64" y2="48" />
+                        {/* Side torso */}
+                        <path d="M56 48 L48 56 L46 100 L48 130 L44 180 L40 210 L52 210 L56 180 L58 130 L58 48" />
+                        <path d="M64 48 L72 56 L74 100 L72 130 L76 180 L80 210 L68 210 L64 180 L62 130 L62 48" />
+                      </>
+                    )}
+                    {/* Floor markers */}
+                    <line x1="20" y1="212" x2="100" y2="212" strokeDasharray="4 4" opacity="0.5" />
+                    {/* Head marker */}
+                    <line x1="30" y1="4" x2="90" y2="4" strokeDasharray="4 4" opacity="0.5" />
+                  </svg>
+                  <p className="text-xs font-semibold text-foreground/50 absolute bottom-6">
+                    {step === 'front' ? 'Face camera • head to feet visible' : 'Turn 90° • head to feet visible'}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <p className="text-sm font-medium text-foreground/70 text-center bg-muted/50 px-4 py-2 rounded-xl mb-3">
+              💡 {config.tip}
+            </p>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Reference object — accordion card */}
+        <div className="w-full max-w-sm mb-4">
+          <Accordion type="single" collapsible>
+            <AccordionItem value="ref" className="border rounded-2xl px-3">
+              <AccordionTrigger className="text-sm font-bold text-foreground py-3 hover:no-underline">
+                <span className="flex items-center gap-2">
+                  <Ruler className="h-4 w-4 text-primary" />
+                  Add reference object for better accuracy
+                </span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="grid grid-cols-2 gap-2 pb-2">
+                  {(Object.entries(REFERENCE_OBJECTS) as [ReferenceObject, { label: string; description: string }][])
+                    .filter(([key]) => key !== 'none')
+                    .map(([key, val]) => (
+                      <button
+                        key={key}
+                        onClick={() => setRefObject(refObject === key ? 'none' : key)}
+                        className={`text-left p-3 rounded-xl border text-sm transition-all ${
+                          refObject === key ? 'border-primary bg-primary/5' : 'border-border'
+                        }`}
+                      >
+                        <p className="font-bold text-foreground text-xs">{val.label}</p>
+                        <p className="text-[10px] text-foreground/50">{val.description}</p>
+                      </button>
+                    ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
       </div>
 
@@ -235,16 +269,23 @@ const Capture = () => {
             </Button>
           </div>
         ) : (
-          <Button className="w-full h-14 rounded-2xl text-base" onClick={handleCapture}>
+          <Button
+            className="w-full h-14 rounded-2xl text-base"
+            onClick={handleCapture}
+            disabled={!heightValid}
+          >
             <Camera className="mr-2 h-5 w-5" /> Take Photo
           </Button>
         )}
 
-        <p className="text-[11px] text-muted-foreground text-center flex items-center justify-center gap-1">
+        {!heightValid && !photos[step] && (
+          <p className="text-xs text-foreground/50 text-center">Enter your height above to enable capture.</p>
+        )}
+
+        <p className="text-[11px] text-foreground/60 text-center flex items-center justify-center gap-1">
           <Shield className="h-3 w-3" /> Private by default • delete anytime
         </p>
       </div>
-      {/* No bottom nav in capture - focus mode */}
     </div>
   );
 };

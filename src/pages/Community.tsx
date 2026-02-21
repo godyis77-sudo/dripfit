@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, Send, Shirt, Sparkles, Eye, Heart, TrendingUp, Zap } from 'lucide-react';
+import { ArrowLeft, Star, Send, Shirt, Sparkles, TrendingUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { trackEvent } from '@/lib/analytics';
 import BottomTabBar from '@/components/BottomTabBar';
 
 interface Post {
@@ -26,10 +27,10 @@ interface Post {
 }
 
 const RATING_LABELS = [
-  { key: 'style_score', label: 'Style', icon: Eye },
-  { key: 'color_score', label: 'Color', icon: Heart },
-  { key: 'buy_score', label: 'Would Buy?', icon: Zap },
-  { key: 'suitability_score', label: 'Fit', icon: TrendingUp },
+  { key: 'style_score', label: 'Style' },
+  { key: 'color_score', label: 'Color' },
+  { key: 'buy_score', label: 'Would Buy?' },
+  { key: 'suitability_score', label: 'Fit' },
 ] as const;
 
 type FilterType = 'trending' | 'new' | 'similar';
@@ -38,7 +39,7 @@ const StarRating = ({ value, onChange }: { value: number; onChange: (v: number) 
   <div className="flex gap-0.5">
     {[1, 2, 3, 4, 5].map(n => (
       <button key={n} onClick={() => onChange(n)} className="p-0.5">
-        <Star className={`h-5 w-5 ${n <= value ? 'fill-primary text-primary' : 'text-muted-foreground/30'}`} />
+        <Star className={`h-5 w-5 ${n <= value ? 'fill-primary text-primary' : 'text-foreground/20'}`} />
       </button>
     ))}
   </div>
@@ -135,6 +136,7 @@ const Community = () => {
     if (error) {
       toast({ title: 'Error', description: error.message.includes('unique') ? 'You already rated this look.' : error.message, variant: 'destructive' });
     } else {
+      trackEvent('community_rated');
       toast({ title: 'Thanks!', description: 'Your rating was submitted.' });
       setRatingPost(null);
       setRatings({ style_score: 0, color_score: 0, buy_score: 0, suitability_score: 0 });
@@ -171,7 +173,7 @@ const Community = () => {
 
         {loading ? (
           <div className="flex justify-center py-20">
-            <div className="animate-pulse text-muted-foreground">Loading…</div>
+            <div className="animate-pulse text-foreground/50">Loading…</div>
           </div>
         ) : posts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -179,7 +181,7 @@ const Community = () => {
               <Sparkles className="h-8 w-8 text-primary-foreground" />
             </div>
             <h2 className="font-display text-lg font-bold mb-2">Be the First</h2>
-            <p className="text-sm font-medium text-foreground/70 max-w-[250px] mb-6">
+            <p className="text-sm font-medium text-foreground/60 max-w-[250px] mb-6">
               Share your virtual try-ons and get real ratings from the community.
             </p>
             <Button className="rounded-2xl btn-3d-drip border-0 h-12 px-8 font-display font-bold uppercase tracking-wider" onClick={() => navigate('/tryon')}>
@@ -196,12 +198,29 @@ const Community = () => {
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between mb-2">
                         <p className="text-sm font-medium text-foreground">{post.profile?.display_name || 'Anonymous'}</p>
-                        <p className="text-xs text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
+                        <p className="text-xs text-foreground/50">{new Date(post.created_at).toLocaleDateString()}</p>
                       </div>
-                      {post.caption && <p className="text-sm font-medium text-foreground/80 mb-3">{post.caption}</p>}
+                      {post.caption && <p className="text-sm font-medium text-foreground/70 mb-3">{post.caption}</p>}
+
+                      {/* Rate Look CTA — above the fold */}
+                      {ratingPost !== post.id && (
+                        <Button
+                          variant="outline"
+                          className="w-full rounded-xl mb-3"
+                          onClick={() => {
+                            if (!user) {
+                              toast({ title: 'Sign in to rate', description: 'Browsing is free — sign in to rate.', variant: 'destructive' });
+                              return;
+                            }
+                            setRatingPost(post.id);
+                          }}
+                        >
+                          <Star className="mr-2 h-4 w-4" /> Rate This Look
+                        </Button>
+                      )}
 
                       {(post.rating_count ?? 0) > 0 && (
-                        <div className="grid grid-cols-4 gap-2 mb-3">
+                        <div className="grid grid-cols-4 gap-2 mb-2">
                           {[
                             { label: 'Style', val: post.avg_style },
                             { label: 'Color', val: post.avg_color },
@@ -209,20 +228,22 @@ const Community = () => {
                             { label: 'Fit', val: post.avg_suitability },
                           ].map(r => (
                             <div key={r.label} className="text-center">
-                              <p className="text-[10px] text-muted-foreground">{r.label}</p>
+                              <p className="text-[10px] text-foreground/50">{r.label}</p>
                               <p className="text-sm font-bold text-foreground">{(r.val ?? 0).toFixed(1)}</p>
                               <Star className="h-3 w-3 fill-primary text-primary mx-auto" />
                             </div>
                           ))}
                         </div>
                       )}
-                      <p className="text-[10px] text-muted-foreground mb-2">{post.rating_count} rating{post.rating_count !== 1 ? 's' : ''}</p>
+                      {(post.rating_count ?? 0) > 0 && (
+                        <p className="text-[10px] text-foreground/50 mb-2">{post.rating_count} rating{post.rating_count !== 1 ? 's' : ''}</p>
+                      )}
 
-                      {ratingPost === post.id ? (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3 mt-3 pt-3 border-t border-border">
+                      {ratingPost === post.id && (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3 mt-2 pt-3 border-t border-border">
                           {RATING_LABELS.map(({ key, label }) => (
                             <div key={key} className="flex items-center justify-between">
-                              <span className="text-sm text-muted-foreground">{label}</span>
+                              <span className="text-sm text-foreground/60">{label}</span>
                               <StarRating value={ratings[key]} onChange={v => setRatings(p => ({ ...p, [key]: v }))} />
                             </div>
                           ))}
@@ -234,20 +255,6 @@ const Community = () => {
                             </Button>
                           </div>
                         </motion.div>
-                      ) : (
-                        <Button
-                          variant="outline"
-                          className="w-full rounded-xl mt-1"
-                          onClick={() => {
-                            if (!user) {
-                              toast({ title: 'Sign in to rate', description: 'Browsing is free — sign in to rate.', variant: 'destructive' });
-                              return;
-                            }
-                            setRatingPost(post.id);
-                          }}
-                        >
-                          <Star className="mr-2 h-4 w-4" /> Rate This Look
-                        </Button>
                       )}
                     </CardContent>
                   </Card>
