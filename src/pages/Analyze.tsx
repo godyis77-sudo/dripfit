@@ -3,28 +3,33 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { PhotoSet, MeasurementResult, CalibrationObject } from '@/lib/types';
+import { PhotoSet, BodyScanResult, FitPreference, ReferenceObject } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
 
 const ANALYSIS_MESSAGES = [
-  'Detecting ruler for scale calibration…',
-  'Identifying body landmarks…',
+  'Detecting body landmarks…',
   'Cross-referencing front and side views…',
-  'Calculating measurements…',
-  'Generating size recommendations…',
+  'Estimating measurement ranges…',
+  'Matching retailer size charts…',
+  'Generating recommendations…',
 ];
+
+interface AnalyzeState {
+  photos: PhotoSet;
+  heightCm: number;
+  referenceObject: ReferenceObject;
+  fitPreference: FitPreference;
+}
 
 const Analyze = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const state = location.state as { photos: PhotoSet; calibrationObject?: CalibrationObject } | undefined;
-  const photos = state?.photos;
-  const calibrationObject = state?.calibrationObject || 'ruler';
+  const state = location.state as AnalyzeState | undefined;
   const [messageIndex, setMessageIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!photos?.front || !photos?.side || !photos?.armsOut) {
+    if (!state?.photos?.front || !state?.photos?.side) {
       navigate('/capture', { replace: true });
       return;
     }
@@ -34,7 +39,6 @@ const Analyze = () => {
     }, 2500);
 
     analyzePhotos();
-
     return () => clearInterval(interval);
   }, []);
 
@@ -42,22 +46,21 @@ const Analyze = () => {
     try {
       const { data, error: fnError } = await supabase.functions.invoke('analyze-body', {
         body: {
-          frontPhoto: photos!.front,
-          sidePhoto: photos!.side,
-          armsOutPhoto: photos!.armsOut,
-          calibrationObject,
+          frontPhoto: state!.photos.front,
+          sidePhoto: state!.photos.side,
+          heightCm: state!.heightCm,
+          referenceObject: state!.referenceObject,
+          fitPreference: state!.fitPreference,
         },
       });
 
       if (fnError) throw new Error(fnError.message);
       if (data?.error) throw new Error(data.error);
 
-      const result: MeasurementResult = {
+      const result: BodyScanResult = {
         id: crypto.randomUUID(),
         date: new Date().toISOString(),
-        ...data.measurements,
-        unit: 'in',
-        sizeRecommendation: data.sizeRecommendation,
+        ...data,
       };
 
       navigate('/results', { state: { result }, replace: true });

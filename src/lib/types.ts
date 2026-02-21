@@ -1,3 +1,28 @@
+export type FitPreference = 'fitted' | 'regular' | 'relaxed';
+export type Confidence = 'high' | 'medium' | 'low';
+
+export interface MeasurementRange {
+  min: number;
+  max: number;
+}
+
+export interface BodyScanResult {
+  id: string;
+  date: string;
+  shoulder: MeasurementRange;
+  chest: MeasurementRange;
+  waist: MeasurementRange;
+  hips: MeasurementRange;
+  inseam: MeasurementRange;
+  heightCm: number;
+  confidence: Confidence;
+  recommendedSize: string;
+  fitPreference: FitPreference;
+  alternatives: { sizeDown: string; sizeUp: string };
+  whyLine: string;
+}
+
+// Legacy compat for localStorage history
 export interface MeasurementResult {
   id: string;
   date: string;
@@ -14,55 +39,30 @@ export interface MeasurementResult {
 export interface PhotoSet {
   front: string | null;
   side: string | null;
-  armsOut: string | null;
 }
 
-export type CaptureStep = 'front' | 'side' | 'armsOut';
+export type CaptureStep = 'front' | 'side';
 
-export type CalibrationObject = 'ruler' | 'loonie' | 'quarter' | 'five_dollar_bill';
+export type ReferenceObject = 'credit_card' | 'a4_paper' | 'phone' | 'none';
 
-export const CALIBRATION_OBJECTS: Record<CalibrationObject, { label: string; description: string; knownSize: string }> = {
-  ruler: {
-    label: 'Ruler',
-    description: 'Standard 12″ ruler',
-    knownSize: '12 inches long',
-  },
-  loonie: {
-    label: 'Loonie (CAD $1)',
-    description: '26.5 mm diameter coin',
-    knownSize: '26.5 mm (1.043 inches) diameter',
-  },
-  quarter: {
-    label: 'Quarter (US 25¢)',
-    description: '24.26 mm diameter coin',
-    knownSize: '24.26 mm (0.955 inches) diameter',
-  },
-  five_dollar_bill: {
-    label: '$5 Bill (CAD)',
-    description: '152.4 × 69.85 mm',
-    knownSize: '152.4 mm (6 inches) long × 69.85 mm (2.75 inches) tall',
-  },
+export const REFERENCE_OBJECTS: Record<ReferenceObject, { label: string; description: string }> = {
+  credit_card: { label: 'Credit Card', description: '85.6 × 53.98 mm' },
+  a4_paper: { label: 'A4 Paper', description: '210 × 297 mm' },
+  phone: { label: 'Phone', description: 'Standard smartphone ~15 cm' },
+  none: { label: 'None', description: 'Skip reference object' },
 };
 
-export const getStepConfig = (object: CalibrationObject): Record<CaptureStep, { title: string; instruction: string; tip: string }> => {
-  const objLabel = CALIBRATION_OBJECTS[object].label;
-  return {
-    front: {
-      title: 'Front View',
-      instruction: `Stand facing the camera with ${objLabel} held at waist level`,
-      tip: 'Keep feet shoulder-width apart, arms relaxed at sides',
-    },
-    side: {
-      title: 'Side View',
-      instruction: `Turn 90° to the right. Keep ${objLabel} visible`,
-      tip: "Stand naturally, don't suck in your stomach",
-    },
-    armsOut: {
-      title: 'Arms Extended',
-      instruction: `Face camera with arms straight out to the sides, ${objLabel} visible`,
-      tip: 'Keep arms level with shoulders, palms facing down',
-    },
-  };
+export const STEP_CONFIG: Record<CaptureStep, { title: string; instruction: string; tip: string }> = {
+  front: {
+    title: 'Front View',
+    instruction: 'Stand facing the camera in fitted clothing',
+    tip: 'Keep feet shoulder-width apart, arms relaxed at sides',
+  },
+  side: {
+    title: 'Side View',
+    instruction: 'Turn 90° to the right, keep hands at your sides',
+    tip: "Stand naturally, don't suck in your stomach",
+  },
 };
 
 export const MEASUREMENT_LABELS: Record<string, string> = {
@@ -73,3 +73,10 @@ export const MEASUREMENT_LABELS: Record<string, string> = {
   inseam: 'Inseam',
   height: 'Height',
 };
+
+export const SUPPORTED_RETAILERS = [
+  'SHEIN', 'Macys', 'Gap', 'Nordstrom', 'JCPenney',
+  'Lululemon', 'Zara', 'H&M', 'Aritzia', 'Simons',
+] as const;
+
+export const CALIBRATION_BRANDS = ['Levi\'s', 'Nike', 'Gap', 'Zara', 'Aritzia'] as const;

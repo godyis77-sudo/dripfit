@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, Send, MessageCircle, Shirt, Sparkles, Eye, Heart, TrendingUp, Zap } from 'lucide-react';
+import { ArrowLeft, Star, Send, Shirt, Sparkles, Eye, Heart, TrendingUp, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -26,11 +26,13 @@ interface Post {
 }
 
 const RATING_LABELS = [
-  { key: 'style_score', label: 'Style' },
-  { key: 'color_score', label: 'Color' },
-  { key: 'buy_score', label: 'Buy It?' },
-  { key: 'suitability_score', label: 'Suitability' },
+  { key: 'style_score', label: 'Style', icon: Eye },
+  { key: 'color_score', label: 'Color', icon: Heart },
+  { key: 'buy_score', label: 'Would Buy?', icon: Zap },
+  { key: 'suitability_score', label: 'Fit', icon: TrendingUp },
 ] as const;
+
+type FilterType = 'trending' | 'new' | 'similar';
 
 const StarRating = ({ value, onChange }: { value: number; onChange: (v: number) => void }) => (
   <div className="flex gap-0.5">
@@ -48,6 +50,7 @@ const Community = () => {
   const { toast } = useToast();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<FilterType>('new');
   const [ratingPost, setRatingPost] = useState<string | null>(null);
   const [ratings, setRatings] = useState({ style_score: 0, color_score: 0, buy_score: 0, suitability_score: 0 });
   const [comment, setComment] = useState('');
@@ -55,15 +58,18 @@ const Community = () => {
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [filter]);
 
   const fetchPosts = async () => {
-    const { data, error } = await supabase
+    setLoading(true);
+    const query = supabase
       .from('tryon_posts')
       .select('*')
       .eq('is_public', true)
       .order('created_at', { ascending: false })
       .limit(50);
+
+    const { data, error } = await query;
 
     if (error) {
       console.error(error);
@@ -71,7 +77,6 @@ const Community = () => {
       return;
     }
 
-    // Fetch profiles and ratings for posts
     const userIds = [...new Set((data || []).map(p => p.user_id))];
     const postIds = (data || []).map(p => p.id);
 
@@ -87,19 +92,23 @@ const Community = () => {
       ratingsByPost.get(r.post_id)!.push(r);
     });
 
-    const enriched = (data || []).map(p => {
+    let enriched = (data || []).map(p => {
       const postRatings = ratingsByPost.get(p.id) || [];
       const count = postRatings.length;
       return {
         ...p,
         profile: profileMap.get(p.user_id) || { display_name: 'Anonymous' },
-        avg_style: count ? postRatings.reduce((s, r) => s + r.style_score, 0) / count : 0,
-        avg_color: count ? postRatings.reduce((s, r) => s + r.color_score, 0) / count : 0,
-        avg_buy: count ? postRatings.reduce((s, r) => s + r.buy_score, 0) / count : 0,
-        avg_suitability: count ? postRatings.reduce((s, r) => s + r.suitability_score, 0) / count : 0,
+        avg_style: count ? postRatings.reduce((s: number, r: any) => s + r.style_score, 0) / count : 0,
+        avg_color: count ? postRatings.reduce((s: number, r: any) => s + r.color_score, 0) / count : 0,
+        avg_buy: count ? postRatings.reduce((s: number, r: any) => s + r.buy_score, 0) / count : 0,
+        avg_suitability: count ? postRatings.reduce((s: number, r: any) => s + r.suitability_score, 0) / count : 0,
         rating_count: count,
       };
     });
+
+    if (filter === 'trending') {
+      enriched.sort((a, b) => (b.rating_count || 0) - (a.rating_count || 0));
+    }
 
     setPosts(enriched);
     setLoading(false);
@@ -107,7 +116,7 @@ const Community = () => {
 
   const handleSubmitRating = async (postId: string) => {
     if (!user) {
-      toast({ title: 'Sign in required', description: 'Please sign in to rate looks.', variant: 'destructive' });
+      toast({ title: 'Sign in to rate', description: 'Create an account to rate looks.', variant: 'destructive' });
       return;
     }
     if (Object.values(ratings).some(v => v === 0)) {
@@ -138,11 +147,26 @@ const Community = () => {
   return (
     <div className="min-h-screen bg-background px-6 py-6 pb-24">
       <div className="max-w-sm mx-auto">
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-4">
           <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-xl font-bold text-foreground">Community Looks</h1>
+          <h1 className="text-xl font-bold text-foreground">Rate Looks</h1>
+        </div>
+
+        {/* Filters */}
+        <div className="flex gap-2 mb-4">
+          {(['trending', 'new', 'similar'] as FilterType[]).map(f => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                filter === f ? 'bg-primary text-primary-foreground' : 'bg-card border border-border text-foreground/60'
+              }`}
+            >
+              {f === 'trending' ? '🔥 Trending' : f === 'new' ? '✨ New' : '👤 Similar Fit'}
+            </button>
+          ))}
         </div>
 
         {loading ? (
@@ -154,33 +178,12 @@ const Community = () => {
             <div className="h-16 w-16 rounded-2xl gradient-drip flex items-center justify-center mb-4">
               <Sparkles className="h-8 w-8 text-primary-foreground" />
             </div>
-            <h2 className="font-display text-lg font-bold mb-2">Be the First to Drip</h2>
+            <h2 className="font-display text-lg font-bold mb-2">Be the First</h2>
             <p className="text-sm font-medium text-foreground/70 max-w-[250px] mb-6">
-              Share your virtual try-ons and get real ratings from the community on your style, color, and fit.
+              Share your virtual try-ons and get real ratings from the community.
             </p>
-            <div className="glass rounded-2xl p-4 border border-border/30 w-full mb-6">
-              <h3 className="font-display text-sm font-bold mb-3 text-center">Rate looks on</h3>
-              <div className="grid grid-cols-4 gap-2 text-center">
-                <div className="flex flex-col items-center gap-1">
-                  <Eye className="h-4 w-4 text-primary" />
-                     <span className="text-xs font-semibold text-foreground/70">Style</span>
-                 </div>
-                 <div className="flex flex-col items-center gap-1">
-                   <Heart className="h-4 w-4 text-primary" />
-                   <span className="text-xs font-semibold text-foreground/70">Color</span>
-                 </div>
-                 <div className="flex flex-col items-center gap-1">
-                   <TrendingUp className="h-4 w-4 text-primary" />
-                   <span className="text-xs font-semibold text-foreground/70">Fit</span>
-                 </div>
-                 <div className="flex flex-col items-center gap-1">
-                   <Zap className="h-4 w-4 text-primary" />
-                   <span className="text-xs font-semibold text-foreground/70">Buy It?</span>
-                </div>
-              </div>
-            </div>
             <Button className="rounded-2xl btn-3d-drip border-0 h-12 px-8 font-display font-bold uppercase tracking-wider" onClick={() => navigate('/tryon')}>
-              <Shirt className="mr-2 h-4 w-4" /> Try On Something
+              <Shirt className="mr-2 h-4 w-4" /> Generate Try-On
             </Button>
           </div>
         ) : (
@@ -197,7 +200,6 @@ const Community = () => {
                       </div>
                       {post.caption && <p className="text-sm font-medium text-foreground/80 mb-3">{post.caption}</p>}
 
-                      {/* Average ratings */}
                       {(post.rating_count ?? 0) > 0 && (
                         <div className="grid grid-cols-4 gap-2 mb-3">
                           {[
@@ -209,16 +211,13 @@ const Community = () => {
                             <div key={r.label} className="text-center">
                               <p className="text-[10px] text-muted-foreground">{r.label}</p>
                               <p className="text-sm font-bold text-foreground">{(r.val ?? 0).toFixed(1)}</p>
-                              <div className="flex justify-center">
-                                <Star className="h-3 w-3 fill-primary text-primary" />
-                              </div>
+                              <Star className="h-3 w-3 fill-primary text-primary mx-auto" />
                             </div>
                           ))}
                         </div>
                       )}
                       <p className="text-[10px] text-muted-foreground mb-2">{post.rating_count} rating{post.rating_count !== 1 ? 's' : ''}</p>
 
-                      {/* Rate button / form */}
                       {ratingPost === post.id ? (
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3 mt-3 pt-3 border-t border-border">
                           {RATING_LABELS.map(({ key, label }) => (
@@ -241,7 +240,7 @@ const Community = () => {
                           className="w-full rounded-xl mt-1"
                           onClick={() => {
                             if (!user) {
-                              toast({ title: 'Sign in to rate', description: 'Create an account to rate looks.', variant: 'destructive' });
+                              toast({ title: 'Sign in to rate', description: 'Browsing is free — sign in to rate.', variant: 'destructive' });
                               return;
                             }
                             setRatingPost(post.id);
