@@ -1,53 +1,66 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { motion } from 'framer-motion';
-import { Save, Share2, ArrowLeft, Check, Shirt, Trash2, Shield, ChevronDown, ChevronUp } from 'lucide-react';
-import { BodyScanResult, MEASUREMENT_LABELS } from '@/lib/types';
+import { ArrowLeft } from 'lucide-react';
+import { BodyScanResult, FitPreference, MeasurementRange } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
+import SizeHero from '@/components/results/SizeHero';
+import FitPreferenceToggle from '@/components/results/FitPreferenceToggle';
+import AlternativeSizes from '@/components/results/AlternativeSizes';
+import MeasurementGrid from '@/components/results/MeasurementGrid';
+import LowConfidenceRescue from '@/components/results/LowConfidenceRescue';
+import ResultActions from '@/components/results/ResultActions';
 
-const CM_TO_IN = 0.3937;
+// Simple size ladder for fit-adjusted recommendations
+const SIZE_LADDER = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL'];
 
-const confidenceColors: Record<string, string> = {
-  high: 'bg-primary/10 text-primary',
-  medium: 'bg-accent/20 text-accent-foreground',
-  low: 'bg-destructive/10 text-destructive',
-};
-
-const confidenceDotColors: Record<string, string> = {
-  high: 'bg-primary',
-  medium: 'bg-accent',
-  low: 'bg-destructive',
-};
+function shiftSize(size: string, delta: number): string {
+  const idx = SIZE_LADDER.indexOf(size);
+  if (idx === -1) return size;
+  const newIdx = Math.max(0, Math.min(SIZE_LADDER.length - 1, idx + delta));
+  return SIZE_LADDER[newIdx];
+}
 
 const Results = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const result = (location.state as { result: BodyScanResult })?.result;
-  const [useCm, setUseCm] = useState(true);
+  const state = location.state as { result: BodyScanResult; retailer?: string; category?: string } | undefined;
+  const result = state?.result;
+  const [fitPref, setFitPref] = useState<FitPreference>(result?.fitPreference || 'regular');
   const [saved, setSaved] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
+  const [confidence, setConfidence] = useState(result?.confidence || 'medium');
 
   useEffect(() => {
     if (result) trackEvent('results_viewed');
-  }, []);
+  }, [result]);
+
+  const adjustedSize = useMemo(() => {
+    if (!result) return '';
+    const base = result.recommendedSize;
+    if (fitPref === 'fitted') return shiftSize(base, -1);
+    if (fitPref === 'relaxed') return shiftSize(base, 1);
+    return base;
+  }, [fitPref, result]);
+
+  const alternatives = useMemo(() => ({
+    sizeDown: shiftSize(adjustedSize, -1),
+    sizeUp: shiftSize(adjustedSize, 1),
+  }), [adjustedSize]);
 
   if (!result) {
     navigate('/', { replace: true });
     return null;
   }
 
-  const formatRange = (r: { min: number; max: number }) => {
-    if (useCm) return `${r.min.toFixed(0)}–${r.max.toFixed(0)}`;
-    return `${(r.min * CM_TO_IN).toFixed(1)}–${(r.max * CM_TO_IN).toFixed(1)}`;
+  const measurements: Record<string, MeasurementRange> = {
+    chest: result.chest,
+    waist: result.waist,
+    hips: result.hips,
+    inseam: result.inseam,
+    shoulder: result.shoulder,
   };
-
-  const unitLabel = useCm ? 'cm' : 'in';
-  const measurementKeys = ['shoulder', 'chest', 'waist', 'hips', 'inseam'] as const;
 
   const handleSave = () => {
     const history = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]');
@@ -62,169 +75,52 @@ const Results = () => {
     navigate('/');
   };
 
-  const handleShare = async () => {
-    const text = measurementKeys
-      .map(k => `${MEASUREMENT_LABELS[k]}: ${formatRange(result[k])} ${unitLabel}`)
-      .join('\n');
-    const shareText = `DRIP FIT Results\nRecommended: ${result.recommendedSize}\nConfidence: ${result.confidence}\n\n${text}\nHeight: ${useCm ? result.heightCm : (result.heightCm * CM_TO_IN).toFixed(1)} ${unitLabel}`;
-
-    if (navigator.share) {
-      await navigator.share({ title: 'My Size Results', text: shareText });
-    } else {
-      await navigator.clipboard.writeText(shareText);
-      toast({ title: 'Copied!', description: 'Results copied to clipboard.' });
-    }
+  const handleCalibrate = (data: { type: 'waist'; value: number } | { type: 'brand'; brand: string; size: string }) => {
+    // Upgrade confidence after calibration
+    setConfidence('medium');
+    toast({ title: 'Updated!', description: 'Confidence improved with your input.' });
   };
 
   return (
-    <div className="min-h-screen bg-background px-6 py-6 pb-8">
+    <div className="min-h-screen bg-background px-5 py-5 pb-10">
       <div className="max-w-sm mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
-            <ArrowLeft className="h-5 w-5" />
+        <div className="flex items-center mb-5">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-9 w-9 rounded-xl">
+            <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-xl font-bold text-foreground">Your Results</h1>
-          <div className="w-10" />
         </div>
 
-        {/* Main recommendation */}
-        <Card className="rounded-2xl mb-4 bg-primary/5 border-primary/20">
-          <CardContent className="p-5 text-center">
-            <p className="text-xs font-semibold text-foreground/60 mb-1">Recommended Size</p>
-            <p className="text-4xl font-bold text-primary mb-2">{result.recommendedSize}</p>
-            <div className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1 ${confidenceColors[result.confidence]}`}>
-              <div className={`h-2 w-2 rounded-full ${confidenceDotColors[result.confidence]}`} />
-              <span className="text-xs font-bold capitalize">{result.confidence} confidence</span>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Size recommendation hero */}
+        <SizeHero
+          retailer={state?.retailer}
+          category={state?.category}
+          recommendedSize={adjustedSize}
+          confidence={confidence}
+          whyLine={result.whyLine || 'Based on your scan estimate + retailer size chart + fit preference'}
+        />
+
+        {/* Fit preference toggle */}
+        <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
 
         {/* Alternatives */}
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          <Card className="rounded-2xl">
-            <CardContent className="p-3 text-center">
-              <p className="text-[10px] font-semibold text-foreground/60">Fitted</p>
-              <p className="text-lg font-bold text-foreground">{result.alternatives.sizeDown}</p>
-              <p className="text-[10px] text-foreground/50">Size down</p>
-            </CardContent>
-          </Card>
-          <Card className="rounded-2xl">
-            <CardContent className="p-3 text-center">
-              <p className="text-[10px] font-semibold text-foreground/60">Relaxed</p>
-              <p className="text-lg font-bold text-foreground">{result.alternatives.sizeUp}</p>
-              <p className="text-[10px] text-foreground/50">Size up</p>
-            </CardContent>
-          </Card>
-        </div>
+        <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} />
 
-        {/* Why line */}
-        {result.whyLine && (
-          <Card className="rounded-2xl mb-4">
-            <CardContent className="p-3">
-              <p className="text-sm text-foreground/70">{result.whyLine}</p>
-            </CardContent>
-          </Card>
-        )}
+        {/* Low confidence rescue */}
+        {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
 
-        {/* Unit toggle + measurements */}
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-sm font-bold text-foreground">Estimated Measurements</p>
-          <div className="flex items-center gap-2 text-xs">
-            <span className={useCm ? 'text-primary font-bold' : 'text-foreground/50'}>cm</span>
-            <Switch checked={!useCm} onCheckedChange={v => setUseCm(!v)} />
-            <span className={!useCm ? 'text-primary font-bold' : 'text-foreground/50'}>in</span>
-          </div>
-        </div>
-
-        <button
-          onClick={() => setShowDetails(!showDetails)}
-          className="w-full flex items-center justify-between text-sm text-foreground/60 mb-3"
-        >
-          <span>{showDetails ? 'Hide ranges' : 'Show measurement ranges'}</span>
-          {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-        </button>
-
-        {showDetails && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            className="grid grid-cols-2 gap-3 mb-4"
-          >
-            {measurementKeys.map((key, i) => (
-              <motion.div
-                key={key}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-              >
-                <Card className="rounded-2xl">
-                  <CardContent className="p-3">
-                    <p className="text-[10px] font-semibold text-foreground/60 mb-1">{MEASUREMENT_LABELS[key]}</p>
-                    <p className="text-lg font-bold text-foreground">
-                      {formatRange(result[key])}
-                      <span className="text-xs font-normal text-foreground/50 ml-1">{unitLabel}</span>
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-            <Card className="rounded-2xl">
-              <CardContent className="p-3">
-                <p className="text-[10px] font-semibold text-foreground/60 mb-1">Height</p>
-                <p className="text-lg font-bold text-foreground">
-                  {useCm ? result.heightCm.toFixed(0) : (result.heightCm * CM_TO_IN).toFixed(1)}
-                  <span className="text-xs font-normal text-foreground/50 ml-1">{unitLabel}</span>
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
+        {/* Measurements */}
+        <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
 
         {/* Actions */}
-        <div className="space-y-3 mt-4">
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              className="flex-1 h-12 rounded-2xl"
-              onClick={handleShare}
-            >
-              <Share2 className="mr-2 h-4 w-4" /> Share
-            </Button>
-            <Button
-              className="flex-1 h-12 rounded-2xl"
-              onClick={handleSave}
-              disabled={saved}
-            >
-              {saved ? <Check className="mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
-              {saved ? 'Saved' : 'Save Body Profile'}
-            </Button>
-          </div>
-          <Button
-            variant="outline"
-            className="w-full h-12 rounded-2xl"
-            onClick={() => navigate('/tryon', { state: { bodyProfile: result } })}
-          >
-            <Shirt className="mr-2 h-4 w-4" /> Use for Try-On
-          </Button>
-          <Button
-            variant="ghost"
-            className="w-full text-foreground/60"
-            onClick={() => navigate('/capture')}
-          >
-            Scan Again
-          </Button>
-          <Button
-            variant="ghost"
-            className="w-full text-destructive/60 hover:text-destructive"
-            onClick={handleDelete}
-          >
-            <Trash2 className="mr-2 h-4 w-4" /> Delete Photos
-          </Button>
-          <p className="text-[11px] text-foreground/60 text-center flex items-center justify-center gap-1">
-            <Shield className="h-3 w-3" /> Private by default • delete anytime
-          </p>
-        </div>
+        <ResultActions
+          saved={saved}
+          scanDate={result.date}
+          onSave={handleSave}
+          onTryOn={() => navigate('/tryon', { state: { bodyProfile: result } })}
+          onNewScan={() => navigate('/capture')}
+          onDelete={handleDelete}
+        />
       </div>
     </div>
   );
