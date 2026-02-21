@@ -12,14 +12,12 @@ import MeasurementGrid from '@/components/results/MeasurementGrid';
 import LowConfidenceRescue from '@/components/results/LowConfidenceRescue';
 import ResultActions from '@/components/results/ResultActions';
 
-// Simple size ladder for fit-adjusted recommendations
 const SIZE_LADDER = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL'];
 
 function shiftSize(size: string, delta: number): string {
   const idx = SIZE_LADDER.indexOf(size);
   if (idx === -1) return size;
-  const newIdx = Math.max(0, Math.min(SIZE_LADDER.length - 1, idx + delta));
-  return SIZE_LADDER[newIdx];
+  return SIZE_LADDER[Math.max(0, Math.min(SIZE_LADDER.length - 1, idx + delta))];
 }
 
 const Results = () => {
@@ -32,9 +30,7 @@ const Results = () => {
   const [saved, setSaved] = useState(false);
   const [confidence, setConfidence] = useState(result?.confidence || 'medium');
 
-  useEffect(() => {
-    if (result) trackEvent('results_viewed');
-  }, [result]);
+  useEffect(() => { if (result) trackEvent('results_viewed'); }, [result]);
 
   const adjustedSize = useMemo(() => {
     if (!result) return '';
@@ -44,22 +40,12 @@ const Results = () => {
     return base;
   }, [fitPref, result]);
 
-  const alternatives = useMemo(() => ({
-    sizeDown: shiftSize(adjustedSize, -1),
-    sizeUp: shiftSize(adjustedSize, 1),
-  }), [adjustedSize]);
+  const alternatives = useMemo(() => ({ sizeDown: shiftSize(adjustedSize, -1), sizeUp: shiftSize(adjustedSize, 1) }), [adjustedSize]);
 
-  if (!result) {
-    navigate('/', { replace: true });
-    return null;
-  }
+  if (!result) { navigate('/', { replace: true }); return null; }
 
   const measurements: Record<string, MeasurementRange> = {
-    chest: result.chest,
-    waist: result.waist,
-    hips: result.hips,
-    inseam: result.inseam,
-    shoulder: result.shoulder,
+    chest: result.chest, waist: result.waist, hips: result.hips, inseam: result.inseam, shoulder: result.shoulder,
   };
 
   const handleSave = () => {
@@ -67,60 +53,30 @@ const Results = () => {
     history.unshift(result);
     localStorage.setItem('dripcheck_scans', JSON.stringify(history));
     setSaved(true);
-    toast({ title: 'Saved!', description: 'Body profile saved to your device.' });
+    toast({ title: 'Saved!', description: 'Body profile saved.' });
   };
 
-  const handleDelete = () => {
-    toast({ title: 'Deleted', description: 'Photos removed from this session.' });
-    navigate('/');
-  };
+  const handleDelete = () => { toast({ title: 'Deleted', description: 'Photos removed.' }); navigate('/'); };
 
   const handleCalibrate = (data: { type: 'waist'; value: number } | { type: 'brand'; brand: string; size: string }) => {
-    // Upgrade confidence after calibration
     setConfidence('medium');
-    toast({ title: 'Updated!', description: 'Confidence improved with your input.' });
+    toast({ title: 'Updated!', description: 'Confidence improved.' });
   };
 
   return (
-    <div className="min-h-screen bg-background px-5 py-5 pb-10">
+    <div className="min-h-screen bg-background px-4 py-4 pb-8">
       <div className="max-w-sm mx-auto">
-        {/* Header */}
-        <div className="flex items-center mb-5">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-9 w-9 rounded-xl">
+        <div className="flex items-center mb-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </div>
-
-        {/* Size recommendation hero */}
-        <SizeHero
-          retailer={state?.retailer}
-          category={state?.category}
-          recommendedSize={adjustedSize}
-          confidence={confidence}
-          whyLine={result.whyLine || 'Based on your scan estimate + retailer size chart + fit preference'}
-        />
-
-        {/* Fit preference toggle */}
+        <SizeHero retailer={state?.retailer} category={state?.category} recommendedSize={adjustedSize} confidence={confidence} whyLine={result.whyLine || 'Based on scan + retailer chart + fit preference'} />
         <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
-
-        {/* Alternatives */}
         <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} />
-
-        {/* Low confidence rescue */}
         {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
-
-        {/* Measurements */}
         <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
-
-        {/* Actions */}
-        <ResultActions
-          saved={saved}
-          scanDate={result.date}
-          onSave={handleSave}
-          onTryOn={() => navigate('/tryon', { state: { bodyProfile: result } })}
-          onNewScan={() => navigate('/capture')}
-          onDelete={handleDelete}
-        />
+        <ResultActions saved={saved} scanDate={result.date} onSave={handleSave} onTryOn={() => navigate('/tryon', { state: { bodyProfile: result } })} onNewScan={() => navigate('/capture')} onDelete={handleDelete} />
       </div>
     </div>
   );

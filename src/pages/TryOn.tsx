@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Upload, Shirt, Sparkles, Loader2, Share2, Shield, User, Save } from 'lucide-react';
+import { ArrowLeft, Shirt, Sparkles, Loader2, Share2, Shield, User, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -50,38 +50,21 @@ const TryOn = () => {
   };
 
   const handleTryOn = async () => {
-    if (!userPhoto) {
-      toast({ title: 'Photo required', description: 'Upload your photo first.', variant: 'destructive' });
-      return;
-    }
-    if (!clothingPhoto) {
-      toast({ title: 'Clothing required', description: 'Upload or select a clothing item.', variant: 'destructive' });
-      return;
-    }
+    if (!userPhoto) { toast({ title: 'Photo required', description: 'Upload your photo first.', variant: 'destructive' }); return; }
+    if (!clothingPhoto) { toast({ title: 'Clothing required', description: 'Upload or select a clothing item.', variant: 'destructive' }); return; }
     setLoading(true);
     setResultImage(null);
     setDescription(null);
-
     try {
-      const { data, error } = await supabase.functions.invoke('virtual-tryon', {
-        body: { userPhoto, clothingPhoto },
-      });
+      const { data, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto, clothingPhoto } });
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
-
       trackEvent('tryon_generated');
-
-      if (data.resultImage) {
-        setResultImage(data.resultImage);
-        if (user) autoSaveToProfile(data.resultImage);
-      } else if (data.description) {
-        setDescription(data.description);
-      }
+      if (data.resultImage) { setResultImage(data.resultImage); if (user) autoSaveToProfile(data.resultImage); }
+      else if (data.description) { setDescription(data.description); }
     } catch (err: any) {
       toast({ title: 'Try-on failed', description: err.message, variant: 'destructive' });
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   const uploadBase64ToStorage = async (base64: string, folder: string): Promise<string> => {
@@ -90,12 +73,8 @@ const TryOn = () => {
     const data = match ? match[2] : base64;
     const bytes = Uint8Array.from(atob(data), c => c.charCodeAt(0));
     const fileName = `${user!.id}/${folder}/${crypto.randomUUID()}.${ext}`;
-
-    const { error } = await supabase.storage.from('tryon-images').upload(fileName, bytes, {
-      contentType: match ? match[1] : 'image/jpeg',
-    });
+    const { error } = await supabase.storage.from('tryon-images').upload(fileName, bytes, { contentType: match ? match[1] : 'image/jpeg' });
     if (error) throw error;
-
     const { data: urlData } = supabase.storage.from('tryon-images').getPublicUrl(fileName);
     return urlData.publicUrl;
   };
@@ -107,61 +86,27 @@ const TryOn = () => {
         uploadBase64ToStorage(clothingPhoto!, 'clothing'),
         uploadBase64ToStorage(resultBase64, 'result'),
       ]);
-
-      const { error } = await supabase.from('tryon_posts').insert({
-        user_id: user!.id,
-        user_photo_url: userUrl,
-        clothing_photo_url: clothingUrl,
-        result_photo_url: resultUrl,
-        caption: null,
-        is_public: false,
-      });
-
+      const { error } = await supabase.from('tryon_posts').insert({ user_id: user!.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false });
       if (error) throw error;
       setAutoSaved(true);
       toast({ title: 'Saved!', description: 'Look saved to your profile.' });
-    } catch (err: any) {
-      console.error('Auto-save failed:', err);
-    }
+    } catch (err: any) { console.error('Auto-save failed:', err); }
   };
 
   const handleShare = async () => {
-    if (!user) {
-      toast({ title: 'Sign in required', description: 'Create an account to share.', variant: 'destructive' });
-      navigate('/auth');
-      return;
-    }
+    if (!user) { toast({ title: 'Sign in required', description: 'Create an account to share.', variant: 'destructive' }); navigate('/auth'); return; }
     setShared(true);
     try {
       if (autoSaved) {
-        const { data: latestPosts } = await supabase
-          .from('tryon_posts')
-          .select('id')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(1);
-
-        if (latestPosts && latestPosts.length > 0) {
-          await supabase
-            .from('tryon_posts')
-            .update({ caption: caption || null, is_public: isPublic })
-            .eq('id', latestPosts[0].id);
-        }
+        const { data: latestPosts } = await supabase.from('tryon_posts').select('id').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
+        if (latestPosts && latestPosts.length > 0) await supabase.from('tryon_posts').update({ caption: caption || null, is_public: isPublic }).eq('id', latestPosts[0].id);
       } else {
         const [userUrl, clothingUrl, resultUrl] = await Promise.all([
           uploadBase64ToStorage(userPhoto!, 'user'),
           uploadBase64ToStorage(clothingPhoto!, 'clothing'),
           uploadBase64ToStorage(resultImage!, 'result'),
         ]);
-
-        await supabase.from('tryon_posts').insert({
-          user_id: user.id,
-          user_photo_url: userUrl,
-          clothing_photo_url: clothingUrl,
-          result_photo_url: resultUrl,
-          caption: caption || null,
-          is_public: isPublic,
-        });
+        await supabase.from('tryon_posts').insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic });
       }
       toast({ title: isPublic ? 'Shared!' : 'Updated!', description: isPublic ? 'Your look is now in the community feed.' : 'Caption updated.' });
     } catch (err: any) {
@@ -171,132 +116,107 @@ const TryOn = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background px-6 py-6 pb-24">
+    <div className="min-h-screen bg-background px-4 pt-4 pb-20">
       <div className="max-w-sm mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
-            <ArrowLeft className="h-5 w-5" />
+        <div className="flex items-center gap-2 mb-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg">
+            <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-xl font-bold text-foreground">Virtual Try-On</h1>
+          <h1 className="text-base font-bold text-foreground">Virtual Try-On</h1>
         </div>
 
-        {/* Saved body profile banner */}
+        {/* Saved body profile */}
         {(hasSavedProfile || bodyProfile) && (
-          <Card className="rounded-2xl mb-4 border-primary/20 bg-primary/5">
-            <CardContent className="p-3 flex items-center justify-between">
-              <div>
-                <p className="text-xs font-bold text-primary">✓ Saved Body Profile</p>
-                <p className="text-[10px] text-foreground/60">Your scan data will improve try-on accuracy.</p>
-              </div>
-              {!bodyProfile && (
-                <Button variant="ghost" size="sm" className="text-xs text-primary" onClick={() => navigate('/capture')}>
-                  Re-scan
-                </Button>
-              )}
-            </CardContent>
-          </Card>
+          <div className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-lg px-3 py-2 mb-3">
+            <div>
+              <p className="text-[11px] font-bold text-primary flex items-center gap-1"><Check className="h-3 w-3" /> Body Profile Saved</p>
+              <p className="text-[10px] text-muted-foreground">Improves try-on accuracy</p>
+            </div>
+            {!bodyProfile && (
+              <Button variant="ghost" size="sm" className="text-[11px] text-primary h-7 px-2" onClick={() => navigate('/capture')}>Re-scan</Button>
+            )}
+          </div>
         )}
 
-        {/* Upload section */}
-        <div className="grid grid-cols-2 gap-3 mb-4">
+        {/* Upload cards */}
+        <div className="grid grid-cols-2 gap-2 mb-3">
           <input ref={userPhotoRef} type="file" accept="image/*" onChange={handleFileSelect(setUserPhoto)} className="hidden" />
           <input ref={clothingPhotoRef} type="file" accept="image/*" onChange={handleFileSelect(setClothingPhoto)} className="hidden" />
 
-          <Card className="rounded-2xl cursor-pointer overflow-hidden" onClick={() => userPhotoRef.current?.click()}>
-            <CardContent className="p-0 aspect-[3/4] flex items-center justify-center">
+          <button onClick={() => userPhotoRef.current?.click()} className="rounded-xl overflow-hidden border border-border bg-card active:scale-[0.97] transition-transform">
+            <div className="aspect-[3/4] flex items-center justify-center">
               {userPhoto ? (
                 <img src={userPhoto} alt="You" className="w-full h-full object-cover" />
               ) : (
-                <div className="flex flex-col items-center gap-2 text-muted-foreground p-4">
-                  <User className="h-8 w-8" />
-                  <p className="text-sm text-center font-semibold">Your Photo</p>
-                  <p className="text-xs text-center font-medium text-foreground/60">Full body, front facing</p>
+                <div className="flex flex-col items-center gap-1.5 text-muted-foreground p-3">
+                  <User className="h-6 w-6" />
+                  <p className="text-[11px] font-semibold">Your Photo</p>
+                  <p className="text-[10px] text-muted-foreground">Full body, front</p>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </button>
 
-          <Card className="rounded-2xl cursor-pointer overflow-hidden" onClick={() => clothingPhotoRef.current?.click()}>
-            <CardContent className="p-0 aspect-[3/4] flex items-center justify-center">
+          <button onClick={() => clothingPhotoRef.current?.click()} className="rounded-xl overflow-hidden border border-border bg-card active:scale-[0.97] transition-transform">
+            <div className="aspect-[3/4] flex items-center justify-center">
               {clothingPhoto ? (
                 <img src={clothingPhoto} alt="Clothing" className="w-full h-full object-cover" />
               ) : (
-                <div className="flex flex-col items-center gap-2 text-muted-foreground p-4">
-                  <Shirt className="h-8 w-8" />
-                  <p className="text-sm text-center font-semibold">Clothing Item</p>
-                  <p className="text-xs text-center font-medium text-foreground/60">Upload or pick below</p>
+                <div className="flex flex-col items-center gap-1.5 text-muted-foreground p-3">
+                  <Shirt className="h-6 w-6" />
+                  <p className="text-[11px] font-semibold">Clothing Item</p>
+                  <p className="text-[10px] text-muted-foreground">Upload or pick</p>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </button>
         </div>
 
-        {/* Mini catalog — styled as cards, not emojis */}
+        {/* Quick picks */}
         {!clothingPhoto && (
-          <div className="mb-4">
-            <p className="text-xs font-bold text-foreground/60 mb-2 uppercase tracking-wider">Quick picks</p>
-            <div className="grid grid-cols-4 gap-2">
+          <div className="mb-3">
+            <p className="section-label mb-1.5">Quick picks</p>
+            <div className="grid grid-cols-4 gap-1.5">
               {DEMO_OUTFITS.map(o => (
                 <button
                   key={o.label}
-                  className="flex flex-col items-center p-2 rounded-xl border border-border hover:border-primary/30 transition-all"
+                  className="flex flex-col items-center p-1.5 rounded-lg border border-border hover:border-primary/30 transition-colors active:scale-95"
                   onClick={() => toast({ title: 'Coming soon', description: `${o.label} catalog coming soon!` })}
                 >
-                  <div className={`w-full aspect-square rounded-lg ${o.color} mb-1.5 flex items-center justify-center`}>
-                    <Shirt className="h-5 w-5 text-foreground/30" />
+                  <div className={`w-full aspect-square rounded-md ${o.color} mb-1 flex items-center justify-center`}>
+                    <Shirt className="h-4 w-4 text-foreground/20" />
                   </div>
-                  <p className="text-[10px] text-foreground/60 font-medium leading-tight text-center">{o.label}</p>
+                  <p className="text-[9px] text-muted-foreground font-medium leading-tight text-center">{o.label}</p>
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* Generate button */}
-        <Button
-          className="w-full h-14 rounded-2xl text-base mb-4"
-          onClick={handleTryOn}
-          disabled={loading}
-        >
-          {loading ? (
-            <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Generating…</>
-          ) : (
-            <><Sparkles className="mr-2 h-5 w-5" /> Generate Try-On</>
-          )}
+        {/* Generate */}
+        <Button className="w-full h-11 rounded-lg text-sm font-bold mb-2 btn-luxury text-primary-foreground active:scale-[0.97] transition-transform" onClick={handleTryOn} disabled={loading}>
+          {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating…</> : <><Sparkles className="mr-2 h-4 w-4" /> Generate Try-On</>}
         </Button>
 
-        <p className="text-[11px] text-foreground/60 text-center flex items-center justify-center gap-1 mb-4">
-          <Shield className="h-3 w-3" /> Private by default • delete anytime
+        <p className="text-[10px] text-muted-foreground text-center flex items-center justify-center gap-1 mb-3">
+          <Shield className="h-3 w-3" /> Private · delete anytime
         </p>
 
         {/* Result */}
         {resultImage && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-            <Card className="rounded-2xl overflow-hidden mb-4">
-              <CardContent className="p-0">
-                <img src={resultImage} alt="Try-on result" className="w-full" />
-              </CardContent>
-            </Card>
-
-            <div className="space-y-3">
-              <Textarea
-                placeholder="Add a caption…"
-                value={caption}
-                onChange={e => setCaption(e.target.value)}
-                className="rounded-xl resize-none"
-                rows={2}
-              />
-              <div className="flex items-center justify-between bg-card rounded-2xl p-3 border border-border">
-                <span className="text-sm font-semibold text-foreground/70">Share to community</span>
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+            <div className="rounded-xl overflow-hidden border border-border mb-3">
+              <img src={resultImage} alt="Try-on result" className="w-full" />
+            </div>
+            <div className="space-y-2">
+              <Textarea placeholder="Add a caption…" value={caption} onChange={e => setCaption(e.target.value)} className="rounded-lg resize-none text-sm" rows={2} />
+              <div className="flex items-center justify-between bg-card rounded-lg p-2.5 border border-border">
+                <span className="text-[13px] font-semibold text-foreground/70">Share to community</span>
                 <Switch checked={isPublic} onCheckedChange={setIsPublic} />
               </div>
-              <Button
-                className="w-full h-12 rounded-2xl"
-                onClick={handleShare}
-                disabled={shared}
-              >
-                <Share2 className="mr-2 h-4 w-4" />
+              <Button className="w-full h-10 rounded-lg btn-luxury text-primary-foreground text-sm" onClick={handleShare} disabled={shared}>
+                <Share2 className="mr-1.5 h-3.5 w-3.5" />
                 {shared ? 'Shared!' : isPublic ? 'Share to Community' : 'Save to My Posts'}
               </Button>
             </div>
@@ -304,11 +224,9 @@ const TryOn = () => {
         )}
 
         {description && !resultImage && (
-          <Card className="rounded-2xl">
-            <CardContent className="p-4">
-              <p className="text-sm font-semibold text-foreground/70">{description}</p>
-            </CardContent>
-          </Card>
+          <div className="bg-card border border-border rounded-lg p-3">
+            <p className="text-[13px] text-foreground/80">{description}</p>
+          </div>
         )}
       </div>
       <BottomTabBar />

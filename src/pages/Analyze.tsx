@@ -6,11 +6,11 @@ import { Button } from '@/components/ui/button';
 import { PhotoSet, BodyScanResult, FitPreference, ReferenceObject } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
 
-const ANALYSIS_MESSAGES = [
+const MESSAGES = [
   'Detecting body landmarks…',
-  'Cross-referencing front and side views…',
-  'Estimating measurement ranges…',
-  'Matching retailer size charts…',
+  'Cross-referencing views…',
+  'Estimating measurements…',
+  'Matching size charts…',
   'Generating recommendations…',
 ];
 
@@ -25,19 +25,12 @@ const Analyze = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as AnalyzeState | undefined;
-  const [messageIndex, setMessageIndex] = useState(0);
+  const [msgIdx, setMsgIdx] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!state?.photos?.front || !state?.photos?.side) {
-      navigate('/capture', { replace: true });
-      return;
-    }
-
-    const interval = setInterval(() => {
-      setMessageIndex(prev => (prev + 1) % ANALYSIS_MESSAGES.length);
-    }, 2500);
-
+    if (!state?.photos?.front || !state?.photos?.side) { navigate('/capture', { replace: true }); return; }
+    const interval = setInterval(() => setMsgIdx(p => (p + 1) % MESSAGES.length), 2200);
     analyzePhotos();
     return () => clearInterval(interval);
   }, []);
@@ -45,60 +38,36 @@ const Analyze = () => {
   const analyzePhotos = async () => {
     try {
       const { data, error: fnError } = await supabase.functions.invoke('analyze-body', {
-        body: {
-          frontPhoto: state!.photos.front,
-          sidePhoto: state!.photos.side,
-          heightCm: state!.heightCm,
-          referenceObject: state!.referenceObject,
-          fitPreference: state!.fitPreference,
-        },
+        body: { frontPhoto: state!.photos.front, sidePhoto: state!.photos.side, heightCm: state!.heightCm, referenceObject: state!.referenceObject, fitPreference: state!.fitPreference },
       });
-
       if (fnError) throw new Error(fnError.message);
       if (data?.error) throw new Error(data.error);
-
-      const result: BodyScanResult = {
-        id: crypto.randomUUID(),
-        date: new Date().toISOString(),
-        ...data,
-      };
-
-      navigate('/results', { state: { result }, replace: true });
+      navigate('/results', { state: { result: { id: crypto.randomUUID(), date: new Date().toISOString(), ...data } }, replace: true });
     } catch (err: any) {
       console.error('Analysis failed:', err);
-      setError(err.message || 'Analysis failed. Please try again.');
+      setError(err.message || 'Analysis failed.');
     }
   };
 
   if (error) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
-        <AlertCircle className="h-12 w-12 text-destructive mb-4" />
-        <h2 className="text-xl font-bold text-foreground mb-2">Analysis Failed</h2>
-        <p className="text-sm font-semibold text-foreground/80 text-center mb-6">{error}</p>
-        <Button onClick={() => navigate('/capture', { replace: true })} className="rounded-2xl">
-          Try Again
-        </Button>
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5">
+        <AlertCircle className="h-10 w-10 text-destructive mb-3" />
+        <h2 className="text-lg font-bold text-foreground mb-1.5">Analysis Failed</h2>
+        <p className="text-[13px] text-muted-foreground text-center mb-5 max-w-[240px]">{error}</p>
+        <Button onClick={() => navigate('/capture', { replace: true })} className="rounded-lg btn-luxury text-primary-foreground h-10 px-5 text-sm">Try Again</Button>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-      >
-        <Loader2 className="h-12 w-12 text-primary" />
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5">
+      <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}>
+        <Loader2 className="h-10 w-10 text-primary" />
       </motion.div>
-      <h2 className="text-xl font-bold text-foreground mt-6 mb-3">Analyzing Your Photos</h2>
-      <motion.p
-        key={messageIndex}
-        initial={{ opacity: 0, y: 5 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-sm font-semibold text-foreground/70 text-center"
-      >
-        {ANALYSIS_MESSAGES[messageIndex]}
+      <h2 className="text-lg font-bold text-foreground mt-5 mb-2">Analyzing Photos</h2>
+      <motion.p key={msgIdx} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] text-muted-foreground text-center">
+        {MESSAGES[msgIdx]}
       </motion.p>
     </div>
   );
