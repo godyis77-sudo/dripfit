@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { Save, Share2, ArrowLeft, Check, Shirt, Trash2, Shield, ChevronDown, ChevronUp } from 'lucide-react';
 import { BodyScanResult, MEASUREMENT_LABELS } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { trackEvent } from '@/lib/analytics';
 
 const CM_TO_IN = 0.3937;
 
@@ -31,6 +32,10 @@ const Results = () => {
   const [saved, setSaved] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
 
+  useEffect(() => {
+    if (result) trackEvent('results_viewed');
+  }, []);
+
   if (!result) {
     navigate('/', { replace: true });
     return null;
@@ -45,7 +50,6 @@ const Results = () => {
   const measurementKeys = ['shoulder', 'chest', 'waist', 'hips', 'inseam'] as const;
 
   const handleSave = () => {
-    // Save to localStorage for now
     const history = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]');
     history.unshift(result);
     localStorage.setItem('dripcheck_scans', JSON.stringify(history));
@@ -62,7 +66,7 @@ const Results = () => {
     const text = measurementKeys
       .map(k => `${MEASUREMENT_LABELS[k]}: ${formatRange(result[k])} ${unitLabel}`)
       .join('\n');
-    const shareText = `DripCheck Results\nRecommended: ${result.recommendedSize}\nConfidence: ${result.confidence}\n\n${text}\nHeight: ${useCm ? result.heightCm : (result.heightCm * CM_TO_IN).toFixed(1)} ${unitLabel}`;
+    const shareText = `DRIP FIT Results\nRecommended: ${result.recommendedSize}\nConfidence: ${result.confidence}\n\n${text}\nHeight: ${useCm ? result.heightCm : (result.heightCm * CM_TO_IN).toFixed(1)} ${unitLabel}`;
 
     if (navigator.share) {
       await navigator.share({ title: 'My Size Results', text: shareText });
@@ -87,7 +91,7 @@ const Results = () => {
         {/* Main recommendation */}
         <Card className="rounded-2xl mb-4 bg-primary/5 border-primary/20">
           <CardContent className="p-5 text-center">
-            <p className="text-xs font-semibold text-foreground/70 mb-1">Recommended Size</p>
+            <p className="text-xs font-semibold text-foreground/60 mb-1">Recommended Size</p>
             <p className="text-4xl font-bold text-primary mb-2">{result.recommendedSize}</p>
             <div className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1 ${confidenceColors[result.confidence]}`}>
               <div className={`h-2 w-2 rounded-full ${confidenceDotColors[result.confidence]}`} />
@@ -100,16 +104,16 @@ const Results = () => {
         <div className="grid grid-cols-2 gap-3 mb-4">
           <Card className="rounded-2xl">
             <CardContent className="p-3 text-center">
-              <p className="text-[10px] font-semibold text-muted-foreground">Fitted</p>
+              <p className="text-[10px] font-semibold text-foreground/60">Fitted</p>
               <p className="text-lg font-bold text-foreground">{result.alternatives.sizeDown}</p>
-              <p className="text-[10px] text-muted-foreground">Size down</p>
+              <p className="text-[10px] text-foreground/50">Size down</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl">
             <CardContent className="p-3 text-center">
-              <p className="text-[10px] font-semibold text-muted-foreground">Relaxed</p>
+              <p className="text-[10px] font-semibold text-foreground/60">Relaxed</p>
               <p className="text-lg font-bold text-foreground">{result.alternatives.sizeUp}</p>
-              <p className="text-[10px] text-muted-foreground">Size up</p>
+              <p className="text-[10px] text-foreground/50">Size up</p>
             </CardContent>
           </Card>
         </div>
@@ -125,17 +129,17 @@ const Results = () => {
 
         {/* Unit toggle + measurements */}
         <div className="flex items-center justify-between mb-3">
-          <p className="text-sm font-bold text-foreground">Measurement Estimates</p>
+          <p className="text-sm font-bold text-foreground">Estimated Measurements</p>
           <div className="flex items-center gap-2 text-xs">
-            <span className={useCm ? 'text-primary font-bold' : 'text-muted-foreground'}>cm</span>
+            <span className={useCm ? 'text-primary font-bold' : 'text-foreground/50'}>cm</span>
             <Switch checked={!useCm} onCheckedChange={v => setUseCm(!v)} />
-            <span className={!useCm ? 'text-primary font-bold' : 'text-muted-foreground'}>in</span>
+            <span className={!useCm ? 'text-primary font-bold' : 'text-foreground/50'}>in</span>
           </div>
         </div>
 
         <button
           onClick={() => setShowDetails(!showDetails)}
-          className="w-full flex items-center justify-between text-sm text-muted-foreground mb-3"
+          className="w-full flex items-center justify-between text-sm text-foreground/60 mb-3"
         >
           <span>{showDetails ? 'Hide ranges' : 'Show measurement ranges'}</span>
           {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -156,10 +160,10 @@ const Results = () => {
               >
                 <Card className="rounded-2xl">
                   <CardContent className="p-3">
-                    <p className="text-[10px] font-semibold text-foreground/70 mb-1">{MEASUREMENT_LABELS[key]}</p>
+                    <p className="text-[10px] font-semibold text-foreground/60 mb-1">{MEASUREMENT_LABELS[key]}</p>
                     <p className="text-lg font-bold text-foreground">
                       {formatRange(result[key])}
-                      <span className="text-xs font-normal text-muted-foreground ml-1">{unitLabel}</span>
+                      <span className="text-xs font-normal text-foreground/50 ml-1">{unitLabel}</span>
                     </p>
                   </CardContent>
                 </Card>
@@ -167,10 +171,10 @@ const Results = () => {
             ))}
             <Card className="rounded-2xl">
               <CardContent className="p-3">
-                <p className="text-[10px] font-semibold text-foreground/70 mb-1">Height</p>
+                <p className="text-[10px] font-semibold text-foreground/60 mb-1">Height</p>
                 <p className="text-lg font-bold text-foreground">
                   {useCm ? result.heightCm.toFixed(0) : (result.heightCm * CM_TO_IN).toFixed(1)}
-                  <span className="text-xs font-normal text-muted-foreground ml-1">{unitLabel}</span>
+                  <span className="text-xs font-normal text-foreground/50 ml-1">{unitLabel}</span>
                 </p>
               </CardContent>
             </Card>
@@ -205,7 +209,7 @@ const Results = () => {
           </Button>
           <Button
             variant="ghost"
-            className="w-full text-muted-foreground"
+            className="w-full text-foreground/60"
             onClick={() => navigate('/capture')}
           >
             Scan Again
@@ -217,7 +221,7 @@ const Results = () => {
           >
             <Trash2 className="mr-2 h-4 w-4" /> Delete Photos
           </Button>
-          <p className="text-[11px] text-muted-foreground text-center flex items-center justify-center gap-1">
+          <p className="text-[11px] text-foreground/60 text-center flex items-center justify-center gap-1">
             <Shield className="h-3 w-3" /> Private by default • delete anytime
           </p>
         </div>

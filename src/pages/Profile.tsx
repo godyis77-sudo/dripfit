@@ -4,11 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Ruler, Shirt, Crown, Trash2, Shield, Download, Settings } from 'lucide-react';
+import { LogOut, Shirt, Crown, Trash2, Shield, Download, Settings, Ruler } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { getFitPreference, setFitPreference } from '@/lib/session';
-import type { FitPreference } from '@/lib/types';
+import type { FitPreference, BodyScanResult } from '@/lib/types';
+import { SUPPORTED_RETAILERS } from '@/lib/types';
 import BottomTabBar from '@/components/BottomTabBar';
 import { useToast } from '@/hooks/use-toast';
 
@@ -30,6 +31,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [useCm, setUseCm] = useState(true);
   const [fit, setFit] = useState<FitPreference>(getFitPreference());
+  const [savedProfile, setSavedProfile] = useState<BodyScanResult | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -37,6 +39,7 @@ const Profile = () => {
       return;
     }
     fetchProfile();
+    loadSavedProfile();
   }, [user]);
 
   const fetchProfile = async () => {
@@ -52,10 +55,23 @@ const Profile = () => {
     setLoading(false);
   };
 
+  const loadSavedProfile = () => {
+    try {
+      const scans = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]');
+      if (scans.length > 0) setSavedProfile(scans[0]);
+    } catch { /* ignore */ }
+  };
+
   const handleFitChange = (newFit: FitPreference) => {
     setFit(newFit);
     setFitPreference(newFit);
     toast({ title: 'Updated', description: `Default fit set to ${newFit}.` });
+  };
+
+  const handleDeletePhotos = () => {
+    localStorage.removeItem('dripcheck_scans');
+    setSavedProfile(null);
+    toast({ title: 'Deleted', description: 'Saved scan data and photos removed.' });
   };
 
   const handleDeleteAccount = () => {
@@ -68,7 +84,7 @@ const Profile = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'dripcheck-data.json';
+    a.download = 'dripfit-data.json';
     a.click();
     URL.revokeObjectURL(url);
     toast({ title: 'Exported', description: 'Your data has been downloaded.' });
@@ -156,9 +172,9 @@ const Profile = () => {
                 <CardContent className="p-4 flex items-center justify-between">
                   <span className="text-sm font-bold text-foreground">Default unit</span>
                   <div className="flex items-center gap-2 text-xs">
-                    <span className={useCm ? 'text-primary font-bold' : 'text-muted-foreground'}>cm</span>
+                    <span className={useCm ? 'text-primary font-bold' : 'text-foreground/50'}>cm</span>
                     <Switch checked={!useCm} onCheckedChange={v => setUseCm(!v)} />
-                    <span className={!useCm ? 'text-primary font-bold' : 'text-muted-foreground'}>in</span>
+                    <span className={!useCm ? 'text-primary font-bold' : 'text-foreground/50'}>in</span>
                   </div>
                 </CardContent>
               </Card>
@@ -183,20 +199,75 @@ const Profile = () => {
                 </CardContent>
               </Card>
 
+              {/* Saved body profile summary */}
+              <Card className="rounded-2xl">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Ruler className="h-4 w-4 text-primary" />
+                    <p className="text-sm font-bold text-foreground">Saved Body Profile</p>
+                  </div>
+                  {savedProfile ? (
+                    <div className="space-y-2">
+                      <div className="grid grid-cols-3 gap-2 text-center">
+                        <div>
+                          <p className="text-[10px] text-foreground/50">Size</p>
+                          <p className="text-sm font-bold text-primary">{savedProfile.recommendedSize}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-foreground/50">Confidence</p>
+                          <p className="text-sm font-bold text-foreground capitalize">{savedProfile.confidence}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-foreground/50">Height</p>
+                          <p className="text-sm font-bold text-foreground">{savedProfile.heightCm} cm</p>
+                        </div>
+                      </div>
+                      <Button variant="outline" size="sm" className="w-full rounded-xl text-xs mt-2" onClick={() => navigate('/capture')}>
+                        Re-scan
+                      </Button>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-sm text-foreground/50 mb-2">No saved scan yet.</p>
+                      <Button variant="outline" size="sm" className="rounded-xl text-xs" onClick={() => navigate('/capture')}>
+                        Start Scan
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Preferred retailers */}
+              <Card className="rounded-2xl">
+                <CardContent className="p-4">
+                  <p className="text-sm font-bold text-foreground mb-3">Supported Retailers</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {SUPPORTED_RETAILERS.map(r => (
+                      <span key={r} className="px-2.5 py-1 rounded-full bg-muted text-[11px] font-semibold text-foreground/60">
+                        {r}
+                      </span>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Privacy */}
               <Card className="rounded-2xl">
                 <CardContent className="p-4 space-y-3">
-                  <p className="text-sm font-bold text-foreground">Privacy</p>
+                  <p className="text-sm font-bold text-foreground">Privacy & Data</p>
                   <Button variant="outline" className="w-full rounded-xl justify-start" onClick={handleExport}>
                     <Download className="mr-2 h-4 w-4" /> Export my data
                   </Button>
-                  <Button variant="outline" className="w-full rounded-xl justify-start text-destructive/60 hover:text-destructive" onClick={handleDeleteAccount}>
+                  <Button variant="outline" className="w-full rounded-xl justify-start text-destructive/70 hover:text-destructive" onClick={handleDeletePhotos}>
+                    <Trash2 className="mr-2 h-4 w-4" /> Delete saved photos & scans
+                  </Button>
+                  <Button variant="outline" className="w-full rounded-xl justify-start text-destructive/70 hover:text-destructive" onClick={handleDeleteAccount}>
                     <Trash2 className="mr-2 h-4 w-4" /> Delete account & data
                   </Button>
                 </CardContent>
               </Card>
 
-              <p className="text-[11px] text-muted-foreground text-center flex items-center justify-center gap-1">
+              <p className="text-[11px] text-foreground/60 text-center flex items-center justify-center gap-1">
                 <Shield className="h-3 w-3" /> Private by default • delete anytime
               </p>
             </motion.div>

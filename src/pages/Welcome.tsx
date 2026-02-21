@@ -2,16 +2,19 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import { Camera, Shirt, Crown, LogIn, LogOut, Shield, ArrowRight } from 'lucide-react';
+import { Camera, Shirt, Crown, LogIn, LogOut, Shield, ArrowRight, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { isOnboarded } from '@/lib/session';
+import { trackEvent } from '@/lib/analytics';
 import BottomTabBar from '@/components/BottomTabBar';
+import { SUPPORTED_RETAILERS } from '@/lib/types';
 
 const Welcome = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
 
   const handleStartScan = () => {
+    trackEvent('home_start_scan_click');
     if (isOnboarded()) {
       navigate('/capture');
     } else {
@@ -57,12 +60,12 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center max-w-lg mb-8"
+          className="text-center max-w-lg mb-6"
         >
           <h1 className="font-display text-3xl font-bold tracking-wide mb-3 leading-[1.15]">
             Find your <span className="gradient-drip-text">best size</span> in 30 seconds.
           </h1>
-          <p className="text-foreground/60 text-sm font-medium leading-relaxed max-w-xs mx-auto">
+          <p className="text-foreground/70 text-sm font-medium leading-relaxed max-w-xs mx-auto">
             Scan → estimate → match retailer charts → fitted / regular / relaxed.
           </p>
         </motion.div>
@@ -72,7 +75,7 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="w-full max-w-sm mb-4"
+          className="w-full max-w-sm mb-3"
         >
           <motion.div whileHover={{ y: -2 }} whileTap={{ y: 4, scale: 0.98 }} transition={{ type: 'spring', stiffness: 400, damping: 20 }}>
             <Button
@@ -83,6 +86,34 @@ const Welcome = () => {
               <Camera className="mr-2 h-5 w-5" /> Start Scan
             </Button>
           </motion.div>
+        </motion.div>
+
+        {/* Trust row */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="flex items-center gap-3 text-foreground/60 text-xs font-medium mb-6"
+        >
+          <span className="flex items-center gap-1"><CheckCircle className="h-3 w-3 text-primary" /> 10+ retailer charts</span>
+          <span className="text-border">•</span>
+          <span className="flex items-center gap-1"><CheckCircle className="h-3 w-3 text-primary" /> Confidence score</span>
+          <span className="text-border">•</span>
+          <span className="flex items-center gap-1"><CheckCircle className="h-3 w-3 text-primary" /> Alternatives</span>
+        </motion.div>
+
+        {/* Retailer chips */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.45 }}
+          className="flex flex-wrap justify-center gap-2 max-w-sm mb-8"
+        >
+          {SUPPORTED_RETAILERS.map(r => (
+            <span key={r} className="px-3 py-1 rounded-full bg-card border border-border/50 text-[11px] font-semibold text-foreground/70">
+              {r}
+            </span>
+          ))}
         </motion.div>
 
         {/* Secondary CTA */}
@@ -108,7 +139,7 @@ const Welcome = () => {
           transition={{ delay: 0.6, duration: 0.5 }}
           className="w-full max-w-sm mb-8"
         >
-          <p className="text-xs font-bold text-muted-foreground mb-3 uppercase tracking-wider">Sample Result Preview</p>
+          <p className="text-xs font-bold text-foreground/60 mb-3 uppercase tracking-wider">Sample Result Preview</p>
           <Card className="rounded-2xl border-border/30">
             <CardContent className="p-4">
               <div className="grid grid-cols-3 gap-3 mb-3">
@@ -118,14 +149,14 @@ const Welcome = () => {
                   { label: 'Hips', range: '98–104 cm' },
                 ].map(m => (
                   <div key={m.label} className="text-center">
-                    <p className="text-[10px] font-semibold text-muted-foreground">{m.label}</p>
+                    <p className="text-[10px] font-semibold text-foreground/60">{m.label}</p>
                     <p className="text-sm font-bold text-foreground">{m.range}</p>
                   </div>
                 ))}
               </div>
               <div className="flex items-center justify-between bg-primary/5 rounded-xl p-3">
                 <div>
-                  <p className="text-[10px] text-muted-foreground">Best Size at Zara</p>
+                  <p className="text-[10px] text-foreground/60">Best Size at Zara</p>
                   <p className="text-xl font-bold text-primary">M</p>
                 </div>
                 <div className="flex items-center gap-1 bg-primary/10 rounded-lg px-2 py-1">
@@ -169,7 +200,7 @@ const Welcome = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-          className="text-[11px] text-muted-foreground flex items-center gap-1 mb-6"
+          className="text-[11px] text-foreground/60 flex items-center gap-1 mb-6"
         >
           <Shield className="h-3 w-3" /> Private by default • delete anytime
         </motion.p>

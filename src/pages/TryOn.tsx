@@ -5,17 +5,18 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Upload, Shirt, Sparkles, Loader2, Share2, Image, Shield, User } from 'lucide-react';
+import { ArrowLeft, Upload, Shirt, Sparkles, Loader2, Share2, Shield, User, Save } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { trackEvent } from '@/lib/analytics';
 import BottomTabBar from '@/components/BottomTabBar';
 
 const DEMO_OUTFITS = [
-  { label: 'White Tee', emoji: '👕' },
-  { label: 'Denim Jacket', emoji: '🧥' },
-  { label: 'Black Hoodie', emoji: '🖤' },
-  { label: 'Blazer', emoji: '🤵' },
+  { label: 'White Tee', color: 'bg-card' },
+  { label: 'Denim Jacket', color: 'bg-blue-900/30' },
+  { label: 'Black Hoodie', color: 'bg-foreground/10' },
+  { label: 'Blazer', color: 'bg-muted' },
 ];
 
 const TryOn = () => {
@@ -25,6 +26,7 @@ const TryOn = () => {
   const { toast } = useToast();
   const userPhotoRef = useRef<HTMLInputElement>(null);
   const clothingPhotoRef = useRef<HTMLInputElement>(null);
+  const bodyProfile = (location.state as any)?.bodyProfile;
 
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
   const [clothingPhoto, setClothingPhoto] = useState<string | null>(null);
@@ -36,6 +38,8 @@ const TryOn = () => {
   const [shared, setShared] = useState(false);
   const [autoSaved, setAutoSaved] = useState(false);
 
+  const hasSavedProfile = !!localStorage.getItem('dripcheck_scans') && JSON.parse(localStorage.getItem('dripcheck_scans') || '[]').length > 0;
+
   const handleFileSelect = (setter: (v: string) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -46,7 +50,14 @@ const TryOn = () => {
   };
 
   const handleTryOn = async () => {
-    if (!userPhoto || !clothingPhoto) return;
+    if (!userPhoto) {
+      toast({ title: 'Photo required', description: 'Upload your photo first.', variant: 'destructive' });
+      return;
+    }
+    if (!clothingPhoto) {
+      toast({ title: 'Clothing required', description: 'Upload or select a clothing item.', variant: 'destructive' });
+      return;
+    }
     setLoading(true);
     setResultImage(null);
     setDescription(null);
@@ -57,6 +68,8 @@ const TryOn = () => {
       });
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
+
+      trackEvent('tryon_generated');
 
       if (data.resultImage) {
         setResultImage(data.resultImage);
@@ -168,6 +181,23 @@ const TryOn = () => {
           <h1 className="text-xl font-bold text-foreground">Virtual Try-On</h1>
         </div>
 
+        {/* Saved body profile banner */}
+        {(hasSavedProfile || bodyProfile) && (
+          <Card className="rounded-2xl mb-4 border-primary/20 bg-primary/5">
+            <CardContent className="p-3 flex items-center justify-between">
+              <div>
+                <p className="text-xs font-bold text-primary">✓ Saved Body Profile</p>
+                <p className="text-[10px] text-foreground/60">Your scan data will improve try-on accuracy.</p>
+              </div>
+              {!bodyProfile && (
+                <Button variant="ghost" size="sm" className="text-xs text-primary" onClick={() => navigate('/capture')}>
+                  Re-scan
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Upload section */}
         <div className="grid grid-cols-2 gap-3 mb-4">
           <input ref={userPhotoRef} type="file" accept="image/*" onChange={handleFileSelect(setUserPhoto)} className="hidden" />
@@ -202,19 +232,21 @@ const TryOn = () => {
           </Card>
         </div>
 
-        {/* Mini catalog */}
+        {/* Mini catalog — styled as cards, not emojis */}
         {!clothingPhoto && (
           <div className="mb-4">
-            <p className="text-xs font-bold text-muted-foreground mb-2 uppercase tracking-wider">Quick picks</p>
-            <div className="flex gap-2">
+            <p className="text-xs font-bold text-foreground/60 mb-2 uppercase tracking-wider">Quick picks</p>
+            <div className="grid grid-cols-4 gap-2">
               {DEMO_OUTFITS.map(o => (
                 <button
                   key={o.label}
-                  className="flex-1 p-3 rounded-xl border border-border hover:border-primary/30 text-center transition-all"
+                  className="flex flex-col items-center p-2 rounded-xl border border-border hover:border-primary/30 transition-all"
                   onClick={() => toast({ title: 'Coming soon', description: `${o.label} catalog coming soon!` })}
                 >
-                  <span className="text-lg">{o.emoji}</span>
-                  <p className="text-[10px] text-muted-foreground mt-1">{o.label}</p>
+                  <div className={`w-full aspect-square rounded-lg ${o.color} mb-1.5 flex items-center justify-center`}>
+                    <Shirt className="h-5 w-5 text-foreground/30" />
+                  </div>
+                  <p className="text-[10px] text-foreground/60 font-medium leading-tight text-center">{o.label}</p>
                 </button>
               ))}
             </div>
@@ -225,7 +257,7 @@ const TryOn = () => {
         <Button
           className="w-full h-14 rounded-2xl text-base mb-4"
           onClick={handleTryOn}
-          disabled={!userPhoto || !clothingPhoto || loading}
+          disabled={loading}
         >
           {loading ? (
             <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Generating…</>
@@ -234,7 +266,7 @@ const TryOn = () => {
           )}
         </Button>
 
-        <p className="text-[11px] text-muted-foreground text-center flex items-center justify-center gap-1 mb-4">
+        <p className="text-[11px] text-foreground/60 text-center flex items-center justify-center gap-1 mb-4">
           <Shield className="h-3 w-3" /> Private by default • delete anytime
         </p>
 
@@ -256,7 +288,7 @@ const TryOn = () => {
                 rows={2}
               />
               <div className="flex items-center justify-between bg-card rounded-2xl p-3 border border-border">
-                <span className="text-sm font-semibold text-foreground/80">Share to community</span>
+                <span className="text-sm font-semibold text-foreground/70">Share to community</span>
                 <Switch checked={isPublic} onCheckedChange={setIsPublic} />
               </div>
               <Button
@@ -274,7 +306,7 @@ const TryOn = () => {
         {description && !resultImage && (
           <Card className="rounded-2xl">
             <CardContent className="p-4">
-              <p className="text-sm font-semibold text-foreground/80">{description}</p>
+              <p className="text-sm font-semibold text-foreground/70">{description}</p>
             </CardContent>
           </Card>
         )}
