@@ -1,22 +1,30 @@
 import { useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Shirt, Sparkles, Loader2, Share2, Shield, User, Check } from 'lucide-react';
+import { ArrowLeft, Shirt, Sparkles, Loader2, Share2, Shield, User, Check, Link2, Info } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import BottomTabBar from '@/components/BottomTabBar';
 
+const CATEGORIES = [
+  { key: 'top', label: 'Top' },
+  { key: 'bottom', label: 'Bottom' },
+  { key: 'dress', label: 'Dress' },
+  { key: 'outerwear', label: 'Outerwear' },
+  { key: 'full', label: 'Full Look' },
+] as const;
+
 const DEMO_OUTFITS = [
-  { label: 'White Tee', color: 'bg-card' },
-  { label: 'Denim Jacket', color: 'bg-blue-900/30' },
-  { label: 'Black Hoodie', color: 'bg-foreground/10' },
-  { label: 'Blazer', color: 'bg-muted' },
+  { label: 'White Tee', category: 'top', color: 'bg-card' },
+  { label: 'Denim Jacket', category: 'outerwear', color: 'bg-blue-900/30' },
+  { label: 'Black Hoodie', category: 'top', color: 'bg-foreground/10' },
+  { label: 'Blazer', category: 'outerwear', color: 'bg-muted' },
 ];
 
 const TryOn = () => {
@@ -37,8 +45,11 @@ const TryOn = () => {
   const [isPublic, setIsPublic] = useState(false);
   const [shared, setShared] = useState(false);
   const [autoSaved, setAutoSaved] = useState(false);
+  const [productLink, setProductLink] = useState('');
+  const [category, setCategory] = useState<string>('top');
 
   const hasSavedProfile = !!localStorage.getItem('dripcheck_scans') && JSON.parse(localStorage.getItem('dripcheck_scans') || '[]').length > 0;
+  const canGenerate = !!userPhoto && !!clothingPhoto;
 
   const handleFileSelect = (setter: (v: string) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -50,8 +61,7 @@ const TryOn = () => {
   };
 
   const handleTryOn = async () => {
-    if (!userPhoto) { toast({ title: 'Photo required', description: 'Upload your photo first.', variant: 'destructive' }); return; }
-    if (!clothingPhoto) { toast({ title: 'Clothing required', description: 'Upload or select a clothing item.', variant: 'destructive' }); return; }
+    if (!canGenerate) return;
     setLoading(true);
     setResultImage(null);
     setDescription(null);
@@ -126,7 +136,7 @@ const TryOn = () => {
           <h1 className="text-base font-bold text-foreground">Virtual Try-On</h1>
         </div>
 
-        {/* Saved body profile */}
+        {/* Body profile badge */}
         {(hasSavedProfile || bodyProfile) && (
           <div className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-lg px-3 py-2 mb-3">
             <div>
@@ -139,44 +149,92 @@ const TryOn = () => {
           </div>
         )}
 
-        {/* Upload cards */}
+        {/* Upload zones */}
         <div className="grid grid-cols-2 gap-2 mb-3">
-          <input ref={userPhotoRef} type="file" accept="image/*" onChange={handleFileSelect(setUserPhoto)} className="hidden" />
-          <input ref={clothingPhotoRef} type="file" accept="image/*" onChange={handleFileSelect(setClothingPhoto)} className="hidden" />
+          <input ref={userPhotoRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileSelect(setUserPhoto)} className="hidden" />
+          <input ref={clothingPhotoRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileSelect(setClothingPhoto)} className="hidden" />
 
-          <button onClick={() => userPhotoRef.current?.click()} className="rounded-xl overflow-hidden border border-border bg-card active:scale-[0.97] transition-transform">
-            <div className="aspect-[3/4] flex items-center justify-center">
-              {userPhoto ? (
-                <img src={userPhoto} alt="You" className="w-full h-full object-cover" />
-              ) : (
-                <div className="flex flex-col items-center gap-1.5 text-muted-foreground p-3">
-                  <User className="h-6 w-6" />
-                  <p className="text-[11px] font-semibold">Your Photo</p>
-                  <p className="text-[10px] text-muted-foreground">Full body, front</p>
-                </div>
-              )}
-            </div>
-          </button>
+          {/* Your Photo */}
+          <div>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Your Photo</p>
+            <button onClick={() => userPhotoRef.current?.click()} className="w-full rounded-xl overflow-hidden border-2 border-dashed border-border bg-card active:scale-[0.97] transition-transform hover:border-primary/30">
+              <div className="aspect-[3/4] flex items-center justify-center">
+                {userPhoto ? (
+                  <img src={userPhoto} alt="You" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="flex flex-col items-center gap-1.5 text-muted-foreground p-3">
+                    <div className="h-10 w-10 rounded-full border-2 border-dashed border-border flex items-center justify-center">
+                      <User className="h-5 w-5" />
+                    </div>
+                    <p className="text-[11px] font-semibold text-foreground">Tap to upload</p>
+                    <p className="text-[9px] text-muted-foreground">Full body, front facing</p>
+                  </div>
+                )}
+              </div>
+            </button>
+            <p className="text-[9px] text-muted-foreground mt-1 text-center">JPG, PNG, WebP</p>
+          </div>
 
-          <button onClick={() => clothingPhotoRef.current?.click()} className="rounded-xl overflow-hidden border border-border bg-card active:scale-[0.97] transition-transform">
-            <div className="aspect-[3/4] flex items-center justify-center">
-              {clothingPhoto ? (
-                <img src={clothingPhoto} alt="Clothing" className="w-full h-full object-cover" />
-              ) : (
-                <div className="flex flex-col items-center gap-1.5 text-muted-foreground p-3">
-                  <Shirt className="h-6 w-6" />
-                  <p className="text-[11px] font-semibold">Clothing Item</p>
-                  <p className="text-[10px] text-muted-foreground">Upload or pick</p>
-                </div>
-              )}
-            </div>
-          </button>
+          {/* Clothing Item */}
+          <div>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Clothing Item</p>
+            <button onClick={() => clothingPhotoRef.current?.click()} className="w-full rounded-xl overflow-hidden border-2 border-dashed border-border bg-card active:scale-[0.97] transition-transform hover:border-primary/30">
+              <div className="aspect-[3/4] flex items-center justify-center">
+                {clothingPhoto ? (
+                  <img src={clothingPhoto} alt="Clothing" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="flex flex-col items-center gap-1.5 text-muted-foreground p-3">
+                    <div className="h-10 w-10 rounded-full border-2 border-dashed border-border flex items-center justify-center">
+                      <Shirt className="h-5 w-5" />
+                    </div>
+                    <p className="text-[11px] font-semibold text-foreground">Tap to upload</p>
+                    <p className="text-[9px] text-muted-foreground">Product photo or screenshot</p>
+                  </div>
+                )}
+              </div>
+            </button>
+            <p className="text-[9px] text-muted-foreground mt-1 text-center">JPG, PNG, WebP</p>
+          </div>
+        </div>
+
+        {/* Product link */}
+        <div className="mb-3">
+          <div className="flex items-center gap-1.5 mb-1">
+            <Link2 className="h-3 w-3 text-muted-foreground" />
+            <p className="text-[11px] text-muted-foreground">Paste product link <span className="text-[9px]">(optional)</span></p>
+          </div>
+          <Input
+            placeholder="https://zara.com/product/..."
+            value={productLink}
+            onChange={e => setProductLink(e.target.value)}
+            className="rounded-lg h-9 text-[12px]"
+          />
+        </div>
+
+        {/* Category selector */}
+        <div className="mb-3">
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Garment Category</p>
+          <div className="flex gap-1.5 flex-wrap">
+            {CATEGORIES.map(c => (
+              <button
+                key={c.key}
+                onClick={() => setCategory(c.key)}
+                className={`px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${
+                  category === c.key
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border text-muted-foreground hover:border-primary/30'
+                }`}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Quick picks */}
         {!clothingPhoto && (
           <div className="mb-3">
-            <p className="section-label mb-1.5">Quick picks</p>
+            <p className="section-label mb-1.5">Quick Picks</p>
             <div className="grid grid-cols-4 gap-1.5">
               {DEMO_OUTFITS.map(o => (
                 <button
@@ -185,7 +243,7 @@ const TryOn = () => {
                   onClick={() => toast({ title: 'Coming soon', description: `${o.label} catalog coming soon!` })}
                 >
                   <div className={`w-full aspect-square rounded-md ${o.color} mb-1 flex items-center justify-center`}>
-                    <Shirt className="h-4 w-4 text-foreground/20" />
+                    <Shirt className="h-5 w-5 text-foreground/15" />
                   </div>
                   <p className="text-[9px] text-muted-foreground font-medium leading-tight text-center">{o.label}</p>
                 </button>
@@ -195,9 +253,31 @@ const TryOn = () => {
         )}
 
         {/* Generate */}
-        <Button className="w-full h-11 rounded-lg text-sm font-bold mb-2 btn-luxury text-primary-foreground active:scale-[0.97] transition-transform" onClick={handleTryOn} disabled={loading}>
-          {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating…</> : <><Sparkles className="mr-2 h-4 w-4" /> Generate Try-On</>}
+        <Button
+          className="w-full h-11 rounded-lg text-sm font-bold mb-1.5 btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-40"
+          onClick={handleTryOn}
+          disabled={loading || !canGenerate}
+        >
+          {loading ? (
+            <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating…</>
+          ) : (
+            <><Sparkles className="mr-2 h-4 w-4" /> Generate Try-On</>
+          )}
         </Button>
+
+        {!canGenerate && !loading && (
+          <p className="text-[10px] text-muted-foreground text-center mb-1.5">
+            Upload both photos to generate.
+          </p>
+        )}
+
+        {/* Expectation note */}
+        <div className="flex items-start gap-1.5 bg-card border border-border rounded-lg px-3 py-2 mb-3">
+          <Info className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" />
+          <p className="text-[10px] text-muted-foreground leading-relaxed">
+            Preview only — exact drape, texture, and fit may vary from the actual garment.
+          </p>
+        </div>
 
         <p className="text-[10px] text-muted-foreground text-center flex items-center justify-center gap-1 mb-3">
           <Shield className="h-3 w-3" /> Private · delete anytime
