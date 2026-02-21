@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      body_scans: {
+        Row: {
+          chest_max: number
+          chest_min: number
+          confidence: string
+          created_at: string
+          front_photo_used: boolean
+          height_cm: number
+          hip_max: number
+          hip_min: number
+          id: string
+          inseam_max: number
+          inseam_min: number
+          recommended_size: string | null
+          reference_object: string | null
+          session_id: string | null
+          shoulder_max: number
+          shoulder_min: number
+          side_photo_used: boolean
+          user_id: string | null
+          waist_max: number
+          waist_min: number
+        }
+        Insert: {
+          chest_max: number
+          chest_min: number
+          confidence?: string
+          created_at?: string
+          front_photo_used?: boolean
+          height_cm: number
+          hip_max: number
+          hip_min: number
+          id?: string
+          inseam_max: number
+          inseam_min: number
+          recommended_size?: string | null
+          reference_object?: string | null
+          session_id?: string | null
+          shoulder_max: number
+          shoulder_min: number
+          side_photo_used?: boolean
+          user_id?: string | null
+          waist_max: number
+          waist_min: number
+        }
+        Update: {
+          chest_max?: number
+          chest_min?: number
+          confidence?: string
+          created_at?: string
+          front_photo_used?: boolean
+          height_cm?: number
+          hip_max?: number
+          hip_min?: number
+          id?: string
+          inseam_max?: number
+          inseam_min?: number
+          recommended_size?: string | null
+          reference_object?: string | null
+          session_id?: string | null
+          shoulder_max?: number
+          shoulder_min?: number
+          side_photo_used?: boolean
+          user_id?: string | null
+          waist_max?: number
+          waist_min?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -38,6 +107,101 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      size_chart_rows: {
+        Row: {
+          bust_max: number | null
+          bust_min: number | null
+          chart_id: string
+          chest_max: number | null
+          chest_min: number | null
+          hip_max: number | null
+          hip_min: number | null
+          id: string
+          inseam_max: number | null
+          inseam_min: number | null
+          shoulder_max: number | null
+          shoulder_min: number | null
+          size_label: string
+          waist_max: number | null
+          waist_min: number | null
+        }
+        Insert: {
+          bust_max?: number | null
+          bust_min?: number | null
+          chart_id: string
+          chest_max?: number | null
+          chest_min?: number | null
+          hip_max?: number | null
+          hip_min?: number | null
+          id?: string
+          inseam_max?: number | null
+          inseam_min?: number | null
+          shoulder_max?: number | null
+          shoulder_min?: number | null
+          size_label: string
+          waist_max?: number | null
+          waist_min?: number | null
+        }
+        Update: {
+          bust_max?: number | null
+          bust_min?: number | null
+          chart_id?: string
+          chest_max?: number | null
+          chest_min?: number | null
+          hip_max?: number | null
+          hip_min?: number | null
+          id?: string
+          inseam_max?: number | null
+          inseam_min?: number | null
+          shoulder_max?: number | null
+          shoulder_min?: number | null
+          size_label?: string
+          waist_max?: number | null
+          waist_min?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "size_chart_rows_chart_id_fkey"
+            columns: ["chart_id"]
+            isOneToOne: false
+            referencedRelation: "size_charts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      size_charts: {
+        Row: {
+          brand: string
+          category: string
+          created_at: string
+          gender: string
+          id: string
+          retailer: string
+          source_url: string | null
+          units: string
+        }
+        Insert: {
+          brand: string
+          category: string
+          created_at?: string
+          gender: string
+          id?: string
+          retailer: string
+          source_url?: string | null
+          units?: string
+        }
+        Update: {
+          brand?: string
+          category?: string
+          created_at?: string
+          gender?: string
+          id?: string
+          retailer?: string
+          source_url?: string | null
+          units?: string
         }
         Relationships: []
       }
@@ -117,6 +281,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_preferences: {
+        Row: {
+          calibration_brand: string | null
+          calibration_size: string | null
+          created_at: string
+          fit_preference: string
+          id: string
+          session_id: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          calibration_brand?: string | null
+          calibration_size?: string | null
+          created_at?: string
+          fit_preference?: string
+          id?: string
+          session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          calibration_brand?: string | null
+          calibration_size?: string | null
+          created_at?: string
+          fit_preference?: string
+          id?: string
+          session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {
