@@ -77,6 +77,7 @@ const Results = () => {
         {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
         <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
         <ResultActions saved={saved} scanDate={result.date} onSave={handleSave} onTryOn={() => navigate('/tryon', { state: { bodyProfile: result } })} onNewScan={() => navigate('/capture')} onDelete={handleDelete} />
+
       </div>
     </div>
   );

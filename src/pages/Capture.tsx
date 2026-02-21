@@ -116,7 +116,7 @@ const Capture = () => {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex-1">
-          <p className="text-[11px] font-medium text-muted-foreground mb-1.5">Body Scan</p>
+          <p className="text-[11px] font-medium text-muted-foreground mb-1.5">Scan</p>
           {/* Step indicators */}
           <div className="flex items-center gap-1">
             {FLOW_STEPS.map((s, i) => (
@@ -404,7 +404,7 @@ const Capture = () => {
             disabled={!allDone}
             onClick={handleAnalyze}
           >
-            Analyze My Body Scan
+            Analyze Scan
           </Button>
         )}
 

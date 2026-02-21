@@ -95,8 +95,8 @@ const SizeGuide = () => {
           {measurements.length === 0 ? (
             <Card className="rounded-xl"><CardContent className="p-3 text-center">
               <Ruler className="h-6 w-6 text-muted-foreground/30 mx-auto mb-1.5" />
-              <p className="text-[13px] text-muted-foreground mb-2">No measurements</p>
-              <Button size="sm" className="rounded-lg text-[12px] h-8" onClick={() => navigate('/capture')}>Take Measurements</Button>
+               <p className="text-[13px] text-muted-foreground mb-2">No scan data yet</p>
+               <Button size="sm" className="rounded-lg text-[12px] h-8" onClick={() => navigate('/capture')}>Start a Scan</Button>
             </CardContent></Card>
           ) : (
             <>

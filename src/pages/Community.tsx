@@ -151,9 +151,9 @@ const Community = () => {
           </div>
           <Button
             className="rounded-lg btn-luxury text-primary-foreground h-8 px-3 text-[11px] font-bold active:scale-95 transition-transform"
-            onClick={() => navigate('/try-on')}
+            onClick={() => navigate('/tryon')}
           >
-            <Sparkles className="mr-1 h-3 w-3" /> Post
+            <Sparkles className="mr-1 h-3 w-3" /> Post a Look
           </Button>
         </div>
 
@@ -194,9 +194,9 @@ const Community = () => {
               <Sparkles className="h-6 w-6 text-primary" />
             </div>
             <h2 className="font-display text-base font-bold mb-1.5">Be the First</h2>
-            <p className="text-[13px] text-muted-foreground max-w-[200px] mb-4">Post your try-on and get real feedback.</p>
-            <Button className="rounded-lg btn-luxury text-primary-foreground h-10 px-5 text-sm font-bold" onClick={() => navigate('/try-on')}>
-              <Shirt className="mr-1.5 h-4 w-4" /> Try On Now
+            <p className="text-[13px] text-muted-foreground max-w-[200px] mb-4">Create a Try-On and get real Fit Check feedback.</p>
+            <Button className="rounded-lg btn-luxury text-primary-foreground h-10 px-5 text-sm font-bold" onClick={() => navigate('/tryon')}>
+              <Shirt className="mr-1.5 h-4 w-4" /> Create a Try-On
             </Button>
           </div>
         ) : (

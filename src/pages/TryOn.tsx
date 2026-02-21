@@ -133,7 +133,7 @@ const TryOn = () => {
           <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg">
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-base font-bold text-foreground">Virtual Try-On</h1>
+          <h1 className="text-base font-bold text-foreground">Try-On</h1>
         </div>
 
         {/* Body profile badge */}
@@ -261,7 +261,7 @@ const TryOn = () => {
           {loading ? (
             <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating…</>
           ) : (
-            <><Sparkles className="mr-2 h-4 w-4" /> Generate Try-On</>
+            <><Sparkles className="mr-2 h-4 w-4" /> Generate</>
           )}
         </Button>
 
@@ -292,12 +292,12 @@ const TryOn = () => {
             <div className="space-y-2">
               <Textarea placeholder="Add a caption…" value={caption} onChange={e => setCaption(e.target.value)} className="rounded-lg resize-none text-sm" rows={2} />
               <div className="flex items-center justify-between bg-card rounded-lg p-2.5 border border-border">
-                <span className="text-[13px] font-semibold text-foreground/70">Share to community</span>
+                <span className="text-[13px] font-semibold text-foreground/70">Share as Fit Check</span>
                 <Switch checked={isPublic} onCheckedChange={setIsPublic} />
               </div>
               <Button className="w-full h-10 rounded-lg btn-luxury text-primary-foreground text-sm" onClick={handleShare} disabled={shared}>
                 <Share2 className="mr-1.5 h-3.5 w-3.5" />
-                {shared ? 'Shared!' : isPublic ? 'Share to Community' : 'Save to My Posts'}
+                {shared ? 'Shared!' : isPublic ? 'Post Fit Check' : 'Save to Profile'}
               </Button>
             </div>
           </motion.div>
