@@ -136,8 +136,8 @@ const Profile = () => {
               ) : tryOnPosts.length === 0 ? (
                 <div className="text-center py-10">
                   <Shirt className="h-8 w-8 text-muted-foreground/20 mx-auto mb-2" />
-                  <p className="text-[13px] font-semibold text-muted-foreground mb-3">No try-ons yet</p>
-                  <Button className="rounded-lg btn-luxury text-primary-foreground text-sm h-10 px-5" onClick={() => navigate('/try-on')}>Generate Try-On</Button>
+                  <p className="text-[13px] font-semibold text-muted-foreground mb-3">No Try-Ons yet</p>
+                  <Button className="rounded-lg btn-luxury text-primary-foreground text-sm h-10 px-5" onClick={() => navigate('/tryon')}>Create a Try-On</Button>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-2">
@@ -256,10 +256,11 @@ const Profile = () => {
                     </div>
                     <p className="text-[12px] font-semibold text-foreground mb-0.5">No body profile yet</p>
                     <p className="text-[10px] text-muted-foreground mb-3 text-center max-w-[200px]">
-                      Scan your body once to unlock accurate size recommendations across all retailers.
+                      Complete one Scan to unlock accurate size recommendations across all retailers.
                     </p>
                     <Button className="rounded-lg btn-luxury text-primary-foreground text-[11px] h-9 px-4 font-bold active:scale-95 transition-transform" onClick={() => navigate('/capture')}>
-                      <Camera className="mr-1.5 h-3.5 w-3.5" /> Start Body Scan
+
+                      <Camera className="mr-1.5 h-3.5 w-3.5" /> Start Scan
                     </Button>
                   </div>
                 )}
@@ -298,7 +299,7 @@ const Profile = () => {
               </div>
 
               <p className="text-[10px] text-muted-foreground text-center flex items-center justify-center gap-1 pb-2">
-                <Shield className="h-3 w-3" /> Private by default · delete anytime
+                <Shield className="h-3 w-3" /> Your data is private by default · delete anytime
               </p>
             </motion.div>
           )}

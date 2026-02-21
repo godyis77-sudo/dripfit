@@ -22,14 +22,14 @@ const History = () => {
           <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg">
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-base font-bold text-foreground">Saved Measurements</h1>
+          <h1 className="text-base font-bold text-foreground">Scan History</h1>
         </div>
 
         {measurements.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-14 text-center">
             <Ruler className="h-8 w-8 text-muted-foreground/25 mb-3" />
-            <p className="text-[13px] font-semibold text-muted-foreground mb-3">No saved measurements</p>
-            <Button className="rounded-lg btn-luxury text-primary-foreground text-sm h-10 px-5" onClick={() => navigate('/capture')}>Start Scan</Button>
+            <p className="text-[13px] font-semibold text-muted-foreground mb-3">No scans yet</p>
+            <Button className="rounded-lg btn-luxury text-primary-foreground text-sm h-10 px-5" onClick={() => navigate('/capture')}>Start Your First Scan</Button>
           </div>
         ) : (
           <AnimatePresence>

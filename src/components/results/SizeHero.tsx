@@ -22,7 +22,7 @@ const SizeHero = ({ retailer, category, recommendedSize, confidence, whyLine }: 
 
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="text-center mb-5">
-      <h1 className="text-base font-bold text-foreground mb-0.5">Best Size for You</h1>
+      <h1 className="text-base font-bold text-foreground mb-0.5">Your Best Size</h1>
       {retailer && category && <p className="text-[11px] text-muted-foreground mb-3">{retailer} · {category}</p>}
 
       <motion.div initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.15, type: 'spring', stiffness: 200 }} className="inline-flex flex-col items-center">

@@ -34,7 +34,7 @@ const Onboarding = () => {
           {step === 'fit' ? (
             <>
               <h1 className="font-display text-xl font-bold text-foreground mb-1.5">How do you like your fit?</h1>
-              <p className="text-[13px] text-muted-foreground mb-5">Helps us recommend the right size.</p>
+              <p className="text-[13px] text-muted-foreground mb-5">We'll use this to find your best size.</p>
               <div className="space-y-2 mb-6">
                 {FIT_OPTIONS.map(opt => (
                   <button
@@ -53,7 +53,7 @@ const Onboarding = () => {
           ) : (
             <>
               <h1 className="font-display text-xl font-bold text-foreground mb-1.5">What's your usual size?</h1>
-              <p className="text-[13px] text-muted-foreground mb-5">Optional — helps improve accuracy.</p>
+              <p className="text-[13px] text-muted-foreground mb-5">Optional — improves your Scan accuracy.</p>
               <div className="flex flex-wrap gap-1.5 mb-3">
                 {CALIBRATION_BRANDS.map(b => (
                   <button key={b} onClick={() => setBrand(brand === b ? null : b)} className={`px-3 py-1.5 rounded-lg text-[12px] font-bold border transition-all active:scale-95 ${brand === b ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
@@ -83,7 +83,8 @@ const Onboarding = () => {
           </Button>
 
           <p className="text-[10px] text-muted-foreground text-center mt-3 flex items-center justify-center gap-1">
-            <Shield className="h-3 w-3" /> Private · delete anytime
+
+            <Shield className="h-3 w-3" /> Private by default · delete anytime
           </p>
         </motion.div>
       </div>

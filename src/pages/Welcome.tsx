@@ -9,8 +9,8 @@ import BottomTabBar from '@/components/BottomTabBar';
 
 const PILLARS = [
   { icon: Ruler, label: 'Scan', desc: 'AI body measurements' },
-  { icon: Sparkles, label: 'Try On', desc: 'Virtual outfit preview' },
-  { icon: Users, label: 'Community', desc: 'Get feedback before you buy' },
+  { icon: Sparkles, label: 'Try-On', desc: 'Virtual outfit preview' },
+  { icon: Users, label: 'Fit Check', desc: 'Feedback before you buy' },
 ];
 
 const TRUST = [
@@ -71,7 +71,7 @@ const Welcome = () => {
             Never buy the <span className="gradient-drip-text">wrong size</span> again
           </h1>
           <p className="text-muted-foreground text-[13px] leading-relaxed">
-            Scan → Try on virtually → Get community feedback — all before you buy.
+            Scan → Try-On → Fit Check — all before you buy.
           </p>
         </motion.div>
 
@@ -118,7 +118,7 @@ const Welcome = () => {
         >
           <Button
             variant="ghost"
-            onClick={() => navigate('/try-on')}
+            onClick={() => navigate('/tryon')}
             className="w-full h-10 text-xs font-display font-semibold uppercase tracking-wider text-primary hover:text-primary hover:bg-primary/5 rounded-lg"
           >
             <Sparkles className="mr-1.5 h-3.5 w-3.5" /> Try Virtual Try-On

@@ -53,7 +53,7 @@ const Analyze = () => {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5">
         <AlertCircle className="h-10 w-10 text-destructive mb-3" />
-        <h2 className="text-lg font-bold text-foreground mb-1.5">Analysis Failed</h2>
+        <h2 className="text-lg font-bold text-foreground mb-1.5">Scan Failed</h2>
         <p className="text-[13px] text-muted-foreground text-center mb-5 max-w-[240px]">{error}</p>
         <Button onClick={() => navigate('/capture', { replace: true })} className="rounded-lg btn-luxury text-primary-foreground h-10 px-5 text-sm">Try Again</Button>
       </div>
@@ -65,7 +65,7 @@ const Analyze = () => {
       <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}>
         <Loader2 className="h-10 w-10 text-primary" />
       </motion.div>
-      <h2 className="text-lg font-bold text-foreground mt-5 mb-2">Analyzing Photos</h2>
+      <h2 className="text-lg font-bold text-foreground mt-5 mb-2">Analyzing Your Scan</h2>
       <motion.p key={msgIdx} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] text-muted-foreground text-center">
         {MESSAGES[msgIdx]}
       </motion.p>
