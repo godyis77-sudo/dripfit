@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, Send, Shirt, Sparkles } from 'lucide-react';
+import { ArrowLeft, Star, Send, Shirt, Sparkles, Heart, ShoppingBag, X, ThumbsUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -25,6 +25,13 @@ interface Post {
   rating_count?: number;
 }
 
+const REACTIONS = [
+  { key: 'love', label: 'Love it', icon: Heart },
+  { key: 'buy', label: 'Buy it', icon: ShoppingBag },
+  { key: 'keep', label: 'Keep shopping', icon: ThumbsUp },
+  { key: 'nope', label: 'Not my style', icon: X },
+] as const;
+
 const RATING_LABELS = [
   { key: 'style_score', label: 'Style' },
   { key: 'color_score', label: 'Color' },
@@ -34,28 +41,38 @@ const RATING_LABELS = [
 
 type FilterType = 'trending' | 'new' | 'similar';
 
+const PROMPTS = [
+  'Should I buy this for work?',
+  'Date night — yes or no?',
+  'Would you wear this?',
+  'Too bold or just right?',
+  'Casual Friday vibes?',
+  'Wedding guest — yay or nay?',
+];
+
+const getPrompt = (idx: number) => PROMPTS[idx % PROMPTS.length];
+
 const StarRating = ({ value, onChange }: { value: number; onChange: (v: number) => void }) => (
   <div className="flex gap-0.5">
     {[1, 2, 3, 4, 5].map(n => (
       <button key={n} onClick={() => onChange(n)} className="p-0.5 active:scale-110 transition-transform">
-        <Star className={`h-4 w-4 ${n <= value ? 'fill-primary text-primary' : 'text-muted-foreground/30'}`} />
+        <Star className={`h-3.5 w-3.5 ${n <= value ? 'fill-primary text-primary' : 'text-muted-foreground/30'}`} />
       </button>
     ))}
   </div>
 );
 
 const PLACEHOLDER_POSTS: Omit<Post, 'user_id' | 'clothing_photo_url'>[] = [
-  { id: 'placeholder-1', result_photo_url: '', caption: 'Casual weekend look', created_at: new Date().toISOString(), profile: { display_name: 'Style Preview' }, avg_style: 4.2, avg_color: 3.8, avg_buy: 4.0, avg_suitability: 4.5, rating_count: 12 },
-  { id: 'placeholder-2', result_photo_url: '', caption: 'Office ready fit', created_at: new Date(Date.now() - 86400000).toISOString(), profile: { display_name: 'Fit Check' }, avg_style: 3.9, avg_color: 4.1, avg_buy: 3.5, avg_suitability: 4.2, rating_count: 8 },
+  { id: 'placeholder-1', result_photo_url: '', caption: 'Should I buy this for work?', created_at: new Date().toISOString(), profile: { display_name: 'Style Preview' }, avg_style: 4.2, avg_color: 3.8, avg_buy: 4.0, avg_suitability: 4.5, rating_count: 12 },
+  { id: 'placeholder-2', result_photo_url: '', caption: 'Date night — yes or no?', created_at: new Date(Date.now() - 86400000).toISOString(), profile: { display_name: 'Fit Check' }, avg_style: 3.9, avg_color: 4.1, avg_buy: 3.5, avg_suitability: 4.2, rating_count: 8 },
 ];
 
 const PlaceholderImage = ({ caption }: { caption: string }) => (
-  <div className="w-full aspect-[4/5] bg-card flex flex-col items-center justify-center gap-2">
-    <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
-      <Shirt className="h-6 w-6 text-primary/50" />
+  <div className="w-full aspect-[4/5] bg-gradient-to-b from-card to-background flex flex-col items-center justify-center gap-2">
+    <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center">
+      <Shirt className="h-7 w-7 text-primary/40" />
     </div>
-    <p className="text-[13px] font-medium text-foreground/50">{caption}</p>
-    <p className="text-[10px] text-muted-foreground">Community preview</p>
+    <p className="text-[12px] font-medium text-foreground/40">{caption}</p>
   </div>
 );
 
@@ -70,6 +87,7 @@ const Community = () => {
   const [ratings, setRatings] = useState({ style_score: 0, color_score: 0, buy_score: 0, suitability_score: 0 });
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [reactions, setReactions] = useState<Record<string, string>>({});
 
   useEffect(() => { fetchPosts(); }, [filter]);
 
@@ -110,37 +128,65 @@ const Community = () => {
     setSubmitting(false);
   };
 
+  const handleReaction = (postId: string, key: string) => {
+    setReactions(prev => ({ ...prev, [postId]: prev[postId] === key ? '' : key }));
+    if (!user) { toast({ title: 'Sign in to react', variant: 'destructive' }); return; }
+  };
+
   const isPlaceholder = (post: Post) => post.id.startsWith('placeholder-');
 
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="max-w-sm mx-auto px-4 pt-4">
         {/* Header */}
-        <div className="flex items-center gap-2 mb-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg">
-            <ArrowLeft className="h-4 w-4" />
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div>
+              <h1 className="text-base font-bold text-foreground">Fit Check</h1>
+              <p className="text-[10px] text-muted-foreground">Get opinions before you buy</p>
+            </div>
+          </div>
+          <Button
+            className="rounded-lg btn-luxury text-primary-foreground h-8 px-3 text-[11px] font-bold active:scale-95 transition-transform"
+            onClick={() => navigate('/try-on')}
+          >
+            <Sparkles className="mr-1 h-3 w-3" /> Post
           </Button>
-          <h1 className="text-base font-bold text-foreground">Community</h1>
         </div>
 
         {/* Filters */}
         <div className="flex gap-1.5 mb-4">
-          {(['trending', 'new', 'similar'] as FilterType[]).map(f => (
+          {([
+            { key: 'trending' as FilterType, label: '🔥 Trending' },
+            { key: 'new' as FilterType, label: 'New' },
+            { key: 'similar' as FilterType, label: 'Similar Fit' },
+          ]).map(f => (
             <button
-              key={f}
-              onClick={() => setFilter(f)}
+              key={f.key}
+              onClick={() => setFilter(f.key)}
               className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all active:scale-95 ${
-                filter === f ? 'gradient-drip text-primary-foreground' : 'bg-card border border-border text-muted-foreground'
+                filter === f.key ? 'gradient-drip text-primary-foreground' : 'bg-card border border-border text-muted-foreground'
               }`}
             >
-              {f === 'trending' ? 'Trending' : f === 'new' ? 'New' : 'Similar Fit'}
+              {f.label}
             </button>
           ))}
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-16">
-            <motion.div animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.5, repeat: Infinity }} className="text-muted-foreground text-[13px]">Loading…</motion.div>
+          <div className="space-y-3">
+            {[1, 2].map(i => (
+              <div key={i} className="bg-card border border-border rounded-xl overflow-hidden animate-pulse">
+                <div className="w-full aspect-[4/5] bg-muted" />
+                <div className="p-3 space-y-2">
+                  <div className="h-3 bg-muted rounded w-2/3" />
+                  <div className="h-3 bg-muted rounded w-1/2" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : posts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -148,61 +194,106 @@ const Community = () => {
               <Sparkles className="h-6 w-6 text-primary" />
             </div>
             <h2 className="font-display text-base font-bold mb-1.5">Be the First</h2>
-            <p className="text-[13px] text-muted-foreground max-w-[200px] mb-4">Share your virtual try-on and get real ratings.</p>
-            <Button className="rounded-lg btn-luxury text-primary-foreground h-10 px-5 text-sm font-bold" onClick={() => navigate('/tryon')}>
+            <p className="text-[13px] text-muted-foreground max-w-[200px] mb-4">Post your try-on and get real feedback.</p>
+            <Button className="rounded-lg btn-luxury text-primary-foreground h-10 px-5 text-sm font-bold" onClick={() => navigate('/try-on')}>
               <Shirt className="mr-1.5 h-4 w-4" /> Try On Now
             </Button>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <AnimatePresence>
-              {posts.map(post => (
-                <motion.div key={post.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="bg-card border border-border rounded-xl overflow-hidden">
+              {posts.map((post, idx) => (
+                <motion.div key={post.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} className="bg-card border border-border rounded-xl overflow-hidden">
+                  {/* Image */}
                   {isPlaceholder(post) || !post.result_photo_url ? (
                     <PlaceholderImage caption={post.caption || 'Try-on look'} />
                   ) : (
                     <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[4/5] object-cover" />
                   )}
-                  <div className="p-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-[13px] font-semibold text-foreground">{post.profile?.display_name || 'Anonymous'}</p>
+
+                  <div className="p-3 space-y-2.5">
+                    {/* Author + date */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="h-6 w-6 rounded-full gradient-drip flex items-center justify-center">
+                          <span className="text-[9px] font-bold text-primary-foreground">
+                            {(post.profile?.display_name || 'A')[0].toUpperCase()}
+                          </span>
+                        </div>
+                        <p className="text-[12px] font-semibold text-foreground">{post.profile?.display_name || 'Anonymous'}</p>
+                      </div>
                       <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
                     </div>
 
-                    {ratingPost !== post.id && !isPlaceholder(post) && (
-                      <Button variant="outline" className="w-full rounded-lg h-9 mb-2 text-[12px] active:scale-[0.97] transition-transform" onClick={() => { if (!user) { toast({ title: 'Sign in to rate', variant: 'destructive' }); return; } setRatingPost(post.id); }}>
-                        <Star className="mr-1.5 h-3.5 w-3.5" /> Rate This Look
-                      </Button>
-                    )}
+                    {/* Question prompt */}
+                    <p className="text-[14px] font-bold text-foreground leading-snug">
+                      {post.caption || getPrompt(idx)}
+                    </p>
 
+                    {/* Quick reactions */}
+                    <div className="flex gap-1.5 flex-wrap">
+                      {REACTIONS.map(r => {
+                        const active = reactions[post.id] === r.key;
+                        return (
+                          <button
+                            key={r.key}
+                            onClick={() => handleReaction(post.id, r.key)}
+                            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-medium border transition-all active:scale-95 ${
+                              active
+                                ? 'border-primary bg-primary/10 text-primary'
+                                : 'border-border text-muted-foreground hover:border-primary/30'
+                            }`}
+                          >
+                            <r.icon className="h-3 w-3" />
+                            {r.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Score metrics - secondary */}
                     {(post.rating_count ?? 0) > 0 && (
-                      <div className="flex items-center justify-between bg-background/50 rounded-lg px-2.5 py-1.5">
-                        {[{ l: 'Style', v: post.avg_style }, { l: 'Color', v: post.avg_color }, { l: 'Buy', v: post.avg_buy }, { l: 'Fit', v: post.avg_suitability }].map(r => (
-                          <div key={r.l} className="text-center">
-                            <p className="text-[9px] text-muted-foreground">{r.l}</p>
-                            <p className="text-[13px] font-bold text-foreground">{(r.v ?? 0).toFixed(1)}</p>
+                      <div className="flex items-center gap-2 pt-1">
+                        {[
+                          { l: 'Style', v: post.avg_style },
+                          { l: 'Color', v: post.avg_color },
+                          { l: 'Fit', v: post.avg_suitability },
+                          { l: 'Trendy', v: post.avg_buy },
+                        ].map(r => (
+                          <div key={r.l} className="flex items-center gap-1">
+                            <span className="text-[9px] text-muted-foreground">{r.l}</span>
+                            <span className="text-[10px] font-bold text-foreground">{(r.v ?? 0).toFixed(1)}</span>
                           </div>
                         ))}
-                        <div className="text-center">
-                          <p className="text-[9px] text-muted-foreground">Votes</p>
-                          <p className="text-[13px] font-bold text-muted-foreground">{post.rating_count}</p>
-                        </div>
+                        <span className="text-[9px] text-muted-foreground ml-auto">{post.rating_count} votes</span>
                       </div>
                     )}
 
+                    {/* Rate button */}
+                    {ratingPost !== post.id && !isPlaceholder(post) && (
+                      <Button
+                        variant="ghost"
+                        className="w-full rounded-lg h-8 text-[11px] text-muted-foreground hover:text-foreground active:scale-[0.97] transition-transform"
+                        onClick={() => { if (!user) { toast({ title: 'Sign in to rate', variant: 'destructive' }); return; } setRatingPost(post.id); }}
+                      >
+                        <Star className="mr-1 h-3 w-3" /> Rate this look
+                      </Button>
+                    )}
+
+                    {/* Rating form */}
                     {ratingPost === post.id && (
-                      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2 pt-2 border-t border-border mt-2">
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-2 pt-2 border-t border-border">
                         {RATING_LABELS.map(({ key, label }) => (
                           <div key={key} className="flex items-center justify-between">
-                            <span className="text-[13px] text-muted-foreground">{label}</span>
+                            <span className="text-[12px] text-muted-foreground">{label}</span>
                             <StarRating value={ratings[key]} onChange={v => setRatings(p => ({ ...p, [key]: v }))} />
                           </div>
                         ))}
-                        <Textarea placeholder="Comment (optional)" value={comment} onChange={e => setComment(e.target.value)} className="rounded-lg resize-none text-[13px]" rows={2} />
+                        <Textarea placeholder="Comment (optional)" value={comment} onChange={e => setComment(e.target.value)} className="rounded-lg resize-none text-[12px]" rows={2} />
                         <div className="flex gap-1.5">
-                          <Button variant="outline" className="flex-1 rounded-lg h-9 text-[12px]" onClick={() => setRatingPost(null)}>Cancel</Button>
-                          <Button className="flex-1 rounded-lg h-9 btn-luxury text-primary-foreground text-[12px]" onClick={() => handleSubmitRating(post.id)} disabled={submitting}>
-                            <Send className="mr-1.5 h-3 w-3" /> Submit
+                          <Button variant="outline" className="flex-1 rounded-lg h-8 text-[11px]" onClick={() => setRatingPost(null)}>Cancel</Button>
+                          <Button className="flex-1 rounded-lg h-8 btn-luxury text-primary-foreground text-[11px]" onClick={() => handleSubmitRating(post.id)} disabled={submitting}>
+                            <Send className="mr-1 h-3 w-3" /> Submit
                           </Button>
                         </div>
                       </motion.div>
