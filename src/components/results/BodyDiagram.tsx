@@ -188,7 +188,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               <div className={`${isLeft ? 'text-left' : 'text-right'} rounded px-1.5 py-0.5`}>
                   <p className="text-[9px] font-bold uppercase tracking-wide leading-none" style={{ color: 'hsl(0 0% 15%)' }}>{label}</p>
                   <p className="text-[8px] font-bold leading-none mt-0.5" style={{ color: 'hsl(0 0% 20%)' }}>{fmtIn(m[key])}</p>
-                  <p className="text-[7px] leading-none mt-0.5" style={{ color: 'hsl(0 0% 40%)' }}>{fmt(m[key])}</p>
+                  <p className="text-[7px] font-bold leading-none mt-0.5" style={{ color: 'hsl(0 0% 40%)' }}>{fmt(m[key])}</p>
                 </div>
               </div>
             );
