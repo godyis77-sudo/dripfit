@@ -12,6 +12,9 @@ import MeasurementGrid from '@/components/results/MeasurementGrid';
 import BodyDiagram from '@/components/results/BodyDiagram';
 import LowConfidenceRescue from '@/components/results/LowConfidenceRescue';
 import ResultActions from '@/components/results/ResultActions';
+import ShopThisSize from '@/components/monetization/ShopThisSize';
+import UpgradePrompt from '@/components/monetization/UpgradePrompt';
+import FitFeedbackSheet from '@/components/monetization/FitFeedbackSheet';
 
 const SIZE_LADDER = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL'];
 
@@ -30,6 +33,7 @@ const Results = () => {
   const [fitPref, setFitPref] = useState<FitPreference>(result?.fitPreference || 'regular');
   const [saved, setSaved] = useState(false);
   const [confidence, setConfidence] = useState(result?.confidence || 'medium');
+  const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => { if (result) trackEvent('results_viewed'); }, [result]);
 
@@ -89,6 +93,15 @@ const Results = () => {
         <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
         <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} />
         {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
+
+        {/* Affiliate clickout — primary monetization */}
+        <ShopThisSize
+          recommendedSize={adjustedSize}
+          confidence={confidence}
+          retailer={state?.retailer}
+          category={state?.category}
+        />
+
         <BodyDiagram measurements={measurements} heightCm={result.heightCm} />
         <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
         <ResultActions saved={saved} scanDate={result.date} onSave={handleSave} onTryOn={() => { trackEvent('results_tryon_click'); navigate('/tryon', { state: { bodyProfile: result } }); }} onNewScan={() => navigate('/capture')} onDelete={handleDelete} />
@@ -101,6 +114,33 @@ const Results = () => {
             <Button className="rounded-lg btn-luxury text-primary-foreground text-[11px] h-9 px-4 font-bold" onClick={() => navigate('/tryon', { state: { bodyProfile: result } })}>
               <Sparkles className="mr-1.5 h-3.5 w-3.5" /> Try-On an Outfit
             </Button>
+          </div>
+        )}
+
+        {/* Upgrade prompt — after value delivered */}
+        {saved && (
+          <UpgradePrompt
+            headline="Want higher confidence?"
+            description="Unlock advanced calibration, brand fit memory, and return risk alerts."
+            className="mt-3"
+          />
+        )}
+
+        {/* Fit feedback — post-purchase */}
+        {saved && (
+          <div className="mt-3">
+            <button
+              onClick={() => setShowFeedback(!showFeedback)}
+              className="text-[11px] text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2 mb-2"
+            >
+              Already bought something? Report how it fit
+            </button>
+            {showFeedback && (
+              <FitFeedbackSheet
+                retailer={state?.retailer || 'Unknown'}
+                recommendedSize={adjustedSize}
+              />
+            )}
           </div>
         )}
       </div>

@@ -83,6 +83,45 @@ export type Database = {
         }
         Relationships: []
       }
+      fit_feedback: {
+        Row: {
+          brand: string | null
+          created_at: string
+          id: string
+          item_description: string | null
+          outcome: string
+          recommended_size: string | null
+          retailer: string
+          session_id: string | null
+          size_worn: string
+          user_id: string | null
+        }
+        Insert: {
+          brand?: string | null
+          created_at?: string
+          id?: string
+          item_description?: string | null
+          outcome: string
+          recommended_size?: string | null
+          retailer: string
+          session_id?: string | null
+          size_worn: string
+          user_id?: string | null
+        }
+        Update: {
+          brand?: string | null
+          created_at?: string
+          id?: string
+          item_description?: string | null
+          outcome?: string
+          recommended_size?: string | null
+          retailer?: string
+          session_id?: string | null
+          size_worn?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -107,6 +146,48 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      saved_items: {
+        Row: {
+          brand: string | null
+          category: string | null
+          confidence: string | null
+          created_at: string
+          id: string
+          product_image_url: string | null
+          product_link: string | null
+          retailer: string | null
+          session_id: string | null
+          size_recommendation: string | null
+          user_id: string | null
+        }
+        Insert: {
+          brand?: string | null
+          category?: string | null
+          confidence?: string | null
+          created_at?: string
+          id?: string
+          product_image_url?: string | null
+          product_link?: string | null
+          retailer?: string | null
+          session_id?: string | null
+          size_recommendation?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          brand?: string | null
+          category?: string | null
+          confidence?: string | null
+          created_at?: string
+          id?: string
+          product_image_url?: string | null
+          product_link?: string | null
+          retailer?: string | null
+          session_id?: string | null
+          size_recommendation?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }

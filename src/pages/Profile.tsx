@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Shirt, Crown, Trash2, Shield, Download, Settings, Ruler, Camera, ChevronRight, Fingerprint, Sparkles, MessageSquare } from 'lucide-react';
+import { LogOut, Shirt, Crown, Trash2, Shield, Download, Settings, Ruler, Camera, ChevronRight, Fingerprint, Sparkles, MessageSquare, Bookmark } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { getFitPreference, setFitPreference } from '@/lib/session';
@@ -285,6 +285,32 @@ const Profile = () => {
                     </Button>
                   </div>
                 )}
+              </div>
+
+              {/* ── Saved Items ── */}
+              <SectionHeader>Saved Items</SectionHeader>
+              <div className="bg-card border border-border rounded-xl mb-1">
+                <button
+                  onClick={() => navigate('/saved')}
+                  className="w-full flex items-center gap-2 px-3 py-2.5 active:bg-muted/50 transition-colors"
+                >
+                  <Bookmark className="h-3.5 w-3.5 text-primary" />
+                  <span className="text-[12px] text-foreground font-medium">View Saved for Later</span>
+                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground ml-auto" />
+                </button>
+              </div>
+
+              {/* ── Premium ── */}
+              <SectionHeader>Premium</SectionHeader>
+              <div className="bg-card border border-primary/20 rounded-xl mb-1">
+                <button
+                  onClick={() => navigate('/premium')}
+                  className="w-full flex items-center gap-2 px-3 py-2.5 active:bg-primary/5 transition-colors"
+                >
+                  <Crown className="h-3.5 w-3.5 text-primary" />
+                  <span className="text-[12px] text-foreground font-medium">Upgrade to Premium</span>
+                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground ml-auto" />
+                </button>
               </div>
 
               {/* ── Retailers ── */}
