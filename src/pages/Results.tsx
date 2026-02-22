@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Sparkles, Check } from 'lucide-react';
@@ -9,6 +9,7 @@ import SizeHero from '@/components/results/SizeHero';
 import FitPreferenceToggle from '@/components/results/FitPreferenceToggle';
 import AlternativeSizes from '@/components/results/AlternativeSizes';
 import MeasurementGrid from '@/components/results/MeasurementGrid';
+import MeasurementAdjuster from '@/components/results/MeasurementAdjuster';
 import BodyDiagram from '@/components/results/BodyDiagram';
 import LowConfidenceRescue from '@/components/results/LowConfidenceRescue';
 import ResultActions from '@/components/results/ResultActions';
@@ -35,6 +36,7 @@ const Results = () => {
   const [saved, setSaved] = useState(false);
   const [confidence, setConfidence] = useState(result?.confidence || 'medium');
   const [showFeedback, setShowFeedback] = useState(false);
+  const [adjustedMeasurements, setAdjustedMeasurements] = useState<Record<string, MeasurementRange>>({});
 
   useEffect(() => {
     if (result) {
@@ -52,6 +54,21 @@ const Results = () => {
   }, [fitPref, result]);
 
   const alternatives = useMemo(() => ({ sizeDown: shiftSize(adjustedSize, -1), sizeUp: shiftSize(adjustedSize, 1) }), [adjustedSize]);
+
+  const measurements: Record<string, MeasurementRange> = useMemo(() => {
+    if (!result) return {};
+    const base: Record<string, MeasurementRange> = {
+      chest: result.chest, waist: result.waist, hips: result.hips, inseam: result.inseam, shoulder: result.shoulder,
+      ...(result.bust ? { bust: result.bust } : {}),
+      ...(result.sleeve ? { sleeve: result.sleeve } : {}),
+    };
+    return { ...base, ...adjustedMeasurements };
+  }, [result, adjustedMeasurements]);
+
+  const handleMeasurementAdjust = useCallback((key: string, newRange: MeasurementRange) => {
+    setAdjustedMeasurements(prev => ({ ...prev, [key]: newRange }));
+    trackEvent('measurement_adjusted', { key });
+  }, []);
 
   if (!result) {
     return (
@@ -72,12 +89,6 @@ const Results = () => {
       </div>
     );
   }
-
-  const measurements: Record<string, MeasurementRange> = {
-    chest: result.chest, waist: result.waist, hips: result.hips, inseam: result.inseam, shoulder: result.shoulder,
-    ...(result.bust ? { bust: result.bust } : {}),
-    ...(result.sleeve ? { sleeve: result.sleeve } : {}),
-  };
 
   const handleSave = () => {
     const history = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]');
@@ -118,6 +129,14 @@ const Results = () => {
         <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
         <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} />
         {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
+
+        {/* Measurement adjustment — show when medium/low confidence */}
+        {(confidence === 'low' || confidence === 'medium') && (
+          <MeasurementAdjuster
+            measurements={measurements}
+            onAdjust={handleMeasurementAdjust}
+          />
+        )}
 
         {/* Primary CTA: Shop This Size */}
         <ShopThisSize

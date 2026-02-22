@@ -24,6 +24,7 @@ type FunnelEvent =
   | 'fitcheck_post_started'
   | 'fitcheck_posted'
   | 'fitcheck_reaction'
+  | 'fitcheck_voted'
   | 'community_rated'
   | 'retailer_click'
   | 'profile_export'
@@ -42,7 +43,8 @@ type FunnelEvent =
   | 'result_viewed'
   | 'save_item'
   | 'vote_cast'
-  | 'trial_started';
+  | 'trial_started'
+  | 'measurement_adjusted';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {

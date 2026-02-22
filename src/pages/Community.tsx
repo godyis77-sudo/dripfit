@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown, Bookmark } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -26,9 +26,9 @@ interface Post {
 }
 
 const VOTE_OPTIONS = [
-  { key: 'buy', label: 'Buy', emoji: '🔥' },
-  { key: 'maybe', label: 'Maybe', emoji: '🤔' },
-  { key: 'pass', label: 'Pass', emoji: '👋' },
+  { key: 'love', label: 'Love it', emoji: '❤️' },
+  { key: 'buy', label: 'Buy it', emoji: '🔥' },
+  { key: 'keep_shopping', label: 'Keep shopping', emoji: '🛒' },
 ] as const;
 
 const RATING_LABELS = [
@@ -130,7 +130,8 @@ const Community = () => {
 
   const handleVote = (postId: string, key: string) => {
     setVotes(prev => ({ ...prev, [postId]: prev[postId] === key ? '' : key }));
-    trackEvent('fitcheck_reaction', { vote: key });
+    trackEvent('vote_cast', { vote: key, source: 'fitcheck' });
+    trackEvent('fitcheck_voted', { vote: key });
     if (!user) { toast({ title: 'Sign in to vote', description: 'Create a free account to share your opinion.', variant: 'destructive' }); return; }
   };
 
@@ -236,6 +237,7 @@ const Community = () => {
                     </p>
 
                     {/* Sticky-style voting bar: Buy / Maybe / Pass */}
+                    {/* Primary vote buttons */}
                     <div className="flex gap-1.5">
                       {VOTE_OPTIONS.map(v => {
                         const active = votes[post.id] === v.key;
@@ -243,7 +245,7 @@ const Community = () => {
                           <button
                             key={v.key}
                             onClick={() => handleVote(post.id, v.key)}
-                            className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[11px] font-bold border transition-all active:scale-95 ${
+                            className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-[11px] font-bold border transition-all active:scale-95 ${
                               active
                                 ? 'border-primary bg-primary/10 text-primary'
                                 : 'border-border text-muted-foreground hover:border-primary/30'
@@ -255,18 +257,42 @@ const Community = () => {
                       })}
                     </div>
 
-                    {/* Shop This Look CTA */}
+                    {/* Secondary: Not my style */}
+                    <button
+                      onClick={() => handleVote(post.id, 'not_my_style')}
+                      className={`w-full py-1.5 rounded-lg text-[10px] font-medium transition-all ${
+                        votes[post.id] === 'not_my_style'
+                          ? 'text-primary bg-primary/5'
+                          : 'text-muted-foreground/60 hover:text-muted-foreground'
+                      }`}
+                    >
+                      Not my style
+                    </button>
+
+                    {/* Shop + Save actions */}
                     {!isPlaceholder(post) && (
-                      <div>
+                      <div className="flex gap-1.5">
                         <Button
                           variant="outline"
-                          className="w-full h-8 rounded-lg text-[11px] font-bold"
+                          className="flex-1 h-8 rounded-lg text-[10px] font-bold"
                           onClick={() => handleShopLook(post)}
                         >
                           <ShoppingBag className="mr-1 h-3 w-3" /> Shop This Look
                         </Button>
-                        <p className="text-[8px] text-muted-foreground/50 text-center mt-1">We may earn a commission. It doesn't change your price.</p>
+                        <Button
+                          variant="outline"
+                          className="h-8 rounded-lg text-[10px] px-3"
+                          onClick={() => {
+                            trackEvent('save_item', { type: 'fitcheck', postId: post.id });
+                            toast({ title: 'Saved', description: 'Added to your saved items.' });
+                          }}
+                        >
+                          <Bookmark className="h-3 w-3" />
+                        </Button>
                       </div>
+                    )}
+                    {!isPlaceholder(post) && (
+                      <p className="text-[8px] text-muted-foreground/50 text-center">We may earn a commission. It doesn't change your price.</p>
                     )}
 
                     {/* Expandable detailed ratings */}
