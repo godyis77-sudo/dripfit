@@ -22,13 +22,13 @@ interface Annotation {
 }
 
 const annotations: Annotation[] = [
-  { key: 'shoulder', label: 'Shoulder', top: '14%', side: 'left' },
-  { key: 'bust', label: 'Bust', top: '22%', side: 'right' },
-  { key: 'chest', label: 'Chest', top: '26%', side: 'left' },
-  { key: 'sleeve', label: 'Sleeve', top: '38%', side: 'right' },
-  { key: 'waist', label: 'Waist', top: '34%', side: 'left' },
-  { key: 'hips', label: 'Hips', top: '42%', side: 'right' },
-  { key: 'inseam', label: 'Inseam', top: '62%', side: 'left' },
+  { key: 'shoulder', label: 'Shoulder', top: '12%', side: 'left' },
+  { key: 'bust', label: 'Bust', top: '20%', side: 'right' },
+  { key: 'chest', label: 'Chest', top: '28%', side: 'left' },
+  { key: 'waist', label: 'Waist', top: '36%', side: 'right' },
+  { key: 'sleeve', label: 'Sleeve', top: '44%', side: 'left' },
+  { key: 'hips', label: 'Hips', top: '48%', side: 'right' },
+  { key: 'inseam', label: 'Inseam', top: '65%', side: 'left' },
 ];
 
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
@@ -76,7 +76,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
   return (
     <div className="mb-4">
       <p className="section-label mb-2">Body Measurement Map</p>
-      <div className="bg-card border border-border rounded-xl p-2 overflow-hidden">
+      <div className="border border-primary/20 rounded-xl p-2 overflow-hidden" style={{ background: 'linear-gradient(180deg, hsl(0 0% 100%), hsl(42 45% 92%), hsl(42 35% 85%))' }}>
         <div className="relative w-full max-w-[320px] mx-auto" style={{ minHeight: 380 }}>
           {/* Body image */}
           {loading && (
@@ -101,14 +101,14 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {/* Height indicator on far left */}
           {imageUrl && (
             <div className="absolute left-0 top-[4%] bottom-[4%] w-5 flex flex-col items-center">
-              <div className="w-px flex-1 border-l border-dashed border-primary/50" />
+              <div className="w-px flex-1 border-l border-dashed" style={{ borderColor: 'hsl(42 45% 55%)' }} />
               <span
-                className="text-[8px] font-bold text-primary whitespace-nowrap"
-                style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+                className="text-[8px] font-bold whitespace-nowrap"
+                style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', color: 'hsl(42 45% 45%)' }}
               >
                 {heightCm.toFixed(0)} cm · {(heightCm * CM_TO_IN).toFixed(1)} in
               </span>
-              <div className="w-px flex-1 border-l border-dashed border-primary/50" />
+              <div className="w-px flex-1 border-l border-dashed" style={{ borderColor: 'hsl(42 45% 55%)' }} />
             </div>
           )}
 
@@ -130,14 +130,14 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               >
                 {/* Label block */}
                 <div className={`${isLeft ? 'text-right pr-1' : 'text-left pl-1'}`}>
-                  <p className="text-[9px] font-bold text-foreground leading-tight">{label}</p>
-                  <p className="text-[7.5px] text-muted-foreground leading-tight">{fmt(m[key])}</p>
-                  <p className="text-[7px] text-muted-foreground/70 leading-tight">{fmtIn(m[key])}</p>
+                  <p className="text-[9px] font-bold leading-tight" style={{ color: 'hsl(0 0% 15%)' }}>{label}</p>
+                  <p className="text-[7.5px] leading-tight" style={{ color: 'hsl(0 0% 35%)' }}>{fmt(m[key])}</p>
+                  <p className="text-[7px] leading-tight" style={{ color: 'hsl(0 0% 50%)' }}>{fmtIn(m[key])}</p>
                 </div>
                 {/* Dashed connector line */}
-                <div className="w-6 border-t border-dashed border-primary/40" />
+                <div className="w-6 border-t border-dashed" style={{ borderColor: 'hsl(42 45% 55%)' }} />
                 {/* Dot */}
-                <div className="w-1.5 h-1.5 rounded-full bg-primary/80 shrink-0" />
+                <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'hsl(42 45% 50%)' }} />
               </div>
             );
           })}
