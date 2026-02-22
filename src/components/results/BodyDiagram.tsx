@@ -90,8 +90,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
     <div className="mb-4">
       <p className="section-label mb-2">Body Measurement Map</p>
       <div className="border border-primary/20 rounded-xl overflow-hidden" style={{ background: 'linear-gradient(180deg, hsl(0 0% 100%), hsl(42 45% 92%), hsl(42 35% 85%))' }}>
-        <p className="text-center text-[18px] font-bold uppercase tracking-widest pt-3 pb-1" style={{ color: 'hsl(42 45% 45%)' }}>Scan Results</p>
         <div className="relative w-full max-w-[380px] mx-auto" style={{ minHeight: 500 }}>
+          {/* Title overlay */}
+          <p className="absolute top-3 left-0 right-0 text-center text-[18px] font-bold uppercase tracking-widest z-10" style={{ color: 'hsl(42 45% 45%)' }}>Scan Results</p>
           {/* Body image */}
           {loading && (
             <Skeleton className="w-full h-[500px] rounded-lg" />
