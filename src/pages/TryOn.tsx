@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Shirt, Sparkles, Loader2, Share2, Shield, User, Check, Link2, Info, MessageSquare, Save, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Shirt, Sparkles, Loader2, Share2, Shield, User, Check, Link2, Info, MessageSquare, Save, RotateCcw, Store } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -228,14 +228,29 @@ const TryOn = () => {
             <div className="mb-3">
               <div className="flex items-center gap-1.5 mb-1">
                 <Link2 className="h-3 w-3 text-muted-foreground" />
-                <p className="text-[11px] text-muted-foreground">Product link <span className="text-[9px] text-muted-foreground/70">(optional — for future retailer matching)</span></p>
+                <p className="text-[11px] text-muted-foreground">Paste product link <span className="text-[9px] text-muted-foreground/70">(optional)</span></p>
               </div>
               <Input
                 placeholder="https://zara.com/product/..."
                 value={productLink}
-                onChange={e => setProductLink(e.target.value)}
+                onChange={e => {
+                  setProductLink(e.target.value);
+                  if (e.target.value.length > 10) trackEvent('product_link_pasted');
+                }}
                 className="rounded-lg h-9 text-[12px]"
               />
+              {productLink.length > 10 && (() => {
+                const hostname = (() => { try { return new URL(productLink).hostname.toLowerCase(); } catch { return ''; } })();
+                const matched = ['shein', 'zara', 'hm', 'gap', 'nordstrom', 'lululemon', 'macys', 'jcpenney', 'aritzia', 'simons'].find(r => hostname.includes(r));
+                return matched ? (
+                  <div className="flex items-center gap-1.5 mt-1.5">
+                    <span className="text-[10px] px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-primary font-bold flex items-center gap-1">
+                      <Store className="h-3 w-3" /> Matched: {matched}
+                    </span>
+                    <span className="text-[9px] text-muted-foreground">We'll recommend the best size.</span>
+                  </div>
+                ) : null;
+              })()}
             </div>
 
             {/* Category selector */}

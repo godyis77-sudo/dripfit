@@ -15,6 +15,8 @@ import TryOn from "./pages/TryOn";
 import Community from "./pages/Community";
 import SizeGuide from "./pages/SizeGuide";
 import Profile from "./pages/Profile";
+import Premium from "./pages/Premium";
+import SavedItems from "./pages/SavedItems";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +40,8 @@ const App = () => (
             <Route path="/community" element={<Community />} />
             <Route path="/size-guide" element={<SizeGuide />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/premium" element={<Premium />} />
+            <Route path="/saved" element={<SavedItems />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

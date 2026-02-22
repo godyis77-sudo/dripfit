@@ -28,7 +28,16 @@ type FunnelEvent =
   | 'retailer_click'
   | 'profile_export'
   | 'share_action'
-  | 'save_action';
+  | 'save_action'
+  // Monetization events
+  | 'product_link_pasted'
+  | 'retailer_selected'
+  | 'shop_clickout'
+  | 'saved_item_added'
+  | 'saved_item_removed'
+  | 'premium_viewed'
+  | 'premium_started'
+  | 'fit_feedback_submitted';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
