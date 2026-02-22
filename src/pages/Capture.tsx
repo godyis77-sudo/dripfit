@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useEffect } from 'react';
+import { useState, useRef, useMemo, useEffect, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,7 +28,7 @@ const GUIDANCE = [
   { icon: Eye, text: 'Full body in frame' },
 ];
 
-const Capture = () => {
+const Capture = forwardRef<HTMLDivElement>((_, _ref) => {
   const navigate = useNavigate();
   const [flowStep, setFlowStep] = useState<FlowStep>('height');
   const [photos, setPhotos] = useState<PhotoSet>({ front: null, side: null });
@@ -417,6 +417,8 @@ const Capture = () => {
       </div>
     </div>
   );
-};
+});
+
+Capture.displayName = 'Capture';
 
 export default Capture;
