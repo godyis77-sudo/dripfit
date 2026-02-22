@@ -29,7 +29,7 @@ serve(async (req) => {
             {
               role: "user",
               content:
-                "Generate a clean, minimal, front-facing human body silhouette suitable for a body measurement diagram. The figure should be gender-neutral, standing upright with arms slightly away from the body, feet shoulder-width apart. Use a solid dark charcoal/gray tone for the silhouette on a completely transparent background. The style should be smooth, anatomically proportioned, and modern — like a fashion tech app icon. No face details, no clothing, just a clean outline fill. The image should be tall and narrow, portrait orientation, approximately 3:5 aspect ratio.",
+                "Generate a clean, minimal, front-facing human body silhouette suitable for a body measurement diagram. The figure should be gender-neutral, standing upright with arms slightly away from the body, feet shoulder-width apart. Use a solid dark charcoal/gray tone for the silhouette. The background should be a smooth vertical gradient from white at the top to a warm golden beige (like #D4C5A0) at the bottom. NO transparent background, NO checkered pattern. The style should be smooth, anatomically proportioned, and modern — like a fashion tech app icon. No face details, no clothing, just a clean outline fill. The image should be tall and narrow, portrait orientation, approximately 3:5 aspect ratio.",
             },
           ],
           modalities: ["image", "text"],

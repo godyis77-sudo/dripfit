@@ -7,7 +7,7 @@ const CM_TO_IN = 0.3937;
 const fmt = (r: MeasurementRange) => `${r.min.toFixed(0)}–${r.max.toFixed(0)} cm`;
 const fmtIn = (r: MeasurementRange) => `${(r.min * CM_TO_IN).toFixed(1)}–${(r.max * CM_TO_IN).toFixed(1)} in`;
 
-const CACHE_KEY = 'dripcheck_body_silhouette';
+const CACHE_KEY = 'dripcheck_body_silhouette_v2';
 
 interface BodyDiagramProps {
   measurements: Record<string, MeasurementRange>;
