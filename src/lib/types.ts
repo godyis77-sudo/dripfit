@@ -11,9 +11,11 @@ export interface BodyScanResult {
   date: string;
   shoulder: MeasurementRange;
   chest: MeasurementRange;
+  bust?: MeasurementRange;
   waist: MeasurementRange;
   hips: MeasurementRange;
   inseam: MeasurementRange;
+  sleeve?: MeasurementRange;
   heightCm: number;
   confidence: Confidence;
   recommendedSize: string;
@@ -68,9 +70,11 @@ export const STEP_CONFIG: Record<CaptureStep, { title: string; instruction: stri
 export const MEASUREMENT_LABELS: Record<string, string> = {
   shoulder: 'Shoulder',
   chest: 'Chest',
+  bust: 'Bust',
   waist: 'Waist',
   hips: 'Hips',
   inseam: 'Inseam',
+  sleeve: 'Sleeve Length',
   height: 'Height',
 };
 
