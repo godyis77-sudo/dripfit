@@ -28,19 +28,19 @@ interface MeasurementLine {
 
 const measurementLines: MeasurementLine[] = [
   // Shoulder: shoulder tip to shoulder tip
-  { key: 'shoulder', label: 'Shoulder', labelSide: 'left', x1: '37%', y1: '17%', x2: '63%', y2: '17%', labelTop: '15.5%' },
-  // Chest: armpit to armpit (tighter inward)
-  { key: 'chest', label: 'Chest', labelSide: 'left', x1: '38%', y1: '22%', x2: '62%', y2: '22%', labelTop: '20.5%' },
-  // Bust: across bust (tighter)
-  { key: 'bust', label: 'Bust', labelSide: 'right', x1: '39%', y1: '25%', x2: '61%', y2: '25%', labelTop: '23.5%' },
+  { key: 'shoulder', label: 'Shoulder', labelSide: 'left', x1: '37%', y1: '27%', x2: '63%', y2: '27%', labelTop: '25.5%' },
+  // Chest: armpit to armpit
+  { key: 'chest', label: 'Chest', labelSide: 'left', x1: '38%', y1: '32%', x2: '62%', y2: '32%', labelTop: '30.5%' },
+  // Bust: across bust
+  { key: 'bust', label: 'Bust', labelSide: 'right', x1: '39%', y1: '35%', x2: '61%', y2: '35%', labelTop: '33.5%' },
   // Waist: narrowest torso point
-  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '41%', y1: '34%', x2: '59%', y2: '34%', labelTop: '32.5%' },
-  // Hips: widest hip point (pulled in)
-  { key: 'hips', label: 'Hips', labelSide: 'right', x1: '37%', y1: '41%', x2: '63%', y2: '41%', labelTop: '39.5%' },
+  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '41%', y1: '44%', x2: '59%', y2: '44%', labelTop: '42.5%' },
+  // Hips: widest hip point
+  { key: 'hips', label: 'Hips', labelSide: 'right', x1: '37%', y1: '51%', x2: '63%', y2: '51%', labelTop: '49.5%' },
   // Sleeve: shoulder seam to wrist along arm
-  { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '36%', y1: '18%', x2: '28%', y2: '43%', labelTop: '29%' },
+  { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '36%', y1: '28%', x2: '28%', y2: '53%', labelTop: '39%' },
   // Inseam: crotch to inner ankle
-  { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '48%', y1: '45%', x2: '45%', y2: '76%', labelTop: '60%' },
+  { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '48%', y1: '55%', x2: '45%', y2: '86%', labelTop: '70%' },
 ];
 
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
