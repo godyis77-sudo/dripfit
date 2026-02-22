@@ -29,7 +29,7 @@ interface MeasurementLine {
 
 const measurementLines: MeasurementLine[] = [
   // Shoulder — label on left, aligned to line y
-  { key: 'shoulder', label: 'Shoulder', labelSide: 'left', x1: '33%', y1: '24%', x2: '67%', y2: '24%', labelTop: '22%', leaderX: 33, leaderY: 24 },
+  { key: 'shoulder', label: 'Shoulder', labelSide: 'right', x1: '33%', y1: '24%', x2: '67%', y2: '24%', labelTop: '22%', leaderX: 67, leaderY: 24 },
   // Chest — label on left
   { key: 'chest', label: 'Chest', labelSide: 'left', x1: '38%', y1: '27%', x2: '62%', y2: '27%', labelTop: '25%', leaderX: 38, leaderY: 27 },
   // Bust — label on right
