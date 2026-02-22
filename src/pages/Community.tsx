@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import BottomTabBar from '@/components/BottomTabBar';
+import PostLookFlow from '@/components/community/PostLookFlow';
 
 interface Post {
   id: string;
@@ -88,6 +89,7 @@ const Community = () => {
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [votes, setVotes] = useState<Record<string, string>>({});
+  const [showPostFlow, setShowPostFlow] = useState(false);
 
   useEffect(() => { fetchPosts(); }, [filter]);
 
@@ -159,7 +161,7 @@ const Community = () => {
           </div>
           <Button
             className="rounded-lg btn-luxury text-primary-foreground h-8 px-3 text-[11px] font-bold active:scale-95 transition-transform"
-            onClick={() => { trackEvent('fitcheck_post_started'); navigate('/tryon'); }}
+            onClick={() => { trackEvent('fitcheck_post_started'); if (!user) { toast({ title: 'Sign in to post', variant: 'destructive' }); navigate('/auth'); return; } setShowPostFlow(true); }}
           >
             <Sparkles className="mr-1 h-3 w-3" /> Post a Look
           </Button>
@@ -362,6 +364,7 @@ const Community = () => {
           </div>
         )}
       </div>
+      <PostLookFlow open={showPostFlow} onOpenChange={setShowPostFlow} onPosted={fetchPosts} />
       <BottomTabBar />
     </div>
   );
