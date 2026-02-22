@@ -28,20 +28,45 @@ const GUIDANCE = [
   { icon: Eye, text: 'Full body in frame' },
 ];
 
+// Persist scan state in sessionStorage to survive camera-triggered reloads
+const SCAN_STATE_KEY = 'dripcheck_scan_state';
+
+function loadScanState() {
+  try {
+    const raw = sessionStorage.getItem(SCAN_STATE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch { /* ignore */ }
+  return null;
+}
+
+function saveScanState(state: Record<string, unknown>) {
+  try { sessionStorage.setItem(SCAN_STATE_KEY, JSON.stringify(state)); } catch { /* ignore */ }
+}
+
+function clearScanState() {
+  try { sessionStorage.removeItem(SCAN_STATE_KEY); } catch { /* ignore */ }
+}
+
 const Capture = () => {
   const navigate = useNavigate();
-  const [flowStep, setFlowStep] = useState<FlowStep>('height');
-  const [photos, setPhotos] = useState<PhotoSet>({ front: null, side: null });
-  const [heightCm, setHeightCm] = useState('');
-  const [heightFt, setHeightFt] = useState('');
-  const [heightIn, setHeightIn] = useState('');
-  const [useCm, setUseCm] = useState(false);
+  const saved = loadScanState();
+  const [flowStep, setFlowStep] = useState<FlowStep>(saved?.flowStep || 'height');
+  const [photos, setPhotos] = useState<PhotoSet>(saved?.photos || { front: null, side: null });
+  const [heightCm, setHeightCm] = useState(saved?.heightCm || '');
+  const [heightFt, setHeightFt] = useState(saved?.heightFt || '');
+  const [heightIn, setHeightIn] = useState(saved?.heightIn || '');
+  const [useCm, setUseCm] = useState(saved?.useCm || false);
 
   // Track scan start once
   useEffect(() => { trackEvent('scan_started'); }, []);
-  const [refObject, setRefObject] = useState<ReferenceObject>('none');
+  const [refObject, setRefObject] = useState<ReferenceObject>(saved?.refObject || 'none');
   const [reviewing, setReviewing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Persist state on every change
+  useEffect(() => {
+    saveScanState({ flowStep, photos, heightCm, heightFt, heightIn, useCm, refObject });
+  }, [flowStep, photos, heightCm, heightFt, heightIn, useCm, refObject]);
 
   const getHeightCm = (): number => {
     if (useCm) return parseFloat(heightCm) || 0;
@@ -95,6 +120,7 @@ const Capture = () => {
   };
 
   const handleAnalyze = () => {
+    clearScanState();
     trackEvent('scan_completed');
     navigate('/analyze', {
       state: {
