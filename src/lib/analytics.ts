@@ -2,12 +2,33 @@
 
 type FunnelEvent =
   | 'home_start_scan_click'
+  | 'home_tryon_click'
+  | 'home_fitcheck_click'
+  | 'auth_started'
+  | 'auth_completed'
+  | 'onboarding_fit_selected'
+  | 'onboarding_completed'
+  | 'scan_started'
   | 'scan_front_captured'
   | 'scan_side_captured'
   | 'scan_completed'
   | 'results_viewed'
+  | 'results_saved'
+  | 'results_tryon_click'
+  | 'tryon_started'
+  | 'tryon_photo_uploaded'
+  | 'tryon_clothing_uploaded'
   | 'tryon_generated'
-  | 'community_rated';
+  | 'tryon_saved'
+  | 'tryon_posted'
+  | 'fitcheck_post_started'
+  | 'fitcheck_posted'
+  | 'fitcheck_reaction'
+  | 'community_rated'
+  | 'retailer_click'
+  | 'profile_export'
+  | 'share_action'
+  | 'save_action';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
