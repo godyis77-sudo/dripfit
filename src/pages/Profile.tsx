@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Shirt, Crown, Trash2, Shield, Download, Settings, Ruler, Camera, ChevronRight, Fingerprint, Star } from 'lucide-react';
+import { LogOut, Shirt, Crown, Trash2, Shield, Download, Settings, Ruler, Camera, ChevronRight, Fingerprint, Sparkles, MessageSquare } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { getFitPreference, setFitPreference } from '@/lib/session';
+import { trackEvent } from '@/lib/analytics';
 import type { FitPreference, BodyScanResult } from '@/lib/types';
 import { SUPPORTED_RETAILERS } from '@/lib/types';
 import BottomTabBar from '@/components/BottomTabBar';
@@ -57,7 +58,7 @@ const Profile = () => {
     try { const scans = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]'); if (scans.length > 0) setSavedProfile(scans[0]); } catch { /* ignore */ }
   };
 
-  const handleFitChange = (newFit: FitPreference) => { setFit(newFit); setFitPreference(newFit); toast({ title: 'Updated', description: `Default fit: ${newFit}.` }); };
+  const handleFitChange = (newFit: FitPreference) => { setFit(newFit); setFitPreference(newFit); toast({ title: 'Updated', description: `Default fit set to ${newFit}.` }); };
   const handleDeletePhotos = () => { localStorage.removeItem('dripcheck_scans'); setSavedProfile(null); toast({ title: 'Deleted', description: 'Scan data removed.' }); };
   const handleDeleteAccount = () => { toast({ title: 'Contact support', description: 'Account deletion requires contacting support.' }); };
   const handleExport = () => {
@@ -66,11 +67,15 @@ const Profile = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = 'dripfit-data.json'; a.click();
     URL.revokeObjectURL(url);
-    toast({ title: 'Exported' });
+    trackEvent('profile_export');
+    toast({ title: 'Data exported' });
   };
   const handleSignOut = async () => { await signOut(); navigate('/', { replace: true }); };
 
   if (!user) return null;
+
+  const publicCount = tryOnPosts.filter(p => p.is_public).length;
+  const pendingFeedback = tryOnPosts.filter(p => p.is_public).length; // posts awaiting community response
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-bottom">
@@ -113,9 +118,9 @@ const Profile = () => {
               {/* Stats row */}
               <div className="flex gap-2 mb-4">
                 {[
-                  { label: 'Try-Ons', value: tryOnPosts.length },
-                  { label: 'Public', value: tryOnPosts.filter(p => p.is_public).length },
-                  { label: 'Private', value: tryOnPosts.filter(p => !p.is_public).length },
+                  { label: 'Total', value: tryOnPosts.length },
+                  { label: 'Public', value: publicCount },
+                  { label: 'Private', value: tryOnPosts.length - publicCount },
                 ].map(s => (
                   <div key={s.label} className="flex-1 bg-card border border-border rounded-lg py-2 text-center">
                     <p className="text-[16px] font-bold text-foreground">{s.value}</p>
@@ -135,26 +140,43 @@ const Profile = () => {
                 </div>
               ) : tryOnPosts.length === 0 ? (
                 <div className="text-center py-10">
-                  <Shirt className="h-8 w-8 text-muted-foreground/20 mx-auto mb-2" />
-                  <p className="text-[13px] font-semibold text-muted-foreground mb-3">No Try-Ons yet</p>
-                  <Button className="rounded-lg btn-luxury text-primary-foreground text-sm h-10 px-5" onClick={() => navigate('/tryon')}>Create a Try-On</Button>
+                  <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                    <Sparkles className="h-6 w-6 text-primary/50" />
+                  </div>
+                  <p className="text-[14px] font-bold text-foreground mb-1">No Try-Ons yet</p>
+                  <p className="text-[12px] text-muted-foreground max-w-[200px] mx-auto mb-4">Upload a photo and a clothing item to see how it looks on you.</p>
+                  <Button className="rounded-lg btn-luxury text-primary-foreground text-sm h-10 px-5 font-bold" onClick={() => navigate('/tryon')}>
+                    <Sparkles className="mr-1.5 h-4 w-4" /> Create Your First Try-On
+                  </Button>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-2">
-                  {tryOnPosts.map(post => (
-                    <motion.div key={post.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
-                      <div className="rounded-xl overflow-hidden border border-border bg-card">
-                        <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
-                        <div className="p-2 flex items-center justify-between">
-                          <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
-                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${post.is_public ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                            {post.is_public ? 'Public' : 'Private'}
-                          </span>
+                <>
+                  <div className="grid grid-cols-2 gap-2">
+                    {tryOnPosts.map(post => (
+                      <motion.div key={post.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
+                        <div className="rounded-xl overflow-hidden border border-border bg-card">
+                          <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
+                          <div className="p-2 flex items-center justify-between">
+                            <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
+                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${post.is_public ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                              {post.is_public ? 'Public' : 'Private'}
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* Re-entry CTAs */}
+                  <div className="flex gap-2 mt-4">
+                    <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px]" onClick={() => navigate('/tryon')}>
+                      <Sparkles className="mr-1 h-3 w-3" /> New Try-On
+                    </Button>
+                    <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px]" onClick={() => navigate('/community')}>
+                      <MessageSquare className="mr-1 h-3 w-3" /> Fit Check Feed
+                    </Button>
+                  </div>
+                </>
               )}
             </motion.div>
           ) : (
@@ -255,11 +277,10 @@ const Profile = () => {
                       <Ruler className="h-5 w-5 text-primary/50" />
                     </div>
                     <p className="text-[12px] font-semibold text-foreground mb-0.5">No body profile yet</p>
-                    <p className="text-[10px] text-muted-foreground mb-3 text-center max-w-[200px]">
-                      Complete one Scan to unlock accurate size recommendations across all retailers.
+                    <p className="text-[10px] text-muted-foreground mb-3 text-center max-w-[220px]">
+                      Complete a quick Scan to get accurate size recommendations across all retailers.
                     </p>
                     <Button className="rounded-lg btn-luxury text-primary-foreground text-[11px] h-9 px-4 font-bold active:scale-95 transition-transform" onClick={() => navigate('/capture')}>
-
                       <Camera className="mr-1.5 h-3.5 w-3.5" /> Start Scan
                     </Button>
                   </div>
@@ -299,7 +320,7 @@ const Profile = () => {
               </div>
 
               <p className="text-[10px] text-muted-foreground text-center flex items-center justify-center gap-1 pb-2">
-                <Shield className="h-3 w-3" /> Your data is private by default · delete anytime
+                <Shield className="h-3 w-3" /> Private by default · delete anytime
               </p>
             </motion.div>
           )}

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Sparkles, Check } from 'lucide-react';
 import { BodyScanResult, FitPreference, MeasurementRange } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
@@ -53,14 +53,15 @@ const Results = () => {
     history.unshift(result);
     localStorage.setItem('dripcheck_scans', JSON.stringify(history));
     setSaved(true);
-    toast({ title: 'Saved!', description: 'Body profile saved.' });
+    trackEvent('results_saved');
+    toast({ title: 'Saved to Profile', description: 'Your body profile is ready for Try-Ons.' });
   };
 
-  const handleDelete = () => { toast({ title: 'Deleted', description: 'Photos removed.' }); navigate('/'); };
+  const handleDelete = () => { toast({ title: 'Deleted', description: 'Scan data removed.' }); navigate('/'); };
 
   const handleCalibrate = (data: { type: 'waist'; value: number } | { type: 'brand'; brand: string; size: string }) => {
     setConfidence('medium');
-    toast({ title: 'Updated!', description: 'Confidence improved.' });
+    toast({ title: 'Confidence improved', description: 'Your size recommendation is now more accurate.' });
   };
 
   return (
@@ -71,13 +72,33 @@ const Results = () => {
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </div>
-        <SizeHero retailer={state?.retailer} category={state?.category} recommendedSize={adjustedSize} confidence={confidence} whyLine={result.whyLine || 'Based on scan + retailer chart + fit preference'} />
+
+        {/* Success confirmation */}
+        <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-lg px-3 py-2 mb-4">
+          <Check className="h-4 w-4 text-primary shrink-0" />
+          <div>
+            <p className="text-[12px] font-bold text-primary">Scan complete</p>
+            <p className="text-[10px] text-muted-foreground">Your measurements are ready — see your best size below</p>
+          </div>
+        </div>
+
+        <SizeHero retailer={state?.retailer} category={state?.category} recommendedSize={adjustedSize} confidence={confidence} whyLine={result.whyLine || 'Based on your scan + retailer chart + fit preference'} />
         <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
         <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} />
         {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
         <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
-        <ResultActions saved={saved} scanDate={result.date} onSave={handleSave} onTryOn={() => navigate('/tryon', { state: { bodyProfile: result } })} onNewScan={() => navigate('/capture')} onDelete={handleDelete} />
+        <ResultActions saved={saved} scanDate={result.date} onSave={handleSave} onTryOn={() => { trackEvent('results_tryon_click'); navigate('/tryon', { state: { bodyProfile: result } }); }} onNewScan={() => navigate('/capture')} onDelete={handleDelete} />
 
+        {/* Next step suggestion */}
+        {saved && (
+          <div className="mt-3 bg-card border border-border rounded-lg p-3 text-center">
+            <p className="text-[12px] font-bold text-foreground mb-1">What's next?</p>
+            <p className="text-[10px] text-muted-foreground mb-2.5">See how a specific item looks on you with your new size profile.</p>
+            <Button className="rounded-lg btn-luxury text-primary-foreground text-[11px] h-9 px-4 font-bold" onClick={() => navigate('/tryon', { state: { bodyProfile: result } })}>
+              <Sparkles className="mr-1.5 h-3.5 w-3.5" /> Try-On an Outfit
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

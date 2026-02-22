@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Shirt, Sparkles, Loader2, Share2, Shield, User, Check, Link2, Info } from 'lucide-react';
+import { ArrowLeft, Shirt, Sparkles, Loader2, Share2, Shield, User, Check, Link2, Info, MessageSquare, Save, RotateCcw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -25,6 +25,13 @@ const DEMO_OUTFITS = [
   { label: 'Denim Jacket', category: 'outerwear', color: 'bg-blue-900/30' },
   { label: 'Black Hoodie', category: 'top', color: 'bg-foreground/10' },
   { label: 'Blazer', category: 'outerwear', color: 'bg-muted' },
+];
+
+const FIT_CHECK_PROMPTS = [
+  'Should I buy this for work?',
+  'Date night — yes or no?',
+  'Casual Friday vibes?',
+  'Too bold or just right?',
 ];
 
 const TryOn = () => {
@@ -51,11 +58,14 @@ const TryOn = () => {
   const hasSavedProfile = !!localStorage.getItem('dripcheck_scans') && JSON.parse(localStorage.getItem('dripcheck_scans') || '[]').length > 0;
   const canGenerate = !!userPhoto && !!clothingPhoto;
 
-  const handleFileSelect = (setter: (v: string) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (setter: (v: string) => void, type: 'photo' | 'clothing') => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onloadend = () => setter(reader.result as string);
+    reader.onloadend = () => {
+      setter(reader.result as string);
+      trackEvent(type === 'photo' ? 'tryon_photo_uploaded' : 'tryon_clothing_uploaded');
+    };
     reader.readAsDataURL(file);
     e.target.value = '';
   };
@@ -65,6 +75,7 @@ const TryOn = () => {
     setLoading(true);
     setResultImage(null);
     setDescription(null);
+    trackEvent('tryon_started');
     try {
       const { data, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto, clothingPhoto } });
       if (error) throw new Error(error.message);
@@ -73,7 +84,7 @@ const TryOn = () => {
       if (data.resultImage) { setResultImage(data.resultImage); if (user) autoSaveToProfile(data.resultImage); }
       else if (data.description) { setDescription(data.description); }
     } catch (err: any) {
-      toast({ title: 'Try-on failed', description: err.message, variant: 'destructive' });
+      toast({ title: 'Try-On failed', description: err.message, variant: 'destructive' });
     } finally { setLoading(false); }
   };
 
@@ -99,13 +110,15 @@ const TryOn = () => {
       const { error } = await supabase.from('tryon_posts').insert({ user_id: user!.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false });
       if (error) throw error;
       setAutoSaved(true);
-      toast({ title: 'Saved!', description: 'Look saved to your profile.' });
+      trackEvent('tryon_saved');
+      toast({ title: 'Saved to Profile', description: 'Your Try-On is saved privately.' });
     } catch (err: any) { console.error('Auto-save failed:', err); }
   };
 
   const handleShare = async () => {
-    if (!user) { toast({ title: 'Sign in required', description: 'Create an account to share.', variant: 'destructive' }); navigate('/auth'); return; }
+    if (!user) { toast({ title: 'Sign in to share', description: 'Create a free account to post your look.', variant: 'destructive' }); navigate('/auth'); return; }
     setShared(true);
+    trackEvent('tryon_posted', { isPublic });
     try {
       if (autoSaved) {
         const { data: latestPosts } = await supabase.from('tryon_posts').select('id').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
@@ -118,194 +131,247 @@ const TryOn = () => {
         ]);
         await supabase.from('tryon_posts').insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic });
       }
-      toast({ title: isPublic ? 'Shared!' : 'Updated!', description: isPublic ? 'Your look is now in the community feed.' : 'Caption updated.' });
+      toast({ title: isPublic ? 'Posted to Fit Check!' : 'Saved!', description: isPublic ? 'Your look is live — get feedback from the community.' : 'Caption updated.' });
     } catch (err: any) {
       setShared(false);
       toast({ title: 'Share failed', description: err.message, variant: 'destructive' });
     }
   };
 
+  const handleTryAnother = () => {
+    setUserPhoto(null);
+    setClothingPhoto(null);
+    setResultImage(null);
+    setDescription(null);
+    setCaption('');
+    setIsPublic(false);
+    setShared(false);
+    setAutoSaved(false);
+    setProductLink('');
+  };
+
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-bottom">
       <div className="max-w-sm mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mb-3">
           <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg">
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-base font-bold text-foreground">Try-On</h1>
+          <div>
+            <h1 className="text-base font-bold text-foreground">Try-On</h1>
+            <p className="text-[10px] text-muted-foreground">See how it looks before you buy</p>
+          </div>
         </div>
 
         {/* Body profile badge */}
-        {(hasSavedProfile || bodyProfile) && (
+        {(hasSavedProfile || bodyProfile) && !resultImage && (
           <div className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-lg px-3 py-2 mb-3">
             <div>
-              <p className="text-[11px] font-bold text-primary flex items-center gap-1"><Check className="h-3 w-3" /> Body Profile Saved</p>
-              <p className="text-[10px] text-muted-foreground">Improves try-on accuracy</p>
+              <p className="text-[11px] font-bold text-primary flex items-center gap-1"><Check className="h-3 w-3" /> Body Profile Active</p>
+              <p className="text-[10px] text-muted-foreground">Your measurements improve try-on accuracy</p>
             </div>
-            {!bodyProfile && (
-              <Button variant="ghost" size="sm" className="text-[11px] text-primary h-7 px-2" onClick={() => navigate('/capture')}>Re-scan</Button>
-            )}
           </div>
         )}
 
-        {/* Upload zones */}
-        <div className="grid grid-cols-2 gap-2 mb-3">
-          <input ref={userPhotoRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileSelect(setUserPhoto)} className="hidden" />
-          <input ref={clothingPhotoRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileSelect(setClothingPhoto)} className="hidden" />
+        {!resultImage ? (
+          <>
+            {/* Upload zones */}
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              <input ref={userPhotoRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileSelect(setUserPhoto, 'photo')} className="hidden" />
+              <input ref={clothingPhotoRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileSelect(setClothingPhoto, 'clothing')} className="hidden" />
 
-          {/* Your Photo */}
-          <div>
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Your Photo</p>
-            <button onClick={() => userPhotoRef.current?.click()} className={`w-full rounded-xl overflow-hidden border-2 border-dashed bg-card active:scale-[0.97] transition-all ${userPhoto ? 'border-primary/40' : 'border-border hover:border-primary/30'}`}>
-              <div className="aspect-[3/4] flex items-center justify-center">
-                {userPhoto ? (
-                  <img src={userPhoto} alt="You" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="flex flex-col items-center gap-1.5 text-muted-foreground p-3">
-                    <div className="h-10 w-10 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
-                      <User className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <p className="text-[11px] font-semibold text-foreground">Tap to upload</p>
-                    <p className="text-[9px] text-muted-foreground">Full body, front facing</p>
+              {/* Your Photo */}
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Your Photo <span className="text-destructive">*</span></p>
+                <button onClick={() => userPhotoRef.current?.click()} className={`w-full rounded-xl overflow-hidden border-2 bg-card active:scale-[0.97] transition-all ${userPhoto ? 'border-primary/40 border-solid' : 'border-border border-dashed hover:border-primary/30'}`}>
+                  <div className="aspect-[3/4] flex items-center justify-center">
+                    {userPhoto ? (
+                      <img src={userPhoto} alt="You" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="flex flex-col items-center gap-1.5 text-muted-foreground p-3">
+                        <div className="h-10 w-10 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
+                          <User className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                        <p className="text-[11px] font-semibold text-foreground">Tap to upload</p>
+                        <p className="text-[9px] text-muted-foreground text-center">Full body · front facing · well lit</p>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            </button>
-            {userPhoto && <p className="text-[9px] text-primary font-medium mt-1 text-center">✓ Uploaded</p>}
-            {!userPhoto && <p className="text-[9px] text-muted-foreground mt-1 text-center">JPG, PNG, WebP</p>}
-          </div>
-
-          {/* Clothing Item */}
-          <div>
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Clothing Item</p>
-            <button onClick={() => clothingPhotoRef.current?.click()} className={`w-full rounded-xl overflow-hidden border-2 border-dashed bg-card active:scale-[0.97] transition-all ${clothingPhoto ? 'border-primary/40' : 'border-border hover:border-primary/30'}`}>
-              <div className="aspect-[3/4] flex items-center justify-center">
-                {clothingPhoto ? (
-                  <img src={clothingPhoto} alt="Clothing" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="flex flex-col items-center gap-1.5 text-muted-foreground p-3">
-                    <div className="h-10 w-10 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
-                      <Shirt className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <p className="text-[11px] font-semibold text-foreground">Tap to upload</p>
-                    <p className="text-[9px] text-muted-foreground">Product photo or screenshot</p>
-                  </div>
-                )}
-              </div>
-            </button>
-            {clothingPhoto && <p className="text-[9px] text-primary font-medium mt-1 text-center">✓ Uploaded</p>}
-            {!clothingPhoto && <p className="text-[9px] text-muted-foreground mt-1 text-center">JPG, PNG, WebP</p>}
-          </div>
-        </div>
-
-        {/* Product link */}
-        <div className="mb-3">
-          <div className="flex items-center gap-1.5 mb-1">
-            <Link2 className="h-3 w-3 text-muted-foreground" />
-            <p className="text-[11px] text-muted-foreground">Paste product link <span className="text-[9px]">(optional)</span></p>
-          </div>
-          <Input
-            placeholder="https://zara.com/product/..."
-            value={productLink}
-            onChange={e => setProductLink(e.target.value)}
-            className="rounded-lg h-9 text-[12px]"
-          />
-        </div>
-
-        {/* Category selector */}
-        <div className="mb-3">
-          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Garment Category</p>
-          <div className="flex gap-1.5 flex-wrap">
-            {CATEGORIES.map(c => (
-              <button
-                key={c.key}
-                onClick={() => setCategory(c.key)}
-                className={`px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${
-                  category === c.key
-                    ? 'border-primary bg-primary/10 text-primary'
-                    : 'border-border text-muted-foreground hover:border-primary/30'
-                }`}
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Quick picks */}
-        {!clothingPhoto && (
-          <div className="mb-3">
-            <p className="section-label mb-1.5">Quick Picks</p>
-            <div className="grid grid-cols-4 gap-1.5">
-              {DEMO_OUTFITS.map(o => (
-                <button
-                  key={o.label}
-                  className="flex flex-col items-center p-1.5 rounded-lg border border-border hover:border-primary/30 transition-colors active:scale-95"
-                  onClick={() => toast({ title: 'Coming soon', description: `${o.label} catalog coming soon!` })}
-                >
-                  <div className={`w-full aspect-square rounded-md ${o.color} mb-1 flex items-center justify-center`}>
-                    <Shirt className="h-5 w-5 text-foreground/15" />
-                  </div>
-                  <p className="text-[9px] text-muted-foreground font-medium leading-tight text-center">{o.label}</p>
                 </button>
-              ))}
+                {userPhoto && <p className="text-[9px] text-primary font-medium mt-1 text-center flex items-center justify-center gap-0.5"><Check className="h-2.5 w-2.5" /> Ready</p>}
+              </div>
+
+              {/* Clothing Item */}
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Clothing <span className="text-destructive">*</span></p>
+                <button onClick={() => clothingPhotoRef.current?.click()} className={`w-full rounded-xl overflow-hidden border-2 bg-card active:scale-[0.97] transition-all ${clothingPhoto ? 'border-primary/40 border-solid' : 'border-border border-dashed hover:border-primary/30'}`}>
+                  <div className="aspect-[3/4] flex items-center justify-center">
+                    {clothingPhoto ? (
+                      <img src={clothingPhoto} alt="Clothing" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="flex flex-col items-center gap-1.5 text-muted-foreground p-3">
+                        <div className="h-10 w-10 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
+                          <Shirt className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                        <p className="text-[11px] font-semibold text-foreground">Tap to upload</p>
+                        <p className="text-[9px] text-muted-foreground text-center">Product photo · clean background</p>
+                      </div>
+                    )}
+                  </div>
+                </button>
+                {clothingPhoto && <p className="text-[9px] text-primary font-medium mt-1 text-center flex items-center justify-center gap-0.5"><Check className="h-2.5 w-2.5" /> Ready</p>}
+              </div>
             </div>
-          </div>
-        )}
 
-        {/* Generate */}
-        <Button
-          className="w-full h-11 rounded-lg text-sm font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30"
-          onClick={handleTryOn}
-          disabled={loading || !canGenerate}
-        >
-          {loading ? (
-            <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating…</>
-          ) : (
-            <><Sparkles className="mr-2 h-4 w-4" /> Generate</>
-          )}
-        </Button>
+            {/* Product link */}
+            <div className="mb-3">
+              <div className="flex items-center gap-1.5 mb-1">
+                <Link2 className="h-3 w-3 text-muted-foreground" />
+                <p className="text-[11px] text-muted-foreground">Product link <span className="text-[9px] text-muted-foreground/70">(optional — for future retailer matching)</span></p>
+              </div>
+              <Input
+                placeholder="https://zara.com/product/..."
+                value={productLink}
+                onChange={e => setProductLink(e.target.value)}
+                className="rounded-lg h-9 text-[12px]"
+              />
+            </div>
 
-        {!canGenerate && !loading && (
-          <p className="text-[10px] text-muted-foreground text-center mt-1.5 mb-1">
-            Upload both photos to generate.
-          </p>
-        )}
-        {canGenerate && !loading && (
-          <p className="text-[10px] text-primary font-medium text-center mt-1.5 mb-1">
-            ✓ Ready to generate
-          </p>
-        )}
+            {/* Category selector */}
+            <div className="mb-3">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Category</p>
+              <div className="flex gap-1.5 flex-wrap">
+                {CATEGORIES.map(c => (
+                  <button
+                    key={c.key}
+                    onClick={() => setCategory(c.key)}
+                    className={`px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${
+                      category === c.key
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border text-muted-foreground hover:border-primary/30'
+                    }`}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-        {/* Expectation note */}
-        <div className="flex items-start gap-1.5 bg-card border border-border rounded-lg px-3 py-2 mb-3">
-          <Info className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" />
-          <p className="text-[10px] text-muted-foreground leading-relaxed">
-            Preview only — exact drape, texture, and fit may vary from the actual garment.
-          </p>
-        </div>
+            {/* Quick picks */}
+            {!clothingPhoto && (
+              <div className="mb-3">
+                <p className="section-label mb-1.5">Quick Picks</p>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {DEMO_OUTFITS.map(o => (
+                    <button
+                      key={o.label}
+                      className="flex flex-col items-center p-1.5 rounded-lg border border-border hover:border-primary/30 transition-colors active:scale-95"
+                      onClick={() => toast({ title: 'Coming soon', description: `${o.label} catalog coming soon!` })}
+                    >
+                      <div className={`w-full aspect-square rounded-md ${o.color} mb-1 flex items-center justify-center`}>
+                        <Shirt className="h-5 w-5 text-foreground/15" />
+                      </div>
+                      <p className="text-[9px] text-muted-foreground font-medium leading-tight text-center">{o.label}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
-        <p className="text-[10px] text-muted-foreground text-center flex items-center justify-center gap-1 mb-2">
-          <Shield className="h-3 w-3" /> Private by default · delete anytime
-        </p>
+            {/* Generate CTA */}
+            <Button
+              className="w-full h-11 rounded-lg text-sm font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30"
+              onClick={handleTryOn}
+              disabled={loading || !canGenerate}
+            >
+              {loading ? (
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating your preview…</>
+              ) : (
+                <><Sparkles className="mr-2 h-4 w-4" /> Generate Try-On</>
+              )}
+            </Button>
 
-        {/* Result */}
-        {resultImage && (
+            {!canGenerate && !loading && (
+              <p className="text-[10px] text-muted-foreground text-center mt-1.5 mb-1">
+                {!userPhoto && !clothingPhoto ? 'Upload your photo and a clothing item to start' :
+                 !userPhoto ? 'Upload your photo to continue' : 'Upload a clothing item to continue'}
+              </p>
+            )}
+            {canGenerate && !loading && (
+              <p className="text-[10px] text-primary font-medium text-center mt-1.5 mb-1 flex items-center justify-center gap-1">
+                <Check className="h-3 w-3" /> Ready to generate
+              </p>
+            )}
+
+            {/* Expectation note */}
+            <div className="flex items-start gap-1.5 bg-card border border-border rounded-lg px-3 py-2 mt-2 mb-3">
+              <Info className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" />
+              <p className="text-[10px] text-muted-foreground leading-relaxed">
+                AI preview — actual fit, drape, and texture may vary. Use your Scan profile for the most accurate sizing.
+              </p>
+            </div>
+          </>
+        ) : (
+          /* ─── RESULT STATE ─── */
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+            {/* Success banner */}
+            <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-lg px-3 py-2 mb-3">
+              <Check className="h-4 w-4 text-primary shrink-0" />
+              <div>
+                <p className="text-[12px] font-bold text-primary">Try-On ready</p>
+                <p className="text-[10px] text-muted-foreground">{autoSaved ? 'Auto-saved to your profile' : 'Sign in to save'}</p>
+              </div>
+            </div>
+
             <div className="rounded-xl overflow-hidden border border-border mb-3">
               <img src={resultImage} alt="Try-on result" className="w-full" />
             </div>
+
+            {/* Post-action CTA bar */}
             <div className="space-y-2">
-              <Textarea placeholder="Add a caption…" value={caption} onChange={e => setCaption(e.target.value)} className="rounded-lg resize-none text-sm" rows={2} />
+              {/* Caption + prompt suggestions */}
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Add a caption or question</p>
+                <Textarea placeholder="e.g., Should I buy this for work?" value={caption} onChange={e => setCaption(e.target.value)} className="rounded-lg resize-none text-sm" rows={2} />
+                {!caption && (
+                  <div className="flex gap-1 mt-1.5 flex-wrap">
+                    {FIT_CHECK_PROMPTS.map(p => (
+                      <button key={p} onClick={() => setCaption(p)} className="text-[9px] px-2 py-1 rounded-md border border-border text-muted-foreground hover:border-primary/30 hover:text-foreground transition-colors">
+                        {p}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Visibility toggle */}
               <div className="flex items-center justify-between bg-card rounded-lg p-2.5 border border-border">
-                <span className="text-[13px] font-semibold text-foreground/70">Share as Fit Check</span>
+                <div>
+                  <span className="text-[12px] font-semibold text-foreground">Post to Fit Check</span>
+                  <p className="text-[9px] text-muted-foreground">Get real feedback from the community</p>
+                </div>
                 <Switch checked={isPublic} onCheckedChange={setIsPublic} />
               </div>
-              <Button className="w-full h-10 rounded-lg btn-luxury text-primary-foreground text-sm" onClick={handleShare} disabled={shared}>
-                <Share2 className="mr-1.5 h-3.5 w-3.5" />
-                {shared ? 'Shared!' : isPublic ? 'Post Fit Check' : 'Save to Profile'}
+
+              {/* Primary action */}
+              <Button className="w-full h-10 rounded-lg btn-luxury text-primary-foreground text-sm font-bold" onClick={handleShare} disabled={shared}>
+                {shared ? (
+                  <><Check className="mr-1.5 h-3.5 w-3.5" /> {isPublic ? 'Posted!' : 'Saved!'}</>
+                ) : (
+                  <>{isPublic ? <><MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Post for Feedback</> : <><Save className="mr-1.5 h-3.5 w-3.5" /> Save to Profile</>}</>
+                )}
               </Button>
+
+              {/* Secondary actions */}
+              <div className="flex gap-2">
+                <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px]" onClick={handleTryAnother}>
+                  <RotateCcw className="mr-1 h-3 w-3" /> Try Another
+                </Button>
+                <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px]" onClick={() => navigate('/community')}>
+                  <MessageSquare className="mr-1 h-3 w-3" /> View Fit Check
+                </Button>
+              </div>
             </div>
           </motion.div>
         )}
@@ -315,6 +381,10 @@ const TryOn = () => {
             <p className="text-[13px] text-foreground/80">{description}</p>
           </div>
         )}
+
+        <p className="text-[10px] text-muted-foreground text-center flex items-center justify-center gap-1 mt-3 mb-2">
+          <Shield className="h-3 w-3" /> Private by default · delete anytime
+        </p>
       </div>
       <BottomTabBar />
     </div>

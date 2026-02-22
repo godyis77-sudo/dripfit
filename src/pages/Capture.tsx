@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,6 +36,9 @@ const Capture = () => {
   const [heightFt, setHeightFt] = useState('');
   const [heightIn, setHeightIn] = useState('');
   const [useCm, setUseCm] = useState(false);
+
+  // Track scan start once
+  useEffect(() => { trackEvent('scan_started'); }, []);
   const [refObject, setRefObject] = useState<ReferenceObject>('none');
   const [reviewing, setReviewing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);

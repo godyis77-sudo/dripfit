@@ -1,22 +1,22 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Camera, Crown, LogIn, LogOut, Shield, Sparkles, Users, Ruler, Star, ChevronRight } from 'lucide-react';
+import { Camera, Crown, LogIn, LogOut, Shield, Sparkles, Users, Ruler, Star, ChevronRight, ArrowRight, TrendingUp } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { isOnboarded } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import BottomTabBar from '@/components/BottomTabBar';
 
 const PILLARS = [
-  { icon: Ruler, label: 'Scan', desc: 'AI body measurements' },
-  { icon: Sparkles, label: 'Try-On', desc: 'Virtual outfit preview' },
-  { icon: Users, label: 'Fit Check', desc: 'Feedback before you buy' },
+  { icon: Ruler, label: 'Scan', desc: 'AI body measurements in 60 seconds', action: '/capture' },
+  { icon: Sparkles, label: 'Try-On', desc: 'See it on you before you buy', action: '/tryon' },
+  { icon: Users, label: 'Fit Check', desc: 'Real feedback from real people', action: '/community' },
 ];
 
 const TRUST = [
   { icon: Shield, text: 'Private by default' },
   { icon: Star, text: '10+ retailer charts' },
-  { icon: Sparkles, text: 'Confidence scores' },
+  { icon: TrendingUp, text: 'Confidence scores' },
 ];
 
 const Welcome = () => {
@@ -41,7 +41,7 @@ const Welcome = () => {
         <motion.nav
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="w-full max-w-sm flex items-center justify-between mb-6"
+          className="w-full max-w-sm flex items-center justify-between mb-5"
         >
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg gradient-drip flex items-center justify-center">
@@ -54,7 +54,7 @@ const Welcome = () => {
               <LogOut className="mr-1 h-3.5 w-3.5" /> Sign Out
             </Button>
           ) : (
-            <Button variant="ghost" size="sm" onClick={() => navigate('/auth')} className="text-muted-foreground text-xs h-8 px-2.5 rounded-lg">
+            <Button variant="ghost" size="sm" onClick={() => { trackEvent('auth_started'); navigate('/auth'); }} className="text-muted-foreground text-xs h-8 px-2.5 rounded-lg">
               <LogIn className="mr-1 h-3.5 w-3.5" /> Sign In
             </Button>
           )}
@@ -65,39 +65,21 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center max-w-[300px] mb-6"
+          className="text-center max-w-[300px] mb-5"
         >
           <h1 className="font-display text-[28px] font-bold tracking-tight mb-2 leading-[1.12]">
-            Never buy the <span className="gradient-drip-text">wrong size</span> again
+            Know your size <span className="gradient-drip-text">before you buy</span>
           </h1>
           <p className="text-muted-foreground text-[13px] leading-relaxed">
-            Scan → Try-On → Fit Check — all before you buy.
+            Get your measurements, preview the outfit, and get real feedback — all in under 2 minutes.
           </p>
-        </motion.div>
-
-        {/* 3 Pillars */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.4 }}
-          className="w-full max-w-[300px] grid grid-cols-3 gap-2 mb-6"
-        >
-          {PILLARS.map((p) => (
-            <div key={p.label} className="flex flex-col items-center gap-1.5 bg-card border border-border rounded-lg py-3 px-2">
-              <div className="h-8 w-8 rounded-lg gradient-drip flex items-center justify-center">
-                <p.icon className="h-4 w-4 text-primary-foreground" />
-              </div>
-              <span className="text-[11px] font-bold text-foreground">{p.label}</span>
-              <span className="text-[10px] text-muted-foreground text-center leading-tight">{p.desc}</span>
-            </div>
-          ))}
         </motion.div>
 
         {/* Primary CTA */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.4 }}
+          transition={{ delay: 0.15, duration: 0.4 }}
           className="w-full max-w-[300px] mb-2"
         >
           <Button
@@ -105,24 +87,45 @@ const Welcome = () => {
             className="w-full h-12 text-sm font-display font-bold uppercase tracking-widest btn-luxury text-primary-foreground rounded-lg active:scale-[0.97] transition-transform"
             size="lg"
           >
-            <Camera className="mr-2 h-4 w-4" /> Start Scan
+            <Camera className="mr-2 h-4 w-4" /> Get My Size
           </Button>
+          <p className="text-[10px] text-muted-foreground text-center mt-1.5">
+            Free · 2 photos · 60 seconds
+          </p>
         </motion.div>
 
-        {/* Secondary CTA */}
+        {/* 3 Pillars — clickable */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.25 }}
-          className="w-full max-w-[300px] mb-6"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.4 }}
+          className="w-full max-w-[300px] mb-5 mt-3"
         >
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/tryon')}
-            className="w-full h-10 text-xs font-display font-semibold uppercase tracking-wider text-primary hover:text-primary hover:bg-primary/5 rounded-lg"
-          >
-            <Sparkles className="mr-1.5 h-3.5 w-3.5" /> Try Virtual Try-On
-          </Button>
+          <p className="section-label mb-2">How it works</p>
+          <div className="space-y-1.5">
+            {PILLARS.map((p, i) => (
+              <button
+                key={p.label}
+                onClick={() => {
+                  if (p.label === 'Scan') handleStartScan();
+                  else if (p.label === 'Try-On') { trackEvent('home_tryon_click'); navigate(p.action); }
+                  else { trackEvent('home_fitcheck_click'); navigate(p.action); }
+                }}
+                className="w-full flex items-center gap-3 bg-card border border-border rounded-lg py-2.5 px-3 group active:scale-[0.98] transition-transform"
+              >
+                <div className="flex items-center justify-center h-8 w-8 rounded-lg gradient-drip shrink-0">
+                  <p.icon className="h-4 w-4 text-primary-foreground" />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="text-[12px] font-bold text-foreground flex items-center gap-1.5">
+                    <span className="text-[10px] text-primary font-bold">{i + 1}.</span> {p.label}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground leading-tight">{p.desc}</p>
+                </div>
+                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+              </button>
+            ))}
+          </div>
         </motion.div>
 
         {/* Sample Result Preview */}
@@ -130,13 +133,13 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.4 }}
-          className="w-full max-w-[300px] mb-6"
+          className="w-full max-w-[300px] mb-5"
         >
-          <p className="section-label mb-2">Sample Result</p>
+          <p className="section-label mb-2">What you'll get</p>
           <div className="bg-card border border-border rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Recommended</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Your best size</p>
                 <p className="font-display text-2xl font-bold gradient-drip-text leading-none">M</p>
               </div>
               <div className="flex items-center gap-1 bg-primary/10 rounded-md px-2 py-1">
@@ -175,12 +178,28 @@ const Welcome = () => {
           </div>
         </motion.div>
 
+        {/* Secondary CTA */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.35 }}
+          className="w-full max-w-[300px] mb-4"
+        >
+          <Button
+            variant="outline"
+            onClick={() => { trackEvent('home_tryon_click'); navigate('/tryon'); }}
+            className="w-full h-10 text-xs font-display font-semibold uppercase tracking-wider text-primary border-primary/20 hover:bg-primary/5 rounded-lg"
+          >
+            <Sparkles className="mr-1.5 h-3.5 w-3.5" /> Skip to Try-On
+          </Button>
+        </motion.div>
+
         {/* Trust row */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="w-full max-w-[300px] flex items-center justify-between mb-6"
+          className="w-full max-w-[300px] flex items-center justify-between mb-5"
         >
           {TRUST.map((t) => (
             <div key={t.text} className="flex items-center gap-1">

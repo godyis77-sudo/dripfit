@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, Send, Shirt, Sparkles, Heart, ShoppingBag, X, ThumbsUp } from 'lucide-react';
+import { ArrowLeft, Star, Send, Shirt, Sparkles, Heart, ShoppingBag, X, ThumbsUp, TrendingUp, Users } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -56,7 +56,7 @@ const StarRating = ({ value, onChange }: { value: number; onChange: (v: number) 
   <div className="flex gap-0.5">
     {[1, 2, 3, 4, 5].map(n => (
       <button key={n} onClick={() => onChange(n)} className="p-0.5 active:scale-110 transition-transform">
-        <Star className={`h-3.5 w-3.5 ${n <= value ? 'fill-primary text-primary' : 'text-muted-foreground/30'}`} />
+        <Star className={`h-3.5 w-3.5 ${n <= value ? 'fill-primary text-primary' : 'text-muted-foreground/40'}`} />
       </button>
     ))}
   </div>
@@ -123,14 +123,15 @@ const Community = () => {
     if (Object.values(ratings).some(v => v === 0)) { toast({ title: 'Rate all categories', variant: 'destructive' }); return; }
     setSubmitting(true);
     const { error } = await supabase.from('tryon_ratings').insert({ post_id: postId, rater_user_id: user.id, ...ratings, comment: comment || null });
-    if (error) { toast({ title: 'Error', description: error.message.includes('unique') ? 'Already rated.' : error.message, variant: 'destructive' }); }
-    else { trackEvent('community_rated'); toast({ title: 'Thanks!' }); setRatingPost(null); setRatings({ style_score: 0, color_score: 0, buy_score: 0, suitability_score: 0 }); setComment(''); fetchPosts(); }
+    if (error) { toast({ title: 'Error', description: error.message.includes('unique') ? 'You already rated this look.' : error.message, variant: 'destructive' }); }
+    else { trackEvent('community_rated'); toast({ title: 'Rating submitted!' }); setRatingPost(null); setRatings({ style_score: 0, color_score: 0, buy_score: 0, suitability_score: 0 }); setComment(''); fetchPosts(); }
     setSubmitting(false);
   };
 
   const handleReaction = (postId: string, key: string) => {
     setReactions(prev => ({ ...prev, [postId]: prev[postId] === key ? '' : key }));
-    if (!user) { toast({ title: 'Sign in to react', variant: 'destructive' }); return; }
+    trackEvent('fitcheck_reaction', { reaction: key });
+    if (!user) { toast({ title: 'Sign in to react', description: 'Create a free account to share your opinion.', variant: 'destructive' }); return; }
   };
 
   const isPlaceholder = (post: Post) => post.id.startsWith('placeholder-');
@@ -146,12 +147,12 @@ const Community = () => {
             </Button>
             <div>
               <h1 className="text-base font-bold text-foreground">Fit Check</h1>
-              <p className="text-[10px] text-muted-foreground">Get opinions before you buy</p>
+              <p className="text-[10px] text-muted-foreground">Get real opinions before you buy</p>
             </div>
           </div>
           <Button
             className="rounded-lg btn-luxury text-primary-foreground h-8 px-3 text-[11px] font-bold active:scale-95 transition-transform"
-            onClick={() => navigate('/tryon')}
+            onClick={() => { trackEvent('fitcheck_post_started'); navigate('/tryon'); }}
           >
             <Sparkles className="mr-1 h-3 w-3" /> Post a Look
           </Button>
@@ -160,9 +161,9 @@ const Community = () => {
         {/* Filters */}
         <div className="flex gap-1.5 mb-4">
           {([
-            { key: 'trending' as FilterType, label: '🔥 Trending' },
-            { key: 'new' as FilterType, label: 'New' },
-            { key: 'similar' as FilterType, label: 'Similar Fit' },
+            { key: 'trending' as FilterType, label: '🔥 Trending', icon: TrendingUp },
+            { key: 'new' as FilterType, label: 'New', icon: Sparkles },
+            { key: 'similar' as FilterType, label: 'Similar Fit', icon: Users },
           ]).map(f => (
             <button
               key={f.key}
@@ -193,8 +194,8 @@ const Community = () => {
             <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
               <Sparkles className="h-6 w-6 text-primary" />
             </div>
-            <h2 className="font-display text-base font-bold mb-1.5">Be the First</h2>
-            <p className="text-[13px] text-muted-foreground max-w-[200px] mb-4">Create a Try-On and get real Fit Check feedback.</p>
+            <h2 className="font-display text-base font-bold mb-1.5">Be the first to post</h2>
+            <p className="text-[13px] text-muted-foreground max-w-[220px] mb-4">Create a Try-On and get honest feedback from the community.</p>
             <Button className="rounded-lg btn-luxury text-primary-foreground h-10 px-5 text-sm font-bold" onClick={() => navigate('/tryon')}>
               <Shirt className="mr-1.5 h-4 w-4" /> Create a Try-On
             </Button>
@@ -265,7 +266,7 @@ const Community = () => {
                             <span className="text-[10px] font-bold text-foreground">{(r.v ?? 0).toFixed(1)}</span>
                           </div>
                         ))}
-                        <span className="text-[9px] text-muted-foreground ml-auto">{post.rating_count} votes</span>
+                        <span className="text-[9px] text-muted-foreground ml-auto">{post.rating_count} {post.rating_count === 1 ? 'vote' : 'votes'}</span>
                       </div>
                     )}
 
@@ -274,7 +275,7 @@ const Community = () => {
                       <Button
                         variant="ghost"
                         className="w-full rounded-lg h-8 text-[11px] text-muted-foreground hover:text-foreground active:scale-[0.97] transition-transform"
-                        onClick={() => { if (!user) { toast({ title: 'Sign in to rate', variant: 'destructive' }); return; } setRatingPost(post.id); }}
+                        onClick={() => { if (!user) { toast({ title: 'Sign in to rate', description: 'Create a free account to share your opinion.', variant: 'destructive' }); return; } setRatingPost(post.id); }}
                       >
                         <Star className="mr-1 h-3 w-3" /> Rate this look
                       </Button>
@@ -289,11 +290,11 @@ const Community = () => {
                             <StarRating value={ratings[key]} onChange={v => setRatings(p => ({ ...p, [key]: v }))} />
                           </div>
                         ))}
-                        <Textarea placeholder="Comment (optional)" value={comment} onChange={e => setComment(e.target.value)} className="rounded-lg resize-none text-[12px]" rows={2} />
+                        <Textarea placeholder="Optional comment" value={comment} onChange={e => setComment(e.target.value)} className="rounded-lg resize-none text-[12px]" rows={2} />
                         <div className="flex gap-1.5">
                           <Button variant="outline" className="flex-1 rounded-lg h-8 text-[11px]" onClick={() => setRatingPost(null)}>Cancel</Button>
                           <Button className="flex-1 rounded-lg h-8 btn-luxury text-primary-foreground text-[11px]" onClick={() => handleSubmitRating(post.id)} disabled={submitting}>
-                            <Send className="mr-1 h-3 w-3" /> Submit
+                            <Send className="mr-1 h-3 w-3" /> Submit Rating
                           </Button>
                         </div>
                       </motion.div>
