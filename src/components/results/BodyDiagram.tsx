@@ -89,14 +89,14 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
     <div className="mb-4">
       <p className="section-label mb-2">Body Measurement Map</p>
       <div className="border border-primary/20 rounded-xl p-2 overflow-hidden" style={{ background: 'linear-gradient(180deg, hsl(0 0% 100%), hsl(42 45% 92%), hsl(42 35% 85%))' }}>
-        <div className="relative w-full max-w-[320px] mx-auto" style={{ minHeight: 380 }}>
+        <div className="relative w-full max-w-[360px] mx-auto" style={{ minHeight: 460 }}>
           {/* Body image */}
           {loading && (
-            <Skeleton className="w-full h-[380px] rounded-lg" />
+            <Skeleton className="w-full h-[460px] rounded-lg" />
           )}
 
           {error && !imageUrl && (
-            <div className="w-full h-[380px] flex items-center justify-center text-muted-foreground text-xs">
+            <div className="w-full h-[460px] flex items-center justify-center text-muted-foreground text-xs">
               Could not generate diagram
             </div>
           )}
@@ -105,8 +105,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             <img
               src={imageUrl}
               alt="Body silhouette for measurements"
-              className="w-full h-auto mx-auto block rounded-lg"
-              style={{ maxHeight: 380, objectFit: 'contain' }}
+              className="w-full h-[460px] mx-auto block rounded-lg"
+              style={{ objectFit: 'cover' }}
             />
           )}
 
