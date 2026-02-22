@@ -25,13 +25,15 @@ ${referenceObject !== "none" ? `A reference object (${refDesc}) may be visible f
 
 Your task:
 1. Use the known height (${heightCm} cm) to establish pixel-to-cm scale.
-2. IDENTIFY body landmarks: shoulders, chest, waist, hip, crotch/inseam, top of head, floor.
+2. IDENTIFY body landmarks: shoulders, bust/chest, waist, hip, crotch/inseam, wrist, top of head, floor.
 3. ESTIMATE measurement RANGES in centimeters (provide min and max for each):
    - shoulder: shoulder tip to shoulder tip
    - chest: circumference estimate (front width × π/2 + side depth × π/2)
+   - bust: circumference at fullest part of bust (for women; for men set equal to chest)
    - waist: circumference at natural waist
    - hips: circumference at widest hip point
    - inseam: crotch to floor
+   - sleeve: shoulder point to wrist along the arm
 4. Assess CONFIDENCE: "high" (clear photos, good lighting, fitted clothes), "medium" (decent but some uncertainty), "low" (poor quality, baggy clothes, partial body)
 5. Based on measurement ranges and "${fitPreference}" fit preference, recommend a US size (XS/S/M/L/XL/XXL).
 6. Provide alternatives: one size down (for fitted) and one size up (for relaxed).
@@ -43,9 +45,11 @@ Return ONLY a JSON object:
 {
   "shoulder": { "min": number, "max": number },
   "chest": { "min": number, "max": number },
+  "bust": { "min": number, "max": number },
   "waist": { "min": number, "max": number },
   "hips": { "min": number, "max": number },
   "inseam": { "min": number, "max": number },
+  "sleeve": { "min": number, "max": number },
   "heightCm": ${heightCm},
   "confidence": "high" | "medium" | "low",
   "recommendedSize": "M",

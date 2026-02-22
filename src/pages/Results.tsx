@@ -9,6 +9,7 @@ import SizeHero from '@/components/results/SizeHero';
 import FitPreferenceToggle from '@/components/results/FitPreferenceToggle';
 import AlternativeSizes from '@/components/results/AlternativeSizes';
 import MeasurementGrid from '@/components/results/MeasurementGrid';
+import BodyDiagram from '@/components/results/BodyDiagram';
 import LowConfidenceRescue from '@/components/results/LowConfidenceRescue';
 import ResultActions from '@/components/results/ResultActions';
 
@@ -46,6 +47,8 @@ const Results = () => {
 
   const measurements: Record<string, MeasurementRange> = {
     chest: result.chest, waist: result.waist, hips: result.hips, inseam: result.inseam, shoulder: result.shoulder,
+    ...(result.bust ? { bust: result.bust } : {}),
+    ...(result.sleeve ? { sleeve: result.sleeve } : {}),
   };
 
   const handleSave = () => {
@@ -86,6 +89,7 @@ const Results = () => {
         <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
         <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} />
         {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
+        <BodyDiagram measurements={measurements} heightCm={result.heightCm} />
         <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
         <ResultActions saved={saved} scanDate={result.date} onSave={handleSave} onTryOn={() => { trackEvent('results_tryon_click'); navigate('/tryon', { state: { bodyProfile: result } }); }} onNewScan={() => navigate('/capture')} onDelete={handleDelete} />
 
