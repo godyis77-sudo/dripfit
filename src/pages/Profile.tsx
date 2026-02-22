@@ -3,14 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Shirt, Crown, Trash2, Shield, Download, Settings, Ruler, Camera, ChevronRight, Sparkles, MessageSquare, Bookmark, ShoppingBag } from 'lucide-react';
+import { LogOut, Shirt, Crown, Trash2, Shield, Download, Settings, Ruler, Camera, ChevronRight, Sparkles, MessageSquare, Bookmark, ShoppingBag, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { getFitPreference, setFitPreference } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import type { FitPreference, BodyScanResult } from '@/lib/types';
-import { SUPPORTED_RETAILERS } from '@/lib/types';
+import { SUPPORTED_RETAILERS, MEASUREMENT_LABELS } from '@/lib/types';
 import BottomTabBar from '@/components/BottomTabBar';
+import BodyDiagram from '@/components/results/BodyDiagram';
 import { useToast } from '@/hooks/use-toast';
 
 interface TryOnPost {
@@ -41,7 +42,7 @@ const Profile = () => {
   const [displayName, setDisplayName] = useState('');
   const [tryOnPosts, setTryOnPosts] = useState<TryOnPost[]>([]);
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
-  const [activeTab, setActiveTab] = useState<'tryons' | 'wardrobe' | 'settings'>('tryons');
+  const [activeTab, setActiveTab] = useState<'tryons' | 'body' | 'wardrobe' | 'settings'>('tryons');
   const [loading, setLoading] = useState(true);
   const [useCm, setUseCm] = useState(true);
   const [fit, setFit] = useState<FitPreference>(getFitPreference());
@@ -131,6 +132,7 @@ const Profile = () => {
         <div className="flex gap-0.5 bg-card rounded-lg p-0.5 mb-4 border border-border/40">
           {[
             { key: 'tryons' as const, icon: Shirt, label: 'Try-Ons' },
+            { key: 'body' as const, icon: User, label: 'Body' },
             { key: 'wardrobe' as const, icon: ShoppingBag, label: 'Wardrobe' },
             { key: 'settings' as const, icon: Settings, label: 'Settings' },
           ].map(t => (
@@ -209,6 +211,62 @@ const Profile = () => {
                     </Button>
                   </div>
                 </>
+              )}
+            </motion.div>
+          ) : activeTab === 'body' ? (
+            <motion.div key="body" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
+              {savedProfile ? (
+                <>
+                  {/* Body Diagram */}
+                  {(() => {
+                    const m: Record<string, { min: number; max: number }> = {};
+                    if (savedProfile.shoulder) m.shoulder = savedProfile.shoulder;
+                    if (savedProfile.chest) m.chest = savedProfile.chest;
+                    if (savedProfile.bust) m.bust = savedProfile.bust;
+                    if (savedProfile.waist) m.waist = savedProfile.waist;
+                    if (savedProfile.hips) m.hips = savedProfile.hips;
+                    if (savedProfile.inseam) m.inseam = savedProfile.inseam;
+                    if (savedProfile.sleeve) m.sleeve = savedProfile.sleeve;
+                    return <BodyDiagram measurements={m} heightCm={savedProfile.heightCm} />;
+                  })()}
+
+                  {/* Summary card */}
+                  <div className="bg-card border border-border rounded-xl p-3 mb-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Ruler className="h-3.5 w-3.5 text-primary" />
+                      <p className="text-[13px] font-bold text-foreground">Fit Identity</p>
+                    </div>
+                    <div className="grid grid-cols-4 gap-1.5">
+                      {[
+                        { label: 'Size', value: savedProfile.recommendedSize },
+                        { label: 'Fit', value: fit, cls: 'capitalize' },
+                        { label: 'Confidence', value: savedProfile.confidence, cls: 'capitalize' },
+                        { label: 'Height', value: `${savedProfile.heightCm}cm` },
+                      ].map(d => (
+                        <div key={d.label} className="bg-background rounded-lg py-1.5 text-center">
+                          <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{d.label}</p>
+                          <p className={`text-[12px] font-bold text-foreground ${d.cls || ''}`}>{d.value}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-[9px] text-muted-foreground mt-2">Last scan: {new Date(savedProfile.date).toLocaleDateString()}</p>
+                  </div>
+
+                  <Button variant="outline" className="w-full rounded-lg text-[11px] h-9 mb-2" onClick={() => navigate('/capture')}>
+                    <Camera className="mr-1.5 h-3.5 w-3.5" /> Update Body Scan
+                  </Button>
+                </>
+              ) : (
+                <div className="text-center py-10">
+                  <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                    <Ruler className="h-6 w-6 text-primary/50" />
+                  </div>
+                  <p className="text-[14px] font-bold text-foreground mb-1">No body scan yet</p>
+                  <p className="text-[12px] text-muted-foreground max-w-[220px] mx-auto mb-4">Complete a quick scan to see your measurements and body diagram here.</p>
+                  <Button className="rounded-lg btn-luxury text-primary-foreground text-sm h-10 px-5 font-bold" onClick={() => navigate('/capture')}>
+                    <Camera className="mr-1.5 h-4 w-4" /> Start Scan
+                  </Button>
+                </div>
               )}
             </motion.div>
           ) : activeTab === 'wardrobe' ? (
