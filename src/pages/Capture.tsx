@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Camera, ArrowLeft, RotateCcw, Check, Shield, AlertTriangle,
   Ruler, Sun, Maximize, Shirt, ChevronRight, Eye,
@@ -144,7 +144,7 @@ const Capture = () => {
 
       {/* Content */}
       <div className="flex-1 flex flex-col items-center px-4 pt-2 overflow-y-auto pb-4">
-        <AnimatePresence mode="wait">
+        <>
           {/* ─── STEP: HEIGHT ─── */}
           {flowStep === 'height' && (
             <motion.div key="height" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm">
@@ -355,7 +355,7 @@ const Capture = () => {
               )}
             </motion.div>
           )}
-        </AnimatePresence>
+        </>
       </div>
 
       {/* Bottom actions — sticky above safe area */}
