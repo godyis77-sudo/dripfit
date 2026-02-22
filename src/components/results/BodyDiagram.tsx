@@ -28,20 +28,20 @@ interface MeasurementLine {
 }
 
 const measurementLines: MeasurementLine[] = [
-  // Shoulder — label on left, leader goes right to left endpoint
-  { key: 'shoulder', label: 'Shoulder', labelSide: 'left', x1: '33%', y1: '24%', x2: '67%', y2: '24%', labelTop: '19%', leaderX: 33, leaderY: 24 },
-  // Chest — label on left, spaced below shoulder
-  { key: 'chest', label: 'Chest', labelSide: 'left', x1: '38%', y1: '27%', x2: '62%', y2: '27%', labelTop: '27%', leaderX: 38, leaderY: 27 },
+  // Shoulder — label on left, aligned to line y
+  { key: 'shoulder', label: 'Shoulder', labelSide: 'left', x1: '33%', y1: '24%', x2: '67%', y2: '24%', labelTop: '22%', leaderX: 33, leaderY: 24 },
+  // Chest — label on left
+  { key: 'chest', label: 'Chest', labelSide: 'left', x1: '38%', y1: '27%', x2: '62%', y2: '27%', labelTop: '25%', leaderX: 38, leaderY: 27 },
   // Bust — label on right
-  { key: 'bust', label: 'Bust', labelSide: 'right', x1: '39%', y1: '30%', x2: '61%', y2: '30%', labelTop: '27%', leaderX: 61, leaderY: 30 },
+  { key: 'bust', label: 'Bust', labelSide: 'right', x1: '39%', y1: '30%', x2: '61%', y2: '30%', labelTop: '28%', leaderX: 61, leaderY: 30 },
   // Waist — label on right
-  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '37%', y1: '41%', x2: '63%', y2: '41%', labelTop: '38%', leaderX: 63, leaderY: 41 },
-  // Hips — label on right, spaced below waist
+  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '37%', y1: '41%', x2: '63%', y2: '41%', labelTop: '39%', leaderX: 63, leaderY: 41 },
+  // Hips — label on right
   { key: 'hips', label: 'Hips', labelSide: 'right', x1: '37%', y1: '49%', x2: '63%', y2: '49%', labelTop: '47%', leaderX: 63, leaderY: 49 },
   // Sleeve — label on left
-  { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '36%', y1: '23%', x2: '28%', y2: '53%', labelTop: '37%', leaderX: 32, leaderY: 38 },
+  { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '36%', y1: '23%', x2: '28%', y2: '53%', labelTop: '36%', leaderX: 32, leaderY: 38 },
   // Inseam — label on left
-  { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '48%', y1: '55%', x2: '45%', y2: '86%', labelTop: '70%', leaderX: 46, leaderY: 72 },
+  { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '48%', y1: '55%', x2: '45%', y2: '86%', labelTop: '69%', leaderX: 46, leaderY: 72 },
 ];
 
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
@@ -153,15 +153,14 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   </g>
                 );
               })}
-              {/* Solid leader lines from label edge to reference line */}
-              {measurementLines.map(({ key, labelSide, leaderX, leaderY, labelTop }) => {
+              {/* Horizontal solid leader lines from label to reference line */}
+              {measurementLines.map(({ key, labelSide, leaderX, leaderY }) => {
                 if (!m[key]) return null;
                 const labelEdgeX = labelSide === 'left' ? 18 : 82;
-                const labelY = parseFloat(labelTop) + 1.5;
                 return (
                   <line
                     key={`leader-${key}`}
-                    x1={labelEdgeX} y1={labelY}
+                    x1={labelEdgeX} y1={leaderY}
                     x2={leaderX} y2={leaderY}
                     stroke="hsl(42 45% 55%)"
                     strokeWidth="0.25"
@@ -172,7 +171,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             </svg>
           )}
 
-          {/* Measurement labels */}
+          {/* Measurement labels — aligned horizontally to reference lines */}
           {imageUrl && measurementLines.map(({ key, label, labelSide, labelTop }) => {
             if (!m[key]) return null;
             const isLeft = labelSide === 'left';
@@ -187,9 +186,10 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 }}
               >
                 <div className={`${isLeft ? 'text-left' : 'text-right'} bg-white/80 rounded px-1.5 py-0.5`}>
-                  <p className="text-[10px] font-bold leading-tight" style={{ color: 'hsl(0 0% 15%)' }}>{label}</p>
-                  <p className="text-[8px] leading-tight" style={{ color: 'hsl(0 0% 30%)' }}>{fmt(m[key])}</p>
-                  <p className="text-[7px] leading-tight" style={{ color: 'hsl(0 0% 50%)' }}>{fmtIn(m[key])}</p>
+                  <p className="text-[10px] font-bold leading-none" style={{ color: 'hsl(0 0% 15%)' }}>{label}</p>
+                  <p className="text-[8px] leading-none mt-0.5" style={{ color: 'hsl(0 0% 30%)' }}>
+                    {fmt(m[key])} <span style={{ color: 'hsl(0 0% 50%)' }}>· {fmtIn(m[key])}</span>
+                  </p>
                 </div>
               </div>
             );
