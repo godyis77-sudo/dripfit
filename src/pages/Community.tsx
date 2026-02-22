@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, Send, Shirt, Sparkles, Heart, ShoppingBag, X, ThumbsUp, TrendingUp, Users } from 'lucide-react';
+import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -25,11 +25,10 @@ interface Post {
   rating_count?: number;
 }
 
-const REACTIONS = [
-  { key: 'love', label: 'Love it', icon: Heart },
-  { key: 'buy', label: 'Buy it', icon: ShoppingBag },
-  { key: 'keep', label: 'Keep shopping', icon: ThumbsUp },
-  { key: 'nope', label: 'Not my style', icon: X },
+const VOTE_OPTIONS = [
+  { key: 'buy', label: 'Buy', emoji: '🔥' },
+  { key: 'maybe', label: 'Maybe', emoji: '🤔' },
+  { key: 'pass', label: 'Pass', emoji: '👋' },
 ] as const;
 
 const RATING_LABELS = [
@@ -83,11 +82,12 @@ const Community = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterType>('new');
+  const [expandedRatings, setExpandedRatings] = useState<Record<string, boolean>>({});
   const [ratingPost, setRatingPost] = useState<string | null>(null);
   const [ratings, setRatings] = useState({ style_score: 0, color_score: 0, buy_score: 0, suitability_score: 0 });
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [reactions, setReactions] = useState<Record<string, string>>({});
+  const [votes, setVotes] = useState<Record<string, string>>({});
 
   useEffect(() => { fetchPosts(); }, [filter]);
 
@@ -128,10 +128,16 @@ const Community = () => {
     setSubmitting(false);
   };
 
-  const handleReaction = (postId: string, key: string) => {
-    setReactions(prev => ({ ...prev, [postId]: prev[postId] === key ? '' : key }));
-    trackEvent('fitcheck_reaction', { reaction: key });
-    if (!user) { toast({ title: 'Sign in to react', description: 'Create a free account to share your opinion.', variant: 'destructive' }); return; }
+  const handleVote = (postId: string, key: string) => {
+    setVotes(prev => ({ ...prev, [postId]: prev[postId] === key ? '' : key }));
+    trackEvent('fitcheck_reaction', { vote: key });
+    if (!user) { toast({ title: 'Sign in to vote', description: 'Create a free account to share your opinion.', variant: 'destructive' }); return; }
+  };
+
+  const handleShopLook = (post: Post) => {
+    trackEvent('shop_clickout', { source: 'fitcheck' });
+    // Navigate to try-on with the clothing image for shopping context
+    navigate('/tryon', { state: { shopMode: true } });
   };
 
   const isPlaceholder = (post: Post) => post.id.startsWith('placeholder-');
@@ -195,17 +201,28 @@ const Community = () => {
               <Sparkles className="h-6 w-6 text-primary" />
             </div>
             <h2 className="font-display text-base font-bold mb-1.5">Be the first to post</h2>
-            <p className="text-[13px] text-muted-foreground max-w-[220px] mb-4">Create a Try-On and get honest feedback from the community.</p>
+            <p className="text-[13px] text-muted-foreground max-w-[220px] mb-4">Create a Try-On and get honest feedback.</p>
             <Button className="rounded-lg btn-luxury text-primary-foreground h-10 px-5 text-sm font-bold" onClick={() => navigate('/tryon')}>
               <Shirt className="mr-1.5 h-4 w-4" /> Create a Try-On
             </Button>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3 pb-20">
             <AnimatePresence>
               {posts.map((post, idx) => (
                 <motion.div key={post.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} className="bg-card border border-border rounded-xl overflow-hidden">
-                  {/* Image */}
+                  {/* Minimal header */}
+                  <div className="flex items-center gap-2 px-2.5 pt-2 pb-1">
+                    <div className="h-5 w-5 rounded-full gradient-drip flex items-center justify-center">
+                      <span className="text-[8px] font-bold text-primary-foreground">
+                        {(post.profile?.display_name || 'A')[0].toUpperCase()}
+                      </span>
+                    </div>
+                    <p className="text-[11px] font-semibold text-foreground flex-1">{post.profile?.display_name || 'Anonymous'}</p>
+                    <p className="text-[9px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
+                  </div>
+
+                  {/* Image — consistent 4:5 aspect ratio */}
                   {isPlaceholder(post) || !post.result_photo_url ? (
                     <PlaceholderImage caption={post.caption || 'Try-on look'} />
                   ) : (
@@ -213,71 +230,84 @@ const Community = () => {
                   )}
 
                   <div className="p-2.5 space-y-2">
-                    {/* Author + date */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="h-6 w-6 rounded-full gradient-drip flex items-center justify-center">
-                          <span className="text-[9px] font-bold text-primary-foreground">
-                            {(post.profile?.display_name || 'A')[0].toUpperCase()}
-                          </span>
-                        </div>
-                        <p className="text-[12px] font-semibold text-foreground">{post.profile?.display_name || 'Anonymous'}</p>
-                      </div>
-                      <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
-                    </div>
-
                     {/* Question prompt */}
-                    <p className="text-[13px] font-bold text-foreground leading-snug">
+                    <p className="text-[12px] font-bold text-foreground leading-snug">
                       {post.caption || getPrompt(idx)}
                     </p>
 
-                    {/* Quick reactions */}
-                    <div className="flex gap-1.5 flex-wrap">
-                      {REACTIONS.map(r => {
-                        const active = reactions[post.id] === r.key;
+                    {/* Sticky-style voting bar: Buy / Maybe / Pass */}
+                    <div className="flex gap-1.5">
+                      {VOTE_OPTIONS.map(v => {
+                        const active = votes[post.id] === v.key;
                         return (
                           <button
-                            key={r.key}
-                            onClick={() => handleReaction(post.id, r.key)}
-                            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-medium border transition-all active:scale-95 ${
+                            key={v.key}
+                            onClick={() => handleVote(post.id, v.key)}
+                            className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[11px] font-bold border transition-all active:scale-95 ${
                               active
                                 ? 'border-primary bg-primary/10 text-primary'
                                 : 'border-border text-muted-foreground hover:border-primary/30'
                             }`}
                           >
-                            <r.icon className="h-3 w-3" />
-                            {r.label}
+                            <span>{v.emoji}</span> {v.label}
                           </button>
                         );
                       })}
                     </div>
 
-                    {/* Score metrics */}
-                    {(post.rating_count ?? 0) > 0 && (
-                      <div className="flex items-center gap-2.5 pt-0.5">
-                        {[
-                          { l: 'Style', v: post.avg_style },
-                          { l: 'Color', v: post.avg_color },
-                          { l: 'Fit', v: post.avg_suitability },
-                          { l: 'Trend', v: post.avg_buy },
-                        ].map(r => (
-                          <div key={r.l} className="flex items-center gap-0.5">
-                            <span className="text-[9px] text-muted-foreground">{r.l}</span>
-                            <span className="text-[10px] font-bold text-foreground">{(r.v ?? 0).toFixed(1)}</span>
-                          </div>
-                        ))}
-                        <span className="text-[9px] text-muted-foreground ml-auto">{post.rating_count} {post.rating_count === 1 ? 'vote' : 'votes'}</span>
+                    {/* Shop This Look CTA */}
+                    {!isPlaceholder(post) && (
+                      <div>
+                        <Button
+                          variant="outline"
+                          className="w-full h-8 rounded-lg text-[11px] font-bold"
+                          onClick={() => handleShopLook(post)}
+                        >
+                          <ShoppingBag className="mr-1 h-3 w-3" /> Shop This Look
+                        </Button>
+                        <p className="text-[8px] text-muted-foreground/50 text-center mt-1">We may earn a commission. It doesn't change your price.</p>
                       </div>
                     )}
+
+                    {/* Expandable detailed ratings */}
+                    {(post.rating_count ?? 0) > 0 && (
+                      <button
+                        onClick={() => setExpandedRatings(prev => ({ ...prev, [post.id]: !prev[post.id] }))}
+                        className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors w-full"
+                      >
+                        <ChevronDown className={`h-3 w-3 transition-transform ${expandedRatings[post.id] ? 'rotate-180' : ''}`} />
+                        <span>{post.rating_count} detailed {post.rating_count === 1 ? 'rating' : 'ratings'}</span>
+                      </button>
+                    )}
+
+                    <AnimatePresence>
+                      {expandedRatings[post.id] && (post.rating_count ?? 0) > 0 && (
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                          <div className="flex items-center gap-2.5 pt-1">
+                            {[
+                              { l: 'Style', v: post.avg_style },
+                              { l: 'Color', v: post.avg_color },
+                              { l: 'Fit', v: post.avg_suitability },
+                              { l: 'Trend', v: post.avg_buy },
+                            ].map(r => (
+                              <div key={r.l} className="flex items-center gap-0.5">
+                                <span className="text-[9px] text-muted-foreground">{r.l}</span>
+                                <span className="text-[10px] font-bold text-foreground">{(r.v ?? 0).toFixed(1)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
 
                     {/* Rate button */}
                     {ratingPost !== post.id && !isPlaceholder(post) && (
                       <Button
                         variant="ghost"
-                        className="w-full rounded-lg h-8 text-[11px] text-muted-foreground hover:text-foreground active:scale-[0.97] transition-transform"
-                        onClick={() => { if (!user) { toast({ title: 'Sign in to rate', description: 'Create a free account to share your opinion.', variant: 'destructive' }); return; } setRatingPost(post.id); }}
+                        className="w-full rounded-lg h-7 text-[10px] text-muted-foreground hover:text-foreground"
+                        onClick={() => { if (!user) { toast({ title: 'Sign in to rate', variant: 'destructive' }); return; } setRatingPost(post.id); }}
                       >
-                        <Star className="mr-1 h-3 w-3" /> Rate this look
+                        <Star className="mr-1 h-3 w-3" /> Detailed rating
                       </Button>
                     )}
 
@@ -294,7 +324,7 @@ const Community = () => {
                         <div className="flex gap-1.5">
                           <Button variant="outline" className="flex-1 rounded-lg h-8 text-[11px]" onClick={() => setRatingPost(null)}>Cancel</Button>
                           <Button className="flex-1 rounded-lg h-8 btn-luxury text-primary-foreground text-[11px]" onClick={() => handleSubmitRating(post.id)} disabled={submitting}>
-                            <Send className="mr-1 h-3 w-3" /> Submit Rating
+                            <Send className="mr-1 h-3 w-3" /> Submit
                           </Button>
                         </div>
                       </motion.div>

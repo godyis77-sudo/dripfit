@@ -37,7 +37,12 @@ type FunnelEvent =
   | 'saved_item_removed'
   | 'premium_viewed'
   | 'premium_started'
-  | 'fit_feedback_submitted';
+  | 'fit_feedback_submitted'
+  // Standardized funnel events
+  | 'result_viewed'
+  | 'save_item'
+  | 'vote_cast'
+  | 'trial_started';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {

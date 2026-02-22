@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Shirt, Crown, Trash2, Shield, Download, Settings, Ruler, Camera, ChevronRight, Fingerprint, Sparkles, MessageSquare, Bookmark } from 'lucide-react';
+import { LogOut, Shirt, Crown, Trash2, Shield, Download, Settings, Ruler, Camera, ChevronRight, Sparkles, MessageSquare, Bookmark } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { getFitPreference, setFitPreference } from '@/lib/session';
@@ -36,11 +36,13 @@ const Profile = () => {
   const [useCm, setUseCm] = useState(true);
   const [fit, setFit] = useState<FitPreference>(getFitPreference());
   const [savedProfile, setSavedProfile] = useState<BodyScanResult | null>(null);
+  const [savedItemCount, setSavedItemCount] = useState(0);
 
   useEffect(() => {
     if (!user) { navigate('/auth', { replace: true }); return; }
     fetchProfile();
     loadSavedProfile();
+    fetchSavedItemCount();
   }, [user]);
 
   const fetchProfile = async () => {
@@ -56,6 +58,12 @@ const Profile = () => {
 
   const loadSavedProfile = () => {
     try { const scans = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]'); if (scans.length > 0) setSavedProfile(scans[0]); } catch { /* ignore */ }
+  };
+
+  const fetchSavedItemCount = async () => {
+    if (!user) return;
+    const { count } = await supabase.from('saved_items').select('id', { count: 'exact', head: true }).eq('user_id', user.id);
+    setSavedItemCount(count || 0);
   };
 
   const handleFitChange = (newFit: FitPreference) => { setFit(newFit); setFitPreference(newFit); toast({ title: 'Updated', description: `Default fit set to ${newFit}.` }); };
@@ -75,7 +83,6 @@ const Profile = () => {
   if (!user) return null;
 
   const publicCount = tryOnPosts.filter(p => p.is_public).length;
-  const pendingFeedback = tryOnPosts.filter(p => p.is_public).length; // posts awaiting community response
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-bottom">
@@ -182,33 +189,46 @@ const Profile = () => {
           ) : (
             <motion.div key="settings" initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }}>
 
-              {/* ── Fit Identity Card ── */}
-              <div className="bg-card border border-border rounded-xl p-3 mb-4">
-                <div className="flex items-center gap-2 mb-2.5">
-                  <div className="h-7 w-7 rounded-lg gradient-drip flex items-center justify-center">
-                    <Fingerprint className="h-3.5 w-3.5 text-primary-foreground" />
-                  </div>
-                  <p className="text-[13px] font-bold text-foreground">Fit Identity</p>
-                </div>
-                <div className="grid grid-cols-4 gap-1.5">
-                  {[
-                    { label: 'Fit', value: fit, cls: 'capitalize' },
-                    { label: 'Size', value: savedProfile?.recommendedSize || '—' },
-                    { label: 'Unit', value: useCm ? 'cm' : 'in' },
-                    { label: 'Confidence', value: savedProfile?.confidence || '—', cls: 'capitalize' },
-                  ].map(d => (
-                    <div key={d.label} className="bg-background rounded-lg py-1.5 text-center">
-                      <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{d.label}</p>
-                      <p className={`text-[12px] font-bold text-foreground ${d.cls || ''}`}>{d.value}</p>
+              {/* ── Fit Identity Card — conditional ── */}
+              {savedProfile ? (
+                <div className="bg-card border border-border rounded-xl p-3 mb-4">
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <div className="h-7 w-7 rounded-lg gradient-drip flex items-center justify-center">
+                      <Ruler className="h-3.5 w-3.5 text-primary-foreground" />
                     </div>
-                  ))}
-                </div>
-                {savedProfile && (
+                    <p className="text-[13px] font-bold text-foreground">Fit Identity</p>
+                  </div>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {[
+                      { label: 'Fit', value: fit, cls: 'capitalize' },
+                      { label: 'Size', value: savedProfile.recommendedSize },
+                      { label: 'Unit', value: useCm ? 'cm' : 'in' },
+                      { label: 'Confidence', value: savedProfile.confidence, cls: 'capitalize' },
+                    ].map(d => (
+                      <div key={d.label} className="bg-background rounded-lg py-1.5 text-center">
+                        <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{d.label}</p>
+                        <p className={`text-[12px] font-bold text-foreground ${d.cls || ''}`}>{d.value}</p>
+                      </div>
+                    ))}
+                  </div>
                   <p className="text-[9px] text-muted-foreground mt-2">
                     Last scan: {new Date(savedProfile.date).toLocaleDateString()}
                   </p>
-                )}
-              </div>
+                </div>
+              ) : (
+                <div className="bg-card border border-border rounded-xl p-4 mb-4 text-center">
+                  <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                    <Ruler className="h-5 w-5 text-primary/50" />
+                  </div>
+                  <p className="text-[13px] font-bold text-foreground mb-0.5">No fit profile yet</p>
+                  <p className="text-[10px] text-muted-foreground mb-3 max-w-[220px] mx-auto">
+                    Complete a quick Scan to get accurate size recommendations across all retailers.
+                  </p>
+                  <Button className="rounded-lg btn-luxury text-primary-foreground text-[11px] h-9 px-4 font-bold" onClick={() => navigate('/capture')}>
+                    <Camera className="mr-1.5 h-3.5 w-3.5" /> Start Scan
+                  </Button>
+                </div>
+              )}
 
               {/* ── Account ── */}
               <SectionHeader>Account</SectionHeader>
@@ -246,48 +266,7 @@ const Profile = () => {
                 </div>
               </div>
 
-              {/* ── Saved Body Profile ── */}
-              <SectionHeader>Saved Body Profile</SectionHeader>
-              <div className="bg-card border border-border rounded-xl p-3 mb-1">
-                {savedProfile ? (
-                  <div className="space-y-2">
-                    <div className="grid grid-cols-3 gap-1.5">
-                      {[
-                        { l: 'Size', v: savedProfile.recommendedSize },
-                        { l: 'Confidence', v: savedProfile.confidence },
-                        { l: 'Height', v: `${savedProfile.heightCm} cm` },
-                      ].map(d => (
-                        <div key={d.l} className="bg-background rounded-lg py-1.5 text-center">
-                          <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{d.l}</p>
-                          <p className="text-[12px] font-bold text-foreground capitalize">{d.v}</p>
-                        </div>
-                      ))}
-                    </div>
-                    <button
-                      onClick={() => navigate('/capture')}
-                      className="w-full flex items-center justify-between bg-background border border-border rounded-lg px-3 py-2 group active:scale-[0.98] transition-transform"
-                    >
-                      <span className="text-[11px] text-muted-foreground">Update body scan</span>
-                      <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center py-4">
-                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center mb-2">
-                      <Ruler className="h-5 w-5 text-primary/50" />
-                    </div>
-                    <p className="text-[12px] font-semibold text-foreground mb-0.5">No body profile yet</p>
-                    <p className="text-[10px] text-muted-foreground mb-3 text-center max-w-[220px]">
-                      Complete a quick Scan to get accurate size recommendations across all retailers.
-                    </p>
-                    <Button className="rounded-lg btn-luxury text-primary-foreground text-[11px] h-9 px-4 font-bold active:scale-95 transition-transform" onClick={() => navigate('/capture')}>
-                      <Camera className="mr-1.5 h-3.5 w-3.5" /> Start Scan
-                    </Button>
-                  </div>
-                )}
-              </div>
-
-              {/* ── Saved Items ── */}
+              {/* ── Saved Items with count ── */}
               <SectionHeader>Saved Items</SectionHeader>
               <div className="bg-card border border-border rounded-xl mb-1">
                 <button
@@ -296,15 +275,48 @@ const Profile = () => {
                 >
                   <Bookmark className="h-3.5 w-3.5 text-primary" />
                   <span className="text-[12px] text-foreground font-medium">View Saved for Later</span>
+                  {savedItemCount > 0 && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold">{savedItemCount}</span>
+                  )}
                   <ChevronRight className="h-3.5 w-3.5 text-muted-foreground ml-auto" />
                 </button>
               </div>
+
+              {/* ── Saved Body Profile ── */}
+              {savedProfile && (
+                <>
+                  <SectionHeader>Body Profile</SectionHeader>
+                  <div className="bg-card border border-border rounded-xl p-3 mb-1">
+                    <div className="space-y-2">
+                      <div className="grid grid-cols-3 gap-1.5">
+                        {[
+                          { l: 'Size', v: savedProfile.recommendedSize },
+                          { l: 'Confidence', v: savedProfile.confidence },
+                          { l: 'Height', v: `${savedProfile.heightCm} cm` },
+                        ].map(d => (
+                          <div key={d.l} className="bg-background rounded-lg py-1.5 text-center">
+                            <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{d.l}</p>
+                            <p className="text-[12px] font-bold text-foreground capitalize">{d.v}</p>
+                          </div>
+                        ))}
+                      </div>
+                      <button
+                        onClick={() => navigate('/capture')}
+                        className="w-full flex items-center justify-between bg-background border border-border rounded-lg px-3 py-2 group active:scale-[0.98] transition-transform"
+                      >
+                        <span className="text-[11px] text-muted-foreground">Update body scan</span>
+                        <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
 
               {/* ── Premium ── */}
               <SectionHeader>Premium</SectionHeader>
               <div className="bg-card border border-primary/20 rounded-xl mb-1">
                 <button
-                  onClick={() => navigate('/premium')}
+                  onClick={() => { trackEvent('premium_viewed'); navigate('/premium'); }}
                   className="w-full flex items-center gap-2 px-3 py-2.5 active:bg-primary/5 transition-colors"
                 >
                   <Crown className="h-3.5 w-3.5 text-primary" />
@@ -333,7 +345,7 @@ const Profile = () => {
                 </button>
               </div>
 
-              {/* Destructive - grouped, subdued */}
+              {/* Destructive */}
               <div className="bg-card border border-destructive/10 rounded-xl divide-y divide-border mt-2 mb-3">
                 <button onClick={handleDeletePhotos} className="w-full flex items-center gap-2 px-3 py-2.5 active:bg-destructive/5 transition-colors">
                   <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Shirt, Sparkles, Loader2, Share2, Shield, User, Check, Link2, Info, MessageSquare, Save, RotateCcw, Store } from 'lucide-react';
+import { ArrowLeft, Shirt, Sparkles, Loader2, Share2, Shield, User, Check, Link2, Info, MessageSquare, Save, RotateCcw, Store, ShoppingBag } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -341,6 +341,24 @@ const TryOn = () => {
 
             <div className="rounded-xl overflow-hidden border border-border mb-3">
               <img src={resultImage} alt="Try-on result" className="w-full" />
+            </div>
+
+            {/* Primary CTA: Shop This Look */}
+            <div className="mb-3">
+              <Button
+                className="w-full h-11 rounded-lg btn-luxury text-primary-foreground text-sm font-bold"
+                onClick={() => {
+                  trackEvent('shop_clickout', { source: 'tryon', hasLink: !!productLink });
+                  if (productLink) {
+                    window.open(productLink, '_blank', 'noopener');
+                  } else {
+                    navigate('/results');
+                  }
+                }}
+              >
+                <ShoppingBag className="mr-2 h-4 w-4" /> Shop This Look in My Size
+              </Button>
+              <p className="text-[8px] text-muted-foreground/50 text-center mt-1">We may earn a commission. It doesn't change your price.</p>
             </div>
 
             {/* Post-action CTA bar */}

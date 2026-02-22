@@ -36,7 +36,12 @@ const Results = () => {
   const [confidence, setConfidence] = useState(result?.confidence || 'medium');
   const [showFeedback, setShowFeedback] = useState(false);
 
-  useEffect(() => { if (result) trackEvent('results_viewed'); }, [result]);
+  useEffect(() => {
+    if (result) {
+      trackEvent('results_viewed');
+      trackEvent('result_viewed');
+    }
+  }, [result]);
 
   const adjustedSize = useMemo(() => {
     if (!result) return '';
@@ -62,6 +67,7 @@ const Results = () => {
     localStorage.setItem('dripcheck_scans', JSON.stringify(history));
     setSaved(true);
     trackEvent('results_saved');
+    trackEvent('save_item', { type: 'scan' });
     toast({ title: 'Saved to Profile', description: 'Your body profile is ready for Try-Ons.' });
   };
 
@@ -95,7 +101,7 @@ const Results = () => {
         <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} />
         {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
 
-        {/* Affiliate clickout — primary monetization */}
+        {/* Primary CTA: Shop This Size */}
         <ShopThisSize
           recommendedSize={adjustedSize}
           confidence={confidence}
@@ -103,28 +109,27 @@ const Results = () => {
           category={state?.category}
         />
 
+        {/* Action ladder: Secondary + Tertiary CTAs */}
+        <ResultActions
+          saved={saved}
+          scanDate={result.date}
+          onSave={handleSave}
+          onTryOn={() => { trackEvent('results_tryon_click'); navigate('/tryon', { state: { bodyProfile: result } }); }}
+          onNewScan={() => navigate('/capture')}
+          onDelete={handleDelete}
+          recommendedSize={adjustedSize}
+        />
+
         <BodyDiagram measurements={measurements} heightCm={result.heightCm} />
         <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
-        <ResultActions saved={saved} scanDate={result.date} onSave={handleSave} onTryOn={() => { trackEvent('results_tryon_click'); navigate('/tryon', { state: { bodyProfile: result } }); }} onNewScan={() => navigate('/capture')} onDelete={handleDelete} />
 
         {/* Brand partnership placeholders */}
         <BrandPartnerCards />
 
-        {/* Next step suggestion */}
-        {saved && (
-          <div className="mt-3 bg-card border border-border rounded-lg p-3 text-center">
-            <p className="text-[12px] font-bold text-foreground mb-1">What's next?</p>
-            <p className="text-[10px] text-muted-foreground mb-2.5">See how a specific item looks on you with your new size profile.</p>
-            <Button className="rounded-lg btn-luxury text-primary-foreground text-[11px] h-9 px-4 font-bold" onClick={() => navigate('/tryon', { state: { bodyProfile: result } })}>
-              <Sparkles className="mr-1.5 h-3.5 w-3.5" /> Try-On an Outfit
-            </Button>
-          </div>
-        )}
-
-        {/* Upgrade prompt — after value delivered */}
-        {saved && (
+        {/* Upgrade prompt — after value delivered or low confidence */}
+        {(saved || confidence === 'low') && (
           <UpgradePrompt
-            headline="Want higher confidence?"
+            headline={confidence === 'low' ? 'Low confidence? Get smarter sizing.' : 'Want higher confidence?'}
             description="Unlock advanced calibration, brand fit memory, and return risk alerts."
             className="mt-3"
           />

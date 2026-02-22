@@ -7,8 +7,8 @@ import { useToast } from '@/hooks/use-toast';
 import PremiumBadge from '@/components/monetization/PremiumBadge';
 
 const PLANS = [
-  { key: 'monthly' as const, label: 'Monthly', price: '$4.99', period: '/mo', badge: '', total: '' },
-  { key: 'annual' as const, label: 'Annual', price: '$2.99', period: '/mo', badge: 'Best Value', total: '$35.88/yr' },
+  { key: 'monthly' as const, label: 'Monthly', price: '$4.99', period: '/mo', badge: '', total: 'Billed $4.99/month', trial: '7-day free trial' },
+  { key: 'annual' as const, label: 'Annual', price: '$2.99', period: '/mo', badge: 'Best Value', total: 'Billed $35.88/year (save 40%)', trial: '7-day free trial' },
 ];
 
 const FEATURES = [
@@ -29,6 +29,8 @@ const Premium = () => {
     trackEvent('premium_started', { plan: selectedPlan });
     toast({ title: 'Coming soon', description: 'Premium subscriptions launch soon — you\'ll be first to know!' });
   };
+
+  const currentPlan = PLANS.find(p => p.key === selectedPlan)!;
 
   return (
     <div className="min-h-screen bg-background px-4 py-4 pb-8">
@@ -53,7 +55,7 @@ const Premium = () => {
         </div>
 
         {/* Plan selector */}
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-2 mb-3">
           {PLANS.map(p => (
             <button
               key={p.key}
@@ -76,11 +78,27 @@ const Premium = () => {
           ))}
         </div>
 
+        {/* Clear plan terms */}
+        <div className="bg-card border border-border rounded-xl p-3 mb-4 space-y-1">
+          <div className="flex items-center gap-1.5">
+            <Check className="h-3 w-3 text-primary" />
+            <span className="text-[11px] text-foreground">{currentPlan.trial} included</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Check className="h-3 w-3 text-primary" />
+            <span className="text-[11px] text-foreground">{currentPlan.total}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Check className="h-3 w-3 text-primary" />
+            <span className="text-[11px] text-foreground">Cancel anytime — no questions asked</span>
+          </div>
+        </div>
+
         {/* CTA */}
-        <Button className="w-full h-12 rounded-xl btn-luxury text-primary-foreground text-sm font-bold mb-4" onClick={handleStart}>
-          <Sparkles className="mr-2 h-4 w-4" /> Start Free Trial
+        <Button className="w-full h-12 rounded-xl btn-luxury text-primary-foreground text-sm font-bold mb-2" onClick={handleStart}>
+          <Sparkles className="mr-2 h-4 w-4" /> Start 7-Day Free Trial
         </Button>
-        <p className="text-[9px] text-muted-foreground text-center mb-5">7-day free trial · Cancel anytime · No hidden fees</p>
+        <p className="text-[9px] text-muted-foreground text-center mb-5">No charge until trial ends · Cancel anytime</p>
 
         {/* Features */}
         <div className="space-y-2">
