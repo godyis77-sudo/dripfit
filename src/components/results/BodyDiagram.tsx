@@ -14,21 +14,33 @@ interface BodyDiagramProps {
   heightCm: number;
 }
 
-interface Annotation {
+
+// Measurement line definitions — each describes a visible reference line on the body
+interface MeasurementLine {
   key: string;
   label: string;
-  top: string;   // percentage from top
-  side: 'left' | 'right';
+  labelSide: 'left' | 'right';
+  // Line coordinates as percentages of the container
+  x1: string; y1: string; x2: string; y2: string;
+  // Label position
+  labelTop: string;
 }
 
-const annotations: Annotation[] = [
-  { key: 'shoulder', label: 'Shoulder', top: '12%', side: 'left' },
-  { key: 'bust', label: 'Bust', top: '20%', side: 'right' },
-  { key: 'chest', label: 'Chest', top: '28%', side: 'left' },
-  { key: 'waist', label: 'Waist', top: '36%', side: 'right' },
-  { key: 'sleeve', label: 'Sleeve', top: '44%', side: 'left' },
-  { key: 'hips', label: 'Hips', top: '48%', side: 'right' },
-  { key: 'inseam', label: 'Inseam', top: '65%', side: 'left' },
+const measurementLines: MeasurementLine[] = [
+  // Shoulder: horizontal line from left shoulder to right shoulder
+  { key: 'shoulder', label: 'Shoulder', labelSide: 'left', x1: '28%', y1: '16%', x2: '72%', y2: '16%', labelTop: '13%' },
+  // Bust: horizontal line across bust area
+  { key: 'bust', label: 'Bust', labelSide: 'right', x1: '30%', y1: '23%', x2: '70%', y2: '23%', labelTop: '20%' },
+  // Chest: horizontal line armpit to armpit
+  { key: 'chest', label: 'Chest', labelSide: 'left', x1: '28%', y1: '20%', x2: '72%', y2: '20%', labelTop: '17%' },
+  // Waist: horizontal line across body above hips
+  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '33%', y1: '35%', x2: '67%', y2: '35%', labelTop: '32%' },
+  // Hips: horizontal line across hips/genitals area
+  { key: 'hips', label: 'Hips', labelSide: 'right', x1: '30%', y1: '42%', x2: '70%', y2: '42%', labelTop: '39%' },
+  // Sleeve: diagonal line from shoulder down to wrist
+  { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '27%', y1: '16%', x2: '15%', y2: '48%', labelTop: '30%' },
+  // Inseam: vertical line from crotch to ankle
+  { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '50%', y1: '45%', x2: '42%', y2: '82%', labelTop: '62%' },
 ];
 
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
@@ -112,32 +124,59 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             </div>
           )}
 
-          {/* Measurement annotations */}
-          {imageUrl && annotations.map(({ key, label, top, side }) => {
+          {/* Measurement reference lines (SVG overlay) */}
+          {imageUrl && (
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+              {measurementLines.map(({ key, x1, y1, x2, y2 }) => {
+                if (!m[key]) return null;
+                return (
+                  <line
+                    key={key}
+                    x1={parseFloat(x1)} y1={parseFloat(y1)}
+                    x2={parseFloat(x2)} y2={parseFloat(y2)}
+                    stroke="hsl(42 45% 50%)"
+                    strokeWidth="0.4"
+                    strokeDasharray="1.2 0.8"
+                    strokeLinecap="round"
+                  />
+                );
+              })}
+              {/* Small endpoint dots */}
+              {measurementLines.map(({ key, x1, y1, x2, y2 }) => {
+                if (!m[key]) return null;
+                return (
+                  <g key={`dots-${key}`}>
+                    <circle cx={parseFloat(x1)} cy={parseFloat(y1)} r="0.7" fill="hsl(42 45% 45%)" />
+                    <circle cx={parseFloat(x2)} cy={parseFloat(y2)} r="0.7" fill="hsl(42 45% 45%)" />
+                  </g>
+                );
+              })}
+            </svg>
+          )}
+
+          {/* Measurement labels */}
+          {imageUrl && measurementLines.map(({ key, label, labelSide, labelTop }) => {
             if (!m[key]) return null;
-            const isLeft = side === 'left';
+            const isLeft = labelSide === 'left';
 
             return (
               <div
-                key={key}
-                className="absolute flex items-center gap-1"
+                key={`label-${key}`}
+                className="absolute flex items-center gap-0.5"
                 style={{
-                  top,
+                  top: labelTop,
                   ...(isLeft
                     ? { left: 0, flexDirection: 'row' }
                     : { right: 0, flexDirection: 'row-reverse' }),
                 }}
               >
-                {/* Label block */}
-                <div className={`${isLeft ? 'text-right pr-1' : 'text-left pl-1'}`}>
+                <div className={`${isLeft ? 'text-right pr-0.5' : 'text-left pl-0.5'} bg-white/70 rounded px-1 py-0.5`}>
                   <p className="text-[9px] font-bold leading-tight" style={{ color: 'hsl(0 0% 15%)' }}>{label}</p>
                   <p className="text-[7.5px] leading-tight" style={{ color: 'hsl(0 0% 35%)' }}>{fmt(m[key])}</p>
                   <p className="text-[7px] leading-tight" style={{ color: 'hsl(0 0% 50%)' }}>{fmtIn(m[key])}</p>
                 </div>
-                {/* Dashed connector line */}
-                <div className="w-6 border-t border-dashed" style={{ borderColor: 'hsl(42 45% 55%)' }} />
-                {/* Dot */}
-                <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'hsl(42 45% 50%)' }} />
+                {/* Connector to line */}
+                <div className="w-4 border-t border-dashed" style={{ borderColor: 'hsl(42 45% 55%)' }} />
               </div>
             );
           })}
