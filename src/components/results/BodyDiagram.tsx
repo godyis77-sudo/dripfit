@@ -28,7 +28,7 @@ interface MeasurementLine {
 
 const measurementLines: MeasurementLine[] = [
   // Shoulder: shoulder tip to shoulder tip
-  { key: 'shoulder', label: 'Shoulder', labelSide: 'left', x1: '33%', y1: '22%', x2: '67%', y2: '22%', labelTop: '20.5%' },
+  { key: 'shoulder', label: 'Shoulder', labelSide: 'left', x1: '33%', y1: '24%', x2: '67%', y2: '24%', labelTop: '22.5%' },
   // Chest: armpit to armpit
   { key: 'chest', label: 'Chest', labelSide: 'left', x1: '38%', y1: '27%', x2: '62%', y2: '27%', labelTop: '25.5%' },
   // Bust: across bust
