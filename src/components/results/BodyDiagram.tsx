@@ -27,20 +27,20 @@ interface MeasurementLine {
 }
 
 const measurementLines: MeasurementLine[] = [
-  // Shoulder: tight across shoulders
-  { key: 'shoulder', label: 'Shoulder', labelSide: 'left', x1: '34%', y1: '16%', x2: '66%', y2: '16%', labelTop: '14%' },
-  // Chest: armpit to armpit (tighter)
-  { key: 'chest', label: 'Chest', labelSide: 'left', x1: '35%', y1: '21%', x2: '65%', y2: '21%', labelTop: '19%' },
-  // Bust: across bust (tighter)
-  { key: 'bust', label: 'Bust', labelSide: 'right', x1: '36%', y1: '24%', x2: '64%', y2: '24%', labelTop: '22%' },
-  // Waist: narrow across waist
-  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '38%', y1: '35%', x2: '62%', y2: '35%', labelTop: '33%' },
+  // Shoulder: across shoulders
+  { key: 'shoulder', label: 'Shoulder', labelSide: 'left', x1: '35%', y1: '15%', x2: '65%', y2: '15%', labelTop: '13%' },
+  // Chest: armpit to armpit
+  { key: 'chest', label: 'Chest', labelSide: 'left', x1: '36%', y1: '20%', x2: '64%', y2: '20%', labelTop: '18%' },
+  // Bust: across bust
+  { key: 'bust', label: 'Bust', labelSide: 'right', x1: '37%', y1: '23%', x2: '63%', y2: '23%', labelTop: '21%' },
+  // Waist: across waist
+  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '39%', y1: '33%', x2: '61%', y2: '33%', labelTop: '31%' },
   // Hips: across hips
-  { key: 'hips', label: 'Hips', labelSide: 'right', x1: '35%', y1: '42%', x2: '65%', y2: '42%', labelTop: '40%' },
-  // Sleeve: shoulder to wrist along arm (tighter to body)
-  { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '33%', y1: '17%', x2: '24%', y2: '44%', labelTop: '29%' },
-  // Inseam: crotch to ankle (inner leg)
-  { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '48%', y1: '46%', x2: '44%', y2: '78%', labelTop: '60%' },
+  { key: 'hips', label: 'Hips', labelSide: 'right', x1: '36%', y1: '40%', x2: '64%', y2: '40%', labelTop: '38%' },
+  // Sleeve: shoulder to wrist along arm
+  { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '34%', y1: '16%', x2: '26%', y2: '42%', labelTop: '27%' },
+  // Inseam: crotch to ankle
+  { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '48%', y1: '44%', x2: '45%', y2: '76%', labelTop: '58%' },
 ];
 
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
@@ -88,15 +88,15 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
   return (
     <div className="mb-4">
       <p className="section-label mb-2">Body Measurement Map</p>
-      <div className="border border-primary/20 rounded-xl p-2 overflow-hidden" style={{ background: 'linear-gradient(180deg, hsl(0 0% 100%), hsl(42 45% 92%), hsl(42 35% 85%))' }}>
-        <div className="relative w-full max-w-[360px] mx-auto" style={{ minHeight: 460 }}>
+      <div className="border border-primary/20 rounded-xl overflow-hidden" style={{ background: 'linear-gradient(180deg, hsl(0 0% 100%), hsl(42 45% 92%), hsl(42 35% 85%))' }}>
+        <div className="relative w-full max-w-[380px] mx-auto" style={{ minHeight: 500 }}>
           {/* Body image */}
           {loading && (
-            <Skeleton className="w-full h-[460px] rounded-lg" />
+            <Skeleton className="w-full h-[500px] rounded-lg" />
           )}
 
           {error && !imageUrl && (
-            <div className="w-full h-[460px] flex items-center justify-center text-muted-foreground text-xs">
+            <div className="w-full h-[500px] flex items-center justify-center text-muted-foreground text-xs">
               Could not generate diagram
             </div>
           )}
@@ -105,7 +105,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             <img
               src={imageUrl}
               alt="Body silhouette for measurements"
-              className="w-full h-[460px] mx-auto block rounded-lg"
+              className="w-full h-[500px] mx-auto block rounded-lg"
               style={{ objectFit: 'cover' }}
             />
           )}
