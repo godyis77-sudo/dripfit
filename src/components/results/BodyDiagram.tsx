@@ -27,20 +27,20 @@ interface MeasurementLine {
 }
 
 const measurementLines: MeasurementLine[] = [
-  // Shoulder: horizontal line from left shoulder to right shoulder
-  { key: 'shoulder', label: 'Shoulder', labelSide: 'left', x1: '28%', y1: '16%', x2: '72%', y2: '16%', labelTop: '13%' },
-  // Bust: horizontal line across bust area
-  { key: 'bust', label: 'Bust', labelSide: 'right', x1: '30%', y1: '23%', x2: '70%', y2: '23%', labelTop: '20%' },
-  // Chest: horizontal line armpit to armpit
-  { key: 'chest', label: 'Chest', labelSide: 'left', x1: '28%', y1: '20%', x2: '72%', y2: '20%', labelTop: '17%' },
-  // Waist: horizontal line across body above hips
-  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '33%', y1: '35%', x2: '67%', y2: '35%', labelTop: '32%' },
-  // Hips: horizontal line across hips/genitals area
-  { key: 'hips', label: 'Hips', labelSide: 'right', x1: '30%', y1: '42%', x2: '70%', y2: '42%', labelTop: '39%' },
-  // Sleeve: diagonal line from shoulder down to wrist
-  { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '27%', y1: '16%', x2: '15%', y2: '48%', labelTop: '30%' },
-  // Inseam: vertical line from crotch to ankle
-  { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '50%', y1: '45%', x2: '42%', y2: '82%', labelTop: '62%' },
+  // Shoulder: tight across shoulders
+  { key: 'shoulder', label: 'Shoulder', labelSide: 'left', x1: '34%', y1: '16%', x2: '66%', y2: '16%', labelTop: '14%' },
+  // Chest: armpit to armpit (tighter)
+  { key: 'chest', label: 'Chest', labelSide: 'left', x1: '35%', y1: '21%', x2: '65%', y2: '21%', labelTop: '19%' },
+  // Bust: across bust (tighter)
+  { key: 'bust', label: 'Bust', labelSide: 'right', x1: '36%', y1: '24%', x2: '64%', y2: '24%', labelTop: '22%' },
+  // Waist: narrow across waist
+  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '38%', y1: '35%', x2: '62%', y2: '35%', labelTop: '33%' },
+  // Hips: across hips
+  { key: 'hips', label: 'Hips', labelSide: 'right', x1: '35%', y1: '42%', x2: '65%', y2: '42%', labelTop: '40%' },
+  // Sleeve: shoulder to wrist along arm (tighter to body)
+  { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '33%', y1: '17%', x2: '24%', y2: '44%', labelTop: '29%' },
+  // Inseam: crotch to ankle (inner leg)
+  { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '48%', y1: '46%', x2: '44%', y2: '78%', labelTop: '60%' },
 ];
 
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
