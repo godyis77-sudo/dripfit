@@ -113,7 +113,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
           {/* Height indicator above chest */}
           {imageUrl && (
-            <div className="absolute top-[14%] left-1/2 -translate-x-1/2 text-center">
+            <div className="absolute top-[14%] left-1 text-left">
               <p className="text-[9px] font-bold uppercase tracking-wide" style={{ color: 'hsl(0 0% 15%)' }}>Height</p>
               <p className="text-[8px] font-bold" style={{ color: 'hsl(0 0% 20%)' }}>{(heightCm * CM_TO_IN).toFixed(1)} in</p>
               <p className="text-[8px] font-bold" style={{ color: 'hsl(0 0% 40%)' }}>{heightCm.toFixed(0)} cm</p>
