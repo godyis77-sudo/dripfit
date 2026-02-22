@@ -37,7 +37,7 @@ const measurementLines: MeasurementLine[] = [
   // Waist — label on right
   { key: 'waist', label: 'Waist', labelSide: 'right', x1: '37%', y1: '41%', x2: '63%', y2: '41%', labelTop: '39%', leaderX: 63, leaderY: 41 },
   // Hips — label on right
-  { key: 'hips', label: 'Hips', labelSide: 'right', x1: '37%', y1: '49%', x2: '63%', y2: '49%', labelTop: '47%', leaderX: 63, leaderY: 49 },
+  { key: 'hips', label: 'Hips', labelSide: 'right', x1: '37%', y1: '51%', x2: '63%', y2: '51%', labelTop: '49%', leaderX: 63, leaderY: 51 },
   // Sleeve — label on left
   { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '36%', y1: '23%', x2: '28%', y2: '53%', labelTop: '36%', leaderX: 32, leaderY: 38 },
   // Inseam — label on left
