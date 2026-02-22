@@ -53,7 +53,25 @@ const Results = () => {
 
   const alternatives = useMemo(() => ({ sizeDown: shiftSize(adjustedSize, -1), sizeUp: shiftSize(adjustedSize, 1) }), [adjustedSize]);
 
-  if (!result) { navigate('/', { replace: true }); return null; }
+  if (!result) {
+    return (
+      <div className="min-h-screen bg-background px-4 py-4 flex items-center justify-center">
+        <div className="max-w-sm mx-auto text-center">
+          <div className="h-16 w-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4">
+            <Sparkles className="h-7 w-7 text-primary" />
+          </div>
+          <h2 className="text-lg font-bold text-foreground mb-1">No fit profile yet</h2>
+          <p className="text-sm text-muted-foreground mb-5">Complete a quick body scan to get your personalized size recommendations.</p>
+          <Button className="w-full h-11 rounded-lg btn-luxury text-primary-foreground text-sm font-bold" onClick={() => navigate('/capture')}>
+            Start Scan
+          </Button>
+          <Button variant="ghost" className="w-full mt-2 text-xs text-muted-foreground" onClick={() => navigate('/')}>
+            Back to Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   const measurements: Record<string, MeasurementRange> = {
     chest: result.chest, waist: result.waist, hips: result.hips, inseam: result.inseam, shoulder: result.shoulder,
