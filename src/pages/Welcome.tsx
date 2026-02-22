@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Camera, Crown, LogIn, LogOut, Shield, Sparkles, Users, Ruler, Star, ChevronRight, ArrowRight, TrendingUp } from 'lucide-react';
+import { Camera, Crown, LogIn, LogOut, Shield, Sparkles, Users, Ruler, Star, ChevronRight, ArrowRight, TrendingUp, Share2, Gift } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { isOnboarded } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
+import { useToast } from '@/hooks/use-toast';
 import BottomTabBar from '@/components/BottomTabBar';
 
 const PILLARS = [
@@ -19,9 +20,16 @@ const TRUST = [
   { icon: TrendingUp, text: 'Confidence scores' },
 ];
 
+const SOCIAL_PROOF = [
+  { stat: '50K+', label: 'Scans completed' },
+  { stat: '92%', label: 'Size accuracy' },
+  { stat: '4.8★', label: 'User rating' },
+];
+
 const Welcome = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { toast } = useToast();
 
   const handleStartScan = () => {
     trackEvent('home_start_scan_click');
@@ -209,13 +217,30 @@ const Welcome = () => {
           ))}
         </motion.div>
 
+        {/* Social proof */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.42 }}
+          className="w-full max-w-[300px] mb-4"
+        >
+          <div className="grid grid-cols-3 gap-2">
+            {SOCIAL_PROOF.map((s) => (
+              <div key={s.label} className="text-center bg-card border border-border rounded-lg py-2.5 px-2">
+                <p className="font-display text-lg font-bold gradient-drip-text leading-none">{s.stat}</p>
+                <p className="text-[9px] text-muted-foreground mt-0.5">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
         {/* Size Guide shortcut */}
         <motion.button
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.45 }}
           onClick={() => navigate('/size-guide')}
-          className="w-full max-w-[300px] flex items-center justify-between bg-card border border-border rounded-lg px-4 py-3 mb-4 group active:scale-[0.98] transition-transform"
+          className="w-full max-w-[300px] flex items-center justify-between bg-card border border-border rounded-lg px-4 py-3 mb-3 group active:scale-[0.98] transition-transform"
         >
           <div>
             <p className="text-[13px] font-semibold text-foreground">Size Guide Match</p>
@@ -223,6 +248,37 @@ const Welcome = () => {
           </div>
           <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
         </motion.button>
+
+        {/* Referral CTA */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="w-full max-w-[300px] mb-4"
+        >
+          <button
+            onClick={() => {
+              const url = window.location.origin;
+              if (navigator.share) {
+                navigator.share({ title: 'DRIP FIT — Know your size before you buy', text: 'Get AI body measurements, virtual try-on, and real fit feedback.', url });
+              } else {
+                navigator.clipboard.writeText(url);
+                toast({ title: 'Link copied!', description: 'Share it with friends to help them find their size.' });
+              }
+              trackEvent('share_action', { source: 'home_referral' });
+            }}
+            className="w-full flex items-center gap-3 bg-primary/5 border border-primary/20 rounded-lg px-4 py-3 group active:scale-[0.98] transition-transform"
+          >
+            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <Gift className="h-4 w-4 text-primary" />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-[12px] font-bold text-foreground">Invite Friends</p>
+              <p className="text-[10px] text-muted-foreground">Share DRIP FIT — help your crew find their size</p>
+            </div>
+            <Share2 className="h-3.5 w-3.5 text-primary shrink-0" />
+          </button>
+        </motion.div>
       </div>
 
       <BottomTabBar />

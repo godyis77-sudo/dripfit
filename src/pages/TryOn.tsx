@@ -1,11 +1,11 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Shirt, Sparkles, Loader2, Share2, Shield, User, Check, Link2, Info, MessageSquare, Save, RotateCcw, Store, ShoppingBag, Camera, ImageIcon, Bookmark } from 'lucide-react';
+import { ArrowLeft, Shirt, Sparkles, Loader2, Share2, Shield, User, Check, Link2, Info, MessageSquare, Save, RotateCcw, Store, ShoppingBag, Camera, ImageIcon, Bookmark, FolderOpen } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -57,9 +57,27 @@ const TryOn = () => {
   const [productLink, setProductLink] = useState('');
   const [category, setCategory] = useState<string>('top');
   const [clothingSaved, setClothingSaved] = useState(false);
+  const [wardrobeItems, setWardrobeItems] = useState<Array<{ id: string; image_url: string; category: string; product_link: string | null }>>([]);
+  const [showWardrobe, setShowWardrobe] = useState(false);
 
   const hasSavedProfile = !!localStorage.getItem('dripcheck_scans') && JSON.parse(localStorage.getItem('dripcheck_scans') || '[]').length > 0;
   const canGenerate = !!userPhoto && !!clothingPhoto;
+
+  useEffect(() => {
+    if (user) {
+      supabase.from('clothing_wardrobe' as any).select('id, image_url, category, product_link').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20)
+        .then(({ data }) => { if (data) setWardrobeItems(data as any); });
+    }
+  }, [user]);
+
+  const selectFromWardrobe = (item: { image_url: string; product_link: string | null; category: string }) => {
+    setClothingPhoto(item.image_url);
+    if (item.product_link) setProductLink(item.product_link);
+    setCategory(item.category);
+    setShowWardrobe(false);
+    setClothingSaved(true);
+    trackEvent('tryon_clothing_uploaded');
+  };
 
   const handleFileSelect = (setter: (v: string) => void, type: 'photo' | 'clothing') => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -292,6 +310,31 @@ const TryOn = () => {
                           <span className="text-[10px] font-bold">Gallery</span>
                         </button>
                       </div>
+                      {user && wardrobeItems.length > 0 && (
+                        <button
+                          onClick={() => setShowWardrobe(!showWardrobe)}
+                          className="w-full flex items-center justify-center gap-1 py-1.5 rounded-lg border border-primary/20 text-primary active:scale-95 transition-transform mt-0.5"
+                        >
+                          <FolderOpen className="h-3.5 w-3.5" />
+                          <span className="text-[10px] font-bold">My Wardrobe ({wardrobeItems.length})</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {/* Wardrobe picker */}
+                {showWardrobe && wardrobeItems.length > 0 && (
+                  <div className="mt-2 bg-card border border-border rounded-xl p-2 max-h-[200px] overflow-y-auto">
+                    <div className="grid grid-cols-3 gap-1.5">
+                      {wardrobeItems.map(item => (
+                        <button
+                          key={item.id}
+                          onClick={() => selectFromWardrobe(item)}
+                          className="rounded-lg overflow-hidden border border-border hover:border-primary/40 active:scale-95 transition-all"
+                        >
+                          <img src={item.image_url} alt="" className="w-full aspect-square object-cover" />
+                        </button>
+                      ))}
                     </div>
                   </div>
                 )}
