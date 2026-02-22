@@ -28,13 +28,13 @@ interface MeasurementLine {
 
 const measurementLines: MeasurementLine[] = [
   // Shoulder: shoulder tip to shoulder tip
-  { key: 'shoulder', label: 'Shoulder', labelSide: 'left', x1: '37%', y1: '22%', x2: '63%', y2: '22%', labelTop: '20.5%' },
+  { key: 'shoulder', label: 'Shoulder', labelSide: 'left', x1: '33%', y1: '22%', x2: '67%', y2: '22%', labelTop: '20.5%' },
   // Chest: armpit to armpit
   { key: 'chest', label: 'Chest', labelSide: 'left', x1: '38%', y1: '27%', x2: '62%', y2: '27%', labelTop: '25.5%' },
   // Bust: across bust
   { key: 'bust', label: 'Bust', labelSide: 'right', x1: '39%', y1: '30%', x2: '61%', y2: '30%', labelTop: '28.5%' },
   // Waist: narrowest torso point
-  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '41%', y1: '44%', x2: '59%', y2: '44%', labelTop: '42.5%' },
+  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '37%', y1: '44%', x2: '63%', y2: '44%', labelTop: '42.5%' },
   // Hips: widest hip point
   { key: 'hips', label: 'Hips', labelSide: 'right', x1: '37%', y1: '51%', x2: '63%', y2: '51%', labelTop: '49.5%' },
   // Sleeve: shoulder seam to wrist along arm
