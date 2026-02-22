@@ -15,6 +15,7 @@ import ResultActions from '@/components/results/ResultActions';
 import ShopThisSize from '@/components/monetization/ShopThisSize';
 import UpgradePrompt from '@/components/monetization/UpgradePrompt';
 import FitFeedbackSheet from '@/components/monetization/FitFeedbackSheet';
+import BrandPartnerCards from '@/components/monetization/BrandPartnerCards';
 
 const SIZE_LADDER = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL'];
 
@@ -105,6 +106,9 @@ const Results = () => {
         <BodyDiagram measurements={measurements} heightCm={result.heightCm} />
         <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
         <ResultActions saved={saved} scanDate={result.date} onSave={handleSave} onTryOn={() => { trackEvent('results_tryon_click'); navigate('/tryon', { state: { bodyProfile: result } }); }} onNewScan={() => navigate('/capture')} onDelete={handleDelete} />
+
+        {/* Brand partnership placeholders */}
+        <BrandPartnerCards />
 
         {/* Next step suggestion */}
         {saved && (
