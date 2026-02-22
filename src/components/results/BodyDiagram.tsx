@@ -115,7 +115,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {imageUrl && (
             <div className="absolute top-[9%] text-left" style={{ left: 4 }}>
               <div className="rounded px-1.5 py-0.5">
-                <p className="text-[14px] font-bold uppercase tracking-wide leading-none" style={{ color: 'hsl(0 0% 15%)' }}>Height</p>
+                <p className="text-[14px] font-bold uppercase tracking-wide leading-none" style={{ color: 'hsl(42 45% 45%)' }}>Height</p>
                 <p className="text-[12px] font-bold leading-none mt-0.5" style={{ color: 'hsl(0 0% 20%)' }}>{(heightCm * CM_TO_IN).toFixed(1)} in</p>
                 <p className="text-[12px] font-bold leading-none mt-0.5" style={{ color: 'hsl(0 0% 40%)' }}>{heightCm.toFixed(0)} cm</p>
               </div>
@@ -183,7 +183,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 }}
               >
               <div className={`${isLeft ? 'text-left' : 'text-right'} rounded px-1.5 py-0.5`}>
-                  <p className="text-[14px] font-bold uppercase tracking-wide leading-none" style={{ color: 'hsl(0 0% 15%)' }}>{label}</p>
+                  <p className="text-[14px] font-bold uppercase tracking-wide leading-none" style={{ color: 'hsl(42 45% 45%)' }}>{label}</p>
                   <p className="text-[12px] font-bold leading-none mt-0.5" style={{ color: 'hsl(0 0% 20%)' }}>{fmtIn(m[key])}</p>
                   <p className="text-[12px] font-bold leading-none mt-0.5" style={{ color: 'hsl(0 0% 40%)' }}>{fmt(m[key])}</p>
                 </div>
