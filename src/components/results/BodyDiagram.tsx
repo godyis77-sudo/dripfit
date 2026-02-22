@@ -15,32 +15,33 @@ interface BodyDiagramProps {
 }
 
 
-// Measurement line definitions — each describes a visible reference line on the body
+// Measurement line definitions
 interface MeasurementLine {
   key: string;
   label: string;
   labelSide: 'left' | 'right';
-  // Line coordinates as percentages of the container
   x1: string; y1: string; x2: string; y2: string;
-  // Label position
   labelTop: string;
+  // SVG x-coordinate where the solid leader line connects from label edge to reference line
+  leaderX: number;
+  leaderY: number;
 }
 
 const measurementLines: MeasurementLine[] = [
-  // Shoulder: shoulder tip to shoulder tip
-  { key: 'shoulder', label: 'Shoulder', labelSide: 'left', x1: '33%', y1: '24%', x2: '67%', y2: '24%', labelTop: '22.5%' },
-  // Chest: armpit to armpit
-  { key: 'chest', label: 'Chest', labelSide: 'left', x1: '38%', y1: '27%', x2: '62%', y2: '27%', labelTop: '25.5%' },
-  // Bust: across bust
-  { key: 'bust', label: 'Bust', labelSide: 'right', x1: '39%', y1: '30%', x2: '61%', y2: '30%', labelTop: '28.5%' },
-  // Waist: narrowest torso point
-  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '37%', y1: '44%', x2: '63%', y2: '44%', labelTop: '42.5%' },
-  // Hips: widest hip point
-  { key: 'hips', label: 'Hips', labelSide: 'right', x1: '37%', y1: '51%', x2: '63%', y2: '51%', labelTop: '49.5%' },
-  // Sleeve: shoulder seam to wrist along arm
-  { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '36%', y1: '23%', x2: '28%', y2: '53%', labelTop: '36%' },
-  // Inseam: crotch to inner ankle
-  { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '48%', y1: '55%', x2: '45%', y2: '86%', labelTop: '70%' },
+  // Shoulder — label on left, leader goes right to left endpoint
+  { key: 'shoulder', label: 'Shoulder', labelSide: 'left', x1: '33%', y1: '24%', x2: '67%', y2: '24%', labelTop: '19%', leaderX: 33, leaderY: 24 },
+  // Chest — label on left, spaced below shoulder
+  { key: 'chest', label: 'Chest', labelSide: 'left', x1: '38%', y1: '27%', x2: '62%', y2: '27%', labelTop: '27%', leaderX: 38, leaderY: 27 },
+  // Bust — label on right
+  { key: 'bust', label: 'Bust', labelSide: 'right', x1: '39%', y1: '30%', x2: '61%', y2: '30%', labelTop: '27%', leaderX: 61, leaderY: 30 },
+  // Waist — label on right
+  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '37%', y1: '44%', x2: '63%', y2: '44%', labelTop: '41%', leaderX: 63, leaderY: 44 },
+  // Hips — label on right, spaced below waist
+  { key: 'hips', label: 'Hips', labelSide: 'right', x1: '37%', y1: '51%', x2: '63%', y2: '51%', labelTop: '49%', leaderX: 63, leaderY: 51 },
+  // Sleeve — label on left
+  { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '36%', y1: '23%', x2: '28%', y2: '53%', labelTop: '37%', leaderX: 32, leaderY: 38 },
+  // Inseam — label on left
+  { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '48%', y1: '55%', x2: '45%', y2: '86%', labelTop: '70%', leaderX: 46, leaderY: 72 },
 ];
 
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
@@ -124,9 +125,10 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             </div>
           )}
 
-          {/* Measurement reference lines (SVG overlay) */}
+          {/* Measurement reference lines + leader lines (SVG overlay) */}
           {imageUrl && (
             <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+              {/* Dashed measurement lines on body */}
               {measurementLines.map(({ key, x1, y1, x2, y2 }) => {
                 if (!m[key]) return null;
                 return (
@@ -141,14 +143,30 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   />
                 );
               })}
-              {/* Small endpoint dots */}
+              {/* Endpoint dots */}
               {measurementLines.map(({ key, x1, y1, x2, y2 }) => {
                 if (!m[key]) return null;
                 return (
                   <g key={`dots-${key}`}>
-                    <circle cx={parseFloat(x1)} cy={parseFloat(y1)} r="0.7" fill="hsl(42 45% 45%)" />
-                    <circle cx={parseFloat(x2)} cy={parseFloat(y2)} r="0.7" fill="hsl(42 45% 45%)" />
+                    <circle cx={parseFloat(x1)} cy={parseFloat(y1)} r="0.8" fill="hsl(42 45% 45%)" />
+                    <circle cx={parseFloat(x2)} cy={parseFloat(y2)} r="0.8" fill="hsl(42 45% 45%)" />
                   </g>
+                );
+              })}
+              {/* Solid leader lines from label edge to reference line */}
+              {measurementLines.map(({ key, labelSide, leaderX, leaderY, labelTop }) => {
+                if (!m[key]) return null;
+                const labelEdgeX = labelSide === 'left' ? 18 : 82;
+                const labelY = parseFloat(labelTop) + 1.5;
+                return (
+                  <line
+                    key={`leader-${key}`}
+                    x1={labelEdgeX} y1={labelY}
+                    x2={leaderX} y2={leaderY}
+                    stroke="hsl(42 45% 55%)"
+                    strokeWidth="0.25"
+                    strokeLinecap="round"
+                  />
                 );
               })}
             </svg>
@@ -162,21 +180,17 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             return (
               <div
                 key={`label-${key}`}
-                className="absolute flex items-center gap-0.5"
+                className="absolute"
                 style={{
                   top: labelTop,
-                  ...(isLeft
-                    ? { left: 0, flexDirection: 'row' }
-                    : { right: 0, flexDirection: 'row-reverse' }),
+                  ...(isLeft ? { left: 4 } : { right: 4 }),
                 }}
               >
-                <div className={`${isLeft ? 'text-right pr-0.5' : 'text-left pl-0.5'} bg-white/70 rounded px-1 py-0.5`}>
-                  <p className="text-[9px] font-bold leading-tight" style={{ color: 'hsl(0 0% 15%)' }}>{label}</p>
-                  <p className="text-[7.5px] leading-tight" style={{ color: 'hsl(0 0% 35%)' }}>{fmt(m[key])}</p>
+                <div className={`${isLeft ? 'text-left' : 'text-right'} bg-white/80 rounded px-1.5 py-0.5`}>
+                  <p className="text-[10px] font-bold leading-tight" style={{ color: 'hsl(0 0% 15%)' }}>{label}</p>
+                  <p className="text-[8px] leading-tight" style={{ color: 'hsl(0 0% 30%)' }}>{fmt(m[key])}</p>
                   <p className="text-[7px] leading-tight" style={{ color: 'hsl(0 0% 50%)' }}>{fmtIn(m[key])}</p>
                 </div>
-                {/* Connector to line */}
-                <div className="w-4 border-t border-dashed" style={{ borderColor: 'hsl(42 45% 55%)' }} />
               </div>
             );
           })}
