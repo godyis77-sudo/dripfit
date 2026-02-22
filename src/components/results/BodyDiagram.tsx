@@ -29,7 +29,7 @@ interface MeasurementLine {
 
 const measurementLines: MeasurementLine[] = [
   // Shoulder — label on left, aligned to line y
-  { key: 'shoulder', label: 'Shoulder', labelSide: 'right', x1: '33%', y1: '24%', x2: '67%', y2: '24%', labelTop: '22%', leaderX: 67, leaderY: 24 },
+  { key: 'shoulder', label: 'Shoulder', labelSide: 'right', x1: '33%', y1: '18%', x2: '67%', y2: '18%', labelTop: '16%', leaderX: 67, leaderY: 18 },
   // Chest — label on left
   { key: 'chest', label: 'Chest', labelSide: 'left', x1: '38%', y1: '27%', x2: '62%', y2: '27%', labelTop: '25%', leaderX: 38, leaderY: 27 },
   // Bust — label on right
@@ -113,7 +113,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
           {/* Height indicator above chest */}
           {imageUrl && (
-            <div className="absolute top-[25%] left-1 text-left">
+            <div className="absolute top-[19%] left-1 text-left">
               <p className="text-[9px] font-bold uppercase tracking-wide" style={{ color: 'hsl(0 0% 15%)' }}>Height</p>
               <p className="text-[8px] font-bold" style={{ color: 'hsl(0 0% 20%)' }}>{(heightCm * CM_TO_IN).toFixed(1)} in</p>
               <p className="text-[8px] font-bold" style={{ color: 'hsl(0 0% 40%)' }}>{heightCm.toFixed(0)} cm</p>
