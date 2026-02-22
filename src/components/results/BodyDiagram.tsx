@@ -107,21 +107,16 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               src={imageUrl}
               alt="Body silhouette for measurements"
               className="w-full h-[500px] mx-auto block rounded-lg"
-              style={{ objectFit: 'cover' }}
+              style={{ objectFit: 'cover', transform: 'scale(1.05)' }}
             />
           )}
 
-          {/* Height indicator on far left */}
+          {/* Height indicator above chest */}
           {imageUrl && (
-            <div className="absolute left-0 top-[4%] bottom-[4%] w-5 flex flex-col items-center">
-              <div className="w-px flex-1 border-l border-dashed" style={{ borderColor: 'hsl(42 45% 55%)' }} />
-              <span
-                className="text-[8px] font-bold whitespace-nowrap"
-                style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', color: 'hsl(42 45% 45%)' }}
-              >
-                {heightCm.toFixed(0)} cm · {(heightCm * CM_TO_IN).toFixed(1)} in
-              </span>
-              <div className="w-px flex-1 border-l border-dashed" style={{ borderColor: 'hsl(42 45% 55%)' }} />
+            <div className="absolute top-[14%] left-1/2 -translate-x-1/2 text-center">
+              <p className="text-[9px] font-bold uppercase tracking-wide" style={{ color: 'hsl(0 0% 15%)' }}>Height</p>
+              <p className="text-[8px] font-bold" style={{ color: 'hsl(0 0% 20%)' }}>{(heightCm * CM_TO_IN).toFixed(1)} in</p>
+              <p className="text-[8px] font-bold" style={{ color: 'hsl(0 0% 40%)' }}>{heightCm.toFixed(0)} cm</p>
             </div>
           )}
 
