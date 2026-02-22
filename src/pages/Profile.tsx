@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Shirt, Crown, Trash2, Shield, Download, Settings, Ruler, Camera, ChevronRight, Sparkles, MessageSquare, Bookmark } from 'lucide-react';
+import { LogOut, Shirt, Crown, Trash2, Shield, Download, Settings, Ruler, Camera, ChevronRight, Sparkles, MessageSquare, Bookmark, ShoppingBag } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { getFitPreference, setFitPreference } from '@/lib/session';
@@ -21,6 +21,15 @@ interface TryOnPost {
   created_at: string;
 }
 
+interface WardrobeItem {
+  id: string;
+  image_url: string;
+  category: string;
+  product_link: string | null;
+  retailer: string | null;
+  created_at: string;
+}
+
 const SectionHeader = ({ children }: { children: React.ReactNode }) => (
   <p className="section-label mb-2 mt-4 first:mt-0">{children}</p>
 );
@@ -31,7 +40,8 @@ const Profile = () => {
   const { toast } = useToast();
   const [displayName, setDisplayName] = useState('');
   const [tryOnPosts, setTryOnPosts] = useState<TryOnPost[]>([]);
-  const [activeTab, setActiveTab] = useState<'tryons' | 'settings'>('tryons');
+  const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
+  const [activeTab, setActiveTab] = useState<'tryons' | 'wardrobe' | 'settings'>('tryons');
   const [loading, setLoading] = useState(true);
   const [useCm, setUseCm] = useState(true);
   const [fit, setFit] = useState<FitPreference>(getFitPreference());
@@ -43,6 +53,7 @@ const Profile = () => {
     fetchProfile();
     loadSavedProfile();
     fetchSavedItemCount();
+    fetchWardrobe();
   }, [user]);
 
   const fetchProfile = async () => {
@@ -65,6 +76,19 @@ const Profile = () => {
     const { count } = await supabase.from('saved_items').select('id', { count: 'exact', head: true }).eq('user_id', user.id);
     setSavedItemCount(count || 0);
   };
+
+  const fetchWardrobe = async () => {
+    if (!user) return;
+    const { data } = await supabase.from('clothing_wardrobe' as any).select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+    if (data) setWardrobeItems(data as any as WardrobeItem[]);
+  };
+
+  const deleteWardrobeItem = async (id: string) => {
+    await supabase.from('clothing_wardrobe' as any).delete().eq('id', id);
+    setWardrobeItems(prev => prev.filter(i => i.id !== id));
+    toast({ title: 'Removed', description: 'Item removed from wardrobe.' });
+  };
+
 
   const handleFitChange = (newFit: FitPreference) => { setFit(newFit); setFitPreference(newFit); toast({ title: 'Updated', description: `Default fit set to ${newFit}.` }); };
   const handleDeletePhotos = () => { localStorage.removeItem('dripcheck_scans'); setSavedProfile(null); toast({ title: 'Deleted', description: 'Scan data removed.' }); };
@@ -107,6 +131,7 @@ const Profile = () => {
         <div className="flex gap-0.5 bg-card rounded-lg p-0.5 mb-4 border border-border/40">
           {[
             { key: 'tryons' as const, icon: Shirt, label: 'Try-Ons' },
+            { key: 'wardrobe' as const, icon: ShoppingBag, label: 'Wardrobe' },
             { key: 'settings' as const, icon: Settings, label: 'Settings' },
           ].map(t => (
             <button
@@ -184,6 +209,54 @@ const Profile = () => {
                     </Button>
                   </div>
                 </>
+              )}
+            </motion.div>
+          ) : activeTab === 'wardrobe' ? (
+            <motion.div key="wardrobe" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
+              <p className="text-[11px] text-muted-foreground mb-3">Clothing you've saved as potential buys from Try-On.</p>
+              {wardrobeItems.length === 0 ? (
+                <div className="text-center py-10">
+                  <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                    <ShoppingBag className="h-6 w-6 text-primary/50" />
+                  </div>
+                  <p className="text-[14px] font-bold text-foreground mb-1">No saved outfits yet</p>
+                  <p className="text-[12px] text-muted-foreground max-w-[220px] mx-auto mb-4">Save clothing items during Try-On to build your wardrobe wishlist.</p>
+                  <Button className="rounded-lg btn-luxury text-primary-foreground text-sm h-10 px-5 font-bold" onClick={() => navigate('/tryon')}>
+                    <Sparkles className="mr-1.5 h-4 w-4" /> Go to Try-On
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  {wardrobeItems.map(item => (
+                    <motion.div key={item.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
+                      <div className="rounded-xl overflow-hidden border border-border bg-card">
+                        <img src={item.image_url} alt="Clothing" className="w-full aspect-[3/4] object-cover" />
+                        <div className="p-2 space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-bold text-foreground capitalize">{item.category}</span>
+                            {item.retailer && <span className="text-[9px] text-primary font-bold">{item.retailer}</span>}
+                          </div>
+                          <div className="flex gap-1">
+                            {item.product_link && (
+                              <button
+                                onClick={() => { trackEvent('shop_clickout', { source: 'wardrobe' }); window.open(item.product_link!, '_blank', 'noopener'); }}
+                                className="flex-1 text-[9px] font-bold py-1 rounded-md bg-primary/10 text-primary active:scale-95 transition-transform"
+                              >
+                                Shop
+                              </button>
+                            )}
+                            <button
+                              onClick={() => deleteWardrobeItem(item.id)}
+                              className="text-[9px] text-muted-foreground py-1 px-2 rounded-md border border-border active:scale-95 transition-transform"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
               )}
             </motion.div>
           ) : (

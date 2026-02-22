@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Shirt, Sparkles, Loader2, Share2, Shield, User, Check, Link2, Info, MessageSquare, Save, RotateCcw, Store, ShoppingBag } from 'lucide-react';
+import { ArrowLeft, Shirt, Sparkles, Loader2, Share2, Shield, User, Check, Link2, Info, MessageSquare, Save, RotateCcw, Store, ShoppingBag, Camera, ImageIcon, Bookmark } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -40,7 +40,9 @@ const TryOn = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const userPhotoRef = useRef<HTMLInputElement>(null);
+  const userCameraRef = useRef<HTMLInputElement>(null);
   const clothingPhotoRef = useRef<HTMLInputElement>(null);
+  const clothingCameraRef = useRef<HTMLInputElement>(null);
   const bodyProfile = (location.state as any)?.bodyProfile;
 
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
@@ -54,6 +56,7 @@ const TryOn = () => {
   const [autoSaved, setAutoSaved] = useState(false);
   const [productLink, setProductLink] = useState('');
   const [category, setCategory] = useState<string>('top');
+  const [clothingSaved, setClothingSaved] = useState(false);
 
   const hasSavedProfile = !!localStorage.getItem('dripcheck_scans') && JSON.parse(localStorage.getItem('dripcheck_scans') || '[]').length > 0;
   const canGenerate = !!userPhoto && !!clothingPhoto;
@@ -98,6 +101,26 @@ const TryOn = () => {
     if (error) throw error;
     const { data: urlData } = supabase.storage.from('tryon-images').getPublicUrl(fileName);
     return urlData.publicUrl;
+  };
+
+  const saveClothingToWardrobe = async () => {
+    if (!user || !clothingPhoto || clothingSaved) return;
+    try {
+      const imageUrl = await uploadBase64ToStorage(clothingPhoto, 'wardrobe');
+      await supabase.from('clothing_wardrobe' as any).insert({
+        user_id: user.id,
+        image_url: imageUrl,
+        category,
+        product_link: productLink || null,
+        retailer: (() => { try { const h = new URL(productLink).hostname; const m = ['shein','zara','hm','gap','nordstrom','lululemon','macys','jcpenney','aritzia','simons'].find(r => h.includes(r)); return m || null; } catch { return null; } })(),
+      } as any);
+      setClothingSaved(true);
+      trackEvent('saved_item_added', { source: 'tryon_wardrobe', category });
+      toast({ title: 'Saved to Wardrobe', description: 'Clothing saved as a potential buy outfit.' });
+    } catch (err: any) {
+      console.error('Save to wardrobe failed:', err);
+      toast({ title: 'Save failed', description: err.message, variant: 'destructive' });
+    }
   };
 
   const autoSaveToProfile = async (resultBase64: string) => {
@@ -148,6 +171,7 @@ const TryOn = () => {
     setShared(false);
     setAutoSaved(false);
     setProductLink('');
+    setClothingSaved(false);
   };
 
   return (
@@ -179,48 +203,98 @@ const TryOn = () => {
             {/* Upload zones */}
             <div className="grid grid-cols-2 gap-2 mb-3">
               <input ref={userPhotoRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileSelect(setUserPhoto, 'photo')} className="hidden" />
+              <input ref={userCameraRef} type="file" accept="image/jpeg,image/png,image/webp" capture="user" onChange={handleFileSelect(setUserPhoto, 'photo')} className="hidden" />
               <input ref={clothingPhotoRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileSelect(setClothingPhoto, 'clothing')} className="hidden" />
+              <input ref={clothingCameraRef} type="file" accept="image/jpeg,image/png,image/webp" capture="environment" onChange={handleFileSelect(setClothingPhoto, 'clothing')} className="hidden" />
 
               {/* Your Photo */}
               <div>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Your Photo <span className="text-destructive">*</span></p>
-                <button onClick={() => userPhotoRef.current?.click()} className={`w-full rounded-xl overflow-hidden border-2 bg-card active:scale-[0.97] transition-all ${userPhoto ? 'border-primary/40 border-solid' : 'border-border border-dashed hover:border-primary/30'}`}>
-                  <div className="aspect-[3/4] flex items-center justify-center">
-                    {userPhoto ? (
-                      <img src={userPhoto} alt="You" className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="flex flex-col items-center gap-1.5 text-muted-foreground p-3">
-                        <div className="h-10 w-10 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
-                          <User className="h-5 w-5 text-muted-foreground" />
-                        </div>
-                        <p className="text-[11px] font-semibold text-foreground">Tap to upload</p>
-                        <p className="text-[9px] text-muted-foreground text-center">Full body · front facing · well lit</p>
+                {userPhoto ? (
+                  <div className="relative">
+                    <button onClick={() => userPhotoRef.current?.click()} className="w-full rounded-xl overflow-hidden border-2 border-primary/40 bg-card active:scale-[0.97] transition-all">
+                      <div className="aspect-[3/4]">
+                        <img src={userPhoto} alt="You" className="w-full h-full object-cover" />
                       </div>
-                    )}
+                    </button>
+                    <p className="text-[9px] text-primary font-medium mt-1 text-center flex items-center justify-center gap-0.5"><Check className="h-2.5 w-2.5" /> Ready</p>
                   </div>
-                </button>
-                {userPhoto && <p className="text-[9px] text-primary font-medium mt-1 text-center flex items-center justify-center gap-0.5"><Check className="h-2.5 w-2.5" /> Ready</p>}
+                ) : (
+                  <div className="rounded-xl border-2 border-dashed border-border bg-card overflow-hidden">
+                    <div className="aspect-[3/4] flex flex-col items-center justify-center gap-2 p-3">
+                      <div className="h-10 w-10 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
+                        <User className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                      <p className="text-[9px] text-muted-foreground text-center">Full body · front facing · well lit</p>
+                      <div className="flex gap-1.5 w-full">
+                        <button
+                          onClick={() => userCameraRef.current?.click()}
+                          className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 border border-primary/20 text-primary active:scale-95 transition-transform"
+                        >
+                          <Camera className="h-3.5 w-3.5" />
+                          <span className="text-[10px] font-bold">Camera</span>
+                        </button>
+                        <button
+                          onClick={() => userPhotoRef.current?.click()}
+                          className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-card border border-border text-muted-foreground active:scale-95 transition-transform"
+                        >
+                          <ImageIcon className="h-3.5 w-3.5" />
+                          <span className="text-[10px] font-bold">Gallery</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Clothing Item */}
               <div>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Clothing <span className="text-destructive">*</span></p>
-                <button onClick={() => clothingPhotoRef.current?.click()} className={`w-full rounded-xl overflow-hidden border-2 bg-card active:scale-[0.97] transition-all ${clothingPhoto ? 'border-primary/40 border-solid' : 'border-border border-dashed hover:border-primary/30'}`}>
-                  <div className="aspect-[3/4] flex items-center justify-center">
-                    {clothingPhoto ? (
-                      <img src={clothingPhoto} alt="Clothing" className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="flex flex-col items-center gap-1.5 text-muted-foreground p-3">
-                        <div className="h-10 w-10 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
-                          <Shirt className="h-5 w-5 text-muted-foreground" />
-                        </div>
-                        <p className="text-[11px] font-semibold text-foreground">Tap to upload</p>
-                        <p className="text-[9px] text-muted-foreground text-center">Product photo · clean background</p>
+                {clothingPhoto ? (
+                  <div className="relative">
+                    <button onClick={() => clothingPhotoRef.current?.click()} className="w-full rounded-xl overflow-hidden border-2 border-primary/40 bg-card active:scale-[0.97] transition-all">
+                      <div className="aspect-[3/4]">
+                        <img src={clothingPhoto} alt="Clothing" className="w-full h-full object-cover" />
                       </div>
-                    )}
+                    </button>
+                    <div className="flex items-center justify-center gap-2 mt-1">
+                      <p className="text-[9px] text-primary font-medium flex items-center gap-0.5"><Check className="h-2.5 w-2.5" /> Ready</p>
+                      {user && !clothingSaved && (
+                        <button onClick={saveClothingToWardrobe} className="text-[9px] text-muted-foreground hover:text-primary flex items-center gap-0.5 transition-colors">
+                          <Bookmark className="h-2.5 w-2.5" /> Save
+                        </button>
+                      )}
+                      {clothingSaved && (
+                        <span className="text-[9px] text-primary/70 flex items-center gap-0.5"><Bookmark className="h-2.5 w-2.5" /> Saved</span>
+                      )}
+                    </div>
                   </div>
-                </button>
-                {clothingPhoto && <p className="text-[9px] text-primary font-medium mt-1 text-center flex items-center justify-center gap-0.5"><Check className="h-2.5 w-2.5" /> Ready</p>}
+                ) : (
+                  <div className="rounded-xl border-2 border-dashed border-border bg-card overflow-hidden">
+                    <div className="aspect-[3/4] flex flex-col items-center justify-center gap-2 p-3">
+                      <div className="h-10 w-10 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
+                        <Shirt className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                      <p className="text-[9px] text-muted-foreground text-center">Product photo · clean background</p>
+                      <div className="flex gap-1.5 w-full">
+                        <button
+                          onClick={() => clothingCameraRef.current?.click()}
+                          className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 border border-primary/20 text-primary active:scale-95 transition-transform"
+                        >
+                          <Camera className="h-3.5 w-3.5" />
+                          <span className="text-[10px] font-bold">Camera</span>
+                        </button>
+                        <button
+                          onClick={() => clothingPhotoRef.current?.click()}
+                          className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-card border border-border text-muted-foreground active:scale-95 transition-transform"
+                        >
+                          <ImageIcon className="h-3.5 w-3.5" />
+                          <span className="text-[10px] font-bold">Gallery</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

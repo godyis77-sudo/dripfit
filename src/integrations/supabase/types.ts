@@ -83,6 +83,42 @@ export type Database = {
         }
         Relationships: []
       }
+      clothing_wardrobe: {
+        Row: {
+          brand: string | null
+          category: string
+          created_at: string
+          id: string
+          image_url: string
+          notes: string | null
+          product_link: string | null
+          retailer: string | null
+          user_id: string
+        }
+        Insert: {
+          brand?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          image_url: string
+          notes?: string | null
+          product_link?: string | null
+          retailer?: string | null
+          user_id: string
+        }
+        Update: {
+          brand?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          notes?: string | null
+          product_link?: string | null
+          retailer?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       fit_feedback: {
         Row: {
           brand: string | null
