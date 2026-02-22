@@ -68,7 +68,7 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
 
   const confirmClickout = () => {
     if (!showConfirmation) return;
-    trackEvent('shop_clickout', { retailer: showConfirmation.retailer, size: recommendedSize });
+    trackEvent('shop_clickout', { retailer: showConfirmation.retailer, size: recommendedSize, source: 'results', confidence, category: category || 'general', hasLink: !!productLink });
     window.open(showConfirmation.url, '_blank', 'noopener');
     setShowConfirmation(null);
   };

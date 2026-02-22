@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Sparkles, Check } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { BodyScanResult, FitPreference, MeasurementRange } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
@@ -130,65 +131,74 @@ const Results = () => {
         <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} />
         {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
 
-        {/* Measurement adjustment — show when medium/low confidence */}
-        {(confidence === 'low' || confidence === 'medium') && (
-          <MeasurementAdjuster
-            measurements={measurements}
-            onAdjust={handleMeasurementAdjust}
-          />
-        )}
+        {/* Tabbed sections */}
+        <Tabs defaultValue="shop" className="mt-4">
+          <TabsList className="w-full grid grid-cols-3 h-9 rounded-lg bg-muted">
+            <TabsTrigger value="shop" className="text-[11px] font-bold rounded-md">Shop</TabsTrigger>
+            <TabsTrigger value="body" className="text-[11px] font-bold rounded-md">Body</TabsTrigger>
+            <TabsTrigger value="more" className="text-[11px] font-bold rounded-md">More</TabsTrigger>
+          </TabsList>
 
-        {/* Primary CTA: Shop This Size */}
-        <ShopThisSize
-          recommendedSize={adjustedSize}
-          confidence={confidence}
-          retailer={state?.retailer}
-          category={state?.category}
-        />
-
-        {/* Action ladder: Secondary + Tertiary CTAs */}
-        <ResultActions
-          saved={saved}
-          scanDate={result.date}
-          onSave={handleSave}
-          onTryOn={() => { trackEvent('results_tryon_click'); navigate('/tryon', { state: { bodyProfile: result } }); }}
-          onNewScan={() => navigate('/capture')}
-          onDelete={handleDelete}
-          recommendedSize={adjustedSize}
-        />
-
-        <BodyDiagram measurements={measurements} heightCm={result.heightCm} />
-        <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
-
-        {/* Brand partnership placeholders */}
-        <BrandPartnerCards />
-
-        {/* Upgrade prompt — after value delivered or low confidence */}
-        {(saved || confidence === 'low') && (
-          <UpgradePrompt
-            headline={confidence === 'low' ? 'Low confidence? Get smarter sizing.' : 'Want higher confidence?'}
-            description="Unlock advanced calibration, brand fit memory, and return risk alerts."
-            className="mt-3"
-          />
-        )}
-
-        {/* Fit feedback — post-purchase */}
-        {saved && (
-          <div className="mt-3">
-            <button
-              onClick={() => setShowFeedback(!showFeedback)}
-              className="text-[11px] text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2 mb-2"
-            >
-              Already bought something? Report how it fit
-            </button>
-            {showFeedback && (
-              <FitFeedbackSheet
-                retailer={state?.retailer || 'Unknown'}
-                recommendedSize={adjustedSize}
+          <TabsContent value="shop" className="mt-3 space-y-3">
+            {/* Measurement adjustment — show when medium/low confidence */}
+            {(confidence === 'low' || confidence === 'medium') && (
+              <MeasurementAdjuster
+                measurements={measurements}
+                onAdjust={handleMeasurementAdjust}
               />
             )}
-          </div>
-        )}
+
+            <ShopThisSize
+              recommendedSize={adjustedSize}
+              confidence={confidence}
+              retailer={state?.retailer}
+              category={state?.category}
+            />
+
+            <ResultActions
+              saved={saved}
+              scanDate={result.date}
+              onSave={handleSave}
+              onTryOn={() => { trackEvent('results_tryon_click'); navigate('/tryon', { state: { bodyProfile: result } }); }}
+              onNewScan={() => navigate('/capture')}
+              onDelete={handleDelete}
+              recommendedSize={adjustedSize}
+            />
+          </TabsContent>
+
+          <TabsContent value="body" className="mt-3 space-y-3">
+            <BodyDiagram measurements={measurements} heightCm={result.heightCm} />
+            <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
+          </TabsContent>
+
+          <TabsContent value="more" className="mt-3 space-y-3">
+            <BrandPartnerCards />
+
+            {(saved || confidence === 'low') && (
+              <UpgradePrompt
+                headline={confidence === 'low' ? 'Low confidence? Get smarter sizing.' : 'Want higher confidence?'}
+                description="Unlock advanced calibration, brand fit memory, and return risk alerts."
+              />
+            )}
+
+            {saved && (
+              <div>
+                <button
+                  onClick={() => setShowFeedback(!showFeedback)}
+                  className="text-[11px] text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2 mb-2"
+                >
+                  Already bought something? Report how it fit
+                </button>
+                {showFeedback && (
+                  <FitFeedbackSheet
+                    retailer={state?.retailer || 'Unknown'}
+                    recommendedSize={adjustedSize}
+                  />
+                )}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
