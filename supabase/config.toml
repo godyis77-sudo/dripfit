@@ -1,13 +1,1 @@
-project_id = "pdeufvqqdfmvbzotuyjh"
-
-[functions.analyze-body]
-verify_jwt = false
-
-[functions.virtual-tryon]
-verify_jwt = false
-
-[functions.analyze-size-guide]
-verify_jwt = false
-
-[functions.generate-body-diagram]
-verify_jwt = false
+project_id = "omdfzenqosecrytezyfa"
