@@ -44,7 +44,9 @@ type FunnelEvent =
   | 'save_item'
   | 'vote_cast'
   | 'trial_started'
-  | 'measurement_adjusted';
+  | 'measurement_adjusted'
+  | 'home_quick_scan'
+  | 'home_quick_tryon';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
