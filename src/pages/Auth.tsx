@@ -47,7 +47,7 @@ const Auth = () => {
         trackEvent('auth_completed', { method: 'email' });
         navigate('/');
       } else {
-        const { error } = await supabase.auth.signUp({ email, password, options: { data: { display_name: displayName }, emailRedirectTo: window.location.origin } });
+        const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } });
         if (error) throw error;
         trackEvent('auth_completed', { method: 'email_signup' });
         toast({ title: 'Check your email', description: 'We sent a confirmation link to verify your account.' });
@@ -135,15 +135,7 @@ const Auth = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-2.5">
-              {!isLogin && (
-                <div className="space-y-1">
-                  <Label htmlFor="name" className="text-[11px] text-foreground/70">Display Name</Label>
-                  <div className="relative">
-                    <User className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-                    <Input id="name" placeholder="Your name" value={displayName} onChange={e => setDisplayName(e.target.value)} className="pl-8 rounded-lg h-9 text-[13px] border-border/60 focus:border-primary" required />
-                  </div>
-                </div>
-              )}
+              {/* No extra fields — collect progressively */}
               <div className="space-y-1">
                 <Label htmlFor="email" className="text-[11px] text-foreground/70">Email</Label>
                 <div className="relative">
@@ -176,8 +168,8 @@ const Auth = () => {
               <button onClick={() => setIsLogin(!isLogin)} className="text-primary font-bold hover:underline">{isLogin ? 'Sign Up' : 'Sign In'}</button>
             </p>
 
-            <p className="text-[10px] text-muted-foreground text-center flex items-center justify-center gap-1">
-              <Shield className="h-3 w-3" /> Private by default · delete anytime
+            <p className="text-[9px] text-muted-foreground/50 text-center">
+              By continuing, you agree to our Terms & Privacy Policy.
             </p>
           </CardContent>
         </Card>
