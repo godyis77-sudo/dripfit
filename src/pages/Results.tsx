@@ -145,9 +145,11 @@ const Results = () => {
 
         <SizeHero retailer={state?.retailer} category={state?.category} recommendedSize={adjustedSize} confidence={confidence} whyLine={result.whyLine || 'Based on your scan + retailer chart + fit preference'} />
 
-        <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
-
         <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
+        <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} />
+        {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
+
+        <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
 
         {(confidence === 'low' || confidence === 'medium') && (
           <MeasurementAdjuster
@@ -155,9 +157,6 @@ const Results = () => {
             onAdjust={handleMeasurementAdjust}
           />
         )}
-
-        <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} />
-        {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
 
         {/* Tabbed sections */}
         <Tabs defaultValue="shop" className="mt-4">
