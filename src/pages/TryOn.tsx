@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Shirt, Sparkles, Loader2, Share2, Shield, User, Check, Link2, Info, MessageSquare, Save, RotateCcw, Store, ShoppingBag, Camera, ImageIcon, Bookmark, FolderOpen } from 'lucide-react';
+import { ArrowLeft, Shirt, Sparkles, Loader2, Share2, Shield, User, Check, Link2, Info, MessageSquare, Save, RotateCcw, Store, ShoppingBag, Camera, ImageIcon, Bookmark, FolderOpen, Crown, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -59,6 +59,23 @@ const TryOn = () => {
   const [clothingSaved, setClothingSaved] = useState(false);
   const [wardrobeItems, setWardrobeItems] = useState<Array<{ id: string; image_url: string; category: string; product_link: string | null }>>([]);
   const [showWardrobe, setShowWardrobe] = useState(false);
+  const [showPremiumGate, setShowPremiumGate] = useState(false);
+
+  const FREE_MONTHLY_LIMIT = 3;
+
+  const getMonthlyTryOnCount = (): number => {
+    const now = new Date();
+    const key = `drip_tryons_${now.getFullYear()}_${now.getMonth()}`;
+    return parseInt(localStorage.getItem(key) || '0', 10);
+  };
+
+  const incrementTryOnCount = () => {
+    const now = new Date();
+    const key = `drip_tryons_${now.getFullYear()}_${now.getMonth()}`;
+    localStorage.setItem(key, String(getMonthlyTryOnCount() + 1));
+  };
+
+  const remainingTryOns = Math.max(0, FREE_MONTHLY_LIMIT - getMonthlyTryOnCount());
 
   const hasSavedProfile = !!localStorage.getItem('dripcheck_scans') && JSON.parse(localStorage.getItem('dripcheck_scans') || '[]').length > 0;
   const canGenerate = !!userPhoto && !!clothingPhoto;
@@ -93,6 +110,10 @@ const TryOn = () => {
 
   const handleTryOn = async () => {
     if (!canGenerate) return;
+    if (getMonthlyTryOnCount() >= FREE_MONTHLY_LIMIT) {
+      setShowPremiumGate(true);
+      return;
+    }
     setLoading(true);
     setResultImage(null);
     setDescription(null);
@@ -102,6 +123,7 @@ const TryOn = () => {
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
       trackEvent('tryon_generated');
+      incrementTryOnCount();
       if (data.resultImage) { setResultImage(data.resultImage); if (user) autoSaveToProfile(data.resultImage); }
       else if (data.description) { setDescription(data.description); }
     } catch (err: any) {
@@ -235,7 +257,10 @@ const TryOn = () => {
                         <img src={userPhoto} alt="You" className="w-full h-full object-cover" />
                       </div>
                     </button>
-                    <p className="text-[9px] text-primary font-medium mt-1 text-center flex items-center justify-center gap-0.5"><Check className="h-2.5 w-2.5" /> Ready</p>
+                    <div className="flex items-center justify-center gap-2 mt-1">
+                      <p className="text-[9px] text-primary font-medium flex items-center gap-0.5"><Check className="h-2.5 w-2.5" /> Ready</p>
+                      <button onClick={(e) => { e.stopPropagation(); userPhotoRef.current?.click(); }} className="text-[9px] text-muted-foreground hover:text-foreground transition-colors underline">Change</button>
+                    </div>
                   </div>
                 ) : (
                   <div className="rounded-xl border-2 border-dashed border-border bg-card overflow-hidden">
@@ -277,6 +302,7 @@ const TryOn = () => {
                     </button>
                     <div className="flex items-center justify-center gap-2 mt-1">
                       <p className="text-[9px] text-primary font-medium flex items-center gap-0.5"><Check className="h-2.5 w-2.5" /> Ready</p>
+                      <button onClick={(e) => { e.stopPropagation(); clothingPhotoRef.current?.click(); }} className="text-[9px] text-muted-foreground hover:text-foreground transition-colors underline">Change</button>
                       {user && !clothingSaved && (
                         <button onClick={saveClothingToWardrobe} className="text-[9px] text-muted-foreground hover:text-primary flex items-center gap-0.5 transition-colors">
                           <Bookmark className="h-2.5 w-2.5" /> Save
@@ -378,9 +404,9 @@ const TryOn = () => {
                   <button
                     key={c.key}
                     onClick={() => setCategory(c.key)}
-                    className={`px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${
+                     className={`px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${
                       category === c.key
-                        ? 'border-primary bg-primary/10 text-primary'
+                        ? 'border-primary bg-primary text-primary-foreground font-bold'
                         : 'border-border text-muted-foreground hover:border-primary/30'
                     }`}
                   >
@@ -535,7 +561,51 @@ const TryOn = () => {
         <p className="text-[10px] text-muted-foreground text-center flex items-center justify-center gap-1 mt-3 mb-2">
           <Shield className="h-3 w-3" /> Private by default · delete anytime
         </p>
+
+        {!resultImage && remainingTryOns <= FREE_MONTHLY_LIMIT && (
+          <p className="text-[9px] text-muted-foreground/60 text-center mb-2">
+            {remainingTryOns} free try-on{remainingTryOns !== 1 ? 's' : ''} left this month
+          </p>
+        )}
       </div>
+
+      {/* Premium Gate Modal */}
+      {showPremiumGate && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm px-6"
+          onClick={() => setShowPremiumGate(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            onClick={e => e.stopPropagation()}
+            className="w-full max-w-sm bg-card border border-border rounded-2xl p-6 text-center relative"
+          >
+            <button onClick={() => setShowPremiumGate(false)} className="absolute top-3 right-3 text-muted-foreground hover:text-foreground">
+              <X className="h-4 w-4" />
+            </button>
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+              <Crown className="h-6 w-6 text-primary" />
+            </div>
+            <h2 className="text-lg font-bold text-foreground mb-1">You've used your free try-ons</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              Upgrade to Premium for unlimited try-ons, priority generation, and side-by-side comparison mode.
+            </p>
+            <Button
+              className="w-full h-11 rounded-lg btn-luxury text-primary-foreground font-bold mb-2"
+              onClick={() => { setShowPremiumGate(false); navigate('/premium'); }}
+            >
+              <Crown className="mr-2 h-4 w-4" /> Upgrade to Premium
+            </Button>
+            <button onClick={() => setShowPremiumGate(false)} className="text-[12px] text-muted-foreground hover:text-foreground transition-colors">
+              Maybe later
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+
       <BottomTabBar />
     </div>
   );
