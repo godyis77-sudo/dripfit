@@ -5,6 +5,7 @@ import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PhotoSet, BodyScanResult, FitPreference, ReferenceObject } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
+import bodySilhouette from '@/assets/body-silhouette.jpg';
 
 const MESSAGES = [
   'Detecting body landmarks…',
@@ -123,17 +124,16 @@ const Analyze = () => {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5">
-      {/* Animated body outline filling in */}
+      {/* Body silhouette with measurement lines filling in */}
       <div className="relative mb-6">
-        <svg viewBox="0 0 120 240" className="h-[220px] w-auto" fill="none">
-          {/* Body outline */}
-          <ellipse cx="60" cy="24" rx="14" ry="16" stroke="hsl(45 88% 40%)" strokeWidth="1.5" opacity="0.3" />
-          <path
-            d="M46 40 L46 48 L26 56 L24 60 L34 64 L36 100 L40 130 L36 180 L32 215 L46 215 L52 180 L56 140 L60 140 L64 140 L68 180 L74 215 L88 215 L84 180 L80 130 L84 100 L86 64 L96 60 L94 56 L74 48 L74 40"
-            stroke="hsl(45 88% 40%)" strokeWidth="1.5" opacity="0.3" strokeLinecap="round" strokeLinejoin="round"
-          />
+        <img
+          src={bodySilhouette}
+          alt="Body scan analysis"
+          className="h-[260px] w-auto rounded-xl object-cover"
+        />
 
-          {/* Measurement lines that appear as they "calculate" */}
+        {/* Measurement lines overlay */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 120 240" fill="none">
           {[
             { label: 'SHOULDER', y: 48, show: filledMeasurements.includes('SHOULDER') },
             { label: 'CHEST', y: 72, show: filledMeasurements.includes('CHEST') },
@@ -148,7 +148,6 @@ const Analyze = () => {
             </motion.g>
           ))}
 
-          {/* HEIGHT vertical line */}
           {filledMeasurements.includes('HEIGHT') && (
             <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
               <line x1="10" y1="12" x2="10" y2="215" stroke="hsl(45 88% 40%)" strokeWidth="0.8" />
