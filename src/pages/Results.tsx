@@ -114,18 +114,15 @@ const Results = () => {
   return (
     <div className="min-h-screen bg-background px-4 py-4 pb-8">
       <div className="max-w-sm mx-auto">
-        <div className="flex items-center mb-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg">
+        <div className="flex items-center gap-3 bg-primary/10 border border-primary/20 rounded-lg px-4 py-2.5 mb-3">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-7 w-7 rounded-md p-0 shrink-0">
             <ArrowLeft className="h-4 w-4" />
           </Button>
-        </div>
-
-        {/* Success confirmation */}
-        <div className="flex items-center gap-3 bg-primary/10 border border-primary/20 rounded-lg px-4 py-3 mb-4">
           <Check className="h-5 w-5 text-primary shrink-0" />
-          <div>
+          <div className="min-w-0">
             <p className="text-sm font-bold text-primary">Scan complete</p>
             <p className="text-sm text-muted-foreground">Your measurements are ready — see your best size below</p>
+          </div>
         </div>
 
         {/* Post-scan guided flow */}
@@ -141,7 +138,6 @@ const Results = () => {
             />
           )}
         </AnimatePresence>
-        </div>
 
         <SizeHero retailer={state?.retailer} category={state?.category} recommendedSize={adjustedSize} confidence={confidence} whyLine={result.whyLine || 'Based on your scan + retailer chart + fit preference'} />
 
