@@ -8,6 +8,7 @@ import { BodyScanResult, FitPreference, MeasurementRange } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import SizeHero from '@/components/results/SizeHero';
+import BottomTabBar from '@/components/BottomTabBar';
 import FitPreferenceToggle from '@/components/results/FitPreferenceToggle';
 import AlternativeSizes from '@/components/results/AlternativeSizes';
 import MeasurementGrid from '@/components/results/MeasurementGrid';
@@ -209,6 +210,7 @@ const Results = () => {
           </TabsContent>
         </Tabs>
       </div>
+      <BottomTabBar />
     </div>
   );
 };
