@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Shirt, Crown, Trash2, Shield, Download, Settings, Ruler, Camera, ChevronRight, Sparkles, MessageSquare, Bookmark, ShoppingBag, User } from 'lucide-react';
+import { LogOut, Shirt, Crown, Trash2, Shield, Download, Settings, Ruler, Camera, ChevronRight, Sparkles, MessageSquare, Bookmark, ShoppingBag, User, Check, ImageIcon } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { getFitPreference, setFitPreference } from '@/lib/session';
@@ -40,6 +40,7 @@ const Profile = () => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   const [displayName, setDisplayName] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [tryOnPosts, setTryOnPosts] = useState<TryOnPost[]>([]);
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
   const [activeTab, setActiveTab] = useState<'tryons' | 'body' | 'wardrobe' | 'settings'>('tryons');
@@ -48,6 +49,7 @@ const Profile = () => {
   const [fit, setFit] = useState<FitPreference>(getFitPreference());
   const [savedProfile, setSavedProfile] = useState<BodyScanResult | null>(null);
   const [savedItemCount, setSavedItemCount] = useState(0);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!user) { navigate('/auth', { replace: true }); return; }
@@ -60,10 +62,13 @@ const Profile = () => {
   const fetchProfile = async () => {
     if (!user) return;
     const [profileRes, postsRes] = await Promise.all([
-      supabase.from('profiles').select('display_name').eq('user_id', user.id).single(),
+      supabase.from('profiles').select('display_name, avatar_url').eq('user_id', user.id).single(),
       supabase.from('tryon_posts').select('id, result_photo_url, caption, is_public, created_at').eq('user_id', user.id).order('created_at', { ascending: false }),
     ]);
-    if (profileRes.data) setDisplayName(profileRes.data.display_name || user.email?.split('@')[0] || 'User');
+    if (profileRes.data) {
+      setDisplayName(profileRes.data.display_name || user.email?.split('@')[0] || 'User');
+      setAvatarUrl(profileRes.data.avatar_url);
+    }
     if (postsRes.data) setTryOnPosts(postsRes.data);
     setLoading(false);
   };
@@ -103,6 +108,19 @@ const Profile = () => {
     trackEvent('profile_export');
     toast({ title: 'Data exported' });
   };
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    const ext = file.name.split('.').pop() || 'jpg';
+    const fileName = `${user.id}/avatar.${ext}`;
+    const { error } = await supabase.storage.from('tryon-images').upload(fileName, file, { contentType: file.type, upsert: true });
+    if (error) { toast({ title: 'Upload failed', description: error.message, variant: 'destructive' }); return; }
+    const { data: urlData } = supabase.storage.from('tryon-images').getPublicUrl(fileName);
+    const publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+    await supabase.from('profiles').update({ avatar_url: publicUrl }).eq('user_id', user.id);
+    setAvatarUrl(publicUrl);
+    toast({ title: 'Avatar updated' });
+  };
   const handleSignOut = async () => { await signOut(); navigate('/', { replace: true }); };
 
   if (!user) return null;
@@ -114,10 +132,22 @@ const Profile = () => {
       <div className="max-w-sm mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2.5">
-            <div className="h-10 w-10 rounded-xl gradient-drip flex items-center justify-center">
-              <Crown className="h-5 w-5 text-primary-foreground" />
-            </div>
+          <div className="flex items-center gap-3">
+            <input ref={avatarInputRef} type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
+            <button onClick={() => avatarInputRef.current?.click()} className="relative group">
+              <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-primary/30 bg-card">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full gradient-drip flex items-center justify-center">
+                    <span className="text-lg font-bold text-primary-foreground">{displayName[0]?.toUpperCase() || 'U'}</span>
+                  </div>
+                )}
+              </div>
+              <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-background">
+                <Camera className="h-2.5 w-2.5 text-primary-foreground" />
+              </div>
+            </button>
             <div>
               <h1 className="text-[15px] font-bold text-foreground leading-tight">{displayName}</h1>
               <p className="text-[11px] text-muted-foreground">{user.email}</p>
@@ -271,29 +301,42 @@ const Profile = () => {
             </motion.div>
           ) : activeTab === 'wardrobe' ? (
             <motion.div key="wardrobe" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
-              <p className="text-[11px] text-muted-foreground mb-3">Clothing you've saved as potential buys from Try-On.</p>
+              <p className="text-[11px] text-muted-foreground mb-3">Your saved clothing and potential buys.</p>
               {wardrobeItems.length === 0 ? (
-                <div className="text-center py-10">
-                  <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                    <ShoppingBag className="h-6 w-6 text-primary/50" />
+                <div className="text-center py-8">
+                  {/* Stylized empty wardrobe illustration */}
+                  <div className="relative mx-auto w-32 h-36 mb-4">
+                    <div className="absolute inset-x-2 top-0 h-1.5 rounded-full bg-muted" />
+                    <div className="absolute left-4 top-1.5 w-0.5 h-8 bg-muted" />
+                    <div className="absolute right-4 top-1.5 w-0.5 h-8 bg-muted" />
+                    <div className="absolute inset-x-0 top-10 bottom-0 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-1">
+                      <Shirt className="h-8 w-8 text-muted-foreground/20" />
+                      <div className="flex gap-1">
+                        <div className="w-1.5 h-6 rounded-full bg-primary/10" />
+                        <div className="w-1.5 h-8 rounded-full bg-primary/15" />
+                        <div className="w-1.5 h-5 rounded-full bg-primary/10" />
+                        <div className="w-1.5 h-7 rounded-full bg-primary/12" />
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-[14px] font-bold text-foreground mb-1">No saved outfits yet</p>
-                  <p className="text-[12px] text-muted-foreground max-w-[220px] mx-auto mb-4">Save clothing items during Try-On to build your wardrobe wishlist.</p>
+                  <p className="text-[15px] font-bold text-foreground mb-1">Your dream closet starts here</p>
+                  <p className="text-[12px] text-muted-foreground max-w-[220px] mx-auto mb-4">Save clothing from Try-On sessions to build your personal wardrobe.</p>
                   <Button className="rounded-lg btn-luxury text-primary-foreground text-sm h-10 px-5 font-bold" onClick={() => navigate('/tryon')}>
-                    <Sparkles className="mr-1.5 h-4 w-4" /> Go to Try-On
+                    <Sparkles className="mr-1.5 h-4 w-4" /> Start Try-On
                   </Button>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-2">
+                <div className="columns-2 gap-2 space-y-2">
                   {wardrobeItems.map(item => (
-                    <motion.div key={item.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
+                    <motion.div key={item.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="break-inside-avoid">
                       <div className="rounded-xl overflow-hidden border border-border bg-card">
-                        <img src={item.image_url} alt="Clothing" className="w-full aspect-[3/4] object-cover" />
+                        <img src={item.image_url} alt="Clothing" className="w-full object-cover" />
                         <div className="p-2 space-y-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-bold text-foreground capitalize">{item.category}</span>
-                            {item.retailer && <span className="text-[9px] text-primary font-bold">{item.retailer}</span>}
+                            <span className="text-[11px] font-bold text-foreground capitalize">{item.category}</span>
+                            {item.retailer && <span className="text-[9px] text-primary font-bold uppercase">{item.retailer}</span>}
                           </div>
+                          <p className="text-[9px] text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</p>
                           <div className="flex gap-1">
                             {item.product_link && (
                               <button
