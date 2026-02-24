@@ -31,6 +31,7 @@ const Analyze = () => {
   const [msgIdx, setMsgIdx] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [scanPos, setScanPos] = useState(0);
   const [filledMeasurements, setFilledMeasurements] = useState<string[]>([]);
   const minTimeElapsed = useRef(false);
   const resultReady = useRef<any>(null);
@@ -48,6 +49,16 @@ const Analyze = () => {
     const progressInterval = setInterval(() => {
       setProgress(p => Math.min(p + 1.5, 90));
     }, 100);
+
+    // Looping scan line — sweeps top to bottom over 3s, then resets
+    const SCAN_DURATION = 3000;
+    const SCAN_TICK = 30;
+    const scanInterval = setInterval(() => {
+      setScanPos(p => {
+        const next = p + (SCAN_TICK / SCAN_DURATION) * 100;
+        return next >= 100 ? 0 : next;
+      });
+    }, SCAN_TICK);
 
     // Fill in measurement labels one by one
     MEASUREMENT_LABELS.forEach((label, i) => {
@@ -67,6 +78,7 @@ const Analyze = () => {
     return () => {
       clearInterval(msgInterval);
       clearInterval(progressInterval);
+      clearInterval(scanInterval);
     };
   }, []);
 
@@ -126,7 +138,14 @@ const Analyze = () => {
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5">
       {/* Animated body silhouette reveal */}
       <div className="relative mb-6 w-[220px] h-[280px] rounded-xl overflow-hidden">
-        {/* The image, clipped by a moving reveal mask */}
+        {/* Base dimmed image */}
+        <img
+          src={bodySilhouetteScan}
+          alt="Body scan analysis"
+          className="absolute inset-0 w-full h-full object-cover opacity-30"
+        />
+
+        {/* Revealed portion — grows with progress, stays revealed */}
         <div
           className="absolute inset-0"
           style={{
@@ -141,22 +160,20 @@ const Analyze = () => {
           />
         </div>
 
-        {/* Scan line at the reveal edge */}
+        {/* Looping scan line */}
         <motion.div
-          className="absolute left-0 right-0 h-[2px] bg-primary shadow-[0_0_12px_hsl(var(--primary))]"
-          style={{
-            top: `${Math.min((progress / 90) * 100, 100)}%`,
-          }}
-          animate={{ opacity: progress >= 90 ? 0 : [0.6, 1, 0.6] }}
-          transition={{ duration: 0.8, repeat: Infinity }}
+          className="absolute left-0 right-0 h-[2px] bg-primary shadow-[0_0_16px_hsl(var(--primary)),0_0_4px_hsl(var(--primary))]"
+          style={{ top: `${scanPos}%` }}
+          animate={{ opacity: progress >= 90 ? 0 : [0.5, 1, 0.5] }}
+          transition={{ duration: 0.6, repeat: Infinity }}
         />
 
-        {/* Dim unrevealed area */}
+        {/* Subtle glow trailing the scan line */}
         <div
-          className="absolute inset-0 bg-background/80"
+          className="absolute left-0 right-0 h-8 bg-gradient-to-b from-primary/20 to-transparent pointer-events-none"
           style={{
-            clipPath: `inset(${Math.min((progress / 90) * 100, 100)}% 0 0 0)`,
-            transition: 'clip-path 0.4s ease-out',
+            top: `${scanPos}%`,
+            transition: 'top 30ms linear',
           }}
         />
 
