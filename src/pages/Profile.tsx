@@ -31,9 +31,14 @@ interface WardrobeItem {
   created_at: string;
 }
 
-const SectionHeader = ({ children }: { children: React.ReactNode }) => (
-  <p className="section-label mb-2 mt-4 first:mt-0">{children}</p>
+import { forwardRef } from 'react';
+
+const SectionHeader = forwardRef<HTMLParagraphElement, { children: React.ReactNode }>(
+  ({ children }, ref) => (
+    <p ref={ref} className="section-label mb-2 mt-4 first:mt-0">{children}</p>
+  )
 );
+SectionHeader.displayName = 'SectionHeader';
 
 const Profile = () => {
   const navigate = useNavigate();

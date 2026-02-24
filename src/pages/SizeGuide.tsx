@@ -55,7 +55,10 @@ const SizeGuide = () => {
     finally { setLoading(false); }
   };
 
-  if (measurements.length > 0 && !selectedMeasurement) setSelectedMeasurement(measurements[0]);
+  // Auto-select first measurement on mount (not during render)
+  useState(() => {
+    if (measurements.length > 0) setSelectedMeasurement(measurements[0]);
+  });
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-bottom">
