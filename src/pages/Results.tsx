@@ -144,7 +144,18 @@ const Results = () => {
         </div>
 
         <SizeHero retailer={state?.retailer} category={state?.category} recommendedSize={adjustedSize} confidence={confidence} whyLine={result.whyLine || 'Based on your scan + retailer chart + fit preference'} />
+
+        <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
+
         <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
+
+        {(confidence === 'low' || confidence === 'medium') && (
+          <MeasurementAdjuster
+            measurements={measurements}
+            onAdjust={handleMeasurementAdjust}
+          />
+        )}
+
         <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} />
         {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
 
@@ -157,14 +168,6 @@ const Results = () => {
           </TabsList>
 
           <TabsContent value="shop" className="mt-3 space-y-3">
-            {/* Measurement adjustment — show when medium/low confidence */}
-            {(confidence === 'low' || confidence === 'medium') && (
-              <MeasurementAdjuster
-                measurements={measurements}
-                onAdjust={handleMeasurementAdjust}
-              />
-            )}
-
             <ShopThisSize
               recommendedSize={adjustedSize}
               confidence={confidence}
@@ -185,7 +188,6 @@ const Results = () => {
 
           <TabsContent value="body" className="mt-3 space-y-3">
             <BodyDiagram measurements={measurements} heightCm={result.heightCm} />
-            <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
           </TabsContent>
 
           <TabsContent value="more" className="mt-3 space-y-3">
