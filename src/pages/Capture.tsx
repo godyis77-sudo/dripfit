@@ -70,8 +70,8 @@ const AnimatedSilhouette = () => {
       className="flex items-center justify-center"
     >
       {imgUrl ? (
-        <div className="relative h-[220px] w-[200px]">
-          <img src={imgUrl} alt="Body silhouette" className="h-full w-auto mx-auto rounded-lg object-cover" />
+        <div className="relative h-[240px] w-[220px]">
+          <img src={imgUrl} alt="Body silhouette" className="h-full w-auto mx-auto rounded-lg object-cover" style={{ transform: 'scale(1.10)' }} />
           {/* Measurement label overlays */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
             {[
@@ -90,8 +90,8 @@ const AnimatedSilhouette = () => {
                 <line x1={x1} y1={y} x2={x2} y2={label === 'INSEAM' ? 86 : y} stroke="hsl(42 45% 50%)" strokeWidth="0.4" strokeDasharray="1.2 0.8" strokeLinecap="round" />
                 <circle cx={x1} cy={y} r="0.7" fill="hsl(42 45% 45%)" />
                 <circle cx={x2} cy={label === 'INSEAM' ? 86 : y} r="0.7" fill="hsl(42 45% 45%)" />
-                <line x1={side === 'left' ? 14 : 86} y1={y} x2={side === 'left' ? x1 : x2} y2={y} stroke="hsl(42 45% 55%)" strokeWidth="0.2" strokeLinecap="round" />
-                <text x={side === 'left' ? 13 : 87} y={y + 0.5} textAnchor={side === 'left' ? 'end' : 'start'} fill="hsl(42 45% 45%)" fontSize="3.2" fontWeight="bold" letterSpacing="0.3">{label}</text>
+                <line x1={side === 'left' ? 20 : 80} y1={y} x2={side === 'left' ? x1 : x2} y2={y} stroke="hsl(42 45% 55%)" strokeWidth="0.2" strokeLinecap="round" />
+                <text x={side === 'left' ? 19 : 81} y={y + 0.5} textAnchor={side === 'left' ? 'end' : 'start'} fill="hsl(42 45% 45%)" fontSize="3.2" fontWeight="bold" letterSpacing="0.3">{label}</text>
               </motion.g>
             ))}
           </svg>
