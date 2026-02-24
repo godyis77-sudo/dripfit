@@ -126,11 +126,16 @@ const Analyze = () => {
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5">
       {/* Body silhouette with measurement lines filling in */}
       <div className="relative mb-6">
-        <img
-          src={bodySilhouette}
-          alt="Body scan analysis"
-          className="h-[260px] w-auto rounded-xl object-cover"
-        />
+        <div className="relative h-[260px] w-auto rounded-xl overflow-hidden">
+          {/* Fully opaque background to hide baked-in text */}
+          <div className="absolute inset-0 bg-background rounded-xl" />
+          <img
+            src={bodySilhouette}
+            alt="Body scan analysis"
+            className="absolute inset-0 h-full w-full rounded-xl object-cover opacity-40"
+            style={{ filter: 'brightness(0.3) contrast(2)' }}
+          />
+        </div>
 
         {/* Measurement lines overlay */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 120 240" fill="none">
