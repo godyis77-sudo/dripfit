@@ -46,7 +46,11 @@ type FunnelEvent =
   | 'trial_started'
   | 'measurement_adjusted'
   | 'home_quick_scan'
-  | 'home_quick_tryon';
+  | 'home_quick_tryon'
+  | 'postscan_tryon_click'
+  | 'postscan_shop_click'
+  | 'postscan_fitcheck_click'
+  | 'postscan_dismissed';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
