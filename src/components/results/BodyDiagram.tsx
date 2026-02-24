@@ -1,13 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { supabase } from '@/integrations/supabase/client';
 import type { MeasurementRange } from '@/lib/types';
 
 const CM_TO_IN = 0.3937;
 const fmt = (r: MeasurementRange) => `${r.min.toFixed(0)}–${r.max.toFixed(0)} cm`;
 const fmtIn = (r: MeasurementRange) => `${(r.min * CM_TO_IN).toFixed(1)}–${(r.max * CM_TO_IN).toFixed(1)} in`;
-
-const CACHE_KEY = 'dripcheck_body_silhouette_v2';
 
 interface BodyDiagramProps {
   measurements: Record<string, MeasurementRange>;
@@ -34,46 +29,51 @@ const measurementLines: MeasurementLine[] = [
   { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '48%', y1: '55%', x2: '45%', y2: '86%', labelTop: '69%', leaderX: 46, leaderY: 72 },
 ];
 
+/** Inline SVG body silhouette — gold outlined, gender-neutral figure */
+const BodySilhouetteSVG = () => (
+  <svg
+    viewBox="0 0 200 480"
+    className="w-full h-[500px] mx-auto block"
+    style={{ maxWidth: 260 }}
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    {/* Head */}
+    <ellipse cx="100" cy="42" rx="22" ry="26" stroke="hsl(42 75% 50%)" strokeWidth="2.5" fill="none" />
+    {/* Neck */}
+    <line x1="92" y1="68" x2="92" y2="82" stroke="hsl(42 75% 50%)" strokeWidth="2.5" />
+    <line x1="108" y1="68" x2="108" y2="82" stroke="hsl(42 75% 50%)" strokeWidth="2.5" />
+    {/* Shoulders */}
+    <line x1="92" y1="82" x2="52" y2="92" stroke="hsl(42 75% 50%)" strokeWidth="2.5" />
+    <line x1="108" y1="82" x2="148" y2="92" stroke="hsl(42 75% 50%)" strokeWidth="2.5" />
+    {/* Left arm */}
+    <line x1="52" y1="92" x2="38" y2="160" stroke="hsl(42 75% 50%)" strokeWidth="2.5" />
+    <line x1="38" y1="160" x2="30" y2="240" stroke="hsl(42 75% 50%)" strokeWidth="2.5" />
+    {/* Left hand */}
+    <line x1="30" y1="240" x2="26" y2="255" stroke="hsl(42 75% 50%)" strokeWidth="2.5" />
+    {/* Right arm */}
+    <line x1="148" y1="92" x2="162" y2="160" stroke="hsl(42 75% 50%)" strokeWidth="2.5" />
+    <line x1="162" y1="160" x2="170" y2="240" stroke="hsl(42 75% 50%)" strokeWidth="2.5" />
+    {/* Right hand */}
+    <line x1="170" y1="240" x2="174" y2="255" stroke="hsl(42 75% 50%)" strokeWidth="2.5" />
+    {/* Torso left side */}
+    <path d="M52 92 Q48 130 55 170 Q50 195 56 220 Q62 245 72 260" stroke="hsl(42 75% 50%)" strokeWidth="2.5" fill="none" />
+    {/* Torso right side */}
+    <path d="M148 92 Q152 130 145 170 Q150 195 144 220 Q138 245 128 260" stroke="hsl(42 75% 50%)" strokeWidth="2.5" fill="none" />
+    {/* Crotch */}
+    <path d="M72 260 Q100 275 128 260" stroke="hsl(42 75% 50%)" strokeWidth="2.5" fill="none" />
+    {/* Left leg */}
+    <path d="M72 260 Q68 320 66 370 Q64 410 62 450" stroke="hsl(42 75% 50%)" strokeWidth="2.5" fill="none" />
+    {/* Left foot */}
+    <path d="M62 450 Q58 460 50 462 Q48 464 50 466" stroke="hsl(42 75% 50%)" strokeWidth="2.5" fill="none" />
+    {/* Right leg */}
+    <path d="M128 260 Q132 320 134 370 Q136 410 138 450" stroke="hsl(42 75% 50%)" strokeWidth="2.5" fill="none" />
+    {/* Right foot */}
+    <path d="M138 450 Q142 460 150 462 Q152 464 150 466" stroke="hsl(42 75% 50%)" strokeWidth="2.5" fill="none" />
+  </svg>
+);
+
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    const cached = localStorage.getItem(CACHE_KEY);
-    if (cached) {
-      setImageUrl(cached);
-      setLoading(false);
-      return;
-    }
-
-    const generate = async () => {
-      try {
-        const { data, error: fnError } = await supabase.functions.invoke('generate-body-diagram', {
-          method: 'POST',
-          body: {},
-        });
-
-        if (fnError || !data?.image) {
-          console.error('Body diagram generation failed:', fnError);
-          setError(true);
-          setLoading(false);
-          return;
-        }
-
-        localStorage.setItem(CACHE_KEY, data.image);
-        setImageUrl(data.image);
-      } catch (e) {
-        console.error('Body diagram error:', e);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    generate();
-  }, []);
-
   const m = measurements;
 
   return (
@@ -83,82 +83,62 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
         <div className="relative w-full max-w-[380px] mx-auto" style={{ minHeight: 500 }}>
           {/* Title overlay */}
           <p className="absolute top-3 left-0 right-0 text-center text-[18px] font-bold uppercase tracking-widest z-10" style={{ color: 'hsl(42 45% 45%)' }}>Scan Results</p>
-          {/* Body image */}
-          {loading && (
-            <Skeleton className="w-full h-[500px] rounded-lg" />
-          )}
 
-          {error && !imageUrl && (
-            <div className="w-full h-[500px] flex items-center justify-center text-muted-foreground text-xs">
-              Could not generate diagram
-            </div>
-          )}
-
-          {imageUrl && (
-            <img
-              src={imageUrl}
-              alt="Body silhouette for measurements"
-              className="w-full h-[500px] mx-auto block rounded-lg"
-              style={{ objectFit: 'cover', transform: 'scale(1.10)' }}
-            />
-          )}
+          {/* Body silhouette SVG */}
+          <div className="pt-8">
+            <BodySilhouetteSVG />
+          </div>
 
           {/* Height indicator */}
-          {imageUrl && (
-            <div className="absolute top-[9%] text-left" style={{ left: 4 }}>
-              <div className="rounded px-1.5 py-0.5">
-                <p className="text-[14px] font-bold uppercase tracking-wide leading-none" style={{ color: 'hsl(42 45% 45%)' }}>Height</p>
-                <p className="text-[12px] font-bold leading-none mt-0.5" style={{ color: 'hsl(0 0% 20%)' }}>{(heightCm * CM_TO_IN).toFixed(1)} in</p>
-                <p className="text-[12px] font-bold leading-none mt-0.5" style={{ color: 'hsl(0 0% 40%)' }}>{heightCm.toFixed(0)} cm</p>
-              </div>
+          <div className="absolute top-[9%] text-left" style={{ left: 4 }}>
+            <div className="rounded px-1.5 py-0.5">
+              <p className="text-[14px] font-bold uppercase tracking-wide leading-none" style={{ color: 'hsl(42 45% 45%)' }}>Height</p>
             </div>
-          )}
+          </div>
 
           {/* SVG measurement lines */}
-          {imageUrl && (
-            <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
-              {measurementLines.map(({ key, x1, y1, x2, y2 }) => {
-                if (!m[key]) return null;
-                return (
-                  <line
-                    key={key}
-                    x1={parseFloat(x1)} y1={parseFloat(y1)}
-                    x2={parseFloat(x2)} y2={parseFloat(y2)}
-                    stroke="hsl(42 45% 50%)"
-                    strokeWidth="0.4"
-                    strokeDasharray="1.2 0.8"
-                    strokeLinecap="round"
-                  />
-                );
-              })}
-              {measurementLines.map(({ key, x1, y1, x2, y2 }) => {
-                if (!m[key]) return null;
-                return (
-                  <g key={`dots-${key}`}>
-                    <circle cx={parseFloat(x1)} cy={parseFloat(y1)} r="0.8" fill="hsl(42 45% 45%)" />
-                    <circle cx={parseFloat(x2)} cy={parseFloat(y2)} r="0.8" fill="hsl(42 45% 45%)" />
-                  </g>
-                );
-              })}
-              {measurementLines.map(({ key, labelSide, leaderX, leaderY }) => {
-                if (!m[key]) return null;
-                const labelEdgeX = labelSide === 'left' ? 18 : 82;
-                return (
-                  <line
-                    key={`leader-${key}`}
-                    x1={labelEdgeX} y1={leaderY}
-                    x2={leaderX} y2={leaderY}
-                    stroke="hsl(42 45% 55%)"
-                    strokeWidth="0.25"
-                    strokeLinecap="round"
-                  />
-                );
-              })}
-            </svg>
-          )}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+            {measurementLines.map(({ key, x1, y1, x2, y2 }) => {
+              if (!m[key]) return null;
+              return (
+                <line
+                  key={key}
+                  x1={parseFloat(x1)} y1={parseFloat(y1)}
+                  x2={parseFloat(x2)} y2={parseFloat(y2)}
+                  stroke="hsl(42 45% 50%)"
+                  strokeWidth="0.4"
+                  strokeDasharray="1.2 0.8"
+                  strokeLinecap="round"
+                />
+              );
+            })}
+            {measurementLines.map(({ key, x1, y1, x2, y2 }) => {
+              if (!m[key]) return null;
+              return (
+                <g key={`dots-${key}`}>
+                  <circle cx={parseFloat(x1)} cy={parseFloat(y1)} r="0.8" fill="hsl(42 45% 45%)" />
+                  <circle cx={parseFloat(x2)} cy={parseFloat(y2)} r="0.8" fill="hsl(42 45% 45%)" />
+                </g>
+              );
+            })}
+            {measurementLines.map(({ key, labelSide, leaderX, leaderY }) => {
+              if (!m[key]) return null;
+              const labelEdgeX = labelSide === 'left' ? 18 : 82;
+              return (
+                <line
+                  key={`leader-${key}`}
+                  x1={labelEdgeX} y1={leaderY}
+                  x2={leaderX} y2={leaderY}
+                  stroke="hsl(42 45% 55%)"
+                  strokeWidth="0.25"
+                  strokeLinecap="round"
+                />
+              );
+            })}
+          </svg>
 
           {/* Measurement labels */}
-          {imageUrl && measurementLines.map(({ key, label, labelSide, labelTop }) => {
+          {measurementLines.map(({ key, label, labelSide, labelTop }) => {
             if (!m[key]) return null;
             const isLeft = labelSide === 'left';
 
@@ -173,8 +153,6 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               >
                 <div className={`${isLeft ? 'text-left' : 'text-right'} rounded px-1.5 py-0.5`}>
                   <p className="text-[14px] font-bold uppercase tracking-wide leading-none" style={{ color: 'hsl(42 45% 45%)' }}>{label}</p>
-                  <p className="text-[12px] font-bold leading-none mt-0.5" style={{ color: 'hsl(0 0% 20%)' }}>{fmtIn(m[key])}</p>
-                  <p className="text-[12px] font-bold leading-none mt-0.5" style={{ color: 'hsl(0 0% 40%)' }}>{fmt(m[key])}</p>
                 </div>
               </div>
             );
