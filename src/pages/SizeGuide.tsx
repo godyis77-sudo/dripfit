@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -55,10 +55,11 @@ const SizeGuide = () => {
     finally { setLoading(false); }
   };
 
-  // Auto-select first measurement on mount (not during render)
-  useState(() => {
-    if (measurements.length > 0) setSelectedMeasurement(measurements[0]);
-  });
+  useEffect(() => {
+    if (measurements.length > 0 && !selectedMeasurement) {
+      setSelectedMeasurement(measurements[0]);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-bottom">
