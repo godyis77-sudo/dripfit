@@ -1,5 +1,4 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
-import bodySilhouette from '@/assets/body-silhouette.jpg';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -49,11 +48,36 @@ const AnimatedSilhouette = () => (
     transition={{ duration: 0.6, ease: 'easeOut' }}
     className="flex items-center justify-center"
   >
-    <img
-      src={bodySilhouette}
-      alt="Body scan silhouette"
-      className="h-[200px] w-auto rounded-xl object-cover"
-    />
+    <svg viewBox="0 0 120 240" className="h-[200px] w-auto" fill="none">
+      {/* Body outline */}
+      <motion.ellipse
+        cx="60" cy="24" rx="14" ry="16"
+        stroke="hsl(45 88% 40%)" strokeWidth="1.5" fill="none"
+        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+        transition={{ duration: 1, delay: 0.2 }}
+      />
+      <motion.path
+        d="M46 40 L46 48 L26 56 L24 60 L34 64 L36 100 L40 130 L36 180 L32 215 L46 215 L52 180 L56 140 L60 140 L64 140 L68 180 L74 215 L88 215 L84 180 L80 130 L84 100 L86 64 L96 60 L94 56 L74 48 L74 40"
+        stroke="hsl(45 88% 40%)" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"
+        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+        transition={{ duration: 1.5, delay: 0.4 }}
+      />
+      {/* Measurement markers */}
+      {[
+        { y: 56, label: 'SHOULDER' },
+        { y: 72, label: 'CHEST' },
+        { y: 95, label: 'WAIST' },
+        { y: 120, label: 'HIPS' },
+      ].map((m, i) => (
+        <motion.g key={m.label}
+          initial={{ opacity: 0, x: -8 }}
+          animate={{ opacity: 0.5, x: 0 }}
+          transition={{ delay: 1.2 + i * 0.15 }}
+        >
+          <line x1="30" y1={m.y} x2="90" y2={m.y} stroke="hsl(45 88% 40%)" strokeWidth="0.5" strokeDasharray="3 2" opacity="0.4" />
+        </motion.g>
+      ))}
+    </svg>
   </motion.div>
 );
 

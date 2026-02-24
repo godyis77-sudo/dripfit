@@ -1,8 +1,7 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Sparkles, Check } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { AnimatePresence } from 'framer-motion';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { BodyScanResult, FitPreference, MeasurementRange } from '@/lib/types';
@@ -42,47 +41,12 @@ const Results = () => {
   const [showFeedback, setShowFeedback] = useState(false);
   const [adjustedMeasurements, setAdjustedMeasurements] = useState<Record<string, MeasurementRange>>({});
   const [showGuide, setShowGuide] = useState(true);
-  const savedToDb = useRef(false);
 
   useEffect(() => {
     if (result) {
       trackEvent('results_viewed');
       trackEvent('result_viewed');
     }
-  }, [result]);
-
-  // Auto-save scan to database on mount
-  useEffect(() => {
-    if (!result || savedToDb.current) return;
-    savedToDb.current = true;
-    const saveScanToDb = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        await supabase.from('body_scans').insert({
-          user_id: user?.id || null,
-          height_cm: result.heightCm,
-          shoulder_min: result.shoulder.min,
-          shoulder_max: result.shoulder.max,
-          chest_min: result.chest.min,
-          chest_max: result.chest.max,
-          waist_min: result.waist.min,
-          waist_max: result.waist.max,
-          hip_min: result.hips.min,
-          hip_max: result.hips.max,
-          inseam_min: result.inseam.min,
-          inseam_max: result.inseam.max,
-          confidence: result.confidence,
-          recommended_size: result.recommendedSize,
-        });
-      } catch (e) {
-        console.error('Failed to save scan to DB:', e);
-      }
-    };
-    saveScanToDb();
-    // Also save to localStorage for backward compat
-    const history = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]');
-    history.unshift(result);
-    localStorage.setItem('dripcheck_scans', JSON.stringify(history));
   }, [result]);
 
   const adjustedSize = useMemo(() => {
@@ -131,6 +95,9 @@ const Results = () => {
   }
 
   const handleSave = () => {
+    const history = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]');
+    history.unshift(result);
+    localStorage.setItem('dripcheck_scans', JSON.stringify(history));
     setSaved(true);
     trackEvent('results_saved');
     trackEvent('save_item', { type: 'scan' });

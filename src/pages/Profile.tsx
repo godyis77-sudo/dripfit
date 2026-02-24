@@ -73,35 +73,7 @@ const Profile = () => {
     setLoading(false);
   };
 
-  const loadSavedProfile = async () => {
-    if (!user) return;
-    // Try database first
-    const { data } = await supabase
-      .from('body_scans')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (data) {
-      setSavedProfile({
-        id: data.id,
-        date: data.created_at,
-        shoulder: { min: data.shoulder_min, max: data.shoulder_max },
-        chest: { min: data.chest_min, max: data.chest_max },
-        waist: { min: data.waist_min, max: data.waist_max },
-        hips: { min: data.hip_min, max: data.hip_max },
-        inseam: { min: data.inseam_min, max: data.inseam_max },
-        heightCm: data.height_cm,
-        confidence: data.confidence as any,
-        recommendedSize: data.recommended_size || 'M',
-        fitPreference: 'regular',
-        alternatives: { sizeDown: '', sizeUp: '' },
-        whyLine: '',
-      });
-      return;
-    }
-    // Fallback to localStorage
+  const loadSavedProfile = () => {
     try { const scans = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]'); if (scans.length > 0) setSavedProfile(scans[0]); } catch { /* ignore */ }
   };
 
