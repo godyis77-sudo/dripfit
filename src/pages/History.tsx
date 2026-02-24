@@ -4,9 +4,28 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Trash2, Ruler } from 'lucide-react';
-import { MeasurementResult, MEASUREMENT_LABELS } from '@/lib/types';
+import { MeasurementResult, MEASUREMENT_LABELS, BodyScanResult } from '@/lib/types';
 import BottomTabBar from '@/components/BottomTabBar';
 import { getMeasurements, deleteMeasurement } from '@/lib/storage';
+
+function toBodyScanResult(m: MeasurementResult): BodyScanResult {
+  const v = (n: number) => ({ min: n - 0.5, max: n + 0.5 });
+  return {
+    id: m.id,
+    date: m.date,
+    shoulder: v(m.shoulder),
+    chest: v(m.chest),
+    waist: v(m.waist),
+    hips: v(m.hips),
+    inseam: v(m.inseam),
+    heightCm: m.unit === 'cm' ? m.height : Math.round(m.height * 2.54),
+    confidence: 'medium',
+    recommendedSize: m.sizeRecommendation,
+    fitPreference: 'regular',
+    alternatives: { sizeDown: '', sizeUp: '' },
+    whyLine: 'Based on your saved scan',
+  };
+}
 
 const History = () => {
   const navigate = useNavigate();
@@ -37,7 +56,7 @@ const History = () => {
             <div className="space-y-2">
               {measurements.map((m) => (
                 <motion.div key={m.id} layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -80 }}>
-                  <Card className="rounded-xl cursor-pointer" onClick={() => navigate('/results', { state: { result: m } })}>
+                  <Card className="rounded-xl cursor-pointer" onClick={() => navigate('/results', { state: { result: toBodyScanResult(m) } })}>
                     <CardContent className="p-3">
                       <div className="flex items-center justify-between mb-1.5">
                         <p className="text-[13px] font-medium text-foreground">{new Date(m.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
