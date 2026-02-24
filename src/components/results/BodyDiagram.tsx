@@ -59,23 +59,23 @@ const BodyDiagram = ({ measurements, heightCm, hideValues = false }: BodyDiagram
       </div>
 
       <div className="border border-primary/20 rounded-xl overflow-hidden bg-card relative">
-        {/* Background silhouette image — measurements baked in are covered by our own labels */}
+        {/* Background silhouette image — fully covered by opaque overlay */}
         <img
           src={bodySilhouette}
           alt="Body measurement diagram"
-          className="w-full rounded-xl"
+          className="w-full rounded-xl invisible"
           style={{ objectFit: 'contain' }}
         />
 
-        {/* Overlay to hide the baked-in text from the source image */}
-        <div className="absolute inset-0 bg-card/90 rounded-xl" />
+        {/* Fully opaque overlay to hide ALL baked-in text */}
+        <div className="absolute inset-0 bg-card rounded-xl" />
 
-        {/* Re-render the silhouette on top so it's visible through the overlay */}
+        {/* Re-render silhouette with heavy darkening to eliminate any text visibility */}
         <img
           src={bodySilhouette}
           alt=""
-          className="absolute inset-0 w-full h-full rounded-xl mix-blend-luminosity opacity-60"
-          style={{ objectFit: 'contain' }}
+          className="absolute inset-0 w-full h-full rounded-xl opacity-40"
+          style={{ objectFit: 'contain', filter: 'brightness(0.3) contrast(2)' }}
         />
 
         {/* Height label */}
