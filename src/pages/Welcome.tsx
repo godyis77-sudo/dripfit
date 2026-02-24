@@ -7,6 +7,7 @@ import { isOnboarded } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
 import BottomTabBar from '@/components/BottomTabBar';
+import AuthenticatedHome from '@/components/home/AuthenticatedHome';
 
 const PILLARS = [
   { icon: Ruler, label: 'Scan', desc: 'AI body measurements in 60 seconds', action: '/capture' },
@@ -35,6 +36,15 @@ const Welcome = () => {
     trackEvent('home_start_scan_click');
     navigate(isOnboarded() ? '/capture' : '/onboarding');
   };
+
+  if (user) {
+    return (
+      <>
+        <AuthenticatedHome />
+        <BottomTabBar />
+      </>
+    );
+  }
 
   return (
     <div className="relative min-h-screen bg-background overflow-hidden pb-safe-bottom">
