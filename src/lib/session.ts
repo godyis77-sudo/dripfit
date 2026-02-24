@@ -31,3 +31,15 @@ export function getFitPreference(): 'fitted' | 'regular' | 'relaxed' {
 export function setFitPreference(fit: 'fitted' | 'regular' | 'relaxed'): void {
   localStorage.setItem(FIT_KEY, fit);
 }
+
+// Shopping habit
+const SHOP_HABIT_KEY = 'dripcheck_shop_habit';
+export type ShoppingHabit = 'online' | 'mix' | 'instore' | 'browser';
+
+export function getShoppingHabit(): ShoppingHabit | null {
+  return localStorage.getItem(SHOP_HABIT_KEY) as ShoppingHabit | null;
+}
+
+export function setShoppingHabit(habit: ShoppingHabit): void {
+  localStorage.setItem(SHOP_HABIT_KEY, habit);
+}

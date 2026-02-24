@@ -50,7 +50,12 @@ type FunnelEvent =
   | 'postscan_tryon_click'
   | 'postscan_shop_click'
   | 'postscan_fitcheck_click'
-  | 'postscan_dismissed';
+  | 'postscan_dismissed'
+  | 'onboarding_splash_done'
+  | 'onboarding_carousel_skip'
+  | 'onboarding_carousel_done'
+  | 'onboarding_shopping_habit'
+  | 'onboarding_scan_prompt_skip';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {

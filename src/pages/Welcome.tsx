@@ -34,7 +34,7 @@ const Welcome = () => {
 
   const handleStartScan = () => {
     trackEvent('home_start_scan_click');
-    navigate(isOnboarded() ? '/capture' : '/onboarding');
+    navigate('/capture');
   };
 
   if (user) {
