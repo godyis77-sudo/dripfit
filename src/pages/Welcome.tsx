@@ -48,34 +48,27 @@ const Welcome = () => {
 
   return (
     <div className="relative min-h-screen bg-background overflow-hidden pb-safe-bottom">
-      {/* Background glows */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-[5%] left-1/2 -translate-x-1/2 h-[320px] w-[320px] rounded-full bg-primary/8 blur-[140px]" />
-        <div className="absolute bottom-[20%] right-0 h-[200px] w-[200px] rounded-full bg-drip-accent/5 blur-[100px]" />
-      </div>
-
       <div className="relative z-10 flex flex-col items-center px-5 pt-4">
         {/* Nav */}
         <motion.nav
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="w-full max-w-sm flex items-center justify-between mb-5"
+          className="w-full max-w-sm flex items-center justify-between mb-6"
         >
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg gradient-drip flex items-center justify-center">
+            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
               <Crown className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-display font-bold text-sm tracking-wider">DRIP FIT</span>
+            <span className="font-display font-bold text-sm tracking-wider text-primary">DRIP FIT</span>
           </div>
-          {user ? (
-            <Button variant="ghost" size="sm" onClick={() => signOut()} className="text-muted-foreground text-xs h-8 px-2.5 rounded-lg">
-              <LogOut className="mr-1 h-3.5 w-3.5" /> Sign Out
-            </Button>
-          ) : (
-            <Button variant="ghost" size="sm" onClick={() => { trackEvent('auth_started'); navigate('/auth'); }} className="text-muted-foreground text-xs h-8 px-2.5 rounded-lg">
-              <LogIn className="mr-1 h-3.5 w-3.5" /> Sign In
-            </Button>
-          )}
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => { trackEvent('auth_started'); navigate('/auth'); }}
+            className="text-xs h-9 px-3 rounded-xl min-h-[44px]"
+          >
+            <LogIn className="mr-1 h-3.5 w-3.5" /> Sign In
+          </Button>
         </motion.nav>
 
         {/* Hero */}
@@ -83,10 +76,11 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center max-w-[300px] mb-5"
+          className="text-center max-w-[300px] mb-6"
         >
-          <h1 className="font-display text-[28px] font-bold tracking-tight mb-2 leading-[1.12]">
-            Know your size <span className="gradient-drip-text">before you buy</span>
+          <h1 className="font-display text-[28px] font-bold tracking-tight mb-2 leading-[1.12] text-foreground">
+            Know your size{' '}
+            <span className="text-primary">before</span> you buy
           </h1>
           <p className="text-muted-foreground text-[13px] leading-relaxed">
             Get your measurements, preview the outfit, and get real feedback — all in under 2 minutes.
@@ -102,7 +96,7 @@ const Welcome = () => {
         >
           <Button
             onClick={handleStartScan}
-            className="w-full h-12 text-sm font-display font-bold uppercase tracking-widest btn-luxury text-primary-foreground rounded-lg active:scale-[0.97] transition-transform"
+            className="w-full h-12 text-sm font-semibold uppercase tracking-widest rounded-xl active:scale-[0.97] transition-transform"
             size="lg"
           >
             <Camera className="mr-2 h-4 w-4" /> Get My Size
@@ -112,12 +106,12 @@ const Welcome = () => {
           </p>
         </motion.div>
 
-        {/* 3 Pillars — clickable */}
+        {/* How It Works */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.4 }}
-          className="w-full max-w-[300px] mb-5 mt-3"
+          className="w-full max-w-[300px] mb-6 mt-4"
         >
           <p className="section-label mb-2">How it works</p>
           <div className="space-y-1.5">
@@ -129,9 +123,9 @@ const Welcome = () => {
                   else if (p.label === 'Try-On') { trackEvent('home_tryon_click'); navigate(p.action); }
                   else { trackEvent('home_fitcheck_click'); navigate(p.action); }
                 }}
-                className="w-full flex items-center gap-3 bg-card border border-border rounded-lg py-2.5 px-3 group active:scale-[0.98] transition-transform"
+                className="w-full flex items-center gap-3 bg-card border border-border rounded-xl py-3 px-3 group active:scale-[0.97] transition-transform min-h-[44px]"
               >
-                <div className="flex items-center justify-center h-8 w-8 rounded-lg gradient-drip shrink-0">
+                <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary shrink-0">
                   <p.icon className="h-4 w-4 text-primary-foreground" />
                 </div>
                 <div className="flex-1 text-left">
@@ -140,13 +134,13 @@ const Welcome = () => {
                   </p>
                   <p className="text-[10px] text-muted-foreground leading-tight">{p.desc}</p>
                 </div>
-                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
               </button>
             ))}
           </div>
         </motion.div>
 
-        {/* Sample Result Preview */}
+        {/* What You'll Get */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -154,13 +148,13 @@ const Welcome = () => {
           className="w-full max-w-[300px] mb-5"
         >
           <p className="section-label mb-2">What you'll get</p>
-          <div className="bg-card border border-border rounded-lg p-3">
+          <div className="bg-card border border-border rounded-xl p-3">
             <div className="flex items-center justify-between mb-2">
               <div>
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Your best size</p>
-                <p className="font-display text-2xl font-bold gradient-drip-text leading-none">M</p>
+                <p className="font-display text-2xl font-bold text-primary leading-none">M</p>
               </div>
-              <div className="flex items-center gap-1 bg-primary/10 rounded-md px-2 py-1">
+              <div className="flex items-center gap-1 bg-primary/15 rounded-lg px-2 py-1">
                 <Star className="h-3 w-3 text-primary" />
                 <span className="text-[11px] font-bold text-primary">92% match</span>
               </div>
@@ -172,7 +166,7 @@ const Welcome = () => {
                 { label: 'Hips', val: '98–102' },
                 { label: 'Inseam', val: '78–80' },
               ].map((m) => (
-                <div key={m.label} className="bg-background rounded-md px-1.5 py-1.5 text-center">
+                <div key={m.label} className="bg-muted rounded-lg px-1.5 py-1.5 text-center">
                   <p className="text-[9px] text-muted-foreground uppercase tracking-wide">{m.label}</p>
                   <p className="text-[11px] font-semibold text-foreground">{m.val}</p>
                 </div>
@@ -182,10 +176,10 @@ const Welcome = () => {
               {['S', 'M', 'L'].map((s) => (
                 <span
                   key={s}
-                  className={`text-[10px] font-bold rounded-md px-2.5 py-0.5 ${
+                  className={`text-[10px] font-bold rounded-full px-2.5 py-0.5 ${
                     s === 'M'
-                      ? 'gradient-drip text-primary-foreground'
-                      : 'bg-secondary text-muted-foreground'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground'
                   }`}
                 >
                   {s}
@@ -196,23 +190,23 @@ const Welcome = () => {
           </div>
         </motion.div>
 
-        {/* Secondary CTA */}
+        {/* Skip to Try-On */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.35 }}
-          className="w-full max-w-[300px] mb-4"
+          className="w-full max-w-[300px] mb-5"
         >
           <Button
-            variant="outline"
+            variant="secondary"
             onClick={() => { trackEvent('home_tryon_click'); navigate('/tryon'); }}
-            className="w-full h-10 text-xs font-display font-semibold uppercase tracking-wider text-primary border-primary/20 hover:bg-primary/5 rounded-lg"
+            className="w-full h-11 text-xs font-semibold uppercase tracking-wider rounded-xl min-h-[44px]"
           >
-            <Sparkles className="mr-1.5 h-3.5 w-3.5" /> Skip to Try-On
+            <Sparkles className="mr-1.5 h-3.5 w-3.5 text-primary" /> Skip to Try-On
           </Button>
         </motion.div>
 
-        {/* Trust row */}
+        {/* Trust bar */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -232,12 +226,12 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.42 }}
-          className="w-full max-w-[300px] mb-4"
+          className="w-full max-w-[300px] mb-5"
         >
           <div className="grid grid-cols-3 gap-2">
             {SOCIAL_PROOF.map((s) => (
-              <div key={s.label} className="text-center bg-card border border-border rounded-lg py-2.5 px-2">
-                <p className="font-display text-lg font-bold gradient-drip-text leading-none">{s.stat}</p>
+              <div key={s.label} className="text-center bg-card border border-border rounded-xl py-2.5 px-2">
+                <p className="font-display text-lg font-bold text-primary leading-none">{s.stat}</p>
                 <p className="text-[9px] text-muted-foreground mt-0.5">{s.label}</p>
               </div>
             ))}
@@ -250,7 +244,7 @@ const Welcome = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.45 }}
           onClick={() => navigate('/size-guide')}
-          className="w-full max-w-[300px] flex items-center justify-between bg-card border border-border rounded-lg px-4 py-3 mb-3 group active:scale-[0.98] transition-transform"
+          className="w-full max-w-[300px] flex items-center justify-between bg-card border border-border rounded-xl px-4 py-3 mb-3 group active:scale-[0.98] transition-transform min-h-[44px]"
         >
           <div>
             <p className="text-[13px] font-semibold text-foreground">Size Guide Match</p>
@@ -264,7 +258,7 @@ const Welcome = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="w-full max-w-[300px] mb-4"
+          className="w-full max-w-[300px] mb-6"
         >
           <button
             onClick={() => {
@@ -277,9 +271,9 @@ const Welcome = () => {
               }
               trackEvent('share_action', { source: 'home_referral' });
             }}
-            className="w-full flex items-center gap-3 bg-primary/5 border border-primary/20 rounded-lg px-4 py-3 group active:scale-[0.98] transition-transform"
+            className="w-full flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 group active:scale-[0.98] transition-transform min-h-[44px]"
           >
-            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+            <div className="h-8 w-8 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
               <Gift className="h-4 w-4 text-primary" />
             </div>
             <div className="flex-1 text-left">
