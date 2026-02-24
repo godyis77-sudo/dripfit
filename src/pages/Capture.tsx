@@ -71,7 +71,7 @@ const AnimatedSilhouette = () => {
     >
       {imgUrl ? (
         <div className="relative h-[240px] w-[220px]">
-          <img src={imgUrl} alt="Body silhouette" className="h-full w-auto mx-auto rounded-lg object-cover" style={{ transform: 'scale(1.10)' }} />
+          <img src={imgUrl} alt="Body silhouette" className="h-full w-auto mx-auto rounded-lg object-cover" style={{ transform: 'scale(1.30)' }} />
           {/* Measurement label overlays */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
             {[
