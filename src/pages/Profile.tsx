@@ -130,6 +130,16 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-bottom">
       <div className="max-w-sm mx-auto">
+        {/* Go Premium banner */}
+        <button
+          onClick={() => { trackEvent('premium_viewed', { source: 'profile_banner' }); navigate('/premium'); }}
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-primary/20 bg-primary/5 mb-3 active:scale-[0.98] transition-transform"
+        >
+          <Crown className="h-4 w-4 text-primary shrink-0" />
+          <span className="text-[11px] font-bold text-foreground flex-1 text-left">Go Premium</span>
+          <span className="text-[9px] text-primary font-bold">7-day free trial →</span>
+        </button>
+
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
