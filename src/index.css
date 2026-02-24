@@ -177,4 +177,54 @@
   .pb-safe-bottom {
     padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
   }
+
+  /* Gold shimmer skeleton for loading states */
+  .skeleton-gold {
+    background: linear-gradient(
+      110deg,
+      hsl(var(--muted)) 30%,
+      hsl(var(--primary) / 0.12) 50%,
+      hsl(var(--muted)) 70%
+    );
+    background-size: 200% 100%;
+    animation: shimmer-gold 1.5s ease-in-out infinite;
+  }
+
+  @keyframes shimmer-gold {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Image auto-brightness normalization for dark user-generated images */
+  .img-normalize {
+    filter: brightness(1.05) contrast(1.02);
+  }
+
+  /* Toast with gold left-border, slide from bottom */
+  [data-sonner-toast] {
+    border-left: 3px solid hsl(var(--primary)) !important;
+  }
+
+  /* Form validation: inline red underline */
+  .field-error {
+    @apply border-destructive ring-destructive/30;
+  }
+  .field-error-message {
+    @apply text-[11px] text-destructive mt-1 font-medium;
+  }
+
+  /* Minimum touch targets for accessibility */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Tablet 2-column grid */
+  @media (min-width: 768px) {
+    .feed-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+  }
 }

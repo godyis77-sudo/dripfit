@@ -3,7 +3,9 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/hooks/useAuth";
+import { MobileShell } from "@/components/layout/MobileShell";
 import Welcome from "./pages/Welcome";
 import Onboarding from "./pages/Onboarding";
 import Capture from "./pages/Capture";
@@ -28,22 +30,26 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Welcome />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/capture" element={<Capture />} />
-            <Route path="/analyze" element={<Analyze />} />
-            <Route path="/results" element={<Results />} />
-            <Route path="/history" element={<History />} />
-            <Route path="/tryon" element={<TryOn />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/size-guide" element={<SizeGuide />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/premium" element={<Premium />} />
-            <Route path="/saved" element={<SavedItems />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <MobileShell>
+            <AnimatePresence mode="wait">
+              <Routes>
+                <Route path="/" element={<Welcome />} />
+                <Route path="/onboarding" element={<Onboarding />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/capture" element={<Capture />} />
+                <Route path="/analyze" element={<Analyze />} />
+                <Route path="/results" element={<Results />} />
+                <Route path="/history" element={<History />} />
+                <Route path="/tryon" element={<TryOn />} />
+                <Route path="/community" element={<Community />} />
+                <Route path="/size-guide" element={<SizeGuide />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/premium" element={<Premium />} />
+                <Route path="/saved" element={<SavedItems />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </AnimatePresence>
+          </MobileShell>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
