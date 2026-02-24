@@ -187,13 +187,18 @@ const Community = () => {
         </div>
 
         {loading ? (
-          <div className="space-y-3">
+          <div className="space-y-3 md:feed-grid">
             {[1, 2].map(i => (
-              <div key={i} className="bg-card border border-border rounded-xl overflow-hidden animate-pulse">
-                <div className="w-full aspect-[4/5] bg-muted" />
+              <div key={i} className="bg-card border border-border rounded-xl overflow-hidden">
+                <div className="w-full aspect-[4/5] skeleton-gold" />
                 <div className="p-3 space-y-2">
-                  <div className="h-3 bg-muted rounded w-2/3" />
-                  <div className="h-3 bg-muted rounded w-1/2" />
+                  <div className="h-3 w-2/3 rounded skeleton-gold" />
+                  <div className="h-3 w-1/2 rounded skeleton-gold" />
+                  <div className="flex gap-1.5 mt-2">
+                    <div className="h-8 flex-1 rounded-lg skeleton-gold" />
+                    <div className="h-8 flex-1 rounded-lg skeleton-gold" />
+                    <div className="h-8 flex-1 rounded-lg skeleton-gold" />
+                  </div>
                 </div>
               </div>
             ))}
@@ -229,7 +234,7 @@ const Community = () => {
                   {isPlaceholder(post) || !post.result_photo_url ? (
                     <PlaceholderImage caption={post.caption || 'Try-on look'} />
                   ) : (
-                    <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[4/5] object-cover" />
+                    <img src={post.result_photo_url} alt={post.caption || "Try-on look"} loading="lazy" decoding="async" className="w-full aspect-[4/5] object-cover img-normalize" />
                   )}
 
                   <div className="p-2.5 space-y-2">
