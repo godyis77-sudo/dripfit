@@ -121,11 +121,11 @@ const Results = () => {
         </div>
 
         {/* Success confirmation */}
-        <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-lg px-3 py-2 mb-4">
-          <Check className="h-4 w-4 text-primary shrink-0" />
+        <div className="flex items-center gap-3 bg-primary/10 border border-primary/20 rounded-lg px-4 py-3 mb-4">
+          <Check className="h-5 w-5 text-primary shrink-0" />
           <div>
-            <p className="text-[12px] font-bold text-primary">Scan complete</p>
-            <p className="text-[10px] text-muted-foreground">Your measurements are ready — see your best size below</p>
+            <p className="text-sm font-bold text-primary">Scan complete</p>
+            <p className="text-sm text-muted-foreground">Your measurements are ready — see your best size below</p>
         </div>
 
         {/* Post-scan guided flow */}
