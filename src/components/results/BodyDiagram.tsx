@@ -61,22 +61,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
   return (
     <div className="mb-4">
-      {/* Unit toggle */}
       <div className="flex items-center justify-between mb-2">
         <p className="section-label">Body Measurement Map</p>
-        <div className="flex items-center gap-1 bg-card border border-border rounded-full px-1 py-0.5">
-          {(['cm', 'in'] as const).map(u => (
-            <button
-              key={u}
-              onClick={() => setShowUnits(u)}
-              className={`text-[10px] font-bold px-2.5 py-1 rounded-full transition-colors min-h-[28px] ${
-                showUnits === u ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'
-              }`}
-            >
-              {u}
-            </button>
-          ))}
-        </div>
       </div>
 
       <div className="border border-primary/20 rounded-xl overflow-hidden bg-card">
@@ -102,9 +88,6 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             <div className="absolute top-[9%] text-left" style={{ left: 4 }}>
               <div className="rounded-lg px-1.5 py-0.5">
                 <p className="text-[12px] font-bold uppercase tracking-wide leading-none text-primary">HEIGHT</p>
-                <p className="text-[11px] font-bold leading-none mt-0.5 text-foreground">
-                  {showUnits === 'cm' ? `${heightCm.toFixed(0)} cm` : `${(heightCm * CM_TO_IN).toFixed(1)} in`}
-                </p>
               </div>
             </div>
           )}
@@ -147,9 +130,6 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               <div key={`label-${key}`} className="absolute" style={{ top: labelTop, ...(isLeft ? { left: 4 } : { right: 4 }) }}>
                 <div className={`${isLeft ? 'text-left' : 'text-right'} rounded-lg px-1.5 py-0.5`}>
                   <p className="text-[11px] font-bold uppercase tracking-wider leading-none text-primary">{label}</p>
-                  <p className="text-[11px] font-bold leading-none mt-0.5 text-foreground">
-                    {showUnits === 'cm' ? `${fmtCm(m[key])} cm` : `${fmtIn(m[key])} in`}
-                  </p>
                 </div>
               </div>
             );
