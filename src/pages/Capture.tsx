@@ -70,9 +70,34 @@ const AnimatedSilhouette = () => {
       className="flex items-center justify-center"
     >
       {imgUrl ? (
-        <img src={imgUrl} alt="Body silhouette" className="h-[200px] w-auto rounded-lg object-cover" />
+        <div className="relative h-[220px] w-[200px]">
+          <img src={imgUrl} alt="Body silhouette" className="h-full w-auto mx-auto rounded-lg object-cover" />
+          {/* Measurement label overlays */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+            {[
+              { label: 'SHOULDER', y: 20, x1: 33, x2: 67, side: 'right' as const },
+              { label: 'CHEST', y: 27, x1: 38, x2: 62, side: 'left' as const },
+              { label: 'WAIST', y: 41, x1: 37, x2: 63, side: 'right' as const },
+              { label: 'HIPS', y: 51, x1: 37, x2: 63, side: 'right' as const },
+              { label: 'INSEAM', y: 72, x1: 48, x2: 45, side: 'left' as const },
+            ].map(({ label, y, x1, x2, side }, i) => (
+              <motion.g
+                key={label}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 + i * 0.12 }}
+              >
+                <line x1={x1} y1={y} x2={x2} y2={label === 'INSEAM' ? 86 : y} stroke="hsl(42 45% 50%)" strokeWidth="0.4" strokeDasharray="1.2 0.8" strokeLinecap="round" />
+                <circle cx={x1} cy={y} r="0.7" fill="hsl(42 45% 45%)" />
+                <circle cx={x2} cy={label === 'INSEAM' ? 86 : y} r="0.7" fill="hsl(42 45% 45%)" />
+                <line x1={side === 'left' ? 14 : 86} y1={y} x2={side === 'left' ? x1 : x2} y2={y} stroke="hsl(42 45% 55%)" strokeWidth="0.2" strokeLinecap="round" />
+                <text x={side === 'left' ? 13 : 87} y={y + 0.5} textAnchor={side === 'left' ? 'end' : 'start'} fill="hsl(42 45% 45%)" fontSize="3.2" fontWeight="bold" letterSpacing="0.3">{label}</text>
+              </motion.g>
+            ))}
+          </svg>
+        </div>
       ) : (
-        <div className="h-[200px] w-[120px] rounded-lg bg-card animate-pulse" />
+        <div className="h-[220px] w-[200px] rounded-lg bg-card animate-pulse" />
       )}
     </motion.div>
   );
