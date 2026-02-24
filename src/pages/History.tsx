@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Trash2, Ruler } from 'lucide-react';
 import { MeasurementResult, MEASUREMENT_LABELS } from '@/lib/types';
+import BottomTabBar from '@/components/BottomTabBar';
 import { getMeasurements, deleteMeasurement } from '@/lib/storage';
 
 const History = () => {
@@ -63,6 +64,7 @@ const History = () => {
           </AnimatePresence>
         )}
       </div>
+      <BottomTabBar />
     </div>
   );
 };
