@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Sparkles, Check } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { BodyScanResult, FitPreference, MeasurementRange } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
@@ -18,6 +19,7 @@ import ShopThisSize from '@/components/monetization/ShopThisSize';
 import UpgradePrompt from '@/components/monetization/UpgradePrompt';
 import FitFeedbackSheet from '@/components/monetization/FitFeedbackSheet';
 import BrandPartnerCards from '@/components/monetization/BrandPartnerCards';
+import PostScanGuide from '@/components/results/PostScanGuide';
 
 const SIZE_LADDER = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL'];
 
@@ -38,6 +40,7 @@ const Results = () => {
   const [confidence, setConfidence] = useState(result?.confidence || 'medium');
   const [showFeedback, setShowFeedback] = useState(false);
   const [adjustedMeasurements, setAdjustedMeasurements] = useState<Record<string, MeasurementRange>>({});
+  const [showGuide, setShowGuide] = useState(true);
 
   useEffect(() => {
     if (result) {
@@ -123,7 +126,21 @@ const Results = () => {
           <div>
             <p className="text-[12px] font-bold text-primary">Scan complete</p>
             <p className="text-[10px] text-muted-foreground">Your measurements are ready — see your best size below</p>
-          </div>
+        </div>
+
+        {/* Post-scan guided flow */}
+        <AnimatePresence>
+          {showGuide && (
+            <PostScanGuide
+              result={result}
+              recommendedSize={adjustedSize}
+              onDismiss={() => {
+                setShowGuide(false);
+                trackEvent('postscan_dismissed');
+              }}
+            />
+          )}
+        </AnimatePresence>
         </div>
 
         <SizeHero retailer={state?.retailer} category={state?.category} recommendedSize={adjustedSize} confidence={confidence} whyLine={result.whyLine || 'Based on your scan + retailer chart + fit preference'} />
