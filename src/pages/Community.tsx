@@ -167,21 +167,24 @@ const Community = () => {
           </Button>
         </div>
 
-        {/* Filters */}
-        <div className="flex gap-1.5 mb-4">
+        {/* Filter tabs */}
+        <div className="flex border-b border-border mb-4">
           {([
-            { key: 'trending' as FilterType, label: '🔥 Trending', icon: TrendingUp },
-            { key: 'new' as FilterType, label: 'New', icon: Sparkles },
-            { key: 'similar' as FilterType, label: 'Similar Fit', icon: Users },
+            { key: 'trending' as FilterType, label: 'Trending' },
+            { key: 'new' as FilterType, label: 'New' },
+            { key: 'similar' as FilterType, label: 'Similar Fit' },
           ]).map(f => (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
-              className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all active:scale-95 ${
-                filter === f.key ? 'gradient-drip text-primary-foreground' : 'bg-card border border-border text-muted-foreground'
+              className={`flex-1 py-2 text-[12px] font-semibold transition-all relative ${
+                filter === f.key ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               {f.label}
+              {filter === f.key && (
+                <motion.div layoutId="fitcheck-tab" className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full" />
+              )}
             </button>
           ))}
         </div>
@@ -248,6 +251,8 @@ const Community = () => {
                     <div className="flex gap-1.5">
                       {VOTE_OPTIONS.map(v => {
                         const active = votes[post.id] === v.key;
+                        const hasVoted = !!votes[post.id];
+                        const fakeCount = ((post.id.charCodeAt(0) + v.key.charCodeAt(0)) % 18) + 3;
                         return (
                           <button
                             key={v.key}
@@ -259,6 +264,7 @@ const Community = () => {
                             }`}
                           >
                             <span>{v.emoji}</span> {v.label}
+                            {hasVoted && <span className="text-[9px] font-normal ml-0.5 opacity-60">{fakeCount}</span>}
                           </button>
                         );
                       })}
