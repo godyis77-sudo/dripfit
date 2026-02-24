@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import bodySilhouetteScan from '@/assets/body-silhouette-scan.jpg';
 import { PhotoSet, BodyScanResult, FitPreference, ReferenceObject } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -123,45 +124,46 @@ const Analyze = () => {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5">
-      {/* Animated body outline filling in */}
-      <div className="relative mb-6">
-        <svg viewBox="0 0 120 240" className="h-[220px] w-auto" fill="none">
-          {/* Body outline */}
-          <ellipse cx="60" cy="24" rx="14" ry="16" stroke="hsl(45 88% 40%)" strokeWidth="1.5" opacity="0.3" />
-          <path
-            d="M46 40 L46 48 L26 56 L24 60 L34 64 L36 100 L40 130 L36 180 L32 215 L46 215 L52 180 L56 140 L60 140 L64 140 L68 180 L74 215 L88 215 L84 180 L80 130 L84 100 L86 64 L96 60 L94 56 L74 48 L74 40"
-            stroke="hsl(45 88% 40%)" strokeWidth="1.5" opacity="0.3" strokeLinecap="round" strokeLinejoin="round"
+      {/* Animated body silhouette reveal */}
+      <div className="relative mb-6 w-[220px] h-[280px] rounded-xl overflow-hidden">
+        {/* The image, clipped by a moving reveal mask */}
+        <div
+          className="absolute inset-0"
+          style={{
+            clipPath: `inset(0 0 ${Math.max(0, 100 - (progress / 90) * 100)}% 0)`,
+            transition: 'clip-path 0.4s ease-out',
+          }}
+        >
+          <img
+            src={bodySilhouetteScan}
+            alt="Body scan analysis"
+            className="w-full h-full object-cover"
           />
+        </div>
 
-          {/* Measurement lines that appear as they "calculate" */}
-          {[
-            { label: 'SHOULDER', y: 48, show: filledMeasurements.includes('SHOULDER') },
-            { label: 'CHEST', y: 72, show: filledMeasurements.includes('CHEST') },
-            { label: 'WAIST', y: 100, show: filledMeasurements.includes('WAIST') },
-            { label: 'HIPS', y: 130, show: filledMeasurements.includes('HIPS') },
-            { label: 'INSEAM', y: 170, show: filledMeasurements.includes('INSEAM') },
-          ].map((m) => m.show && (
-            <motion.g key={m.label} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
-              <line x1="28" y1={m.y} x2="92" y2={m.y} stroke="hsl(45 88% 40%)" strokeWidth="0.8" strokeDasharray="2 1.5" />
-              <circle cx="28" cy={m.y} r="1.5" fill="hsl(45 88% 40%)" />
-              <circle cx="92" cy={m.y} r="1.5" fill="hsl(45 88% 40%)" />
-            </motion.g>
-          ))}
+        {/* Scan line at the reveal edge */}
+        <motion.div
+          className="absolute left-0 right-0 h-[2px] bg-primary shadow-[0_0_12px_hsl(var(--primary))]"
+          style={{
+            top: `${Math.min((progress / 90) * 100, 100)}%`,
+          }}
+          animate={{ opacity: progress >= 90 ? 0 : [0.6, 1, 0.6] }}
+          transition={{ duration: 0.8, repeat: Infinity }}
+        />
 
-          {/* HEIGHT vertical line */}
-          {filledMeasurements.includes('HEIGHT') && (
-            <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
-              <line x1="10" y1="12" x2="10" y2="215" stroke="hsl(45 88% 40%)" strokeWidth="0.8" />
-              <line x1="6" y1="12" x2="14" y2="12" stroke="hsl(45 88% 40%)" strokeWidth="0.8" />
-              <line x1="6" y1="215" x2="14" y2="215" stroke="hsl(45 88% 40%)" strokeWidth="0.8" />
-            </motion.g>
-          )}
-        </svg>
+        {/* Dim unrevealed area */}
+        <div
+          className="absolute inset-0 bg-background/80"
+          style={{
+            clipPath: `inset(${Math.min((progress / 90) * 100, 100)}% 0 0 0)`,
+            transition: 'clip-path 0.4s ease-out',
+          }}
+        />
 
         {/* Pulsing glow behind */}
         <motion.div
-          className="absolute inset-0 rounded-full blur-[60px] bg-primary/10"
-          animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
+          className="absolute inset-0 rounded-xl blur-[40px] bg-primary/10 -z-10"
+          animate={{ scale: [1, 1.05, 1], opacity: [0.2, 0.4, 0.2] }}
           transition={{ duration: 2, repeat: Infinity }}
         />
       </div>
