@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { isOnboarded } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import BottomTabBar from '@/components/BottomTabBar';
 import AuthenticatedHome from '@/components/home/AuthenticatedHome';
 
@@ -31,6 +32,7 @@ const Welcome = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { toast } = useToast();
+  usePageTitle();
 
   const handleStartScan = () => {
     trackEvent('home_start_scan_click');

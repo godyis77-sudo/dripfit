@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Sparkles } from 'lucide-react';
@@ -32,6 +33,7 @@ function shiftSize(size: string, delta: number): string {
 
 const Results = () => {
   const location = useLocation();
+  usePageTitle('Your Results');
   const navigate = useNavigate();
   const { toast } = useToast();
   const state = location.state as { result: BodyScanResult; retailer?: string; category?: string } | undefined;
