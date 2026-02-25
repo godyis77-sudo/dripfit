@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,6 +37,7 @@ const FIT_CHECK_PROMPTS = [
 
 const TryOn = () => {
   const navigate = useNavigate();
+  usePageTitle('Virtual Try-On');
   const location = useLocation();
   const { user } = useAuth();
   const { toast } = useToast();

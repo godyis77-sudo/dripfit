@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -19,6 +20,7 @@ const fitLabels: Record<string, string> = { tight: 'Tight', good: 'Good', loose:
 
 const SizeGuide = () => {
   const navigate = useNavigate();
+  usePageTitle('Size Guide Match');
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);

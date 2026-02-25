@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -34,6 +35,7 @@ interface WardrobeItem {
 
 const Profile = () => {
   const navigate = useNavigate();
+  usePageTitle('Profile');
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   const [displayName, setDisplayName] = useState('');
