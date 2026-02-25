@@ -1,11 +1,14 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Crown, Check, Sparkles, Ruler, Shirt, MessageSquare, Store, Shield, Zap, BarChart3, Eye, Star, Ban } from 'lucide-react';
+import { ArrowLeft, Crown, Check, Sparkles, Ruler, Shirt, MessageSquare, Store, Shield, Zap, BarChart3, Eye, Star, Ban, Loader2 } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
 import PremiumBadge from '@/components/monetization/PremiumBadge';
 import { motion } from 'framer-motion';
+import { useAuth, STRIPE_TIERS } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { useEffect } from 'react';
 
 const PLANS = [
   { key: 'monthly' as const, label: 'Monthly', price: '$7.99', period: '/mo', badge: '', total: 'Billed $7.99/month', trial: '7-day free trial' },
@@ -27,10 +30,56 @@ const Premium = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const { user, isSubscribed, subscriptionEnd, checkSubscription } = useAuth();
+  const [searchParams] = useSearchParams();
 
-  const handleStart = () => {
+  // Check for success/cancel query params
+  useEffect(() => {
+    if (searchParams.get('success') === 'true') {
+      toast({ title: '🎉 Welcome to Premium!', description: 'Your subscription is active. Enjoy unlimited features!' });
+      checkSubscription();
+    }
+    if (searchParams.get('canceled') === 'true') {
+      toast({ title: 'Checkout canceled', description: 'No worries — you can upgrade anytime.' });
+    }
+  }, [searchParams]);
+
+  const handleStart = async () => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+
+    setCheckoutLoading(true);
     trackEvent('premium_started', { plan: selectedPlan });
-    toast({ title: 'Coming soon', description: 'Premium subscriptions launch soon — you\'ll be first to know!' });
+
+    try {
+      const priceId = STRIPE_TIERS[selectedPlan].price_id;
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { priceId },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message || 'Could not start checkout', variant: 'destructive' });
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
+
+  const handleManage = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('customer-portal');
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message || 'Could not open subscription management', variant: 'destructive' });
+    }
   };
 
   const currentPlan = PLANS.find(p => p.key === selectedPlan)!;
@@ -56,57 +105,81 @@ const Premium = () => {
           <div className="h-16 w-16 rounded-2xl gradient-drip flex items-center justify-center mx-auto mb-3 glow-primary">
             <Crown className="h-8 w-8 text-primary-foreground" />
           </div>
-          <h1 className="text-xl font-bold text-foreground mb-1">Unlock Your Full Potential</h1>
-          <p className="text-[12px] text-muted-foreground max-w-[260px] mx-auto">
-            Unlimited try-ons, smarter sizing, zero ads — the ultimate fit experience.
-          </p>
+          {isSubscribed ? (
+            <>
+              <h1 className="text-xl font-bold text-foreground mb-1">You're Premium 👑</h1>
+              <p className="text-[12px] text-muted-foreground max-w-[260px] mx-auto">
+                {subscriptionEnd ? `Active until ${new Date(subscriptionEnd).toLocaleDateString()}` : 'Your premium subscription is active'}
+              </p>
+            </>
+          ) : (
+            <>
+              <h1 className="text-xl font-bold text-foreground mb-1">Unlock Your Full Potential</h1>
+              <p className="text-[12px] text-muted-foreground max-w-[260px] mx-auto">
+                Unlimited try-ons, smarter sizing, zero ads — the ultimate fit experience.
+              </p>
+            </>
+          )}
         </motion.div>
 
-        {/* Plan selector */}
-        <div className="flex gap-2 mb-3">
-          {PLANS.map(p => (
-            <button
-              key={p.key}
-              onClick={() => setSelectedPlan(p.key)}
-              className={`flex-1 relative rounded-xl border-2 p-3 transition-all active:scale-[0.97] ${
-                selectedPlan === p.key
-                  ? 'border-primary bg-primary/5'
-                  : 'border-border bg-card'
-              }`}
+        {isSubscribed ? (
+          <Button className="w-full h-12 rounded-xl text-sm font-bold mb-5" variant="outline" onClick={handleManage}>
+            Manage Subscription
+          </Button>
+        ) : (
+          <>
+            {/* Plan selector */}
+            <div className="flex gap-2 mb-3">
+              {PLANS.map(p => (
+                <button
+                  key={p.key}
+                  onClick={() => setSelectedPlan(p.key)}
+                  className={`flex-1 relative rounded-xl border-2 p-3 transition-all active:scale-[0.97] ${
+                    selectedPlan === p.key
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border bg-card'
+                  }`}
+                >
+                  {p.badge && (
+                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full gradient-drip text-primary-foreground whitespace-nowrap">
+                      {p.badge}
+                    </span>
+                  )}
+                  <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">{p.label}</p>
+                  <p className="text-[20px] font-bold text-foreground mt-0.5">{p.price}<span className="text-[11px] text-muted-foreground font-normal">{p.period}</span></p>
+                  {p.total && <p className="text-[9px] text-muted-foreground">{p.total}</p>}
+                </button>
+              ))}
+            </div>
+
+            {/* Plan terms */}
+            <div className="bg-card border border-border rounded-xl p-3 mb-4 space-y-1">
+              <div className="flex items-center gap-1.5">
+                <Check className="h-3 w-3 text-primary" />
+                <span className="text-[11px] text-foreground">{currentPlan.trial} included</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Check className="h-3 w-3 text-primary" />
+                <span className="text-[11px] text-foreground">{currentPlan.total}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Check className="h-3 w-3 text-primary" />
+                <span className="text-[11px] text-foreground">Cancel anytime — no questions asked</span>
+              </div>
+            </div>
+
+            {/* CTA */}
+            <Button
+              className="w-full h-12 rounded-xl btn-luxury text-primary-foreground text-sm font-bold mb-2"
+              onClick={handleStart}
+              disabled={checkoutLoading}
             >
-              {p.badge && (
-                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full gradient-drip text-primary-foreground whitespace-nowrap">
-                  {p.badge}
-                </span>
-              )}
-              <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">{p.label}</p>
-              <p className="text-[20px] font-bold text-foreground mt-0.5">{p.price}<span className="text-[11px] text-muted-foreground font-normal">{p.period}</span></p>
-              {p.total && <p className="text-[9px] text-muted-foreground">{p.total}</p>}
-            </button>
-          ))}
-        </div>
-
-        {/* Plan terms */}
-        <div className="bg-card border border-border rounded-xl p-3 mb-4 space-y-1">
-          <div className="flex items-center gap-1.5">
-            <Check className="h-3 w-3 text-primary" />
-            <span className="text-[11px] text-foreground">{currentPlan.trial} included</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Check className="h-3 w-3 text-primary" />
-            <span className="text-[11px] text-foreground">{currentPlan.total}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Check className="h-3 w-3 text-primary" />
-            <span className="text-[11px] text-foreground">Cancel anytime — no questions asked</span>
-          </div>
-        </div>
-
-        {/* CTA */}
-        <Button className="w-full h-12 rounded-xl btn-luxury text-primary-foreground text-sm font-bold mb-2" onClick={handleStart}>
-          <Sparkles className="mr-2 h-4 w-4" /> Start 7-Day Free Trial
-        </Button>
-        <p className="text-[9px] text-muted-foreground text-center mb-5">No charge until trial ends · Cancel anytime</p>
+              {checkoutLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+              {checkoutLoading ? 'Opening checkout…' : 'Start 7-Day Free Trial'}
+            </Button>
+            <p className="text-[9px] text-muted-foreground text-center mb-5">No charge until trial ends · Cancel anytime</p>
+          </>
+        )}
 
         {/* Feature comparison */}
         <div className="space-y-1.5">
