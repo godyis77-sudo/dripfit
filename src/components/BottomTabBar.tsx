@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Camera, Shirt, Users, User, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -11,12 +12,13 @@ const tabs = [
   { icon: User, label: 'Profile', path: '/profile' },
 ];
 
-const BottomTabBar = () => {
+const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   return (
     <motion.nav
+      ref={ref}
       initial={{ y: 80 }}
       animate={{ y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.3 }}
@@ -52,6 +54,8 @@ const BottomTabBar = () => {
       </div>
     </motion.nav>
   );
-};
+});
+
+BottomTabBar.displayName = 'BottomTabBar';
 
 export default BottomTabBar;
