@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Sparkles, Camera, Heart, ShoppingBag, Clock, TrendingUp, Shirt } from 'lucide-react';
@@ -21,7 +22,7 @@ const RECOMMENDED = [
   { id: '3', label: 'Bomber jacket — Your size: M', brand: 'Uniqlo' },
 ];
 
-const AuthenticatedHome = () => {
+const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [fabOpen, setFabOpen] = useState(false);
@@ -31,7 +32,7 @@ const AuthenticatedHome = () => {
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
   return (
-    <div className="relative min-h-screen bg-background pb-safe-bottom">
+    <div ref={ref} className="relative min-h-screen bg-background pb-safe-bottom">
       <div className="relative z-10 px-5 pt-5">
         {/* Greeting */}
         <motion.div
@@ -76,7 +77,7 @@ const AuthenticatedHome = () => {
           </button>
         </motion.div>
 
-        {/* Trending Fits — 3-column scrollable grid */}
+        {/* Trending Fits */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -186,7 +187,7 @@ const AuthenticatedHome = () => {
         </motion.div>
       </div>
 
-      {/* FAB — gold, bottom-right above nav */}
+      {/* FAB */}
       <div className="fixed bottom-20 right-5 z-50 lg:right-[calc(50%-195px+20px)]">
         <AnimatePresence>
           {fabOpen && (
@@ -224,6 +225,8 @@ const AuthenticatedHome = () => {
       </div>
     </div>
   );
-};
+});
+
+AuthenticatedHome.displayName = 'AuthenticatedHome';
 
 export default AuthenticatedHome;
