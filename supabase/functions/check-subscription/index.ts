@@ -58,8 +58,10 @@ serve(async (req) => {
 
     if (hasActiveSub) {
       const sub = allSubs[0];
-      subscriptionEnd = new Date(sub.current_period_end * 1000).toISOString();
-      productId = sub.items.data[0].price.product;
+      if (sub.current_period_end && typeof sub.current_period_end === 'number') {
+        subscriptionEnd = new Date(sub.current_period_end * 1000).toISOString();
+      }
+      productId = sub.items.data[0]?.price?.product ?? null;
       logStep("Active subscription found", { productId, subscriptionEnd });
     }
 
