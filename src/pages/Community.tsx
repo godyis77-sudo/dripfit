@@ -63,10 +63,29 @@ const StarRating = ({ value, onChange }: { value: number; onChange: (v: number) 
   </div>
 );
 
-const PLACEHOLDER_POSTS: Omit<Post, 'user_id' | 'clothing_photo_url'>[] = [
-  { id: 'placeholder-1', result_photo_url: '', caption: 'Should I buy this for work?', created_at: new Date().toISOString(), profile: { display_name: 'Style Preview' }, avg_style: 4.2, avg_color: 3.8, avg_buy: 4.0, avg_suitability: 4.5, rating_count: 12 },
-  { id: 'placeholder-2', result_photo_url: '', caption: 'Date night — yes or no?', created_at: new Date(Date.now() - 86400000).toISOString(), profile: { display_name: 'Fit Check' }, avg_style: 3.9, avg_color: 4.1, avg_buy: 3.5, avg_suitability: 4.2, rating_count: 8 },
-];
+interface SeedPost {
+  id: string;
+  username: string;
+  caption: string | null;
+  image_url: string;
+  like_count: number;
+  created_at: string;
+}
+
+const seedToPost = (s: SeedPost): Post => ({
+  id: `seed-${s.id}`,
+  user_id: '',
+  result_photo_url: s.image_url,
+  clothing_photo_url: '',
+  caption: s.caption,
+  created_at: s.created_at,
+  profile: { display_name: s.username },
+  avg_style: 0,
+  avg_color: 0,
+  avg_buy: 0,
+  avg_suitability: 0,
+  rating_count: s.like_count,
+});
 
 const PlaceholderImage = ({ caption }: { caption: string }) => (
   <div className="w-full aspect-[4/5] bg-gradient-to-b from-card to-background flex flex-col items-center justify-center gap-1.5">
@@ -99,7 +118,19 @@ const Community = () => {
     setLoading(true);
     const { data, error } = await supabase.from('tryon_posts').select('*').eq('is_public', true).order('created_at', { ascending: false }).limit(50);
     if (error) { console.error(error); setLoading(false); return; }
-    if (!data || data.length === 0) { setPosts(PLACEHOLDER_POSTS as Post[]); setLoading(false); return; }
+    if (!data || data.length === 0) {
+      // Fetch seed posts as fallback
+      const { data: seeds } = await supabase.from('seed_posts').select('*').eq('is_public', true).order('created_at', { ascending: false });
+      if (seeds && seeds.length > 0) {
+        const seedPosts = (seeds as SeedPost[]).map(seedToPost);
+        if (filter === 'trending') seedPosts.sort((a, b) => (b.rating_count || 0) - (a.rating_count || 0));
+        setPosts(seedPosts);
+      } else {
+        setPosts([]);
+      }
+      setLoading(false);
+      return;
+    }
 
     const userIds = [...new Set(data.map(p => p.user_id))];
     const postIds = data.map(p => p.id);
@@ -145,7 +176,7 @@ const Community = () => {
     navigate('/tryon', { state: { shopMode: true } });
   };
 
-  const isPlaceholder = (post: Post) => post.id.startsWith('placeholder-');
+  const isPlaceholder = (post: Post) => post.id.startsWith('seed-');
 
   return (
     <div className="min-h-screen bg-background pb-safe-bottom">
@@ -236,7 +267,7 @@ const Community = () => {
                   </div>
 
                   {/* Image — consistent 4:5 aspect ratio */}
-                  {isPlaceholder(post) || !post.result_photo_url ? (
+                  {!post.result_photo_url ? (
                     <PlaceholderImage caption={post.caption || 'Try-on look'} />
                   ) : (
                     <img src={post.result_photo_url} alt={post.caption || "Try-on look"} loading="lazy" decoding="async" className="w-full aspect-[4/5] object-cover img-normalize" />

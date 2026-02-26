@@ -227,6 +227,36 @@ export type Database = {
         }
         Relationships: []
       }
+      seed_posts: {
+        Row: {
+          caption: string | null
+          created_at: string
+          id: string
+          image_url: string
+          is_public: boolean
+          like_count: number
+          username: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          image_url: string
+          is_public?: boolean
+          like_count?: number
+          username: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string
+          is_public?: boolean
+          like_count?: number
+          username?: string
+        }
+        Relationships: []
+      }
       size_chart_rows: {
         Row: {
           bust_max: number | null
