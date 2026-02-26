@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { AnalyzeBodySchema, parseOrError } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -65,21 +66,15 @@ serve(async (req) => {
   }
 
   try {
-    const { frontPhoto, sidePhoto, heightCm, referenceObject, fitPreference } = await req.json();
-
-    if (!frontPhoto || !sidePhoto) {
+    const raw = await req.json();
+    const parsed = parseOrError(AnalyzeBodySchema, raw);
+    if (!parsed.success) {
       return new Response(
-        JSON.stringify({ error: "Both front and side photos are required" }),
+        JSON.stringify({ error: parsed.error }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-
-    if (!heightCm || heightCm < 120 || heightCm > 230) {
-      return new Response(
-        JSON.stringify({ error: "Valid height (120-230 cm) is required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    const { frontPhoto, sidePhoto, heightCm, referenceObject, fitPreference } = parsed.data;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
