@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Trash2, X, ShoppingBag, Tag, Calendar, Store } from 'lucide-react';
+import { ExternalLink, Trash2, X, ShoppingBag, Tag, Calendar, Store, Star } from 'lucide-react';
 import { buildRetailerSearchUrl, getRetailersForCategory } from '@/lib/retailerLinks';
 import { trackEvent } from '@/lib/analytics';
 
@@ -21,13 +21,20 @@ interface WardrobeDetailSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onDelete: (id: string) => void;
+  favoriteRetailers?: string[];
 }
 
-const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete }: WardrobeDetailSheetProps) => {
+const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetailers = [] }: WardrobeDetailSheetProps) => {
   if (!item) return null;
 
   const searchQuery = [item.brand, item.category].filter(Boolean).join(' ');
-  const suggestedRetailers = getRetailersForCategory(item.category);
+  const categoryRetailers = getRetailersForCategory(item.category);
+  // Merge: show favorite retailers first, then category suggestions (deduped)
+  const mergedRetailers = [
+    ...favoriteRetailers,
+    ...categoryRetailers.filter(r => !favoriteRetailers.includes(r)),
+  ];
+  const displayRetailer = item.retailer || (favoriteRetailers.length > 0 ? favoriteRetailers[0] : null);
 
   const handleShop = (retailerName: string) => {
     trackEvent('shop_clickout', { source: 'wardrobe_detail', retailer: retailerName });
@@ -48,9 +55,9 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete }: WardrobeDet
         {/* Image */}
         <div className="relative w-full h-[50dvh] bg-black flex items-center justify-center overflow-hidden">
           <img src={item.image_url} alt={item.category} className="w-full h-full object-contain" />
-          {item.retailer && (
+          {displayRetailer && (
             <div className="absolute bottom-3 right-3 bg-primary rounded-lg px-3 py-1 shadow-lg border border-primary-foreground/20">
-              <p className="text-[11px] font-extrabold text-primary-foreground uppercase tracking-wide">{item.retailer}</p>
+              <p className="text-[11px] font-extrabold text-primary-foreground uppercase tracking-wide">{displayRetailer}</p>
             </div>
           )}
         </div>
@@ -95,7 +102,7 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete }: WardrobeDet
               <ShoppingBag className="h-3.5 w-3.5 text-primary" /> Shop at Retailers
             </p>
             <div className="grid grid-cols-2 gap-1.5">
-              {suggestedRetailers.map(name => (
+              {mergedRetailers.map(name => (
                 <button
                   key={name}
                   onClick={() => handleShop(name)}
@@ -103,6 +110,9 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete }: WardrobeDet
                 >
                   <ExternalLink className="h-3 w-3 text-primary shrink-0" />
                   <span className="text-[11px] font-bold text-foreground truncate">{name}</span>
+                  {favoriteRetailers.includes(name) && (
+                    <Star className="h-2.5 w-2.5 text-primary fill-primary ml-auto shrink-0" />
+                  )}
                 </button>
               ))}
             </div>

@@ -47,6 +47,7 @@ const Profile = () => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [tryOnPosts, setTryOnPosts] = useState<TryOnPost[]>([]);
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
+  const [favoriteRetailers, setFavoriteRetailers] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<'tryons' | 'body' | 'wardrobe' | 'settings'>('tryons');
   const [loading, setLoading] = useState(true);
   const [useCm, setUseCm] = useState(true);
@@ -61,6 +62,7 @@ const Profile = () => {
     loadSavedProfile();
     fetchSavedItemCount();
     fetchWardrobe();
+    fetchFavoriteRetailers();
   }, [user]);
 
   const fetchProfile = async () => {
@@ -125,6 +127,12 @@ const Profile = () => {
     if (!user) return;
     const { data } = await supabase.from('clothing_wardrobe' as any).select('*').eq('user_id', user.id).order('created_at', { ascending: false });
     if (data) setWardrobeItems(data as any as WardrobeItem[]);
+  };
+
+  const fetchFavoriteRetailers = async () => {
+    if (!user) return;
+    const { data } = await supabase.from('user_favorite_retailers' as any).select('retailer_name').eq('user_id', user.id);
+    if (data) setFavoriteRetailers((data as any[]).map((r: any) => r.retailer_name));
   };
 
   const deleteWardrobeItem = async (id: string) => {
@@ -262,7 +270,7 @@ const Profile = () => {
             </motion.div>
           ) : activeTab === 'wardrobe' ? (
             <motion.div key="wardrobe" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
-              <WardrobeTab wardrobeItems={wardrobeItems} onDeleteItem={deleteWardrobeItem} />
+              <WardrobeTab wardrobeItems={wardrobeItems} onDeleteItem={deleteWardrobeItem} favoriteRetailers={favoriteRetailers} />
             </motion.div>
           ) : (
             <motion.div key="settings" initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }}>
@@ -277,6 +285,8 @@ const Profile = () => {
                 isSubscribed={isSubscribed}
                 subscriptionEnd={subscriptionEnd}
                 productId={productId}
+                favoriteRetailers={favoriteRetailers}
+                onFavoriteRetailersChange={setFavoriteRetailers}
                 onFitChange={handleFitChange}
                 onUnitToggle={(v) => setUseCm(!v)}
                 onExport={handleExport}

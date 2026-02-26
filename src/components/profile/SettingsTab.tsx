@@ -4,13 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Switch } from '@/components/ui/switch';
-import { Crown, Trash2, Shield, Download, Ruler, Camera, ChevronRight, Bookmark, Pencil, Check, X } from 'lucide-react';
+import { Crown, Trash2, Shield, Download, Ruler, Camera, ChevronRight, Bookmark, Pencil, Check, X, Star } from 'lucide-react';
 import type { FitPreference, BodyScanResult } from '@/lib/types';
 import { SUPPORTED_RETAILERS } from '@/lib/types';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { STRIPE_TIERS } from '@/hooks/useAuth';
+import FavoriteRetailers from './FavoriteRetailers';
 
 const SectionHeader = forwardRef<HTMLParagraphElement, { children: React.ReactNode }>(
   ({ children }, ref) => (
@@ -20,7 +21,7 @@ const SectionHeader = forwardRef<HTMLParagraphElement, { children: React.ReactNo
 SectionHeader.displayName = 'SectionHeader';
 
 interface SettingsTabProps {
-  user: { email?: string };
+  user: { id: string; email?: string };
   displayName: string;
   avatarUrl: string | null;
   savedProfile: BodyScanResult | null;
@@ -30,6 +31,8 @@ interface SettingsTabProps {
   isSubscribed: boolean;
   subscriptionEnd: string | null;
   productId: string | null;
+  favoriteRetailers: string[];
+  onFavoriteRetailersChange: (favs: string[]) => void;
   onFitChange: (f: FitPreference) => void;
   onUnitToggle: (v: boolean) => void;
   onExport: () => void;
@@ -41,7 +44,7 @@ interface SettingsTabProps {
 
 const SettingsTab = ({
   user, displayName, avatarUrl, savedProfile, fit, useCm, savedItemCount,
-  isSubscribed, subscriptionEnd, productId,
+  isSubscribed, subscriptionEnd, productId, favoriteRetailers, onFavoriteRetailersChange,
   onFitChange, onUnitToggle, onExport, onDeletePhotos, onDeleteAccount, onAvatarTap, onDisplayNameSave,
 }: SettingsTabProps) => {
   const navigate = useNavigate();
@@ -248,14 +251,15 @@ const SettingsTab = ({
         )}
       </div>
 
-      {/* Retailers */}
-      <SectionHeader>Supported Retailers</SectionHeader>
+      {/* Favorite Retailers */}
+      <SectionHeader>
+        <span className="flex items-center gap-1">
+          <Star className="h-3 w-3 text-primary" /> Favorite Retailers
+        </span>
+      </SectionHeader>
       <div className="bg-card border border-border rounded-xl p-3 mb-1">
-        <div className="flex flex-wrap gap-1">
-          {SUPPORTED_RETAILERS.map(r => (
-            <span key={r} className="px-2 py-0.5 rounded-md bg-background border border-border text-[10px] font-semibold text-muted-foreground">{r}</span>
-          ))}
-        </div>
+        <p className="text-[10px] text-muted-foreground mb-2">Pick your go-to stores. These will appear on wardrobe items without a retailer.</p>
+        <FavoriteRetailers userId={user.id} favorites={favoriteRetailers} onFavoritesChange={onFavoriteRetailersChange} />
       </div>
 
       {/* Privacy & Data */}
