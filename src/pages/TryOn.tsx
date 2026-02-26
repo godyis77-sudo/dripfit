@@ -48,14 +48,14 @@ const CATEGORIES = [
 ] as const;
 
 const DEMO_OUTFITS = [
-  { label: 'White Tee', category: 'top', image: quickpickWhiteTee },
-  { label: 'Denim Jacket', category: 'outerwear', image: quickpickDenimJacket },
-  { label: 'Black Hoodie', category: 'top', image: quickpickBlackHoodie },
-  { label: 'Blazer', category: 'outerwear', image: quickpickBlazer },
-  { label: 'Button-Down', category: 'top', image: quickpickButtonDown },
-  { label: 'Black Dress', category: 'dress', image: quickpickBlackDress },
-  { label: 'Cargo Pants', category: 'bottom', image: quickpickCargoPants },
-  { label: 'Puffer Vest', category: 'outerwear', image: quickpickPufferVest },
+  { label: 'White Tee', category: 'top', image: quickpickWhiteTee, retailers: ['Zara', 'H&M', 'Uniqlo', 'Gap'] },
+  { label: 'Denim Jacket', category: 'outerwear', image: quickpickDenimJacket, retailers: ['Zara', 'H&M', 'ASOS', 'Mango'] },
+  { label: 'Black Hoodie', category: 'top', image: quickpickBlackHoodie, retailers: ['Nike', 'Adidas', 'H&M', 'Uniqlo'] },
+  { label: 'Blazer', category: 'outerwear', image: quickpickBlazer, retailers: ['Zara', 'Mango', 'Nordstrom', 'Revolve'] },
+  { label: 'Button-Down', category: 'top', image: quickpickButtonDown, retailers: ['Uniqlo', 'H&M', 'Gap', 'Nordstrom'] },
+  { label: 'Black Dress', category: 'dress', image: quickpickBlackDress, retailers: ['Zara', 'ASOS', 'Revolve', 'Mango'] },
+  { label: 'Cargo Pants', category: 'bottom', image: quickpickCargoPants, retailers: ['H&M', 'ASOS', 'Fashion Nova', 'SHEIN'] },
+  { label: 'Puffer Vest', category: 'outerwear', image: quickpickPufferVest, retailers: ['Nike', 'Adidas', 'Uniqlo', 'Nordstrom'] },
 ];
 
 const FIT_CHECK_PROMPTS = [
@@ -92,6 +92,8 @@ const TryOn = () => {
   const [wardrobeItems, setWardrobeItems] = useState<Array<{ id: string; image_url: string; category: string; product_link: string | null }>>([]);
   const [showWardrobe, setShowWardrobe] = useState(false);
   const [showPremiumGate, setShowPremiumGate] = useState(false);
+  const [selectedQuickPick, setSelectedQuickPick] = useState<typeof DEMO_OUTFITS[number] | null>(null);
+  const [retailerMap, setRetailerMap] = useState<Record<string, { website_url: string }>>({});
 
   const FREE_MONTHLY_LIMIT = 3;
 
@@ -122,6 +124,17 @@ const TryOn = () => {
     }
   }, [user]);
   const canGenerate = !!userPhoto && !!clothingPhoto;
+
+  // Fetch retailers from database
+  useEffect(() => {
+    supabase.from('retailers').select('name, website_url').eq('is_active', true).then(({ data }) => {
+      if (data) {
+        const map: Record<string, { website_url: string }> = {};
+        data.forEach((r: any) => { map[r.name] = { website_url: r.website_url }; });
+        setRetailerMap(map);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -465,7 +478,7 @@ const TryOn = () => {
                 <p className="section-label mb-1.5">Quick Picks</p>
                 <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
                   {DEMO_OUTFITS.map(o => {
-                    const isSelected = clothingPhoto === o.image;
+                    const isSelected = selectedQuickPick?.label === o.label;
                     return (
                       <button
                         key={o.label}
@@ -475,6 +488,7 @@ const TryOn = () => {
                         onClick={() => {
                           setClothingPhoto(o.image);
                           setCategory(o.category);
+                          setSelectedQuickPick(o);
                           trackEvent('tryon_clothing_uploaded');
                         }}
                       >
@@ -492,6 +506,32 @@ const TryOn = () => {
                     );
                   })}
                 </div>
+
+                {/* Retailer links for selected Quick Pick */}
+                {selectedQuickPick && (
+                  <div className="mt-2 p-2.5 rounded-lg bg-card border border-border">
+                    <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-1.5">
+                      Shop {selectedQuickPick.label} at
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedQuickPick.retailers
+                        .filter(name => retailerMap[name])
+                        .map(name => (
+                          <a
+                            key={name}
+                            href={retailerMap[name].website_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => trackEvent('quickpick_retailer_clicked', { retailer: name, item: selectedQuickPick.label })}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-semibold text-primary hover:bg-primary/20 transition-colors active:scale-95"
+                          >
+                            <Store className="h-3 w-3" />
+                            {name}
+                          </a>
+                        ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

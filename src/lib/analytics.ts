@@ -56,7 +56,8 @@ type FunnelEvent =
   | 'onboarding_carousel_done'
   | 'onboarding_shopping_habit'
   | 'onboarding_scan_prompt_skip'
-  | 'scan_results_shared';
+  | 'scan_results_shared'
+  | 'quickpick_retailer_clicked';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
