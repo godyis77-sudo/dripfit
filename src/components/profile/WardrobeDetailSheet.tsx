@@ -49,8 +49,8 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete }: WardrobeDet
         <div className="relative w-full h-[50dvh] bg-black flex items-center justify-center overflow-hidden">
           <img src={item.image_url} alt={item.category} className="w-full h-full object-contain" />
           {item.retailer && (
-            <div className="absolute top-3 left-3 bg-primary/90 backdrop-blur-sm rounded-full px-2.5 py-1">
-              <p className="text-[10px] font-bold text-primary-foreground uppercase">{item.retailer}</p>
+            <div className="absolute bottom-3 right-3 bg-primary rounded-lg px-3 py-1 shadow-lg border border-primary-foreground/20">
+              <p className="text-[11px] font-extrabold text-primary-foreground uppercase tracking-wide">{item.retailer}</p>
             </div>
           )}
         </div>
