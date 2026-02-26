@@ -54,12 +54,31 @@ interface Retailer {
 }
 
 const PROMPTS = [
-  'Should I buy this for work?',
-  'Date night — yes or no?',
   'Would you wear this?',
+  'Date night — yes or no?',
+  'Should I buy this for work?',
   'Too bold or just right?',
   'Casual Friday vibes?',
   'Wedding guest — yay or nay?',
+  'Could you pull this off?',
+  'Brunch outfit material?',
+  'Festival ready or nah?',
+  'Office appropriate?',
+  'First date energy?',
+  'Streetwear or try again?',
+  'Summer vacation fit?',
+  'Would you rock this to the gym?',
+  'Cozy enough for a movie night?',
+  'Drip or skip?',
+  'Airport outfit check',
+  'Night out — cop or drop?',
+  'Is this giving main character?',
+  'Rate this vibe 1-10',
+  'Hot take — overdressed or perfect?',
+  'Would you steal this look?',
+  'Dinner party ready?',
+  'Spring wardrobe essential?',
+  'Weekend errand fit?',
 ];
 
 const getPrompt = (idx: number) => PROMPTS[idx % PROMPTS.length];
