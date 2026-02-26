@@ -61,7 +61,9 @@ type FunnelEvent =
   | 'tryon_liked'
   | 'tryon_posted_to_community'
   | 'wardrobe_added_from_tryon'
-  | 'tryon_shared_instagram';
+  | 'tryon_shared_instagram'
+  | 'user_followed'
+  | 'user_unfollowed';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {

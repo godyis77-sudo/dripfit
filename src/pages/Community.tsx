@@ -4,13 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown, Bookmark, Camera, MessageSquare, Flame, Search, Ruler } from 'lucide-react';
+import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown, Bookmark, Camera, MessageSquare, Flame, Search, Ruler, UserPlus, UserCheck } from 'lucide-react';
 import { detectRetailer } from '@/lib/retailerDetect';
 import { getBestRetailerForItem } from '@/lib/retailerLinks';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
+import { getFollowingIds } from '@/hooks/useFollow';
 import BottomTabBar from '@/components/BottomTabBar';
 import PostLookFlow from '@/components/community/PostLookFlow';
 
@@ -43,7 +44,7 @@ const RATING_LABELS = [
   { key: 'suitability_score', label: 'Fit' },
 ] as const;
 
-type FilterType = 'trending' | 'new' | 'similar' | 'shop';
+type FilterType = 'trending' | 'new' | 'similar' | 'shop' | 'following';
 
 interface Retailer {
   id: string;
@@ -143,14 +144,59 @@ const Community = () => {
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const [retailers, setRetailers] = useState<Retailer[]>([]);
   const [retailersLoading, setRetailersLoading] = useState(false);
+  const [followingIds, setFollowingIds] = useState<string[]>([]);
+  const [followToggles, setFollowToggles] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (filter === 'shop') {
       fetchRetailers();
+    } else if (filter === 'following') {
+      fetchFollowingFeed();
     } else {
       fetchPosts();
     }
   }, [filter]);
+
+  // Load following IDs for follow buttons
+  useEffect(() => {
+    if (!user) return;
+    getFollowingIds(user.id).then(ids => {
+      setFollowingIds(ids);
+      const toggles: Record<string, boolean> = {};
+      ids.forEach(id => { toggles[id] = true; });
+      setFollowToggles(toggles);
+    });
+  }, [user]);
+
+  const fetchFollowingFeed = async () => {
+    if (!user) { setPosts([]); setLoading(false); return; }
+    setLoading(true);
+    const ids = followingIds.length > 0 ? followingIds : await getFollowingIds(user.id);
+    if (ids.length === 0) { setPosts([]); setLoading(false); return; }
+    const { data } = await supabase.from('tryon_posts').select('*').eq('is_public', true).in('user_id', ids).order('created_at', { ascending: false }).limit(50);
+    if (!data || data.length === 0) { setPosts([]); setLoading(false); return; }
+    const userIds = [...new Set(data.map(p => p.user_id))];
+    const { data: profiles } = await supabase.from('profiles').select('user_id, display_name, avatar_url').in('user_id', userIds);
+    const profileMap = new Map((profiles || []).map(p => [p.user_id, p]));
+    const enriched = data.map(p => ({ ...p, profile: profileMap.get(p.user_id) || { display_name: 'Anonymous' }, rating_count: 0 }));
+    setPosts(enriched);
+    setLoading(false);
+  };
+
+  const handleFollowToggle = async (targetUserId: string) => {
+    if (!user) { toast({ title: 'Sign in to follow', variant: 'destructive' }); navigate('/auth'); return; }
+    const isCurrentlyFollowing = followToggles[targetUserId];
+    setFollowToggles(prev => ({ ...prev, [targetUserId]: !isCurrentlyFollowing }));
+    if (isCurrentlyFollowing) {
+      await supabase.from('user_follows' as any).delete().eq('follower_id', user.id).eq('following_id', targetUserId);
+      setFollowingIds(prev => prev.filter(id => id !== targetUserId));
+      trackEvent('user_unfollowed');
+    } else {
+      await supabase.from('user_follows' as any).insert({ follower_id: user.id, following_id: targetUserId } as any);
+      setFollowingIds(prev => [...prev, targetUserId]);
+      trackEvent('user_followed');
+    }
+  };
 
   const fetchRetailers = async () => {
     setRetailersLoading(true);
@@ -271,17 +317,18 @@ const Community = () => {
         </div>
 
         {/* Filter tabs */}
-        <div className="flex border-b border-border mb-4">
+        <div className="flex border-b border-border mb-4 overflow-x-auto no-scrollbar">
           {([
-            { key: 'trending' as FilterType, label: 'Trending' },
             { key: 'new' as FilterType, label: 'New' },
+            { key: 'following' as FilterType, label: 'Following' },
+            { key: 'trending' as FilterType, label: 'Trending' },
             { key: 'similar' as FilterType, label: 'Similar Fit' },
             { key: 'shop' as FilterType, label: 'Shop' },
           ]).map(f => (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
-              className={`flex-1 py-2 text-[12px] font-semibold transition-all relative ${
+              className={`flex-1 py-2 text-[12px] font-semibold transition-all relative whitespace-nowrap px-2 ${
                 filter === f.key ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
@@ -424,6 +471,21 @@ const Community = () => {
               </div>
             );
           }
+
+          if (filter === 'following' && visiblePosts.length === 0) {
+            return (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                  <Users className="h-6 w-6 text-primary" />
+                </div>
+                <h2 className="text-[18px] font-bold text-foreground mb-1.5">Your custom feed is empty</h2>
+                <p className="text-[14px] text-muted-foreground max-w-[280px] mb-5">Follow people in the community to build a personalized feed of their looks and fit checks.</p>
+                <Button className="w-4/5 h-12 rounded-xl text-sm font-bold btn-luxury text-primary-foreground" onClick={() => setFilter('new')}>
+                  Browse New Looks
+                </Button>
+              </div>
+            );
+          }
           
           return (
           <div className="space-y-3 pb-20">
@@ -453,6 +515,20 @@ const Community = () => {
                       <p className="text-[11px] font-semibold text-foreground">{post.profile?.display_name || 'Anonymous'}</p>
                     </button>
                     <span className="flex-1" />
+                    {/* Follow button */}
+                    {user && post.user_id !== user.id && !isPlaceholder(post) && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleFollowToggle(post.user_id); }}
+                        className={`flex items-center gap-0.5 px-2 py-1 rounded-md text-[9px] font-bold transition-all active:scale-95 ${
+                          followToggles[post.user_id]
+                            ? 'bg-primary/10 text-primary border border-primary/20'
+                            : 'bg-muted/50 text-muted-foreground border border-border'
+                        }`}
+                      >
+                        {followToggles[post.user_id] ? <UserCheck className="h-2.5 w-2.5" /> : <UserPlus className="h-2.5 w-2.5" />}
+                        {followToggles[post.user_id] ? 'Following' : 'Follow'}
+                      </button>
+                    )}
                     <p className="text-[9px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
                   </div>
 
