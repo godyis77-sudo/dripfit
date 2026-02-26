@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Ruler, Camera } from 'lucide-react';
 import type { BodyScanResult, FitPreference } from '@/lib/types';
 import BodyDiagram from '@/components/results/BodyDiagram';
+import ShareResultsButton from '@/components/results/ShareResultsButton';
 
 interface BodyTabProps {
   savedProfile: BodyScanResult | null;
@@ -38,7 +39,18 @@ const BodyTab = ({ savedProfile, fit }: BodyTabProps) => {
 
   return (
     <>
-      <BodyDiagram measurements={m} heightCm={savedProfile.heightCm} />
+      <div className="relative">
+        <div className="absolute top-2 right-2 z-10">
+          <ShareResultsButton
+            measurements={m}
+            heightCm={savedProfile.heightCm}
+            recommendedSize={savedProfile.recommendedSize}
+            fitPreference={fit}
+            variant="icon"
+          />
+        </div>
+        <BodyDiagram measurements={m} heightCm={savedProfile.heightCm} />
+      </div>
 
       <div className="bg-card border border-border rounded-xl p-3 mb-3">
         <div className="flex items-center gap-2 mb-2">

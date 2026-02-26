@@ -23,6 +23,7 @@ import FitFeedbackSheet from '@/components/monetization/FitFeedbackSheet';
 import BrandPartnerCards from '@/components/monetization/BrandPartnerCards';
 import PostScanGuide from '@/components/results/PostScanGuide';
 import ProfilePhotoPrompt from '@/components/results/ProfilePhotoPrompt';
+import ShareResultsButton from '@/components/results/ShareResultsButton';
 import { useAuth } from '@/hooks/useAuth';
 const SIZE_LADDER = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL'];
 
@@ -167,6 +168,16 @@ const Results = () => {
             onAdjust={handleMeasurementAdjust}
           />
         )}
+
+        {/* Share button */}
+        <div className="mt-4 mb-2">
+          <ShareResultsButton
+            measurements={measurements}
+            heightCm={result.heightCm}
+            recommendedSize={adjustedSize}
+            fitPreference={fitPref}
+          />
+        </div>
 
         {/* Tabbed sections */}
         <Tabs defaultValue="shop" className="mt-4">
