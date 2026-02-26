@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -33,6 +34,13 @@ const Welcome = () => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   usePageTitle();
+
+  // Redirect first-time visitors to onboarding
+  useEffect(() => {
+    if (!user && !isOnboarded()) {
+      navigate('/onboarding', { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleStartScan = () => {
     trackEvent('home_start_scan_click');
