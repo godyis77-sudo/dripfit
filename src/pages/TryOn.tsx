@@ -77,6 +77,16 @@ function buildRetailerSearchUrl(retailerName: string, baseUrl: string, query: st
     'Lululemon': (q) => `https://shop.lululemon.com/search?Ntt=${q}`,
     'Amazon Fashion': (q) => `https://www.amazon.com/s?k=${q}&i=fashion`,
     'PrettyLittleThing': (q) => `https://www.prettylittlething.us/catalogsearch/result/?q=${q}`,
+    'Abercrombie & Fitch': (q) => `https://www.abercrombie.com/shop/us/search?searchTerm=${q}`,
+    'Urban Outfitters': (q) => `https://www.urbanoutfitters.com/search?q=${q}`,
+    'Forever 21': (q) => `https://www.forever21.com/us/search/${q}`,
+    'Topshop': (q) => `https://www.topshop.com/search?q=${q}`,
+    'J.Crew': (q) => `https://www.jcrew.com/r/search/?N=0&Nloc=en&Ntrm=${q}`,
+    'Banana Republic': (q) => `https://www.bananarepublic.com/browse/search.do?searchText=${q}`,
+    'Old Navy': (q) => `https://oldnavy.gap.com/browse/search.do?searchText=${q}`,
+    'Puma': (q) => `https://us.puma.com/us/en/search?q=${q}`,
+    'Boohoo': (q) => `https://us.boohoo.com/search?q=${q}`,
+    'Target': (q) => `https://www.target.com/s?searchTerm=${q}&category=5xtg6`,
   };
   return searchPaths[retailerName]?.(q) || `${baseUrl.replace(/\/$/, '')}/?q=${q}`;
 }
