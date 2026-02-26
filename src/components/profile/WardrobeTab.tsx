@@ -67,8 +67,8 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem }: WardrobeTabProps) => {
                     </div>
                   )}
                   {item.retailer && (
-                    <div className="absolute bottom-1.5 left-1.5 bg-primary/80 backdrop-blur-sm rounded-full px-2 py-0.5">
-                      <span className="text-[8px] font-bold text-primary-foreground uppercase">{item.retailer}</span>
+                    <div className="absolute bottom-1.5 right-1.5 bg-primary rounded-md px-2 py-0.5 shadow-lg border border-primary-foreground/20">
+                      <span className="text-[9px] font-extrabold text-primary-foreground uppercase tracking-wide">{item.retailer}</span>
                     </div>
                   )}
                 </div>
