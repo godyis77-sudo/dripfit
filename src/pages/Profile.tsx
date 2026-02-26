@@ -3,7 +3,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Shirt, Crown, Camera, Settings, ShoppingBag, User } from 'lucide-react';
+import { LogOut, Shirt, Crown, Camera, Settings, ShoppingBag, User, Globe } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -195,6 +195,13 @@ const Profile = () => {
             <div>
               <h1 className="text-[15px] font-bold text-foreground leading-tight">{displayName}</h1>
               <p className="text-[11px] text-muted-foreground">{user.email}</p>
+              <button
+                onClick={() => navigate(`/profile/${encodeURIComponent(displayName)}`)}
+                className="flex items-center gap-1 mt-0.5 active:opacity-70 transition-opacity"
+              >
+                <Globe className="h-2.5 w-2.5 text-primary" />
+                <span className="text-[10px] text-primary font-medium">View Public Profile</span>
+              </button>
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={handleSignOut} className="text-muted-foreground h-8 w-8 rounded-lg">

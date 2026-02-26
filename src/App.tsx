@@ -20,6 +20,7 @@ import Profile from "./pages/Profile";
 import Premium from "./pages/Premium";
 import SavedItems from "./pages/SavedItems";
 import NotFound from "./pages/NotFound";
+import PublicProfile from "./pages/PublicProfile";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
                 <Route path="/community" element={<Community />} />
                 <Route path="/size-guide" element={<SizeGuide />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/profile/:username" element={<PublicProfile />} />
                 <Route path="/premium" element={<Premium />} />
                 <Route path="/saved" element={<SavedItems />} />
                 <Route path="*" element={<NotFound />} />
