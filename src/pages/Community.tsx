@@ -411,16 +411,27 @@ const Community = () => {
                 <motion.div key={post.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} className="bg-card border border-border rounded-xl overflow-hidden">
                   {/* Minimal header */}
                   <div className="flex items-center gap-2 px-2.5 pt-2 pb-1">
-                    {post.profile?.avatar_url ? (
-                      <img src={post.profile.avatar_url} alt="" className="h-5 w-5 rounded-full object-cover" />
-                    ) : (
-                      <div className="h-5 w-5 rounded-full gradient-drip flex items-center justify-center">
-                        <span className="text-[8px] font-bold text-primary-foreground">
-                          {(post.profile?.display_name || 'A')[0].toUpperCase()}
-                        </span>
-                      </div>
-                    )}
-                    <p className="text-[11px] font-semibold text-foreground flex-1">{post.profile?.display_name || 'Anonymous'}</p>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const name = post.profile?.display_name || 'Anonymous';
+                        if (user && post.user_id === user.id) { navigate('/profile'); return; }
+                        navigate(`/profile/${encodeURIComponent(name)}`);
+                      }}
+                      className="flex items-center gap-2 active:opacity-70 transition-opacity"
+                    >
+                      {post.profile?.avatar_url ? (
+                        <img src={post.profile.avatar_url} alt="" className="h-5 w-5 rounded-full object-cover" />
+                      ) : (
+                        <div className="h-5 w-5 rounded-full gradient-drip flex items-center justify-center">
+                          <span className="text-[8px] font-bold text-primary-foreground">
+                            {(post.profile?.display_name || 'A')[0].toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                      <p className="text-[11px] font-semibold text-foreground">{post.profile?.display_name || 'Anonymous'}</p>
+                    </button>
+                    <span className="flex-1" />
                     <p className="text-[9px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
                   </div>
 
