@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Trash2, X, ShoppingBag, Tag, Calendar, Store, Star } from 'lucide-react';
-import { buildRetailerSearchUrl, getRetailersForCategory } from '@/lib/retailerLinks';
+import { buildRetailerSearchUrl, getRetailersForCategory, getBestRetailerForItem } from '@/lib/retailerLinks';
 import { trackEvent } from '@/lib/analytics';
 
 interface WardrobeItem {
@@ -34,7 +34,7 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
     ...favoriteRetailers,
     ...categoryRetailers.filter(r => !favoriteRetailers.includes(r)),
   ];
-  const displayRetailer = item.retailer || (favoriteRetailers.length > 0 ? favoriteRetailers[0] : null);
+  const displayRetailer = item.retailer || (favoriteRetailers.length > 0 ? favoriteRetailers[0] : getBestRetailerForItem(item.brand, item.category));
 
   const handleShop = (retailerName: string) => {
     trackEvent('shop_clickout', { source: 'wardrobe_detail', retailer: retailerName });

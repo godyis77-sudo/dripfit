@@ -43,3 +43,42 @@ export function getRetailersForCategory(category: string): string[] {
   };
   return map[category] || map['top'];
 }
+
+/** Pick the single best-fit retailer for badge display based on brand + category signals */
+export function getBestRetailerForItem(brand: string | null, category: string): string {
+  // Brand-to-retailer affinity: if we recognise the brand, suggest where it's typically sold
+  const brandAffinity: Record<string, string> = {
+    'nike': 'Nike', 'adidas': 'Adidas', 'puma': 'Puma', 'lululemon': 'Lululemon',
+    'zara': 'Zara', 'h&m': 'H&M', 'uniqlo': 'Uniqlo', 'gap': 'Gap',
+    'mango': 'Mango', 'asos': 'ASOS', 'shein': 'SHEIN', 'revolve': 'Revolve',
+    'fashion nova': 'Fashion Nova', 'abercrombie': 'Abercrombie & Fitch',
+    'j.crew': 'J.Crew', 'banana republic': 'Banana Republic', 'old navy': 'Old Navy',
+    'urban outfitters': 'Urban Outfitters', 'forever 21': 'Forever 21',
+    'prettylittlething': 'PrettyLittleThing', 'boohoo': 'Boohoo',
+    'north face': 'Nordstrom', 'patagonia': 'Nordstrom', 'ralph lauren': 'Nordstrom',
+    'calvin klein': 'Nordstrom', 'tommy hilfiger': 'Nordstrom',
+    'levi': 'Nordstrom', "levi's": 'Nordstrom',
+    'champion': 'Amazon Fashion', 'hanes': 'Amazon Fashion',
+    'target': 'Target',
+  };
+
+  if (brand) {
+    const key = brand.toLowerCase().trim();
+    if (brandAffinity[key]) return brandAffinity[key];
+    // Partial match
+    for (const [k, v] of Object.entries(brandAffinity)) {
+      if (key.includes(k) || k.includes(key)) return v;
+    }
+  }
+
+  // Quality/style tiers by category
+  const categoryPrimary: Record<string, string> = {
+    top: 'Zara',
+    bottom: 'H&M',
+    dress: 'Zara',
+    outerwear: 'Nordstrom',
+    activewear: 'Nike',
+    shoes: 'Nike',
+  };
+  return categoryPrimary[category] || 'Zara';
+}
