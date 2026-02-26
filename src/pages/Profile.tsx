@@ -55,6 +55,7 @@ const Profile = () => {
   const [savedProfile, setSavedProfile] = useState<BodyScanResult | null>(null);
   const [savedItemCount, setSavedItemCount] = useState(0);
   const [showAvatarSheet, setShowAvatarSheet] = useState(false);
+  const [instagramHandle, setInstagramHandle] = useState('');
 
   useEffect(() => {
     if (!user) { navigate('/auth', { replace: true }); return; }
@@ -74,6 +75,7 @@ const Profile = () => {
     if (profileRes.data) {
       setDisplayName(profileRes.data.display_name || user.email?.split('@')[0] || 'User');
       setAvatarUrl(profileRes.data.avatar_url);
+      setInstagramHandle((profileRes.data as any).instagram_handle || '');
     }
     if (postsRes.data) setTryOnPosts(postsRes.data);
     setLoading(false);
@@ -175,6 +177,13 @@ const Profile = () => {
     if (error) { toast({ title: 'Error', description: 'Could not update display name.', variant: 'destructive' }); return; }
     setDisplayName(name);
     toast({ title: 'Display name updated!' });
+  };
+  const handleInstagramSave = async (handle: string) => {
+    if (!user) return;
+    const { error } = await supabase.from('profiles').update({ instagram_handle: handle } as any).eq('user_id', user.id);
+    if (error) { toast({ title: 'Error', description: 'Could not update Instagram handle.', variant: 'destructive' }); return; }
+    setInstagramHandle(handle);
+    toast({ title: handle ? 'Instagram linked!' : 'Instagram removed' });
   };
   const handleSignOut = async () => { await signOut(); navigate('/', { replace: true }); };
 
@@ -286,6 +295,7 @@ const Profile = () => {
                 subscriptionEnd={subscriptionEnd}
                 productId={productId}
                 favoriteRetailers={favoriteRetailers}
+                instagramHandle={instagramHandle}
                 onFavoriteRetailersChange={setFavoriteRetailers}
                 onFitChange={handleFitChange}
                 onUnitToggle={(v) => setUseCm(!v)}
@@ -294,6 +304,7 @@ const Profile = () => {
                 onDeleteAccount={handleDeleteAccount}
                 onAvatarTap={() => setShowAvatarSheet(true)}
                 onDisplayNameSave={handleDisplayNameSave}
+                onInstagramSave={handleInstagramSave}
               />
             </motion.div>
           )}

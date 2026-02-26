@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Shirt, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Shirt, MessageSquare, Instagram } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -11,6 +11,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 interface PublicProfileData {
   display_name: string | null;
   avatar_url: string | null;
+  instagram_handle: string | null;
   user_id: string;
 }
 
@@ -46,10 +47,10 @@ const PublicProfile = () => {
     // Find profile by display_name
     const { data: profileData, error } = await supabase
       .from('profiles')
-      .select('display_name, avatar_url, user_id')
+      .select('display_name, avatar_url, user_id, instagram_handle')
       .ilike('display_name', username!)
       .limit(1)
-      .maybeSingle();
+      .maybeSingle() as any;
 
     if (error || !profileData) {
       setNotFound(true);
@@ -151,6 +152,16 @@ const PublicProfile = () => {
               <div>
                 <h1 className="text-lg font-bold text-foreground leading-tight">{displayName}</h1>
                 <p className="text-[12px] text-muted-foreground">@{(displayName).toLowerCase().replace(/\s+/g, '')}</p>
+                {profile?.instagram_handle && (
+                  <a
+                    href={`https://instagram.com/${profile.instagram_handle}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 mt-0.5 text-[10px] text-primary font-medium active:opacity-70 transition-opacity"
+                  >
+                    <Instagram className="h-3 w-3" /> @{profile.instagram_handle}
+                  </a>
+                )}
                 {scanInfo && (
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-[10px] font-bold text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-md">

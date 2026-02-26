@@ -60,7 +60,8 @@ type FunnelEvent =
   | 'quickpick_retailer_clicked'
   | 'tryon_liked'
   | 'tryon_posted_to_community'
-  | 'wardrobe_added_from_tryon';
+  | 'wardrobe_added_from_tryon'
+  | 'tryon_shared_instagram';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
