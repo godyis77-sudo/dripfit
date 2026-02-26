@@ -33,19 +33,27 @@ const RECOMMENDED = [
   { id: '3', label: 'Bomber jacket — Your size: M', brand: 'Uniqlo', url: 'https://www.uniqlo.com/us/en/search?q=bomber+jacket' },
 ];
 
+interface RecentItem {
+  id: string;
+  image_url: string;
+  label: string;
+  type: 'wardrobe' | 'tryon';
+  created_at: string;
+}
+
 const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [fabOpen, setFabOpen] = useState(false);
   const [trendingFits, setTrendingFits] = useState<TrendingPost[]>([]);
   const [profileName, setProfileName] = useState<string | null>(null);
+  const [recentItems, setRecentItems] = useState<RecentItem[]>([]);
 
   useEffect(() => {
     const fetchTrending = async () => {
       const TARGET = 6;
       let posts: TrendingPost[] = [];
 
-      // 1. Try real community posts first
       const { data: livePosts } = await supabase
         .from('tryon_posts')
         .select('id, user_id, caption, result_photo_url, created_at, is_public')
@@ -54,7 +62,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
         .limit(TARGET);
 
       if (livePosts && livePosts.length > 0) {
-        // Fetch display names for live posts
         const userIds = [...new Set(livePosts.map(p => p.user_id))];
         const { data: profiles } = await supabase
           .from('profiles')
@@ -73,7 +80,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
         }));
       }
 
-      // 2. Fill remaining slots with seed posts
       if (posts.length < TARGET) {
         const remaining = TARGET - posts.length;
         const { data: seeds } = await supabase
@@ -89,13 +95,61 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
 
       setTrendingFits(posts);
     };
+
     const fetchProfileName = async () => {
       if (!user) return;
       const { data } = await supabase.from('profiles').select('display_name').eq('user_id', user.id).maybeSingle();
       if (data?.display_name) setProfileName(data.display_name);
     };
+
+    const fetchRecentItems = async () => {
+      if (!user) return;
+      const items: RecentItem[] = [];
+
+      // Fetch recent wardrobe items
+      const { data: wardrobe } = await supabase
+        .from('clothing_wardrobe' as any)
+        .select('id, image_url, category, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(4);
+
+      if (wardrobe) {
+        items.push(...(wardrobe as any[]).map(w => ({
+          id: w.id,
+          image_url: w.image_url,
+          label: w.category || 'Wardrobe',
+          type: 'wardrobe' as const,
+          created_at: w.created_at,
+        })));
+      }
+
+      // Fetch recent try-on results
+      const { data: tryons } = await supabase
+        .from('tryon_posts')
+        .select('id, result_photo_url, caption, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(4);
+
+      if (tryons) {
+        items.push(...tryons.map(t => ({
+          id: t.id,
+          image_url: t.result_photo_url,
+          label: t.caption || 'Try-On',
+          type: 'tryon' as const,
+          created_at: t.created_at,
+        })));
+      }
+
+      // Sort by date, take latest 6
+      items.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      setRecentItems(items.slice(0, 6));
+    };
+
     fetchTrending();
     fetchProfileName();
+    fetchRecentItems();
   }, [user]);
 
   const displayName = profileName || user?.email?.split('@')[0] || '';
@@ -254,22 +308,41 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               View all
             </button>
           </div>
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            {[1, 2, 3, 4].map((i) => (
+          {recentItems.length > 0 ? (
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {recentItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => navigate(item.type === 'wardrobe' ? '/profile' : '/profile')}
+                  className="shrink-0 w-[100px] bg-card border border-border rounded-xl overflow-hidden active:scale-[0.97] transition-transform"
+                >
+                  <div className="aspect-square bg-muted overflow-hidden">
+                    <img src={item.image_url} alt={item.label} className="w-full h-full object-cover" loading="lazy" />
+                  </div>
+                  <div className="p-1.5 flex items-center gap-1">
+                    {item.type === 'wardrobe' ? (
+                      <Shirt className="h-2.5 w-2.5 text-primary shrink-0" />
+                    ) : (
+                      <Sparkles className="h-2.5 w-2.5 text-primary shrink-0" />
+                    )}
+                    <p className="text-[9px] text-muted-foreground truncate capitalize">{item.label}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
               <button
-                key={i}
-                onClick={() => navigate('/saved')}
-                className="shrink-0 w-[100px] bg-card border border-border rounded-xl overflow-hidden active:scale-[0.97] transition-transform"
+                onClick={() => navigate('/tryon')}
+                className="shrink-0 w-[100px] bg-card border border-dashed border-border rounded-xl overflow-hidden active:scale-[0.97] transition-transform"
               >
-                <div className="aspect-square bg-gradient-to-br from-muted to-card flex items-center justify-center">
-                  <ShoppingBag className="h-5 w-5 text-muted-foreground/30" />
-                </div>
-                <div className="p-1.5">
-                  <p className="text-[9px] text-muted-foreground truncate">Saved item {i}</p>
+                <div className="aspect-square flex flex-col items-center justify-center gap-1">
+                  <Plus className="h-5 w-5 text-muted-foreground/30" />
+                  <p className="text-[9px] text-muted-foreground">Try something on</p>
                 </div>
               </button>
-            ))}
-          </div>
+            </div>
+          )}
         </motion.div>
       </div>
 
