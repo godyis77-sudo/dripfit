@@ -74,7 +74,7 @@ const BodyTab = ({ savedProfile, fit }: BodyTabProps) => {
             >
               <p className="text-[9px] text-muted-foreground uppercase tracking-wider flex items-center justify-center gap-0.5">
                 {d.label}
-                {d.tappable && <Info className="h-2 w-2 opacity-40" />}
+                {d.tappable && <Info className="h-2.5 w-2.5 text-primary opacity-80" />}
               </p>
               <p className={`text-[12px] font-bold text-foreground ${d.cls || ''}`}>{d.value}</p>
             </button>
