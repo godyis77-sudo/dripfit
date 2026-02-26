@@ -389,6 +389,7 @@ export type Database = {
           created_at: string
           id: string
           is_public: boolean
+          product_url: string | null
           result_photo_url: string
           user_id: string
           user_photo_url: string
@@ -399,6 +400,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_public?: boolean
+          product_url?: string | null
           result_photo_url: string
           user_id: string
           user_photo_url: string
@@ -409,6 +411,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_public?: boolean
+          product_url?: string | null
           result_photo_url?: string
           user_id?: string
           user_photo_url?: string
