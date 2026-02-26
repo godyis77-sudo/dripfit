@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Shirt, Trash2, Sparkles } from 'lucide-react';
+import { Shirt, Sparkles, Store, ExternalLink } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
+import WardrobeDetailSheet from './WardrobeDetailSheet';
 
 interface WardrobeItem {
   id: string;
@@ -10,6 +12,8 @@ interface WardrobeItem {
   category: string;
   product_link: string | null;
   retailer: string | null;
+  brand: string | null;
+  notes: string | null;
   created_at: string;
 }
 
@@ -20,6 +24,7 @@ interface WardrobeTabProps {
 
 const WardrobeTab = ({ wardrobeItems, onDeleteItem }: WardrobeTabProps) => {
   const navigate = useNavigate();
+  const [selectedItem, setSelectedItem] = useState<WardrobeItem | null>(null);
 
   return (
     <>
@@ -50,36 +55,46 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem }: WardrobeTabProps) => {
         <div className="columns-2 gap-2 space-y-2">
           {wardrobeItems.map(item => (
             <motion.div key={item.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="break-inside-avoid">
-              <div className="rounded-xl overflow-hidden border border-border bg-card">
-                <img src={item.image_url} alt="Clothing" className="w-full object-cover" />
-                <div className="p-2 space-y-1">
+              <button
+                onClick={() => setSelectedItem(item)}
+                className="w-full rounded-xl overflow-hidden border border-border bg-card text-left active:scale-[0.97] transition-transform"
+              >
+                <div className="relative">
+                  <img src={item.image_url} alt="Clothing" className="w-full object-cover" />
+                  {item.product_link && (
+                    <div className="absolute top-1.5 right-1.5 bg-black/50 backdrop-blur-sm rounded-full p-1">
+                      <ExternalLink className="h-3 w-3 text-white" />
+                    </div>
+                  )}
+                  {item.retailer && (
+                    <div className="absolute bottom-1.5 left-1.5 bg-primary/80 backdrop-blur-sm rounded-full px-2 py-0.5">
+                      <span className="text-[8px] font-bold text-primary-foreground uppercase">{item.retailer}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="p-2 space-y-0.5">
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] font-bold text-foreground capitalize">{item.category}</span>
-                    {item.retailer && <span className="text-[9px] text-primary font-bold uppercase">{item.retailer}</span>}
+                    {item.brand && (
+                      <span className="text-[9px] text-primary font-bold flex items-center gap-0.5">
+                        <Store className="h-2.5 w-2.5" /> {item.brand}
+                      </span>
+                    )}
                   </div>
                   <p className="text-[9px] text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</p>
-                  <div className="flex gap-1">
-                    {item.product_link && (
-                      <button
-                        onClick={() => { trackEvent('shop_clickout', { source: 'wardrobe' }); window.open(item.product_link!, '_blank', 'noopener'); }}
-                        className="flex-1 text-[9px] font-bold py-1 rounded-md bg-primary/10 text-primary active:scale-95 transition-transform"
-                      >
-                        Shop
-                      </button>
-                    )}
-                    <button
-                      onClick={() => onDeleteItem(item.id)}
-                      className="text-[9px] text-muted-foreground py-1 px-2 rounded-md border border-border active:scale-95 transition-transform"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </button>
-                  </div>
                 </div>
-              </div>
+              </button>
             </motion.div>
           ))}
         </div>
       )}
+
+      <WardrobeDetailSheet
+        item={selectedItem}
+        open={!!selectedItem}
+        onOpenChange={(open) => { if (!open) setSelectedItem(null); }}
+        onDelete={(id) => { onDeleteItem(id); setSelectedItem(null); }}
+      />
     </>
   );
 };
