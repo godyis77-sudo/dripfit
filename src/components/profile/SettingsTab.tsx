@@ -8,6 +8,9 @@ import { Crown, Trash2, Shield, Download, Ruler, Camera, ChevronRight, Bookmark,
 import type { FitPreference, BodyScanResult } from '@/lib/types';
 import { SUPPORTED_RETAILERS } from '@/lib/types';
 import { trackEvent } from '@/lib/analytics';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { STRIPE_TIERS } from '@/hooks/useAuth';
 
 const SectionHeader = forwardRef<HTMLParagraphElement, { children: React.ReactNode }>(
   ({ children }, ref) => (
@@ -24,6 +27,9 @@ interface SettingsTabProps {
   fit: FitPreference;
   useCm: boolean;
   savedItemCount: number;
+  isSubscribed: boolean;
+  subscriptionEnd: string | null;
+  productId: string | null;
   onFitChange: (f: FitPreference) => void;
   onUnitToggle: (v: boolean) => void;
   onExport: () => void;
@@ -35,9 +41,11 @@ interface SettingsTabProps {
 
 const SettingsTab = ({
   user, displayName, avatarUrl, savedProfile, fit, useCm, savedItemCount,
+  isSubscribed, subscriptionEnd, productId,
   onFitChange, onUnitToggle, onExport, onDeletePhotos, onDeleteAccount, onAvatarTap, onDisplayNameSave,
 }: SettingsTabProps) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [editingName, setEditingName] = useState(false);
   const [nameValue, setNameValue] = useState(displayName);
 
@@ -204,11 +212,40 @@ const SettingsTab = ({
       {/* Premium */}
       <SectionHeader>Premium</SectionHeader>
       <div className="bg-card border border-primary/20 rounded-xl mb-1">
-        <button onClick={() => { trackEvent('premium_viewed'); navigate('/premium'); }} className="w-full flex items-center gap-2 px-3 py-2.5 active:bg-primary/5 transition-colors">
-          <Crown className="h-3.5 w-3.5 text-primary" />
-          <span className="text-[12px] text-foreground font-medium">Upgrade to Premium</span>
-          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground ml-auto" />
-        </button>
+        {isSubscribed ? (
+          <div className="px-3 py-2.5">
+            <div className="flex items-center gap-2">
+              <Crown className="h-3.5 w-3.5 text-primary" />
+              <span className="text-[12px] text-foreground font-medium">Premium: Active ✓</span>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-0.5 ml-5.5">
+              {productId === STRIPE_TIERS.annual.product_id ? 'Annual' : 'Monthly'}
+              {subscriptionEnd ? ` — renews ${new Date(subscriptionEnd).toLocaleDateString()}` : ''}
+            </p>
+            <button
+              onClick={async () => {
+                try {
+                  const { data, error } = await supabase.functions.invoke('customer-portal');
+                  if (error) throw error;
+                  if (data?.url) window.open(data.url, '_blank');
+                } catch (e: any) {
+                  toast({ title: 'Error', description: e.message || 'Could not open portal', variant: 'destructive' });
+                }
+              }}
+              className="text-[10px] text-primary font-bold mt-1 ml-5.5 active:opacity-70"
+            >
+              Manage →
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => { trackEvent('premium_viewed'); navigate('/premium'); }} className="w-full px-3 py-2.5 active:bg-primary/5 transition-colors text-left">
+            <div className="flex items-center gap-2">
+              <Crown className="h-3.5 w-3.5 text-primary" />
+              <span className="text-[12px] text-foreground font-medium">Premium: Free plan</span>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-0.5 ml-5.5">Tap to see what you're missing</p>
+          </button>
+        )}
       </div>
 
       {/* Retailers */}

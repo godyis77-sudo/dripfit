@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LogOut, Shirt, Crown, Camera, Settings, ShoppingBag, User, Globe } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useAuth } from '@/hooks/useAuth';
+import PremiumBadge from '@/components/monetization/PremiumBadge';
 import { supabase } from '@/integrations/supabase/client';
 import { getFitPreference, setFitPreference } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
@@ -38,7 +39,7 @@ interface WardrobeItem {
 const Profile = () => {
   const navigate = useNavigate();
   usePageTitle('Profile');
-  const { user, signOut } = useAuth();
+  const { user, signOut, isSubscribed, subscriptionEnd, productId } = useAuth();
   const { toast } = useToast();
   const [displayName, setDisplayName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -172,15 +173,23 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-bottom">
       <div className="max-w-sm mx-auto">
-        {/* Go Premium banner */}
-        <button
-          onClick={() => { trackEvent('premium_viewed', { source: 'profile_banner' }); navigate('/premium'); }}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-primary/20 bg-primary/5 mb-3 active:scale-[0.98] transition-transform"
-        >
-          <Crown className="h-4 w-4 text-primary shrink-0" />
-          <span className="text-[11px] font-bold text-foreground flex-1 text-left">Go Premium</span>
-          <span className="text-[9px] text-primary font-bold">7-day free trial →</span>
-        </button>
+        {/* Premium banner / status bar */}
+        {isSubscribed ? (
+          <div className="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-[hsl(42,80%,30%)] to-[hsl(42,70%,20%)] border border-primary/30 mb-3">
+            <Crown className="h-4 w-4 text-primary shrink-0" />
+            <span className="text-[11px] font-bold text-foreground flex-1 text-left">DRIP FIT PREMIUM</span>
+            <PremiumBadge label="Active" />
+          </div>
+        ) : (
+          <button
+            onClick={() => { trackEvent('premium_viewed', { source: 'profile_banner' }); navigate('/premium'); }}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-primary/20 bg-primary/5 mb-3 active:scale-[0.98] transition-transform"
+          >
+            <Crown className="h-4 w-4 text-primary shrink-0" />
+            <span className="text-[11px] font-bold text-foreground flex-1 text-left">Go Premium</span>
+            <span className="text-[9px] text-primary font-bold">7-day free trial →</span>
+          </button>
+        )}
 
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
@@ -195,9 +204,15 @@ const Profile = () => {
                   </div>
                 )}
               </div>
-              <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-background">
-                <Camera className="h-2.5 w-2.5 text-primary-foreground" />
-              </div>
+              {isSubscribed ? (
+                <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-[hsl(42,80%,30%)] flex items-center justify-center border-2 border-background">
+                  <Crown className="h-2.5 w-2.5 text-primary" />
+                </div>
+              ) : (
+                <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-background">
+                  <Camera className="h-2.5 w-2.5 text-primary-foreground" />
+                </div>
+              )}
             </button>
             <div>
               <h1 className="text-[15px] font-bold text-foreground leading-tight">{displayName}</h1>
@@ -257,6 +272,9 @@ const Profile = () => {
                 fit={fit}
                 useCm={useCm}
                 savedItemCount={savedItemCount}
+                isSubscribed={isSubscribed}
+                subscriptionEnd={subscriptionEnd}
+                productId={productId}
                 onFitChange={handleFitChange}
                 onUnitToggle={(v) => setUseCm(!v)}
                 onExport={handleExport}
