@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import SaveBanner from '@/components/ui/save-banner';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -43,6 +44,7 @@ const Results = () => {
   const result = state?.result;
   const [fitPref, setFitPref] = useState<FitPreference>(result?.fitPreference || 'regular');
   const [saved, setSaved] = useState(false);
+  const [showSaveBanner, setShowSaveBanner] = useState(false);
   const [confidence, setConfidence] = useState(result?.confidence || 'medium');
   const [showFeedback, setShowFeedback] = useState(false);
   const [adjustedMeasurements, setAdjustedMeasurements] = useState<Record<string, MeasurementRange>>({});
@@ -104,15 +106,13 @@ const Results = () => {
   }
 
   const handleSave = () => {
-    // Save to localStorage as fallback
     const history = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]');
     history.unshift(result);
     localStorage.setItem('dripcheck_scans', JSON.stringify(history));
-    // Note: scan is already persisted to DB during the Analyze step
     setSaved(true);
+    setShowSaveBanner(true);
     trackEvent('results_saved');
     trackEvent('save_item', { type: 'scan' });
-    toast({ title: 'Saved to Profile', description: 'Your body profile is saved permanently.' });
   };
 
   const handleDelete = () => { toast({ title: 'Deleted', description: 'Scan data removed.' }); navigate('/'); };
@@ -124,6 +124,13 @@ const Results = () => {
 
   return (
     <div className="min-h-screen bg-background px-4 py-4 pb-8">
+      <SaveBanner
+        visible={showSaveBanner}
+        onDismiss={() => setShowSaveBanner(false)}
+        navigateTo="/profile"
+        label="Saved successfully"
+        subtext="View in Profile > Body"
+      />
       <div className="max-w-sm mx-auto">
         <div className="flex items-center mb-3">
           <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg">

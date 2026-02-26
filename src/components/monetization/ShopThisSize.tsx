@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ExternalLink, Link2, ShoppingBag, Bookmark, Check, Store } from 'lucide-react';
+import SaveBanner from '@/components/ui/save-banner';
 import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -89,7 +90,7 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
       setSaved(true);
       setShowSavedConfirmation(true);
       trackEvent('saved_item_added', { retailer: targetRetailer });
-      toast({ title: 'Saved for later' });
+      // No toast — SaveBanner handles confirmation
     } catch {
       toast({ title: 'Could not save', variant: 'destructive' });
     }
@@ -156,35 +157,27 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
       )}
 
       {/* Save for later */}
-      {!showSavedConfirmation ? (
-        <Button
-          variant="outline"
-          className="w-full h-9 rounded-lg text-[11px] font-bold"
-          onClick={handleSaveForLater}
-          disabled={saved}
-        >
-          {saved ? (
-            <><Check className="mr-1.5 h-3.5 w-3.5" /> Saved for Later</>
-          ) : (
-            <><Bookmark className="mr-1.5 h-3.5 w-3.5" /> Save for Later</>
-          )}
-        </Button>
-      ) : (
-        <div className="bg-primary/10 border border-primary/20 rounded-lg px-3 py-2.5 space-y-2">
-          <div className="flex items-center gap-2">
-            <Check className="h-3.5 w-3.5 text-primary" />
-            <span className="text-[11px] font-bold text-primary">Saved to your items</span>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full h-8 rounded-lg text-[11px] font-medium"
-            onClick={() => navigate('/saved')}
-          >
-            <Bookmark className="mr-1 h-3 w-3" /> View Saved Items
-          </Button>
-        </div>
-      )}
+      <Button
+        variant="outline"
+        className="w-full h-9 rounded-lg text-[11px] font-bold"
+        onClick={handleSaveForLater}
+        disabled={saved}
+      >
+        {saved ? (
+          <><Check className="mr-1.5 h-3.5 w-3.5" /> Saved</>
+        ) : (
+          <><Bookmark className="mr-1.5 h-3.5 w-3.5" /> Save for Later</>
+        )}
+      </Button>
+
+      {/* Save confirmation banner */}
+      <SaveBanner
+        visible={showSavedConfirmation}
+        onDismiss={useCallback(() => setShowSavedConfirmation(false), [])}
+        navigateTo="/saved"
+        label="Saved successfully"
+        subtext="View in Profile > Saved Items"
+      />
 
       {/* Confirmation sheet */}
       {showConfirmation && (
