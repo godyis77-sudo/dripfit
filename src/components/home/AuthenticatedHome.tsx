@@ -1,20 +1,20 @@
-import { forwardRef } from 'react';
+import { forwardRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Sparkles, Camera, Heart, ShoppingBag, Clock, TrendingUp, Shirt } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
-import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
-const TRENDING_FITS = [
-  { id: '1', user: 'Alex', votes: 42, caption: 'Date night look?' },
-  { id: '2', user: 'Jordan', votes: 38, caption: 'Office casual vibes' },
-  { id: '3', user: 'Sam', votes: 55, caption: 'Festival ready?' },
-  { id: '4', user: 'Kai', votes: 29, caption: 'Street style check' },
-  { id: '5', user: 'Riley', votes: 61, caption: 'Too bold?' },
-  { id: '6', user: 'Morgan', votes: 34, caption: 'Brunch fit' },
-];
+interface SeedPost {
+  id: string;
+  username: string;
+  caption: string | null;
+  image_url: string;
+  like_count: number;
+  created_at: string;
+}
 
 const RECOMMENDED = [
   { id: '1', label: 'Oversized tee — Your size: L', brand: 'Zara' },
@@ -26,6 +26,20 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [fabOpen, setFabOpen] = useState(false);
+  const [trendingFits, setTrendingFits] = useState<SeedPost[]>([]);
+
+  useEffect(() => {
+    const fetchTrending = async () => {
+      const { data } = await supabase
+        .from('seed_posts')
+        .select('*')
+        .eq('is_public', true)
+        .order('like_count', { ascending: false })
+        .limit(6);
+      if (data) setTrendingFits(data as SeedPost[]);
+    };
+    fetchTrending();
+  }, []);
 
   const displayName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'there';
   const hour = new Date().getHours();
@@ -97,23 +111,26 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             </button>
           </div>
           <div className="grid grid-cols-3 gap-2">
-            {TRENDING_FITS.map((fit) => (
+            {trendingFits.map((fit) => (
               <button
                 key={fit.id}
                 onClick={() => navigate('/community')}
                 className="relative bg-card border border-border rounded-xl overflow-hidden aspect-[3/4] group active:scale-[0.97] transition-transform"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-muted to-card" />
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
-                  <Shirt className="h-5 w-5 text-muted-foreground/30 mb-1" />
-                  <p className="text-[9px] text-muted-foreground text-center leading-tight">{fit.caption}</p>
-                </div>
+                <img
+                  src={fit.image_url}
+                  alt={fit.caption || 'Trending fit'}
+                  loading="lazy"
+                  decoding="async"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
                 <div className="absolute bottom-1.5 left-1.5 flex items-center gap-0.5 bg-background/80 backdrop-blur-sm rounded-lg px-1.5 py-0.5">
                   <Heart className="h-2.5 w-2.5 text-primary" />
-                  <span className="text-[9px] font-bold text-foreground">{fit.votes}</span>
+                  <span className="text-[9px] font-bold text-foreground">{fit.like_count}</span>
                 </div>
                 <div className="absolute top-1.5 left-1.5">
-                  <span className="text-[8px] font-bold text-muted-foreground bg-background/60 rounded-lg px-1 py-0.5">{fit.user}</span>
+                  <span className="text-[8px] font-bold text-white bg-black/40 backdrop-blur-sm rounded-lg px-1 py-0.5">{fit.username}</span>
                 </div>
               </button>
             ))}
