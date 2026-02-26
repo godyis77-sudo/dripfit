@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown, Bookmark, Camera, MessageSquare, Flame, Search, Ruler } from 'lucide-react';
 import { detectRetailer } from '@/lib/retailerDetect';
+import { getBestRetailerForItem } from '@/lib/retailerLinks';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -474,9 +475,11 @@ const Community = () => {
                         {post.caption || getPrompt(post.id, idx)}
                       </p>
                     </div>
-                    {/* Retailer badge */}
-                    {post.product_url && (() => {
-                      const retailer = detectRetailer(post.product_url);
+                    {/* Retailer badge — product_url > smart recommendation */}
+                    {(() => {
+                      const retailer = post.product_url
+                        ? detectRetailer(post.product_url)
+                        : getBestRetailerForItem(null, post.caption?.toLowerCase().includes('dress') ? 'dress' : post.caption?.toLowerCase().includes('shoe') ? 'shoes' : post.caption?.toLowerCase().includes('jacket') || post.caption?.toLowerCase().includes('coat') ? 'outerwear' : post.caption?.toLowerCase().includes('gym') || post.caption?.toLowerCase().includes('workout') ? 'activewear' : 'top');
                       return retailer ? (
                         <span className="absolute top-2 right-2 text-[9px] font-bold text-white bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded-full">
                           {retailer}
