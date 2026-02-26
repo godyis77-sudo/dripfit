@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { VirtualTryonSchema, parseOrError } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,14 +13,15 @@ serve(async (req) => {
   }
 
   try {
-    const { userPhoto, clothingPhoto } = await req.json();
-
-    if (!userPhoto || !clothingPhoto) {
+    const raw = await req.json();
+    const parsed = parseOrError(VirtualTryonSchema, raw);
+    if (!parsed.success) {
       return new Response(
-        JSON.stringify({ error: "Both user photo and clothing photo are required" }),
+        JSON.stringify({ error: parsed.error }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+    const { userPhoto, clothingPhoto } = parsed.data;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
