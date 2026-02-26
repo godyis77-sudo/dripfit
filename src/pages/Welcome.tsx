@@ -58,28 +58,21 @@ const Welcome = () => {
 
   return (
     <div className="relative min-h-screen bg-background overflow-hidden pb-safe-bottom">
-      <div className="relative z-10 flex flex-col items-center px-5 pt-4">
-        {/* Nav */}
-        <motion.nav
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="w-full max-w-sm flex items-center justify-between mb-6"
+      {/* Sticky top nav bar */}
+      <nav className="sticky top-0 z-50 h-[52px] flex items-center justify-between px-5 bg-background/80 backdrop-blur-lg border-b border-[hsl(0,0%,10%)]">
+        <div className="flex items-center gap-2">
+          <Crown className="h-4 w-4 text-primary" />
+          <span className="font-display font-bold text-[16px] tracking-[2px] text-foreground">DRIP FIT</span>
+        </div>
+        <button
+          onClick={() => { trackEvent('auth_started'); navigate('/auth'); }}
+          className="text-[13px] text-muted-foreground active:opacity-70 transition-opacity"
         >
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-              <Crown className="h-4 w-4 text-primary-foreground" />
-            </div>
-            <span className="font-display font-bold text-sm tracking-wider text-primary">DRIP FIT</span>
-          </div>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => { trackEvent('auth_started'); navigate('/auth'); }}
-            className="text-xs h-9 px-3 rounded-xl min-h-[44px]"
-          >
-            <LogIn className="mr-1 h-3.5 w-3.5" /> Sign In
-          </Button>
-        </motion.nav>
+          Sign In
+        </button>
+      </nav>
+
+      <div className="relative z-10 flex flex-col items-center px-5 pt-4">
 
         {/* Hero */}
         <motion.div
