@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown, Bookmark, Camera, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown, Bookmark, Camera, MessageSquare, Flame, Search, Ruler } from 'lucide-react';
 import { detectRetailer } from '@/lib/retailerDetect';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -340,8 +340,8 @@ const Community = () => {
             </div>
           )
         ) : loading ? (
-          <div className="space-y-3 md:feed-grid">
-            {[1, 2].map(i => (
+          <div className="space-y-3">
+            {[1, 2, 3].map(i => (
               <div key={i} className="bg-card border border-border rounded-xl overflow-hidden">
                 <div className="w-full aspect-[4/5] skeleton-gold" />
                 <div className="p-3 space-y-2">
@@ -358,47 +358,63 @@ const Community = () => {
           </div>
         ) : (() => {
           const visiblePosts = posts.filter(p => isValidImageUrl(p.result_photo_url) && !failedImages.has(p.id));
-          
+
           if (filter === 'trending' && visiblePosts.length < 3) {
             return (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
-                  <Users className="h-6 w-6 text-primary" />
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                  <Flame className="h-6 w-6 text-primary" />
                 </div>
-                <h2 className="font-display text-base font-bold mb-1.5">Be the first to post a look</h2>
-                <p className="text-[13px] text-muted-foreground max-w-[220px] mb-4">Generate a Try-On and share it with the community for real feedback</p>
-                <Button className="rounded-lg btn-luxury text-primary-foreground h-10 px-5 text-sm font-bold" onClick={() => navigate('/tryon')}>
-                  <Shirt className="mr-1.5 h-4 w-4" /> Create a Try-On
+                <h2 className="text-[18px] font-bold text-foreground mb-1.5">Trending looks will appear here</h2>
+                <p className="text-[14px] text-muted-foreground max-w-[280px] mb-5">Post your first try-on and ask the community. The more votes a look gets, the higher it trends.</p>
+                <Button className="w-4/5 h-12 rounded-xl text-sm font-bold btn-luxury text-primary-foreground" onClick={() => { if (!user) { navigate('/auth'); return; } setShowPostFlow(true); }}>
+                  Post a Look
                 </Button>
               </div>
             );
           }
-          
+
           if (filter === 'new' && visiblePosts.length === 0) {
             return (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
                   <Sparkles className="h-6 w-6 text-primary" />
                 </div>
-                <h2 className="font-display text-base font-bold mb-1.5">No new posts yet today</h2>
-                <p className="text-[13px] text-muted-foreground max-w-[220px] mb-4">Check back soon — new looks are being added all the time</p>
-                <Button className="rounded-lg btn-luxury text-primary-foreground h-10 px-5 text-sm font-bold" onClick={() => { if (!user) { navigate('/auth'); return; } setShowPostFlow(true); }}>
-                  <Sparkles className="mr-1.5 h-4 w-4" /> Post a Look
+                <h2 className="text-[18px] font-bold text-foreground mb-1.5">No new looks today — yet</h2>
+                <p className="text-[14px] text-muted-foreground max-w-[280px] mb-5">New posts appear here as community members share their try-ons. Check back soon or be the first to post.</p>
+                <Button className="w-4/5 h-12 rounded-xl text-sm font-bold btn-luxury text-primary-foreground" onClick={() => { if (!user) { navigate('/auth'); return; } setShowPostFlow(true); }}>
+                  Be the First to Post
                 </Button>
               </div>
             );
           }
-          
+
           if (filter === 'similar' && visiblePosts.length === 0) {
-            return (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
-                  <Users className="h-6 w-6 text-primary" />
+            // Check if user has scanned
+            const hasScan = !!localStorage.getItem('dripcheck_scans') && JSON.parse(localStorage.getItem('dripcheck_scans') || '[]').length > 0;
+            if (!hasScan) {
+              return (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                    <Ruler className="h-6 w-6 text-primary" />
+                  </div>
+                  <h2 className="text-[18px] font-bold text-foreground mb-1.5">See looks from people with your body type</h2>
+                  <p className="text-[14px] text-muted-foreground max-w-[280px] mb-5">Complete a quick body scan so we can show you try-ons from people with similar measurements.</p>
+                  <Button className="w-4/5 h-12 rounded-xl text-sm font-bold btn-luxury text-primary-foreground" onClick={() => navigate('/capture')}>
+                    Start Body Scan
+                  </Button>
                 </div>
-                <h2 className="font-display text-base font-bold mb-1.5">Complete your body scan</h2>
-                <p className="text-[13px] text-muted-foreground max-w-[220px] mb-4">Complete your body scan to see posts from people with similar measurements</p>
-                <Button className="rounded-lg btn-luxury text-primary-foreground h-10 px-5 text-sm font-bold" onClick={() => navigate('/capture')}>
-                  <Camera className="mr-1.5 h-4 w-4" /> Start Scan
+              );
+            }
+            return (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                  <Search className="h-6 w-6 text-primary" />
+                </div>
+                <h2 className="text-[18px] font-bold text-foreground mb-1.5">No similar fits yet</h2>
+                <p className="text-[14px] text-muted-foreground max-w-[280px] mb-5">We're matching looks to your measurements. As more people with similar measurements post, they'll appear here.</p>
+                <Button className="w-4/5 h-12 rounded-xl text-sm font-bold btn-luxury text-primary-foreground" onClick={() => { if (!user) { navigate('/auth'); return; } setShowPostFlow(true); }}>
+                  Post Your Own Look
                 </Button>
               </div>
             );
