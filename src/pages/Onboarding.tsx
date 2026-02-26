@@ -21,23 +21,23 @@ type Screen = 'splash' | 'carousel' | 'auth' | 'personalize' | 'scan-prompt';
 const SLIDES = [
   {
     icon: Ruler,
-    title: 'Know your exact size —',
-    highlight: 'across every brand.',
-    desc: 'No more guessing. Get precise measurements in 60 seconds.',
+    title: 'Know your exact size in every brand',
+    highlight: '',
+    desc: 'Stop guessing. Two photos and 60 seconds gives you precise measurements across SHEIN, Zara, H&M, Lululemon, and 10+ more.',
     image: heroScan,
   },
   {
     icon: Sparkles,
-    title: 'See how it looks on YOU —',
-    highlight: 'before you buy.',
-    desc: 'AI-powered virtual fitting that actually looks like you.',
+    title: 'See how it looks before you buy',
+    highlight: '',
+    desc: "Upload a photo of any clothing item and see yourself wearing it. No more buying blind — try on thousands of styles instantly.",
     image: heroTryon,
   },
   {
     icon: Users,
-    title: 'Get honest opinions —',
-    highlight: 'from people just like you.',
-    desc: 'Post your look. Get real votes. Shop with confidence.',
+    title: 'Get honest opinions from real people',
+    highlight: '',
+    desc: 'Post your virtual try-on to the Fit Check community. Get votes from people with similar body types. Shop with total confidence.',
     image: heroCommunity,
   },
 ];
@@ -140,11 +140,13 @@ const Onboarding = () => {
             exit={{ opacity: 0 }}
             className="w-full h-screen flex flex-col"
           >
-            {/* Skip */}
-            <div className="px-6 pt-12 flex justify-end">
-              <button onClick={skipCarousel} className="text-[12px] text-muted-foreground font-semibold active:text-foreground transition-colors">
-                Skip
-              </button>
+            {/* Skip — hidden on last slide */}
+            <div className="px-6 pt-12 flex justify-end h-10">
+              {slideIdx < SLIDES.length - 1 && (
+                <button onClick={skipCarousel} className="text-[12px] text-muted-foreground font-semibold active:text-foreground transition-colors">
+                  Skip
+                </button>
+              )}
             </div>
 
             {/* Slide content — illustration takes top 55% */}
@@ -158,7 +160,19 @@ const Onboarding = () => {
                   animate="center"
                   exit="exit"
                   transition={{ duration: 0.3 }}
-                  className="flex-1 flex flex-col"
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.2}
+                  onDragEnd={(_, info) => {
+                    if (info.offset.x < -60 && slideIdx < SLIDES.length - 1) {
+                      setSlideDir(1);
+                      setSlideIdx(i => i + 1);
+                    } else if (info.offset.x > 60 && slideIdx > 0) {
+                      setSlideDir(-1);
+                      setSlideIdx(i => i - 1);
+                    }
+                  }}
+                  className="flex-1 flex flex-col cursor-grab active:cursor-grabbing"
                 >
                   {/* Illustration area — 55% */}
                   <div className="flex-[55] flex items-center justify-center bg-card/30 mx-4 rounded-3xl overflow-hidden">
@@ -174,13 +188,15 @@ const Onboarding = () => {
                     <div className="h-10 w-10 rounded-xl gradient-drip flex items-center justify-center mb-3">
                       {(() => { const Icon = SLIDES[slideIdx].icon; return <Icon className="h-5 w-5 text-primary-foreground" />; })()}
                     </div>
-                    <h2 className="font-display text-xl font-bold text-foreground leading-tight">
+                    <h2 className="font-display text-[22px] font-bold text-foreground leading-tight">
                       {SLIDES[slideIdx].title}
                     </h2>
-                    <p className="font-display text-lg font-bold gradient-drip-text leading-tight">
-                      {SLIDES[slideIdx].highlight}
-                    </p>
-                    <p className="text-[13px] text-muted-foreground mt-2 leading-relaxed max-w-[280px]">
+                    {SLIDES[slideIdx].highlight && (
+                      <p className="font-display text-lg font-bold gradient-drip-text leading-tight">
+                        {SLIDES[slideIdx].highlight}
+                      </p>
+                    )}
+                    <p className="text-[14px] text-muted-foreground mt-2 leading-relaxed max-w-[300px]">
                       {SLIDES[slideIdx].desc}
                     </p>
                   </div>
