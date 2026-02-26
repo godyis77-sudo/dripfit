@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown, Bookmark, Camera } from 'lucide-react';
+import { detectRetailer } from '@/lib/retailerDetect';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -19,6 +20,7 @@ interface Post {
   clothing_photo_url: string;
   caption: string | null;
   created_at: string;
+  product_url?: string | null;
   profile?: { display_name: string | null; avatar_url?: string | null };
   avg_style?: number;
   avg_color?: number;
@@ -211,10 +213,13 @@ const Community = () => {
   };
 
   const handleShopLook = (post: Post) => {
-    trackEvent('shop_clickout', { source: 'fitcheck' });
-    // Open a retailer search for the clothing item
-    const query = encodeURIComponent(post.caption || 'outfit');
-    window.open(`https://www.google.com/search?tbm=shop&q=${query}`, '_blank', 'noopener');
+    trackEvent('shop_clickout', { source: 'fitcheck', hasProductUrl: !!post.product_url });
+    if (post.product_url) {
+      window.open(post.product_url, '_blank', 'noopener');
+    } else {
+      const query = encodeURIComponent(post.caption || 'outfit');
+      window.open(`https://www.google.com/search?tbm=shop&q=${query}`, '_blank', 'noopener');
+    }
   };
 
   const isPlaceholder = (post: Post) => post.id.startsWith('seed-');
@@ -401,14 +406,25 @@ const Community = () => {
                   </div>
 
                   {/* Image — consistent 4:5 aspect ratio */}
-                  <img 
-                    src={post.result_photo_url} 
-                    alt={post.caption || "Try-on look"} 
-                    loading="lazy" 
-                    decoding="async" 
-                    className="w-full aspect-[4/5] object-cover img-normalize" 
-                    onError={() => handleImageError(post.id)}
-                  />
+                  <div className="relative">
+                    <img 
+                      src={post.result_photo_url} 
+                      alt={post.caption || "Try-on look"} 
+                      loading="lazy" 
+                      decoding="async" 
+                      className="w-full aspect-[4/5] object-cover img-normalize" 
+                      onError={() => handleImageError(post.id)}
+                    />
+                    {/* Retailer badge */}
+                    {post.product_url && (() => {
+                      const retailer = detectRetailer(post.product_url);
+                      return retailer ? (
+                        <span className="absolute bottom-2 right-2 text-[9px] font-bold text-white bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded-full">
+                          {retailer}
+                        </span>
+                      ) : null;
+                    })()}
+                  </div>
 
                   <div className="p-2.5 space-y-2">
                     {/* Question prompt */}
@@ -457,7 +473,7 @@ const Community = () => {
                       <div className="flex gap-1.5">
                         <Button
                           variant="outline"
-                          className="flex-1 h-8 rounded-lg text-[10px] font-bold"
+                          className={`flex-1 h-8 rounded-lg text-[10px] font-bold ${post.product_url ? 'btn-luxury text-primary-foreground border-0' : ''}`}
                           onClick={() => handleShopLook(post)}
                         >
                           <ShoppingBag className="mr-1 h-3 w-3" /> Shop This Look

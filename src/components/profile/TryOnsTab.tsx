@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Sparkles, MessageSquare } from 'lucide-react';
+import { Sparkles, MessageSquare, ShoppingBag } from 'lucide-react';
 
 interface TryOnPost {
   id: string;
@@ -9,6 +9,7 @@ interface TryOnPost {
   caption: string | null;
   is_public: boolean;
   created_at: string;
+  product_url?: string | null;
 }
 
 interface TryOnsTabProps {
@@ -62,7 +63,14 @@ const TryOnsTab = ({ tryOnPosts, loading }: TryOnsTabProps) => {
             {tryOnPosts.map(post => (
               <motion.div key={post.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
                 <div className="rounded-xl overflow-hidden border border-border bg-card">
-                  <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
+                  <div className="relative">
+                    <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
+                    {post.product_url && (
+                      <div className="absolute top-1.5 right-1.5 bg-black/50 backdrop-blur-sm rounded-full p-1">
+                        <ShoppingBag className="h-3 w-3 text-white" />
+                      </div>
+                    )}
+                  </div>
                   <div className="p-2 flex items-center justify-between">
                     <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
                     <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${post.is_public ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>

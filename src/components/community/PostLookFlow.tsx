@@ -3,12 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, ArrowRight, Check, Globe, Lock, Loader2, Sparkles, ImageIcon } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Globe, Lock, Loader2, Sparkles, ImageIcon, Link2, ChevronDown, ChevronUp, Store } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
+import { detectRetailer } from '@/lib/retailerDetect';
 
 interface TryOnPost {
   id: string;
@@ -42,8 +44,12 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState<TryOnPost | null>(null);
   const [caption, setCaption] = useState('');
-  const [isPublic, setIsPublic] = useState(true); // confirmed: defaults to ON/Public
+  const [isPublic, setIsPublic] = useState(true); // defaults to ON/Public
   const [submitting, setSubmitting] = useState(false);
+  const [productUrl, setProductUrl] = useState('');
+  const [linkExpanded, setLinkExpanded] = useState(false);
+
+  const detectedRetailer = productUrl.length > 10 ? detectRetailer(productUrl) : null;
 
   useEffect(() => {
     if (open && user) {
@@ -51,6 +57,8 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
       setSelectedPost(null);
       setCaption('');
       setIsPublic(true);
+      setProductUrl('');
+      setLinkExpanded(false);
       fetchUserTryOns();
     }
   }, [open, user]);
@@ -71,14 +79,21 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
   const handlePost = async () => {
     if (!selectedPost || !user) return;
     setSubmitting(true);
+    const updatePayload: Record<string, any> = {
+      caption: caption || null,
+      is_public: isPublic,
+    };
+    if (productUrl.length > 5) {
+      updatePayload.product_url = productUrl;
+    }
     const { error } = await supabase
       .from('tryon_posts')
-      .update({ caption: caption || null, is_public: isPublic })
+      .update(updatePayload)
       .eq('id', selectedPost.id);
     if (error) {
       toast({ title: 'Post failed', description: error.message, variant: 'destructive' });
     } else {
-      trackEvent('fitcheck_posted', { isPublic });
+      trackEvent('fitcheck_posted', { isPublic, hasProductUrl: !!productUrl });
       toast({ title: isPublic ? 'Posted to Fit Check!' : 'Saved privately' });
       onPosted();
       onOpenChange(false);
@@ -153,7 +168,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
             </motion.div>
           )}
 
-          {/* Step 2: Add question */}
+          {/* Step 2: Add question + product link */}
           {step === 1 && selectedPost && (
             <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="pt-3 space-y-3">
               <div className="flex gap-3">
@@ -184,6 +199,45 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                   ))}
                 </div>
               </div>
+
+              {/* Product link collapsible */}
+              <div className="border border-border rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setLinkExpanded(!linkExpanded)}
+                  className="w-full flex items-center justify-between px-3 py-2.5 text-left active:bg-muted/30 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <Link2 className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="text-[11px] text-muted-foreground">
+                      Add product link <span className="text-[9px] text-muted-foreground/60">(optional)</span>
+                      {!linkExpanded && <span className="text-[9px] text-muted-foreground/60"> — earn commission on clicks</span>}
+                    </span>
+                  </div>
+                  {linkExpanded ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
+                </button>
+                {linkExpanded && (
+                  <div className="px-3 pb-3 space-y-2">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Product Link (optional)</p>
+                    <Input
+                      placeholder="https://zara.com/product/..."
+                      value={productUrl}
+                      onChange={e => setProductUrl(e.target.value)}
+                      className="rounded-lg h-9 text-[12px]"
+                    />
+                    {detectedRetailer && (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-primary font-bold flex items-center gap-1">
+                          <Store className="h-3 w-3" /> {detectedRetailer}
+                        </span>
+                      </div>
+                    )}
+                    <p className="text-[9px] text-muted-foreground/60 leading-relaxed">
+                      We may earn a commission when your followers shop this look. It doesn't change their price.
+                    </p>
+                  </div>
+                )}
+              </div>
+
               <Button
                 className="w-full rounded-lg btn-luxury text-primary-foreground h-10 text-sm font-bold"
                 onClick={() => setStep(2)}
@@ -202,6 +256,14 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                   <p className="px-3 py-2 text-sm font-medium text-foreground">{caption}</p>
                 )}
               </div>
+
+              {productUrl && detectedRetailer && (
+                <div className="flex items-center gap-2 bg-primary/5 border border-primary/20 rounded-lg px-3 py-2">
+                  <Link2 className="h-3.5 w-3.5 text-primary" />
+                  <span className="text-[11px] font-medium text-primary">{detectedRetailer}</span>
+                  <span className="text-[9px] text-muted-foreground truncate flex-1">{productUrl}</span>
+                </div>
+              )}
 
               <div className="flex items-center justify-between bg-card border border-border rounded-xl px-4 py-3">
                 <div className="flex items-center gap-2">
