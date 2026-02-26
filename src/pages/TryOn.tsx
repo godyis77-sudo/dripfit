@@ -648,9 +648,19 @@ const TryOn = () => {
               <Button
                 className="w-full h-11 rounded-lg btn-luxury text-primary-foreground text-sm font-bold"
                 onClick={() => {
-                  trackEvent('shop_clickout', { source: 'tryon', hasLink: !!productLink });
+                  trackEvent('shop_clickout', { source: 'tryon', hasLink: !!productLink, quickPick: selectedQuickPick?.label });
                   if (productLink) {
                     window.open(productLink, '_blank', 'noopener');
+                  } else if (selectedQuickPick) {
+                    // Use the first available retailer deep link from the Quick Pick
+                    const firstRetailer = selectedQuickPick.retailers.find(r => retailerMap[r]);
+                    if (firstRetailer) {
+                      window.open(buildRetailerSearchUrl(firstRetailer, retailerMap[firstRetailer].website_url, selectedQuickPick.searchTerm), '_blank', 'noopener');
+                    } else {
+                      // Fallback to first retailer's generic search
+                      const fallbackRetailer = selectedQuickPick.retailers[0];
+                      window.open(buildRetailerSearchUrl(fallbackRetailer, '', selectedQuickPick.searchTerm), '_blank', 'noopener');
+                    }
                   } else {
                     window.open('https://www.google.com/search?tbm=shop&q=outfit', '_blank', 'noopener');
                   }
