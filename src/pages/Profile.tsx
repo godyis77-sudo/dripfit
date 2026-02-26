@@ -33,6 +33,8 @@ interface WardrobeItem {
   category: string;
   product_link: string | null;
   retailer: string | null;
+  brand: string | null;
+  notes: string | null;
   created_at: string;
 }
 
