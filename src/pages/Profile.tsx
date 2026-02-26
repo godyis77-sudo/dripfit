@@ -158,6 +158,13 @@ const Profile = () => {
   const handleAvatarUploaded = (url: string) => {
     setAvatarUrl(url);
   };
+  const handleDisplayNameSave = async (name: string) => {
+    if (!user) return;
+    const { error } = await supabase.from('profiles').update({ display_name: name }).eq('user_id', user.id);
+    if (error) { toast({ title: 'Error', description: 'Could not update display name.', variant: 'destructive' }); return; }
+    setDisplayName(name);
+    toast({ title: 'Display name updated!' });
+  };
   const handleSignOut = async () => { await signOut(); navigate('/', { replace: true }); };
 
   if (!user) return null;
@@ -256,6 +263,7 @@ const Profile = () => {
                 onDeletePhotos={handleDeletePhotos}
                 onDeleteAccount={handleDeleteAccount}
                 onAvatarTap={() => setShowAvatarSheet(true)}
+                onDisplayNameSave={handleDisplayNameSave}
               />
             </motion.div>
           )}
