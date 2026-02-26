@@ -59,6 +59,12 @@ const Premium = () => {
     }
   }, [searchParams]);
 
+  const handleBack = () => {
+    const hasHistory = typeof window !== 'undefined' && (window.history.state?.idx ?? 0) > 0;
+    if (hasHistory) navigate(-1);
+    else navigate('/');
+  };
+
   const handleStart = async () => {
     if (!user) {
       navigate('/auth');
@@ -103,7 +109,7 @@ const Premium = () => {
       <div className="max-w-sm mx-auto">
         {/* Header */}
         <div className="flex items-center gap-2 mb-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg">
+          <Button variant="ghost" size="icon" onClick={handleBack} className="h-8 w-8 rounded-lg">
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <PremiumBadge label="DRIP FIT Premium" />
@@ -160,6 +166,15 @@ const Premium = () => {
           </Button>
         ) : (
           <>
+            {!user && (
+              <Button
+                variant="outline"
+                className="w-full h-10 rounded-xl text-sm font-bold mb-3"
+                onClick={() => navigate('/auth')}
+              >
+                Sign in to continue
+              </Button>
+            )}
             {/* Plan selector */}
             <div className="flex gap-2 mb-3">
               {PLANS.map(p => (
