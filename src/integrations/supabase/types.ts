@@ -185,6 +185,36 @@ export type Database = {
         }
         Relationships: []
       }
+      retailers: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          website_url: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name: string
+          website_url: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          website_url?: string
+        }
+        Relationships: []
+      }
       saved_items: {
         Row: {
           brand: string | null
