@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Shirt, MessageSquare, Instagram } from 'lucide-react';
+import { ArrowLeft, Shirt, MessageSquare, Instagram, UserPlus, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useFollow, getFollowCounts } from '@/hooks/useFollow';
 import BottomTabBar from '@/components/BottomTabBar';
 
 interface PublicProfileData {
@@ -36,6 +37,9 @@ const PublicProfile = () => {
   const [activeTab, setActiveTab] = useState<'tryons' | 'fitchecks'>('tryons');
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const { isFollowing, loading: followLoading, toggle: toggleFollow } = useFollow(profile?.user_id || null);
 
   useEffect(() => {
     if (!username) return;
@@ -95,6 +99,12 @@ const PublicProfile = () => {
     if (scanRes.data?.recommended_size) {
       setScanInfo({ size: scanRes.data.recommended_size, fit: 'Regular' });
     }
+
+    // Fetch follow counts
+    getFollowCounts(profileData.user_id).then(counts => {
+      setFollowerCount(counts.followers);
+      setFollowingCount(counts.following);
+    });
 
     setLoading(false);
   };
@@ -175,10 +185,23 @@ const PublicProfile = () => {
               </div>
             </div>
 
+            {/* Follow button */}
+            {user && profile && user.id !== profile.user_id && (
+              <Button
+                variant={isFollowing ? 'outline' : 'default'}
+                className={`w-full rounded-xl h-9 text-[12px] font-bold mb-4 ${!isFollowing ? 'btn-luxury text-primary-foreground' : ''}`}
+                onClick={toggleFollow}
+                disabled={followLoading}
+              >
+                {isFollowing ? <><UserCheck className="mr-1 h-3.5 w-3.5" /> Following</> : <><UserPlus className="mr-1 h-3.5 w-3.5" /> Follow</>}
+              </Button>
+            )}
+
             {/* Stats row */}
-            <div className="grid grid-cols-3 gap-1.5 mb-4">
+            <div className="grid grid-cols-4 gap-1.5 mb-4">
               {[
-                { label: 'Try-Ons', value: tryOns.length },
+                { label: 'Followers', value: followerCount + (isFollowing ? 1 : 0) },
+                { label: 'Following', value: followingCount },
                 { label: 'Fit Checks', value: fitCheckCount },
                 { label: 'Votes', value: voteCount },
               ].map(s => (
