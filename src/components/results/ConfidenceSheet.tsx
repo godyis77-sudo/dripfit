@@ -54,8 +54,8 @@ const ConfidenceSheet = ({ open, onOpenChange, confidence }: ConfidenceSheetProp
         <SheetHeader className="mb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className={`h-9 w-9 rounded-xl flex items-center justify-center bg-background border border-border`}>
-                <Icon className={`h-5 w-5 ${data.iconClass}`} />
+              <div className="h-9 w-9 rounded-xl flex items-center justify-center bg-background border border-border">
+                <Icon className={`h-5 w-5 ${data.iconClass}`} style={{ color: confidence === 'high' ? '#22c55e' : confidence === 'low' ? '#f97316' : undefined }} />
               </div>
               <SheetTitle className={`text-base font-bold ${data.headerClass}`}>
                 {data.title}

@@ -39,7 +39,7 @@ const SizeHero = ({ retailer, category, recommendedSize, confidence, whyLine }: 
           >
             <Icon className="h-3 w-3" />
             <span>{conf.label}</span>
-            <Info className="h-2.5 w-2.5 opacity-50" />
+            <Info className="h-3 w-3 text-primary opacity-80" />
           </button>
         </motion.div>
 
