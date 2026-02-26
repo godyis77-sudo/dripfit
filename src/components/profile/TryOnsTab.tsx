@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { Sparkles, MessageSquare, ShoppingBag } from 'lucide-react';
+import TryOnDetailSheet from './TryOnDetailSheet';
 
 interface TryOnPost {
   id: string;
@@ -10,16 +12,19 @@ interface TryOnPost {
   is_public: boolean;
   created_at: string;
   product_url?: string | null;
+  clothing_photo_url?: string;
 }
 
 interface TryOnsTabProps {
   tryOnPosts: TryOnPost[];
   loading: boolean;
+  onPostUpdated?: () => void;
 }
 
-const TryOnsTab = ({ tryOnPosts, loading }: TryOnsTabProps) => {
+const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
   const navigate = useNavigate();
   const publicCount = tryOnPosts.filter(p => p.is_public).length;
+  const [selectedPost, setSelectedPost] = useState<TryOnPost | null>(null);
 
   return (
     <>
@@ -62,7 +67,10 @@ const TryOnsTab = ({ tryOnPosts, loading }: TryOnsTabProps) => {
           <div className="grid grid-cols-2 gap-2">
             {tryOnPosts.map(post => (
               <motion.div key={post.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
-                <div className="rounded-xl overflow-hidden border border-border bg-card">
+                <button
+                  onClick={() => setSelectedPost(post)}
+                  className="w-full rounded-xl overflow-hidden border border-border bg-card text-left active:scale-[0.97] transition-transform"
+                >
                   <div className="relative">
                     <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
                     {post.product_url && (
@@ -77,7 +85,7 @@ const TryOnsTab = ({ tryOnPosts, loading }: TryOnsTabProps) => {
                       {post.is_public ? 'Public' : 'Private'}
                     </span>
                   </div>
-                </div>
+                </button>
               </motion.div>
             ))}
           </div>
@@ -91,6 +99,13 @@ const TryOnsTab = ({ tryOnPosts, loading }: TryOnsTabProps) => {
           </div>
         </>
       )}
+
+      <TryOnDetailSheet
+        post={selectedPost}
+        open={!!selectedPost}
+        onOpenChange={(open) => { if (!open) setSelectedPost(null); }}
+        onPostUpdated={() => { setSelectedPost(null); onPostUpdated?.(); }}
+      />
     </>
   );
 };

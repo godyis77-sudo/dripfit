@@ -65,7 +65,7 @@ const Profile = () => {
     if (!user) return;
     const [profileRes, postsRes] = await Promise.all([
       supabase.from('profiles').select('display_name, avatar_url').eq('user_id', user.id).single(),
-      supabase.from('tryon_posts').select('id, result_photo_url, caption, is_public, created_at, product_url').eq('user_id', user.id).order('created_at', { ascending: false }),
+      supabase.from('tryon_posts').select('id, result_photo_url, clothing_photo_url, caption, is_public, created_at, product_url').eq('user_id', user.id).order('created_at', { ascending: false }),
     ]);
     if (profileRes.data) {
       setDisplayName(profileRes.data.display_name || user.email?.split('@')[0] || 'User');
@@ -252,7 +252,7 @@ const Profile = () => {
         <AnimatePresence mode="wait">
           {activeTab === 'tryons' ? (
             <motion.div key="tryons" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
-              <TryOnsTab tryOnPosts={tryOnPosts} loading={loading} />
+              <TryOnsTab tryOnPosts={tryOnPosts} loading={loading} onPostUpdated={fetchProfile} />
             </motion.div>
           ) : activeTab === 'body' ? (
             <motion.div key="body" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
