@@ -31,16 +31,16 @@ const SOCIAL_PROOF = [
 
 const Welcome = () => {
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user, loading, signOut } = useAuth();
   const { toast } = useToast();
   usePageTitle();
 
-  // Redirect first-time visitors to onboarding
+  // Redirect first-time visitors to onboarding (only after auth finishes loading)
   useEffect(() => {
-    if (!user && !isOnboarded()) {
+    if (!loading && !user && !isOnboarded()) {
       navigate('/onboarding', { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, loading, navigate]);
 
   const handleStartScan = () => {
     trackEvent('home_start_scan_click');
