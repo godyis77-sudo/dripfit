@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown, Bookmark, Camera } from 'lucide-react';
+import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown, Bookmark, Camera, MessageSquare } from 'lucide-react';
 import { detectRetailer } from '@/lib/retailerDetect';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -415,11 +415,20 @@ const Community = () => {
                       className="w-full aspect-[4/5] object-cover img-normalize" 
                       onError={() => handleImageError(post.id)}
                     />
+                    {/* Question overlay on image */}
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pt-10 pb-2.5 px-3">
+                      <p className="text-white font-bold text-sm leading-snug line-clamp-2">
+                        {(post.caption || getPrompt(idx)).endsWith('?') && (
+                          <MessageSquare className="inline h-3 w-3 mr-1 opacity-60 -mt-0.5" />
+                        )}
+                        {post.caption || getPrompt(idx)}
+                      </p>
+                    </div>
                     {/* Retailer badge */}
                     {post.product_url && (() => {
                       const retailer = detectRetailer(post.product_url);
                       return retailer ? (
-                        <span className="absolute bottom-2 right-2 text-[9px] font-bold text-white bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded-full">
+                        <span className="absolute top-2 right-2 text-[9px] font-bold text-white bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded-full">
                           {retailer}
                         </span>
                       ) : null;
@@ -427,8 +436,11 @@ const Community = () => {
                   </div>
 
                   <div className="p-2.5 space-y-2">
-                    {/* Question prompt */}
-                    <p className="text-[12px] font-bold text-foreground leading-snug">
+                    {/* Question prompt (also below image) */}
+                    <p className="text-[15px] font-bold text-foreground leading-snug">
+                      {(post.caption || getPrompt(idx)).endsWith('?') && (
+                        <MessageSquare className="inline h-3 w-3 mr-1 opacity-50 -mt-0.5" />
+                      )}
                       {post.caption || getPrompt(idx)}
                     </p>
 

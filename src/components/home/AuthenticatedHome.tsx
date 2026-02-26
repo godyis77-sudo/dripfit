@@ -1,11 +1,21 @@
 import { forwardRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Sparkles, Camera, Heart, ShoppingBag, Clock, TrendingUp, Shirt } from 'lucide-react';
+import { Plus, Sparkles, Camera, Heart, ShoppingBag, Clock, TrendingUp, Shirt, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
+
+const PROMPTS = [
+  'Should I buy this for work?',
+  'Date night — yes or no?',
+  'Would you wear this?',
+  'Too bold or just right?',
+  'Casual Friday vibes?',
+  'Wedding guest — yay or nay?',
+];
+const getPrompt = (idx: number) => PROMPTS[idx % PROMPTS.length];
 
 interface SeedPost {
   id: string;
@@ -111,29 +121,41 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             </button>
           </div>
           <div className="grid grid-cols-3 gap-2">
-            {trendingFits.map((fit) => (
-              <button
-                key={fit.id}
-                onClick={() => navigate('/community')}
-                className="relative bg-card border border-border rounded-xl overflow-hidden aspect-[3/4] group active:scale-[0.97] transition-transform"
-              >
-                <img
-                  src={fit.image_url}
-                  alt={fit.caption || 'Trending fit'}
-                  loading="lazy"
-                  decoding="async"
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
-                <div className="absolute bottom-1.5 left-1.5 flex items-center gap-0.5 bg-background/80 backdrop-blur-sm rounded-lg px-1.5 py-0.5">
-                  <Heart className="h-2.5 w-2.5 text-primary" />
-                  <span className="text-[9px] font-bold text-foreground">{fit.like_count}</span>
-                </div>
-                <div className="absolute top-1.5 left-1.5">
-                  <span className="text-[8px] font-bold text-white bg-black/40 backdrop-blur-sm rounded-lg px-1 py-0.5">{fit.username}</span>
-                </div>
-              </button>
-            ))}
+            {trendingFits.map((fit, idx) => {
+              const question = fit.caption || getPrompt(idx);
+              return (
+                <button
+                  key={fit.id}
+                  onClick={() => navigate('/community')}
+                  className="relative bg-card border border-border rounded-xl overflow-hidden aspect-[3/4] group active:scale-[0.97] transition-transform"
+                >
+                  <img
+                    src={fit.image_url}
+                    alt={fit.caption || 'Trending fit'}
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/20" />
+                  {/* Question overlay */}
+                  <div className="absolute inset-x-0 bottom-6 px-1.5">
+                    <p className="text-white font-bold text-[11px] leading-tight line-clamp-2">
+                      {question.endsWith('?') && (
+                        <MessageSquare className="inline h-2.5 w-2.5 mr-0.5 opacity-50 -mt-0.5" />
+                      )}
+                      {question}
+                    </p>
+                  </div>
+                  <div className="absolute bottom-1.5 left-1.5 flex items-center gap-0.5 bg-background/80 backdrop-blur-sm rounded-lg px-1.5 py-0.5">
+                    <Heart className="h-2.5 w-2.5 text-primary" />
+                    <span className="text-[9px] font-bold text-foreground">{fit.like_count}</span>
+                  </div>
+                  <div className="absolute top-1.5 left-1.5">
+                    <span className="text-[8px] font-bold text-white bg-black/40 backdrop-blur-sm rounded-lg px-1 py-0.5">{fit.username}</span>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </motion.div>
 
