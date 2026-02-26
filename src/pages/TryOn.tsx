@@ -13,6 +13,23 @@ import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import BottomTabBar from '@/components/BottomTabBar';
 
+const SHARE_PREF_KEY = 'drip_default_share_preference';
+const SHARE_PREF_TS_KEY = 'drip_default_share_preference_ts';
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+
+function getDefaultSharePreference(): boolean {
+  const saved = localStorage.getItem(SHARE_PREF_KEY);
+  if (saved === null) return true; // default ON for new users
+  const ts = localStorage.getItem(SHARE_PREF_TS_KEY);
+  if (ts && Date.now() - Number(ts) > SEVEN_DAYS_MS) return true; // reset after 7 days
+  return saved === 'true';
+}
+
+function saveSharePreference(value: boolean) {
+  localStorage.setItem(SHARE_PREF_KEY, String(value));
+  localStorage.setItem(SHARE_PREF_TS_KEY, String(Date.now()));
+}
+
 const CATEGORIES = [
   { key: 'top', label: 'Top' },
   { key: 'bottom', label: 'Bottom' },
@@ -53,7 +70,7 @@ const TryOn = () => {
   const [description, setDescription] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [caption, setCaption] = useState('');
-  const [isPublic, setIsPublic] = useState(false);
+  const [isPublic, setIsPublic] = useState(() => getDefaultSharePreference());
   const [shared, setShared] = useState(false);
   const [autoSaved, setAutoSaved] = useState(false);
   const [productLink, setProductLink] = useState('');
@@ -209,7 +226,7 @@ const TryOn = () => {
     setResultImage(null);
     setDescription(null);
     setCaption('');
-    setIsPublic(false);
+    setIsPublic(getDefaultSharePreference());
     setShared(false);
     setAutoSaved(false);
     setProductLink('');
@@ -527,17 +544,25 @@ const TryOn = () => {
               <div className="flex items-center justify-between bg-card rounded-lg p-2.5 border border-border">
                 <div>
                   <span className="text-[12px] font-semibold text-foreground">Post to Fit Check</span>
-                  <p className="text-[9px] text-muted-foreground">Get real feedback from the community</p>
+                  <p className="text-[9px] text-muted-foreground">
+                    {isPublic ? 'Share with the community — toggle off for private' : 'Saved privately to your profile only'}
+                  </p>
                 </div>
-                <Switch checked={isPublic} onCheckedChange={setIsPublic} />
+                <Switch checked={isPublic} onCheckedChange={(v) => { setIsPublic(v); saveSharePreference(v); }} />
               </div>
+              {/* Context note */}
+              <p className="text-[9px] text-muted-foreground/70 px-1 -mt-1">
+                {isPublic
+                  ? `Your look will appear in the Fit Check feed. Add a question above to get specific feedback.`
+                  : `You can share it later from your Try-Ons tab.`}
+              </p>
 
               {/* Primary action */}
               <Button className="w-full h-10 rounded-lg btn-luxury text-primary-foreground text-sm font-bold" onClick={handleShare} disabled={shared}>
                 {shared ? (
                   <><Check className="mr-1.5 h-3.5 w-3.5" /> {isPublic ? 'Posted!' : 'Saved!'}</>
                 ) : (
-                  <>{isPublic ? <><MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Post for Feedback</> : <><Save className="mr-1.5 h-3.5 w-3.5" /> Save to Profile</>}</>
+                  <>{isPublic ? <><MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Save & Post to Fit Check</> : <><Save className="mr-1.5 h-3.5 w-3.5" /> Save to Profile</>}</>
                 )}
               </Button>
 
