@@ -104,13 +104,15 @@ const Results = () => {
   }
 
   const handleSave = () => {
+    // Save to localStorage as fallback
     const history = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]');
     history.unshift(result);
     localStorage.setItem('dripcheck_scans', JSON.stringify(history));
+    // Note: scan is already persisted to DB during the Analyze step
     setSaved(true);
     trackEvent('results_saved');
     trackEvent('save_item', { type: 'scan' });
-    toast({ title: 'Saved to Profile', description: 'Your body profile is ready for Try-Ons.' });
+    toast({ title: 'Saved to Profile', description: 'Your body profile is saved permanently.' });
   };
 
   const handleDelete = () => { toast({ title: 'Deleted', description: 'Scan data removed.' }); navigate('/'); };

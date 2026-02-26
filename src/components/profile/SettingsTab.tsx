@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Switch } from '@/components/ui/switch';
 import { Crown, Trash2, Shield, Download, Ruler, Camera, ChevronRight, Bookmark } from 'lucide-react';
 import type { FitPreference, BodyScanResult } from '@/lib/types';
@@ -200,10 +201,28 @@ const SettingsTab = ({
 
       {/* Destructive */}
       <div className="bg-card border border-destructive/10 rounded-xl divide-y divide-border mt-2 mb-3">
-        <button onClick={onDeletePhotos} className="w-full flex items-center gap-2 px-3 py-2.5 active:bg-destructive/5 transition-colors">
-          <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="text-[12px] text-muted-foreground">Delete photos & scans</span>
-        </button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button className="w-full flex items-center gap-2 px-3 py-2.5 active:bg-destructive/5 transition-colors">
+              <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
+              <span className="text-[12px] text-muted-foreground">Delete photos & scans</span>
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent className="max-w-[320px] bg-card border-border">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-foreground text-sm">Delete all scan data?</AlertDialogTitle>
+              <AlertDialogDescription className="text-muted-foreground text-xs">
+                This will permanently delete all your body scans and measurements. This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="text-xs h-9">Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={onDeletePhotos} className="bg-destructive text-destructive-foreground text-xs h-9 hover:bg-destructive/90">
+                Delete Forever
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
         <button onClick={onDeleteAccount} className="w-full flex items-center gap-2 px-3 py-2.5 active:bg-destructive/5 transition-colors">
           <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
           <span className="text-[12px] text-muted-foreground">Delete account</span>

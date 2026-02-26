@@ -96,7 +96,18 @@ const TryOn = () => {
 
   const remainingTryOns = Math.max(0, FREE_MONTHLY_LIMIT - getMonthlyTryOnCount());
 
-  const hasSavedProfile = !!localStorage.getItem('dripcheck_scans') && JSON.parse(localStorage.getItem('dripcheck_scans') || '[]').length > 0;
+  const [hasSavedProfile, setHasSavedProfile] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('dripcheck_scans') || '[]').length > 0; } catch { return false; }
+  });
+
+  // Also check database for saved profile
+  useEffect(() => {
+    if (user && !hasSavedProfile) {
+      supabase.from('body_scans').select('id').eq('user_id', user.id).limit(1).then(({ data }) => {
+        if (data && data.length > 0) setHasSavedProfile(true);
+      });
+    }
+  }, [user]);
   const canGenerate = !!userPhoto && !!clothingPhoto;
 
   useEffect(() => {
