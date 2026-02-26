@@ -141,9 +141,9 @@ serve(async (req) => {
     const jsonMatch = content.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("Could not parse measurements from AI response");
 
-    const parsed = JSON.parse(jsonMatch[0]);
+    const measurements = JSON.parse(jsonMatch[0]);
 
-    return new Response(JSON.stringify(parsed), {
+    return new Response(JSON.stringify(measurements), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
