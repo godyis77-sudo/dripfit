@@ -28,12 +28,12 @@ const AuthContext = createContext<AuthContextType>({
 
 export const STRIPE_TIERS = {
   monthly: {
-    price_id: "price_1T4mhLHic7Kh38nxhoQ7eFxx",
-    product_id: "prod_U2sSh213NVLHG9",
+    price_id: "price_1T56IXQaG3oYhM6e5KPtbzma",
+    product_id: "prod_U3ChrYjsL6sDaJ",
   },
   annual: {
-    price_id: "price_1T4mhdHic7Kh38nxpnpcQtZT",
-    product_id: "prod_U2sS5QSUEADHdp",
+    price_id: "price_1T56IsQaG3oYhM6esioOSiad",
+    product_id: "prod_U3CiFpBgNOe7Id",
   },
 } as const;
 
