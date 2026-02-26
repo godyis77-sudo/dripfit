@@ -150,6 +150,11 @@ const Welcome = () => {
           </div>
         </motion.div>
 
+        {/* Separator */}
+        <div className="w-full max-w-[300px] my-6">
+          <div className="h-px bg-[hsl(0,0%,16%)]" />
+        </div>
+
         {/* What You'll Get */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -200,20 +205,19 @@ const Welcome = () => {
           </div>
         </motion.div>
 
-        {/* Skip to Try-On */}
+        {/* Skip to Try-On text link */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.35 }}
-          className="w-full max-w-[300px] mb-5"
+          className="w-full max-w-[300px] mb-5 text-center"
         >
-          <Button
-            variant="secondary"
+          <button
             onClick={() => { trackEvent('home_tryon_click'); navigate('/tryon'); }}
-            className="w-full h-11 text-xs font-semibold uppercase tracking-wider rounded-xl min-h-[44px]"
+            className="text-[13px] text-muted-foreground active:opacity-70 transition-opacity"
           >
-            <Sparkles className="mr-1.5 h-3.5 w-3.5 text-primary" /> Skip to Try-On
-          </Button>
+            Or skip to Try-On →
+          </button>
         </motion.div>
 
         {/* Trust bar */}
@@ -240,8 +244,8 @@ const Welcome = () => {
         >
           <div className="grid grid-cols-3 gap-2">
             {SOCIAL_PROOF.map((s) => (
-              <div key={s.label} className="text-center bg-card border border-border rounded-xl py-2.5 px-2">
-                <p className="font-display text-lg font-bold text-primary leading-none">{s.stat}</p>
+              <div key={s.label} className="text-center bg-card border border-border rounded-xl py-3 px-2">
+                <p className="font-display text-[20px] font-bold text-primary leading-none">{s.stat}</p>
                 <p className="text-[9px] text-muted-foreground mt-0.5">{s.label}</p>
               </div>
             ))}
