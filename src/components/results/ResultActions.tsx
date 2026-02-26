@@ -37,25 +37,15 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
         <MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Ask Fit Check
       </Button>
 
-      {/* Save / Saved confirmation */}
+      {/* Save / Saved */}
       {!saved ? (
         <Button variant="outline" className="w-full h-9 rounded-lg text-[11px] font-bold" onClick={onSave}>
           <Save className="mr-1.5 h-3.5 w-3.5" /> Save to Profile
         </Button>
       ) : (
-        <div className="bg-primary/10 border border-primary/20 rounded-lg px-3 py-2.5 space-y-2">
-          <div className="flex items-center gap-2">
-            <Check className="h-3.5 w-3.5 text-primary" />
-            <span className="text-[11px] font-bold text-primary">Saved to Profile</span>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full h-8 rounded-lg text-[11px] font-medium"
-            onClick={() => navigate('/saved')}
-          >
-            <Bookmark className="mr-1 h-3 w-3" /> View Saved Items
-          </Button>
+        <div className="flex items-center gap-2 px-3 py-2">
+          <Check className="h-3.5 w-3.5 text-primary" />
+          <span className="text-[11px] font-bold text-primary">Saved to Profile</span>
         </div>
       )}
 
