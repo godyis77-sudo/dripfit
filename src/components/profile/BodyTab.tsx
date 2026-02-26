@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Ruler, Camera } from 'lucide-react';
+import { Ruler, Camera, Info } from 'lucide-react';
 import type { BodyScanResult, FitPreference } from '@/lib/types';
 import BodyDiagram from '@/components/results/BodyDiagram';
 import ShareResultsButton from '@/components/results/ShareResultsButton';
+import ConfidenceSheet from '@/components/results/ConfidenceSheet';
 
 interface BodyTabProps {
   savedProfile: BodyScanResult | null;
@@ -12,6 +14,7 @@ interface BodyTabProps {
 
 const BodyTab = ({ savedProfile, fit }: BodyTabProps) => {
   const navigate = useNavigate();
+  const [showConfidence, setShowConfidence] = useState(false);
 
   if (!savedProfile) {
     return (
@@ -61,13 +64,20 @@ const BodyTab = ({ savedProfile, fit }: BodyTabProps) => {
           {[
             { label: 'Size', value: savedProfile.recommendedSize },
             { label: 'Fit', value: fit, cls: 'capitalize' },
-            { label: 'Confidence', value: savedProfile.confidence, cls: 'capitalize' },
+            { label: 'Confidence', value: savedProfile.confidence, cls: 'capitalize', tappable: true },
             { label: 'Height', value: `${savedProfile.heightCm}cm` },
           ].map(d => (
-            <div key={d.label} className="bg-background rounded-lg py-1.5 text-center">
-              <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{d.label}</p>
+            <button
+              key={d.label}
+              onClick={d.tappable ? () => setShowConfidence(true) : undefined}
+              className={`bg-background rounded-lg py-1.5 text-center ${d.tappable ? 'active:scale-95 transition-transform cursor-pointer' : 'cursor-default'}`}
+            >
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wider flex items-center justify-center gap-0.5">
+                {d.label}
+                {d.tappable && <Info className="h-2 w-2 opacity-40" />}
+              </p>
               <p className={`text-[12px] font-bold text-foreground ${d.cls || ''}`}>{d.value}</p>
-            </div>
+            </button>
           ))}
         </div>
         <p className="text-[9px] text-muted-foreground mt-2">Last scan: {new Date(savedProfile.date).toLocaleDateString()}</p>
@@ -76,6 +86,12 @@ const BodyTab = ({ savedProfile, fit }: BodyTabProps) => {
       <Button variant="outline" className="w-full rounded-lg text-[11px] h-9 mb-2" onClick={() => navigate('/capture')}>
         <Camera className="mr-1.5 h-3.5 w-3.5" /> Update Body Scan
       </Button>
+
+      <ConfidenceSheet
+        open={showConfidence}
+        onOpenChange={setShowConfidence}
+        confidence={(savedProfile.confidence as any) || 'medium'}
+      />
     </>
   );
 };
