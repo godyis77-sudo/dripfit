@@ -40,7 +40,16 @@ const RATING_LABELS = [
   { key: 'suitability_score', label: 'Fit' },
 ] as const;
 
-type FilterType = 'trending' | 'new' | 'similar';
+type FilterType = 'trending' | 'new' | 'similar' | 'shop';
+
+interface Retailer {
+  id: string;
+  name: string;
+  logo_url: string | null;
+  website_url: string;
+  category: string;
+  is_active: boolean;
+}
 
 const PROMPTS = [
   'Should I buy this for work?',
@@ -106,8 +115,33 @@ const Community = () => {
   const [showPostFlow, setShowPostFlow] = useState(false);
 
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+  const [retailers, setRetailers] = useState<Retailer[]>([]);
+  const [retailersLoading, setRetailersLoading] = useState(false);
 
-  useEffect(() => { fetchPosts(); }, [filter]);
+  useEffect(() => {
+    if (filter === 'shop') {
+      fetchRetailers();
+    } else {
+      fetchPosts();
+    }
+  }, [filter]);
+
+  const fetchRetailers = async () => {
+    setRetailersLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('retailers')
+        .select('*')
+        .eq('is_active', true)
+        .order('name');
+      if (error) throw error;
+      setRetailers((data as unknown as Retailer[]) || []);
+    } catch (e) {
+      console.error('Failed to fetch retailers:', e);
+    } finally {
+      setRetailersLoading(false);
+    }
+  };
 
   const isValidImageUrl = (url: string | null | undefined): boolean => {
     if (!url || url === '') return false;
@@ -213,6 +247,7 @@ const Community = () => {
             { key: 'trending' as FilterType, label: 'Trending' },
             { key: 'new' as FilterType, label: 'New' },
             { key: 'similar' as FilterType, label: 'Similar Fit' },
+            { key: 'shop' as FilterType, label: 'Shop' },
           ]).map(f => (
             <button
               key={f.key}
@@ -229,7 +264,58 @@ const Community = () => {
           ))}
         </div>
 
-        {loading ? (
+        {filter === 'shop' ? (
+          retailersLoading ? (
+            <div className="space-y-2">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="h-14 rounded-xl skeleton-gold" />
+              ))}
+            </div>
+          ) : retailers.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <ShoppingBag className="h-8 w-8 text-primary mb-3" />
+              <h2 className="font-display text-base font-bold mb-1">No retailers yet</h2>
+              <p className="text-[13px] text-muted-foreground">Retailers will appear here soon</p>
+            </div>
+          ) : (
+            <div className="rounded-xl border border-border overflow-hidden">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-border bg-muted/30">
+                    <th className="py-2.5 px-3 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Retailer</th>
+                    <th className="py-2.5 px-3 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Category</th>
+                    <th className="py-2.5 px-3 text-[11px] font-bold text-muted-foreground uppercase tracking-wider text-right">Link</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {retailers.map((r, idx) => (
+                    <tr key={r.id} className={`${idx < retailers.length - 1 ? 'border-b border-border' : ''} hover:bg-muted/20 transition-colors`}>
+                      <td className="py-2.5 px-3">
+                        <span className="text-[13px] font-semibold text-foreground">{r.name}</span>
+                      </td>
+                      <td className="py-2.5 px-3">
+                        <span className="text-[11px] text-muted-foreground capitalize">{r.category}</span>
+                      </td>
+                      <td className="py-2.5 px-3 text-right">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 px-2.5 text-[11px] font-bold text-primary hover:text-primary"
+                          onClick={() => {
+                            trackEvent('retailer_click', { retailer: r.name });
+                            window.open(r.website_url, '_blank', 'noopener');
+                          }}
+                        >
+                          Shop →
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        ) : loading ? (
           <div className="space-y-3 md:feed-grid">
             {[1, 2].map(i => (
               <div key={i} className="bg-card border border-border rounded-xl overflow-hidden">
