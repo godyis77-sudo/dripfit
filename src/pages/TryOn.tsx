@@ -72,7 +72,7 @@ const TryOn = () => {
   const navigate = useNavigate();
   usePageTitle('Virtual Try-On');
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, isSubscribed } = useAuth();
   const { toast } = useToast();
   const userPhotoRef = useRef<HTMLInputElement>(null);
   const userCameraRef = useRef<HTMLInputElement>(null);
@@ -185,7 +185,7 @@ const TryOn = () => {
 
   const handleTryOn = async () => {
     if (!canGenerate) return;
-    if (getMonthlyTryOnCount() >= FREE_MONTHLY_LIMIT) {
+    if (!isSubscribed && getMonthlyTryOnCount() >= FREE_MONTHLY_LIMIT) {
       setShowPremiumGate(true);
       return;
     }
@@ -198,7 +198,7 @@ const TryOn = () => {
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
       trackEvent('tryon_generated');
-      incrementTryOnCount();
+      if (!isSubscribed) incrementTryOnCount();
       if (data.resultImage) { setResultImage(data.resultImage); if (user) autoSaveToProfile(data.resultImage); }
       else if (data.description) { setDescription(data.description); }
     } catch (err: any) {
@@ -726,7 +726,7 @@ const TryOn = () => {
           <Shield className="h-3 w-3" /> Private by default · delete anytime
         </p>
 
-        {!resultImage && remainingTryOns <= FREE_MONTHLY_LIMIT && (
+        {!resultImage && !isSubscribed && remainingTryOns <= FREE_MONTHLY_LIMIT && (
           <p className="text-[9px] text-muted-foreground/60 text-center mb-2">
             {remainingTryOns} free try-on{remainingTryOns !== 1 ? 's' : ''} left this month
           </p>
