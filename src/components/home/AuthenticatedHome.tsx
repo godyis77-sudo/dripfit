@@ -17,13 +17,14 @@ const PROMPTS = [
 ];
 const getPrompt = (idx: number) => PROMPTS[idx % PROMPTS.length];
 
-interface SeedPost {
+interface TrendingPost {
   id: string;
   username: string;
   caption: string | null;
   image_url: string;
   like_count: number;
   created_at: string;
+  isLive?: boolean;
 }
 
 const RECOMMENDED = [
@@ -36,18 +37,57 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [fabOpen, setFabOpen] = useState(false);
-  const [trendingFits, setTrendingFits] = useState<SeedPost[]>([]);
+  const [trendingFits, setTrendingFits] = useState<TrendingPost[]>([]);
   const [profileName, setProfileName] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTrending = async () => {
-      const { data } = await supabase
-        .from('seed_posts')
-        .select('*')
+      const TARGET = 6;
+      let posts: TrendingPost[] = [];
+
+      // 1. Try real community posts first
+      const { data: livePosts } = await supabase
+        .from('tryon_posts')
+        .select('id, user_id, caption, result_photo_url, created_at, is_public')
         .eq('is_public', true)
-        .order('like_count', { ascending: false })
-        .limit(6);
-      if (data) setTrendingFits(data as SeedPost[]);
+        .order('created_at', { ascending: false })
+        .limit(TARGET);
+
+      if (livePosts && livePosts.length > 0) {
+        // Fetch display names for live posts
+        const userIds = [...new Set(livePosts.map(p => p.user_id))];
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('user_id, display_name')
+          .in('user_id', userIds);
+        const nameMap = new Map(profiles?.map(p => [p.user_id, p.display_name]) || []);
+
+        posts = livePosts.map(p => ({
+          id: p.id,
+          username: nameMap.get(p.user_id) || 'User',
+          caption: p.caption,
+          image_url: p.result_photo_url,
+          like_count: 0,
+          created_at: p.created_at,
+          isLive: true,
+        }));
+      }
+
+      // 2. Fill remaining slots with seed posts
+      if (posts.length < TARGET) {
+        const remaining = TARGET - posts.length;
+        const { data: seeds } = await supabase
+          .from('seed_posts')
+          .select('*')
+          .eq('is_public', true)
+          .order('like_count', { ascending: false })
+          .limit(remaining);
+        if (seeds) {
+          posts = [...posts, ...seeds.map(s => ({ ...s, isLive: false }))];
+        }
+      }
+
+      setTrendingFits(posts);
     };
     const fetchProfileName = async () => {
       if (!user) return;
