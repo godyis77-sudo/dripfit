@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import bodySilhouetteScan from '@/assets/body-silhouette-scan.jpg';
 import { PhotoSet, BodyScanResult, FitPreference, ReferenceObject } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { getSessionId } from '@/lib/session';
 
 const MESSAGES = [
   'Detecting body landmarks…',
@@ -27,6 +29,7 @@ interface AnalyzeState {
 const Analyze = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const state = location.state as AnalyzeState | undefined;
   const [msgIdx, setMsgIdx] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -82,8 +85,39 @@ const Analyze = () => {
     };
   }, []);
 
+  const saveToDatabase = async (data: any) => {
+    try {
+      const sessionId = getSessionId();
+      const { error: dbError } = await supabase.from('body_scans').insert({
+        user_id: user?.id || null,
+        session_id: user ? null : sessionId,
+        height_cm: data.heightCm || state?.heightCm || 0,
+        chest_min: data.chest?.min ?? 0,
+        chest_max: data.chest?.max ?? 0,
+        waist_min: data.waist?.min ?? 0,
+        waist_max: data.waist?.max ?? 0,
+        hip_min: data.hips?.min ?? 0,
+        hip_max: data.hips?.max ?? 0,
+        inseam_min: data.inseam?.min ?? 0,
+        inseam_max: data.inseam?.max ?? 0,
+        shoulder_min: data.shoulder?.min ?? 0,
+        shoulder_max: data.shoulder?.max ?? 0,
+        confidence: data.confidence || 'medium',
+        recommended_size: data.recommendedSize || null,
+        reference_object: state?.referenceObject || null,
+        front_photo_used: !!state?.photos?.front,
+        side_photo_used: !!state?.photos?.side,
+      });
+      if (dbError) console.error('Failed to save scan:', dbError);
+    } catch (e) {
+      console.error('Error saving scan to profile:', e);
+    }
+  };
+
   const navigateToResults = (data: any) => {
     setProgress(100);
+    // Auto-save scan to user's profile
+    saveToDatabase(data);
     setTimeout(() => {
       navigate('/results', {
         state: { result: { id: crypto.randomUUID(), date: new Date().toISOString(), ...data } },
