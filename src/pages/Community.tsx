@@ -81,7 +81,11 @@ const PROMPTS = [
   'Weekend errand fit?',
 ];
 
-const getPrompt = (idx: number) => PROMPTS[idx % PROMPTS.length];
+const getPrompt = (postId: string, idx: number) => {
+  // Hash-based selection for variety — same post always gets same prompt
+  const hash = postId.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  return PROMPTS[(hash + idx) % PROMPTS.length];
+};
 
 const StarRating = ({ value, onChange }: { value: number; onChange: (v: number) => void }) => (
   <div className="flex gap-0.5">
@@ -461,13 +465,13 @@ const Community = () => {
                       className="w-full aspect-[4/5] object-cover img-normalize" 
                       onError={() => handleImageError(post.id)}
                     />
-                    {/* Question overlay on image — always a community prompt */}
+                    {/* Question overlay on image */}
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pt-10 pb-2.5 px-3">
                       <p className="text-white font-bold text-sm leading-snug line-clamp-2">
-                        {getPrompt(idx).endsWith('?') && (
+                        {(post.caption || getPrompt(post.id, idx)).endsWith('?') && (
                           <MessageSquare className="inline h-3 w-3 mr-1 opacity-60 -mt-0.5" />
                         )}
-                        {getPrompt(idx)}
+                        {post.caption || getPrompt(post.id, idx)}
                       </p>
                     </div>
                     {/* Retailer badge */}
@@ -482,13 +486,6 @@ const Community = () => {
                   </div>
 
                   <div className="p-2.5 space-y-2">
-                    {/* Caption / question below image */}
-                    <p className="text-[15px] font-bold text-foreground leading-snug">
-                      {(post.caption || getPrompt(idx)).endsWith('?') && (
-                        <MessageSquare className="inline h-3 w-3 mr-1 opacity-50 -mt-0.5" />
-                      )}
-                      {post.caption || getPrompt(idx)}
-                    </p>
 
                     {/* Sticky-style voting bar: Buy / Maybe / Pass */}
                     {/* Primary vote buttons */}
