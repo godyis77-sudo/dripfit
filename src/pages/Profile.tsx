@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogOut, Shirt, Crown, Camera, Settings, ShoppingBag, User } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { getFitPreference, setFitPreference } from '@/lib/session';
@@ -73,8 +74,42 @@ const Profile = () => {
     setLoading(false);
   };
 
-  const loadSavedProfile = () => {
-    try { const scans = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]'); if (scans.length > 0) setSavedProfile(scans[0]); } catch { /* ignore */ }
+  const loadSavedProfile = async () => {
+    if (!user) {
+      // Fallback: try localStorage for guests
+      try { const scans = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]'); if (scans.length > 0) setSavedProfile(scans[0]); } catch { /* ignore */ }
+      return;
+    }
+    try {
+      const { data, error } = await supabase
+        .from('body_scans')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (error) { console.error('Failed to load scan:', error); return; }
+      if (data) {
+        const profile: BodyScanResult = {
+          id: data.id,
+          date: data.created_at,
+          shoulder: { min: data.shoulder_min, max: data.shoulder_max },
+          chest: { min: data.chest_min, max: data.chest_max },
+          waist: { min: data.waist_min, max: data.waist_max },
+          hips: { min: data.hip_min, max: data.hip_max },
+          inseam: { min: data.inseam_min, max: data.inseam_max },
+          heightCm: data.height_cm,
+          confidence: (data.confidence as any) || 'medium',
+          recommendedSize: data.recommended_size || 'M',
+          fitPreference: 'regular',
+          alternatives: { sizeDown: '', sizeUp: '' },
+          whyLine: '',
+        };
+        setSavedProfile(profile);
+      }
+    } catch (e) {
+      console.error('Error loading scan profile:', e);
+    }
   };
 
   const fetchSavedItemCount = async () => {
@@ -96,7 +131,20 @@ const Profile = () => {
   };
 
   const handleFitChange = (newFit: FitPreference) => { setFit(newFit); setFitPreference(newFit); toast({ title: 'Updated', description: `Default fit set to ${newFit}.` }); };
-  const handleDeletePhotos = () => { localStorage.removeItem('dripcheck_scans'); setSavedProfile(null); toast({ title: 'Deleted', description: 'Scan data removed.' }); };
+  const handleDeletePhotos = async () => {
+    if (!user) return;
+    // Delete from database
+    const { error } = await supabase.from('body_scans').delete().eq('user_id', user.id);
+    if (error) {
+      console.error('Failed to delete scans:', error);
+      toast({ title: 'Error', description: 'Could not delete scan data.' });
+      return;
+    }
+    // Also clear localStorage fallback
+    localStorage.removeItem('dripcheck_scans');
+    setSavedProfile(null);
+    toast({ title: 'Deleted', description: 'All scan data has been permanently removed.' });
+  };
   const handleDeleteAccount = () => { toast({ title: 'Contact support', description: 'Account deletion requires contacting support.' }); };
   const handleExport = () => {
     const scans = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]');
