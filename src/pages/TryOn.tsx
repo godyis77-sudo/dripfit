@@ -39,10 +39,14 @@ const CATEGORIES = [
 ] as const;
 
 const DEMO_OUTFITS = [
-  { label: 'White Tee', category: 'top', color: 'bg-card' },
-  { label: 'Denim Jacket', category: 'outerwear', color: 'bg-blue-900/30' },
-  { label: 'Black Hoodie', category: 'top', color: 'bg-foreground/10' },
-  { label: 'Blazer', category: 'outerwear', color: 'bg-muted' },
+  { label: 'White Tee', category: 'top', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80&fit=crop' },
+  { label: 'Denim Jacket', category: 'outerwear', image: 'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=400&q=80&fit=crop' },
+  { label: 'Black Hoodie', category: 'top', image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&q=80&fit=crop' },
+  { label: 'Blazer', category: 'outerwear', image: 'https://images.unsplash.com/photo-1507679799987-c73b7651ba37?w=400&q=80&fit=crop' },
+  { label: 'Button-Down', category: 'top', image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&q=80&fit=crop' },
+  { label: 'Black Dress', category: 'dress', image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&q=80&fit=crop' },
+  { label: 'Cargo Pants', category: 'bottom', image: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400&q=80&fit=crop' },
+  { label: 'Puffer Vest', category: 'outerwear', image: 'https://images.unsplash.com/photo-1611312449408-fcece27cdbb7?w=400&q=80&fit=crop' },
 ];
 
 const FIT_CHECK_PROMPTS = [
@@ -450,19 +454,34 @@ const TryOn = () => {
             {!clothingPhoto && (
               <div className="mb-3">
                 <p className="section-label mb-1.5">Quick Picks</p>
-                <div className="grid grid-cols-4 gap-1.5">
-                  {DEMO_OUTFITS.map(o => (
-                    <button
-                      key={o.label}
-                      className="flex flex-col items-center p-1.5 rounded-lg border border-border hover:border-primary/30 transition-colors active:scale-95"
-                      onClick={() => toast({ title: 'Coming soon', description: `${o.label} catalog coming soon!` })}
-                    >
-                      <div className={`w-full aspect-square rounded-md ${o.color} mb-1 flex items-center justify-center`}>
-                        <Shirt className="h-5 w-5 text-foreground/15" />
-                      </div>
-                      <p className="text-[9px] text-muted-foreground font-medium leading-tight text-center">{o.label}</p>
-                    </button>
-                  ))}
+                <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                  {DEMO_OUTFITS.map(o => {
+                    const isSelected = clothingPhoto === o.image;
+                    return (
+                      <button
+                        key={o.label}
+                        className={`flex-shrink-0 w-[72px] flex flex-col items-center p-1.5 rounded-lg border-2 transition-all active:scale-95 ${
+                          isSelected ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/30'
+                        }`}
+                        onClick={() => {
+                          setClothingPhoto(o.image);
+                          setCategory(o.category);
+                          trackEvent('tryon_clothing_uploaded');
+                        }}
+                      >
+                        <div className="relative w-full aspect-square rounded-md overflow-hidden mb-1">
+                          <img src={o.image} alt={o.label} className="w-full h-full object-contain bg-muted/30" loading="lazy" />
+                          <div className="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-background/80 to-transparent" />
+                          {isSelected && (
+                            <div className="absolute top-0.5 right-0.5 h-4 w-4 rounded-full bg-primary flex items-center justify-center">
+                              <Check className="h-2.5 w-2.5 text-primary-foreground" />
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-[9px] text-muted-foreground font-medium leading-tight text-center truncate w-full">{o.label}</p>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
