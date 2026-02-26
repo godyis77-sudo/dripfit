@@ -42,7 +42,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState<TryOnPost | null>(null);
   const [caption, setCaption] = useState('');
-  const [isPublic, setIsPublic] = useState(true);
+  const [isPublic, setIsPublic] = useState(true); // confirmed: defaults to ON/Public
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
