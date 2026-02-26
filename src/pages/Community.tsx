@@ -178,8 +178,9 @@ const Community = () => {
 
   const handleShopLook = (post: Post) => {
     trackEvent('shop_clickout', { source: 'fitcheck' });
-    // Navigate to try-on with the clothing image for shopping context
-    navigate('/tryon', { state: { shopMode: true } });
+    // Open a retailer search for the clothing item
+    const query = encodeURIComponent(post.caption || 'outfit');
+    window.open(`https://www.google.com/search?tbm=shop&q=${query}`, '_blank', 'noopener');
   };
 
   const isPlaceholder = (post: Post) => post.id.startsWith('seed-');
