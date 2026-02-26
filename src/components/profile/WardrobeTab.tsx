@@ -20,9 +20,10 @@ interface WardrobeItem {
 interface WardrobeTabProps {
   wardrobeItems: WardrobeItem[];
   onDeleteItem: (id: string) => void;
+  favoriteRetailers: string[];
 }
 
-const WardrobeTab = ({ wardrobeItems, onDeleteItem }: WardrobeTabProps) => {
+const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: WardrobeTabProps) => {
   const navigate = useNavigate();
   const [selectedItem, setSelectedItem] = useState<WardrobeItem | null>(null);
 
@@ -66,11 +67,15 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem }: WardrobeTabProps) => {
                       <ExternalLink className="h-3 w-3 text-white" />
                     </div>
                   )}
-                  {item.retailer && (
-                    <div className="absolute bottom-1.5 right-1.5 bg-primary rounded-md px-2 py-0.5 shadow-lg border border-primary-foreground/20">
-                      <span className="text-[9px] font-extrabold text-primary-foreground uppercase tracking-wide">{item.retailer}</span>
-                    </div>
-                  )}
+                  {/* Retailer badge: show item retailer, or first favorite retailer as fallback */}
+                  {(() => {
+                    const displayRetailer = item.retailer || (favoriteRetailers.length > 0 ? favoriteRetailers[0] : null);
+                    return displayRetailer ? (
+                      <div className="absolute bottom-1.5 right-1.5 bg-primary rounded-md px-2 py-0.5 shadow-lg border border-primary-foreground/20">
+                        <span className="text-[9px] font-extrabold text-primary-foreground uppercase tracking-wide">{displayRetailer}</span>
+                      </div>
+                    ) : null;
+                  })()}
                 </div>
                 <div className="p-2 space-y-0.5">
                   <div className="flex items-center justify-between">
@@ -94,6 +99,7 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem }: WardrobeTabProps) => {
         open={!!selectedItem}
         onOpenChange={(open) => { if (!open) setSelectedItem(null); }}
         onDelete={(id) => { onDeleteItem(id); setSelectedItem(null); }}
+        favoriteRetailers={favoriteRetailers}
       />
     </>
   );

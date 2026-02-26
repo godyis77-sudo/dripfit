@@ -489,6 +489,27 @@ export type Database = {
           },
         ]
       }
+      user_favorite_retailers: {
+        Row: {
+          created_at: string
+          id: string
+          retailer_name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          retailer_name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          retailer_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_preferences: {
         Row: {
           calibration_brand: string | null
