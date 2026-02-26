@@ -17,9 +17,9 @@ interface SeedPost {
 }
 
 const RECOMMENDED = [
-  { id: '1', label: 'Oversized tee — Your size: L', brand: 'Zara' },
-  { id: '2', label: 'Slim chinos — Your size: 32', brand: 'H&M' },
-  { id: '3', label: 'Bomber jacket — Your size: M', brand: 'Uniqlo' },
+  { id: '1', label: 'Oversized tee — Your size: L', brand: 'Zara', url: 'https://www.zara.com/us/en/search?searchTerm=oversized+tee' },
+  { id: '2', label: 'Slim chinos — Your size: 32', brand: 'H&M', url: 'https://www.hm.com/search?q=slim+chinos' },
+  { id: '3', label: 'Bomber jacket — Your size: M', brand: 'Uniqlo', url: 'https://www.uniqlo.com/us/en/search?q=bomber+jacket' },
 ];
 
 const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
@@ -151,7 +151,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             {RECOMMENDED.map((item) => (
               <button
                 key={item.id}
-                onClick={() => navigate('/tryon')}
+                onClick={() => window.open(item.url, '_blank', 'noopener')}
                 className="w-full flex items-center gap-3 bg-card border border-border rounded-xl px-3 py-2.5 active:scale-[0.98] transition-transform min-h-[44px]"
               >
                 <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
