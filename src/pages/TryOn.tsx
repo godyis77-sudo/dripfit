@@ -529,32 +529,41 @@ const TryOn = () => {
                     );
                   })}
                 </div>
+              </div>
+            )}
 
-                {/* Retailer links for selected Quick Pick */}
-                {selectedQuickPick && (
-                  <div className="mt-2 p-2.5 rounded-lg bg-card border border-border">
-                    <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-1.5">
-                      Shop {selectedQuickPick.label} at
-                    </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {selectedQuickPick.retailers
-                        .filter(name => retailerMap[name])
-                        .map(name => (
-                          <a
-                            key={name}
-                            href={buildRetailerSearchUrl(name, retailerMap[name].website_url, selectedQuickPick.searchTerm)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => trackEvent('quickpick_retailer_clicked', { retailer: name, item: selectedQuickPick.label, searchTerm: selectedQuickPick.searchTerm })}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-semibold text-primary hover:bg-primary/20 transition-colors active:scale-95"
-                          >
-                            <Store className="h-3 w-3" />
-                            {name}
-                          </a>
-                        ))}
-                    </div>
-                  </div>
-                )}
+            {/* Retailer links for selected Quick Pick — always visible */}
+            {selectedQuickPick && (
+              <div className="mb-3 p-3 rounded-xl bg-primary/5 border-2 border-primary/30">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+                    <ShoppingBag className="h-3.5 w-3.5" />
+                    Shop {selectedQuickPick.label}
+                  </p>
+                  <button
+                    onClick={() => setSelectedQuickPick(null)}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {selectedQuickPick.retailers
+                    .filter(name => retailerMap[name])
+                    .map(name => (
+                      <a
+                        key={name}
+                        href={buildRetailerSearchUrl(name, retailerMap[name].website_url, selectedQuickPick.searchTerm)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => trackEvent('quickpick_retailer_clicked', { retailer: name, item: selectedQuickPick.label, searchTerm: selectedQuickPick.searchTerm })}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/15 border border-primary/40 text-xs font-bold text-primary hover:bg-primary/25 transition-colors active:scale-95"
+                      >
+                        <Store className="h-3.5 w-3.5" />
+                        {name}
+                      </a>
+                    ))}
+                </div>
               </div>
             )}
 
