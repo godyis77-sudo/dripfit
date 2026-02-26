@@ -13,6 +13,15 @@ import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import BottomTabBar from '@/components/BottomTabBar';
 
+import quickpickWhiteTee from '@/assets/quickpick-white-tee.png';
+import quickpickDenimJacket from '@/assets/quickpick-denim-jacket.png';
+import quickpickBlackHoodie from '@/assets/quickpick-black-hoodie.png';
+import quickpickBlazer from '@/assets/quickpick-blazer.png';
+import quickpickButtonDown from '@/assets/quickpick-button-down.png';
+import quickpickBlackDress from '@/assets/quickpick-black-dress.png';
+import quickpickCargoPants from '@/assets/quickpick-cargo-pants.png';
+import quickpickPufferVest from '@/assets/quickpick-puffer-vest.png';
+
 const SHARE_PREF_KEY = 'drip_default_share_preference';
 const SHARE_PREF_TS_KEY = 'drip_default_share_preference_ts';
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
@@ -39,14 +48,14 @@ const CATEGORIES = [
 ] as const;
 
 const DEMO_OUTFITS = [
-  { label: 'White Tee', category: 'top', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80&fit=crop' },
-  { label: 'Denim Jacket', category: 'outerwear', image: 'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=400&q=80&fit=crop' },
-  { label: 'Black Hoodie', category: 'top', image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&q=80&fit=crop' },
-  { label: 'Blazer', category: 'outerwear', image: 'https://images.unsplash.com/photo-1507679799987-c73b7651ba37?w=400&q=80&fit=crop' },
-  { label: 'Button-Down', category: 'top', image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&q=80&fit=crop' },
-  { label: 'Black Dress', category: 'dress', image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&q=80&fit=crop' },
-  { label: 'Cargo Pants', category: 'bottom', image: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400&q=80&fit=crop' },
-  { label: 'Puffer Vest', category: 'outerwear', image: 'https://images.unsplash.com/photo-1611312449408-fcece27cdbb7?w=400&q=80&fit=crop' },
+  { label: 'White Tee', category: 'top', image: quickpickWhiteTee },
+  { label: 'Denim Jacket', category: 'outerwear', image: quickpickDenimJacket },
+  { label: 'Black Hoodie', category: 'top', image: quickpickBlackHoodie },
+  { label: 'Blazer', category: 'outerwear', image: quickpickBlazer },
+  { label: 'Button-Down', category: 'top', image: quickpickButtonDown },
+  { label: 'Black Dress', category: 'dress', image: quickpickBlackDress },
+  { label: 'Cargo Pants', category: 'bottom', image: quickpickCargoPants },
+  { label: 'Puffer Vest', category: 'outerwear', image: quickpickPufferVest },
 ];
 
 const FIT_CHECK_PROMPTS = [
