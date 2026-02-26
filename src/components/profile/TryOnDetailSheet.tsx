@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Heart, MessageSquare, ShoppingBag, X, Share2 } from 'lucide-react';
+import { Heart, MessageSquare, ShoppingBag, X, Share2, Instagram } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -137,6 +137,29 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated }: TryOnDeta
             >
               <ShoppingBag className="h-4 w-4" />
               {addingToWardrobe ? 'Adding…' : 'Add to Wardrobe'}
+            </Button>
+
+            <Button
+              variant="outline"
+              className="h-11 rounded-xl text-[12px] font-bold gap-1.5 col-span-2"
+              onClick={async () => {
+                if (navigator.share) {
+                  try {
+                    const response = await fetch(post.result_photo_url);
+                    const blob = await response.blob();
+                    const file = new File([blob], 'drip-fit-tryon.jpg', { type: 'image/jpeg' });
+                    await navigator.share({ title: post.caption || 'Check my fit!', files: [file] });
+                    trackEvent('tryon_shared_instagram', { post_id: post.id });
+                  } catch { /* user cancelled */ }
+                } else {
+                  // Fallback: copy image URL
+                  await navigator.clipboard.writeText(post.result_photo_url);
+                  toast({ title: 'Link copied!', description: 'Paste it into Instagram Stories.' });
+                }
+              }}
+            >
+              <Instagram className="h-4 w-4" />
+              Share to Instagram
             </Button>
           </div>
 

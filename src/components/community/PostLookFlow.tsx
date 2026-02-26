@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, ArrowRight, Check, Globe, Lock, Loader2, Sparkles, ImageIcon, Link2, ChevronDown, ChevronUp, Store } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Globe, Lock, Loader2, Sparkles, ImageIcon, Link2, ChevronDown, ChevronUp, Store, Instagram } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -48,6 +48,8 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
   const [submitting, setSubmitting] = useState(false);
   const [productUrl, setProductUrl] = useState('');
   const [linkExpanded, setLinkExpanded] = useState(false);
+  const [igPostUrl, setIgPostUrl] = useState('');
+  const [igExpanded, setIgExpanded] = useState(false);
 
   const detectedRetailer = productUrl.length > 10 ? detectRetailer(productUrl) : null;
 
@@ -59,6 +61,8 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
       setIsPublic(true);
       setProductUrl('');
       setLinkExpanded(false);
+      setIgPostUrl('');
+      setIgExpanded(false);
       fetchUserTryOns();
     }
   }, [open, user]);
@@ -233,6 +237,35 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                     )}
                     <p className="text-[9px] text-muted-foreground/60 leading-relaxed">
                       We may earn a commission when your followers shop this look. It doesn't change their price.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Instagram post link */}
+              <div className="border border-border rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setIgExpanded(!igExpanded)}
+                  className="w-full flex items-center justify-between px-3 py-2.5 text-left active:bg-muted/30 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <Instagram className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="text-[11px] text-muted-foreground">
+                      Link Instagram post <span className="text-[9px] text-muted-foreground/60">(optional)</span>
+                    </span>
+                  </div>
+                  {igExpanded ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
+                </button>
+                {igExpanded && (
+                  <div className="px-3 pb-3 space-y-2">
+                    <Input
+                      placeholder="https://instagram.com/p/..."
+                      value={igPostUrl}
+                      onChange={e => setIgPostUrl(e.target.value)}
+                      className="rounded-lg h-9 text-[12px]"
+                    />
+                    <p className="text-[9px] text-muted-foreground/60 leading-relaxed">
+                      Cross-post your fit — link your IG post so the community can find you there too.
                     </p>
                   </div>
                 )}

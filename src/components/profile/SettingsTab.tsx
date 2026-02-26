@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Switch } from '@/components/ui/switch';
-import { Crown, Trash2, Shield, Download, Ruler, Camera, ChevronRight, Bookmark, Pencil, Check, X, Star } from 'lucide-react';
+import { Crown, Trash2, Shield, Download, Ruler, Camera, ChevronRight, Bookmark, Pencil, Check, X, Star, Instagram } from 'lucide-react';
 import type { FitPreference, BodyScanResult } from '@/lib/types';
 import { SUPPORTED_RETAILERS } from '@/lib/types';
 import { trackEvent } from '@/lib/analytics';
@@ -32,6 +32,7 @@ interface SettingsTabProps {
   subscriptionEnd: string | null;
   productId: string | null;
   favoriteRetailers: string[];
+  instagramHandle: string;
   onFavoriteRetailersChange: (favs: string[]) => void;
   onFitChange: (f: FitPreference) => void;
   onUnitToggle: (v: boolean) => void;
@@ -40,17 +41,21 @@ interface SettingsTabProps {
   onDeleteAccount: () => void;
   onAvatarTap: () => void;
   onDisplayNameSave?: (name: string) => void;
+  onInstagramSave?: (handle: string) => void;
 }
 
 const SettingsTab = ({
   user, displayName, avatarUrl, savedProfile, fit, useCm, savedItemCount,
-  isSubscribed, subscriptionEnd, productId, favoriteRetailers, onFavoriteRetailersChange,
-  onFitChange, onUnitToggle, onExport, onDeletePhotos, onDeleteAccount, onAvatarTap, onDisplayNameSave,
+  isSubscribed, subscriptionEnd, productId, favoriteRetailers, instagramHandle,
+  onFavoriteRetailersChange,
+  onFitChange, onUnitToggle, onExport, onDeletePhotos, onDeleteAccount, onAvatarTap, onDisplayNameSave, onInstagramSave,
 }: SettingsTabProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [editingName, setEditingName] = useState(false);
   const [nameValue, setNameValue] = useState(displayName);
+  const [editingIg, setEditingIg] = useState(false);
+  const [igValue, setIgValue] = useState(instagramHandle);
 
   return (
     <>
@@ -143,6 +148,44 @@ const SettingsTab = ({
             <span className="text-[12px] text-foreground">Display name</span>
             <div className="flex items-center gap-1.5">
               <span className="text-[11px] text-muted-foreground">{displayName}</span>
+              <Pencil className="h-3 w-3 text-muted-foreground" />
+            </div>
+          </button>
+        )}
+        {/* Instagram handle */}
+        {editingIg ? (
+          <div className="flex items-center gap-2 px-3 py-2">
+            <Instagram className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            <span className="text-[12px] text-foreground shrink-0">@</span>
+            <Input
+              value={igValue}
+              onChange={e => setIgValue(e.target.value.replace(/[^a-zA-Z0-9._]/g, ''))}
+              className="h-7 text-[11px] flex-1 rounded-lg"
+              autoFocus
+              maxLength={30}
+              placeholder="username"
+            />
+            <button
+              onClick={() => { if (onInstagramSave) { onInstagramSave(igValue.trim()); } setEditingIg(false); }}
+              className="h-6 w-6 rounded-md bg-primary flex items-center justify-center active:scale-90 transition-transform"
+            >
+              <Check className="h-3 w-3 text-primary-foreground" />
+            </button>
+            <button
+              onClick={() => { setIgValue(instagramHandle); setEditingIg(false); }}
+              className="h-6 w-6 rounded-md bg-muted flex items-center justify-center active:scale-90 transition-transform"
+            >
+              <X className="h-3 w-3 text-muted-foreground" />
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => { setIgValue(instagramHandle); setEditingIg(true); }} className="w-full flex items-center justify-between px-3 py-2.5 active:bg-muted/50 transition-colors">
+            <div className="flex items-center gap-2">
+              <Instagram className="h-3.5 w-3.5 text-muted-foreground" />
+              <span className="text-[12px] text-foreground">Instagram</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] text-muted-foreground">{instagramHandle ? `@${instagramHandle}` : 'Not set'}</span>
               <Pencil className="h-3 w-3 text-muted-foreground" />
             </div>
           </button>
