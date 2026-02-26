@@ -99,6 +99,7 @@ const TryOn = () => {
   const [retailerMap, setRetailerMap] = useState<Record<string, { website_url: string }>>({});
 
   const FREE_MONTHLY_LIMIT = 3;
+  const hasUnlimitedTryOns = isSubscribed || user?.email?.toLowerCase() === 'godyis77@gmail.com';
 
   const getMonthlyTryOnCount = (): number => {
     const now = new Date();
@@ -185,7 +186,7 @@ const TryOn = () => {
 
   const handleTryOn = async () => {
     if (!canGenerate) return;
-    if (!isSubscribed && getMonthlyTryOnCount() >= FREE_MONTHLY_LIMIT) {
+    if (!hasUnlimitedTryOns && getMonthlyTryOnCount() >= FREE_MONTHLY_LIMIT) {
       setShowPremiumGate(true);
       return;
     }
@@ -198,7 +199,7 @@ const TryOn = () => {
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
       trackEvent('tryon_generated');
-      if (!isSubscribed) incrementTryOnCount();
+      if (!hasUnlimitedTryOns) incrementTryOnCount();
       if (data.resultImage) { setResultImage(data.resultImage); if (user) autoSaveToProfile(data.resultImage); }
       else if (data.description) { setDescription(data.description); }
     } catch (err: any) {
@@ -726,7 +727,7 @@ const TryOn = () => {
           <Shield className="h-3 w-3" /> Private by default · delete anytime
         </p>
 
-        {!resultImage && !isSubscribed && remainingTryOns <= FREE_MONTHLY_LIMIT && (
+        {!resultImage && !hasUnlimitedTryOns && remainingTryOns <= FREE_MONTHLY_LIMIT && (
           <p className="text-[9px] text-muted-foreground/60 text-center mb-2">
             {remainingTryOns} free try-on{remainingTryOns !== 1 ? 's' : ''} left this month
           </p>
