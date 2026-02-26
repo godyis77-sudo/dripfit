@@ -415,13 +415,13 @@ const Community = () => {
                       className="w-full aspect-[4/5] object-cover img-normalize" 
                       onError={() => handleImageError(post.id)}
                     />
-                    {/* Question overlay on image */}
+                    {/* Question overlay on image — always a community prompt */}
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pt-10 pb-2.5 px-3">
                       <p className="text-white font-bold text-sm leading-snug line-clamp-2">
-                        {(post.caption || getPrompt(idx)).endsWith('?') && (
+                        {getPrompt(idx).endsWith('?') && (
                           <MessageSquare className="inline h-3 w-3 mr-1 opacity-60 -mt-0.5" />
                         )}
-                        {post.caption || getPrompt(idx)}
+                        {getPrompt(idx)}
                       </p>
                     </div>
                     {/* Retailer badge */}
@@ -436,7 +436,7 @@ const Community = () => {
                   </div>
 
                   <div className="p-2.5 space-y-2">
-                    {/* Question prompt (also below image) */}
+                    {/* Caption / question below image */}
                     <p className="text-[15px] font-bold text-foreground leading-snug">
                       {(post.caption || getPrompt(idx)).endsWith('?') && (
                         <MessageSquare className="inline h-3 w-3 mr-1 opacity-50 -mt-0.5" />
