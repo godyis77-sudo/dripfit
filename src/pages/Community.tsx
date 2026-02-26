@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown, Bookmark } from 'lucide-react';
+import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown, Bookmark, Camera } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -87,14 +87,7 @@ const seedToPost = (s: SeedPost): Post => ({
   rating_count: s.like_count,
 });
 
-const PlaceholderImage = ({ caption }: { caption: string }) => (
-  <div className="w-full aspect-[4/5] bg-gradient-to-b from-card to-background flex flex-col items-center justify-center gap-1.5">
-    <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-      <Shirt className="h-6 w-6 text-primary/40" />
-    </div>
-    <p className="text-[11px] font-medium text-muted-foreground">{caption}</p>
-  </div>
-);
+
 
 const Community = () => {
   const navigate = useNavigate();
@@ -112,7 +105,19 @@ const Community = () => {
   const [votes, setVotes] = useState<Record<string, string>>({});
   const [showPostFlow, setShowPostFlow] = useState(false);
 
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
   useEffect(() => { fetchPosts(); }, [filter]);
+
+  const isValidImageUrl = (url: string | null | undefined): boolean => {
+    if (!url || url === '') return false;
+    if (url.includes('placeholder') || url.includes('undefined')) return false;
+    return true;
+  };
+
+  const handleImageError = (postId: string) => {
+    setFailedImages(prev => new Set(prev).add(postId));
+  };
 
   const fetchPosts = async () => {
     setLoading(true);
@@ -122,7 +127,8 @@ const Community = () => {
       // Fetch seed posts as fallback
       const { data: seeds } = await supabase.from('seed_posts').select('*').eq('is_public', true).order('created_at', { ascending: false });
       if (seeds && seeds.length > 0) {
-        const seedPosts = (seeds as SeedPost[]).map(seedToPost);
+        const validSeeds = (seeds as SeedPost[]).filter(s => isValidImageUrl(s.image_url));
+        const seedPosts = validSeeds.map(seedToPost);
         if (filter === 'trending') seedPosts.sort((a, b) => (b.rating_count || 0) - (a.rating_count || 0));
         setPosts(seedPosts);
       } else {
@@ -239,21 +245,58 @@ const Community = () => {
               </div>
             ))}
           </div>
-        ) : posts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
-              <Sparkles className="h-6 w-6 text-primary" />
-            </div>
-            <h2 className="font-display text-base font-bold mb-1.5">Be the first to post</h2>
-            <p className="text-[13px] text-muted-foreground max-w-[220px] mb-4">Create a Try-On and get honest feedback.</p>
-            <Button className="rounded-lg btn-luxury text-primary-foreground h-10 px-5 text-sm font-bold" onClick={() => navigate('/tryon')}>
-              <Shirt className="mr-1.5 h-4 w-4" /> Create a Try-On
-            </Button>
-          </div>
-        ) : (
+        ) : (() => {
+          const visiblePosts = posts.filter(p => isValidImageUrl(p.result_photo_url) && !failedImages.has(p.id));
+          
+          if (filter === 'trending' && visiblePosts.length < 3) {
+            return (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                  <Users className="h-6 w-6 text-primary" />
+                </div>
+                <h2 className="font-display text-base font-bold mb-1.5">Be the first to post a look</h2>
+                <p className="text-[13px] text-muted-foreground max-w-[220px] mb-4">Generate a Try-On and share it with the community for real feedback</p>
+                <Button className="rounded-lg btn-luxury text-primary-foreground h-10 px-5 text-sm font-bold" onClick={() => navigate('/tryon')}>
+                  <Shirt className="mr-1.5 h-4 w-4" /> Create a Try-On
+                </Button>
+              </div>
+            );
+          }
+          
+          if (filter === 'new' && visiblePosts.length === 0) {
+            return (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                  <Sparkles className="h-6 w-6 text-primary" />
+                </div>
+                <h2 className="font-display text-base font-bold mb-1.5">No new posts yet today</h2>
+                <p className="text-[13px] text-muted-foreground max-w-[220px] mb-4">Check back soon — new looks are being added all the time</p>
+                <Button className="rounded-lg btn-luxury text-primary-foreground h-10 px-5 text-sm font-bold" onClick={() => { if (!user) { navigate('/auth'); return; } setShowPostFlow(true); }}>
+                  <Sparkles className="mr-1.5 h-4 w-4" /> Post a Look
+                </Button>
+              </div>
+            );
+          }
+          
+          if (filter === 'similar' && visiblePosts.length === 0) {
+            return (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                  <Users className="h-6 w-6 text-primary" />
+                </div>
+                <h2 className="font-display text-base font-bold mb-1.5">Complete your body scan</h2>
+                <p className="text-[13px] text-muted-foreground max-w-[220px] mb-4">Complete your body scan to see posts from people with similar measurements</p>
+                <Button className="rounded-lg btn-luxury text-primary-foreground h-10 px-5 text-sm font-bold" onClick={() => navigate('/capture')}>
+                  <Camera className="mr-1.5 h-4 w-4" /> Start Scan
+                </Button>
+              </div>
+            );
+          }
+          
+          return (
           <div className="space-y-3 pb-20">
             <AnimatePresence>
-              {posts.map((post, idx) => (
+              {visiblePosts.map((post, idx) => (
                 <motion.div key={post.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} className="bg-card border border-border rounded-xl overflow-hidden">
                   {/* Minimal header */}
                   <div className="flex items-center gap-2 px-2.5 pt-2 pb-1">
@@ -271,11 +314,14 @@ const Community = () => {
                   </div>
 
                   {/* Image — consistent 4:5 aspect ratio */}
-                  {!post.result_photo_url ? (
-                    <PlaceholderImage caption={post.caption || 'Try-on look'} />
-                  ) : (
-                    <img src={post.result_photo_url} alt={post.caption || "Try-on look"} loading="lazy" decoding="async" className="w-full aspect-[4/5] object-cover img-normalize" />
-                  )}
+                  <img 
+                    src={post.result_photo_url} 
+                    alt={post.caption || "Try-on look"} 
+                    loading="lazy" 
+                    decoding="async" 
+                    className="w-full aspect-[4/5] object-cover img-normalize" 
+                    onError={() => handleImageError(post.id)}
+                  />
 
                   <div className="p-2.5 space-y-2">
                     {/* Question prompt */}
@@ -410,7 +456,8 @@ const Community = () => {
               ))}
             </AnimatePresence>
           </div>
-        )}
+          );
+        })()}
       </div>
       <PostLookFlow open={showPostFlow} onOpenChange={setShowPostFlow} onPosted={fetchPosts} />
       <BottomTabBar />
