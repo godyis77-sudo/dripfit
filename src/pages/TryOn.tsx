@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Shirt, Sparkles, Loader2, Share2, Shield, User, Check, Link2, Info, MessageSquare, Save, RotateCcw, Store, ShoppingBag, Camera, ImageIcon, Bookmark, FolderOpen, Crown, X } from 'lucide-react';
+import { ArrowLeft, Shirt, Sparkles, Loader2, Share2, Shield, User, Check, Link2, Info, MessageSquare, Save, RotateCcw, Store, ShoppingBag, Camera, ImageIcon, Bookmark, FolderOpen, Crown, X, ExternalLink } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -645,29 +645,48 @@ const TryOn = () => {
 
             {/* Primary CTA: Shop This Look */}
             <div className="mb-3">
-              <Button
-                className="w-full h-11 rounded-lg btn-luxury text-primary-foreground text-sm font-bold"
-                onClick={() => {
-                  trackEvent('shop_clickout', { source: 'tryon', hasLink: !!productLink, quickPick: selectedQuickPick?.label });
-                  if (productLink) {
+              {productLink ? (
+                <Button
+                  className="w-full h-11 rounded-lg btn-luxury text-primary-foreground text-sm font-bold"
+                  onClick={() => {
+                    trackEvent('shop_clickout', { source: 'tryon', hasLink: true });
                     window.open(productLink, '_blank', 'noopener');
-                  } else if (selectedQuickPick) {
-                    // Use the first available retailer deep link from the Quick Pick
-                    const firstRetailer = selectedQuickPick.retailers.find(r => retailerMap[r]);
-                    if (firstRetailer) {
-                      window.open(buildRetailerSearchUrl(firstRetailer, retailerMap[firstRetailer].website_url, selectedQuickPick.searchTerm), '_blank', 'noopener');
-                    } else {
-                      // Fallback to first retailer's generic search
-                      const fallbackRetailer = selectedQuickPick.retailers[0];
-                      window.open(buildRetailerSearchUrl(fallbackRetailer, '', selectedQuickPick.searchTerm), '_blank', 'noopener');
-                    }
-                  } else {
+                  }}
+                >
+                  <ShoppingBag className="mr-2 h-4 w-4" /> Shop This Look in My Size
+                </Button>
+              ) : selectedQuickPick ? (
+                <div className="space-y-2">
+                  <p className="text-[11px] font-bold text-foreground">Shop this look at:</p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {selectedQuickPick.retailers
+                      .filter(name => retailerMap[name])
+                      .map(name => (
+                        <button
+                          key={name}
+                          onClick={() => {
+                            trackEvent('shop_clickout', { source: 'tryon', retailer: name, quickPick: selectedQuickPick.label });
+                            window.open(buildRetailerSearchUrl(name, retailerMap[name].website_url, selectedQuickPick.searchTerm), '_blank', 'noopener');
+                          }}
+                          className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-border bg-card hover:border-primary/40 active:scale-[0.97] transition-all text-left"
+                        >
+                          <ExternalLink className="h-3 w-3 text-muted-foreground shrink-0" />
+                          <span className="text-[12px] font-semibold text-foreground">{name}</span>
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              ) : (
+                <Button
+                  className="w-full h-11 rounded-lg btn-luxury text-primary-foreground text-sm font-bold"
+                  onClick={() => {
+                    trackEvent('shop_clickout', { source: 'tryon', hasLink: false });
                     window.open('https://www.google.com/search?tbm=shop&q=outfit', '_blank', 'noopener');
-                  }
-                }}
-              >
-                <ShoppingBag className="mr-2 h-4 w-4" /> Shop This Look in My Size
-              </Button>
+                  }}
+                >
+                  <ShoppingBag className="mr-2 h-4 w-4" /> Shop This Look in My Size
+                </Button>
+              )}
               <p className="text-[8px] text-muted-foreground/50 text-center mt-1">We may earn a commission. It doesn't change your price.</p>
             </div>
 
