@@ -185,6 +185,22 @@ const TryOn = () => {
     trackEvent('tryon_clothing_uploaded');
   };
 
+  const imageUrlToBase64 = (url: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        canvas.getContext('2d')!.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      img.onerror = reject;
+      img.src = url;
+    });
+  };
+
   const handleFileSelect = (setter: (v: string) => void, type: 'photo' | 'clothing') => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -518,11 +534,12 @@ const TryOn = () => {
                         className={`flex-shrink-0 w-[72px] flex flex-col items-center p-1.5 rounded-lg border-2 transition-all active:scale-95 ${
                           isSelected ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/30'
                         }`}
-                        onClick={() => {
-                          setClothingPhoto(o.image);
-                          setCategory(o.category);
+                        onClick={async () => {
                           setSelectedQuickPick(o);
+                          setCategory(o.category);
                           trackEvent('tryon_clothing_uploaded');
+                          const base64 = await imageUrlToBase64(o.image);
+                          setClothingPhoto(base64);
                         }}
                       >
                         <div className="relative w-full aspect-square rounded-md overflow-hidden mb-1">
