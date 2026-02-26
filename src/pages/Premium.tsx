@@ -1,14 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Crown, Check, Sparkles, Ruler, Shirt, MessageSquare, Store, Shield, Zap, BarChart3, Eye, Star, Ban, Loader2 } from 'lucide-react';
+import { ArrowLeft, Crown, Check, Sparkles, Ruler, Shirt, MessageSquare, Store, Shield, Zap, BarChart3, Eye, Star, Ban, Loader2, Quote } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
 import PremiumBadge from '@/components/monetization/PremiumBadge';
 import { motion } from 'framer-motion';
 import { useAuth, STRIPE_TIERS } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { useEffect } from 'react';
 
 const PLANS = [
   { key: 'monthly' as const, label: 'Monthly', price: '$7.99', period: '/mo', badge: '', total: 'Billed $7.99/month', trial: '7-day free trial' },
@@ -33,6 +32,21 @@ const Premium = () => {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const { user, isSubscribed, subscriptionEnd, checkSubscription } = useAuth();
   const [searchParams] = useSearchParams();
+  const [memberCount, setMemberCount] = useState<number | null>(null);
+  const [testimonials, setTestimonials] = useState<{ quote_text: string; attribution: string; star_rating: number }[]>([]);
+
+  // Fetch member count and testimonials
+  useEffect(() => {
+    const fetchSocialProof = async () => {
+      const [testimonialsRes] = await Promise.all([
+        supabase.from('premium_testimonials' as any).select('quote_text, attribution, star_rating').eq('is_active', true).limit(3),
+      ]);
+      if (testimonialsRes.data) setTestimonials(testimonialsRes.data as any);
+      // For member count, we'd need a view or function; for now use null (hidden)
+      // TODO: Add actual premium member count when is_premium field exists
+    };
+    fetchSocialProof();
+  }, []);
 
   // Check for success/cancel query params
   useEffect(() => {
@@ -118,6 +132,24 @@ const Premium = () => {
               <p className="text-[12px] text-muted-foreground max-w-[260px] mx-auto">
                 Unlimited try-ons, smarter sizing, zero ads — the ultimate fit experience.
               </p>
+              {/* Member count badge */}
+              {memberCount !== null && memberCount >= 10 && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="mt-2 inline-flex items-center gap-1 px-3 py-1 rounded-full bg-card border border-primary/20"
+                >
+                  <Crown className="h-2.5 w-2.5 text-primary" />
+                  <span className="text-[10px] font-bold text-primary">
+                    {memberCount >= 1000
+                      ? `${Math.floor(memberCount / 1000).toLocaleString()},000+ premium members`
+                      : memberCount >= 100
+                        ? `${Math.floor(memberCount / 100) * 100}+ premium members`
+                        : `${memberCount} premium members`}
+                  </span>
+                </motion.div>
+              )}
             </>
           )}
         </motion.div>
@@ -208,6 +240,33 @@ const Premium = () => {
             </motion.div>
           ))}
         </div>
+
+        {/* Testimonials */}
+        {testimonials.length > 0 && (
+          <div className="mt-5 space-y-2">
+            <p className="section-label px-1 mb-2">WHAT PREMIUM MEMBERS SAY</p>
+            {testimonials.map((t, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 * i + 0.4, duration: 0.3 }}
+                className="bg-card border border-border rounded-xl p-3 relative"
+              >
+                <Quote className="absolute top-2 left-2.5 h-5 w-5 text-primary/20" />
+                <p className="text-[11px] text-foreground italic pl-5 leading-relaxed">{t.quote_text}</p>
+                <div className="mt-1.5 pl-5 flex items-center gap-2">
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: t.star_rating }).map((_, s) => (
+                      <Star key={s} className="h-2.5 w-2.5 text-primary fill-primary" />
+                    ))}
+                  </div>
+                  <span className="text-[9px] font-bold text-primary">{t.attribution}</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
         {/* Trust footer */}
         <div className="mt-6 text-center space-y-1 pb-4">
