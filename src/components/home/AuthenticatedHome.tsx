@@ -37,6 +37,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const { user } = useAuth();
   const [fabOpen, setFabOpen] = useState(false);
   const [trendingFits, setTrendingFits] = useState<SeedPost[]>([]);
+  const [profileName, setProfileName] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTrending = async () => {
@@ -48,10 +49,16 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
         .limit(6);
       if (data) setTrendingFits(data as SeedPost[]);
     };
+    const fetchProfileName = async () => {
+      if (!user) return;
+      const { data } = await supabase.from('profiles').select('display_name').eq('user_id', user.id).maybeSingle();
+      if (data?.display_name) setProfileName(data.display_name);
+    };
     fetchTrending();
-  }, []);
+    fetchProfileName();
+  }, [user]);
 
-  const displayName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'there';
+  const displayName = profileName || user?.email?.split('@')[0] || '';
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
@@ -64,8 +71,8 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-5"
         >
-          <p className="text-muted-foreground text-[12px]">{greeting},</p>
-          <h1 className="font-display text-xl font-bold text-foreground capitalize">{displayName}</h1>
+          <p className="text-muted-foreground text-[12px]">{greeting}{displayName ? ',' : '!'}</p>
+          {displayName && <h1 className="font-display text-xl font-bold text-foreground">{displayName}</h1>}
         </motion.div>
 
         {/* Quick Actions */}

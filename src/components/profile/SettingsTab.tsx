@@ -1,9 +1,10 @@
-import { forwardRef } from 'react';
+import { forwardRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Switch } from '@/components/ui/switch';
-import { Crown, Trash2, Shield, Download, Ruler, Camera, ChevronRight, Bookmark } from 'lucide-react';
+import { Crown, Trash2, Shield, Download, Ruler, Camera, ChevronRight, Bookmark, Pencil, Check, X } from 'lucide-react';
 import type { FitPreference, BodyScanResult } from '@/lib/types';
 import { SUPPORTED_RETAILERS } from '@/lib/types';
 import { trackEvent } from '@/lib/analytics';
@@ -29,13 +30,16 @@ interface SettingsTabProps {
   onDeletePhotos: () => void;
   onDeleteAccount: () => void;
   onAvatarTap: () => void;
+  onDisplayNameSave?: (name: string) => void;
 }
 
 const SettingsTab = ({
   user, displayName, avatarUrl, savedProfile, fit, useCm, savedItemCount,
-  onFitChange, onUnitToggle, onExport, onDeletePhotos, onDeleteAccount, onAvatarTap,
+  onFitChange, onUnitToggle, onExport, onDeletePhotos, onDeleteAccount, onAvatarTap, onDisplayNameSave,
 }: SettingsTabProps) => {
   const navigate = useNavigate();
+  const [editingName, setEditingName] = useState(false);
+  const [nameValue, setNameValue] = useState(displayName);
 
   return (
     <>
@@ -100,10 +104,38 @@ const SettingsTab = ({
           <span className="text-[12px] text-foreground">Email</span>
           <span className="text-[11px] text-muted-foreground">{user.email}</span>
         </div>
-        <div className="flex items-center justify-between px-3 py-2.5">
-          <span className="text-[12px] text-foreground">Display name</span>
-          <span className="text-[11px] text-muted-foreground">{displayName}</span>
-        </div>
+        {editingName ? (
+          <div className="flex items-center gap-2 px-3 py-2">
+            <span className="text-[12px] text-foreground shrink-0">Display name</span>
+            <Input
+              value={nameValue}
+              onChange={e => setNameValue(e.target.value)}
+              className="h-7 text-[11px] flex-1 rounded-lg"
+              autoFocus
+              maxLength={30}
+            />
+            <button
+              onClick={() => { if (nameValue.trim() && onDisplayNameSave) { onDisplayNameSave(nameValue.trim()); } setEditingName(false); }}
+              className="h-6 w-6 rounded-md bg-primary flex items-center justify-center active:scale-90 transition-transform"
+            >
+              <Check className="h-3 w-3 text-primary-foreground" />
+            </button>
+            <button
+              onClick={() => { setNameValue(displayName); setEditingName(false); }}
+              className="h-6 w-6 rounded-md bg-muted flex items-center justify-center active:scale-90 transition-transform"
+            >
+              <X className="h-3 w-3 text-muted-foreground" />
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => { setNameValue(displayName); setEditingName(true); }} className="w-full flex items-center justify-between px-3 py-2.5 active:bg-muted/50 transition-colors">
+            <span className="text-[12px] text-foreground">Display name</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] text-muted-foreground">{displayName}</span>
+              <Pencil className="h-3 w-3 text-muted-foreground" />
+            </div>
+          </button>
+        )}
       </div>
 
       {/* Fit Preferences */}
