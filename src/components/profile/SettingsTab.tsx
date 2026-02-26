@@ -17,6 +17,7 @@ SectionHeader.displayName = 'SectionHeader';
 interface SettingsTabProps {
   user: { email?: string };
   displayName: string;
+  avatarUrl: string | null;
   savedProfile: BodyScanResult | null;
   fit: FitPreference;
   useCm: boolean;
@@ -26,11 +27,12 @@ interface SettingsTabProps {
   onExport: () => void;
   onDeletePhotos: () => void;
   onDeleteAccount: () => void;
+  onAvatarTap: () => void;
 }
 
 const SettingsTab = ({
-  user, displayName, savedProfile, fit, useCm, savedItemCount,
-  onFitChange, onUnitToggle, onExport, onDeletePhotos, onDeleteAccount,
+  user, displayName, avatarUrl, savedProfile, fit, useCm, savedItemCount,
+  onFitChange, onUnitToggle, onExport, onDeletePhotos, onDeleteAccount, onAvatarTap,
 }: SettingsTabProps) => {
   const navigate = useNavigate();
 
@@ -80,6 +82,19 @@ const SettingsTab = ({
       {/* Account */}
       <SectionHeader>Account</SectionHeader>
       <div className="bg-card border border-border rounded-xl divide-y divide-border mb-1">
+        <button onClick={onAvatarTap} className="w-full flex items-center justify-between px-3 py-2.5 active:bg-muted/50 transition-colors">
+          <span className="text-[12px] text-foreground">Profile Photo</span>
+          <div className="flex items-center gap-2">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="Avatar" className="h-6 w-6 rounded-full object-cover" />
+            ) : (
+              <div className="h-6 w-6 rounded-full gradient-drip flex items-center justify-center">
+                <span className="text-[8px] font-bold text-primary-foreground">{displayName[0]?.toUpperCase() || 'U'}</span>
+              </div>
+            )}
+            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+          </div>
+        </button>
         <div className="flex items-center justify-between px-3 py-2.5">
           <span className="text-[12px] text-foreground">Email</span>
           <span className="text-[11px] text-muted-foreground">{user.email}</span>
