@@ -158,6 +158,33 @@ export type Database = {
         }
         Relationships: []
       }
+      premium_testimonials: {
+        Row: {
+          attribution: string
+          created_at: string
+          id: string
+          is_active: boolean
+          quote_text: string
+          star_rating: number
+        }
+        Insert: {
+          attribution: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          quote_text: string
+          star_rating?: number
+        }
+        Update: {
+          attribution?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          quote_text?: string
+          star_rating?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
