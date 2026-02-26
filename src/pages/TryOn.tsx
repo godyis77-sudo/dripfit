@@ -497,7 +497,7 @@ const TryOn = () => {
                   if (productLink) {
                     window.open(productLink, '_blank', 'noopener');
                   } else {
-                    navigate('/results');
+                    window.open('https://www.google.com/search?tbm=shop&q=outfit', '_blank', 'noopener');
                   }
                 }}
               >
