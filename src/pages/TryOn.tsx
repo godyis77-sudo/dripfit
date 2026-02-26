@@ -48,15 +48,38 @@ const CATEGORIES = [
 ] as const;
 
 const DEMO_OUTFITS = [
-  { label: 'White Tee', category: 'top', image: quickpickWhiteTee, retailers: ['Zara', 'H&M', 'Uniqlo', 'Gap'] },
-  { label: 'Denim Jacket', category: 'outerwear', image: quickpickDenimJacket, retailers: ['Zara', 'H&M', 'ASOS', 'Mango'] },
-  { label: 'Black Hoodie', category: 'top', image: quickpickBlackHoodie, retailers: ['Nike', 'Adidas', 'H&M', 'Uniqlo'] },
-  { label: 'Blazer', category: 'outerwear', image: quickpickBlazer, retailers: ['Zara', 'Mango', 'Nordstrom', 'Revolve'] },
-  { label: 'Button-Down', category: 'top', image: quickpickButtonDown, retailers: ['Uniqlo', 'H&M', 'Gap', 'Nordstrom'] },
-  { label: 'Black Dress', category: 'dress', image: quickpickBlackDress, retailers: ['Zara', 'ASOS', 'Revolve', 'Mango'] },
-  { label: 'Cargo Pants', category: 'bottom', image: quickpickCargoPants, retailers: ['H&M', 'ASOS', 'Fashion Nova', 'SHEIN'] },
-  { label: 'Puffer Vest', category: 'outerwear', image: quickpickPufferVest, retailers: ['Nike', 'Adidas', 'Uniqlo', 'Nordstrom'] },
+  { label: 'White Tee', category: 'top', image: quickpickWhiteTee, searchTerm: 'white t-shirt', retailers: ['Zara', 'H&M', 'Uniqlo', 'Gap'] },
+  { label: 'Denim Jacket', category: 'outerwear', image: quickpickDenimJacket, searchTerm: 'denim jacket', retailers: ['Zara', 'H&M', 'ASOS', 'Mango'] },
+  { label: 'Black Hoodie', category: 'top', image: quickpickBlackHoodie, searchTerm: 'black hoodie', retailers: ['Nike', 'Adidas', 'H&M', 'Uniqlo'] },
+  { label: 'Blazer', category: 'outerwear', image: quickpickBlazer, searchTerm: 'black blazer', retailers: ['Zara', 'Mango', 'Nordstrom', 'Revolve'] },
+  { label: 'Button-Down', category: 'top', image: quickpickButtonDown, searchTerm: 'white button down shirt', retailers: ['Uniqlo', 'H&M', 'Gap', 'Nordstrom'] },
+  { label: 'Black Dress', category: 'dress', image: quickpickBlackDress, searchTerm: 'black dress', retailers: ['Zara', 'ASOS', 'Revolve', 'Mango'] },
+  { label: 'Cargo Pants', category: 'bottom', image: quickpickCargoPants, searchTerm: 'cargo pants', retailers: ['H&M', 'ASOS', 'Fashion Nova', 'SHEIN'] },
+  { label: 'Puffer Vest', category: 'outerwear', image: quickpickPufferVest, searchTerm: 'puffer vest', retailers: ['Nike', 'Adidas', 'Uniqlo', 'Nordstrom'] },
 ];
+
+/** Build a deep search URL for a retailer + product query */
+function buildRetailerSearchUrl(retailerName: string, baseUrl: string, query: string): string {
+  const q = encodeURIComponent(query);
+  const searchPaths: Record<string, (q: string) => string> = {
+    'Zara': (q) => `https://www.zara.com/us/en/search?searchTerm=${q}`,
+    'H&M': (q) => `https://www2.hm.com/en_us/search-results.html?q=${q}`,
+    'Uniqlo': (q) => `https://www.uniqlo.com/us/en/search?q=${q}`,
+    'Gap': (q) => `https://www.gap.com/browse/search.do?searchText=${q}`,
+    'ASOS': (q) => `https://www.asos.com/us/search/?q=${q}`,
+    'Mango': (q) => `https://shop.mango.com/us/search?kw=${q}`,
+    'Nike': (q) => `https://www.nike.com/w?q=${q}`,
+    'Adidas': (q) => `https://www.adidas.com/us/search?q=${q}`,
+    'Nordstrom': (q) => `https://www.nordstrom.com/sr?keyword=${q}`,
+    'Revolve': (q) => `https://www.revolve.com/r/Search.jsp?search=${q}`,
+    'Fashion Nova': (q) => `https://www.fashionnova.com/pages/search-results?q=${q}`,
+    'SHEIN': (q) => `https://us.shein.com/pdsearch/${q}/`,
+    'Lululemon': (q) => `https://shop.lululemon.com/search?Ntt=${q}`,
+    'Amazon Fashion': (q) => `https://www.amazon.com/s?k=${q}&i=fashion`,
+    'PrettyLittleThing': (q) => `https://www.prettylittlething.us/catalogsearch/result/?q=${q}`,
+  };
+  return searchPaths[retailerName]?.(q) || `${baseUrl.replace(/\/$/, '')}/?q=${q}`;
+}
 
 const FIT_CHECK_PROMPTS = [
   'Should I buy this for work?',
@@ -519,10 +542,10 @@ const TryOn = () => {
                         .map(name => (
                           <a
                             key={name}
-                            href={retailerMap[name].website_url}
+                            href={buildRetailerSearchUrl(name, retailerMap[name].website_url, selectedQuickPick.searchTerm)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            onClick={() => trackEvent('quickpick_retailer_clicked', { retailer: name, item: selectedQuickPick.label })}
+                            onClick={() => trackEvent('quickpick_retailer_clicked', { retailer: name, item: selectedQuickPick.label, searchTerm: selectedQuickPick.searchTerm })}
                             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-semibold text-primary hover:bg-primary/20 transition-colors active:scale-95"
                           >
                             <Store className="h-3 w-3" />
