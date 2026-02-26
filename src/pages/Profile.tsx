@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import TryOnsTab from '@/components/profile/TryOnsTab';
 import BodyTab from '@/components/profile/BodyTab';
 import WardrobeTab from '@/components/profile/WardrobeTab';
 import SettingsTab from '@/components/profile/SettingsTab';
+import AvatarUploadSheet from '@/components/profile/AvatarUploadSheet';
 
 interface TryOnPost {
   id: string;
@@ -48,7 +49,7 @@ const Profile = () => {
   const [fit, setFit] = useState<FitPreference>(getFitPreference());
   const [savedProfile, setSavedProfile] = useState<BodyScanResult | null>(null);
   const [savedItemCount, setSavedItemCount] = useState(0);
-  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [showAvatarSheet, setShowAvatarSheet] = useState(false);
 
   useEffect(() => {
     if (!user) { navigate('/auth', { replace: true }); return; }
@@ -106,18 +107,8 @@ const Profile = () => {
     trackEvent('profile_export');
     toast({ title: 'Data exported' });
   };
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
-    const ext = file.name.split('.').pop() || 'jpg';
-    const fileName = `${user.id}/avatar.${ext}`;
-    const { error } = await supabase.storage.from('tryon-images').upload(fileName, file, { contentType: file.type, upsert: true });
-    if (error) { toast({ title: 'Upload failed', description: error.message, variant: 'destructive' }); return; }
-    const { data: urlData } = supabase.storage.from('tryon-images').getPublicUrl(fileName);
-    const publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
-    await supabase.from('profiles').update({ avatar_url: publicUrl }).eq('user_id', user.id);
-    setAvatarUrl(publicUrl);
-    toast({ title: 'Avatar updated' });
+  const handleAvatarUploaded = (url: string) => {
+    setAvatarUrl(url);
   };
   const handleSignOut = async () => { await signOut(); navigate('/', { replace: true }); };
 
@@ -139,8 +130,7 @@ const Profile = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <input ref={avatarInputRef} type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
-            <button onClick={() => avatarInputRef.current?.click()} className="relative group">
+            <button onClick={() => setShowAvatarSheet(true)} className="relative group">
               <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-primary/30 bg-card">
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
@@ -200,6 +190,7 @@ const Profile = () => {
               <SettingsTab
                 user={user}
                 displayName={displayName}
+                avatarUrl={avatarUrl}
                 savedProfile={savedProfile}
                 fit={fit}
                 useCm={useCm}
@@ -209,12 +200,21 @@ const Profile = () => {
                 onExport={handleExport}
                 onDeletePhotos={handleDeletePhotos}
                 onDeleteAccount={handleDeleteAccount}
+                onAvatarTap={() => setShowAvatarSheet(true)}
               />
             </motion.div>
           )}
         </AnimatePresence>
       </div>
       <BottomTabBar />
+      {user && (
+        <AvatarUploadSheet
+          open={showAvatarSheet}
+          onOpenChange={setShowAvatarSheet}
+          userId={user.id}
+          onUploaded={handleAvatarUploaded}
+        />
+      )}
     </div>
   );
 };

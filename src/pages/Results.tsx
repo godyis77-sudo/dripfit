@@ -22,7 +22,8 @@ import UpgradePrompt from '@/components/monetization/UpgradePrompt';
 import FitFeedbackSheet from '@/components/monetization/FitFeedbackSheet';
 import BrandPartnerCards from '@/components/monetization/BrandPartnerCards';
 import PostScanGuide from '@/components/results/PostScanGuide';
-
+import ProfilePhotoPrompt from '@/components/results/ProfilePhotoPrompt';
+import { useAuth } from '@/hooks/useAuth';
 const SIZE_LADDER = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL'];
 
 function shiftSize(size: string, delta: number): string {
@@ -36,6 +37,7 @@ const Results = () => {
   usePageTitle('Your Results');
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const state = location.state as { result: BodyScanResult; retailer?: string; category?: string } | undefined;
   const result = state?.result;
   const [fitPref, setFitPref] = useState<FitPreference>(result?.fitPreference || 'regular');
@@ -44,6 +46,9 @@ const Results = () => {
   const [showFeedback, setShowFeedback] = useState(false);
   const [adjustedMeasurements, setAdjustedMeasurements] = useState<Record<string, MeasurementRange>>({});
   const [showGuide, setShowGuide] = useState(true);
+  const [showPhotoPrompt, setShowPhotoPrompt] = useState(() => {
+    return !localStorage.getItem('profile_photo_prompted');
+  });
 
   useEffect(() => {
     if (result) {
@@ -138,6 +143,17 @@ const Results = () => {
         </AnimatePresence>
 
         <SizeHero retailer={state?.retailer} category={state?.category} recommendedSize={adjustedSize} confidence={confidence} whyLine={result.whyLine || 'Based on your scan + retailer chart + fit preference'} />
+
+        {/* Post-scan profile photo prompt */}
+        <AnimatePresence>
+          {showPhotoPrompt && user && (
+            <ProfilePhotoPrompt
+              userId={user.id}
+              onDismiss={() => setShowPhotoPrompt(false)}
+              onUploaded={() => setShowPhotoPrompt(false)}
+            />
+          )}
+        </AnimatePresence>
 
         <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
         <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} />

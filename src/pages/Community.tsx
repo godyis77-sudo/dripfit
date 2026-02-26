@@ -19,7 +19,7 @@ interface Post {
   clothing_photo_url: string;
   caption: string | null;
   created_at: string;
-  profile?: { display_name: string | null };
+  profile?: { display_name: string | null; avatar_url?: string | null };
   avg_style?: number;
   avg_color?: number;
   avg_buy?: number;
@@ -135,7 +135,7 @@ const Community = () => {
     const userIds = [...new Set(data.map(p => p.user_id))];
     const postIds = data.map(p => p.id);
     const [profilesRes, ratingsRes] = await Promise.all([
-      userIds.length > 0 ? supabase.from('profiles').select('user_id, display_name').in('user_id', userIds) : { data: [] },
+      userIds.length > 0 ? supabase.from('profiles').select('user_id, display_name, avatar_url').in('user_id', userIds) : { data: [] },
       postIds.length > 0 ? supabase.from('tryon_ratings').select('post_id, style_score, color_score, buy_score, suitability_score').in('post_id', postIds) : { data: [] },
     ]);
 
@@ -257,11 +257,15 @@ const Community = () => {
                 <motion.div key={post.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} className="bg-card border border-border rounded-xl overflow-hidden">
                   {/* Minimal header */}
                   <div className="flex items-center gap-2 px-2.5 pt-2 pb-1">
-                    <div className="h-5 w-5 rounded-full gradient-drip flex items-center justify-center">
-                      <span className="text-[8px] font-bold text-primary-foreground">
-                        {(post.profile?.display_name || 'A')[0].toUpperCase()}
-                      </span>
-                    </div>
+                    {post.profile?.avatar_url ? (
+                      <img src={post.profile.avatar_url} alt="" className="h-5 w-5 rounded-full object-cover" />
+                    ) : (
+                      <div className="h-5 w-5 rounded-full gradient-drip flex items-center justify-center">
+                        <span className="text-[8px] font-bold text-primary-foreground">
+                          {(post.profile?.display_name || 'A')[0].toUpperCase()}
+                        </span>
+                      </div>
+                    )}
                     <p className="text-[11px] font-semibold text-foreground flex-1">{post.profile?.display_name || 'Anonymous'}</p>
                     <p className="text-[9px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
                   </div>
