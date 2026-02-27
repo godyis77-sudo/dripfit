@@ -215,8 +215,9 @@ const TryOn = () => {
     const fileName = `${user!.id}/${folder}/${crypto.randomUUID()}.${ext}`;
     const { error } = await supabase.storage.from('tryon-images').upload(fileName, bytes, { contentType: match ? match[1] : 'image/jpeg' });
     if (error) throw error;
-    const { data: urlData } = supabase.storage.from('tryon-images').getPublicUrl(fileName);
-    return urlData.publicUrl;
+    const { data: signedData, error: signError } = await supabase.storage.from('tryon-images').createSignedUrl(fileName, 60 * 60 * 24 * 365);
+    if (signError || !signedData?.signedUrl) throw signError || new Error('Failed to create signed URL');
+    return signedData.signedUrl;
   };
 
   const saveClothingToWardrobe = async () => {
