@@ -45,6 +45,8 @@ const VOTE_OPTIONS = [
   { key: 'keep_shopping', label: 'Keep shopping', emoji: '🛒' },
 ] as const;
 
+type TrendingSort = 'hot' | 'love' | 'buy' | 'newest';
+
 const RATING_LABELS = [
   { key: 'style_score', label: 'Style' },
   { key: 'color_score', label: 'Color' },
@@ -150,6 +152,7 @@ const Community = () => {
   const [voteCounts, setVoteCounts] = useState<Record<string, Record<string, number>>>({});
   const [showPostFlow, setShowPostFlow] = useState(false);
   const [detailPost, setDetailPost] = useState<Post | null>(null);
+  const [trendingSort, setTrendingSort] = useState<TrendingSort>('hot');
 
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const [retailers, setRetailers] = useState<Retailer[]>([]);
@@ -274,7 +277,7 @@ const Community = () => {
       const c = pr.length;
       return { ...p, profile: profileMap.get(p.user_id) || { display_name: 'Anonymous' }, avg_style: c ? pr.reduce((s: number, r: any) => s + r.style_score, 0) / c : 0, avg_color: c ? pr.reduce((s: number, r: any) => s + r.color_score, 0) / c : 0, avg_buy: c ? pr.reduce((s: number, r: any) => s + r.buy_score, 0) / c : 0, avg_suitability: c ? pr.reduce((s: number, r: any) => s + r.suitability_score, 0) / c : 0, rating_count: c };
     });
-    if (filter === 'trending') enriched.sort((a, b) => (b.rating_count || 0) - (a.rating_count || 0));
+    if (filter === 'trending') enriched.sort((a, b) => (b.rating_count || 0) - (a.rating_count || 0)); // initial sort; real trending sort uses voteCounts applied later
     setPosts(enriched);
     setLoading(false);
   };
@@ -432,6 +435,30 @@ const Community = () => {
           ))}
         </div>
 
+        {/* Trending sub-sort pills */}
+        {filter === 'trending' && (
+          <div className="flex gap-1.5 mb-3 overflow-x-auto no-scrollbar">
+            {([
+              { key: 'hot' as TrendingSort, label: '🔥 Hot', desc: 'Love + Buy' },
+              { key: 'love' as TrendingSort, label: '❤️ Most Loved' },
+              { key: 'buy' as TrendingSort, label: '🛍️ Most Bought' },
+              { key: 'newest' as TrendingSort, label: '🕐 Newest' },
+            ]).map(s => (
+              <button
+                key={s.key}
+                onClick={() => setTrendingSort(s.key)}
+                className={`whitespace-nowrap px-2.5 py-1 rounded-full text-[10px] font-bold border transition-all active:scale-95 ${
+                  trendingSort === s.key
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border text-muted-foreground'
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+        )}
+
         {filter === 'shop' ? (
           retailersLoading ? (
             <div className="space-y-2">
@@ -501,7 +528,26 @@ const Community = () => {
             ))}
           </div>
         ) : (() => {
-          const visiblePosts = posts.filter(p => isValidImageUrl(p.result_photo_url) && !failedImages.has(p.id));
+          let visiblePosts = posts.filter(p => isValidImageUrl(p.result_photo_url) && !failedImages.has(p.id));
+
+          // Apply trending sub-sort using vote counts
+          if (filter === 'trending' && visiblePosts.length > 0) {
+            const getCount = (id: string, key: string) => voteCounts[id]?.[key] ?? 0;
+            switch (trendingSort) {
+              case 'hot':
+                visiblePosts = [...visiblePosts].sort((a, b) => (getCount(b.id, 'love') + getCount(b.id, 'buy')) - (getCount(a.id, 'love') + getCount(a.id, 'buy')));
+                break;
+              case 'love':
+                visiblePosts = [...visiblePosts].sort((a, b) => getCount(b.id, 'love') - getCount(a.id, 'love'));
+                break;
+              case 'buy':
+                visiblePosts = [...visiblePosts].sort((a, b) => getCount(b.id, 'buy') - getCount(a.id, 'buy'));
+                break;
+              case 'newest':
+                visiblePosts = [...visiblePosts].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+                break;
+            }
+          }
 
           if (filter === 'trending' && visiblePosts.length < 3) {
             return (
