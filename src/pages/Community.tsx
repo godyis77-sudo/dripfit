@@ -153,6 +153,7 @@ const Community = () => {
   const [showPostFlow, setShowPostFlow] = useState(false);
   const [detailPost, setDetailPost] = useState<Post | null>(null);
   const [trendingSort, setTrendingSort] = useState<TrendingSort>('hot');
+  const [followingSort, setFollowingSort] = useState<TrendingSort>('newest');
 
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const [retailers, setRetailers] = useState<Retailer[]>([]);
@@ -459,6 +460,30 @@ const Community = () => {
           </div>
         )}
 
+        {/* Following sub-sort pills */}
+        {filter === 'following' && (
+          <div className="flex gap-1.5 mb-3 overflow-x-auto no-scrollbar">
+            {([
+              { key: 'newest' as TrendingSort, label: '🕐 Newest' },
+              { key: 'hot' as TrendingSort, label: '🔥 Hot' },
+              { key: 'love' as TrendingSort, label: '❤️ Most Loved' },
+              { key: 'buy' as TrendingSort, label: '🛍️ Most Bought' },
+            ]).map(s => (
+              <button
+                key={s.key}
+                onClick={() => setFollowingSort(s.key)}
+                className={`whitespace-nowrap px-2.5 py-1 rounded-full text-[10px] font-bold border transition-all active:scale-95 ${
+                  followingSort === s.key
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border text-muted-foreground'
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+        )}
+
         {filter === 'shop' ? (
           retailersLoading ? (
             <div className="space-y-2">
@@ -542,6 +567,25 @@ const Community = () => {
                 break;
               case 'buy':
                 visiblePosts = [...visiblePosts].sort((a, b) => getCount(b.id, 'buy') - getCount(a.id, 'buy'));
+                break;
+              case 'newest':
+                visiblePosts = [...visiblePosts].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+                break;
+            }
+          }
+
+          // Apply following sub-sort
+          if (filter === 'following' && visiblePosts.length > 0) {
+            const getCountF = (id: string, key: string) => voteCounts[id]?.[key] ?? 0;
+            switch (followingSort) {
+              case 'hot':
+                visiblePosts = [...visiblePosts].sort((a, b) => (getCountF(b.id, 'love') + getCountF(b.id, 'buy')) - (getCountF(a.id, 'love') + getCountF(a.id, 'buy')));
+                break;
+              case 'love':
+                visiblePosts = [...visiblePosts].sort((a, b) => getCountF(b.id, 'love') - getCountF(a.id, 'love'));
+                break;
+              case 'buy':
+                visiblePosts = [...visiblePosts].sort((a, b) => getCountF(b.id, 'buy') - getCountF(a.id, 'buy'));
                 break;
               case 'newest':
                 visiblePosts = [...visiblePosts].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -646,7 +690,10 @@ const Community = () => {
                             </span>
                           </div>
                         )}
-                        <p className="text-[9px] font-semibold text-foreground truncate">{post.profile?.display_name || 'Anon'}</p>
+                        <div className="min-w-0">
+                          <p className="text-[9px] font-semibold text-foreground truncate">{post.profile?.display_name || 'Anon'}</p>
+                          <p className="text-[7px] text-muted-foreground truncate">@{(post.profile?.display_name || 'anon').toLowerCase().replace(/\s+/g, '')}</p>
+                        </div>
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="min-w-[140px]">
