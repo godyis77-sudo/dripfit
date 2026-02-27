@@ -703,19 +703,33 @@ const TryOn = () => {
                     });
                     setSavedToItems(true);
                     trackEvent('saved_item_added', { source: 'tryon' });
-                    toast({ title: 'Saved to your items' });
+                    toast({
+                      title: '✓ Saved to your items',
+                      description: 'View your saved items anytime.',
+                      action: (
+                        <button
+                          onClick={() => navigate('/saved')}
+                          className="text-[11px] font-bold text-primary underline"
+                        >
+                          View Saved Items
+                        </button>
+                      ),
+                    });
                   } catch {
                     toast({ title: 'Could not save', variant: 'destructive' });
                   }
                 }}
               >
-                <Bookmark className="mr-1.5 h-3.5 w-3.5" /> Save to Saved Items
+                <Bookmark className="mr-1.5 h-3.5 w-3.5" /> Save for Later
               </Button>
             )}
             {savedToItems && (
-              <div className="flex items-center gap-1.5 justify-center mb-2">
+              <div className="flex items-center gap-2 justify-center mb-2">
                 <Check className="h-3 w-3 text-primary" />
                 <span className="text-[11px] font-bold text-primary">Saved</span>
+                <button onClick={() => navigate('/saved')} className="text-[10px] text-primary underline font-medium">
+                  View Saved Items →
+                </button>
               </div>
             )}
 
