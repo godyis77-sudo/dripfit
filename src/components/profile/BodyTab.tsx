@@ -5,6 +5,7 @@ import { Ruler, Camera, Info } from 'lucide-react';
 import type { BodyScanResult, FitPreference } from '@/lib/types';
 import BodyDiagram from '@/components/results/BodyDiagram';
 import ShareResultsButton from '@/components/results/ShareResultsButton';
+import MeasurementGrid from '@/components/results/MeasurementGrid';
 import ConfidenceSheet from '@/components/results/ConfidenceSheet';
 
 interface BodyTabProps {
@@ -54,6 +55,8 @@ const BodyTab = ({ savedProfile, fit }: BodyTabProps) => {
         </div>
         <BodyDiagram measurements={m} heightCm={savedProfile.heightCm} />
       </div>
+
+      <MeasurementGrid measurements={m} heightCm={savedProfile.heightCm} />
 
       <div className="bg-card border border-border rounded-xl p-3 mb-3">
         <div className="flex items-center gap-2 mb-2">
