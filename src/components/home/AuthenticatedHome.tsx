@@ -215,7 +215,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               <p className="section-label mb-0">Trending Fits</p>
             </div>
             <button
-              onClick={() => navigate('/community')}
+              onClick={() => navigate('/style-check')}
               className="text-[10px] text-primary font-semibold min-h-[44px] flex items-center"
             >
               See all
@@ -227,7 +227,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               return (
                 <button
                   key={fit.id}
-                  onClick={() => navigate('/community')}
+                  onClick={() => navigate('/style-check')}
                   className="relative bg-card border border-border rounded-xl overflow-hidden aspect-[3/4] group active:scale-[0.97] transition-transform"
                 >
                   <img
@@ -302,7 +302,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               <p className="section-label mb-0">Recently Saved</p>
             </div>
             <button
-              onClick={() => navigate('/saved')}
+              onClick={() => navigate('/profile/saved')}
               className="text-[10px] text-primary font-semibold min-h-[44px] flex items-center"
             >
               View all
@@ -364,11 +364,11 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                 <Sparkles className="mr-1.5 h-3.5 w-3.5 text-primary" /> New Try-On
               </Button>
               <Button
-                onClick={() => { setFabOpen(false); navigate('/community'); }}
+                onClick={() => { setFabOpen(false); navigate('/style-check'); }}
                 variant="secondary"
                 className="h-10 rounded-xl text-[11px] font-semibold shadow-lg px-4"
               >
-                <Heart className="mr-1.5 h-3.5 w-3.5 text-primary" /> Post to Fit Check
+                <Heart className="mr-1.5 h-3.5 w-3.5 text-primary" /> Post to Style Check
               </Button>
             </motion.div>
           )}

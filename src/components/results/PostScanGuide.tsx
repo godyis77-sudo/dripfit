@@ -34,10 +34,10 @@ const STEPS = [
   {
     key: 'fitcheck',
     icon: Users,
-    title: 'Get a Fit Check',
+    title: 'Get a Style Check',
     desc: 'Post a look and get honest feedback before buying',
-    cta: 'Go to Fit Check',
-    route: '/community',
+    cta: 'Go to Style Check',
+    route: '/style-check',
     event: 'postscan_fitcheck_click' as const,
   },
 ];

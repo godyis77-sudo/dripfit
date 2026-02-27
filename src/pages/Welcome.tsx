@@ -14,7 +14,7 @@ import AuthenticatedHome from '@/components/home/AuthenticatedHome';
 const PILLARS = [
   { icon: Ruler, label: 'Scan', desc: 'AI body measurements in 60 seconds', action: '/capture' },
   { icon: Sparkles, label: 'Try-On', desc: 'See it on you before you buy', action: '/tryon' },
-  { icon: Users, label: 'Fit Check', desc: 'Real feedback from real people', action: '/community' },
+  { icon: Users, label: 'Style Check', desc: 'Real feedback from real people', action: '/style-check' },
 ];
 
 const TRUST = [

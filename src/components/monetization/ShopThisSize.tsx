@@ -175,7 +175,7 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
       <SaveBanner
         visible={showSavedConfirmation}
         onDismiss={useCallback(() => setShowSavedConfirmation(false), [])}
-        navigateTo="/saved"
+        navigateTo="/profile/saved"
         label="Saved successfully"
         subtext="View in Profile > Saved Items"
       />

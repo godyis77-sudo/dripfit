@@ -242,7 +242,7 @@ const PublicProfile = () => {
                       {tryOns.map(post => (
                         <button
                           key={post.id}
-                          onClick={() => navigate('/community')}
+                          onClick={() => navigate('/style-check')}
                           className="relative rounded-lg overflow-hidden aspect-[3/4] bg-card border border-border active:scale-95 transition-transform"
                         >
                           <img src={post.result_photo_url} alt={post.caption || ''} className="w-full h-full object-cover img-normalize" />
@@ -268,7 +268,7 @@ const PublicProfile = () => {
                       {tryOns.map(post => (
                         <button
                           key={post.id}
-                          onClick={() => navigate('/community')}
+                          onClick={() => navigate('/style-check')}
                           className="w-full flex items-center gap-3 bg-card border border-border rounded-xl p-2.5 active:scale-[0.98] transition-transform text-left"
                         >
                           <img src={post.result_photo_url} alt="" className="h-14 w-14 rounded-lg object-cover shrink-0 img-normalize" />

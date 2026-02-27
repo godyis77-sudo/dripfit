@@ -143,7 +143,7 @@ const seedToPost = (s: SeedPost): Post => ({
 
 const Community = () => {
   const navigate = useNavigate();
-  usePageTitle('Fit Check');
+  usePageTitle('Style Check');
   const { user } = useAuth();
   const { toast } = useToast();
   const [posts, setPosts] = useState<Post[]>([]);
@@ -408,7 +408,7 @@ const Community = () => {
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="text-base font-bold text-foreground">Fit Check</h1>
+              <h1 className="text-base font-bold text-foreground">Style Check</h1>
               <p className="text-[10px] text-muted-foreground">Get real opinions before you buy</p>
             </div>
           </div>

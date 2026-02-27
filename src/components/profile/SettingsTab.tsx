@@ -255,7 +255,7 @@ const SettingsTab = ({
       {/* Saved Items */}
       <SectionHeader>Saved Items</SectionHeader>
       <div className="bg-card border border-border rounded-xl mb-1">
-        <button onClick={() => navigate('/saved')} className="w-full flex items-center gap-2 px-3 py-2.5 active:bg-muted/50 transition-colors">
+        <button onClick={() => navigate('/profile/saved')} className="w-full flex items-center gap-2 px-3 py-2.5 active:bg-muted/50 transition-colors">
           <Bookmark className="h-3.5 w-3.5 text-primary" />
           <span className="text-[12px] text-foreground font-medium">View Saved for Later</span>
           {savedItemCount > 0 && (

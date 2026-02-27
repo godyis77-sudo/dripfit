@@ -273,7 +273,7 @@ const TryOn = () => {
         ]);
         await supabase.from('tryon_posts').insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic });
       }
-      toast({ title: isPublic ? 'Posted to Fit Check!' : 'Saved!', description: isPublic ? 'Your look is live — get feedback from the community.' : 'Caption updated.' });
+      toast({ title: isPublic ? 'Posted to Style Check!' : 'Saved!', description: isPublic ? 'Your look is live — get feedback from the community.' : 'Caption updated.' });
     } catch (err: any) {
       setShared(false);
       toast({ title: 'Share failed', description: err.message, variant: 'destructive' });
@@ -708,7 +708,7 @@ const TryOn = () => {
                       description: 'View your saved items anytime.',
                       action: (
                         <button
-                          onClick={() => navigate('/saved')}
+                          onClick={() => navigate('/profile/saved')}
                           className="text-[11px] font-bold text-primary underline"
                         >
                           View Saved Items
@@ -727,7 +727,7 @@ const TryOn = () => {
               <div className="flex items-center gap-2 justify-center mb-2">
                 <Check className="h-3 w-3 text-primary" />
                 <span className="text-[11px] font-bold text-primary">Saved</span>
-                <button onClick={() => navigate('/saved')} className="text-[10px] text-primary underline font-medium">
+                <button onClick={() => navigate('/profile/saved')} className="text-[10px] text-primary underline font-medium">
                   View Saved Items →
                 </button>
               </div>
@@ -753,7 +753,7 @@ const TryOn = () => {
                 {/* Visibility toggle */}
                 <div className="flex items-center justify-between bg-card rounded-lg p-2.5 border border-border">
                   <div>
-                    <span className="text-[12px] font-semibold text-foreground">Post to Fit Check</span>
+                    <span className="text-[12px] font-semibold text-foreground">Post to Style Check</span>
                     <p className="text-[9px] text-muted-foreground">
                       {isPublic ? 'Visible to the community' : 'Private — only you can see'}
                     </p>
@@ -773,8 +773,8 @@ const TryOn = () => {
               <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px]" onClick={handleTryAnother}>
                 <RotateCcw className="mr-1 h-3 w-3" /> Try Another
               </Button>
-              <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px]" onClick={() => navigate('/community')}>
-                <MessageSquare className="mr-1 h-3 w-3" /> View Fit Check
+              <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px]" onClick={() => navigate('/style-check')}>
+                <MessageSquare className="mr-1 h-3 w-3" /> View Style Check
               </Button>
             </div>
           </motion.div>

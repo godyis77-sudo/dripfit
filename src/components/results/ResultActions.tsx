@@ -32,9 +32,9 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
       <Button
         variant="outline"
         className="w-full h-9 rounded-lg text-[12px] font-bold"
-        onClick={() => navigate('/community')}
+        onClick={() => navigate('/style-check')}
       >
-        <MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Ask Fit Check
+        <MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Ask Style Check
       </Button>
 
       {/* Save / Saved */}
