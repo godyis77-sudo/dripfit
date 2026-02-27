@@ -4,13 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Switch } from '@/components/ui/switch';
-import { Crown, Trash2, Shield, Download, Ruler, Camera, ChevronRight, Bookmark, Pencil, Check, X, Star, Instagram } from 'lucide-react';
+import { Crown, Trash2, Shield, Download, Ruler, Camera, ChevronRight, Bookmark, Pencil, Check, X, Star, Instagram, Globe } from 'lucide-react';
 import type { FitPreference, BodyScanResult } from '@/lib/types';
 import { SUPPORTED_RETAILERS } from '@/lib/types';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { STRIPE_TIERS } from '@/hooks/useAuth';
+import { getUserRegion, setUserRegion, type UserRegion } from '@/lib/session';
 import FavoriteRetailers from './FavoriteRetailers';
 
 const SectionHeader = forwardRef<HTMLParagraphElement, { children: React.ReactNode }>(
@@ -56,6 +57,16 @@ const SettingsTab = ({
   const [nameValue, setNameValue] = useState(displayName);
   const [editingIg, setEditingIg] = useState(false);
   const [igValue, setIgValue] = useState(instagramHandle);
+  const [region, setRegion] = useState<UserRegion>(getUserRegion());
+
+  const REGION_OPTIONS: { value: UserRegion; label: string; flag: string }[] = [
+    { value: 'us', label: 'United States', flag: '🇺🇸' },
+    { value: 'ca', label: 'Canada', flag: '🇨🇦' },
+    { value: 'gb', label: 'United Kingdom', flag: '🇬🇧' },
+    { value: 'au', label: 'Australia', flag: '🇦🇺' },
+    { value: 'eu', label: 'Europe', flag: '🇪🇺' },
+    { value: 'other', label: 'Other', flag: '🌍' },
+  ];
 
   return (
     <>
@@ -212,7 +223,33 @@ const SettingsTab = ({
               </button>
             ))}
           </div>
+      </div>
+
+      {/* Shopping Region */}
+      <SectionHeader>
+        <span className="flex items-center gap-1">
+          <Globe className="h-3 w-3 text-primary" /> Shopping Region
+        </span>
+      </SectionHeader>
+      <div className="bg-card border border-border rounded-xl p-3 mb-1">
+        <p className="text-[10px] text-muted-foreground mb-2">Retailer links will open for your region — no country selector pop-ups.</p>
+        <div className="grid grid-cols-3 gap-1.5">
+          {REGION_OPTIONS.map(r => (
+            <button
+              key={r.value}
+              onClick={() => { setRegion(r.value); setUserRegion(r.value); trackEvent('region_changed' as any, { region: r.value }); toast({ title: `Region set to ${r.label}` }); }}
+              className={`flex flex-col items-center gap-0.5 py-2 rounded-lg text-center transition-all active:scale-95 ${
+                region === r.value
+                  ? 'gradient-drip text-primary-foreground'
+                  : 'bg-background border border-border text-muted-foreground'
+              }`}
+            >
+              <span className="text-base">{r.flag}</span>
+              <span className="text-[9px] font-bold leading-tight">{r.label}</span>
+            </button>
+          ))}
         </div>
+      </div>
       </div>
 
       {/* Saved Items */}
