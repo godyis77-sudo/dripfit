@@ -102,9 +102,13 @@ const Profile = () => {
           date: data.created_at,
           shoulder: { min: data.shoulder_min, max: data.shoulder_max },
           chest: { min: data.chest_min, max: data.chest_max },
+          bust: (data as any).bust_min != null && (data as any).bust_max != null && ((data as any).bust_min > 0 || (data as any).bust_max > 0)
+            ? { min: (data as any).bust_min, max: (data as any).bust_max } : undefined,
           waist: { min: data.waist_min, max: data.waist_max },
           hips: { min: data.hip_min, max: data.hip_max },
           inseam: { min: data.inseam_min, max: data.inseam_max },
+          sleeve: (data as any).sleeve_min != null && (data as any).sleeve_max != null && ((data as any).sleeve_min > 0 || (data as any).sleeve_max > 0)
+            ? { min: (data as any).sleeve_min, max: (data as any).sleeve_max } : undefined,
           heightCm: data.height_cm,
           confidence: (data.confidence as any) || 'medium',
           recommendedSize: data.recommended_size || 'M',
