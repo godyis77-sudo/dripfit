@@ -6,7 +6,7 @@ import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { getSessionId } from '@/lib/session';
+
 
 interface FitFeedbackSheetProps {
   retailer: string;
@@ -32,9 +32,10 @@ const FitFeedbackSheet = ({ retailer, recommendedSize, onComplete }: FitFeedback
   const handleSubmit = async () => {
     if (!outcome) return;
     try {
+      if (!user) { toast({ title: 'Sign in to submit feedback' }); return; }
       await supabase.from('fit_feedback').insert({
-        user_id: user?.id || null,
-        session_id: user ? null : getSessionId(),
+        user_id: user.id,
+        session_id: null,
         retailer,
         size_worn: sizeWorn,
         recommended_size: recommendedSize,
