@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import { buildRetailerSearchUrl } from '@/lib/retailerLinks';
 import BottomTabBar from '@/components/BottomTabBar';
+import { FullscreenImage } from '@/components/ui/fullscreen-image';
 
 import quickpickWhiteTee from '@/assets/quickpick-white-tee.png';
 import quickpickDenimJacket from '@/assets/quickpick-denim-jacket.png';
@@ -611,9 +612,11 @@ const TryOn = () => {
               </div>
             </div>
 
-            <div className="rounded-xl overflow-hidden border border-border mb-3">
-              <img src={resultImage} alt="Try-on result" className="w-full" />
-            </div>
+            <FullscreenImage src={resultImage} alt="Try-on result">
+              <div className="rounded-xl overflow-hidden border border-border mb-3">
+                <img src={resultImage} alt="Try-on result" className="w-full" />
+              </div>
+            </FullscreenImage>
 
             {/* Primary CTA: Shop This Look */}
             <div className="mb-3">
