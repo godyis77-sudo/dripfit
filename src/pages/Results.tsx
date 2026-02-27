@@ -68,6 +68,16 @@ const Results = () => {
     return base;
   }, [fitPref, result]);
 
+  const fitWhyLine = useMemo(() => {
+    const base = result?.whyLine || 'Based on your scan + retailer chart';
+    const fitNotes: Record<string, string> = {
+      fitted: 'Size down for a closer, tailored silhouette.',
+      regular: 'True-to-size for balanced comfort and shape.',
+      relaxed: 'Size up for extra ease and a looser drape.',
+    };
+    return `${base} · ${fitNotes[fitPref]}`;
+  }, [fitPref, result]);
+
   const alternatives = useMemo(() => ({ sizeDown: shiftSize(adjustedSize, -1), sizeUp: shiftSize(adjustedSize, 1) }), [adjustedSize]);
 
   const measurements: Record<string, MeasurementRange> = useMemo(() => {
@@ -152,7 +162,7 @@ const Results = () => {
           )}
         </AnimatePresence>
 
-        <SizeHero retailer={state?.retailer} category={state?.category} recommendedSize={adjustedSize} confidence={confidence} whyLine={result.whyLine || 'Based on your scan + retailer chart + fit preference'} />
+        <SizeHero retailer={state?.retailer} category={state?.category} recommendedSize={adjustedSize} confidence={confidence} whyLine={fitWhyLine} fitPreference={fitPref} />
 
         {/* Post-scan profile photo prompt */}
         <AnimatePresence>
@@ -166,7 +176,7 @@ const Results = () => {
         </AnimatePresence>
 
         <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
-        <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} />
+        <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} fitPreference={fitPref} />
         {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
 
         <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />

@@ -96,6 +96,7 @@ const TryOn = () => {
   const [wardrobeItems, setWardrobeItems] = useState<Array<{ id: string; image_url: string; category: string; product_link: string | null }>>([]);
   const [showWardrobe, setShowWardrobe] = useState(false);
   const [showPremiumGate, setShowPremiumGate] = useState(false);
+  const [savedToItems, setSavedToItems] = useState(false);
   const [selectedQuickPick, setSelectedQuickPick] = useState<typeof DEMO_OUTFITS[number] | null>(null);
   const [retailerMap, setRetailerMap] = useState<Record<string, { website_url: string }>>({});
 
@@ -290,6 +291,7 @@ const TryOn = () => {
     setAutoSaved(false);
     setProductLink('');
     setClothingSaved(false);
+    setSavedToItems(false);
   };
 
   return (
@@ -618,7 +620,7 @@ const TryOn = () => {
               </div>
             </FullscreenImage>
 
-            {/* Primary CTA: Shop This Look */}
+            {/* ── Shop This Size CTA ── */}
             <div className="mb-3">
               {productLink ? (
                 <Button
@@ -628,7 +630,7 @@ const TryOn = () => {
                     window.open(productLink, '_blank', 'noopener');
                   }}
                 >
-                  <ShoppingBag className="mr-2 h-4 w-4" /> Shop This Look in My Size
+                  <ShoppingBag className="mr-2 h-4 w-4" /> Shop This Look
                 </Button>
               ) : selectedQuickPick ? (
                 <div className="space-y-2">
@@ -659,64 +661,107 @@ const TryOn = () => {
                     window.open('https://www.google.com/search?tbm=shop&q=outfit', '_blank', 'noopener');
                   }}
                 >
-                  <ShoppingBag className="mr-2 h-4 w-4" /> Shop This Look in My Size
+                  <ShoppingBag className="mr-2 h-4 w-4" /> Shop This Look
                 </Button>
               )}
               <p className="text-[8px] text-muted-foreground/50 text-center mt-1">We may earn a commission. It doesn't change your price.</p>
             </div>
 
-            {/* Post-action CTA bar */}
-            <div className="space-y-2">
-              {/* Caption + prompt suggestions */}
-              <div>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Add a caption or question</p>
-                <Textarea placeholder="e.g., Should I buy this for work?" value={caption} onChange={e => setCaption(e.target.value)} className="rounded-lg resize-none text-sm" rows={2} />
-                {!caption && (
-                  <div className="flex gap-1 mt-1.5 flex-wrap">
-                    {FIT_CHECK_PROMPTS.map(p => (
-                      <button key={p} onClick={() => setCaption(p)} className="text-[9px] px-2 py-1 rounded-md border border-border text-muted-foreground hover:border-primary/30 hover:text-foreground transition-colors">
-                        {p}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+            {/* ── 1-Tap Post to Fit Check ── */}
+            <Button
+              className="w-full h-10 rounded-lg bg-accent text-accent-foreground text-sm font-bold mb-2 active:scale-[0.97] transition-transform"
+              onClick={() => {
+                if (!caption) setCaption(FIT_CHECK_PROMPTS[Math.floor(Math.random() * FIT_CHECK_PROMPTS.length)]);
+                setIsPublic(true);
+                handleShare();
+              }}
+              disabled={shared}
+            >
+              {shared && isPublic ? (
+                <><Check className="mr-1.5 h-3.5 w-3.5" /> Posted to Fit Check!</>
+              ) : (
+                <><MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Post to Fit Check</>
+              )}
+            </Button>
 
-              {/* Visibility toggle */}
-              <div className="flex items-center justify-between bg-card rounded-lg p-2.5 border border-border">
-                <div>
-                  <span className="text-[12px] font-semibold text-foreground">Post to Fit Check</span>
-                  <p className="text-[9px] text-muted-foreground">
-                    {isPublic ? 'Share with the community — toggle off for private' : 'Saved privately to your profile only'}
-                  </p>
-                </div>
-                <Switch checked={isPublic} onCheckedChange={(v) => { setIsPublic(v); saveSharePreference(v); }} />
-              </div>
-              {/* Context note */}
-              <p className="text-[9px] text-muted-foreground/70 px-1 -mt-1">
-                {isPublic
-                  ? `Your look will appear in the Fit Check feed. Add a question above to get specific feedback.`
-                  : `You can share it later from your Try-Ons tab.`}
-              </p>
-
-              {/* Primary action */}
-              <Button className="w-full h-10 rounded-lg btn-luxury text-primary-foreground text-sm font-bold" onClick={handleShare} disabled={shared}>
-                {shared ? (
-                  <><Check className="mr-1.5 h-3.5 w-3.5" /> {isPublic ? 'Posted!' : 'Saved!'}</>
-                ) : (
-                  <>{isPublic ? <><MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Save & Post to Fit Check</> : <><Save className="mr-1.5 h-3.5 w-3.5" /> Save to Profile</>}</>
-                )}
+            {/* ── Save to Saved Items ── */}
+            {user && !savedToItems && (
+              <Button
+                variant="outline"
+                className="w-full h-9 rounded-lg text-[11px] font-bold mb-2"
+                onClick={async () => {
+                  try {
+                    await supabase.from('saved_items').insert({
+                      user_id: user.id,
+                      product_link: productLink || null,
+                      retailer: selectedQuickPick?.retailers[0] || null,
+                      brand: selectedQuickPick?.label || null,
+                      category: category || null,
+                      size_recommendation: null,
+                      confidence: null,
+                      product_image_url: clothingPhoto,
+                    });
+                    setSavedToItems(true);
+                    trackEvent('saved_item_added', { source: 'tryon' });
+                    toast({ title: 'Saved to your items' });
+                  } catch {
+                    toast({ title: 'Could not save', variant: 'destructive' });
+                  }
+                }}
+              >
+                <Bookmark className="mr-1.5 h-3.5 w-3.5" /> Save to Saved Items
               </Button>
+            )}
+            {savedToItems && (
+              <div className="flex items-center gap-1.5 justify-center mb-2">
+                <Check className="h-3 w-3 text-primary" />
+                <span className="text-[11px] font-bold text-primary">Saved</span>
+              </div>
+            )}
 
-              {/* Secondary actions */}
-              <div className="flex gap-2">
-                <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px]" onClick={handleTryAnother}>
-                  <RotateCcw className="mr-1 h-3 w-3" /> Try Another
-                </Button>
-                <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px]" onClick={() => navigate('/community')}>
-                  <MessageSquare className="mr-1 h-3 w-3" /> View Fit Check
+            {/* ── Caption / Edit before posting ── */}
+            {!shared && (
+              <div className="space-y-2 mb-2">
+                <div>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Caption or question</p>
+                  <Textarea placeholder="e.g., Should I buy this for work?" value={caption} onChange={e => setCaption(e.target.value)} className="rounded-lg resize-none text-sm" rows={2} />
+                  {!caption && (
+                    <div className="flex gap-1 mt-1.5 flex-wrap">
+                      {FIT_CHECK_PROMPTS.map(p => (
+                        <button key={p} onClick={() => setCaption(p)} className="text-[9px] px-2 py-1 rounded-md border border-border text-muted-foreground hover:border-primary/30 hover:text-foreground transition-colors">
+                          {p}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Visibility toggle */}
+                <div className="flex items-center justify-between bg-card rounded-lg p-2.5 border border-border">
+                  <div>
+                    <span className="text-[12px] font-semibold text-foreground">Post to Fit Check</span>
+                    <p className="text-[9px] text-muted-foreground">
+                      {isPublic ? 'Visible to the community' : 'Private — only you can see'}
+                    </p>
+                  </div>
+                  <Switch checked={isPublic} onCheckedChange={(v) => { setIsPublic(v); saveSharePreference(v); }} />
+                </div>
+
+                {/* Manual share button */}
+                <Button className="w-full h-10 rounded-lg btn-luxury text-primary-foreground text-sm font-bold" onClick={handleShare}>
+                  {isPublic ? <><MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Save & Post</> : <><Save className="mr-1.5 h-3.5 w-3.5" /> Save to Profile</>}
                 </Button>
               </div>
+            )}
+
+            {/* Secondary actions */}
+            <div className="flex gap-2">
+              <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px]" onClick={handleTryAnother}>
+                <RotateCcw className="mr-1 h-3 w-3" /> Try Another
+              </Button>
+              <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px]" onClick={() => navigate('/community')}>
+                <MessageSquare className="mr-1 h-3 w-3" /> View Fit Check
+              </Button>
             </div>
           </motion.div>
         )}

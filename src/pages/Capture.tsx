@@ -307,14 +307,23 @@ const Capture = () => {
               <h2 className="text-lg font-bold text-foreground mb-0.5">{config.title}</h2>
               <p className="text-[12px] text-muted-foreground text-center mb-3">{config.instruction}</p>
 
-              {/* Viewfinder with silhouette overlay */}
+              {/* Viewfinder with enhanced silhouette guide overlay */}
               <div className="relative w-full aspect-[3/4] rounded-xl overflow-hidden bg-card border-2 border-dashed border-border mb-3">
                 {photos[captureStep] ? (
                   <img src={photos[captureStep]!} alt={config.title} className="w-full h-full object-cover img-normalize" />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-muted-foreground relative">
+                    {/* Center crosshair guides */}
+                    <div className="absolute inset-0 pointer-events-none">
+                      {/* Vertical center line */}
+                      <div className="absolute left-1/2 top-[8%] bottom-[8%] w-px border-l border-dashed border-primary/20" />
+                      {/* Horizontal thirds */}
+                      <div className="absolute left-[15%] right-[15%] top-[25%] h-px border-t border-dashed border-primary/15" />
+                      <div className="absolute left-[15%] right-[15%] top-[75%] h-px border-t border-dashed border-primary/15" />
+                    </div>
+
                     {/* Translucent silhouette overlay */}
-                    <svg viewBox="0 0 120 220" className="h-[55%] opacity-15" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <svg viewBox="0 0 120 220" className="h-[60%] opacity-20" fill="none" stroke="currentColor" strokeWidth="1.5">
                       {captureStep === 'front' ? (
                         <>
                           <ellipse cx="60" cy="22" rx="14" ry="16" />
@@ -332,14 +341,32 @@ const Capture = () => {
                       )}
                     </svg>
 
-                    {/* Guide arrows */}
+                    {/* Positioning tips overlaid on corners */}
+                    <div className="absolute top-2 left-2 flex items-center gap-1 bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5">
+                      <Eye className="h-2.5 w-2.5 text-primary" />
+                      <span className="text-[8px] font-bold text-foreground">Head visible</span>
+                    </div>
+                    <div className="absolute top-2 right-2 flex items-center gap-1 bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5">
+                      <Sun className="h-2.5 w-2.5 text-primary" />
+                      <span className="text-[8px] font-bold text-foreground">Even light</span>
+                    </div>
+                    <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5">
+                      <Maximize className="h-2.5 w-2.5 text-primary" />
+                      <span className="text-[8px] font-bold text-foreground">Feet visible</span>
+                    </div>
+                    <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5">
+                      <Ruler className="h-2.5 w-2.5 text-primary" />
+                      <span className="text-[8px] font-bold text-foreground">6-8 ft away</span>
+                    </div>
+
+                    {/* Animated guide text */}
                     <motion.div
                       animate={{ y: [0, -4, 0] }}
                       transition={{ duration: 1.5, repeat: Infinity }}
-                      className="absolute bottom-6 text-center"
+                      className="absolute bottom-10 text-center"
                     >
-                      <p className="text-[11px] font-medium text-muted-foreground">
-                        {captureStep === 'front' ? 'Face camera · head to feet' : 'Turn 90° · head to feet'}
+                      <p className="text-[11px] font-semibold text-primary/70">
+                        {captureStep === 'front' ? 'Align with silhouette · head to feet' : 'Turn 90° · align with silhouette'}
                       </p>
                     </motion.div>
                   </div>
