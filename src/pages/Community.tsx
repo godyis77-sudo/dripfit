@@ -45,7 +45,7 @@ const VOTE_OPTIONS = [
   { key: 'keep_shopping', label: 'Keep shopping', emoji: '🛒' },
 ] as const;
 
-type TrendingSort = 'hot' | 'love' | 'buy' | 'newest';
+type TrendingSort = 'hot' | 'love' | 'buy' | 'newest' | 'user';
 
 const RATING_LABELS = [
   { key: 'style_score', label: 'Style' },
@@ -154,6 +154,7 @@ const Community = () => {
   const [detailPost, setDetailPost] = useState<Post | null>(null);
   const [trendingSort, setTrendingSort] = useState<TrendingSort>('hot');
   const [followingSort, setFollowingSort] = useState<TrendingSort>('newest');
+  const [filterUserId, setFilterUserId] = useState<string | null>(null);
 
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const [retailers, setRetailers] = useState<Retailer[]>([]);
@@ -440,14 +441,15 @@ const Community = () => {
         {filter === 'trending' && (
           <div className="flex gap-1.5 mb-3 overflow-x-auto no-scrollbar">
             {([
-              { key: 'hot' as TrendingSort, label: '🔥 Hot', desc: 'Love + Buy' },
+              { key: 'hot' as TrendingSort, label: '🔥 Hot' },
               { key: 'love' as TrendingSort, label: '❤️ Most Loved' },
               { key: 'buy' as TrendingSort, label: '🛍️ Most Bought' },
               { key: 'newest' as TrendingSort, label: '🕐 Newest' },
+              { key: 'user' as TrendingSort, label: '👤 By User' },
             ]).map(s => (
               <button
                 key={s.key}
-                onClick={() => setTrendingSort(s.key)}
+                onClick={() => { setTrendingSort(s.key); if (s.key !== 'user') setFilterUserId(null); }}
                 className={`whitespace-nowrap px-2.5 py-1 rounded-full text-[10px] font-bold border transition-all active:scale-95 ${
                   trendingSort === s.key
                     ? 'border-primary bg-primary/10 text-primary'
@@ -455,6 +457,31 @@ const Community = () => {
                 }`}
               >
                 {s.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* User filter chips when "By User" is selected */}
+        {((filter === 'trending' && trendingSort === 'user') || (filter === 'following' && followingSort === 'user')) && (
+          <div className="flex gap-1.5 mb-3 overflow-x-auto no-scrollbar">
+            <button
+              onClick={() => setFilterUserId(null)}
+              className={`whitespace-nowrap px-2.5 py-1 rounded-full text-[10px] font-bold border transition-all active:scale-95 ${
+                !filterUserId ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'
+              }`}
+            >
+              All
+            </button>
+            {[...new Map(posts.filter(p => p.profile?.display_name).map(p => [p.user_id, p.profile?.display_name])).entries()].map(([uid, name]) => (
+              <button
+                key={uid}
+                onClick={() => setFilterUserId(filterUserId === uid ? null : uid)}
+                className={`whitespace-nowrap px-2.5 py-1 rounded-full text-[10px] font-bold border transition-all active:scale-95 ${
+                  filterUserId === uid ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'
+                }`}
+              >
+                {name}
               </button>
             ))}
           </div>
@@ -468,10 +495,11 @@ const Community = () => {
               { key: 'hot' as TrendingSort, label: '🔥 Hot' },
               { key: 'love' as TrendingSort, label: '❤️ Most Loved' },
               { key: 'buy' as TrendingSort, label: '🛍️ Most Bought' },
+              { key: 'user' as TrendingSort, label: '👤 By User' },
             ]).map(s => (
               <button
                 key={s.key}
-                onClick={() => setFollowingSort(s.key)}
+                onClick={() => { setFollowingSort(s.key); if (s.key !== 'user') setFilterUserId(null); }}
                 className={`whitespace-nowrap px-2.5 py-1 rounded-full text-[10px] font-bold border transition-all active:scale-95 ${
                   followingSort === s.key
                     ? 'border-primary bg-primary/10 text-primary'
@@ -571,6 +599,9 @@ const Community = () => {
               case 'newest':
                 visiblePosts = [...visiblePosts].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
                 break;
+              case 'user':
+                visiblePosts = [...visiblePosts].sort((a, b) => (a.profile?.display_name || '').localeCompare(b.profile?.display_name || ''));
+                break;
             }
           }
 
@@ -590,7 +621,15 @@ const Community = () => {
               case 'newest':
                 visiblePosts = [...visiblePosts].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
                 break;
+              case 'user':
+                visiblePosts = [...visiblePosts].sort((a, b) => (a.profile?.display_name || '').localeCompare(b.profile?.display_name || ''));
+                break;
             }
+          }
+
+          // Apply user filter when "By User" is active and a user is selected
+          if (filterUserId) {
+            visiblePosts = visiblePosts.filter(p => p.user_id === filterUserId);
           }
 
           if (filter === 'trending' && visiblePosts.length < 3) {
@@ -690,10 +729,7 @@ const Community = () => {
                             </span>
                           </div>
                         )}
-                        <div className="min-w-0">
-                          <p className="text-[9px] font-semibold text-foreground truncate">{post.profile?.display_name || 'Anon'}</p>
-                          <p className="text-[7px] text-muted-foreground truncate">@{(post.profile?.display_name || 'anon').toLowerCase().replace(/\s+/g, '')}</p>
-                        </div>
+                        <p className="text-[9px] font-semibold text-foreground truncate">{post.profile?.display_name || 'Anon'}</p>
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="min-w-[140px]">
