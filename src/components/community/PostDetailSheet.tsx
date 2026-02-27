@@ -31,7 +31,7 @@ interface PostDetailSheetProps {
   open: boolean;
   onClose: () => void;
   prompt: string;
-  votes: Record<string, string>;
+  votes: Record<string, string[]>;
   voteCounts: Record<string, Record<string, number>>;
   onVote: (postId: string, key: string) => void;
   onComment: (postId: string, comment: string) => void;
@@ -282,7 +282,7 @@ export const PostDetailSheet = ({
             {/* Emoji votes */}
             <div className="flex gap-2">
               {VOTE_OPTIONS.map(v => {
-                const active = votes[post.id] === v.key;
+                const active = (votes[post.id] || []).includes(v.key);
                 return (
                   <button
                     key={v.key}
@@ -297,9 +297,7 @@ export const PostDetailSheet = ({
                       <span className="mr-1">{v.emoji}</span>
                       <span className="text-[11px]">{v.label}</span>
                     </div>
-                    {(voteCounts[post.id]?.[v.key] ?? 0) > 0 && (
-                      <span className="text-[10px] font-medium text-white/60">{voteCounts[post.id][v.key]}</span>
-                    )}
+                    <span className="text-[10px] font-medium text-white/60">{voteCounts[post.id]?.[v.key] ?? 0}</span>
                   </button>
                 );
               })}

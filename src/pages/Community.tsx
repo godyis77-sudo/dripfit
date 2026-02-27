@@ -139,7 +139,7 @@ const Community = () => {
   const [ratings, setRatings] = useState({ style_score: 0, color_score: 0, buy_score: 0, suitability_score: 0 });
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [votes, setVotes] = useState<Record<string, string>>({});
+  const [votes, setVotes] = useState<Record<string, string[]>>({});
   const [voteCounts, setVoteCounts] = useState<Record<string, Record<string, number>>>({});
   const [showPostFlow, setShowPostFlow] = useState(false);
   const [detailPost, setDetailPost] = useState<Post | null>(null);
@@ -278,18 +278,89 @@ const Community = () => {
     setSubmitting(false);
   };
 
-  const handleVote = (postId: string, key: string) => {
-    const prevKey = votes[postId];
-    setVotes(prev => ({ ...prev, [postId]: prev[postId] === key ? '' : key }));
+  // Load vote counts and user's own votes from DB
+  const loadVoteCounts = async (postIds: string[]) => {
+    if (postIds.length === 0) return;
+    const { data: allVotes } = await supabase.from('community_votes' as any).select('post_id, vote_key, user_id').in('post_id', postIds);
+    if (!allVotes) return;
+    const counts: Record<string, Record<string, number>> = {};
+    const userVotes: Record<string, string[]> = {};
+    (allVotes as any[]).forEach((v: any) => {
+      if (!counts[v.post_id]) counts[v.post_id] = { love: 0, buy: 0, keep_shopping: 0 };
+      counts[v.post_id][v.vote_key] = (counts[v.post_id][v.vote_key] || 0) + 1;
+      if (user && v.user_id === user.id) {
+        if (!userVotes[v.post_id]) userVotes[v.post_id] = [];
+        userVotes[v.post_id].push(v.vote_key);
+      }
+    });
+    setVoteCounts(prev => ({ ...prev, ...counts }));
+    setVotes(prev => ({ ...prev, ...userVotes }));
+  };
+
+  // Load counts when posts change
+  useEffect(() => {
+    if (posts.length > 0) {
+      loadVoteCounts(posts.map(p => p.id));
+    }
+  }, [posts, user]);
+
+  const handleVote = async (postId: string, key: string) => {
+    if (!user) { toast({ title: 'Sign in to vote', description: 'Create a free account to share your opinion.', variant: 'destructive' }); return; }
+    
+    const currentVotes = votes[postId] || [];
+    const hasKey = currentVotes.includes(key);
+    
+    let newVotes: string[];
+    if (key === 'keep_shopping') {
+      // keep_shopping is exclusive — toggle it, remove love/buy
+      if (hasKey) {
+        newVotes = [];
+      } else {
+        newVotes = ['keep_shopping'];
+        // Remove love/buy from DB
+        for (const k of currentVotes) {
+          if (k !== 'keep_shopping') {
+            await supabase.from('community_votes' as any).delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', k);
+          }
+        }
+      }
+    } else {
+      // love/buy can coexist, but remove keep_shopping if present
+      if (hasKey) {
+        newVotes = currentVotes.filter(v => v !== key);
+      } else {
+        newVotes = [...currentVotes.filter(v => v !== 'keep_shopping'), key];
+        // Remove keep_shopping from DB if it was there
+        if (currentVotes.includes('keep_shopping')) {
+          await supabase.from('community_votes' as any).delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', 'keep_shopping');
+        }
+      }
+    }
+    
+    // Optimistic update
+    setVotes(prev => ({ ...prev, [postId]: newVotes }));
     setVoteCounts(prev => {
       const postCounts = { ...(prev[postId] || { love: 0, buy: 0, keep_shopping: 0 }) };
-      if (prevKey) postCounts[prevKey] = Math.max(0, (postCounts[prevKey] || 0) - 1);
-      if (prevKey !== key) postCounts[key] = (postCounts[key] || 0) + 1;
+      // Decrement removed keys
+      for (const k of currentVotes) {
+        if (!newVotes.includes(k)) postCounts[k] = Math.max(0, (postCounts[k] || 0) - 1);
+      }
+      // Increment added keys
+      for (const k of newVotes) {
+        if (!currentVotes.includes(k)) postCounts[k] = (postCounts[k] || 0) + 1;
+      }
       return { ...prev, [postId]: postCounts };
     });
+    
+    // Persist: toggle in DB
+    if (hasKey) {
+      await supabase.from('community_votes' as any).delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', key);
+    } else {
+      await supabase.from('community_votes' as any).insert({ post_id: postId, user_id: user.id, vote_key: key } as any);
+    }
+    
     trackEvent('vote_cast', { vote: key, source: 'fitcheck' });
     trackEvent('fitcheck_voted', { vote: key });
-    if (!user) { toast({ title: 'Sign in to vote', description: 'Create a free account to share your opinion.', variant: 'destructive' }); return; }
   };
 
   const handleShopLook = (post: Post) => {
@@ -568,7 +639,7 @@ const Community = () => {
                 {/* Compact vote row */}
                 <div className="flex gap-1 px-1.5 pt-1.5">
                   {VOTE_OPTIONS.map(v => {
-                    const active = votes[post.id] === v.key;
+                    const active = (votes[post.id] || []).includes(v.key);
                     return (
                       <button
                         key={v.key}
@@ -580,9 +651,7 @@ const Community = () => {
                         }`}
                       >
                         {v.emoji}
-                        {(voteCounts[post.id]?.[v.key] ?? 0) > 0 && (
-                          <span className="text-[8px] font-medium leading-none">{voteCounts[post.id][v.key]}</span>
-                        )}
+                        <span className="text-[8px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
                       </button>
                     );
                   })}

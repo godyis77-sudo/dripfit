@@ -131,6 +131,30 @@ export type Database = {
         }
         Relationships: []
       }
+      community_votes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+          vote_key: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+          vote_key: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+          vote_key?: string
+        }
+        Relationships: []
+      }
       fit_feedback: {
         Row: {
           brand: string | null
