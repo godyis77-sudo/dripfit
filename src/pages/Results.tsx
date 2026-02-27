@@ -14,14 +14,14 @@ import BottomTabBar from '@/components/BottomTabBar';
 import FitPreferenceToggle from '@/components/results/FitPreferenceToggle';
 import AlternativeSizes from '@/components/results/AlternativeSizes';
 import MeasurementGrid from '@/components/results/MeasurementGrid';
-import MeasurementAdjuster from '@/components/results/MeasurementAdjuster';
+
 import BodyDiagram from '@/components/results/BodyDiagram';
 import LowConfidenceRescue from '@/components/results/LowConfidenceRescue';
 import ResultActions from '@/components/results/ResultActions';
+import TrustPanel from '@/components/results/TrustPanel';
 import ShopThisSize from '@/components/monetization/ShopThisSize';
 import UpgradePrompt from '@/components/monetization/UpgradePrompt';
 import FitFeedbackSheet from '@/components/monetization/FitFeedbackSheet';
-import BrandPartnerCards from '@/components/monetization/BrandPartnerCards';
 import PostScanGuide from '@/components/results/PostScanGuide';
 import ProfilePhotoPrompt from '@/components/results/ProfilePhotoPrompt';
 import ShareResultsButton from '@/components/results/ShareResultsButton';
@@ -36,7 +36,7 @@ function shiftSize(size: string, delta: number): string {
 
 const Results = () => {
   const location = useLocation();
-  usePageTitle('Your Results');
+  usePageTitle('Your Fit Results');
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -177,19 +177,38 @@ const Results = () => {
 
         <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
         <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} fitPreference={fitPref} />
+
+        {/* Trust panel — confidence, between sizes, brand notes, quick adjust */}
+        <TrustPanel
+          confidence={confidence}
+          recommendedSize={adjustedSize}
+          measurements={measurements}
+          onAdjust={handleMeasurementAdjust}
+          retailer={state?.retailer}
+        />
+
         {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
 
-        <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
+        {/* Primary CTA above fold */}
+        <ShopThisSize
+          recommendedSize={adjustedSize}
+          confidence={confidence}
+          retailer={state?.retailer}
+          category={state?.category}
+        />
 
-        {(confidence === 'low' || confidence === 'medium') && (
-          <MeasurementAdjuster
-            measurements={measurements}
-            onAdjust={handleMeasurementAdjust}
-          />
-        )}
+        <ResultActions
+          saved={saved}
+          scanDate={result.date}
+          onSave={handleSave}
+          onTryOn={() => { trackEvent('results_tryon_click'); navigate('/tryon', { state: { bodyProfile: result } }); }}
+          onNewScan={() => navigate('/capture')}
+          onDelete={handleDelete}
+          recommendedSize={adjustedSize}
+        />
 
-        {/* Share button */}
-        <div className="mt-4 mb-2">
+        {/* Share */}
+        <div className="mt-3 mb-2">
           <ShareResultsButton
             measurements={measurements}
             heightCm={result.heightCm}
@@ -198,40 +217,19 @@ const Results = () => {
           />
         </div>
 
-        {/* Tabbed sections */}
-        <Tabs defaultValue="shop" className="mt-4">
-          <TabsList className="w-full grid grid-cols-3 h-9 rounded-lg bg-muted">
-            <TabsTrigger value="shop" className="text-[11px] font-bold rounded-md">Shop</TabsTrigger>
-            <TabsTrigger value="body" className="text-[11px] font-bold rounded-md">Body</TabsTrigger>
+        {/* Tabbed sections — secondary content below */}
+        <Tabs defaultValue="body" className="mt-3">
+          <TabsList className="w-full grid grid-cols-2 h-9 rounded-lg bg-muted">
+            <TabsTrigger value="body" className="text-[11px] font-bold rounded-md">Body Map</TabsTrigger>
             <TabsTrigger value="more" className="text-[11px] font-bold rounded-md">More</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="shop" className="mt-3 space-y-3">
-            <ShopThisSize
-              recommendedSize={adjustedSize}
-              confidence={confidence}
-              retailer={state?.retailer}
-              category={state?.category}
-            />
-
-            <ResultActions
-              saved={saved}
-              scanDate={result.date}
-              onSave={handleSave}
-              onTryOn={() => { trackEvent('results_tryon_click'); navigate('/tryon', { state: { bodyProfile: result } }); }}
-              onNewScan={() => navigate('/capture')}
-              onDelete={handleDelete}
-              recommendedSize={adjustedSize}
-            />
-          </TabsContent>
-
           <TabsContent value="body" className="mt-3 space-y-3">
+            <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
             <BodyDiagram measurements={measurements} heightCm={result.heightCm} />
           </TabsContent>
 
           <TabsContent value="more" className="mt-3 space-y-3">
-            <BrandPartnerCards />
-
             {(saved || confidence === 'low') && (
               <UpgradePrompt
                 headline={confidence === 'low' ? 'Low confidence? Get smarter sizing.' : 'Want higher confidence?'}

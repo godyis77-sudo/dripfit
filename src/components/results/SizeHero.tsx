@@ -28,9 +28,9 @@ const SizeHero = ({ retailer, category, recommendedSize, confidence, whyLine, fi
 
   return (
     <>
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="text-center mb-5">
-        <h1 className="text-base font-bold text-foreground mb-0.5">Your Best Size</h1>
-        {fitPreference && <p className="text-[11px] text-primary font-semibold mb-0.5">Recommended for {fitLabels[fitPreference] || fitPreference} fit</p>}
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="text-center mb-4">
+        <h1 className="text-lg font-bold text-foreground mb-0.5">Your Best Size</h1>
+        {fitPreference && <p className="text-[12px] text-primary font-semibold mb-0.5">Recommended for {fitLabels[fitPreference] || fitPreference} fit</p>}
         {retailer && category && <p className="text-[11px] text-muted-foreground mb-3">{retailer} · {category}</p>}
         {!retailer && !category && !fitPreference && <div className="mb-3" />}
 
