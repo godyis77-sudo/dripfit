@@ -29,8 +29,8 @@ const measurementLines: MeasurementLine[] = [
   { key: 'shoulder', label: 'Shoulder', labelSide: 'right', x1: '36%', y1: '24.5%', x2: '64%', y2: '24.5%', labelTop: '23%', labelEdgeX: 76, leaderX: 64, leaderY: 24.5 },
   { key: 'chest', label: 'Chest', labelSide: 'left', x1: '40%', y1: '27%', x2: '60%', y2: '27%', labelTop: '25%', labelEdgeX: 16, leaderX: 40, leaderY: 27 },
   { key: 'bust', label: 'Bust', labelSide: 'right', x1: '40%', y1: '30%', x2: '60%', y2: '30%', labelTop: '28%', labelEdgeX: 88, leaderX: 60, leaderY: 29.5 },
-  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '42%', y1: '43.5%', x2: '58%', y2: '43.5%', labelTop: '42%', labelEdgeX: 85, leaderX: 58, leaderY: 43.5 },
-  { key: 'hips', label: 'Hips', labelSide: 'right', x1: '39%', y1: '50.5%', x2: '61%', y2: '50.5%', labelTop: '49%', labelEdgeX: 88, leaderX: 61, leaderY: 50.5 },
+  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '42%', y1: '43.5%', x2: '58%', y2: '43.5%', labelTop: '40%', labelEdgeX: 85, leaderX: 58, leaderY: 43.5 },
+  { key: 'hips', label: 'Hips', labelSide: 'right', x1: '39%', y1: '50.5%', x2: '61%', y2: '50.5%', labelTop: '51%', labelEdgeX: 88, leaderX: 61, leaderY: 50.5 },
   { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '35%', y1: '25%', x2: '30%', y2: '50%', labelTop: '36%', labelEdgeX: 13, leaderX: 32, leaderY: 37.5 },
   { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '47%', y1: '55%', x2: '44%', y2: '85%', labelTop: '69%', labelEdgeX: 18, leaderX: 45, leaderY: 70.5 },
 ];
