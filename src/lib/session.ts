@@ -21,6 +21,17 @@ export function setOnboarded(): void {
   localStorage.setItem(ONBOARDING_KEY, 'true');
 }
 
+// Guest mode
+const GUEST_KEY = 'dripcheck_guest';
+
+export function isGuestMode(): boolean {
+  return localStorage.getItem(GUEST_KEY) === 'true';
+}
+
+export function setGuestMode(): void {
+  localStorage.setItem(GUEST_KEY, 'true');
+}
+
 // Fit preference cache
 const FIT_KEY = 'dripcheck_fit';
 
