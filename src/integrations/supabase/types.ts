@@ -16,6 +16,8 @@ export type Database = {
     Tables: {
       body_scans: {
         Row: {
+          bust_max: number | null
+          bust_min: number | null
           chest_max: number
           chest_min: number
           confidence: string
@@ -33,11 +35,15 @@ export type Database = {
           shoulder_max: number
           shoulder_min: number
           side_photo_used: boolean
+          sleeve_max: number | null
+          sleeve_min: number | null
           user_id: string | null
           waist_max: number
           waist_min: number
         }
         Insert: {
+          bust_max?: number | null
+          bust_min?: number | null
           chest_max: number
           chest_min: number
           confidence?: string
@@ -55,11 +61,15 @@ export type Database = {
           shoulder_max: number
           shoulder_min: number
           side_photo_used?: boolean
+          sleeve_max?: number | null
+          sleeve_min?: number | null
           user_id?: string | null
           waist_max: number
           waist_min: number
         }
         Update: {
+          bust_max?: number | null
+          bust_min?: number | null
           chest_max?: number
           chest_min?: number
           confidence?: string
@@ -77,6 +87,8 @@ export type Database = {
           shoulder_max?: number
           shoulder_min?: number
           side_photo_used?: boolean
+          sleeve_max?: number | null
+          sleeve_min?: number | null
           user_id?: string | null
           waist_max?: number
           waist_min?: number
