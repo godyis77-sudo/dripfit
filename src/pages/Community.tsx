@@ -4,7 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown, Bookmark, Camera, MessageSquare, Flame, Search, Ruler, UserPlus, UserCheck } from 'lucide-react';
+import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown, Bookmark, Camera, MessageSquare, Flame, Search, Ruler, UserPlus, UserCheck, User } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 import { detectRetailer } from '@/lib/retailerDetect';
 import { getBestRetailerForItem } from '@/lib/retailerLinks';
 import { supabase } from '@/integrations/supabase/client';
@@ -198,6 +205,10 @@ const Community = () => {
       await supabase.from('user_follows' as any).insert({ follower_id: user.id, following_id: targetUserId } as any);
       setFollowingIds(prev => [...prev, targetUserId]);
       trackEvent('user_followed');
+    }
+    // Refresh the Following tab if active
+    if (filter === 'following') {
+      setTimeout(() => fetchFollowingFeed(), 300);
     }
   };
 
@@ -574,36 +585,52 @@ const Community = () => {
               <motion.div key={post.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.03 }} className="bg-card border border-border rounded-xl overflow-hidden flex flex-col">
                 {/* Compact header */}
                 <div className="flex items-center gap-1.5 px-2 pt-1.5 pb-1">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const name = post.profile?.display_name || 'Anonymous';
-                      if (user && post.user_id === user.id) { navigate('/profile'); return; }
-                      navigate(`/profile/${encodeURIComponent(name)}`);
-                    }}
-                    className="flex items-center gap-1 active:opacity-70 transition-opacity min-w-0"
-                  >
-                    {post.profile?.avatar_url ? (
-                      <img src={post.profile.avatar_url} alt="" className="h-4 w-4 rounded-full object-cover shrink-0" />
-                    ) : (
-                      <div className="h-4 w-4 rounded-full gradient-drip flex items-center justify-center shrink-0">
-                        <span className="text-[7px] font-bold text-primary-foreground">
-                          {(post.profile?.display_name || 'A')[0].toUpperCase()}
-                        </span>
-                      </div>
-                    )}
-                    <p className="text-[9px] font-semibold text-foreground truncate">{post.profile?.display_name || 'Anon'}</p>
-                  </button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex items-center gap-1 active:opacity-70 transition-opacity min-w-0"
+                      >
+                        {post.profile?.avatar_url ? (
+                          <img src={post.profile.avatar_url} alt="" className="h-4 w-4 rounded-full object-cover shrink-0" />
+                        ) : (
+                          <div className="h-4 w-4 rounded-full gradient-drip flex items-center justify-center shrink-0">
+                            <span className="text-[7px] font-bold text-primary-foreground">
+                              {(post.profile?.display_name || 'A')[0].toUpperCase()}
+                            </span>
+                          </div>
+                        )}
+                        <p className="text-[9px] font-semibold text-foreground truncate">{post.profile?.display_name || 'Anon'}</p>
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="min-w-[140px]">
+                      <DropdownMenuItem
+                        onClick={() => {
+                          const name = post.profile?.display_name || 'Anonymous';
+                          if (user && post.user_id === user.id) { navigate('/profile'); return; }
+                          navigate(`/profile/${encodeURIComponent(name)}`);
+                        }}
+                      >
+                        <User className="mr-2 h-3.5 w-3.5" /> View Profile
+                      </DropdownMenuItem>
+                      {user && post.user_id !== user.id && !isPlaceholder(post) && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleFollowToggle(post.user_id)}>
+                            {followToggles[post.user_id]
+                              ? <><UserCheck className="mr-2 h-3.5 w-3.5 text-primary" /> Unfollow</>
+                              : <><UserPlus className="mr-2 h-3.5 w-3.5" /> Follow</>
+                            }
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                   <span className="flex-1" />
                   {user && post.user_id !== user.id && !isPlaceholder(post) && (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleFollowToggle(post.user_id); }}
-                      className={`shrink-0 p-0.5 rounded transition-all active:scale-90 ${
-                        followToggles[post.user_id] ? 'text-primary' : 'text-muted-foreground'
-                      }`}
-                    >
-                      {followToggles[post.user_id] ? <UserCheck className="h-3 w-3" /> : <UserPlus className="h-3 w-3" />}
-                    </button>
+                    <span className={`shrink-0 p-0.5 ${followToggles[post.user_id] ? 'text-primary' : 'text-muted-foreground/40'}`}>
+                      {followToggles[post.user_id] ? <UserCheck className="h-3 w-3" /> : null}
+                    </span>
                   )}
                 </div>
 
