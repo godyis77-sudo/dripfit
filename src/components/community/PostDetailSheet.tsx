@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, UserPlus, UserCheck, ExternalLink, Pencil, Check } from 'lucide-react';
+import { X, Send, UserPlus, UserCheck, ExternalLink, Pencil, Check, ZoomIn, ZoomOut } from 'lucide-react';
 import { detectRetailer } from '@/lib/retailerDetect';
 import { getBestRetailerForItem } from '@/lib/retailerLinks';
 
@@ -61,6 +61,60 @@ export const PostDetailSheet = ({
   const [commentText, setCommentText] = useState('');
   const [editingQuestion, setEditingQuestion] = useState(false);
   const [questionText, setQuestionText] = useState('');
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const lastTouch = useRef<{ x: number; y: number } | null>(null);
+  const lastDist = useRef<number | null>(null);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      lastDist.current = Math.hypot(dx, dy);
+    } else if (e.touches.length === 1 && zoom > 1) {
+      lastTouch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      setIsPanning(true);
+    }
+  }, [zoom]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2 && lastDist.current !== null) {
+      e.preventDefault();
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.hypot(dx, dy);
+      const scale = dist / lastDist.current;
+      setZoom(prev => Math.min(4, Math.max(1, prev * scale)));
+      lastDist.current = dist;
+    } else if (e.touches.length === 1 && isPanning && lastTouch.current && zoom > 1) {
+      const dx = e.touches[0].clientX - lastTouch.current.x;
+      const dy = e.touches[0].clientY - lastTouch.current.y;
+      setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+      lastTouch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  }, [isPanning, zoom]);
+
+  const handleTouchEnd = useCallback(() => {
+    lastDist.current = null;
+    lastTouch.current = null;
+    setIsPanning(false);
+    if (zoom <= 1) setPan({ x: 0, y: 0 });
+  }, [zoom]);
+
+  const toggleZoom = () => {
+    if (zoom > 1) {
+      setZoom(1);
+      setPan({ x: 0, y: 0 });
+    } else {
+      setZoom(2.5);
+    }
+  };
+
+  const handleDoubleClick = useCallback(() => {
+    if (zoom > 1) { setZoom(1); setPan({ x: 0, y: 0 }); }
+    else { setZoom(2.5); }
+  }, [zoom]);
 
   if (!post) return null;
 
@@ -147,22 +201,35 @@ export const PostDetailSheet = ({
             </div>
           </motion.div>
 
-          {/* Image */}
+          {/* Image with pinch-to-zoom */}
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="flex-1 flex items-center justify-center px-2 relative"
+            className="flex-1 flex items-center justify-center px-2 relative overflow-hidden touch-none"
             onClick={(e) => e.stopPropagation()}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onDoubleClick={handleDoubleClick}
           >
             <img
               src={post.result_photo_url}
               alt={post.caption || 'Try-on look'}
-              className="max-w-full max-h-full object-contain rounded-xl"
+              className="max-w-full max-h-full object-contain rounded-xl transition-transform duration-100"
+              style={{ transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)` }}
+              draggable={false}
             />
+            {/* Zoom button */}
+            <button
+              onClick={toggleZoom}
+              className="absolute bottom-3 right-4 h-8 w-8 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
+            >
+              {zoom > 1 ? <ZoomOut className="h-4 w-4 text-white" /> : <ZoomIn className="h-4 w-4 text-white" />}
+            </button>
             {/* Retailer badge */}
-            {retailer && (
+            {retailer && zoom <= 1 && (
               <button
                 onClick={() => onShopLook(post)}
                 className="absolute top-3 right-4 text-[11px] font-bold text-white bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1.5 active:scale-95 transition-transform"
