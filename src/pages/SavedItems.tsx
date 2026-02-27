@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Bookmark, ExternalLink, Trash2, ShoppingBag, Shield } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { getSessionId } from '@/lib/session';
+
 import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
 import BottomTabBar from '@/components/BottomTabBar';
@@ -32,9 +32,8 @@ const SavedItems = () => {
   }, [user]);
 
   const fetchItems = async () => {
-    const query = user
-      ? supabase.from('saved_items').select('*').eq('user_id', user.id)
-      : supabase.from('saved_items').select('*').eq('session_id', getSessionId());
+    if (!user) { setLoading(false); return; }
+    const query = supabase.from('saved_items').select('*').eq('user_id', user.id);
     
     const { data } = await query.order('created_at', { ascending: false });
     setItems((data as SavedItem[]) || []);

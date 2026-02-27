@@ -8,7 +8,7 @@ import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { getSessionId } from '@/lib/session';
+
 import { SUPPORTED_RETAILERS } from '@/lib/types';
 
 interface ShopThisSizeProps {
@@ -77,9 +77,10 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
   const handleSaveForLater = async () => {
     const targetRetailer = matchedRetailer || retailer || '';
     try {
+      if (!user) { toast({ title: 'Sign in to save items' }); return; }
       await supabase.from('saved_items').insert({
-        user_id: user?.id || null,
-        session_id: user ? null : getSessionId(),
+        user_id: user.id,
+        session_id: null,
         product_link: productLink || null,
         retailer: targetRetailer,
         brand: targetRetailer,

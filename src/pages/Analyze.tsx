@@ -7,7 +7,7 @@ import bodySilhouetteScan from '@/assets/body-silhouette-scan.jpg';
 import { PhotoSet, BodyScanResult, FitPreference, ReferenceObject } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { getSessionId } from '@/lib/session';
+
 
 const MESSAGES = [
   'Detecting body landmarks…',
@@ -86,11 +86,11 @@ const Analyze = () => {
   }, []);
 
   const saveToDatabase = async (data: any) => {
+    if (!user) return; // Require auth to save scans
     try {
-      const sessionId = getSessionId();
       const { error: dbError } = await supabase.from('body_scans').insert({
-        user_id: user?.id || null,
-        session_id: user ? null : sessionId,
+        user_id: user.id,
+        session_id: null,
         height_cm: data.heightCm || state?.heightCm || 0,
         chest_min: data.chest?.min ?? 0,
         chest_max: data.chest?.max ?? 0,
