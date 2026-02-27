@@ -31,12 +31,15 @@ interface TryOnsTabProps {
   onPostUpdated?: () => void;
 }
 
+type FilterMode = 'all' | 'public' | 'private';
+
 const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
   const publicCount = tryOnPosts.filter(p => p.is_public).length;
   const [selectedPost, setSelectedPost] = useState<TryOnPost | null>(null);
+  const [filterMode, setFilterMode] = useState<FilterMode>('all');
   const [votes, setVotes] = useState<Record<string, string[]>>({});
   const [voteCounts, setVoteCounts] = useState<Record<string, Record<string, number>>>({});
 
@@ -101,17 +104,25 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
 
   return (
     <>
-      {/* Stats row */}
+      {/* Filter stats row */}
       <div className="flex gap-2 mb-4">
-        {[
-          { label: 'Total', value: tryOnPosts.length },
-          { label: 'Public', value: publicCount },
-          { label: 'Private', value: tryOnPosts.length - publicCount },
-        ].map(s => (
-          <div key={s.label} className="flex-1 bg-card border border-border rounded-lg py-2 text-center">
-            <p className="text-[16px] font-bold text-foreground">{s.value}</p>
-            <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{s.label}</p>
-          </div>
+        {([
+          { key: 'all' as FilterMode, label: 'Total', value: tryOnPosts.length },
+          { key: 'public' as FilterMode, label: 'Public', value: publicCount },
+          { key: 'private' as FilterMode, label: 'Private', value: tryOnPosts.length - publicCount },
+        ]).map(s => (
+          <button
+            key={s.key}
+            onClick={() => setFilterMode(s.key)}
+            className={`flex-1 rounded-lg py-2 text-center transition-all active:scale-95 border ${
+              filterMode === s.key
+                ? 'bg-primary/10 border-primary/30'
+                : 'bg-card border-border'
+            }`}
+          >
+            <p className={`text-[16px] font-bold ${filterMode === s.key ? 'text-primary' : 'text-foreground'}`}>{s.value}</p>
+            <p className={`text-[9px] uppercase tracking-wider ${filterMode === s.key ? 'text-primary/70' : 'text-muted-foreground'}`}>{s.label}</p>
+          </button>
         ))}
       </div>
 
@@ -138,7 +149,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-2">
-            {tryOnPosts.map(post => (
+            {tryOnPosts.filter(p => filterMode === 'all' ? true : filterMode === 'public' ? p.is_public : !p.is_public).map(post => (
               <motion.div key={post.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
                 <div className="w-full rounded-xl overflow-hidden border border-border bg-card text-left">
                   <button
