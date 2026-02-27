@@ -23,8 +23,9 @@ const AvatarUploadSheet = ({ open, onOpenChange, userId, onUploaded }: AvatarUpl
       const fileName = `${userId}/profile.${ext}`;
       const { error } = await supabase.storage.from('avatars').upload(fileName, file, { contentType: file.type, upsert: true });
       if (error) throw error;
-      const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(fileName);
-      const publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+      const { data: signedData, error: signError } = await supabase.storage.from('avatars').createSignedUrl(fileName, 60 * 60 * 24 * 365);
+      if (signError || !signedData?.signedUrl) throw signError || new Error('Failed to create signed URL');
+      const publicUrl = signedData.signedUrl;
       await supabase.from('profiles').update({ avatar_url: publicUrl }).eq('user_id', userId);
       onUploaded(publicUrl);
       toast({ title: 'Profile photo updated!' });
