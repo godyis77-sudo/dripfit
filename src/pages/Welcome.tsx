@@ -62,7 +62,7 @@ const Welcome = () => {
       <nav className="sticky top-0 z-50 h-[52px] flex items-center justify-between px-5 bg-background/80 backdrop-blur-lg border-b border-[hsl(0,0%,10%)]">
         <div className="flex items-center gap-2">
           <Crown className="h-4 w-4 text-primary" />
-          <span className="font-display font-bold text-[16px] tracking-[2px] text-foreground">DRIP FIT</span>
+          <span className="font-display font-bold text-[16px] tracking-[2px] text-foreground">DRIPFITCHECK</span>
         </div>
         <button
           onClick={() => { trackEvent('auth_started'); navigate('/auth'); }}
@@ -271,7 +271,7 @@ const Welcome = () => {
             onClick={() => {
               const url = window.location.origin;
               if (navigator.share) {
-                navigator.share({ title: 'DRIP FIT — Know your size before you buy', text: 'Get AI body measurements, virtual try-on, and real fit feedback.', url });
+                navigator.share({ title: 'DripFitCheck — Know your size before you buy', text: 'Get AI body measurements, virtual try-on, and real fit feedback.', url });
               } else {
                 navigator.clipboard.writeText(url);
                 toast({ title: 'Link copied!', description: 'Share it with friends to help them find their size.' });
@@ -285,7 +285,7 @@ const Welcome = () => {
             </div>
             <div className="flex-1 text-left">
               <p className="text-[12px] font-bold text-foreground">Invite Friends</p>
-              <p className="text-[10px] text-muted-foreground">Share DRIP FIT — help your crew find their size</p>
+              <p className="text-[10px] text-muted-foreground">Share DripFitCheck — help your crew find their size</p>
             </div>
             <Share2 className="h-3.5 w-3.5 text-primary shrink-0" />
           </button>

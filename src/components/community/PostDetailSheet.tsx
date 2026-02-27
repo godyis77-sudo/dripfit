@@ -21,9 +21,15 @@ interface Post {
 }
 
 const VOTE_OPTIONS = [
-  { key: 'love', label: 'Love it', emoji: '❤️' },
-  { key: 'buy', label: 'Buy it', emoji: '🔥' },
+  { key: 'buy_yes', label: 'Buy it', emoji: '🔥' },
+  { key: 'buy_no', label: 'Pass', emoji: '👎' },
   { key: 'keep_shopping', label: 'Keep shopping', emoji: '🛒' },
+] as const;
+
+const FIT_OPTIONS = [
+  { key: 'too_tight', label: 'Too tight' },
+  { key: 'perfect', label: 'Perfect' },
+  { key: 'too_loose', label: 'Too loose' },
 ] as const;
 
 interface PostDetailSheetProps {
@@ -105,17 +111,11 @@ export const PostDetailSheet = ({
   }, [zoom]);
 
   const toggleZoom = () => {
-    if (zoom > 1) {
-      setZoom(1);
-      setPan({ x: 0, y: 0 });
-    } else {
-      setZoom(2.5);
-    }
+    if (zoom > 1) { setZoom(1); setPan({ x: 0, y: 0 }); } else { setZoom(2.5); }
   };
 
   const handleDoubleClick = useCallback(() => {
-    if (zoom > 1) { setZoom(1); setPan({ x: 0, y: 0 }); }
-    else { setZoom(2.5); }
+    if (zoom > 1) { setZoom(1); setPan({ x: 0, y: 0 }); } else { setZoom(2.5); }
   }, [zoom]);
 
   if (!post) return null;
@@ -133,14 +133,13 @@ export const PostDetailSheet = ({
     }
   };
 
-  const handleStartEditQuestion = () => {
-    setQuestionText(displayQuestion);
-    setEditingQuestion(true);
-  };
+  const handleStartEditQuestion = () => { setQuestionText(displayQuestion); setEditingQuestion(true); };
+  const handleSaveQuestion = () => { setEditingQuestion(false); };
 
-  const handleSaveQuestion = () => {
-    setEditingQuestion(false);
-  };
+  // Compute outcome summary
+  const buyYes = voteCounts[post.id]?.buy_yes ?? 0;
+  const totalBuy = buyYes + (voteCounts[post.id]?.buy_no ?? 0) + (voteCounts[post.id]?.keep_shopping ?? 0);
+  const buyPct = totalBuy > 0 ? Math.round((buyYes / totalBuy) * 100) : 0;
 
   return (
     <AnimatePresence>
@@ -160,44 +159,27 @@ export const PostDetailSheet = ({
             className="flex items-center justify-between px-4 pt-4 pb-2 z-10"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              onClick={() => onNavigateProfile(post)}
-              className="flex items-center gap-2 active:opacity-70 transition-opacity"
-            >
+            <button onClick={() => onNavigateProfile(post)} className="flex items-center gap-2 active:opacity-70 transition-opacity">
               {post.profile?.avatar_url ? (
                 <img src={post.profile.avatar_url} alt="" className="h-8 w-8 rounded-full object-cover border-2 border-white/20" />
               ) : (
                 <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center">
-                  <span className="text-xs font-bold text-white">
-                    {(post.profile?.display_name || 'A')[0].toUpperCase()}
-                  </span>
+                  <span className="text-xs font-bold text-white">{(post.profile?.display_name || 'A')[0].toUpperCase()}</span>
                 </div>
               )}
               <div>
                 <p className="text-sm font-semibold text-white">{post.profile?.display_name || 'Anonymous'}</p>
-                <p className="text-[10px] text-white/50">
-                  {new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                </p>
+                <p className="text-[10px] text-white/50">{new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
               </div>
             </button>
             <div className="flex items-center gap-2">
               {!isOwnPost && !isPlaceholder && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); onFollow(post.user_id); }}
-                  className={`h-8 px-3 rounded-full text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95 ${
-                    isFollowing
-                      ? 'bg-white/10 text-white'
-                      : 'bg-white text-black'
-                  }`}
-                >
+                <button onClick={(e) => { e.stopPropagation(); onFollow(post.user_id); }} className={`h-8 px-3 rounded-full text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95 ${isFollowing ? 'bg-white/10 text-white' : 'bg-white text-black'}`}>
                   {isFollowing ? <UserCheck className="h-3 w-3" /> : <UserPlus className="h-3 w-3" />}
                   {isFollowing ? 'Following' : 'Follow'}
                 </button>
               )}
-              <button
-                onClick={onClose}
-                className="h-8 w-8 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
-              >
+              <button onClick={onClose} className="h-8 w-8 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform">
                 <X className="h-4 w-4 text-white" />
               </button>
             </div>
@@ -216,26 +198,12 @@ export const PostDetailSheet = ({
             onTouchEnd={handleTouchEnd}
             onDoubleClick={handleDoubleClick}
           >
-            <img
-              src={post.result_photo_url}
-              alt={post.caption || 'Try-on look'}
-              className="max-w-full max-h-full object-contain rounded-xl transition-transform duration-100"
-              style={{ transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)` }}
-              draggable={false}
-            />
-            {/* Zoom button */}
-            <button
-              onClick={toggleZoom}
-              className="absolute bottom-3 right-4 h-8 w-8 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
-            >
+            <img src={post.result_photo_url} alt={post.caption || 'Try-on look'} className="max-w-full max-h-full object-contain rounded-xl transition-transform duration-100" style={{ transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)` }} draggable={false} />
+            <button onClick={toggleZoom} className="absolute bottom-3 right-4 h-8 w-8 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform">
               {zoom > 1 ? <ZoomOut className="h-4 w-4 text-white" /> : <ZoomIn className="h-4 w-4 text-white" />}
             </button>
-            {/* Retailer badge */}
             {retailer && zoom <= 1 && (
-              <button
-                onClick={() => onShopLook(post)}
-                className="absolute top-3 right-4 text-[11px] font-bold text-white bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1.5 active:scale-95 transition-transform"
-              >
+              <button onClick={() => onShopLook(post)} className="absolute top-3 right-4 text-[11px] font-bold text-white bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1.5 active:scale-95 transition-transform">
                 {retailer}
                 <ExternalLink className="h-3 w-3" />
               </button>
@@ -254,14 +222,7 @@ export const PostDetailSheet = ({
             <div className="flex items-start gap-2">
               {editingQuestion ? (
                 <div className="flex-1 flex items-center gap-2">
-                  <input
-                    type="text"
-                    value={questionText}
-                    onChange={(e) => setQuestionText(e.target.value)}
-                    className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40"
-                    autoFocus
-                    onKeyDown={(e) => { if (e.key === 'Enter') handleSaveQuestion(); }}
-                  />
+                  <input type="text" value={questionText} onChange={(e) => setQuestionText(e.target.value)} className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" autoFocus onKeyDown={(e) => { if (e.key === 'Enter') handleSaveQuestion(); }} />
                   <button onClick={handleSaveQuestion} className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center active:scale-90">
                     <Check className="h-4 w-4 text-white" />
                   </button>
@@ -269,17 +230,22 @@ export const PostDetailSheet = ({
               ) : (
                 <>
                   <p className="flex-1 text-white font-bold text-sm leading-snug">{displayQuestion}</p>
-                  <button
-                    onClick={handleStartEditQuestion}
-                    className="shrink-0 h-7 w-7 rounded-full bg-white/10 flex items-center justify-center active:scale-90 transition-transform"
-                  >
+                  <button onClick={handleStartEditQuestion} className="shrink-0 h-7 w-7 rounded-full bg-white/10 flex items-center justify-center active:scale-90 transition-transform">
                     <Pencil className="h-3 w-3 text-white/70" />
                   </button>
                 </>
               )}
             </div>
 
-            {/* Emoji votes */}
+            {/* Outcome summary */}
+            {totalBuy > 0 && (
+              <div className="text-center">
+                <p className="text-[16px] font-bold text-white">{buyPct}% Buy it</p>
+                <p className="text-[11px] text-white/50">{totalBuy} vote{totalBuy !== 1 ? 's' : ''}</p>
+              </div>
+            )}
+
+            {/* Buy votes */}
             <div className="flex gap-2">
               {VOTE_OPTIONS.map(v => {
                 const active = (votes[post.id] || []).includes(v.key);
@@ -287,11 +253,7 @@ export const PostDetailSheet = ({
                   <button
                     key={v.key}
                     onClick={() => onVote(post.id, v.key)}
-                    className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${
-                      active
-                        ? 'border-white bg-white/20 text-white'
-                        : 'border-white/20 text-white/70'
-                    }`}
+                    className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${active ? 'border-white bg-white/20 text-white' : 'border-white/20 text-white/70'}`}
                   >
                     <div>
                       <span className="mr-1">{v.emoji}</span>
@@ -303,30 +265,29 @@ export const PostDetailSheet = ({
               })}
             </div>
 
+            {/* Optional fit vote */}
+            <div className="flex gap-2">
+              {FIT_OPTIONS.map(f => {
+                const active = (votes[post.id] || []).includes(f.key);
+                return (
+                  <button
+                    key={f.key}
+                    onClick={() => onVote(post.id, f.key)}
+                    className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all active:scale-95 ${active ? 'border-white/60 bg-white/10 text-white' : 'border-white/10 text-white/40'}`}
+                  >
+                    {f.label}
+                  </button>
+                );
+              })}
+            </div>
+
             {/* Chat input */}
             <div className="flex items-center gap-2">
-              <input
-                type="text"
-                placeholder="Drop a comment…"
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                className="flex-1 h-10 rounded-xl bg-white/10 border border-white/20 px-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 transition-colors"
-                onKeyDown={(e) => { if (e.key === 'Enter') handleSendComment(); }}
-              />
-              <button
-                onClick={handleSendComment}
-                className="shrink-0 h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center active:scale-90 transition-transform"
-              >
+              <input type="text" placeholder="Drop a comment…" value={commentText} onChange={(e) => setCommentText(e.target.value)} className="flex-1 h-10 rounded-xl bg-white/10 border border-white/20 px-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 transition-colors" onKeyDown={(e) => { if (e.key === 'Enter') handleSendComment(); }} />
+              <button onClick={handleSendComment} className="shrink-0 h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center active:scale-90 transition-transform">
                 <Send className="h-4 w-4 text-white" />
               </button>
             </div>
-
-            {/* Rating count */}
-            {(post.rating_count ?? 0) > 0 && (
-              <p className="text-[11px] text-white/40 text-center">
-                {post.rating_count} {post.rating_count === 1 ? 'rating' : 'ratings'}
-              </p>
-            )}
           </motion.div>
         </motion.div>
       )}

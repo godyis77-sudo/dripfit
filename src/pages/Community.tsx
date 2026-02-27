@@ -40,9 +40,15 @@ interface Post {
 }
 
 const VOTE_OPTIONS = [
-  { key: 'love', label: 'Love it', emoji: '❤️' },
-  { key: 'buy', label: 'Buy it', emoji: '🔥' },
+  { key: 'buy_yes', label: 'Buy it', emoji: '🔥' },
+  { key: 'buy_no', label: 'Pass', emoji: '👎' },
   { key: 'keep_shopping', label: 'Keep shopping', emoji: '🛒' },
+] as const;
+
+const FIT_OPTIONS = [
+  { key: 'too_tight', label: 'Too tight' },
+  { key: 'perfect', label: 'Perfect' },
+  { key: 'too_loose', label: 'Too loose' },
 ] as const;
 
 type TrendingSort = 'hot' | 'love' | 'buy' | 'newest' | 'user';
@@ -150,6 +156,7 @@ const Community = () => {
   const [submitting, setSubmitting] = useState(false);
   const [votes, setVotes] = useState<Record<string, string[]>>({});
   const [voteCounts, setVoteCounts] = useState<Record<string, Record<string, number>>>({});
+  const [fitVotes, setFitVotes] = useState<Record<string, string>>({});
   const [showPostFlow, setShowPostFlow] = useState(false);
   const [detailPost, setDetailPost] = useState<Post | null>(null);
   const [trendingSort, setTrendingSort] = useState<TrendingSort>('hot');
@@ -302,7 +309,7 @@ const Community = () => {
     const counts: Record<string, Record<string, number>> = {};
     const userVotes: Record<string, string[]> = {};
     (allVotes as any[]).forEach((v: any) => {
-      if (!counts[v.post_id]) counts[v.post_id] = { love: 0, buy: 0, keep_shopping: 0 };
+      if (!counts[v.post_id]) counts[v.post_id] = { buy_yes: 0, buy_no: 0, keep_shopping: 0, too_tight: 0, perfect: 0, too_loose: 0 };
       counts[v.post_id][v.vote_key] = (counts[v.post_id][v.vote_key] || 0) + 1;
       if (user && v.user_id === user.id) {
         if (!userVotes[v.post_id]) userVotes[v.post_id] = [];
@@ -324,44 +331,44 @@ const Community = () => {
     if (!user) { toast({ title: 'Sign in to vote', description: 'Create a free account to share your opinion.', variant: 'destructive' }); return; }
     
     const currentVotes = votes[postId] || [];
+    const isBuyVote = key === 'buy_yes' || key === 'buy_no' || key === 'keep_shopping';
+    const isFitVote = key === 'too_tight' || key === 'perfect' || key === 'too_loose';
     const hasKey = currentVotes.includes(key);
     
     let newVotes: string[];
-    if (key === 'keep_shopping') {
-      // keep_shopping is exclusive — toggle it, remove love/buy
+    if (isFitVote) {
+      // Fit votes are mutually exclusive among fit options
+      const otherFit = currentVotes.filter(v => !['too_tight', 'perfect', 'too_loose'].includes(v));
       if (hasKey) {
-        newVotes = [];
+        newVotes = otherFit;
       } else {
-        newVotes = ['keep_shopping'];
-        // Remove love/buy from DB
-        for (const k of currentVotes) {
-          if (k !== 'keep_shopping') {
-            await supabase.from('community_votes' as any).delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', k);
-          }
+        // Remove existing fit votes from DB
+        for (const k of currentVotes.filter(v => ['too_tight', 'perfect', 'too_loose'].includes(v))) {
+          await supabase.from('community_votes' as any).delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', k);
         }
+        newVotes = [...otherFit, key];
       }
     } else {
-      // love/buy can coexist, but remove keep_shopping if present
+      // Buy votes are mutually exclusive among buy options
+      const otherBuy = currentVotes.filter(v => !['buy_yes', 'buy_no', 'keep_shopping'].includes(v));
       if (hasKey) {
-        newVotes = currentVotes.filter(v => v !== key);
+        newVotes = [...otherBuy];
       } else {
-        newVotes = [...currentVotes.filter(v => v !== 'keep_shopping'), key];
-        // Remove keep_shopping from DB if it was there
-        if (currentVotes.includes('keep_shopping')) {
-          await supabase.from('community_votes' as any).delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', 'keep_shopping');
+        // Remove existing buy votes from DB
+        for (const k of currentVotes.filter(v => ['buy_yes', 'buy_no', 'keep_shopping'].includes(v))) {
+          await supabase.from('community_votes' as any).delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', k);
         }
+        newVotes = [...otherBuy, key];
       }
     }
     
     // Optimistic update
     setVotes(prev => ({ ...prev, [postId]: newVotes }));
     setVoteCounts(prev => {
-      const postCounts = { ...(prev[postId] || { love: 0, buy: 0, keep_shopping: 0 }) };
-      // Decrement removed keys
+      const postCounts = { ...(prev[postId] || { buy_yes: 0, buy_no: 0, keep_shopping: 0, too_tight: 0, perfect: 0, too_loose: 0 }) };
       for (const k of currentVotes) {
         if (!newVotes.includes(k)) postCounts[k] = Math.max(0, (postCounts[k] || 0) - 1);
       }
-      // Increment added keys
       for (const k of newVotes) {
         if (!currentVotes.includes(k)) postCounts[k] = (postCounts[k] || 0) + 1;
       }
@@ -375,7 +382,7 @@ const Community = () => {
       await supabase.from('community_votes' as any).insert({ post_id: postId, user_id: user.id, vote_key: key } as any);
     }
     
-    trackEvent('vote_cast', { vote: key, source: 'fitcheck' });
+    trackEvent('vote_submitted', { vote: key, source: 'fitcheck' });
     trackEvent('fitcheck_voted', { vote: key });
   };
 
@@ -442,8 +449,8 @@ const Community = () => {
           <div className="flex gap-1.5 mb-3 overflow-x-auto no-scrollbar">
             {([
               { key: 'hot' as TrendingSort, label: '🔥 Hot' },
-              { key: 'love' as TrendingSort, label: '❤️ Top Liked' },
-              { key: 'buy' as TrendingSort, label: '🛍️ Top Buy' },
+              { key: 'love' as TrendingSort, label: '👍 Top Buy' },
+              { key: 'buy' as TrendingSort, label: '🛍️ Top Pass' },
               { key: 'newest' as TrendingSort, label: '🕐 Newest' },
               { key: 'user' as TrendingSort, label: '👤 By User' },
             ]).map(s => (
@@ -493,8 +500,8 @@ const Community = () => {
             {([
               { key: 'newest' as TrendingSort, label: '🕐 Newest' },
               { key: 'hot' as TrendingSort, label: '🔥 Hot' },
-              { key: 'love' as TrendingSort, label: '❤️ Top Liked' },
-              { key: 'buy' as TrendingSort, label: '🛍️ Top Buy' },
+              { key: 'love' as TrendingSort, label: '👍 Top Buy' },
+              { key: 'buy' as TrendingSort, label: '🛍️ Top Pass' },
               { key: 'user' as TrendingSort, label: '👤 By User' },
             ]).map(s => (
               <button
@@ -588,13 +595,13 @@ const Community = () => {
             const getCount = (id: string, key: string) => voteCounts[id]?.[key] ?? 0;
             switch (trendingSort) {
               case 'hot':
-                visiblePosts = [...visiblePosts].sort((a, b) => (getCount(b.id, 'love') + getCount(b.id, 'buy')) - (getCount(a.id, 'love') + getCount(a.id, 'buy')));
+                visiblePosts = [...visiblePosts].sort((a, b) => (getCount(b.id, 'buy_yes') + getCount(b.id, 'buy_no')) - (getCount(a.id, 'buy_yes') + getCount(a.id, 'buy_no')));
                 break;
               case 'love':
-                visiblePosts = [...visiblePosts].sort((a, b) => getCount(b.id, 'love') - getCount(a.id, 'love'));
+                visiblePosts = [...visiblePosts].sort((a, b) => getCount(b.id, 'buy_yes') - getCount(a.id, 'buy_yes'));
                 break;
               case 'buy':
-                visiblePosts = [...visiblePosts].sort((a, b) => getCount(b.id, 'buy') - getCount(a.id, 'buy'));
+                visiblePosts = [...visiblePosts].sort((a, b) => getCount(b.id, 'buy_no') - getCount(a.id, 'buy_no'));
                 break;
               case 'newest':
                 visiblePosts = [...visiblePosts].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -610,13 +617,13 @@ const Community = () => {
             const getCountF = (id: string, key: string) => voteCounts[id]?.[key] ?? 0;
             switch (followingSort) {
               case 'hot':
-                visiblePosts = [...visiblePosts].sort((a, b) => (getCountF(b.id, 'love') + getCountF(b.id, 'buy')) - (getCountF(a.id, 'love') + getCountF(a.id, 'buy')));
+                visiblePosts = [...visiblePosts].sort((a, b) => (getCountF(b.id, 'buy_yes') + getCountF(b.id, 'buy_no')) - (getCountF(a.id, 'buy_yes') + getCountF(a.id, 'buy_no')));
                 break;
               case 'love':
-                visiblePosts = [...visiblePosts].sort((a, b) => getCountF(b.id, 'love') - getCountF(a.id, 'love'));
+                visiblePosts = [...visiblePosts].sort((a, b) => getCountF(b.id, 'buy_yes') - getCountF(a.id, 'buy_yes'));
                 break;
               case 'buy':
-                visiblePosts = [...visiblePosts].sort((a, b) => getCountF(b.id, 'buy') - getCountF(a.id, 'buy'));
+                visiblePosts = [...visiblePosts].sort((a, b) => getCountF(b.id, 'buy_no') - getCountF(a.id, 'buy_no'));
                 break;
               case 'newest':
                 visiblePosts = [...visiblePosts].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -792,33 +799,72 @@ const Community = () => {
                   })()}
                 </button>
 
-                {/* Compact vote row */}
-                <div className="flex gap-1 px-1.5 pt-1.5">
-                  {VOTE_OPTIONS.map(v => {
-                    const active = (votes[post.id] || []).includes(v.key);
-                    return (
-                      <button
-                        key={v.key}
-                        onClick={() => handleVote(post.id, v.key)}
-                        className={`flex-1 py-1.5 rounded-md text-[9px] font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${
-                          active
-                            ? 'border-primary bg-primary/10 text-primary'
-                            : 'border-border text-muted-foreground'
-                        }`}
-                      >
-                        {v.emoji}
-                        <span className="text-[8px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
-                      </button>
-                    );
-                  })}
+                {/* Buy vote row */}
+                <div className="px-1.5 pt-1.5">
+                  <p className="text-[8px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Buy it?</p>
+                  <div className="flex gap-1">
+                    {VOTE_OPTIONS.map(v => {
+                      const active = (votes[post.id] || []).includes(v.key);
+                      return (
+                        <button
+                          key={v.key}
+                          onClick={() => handleVote(post.id, v.key)}
+                          className={`flex-1 py-1.5 rounded-md text-[9px] font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${
+                            active
+                              ? 'border-primary bg-primary/10 text-primary'
+                              : 'border-border text-muted-foreground'
+                          }`}
+                        >
+                          {v.emoji}
+                          <span className="text-[8px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {/* Outcome summary */}
+                  {(() => {
+                    const buyYes = voteCounts[post.id]?.buy_yes ?? 0;
+                    const total = buyYes + (voteCounts[post.id]?.buy_no ?? 0) + (voteCounts[post.id]?.keep_shopping ?? 0);
+                    if (total > 0) {
+                      const pct = Math.round((buyYes / total) * 100);
+                      return (
+                        <p className="text-[9px] font-bold text-primary mt-1 text-center">
+                          {pct}% Buy it · {total} vote{total !== 1 ? 's' : ''}
+                        </p>
+                      );
+                    }
+                    return null;
+                  })()}
                 </div>
 
-                {/* Mini chat box */}
+                {/* Optional fit vote */}
+                <div className="px-1.5 pt-1">
+                  <div className="flex gap-1">
+                    {FIT_OPTIONS.map(f => {
+                      const active = (votes[post.id] || []).includes(f.key);
+                      return (
+                        <button
+                          key={f.key}
+                          onClick={() => handleVote(post.id, f.key)}
+                          className={`flex-1 py-1 rounded-md text-[8px] font-bold border transition-all active:scale-95 ${
+                            active
+                              ? 'border-primary/60 bg-primary/5 text-primary'
+                              : 'border-border/50 text-muted-foreground/60'
+                          }`}
+                        >
+                          {f.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Mini comment */}
                 <div className="px-1.5 pt-1 pb-1.5">
                   <div className="flex items-center gap-1">
                     <input
                       type="text"
-                      placeholder="Say something…"
+                      placeholder="Comment…"
                       className="flex-1 h-6 rounded-md bg-muted/50 border border-border px-2 text-[9px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && (e.target as HTMLInputElement).value.trim()) {

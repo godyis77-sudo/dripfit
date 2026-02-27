@@ -179,6 +179,23 @@ const Results = () => {
         <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} fitPreference={fitPref} />
 
         {/* Trust panel — confidence, between sizes, brand notes, quick adjust */}
+        {/* Return Risk warning */}
+        {(confidence === 'low' || confidence === 'medium') && (
+          <div className={`rounded-xl border px-3 py-2.5 mb-3 ${confidence === 'low' ? 'bg-orange-500/10 border-orange-500/30' : 'bg-primary/5 border-primary/20'}`}>
+            <div className="flex items-center gap-2 mb-1">
+              <Sparkles className={`h-4 w-4 ${confidence === 'low' ? 'text-orange-500' : 'text-primary'}`} />
+              <p className="text-[12px] font-bold text-foreground">
+                {confidence === 'low' ? '⚠️ Higher Return Risk' : '📏 Between Sizes'}
+              </p>
+            </div>
+            <p className="text-[10px] text-muted-foreground leading-relaxed">
+              {confidence === 'low'
+                ? `We recommend trying ${shiftSize(adjustedSize, 1)} as a safer alternative. Consider ordering both ${adjustedSize} and ${shiftSize(adjustedSize, 1)} if returns are free.`
+                : `You're close to the boundary. ${adjustedSize} is our best pick, but ${shiftSize(adjustedSize, 1)} could also work for a looser fit.`}
+            </p>
+          </div>
+        )}
+
         <TrustPanel
           confidence={confidence}
           recommendedSize={adjustedSize}
