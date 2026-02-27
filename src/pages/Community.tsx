@@ -442,8 +442,8 @@ const Community = () => {
           <div className="flex gap-1.5 mb-3 overflow-x-auto no-scrollbar">
             {([
               { key: 'hot' as TrendingSort, label: '🔥 Hot' },
-              { key: 'love' as TrendingSort, label: '❤️ Most Loved' },
-              { key: 'buy' as TrendingSort, label: '🛍️ Most Bought' },
+              { key: 'love' as TrendingSort, label: '❤️ Top Liked' },
+              { key: 'buy' as TrendingSort, label: '🛍️ Top Buy' },
               { key: 'newest' as TrendingSort, label: '🕐 Newest' },
               { key: 'user' as TrendingSort, label: '👤 By User' },
             ]).map(s => (
@@ -493,8 +493,8 @@ const Community = () => {
             {([
               { key: 'newest' as TrendingSort, label: '🕐 Newest' },
               { key: 'hot' as TrendingSort, label: '🔥 Hot' },
-              { key: 'love' as TrendingSort, label: '❤️ Most Loved' },
-              { key: 'buy' as TrendingSort, label: '🛍️ Most Bought' },
+              { key: 'love' as TrendingSort, label: '❤️ Top Liked' },
+              { key: 'buy' as TrendingSort, label: '🛍️ Top Buy' },
               { key: 'user' as TrendingSort, label: '👤 By User' },
             ]).map(s => (
               <button
