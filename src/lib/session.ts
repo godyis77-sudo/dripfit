@@ -54,3 +54,45 @@ export function getShoppingHabit(): ShoppingHabit | null {
 export function setShoppingHabit(habit: ShoppingHabit): void {
   localStorage.setItem(SHOP_HABIT_KEY, habit);
 }
+
+// Region / country detection
+const REGION_KEY = 'dripcheck_region';
+
+export type UserRegion = 'us' | 'ca' | 'gb' | 'au' | 'eu' | 'other';
+
+const TIMEZONE_REGION_MAP: Record<string, UserRegion> = {
+  'America/New_York': 'us', 'America/Chicago': 'us', 'America/Denver': 'us', 'America/Los_Angeles': 'us',
+  'America/Toronto': 'ca', 'America/Vancouver': 'ca', 'America/Edmonton': 'ca', 'America/Montreal': 'ca',
+  'Europe/London': 'gb', 'Australia/Sydney': 'au', 'Australia/Melbourne': 'au',
+  'Europe/Berlin': 'eu', 'Europe/Paris': 'eu', 'Europe/Madrid': 'eu', 'Europe/Rome': 'eu', 'Europe/Amsterdam': 'eu',
+};
+
+export function detectRegion(): UserRegion {
+  const saved = localStorage.getItem(REGION_KEY) as UserRegion | null;
+  if (saved) return saved;
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const region = TIMEZONE_REGION_MAP[tz];
+    if (region) { localStorage.setItem(REGION_KEY, region); return region; }
+    // Fallback: check language
+    const lang = navigator.language.toLowerCase();
+    if (lang.includes('en-us')) return setAndReturn('us');
+    if (lang.includes('en-ca') || lang.includes('fr-ca')) return setAndReturn('ca');
+    if (lang.includes('en-gb')) return setAndReturn('gb');
+    if (lang.includes('en-au')) return setAndReturn('au');
+  } catch { /* ignore */ }
+  return 'us'; // default
+}
+
+function setAndReturn(r: UserRegion): UserRegion {
+  localStorage.setItem(REGION_KEY, r);
+  return r;
+}
+
+export function getUserRegion(): UserRegion {
+  return (localStorage.getItem(REGION_KEY) as UserRegion) || detectRegion();
+}
+
+export function setUserRegion(region: UserRegion): void {
+  localStorage.setItem(REGION_KEY, region);
+}

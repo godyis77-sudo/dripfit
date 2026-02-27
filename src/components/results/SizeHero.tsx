@@ -10,6 +10,7 @@ interface SizeHeroProps {
   recommendedSize: string;
   confidence: Confidence;
   whyLine?: string;
+  fitPreference?: string;
 }
 
 const confidenceConfig: Record<Confidence, { icon: typeof Shield; label: string; class: string }> = {
@@ -18,7 +19,9 @@ const confidenceConfig: Record<Confidence, { icon: typeof Shield; label: string;
   low: { icon: ShieldAlert, label: 'Low confidence', class: 'bg-destructive/15 text-destructive border border-destructive/20' },
 };
 
-const SizeHero = ({ retailer, category, recommendedSize, confidence, whyLine }: SizeHeroProps) => {
+const fitLabels: Record<string, string> = { fitted: 'Fitted', regular: 'Regular', relaxed: 'Relaxed' };
+
+const SizeHero = ({ retailer, category, recommendedSize, confidence, whyLine, fitPreference }: SizeHeroProps) => {
   const [showSheet, setShowSheet] = useState(false);
   const conf = confidenceConfig[confidence];
   const Icon = conf.icon;
@@ -27,7 +30,9 @@ const SizeHero = ({ retailer, category, recommendedSize, confidence, whyLine }: 
     <>
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="text-center mb-5">
         <h1 className="text-base font-bold text-foreground mb-0.5">Your Best Size</h1>
+        {fitPreference && <p className="text-[11px] text-primary font-semibold mb-0.5">Recommended for {fitLabels[fitPreference] || fitPreference} fit</p>}
         {retailer && category && <p className="text-[11px] text-muted-foreground mb-3">{retailer} · {category}</p>}
+        {!retailer && !category && !fitPreference && <div className="mb-3" />}
 
         <motion.div initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.15, type: 'spring', stiffness: 200 }} className="inline-flex flex-col items-center">
           <div className="w-24 h-24 rounded-full border-2 border-primary/30 bg-primary/5 flex items-center justify-center glow-primary mb-2.5">
