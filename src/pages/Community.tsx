@@ -489,212 +489,130 @@ const Community = () => {
           }
           
           return (
-          <div className="space-y-3 pb-20">
-            <AnimatePresence>
-              {visiblePosts.map((post, idx) => (
-                <motion.div key={post.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} className="bg-card border border-border rounded-xl overflow-hidden">
-                  {/* Minimal header */}
-                  <div className="flex items-center gap-2 px-2.5 pt-2 pb-1">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const name = post.profile?.display_name || 'Anonymous';
-                        if (user && post.user_id === user.id) { navigate('/profile'); return; }
-                        navigate(`/profile/${encodeURIComponent(name)}`);
-                      }}
-                      className="flex items-center gap-2 active:opacity-70 transition-opacity"
-                    >
-                      {post.profile?.avatar_url ? (
-                        <img src={post.profile.avatar_url} alt="" className="h-5 w-5 rounded-full object-cover" />
-                      ) : (
-                        <div className="h-5 w-5 rounded-full gradient-drip flex items-center justify-center">
-                          <span className="text-[8px] font-bold text-primary-foreground">
-                            {(post.profile?.display_name || 'A')[0].toUpperCase()}
-                          </span>
-                        </div>
-                      )}
-                      <p className="text-[11px] font-semibold text-foreground">{post.profile?.display_name || 'Anonymous'}</p>
-                    </button>
-                    <span className="flex-1" />
-                    {/* Follow button */}
-                    {user && post.user_id !== user.id && !isPlaceholder(post) && (
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleFollowToggle(post.user_id); }}
-                        className={`flex items-center gap-0.5 px-2 py-1 rounded-md text-[9px] font-bold transition-all active:scale-95 ${
-                          followToggles[post.user_id]
-                            ? 'bg-primary/10 text-primary border border-primary/20'
-                            : 'bg-muted/50 text-muted-foreground border border-border'
-                        }`}
-                      >
-                        {followToggles[post.user_id] ? <UserCheck className="h-2.5 w-2.5" /> : <UserPlus className="h-2.5 w-2.5" />}
-                        {followToggles[post.user_id] ? 'Following' : 'Follow'}
-                      </button>
+          <div className="grid grid-cols-2 gap-2 pb-20">
+            {visiblePosts.map((post, idx) => (
+              <motion.div key={post.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.03 }} className="bg-card border border-border rounded-xl overflow-hidden flex flex-col">
+                {/* Compact header */}
+                <div className="flex items-center gap-1.5 px-2 pt-1.5 pb-1">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const name = post.profile?.display_name || 'Anonymous';
+                      if (user && post.user_id === user.id) { navigate('/profile'); return; }
+                      navigate(`/profile/${encodeURIComponent(name)}`);
+                    }}
+                    className="flex items-center gap-1 active:opacity-70 transition-opacity min-w-0"
+                  >
+                    {post.profile?.avatar_url ? (
+                      <img src={post.profile.avatar_url} alt="" className="h-4 w-4 rounded-full object-cover shrink-0" />
+                    ) : (
+                      <div className="h-4 w-4 rounded-full gradient-drip flex items-center justify-center shrink-0">
+                        <span className="text-[7px] font-bold text-primary-foreground">
+                          {(post.profile?.display_name || 'A')[0].toUpperCase()}
+                        </span>
+                      </div>
                     )}
-                    <p className="text-[9px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
-                  </div>
+                    <p className="text-[9px] font-semibold text-foreground truncate">{post.profile?.display_name || 'Anon'}</p>
+                  </button>
+                  <span className="flex-1" />
+                  {user && post.user_id !== user.id && !isPlaceholder(post) && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleFollowToggle(post.user_id); }}
+                      className={`shrink-0 p-0.5 rounded transition-all active:scale-90 ${
+                        followToggles[post.user_id] ? 'text-primary' : 'text-muted-foreground'
+                      }`}
+                    >
+                      {followToggles[post.user_id] ? <UserCheck className="h-3 w-3" /> : <UserPlus className="h-3 w-3" />}
+                    </button>
+                  )}
+                </div>
 
-                  {/* Image — consistent 4:5 aspect ratio */}
-                  <FullscreenImage src={post.result_photo_url} alt={post.caption || "Try-on look"}>
-                    <div className="relative">
-                      <img 
-                        src={post.result_photo_url} 
-                        alt={post.caption || "Try-on look"} 
-                        loading="lazy" 
-                        decoding="async" 
-                        className="w-full aspect-[4/5] object-cover img-normalize" 
-                        onError={() => handleImageError(post.id)}
-                      />
-                    {/* Question overlay on image */}
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pt-10 pb-2.5 px-3">
-                      <p className="text-white font-bold text-sm leading-snug line-clamp-2">
-                        {(post.caption || getPrompt(post.id, idx)).endsWith('?') && (
-                          <MessageSquare className="inline h-3 w-3 mr-1 opacity-60 -mt-0.5" />
-                        )}
+                {/* Image — square aspect for grid */}
+                <FullscreenImage src={post.result_photo_url} alt={post.caption || "Try-on look"}>
+                  <div className="relative">
+                    <img 
+                      src={post.result_photo_url} 
+                      alt={post.caption || "Try-on look"} 
+                      loading="lazy" 
+                      decoding="async" 
+                      className="w-full aspect-square object-cover" 
+                      onError={() => handleImageError(post.id)}
+                    />
+                    {/* Caption overlay */}
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent pt-6 pb-1.5 px-2">
+                      <p className="text-white font-bold text-[10px] leading-snug line-clamp-2">
                         {post.caption || getPrompt(post.id, idx)}
                       </p>
                     </div>
-                    {/* Retailer badge — product_url > smart recommendation */}
+                    {/* Retailer badge */}
                     {(() => {
                       const retailer = post.product_url
                         ? detectRetailer(post.product_url)
-                        : getBestRetailerForItem(null, post.caption?.toLowerCase().includes('dress') ? 'dress' : post.caption?.toLowerCase().includes('shoe') ? 'shoes' : post.caption?.toLowerCase().includes('jacket') || post.caption?.toLowerCase().includes('coat') ? 'outerwear' : post.caption?.toLowerCase().includes('gym') || post.caption?.toLowerCase().includes('workout') ? 'activewear' : 'top');
+                        : getBestRetailerForItem(null, post.caption?.toLowerCase().includes('dress') ? 'dress' : 'top');
                       return retailer ? (
-                        <span className="absolute top-2 right-2 text-[9px] font-bold text-white bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded-full">
+                        <span className="absolute top-1.5 right-1.5 text-[8px] font-bold text-white bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
                           {retailer}
                         </span>
                       ) : null;
                     })()}
-                    </div>
-                  </FullscreenImage>
-
-                  <div className="p-2.5 space-y-2">
-
-                    {/* Sticky-style voting bar: Buy / Maybe / Pass */}
-                    {/* Primary vote buttons */}
-                    <div className="flex gap-1.5">
-                      {VOTE_OPTIONS.map(v => {
-                        const active = votes[post.id] === v.key;
-                        const hasVoted = !!votes[post.id];
-                        const fakeCount = ((post.id.charCodeAt(0) + v.key.charCodeAt(0)) % 18) + 3;
-                        return (
-                          <button
-                            key={v.key}
-                            onClick={() => handleVote(post.id, v.key)}
-                            className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-[11px] font-bold border transition-all active:scale-95 ${
-                              active
-                                ? 'border-primary bg-primary/10 text-primary'
-                                : 'border-border text-muted-foreground hover:border-primary/30'
-                            }`}
-                          >
-                            <span>{v.emoji}</span> {v.label}
-                            {hasVoted && <span className="text-[9px] font-normal ml-0.5 opacity-60">{fakeCount}</span>}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {/* Secondary: Not my style */}
-                    <button
-                      onClick={() => handleVote(post.id, 'not_my_style')}
-                      className={`w-full py-1.5 rounded-lg text-[10px] font-medium transition-all ${
-                        votes[post.id] === 'not_my_style'
-                          ? 'text-primary bg-primary/5'
-                          : 'text-muted-foreground/60 hover:text-muted-foreground'
-                      }`}
-                    >
-                      Not my style
-                    </button>
-
-                    {/* Shop + Save actions */}
-                    {!isPlaceholder(post) && (
-                      <div className="flex gap-1.5">
-                        <Button
-                          variant="outline"
-                          className={`flex-1 h-8 rounded-lg text-[10px] font-bold ${post.product_url ? 'btn-luxury text-primary-foreground border-0' : ''}`}
-                          onClick={() => handleShopLook(post)}
-                        >
-                          <ShoppingBag className="mr-1 h-3 w-3" /> Shop This Look
-                        </Button>
-                        <Button
-                          variant="outline"
-                          className="h-8 rounded-lg text-[10px] px-3"
-                          onClick={() => {
-                            trackEvent('save_item', { type: 'fitcheck', postId: post.id });
-                            toast({ title: 'Saved', description: 'Added to your saved items.' });
-                          }}
-                        >
-                          <Bookmark className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    )}
-                    {!isPlaceholder(post) && (
-                      <p className="text-[8px] text-muted-foreground/50 text-center">We may earn a commission. It doesn't change your price.</p>
-                    )}
-
-                    {/* Expandable detailed ratings */}
-                    {(post.rating_count ?? 0) > 0 && (
-                      <button
-                        onClick={() => setExpandedRatings(prev => ({ ...prev, [post.id]: !prev[post.id] }))}
-                        className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors w-full"
-                      >
-                        <ChevronDown className={`h-3 w-3 transition-transform ${expandedRatings[post.id] ? 'rotate-180' : ''}`} />
-                        <span>{post.rating_count} detailed {post.rating_count === 1 ? 'rating' : 'ratings'}</span>
-                      </button>
-                    )}
-
-                    <AnimatePresence>
-                      {expandedRatings[post.id] && (post.rating_count ?? 0) > 0 && (
-                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                          <div className="flex items-center gap-2.5 pt-1">
-                            {[
-                              { l: 'Style', v: post.avg_style },
-                              { l: 'Color', v: post.avg_color },
-                              { l: 'Fit', v: post.avg_suitability },
-                              { l: 'Trend', v: post.avg_buy },
-                            ].map(r => (
-                              <div key={r.l} className="flex items-center gap-0.5">
-                                <span className="text-[9px] text-muted-foreground">{r.l}</span>
-                                <span className="text-[10px] font-bold text-foreground">{(r.v ?? 0).toFixed(1)}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
-                    {/* Rate button */}
-                    {ratingPost !== post.id && !isPlaceholder(post) && (
-                      <Button
-                        variant="ghost"
-                        className="w-full rounded-lg h-7 text-[10px] text-muted-foreground hover:text-foreground"
-                        onClick={() => { if (!user) { toast({ title: 'Sign in to rate', variant: 'destructive' }); return; } setRatingPost(post.id); }}
-                      >
-                        <Star className="mr-1 h-3 w-3" /> Detailed rating
-                      </Button>
-                    )}
-
-                    {/* Rating form */}
-                    {ratingPost === post.id && (
-                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-2 pt-2 border-t border-border">
-                        {RATING_LABELS.map(({ key, label }) => (
-                          <div key={key} className="flex items-center justify-between">
-                            <span className="text-[12px] text-muted-foreground">{label}</span>
-                            <StarRating value={ratings[key]} onChange={v => setRatings(p => ({ ...p, [key]: v }))} />
-                          </div>
-                        ))}
-                        <Textarea placeholder="Optional comment" value={comment} onChange={e => setComment(e.target.value)} className="rounded-lg resize-none text-[12px]" rows={2} />
-                        <div className="flex gap-1.5">
-                          <Button variant="outline" className="flex-1 rounded-lg h-8 text-[11px]" onClick={() => setRatingPost(null)}>Cancel</Button>
-                          <Button className="flex-1 rounded-lg h-8 btn-luxury text-primary-foreground text-[11px]" onClick={() => handleSubmitRating(post.id)} disabled={submitting}>
-                            <Send className="mr-1 h-3 w-3" /> Submit
-                          </Button>
-                        </div>
-                      </motion.div>
-                    )}
                   </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
+                </FullscreenImage>
+
+                {/* Compact vote row */}
+                <div className="flex gap-1 px-1.5 pt-1.5">
+                  {VOTE_OPTIONS.map(v => {
+                    const active = votes[post.id] === v.key;
+                    return (
+                      <button
+                        key={v.key}
+                        onClick={() => handleVote(post.id, v.key)}
+                        className={`flex-1 py-1.5 rounded-md text-[9px] font-bold border transition-all active:scale-95 ${
+                          active
+                            ? 'border-primary bg-primary/10 text-primary'
+                            : 'border-border text-muted-foreground'
+                        }`}
+                      >
+                        {v.emoji}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Mini chat box */}
+                <div className="px-1.5 pt-1 pb-1.5">
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="text"
+                      placeholder="Say something…"
+                      className="flex-1 h-6 rounded-md bg-muted/50 border border-border px-2 text-[9px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && (e.target as HTMLInputElement).value.trim()) {
+                          const val = (e.target as HTMLInputElement).value.trim();
+                          if (!user) { toast({ title: 'Sign in to comment', variant: 'destructive' }); return; }
+                          trackEvent('fitcheck_reaction', { postId: post.id, comment: val });
+                          toast({ title: 'Sent!', description: val });
+                          (e.target as HTMLInputElement).value = '';
+                        }
+                      }}
+                    />
+                    <button
+                      className="shrink-0 h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center active:scale-90 transition-transform"
+                      onClick={(e) => {
+                        const input = (e.currentTarget.previousSibling as HTMLInputElement);
+                        if (input?.value?.trim()) {
+                          if (!user) { toast({ title: 'Sign in to comment', variant: 'destructive' }); return; }
+                          trackEvent('fitcheck_reaction', { postId: post.id, comment: input.value.trim() });
+                          toast({ title: 'Sent!', description: input.value.trim() });
+                          input.value = '';
+                        }
+                      }}
+                    >
+                      <Send className="h-2.5 w-2.5 text-primary" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
           );
         })()}
