@@ -63,7 +63,9 @@ type FunnelEvent =
   | 'wardrobe_added_from_tryon'
   | 'tryon_shared_instagram'
   | 'user_followed'
-  | 'user_unfollowed';
+  | 'user_unfollowed'
+  | 'onboarding_guest_mode'
+  | 'auth_guest_mode';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {

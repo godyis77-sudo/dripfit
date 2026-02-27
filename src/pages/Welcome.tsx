@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { Camera, Crown, LogIn, LogOut, Shield, Sparkles, Users, Ruler, Star, ChevronRight, ArrowRight, TrendingUp, Share2, Gift } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-// Session import removed — carousel always shows for logged-out users
+import { isGuestMode, isOnboarded } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
 import { usePageTitle } from '@/hooks/usePageTitle';
@@ -37,7 +37,7 @@ const Welcome = () => {
 
   // Redirect first-time visitors to onboarding (only after auth finishes loading)
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && !user && !isGuestMode() && !isOnboarded()) {
       navigate('/onboarding', { replace: true });
     }
   }, [user, loading, navigate]);

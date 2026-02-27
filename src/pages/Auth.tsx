@@ -12,6 +12,7 @@ import { lovable } from '@/integrations/lovable/index';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import { useAuth } from '@/hooks/useAuth';
+import { setGuestMode, setOnboarded } from '@/lib/session';
 
 const VALUE_PROPS = [
   { icon: Ruler, text: 'AI body measurements' },
@@ -173,6 +174,18 @@ const Auth = () => {
             <p className="text-[9px] text-muted-foreground/50 text-center">
               By continuing, you agree to our Terms & Privacy Policy.
             </p>
+
+            <button
+              onClick={() => {
+                setGuestMode();
+                setOnboarded();
+                trackEvent('auth_guest_mode');
+                navigate('/');
+              }}
+              className="w-full text-center text-[13px] text-muted-foreground font-semibold hover:text-foreground transition-colors mt-1"
+            >
+              Continue as Guest →
+            </button>
           </CardContent>
         </Card>
       </motion.div>

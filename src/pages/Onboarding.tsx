@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Crown, Ruler, Sparkles, Users, ShoppingBag, Store, Shuffle, Eye, Shield, Camera, Mail, Lock, EyeOff as EyeOffIcon, Eye as EyeIcon } from 'lucide-react';
-import { setOnboarded, setShoppingHabit, type ShoppingHabit } from '@/lib/session';
+import { setOnboarded, setShoppingHabit, setGuestMode, type ShoppingHabit } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -80,6 +80,13 @@ const Onboarding = () => {
   const skipCarousel = () => { trackEvent('onboarding_carousel_skip'); setScreen(user ? 'personalize' : 'auth'); };
 
   const onAuthDone = () => setScreen('personalize');
+
+  const continueAsGuest = () => {
+    setGuestMode();
+    setOnboarded();
+    trackEvent('onboarding_guest_mode');
+    navigate('/');
+  };
 
   const confirmHabit = () => {
     if (habit) { setShoppingHabit(habit); trackEvent('onboarding_shopping_habit', { habit }); }
@@ -237,6 +244,12 @@ const Onboarding = () => {
             className="w-full h-screen flex flex-col items-center justify-center px-6"
           >
             <AuthInline onComplete={onAuthDone} />
+            <button
+              onClick={continueAsGuest}
+              className="mt-4 text-[13px] text-muted-foreground font-semibold hover:text-foreground transition-colors"
+            >
+              Continue as Guest →
+            </button>
           </motion.div>
         )}
 
