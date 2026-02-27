@@ -125,7 +125,7 @@ const Onboarding = () => {
               transition={{ delay: 0.3, duration: 0.3 }}
               className="font-display text-2xl font-bold tracking-[0.2em] text-foreground"
             >
-              DRIP FIT
+              DRIPFITCHECK
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
