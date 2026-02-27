@@ -32,6 +32,7 @@ interface PostDetailSheetProps {
   onClose: () => void;
   prompt: string;
   votes: Record<string, string>;
+  voteCounts: Record<string, Record<string, number>>;
   onVote: (postId: string, key: string) => void;
   onComment: (postId: string, comment: string) => void;
   onFollow: (userId: string) => void;
@@ -49,6 +50,7 @@ export const PostDetailSheet = ({
   onClose,
   prompt,
   votes,
+  voteCounts,
   onVote,
   onComment,
   onFollow,
@@ -285,14 +287,19 @@ export const PostDetailSheet = ({
                   <button
                     key={v.key}
                     onClick={() => onVote(post.id, v.key)}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-bold border transition-all active:scale-95 ${
+                    className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${
                       active
                         ? 'border-white bg-white/20 text-white'
                         : 'border-white/20 text-white/70'
                     }`}
                   >
-                    <span className="mr-1">{v.emoji}</span>
-                    <span className="text-[11px]">{v.label}</span>
+                    <div>
+                      <span className="mr-1">{v.emoji}</span>
+                      <span className="text-[11px]">{v.label}</span>
+                    </div>
+                    {(voteCounts[post.id]?.[v.key] ?? 0) > 0 && (
+                      <span className="text-[10px] font-medium text-white/60">{voteCounts[post.id][v.key]}</span>
+                    )}
                   </button>
                 );
               })}

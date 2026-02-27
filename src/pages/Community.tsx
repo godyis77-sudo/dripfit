@@ -140,6 +140,7 @@ const Community = () => {
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [votes, setVotes] = useState<Record<string, string>>({});
+  const [voteCounts, setVoteCounts] = useState<Record<string, Record<string, number>>>({});
   const [showPostFlow, setShowPostFlow] = useState(false);
   const [detailPost, setDetailPost] = useState<Post | null>(null);
 
@@ -278,7 +279,14 @@ const Community = () => {
   };
 
   const handleVote = (postId: string, key: string) => {
+    const prevKey = votes[postId];
     setVotes(prev => ({ ...prev, [postId]: prev[postId] === key ? '' : key }));
+    setVoteCounts(prev => {
+      const postCounts = { ...(prev[postId] || { love: 0, buy: 0, keep_shopping: 0 }) };
+      if (prevKey) postCounts[prevKey] = Math.max(0, (postCounts[prevKey] || 0) - 1);
+      if (prevKey !== key) postCounts[key] = (postCounts[key] || 0) + 1;
+      return { ...prev, [postId]: postCounts };
+    });
     trackEvent('vote_cast', { vote: key, source: 'fitcheck' });
     trackEvent('fitcheck_voted', { vote: key });
     if (!user) { toast({ title: 'Sign in to vote', description: 'Create a free account to share your opinion.', variant: 'destructive' }); return; }
@@ -565,13 +573,16 @@ const Community = () => {
                       <button
                         key={v.key}
                         onClick={() => handleVote(post.id, v.key)}
-                        className={`flex-1 py-1.5 rounded-md text-[9px] font-bold border transition-all active:scale-95 ${
+                        className={`flex-1 py-1.5 rounded-md text-[9px] font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${
                           active
                             ? 'border-primary bg-primary/10 text-primary'
                             : 'border-border text-muted-foreground'
                         }`}
                       >
                         {v.emoji}
+                        {(voteCounts[post.id]?.[v.key] ?? 0) > 0 && (
+                          <span className="text-[8px] font-medium leading-none">{voteCounts[post.id][v.key]}</span>
+                        )}
                       </button>
                     );
                   })}
@@ -623,6 +634,7 @@ const Community = () => {
         onClose={() => setDetailPost(null)}
         prompt={detailPost ? getPrompt(detailPost.id, posts.indexOf(detailPost)) : ''}
         votes={votes}
+        voteCounts={voteCounts}
         onVote={handleVote}
         onComment={(postId, val) => {
           if (!user) { toast({ title: 'Sign in to comment', variant: 'destructive' }); return; }
