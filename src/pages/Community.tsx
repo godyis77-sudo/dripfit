@@ -14,6 +14,7 @@ import { trackEvent } from '@/lib/analytics';
 import { getFollowingIds } from '@/hooks/useFollow';
 import BottomTabBar from '@/components/BottomTabBar';
 import PostLookFlow from '@/components/community/PostLookFlow';
+import { FullscreenImage } from '@/components/ui/fullscreen-image';
 
 interface Post {
   id: string;
@@ -533,15 +534,16 @@ const Community = () => {
                   </div>
 
                   {/* Image — consistent 4:5 aspect ratio */}
-                  <div className="relative">
-                    <img 
-                      src={post.result_photo_url} 
-                      alt={post.caption || "Try-on look"} 
-                      loading="lazy" 
-                      decoding="async" 
-                      className="w-full aspect-[4/5] object-cover img-normalize" 
-                      onError={() => handleImageError(post.id)}
-                    />
+                  <FullscreenImage src={post.result_photo_url} alt={post.caption || "Try-on look"}>
+                    <div className="relative">
+                      <img 
+                        src={post.result_photo_url} 
+                        alt={post.caption || "Try-on look"} 
+                        loading="lazy" 
+                        decoding="async" 
+                        className="w-full aspect-[4/5] object-cover img-normalize" 
+                        onError={() => handleImageError(post.id)}
+                      />
                     {/* Question overlay on image */}
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pt-10 pb-2.5 px-3">
                       <p className="text-white font-bold text-sm leading-snug line-clamp-2">
@@ -562,7 +564,8 @@ const Community = () => {
                         </span>
                       ) : null;
                     })()}
-                  </div>
+                    </div>
+                  </FullscreenImage>
 
                   <div className="p-2.5 space-y-2">
 
