@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Sparkles, MessageSquare, ShoppingBag } from 'lucide-react';
+import { Sparkles, MessageSquare, ShoppingBag, Send } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
+import { trackEvent } from '@/lib/analytics';
 import TryOnDetailSheet from './TryOnDetailSheet';
 
 interface TryOnPost {
@@ -15,6 +19,12 @@ interface TryOnPost {
   clothing_photo_url?: string;
 }
 
+const VOTE_OPTIONS = [
+  { key: 'love', label: 'Love it', emoji: '❤️' },
+  { key: 'buy', label: 'Buy it', emoji: '🔥' },
+  { key: 'keep_shopping', label: 'Keep shopping', emoji: '🛒' },
+] as const;
+
 interface TryOnsTabProps {
   tryOnPosts: TryOnPost[];
   loading: boolean;
@@ -23,8 +33,71 @@ interface TryOnsTabProps {
 
 const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
   const publicCount = tryOnPosts.filter(p => p.is_public).length;
   const [selectedPost, setSelectedPost] = useState<TryOnPost | null>(null);
+  const [votes, setVotes] = useState<Record<string, string[]>>({});
+  const [voteCounts, setVoteCounts] = useState<Record<string, Record<string, number>>>({});
+
+  // Load vote counts for public posts
+  useEffect(() => {
+    const publicPosts = tryOnPosts.filter(p => p.is_public);
+    if (publicPosts.length === 0) return;
+    const postIds = publicPosts.map(p => p.id);
+    (async () => {
+      const { data } = await supabase.from('community_votes' as any).select('post_id, vote_key, user_id').in('post_id', postIds);
+      if (!data) return;
+      const counts: Record<string, Record<string, number>> = {};
+      const userVotes: Record<string, string[]> = {};
+      (data as any[]).forEach((v: any) => {
+        if (!counts[v.post_id]) counts[v.post_id] = { love: 0, buy: 0, keep_shopping: 0 };
+        counts[v.post_id][v.vote_key] = (counts[v.post_id][v.vote_key] || 0) + 1;
+        if (user && v.user_id === user.id) {
+          if (!userVotes[v.post_id]) userVotes[v.post_id] = [];
+          userVotes[v.post_id].push(v.vote_key);
+        }
+      });
+      setVoteCounts(counts);
+      setVotes(userVotes);
+    })();
+  }, [tryOnPosts, user]);
+
+  const handleVote = async (postId: string, key: string) => {
+    if (!user) { toast({ title: 'Sign in to vote', variant: 'destructive' }); return; }
+    const currentVotes = votes[postId] || [];
+    const hasKey = currentVotes.includes(key);
+    let newVotes: string[];
+    if (key === 'keep_shopping') {
+      if (hasKey) { newVotes = []; } else {
+        newVotes = ['keep_shopping'];
+        for (const k of currentVotes) {
+          if (k !== 'keep_shopping') await supabase.from('community_votes' as any).delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', k);
+        }
+      }
+    } else {
+      if (hasKey) { newVotes = currentVotes.filter(v => v !== key); } else {
+        newVotes = [...currentVotes.filter(v => v !== 'keep_shopping'), key];
+        if (currentVotes.includes('keep_shopping')) await supabase.from('community_votes' as any).delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', 'keep_shopping');
+      }
+    }
+    setVotes(prev => ({ ...prev, [postId]: newVotes }));
+    setVoteCounts(prev => {
+      const pc = { ...(prev[postId] || { love: 0, buy: 0, keep_shopping: 0 }) };
+      for (const k of currentVotes) { if (!newVotes.includes(k)) pc[k] = Math.max(0, (pc[k] || 0) - 1); }
+      for (const k of newVotes) { if (!currentVotes.includes(k)) pc[k] = (pc[k] || 0) + 1; }
+      return { ...prev, [postId]: pc };
+    });
+    if (hasKey) { await supabase.from('community_votes' as any).delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', key); }
+    else { await supabase.from('community_votes' as any).insert({ post_id: postId, user_id: user.id, vote_key: key } as any); }
+    trackEvent('vote_cast', { vote: key, source: 'profile_tryons' });
+  };
+
+  const handleComment = (postId: string, val: string) => {
+    if (!user) { toast({ title: 'Sign in to comment', variant: 'destructive' }); return; }
+    trackEvent('fitcheck_reaction', { postId, comment: val });
+    toast({ title: 'Sent!', description: val });
+  };
 
   return (
     <>
@@ -67,25 +140,79 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
           <div className="grid grid-cols-2 gap-2">
             {tryOnPosts.map(post => (
               <motion.div key={post.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
-                <button
-                  onClick={() => setSelectedPost(post)}
-                  className="w-full rounded-xl overflow-hidden border border-border bg-card text-left active:scale-[0.97] transition-transform"
-                >
-                  <div className="relative">
-                    <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
-                    {post.product_url && (
-                      <div className="absolute top-1.5 right-1.5 bg-black/50 backdrop-blur-sm rounded-full p-1">
-                        <ShoppingBag className="h-3 w-3 text-white" />
+                <div className="w-full rounded-xl overflow-hidden border border-border bg-card text-left">
+                  <button
+                    onClick={() => setSelectedPost(post)}
+                    className="w-full active:scale-[0.97] transition-transform"
+                  >
+                    <div className="relative">
+                      <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
+                      {post.product_url && (
+                        <div className="absolute top-1.5 right-1.5 bg-black/50 backdrop-blur-sm rounded-full p-1">
+                          <ShoppingBag className="h-3 w-3 text-white" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-2 flex items-center justify-between">
+                      <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
+                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${post.is_public ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                        {post.is_public ? 'Public' : 'Private'}
+                      </span>
+                    </div>
+                  </button>
+
+                  {/* Community interactions for public posts */}
+                  {post.is_public && (
+                    <div className="px-1.5 pb-1.5">
+                      {/* Emoji votes */}
+                      <div className="flex gap-1">
+                        {VOTE_OPTIONS.map(v => {
+                          const active = (votes[post.id] || []).includes(v.key);
+                          return (
+                            <button
+                              key={v.key}
+                              onClick={() => handleVote(post.id, v.key)}
+                              className={`flex-1 py-1.5 rounded-md text-[9px] font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${
+                                active
+                                  ? 'border-primary bg-primary/10 text-primary'
+                                  : 'border-border text-muted-foreground'
+                              }`}
+                            >
+                              {v.emoji}
+                              <span className="text-[8px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
+                            </button>
+                          );
+                        })}
                       </div>
-                    )}
-                  </div>
-                  <div className="p-2 flex items-center justify-between">
-                    <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
-                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${post.is_public ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                      {post.is_public ? 'Public' : 'Private'}
-                    </span>
-                  </div>
-                </button>
+                      {/* Chat input */}
+                      <div className="flex items-center gap-1 mt-1">
+                        <input
+                          type="text"
+                          placeholder="Say something…"
+                          className="flex-1 h-6 rounded-md bg-muted/50 border border-border px-2 text-[9px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && (e.target as HTMLInputElement).value.trim()) {
+                              handleComment(post.id, (e.target as HTMLInputElement).value.trim());
+                              (e.target as HTMLInputElement).value = '';
+                            }
+                          }}
+                        />
+                        <button
+                          className="shrink-0 h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center active:scale-90 transition-transform"
+                          onClick={(e) => {
+                            const input = (e.currentTarget.previousSibling as HTMLInputElement);
+                            if (input?.value?.trim()) {
+                              handleComment(post.id, input.value.trim());
+                              input.value = '';
+                            }
+                          }}
+                        >
+                          <Send className="h-2.5 w-2.5 text-primary" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </motion.div>
             ))}
           </div>
