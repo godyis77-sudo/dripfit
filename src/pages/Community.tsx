@@ -14,7 +14,7 @@ import { trackEvent } from '@/lib/analytics';
 import { getFollowingIds } from '@/hooks/useFollow';
 import BottomTabBar from '@/components/BottomTabBar';
 import PostLookFlow from '@/components/community/PostLookFlow';
-import { FullscreenImage } from '@/components/ui/fullscreen-image';
+import { PostDetailSheet } from '@/components/community/PostDetailSheet';
 
 interface Post {
   id: string;
@@ -141,6 +141,7 @@ const Community = () => {
   const [submitting, setSubmitting] = useState(false);
   const [votes, setVotes] = useState<Record<string, string>>({});
   const [showPostFlow, setShowPostFlow] = useState(false);
+  const [detailPost, setDetailPost] = useState<Post | null>(null);
 
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const [retailers, setRetailers] = useState<Retailer[]>([]);
@@ -527,36 +528,34 @@ const Community = () => {
                   )}
                 </div>
 
-                {/* Image — square aspect for grid */}
-                <FullscreenImage src={post.result_photo_url} alt={post.caption || "Try-on look"}>
-                  <div className="relative">
-                    <img 
-                      src={post.result_photo_url} 
-                      alt={post.caption || "Try-on look"} 
-                      loading="lazy" 
-                      decoding="async" 
-                      className="w-full aspect-square object-cover" 
-                      onError={() => handleImageError(post.id)}
-                    />
-                    {/* Caption overlay */}
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent pt-6 pb-1.5 px-2">
-                      <p className="text-white font-bold text-[10px] leading-snug line-clamp-2">
-                        {post.caption || getPrompt(post.id, idx)}
-                      </p>
-                    </div>
-                    {/* Retailer badge */}
-                    {(() => {
-                      const retailer = post.product_url
-                        ? detectRetailer(post.product_url)
-                        : getBestRetailerForItem(null, post.caption?.toLowerCase().includes('dress') ? 'dress' : 'top');
-                      return retailer ? (
-                        <span className="absolute top-1.5 right-1.5 text-[8px] font-bold text-white bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
-                          {retailer}
-                        </span>
-                      ) : null;
-                    })()}
+                {/* Image — square aspect for grid, tap to open detail */}
+                <button onClick={() => setDetailPost(post)} className="relative w-full text-left">
+                  <img 
+                    src={post.result_photo_url} 
+                    alt={post.caption || "Try-on look"} 
+                    loading="lazy" 
+                    decoding="async" 
+                    className="w-full aspect-square object-cover" 
+                    onError={() => handleImageError(post.id)}
+                  />
+                  {/* Caption overlay */}
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent pt-6 pb-1.5 px-2">
+                    <p className="text-white font-bold text-[10px] leading-snug line-clamp-2">
+                      {post.caption || getPrompt(post.id, idx)}
+                    </p>
                   </div>
-                </FullscreenImage>
+                  {/* Retailer badge */}
+                  {(() => {
+                    const retailer = post.product_url
+                      ? detectRetailer(post.product_url)
+                      : getBestRetailerForItem(null, post.caption?.toLowerCase().includes('dress') ? 'dress' : 'top');
+                    return retailer ? (
+                      <span className="absolute top-1.5 right-1.5 text-[8px] font-bold text-white bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
+                        {retailer}
+                      </span>
+                    ) : null;
+                  })()}
+                </button>
 
                 {/* Compact vote row */}
                 <div className="flex gap-1 px-1.5 pt-1.5">
@@ -618,6 +617,31 @@ const Community = () => {
         })()}
       </div>
       <PostLookFlow open={showPostFlow} onOpenChange={setShowPostFlow} onPosted={fetchPosts} />
+      <PostDetailSheet
+        post={detailPost}
+        open={!!detailPost}
+        onClose={() => setDetailPost(null)}
+        prompt={detailPost ? getPrompt(detailPost.id, posts.indexOf(detailPost)) : ''}
+        votes={votes}
+        onVote={handleVote}
+        onComment={(postId, val) => {
+          if (!user) { toast({ title: 'Sign in to comment', variant: 'destructive' }); return; }
+          trackEvent('fitcheck_reaction', { postId, comment: val });
+          toast({ title: 'Sent!', description: val });
+        }}
+        onFollow={handleFollowToggle}
+        onNavigateProfile={(p) => {
+          setDetailPost(null);
+          const name = p.profile?.display_name || 'Anonymous';
+          if (user && p.user_id === user.id) { navigate('/profile'); return; }
+          navigate(`/profile/${encodeURIComponent(name)}`);
+        }}
+        onShopLook={handleShopLook}
+        isFollowing={detailPost ? !!followToggles[detailPost.user_id] : false}
+        isOwnPost={detailPost ? user?.id === detailPost.user_id : false}
+        isPlaceholder={detailPost ? isPlaceholder(detailPost) : false}
+        currentUserId={user?.id}
+      />
       <BottomTabBar />
     </div>
   );
