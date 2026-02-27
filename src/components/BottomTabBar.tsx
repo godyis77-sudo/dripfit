@@ -8,7 +8,7 @@ const tabs = [
   { icon: Home, label: 'Home', path: '/' },
   { icon: Camera, label: 'Scan', path: '/capture' },
   { icon: Shirt, label: 'Try-On', path: '/tryon' },
-  { icon: Users, label: 'Fit Check', path: '/community' },
+  { icon: Users, label: 'Style Check', path: '/style-check' },
   { icon: User, label: 'Profile', path: '/profile' },
 ];
 

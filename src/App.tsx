@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/hooks/useAuth";
 import { MobileShell } from "@/components/layout/MobileShell";
@@ -14,9 +14,13 @@ import Results from "./pages/Results";
 import History from "./pages/History";
 import Auth from "./pages/Auth";
 import TryOn from "./pages/TryOn";
+import TryOnDetail from "./pages/TryOnDetail";
 import Community from "./pages/Community";
+import StyleCheckDetail from "./pages/StyleCheckDetail";
+import ResultsDetail from "./pages/ResultsDetail";
 import SizeGuide from "./pages/SizeGuide";
 import Profile from "./pages/Profile";
+import ProfileBody from "./pages/ProfileBody";
 import Premium from "./pages/Premium";
 import SavedItems from "./pages/SavedItems";
 import NotFound from "./pages/NotFound";
@@ -40,14 +44,23 @@ const App = () => (
                 <Route path="/capture" element={<Capture />} />
                 <Route path="/analyze" element={<Analyze />} />
                 <Route path="/results" element={<Results />} />
-                <Route path="/history" element={<History />} />
+                <Route path="/results/:scanId" element={<ResultsDetail />} />
+                <Route path="/history" element={<Navigate to="/profile/history" replace />} />
                 <Route path="/tryon" element={<TryOn />} />
-                <Route path="/community" element={<Community />} />
+                <Route path="/tryon/:lookId" element={<TryOnDetail />} />
+                <Route path="/style-check" element={<Community />} />
+                <Route path="/style-check/:postId" element={<StyleCheckDetail />} />
+                {/* Backwards compat redirects */}
+                <Route path="/community" element={<Navigate to="/style-check" replace />} />
+                <Route path="/community/:postId" element={<Navigate to="/style-check" replace />} />
+                <Route path="/saved" element={<Navigate to="/profile/saved" replace />} />
                 <Route path="/size-guide" element={<SizeGuide />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/profile/saved" element={<SavedItems />} />
+                <Route path="/profile/history" element={<History />} />
+                <Route path="/profile/body" element={<ProfileBody />} />
                 <Route path="/profile/:username" element={<PublicProfile />} />
                 <Route path="/premium" element={<Premium />} />
-                <Route path="/saved" element={<SavedItems />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </AnimatePresence>

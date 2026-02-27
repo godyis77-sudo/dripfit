@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const BASE_TITLE = 'DRIP FIT';
+const BASE_TITLE = 'DripFitCheck';
 
 export function usePageTitle(page?: string) {
   useEffect(() => {

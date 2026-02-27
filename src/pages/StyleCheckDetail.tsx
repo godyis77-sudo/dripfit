@@ -1,0 +1,90 @@
+import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { usePageTitle } from '@/hooks/usePageTitle';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
+import { PostDetailSheet } from '@/components/community/PostDetailSheet';
+import BottomTabBar from '@/components/BottomTabBar';
+
+const StyleCheckDetail = () => {
+  const { postId } = useParams<{ postId: string }>();
+  const navigate = useNavigate();
+  usePageTitle('Style Check');
+  const [post, setPost] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!postId) return;
+    (async () => {
+      const { data } = await supabase
+        .from('tryon_posts')
+        .select('*')
+        .eq('id', postId)
+        .eq('is_public', true)
+        .maybeSingle();
+      if (data) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('display_name, avatar_url')
+          .eq('user_id', data.user_id)
+          .maybeSingle();
+        setPost({ ...data, profile: profile || { display_name: 'Anonymous' } });
+      }
+      setLoading(false);
+    })();
+  }, [postId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="h-10 w-10 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  if (!post) {
+    return (
+      <div className="min-h-screen bg-background px-4 pt-4 pb-safe-bottom">
+        <div className="max-w-sm mx-auto text-center pt-20">
+          <p className="text-base font-bold text-foreground mb-1">Post not found</p>
+          <p className="text-[12px] text-muted-foreground mb-4">This post may have been removed or made private.</p>
+          <Button variant="outline" className="rounded-xl" onClick={() => navigate('/style-check')}>
+            Back to Style Check
+          </Button>
+        </div>
+        <BottomTabBar />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background pb-safe-bottom">
+      <div className="max-w-sm mx-auto px-4 pt-4">
+        <div className="flex items-center gap-2 mb-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/style-check')} className="h-8 w-8 rounded-lg">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h1 className="text-base font-bold text-foreground">Style Check</h1>
+        </div>
+
+        {/* Full post display */}
+        <div className="rounded-xl overflow-hidden border border-border bg-card mb-3">
+          <img src={post.result_photo_url} alt={post.caption || 'Style Check'} className="w-full aspect-[3/4] object-cover" />
+          <div className="p-3">
+            <p className="text-[11px] font-bold text-foreground">
+              {post.profile?.display_name || 'Anonymous'}
+            </p>
+            {post.caption && <p className="text-[12px] text-muted-foreground mt-1">{post.caption}</p>}
+            <p className="text-[9px] text-muted-foreground mt-1">
+              {new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </p>
+          </div>
+        </div>
+      </div>
+      <BottomTabBar />
+    </div>
+  );
+};
+
+export default StyleCheckDetail;
