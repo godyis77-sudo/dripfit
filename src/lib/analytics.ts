@@ -71,6 +71,7 @@ type FunnelEvent =
   | 'tryon_accessory_started'
   | 'tryon_accessory_generated'
   | 'catalog_product_clicked'
+  | 'catalog_product_preview'
   | 'preferred_brand_added'
   | 'preferred_brand_removed';
 
