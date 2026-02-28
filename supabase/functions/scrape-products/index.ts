@@ -5,7 +5,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-// Use Lovable AI to generate product data for seeding the catalog
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -29,16 +28,28 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Use AI to generate realistic product data with real product URLs
     const prompt = `Generate ${count} real, currently available ${category} products from ${brand}. 
+
+CRITICAL IMAGE REQUIREMENTS:
+- Each image_url MUST show a SINGLE, CLEAR apparel item on a clean background (white, studio, or flat-lay)
+- Do NOT use images showing models wearing full outfits — the image must isolate the individual product
+- Do NOT use lifestyle/editorial images, runway shots, or collage images
+- Prefer official product catalog / e-commerce style images (front-facing, well-lit, no distracting backgrounds)
+- Use real product image URLs from the brand's official website or CDN
+
+DESCRIPTION ACCURACY:
+- The product name MUST accurately describe what is shown in the image (e.g., don't label a hoodie as a "jacket")
+- Color in the name must match the actual product color in the image
+- Tags must reflect the actual product style and category visible in the image
+
 For each product return a JSON object with:
-- name: product name
-- image_url: a real product image URL from the brand's website or CDN
+- name: accurate product name matching the image exactly
+- image_url: a real product image URL showing a single clear apparel item
 - product_url: the actual product page URL on the brand's official website
 - price_cents: realistic price in USD cents
 - tags: array of relevant tags like ["casual", "premium", "bestseller"]
 
-Return ONLY a JSON array, no markdown. Use real URLs that actually exist on ${brand}'s website.`;
+Return ONLY a JSON array, no markdown.`;
 
     const response = await fetch('https://ai.lovable.dev/api/generate', {
       method: 'POST',
@@ -49,7 +60,7 @@ Return ONLY a JSON array, no markdown. Use real URLs that actually exist on ${br
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
         messages: [
-          { role: 'system', content: 'You are a fashion product data generator. Return only valid JSON arrays.' },
+          { role: 'system', content: 'You are a fashion product data generator. Return only valid JSON arrays. Every image_url must point to a clear, single-product e-commerce image — never lifestyle or multi-item photos. Product names must exactly describe the item shown in the image.' },
           { role: 'user', content: prompt },
         ],
         temperature: 0.3,
@@ -59,7 +70,6 @@ Return ONLY a JSON array, no markdown. Use real URLs that actually exist on ${br
     const aiData = await response.json();
     const content = aiData.choices?.[0]?.message?.content || '';
     
-    // Parse JSON from response
     let products: any[] = [];
     try {
       const jsonMatch = content.match(/\[[\s\S]*\]/);
@@ -74,7 +84,15 @@ Return ONLY a JSON array, no markdown. Use real URLs that actually exist on ${br
       });
     }
 
-    // Insert into product_catalog
+    // Validate: filter out products with suspicious image URLs
+    products = products.filter((p: any) => {
+      if (!p.image_url || !p.name) return false;
+      // Reject images that are clearly not product images
+      const url = p.image_url.toLowerCase();
+      if (url.includes('collage') || url.includes('runway') || url.includes('editorial')) return false;
+      return true;
+    });
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);

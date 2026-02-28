@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, ExternalLink, ShoppingBag } from 'lucide-react';
+import { ChevronDown, ChevronUp, ShoppingBag, Sparkles, ExternalLink, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 import { trackEvent } from '@/lib/analytics';
+import { Button } from '@/components/ui/button';
 
 interface CategoryProductGridProps {
   category: string;
@@ -20,6 +22,7 @@ const CategoryProductGrid = ({
 }: CategoryProductGridProps) => {
   const { products, loading } = useProductCatalog(category);
   const [expanded, setExpanded] = useState(!collapsed);
+  const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
 
   if (loading && products.length === 0) {
     return (
@@ -53,12 +56,8 @@ const CategoryProductGrid = ({
           <button
             key={product.id}
             onClick={() => {
-              if (onSelectProduct) {
-                onSelectProduct(product);
-              } else if (product.product_url) {
-                trackEvent('catalog_product_clicked', { brand: product.brand, category: product.category });
-                window.open(product.product_url, '_blank', 'noopener');
-              }
+              trackEvent('catalog_product_preview', { brand: product.brand, category: product.category });
+              setPreviewProduct(product);
             }}
             className="relative rounded-lg overflow-hidden border border-border bg-card active:scale-95 transition-transform group"
           >
@@ -79,14 +78,93 @@ const CategoryProductGrid = ({
                 </p>
               )}
             </div>
-            {product.product_url && (
-              <div className="absolute top-1 right-1 h-4 w-4 rounded-full bg-primary/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <ShoppingBag className="h-2.5 w-2.5 text-primary-foreground" />
-              </div>
-            )}
           </button>
         ))}
       </div>
+
+      {/* Fullscreen product preview */}
+      <AnimatePresence>
+        {previewProduct && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center"
+            onClick={() => setPreviewProduct(null)}
+          >
+            <button
+              onClick={() => setPreviewProduct(null)}
+              className="absolute top-4 right-4 z-[101] h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
+            >
+              <X className="h-5 w-5 text-white" />
+            </button>
+
+            <motion.img
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              src={previewProduct.image_url}
+              alt={previewProduct.name}
+              className="max-w-[85%] max-h-[55vh] object-contain rounded-xl"
+              onClick={(e) => e.stopPropagation()}
+            />
+
+            {/* Product info */}
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className="mt-4 text-center px-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <p className="text-xs text-white/60 uppercase tracking-wider">{previewProduct.brand}</p>
+              <p className="text-base font-semibold text-white mt-0.5">{previewProduct.name}</p>
+              {previewProduct.price_cents && (
+                <p className="text-sm font-bold text-primary mt-1">
+                  ${(previewProduct.price_cents / 100).toFixed(0)}
+                </p>
+              )}
+            </motion.div>
+
+            {/* Action buttons */}
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.15 }}
+              className="mt-5 flex gap-3 px-6 w-full max-w-sm"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {onSelectProduct && (
+                <Button
+                  className="flex-1 gap-2"
+                  onClick={() => {
+                    onSelectProduct(previewProduct);
+                    setPreviewProduct(null);
+                  }}
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Try On
+                </Button>
+              )}
+              {previewProduct.product_url && (
+                <Button
+                  variant="outline"
+                  className="flex-1 gap-2 border-white/20 text-white hover:bg-white/10"
+                  onClick={() => {
+                    trackEvent('catalog_product_clicked', { brand: previewProduct.brand, category: previewProduct.category });
+                    window.open(previewProduct.product_url!, '_blank', 'noopener');
+                  }}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Shop
+                </Button>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
