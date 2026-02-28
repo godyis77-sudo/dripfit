@@ -55,13 +55,13 @@ const CATEGORIES = [
 
 const ACCESSORY_CATEGORIES = [
   { key: 'shoes', label: '👟 Shoes', icon: '👟' },
-  { key: 'hat', label: '🧢 Hat', icon: '🧢' },
+  { key: 'hats', label: '🧢 Hats', icon: '🧢' },
   { key: 'necklace', label: '📿 Necklace', icon: '📿' },
   { key: 'earrings', label: '✨ Earrings', icon: '✨' },
   { key: 'bracelet', label: '⌚ Bracelet', icon: '⌚' },
   { key: 'watch', label: '⌚ Watch', icon: '⌚' },
   { key: 'jewelry', label: '💎 Jewelry', icon: '💎' },
-  { key: 'bag', label: '👜 Bag', icon: '👜' },
+  { key: 'bags', label: '👜 Bags', icon: '👜' },
   { key: 'sunglasses', label: '🕶️ Sunglasses', icon: '🕶️' },
 ] as const;
 
@@ -798,8 +798,7 @@ const TryOn = () => {
                   <button
                     key={c.key}
                     onClick={() => {
-                      setAccessoryCategory(c.key);
-                      if (!accessoryPhoto) accessoryPhotoRef.current?.click();
+                      setAccessoryCategory(prev => prev === c.key ? null : c.key);
                     }}
                     className={`px-2.5 py-1.5 rounded-lg text-[10px] font-medium border transition-all active:scale-95 ${
                       accessoryCategory === c.key
