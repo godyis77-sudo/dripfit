@@ -69,7 +69,10 @@ type FunnelEvent =
   | 'vote_submitted'
   | 'region_changed'
   | 'tryon_accessory_started'
-  | 'tryon_accessory_generated';
+  | 'tryon_accessory_generated'
+  | 'catalog_product_clicked'
+  | 'preferred_brand_added'
+  | 'preferred_brand_removed';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
