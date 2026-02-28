@@ -193,16 +193,39 @@ const TryOn = () => {
     });
   };
 
-  const handleFileSelect = (setter: (v: string) => void, type: 'photo' | 'clothing') => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const compressImage = (file: File, maxDim = 1200, quality = 0.8): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          const scale = maxDim / Math.max(width, height);
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+        URL.revokeObjectURL(img.src);
+      };
+      img.onerror = () => { URL.revokeObjectURL(img.src); reject(new Error('Failed to load image')); };
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  const handleFileSelect = (setter: (v: string) => void, type: 'photo' | 'clothing') => async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setter(reader.result as string);
-      trackEvent(type === 'photo' ? 'tryon_photo_uploaded' : 'tryon_clothing_uploaded');
-    };
-    reader.readAsDataURL(file);
     e.target.value = '';
+    try {
+      const compressed = await compressImage(file);
+      setter(compressed);
+      trackEvent(type === 'photo' ? 'tryon_photo_uploaded' : 'tryon_clothing_uploaded');
+    } catch (err) {
+      toast({ title: 'Image load failed', description: 'Try a different photo.', variant: 'destructive' });
+    }
   };
 
   const handleTryOn = async () => {
