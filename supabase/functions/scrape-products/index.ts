@@ -1,9 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CORS
-// ─────────────────────────────────────────────────────────────────────────────
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
@@ -12,10 +8,6 @@ const corsHeaders = {
 // ─────────────────────────────────────────────────────────────────────────────
 // TYPES
 // ─────────────────────────────────────────────────────────────────────────────
-
-interface RetailerConfig {
-  categoryUrl: (cat: string) => string;
-}
 
 interface RawProduct {
   name: string;
@@ -35,38 +27,62 @@ interface ClassifiedProduct extends RawProduct {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// CONSTANTS — AI PROMPTS
+// RETAILER CATEGORY URLs
 // ─────────────────────────────────────────────────────────────────────────────
 
-const STAGE2_SYSTEM = `You are a product data extraction specialist for a fashion e-commerce database. You receive raw HTML from a retailer category page and extract structured product data from it.
+const CATEGORY_MAP: Record<string, Record<string, string[]>> = {
+  zara: {
+    tops:       ['https://www.zara.com/us/en/man-tshirts-l855.html', 'https://www.zara.com/us/en/woman-tshirts-l1362.html'],
+    bottoms:    ['https://www.zara.com/us/en/man-trousers-l838.html', 'https://www.zara.com/us/en/woman-trousers-l1335.html'],
+    outerwear:  ['https://www.zara.com/us/en/man-jackets-l825.html', 'https://www.zara.com/us/en/woman-jackets-l1114.html'],
+    dresses:    ['https://www.zara.com/us/en/woman-dresses-l1066.html'],
+    shoes:      ['https://www.zara.com/us/en/man-shoes-l769.html', 'https://www.zara.com/us/en/woman-shoes-l1251.html'],
+    accessories:['https://www.zara.com/us/en/man-accessories-l4734.html'],
+  },
+  hm: {
+    tops:       ['https://www2.hm.com/en_us/men/products/t-shirts-and-tanks.html', 'https://www2.hm.com/en_us/women/products/tops.html'],
+    bottoms:    ['https://www2.hm.com/en_us/men/products/pants.html', 'https://www2.hm.com/en_us/women/products/pants.html'],
+    outerwear:  ['https://www2.hm.com/en_us/men/products/jackets-and-coats.html', 'https://www2.hm.com/en_us/women/products/jackets-and-coats.html'],
+    dresses:    ['https://www2.hm.com/en_us/women/products/dresses.html'],
+    shoes:      ['https://www2.hm.com/en_us/men/products/shoes.html', 'https://www2.hm.com/en_us/women/products/shoes.html'],
+    accessories:['https://www2.hm.com/en_us/men/products/accessories.html'],
+  },
+  uniqlo: {
+    tops:       ['https://www.uniqlo.com/us/en/men/tops/t-shirts', 'https://www.uniqlo.com/us/en/women/tops/t-shirts'],
+    bottoms:    ['https://www.uniqlo.com/us/en/men/bottoms/pants', 'https://www.uniqlo.com/us/en/women/bottoms/pants'],
+    outerwear:  ['https://www.uniqlo.com/us/en/men/outerwear', 'https://www.uniqlo.com/us/en/women/outerwear'],
+    dresses:    ['https://www.uniqlo.com/us/en/women/dresses-and-jumpsuits'],
+    shoes:      ['https://www.uniqlo.com/us/en/men/shoes-and-bags', 'https://www.uniqlo.com/us/en/women/shoes-and-bags'],
+    accessories:['https://www.uniqlo.com/us/en/men/accessories-and-shoes'],
+  },
+  shein: {
+    tops:       ['https://us.shein.com/Men-T-Shirts-c-12206.html', 'https://us.shein.com/Women-T-Shirts-c-1738.html'],
+    bottoms:    ['https://us.shein.com/Men-Pants-c-12207.html', 'https://us.shein.com/Women-Pants-Leggings-c-1740.html'],
+    outerwear:  ['https://us.shein.com/Men-Jackets-Coats-c-12201.html', 'https://us.shein.com/Women-Jackets-c-1735.html'],
+    dresses:    ['https://us.shein.com/Women-Dresses-c-1727.html'],
+    shoes:      ['https://us.shein.com/Men-Shoes-c-12211.html', 'https://us.shein.com/Women-Shoes-c-1745.html'],
+    accessories:['https://us.shein.com/Men-Accessories-c-12214.html'],
+  },
+  nike: {
+    tops:       ['https://www.nike.com/w/mens-tops-t-shirts-9om13zav4s6', 'https://www.nike.com/w/womens-tops-t-shirts-5e1x6z9om13'],
+    bottoms:    ['https://www.nike.com/w/mens-pants-tights-2kq19z6o5re', 'https://www.nike.com/w/womens-pants-tights-2kq19z5e1x6'],
+    outerwear:  ['https://www.nike.com/w/mens-jackets-vests-50r7yz6o5re', 'https://www.nike.com/w/womens-jackets-vests-50r7yz5e1x6'],
+    shoes:      ['https://www.nike.com/w/mens-shoes-nik1zy7ok', 'https://www.nike.com/w/womens-shoes-5e1x6zy7ok'],
+    accessories:['https://www.nike.com/w/mens-accessories-equipment-6o5rezawwv'],
+  },
+  asos: {
+    tops:       ['https://www.asos.com/us/men/t-shirts-vests/cat/?cid=7616', 'https://www.asos.com/us/women/tops/cat/?cid=4169'],
+    bottoms:    ['https://www.asos.com/us/men/pants-chinos/cat/?cid=4910', 'https://www.asos.com/us/women/pants-leggings/cat/?cid=7212'],
+    outerwear:  ['https://www.asos.com/us/men/jackets-coats/cat/?cid=3606', 'https://www.asos.com/us/women/jackets-coats/cat/?cid=2641'],
+    dresses:    ['https://www.asos.com/us/women/dresses/cat/?cid=8799'],
+    shoes:      ['https://www.asos.com/us/men/shoes/cat/?cid=1935', 'https://www.asos.com/us/women/shoes/cat/?cid=1931'],
+    accessories:['https://www.asos.com/us/men/accessories/cat/?cid=4210'],
+  },
+};
 
-Rules:
-- Extract ONLY products that are explicitly present in the HTML.
-- Do NOT invent, infer, or add any product that is not in the HTML.
-- Do NOT normalise, clean, or rewrite product names — extract verbatim.
-- Do NOT generate or modify any URLs — copy them exactly as they appear in the HTML, including all query parameters.
-- If a field is not present in the HTML, use null. Never guess.
-- Return ONLY a valid JSON array. No markdown. No prose. No code fences.`;
-
-const STAGE2_USER = (html: string) => `Extract all products from the following HTML.
-
-For each product found, return:
-{
-  "name":         string  — exact product name as shown on page,
-  "product_url":  string  — absolute URL to the product detail page,
-  "price_cents":  integer — price in cents (e.g. $89.99 → 8999), null if not found,
-  "currency":     string  — 3-letter currency code e.g. "USD",
-  "image_urls":   string[] — ALL image URLs found for this product in the HTML, ordered as they appear. Include every variant/angle. Copy URLs exactly.
-  "category_raw": string  — the category as labelled on the page,
-  "colour":       string  — colour as shown in product name or label, null if not explicit.
-}
-
-HTML to extract from:
-\`\`\`
-${html.slice(0, 80_000)}
-\`\`\`
-
-Return ONLY a JSON array. If no products are found, return []. Do not explain. Do not add commentary.`;
+// ─────────────────────────────────────────────────────────────────────────────
+// STAGE 3 — Image classification prompt
+// ─────────────────────────────────────────────────────────────────────────────
 
 const STAGE3_SYSTEM = `You are an image URL classifier for DRIP FIT, a virtual try-on application. You receive a list of real image URLs for a single fashion product and must select the single best image for use as a try-on reference.
 
@@ -90,129 +106,125 @@ ${product.image_urls.map((url, i) => `  ${i + 1}. ${url}`).join('\n')}
 
 PREFER these URL patterns (rank in this order):
 
-RANK 1 — Ghost mannequin / packshot signals:
-  Filenames containing: -main, -front, -p00, -01, _1, _A, -hero
-  Path segments: /packshot/, /studio/, /product/, /catalog/
-  Zara-specific: URLs ending in '-p00.jpg' or '-p0.jpg'
-  Uniqlo-specific: URLs containing '/goods/' with '-sub1' absent
-  H&M-specific: filenames ending in 'main.jpg'
-  SHEIN-specific: URLs containing 'whitem' or '_200w'
+RANK 1 — Ghost mannequin / packshot:
+  Filenames: -main, -front, -p00, -01, _1, _A, -hero
+  Paths: /packshot/, /studio/, /product/, /catalog/
+  Zara: URLs ending in '-p00.jpg' or '-p0.jpg'
+  Uniqlo: URLs containing '/goods/' with '-sub1' absent
+  H&M: filenames ending 'main.jpg'
+  SHEIN: URLs containing 'whitem' or '_200w'
 
-RANK 2 — Flat lay signals:
-  Filenames containing: -flat, -lay, -top
-  Path segments: /flatlay/
+RANK 2 — Flat lay:
+  Filenames: -flat, -lay, -top
+  Paths: /flatlay/
 
-RANK 3 — Model shot, clean background:
-  Filenames containing: -model, -worn, -look, -p01, _2, _B
-  Use ONLY if no RANK 1 or RANK 2 images are available.
+RANK 3 — Model shot (only if no RANK 1/2):
+  Filenames: -model, -worn, -look, -p01, _2, _B
 
-REJECT these URL patterns (do not select):
-  - collage, runway, editorial, campaign, look, outfit, lifestyle
-  - -detail, -close, -texture, -fabric, -zoom, -care, -label
-  - interior, _swatch, -colour, color-chip
-  - thumbnail, thumb, -xs, -sm, -tiny
+REJECT: collage, runway, editorial, campaign, lifestyle, -detail, -close, -texture, -zoom, thumbnail, thumb, -xs, -sm, _swatch
 
 Return exactly one JSON object:
 {
   "selected_url":  string — the chosen image URL, copied exactly,
   "presentation":  "ghost_mannequin" | "flat_lay" | "model_shot",
   "confidence":    number — 0.0 to 1.0,
-  "reject_reason": null | string — if ALL images rejected, explain why. selected_url = null.
+  "reject_reason": null | string — if ALL rejected, explain why
 }`;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// RETAILER CONFIGS
+// STAGES 1+2 — Firecrawl scrapes + extracts structured product data
 // ─────────────────────────────────────────────────────────────────────────────
 
-const RETAILER_CONFIGS: Record<string, RetailerConfig> = {
-  'zara': {
-    categoryUrl: (cat) => `https://www.zara.com/us/en/${cat}-l1098.html`,
-  },
-  'hm': {
-    categoryUrl: (cat) => `https://www2.hm.com/en_us/productlisting/${cat}.html`,
-  },
-  'uniqlo': {
-    categoryUrl: (cat) => `https://www.uniqlo.com/us/en/${cat}?page={page}`,
-  },
-  'shein': {
-    categoryUrl: (cat) => `https://us.shein.com/${cat}.html`,
-  },
-};
-
-const BROWSER_HEADERS = {
-  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-  'Accept-Language': 'en-US,en;q=0.9',
-  'Cache-Control': 'no-cache',
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// STAGE 1 — Fetch real HTML from retailer category pages
-// ─────────────────────────────────────────────────────────────────────────────
-
-async function fetchCategoryHTML(
+async function scrapeProducts(
   brand: string,
   category: string,
-  pageCount: number
-): Promise<string[]> {
-  const config = RETAILER_CONFIGS[brand.toLowerCase()];
-  if (!config) throw new Error(`No retailer config found for brand: ${brand}`);
+  firecrawlApiKey: string
+): Promise<RawProduct[]> {
+  const brandUrls = CATEGORY_MAP[brand.toLowerCase()];
+  if (!brandUrls) throw new Error(`No retailer config for brand: ${brand}. Available: ${Object.keys(CATEGORY_MAP).join(', ')}`);
 
-  const pages: string[] = [];
+  const urls = brandUrls[category.toLowerCase()];
+  if (!urls?.length) throw new Error(`No URLs for ${brand}/${category}. Available categories: ${Object.keys(brandUrls).join(', ')}`);
 
-  for (let page = 0; page < pageCount; page++) {
-    const url = config.categoryUrl(category)
-      .replace('{offset}', String(page * 40))
-      .replace('{page}', String(page + 1));
+  const allProducts: RawProduct[] = [];
 
+  const jsonSchema = {
+    type: 'object',
+    properties: {
+      products: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            name:         { type: 'string', description: 'Exact product name as shown on page' },
+            product_url:  { type: 'string', description: 'Absolute URL to the product detail page' },
+            price_cents:  { type: ['integer', 'null'], description: 'Price in cents (e.g. $89.99 = 8999)' },
+            currency:     { type: 'string', description: '3-letter currency code' },
+            image_urls:   { type: 'array', items: { type: 'string' }, description: 'All product image URLs found for this product' },
+            category_raw: { type: ['string', 'null'], description: 'Category label from the page' },
+            colour:       { type: ['string', 'null'], description: 'Colour from product name/label' },
+          },
+          required: ['name', 'product_url', 'image_urls'],
+        },
+      },
+    },
+    required: ['products'],
+  };
+
+  for (const url of urls) {
     try {
-      const resp = await fetch(url, { headers: BROWSER_HEADERS });
+      console.log(`[scrape] Firecrawl JSON extract: ${url}`);
+
+      const resp = await fetch('https://api.firecrawl.dev/v1/scrape', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${firecrawlApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          url,
+          formats: ['extract'],
+          waitFor: 3000,
+          extract: {
+            schema: jsonSchema,
+            prompt: `Extract all fashion products visible on this ${brand} category page. For each product, get the exact product name, product detail page URL, price in cents, all image URLs, category, and colour.`,
+          },
+        }),
+      });
+
+      const data = await resp.json();
 
       if (!resp.ok) {
-        console.warn(`[stage1] ${brand} page ${page + 1} returned HTTP ${resp.status} — skipping`);
+        console.warn(`[scrape] Firecrawl error for ${url}: ${JSON.stringify(data).slice(0, 300)}`);
         continue;
       }
 
-      const html = await resp.text();
-      pages.push(html);
-      console.log(`[stage1] fetched ${brand}/${category} page ${page + 1} (${html.length} chars)`);
+      const extracted = data.data?.extract || data.extract || {};
+      const products = extracted?.products || [];
+      
+      console.log(`[scrape] extracted ${products.length} products from ${url}`);
+
+      for (const p of products) {
+        if (!p.name || !p.product_url || !p.image_urls?.length) continue;
+        allProducts.push({
+          name: p.name,
+          brand,
+          product_url: p.product_url,
+          price_cents: p.price_cents ?? null,
+          currency: p.currency ?? 'USD',
+          image_urls: p.image_urls,
+          category_raw: p.category_raw ?? category,
+          colour: p.colour ?? null,
+        });
+      }
     } catch (err) {
-      console.warn(`[stage1] fetch failed for ${brand} page ${page + 1}:`, err);
+      console.warn(`[scrape] failed for ${url}:`, err);
     }
 
-    // Polite delay — prevent rate limiting
-    await delay(800 + Math.random() * 400);
+    await delay(1000);
   }
 
-  return pages;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// STAGE 2 — Gemini extracts structured data from real HTML
-// ─────────────────────────────────────────────────────────────────────────────
-
-async function extractProductsFromHTML(
-  html: string,
-  brand: string,
-  apiKey: string
-): Promise<RawProduct[]> {
-  const resp = await callGemini(
-    STAGE2_SYSTEM,
-    STAGE2_USER(html),
-    apiKey
-  );
-
-  try {
-    const clean = resp.replace(/^```json\n?/, '').replace(/```$/, '').trim();
-    const jsonMatch = clean.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) return [];
-    const products = JSON.parse(jsonMatch[0]);
-    if (!Array.isArray(products)) return [];
-    return products.map((p: any) => ({ ...p, brand }));
-  } catch {
-    console.error('[stage2] JSON parse failed. Raw response (first 300 chars):', resp.slice(0, 300));
-    return [];
-  }
+  return allProducts;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -225,11 +237,7 @@ async function classifyProductImages(
 ): Promise<ClassifiedProduct | null> {
   if (!product.image_urls?.length) return null;
 
-  const resp = await callGemini(
-    STAGE3_SYSTEM,
-    STAGE3_USER(product),
-    apiKey
-  );
+  const resp = await callGemini(STAGE3_SYSTEM, STAGE3_USER(product), apiKey);
 
   try {
     const clean = resp.replace(/^```json\n?/, '').replace(/```$/, '').trim();
@@ -238,19 +246,19 @@ async function classifyProductImages(
     const result = JSON.parse(jsonMatch[0]);
 
     if (!result.selected_url || result.confidence < 0.6) {
-      console.warn(`[stage3] rejected (low confidence ${result.confidence}): ${product.name}`);
+      console.warn(`[classify] rejected (confidence ${result.confidence}): ${product.name}`);
       return null;
     }
 
-    // Verify the selected URL actually resolves — no hallucinated URLs enter the DB
+    // Verify the selected URL actually resolves
     try {
       const check = await fetch(result.selected_url, { method: 'HEAD' });
       if (!check.ok) {
-        console.warn(`[stage3] selected URL returned ${check.status}: ${result.selected_url}`);
+        console.warn(`[classify] URL returned ${check.status}: ${result.selected_url}`);
         return null;
       }
     } catch {
-      console.warn(`[stage3] HEAD check failed for: ${result.selected_url}`);
+      console.warn(`[classify] HEAD check failed: ${result.selected_url}`);
       return null;
     }
 
@@ -261,13 +269,13 @@ async function classifyProductImages(
       confidence:   result.confidence,
     };
   } catch {
-    console.error('[stage3] JSON parse failed. Raw response:', resp.slice(0, 300));
+    console.error('[classify] JSON parse failed. Raw:', resp.slice(0, 300));
     return null;
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// DEDUPLICATION — within-run and cross-run
+// DEDUPLICATION
 // ─────────────────────────────────────────────────────────────────────────────
 
 function deduplicateProducts(products: ClassifiedProduct[]): ClassifiedProduct[] {
@@ -285,12 +293,9 @@ function deduplicateProducts(products: ClassifiedProduct[]): ClassifiedProduct[]
       }
       continue;
     }
-
     if ([...seen.values()].some(p => normaliseUrl(p.image_url) === imageKey)) continue;
 
-    const byName = [...seen.values()].find(
-      p => nameFingerprint(p.name, p.brand) === nameKey
-    );
+    const byName = [...seen.values()].find(p => nameFingerprint(p.name, p.brand) === nameKey);
     if (byName) {
       if (imagePriority(product.presentation) > imagePriority(byName.presentation)) {
         seen.delete(normaliseUrl(byName.product_url));
@@ -317,9 +322,7 @@ async function filterExistingProducts(
     .select('product_url')
     .in('product_url', productUrls);
 
-  const existingUrlSet = new Set(
-    (existingByUrl ?? []).map((r: any) => normaliseUrl(r.product_url))
-  );
+  const existingUrlSet = new Set((existingByUrl ?? []).map((r: any) => normaliseUrl(r.product_url)));
   let filtered = products.filter(p => !existingUrlSet.has(normaliseUrl(p.product_url)));
 
   const imageUrls = filtered.map(p => normaliseUrl(p.image_url));
@@ -328,12 +331,10 @@ async function filterExistingProducts(
     .select('image_url')
     .in('image_url', imageUrls);
 
-  const existingImageSet = new Set(
-    (existingByImage ?? []).map((r: any) => normaliseUrl(r.image_url))
-  );
+  const existingImageSet = new Set((existingByImage ?? []).map((r: any) => normaliseUrl(r.image_url)));
   filtered = filtered.filter(p => !existingImageSet.has(normaliseUrl(p.image_url)));
 
-  console.log(`[dedup] ${products.length} classified → ${filtered.length} new (not in DB)`);
+  console.log(`[dedup] ${products.length} → ${filtered.length} new`);
   return filtered;
 }
 
@@ -357,7 +358,6 @@ async function callGemini(system: string, user: string, apiKey: string): Promise
       ],
     }),
   });
-
   const data = await resp.json();
   return data.choices?.[0]?.message?.content?.trim() ?? '';
 }
@@ -365,32 +365,23 @@ async function callGemini(system: string, user: string, apiKey: string): Promise
 function normaliseUrl(url: string): string {
   try {
     const u = new URL(url);
-    const DROP = [
-      'utm_source','utm_medium','utm_campaign','utm_content','utm_term',
-      'sessionid','sid','token','ref','referer','source','clickid',
-      'gclid','fbclid','msclkid','ttclid',
-    ];
-    DROP.forEach(k => u.searchParams.delete(k));
+    ['utm_source','utm_medium','utm_campaign','utm_content','utm_term',
+     'sessionid','sid','token','ref','referer','source','clickid',
+     'gclid','fbclid','msclkid','ttclid'].forEach(k => u.searchParams.delete(k));
     u.hostname = u.hostname.toLowerCase();
     u.searchParams.sort();
     return u.toString();
-  } catch {
-    return url.toLowerCase().trim();
-  }
+  } catch { return url.toLowerCase().trim(); }
 }
 
 function nameFingerprint(name: string, brand: string): string {
-  return `${brand}|${name}`
-    .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .replace(/[^a-z0-9| ]/g, '')
-    .trim();
+  return `${brand}|${name}`.toLowerCase().replace(/\s+/g, ' ').replace(/[^a-z0-9| ]/g, '').trim();
 }
 
-function imagePriority(presentation: string | null): number {
-  if (presentation === 'ghost_mannequin') return 3;
-  if (presentation === 'flat_lay')        return 2;
-  if (presentation === 'model_shot')      return 1;
+function imagePriority(p: string | null): number {
+  if (p === 'ghost_mannequin') return 3;
+  if (p === 'flat_lay') return 2;
+  if (p === 'model_shot') return 1;
   return 0;
 }
 
@@ -398,26 +389,24 @@ function normaliseCategory(raw: string | null): string {
   if (!raw) return 'other';
   const r = raw.toLowerCase();
   if (/shirt|tee|top|blouse|hoodie|sweatshirt|cardigan|bodysuit|polo/.test(r)) return 'tops';
-  if (/pant|jean|trouser|skirt|short|legging|jogger/.test(r))                  return 'bottoms';
-  if (/jacket|coat|blazer|bomber|puffer|trench|windbreaker|parka/.test(r))     return 'outerwear';
-  if (/dress|jumpsuit|romper|gown/.test(r))                                     return 'dresses';
-  if (/shoe|sneaker|boot|heel|sandal|loafer|mule|flat/.test(r))                return 'footwear';
-  if (/bag|belt|hat|scarf|sunglass|jewel|watch|wallet|backpack/.test(r))       return 'accessories';
+  if (/pant|jean|trouser|skirt|short|legging|jogger/.test(r)) return 'bottoms';
+  if (/jacket|coat|blazer|bomber|puffer|trench|windbreaker|parka/.test(r)) return 'outerwear';
+  if (/dress|jumpsuit|romper|gown/.test(r)) return 'dresses';
+  if (/shoe|sneaker|boot|heel|sandal|loafer|mule|flat/.test(r)) return 'footwear';
+  if (/bag|belt|hat|scarf|sunglass|jewel|watch|wallet|backpack/.test(r)) return 'accessories';
   return 'other';
 }
 
 function buildTags(p: ClassifiedProduct): string[] {
   const tags: string[] = [];
-  if (p.brand)        tags.push(p.brand.toLowerCase());
-  if (p.colour)       tags.push(p.colour.toLowerCase());
+  if (p.brand) tags.push(p.brand.toLowerCase());
+  if (p.colour) tags.push(p.colour.toLowerCase());
   if (p.category_raw) tags.push(p.category_raw.toLowerCase());
   if (p.presentation) tags.push(p.presentation);
   return [...new Set(tags)];
 }
 
-function delay(ms: number) {
-  return new Promise(r => setTimeout(r, ms));
-}
+function delay(ms: number) { return new Promise(r => setTimeout(r, ms)); }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN HANDLER
@@ -429,20 +418,25 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { brand, category, pageCount = 2 } = await req.json();
+    const { brand, category } = await req.json();
 
     if (!brand || !category) {
       return new Response(JSON.stringify({ error: 'brand and category are required' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     const OPENROUTER_API_KEY = Deno.env.get('OPENROUTER_API_KEY');
     if (!OPENROUTER_API_KEY) {
       return new Response(JSON.stringify({ error: 'OPENROUTER_API_KEY not set' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const FIRECRAWL_API_KEY = Deno.env.get('FIRECRAWL_API_KEY');
+    if (!FIRECRAWL_API_KEY) {
+      return new Response(JSON.stringify({ error: 'FIRECRAWL_API_KEY not set' }), {
+        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
@@ -453,89 +447,75 @@ Deno.serve(async (req) => {
 
     const runId = crypto.randomUUID();
     const results = { runId, brand, category, scraped: 0, extracted: 0, classified: 0, deduped: 0, inserted: 0 };
+    console.log(`[run:${runId}] Starting: ${brand}/${category}`);
 
-    console.log(`[run:${runId}] Starting pipeline: ${brand}/${category}`);
+    // ── STAGES 1+2: Firecrawl scrape + JSON extract ──────────────────
+    const rawProducts = await scrapeProducts(brand, category, FIRECRAWL_API_KEY);
+    results.extracted = rawProducts.length;
+    results.scraped = rawProducts.length > 0 ? 1 : 0;
+    console.log(`[run:${runId}] Extracted ${rawProducts.length} products`);
 
-    // ── STAGE 1: Fetch real HTML ─────────────────────────────────────
-    const htmlPages = await fetchCategoryHTML(brand, category, pageCount);
-    results.scraped = htmlPages.length;
-
-    if (!htmlPages.length) {
-      return new Response(JSON.stringify({ ...results, warning: 'No HTML pages fetched. Check retailer config.' }), {
+    if (!rawProducts.length) {
+      return new Response(JSON.stringify({ ...results, warning: 'No products extracted. Check Firecrawl output.' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // ── STAGE 2: Extract products from HTML ──────────────────────────
-    const rawProducts: RawProduct[] = [];
-    for (const html of htmlPages) {
-      const extracted = await extractProductsFromHTML(html, brand, OPENROUTER_API_KEY);
-      rawProducts.push(...extracted);
-      await delay(1500);
-    }
-    results.extracted = rawProducts.length;
-    console.log(`[run:${runId}] Stage 2 complete: ${rawProducts.length} products extracted`);
-
     // ── STAGE 3: Classify images ─────────────────────────────────────
     const classified: ClassifiedProduct[] = [];
     for (const product of rawProducts) {
-      if (!product.image_urls?.length) continue;
       const result = await classifyProductImages(product, OPENROUTER_API_KEY);
       if (result) classified.push(result);
       await delay(500);
     }
     results.classified = classified.length;
-    console.log(`[run:${runId}] Stage 3 complete: ${classified.length} images classified`);
+    console.log(`[run:${runId}] Classified ${classified.length} images`);
 
     // ── DEDUPLICATION ────────────────────────────────────────────────
-    const withinRun   = deduplicateProducts(classified);
+    const withinRun = deduplicateProducts(classified);
     const newProducts = await filterExistingProducts(withinRun, supabase);
-    results.deduped   = newProducts.length;
+    results.deduped = newProducts.length;
 
     // ── DB INSERT ────────────────────────────────────────────────────
     if (newProducts.length > 0) {
       const rows = newProducts.map(p => ({
-        name:             p.name,
-        brand:            p.brand,
-        retailer:         p.brand,
-        product_url:      normaliseUrl(p.product_url),
-        image_url:        normaliseUrl(p.image_url),
-        price_cents:      p.price_cents,
-        currency:         p.currency ?? 'USD',
-        category:         normaliseCategory(p.category_raw),
-        tags:             buildTags(p),
-        presentation:     p.presentation,
+        name: p.name,
+        brand: p.brand,
+        retailer: p.brand,
+        product_url: normaliseUrl(p.product_url),
+        image_url: normaliseUrl(p.image_url),
+        price_cents: p.price_cents,
+        currency: p.currency ?? 'USD',
+        category: normaliseCategory(p.category_raw),
+        tags: buildTags(p),
+        presentation: p.presentation,
         image_confidence: p.confidence,
-        scrape_source:    runId,
-        scraped_at:       new Date().toISOString(),
-        is_active:        true,
+        scrape_source: runId,
+        scraped_at: new Date().toISOString(),
+        is_active: true,
       }));
 
-      const { error } = await supabase
-        .from('product_catalog')
-        .insert(rows);
+      const { error } = await supabase.from('product_catalog').insert(rows);
 
       if (error) {
         if (error.code === '23505') {
-          console.warn(`[run:${runId}] Some products skipped (unique constraint) — expected`);
+          console.warn(`[run:${runId}] Some skipped (unique constraint)`);
         } else {
           throw error;
         }
       }
-
       results.inserted = rows.length;
     }
 
-    console.log(`[run:${runId}] Done. Inserted ${results.inserted} new products.`);
+    console.log(`[run:${runId}] Done. Inserted ${results.inserted}`);
     return new Response(JSON.stringify({ success: true, ...results }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (err: any) {
-    console.error('Pipeline fatal error:', err);
+    console.error('Pipeline error:', err);
     return new Response(JSON.stringify({ success: false, error: err.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });
