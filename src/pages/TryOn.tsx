@@ -49,6 +49,18 @@ const CATEGORIES = [
   { key: 'full', label: 'Full Look' },
 ] as const;
 
+const ACCESSORY_CATEGORIES = [
+  { key: 'shoes', label: '👟 Shoes', icon: '👟' },
+  { key: 'hat', label: '🧢 Hat', icon: '🧢' },
+  { key: 'necklace', label: '📿 Necklace', icon: '📿' },
+  { key: 'earrings', label: '✨ Earrings', icon: '✨' },
+  { key: 'bracelet', label: '⌚ Bracelet', icon: '⌚' },
+  { key: 'watch', label: '⌚ Watch', icon: '⌚' },
+  { key: 'jewelry', label: '💎 Jewelry', icon: '💎' },
+  { key: 'bag', label: '👜 Bag', icon: '👜' },
+  { key: 'sunglasses', label: '🕶️ Sunglasses', icon: '🕶️' },
+] as const;
+
 const DEMO_OUTFITS = [
   { label: 'White Tee', category: 'top', image: quickpickWhiteTee, searchTerm: 'white t-shirt', retailers: ['Zara', 'H&M', 'Uniqlo', 'Gap'] },
   { label: 'Denim Jacket', category: 'outerwear', image: quickpickDenimJacket, searchTerm: 'denim jacket', retailers: ['Zara', 'H&M', 'ASOS', 'Mango'] },
@@ -99,6 +111,13 @@ const TryOn = () => {
   const [savedToItems, setSavedToItems] = useState(false);
   const [selectedQuickPick, setSelectedQuickPick] = useState<typeof DEMO_OUTFITS[number] | null>(null);
   const [retailerMap, setRetailerMap] = useState<Record<string, { website_url: string }>>({});
+  // Multi-item accessory layering
+  const [accessoryPhoto, setAccessoryPhoto] = useState<string | null>(null);
+  const [accessoryCategory, setAccessoryCategory] = useState<string | null>(null);
+  const [addingAccessory, setAddingAccessory] = useState(false);
+  const [layerHistory, setLayerHistory] = useState<string[]>([]);
+  const accessoryPhotoRef = useRef<HTMLInputElement>(null);
+  const accessoryCameraRef = useRef<HTMLInputElement>(null);
 
   const FREE_MONTHLY_LIMIT = 3;
   const hasUnlimitedTryOns = isSubscribed || user?.email?.toLowerCase() === 'godyis77@gmail.com';
@@ -292,6 +311,53 @@ const TryOn = () => {
     setProductLink('');
     setClothingSaved(false);
     setSavedToItems(false);
+    setAccessoryPhoto(null);
+    setAccessoryCategory(null);
+    setAddingAccessory(false);
+    setLayerHistory([]);
+  };
+
+  const handleAddAccessory = async () => {
+    if (!resultImage || !accessoryPhoto) return;
+    if (!hasUnlimitedTryOns && getMonthlyTryOnCount() >= FREE_MONTHLY_LIMIT) {
+      setShowPremiumGate(true);
+      return;
+    }
+    setAddingAccessory(true);
+    trackEvent('tryon_accessory_started', { category: accessoryCategory });
+    try {
+      // Use current result as the "person" photo and accessory as the "clothing"
+      const { data, error } = await supabase.functions.invoke('virtual-tryon', {
+        body: { userPhoto: resultImage, clothingPhoto: accessoryPhoto },
+      });
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+      if (!hasUnlimitedTryOns) incrementTryOnCount();
+      if (data.resultImage) {
+        setLayerHistory(prev => [...prev, resultImage!]);
+        setResultImage(data.resultImage);
+        setAccessoryPhoto(null);
+        setAccessoryCategory(null);
+        trackEvent('tryon_accessory_generated', { category: accessoryCategory });
+        toast({ title: `${accessoryCategory || 'Accessory'} added!`, description: 'Keep adding items or finish your look.' });
+        if (user) {
+          // Update the saved post with new result
+          try {
+            const resultUrl = await uploadBase64ToStorage(data.resultImage, 'result');
+            const { data: latestPosts } = await supabase.from('tryon_posts').select('id').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
+            if (latestPosts && latestPosts.length > 0) {
+              await supabase.from('tryon_posts').update({ result_photo_url: resultUrl }).eq('id', latestPosts[0].id);
+            }
+          } catch { /* silent */ }
+        }
+      } else {
+        toast({ title: 'Could not add accessory', description: data?.description || 'Try a clearer photo.', variant: 'destructive' });
+      }
+    } catch (err: any) {
+      toast({ title: 'Accessory failed', description: err.message, variant: 'destructive' });
+    } finally {
+      setAddingAccessory(false);
+    }
   };
 
   return (
@@ -667,7 +733,91 @@ const TryOn = () => {
               <p className="text-[8px] text-muted-foreground/50 text-center mt-1">We may earn a commission. It doesn't change your price.</p>
             </div>
 
-            {/* ── 1-Tap Post to Fit Check ── */}
+            {/* ── Add Accessory Section ── */}
+            <div className="mb-3 p-3 rounded-xl border border-border bg-card">
+              <input ref={accessoryPhotoRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileSelect((v) => setAccessoryPhoto(v), 'clothing')} className="hidden" />
+              <input ref={accessoryCameraRef} type="file" accept="image/jpeg,image/png,image/webp" capture="environment" onChange={handleFileSelect((v) => setAccessoryPhoto(v), 'clothing')} className="hidden" />
+
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[12px] font-bold text-foreground flex items-center gap-1.5">
+                  <Sparkles className="h-3.5 w-3.5 text-primary" />
+                  Add Accessory
+                </p>
+                {layerHistory.length > 0 && (
+                  <span className="text-[9px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                    {layerHistory.length} item{layerHistory.length !== 1 ? 's' : ''} layered
+                  </span>
+                )}
+              </div>
+              <p className="text-[10px] text-muted-foreground mb-2">Layer one item at a time — shoes, hat, jewelry, and more</p>
+
+              {/* Category chips */}
+              <div className="flex gap-1.5 flex-wrap mb-2">
+                {ACCESSORY_CATEGORIES.map(c => (
+                  <button
+                    key={c.key}
+                    onClick={() => {
+                      setAccessoryCategory(c.key);
+                      if (!accessoryPhoto) accessoryPhotoRef.current?.click();
+                    }}
+                    className={`px-2.5 py-1.5 rounded-lg text-[10px] font-medium border transition-all active:scale-95 ${
+                      accessoryCategory === c.key
+                        ? 'border-primary bg-primary text-primary-foreground font-bold'
+                        : 'border-border text-muted-foreground hover:border-primary/30'
+                    }`}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Accessory photo preview + upload */}
+              {accessoryPhoto ? (
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-16 h-16 rounded-lg overflow-hidden border border-primary/40 shrink-0">
+                    <img src={accessoryPhoto} alt="Accessory" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1 space-y-1.5">
+                    <p className="text-[10px] text-primary font-medium flex items-center gap-1"><Check className="h-3 w-3" /> {accessoryCategory || 'Accessory'} ready</p>
+                    <div className="flex gap-1.5">
+                      <button onClick={() => accessoryPhotoRef.current?.click()} className="text-[9px] text-muted-foreground underline">Change</button>
+                      <button onClick={() => { setAccessoryPhoto(null); setAccessoryCategory(null); }} className="text-[9px] text-destructive underline">Remove</button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex gap-1.5 mb-2">
+                  <button
+                    onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryCameraRef.current?.click(); }}
+                    className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 border border-primary/20 text-primary active:scale-95 transition-transform"
+                  >
+                    <Camera className="h-3.5 w-3.5" />
+                    <span className="text-[10px] font-bold">Camera</span>
+                  </button>
+                  <button
+                    onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryPhotoRef.current?.click(); }}
+                    className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-card border border-border text-muted-foreground active:scale-95 transition-transform"
+                  >
+                    <ImageIcon className="h-3.5 w-3.5" />
+                    <span className="text-[10px] font-bold">Gallery</span>
+                  </button>
+                </div>
+              )}
+
+              <Button
+                className="w-full h-10 rounded-lg text-[12px] font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30"
+                onClick={handleAddAccessory}
+                disabled={!accessoryPhoto || addingAccessory}
+              >
+                {addingAccessory ? (
+                  <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> Adding {accessoryCategory || 'accessory'}…</>
+                ) : (
+                  <><Sparkles className="mr-1.5 h-3.5 w-3.5" /> Add {accessoryCategory || 'Accessory'} to Look</>
+                )}
+              </Button>
+            </div>
+
+
             <Button
               className="w-full h-10 rounded-lg bg-accent text-accent-foreground text-sm font-bold mb-2 active:scale-[0.97] transition-transform"
               onClick={() => {

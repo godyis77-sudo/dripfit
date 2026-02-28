@@ -49,7 +49,7 @@ serve(async (req) => {
           {
             role: "user",
             content: [
-              { type: "text", text: "I have two images: the first is a photo of a person, and the second is a clothing item. Generate a new image showing this exact person wearing the clothing item from the second image. Keep the person's face, body, pose, and background exactly the same. Only change their outfit to match the clothing shown in the second image. Output the resulting image." },
+              { type: "text", text: "I have two images: the first is a photo of a person (or a person already wearing an outfit), and the second is an item (clothing or accessory like shoes, hat, jewelry, necklace, earrings, bracelet, watch, bag, or sunglasses). Generate a new image showing this exact person wearing/using the item from the second image in addition to whatever they are already wearing. Keep the person's face, body, pose, background, and existing outfit exactly the same. Only add the new item from the second image. Output the resulting image." },
               makeImagePart(userPhoto),
               makeImagePart(clothingPhoto),
             ],
