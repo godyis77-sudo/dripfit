@@ -222,10 +222,6 @@ const Results = () => {
           onNewScan={() => navigate('/capture')}
           onDelete={handleDelete}
           recommendedSize={adjustedSize}
-          onSaveForLater={() => {
-            trackEvent('save_for_later_click');
-          }}
-          savedForLater={false}
         />
 
         {/* Share */}

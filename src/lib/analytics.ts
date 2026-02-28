@@ -67,8 +67,7 @@ type FunnelEvent =
   | 'onboarding_guest_mode'
   | 'auth_guest_mode'
   | 'vote_submitted'
-  | 'region_changed'
-  | 'save_for_later_click';
+  | 'region_changed';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
