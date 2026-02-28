@@ -228,12 +228,16 @@ export type Database = {
           created_at: string
           currency: string | null
           id: string
+          image_confidence: number | null
           image_url: string
           is_active: boolean
           name: string
+          presentation: string | null
           price_cents: number | null
           product_url: string | null
           retailer: string
+          scrape_source: string | null
+          scraped_at: string | null
           tags: string[] | null
           updated_at: string
         }
@@ -243,12 +247,16 @@ export type Database = {
           created_at?: string
           currency?: string | null
           id?: string
+          image_confidence?: number | null
           image_url: string
           is_active?: boolean
           name: string
+          presentation?: string | null
           price_cents?: number | null
           product_url?: string | null
           retailer: string
+          scrape_source?: string | null
+          scraped_at?: string | null
           tags?: string[] | null
           updated_at?: string
         }
@@ -258,12 +266,16 @@ export type Database = {
           created_at?: string
           currency?: string | null
           id?: string
+          image_confidence?: number | null
           image_url?: string
           is_active?: boolean
           name?: string
+          presentation?: string | null
           price_cents?: number | null
           product_url?: string | null
           retailer?: string
+          scrape_source?: string | null
+          scraped_at?: string | null
           tags?: string[] | null
           updated_at?: string
         }
