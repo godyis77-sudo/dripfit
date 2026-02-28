@@ -172,10 +172,11 @@ const TryOn = () => {
     }
   }, [user]);
 
-  const selectFromWardrobe = (item: { image_url: string; product_link: string | null; category: string }) => {
-    setClothingPhoto(item.image_url);
+  const selectFromWardrobe = async (item: { image_url: string; product_link: string | null; category: string }) => {
     if (item.product_link) setProductLink(item.product_link);
     setCategory(item.category);
+    const base64 = await imageUrlToBase64(item.image_url);
+    setClothingPhoto(base64);
     setShowWardrobe(false);
     setClothingSaved(true);
     trackEvent('tryon_clothing_uploaded');
@@ -633,8 +634,9 @@ const TryOn = () => {
                     collapsed={false}
                     onSelectProduct={async (product) => {
                       if (product.product_url) setProductLink(product.product_url);
-                      setClothingPhoto(product.image_url);
                       trackEvent('tryon_clothing_uploaded');
+                      const base64 = await imageUrlToBase64(product.image_url);
+                      setClothingPhoto(base64);
                     }}
                   />
                 </div>
@@ -851,10 +853,11 @@ const TryOn = () => {
                         title={`Shop ${accessoryCategory}`}
                         collapsed={false}
                         maxItems={4}
-                        onSelectProduct={(product) => {
-                          setAccessoryPhoto(product.image_url);
+                        onSelectProduct={async (product) => {
                           if (product.product_url) setProductLink(product.product_url);
                           trackEvent('catalog_product_clicked', { brand: product.brand, category: accessoryCategory });
+                          const base64 = await imageUrlToBase64(product.image_url);
+                          setAccessoryPhoto(base64);
                         }}
                       />
                     </div>
