@@ -221,6 +221,54 @@ export type Database = {
         }
         Relationships: []
       }
+      product_catalog: {
+        Row: {
+          brand: string
+          category: string
+          created_at: string
+          currency: string | null
+          id: string
+          image_url: string
+          is_active: boolean
+          name: string
+          price_cents: number | null
+          product_url: string | null
+          retailer: string
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          brand: string
+          category: string
+          created_at?: string
+          currency?: string | null
+          id?: string
+          image_url: string
+          is_active?: boolean
+          name: string
+          price_cents?: number | null
+          product_url?: string | null
+          retailer: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          brand?: string
+          category?: string
+          created_at?: string
+          currency?: string | null
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          name?: string
+          price_cents?: number | null
+          product_url?: string | null
+          retailer?: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -600,6 +648,27 @@ export type Database = {
           session_id?: string | null
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_preferred_brands: {
+        Row: {
+          brand_name: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          brand_name: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          brand_name?: string
+          created_at?: string
+          id?: string
+          user_id?: string
         }
         Relationships: []
       }
