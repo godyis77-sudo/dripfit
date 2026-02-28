@@ -14,6 +14,7 @@ import { trackEvent } from '@/lib/analytics';
 import { buildRetailerSearchUrl } from '@/lib/retailerLinks';
 import BottomTabBar from '@/components/BottomTabBar';
 import { FullscreenImage } from '@/components/ui/fullscreen-image';
+import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 
 import quickpickWhiteTee from '@/assets/quickpick-white-tee.png';
 import quickpickDenimJacket from '@/assets/quickpick-denim-jacket.png';
@@ -47,6 +48,9 @@ const CATEGORIES = [
   { key: 'dress', label: 'Dress' },
   { key: 'outerwear', label: 'Outerwear' },
   { key: 'full', label: 'Full Look' },
+  { key: 'shoes', label: 'Shoes' },
+  { key: 'bags', label: 'Bags' },
+  { key: 'hats', label: 'Hats' },
 ] as const;
 
 const ACCESSORY_CATEGORIES = [
@@ -585,12 +589,12 @@ const TryOn = () => {
               </div>
             </div>
 
-            {/* Quick picks */}
+            {/* Quick picks — filter by selected category */}
             {!clothingPhoto && (
               <div className="mb-3">
                 <p className="section-label mb-1.5">Quick Picks</p>
                 <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-                  {DEMO_OUTFITS.map(o => {
+                  {DEMO_OUTFITS.filter(o => o.category === category || category === 'full').map(o => {
                     const isSelected = selectedQuickPick?.label === o.label;
                     return (
                       <button
@@ -619,6 +623,20 @@ const TryOn = () => {
                       </button>
                     );
                   })}
+                </div>
+
+                {/* Catalog products for selected category */}
+                <div className="mt-3">
+                  <CategoryProductGrid
+                    category={category}
+                    title={`Shop ${CATEGORIES.find(c => c.key === category)?.label || category}`}
+                    collapsed={false}
+                    onSelectProduct={async (product) => {
+                      if (product.product_url) setProductLink(product.product_url);
+                      setClothingPhoto(product.image_url);
+                      trackEvent('tryon_clothing_uploaded');
+                    }}
+                  />
                 </div>
               </div>
             )}
@@ -809,22 +827,40 @@ const TryOn = () => {
                   </div>
                 </div>
               ) : (
-                <div className="flex gap-1.5 mb-2">
-                  <button
-                    onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryCameraRef.current?.click(); }}
-                    className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 border border-primary/20 text-primary active:scale-95 transition-transform"
-                  >
-                    <Camera className="h-3.5 w-3.5" />
-                    <span className="text-[10px] font-bold">Camera</span>
-                  </button>
-                  <button
-                    onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryPhotoRef.current?.click(); }}
-                    className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-card border border-border text-muted-foreground active:scale-95 transition-transform"
-                  >
-                    <ImageIcon className="h-3.5 w-3.5" />
-                    <span className="text-[10px] font-bold">Gallery</span>
-                  </button>
-                </div>
+                <>
+                  <div className="flex gap-1.5 mb-2">
+                    <button
+                      onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryCameraRef.current?.click(); }}
+                      className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 border border-primary/20 text-primary active:scale-95 transition-transform"
+                    >
+                      <Camera className="h-3.5 w-3.5" />
+                      <span className="text-[10px] font-bold">Camera</span>
+                    </button>
+                    <button
+                      onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryPhotoRef.current?.click(); }}
+                      className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-card border border-border text-muted-foreground active:scale-95 transition-transform"
+                    >
+                      <ImageIcon className="h-3.5 w-3.5" />
+                      <span className="text-[10px] font-bold">Gallery</span>
+                    </button>
+                  </div>
+                  {/* Catalog products for selected accessory category */}
+                  {accessoryCategory && (
+                    <div className="mb-2">
+                      <CategoryProductGrid
+                        category={accessoryCategory}
+                        title={`Shop ${accessoryCategory}`}
+                        collapsed={false}
+                        maxItems={4}
+                        onSelectProduct={(product) => {
+                          setAccessoryPhoto(product.image_url);
+                          if (product.product_url) setProductLink(product.product_url);
+                          trackEvent('catalog_product_clicked', { brand: product.brand, category: accessoryCategory });
+                        }}
+                      />
+                    </div>
+                  )}
+                </>
               )}
 
               <Button

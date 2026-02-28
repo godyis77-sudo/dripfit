@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { STRIPE_TIERS } from '@/hooks/useAuth';
 import { getUserRegion, setUserRegion, type UserRegion } from '@/lib/session';
 import FavoriteRetailers from './FavoriteRetailers';
+import PreferredBrands from './PreferredBrands';
 
 const SectionHeader = forwardRef<HTMLParagraphElement, { children: React.ReactNode }>(
   ({ children }, ref) => (
@@ -340,6 +341,17 @@ const SettingsTab = ({
       <div className="bg-card border border-border rounded-xl p-3 mb-1">
         <p className="text-[10px] text-muted-foreground mb-2">Pick your go-to stores. These will appear on wardrobe items without a retailer.</p>
         <FavoriteRetailers userId={user.id} favorites={favoriteRetailers} onFavoritesChange={onFavoriteRetailersChange} />
+      </div>
+
+      {/* Preferred Brands */}
+      <SectionHeader>
+        <span className="flex items-center gap-1">
+          <Crown className="h-3 w-3 text-primary" /> Preferred Brands
+        </span>
+      </SectionHeader>
+      <div className="bg-card border border-border rounded-xl p-3 mb-1">
+        <p className="text-[10px] text-muted-foreground mb-2">Search from top brands or add your own. Used to personalize recommendations.</p>
+        <PreferredBrands />
       </div>
 
       {/* Privacy & Data */}

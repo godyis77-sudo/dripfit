@@ -1,11 +1,13 @@
 import { forwardRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Sparkles, Camera, Heart, ShoppingBag, Clock, TrendingUp, Shirt, MessageSquare } from 'lucide-react';
+import { Plus, Sparkles, Camera, Heart, ShoppingBag, Clock, TrendingUp, Shirt, MessageSquare, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
+import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
+import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 
 const PROMPTS = [
   'Should I buy this for work?',
@@ -27,11 +29,7 @@ interface TrendingPost {
   isLive?: boolean;
 }
 
-const RECOMMENDED = [
-  { id: '1', label: 'Oversized tee — Your size: L', brand: 'Zara', url: 'https://www.zara.com/us/en/search?searchTerm=oversized+tee' },
-  { id: '2', label: 'Slim chinos — Your size: 32', brand: 'H&M', url: 'https://www.hm.com/search?q=slim+chinos' },
-  { id: '3', label: 'Bomber jacket — Your size: M', brand: 'Uniqlo', url: 'https://www.uniqlo.com/us/en/search?q=bomber+jacket' },
-];
+// Recommended section now uses product catalog
 
 interface RecentItem {
   id: string;
@@ -260,7 +258,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           </div>
         </motion.div>
 
-        {/* Recommended For You */}
+        {/* Recommended For You — powered by product catalog */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -268,24 +266,43 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           className="mb-6"
         >
           <div className="flex items-center justify-between mb-2.5">
-            <p className="section-label mb-0">Recommended for you</p>
+            <div className="flex items-center gap-1.5">
+              <ShoppingBag className="h-3.5 w-3.5 text-primary" />
+              <p className="section-label mb-0">Recommended for you</p>
+            </div>
+            <button
+              onClick={() => navigate('/tryon')}
+              className="text-[10px] text-primary font-semibold min-h-[44px] flex items-center"
+            >
+              Try on →
+            </button>
           </div>
-          <div className="space-y-1.5">
-            {RECOMMENDED.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => window.open(item.url, '_blank', 'noopener')}
-                className="w-full flex items-center gap-3 bg-card border border-border rounded-xl px-3 py-2.5 active:scale-[0.98] transition-transform min-h-[44px]"
-              >
-                <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                  <ShoppingBag className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="text-[12px] font-semibold text-foreground">{item.label}</p>
-                  <p className="text-[10px] text-muted-foreground">{item.brand}</p>
-                </div>
-              </button>
-            ))}
+          <CategoryProductGrid
+            category="top"
+            collapsed={false}
+            maxItems={8}
+            onSelectProduct={(product) => {
+              if (product.product_url) {
+                trackEvent('catalog_product_clicked', { brand: product.brand, category: product.category });
+                window.open(product.product_url, '_blank', 'noopener');
+              }
+            }}
+          />
+
+          {/* Accessories section */}
+          <div className="mt-3">
+            <CategoryProductGrid
+              category="shoes"
+              title="Trending Accessories"
+              collapsed={true}
+              maxItems={8}
+              onSelectProduct={(product) => {
+                if (product.product_url) {
+                  trackEvent('catalog_product_clicked', { brand: product.brand, category: product.category });
+                  window.open(product.product_url, '_blank', 'noopener');
+                }
+              }}
+            />
           </div>
         </motion.div>
 

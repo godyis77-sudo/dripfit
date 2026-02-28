@@ -81,6 +81,12 @@ export const MEASUREMENT_LABELS: Record<string, string> = {
 export const SUPPORTED_RETAILERS = [
   'SHEIN', 'Macys', 'Gap', 'Nordstrom', 'JCPenney',
   'Lululemon', 'Zara', 'H&M', 'Aritzia', 'Simons',
+  // Luxury
+  'Gucci', 'Louis Vuitton', 'Prada', 'Balenciaga', 'Dior',
+  'Burberry', 'Versace', 'Saint Laurent', 'Givenchy', 'Fendi',
+  // Streetwear
+  'Supreme', 'Off-White', 'Stüssy', 'A Bathing Ape', 'Palace',
+  'Fear of God', 'Kith', 'Essentials', 'Corteiz', 'Trapstar',
 ] as const;
 
 export const CALIBRATION_BRANDS = ['Levi\'s', 'Nike', 'Gap', 'Zara', 'Aritzia'] as const;
