@@ -183,20 +183,20 @@ const Onboarding = () => {
                   className="flex-1 flex flex-col cursor-grab active:cursor-grabbing"
                 >
                   {/* Illustration area — 55% */}
-                  <div className="flex-[60] flex items-center justify-center bg-card/30 mx-4 rounded-3xl overflow-hidden py-6">
+                  <div className="flex-[70] flex items-center justify-center bg-card/30 mx-4 rounded-3xl overflow-hidden">
                     {slideIdx === 0 ? (
-                      <DecorativeSilhouette height={280} />
+                      <DecorativeSilhouette height={360} />
                     ) : (
                       <img
                         src={SLIDES[slideIdx].image}
                         alt={SLIDES[slideIdx].title}
-                        className="h-48 w-48 object-contain"
+                        className="w-full h-full object-cover"
                       />
                     )}
                   </div>
 
                   {/* Text area — 45% */}
-                  <div className="flex-[45] flex flex-col items-center justify-center px-8 text-center">
+                  <div className="flex-[35] flex flex-col items-center justify-center px-8 text-center">
                     <div className="h-10 w-10 rounded-xl gradient-drip flex items-center justify-center mb-3">
                       {(() => { const Icon = SLIDES[slideIdx].icon; return <Icon className="h-5 w-5 text-primary-foreground" />; })()}
                     </div>
