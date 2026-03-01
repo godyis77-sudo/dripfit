@@ -278,7 +278,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             </button>
           </div>
           <CategoryProductGrid
-            category="top"
+            category="tops"
             collapsed={false}
             maxItems={8}
             onSelectProduct={(product) => {
@@ -292,7 +292,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           {/* Accessories section */}
           <div className="mt-3">
             <CategoryProductGrid
-              category="shoes"
+              category="accessories"
               title="Trending Accessories"
               collapsed={true}
               maxItems={8}
