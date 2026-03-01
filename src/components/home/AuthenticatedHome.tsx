@@ -294,10 +294,8 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                 seed={section.seed}
                 showViewAll={true}
                 onSelectProduct={(product) => {
-                  if (product.product_url) {
-                    trackEvent('catalog_product_clicked', { brand: product.brand, category: product.category });
-                    window.open(product.product_url, '_blank', 'noopener');
-                  }
+                  trackEvent('catalog_product_tryon', { brand: product.brand, category: product.category });
+                  navigate('/tryon', { state: { clothingUrl: product.image_url, productUrl: product.product_url } });
                 }}
               />
             </div>

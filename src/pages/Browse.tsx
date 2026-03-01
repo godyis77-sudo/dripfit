@@ -351,7 +351,7 @@ const Browse = () => {
               <Button
                 className="flex-1 gap-2"
                 onClick={() => {
-                  navigate('/tryon');
+                  navigate('/tryon', { state: { clothingUrl: previewProduct.image_url, productUrl: previewProduct.product_url } });
                   setPreviewProduct(null);
                 }}
               >
