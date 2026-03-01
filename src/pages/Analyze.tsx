@@ -35,15 +35,17 @@ interface MeasurementOverlay {
 }
 
 const OVERLAYS: MeasurementOverlay[] = [
-  { key: 'height', label: 'Height', side: 'left', topPct: '8%', bodyX: 38, labelX: 6, lineY: 10 },
-  { key: 'shoulder', label: 'Shoulder', side: 'right', topPct: '18.5%', bodyX: 62, labelX: 94, lineY: 20.2 },
-  { key: 'chest', label: 'Chest', side: 'left', topPct: '24.5%', bodyX: 41, labelX: 6, lineY: 26 },
-  { key: 'waist', label: 'Waist', side: 'right', topPct: '38%', bodyX: 57, labelX: 94, lineY: 39.5 },
-  { key: 'hips', label: 'Hips', side: 'right', topPct: '46%', bodyX: 60, labelX: 94, lineY: 47.4 },
-  { key: 'inseam', label: 'Inseam', side: 'left', topPct: '64%', bodyX: 46, labelX: 6, lineY: 65 },
+  { key: 'height', label: 'Height', side: 'left', topPct: '13%', bodyX: 38, labelX: 6, lineY: 15 },
+  { key: 'shoulder', label: 'Shoulder', side: 'right', topPct: '23.5%', bodyX: 62, labelX: 94, lineY: 25.2 },
+  { key: 'chest', label: 'Chest', side: 'left', topPct: '29.5%', bodyX: 41, labelX: 6, lineY: 31 },
+  { key: 'bust', label: 'Bust', side: 'left', topPct: '32.5%', bodyX: 43, labelX: 6, lineY: 34 },
+  { key: 'waist', label: 'Waist', side: 'right', topPct: '43%', bodyX: 57, labelX: 94, lineY: 44.5 },
+  { key: 'hips', label: 'Hips', side: 'right', topPct: '51%', bodyX: 60, labelX: 94, lineY: 52.4 },
+  { key: 'inseam', label: 'Inseam', side: 'left', topPct: '69%', bodyX: 46, labelX: 6, lineY: 70 },
 ];
 
-const REVEAL_ORDER = ['height', 'shoulder', 'chest', 'waist', 'hips', 'inseam'];
+const TOTAL_SCAN_TIME = 8000;
+const REVEAL_ORDER = ['height', 'shoulder', 'chest', 'bust', 'waist', 'hips', 'inseam'];
 
 interface AnalyzeState {
   photos: PhotoSet;
@@ -87,7 +89,7 @@ const Analyze = () => {
     const msgInterval = setInterval(() => setMsgIdx(p => (p + 1) % MESSAGES.length), 2000);
 
     const progressInterval = setInterval(() => {
-      setProgress(p => Math.min(p + 1.5, 90));
+      setProgress(p => Math.min(p + (90 / (TOTAL_SCAN_TIME / 100)), 90));
     }, 100);
 
     const SCAN_DURATION = 3000;
@@ -99,17 +101,18 @@ const Analyze = () => {
       });
     }, SCAN_TICK);
 
-    // Progressively reveal measurements on the silhouette
+    // Progressively reveal measurements spread across total scan time
+    const revealInterval = TOTAL_SCAN_TIME / REVEAL_ORDER.length;
     REVEAL_ORDER.forEach((key, i) => {
       setTimeout(() => {
         setRevealedKeys(prev => [...prev, key]);
-      }, 1200 + i * 800);
+      }, revealInterval * (i + 0.5));
     });
 
     setTimeout(() => {
       minTimeElapsed.current = true;
       if (resultReady.current) navigateToResults(resultReady.current);
-    }, 5500);
+    }, TOTAL_SCAN_TIME);
 
     analyzePhotos();
 
@@ -292,14 +295,14 @@ const Analyze = () => {
                 }}
               >
                 <div className={`${isLeft ? 'text-left' : 'text-right'} px-1.5 py-0.5`}>
-                  <p className="text-[11px] font-bold uppercase tracking-wider leading-none" style={{ color: 'hsl(42 45% 50%)' }}>
+                  <p className="text-[22px] font-bold uppercase tracking-wider leading-none" style={{ color: 'hsl(42 45% 50%)' }}>
                     {label}
                   </p>
                   <motion.p
                     key={value}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="text-[12px] font-bold leading-none mt-0.5"
+                    className="text-[24px] font-bold leading-none mt-0.5"
                     style={{ color: hasRealValue ? 'hsl(0 0% 95%)' : 'hsl(0 0% 50%)' }}
                   >
                     {value}
@@ -332,13 +335,13 @@ const Analyze = () => {
         />
       </div>
 
-      <h2 className="text-lg font-bold text-foreground mb-2">Analyzing Your Scan</h2>
+      <h2 className="text-xl font-bold text-foreground mb-2">Analyzing Your Scan</h2>
 
       <motion.p
         key={msgIdx}
         initial={{ opacity: 0, y: 4 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-[13px] text-muted-foreground text-center mb-6"
+        className="text-sm text-muted-foreground text-center mb-6"
       >
         {MESSAGES[msgIdx]}
       </motion.p>
@@ -353,7 +356,7 @@ const Analyze = () => {
       </div>
 
       {/* Measurement count */}
-      <p className="text-[10px] text-muted-foreground mt-3">
+      <p className="text-xs text-muted-foreground mt-3">
         {revealedKeys.length} of {REVEAL_ORDER.length} measurements found
       </p>
     </div>
