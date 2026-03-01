@@ -13,7 +13,7 @@ import { lovable } from '@/integrations/lovable/index';
 import { useToast } from '@/hooks/use-toast';
 
 import heroScan from '@/assets/body-silhouette-clean.png';
-import scanResultsPreview from '@/assets/scan-results-decorated.png';
+import scanResultsPreview from '@/assets/scan-results-preview.png';
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
 import heroTryon from '@/assets/hero-tryon-mirror.jpg';
 import heroCommunity from '@/assets/hero-community-feedback.jpg';
