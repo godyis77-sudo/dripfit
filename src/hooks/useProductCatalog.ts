@@ -54,7 +54,7 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
     setLoading(true);
     let query = supabase
       .from('product_catalog')
-      .select('*')
+      .select('id, brand, retailer, category, name, image_url, product_url, price_cents, currency, tags, image_confidence')
       .eq('is_active', true)
       .not('image_url', 'is', null)
       .order('image_confidence', { ascending: false })
@@ -72,20 +72,28 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
 
     const { data } = await query;
     if (data) {
-      // Filter out junk URLs (navigation images, placeholders, tiny swatches, flags)
+      // Filter out junk URLs and low-quality entries
       const JUNK_PATTERNS = [
         'down_for_maintenance', 'Navigation', 'imagesother', 'chip/goods',
         'Topper', 'courtesypage', 'navi/image', 'lineup/', 'width=36',
         'New-Stores', 'miffy', 'placeholder', 'Dress_Toppers', 'Dress-Topper',
         'Share-Image', 'flags/', 'entrance/assets', '/icons/', 'swatch',
         'pixel', 'spacer', 'banner', 'badge', 'app-store', 'download-on',
-        'demandware.static', 'logo', '.gif', '1x1', 'tracking',
+        'demandware.static', '.gif', '1x1', 'tracking',
+        'paymentmethods', 'asos-finance', 'PaymentMethods', 'klarna',
+        'visa.png', 'mastercard.png', 'paypal.png', 'amex.png',
+        'afterpay', 'discover.png', 'dinersclub', 'apple-pay',
+        '/navi/', 'NAVI_',
       ];
+      const MIN_CONFIDENCE = 0.15;
       const seen = new Set<string>();
       const cleaned = (data as unknown as CatalogProduct[]).filter(p => {
         if (!p.image_url || p.image_url.trim() === '') return false;
         const url = p.image_url;
         if (JUNK_PATTERNS.some(pat => url.includes(pat))) return false;
+        // Skip very low confidence scraped images (headshots, icons, etc.)
+        const conf = (p as any).image_confidence;
+        if (conf !== null && conf !== undefined && conf < MIN_CONFIDENCE) return false;
         // Deduplicate by image URL
         if (seen.has(url)) return false;
         seen.add(url);
