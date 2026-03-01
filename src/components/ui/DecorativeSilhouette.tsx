@@ -2,12 +2,12 @@ import { useState } from 'react';
 import bodySilhouette from '@/assets/body-silhouette-clean.png';
 
 const MOCK_LINES = [
-  { key: 'shoulder', label: 'Shoulder', side: 'right' as const, x1: 37.7, y1: 25.2, x2: 62.3, y2: 25.2, labelTop: '24%', leaderFromX: 62.3, leaderEndX: 80 },
-  { key: 'chest', label: 'Chest', side: 'left' as const, x1: 41.2, y1: 30.9, x2: 58.8, y2: 30.9, labelTop: '29.8%', leaderFromX: 41.2, leaderEndX: 20 },
-  { key: 'bust', label: 'Bust', side: 'right' as const, x1: 41.2, y1: 33, x2: 58.8, y2: 33, labelTop: '31.9%', leaderFromX: 58.8, leaderEndX: 80 },
-  { key: 'waist', label: 'Waist', side: 'right' as const, x1: 43, y1: 44.5, x2: 57, y2: 44.5, labelTop: '43.4%', leaderFromX: 57, leaderEndX: 80 },
-  { key: 'hips', label: 'Hips', side: 'right' as const, x1: 40.4, y1: 52.4, x2: 59.6, y2: 52.4, labelTop: '51.3%', leaderFromX: 59.6, leaderEndX: 80 },
-  { key: 'inseam', label: 'Inseam', side: 'left' as const, x1: 47.4, y1: 55.4, x2: 44.7, y2: 95, labelTop: '73%', leaderFromX: 46, leaderEndX: 20 },
+  { key: 'shoulder', label: 'Shoulder', side: 'right' as const, x1: 37.7, y1: 25.2, x2: 62.3, y2: 25.2, labelTop: '25.2%', leaderFromX: 62.3, leaderEndX: 80 },
+  { key: 'chest', label: 'Chest', side: 'left' as const, x1: 41.2, y1: 30.9, x2: 58.8, y2: 30.9, labelTop: '30.9%', leaderFromX: 41.2, leaderEndX: 20 },
+  { key: 'bust', label: 'Bust', side: 'right' as const, x1: 41.2, y1: 33, x2: 58.8, y2: 33, labelTop: '33%', leaderFromX: 58.8, leaderEndX: 80 },
+  { key: 'waist', label: 'Waist', side: 'right' as const, x1: 43, y1: 44.5, x2: 57, y2: 44.5, labelTop: '44.5%', leaderFromX: 57, leaderEndX: 80 },
+  { key: 'hips', label: 'Hips', side: 'right' as const, x1: 40.4, y1: 52.4, x2: 59.6, y2: 52.4, labelTop: '52.4%', leaderFromX: 59.6, leaderEndX: 80 },
+  { key: 'inseam', label: 'Inseam', side: 'left' as const, x1: 47.4, y1: 55.4, x2: 44.7, y2: 95, labelTop: '75.2%', leaderFromX: 46, leaderEndX: 20 },
 ];
 
 const MOCK_VALUES: Record<string, { imperial: string; metric: string }> = {
@@ -70,6 +70,7 @@ const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => {
           className="absolute"
           style={{
             top: labelTop,
+            transform: 'translateY(-50%)',
             ...(isLeft ? { left: '5%' } : { right: '5%' }),
           }}
         >
