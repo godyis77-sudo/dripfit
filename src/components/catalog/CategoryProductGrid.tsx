@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, ShoppingBag, Sparkles, ExternalLink, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
@@ -12,6 +13,7 @@ interface CategoryProductGridProps {
   onSelectProduct?: (product: CatalogProduct) => void;
   maxItems?: number;
   seed?: number;
+  showViewAll?: boolean;
 }
 
 const CategoryProductGrid = ({
@@ -21,7 +23,9 @@ const CategoryProductGrid = ({
   onSelectProduct,
   maxItems = 8,
   seed,
+  showViewAll = false,
 }: CategoryProductGridProps) => {
+  const navigate = useNavigate();
   const { products, loading } = useProductCatalog(category, undefined, seed);
   const [expanded, setExpanded] = useState(!collapsed);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
@@ -43,15 +47,25 @@ const CategoryProductGrid = ({
   return (
     <div>
       {title && (
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="flex items-center gap-1.5 mb-2 w-full"
-        >
-          <p className="text-[11px] font-bold text-foreground capitalize">{title}</p>
-          {products.length > 4 && (
-            expanded ? <ChevronUp className="h-3 w-3 text-muted-foreground" /> : <ChevronDown className="h-3 w-3 text-muted-foreground" />
+        <div className="flex items-center justify-between mb-2">
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="flex items-center gap-1.5"
+          >
+            <p className="text-[11px] font-bold text-foreground capitalize">{title}</p>
+            {products.length > 4 && (
+              expanded ? <ChevronUp className="h-3 w-3 text-muted-foreground" /> : <ChevronDown className="h-3 w-3 text-muted-foreground" />
+            )}
+          </button>
+          {showViewAll && products.length > 0 && (
+            <button
+              onClick={() => navigate(`/browse/${category}`)}
+              className="text-[10px] text-primary font-semibold"
+            >
+              View all →
+            </button>
           )}
-        </button>
+        </div>
       )}
       <div className="grid grid-cols-4 gap-1.5">
         {displayed.map(product => (

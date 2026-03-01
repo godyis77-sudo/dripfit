@@ -73,7 +73,9 @@ type FunnelEvent =
   | 'catalog_product_clicked'
   | 'catalog_product_preview'
   | 'preferred_brand_added'
-  | 'preferred_brand_removed';
+  | 'preferred_brand_removed'
+  | 'browse_product_preview'
+  | 'browse_product_clicked';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
