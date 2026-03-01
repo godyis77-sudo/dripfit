@@ -4,6 +4,10 @@ import bodySilhouette from '@/assets/body-silhouette-clean.png';
 const CM_TO_IN = 0.3937;
 const fmt = (r: MeasurementRange) => `${r.min.toFixed(0)}–${r.max.toFixed(0)} cm`;
 const fmtIn = (r: MeasurementRange) => `${(r.min * CM_TO_IN).toFixed(1)}–${(r.max * CM_TO_IN).toFixed(1)} in`;
+const fmtHeightFtIn = (cm: number) => {
+  const totalIn = Math.round(cm * CM_TO_IN);
+  return `${Math.floor(totalIn / 12)}' ${totalIn % 12}"`;
+};
 
 interface BodyDiagramProps {
   measurements: Record<string, MeasurementRange>;
@@ -58,7 +62,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           <div className="absolute top-[8%] text-left" style={{ left: 4 }}>
             <div className="rounded px-1.5 py-0.5">
               <p className="text-[14px] font-bold uppercase tracking-wide leading-none" style={{ color: 'hsl(42 45% 45%)' }}>Height</p>
-              <p className="text-[12px] font-bold leading-none mt-0.5" style={{ color: 'hsl(0 0% 20%)' }}>{(heightCm * CM_TO_IN).toFixed(1)} in</p>
+              <p className="text-[12px] font-bold leading-none mt-0.5" style={{ color: 'hsl(0 0% 20%)' }}>{fmtHeightFtIn(heightCm)}</p>
               <p className="text-[12px] font-bold leading-none mt-0.5" style={{ color: 'hsl(0 0% 40%)' }}>{heightCm.toFixed(0)} cm</p>
             </div>
           </div>

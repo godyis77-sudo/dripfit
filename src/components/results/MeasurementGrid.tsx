@@ -6,6 +6,10 @@ import type { MeasurementRange } from '@/lib/types';
 import { MEASUREMENT_LABELS } from '@/lib/types';
 
 const CM_TO_IN = 0.3937;
+const fmtHeightFtIn = (cm: number) => {
+  const totalIn = Math.round(cm * CM_TO_IN);
+  return `${Math.floor(totalIn / 12)}' ${totalIn % 12}"`;
+};
 
 interface MeasurementGridProps { measurements: Record<string, MeasurementRange>; heightCm: number; visibleKeys?: string[]; }
 
@@ -37,8 +41,8 @@ const MeasurementGrid = ({ measurements, heightCm, visibleKeys }: MeasurementGri
           ))}
           <div className="bg-card border border-border rounded-lg px-2.5 py-2">
             <p className="text-[9px] font-semibold text-muted-foreground mb-0.5">Height</p>
-            <p className="text-[13px] font-bold text-foreground">{heightCm.toFixed(0)}<span className="text-[9px] font-normal text-muted-foreground ml-0.5">cm</span></p>
-            <p className="text-[11px] text-muted-foreground">{(heightCm * CM_TO_IN).toFixed(1)}<span className="text-[9px] ml-0.5">in</span></p>
+            <p className="text-[13px] font-bold text-foreground">{fmtHeightFtIn(heightCm)}</p>
+            <p className="text-[11px] text-muted-foreground">{heightCm.toFixed(0)}<span className="text-[9px] ml-0.5">cm</span></p>
           </div>
         </motion.div>
       )}
