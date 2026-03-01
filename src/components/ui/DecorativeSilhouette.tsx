@@ -77,8 +77,13 @@ const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => (
       );
     })}
 
+    {/* SCAN RESULTS title */}
+    <div className="absolute top-[4%] left-0 right-0 flex justify-center">
+      <p className="text-[15px] font-extrabold uppercase tracking-[0.2em] leading-none" style={{ color: 'hsl(42 60% 38%)' }}>Scan Results</p>
+    </div>
+
     {/* Height label */}
-    <div className="absolute" style={{ top: '11%', left: '5%' }}>
+    <div className="absolute" style={{ top: '14%', left: '5%' }}>
       <p className="text-[7px] font-bold uppercase tracking-wider leading-none" style={{ color: 'hsl(0 0% 10%)' }}>Height</p>
       <p className="text-[6px] font-bold leading-none mt-px" style={{ color: 'hsl(0 0% 20%)' }}>5' 9"</p>
       <p className="text-[5px] leading-none mt-px" style={{ color: 'hsl(0 0% 35%)' }}>175 cm</p>
