@@ -257,6 +257,20 @@ const ANTI_SCRAPE_BRANDS = new Set([
   'burberry', 'patagonia', 'supreme', 'palace', 'louis vuitton',
   'prada', 'dior', 'balenciaga', 'saint laurent', 'off-white',
   'essentials', 'cartier', 'tiffany & co', 'pandora', 'new era',
+  // Extended list — these all work better via SSENSE/Farfetch/Nordstrom search
+  'fendi', 'givenchy', 'valentino', 'alexander mcqueen', 'bottega veneta',
+  'celine', 'loewe', 'moncler', 'stone island', 'acne studios',
+  'ami paris', 'jacquemus', 'rick owens', 'maison margiela',
+  'a bathing ape', 'kith', 'corteiz', 'trapstar', 'fear of god',
+  'jordan', 'under armour', 'reebok', 'asics', 'on running', 'hoka', 'saucony',
+  'mango', 'cos', '& other stories', 'urban outfitters', 'forever 21',
+  'fashion nova', 'prettylittlething', 'boohoo', 'missguided', 'topshop',
+  'columbia', 'arc\'teryx', 'gap', 'banana republic', 'old navy',
+  'j.crew', 'ralph lauren', 'tommy hilfiger', 'calvin klein', 'hugo boss',
+  'nordstrom', 'anthropologie', 'aritzia', 'revolve', 'everlane',
+  'abercrombie', 'american eagle', 'hollister',
+  'birkenstock', 'crocs', 'timberland', 'steve madden', 'allbirds', 'clarks',
+  'swarovski', 'kendra_scott',
 ]);
 
 // (Stage 3 prompts removed — now uses deterministic URL scoring)
@@ -419,7 +433,7 @@ async function searchProducts(
   firecrawlApiKey: string
 ): Promise<RawProduct[]> {
   const catTerms = CATEGORY_TERMS[category.toLowerCase()] || category;
-  const searchQuery = `${brand} ${catTerms} site:ssense.com OR site:farfetch.com OR site:nordstrom.com OR site:net-a-porter.com OR site:mrporter.com`;
+  const searchQuery = `${brand} ${catTerms} site:ssense.com OR site:farfetch.com OR site:nordstrom.com OR site:net-a-porter.com OR site:mrporter.com OR site:saksoff5th.com OR site:bloomingdales.com`;
 
   console.log(`[search-fallback] Query: "${searchQuery}"`);
 
@@ -432,7 +446,7 @@ async function searchProducts(
       },
       body: JSON.stringify({
         query: searchQuery,
-        limit: 20,
+        limit: 30,
         lang: 'en',
         country: 'us',
         scrapeOptions: {
