@@ -13,6 +13,7 @@ import { lovable } from '@/integrations/lovable/index';
 import { useToast } from '@/hooks/use-toast';
 
 import heroScan from '@/assets/body-silhouette-clean.png';
+import scanResultsPreview from '@/assets/scan-results-preview.png';
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
 import heroTryon from '@/assets/hero-tryon-mirror.jpg';
 import heroCommunity from '@/assets/hero-community-feedback.jpg';
@@ -327,8 +328,8 @@ const Onboarding = () => {
           >
             <div className="max-w-[320px] w-full flex flex-col items-center">
               {/* Illustration */}
-              <div className="h-56 w-56 rounded-3xl bg-card border border-border flex items-center justify-center mb-5 overflow-hidden">
-                <DecorativeSilhouette height={210} />
+              <div className="h-64 w-52 rounded-2xl overflow-hidden mb-5 border-2 border-primary shadow-lg">
+                <img src={scanResultsPreview} alt="Scan results preview" className="w-full h-full object-cover" />
               </div>
 
               <h2 className="font-display text-xl font-bold text-foreground mb-1 text-center">Let's get your measurements</h2>
