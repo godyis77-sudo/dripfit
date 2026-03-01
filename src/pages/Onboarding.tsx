@@ -192,11 +192,19 @@ const Onboarding = () => {
                         <DecorativeSilhouette height={364} className="!rounded-[2rem]" />
                       </div>
                     ) : (
-                      <img
-                        src={SLIDES[slideIdx].image}
-                        alt={SLIDES[slideIdx].title}
-                        className="max-h-full max-w-[85%] object-contain rounded-2xl"
-                      />
+                      <div className="relative max-h-full max-w-[85%] rounded-2xl overflow-hidden">
+                        <img
+                          src={SLIDES[slideIdx].image}
+                          alt={SLIDES[slideIdx].title}
+                          className="w-full h-full object-contain rounded-2xl"
+                          style={slideIdx === 1 ? { filter: 'brightness(0.9)' } : undefined}
+                        />
+                        {slideIdx === 1 && (
+                          <div className="absolute inset-0 rounded-2xl pointer-events-none" style={{
+                            boxShadow: 'inset 0 0 40px 20px rgba(0,0,0,0.25)',
+                          }} />
+                        )}
+                      </div>
                     )}
                   </div>
 
