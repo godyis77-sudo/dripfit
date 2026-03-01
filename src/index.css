@@ -66,19 +66,19 @@
 
 @layer utilities {
   .gradient-drip {
-    background: linear-gradient(135deg, hsl(42 45% 62%), hsl(42 35% 72%));
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(45 80% 48%));
   }
   .gradient-drip-text {
-    background: linear-gradient(135deg, hsl(42 50% 65%), hsl(42 35% 72%), hsl(42 30% 78%));
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(45 80% 48%), hsl(45 70% 52%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   .glow-primary {
-    box-shadow: 0 0 40px -10px hsl(42 45% 62% / 0.25);
+    box-shadow: 0 0 40px -10px hsl(var(--primary) / 0.35);
   }
   .glow-accent {
-    box-shadow: 0 0 40px -10px hsl(42 35% 72% / 0.2);
+    box-shadow: 0 0 40px -10px hsl(var(--primary) / 0.25);
   }
   .glass {
     background: hsl(var(--card) / 0.6);
@@ -86,42 +86,42 @@
     -webkit-backdrop-filter: blur(24px);
   }
   .btn-luxury {
-    background: linear-gradient(135deg, hsl(42 45% 62%), hsl(42 35% 72%));
-    box-shadow: 0 2px 16px -4px hsl(42 45% 62% / 0.3), 0 1px 3px hsl(0 0% 0% / 0.08);
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(45 80% 48%));
+    box-shadow: 0 2px 16px -4px hsl(var(--primary) / 0.4), 0 1px 3px hsl(0 0% 0% / 0.08);
     transition: all 0.2s ease-out;
   }
   .btn-luxury:hover {
-    box-shadow: 0 4px 24px -4px hsl(42 45% 62% / 0.4), 0 2px 6px hsl(0 0% 0% / 0.1);
+    box-shadow: 0 4px 24px -4px hsl(var(--primary) / 0.5), 0 2px 6px hsl(0 0% 0% / 0.1);
     transform: translateY(-1px);
   }
   .btn-luxury:active {
     transform: translateY(0px);
-    box-shadow: 0 1px 8px -2px hsl(42 45% 62% / 0.25);
+    box-shadow: 0 1px 8px -2px hsl(var(--primary) / 0.3);
   }
   .btn-3d-drip {
-    background: linear-gradient(180deg, hsl(42 50% 68%), hsl(42 45% 58%));
+    background: linear-gradient(180deg, hsl(45 80% 48%), hsl(var(--primary)));
     border: none;
     color: hsl(0 0% 8%);
     box-shadow:
-      0 4px 0 0 hsl(42 40% 42%),
+      0 4px 0 0 hsl(45 88% 30%),
       0 6px 12px hsl(0 0% 0% / 0.2),
-      inset 0 1px 0 hsl(42 50% 78% / 0.5);
-    text-shadow: 0 1px 0 hsl(42 50% 78% / 0.5);
+      inset 0 1px 0 hsl(45 80% 55% / 0.5);
+    text-shadow: 0 1px 0 hsl(45 80% 55% / 0.5);
     transition: all 0.12s ease-out;
   }
   .btn-3d-drip:hover {
-    background: linear-gradient(180deg, hsl(42 50% 72%), hsl(42 45% 62%));
+    background: linear-gradient(180deg, hsl(45 85% 52%), hsl(45 80% 48%));
     box-shadow:
-      0 4px 0 0 hsl(42 40% 42%),
+      0 4px 0 0 hsl(45 88% 30%),
       0 8px 20px hsl(0 0% 0% / 0.25),
-      inset 0 1px 0 hsl(42 50% 82% / 0.6);
+      inset 0 1px 0 hsl(45 80% 58% / 0.6);
     transform: translateY(-1px);
   }
   .btn-3d-drip:active {
     box-shadow:
-      0 1px 0 0 hsl(42 40% 42%),
+      0 1px 0 0 hsl(45 88% 30%),
       0 2px 6px hsl(0 0% 0% / 0.15),
-      inset 0 1px 0 hsl(42 50% 78% / 0.3);
+      inset 0 1px 0 hsl(45 80% 55% / 0.3);
     transform: translateY(3px);
   }
 
