@@ -22,13 +22,13 @@ interface MeasurementLine {
 }
 
 const measurementLines: MeasurementLine[] = [
-  { key: 'shoulder', label: 'Shoulder', labelSide: 'right', x1: '36%', y1: '20.5%', x2: '64%', y2: '20.5%', labelTop: '19%', labelEdgeX: 76, leaderX: 64, leaderY: 20.5 },
-  { key: 'chest', label: 'Chest', labelSide: 'left', x1: '40%', y1: '27%', x2: '60%', y2: '27%', labelTop: '25%', labelEdgeX: 16, leaderX: 40, leaderY: 27 },
-  { key: 'bust', label: 'Bust', labelSide: 'right', x1: '40%', y1: '29%', x2: '60%', y2: '29%', labelTop: '27.5%', labelEdgeX: 88, leaderX: 60, leaderY: 29 },
-  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '42%', y1: '42.5%', x2: '58%', y2: '42.5%', labelTop: '41%', labelEdgeX: 85, leaderX: 58, leaderY: 42.5 },
-  { key: 'hips', label: 'Hips', labelSide: 'right', x1: '39%', y1: '51.5%', x2: '61%', y2: '51.5%', labelTop: '50%', labelEdgeX: 88, leaderX: 61, leaderY: 51.5 },
-  { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '35%', y1: '25%', x2: '32%', y2: '50%', labelTop: '36%', labelEdgeX: 22, leaderX: 32, leaderY: 37.5 },
-  { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '47%', y1: '55%', x2: '44%', y2: '92%', labelTop: '69%', labelEdgeX: 18, leaderX: 45, leaderY: 70.5 },
+  { key: 'shoulder', label: 'Shoulder', labelSide: 'right', x1: '37.7%', y1: '18%', x2: '62.3%', y2: '18%', labelTop: '16.7%', labelEdgeX: 76, leaderX: 62.3, leaderY: 18 },
+  { key: 'chest', label: 'Chest', labelSide: 'left', x1: '41.2%', y1: '23.7%', x2: '58.8%', y2: '23.7%', labelTop: '21.9%', labelEdgeX: 16, leaderX: 41.2, leaderY: 23.7 },
+  { key: 'bust', label: 'Bust', labelSide: 'right', x1: '41.2%', y1: '25.4%', x2: '58.8%', y2: '25.4%', labelTop: '24.1%', labelEdgeX: 88, leaderX: 58.8, leaderY: 25.4 },
+  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '43%', y1: '37.3%', x2: '57%', y2: '37.3%', labelTop: '36%', labelEdgeX: 85, leaderX: 57, leaderY: 37.3 },
+  { key: 'hips', label: 'Hips', labelSide: 'right', x1: '40.4%', y1: '45.2%', x2: '59.6%', y2: '45.2%', labelTop: '43.9%', labelEdgeX: 88, leaderX: 59.6, leaderY: 45.2 },
+  { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '36.8%', y1: '21.9%', x2: '34.2%', y2: '43.9%', labelTop: '31.6%', labelEdgeX: 22, leaderX: 34.2, leaderY: 32.9 },
+  { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '47.4%', y1: '48.2%', x2: '44.7%', y2: '80.7%', labelTop: '60.5%', labelEdgeX: 18, leaderX: 45.6, leaderY: 61.8 },
 ];
 
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
@@ -42,7 +42,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
     <div className="mb-4">
       <p className="section-label mb-2">Body Measurement Map</p>
       <div className="border border-primary/20 rounded-xl overflow-hidden" style={{ background: 'linear-gradient(180deg, hsl(0 0% 100%), hsl(42 45% 92%), hsl(42 35% 85%))' }}>
-        <div className="relative w-full max-w-[380px] mx-auto aspect-[19/25]">
+        <div className="relative w-full max-w-[380px] mx-auto aspect-[2/3]">
           {/* Title overlay */}
           <p className="absolute top-3 left-0 right-0 text-center text-[18px] font-bold uppercase tracking-widest z-10" style={{ color: 'hsl(42 45% 45%)' }}>Scan Results</p>
           
@@ -51,11 +51,11 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             src={bodySilhouette}
             alt="Body silhouette for measurements"
             className="w-full h-full mx-auto block rounded-lg"
-            style={{ objectFit: 'cover', objectPosition: 'center top' }}
+            style={{ objectFit: 'contain', objectPosition: 'center top' }}
           />
 
           {/* Height indicator */}
-          <div className="absolute top-[9%] text-left" style={{ left: 4 }}>
+          <div className="absolute top-[8%] text-left" style={{ left: 4 }}>
             <div className="rounded px-1.5 py-0.5">
               <p className="text-[14px] font-bold uppercase tracking-wide leading-none" style={{ color: 'hsl(42 45% 45%)' }}>Height</p>
               <p className="text-[12px] font-bold leading-none mt-0.5" style={{ color: 'hsl(0 0% 20%)' }}>{(heightCm * CM_TO_IN).toFixed(1)} in</p>
