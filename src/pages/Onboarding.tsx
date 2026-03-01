@@ -329,7 +329,7 @@ const Onboarding = () => {
             <div className="max-w-[320px] w-full flex flex-col items-center">
               {/* Illustration */}
               <div className="h-64 w-52 rounded-2xl overflow-hidden mb-5 border-2 border-primary shadow-lg">
-                <img src={scanResultsPreview} alt="Scan results preview" className="w-full h-full object-cover" />
+                <img src={scanResultsPreview} alt="Scan results preview" className="w-full h-full object-contain" />
               </div>
 
               <h2 className="font-display text-xl font-bold text-foreground mb-1 text-center">Let's get your measurements</h2>
