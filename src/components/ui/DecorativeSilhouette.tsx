@@ -28,7 +28,7 @@ const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => {
   const [loaded, setLoaded] = useState(false);
 
   return (
-  <div className={`relative overflow-hidden rounded-[4rem] border-[10px] border-black ${className}`} style={{ width: height * (2 / 3), height, opacity: loaded ? 1 : 0, transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)' }}>
+  <div className={`relative overflow-hidden rounded-[4rem] border-[10px] border-black ${className}`} style={{ width: height * (0.6867), height, opacity: loaded ? 1 : 0, transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)' }}>
     <img
       src={bodySilhouette}
       alt="Body measurement silhouette"
