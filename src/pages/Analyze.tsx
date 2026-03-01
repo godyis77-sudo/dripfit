@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import bodySilhouetteScan from '@/assets/body-silhouette-scan.jpg';
+import bodySilhouetteScan from '@/assets/body-silhouette-clean.png';
 import { PhotoSet, BodyScanResult, FitPreference, ReferenceObject } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
