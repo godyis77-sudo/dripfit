@@ -24,7 +24,7 @@ interface Props {
 }
 
 const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => (
-  <div className={`relative overflow-hidden rounded-[4rem] border-[10px] ${className}`} style={{ width: height * (2 / 3), height, borderColor: 'hsl(42 60% 30%)' }}>
+  <div className={`relative overflow-hidden rounded-[4rem] border-[10px] border-primary ${className}`} style={{ width: height * (2 / 3), height }}>
     <img
       src={bodySilhouette}
       alt="Body measurement silhouette"
@@ -79,7 +79,7 @@ const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => (
 
     {/* SCAN RESULTS title */}
     <div className="absolute top-[2%] left-0 right-0 flex justify-center">
-      <p className="text-[15px] font-extrabold uppercase tracking-[0.2em] leading-none" style={{ color: 'hsl(42 60% 30%)' }}>Scan Results</p>
+      <p className="text-[15px] font-extrabold uppercase tracking-[0.2em] leading-none text-primary">Scan Results</p>
     </div>
 
     {/* Height label */}
