@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, ShoppingBag, Sparkles, ExternalLink, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -29,8 +29,24 @@ const CategoryProductGrid = ({
   const { products, loading } = useProductCatalog(category, undefined, seed);
   const [expanded, setExpanded] = useState(!collapsed);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
+  const [hiddenProductIds, setHiddenProductIds] = useState<Set<string>>(new Set());
 
-  if (loading && products.length === 0) {
+  useEffect(() => {
+    setHiddenProductIds(new Set());
+  }, [category, products.length]);
+
+  const hideProduct = (productId: string) => {
+    setHiddenProductIds(prev => {
+      if (prev.has(productId)) return prev;
+      const next = new Set(prev);
+      next.add(productId);
+      return next;
+    });
+  };
+
+  const visibleProducts = products.filter(product => !hiddenProductIds.has(product.id));
+
+  if (loading && visibleProducts.length === 0) {
     return (
       <div className="flex gap-2 overflow-x-auto pb-1">
         {[1, 2, 3, 4].map(i => (
@@ -40,9 +56,9 @@ const CategoryProductGrid = ({
     );
   }
 
-  if (products.length === 0) return null;
+  if (visibleProducts.length === 0) return null;
 
-  const displayed = expanded ? products.slice(0, maxItems) : products.slice(0, 4);
+  const displayed = expanded ? visibleProducts.slice(0, maxItems) : visibleProducts.slice(0, 4);
 
   return (
     <div>
@@ -53,11 +69,11 @@ const CategoryProductGrid = ({
             className="flex items-center gap-1.5"
           >
             <p className="text-[11px] font-bold text-foreground capitalize">{title}</p>
-            {products.length > 4 && (
+            {visibleProducts.length > 4 && (
               expanded ? <ChevronUp className="h-3 w-3 text-muted-foreground" /> : <ChevronDown className="h-3 w-3 text-muted-foreground" />
             )}
           </button>
-          {showViewAll && products.length > 0 && (
+          {showViewAll && visibleProducts.length > 0 && (
             <button
               onClick={() => navigate(`/browse/${category}`)}
               className="text-[10px] text-primary font-semibold"
@@ -83,9 +99,13 @@ const CategoryProductGrid = ({
                 alt={product.name}
                 className="w-full h-full object-cover"
                 loading="lazy"
-                onError={(e) => {
-                  (e.currentTarget.parentElement!.parentElement as HTMLElement).style.display = 'none';
+                onLoad={(e) => {
+                  const img = e.currentTarget;
+                  if (img.naturalWidth < 120 || img.naturalHeight < 120) {
+                    hideProduct(product.id);
+                  }
                 }}
+                onError={() => hideProduct(product.id)}
               />
             </div>
             <div className="p-1">

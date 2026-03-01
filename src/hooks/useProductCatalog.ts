@@ -13,6 +13,8 @@ export interface CatalogProduct {
   price_cents: number | null;
   currency: string;
   tags: string[];
+  presentation?: string | null;
+  image_confidence?: number | null;
 }
 
 // Map app-facing category keys to actual DB category values
@@ -54,7 +56,7 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
     setLoading(true);
     let query = supabase
       .from('product_catalog')
-      .select('id, brand, retailer, category, name, image_url, product_url, price_cents, currency, tags, image_confidence')
+      .select('id, brand, retailer, category, name, image_url, product_url, price_cents, currency, tags, presentation, image_confidence')
       .eq('is_active', true)
       .not('image_url', 'is', null)
       .order('image_confidence', { ascending: false })
@@ -74,33 +76,40 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
     if (data) {
       // Filter out junk URLs and low-quality entries
       const JUNK_PATTERNS = [
-        'down_for_maintenance', 'Navigation', 'imagesother', 'chip/goods',
-        'Topper', 'courtesypage', 'navi/image', 'lineup/', 'width=36',
-        'New-Stores', 'miffy', 'placeholder', 'Dress_Toppers', 'Dress-Topper',
-        'Share-Image', 'flags/', 'entrance/assets', '/icons/', 'swatch',
+        'down_for_maintenance', 'navigation', 'imagesother', 'chip/goods',
+        'topper', 'courtesypage', 'navi/image', 'lineup/', 'width=36',
+        'new-stores', 'miffy', 'placeholder', 'dress_toppers', 'dress-topper',
+        'share-image', 'flags/', 'entrance/assets', '/icons/', 'swatch',
         'pixel', 'spacer', 'banner', 'badge', 'app-store', 'download-on',
-        'demandware.static', '.gif', '1x1', 'tracking',
-        'paymentmethods', 'asos-finance', 'PaymentMethods', 'klarna',
+        'demandware.static', '.gif', '1x1', 'tracking', 'promo', 'hero',
+        'paymentmethods', 'asos-finance', 'klarna',
         'visa.png', 'mastercard.png', 'paypal.png', 'amex.png',
         'afterpay', 'discover.png', 'dinersclub', 'apple-pay',
-        '/navi/', 'NAVI_',
+        '/navi/', 'pm_',
       ];
-      const MIN_CONFIDENCE = 0.15;
+      const HARD_MIN_CONFIDENCE = 0.15;
+      const PREFERRED_MIN_CONFIDENCE = 0.3;
       const seen = new Set<string>();
       const cleaned = (data as unknown as CatalogProduct[]).filter(p => {
         if (!p.image_url || p.image_url.trim() === '') return false;
-        const url = p.image_url;
-        if (JUNK_PATTERNS.some(pat => url.includes(pat))) return false;
-        // Skip very low confidence scraped images (headshots, icons, etc.)
-        const conf = (p as any).image_confidence;
-        if (conf !== null && conf !== undefined && conf < MIN_CONFIDENCE) return false;
-        // Deduplicate by image URL
-        if (seen.has(url)) return false;
-        seen.add(url);
+        const normalizedUrl = p.image_url.trim().toLowerCase();
+        if (JUNK_PATTERNS.some(pat => normalizedUrl.includes(pat))) return false;
+
+        const conf = p.image_confidence;
+        if (typeof conf === 'number' && conf < HARD_MIN_CONFIDENCE) return false;
+
+        // Deduplicate by image URL (case-insensitive)
+        if (seen.has(normalizedUrl)) return false;
+        seen.add(normalizedUrl);
         return true;
       });
+
+      // Prefer high-confidence entries first to avoid blank / banner-like results.
+      const highConfidence = cleaned.filter(p => p.image_confidence === null || p.image_confidence === undefined || p.image_confidence >= PREFERRED_MIN_CONFIDENCE);
+      const finalPool = highConfidence.length >= 8 ? highConfidence : cleaned;
+
       const shuffleSeed = seed ?? Math.floor(Math.random() * 100000);
-      setProducts(seededShuffle(cleaned, shuffleSeed));
+      setProducts(seededShuffle(finalPool, shuffleSeed));
     }
     setLoading(false);
   }, [category, brand, seed]);
