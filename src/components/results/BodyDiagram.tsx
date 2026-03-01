@@ -24,7 +24,7 @@ interface MeasurementLine {
 const measurementLines: MeasurementLine[] = [
   { key: 'shoulder', label: 'Shoulder', labelSide: 'right', x1: '36%', y1: '22.5%', x2: '64%', y2: '22.5%', labelTop: '21%', labelEdgeX: 76, leaderX: 64, leaderY: 22.5 },
   { key: 'chest', label: 'Chest', labelSide: 'left', x1: '40%', y1: '27%', x2: '60%', y2: '27%', labelTop: '25%', labelEdgeX: 16, leaderX: 40, leaderY: 27 },
-  { key: 'bust', label: 'Bust', labelSide: 'right', x1: '40%', y1: '32%', x2: '60%', y2: '32%', labelTop: '30.5%', labelEdgeX: 88, leaderX: 60, leaderY: 32 },
+  { key: 'bust', label: 'Bust', labelSide: 'right', x1: '40%', y1: '29%', x2: '60%', y2: '29%', labelTop: '30.5%', labelEdgeX: 88, leaderX: 60, leaderY: 32 },
   { key: 'waist', label: 'Waist', labelSide: 'right', x1: '42%', y1: '42.5%', x2: '58%', y2: '42.5%', labelTop: '41%', labelEdgeX: 85, leaderX: 58, leaderY: 42.5 },
   { key: 'hips', label: 'Hips', labelSide: 'right', x1: '39%', y1: '51.5%', x2: '61%', y2: '51.5%', labelTop: '50%', labelEdgeX: 88, leaderX: 61, leaderY: 51.5 },
   { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '35%', y1: '25%', x2: '32%', y2: '50%', labelTop: '36%', labelEdgeX: 22, leaderX: 32, leaderY: 37.5 },
