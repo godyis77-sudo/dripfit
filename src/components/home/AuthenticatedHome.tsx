@@ -281,6 +281,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             category="tops"
             collapsed={false}
             maxItems={8}
+            seed={42}
             onSelectProduct={(product) => {
               if (product.product_url) {
                 trackEvent('catalog_product_clicked', { brand: product.brand, category: product.category });
@@ -296,6 +297,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               title="Trending Accessories"
               collapsed={true}
               maxItems={8}
+              seed={7777}
               onSelectProduct={(product) => {
                 if (product.product_url) {
                   trackEvent('catalog_product_clicked', { brand: product.brand, category: product.category });
