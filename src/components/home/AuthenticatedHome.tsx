@@ -271,7 +271,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               <p className="section-label mb-0">Recommended for you</p>
             </div>
             <button
-              onClick={() => navigate('/tryon')}
+              onClick={() => navigate('/browse/tops')}
               className="text-[10px] text-primary font-semibold min-h-[44px] flex items-center"
             >
               Try on →
@@ -292,6 +292,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                 collapsed={idx > 0}
                 maxItems={8}
                 seed={section.seed}
+                showViewAll={true}
                 onSelectProduct={(product) => {
                   if (product.product_url) {
                     trackEvent('catalog_product_clicked', { brand: product.brand, category: product.category });
