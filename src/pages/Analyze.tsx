@@ -175,12 +175,12 @@ const Analyze = () => {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5">
       {/* Animated body silhouette reveal */}
-      <div className="relative mb-6 w-[220px] h-[280px] rounded-xl overflow-hidden">
+      <div className="relative mb-6 w-[220px] h-[280px] rounded-xl overflow-hidden bg-background">
         {/* Base dimmed image */}
         <img
           src={bodySilhouetteScan}
           alt="Body scan analysis"
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
+          className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-luminosity"
         />
 
         {/* Revealed portion — grows with progress, stays revealed */}
@@ -194,7 +194,7 @@ const Analyze = () => {
           <img
             src={bodySilhouetteScan}
             alt="Body scan analysis"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover mix-blend-luminosity"
           />
         </div>
 
