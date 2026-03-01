@@ -51,13 +51,13 @@ const HABITS: { value: ShoppingHabit; icon: typeof ShoppingBag; label: string; d
 ];
 
 const slideVariants = {
-  enter: (dir: number) => ({ x: dir > 0 ? 60 : -60, opacity: 0 }),
+  enter: (dir: number) => ({ x: dir > 0 ? 24 : -24, opacity: 0 }),
   center: { x: 0, opacity: 1 },
-  exit: (dir: number) => ({ x: dir > 0 ? -60 : 60, opacity: 0 }),
+  exit: (dir: number) => ({ x: dir > 0 ? -24 : 24, opacity: 0 }),
 };
 
-const smoothTransition = { duration: 0.5, ease: [0.4, 0, 0.2, 1] as const };
-const screenTransition = { duration: 0.6, ease: [0.4, 0, 0.2, 1] as const };
+const smoothTransition = { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const };
+const screenTransition = { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const };
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -116,17 +116,17 @@ const Onboarding = () => {
             className="flex flex-col items-center justify-center w-full h-screen bg-background cursor-pointer select-none"
           >
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
+              initial={{ scale: 0.96, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+              transition={screenTransition}
               className="h-20 w-20 rounded-2xl gradient-drip glow-primary flex items-center justify-center mb-5"
             >
               <Crown className="h-10 w-10 text-primary-foreground" />
             </motion.div>
             <motion.h1
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.25, ...screenTransition }}
               className="font-display text-2xl font-bold tracking-[0.2em] text-foreground"
             >
               DRIPFITCHECK
@@ -186,17 +186,19 @@ const Onboarding = () => {
                   className="flex-1 flex flex-col cursor-grab active:cursor-grabbing"
                 >
                   {/* Illustration area */}
-                  <div className="flex-shrink-0 flex items-center justify-center mx-4 py-4">
+                  <div className="flex-shrink-0 min-h-[44vh] flex items-center justify-center mx-4 py-4">
                     {slideIdx === 0 ? (
                       <div className="border-2 border-primary bg-primary rounded-[2rem] p-3 overflow-hidden">
                         <DecorativeSilhouette height={320} className="!rounded-[2rem]" />
                       </div>
                     ) : (
-                      <img
-                        src={SLIDES[slideIdx].image}
-                        alt={SLIDES[slideIdx].title}
-                        className="max-h-[45vh] w-auto object-contain rounded-2xl"
-                      />
+                      <div className="w-full h-[44vh] flex items-center justify-center">
+                        <img
+                          src={SLIDES[slideIdx].image}
+                          alt={SLIDES[slideIdx].title}
+                          className="max-h-full max-w-full object-contain rounded-2xl"
+                        />
+                      </div>
                     )}
                   </div>
 
