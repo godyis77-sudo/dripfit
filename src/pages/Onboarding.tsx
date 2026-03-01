@@ -328,7 +328,7 @@ const Onboarding = () => {
           >
             <div className="max-w-[320px] w-full flex flex-col items-center">
               {/* Illustration */}
-              <div className="h-64 w-52 rounded-2xl overflow-hidden mb-5 shadow-lg">
+              <div className="h-[307px] w-[250px] rounded-2xl overflow-hidden mb-5 shadow-lg">
                 <img src={scanResultsPreview} alt="Scan results preview" className="w-full h-full object-contain" />
               </div>
 
