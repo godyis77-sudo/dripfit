@@ -151,45 +151,46 @@ async function scrapeProducts(
       const extracted = data.data?.extract || data.extract || {};
       const products = extracted?.products || [];
       
-      // Extract image URLs from rawHtml using regex
+      // Extract ALL image URLs from rawHtml
       const rawHtml = data.data?.rawHtml || data.rawHtml || '';
-      const imgRegex = /(?:src|data-src|srcset|data-srcset|content)=["']([^"']*?(?:\.jpg|\.jpeg|\.png|\.webp|\.avif)[^"']*?)["']/gi;
-      const allImageUrls: string[] = [];
-      let match: RegExpExecArray | null;
-      while ((match = imgRegex.exec(rawHtml)) !== null) {
-        let imgUrl = match[1].split(/[,\s]/)[0]; // Take first URL from srcset
-        if (imgUrl.startsWith('//')) imgUrl = 'https:' + imgUrl;
-        if (imgUrl.startsWith('http')) allImageUrls.push(imgUrl);
-      }
-      // Also match background-image urls
-      const bgRegex = /url\(["']?([^"')]*?(?:\.jpg|\.jpeg|\.png|\.webp|\.avif)[^"')]*?)["']?\)/gi;
-      while ((match = bgRegex.exec(rawHtml)) !== null) {
-        let imgUrl = match[1];
-        if (imgUrl.startsWith('//')) imgUrl = 'https:' + imgUrl;
-        if (imgUrl.startsWith('http')) allImageUrls.push(imgUrl);
-      }
+      const allImageUrls = extractImageUrlsFromHtml(rawHtml);
       
-      // Deduplicate image URLs
-      const imageLinks = [...new Set(allImageUrls)];
-      
-      console.log(`[scrape] extracted ${products.length} products, ${imageLinks.length} image URLs from rawHtml of ${url}`);
+      console.log(`[scrape] extracted ${products.length} products, ${allImageUrls.length} image URLs from rawHtml of ${url}`);
 
-      for (const p of products) {
+      // Try ID-based matching first, then fall back to positional assignment
+      const usedImages = new Set<string>();
+      
+      for (let i = 0; i < products.length; i++) {
+        const p = products[i];
         if (!p.name || !p.product_url) continue;
 
-        // Match image URLs to this product using product URL slug/ID patterns
-        const productImages = matchImagesToProduct(p.product_url, p.name, imageLinks, brand);
+        // 1. Try ID-based matching
+        let productImages = matchImagesToProduct(p.product_url, p.name, allImageUrls, brand);
+        
+        // 2. If no ID match, try positional: assign ~N images per product
+        if (!productImages.length && allImageUrls.length > 0) {
+          const imagesPerProduct = Math.max(1, Math.floor(allImageUrls.length / Math.max(products.length, 1)));
+          const start = i * imagesPerProduct;
+          const end = Math.min(start + imagesPerProduct, allImageUrls.length);
+          productImages = allImageUrls.slice(start, end).filter(img => !usedImages.has(img));
+        }
+        
+        // Filter out already-used images
+        productImages = productImages.filter(img => !usedImages.has(img));
+        productImages.forEach(img => usedImages.add(img));
 
-        allProducts.push({
-          name: p.name,
-          brand,
-          product_url: p.product_url,
-          price_cents: p.price_cents ?? null,
-          currency: p.currency ?? 'USD',
-          image_urls: productImages,
-          category_raw: p.category_raw ?? category,
-          colour: p.colour ?? null,
-        });
+        if (productImages.length > 0) {
+          allProducts.push({
+            name: p.name,
+            brand,
+            product_url: p.product_url,
+            price_cents: p.price_cents ?? null,
+            currency: p.currency ?? 'USD',
+            image_urls: productImages.slice(0, 8),
+            category_raw: p.category_raw ?? category,
+            colour: p.colour ?? null,
+          });
+        }
       }
     } catch (err) {
       console.warn(`[scrape] failed for ${url}:`, err);
@@ -199,6 +200,31 @@ async function scrapeProducts(
   }
 
   return allProducts;
+}
+
+// Extract all image URLs from raw HTML
+function extractImageUrlsFromHtml(rawHtml: string): string[] {
+  const allImageUrls: string[] = [];
+  const imgRegex = /(?:src|data-src|srcset|data-srcset|content)=["']([^"']*?(?:\.jpg|\.jpeg|\.png|\.webp|\.avif)[^"']*?)["']/gi;
+  let match: RegExpExecArray | null;
+  while ((match = imgRegex.exec(rawHtml)) !== null) {
+    let imgUrl = match[1].split(/[,\s]/)[0]; // Take first URL from srcset
+    if (imgUrl.startsWith('//')) imgUrl = 'https:' + imgUrl;
+    if (imgUrl.startsWith('http')) allImageUrls.push(imgUrl);
+  }
+  // Background images
+  const bgRegex = /url\(["']?([^"')]*?(?:\.jpg|\.jpeg|\.png|\.webp|\.avif)[^"')]*?)["']?\)/gi;
+  while ((match = bgRegex.exec(rawHtml)) !== null) {
+    let imgUrl = match[1];
+    if (imgUrl.startsWith('//')) imgUrl = 'https:' + imgUrl;
+    if (imgUrl.startsWith('http')) allImageUrls.push(imgUrl);
+  }
+  // Filter out tiny icons, sprites, logos
+  const filtered = [...new Set(allImageUrls)].filter(url => {
+    const lower = url.toLowerCase();
+    return !/logo|icon|sprite|favicon|banner|promo|placeholder|pixel|tracking|analytics|1x1/i.test(lower);
+  });
+  return filtered;
 }
 
 // Match page image URLs to a specific product using URL slug patterns
