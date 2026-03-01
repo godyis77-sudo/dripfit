@@ -72,16 +72,23 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
 
     const { data } = await query;
     if (data) {
-      // Filter out junk URLs (navigation images, placeholders, tiny swatches)
+      // Filter out junk URLs (navigation images, placeholders, tiny swatches, flags)
       const JUNK_PATTERNS = [
         'down_for_maintenance', 'Navigation', 'imagesother', 'chip/goods',
         'Topper', 'courtesypage', 'navi/image', 'lineup/', 'width=36',
         'New-Stores', 'miffy', 'placeholder', 'Dress_Toppers', 'Dress-Topper',
+        'Share-Image', 'flags/', 'entrance/assets', '/icons/', 'swatch',
+        'pixel', 'spacer', 'banner', 'badge', 'app-store', 'download-on',
+        'demandware.static', 'logo', '.gif', '1x1', 'tracking',
       ];
+      const seen = new Set<string>();
       const cleaned = (data as unknown as CatalogProduct[]).filter(p => {
         if (!p.image_url || p.image_url.trim() === '') return false;
         const url = p.image_url;
         if (JUNK_PATTERNS.some(pat => url.includes(pat))) return false;
+        // Deduplicate by image URL
+        if (seen.has(url)) return false;
+        seen.add(url);
         return true;
       });
       const shuffleSeed = seed ?? Math.floor(Math.random() * 100000);
