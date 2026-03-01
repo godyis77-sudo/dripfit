@@ -11,6 +11,7 @@ interface CategoryProductGridProps {
   collapsed?: boolean;
   onSelectProduct?: (product: CatalogProduct) => void;
   maxItems?: number;
+  seed?: number;
 }
 
 const CategoryProductGrid = ({
@@ -19,8 +20,9 @@ const CategoryProductGrid = ({
   collapsed = true,
   onSelectProduct,
   maxItems = 8,
+  seed,
 }: CategoryProductGridProps) => {
-  const { products, loading } = useProductCatalog(category);
+  const { products, loading } = useProductCatalog(category, undefined, seed);
   const [expanded, setExpanded] = useState(!collapsed);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
 

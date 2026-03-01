@@ -34,7 +34,19 @@ const CATEGORY_MAP: Record<string, string[]> = {
   accessories: ['accessories', 'footwear', 'bags', 'hats', 'jewelry', 'sunglasses'],
 };
 
-export function useProductCatalog(category?: string, brand?: string) {
+// Shuffle array with a simple seed-based PRNG for deterministic but varied results
+function seededShuffle<T>(arr: T[], seed: number): T[] {
+  const copy = [...arr];
+  let s = seed;
+  for (let i = copy.length - 1; i > 0; i--) {
+    s = (s * 16807 + 0) % 2147483647;
+    const j = s % (i + 1);
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+export function useProductCatalog(category?: string, brand?: string, seed?: number) {
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -45,7 +57,7 @@ export function useProductCatalog(category?: string, brand?: string) {
       .select('*')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
-      .limit(30);
+      .limit(80);
 
     if (category) {
       const mapped = CATEGORY_MAP[category];
@@ -58,9 +70,12 @@ export function useProductCatalog(category?: string, brand?: string) {
     if (brand) query = query.eq('brand', brand);
 
     const { data } = await query;
-    if (data) setProducts(data as unknown as CatalogProduct[]);
+    if (data) {
+      const shuffleSeed = seed ?? Math.floor(Math.random() * 100000);
+      setProducts(seededShuffle(data as unknown as CatalogProduct[], shuffleSeed));
+    }
     setLoading(false);
-  }, [category, brand]);
+  }, [category, brand, seed]);
 
   useEffect(() => {
     fetchProducts();

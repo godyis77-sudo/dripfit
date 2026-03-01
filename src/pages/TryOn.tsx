@@ -583,6 +583,7 @@ const TryOn = () => {
                   title={`Shop ${CATEGORIES.find(c => c.key === category)?.label || category}`}
                   collapsed={false}
                   maxItems={8}
+                  seed={1234}
                   onSelectProduct={async (product) => {
                     setSelectedQuickPick(product);
                     if (product.product_url) setProductLink(product.product_url);
@@ -786,6 +787,7 @@ const TryOn = () => {
                         title={`Shop ${accessoryCategory}`}
                         collapsed={false}
                         maxItems={4}
+                        seed={9999}
                         onSelectProduct={async (product) => {
                           if (product.product_url) setProductLink(product.product_url);
                           trackEvent('catalog_product_clicked', { brand: product.brand, category: accessoryCategory });
