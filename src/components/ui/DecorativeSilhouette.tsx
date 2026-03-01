@@ -78,7 +78,7 @@ const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => (
     })}
 
     {/* SCAN RESULTS title */}
-    <div className="absolute top-[4%] left-0 right-0 flex justify-center">
+    <div className="absolute top-[2%] left-0 right-0 flex justify-center">
       <p className="text-[15px] font-extrabold uppercase tracking-[0.2em] leading-none" style={{ color: 'hsl(42 60% 38%)' }}>Scan Results</p>
     </div>
 
