@@ -80,57 +80,7 @@ const CATEGORY_MAP: Record<string, Record<string, string[]>> = {
   },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// STAGE 3 — Image classification prompt
-// ─────────────────────────────────────────────────────────────────────────────
-
-const STAGE3_SYSTEM = `You are an image URL classifier for DRIP FIT, a virtual try-on application. You receive a list of real image URLs for a single fashion product and must select the single best image for use as a try-on reference.
-
-You cannot fetch or view the images. Classify them using:
-1. URL path and filename patterns (most reliable signal)
-2. Query parameters and CDN path segments
-3. The product name and category provided as context
-4. Known retailer CDN naming conventions
-
-Return ONLY valid JSON. No prose. No markdown. No code fences.`;
-
-const STAGE3_USER = (product: RawProduct) => `Select the best try-on image from the following product.
-
-Product context:
-  Name:     ${product.name}
-  Brand:    ${product.brand}
-  Category: ${product.category_raw ?? 'unknown'}
-
-Image URLs to evaluate (all are real URLs for this product):
-${product.image_urls.map((url, i) => `  ${i + 1}. ${url}`).join('\n')}
-
-PREFER these URL patterns (rank in this order):
-
-RANK 1 — Ghost mannequin / packshot:
-  Filenames: -main, -front, -p00, -01, _1, _A, -hero
-  Paths: /packshot/, /studio/, /product/, /catalog/
-  Zara: URLs ending in '-p00.jpg' or '-p0.jpg'
-  Uniqlo: URLs containing '/goods/' with '-sub1' absent
-  H&M: filenames ending 'main.jpg'
-  SHEIN: URLs containing 'whitem' or '_200w'
-
-RANK 2 — Flat lay:
-  Filenames: -flat, -lay, -top
-  Paths: /flatlay/
-
-RANK 3 — Model shot (only if no RANK 1/2):
-  Filenames: -model, -worn, -look, -p01, _2, _B
-
-REJECT: collage, runway, editorial, campaign, lifestyle, -detail, -close, -texture, -zoom, thumbnail, thumb, -xs, -sm, _swatch
-
-Return exactly one JSON object:
-{
-  "selected_url":  string — the chosen image URL, copied exactly,
-  "presentation":  "ghost_mannequin" | "flat_lay" | "model_shot",
-  "confidence":    number — 0.0 to 1.0,
-  "reject_reason": null | string — if ALL rejected, explain why
-}`;
-
+// (Stage 3 prompts removed — now uses deterministic URL scoring)
 // ─────────────────────────────────────────────────────────────────────────────
 // STAGES 1+2 — Firecrawl scrapes + extracts structured product data
 // ─────────────────────────────────────────────────────────────────────────────
@@ -160,11 +110,10 @@ async function scrapeProducts(
             product_url:  { type: 'string', description: 'Absolute URL to the product detail page' },
             price_cents:  { type: ['integer', 'null'], description: 'Price in cents (e.g. $89.99 = 8999)' },
             currency:     { type: 'string', description: '3-letter currency code' },
-            image_urls:   { type: 'array', items: { type: 'string' }, description: 'All product image URLs found for this product' },
             category_raw: { type: ['string', 'null'], description: 'Category label from the page' },
             colour:       { type: ['string', 'null'], description: 'Colour from product name/label' },
           },
-          required: ['name', 'product_url', 'image_urls'],
+          required: ['name', 'product_url'],
         },
       },
     },
@@ -173,7 +122,7 @@ async function scrapeProducts(
 
   for (const url of urls) {
     try {
-      console.log(`[scrape] Firecrawl JSON extract: ${url}`);
+      console.log(`[scrape] Firecrawl extract+links: ${url}`);
 
       const resp = await fetch('https://api.firecrawl.dev/v1/scrape', {
         method: 'POST',
@@ -183,11 +132,11 @@ async function scrapeProducts(
         },
         body: JSON.stringify({
           url,
-          formats: ['extract'],
+          formats: ['extract', 'rawHtml'],
           waitFor: 3000,
           extract: {
             schema: jsonSchema,
-            prompt: `Extract all fashion products visible on this ${brand} category page. For each product, get the exact product name, product detail page URL, price in cents, all image URLs, category, and colour.`,
+            prompt: `Extract all fashion products visible on this ${brand} category page. For each product, get the exact product name, product detail page URL (absolute), price in cents, category, and colour.`,
           },
         }),
       });
@@ -202,17 +151,42 @@ async function scrapeProducts(
       const extracted = data.data?.extract || data.extract || {};
       const products = extracted?.products || [];
       
-      console.log(`[scrape] extracted ${products.length} products from ${url}`);
+      // Extract image URLs from rawHtml using regex
+      const rawHtml = data.data?.rawHtml || data.rawHtml || '';
+      const imgRegex = /(?:src|data-src|srcset|data-srcset|content)=["']([^"']*?(?:\.jpg|\.jpeg|\.png|\.webp|\.avif)[^"']*?)["']/gi;
+      const allImageUrls: string[] = [];
+      let match: RegExpExecArray | null;
+      while ((match = imgRegex.exec(rawHtml)) !== null) {
+        let imgUrl = match[1].split(/[,\s]/)[0]; // Take first URL from srcset
+        if (imgUrl.startsWith('//')) imgUrl = 'https:' + imgUrl;
+        if (imgUrl.startsWith('http')) allImageUrls.push(imgUrl);
+      }
+      // Also match background-image urls
+      const bgRegex = /url\(["']?([^"')]*?(?:\.jpg|\.jpeg|\.png|\.webp|\.avif)[^"')]*?)["']?\)/gi;
+      while ((match = bgRegex.exec(rawHtml)) !== null) {
+        let imgUrl = match[1];
+        if (imgUrl.startsWith('//')) imgUrl = 'https:' + imgUrl;
+        if (imgUrl.startsWith('http')) allImageUrls.push(imgUrl);
+      }
+      
+      // Deduplicate image URLs
+      const imageLinks = [...new Set(allImageUrls)];
+      
+      console.log(`[scrape] extracted ${products.length} products, ${imageLinks.length} image URLs from rawHtml of ${url}`);
 
       for (const p of products) {
-        if (!p.name || !p.product_url || !p.image_urls?.length) continue;
+        if (!p.name || !p.product_url) continue;
+
+        // Match image URLs to this product using product URL slug/ID patterns
+        const productImages = matchImagesToProduct(p.product_url, p.name, imageLinks, brand);
+
         allProducts.push({
           name: p.name,
           brand,
           product_url: p.product_url,
           price_cents: p.price_cents ?? null,
           currency: p.currency ?? 'USD',
-          image_urls: p.image_urls,
+          image_urls: productImages,
           category_raw: p.category_raw ?? category,
           colour: p.colour ?? null,
         });
@@ -227,51 +201,166 @@ async function scrapeProducts(
   return allProducts;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// STAGE 3 — Gemini classifies real image URLs, picks best for try-on
-// ─────────────────────────────────────────────────────────────────────────────
+// Match page image URLs to a specific product using URL slug patterns
+function matchImagesToProduct(
+  productUrl: string, 
+  productName: string, 
+  imageLinks: string[], 
+  brand: string
+): string[] {
+  // Extract product ID / slug from product URL
+  const slugs = extractProductIdentifiers(productUrl, brand);
+  
+  if (!slugs.length) {
+    // Fallback: try name-based matching
+    const nameTokens = productName.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(/\s+/).filter(t => t.length > 2);
+    if (nameTokens.length === 0) return [];
+    
+    return imageLinks.filter(img => {
+      const imgLower = img.toLowerCase();
+      return nameTokens.filter(t => imgLower.includes(t)).length >= Math.min(2, nameTokens.length);
+    }).slice(0, 8);
+  }
 
-async function classifyProductImages(
-  product: RawProduct,
-  apiKey: string
-): Promise<ClassifiedProduct | null> {
-  if (!product.image_urls?.length) return null;
+  // Match images that contain any of the product identifiers
+  const matched = imageLinks.filter(img => {
+    const imgLower = img.toLowerCase();
+    return slugs.some(slug => imgLower.includes(slug));
+  });
 
-  const resp = await callGemini(STAGE3_SYSTEM, STAGE3_USER(product), apiKey);
+  return matched.slice(0, 8);
+}
+
+function extractProductIdentifiers(productUrl: string, brand: string): string[] {
+  const ids: string[] = [];
+  const lower = productUrl.toLowerCase();
+  const b = brand.toLowerCase();
 
   try {
-    const clean = resp.replace(/^```json\n?/, '').replace(/```$/, '').trim();
-    const jsonMatch = clean.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) return null;
-    const result = JSON.parse(jsonMatch[0]);
+    const u = new URL(productUrl);
+    const path = u.pathname;
 
-    if (!result.selected_url || result.confidence < 0.6) {
-      console.warn(`[classify] rejected (confidence ${result.confidence}): ${product.name}`);
-      return null;
+    if (b === 'zara') {
+      // Zara: /us/en/product-name-pXXXXXXXX.html → pXXXXXXXX
+      const m = path.match(/p(\d{7,})/);
+      if (m) ids.push(`p${m[1]}`, m[1]);
+    } else if (b === 'hm') {
+      // H&M: /productpage.XXXXXXX.html → XXXXXXX
+      const m = path.match(/(\d{7,})/);
+      if (m) ids.push(m[1]);
+    } else if (b === 'uniqlo') {
+      // Uniqlo: /products/EXXXXXXX → EXXXXXXX or numeric ID
+      const m = path.match(/(E?\d{6,})/i);
+      if (m) ids.push(m[1].toLowerCase());
+    } else if (b === 'shein') {
+      // SHEIN: /product-pXXXXXXX-cat-XXXX.html
+      const m = path.match(/p(\d{5,})/);
+      if (m) ids.push(`p${m[1]}`, m[1]);
+    } else if (b === 'nike') {
+      // Nike: /t/product-name/XXXXXX-XXX
+      const m = path.match(/([A-Z0-9]{6,}-[A-Z0-9]{3})/i);
+      if (m) ids.push(m[1].toLowerCase());
+    } else if (b === 'asos') {
+      // ASOS: /product/XXXXXXX
+      const m = path.match(/\/(\d{6,})/);
+      if (m) ids.push(m[1]);
     }
 
-    // Verify the selected URL actually resolves
-    try {
-      const check = await fetch(result.selected_url, { method: 'HEAD' });
-      if (!check.ok) {
-        console.warn(`[classify] URL returned ${check.status}: ${result.selected_url}`);
-        return null;
-      }
-    } catch {
-      console.warn(`[classify] HEAD check failed: ${result.selected_url}`);
-      return null;
+    // Generic: last path segment slug
+    if (!ids.length) {
+      const segments = path.split('/').filter(Boolean);
+      const last = segments[segments.length - 1]?.replace(/\.[^.]+$/, '');
+      if (last && last.length > 3) ids.push(last.toLowerCase());
+    }
+  } catch { /* ignore */ }
+
+  return ids;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STAGE 3 — Deterministic image URL scoring (no LLM needed)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function selectBestImage(product: RawProduct): ClassifiedProduct | null {
+  if (!product.image_urls?.length) return null;
+
+  let bestUrl = '';
+  let bestScore = -1;
+  let bestPresentation: 'ghost_mannequin' | 'flat_lay' | 'model_shot' = 'model_shot';
+
+  for (const url of product.image_urls) {
+    const lower = url.toLowerCase();
+    let score = 0;
+    let presentation: 'ghost_mannequin' | 'flat_lay' | 'model_shot' = 'model_shot';
+
+    // REJECT patterns
+    if (/-detail|-close|-texture|-zoom|thumb|_swatch|collage|runway|editorial|banner|logo|icon|sprite/i.test(lower)) {
+      continue;
     }
 
-    return {
-      ...product,
-      image_url:    result.selected_url,
-      presentation: result.presentation,
-      confidence:   result.confidence,
-    };
-  } catch {
-    console.error('[classify] JSON parse failed. Raw:', resp.slice(0, 300));
-    return null;
+    // RANK 1: Ghost mannequin / packshot signals
+    if (/-main|_main|-front|_front|-p00|_p00|-hero|_hero|\/packshot|\/studio|\/catalog/i.test(lower)) {
+      score += 10;
+      presentation = 'ghost_mannequin';
+    }
+    // Zara-specific: -p00 or first image
+    if (/static\.zara\.net/i.test(lower) && /-e\d+/i.test(lower)) {
+      score += 5;
+      presentation = 'ghost_mannequin';
+    }
+    // H&M: main.jpg
+    if (/lp2\.hm\.com/i.test(lower) && /main/i.test(lower)) {
+      score += 8;
+      presentation = 'ghost_mannequin';
+    }
+    // Uniqlo: goods image, not sub
+    if (/image\.uniqlo/i.test(lower) && !/-sub/i.test(lower)) {
+      score += 6;
+      presentation = 'ghost_mannequin';
+    }
+
+    // RANK 2: Flat lay signals
+    if (/-flat|-lay|-top/i.test(lower)) {
+      score += 7;
+      presentation = 'flat_lay';
+    }
+
+    // RANK 3: Model shot (default)
+    if (/-model|-worn|-look|-p01|_2\.|_b\./i.test(lower)) {
+      score += 3;
+      presentation = 'model_shot';
+    }
+
+    // Prefer larger images (query params like w=, width=)
+    const widthMatch = lower.match(/[?&]w(?:idth)?=(\d+)/);
+    if (widthMatch && parseInt(widthMatch[1]) >= 500) score += 2;
+
+    // Prefer first image in sequence (_1, _01, -01)
+    if (/[_-]0?1\b/i.test(lower)) score += 4;
+
+    // Base score for being a valid image
+    score += 1;
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestUrl = url;
+      bestPresentation = presentation;
+    }
   }
+
+  if (!bestUrl) {
+    // Just pick the first image as fallback
+    bestUrl = product.image_urls[0];
+    bestPresentation = 'model_shot';
+    bestScore = 1;
+  }
+
+  return {
+    ...product,
+    image_url: bestUrl,
+    presentation: bestPresentation,
+    confidence: Math.min(bestScore / 15, 1.0),
+  };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -342,26 +431,6 @@ async function filterExistingProducts(
 // HELPERS
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function callGemini(system: string, user: string, apiKey: string): Promise<string> {
-  const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'google/gemini-2.5-flash',
-      temperature: 0.0,
-      messages: [
-        { role: 'system', content: system },
-        { role: 'user',   content: user },
-      ],
-    }),
-  });
-  const data = await resp.json();
-  return data.choices?.[0]?.message?.content?.trim() ?? '';
-}
-
 function normaliseUrl(url: string): string {
   try {
     const u = new URL(url);
@@ -426,13 +495,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    const OPENROUTER_API_KEY = Deno.env.get('OPENROUTER_API_KEY');
-    if (!OPENROUTER_API_KEY) {
-      return new Response(JSON.stringify({ error: 'OPENROUTER_API_KEY not set' }), {
-        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
     const FIRECRAWL_API_KEY = Deno.env.get('FIRECRAWL_API_KEY');
     if (!FIRECRAWL_API_KEY) {
       return new Response(JSON.stringify({ error: 'FIRECRAWL_API_KEY not set' }), {
@@ -446,27 +508,27 @@ Deno.serve(async (req) => {
     );
 
     const runId = crypto.randomUUID();
-    const results = { runId, brand, category, scraped: 0, extracted: 0, classified: 0, deduped: 0, inserted: 0 };
+    const results = { runId, brand, category, scraped: 0, extracted: 0, classified: 0, deduped: 0, inserted: 0, withImages: 0 };
     console.log(`[run:${runId}] Starting: ${brand}/${category}`);
 
-    // ── STAGES 1+2: Firecrawl scrape + JSON extract ──────────────────
+    // ── STAGES 1+2: Firecrawl scrape + rawHtml image extraction ──────
     const rawProducts = await scrapeProducts(brand, category, FIRECRAWL_API_KEY);
     results.extracted = rawProducts.length;
     results.scraped = rawProducts.length > 0 ? 1 : 0;
-    console.log(`[run:${runId}] Extracted ${rawProducts.length} products`);
+    results.withImages = rawProducts.filter(p => p.image_urls.length > 0).length;
+    console.log(`[run:${runId}] Extracted ${rawProducts.length} products (${results.withImages} with images)`);
 
     if (!rawProducts.length) {
-      return new Response(JSON.stringify({ ...results, warning: 'No products extracted. Check Firecrawl output.' }), {
+      return new Response(JSON.stringify({ ...results, warning: 'No products extracted.' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // ── STAGE 3: Classify images ─────────────────────────────────────
+    // ── STAGE 3: Deterministic image scoring (no LLM) ────────────────
     const classified: ClassifiedProduct[] = [];
     for (const product of rawProducts) {
-      const result = await classifyProductImages(product, OPENROUTER_API_KEY);
+      const result = selectBestImage(product);
       if (result) classified.push(result);
-      await delay(500);
     }
     results.classified = classified.length;
     console.log(`[run:${runId}] Classified ${classified.length} images`);
