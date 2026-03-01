@@ -40,12 +40,12 @@ const CATEGORY_MAP: Record<string, Record<string, string[]>> = {
     accessories:['https://www.zara.com/us/en/man-accessories-l4734.html'],
   },
   hm: {
-    tops:       ['https://www2.hm.com/en_us/men/products/t-shirts-and-tanks.html', 'https://www2.hm.com/en_us/women/products/tops.html'],
-    bottoms:    ['https://www2.hm.com/en_us/men/products/pants.html', 'https://www2.hm.com/en_us/women/products/pants.html'],
-    outerwear:  ['https://www2.hm.com/en_us/men/products/jackets-and-coats.html', 'https://www2.hm.com/en_us/women/products/jackets-and-coats.html'],
-    dresses:    ['https://www2.hm.com/en_us/women/products/dresses.html'],
-    shoes:      ['https://www2.hm.com/en_us/men/products/shoes.html', 'https://www2.hm.com/en_us/women/products/shoes.html'],
-    accessories:['https://www2.hm.com/en_us/men/products/accessories.html'],
+    tops:       ['https://www2.hm.com/en_us/men/products/t-shirts-and-tanks.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
+    bottoms:    ['https://www2.hm.com/en_us/men/products/pants.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
+    outerwear:  ['https://www2.hm.com/en_us/men/products/jackets-and-coats.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
+    dresses:    ['https://www2.hm.com/en_us/women/products/dresses.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
+    shoes:      ['https://www2.hm.com/en_us/men/products/shoes.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
+    accessories:['https://www2.hm.com/en_us/men/products/accessories.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
   },
   uniqlo: {
     tops:       ['https://www.uniqlo.com/us/en/men/tops/t-shirts', 'https://www.uniqlo.com/us/en/women/tops/t-shirts'],
@@ -133,7 +133,8 @@ async function scrapeProducts(
         body: JSON.stringify({
           url,
           formats: ['extract', 'rawHtml'],
-          waitFor: 3000,
+          waitFor: brand.toLowerCase() === 'hm' ? 1000 : 3000,
+          timeout: 30000,
           extract: {
             schema: jsonSchema,
             prompt: `Extract all fashion products visible on this ${brand} category page. For each product, get the exact product name, product detail page URL (absolute), price in cents, category, and colour.`,
@@ -271,9 +272,12 @@ function extractProductIdentifiers(productUrl: string, brand: string): string[] 
       const m = path.match(/p(\d{7,})/);
       if (m) ids.push(`p${m[1]}`, m[1]);
     } else if (b === 'hm') {
-      // H&M: /productpage.XXXXXXX.html → XXXXXXX
+      // H&M: /productpage.XXXXXXX.html or /en_us/productpage.XXXXXXX.html → XXXXXXX
       const m = path.match(/(\d{7,})/);
       if (m) ids.push(m[1]);
+      // Also try shorter article codes (6 digits)
+      const m2 = path.match(/(\d{6,})/);
+      if (m2 && !ids.includes(m2[1])) ids.push(m2[1]);
     } else if (b === 'uniqlo') {
       // Uniqlo: /products/EXXXXXXX → EXXXXXXX or numeric ID
       const m = path.match(/(E?\d{6,})/i);
