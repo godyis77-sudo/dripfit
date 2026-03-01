@@ -133,7 +133,7 @@ const Onboarding = () => {
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.5 }}
+              animate={{ opacity: 1 }}
               transition={{ delay: 0.6, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
               className="text-sm text-foreground mt-2"
             >
