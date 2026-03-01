@@ -52,7 +52,7 @@ const AnimatedSilhouette = () => (
     transition={{ duration: 0.6, ease: 'easeOut' }}
     className="flex items-center justify-center"
   >
-    <DecorativeSilhouette height={340} />
+    <DecorativeSilhouette height={240} />
   </motion.div>
 );
 
