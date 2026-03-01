@@ -1,13 +1,12 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import bodySilhouetteScan from '@/assets/body-silhouette-clean.png';
-import { PhotoSet, BodyScanResult, FitPreference, ReferenceObject } from '@/lib/types';
+import { PhotoSet, BodyScanResult, FitPreference, ReferenceObject, MeasurementRange } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-
 
 const MESSAGES = [
   'Detecting body landmarks…',
@@ -17,7 +16,31 @@ const MESSAGES = [
   'Generating recommendations…',
 ];
 
-const MEASUREMENT_LABELS = ['HEIGHT', 'SHOULDER', 'CHEST', 'WAIST', 'HIPS', 'INSEAM'];
+const CM_TO_IN = 0.3937;
+const fmtHeightFtIn = (cm: number) => {
+  const totalIn = Math.round(cm * CM_TO_IN);
+  return `${Math.floor(totalIn / 12)}' ${totalIn % 12}"`;
+};
+const fmtRange = (r: MeasurementRange) => `${(r.min * CM_TO_IN).toFixed(1)}–${(r.max * CM_TO_IN).toFixed(1)} in`;
+
+interface MeasurementOverlay {
+  key: string;
+  label: string;
+  side: 'left' | 'right';
+  topPct: string;
+  edgePx: number;
+}
+
+const OVERLAYS: MeasurementOverlay[] = [
+  { key: 'height', label: 'Height', side: 'left', topPct: '6%', edgePx: 4 },
+  { key: 'shoulder', label: 'Shoulder', side: 'right', topPct: '18%', edgePx: 4 },
+  { key: 'chest', label: 'Chest', side: 'left', topPct: '24%', edgePx: 4 },
+  { key: 'waist', label: 'Waist', side: 'right', topPct: '38%', edgePx: 4 },
+  { key: 'hips', label: 'Hips', side: 'right', topPct: '46%', edgePx: 4 },
+  { key: 'inseam', label: 'Inseam', side: 'left', topPct: '62%', edgePx: 4 },
+];
+
+const REVEAL_ORDER = ['height', 'shoulder', 'chest', 'waist', 'hips', 'inseam'];
 
 interface AnalyzeState {
   photos: PhotoSet;
@@ -35,9 +58,22 @@ const Analyze = () => {
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [scanPos, setScanPos] = useState(0);
-  const [filledMeasurements, setFilledMeasurements] = useState<string[]>([]);
+  const [revealedKeys, setRevealedKeys] = useState<string[]>([]);
+  const [realData, setRealData] = useState<any>(null);
   const minTimeElapsed = useRef(false);
   const resultReady = useRef<any>(null);
+
+  // Generate placeholder shimmer values for each measurement
+  const getDisplayValue = useCallback((key: string) => {
+    if (realData) {
+      if (key === 'height') return fmtHeightFtIn(realData.heightCm || state?.heightCm || 170);
+      const range = realData[key] as MeasurementRange | undefined;
+      if (range) return fmtRange(range);
+    }
+    // Placeholder while waiting
+    if (key === 'height') return fmtHeightFtIn(state?.heightCm || 170);
+    return '…';
+  }, [realData, state]);
 
   useEffect(() => {
     if (!state?.photos?.front || !state?.photos?.side) {
@@ -45,15 +81,12 @@ const Analyze = () => {
       return;
     }
 
-    // Message cycling
     const msgInterval = setInterval(() => setMsgIdx(p => (p + 1) % MESSAGES.length), 2000);
 
-    // Progress bar animation — minimum 5s visual
     const progressInterval = setInterval(() => {
       setProgress(p => Math.min(p + 1.5, 90));
     }, 100);
 
-    // Looping scan line — sweeps top to bottom over 3s, then resets
     const SCAN_DURATION = 3000;
     const SCAN_TICK = 30;
     const scanInterval = setInterval(() => {
@@ -63,14 +96,13 @@ const Analyze = () => {
       });
     }, SCAN_TICK);
 
-    // Fill in measurement labels one by one
-    MEASUREMENT_LABELS.forEach((label, i) => {
+    // Progressively reveal measurements on the silhouette
+    REVEAL_ORDER.forEach((key, i) => {
       setTimeout(() => {
-        setFilledMeasurements(prev => [...prev, label]);
+        setRevealedKeys(prev => [...prev, key]);
       }, 1200 + i * 800);
     });
 
-    // Minimum visual time
     setTimeout(() => {
       minTimeElapsed.current = true;
       if (resultReady.current) navigateToResults(resultReady.current);
@@ -86,7 +118,7 @@ const Analyze = () => {
   }, []);
 
   const saveToDatabase = async (data: any) => {
-    if (!user) return; // Require auth to save scans
+    if (!user) return;
     try {
       const { error: dbError } = await supabase.from('body_scans').insert({
         user_id: user.id,
@@ -119,15 +151,17 @@ const Analyze = () => {
   };
 
   const navigateToResults = (data: any) => {
+    setRealData(data);
     setProgress(100);
-    // Auto-save scan to user's profile
+    // Reveal all remaining measurements instantly
+    setRevealedKeys(REVEAL_ORDER);
     saveToDatabase(data);
     setTimeout(() => {
       navigate('/results', {
         state: { result: { id: crypto.randomUUID(), date: new Date().toISOString(), ...data } },
         replace: true,
       });
-    }, 400);
+    }, 800);
   };
 
   const analyzePhotos = async () => {
@@ -143,6 +177,9 @@ const Analyze = () => {
       });
       if (fnError) throw new Error(fnError.message);
       if (data?.error) throw new Error(data.error);
+
+      // Store real data so labels update with actual values
+      setRealData(data);
 
       if (minTimeElapsed.current) {
         navigateToResults(data);
@@ -174,8 +211,8 @@ const Analyze = () => {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5">
-      {/* Animated body silhouette reveal */}
-      <div className="relative mb-6 w-[220px] h-[280px] rounded-xl overflow-hidden bg-background">
+      {/* Animated body silhouette with live measurement overlays */}
+      <div className="relative mb-6 w-[280px] h-[360px] rounded-xl overflow-hidden bg-background">
         {/* Base dimmed image */}
         <img
           src={bodySilhouetteScan}
@@ -183,7 +220,7 @@ const Analyze = () => {
           className="absolute inset-0 w-full h-full object-contain opacity-30 mix-blend-luminosity"
         />
 
-        {/* Revealed portion — grows with progress, stays revealed */}
+        {/* Revealed portion */}
         <div
           className="absolute inset-0"
           style={{
@@ -198,6 +235,45 @@ const Analyze = () => {
           />
         </div>
 
+        {/* Live measurement labels appearing on the silhouette */}
+        <AnimatePresence>
+          {OVERLAYS.map(({ key, label, side, topPct, edgePx }) => {
+            if (!revealedKeys.includes(key)) return null;
+            const isLeft = side === 'left';
+            const value = getDisplayValue(key);
+            const hasRealValue = realData != null && value !== '…';
+
+            return (
+              <motion.div
+                key={key}
+                initial={{ opacity: 0, x: isLeft ? -12 : 12, scale: 0.9 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                transition={{ type: 'spring', damping: 20, stiffness: 200 }}
+                className="absolute"
+                style={{
+                  top: topPct,
+                  ...(isLeft ? { left: edgePx } : { right: edgePx }),
+                }}
+              >
+                <div className={`${isLeft ? 'text-left' : 'text-right'} px-1.5 py-0.5`}>
+                  <p className="text-[10px] font-bold uppercase tracking-wider leading-none" style={{ color: 'hsl(42 45% 50%)' }}>
+                    {label}
+                  </p>
+                  <motion.p
+                    key={value}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-[11px] font-bold leading-none mt-0.5"
+                    style={{ color: hasRealValue ? 'hsl(0 0% 95%)' : 'hsl(0 0% 50%)' }}
+                  >
+                    {value}
+                  </motion.p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+
         {/* Looping scan line */}
         <motion.div
           className="absolute left-0 right-0 h-[2px] bg-primary shadow-[0_0_16px_hsl(var(--primary)),0_0_4px_hsl(var(--primary))]"
@@ -209,10 +285,7 @@ const Analyze = () => {
         {/* Subtle glow trailing the scan line */}
         <div
           className="absolute left-0 right-0 h-8 bg-gradient-to-b from-primary/20 to-transparent pointer-events-none"
-          style={{
-            top: `${scanPos}%`,
-            transition: 'top 30ms linear',
-          }}
+          style={{ top: `${scanPos}%`, transition: 'top 30ms linear' }}
         />
 
         {/* Pulsing glow behind */}
@@ -245,7 +318,7 @@ const Analyze = () => {
 
       {/* Measurement count */}
       <p className="text-[10px] text-muted-foreground mt-3">
-        {filledMeasurements.length} of {MEASUREMENT_LABELS.length} measurements found
+        {revealedKeys.length} of {REVEAL_ORDER.length} measurements found
       </p>
     </div>
   );
