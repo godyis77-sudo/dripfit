@@ -277,35 +277,30 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               Try on →
             </button>
           </div>
-          <CategoryProductGrid
-            category="tops"
-            collapsed={false}
-            maxItems={8}
-            seed={42}
-            onSelectProduct={(product) => {
-              if (product.product_url) {
-                trackEvent('catalog_product_clicked', { brand: product.brand, category: product.category });
-                window.open(product.product_url, '_blank', 'noopener');
-              }
-            }}
-          />
-
-          {/* Accessories section */}
-          <div className="mt-3">
-            <CategoryProductGrid
-              category="accessories"
-              title="Trending Accessories"
-              collapsed={true}
-              maxItems={8}
-              seed={7777}
-              onSelectProduct={(product) => {
-                if (product.product_url) {
-                  trackEvent('catalog_product_clicked', { brand: product.brand, category: product.category });
-                  window.open(product.product_url, '_blank', 'noopener');
-                }
-              }}
-            />
-          </div>
+          {[
+            { category: 'tops', title: 'Tops', seed: 42 },
+            { category: 'bottom', title: 'Bottoms', seed: 314 },
+            { category: 'dress', title: 'Dresses', seed: 628 },
+            { category: 'outerwear', title: 'Outerwear', seed: 1597 },
+            { category: 'shoes', title: 'Shoes', seed: 2718 },
+            { category: 'accessories', title: 'Trending Accessories', seed: 7777 },
+          ].map((section, idx) => (
+            <div key={section.category} className={idx > 0 ? 'mt-3' : ''}>
+              <CategoryProductGrid
+                category={section.category}
+                title={idx > 0 ? section.title : undefined}
+                collapsed={idx > 0}
+                maxItems={8}
+                seed={section.seed}
+                onSelectProduct={(product) => {
+                  if (product.product_url) {
+                    trackEvent('catalog_product_clicked', { brand: product.brand, category: product.category });
+                    window.open(product.product_url, '_blank', 'noopener');
+                  }
+                }}
+              />
+            </div>
+          ))}
         </motion.div>
 
         {/* Recently Saved */}
