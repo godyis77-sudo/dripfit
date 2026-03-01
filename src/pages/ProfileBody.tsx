@@ -6,8 +6,9 @@ import { ArrowLeft, Ruler, Camera } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import BottomTabBar from '@/components/BottomTabBar';
+import BodyDiagram from '@/components/results/BodyDiagram';
+import MeasurementGrid from '@/components/results/MeasurementGrid';
 import type { BodyScanResult } from '@/lib/types';
-import { MEASUREMENT_LABELS } from '@/lib/types';
 import { getFitPreference } from '@/lib/session';
 
 const ProfileBody = () => {
@@ -119,18 +120,9 @@ const ProfileBody = () => {
               </p>
             </div>
 
-            {/* Measurements */}
-            <div className="bg-card border border-border rounded-xl p-3">
-              <p className="text-[11px] font-bold text-foreground mb-2">Measurements (cm)</p>
-              <div className="grid grid-cols-2 gap-1.5">
-                {Object.entries(measurements).map(([key, range]) => (
-                  <div key={key} className="bg-background rounded-lg px-3 py-2">
-                    <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{MEASUREMENT_LABELS[key] || key}</p>
-                    <p className="text-[13px] font-bold text-foreground">{range.min.toFixed(1)} – {range.max.toFixed(1)}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Body Diagram + Measurement Grid */}
+            <BodyDiagram measurements={measurements} heightCm={scan.heightCm} />
+            <MeasurementGrid measurements={measurements} heightCm={scan.heightCm} />
 
             {/* Actions */}
             <Button
