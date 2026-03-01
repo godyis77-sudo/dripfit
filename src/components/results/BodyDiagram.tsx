@@ -51,7 +51,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             src={bodySilhouette}
             alt="Body silhouette for measurements"
             className="w-full h-[500px] mx-auto block rounded-lg"
-            style={{ objectFit: 'cover', transform: 'scale(1.10)' }}
+            style={{ objectFit: 'cover', objectPosition: 'center top' }}
           />
 
           {/* Height indicator */}
