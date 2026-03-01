@@ -78,6 +78,178 @@ const CATEGORY_MAP: Record<string, Record<string, string[]>> = {
     shoes:      ['https://www.asos.com/us/men/shoes/cat/?cid=1935', 'https://www.asos.com/us/women/shoes/cat/?cid=1931'],
     accessories:['https://www.asos.com/us/men/accessories/cat/?cid=4210'],
   },
+  // ── Sportswear & Athletic ──
+  adidas: {
+    tops:       ['https://www.adidas.com/us/men-t_shirts'],
+    bottoms:    ['https://www.adidas.com/us/men-pants'],
+    outerwear:  ['https://www.adidas.com/us/men-jackets'],
+    shoes:      ['https://www.adidas.com/us/men-shoes'],
+    accessories:['https://www.adidas.com/us/men-accessories'],
+  },
+  'new balance': {
+    tops:       ['https://www.newbalance.com/men/clothing/tops/'],
+    bottoms:    ['https://www.newbalance.com/men/clothing/pants-and-tights/'],
+    outerwear:  ['https://www.newbalance.com/men/clothing/jackets-and-vests/'],
+    shoes:      ['https://www.newbalance.com/men/shoes/'],
+    accessories:['https://www.newbalance.com/men/accessories/'],
+  },
+  converse: {
+    tops:       ['https://www.converse.com/shop/mens-clothing'],
+    shoes:      ['https://www.converse.com/shop/mens-sneakers'],
+    accessories:['https://www.converse.com/shop/bags-and-backpacks'],
+  },
+  vans: {
+    tops:       ['https://www.vans.com/en-us/categories/mens-clothing-c3702'],
+    shoes:      ['https://www.vans.com/en-us/categories/mens-shoes-c5702'],
+    accessories:['https://www.vans.com/en-us/categories/accessories-c22220'],
+  },
+  puma: {
+    tops:       ['https://us.puma.com/us/en/men/clothing/t-shirts'],
+    bottoms:    ['https://us.puma.com/us/en/men/clothing/pants'],
+    shoes:      ['https://us.puma.com/us/en/men/shoes'],
+    accessories:['https://us.puma.com/us/en/men/accessories'],
+  },
+  // ── Outdoor & Active ──
+  'the north face': {
+    tops:       ['https://www.thenorthface.com/en-us/mens/mens-tops-c211501'],
+    bottoms:    ['https://www.thenorthface.com/en-us/mens/mens-bottoms-c211502'],
+    outerwear:  ['https://www.thenorthface.com/en-us/mens/mens-jackets-and-vests-c211500'],
+    shoes:      ['https://www.thenorthface.com/en-us/mens/mens-footwear-c211504'],
+    accessories:['https://www.thenorthface.com/en-us/mens/mens-accessories-c211506'],
+  },
+  patagonia: {
+    tops:       ['https://www.patagonia.com/shop/mens-t-shirts-tanks'],
+    bottoms:    ['https://www.patagonia.com/shop/mens-pants-jeans'],
+    outerwear:  ['https://www.patagonia.com/shop/mens-jackets-vests'],
+    accessories:['https://www.patagonia.com/shop/mens-hats'],
+  },
+  lululemon: {
+    tops:       ['https://shop.lululemon.com/c/men-tops/_/N-8r6'],
+    bottoms:    ['https://shop.lululemon.com/c/mens-pants/_/N-8s3'],
+    outerwear:  ['https://shop.lululemon.com/c/men-outerwear/_/N-8q3'],
+    shoes:      ['https://shop.lululemon.com/c/men-shoes/_/N-8r8'],
+    accessories:['https://shop.lululemon.com/c/men-accessories/_/N-8q5'],
+  },
+  salomon: {
+    shoes:      ['https://www.salomon.com/en-us/shop/men/shoes/trail-running-shoes.html'],
+    outerwear:  ['https://www.salomon.com/en-us/shop/men/clothing/jackets.html'],
+    accessories:['https://www.salomon.com/en-us/shop/men/accessories.html'],
+  },
+  // ── Denim & Casual ──
+  "levi's": {
+    tops:       ['https://www.levi.com/US/en_US/clothing/men/shirts/c/levi_clothing_men_shirts'],
+    bottoms:    ['https://www.levi.com/US/en_US/clothing/men/jeans/c/levi_clothing_men_jeans'],
+    outerwear:  ['https://www.levi.com/US/en_US/clothing/men/trucker-jackets/c/levi_clothing_men_702trucker_jackets'],
+    accessories:['https://www.levi.com/US/en_US/accessories/c/levi_accessories'],
+  },
+  carhartt: {
+    tops:       ['https://www.carhartt.com/search?q=t-shirt&cgid=men-shirts'],
+    bottoms:    ['https://www.carhartt.com/search?q=pants&cgid=men-pants'],
+    outerwear:  ['https://www.carhartt.com/search?q=jacket&cgid=men-outerwear'],
+    accessories:['https://www.carhartt.com/men-accessories'],
+  },
+  // ── Boots & Footwear ──
+  'dr. martens': {
+    shoes:      ['https://www.drmartens.com/us/en/boots/c/04010000'],
+  },
+  // ── Eyewear ──
+  'ray-ban': {
+    accessories:['https://www.ray-ban.com/usa/sunglasses'],
+  },
+  oakley: {
+    accessories:['https://www.oakley.com/en-us/category/sunglasses'],
+  },
+  // ── Jewelry ──
+  pandora: {
+    accessories:['https://us.pandora.net/en/jewelry/'],
+  },
+  mejuri: {
+    accessories:['https://mejuri.com/shop/t/type/necklaces'],
+  },
+  'tiffany & co': {
+    accessories:['https://www.tiffany.com/jewelry/necklaces-pendants/'],
+  },
+  cartier: {
+    accessories:['https://www.cartier.com/en-us/jewelry/bracelets/'],
+  },
+  // ── Headwear ──
+  'new era': {
+    accessories:['https://www.neweracap.com/collections/59fifty-fitted'],
+  },
+  // ── Streetwear ──
+  supreme: {
+    tops:       ['https://www.supremenewyork.com/shop/all/tops-sweaters'],
+    outerwear:  ['https://www.supremenewyork.com/shop/all/jackets'],
+    accessories:['https://www.supremenewyork.com/shop/all/hats'],
+  },
+  palace: {
+    tops:       ['https://www.palaceskateboards.com/range/tops/'],
+    outerwear:  ['https://www.palaceskateboards.com/range/jackets/'],
+    accessories:['https://www.palaceskateboards.com/range/hats/'],
+  },
+  "stüssy": {
+    tops:       ['https://www.stussy.com/collections/tops'],
+    bottoms:    ['https://www.stussy.com/collections/bottoms'],
+    outerwear:  ['https://www.stussy.com/collections/outerwear'],
+    accessories:['https://www.stussy.com/collections/accessories'],
+  },
+  'off-white': {
+    tops:       ['https://www.off---white.com/en-us/collections/man-t-shirts'],
+    outerwear:  ['https://www.off---white.com/en-us/collections/man-outerwear'],
+    shoes:      ['https://www.off---white.com/en-us/collections/man-shoes'],
+  },
+  essentials: {
+    tops:       ['https://www.essentialsfog.com/collections/tops'],
+    bottoms:    ['https://www.essentialsfog.com/collections/bottoms'],
+    outerwear:  ['https://www.essentialsfog.com/collections/outerwear'],
+  },
+  // ── Luxury ──
+  gucci: {
+    tops:       ['https://www.gucci.com/us/en/ca/men/ready-to-wear/t-shirts-and-polos-c-men-readytowear-t-shirts-polos'],
+    shoes:      ['https://www.gucci.com/us/en/ca/men/shoes-c-men-shoes'],
+    accessories:['https://www.gucci.com/us/en/ca/men/accessories/hats-and-gloves-c-men-accessories-hatsgloves'],
+  },
+  prada: {
+    shoes:      ['https://www.prada.com/us/en/men/shoes.html'],
+    accessories:['https://www.prada.com/us/en/men/accessories.html'],
+  },
+  dior: {
+    accessories:['https://www.dior.com/en_us/fashion/mens-fashion/bags'],
+    shoes:      ['https://www.dior.com/en_us/fashion/mens-fashion/shoes'],
+  },
+  'louis vuitton': {
+    accessories:['https://us.louisvuitton.com/eng-us/men/bags/_/N-1eoopfs'],
+    shoes:      ['https://us.louisvuitton.com/eng-us/men/shoes/_/N-1i09sii'],
+  },
+  balenciaga: {
+    shoes:      ['https://www.balenciaga.com/en-us/men/shoes'],
+    tops:       ['https://www.balenciaga.com/en-us/men/ready-to-wear/t-shirts'],
+  },
+  'saint laurent': {
+    outerwear:  ['https://www.ysl.com/en-us/men/ready-to-wear/coats-and-trench-coats'],
+    shoes:      ['https://www.ysl.com/en-us/men/shoes'],
+  },
+  versace: {
+    tops:       ['https://www.versace.com/us/en/men/clothing/t-shirts/'],
+    shoes:      ['https://www.versace.com/us/en/men/shoes/'],
+    accessories:['https://www.versace.com/us/en/men/accessories/'],
+  },
+  burberry: {
+    outerwear:  ['https://us.burberry.com/mens-coats-jackets/'],
+    tops:       ['https://us.burberry.com/mens-t-shirts/'],
+    accessories:['https://us.burberry.com/mens-accessories/'],
+  },
+  // ── Women's Fashion ──
+  'free people': {
+    tops:       ['https://www.freepeople.com/tops/'],
+    dresses:    ['https://www.freepeople.com/dresses/'],
+    outerwear:  ['https://www.freepeople.com/jackets/'],
+  },
+  reformation: {
+    dresses:    ['https://www.thereformation.com/categories/dresses'],
+    tops:       ['https://www.thereformation.com/categories/tops'],
+    bottoms:    ['https://www.thereformation.com/categories/bottoms'],
+  },
 };
 
 // (Stage 3 prompts removed — now uses deterministic URL scoring)
