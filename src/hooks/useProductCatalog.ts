@@ -57,7 +57,6 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
       .select('*')
       .eq('is_active', true)
       .not('image_url', 'is', null)
-      .gte('image_confidence', 0.3)
       .order('image_confidence', { ascending: false })
       .limit(120);
 
@@ -73,9 +72,16 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
 
     const { data } = await query;
     if (data) {
-      // Filter out headshot-only model shots and broken URLs
+      // Filter out junk URLs (navigation images, placeholders, tiny swatches)
+      const JUNK_PATTERNS = [
+        'down_for_maintenance', 'Navigation', 'imagesother', 'chip/goods',
+        'Topper', 'courtesypage', 'navi/image', 'lineup/', 'width=36',
+        'New-Stores', 'miffy', 'placeholder', 'Dress_Toppers', 'Dress-Topper',
+      ];
       const cleaned = (data as unknown as CatalogProduct[]).filter(p => {
         if (!p.image_url || p.image_url.trim() === '') return false;
+        const url = p.image_url;
+        if (JUNK_PATTERNS.some(pat => url.includes(pat))) return false;
         return true;
       });
       const shuffleSeed = seed ?? Math.floor(Math.random() * 100000);
