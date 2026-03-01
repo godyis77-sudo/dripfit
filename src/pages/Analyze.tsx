@@ -180,7 +180,7 @@ const Analyze = () => {
         <img
           src={bodySilhouetteScan}
           alt="Body scan analysis"
-          className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-luminosity"
+          className="absolute inset-0 w-full h-full object-contain opacity-30 mix-blend-luminosity"
         />
 
         {/* Revealed portion — grows with progress, stays revealed */}
@@ -194,7 +194,7 @@ const Analyze = () => {
           <img
             src={bodySilhouetteScan}
             alt="Body scan analysis"
-            className="w-full h-full object-cover mix-blend-luminosity"
+            className="w-full h-full object-contain mix-blend-luminosity"
           />
         </div>
 
