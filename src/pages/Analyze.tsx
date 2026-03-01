@@ -35,13 +35,13 @@ interface MeasurementOverlay {
 }
 
 const OVERLAYS: MeasurementOverlay[] = [
-  { key: 'height', label: 'Height', side: 'left', topPct: '13%', bodyX: 38, labelX: 6, lineY: 15 },
-  { key: 'shoulder', label: 'Shoulder', side: 'right', topPct: '23.5%', bodyX: 62, labelX: 94, lineY: 25.2 },
-  { key: 'chest', label: 'Chest', side: 'left', topPct: '29.5%', bodyX: 41, labelX: 6, lineY: 31 },
-  { key: 'bust', label: 'Bust', side: 'left', topPct: '32.5%', bodyX: 43, labelX: 6, lineY: 34 },
-  { key: 'waist', label: 'Waist', side: 'right', topPct: '43%', bodyX: 57, labelX: 94, lineY: 44.5 },
-  { key: 'hips', label: 'Hips', side: 'right', topPct: '51%', bodyX: 60, labelX: 94, lineY: 52.4 },
-  { key: 'inseam', label: 'Inseam', side: 'left', topPct: '69%', bodyX: 46, labelX: 6, lineY: 70 },
+  { key: 'height', label: 'Height', side: 'left', topPct: '8%', bodyX: 38, labelX: 6, lineY: 15 },
+  { key: 'shoulder', label: 'Shoulder', side: 'right', topPct: '18.5%', bodyX: 62, labelX: 94, lineY: 25.2 },
+  { key: 'chest', label: 'Chest', side: 'left', topPct: '24.5%', bodyX: 41, labelX: 6, lineY: 31 },
+  { key: 'bust', label: 'Bust', side: 'right', topPct: '27.5%', bodyX: 57, labelX: 94, lineY: 34 },
+  { key: 'waist', label: 'Waist', side: 'right', topPct: '38%', bodyX: 57, labelX: 94, lineY: 44.5 },
+  { key: 'hips', label: 'Hips', side: 'right', topPct: '46%', bodyX: 60, labelX: 94, lineY: 52.4 },
+  { key: 'inseam', label: 'Inseam', side: 'left', topPct: '63%', bodyX: 46, labelX: 6, lineY: 70 },
 ];
 
 const TOTAL_SCAN_TIME = 8000;
@@ -77,7 +77,7 @@ const Analyze = () => {
     }
     // Placeholder while waiting
     if (key === 'height') return fmtHeightFtIn(state?.heightCm || 170);
-    return '…';
+    return '';
   }, [realData, state]);
 
   useEffect(() => {
@@ -280,7 +280,7 @@ const Analyze = () => {
             if (!revealedKeys.includes(key)) return null;
             const isLeft = side === 'left';
             const value = getDisplayValue(key);
-            const hasRealValue = realData != null && value !== '…';
+            const hasRealValue = realData != null && value !== '';
 
             return (
               <motion.div
@@ -298,15 +298,17 @@ const Analyze = () => {
                   <p className="text-[22px] font-bold uppercase tracking-wider leading-none" style={{ color: 'hsl(42 45% 50%)' }}>
                     {label}
                   </p>
-                  <motion.p
-                    key={value}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-[24px] font-bold leading-none mt-0.5"
-                    style={{ color: hasRealValue ? 'hsl(0 0% 95%)' : 'hsl(0 0% 50%)' }}
-                  >
-                    {value}
-                  </motion.p>
+                  {value ? (
+                    <motion.p
+                      key={value}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-[24px] font-bold leading-none mt-0.5"
+                      style={{ color: hasRealValue ? 'hsl(0 0% 95%)' : 'hsl(0 0% 50%)' }}
+                    >
+                      {value}
+                    </motion.p>
+                  ) : null}
                 </div>
               </motion.div>
             );
