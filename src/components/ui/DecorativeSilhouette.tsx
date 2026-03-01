@@ -24,7 +24,7 @@ interface Props {
 }
 
 const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => (
-  <div className={`relative overflow-hidden rounded-[4rem] border-[10px] border-black ${className}`} style={{ width: height * (2 / 3), height }}>
+  <div className={`relative overflow-hidden rounded-[4rem] border-[10px] ${className}`} style={{ width: height * (2 / 3), height, borderColor: 'hsl(42 60% 30%)' }}>
     <img
       src={bodySilhouette}
       alt="Body measurement silhouette"
