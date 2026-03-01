@@ -12,8 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
 import { useToast } from '@/hooks/use-toast';
 
-import heroScan from '@/assets/body-silhouette-clean.png';
-import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
+import heroScan from '@/assets/hero-get-dripped.jpg';
 import heroTryon from '@/assets/hero-preview.png';
 import heroCommunity from '@/assets/icon-community.png';
 
@@ -184,15 +183,11 @@ const Onboarding = () => {
                 >
                   {/* Illustration area — 55% */}
                   <div className="flex-[60] flex items-center justify-center bg-card/30 mx-4 rounded-3xl overflow-hidden py-6">
-                    {slideIdx === 0 ? (
-                      <DecorativeSilhouette height={280} />
-                    ) : (
-                      <img
-                        src={SLIDES[slideIdx].image}
-                        alt={SLIDES[slideIdx].title}
-                        className="h-48 w-48 object-contain"
-                      />
-                    )}
+                    <img
+                      src={SLIDES[slideIdx].image}
+                      alt={SLIDES[slideIdx].title}
+                      className={slideIdx === 0 ? "h-full w-full object-cover" : "h-48 w-48 object-contain"}
+                    />
                   </div>
 
                   {/* Text area — 45% */}
@@ -317,7 +312,7 @@ const Onboarding = () => {
             <div className="max-w-[320px] w-full flex flex-col items-center">
               {/* Illustration */}
               <div className="h-56 w-56 rounded-3xl bg-card border border-border flex items-center justify-center mb-5 overflow-hidden">
-                <DecorativeSilhouette height={210} />
+                <img src={heroScan} alt="Get dripped" className="h-full w-full object-cover" />
               </div>
 
               <h2 className="font-display text-xl font-bold text-foreground mb-1 text-center">Let's get your measurements</h2>
