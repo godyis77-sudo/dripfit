@@ -15,6 +15,25 @@ export interface CatalogProduct {
   tags: string[];
 }
 
+// Map app-facing category keys to actual DB category values
+const CATEGORY_MAP: Record<string, string[]> = {
+  top: ['tops', 'top'],
+  bottom: ['bottoms', 'bottom'],
+  dress: ['dresses', 'dress'],
+  outerwear: ['outerwear'],
+  shoes: ['footwear', 'shoes'],
+  bags: ['bags', 'accessories'],
+  hats: ['hats', 'accessories'],
+  jewelry: ['jewelry', 'accessories'],
+  sunglasses: ['sunglasses', 'accessories'],
+  necklace: ['jewelry', 'accessories'],
+  earrings: ['jewelry', 'accessories'],
+  bracelet: ['jewelry', 'accessories'],
+  watch: ['jewelry', 'accessories'],
+  full: ['tops', 'dresses', 'outerwear', 'other'],
+  accessories: ['accessories', 'footwear', 'bags', 'hats', 'jewelry', 'sunglasses'],
+};
+
 export function useProductCatalog(category?: string, brand?: string) {
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [loading, setLoading] = useState(false);
@@ -28,7 +47,14 @@ export function useProductCatalog(category?: string, brand?: string) {
       .order('created_at', { ascending: false })
       .limit(30);
 
-    if (category) query = query.eq('category', category);
+    if (category) {
+      const mapped = CATEGORY_MAP[category];
+      if (mapped && mapped.length > 0) {
+        query = query.in('category', mapped);
+      } else {
+        query = query.eq('category', category);
+      }
+    }
     if (brand) query = query.eq('brand', brand);
 
     const { data } = await query;

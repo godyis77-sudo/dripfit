@@ -16,14 +16,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 import { FullscreenImage } from '@/components/ui/fullscreen-image';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 
-import quickpickWhiteTee from '@/assets/quickpick-white-tee.png';
-import quickpickDenimJacket from '@/assets/quickpick-denim-jacket.png';
-import quickpickBlackHoodie from '@/assets/quickpick-black-hoodie.png';
-import quickpickBlazer from '@/assets/quickpick-blazer.png';
-import quickpickButtonDown from '@/assets/quickpick-button-down.png';
-import quickpickBlackDress from '@/assets/quickpick-black-dress.png';
-import quickpickCargoPants from '@/assets/quickpick-cargo-pants.png';
-import quickpickPufferVest from '@/assets/quickpick-puffer-vest.png';
+import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 
 const SHARE_PREF_KEY = 'drip_default_share_preference';
 const SHARE_PREF_TS_KEY = 'drip_default_share_preference_ts';
@@ -65,16 +58,7 @@ const ACCESSORY_CATEGORIES = [
   { key: 'sunglasses', label: '🕶️ Sunglasses', icon: '🕶️' },
 ] as const;
 
-const DEMO_OUTFITS = [
-  { label: 'White Tee', category: 'top', image: quickpickWhiteTee, searchTerm: 'white t-shirt', retailers: ['Zara', 'H&M', 'Uniqlo', 'Gap'] },
-  { label: 'Denim Jacket', category: 'outerwear', image: quickpickDenimJacket, searchTerm: 'denim jacket', retailers: ['Zara', 'H&M', 'ASOS', 'Mango'] },
-  { label: 'Black Hoodie', category: 'top', image: quickpickBlackHoodie, searchTerm: 'black hoodie', retailers: ['Nike', 'Adidas', 'H&M', 'Uniqlo'] },
-  { label: 'Blazer', category: 'outerwear', image: quickpickBlazer, searchTerm: 'black blazer', retailers: ['Zara', 'Mango', 'Nordstrom', 'Revolve'] },
-  { label: 'Button-Down', category: 'top', image: quickpickButtonDown, searchTerm: 'white button down shirt', retailers: ['Uniqlo', 'H&M', 'Gap', 'Nordstrom'] },
-  { label: 'Black Dress', category: 'dress', image: quickpickBlackDress, searchTerm: 'black dress', retailers: ['Zara', 'ASOS', 'Revolve', 'Mango'] },
-  { label: 'Cargo Pants', category: 'bottom', image: quickpickCargoPants, searchTerm: 'cargo pants', retailers: ['H&M', 'ASOS', 'Fashion Nova', 'SHEIN'] },
-  { label: 'Puffer Vest', category: 'outerwear', image: quickpickPufferVest, searchTerm: 'puffer vest', retailers: ['Nike', 'Adidas', 'Uniqlo', 'Nordstrom'] },
-];
+// Quick picks now powered by product catalog — no static assets needed
 
 // buildRetailerSearchUrl is imported from @/lib/retailerLinks
 
@@ -113,7 +97,7 @@ const TryOn = () => {
   const [showWardrobe, setShowWardrobe] = useState(false);
   const [showPremiumGate, setShowPremiumGate] = useState(false);
   const [savedToItems, setSavedToItems] = useState(false);
-  const [selectedQuickPick, setSelectedQuickPick] = useState<typeof DEMO_OUTFITS[number] | null>(null);
+  const [selectedQuickPick, setSelectedQuickPick] = useState<CatalogProduct | null>(null);
   const [retailerMap, setRetailerMap] = useState<Record<string, { website_url: string }>>({});
   // Multi-item accessory layering
   const [accessoryPhoto, setAccessoryPhoto] = useState<string | null>(null);
@@ -590,66 +574,33 @@ const TryOn = () => {
               </div>
             </div>
 
-            {/* Quick picks — filter by selected category */}
+            {/* Quick picks — powered by product catalog */}
             {!clothingPhoto && (
               <div className="mb-3">
                 <p className="section-label mb-1.5">Quick Picks</p>
-                <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-                  {DEMO_OUTFITS.filter(o => o.category === category || category === 'full').map(o => {
-                    const isSelected = selectedQuickPick?.label === o.label;
-                    return (
-                      <button
-                        key={o.label}
-                        className={`flex-shrink-0 w-[72px] flex flex-col items-center p-1.5 rounded-lg border-2 transition-all active:scale-95 ${
-                          isSelected ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/30'
-                        }`}
-                        onClick={async () => {
-                          setSelectedQuickPick(o);
-                          setCategory(o.category);
-                          trackEvent('tryon_clothing_uploaded');
-                          const base64 = await imageUrlToBase64(o.image);
-                          setClothingPhoto(base64);
-                        }}
-                      >
-                        <div className="relative w-full aspect-square rounded-md overflow-hidden mb-1">
-                          <img src={o.image} alt={o.label} className="w-full h-full object-contain bg-muted/30" loading="lazy" />
-                          <div className="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-background/80 to-transparent" />
-                          {isSelected && (
-                            <div className="absolute top-0.5 right-0.5 h-4 w-4 rounded-full bg-primary flex items-center justify-center">
-                              <Check className="h-2.5 w-2.5 text-primary-foreground" />
-                            </div>
-                          )}
-                        </div>
-                        <p className="text-[9px] text-muted-foreground font-medium leading-tight text-center truncate w-full">{o.label}</p>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Catalog products for selected category */}
-                <div className="mt-3">
-                  <CategoryProductGrid
-                    category={category}
-                    title={`Shop ${CATEGORIES.find(c => c.key === category)?.label || category}`}
-                    collapsed={false}
-                    onSelectProduct={async (product) => {
-                      if (product.product_url) setProductLink(product.product_url);
-                      trackEvent('tryon_clothing_uploaded');
-                      const base64 = await imageUrlToBase64(product.image_url);
-                      setClothingPhoto(base64);
-                    }}
-                  />
-                </div>
+                <CategoryProductGrid
+                  category={category}
+                  title={`Shop ${CATEGORIES.find(c => c.key === category)?.label || category}`}
+                  collapsed={false}
+                  maxItems={8}
+                  onSelectProduct={async (product) => {
+                    setSelectedQuickPick(product);
+                    if (product.product_url) setProductLink(product.product_url);
+                    trackEvent('tryon_clothing_uploaded');
+                    const base64 = await imageUrlToBase64(product.image_url);
+                    setClothingPhoto(base64);
+                  }}
+                />
               </div>
             )}
 
-            {/* Retailer links for selected Quick Pick — always visible */}
-            {selectedQuickPick && (
+            {/* Retailer link for selected Quick Pick */}
+            {selectedQuickPick?.product_url && (
               <div className="mb-3 p-3 rounded-xl bg-primary/5 border-2 border-primary/30">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
                     <ShoppingBag className="h-3.5 w-3.5" />
-                    Shop {selectedQuickPick.label}
+                    Shop {selectedQuickPick.name}
                   </p>
                   <button
                     onClick={() => setSelectedQuickPick(null)}
@@ -658,23 +609,16 @@ const TryOn = () => {
                     <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {selectedQuickPick.retailers
-                    .filter(name => retailerMap[name])
-                    .map(name => (
-                      <a
-                        key={name}
-                        href={buildRetailerSearchUrl(name, retailerMap[name].website_url, selectedQuickPick.searchTerm)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={() => trackEvent('quickpick_retailer_clicked', { retailer: name, item: selectedQuickPick.label, searchTerm: selectedQuickPick.searchTerm })}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/15 border border-primary/40 text-xs font-bold text-primary hover:bg-primary/25 transition-colors active:scale-95"
-                      >
-                        <Store className="h-3.5 w-3.5" />
-                        {name}
-                      </a>
-                    ))}
-                </div>
+                <a
+                  href={selectedQuickPick.product_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackEvent('quickpick_retailer_clicked', { retailer: selectedQuickPick.retailer, item: selectedQuickPick.name })}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/15 border border-primary/40 text-xs font-bold text-primary hover:bg-primary/25 transition-colors active:scale-95"
+                >
+                  <Store className="h-3.5 w-3.5" />
+                  {selectedQuickPick.retailer} — {selectedQuickPick.brand}
+                </a>
               </div>
             )}
 
@@ -741,27 +685,16 @@ const TryOn = () => {
                 >
                   <ShoppingBag className="mr-2 h-4 w-4" /> Shop This Look
                 </Button>
-              ) : selectedQuickPick ? (
-                <div className="space-y-2">
-                  <p className="text-[11px] font-bold text-foreground">Shop this look at:</p>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {selectedQuickPick.retailers
-                      .filter(name => retailerMap[name])
-                      .map(name => (
-                        <button
-                          key={name}
-                          onClick={() => {
-                            trackEvent('shop_clickout', { source: 'tryon', retailer: name, quickPick: selectedQuickPick.label });
-                            window.open(buildRetailerSearchUrl(name, retailerMap[name].website_url, selectedQuickPick.searchTerm), '_blank', 'noopener');
-                          }}
-                          className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-border bg-card hover:border-primary/40 active:scale-[0.97] transition-all text-left"
-                        >
-                          <ExternalLink className="h-3 w-3 text-muted-foreground shrink-0" />
-                          <span className="text-[12px] font-semibold text-foreground">{name}</span>
-                        </button>
-                      ))}
-                  </div>
-                </div>
+              ) : selectedQuickPick?.product_url ? (
+                <Button
+                  className="w-full h-11 rounded-lg btn-luxury text-primary-foreground text-sm font-bold"
+                  onClick={() => {
+                    trackEvent('shop_clickout', { source: 'tryon', retailer: selectedQuickPick.retailer, quickPick: selectedQuickPick.name });
+                    window.open(selectedQuickPick.product_url!, '_blank', 'noopener');
+                  }}
+                >
+                  <ShoppingBag className="mr-2 h-4 w-4" /> Shop at {selectedQuickPick.retailer}
+                </Button>
               ) : (
                 <Button
                   className="w-full h-11 rounded-lg btn-luxury text-primary-foreground text-sm font-bold"
@@ -905,8 +838,8 @@ const TryOn = () => {
                     await supabase.from('saved_items').insert({
                       user_id: user.id,
                       product_link: productLink || null,
-                      retailer: selectedQuickPick?.retailers[0] || null,
-                      brand: selectedQuickPick?.label || null,
+                      retailer: selectedQuickPick?.retailer || null,
+                      brand: selectedQuickPick?.brand || null,
                       category: category || null,
                       size_recommendation: null,
                       confidence: null,
