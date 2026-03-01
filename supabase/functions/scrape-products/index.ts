@@ -278,6 +278,18 @@ const ANTI_SCRAPE_BRANDS = new Set([
 // STAGES 1+2 — Firecrawl scrapes + extracts structured product data
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Map granular category keys to parent URL keys used in CATEGORY_MAP
+const CATEGORY_TO_URL_KEY: Record<string, string> = {
+  't-shirts': 'tops', shirts: 'tops', hoodies: 'tops', polos: 'tops', sweaters: 'tops',
+  jeans: 'bottoms', pants: 'bottoms', shorts: 'bottoms', skirts: 'bottoms', leggings: 'bottoms',
+  jackets: 'outerwear', coats: 'outerwear', blazers: 'outerwear', vests: 'outerwear',
+  jumpsuits: 'dresses',
+  sneakers: 'shoes', boots: 'shoes', sandals: 'shoes', loafers: 'shoes', heels: 'shoes',
+  bags: 'accessories', hats: 'accessories', sunglasses: 'accessories', jewelry: 'accessories',
+  watches: 'accessories', belts: 'accessories', scarves: 'accessories',
+  swimwear: 'tops', activewear: 'tops', loungewear: 'tops', underwear: 'tops',
+};
+
 async function scrapeProducts(
   brand: string,
   category: string,
@@ -295,9 +307,12 @@ async function scrapeProducts(
     return searchProducts(brand, category, firecrawlApiKey);
   }
 
-  const urls = brandUrls[category.toLowerCase()];
+  // Try exact category key first, then parent key
+  const catKey = category.toLowerCase();
+  const parentKey = CATEGORY_TO_URL_KEY[catKey] || catKey;
+  const urls = brandUrls[catKey] || brandUrls[parentKey];
   if (!urls?.length) {
-    console.log(`[scrape] No URLs for ${brand}/${category}, using search fallback`);
+    console.log(`[scrape] No URLs for ${brand}/${category} (tried ${catKey}→${parentKey}), using search fallback`);
     return searchProducts(brand, category, firecrawlApiKey);
   }
 
@@ -419,12 +434,43 @@ async function scrapeProducts(
 // ─────────────────────────────────────────────────────────────────────────────
 
 const CATEGORY_TERMS: Record<string, string> = {
-  tops: 't-shirt shirt top hoodie sweatshirt',
+  tops: 't-shirt shirt top hoodie sweatshirt polo tank crop-top blouse henley',
+  't-shirts': 't-shirt tee graphic-tee',
+  shirts: 'shirt button-down oxford flannel dress-shirt',
+  hoodies: 'hoodie sweatshirt pullover crewneck fleece',
+  polos: 'polo shirt pique',
+  sweaters: 'sweater knit cardigan pullover turtleneck',
   bottoms: 'pants jeans trousers shorts joggers',
-  outerwear: 'jacket coat blazer puffer vest',
-  dresses: 'dress gown jumpsuit',
-  shoes: 'shoes sneakers boots',
+  jeans: 'jeans denim skinny straight slim bootcut',
+  pants: 'pants trousers chinos cargo dress-pants',
+  shorts: 'shorts swim-trunks board-shorts cargo-shorts',
+  skirts: 'skirt mini-skirt midi-skirt maxi-skirt',
+  leggings: 'leggings tights yoga-pants',
+  outerwear: 'jacket coat blazer puffer vest windbreaker parka',
+  jackets: 'jacket bomber denim-jacket trucker varsity',
+  coats: 'coat trench overcoat peacoat wool-coat',
+  blazers: 'blazer sport-coat suit-jacket',
+  vests: 'vest gilet puffer-vest down-vest',
+  dresses: 'dress gown jumpsuit romper maxi midi mini',
+  'jumpsuits': 'jumpsuit romper overalls playsuit',
+  shoes: 'shoes sneakers boots loafers sandals',
+  sneakers: 'sneakers trainers running-shoes athletic-shoes',
+  boots: 'boots ankle-boots chelsea-boots combat-boots hiking-boots',
+  sandals: 'sandals slides flip-flops mules',
+  loafers: 'loafers moccasins slip-on driving-shoes',
+  heels: 'heels pumps stilettos wedges platforms',
   accessories: 'bag belt hat sunglasses wallet',
+  bags: 'bag handbag tote crossbody backpack clutch shoulder-bag',
+  hats: 'hat cap beanie bucket-hat snapback baseball-cap',
+  sunglasses: 'sunglasses eyewear aviator wayfarer',
+  jewelry: 'jewelry necklace bracelet ring earrings pendant chain',
+  watches: 'watch timepiece chronograph smartwatch',
+  belts: 'belt leather-belt woven-belt dress-belt',
+  scarves: 'scarf shawl wrap bandana',
+  swimwear: 'swimsuit bikini swim-trunks one-piece boardshorts rashguard',
+  activewear: 'activewear gym workout training sports-bra compression',
+  loungewear: 'loungewear pajamas robe sleepwear sweatpants',
+  underwear: 'underwear boxers briefs bra lingerie socks',
 };
 
 async function searchProducts(
@@ -816,12 +862,44 @@ function imagePriority(p: string | null): number {
 function normaliseCategory(raw: string | null): string {
   if (!raw) return 'other';
   const r = raw.toLowerCase();
-  if (/shirt|tee|top|blouse|hoodie|sweatshirt|cardigan|bodysuit|polo/.test(r)) return 'tops';
-  if (/pant|jean|trouser|skirt|short|legging|jogger/.test(r)) return 'bottoms';
-  if (/jacket|coat|blazer|bomber|puffer|trench|windbreaker|parka/.test(r)) return 'outerwear';
-  if (/dress|jumpsuit|romper|gown/.test(r)) return 'dresses';
-  if (/shoe|sneaker|boot|heel|sandal|loafer|mule|flat/.test(r)) return 'footwear';
-  if (/bag|belt|hat|scarf|sunglass|jewel|watch|wallet|backpack/.test(r)) return 'accessories';
+  // Specific sub-categories first for better accuracy
+  if (/\bt-?shirt|tee\b/.test(r)) return 't-shirts';
+  if (/\bhoodie|sweatshirt|fleece|crewneck\b/.test(r)) return 'hoodies';
+  if (/\bsweater|knit|cardigan|turtleneck|pullover\b/.test(r)) return 'sweaters';
+  if (/\bpolo\b/.test(r)) return 'polos';
+  if (/\bshirt|button.?down|oxford|flannel|blouse\b/.test(r)) return 'shirts';
+  if (/\btop|bodysuit|tank|crop|henley\b/.test(r)) return 'tops';
+  if (/\bjean|denim\b/.test(r)) return 'jeans';
+  if (/\bshort\b/.test(r)) return 'shorts';
+  if (/\bskirt\b/.test(r)) return 'skirts';
+  if (/\blegging|tight|yoga\b/.test(r)) return 'leggings';
+  if (/\bpant|trouser|chino|cargo|jogger\b/.test(r)) return 'pants';
+  if (/\bbottom\b/.test(r)) return 'bottoms';
+  if (/\bblazer|sport.?coat\b/.test(r)) return 'blazers';
+  if (/\bvest|gilet\b/.test(r)) return 'vests';
+  if (/\bcoat|trench|overcoat|peacoat|parka\b/.test(r)) return 'coats';
+  if (/\bjacket|bomber|puffer|windbreaker\b/.test(r)) return 'jackets';
+  if (/\bouterwear\b/.test(r)) return 'outerwear';
+  if (/\bjumpsuit|romper|overall|playsuit\b/.test(r)) return 'jumpsuits';
+  if (/\bdress|gown|maxi|midi\b/.test(r)) return 'dresses';
+  if (/\bsneaker|trainer|running.?shoe|athletic\b/.test(r)) return 'sneakers';
+  if (/\bboot|chelsea|combat|hiking\b/.test(r)) return 'boots';
+  if (/\bsandal|slide|flip.?flop|mule\b/.test(r)) return 'sandals';
+  if (/\bloafer|moccasin|slip.?on|driving\b/.test(r)) return 'loafers';
+  if (/\bheel|pump|stiletto|wedge|platform\b/.test(r)) return 'heels';
+  if (/\bshoe|footwear\b/.test(r)) return 'shoes';
+  if (/\bbag|handbag|tote|crossbody|backpack|clutch|purse\b/.test(r)) return 'bags';
+  if (/\bhat|cap|beanie|bucket|snapback\b/.test(r)) return 'hats';
+  if (/\bsunglass|eyewear\b/.test(r)) return 'sunglasses';
+  if (/\bjewel|necklace|bracelet|ring|earring|pendant|chain\b/.test(r)) return 'jewelry';
+  if (/\bwatch|timepiece|chronograph\b/.test(r)) return 'watches';
+  if (/\bbelt\b/.test(r)) return 'belts';
+  if (/\bscarf|shawl|wrap|bandana\b/.test(r)) return 'scarves';
+  if (/\bswim|bikini|trunk|boardshort|rashguard\b/.test(r)) return 'swimwear';
+  if (/\bactive|gym|workout|training|sports?.bra|compression\b/.test(r)) return 'activewear';
+  if (/\blounge|pajama|robe|sleepwear\b/.test(r)) return 'loungewear';
+  if (/\bunderwear|boxer|brief|bra|lingerie|sock\b/.test(r)) return 'underwear';
+  if (/\baccessor\b/.test(r)) return 'accessories';
   return 'other';
 }
 
