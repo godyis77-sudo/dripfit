@@ -186,13 +186,13 @@ const Onboarding = () => {
                   <div className="flex-[70] flex items-center justify-center bg-card/30 mx-4 rounded-3xl overflow-hidden">
                     {slideIdx === 0 ? (
                       <div className="border-2 border-primary bg-primary rounded-[2rem] p-4 overflow-hidden">
-                        <DecorativeSilhouette height={320} className="!rounded-[2rem]" />
+                        <DecorativeSilhouette height={416} className="!rounded-[2rem]" />
                       </div>
                     ) : (
                       <img
                         src={SLIDES[slideIdx].image}
                         alt={SLIDES[slideIdx].title}
-                        className="w-full h-full object-cover"
+                        className="w-[70%] h-[70%] object-cover rounded-2xl"
                       />
                     )}
                   </div>
