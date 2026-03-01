@@ -28,7 +28,7 @@ const measurementLines: MeasurementLine[] = [
   { key: 'waist', label: 'Waist', labelSide: 'right', x1: '42%', y1: '42.5%', x2: '58%', y2: '42.5%', labelTop: '41%', labelEdgeX: 85, leaderX: 58, leaderY: 42.5 },
   { key: 'hips', label: 'Hips', labelSide: 'right', x1: '39%', y1: '51.5%', x2: '61%', y2: '51.5%', labelTop: '50%', labelEdgeX: 88, leaderX: 61, leaderY: 51.5 },
   { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '35%', y1: '25%', x2: '30%', y2: '50%', labelTop: '36%', labelEdgeX: 13, leaderX: 32, leaderY: 37.5 },
-  { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '47%', y1: '55%', x2: '44%', y2: '85%', labelTop: '69%', labelEdgeX: 18, leaderX: 45, leaderY: 70.5 },
+  { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '47%', y1: '55%', x2: '44%', y2: '90%', labelTop: '69%', labelEdgeX: 18, leaderX: 45, leaderY: 70.5 },
 ];
 
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
