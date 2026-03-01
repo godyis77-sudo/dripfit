@@ -1,37 +1,28 @@
 
 
-# Body Diagram as Generated Image
+## Make All Buttons & Crown Icons Use the Gold (btn-luxury) Color
 
-## Overview
-Replace the current SVG-based body diagram with an AI-generated realistic body silhouette image, with measurement labels overlaid using HTML/CSS positioning instead of SVG text elements.
+The user wants consistency: all interactive buttons and Crown icons throughout the app should use the same warm gold color as the "Start Scan" button (`btn-luxury` gradient: `hsl(42 45% 62%)` → `hsl(42 35% 72%)`).
 
-## Approach
+### What's Changing
 
-1. **Create an edge function** (`generate-body-diagram`) that calls the Lovable AI image generation model (`google/gemini-2.5-flash-image`) to produce a clean, minimal body silhouette image -- a neutral, front-facing human figure on a transparent/dark background, suitable for overlaying measurement annotations.
+**1. CSS Variable Update (`src/index.css`)**
+- Change `--primary` from `45 88% 40%` (dark saturated gold) to `42 45% 62%` (the warm gold used in `btn-luxury`)
+- This automatically updates every `text-primary`, `bg-primary`, `border-primary`, and Crown icon color across the entire app since they all reference `hsl(var(--primary))`
+- Update related variables (`--accent`, `--drip-glow`, `--drip-accent`, `--drip-gold`, `--ring`, sidebar vars) to harmonize with the new primary
 
-2. **Update `BodyDiagram.tsx`** to:
-   - Call the edge function on mount (with caching in state/localStorage so it doesn't regenerate every time)
-   - Display the generated image as an `<img>` tag
-   - Overlay measurement labels using absolutely-positioned HTML `<div>` elements with CSS lines/connectors
-   - Show a loading skeleton while the image generates
-   - Fall back gracefully if generation fails
+**2. Button Default Variant (`src/components/ui/button.tsx`)**
+- Update the `default` variant to use `btn-luxury` styling so all `<Button>` components without explicit variant get the gold gradient + shadow treatment, matching the CTA buttons
 
-3. **Measurement overlay** will use CSS `position: absolute` divs placed at percentage-based coordinates over the image, with thin CSS border lines as connectors -- replicating the same label layout (shoulder, bust, chest, sleeve, waist, hips, inseam, height) but in HTML instead of SVG.
+**3. Gradient Utilities (`src/index.css`)**
+- Adjust `gradient-drip`, `gradient-drip-text`, `glow-primary`, `btn-luxury`, and `btn-3d-drip` to stay harmonized — these may need only minor tweaks since they already use `hsl(42 ...)` values close to the new primary
 
-## Technical Details
+### Scope
+- ~24 files use `btn-luxury` explicitly — those stay as-is
+- ~50+ files reference `text-primary` for icons (including Crown) — all update automatically via the CSS variable
+- Crown icons in PremiumBadge, UpgradePrompt, Profile, Welcome, Onboarding, Premium pages — all use `text-primary` or `text-primary-foreground`, so they update automatically
+- No component-level code changes needed for Crown icons
 
-### New Edge Function: `supabase/functions/generate-body-diagram/index.ts`
-- Accepts a POST with optional gender parameter
-- Calls `google/gemini-2.5-flash-image` with a prompt for a clean anatomical silhouette figure
-- Returns the base64 image data
-- Uses `LOVABLE_API_KEY` (already available)
-
-### Updated Component: `src/components/results/BodyDiagram.tsx`
-- Fetches image once, caches the base64 result in `localStorage` (key: `dripcheck_body_silhouette`)
-- Renders image inside a `relative` container
-- Positions measurement annotations as `absolute` HTML elements at percentage-based top/left coordinates
-- Displays cm and inch values using the same formatting logic
-- Shows skeleton loader during generation
-
-### No database changes required.
+### Risk
+- Changing `--primary` affects the entire color system. Elements using `bg-primary` (dots, badges, borders) will shift too. This is intentional for brand consistency but worth verifying across all pages.
 
