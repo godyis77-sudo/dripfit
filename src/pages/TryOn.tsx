@@ -136,6 +136,26 @@ const TryOn = () => {
       });
     }
   }, [user]);
+  // Pre-populate clothing from catalog product selection
+  useEffect(() => {
+    const state = location.state as any;
+    if (state?.clothingUrl && !clothingPhoto) {
+      imageUrlToBase64(state.clothingUrl)
+        .then(base64 => {
+          setClothingPhoto(base64);
+          if (state.productUrl) setProductLink(state.productUrl);
+          trackEvent('tryon_clothing_uploaded');
+        })
+        .catch(() => {
+          // Fallback: use the URL directly (will be converted during generation)
+          setClothingPhoto(state.clothingUrl);
+          if (state.productUrl) setProductLink(state.productUrl);
+        });
+      // Clear state to prevent re-triggering
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
+
   const canGenerate = !!userPhoto && !!clothingPhoto;
 
   // Fetch retailers from database
