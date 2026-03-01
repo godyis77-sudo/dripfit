@@ -185,7 +185,7 @@ const Onboarding = () => {
                   {/* Illustration area — 55% */}
                   <div className="flex-[70] flex items-center justify-center bg-card/30 mx-4 rounded-3xl overflow-hidden">
                     {slideIdx === 0 ? (
-                      <div className="border-2 border-primary rounded-2xl p-4">
+                      <div className="border-2 border-primary bg-primary/15 rounded-2xl p-4">
                         <DecorativeSilhouette height={320} />
                       </div>
                     ) : (
