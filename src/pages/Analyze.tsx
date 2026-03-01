@@ -28,16 +28,19 @@ interface MeasurementOverlay {
   label: string;
   side: 'left' | 'right';
   topPct: string;
-  edgePx: number;
+  /** Leader line: start X% on body, end X% at label edge */
+  bodyX: number;
+  labelX: number;
+  lineY: number;
 }
 
 const OVERLAYS: MeasurementOverlay[] = [
-  { key: 'height', label: 'Height', side: 'left', topPct: '6%', edgePx: 4 },
-  { key: 'shoulder', label: 'Shoulder', side: 'right', topPct: '18%', edgePx: 4 },
-  { key: 'chest', label: 'Chest', side: 'left', topPct: '24%', edgePx: 4 },
-  { key: 'waist', label: 'Waist', side: 'right', topPct: '38%', edgePx: 4 },
-  { key: 'hips', label: 'Hips', side: 'right', topPct: '46%', edgePx: 4 },
-  { key: 'inseam', label: 'Inseam', side: 'left', topPct: '62%', edgePx: 4 },
+  { key: 'height', label: 'Height', side: 'left', topPct: '8%', bodyX: 38, labelX: 6, lineY: 10 },
+  { key: 'shoulder', label: 'Shoulder', side: 'right', topPct: '18.5%', bodyX: 62, labelX: 94, lineY: 20.2 },
+  { key: 'chest', label: 'Chest', side: 'left', topPct: '24.5%', bodyX: 41, labelX: 6, lineY: 26 },
+  { key: 'waist', label: 'Waist', side: 'right', topPct: '38%', bodyX: 57, labelX: 94, lineY: 39.5 },
+  { key: 'hips', label: 'Hips', side: 'right', topPct: '46%', bodyX: 60, labelX: 94, lineY: 47.4 },
+  { key: 'inseam', label: 'Inseam', side: 'left', topPct: '64%', bodyX: 46, labelX: 6, lineY: 65 },
 ];
 
 const REVEAL_ORDER = ['height', 'shoulder', 'chest', 'waist', 'hips', 'inseam'];
@@ -210,9 +213,9 @@ const Analyze = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
       {/* Animated body silhouette with live measurement overlays */}
-      <div className="relative mb-6 w-[280px] h-[360px] rounded-xl overflow-hidden bg-background">
+      <div className="relative mb-5 w-full max-w-[380px] aspect-[2/3] rounded-xl overflow-hidden bg-background">
         {/* Base dimmed image */}
         <img
           src={bodySilhouetteScan}
@@ -235,9 +238,42 @@ const Analyze = () => {
           />
         </div>
 
+        {/* SVG leader lines */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+          {OVERLAYS.map(({ key, bodyX, labelX, lineY }) => {
+            if (!revealedKeys.includes(key)) return null;
+            return (
+              <motion.line
+                key={`leader-${key}`}
+                x1={labelX} y1={lineY}
+                x2={bodyX} y2={lineY}
+                stroke="hsl(42 45% 55%)"
+                strokeWidth="0.3"
+                strokeDasharray="1.2 0.8"
+                strokeLinecap="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 0.4 }}
+              />
+            );
+          })}
+          {OVERLAYS.map(({ key, bodyX, lineY }) => {
+            if (!revealedKeys.includes(key)) return null;
+            return (
+              <motion.circle
+                key={`dot-${key}`}
+                cx={bodyX} cy={lineY} r="0.7"
+                fill="hsl(42 45% 50%)"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              />
+            );
+          })}
+        </svg>
+
         {/* Live measurement labels appearing on the silhouette */}
         <AnimatePresence>
-          {OVERLAYS.map(({ key, label, side, topPct, edgePx }) => {
+          {OVERLAYS.map(({ key, label, side, topPct }) => {
             if (!revealedKeys.includes(key)) return null;
             const isLeft = side === 'left';
             const value = getDisplayValue(key);
@@ -252,18 +288,18 @@ const Analyze = () => {
                 className="absolute"
                 style={{
                   top: topPct,
-                  ...(isLeft ? { left: edgePx } : { right: edgePx }),
+                  ...(isLeft ? { left: '2%' } : { right: '2%' }),
                 }}
               >
                 <div className={`${isLeft ? 'text-left' : 'text-right'} px-1.5 py-0.5`}>
-                  <p className="text-[10px] font-bold uppercase tracking-wider leading-none" style={{ color: 'hsl(42 45% 50%)' }}>
+                  <p className="text-[11px] font-bold uppercase tracking-wider leading-none" style={{ color: 'hsl(42 45% 50%)' }}>
                     {label}
                   </p>
                   <motion.p
                     key={value}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="text-[11px] font-bold leading-none mt-0.5"
+                    className="text-[12px] font-bold leading-none mt-0.5"
                     style={{ color: hasRealValue ? 'hsl(0 0% 95%)' : 'hsl(0 0% 50%)' }}
                   >
                     {value}
