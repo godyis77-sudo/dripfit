@@ -149,10 +149,10 @@ const Onboarding = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="w-full h-screen flex flex-col"
+            className="w-full h-[100dvh] flex flex-col"
           >
-            {/* Skip — hidden on last slide */}
-            <div className="px-6 pt-12 flex justify-end h-10">
+            {/* Skip */}
+            <div className="px-6 pt-10 flex justify-end shrink-0">
               {slideIdx < SLIDES.length - 1 && (
                 <button onClick={skipCarousel} className="text-[12px] text-muted-foreground font-semibold active:text-foreground transition-colors">
                   Skip
@@ -160,8 +160,8 @@ const Onboarding = () => {
               )}
             </div>
 
-            {/* Slide content — illustration takes top 55% */}
-            <div className="flex-1 flex flex-col overflow-y-auto">
+            {/* Slide content */}
+            <div className="flex-1 flex flex-col min-h-0">
               <AnimatePresence mode="wait" custom={slideDir}>
                 <motion.div
                   key={slideIdx}
@@ -183,39 +183,32 @@ const Onboarding = () => {
                       setSlideIdx(i => i - 1);
                     }
                   }}
-                  className="flex-1 flex flex-col cursor-grab active:cursor-grabbing"
+                  className="flex-1 flex flex-col min-h-0 cursor-grab active:cursor-grabbing"
                 >
-                  {/* Illustration area */}
-                  <div className="flex-shrink-0 min-h-[44vh] flex items-center justify-center mx-4 py-4">
+                  {/* Image — capped at 48% of viewport */}
+                  <div className="flex-1 flex items-center justify-center mx-4 min-h-0">
                     {slideIdx === 0 ? (
-                      <div className="border-2 border-primary bg-primary rounded-[2rem] p-3 overflow-hidden">
-                        <DecorativeSilhouette height={320} className="!rounded-[2rem]" />
+                      <div className="border-2 border-primary bg-primary rounded-[2rem] p-2 overflow-hidden max-h-full">
+                        <DecorativeSilhouette height={280} className="!rounded-[2rem]" />
                       </div>
                     ) : (
-                      <div className="w-full h-[44vh] flex items-center justify-center">
-                        <img
-                          src={SLIDES[slideIdx].image}
-                          alt={SLIDES[slideIdx].title}
-                          className="max-h-full max-w-full object-contain rounded-2xl"
-                        />
-                      </div>
+                      <img
+                        src={SLIDES[slideIdx].image}
+                        alt={SLIDES[slideIdx].title}
+                        className="max-h-full max-w-[85%] object-contain rounded-2xl"
+                      />
                     )}
                   </div>
 
-                  {/* Text area */}
-                  <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
-                    <div className="h-10 w-10 rounded-xl gradient-drip flex items-center justify-center mb-3">
-                      {(() => { const Icon = SLIDES[slideIdx].icon; return <Icon className="h-5 w-5 text-primary-foreground" />; })()}
+                  {/* Text — compact */}
+                  <div className="shrink-0 flex flex-col items-center px-8 pt-3 pb-1 text-center">
+                    <div className="h-9 w-9 rounded-xl gradient-drip flex items-center justify-center mb-2">
+                      {(() => { const Icon = SLIDES[slideIdx].icon; return <Icon className="h-4 w-4 text-primary-foreground" />; })()}
                     </div>
-                    <h2 className="font-display text-[22px] font-bold text-foreground leading-tight">
+                    <h2 className="font-display text-[20px] font-bold text-foreground leading-tight">
                       {SLIDES[slideIdx].title}
                     </h2>
-                    {SLIDES[slideIdx].highlight && (
-                      <p className="font-display text-lg font-bold gradient-drip-text leading-tight">
-                        {SLIDES[slideIdx].highlight}
-                      </p>
-                    )}
-                    <p className="text-[14px] text-muted-foreground mt-2 leading-relaxed max-w-[300px]">
+                    <p className="text-[13px] text-muted-foreground mt-1.5 leading-snug max-w-[300px]">
                       {SLIDES[slideIdx].desc}
                     </p>
                   </div>
@@ -223,8 +216,8 @@ const Onboarding = () => {
               </AnimatePresence>
             </div>
 
-            {/* Dots + CTA */}
-            <div className="flex flex-col items-center gap-4 px-6 pb-8">
+            {/* Dots + CTA — always visible */}
+            <div className="shrink-0 flex flex-col items-center gap-3 px-6 pb-6 pt-2">
               <div className="flex gap-2">
                 {SLIDES.map((_, i) => (
                   <div
