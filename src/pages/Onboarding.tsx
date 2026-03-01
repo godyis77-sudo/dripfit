@@ -51,10 +51,13 @@ const HABITS: { value: ShoppingHabit; icon: typeof ShoppingBag; label: string; d
 ];
 
 const slideVariants = {
-  enter: (dir: number) => ({ x: dir > 0 ? 80 : -80, opacity: 0 }),
+  enter: (dir: number) => ({ x: dir > 0 ? 60 : -60, opacity: 0 }),
   center: { x: 0, opacity: 1 },
-  exit: (dir: number) => ({ x: dir > 0 ? -80 : 80, opacity: 0 }),
+  exit: (dir: number) => ({ x: dir > 0 ? -60 : 60, opacity: 0 }),
 };
+
+const smoothTransition = { duration: 0.5, ease: [0.4, 0, 0.2, 1] as const };
+const screenTransition = { duration: 0.6, ease: [0.4, 0, 0.2, 1] as const };
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -108,14 +111,14 @@ const Onboarding = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
+            transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
             onClick={tapSplash}
             className="flex flex-col items-center justify-center w-full h-screen bg-background cursor-pointer select-none"
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+              transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
               className="h-20 w-20 rounded-2xl gradient-drip glow-primary flex items-center justify-center mb-5"
             >
               <Crown className="h-10 w-10 text-primary-foreground" />
@@ -123,7 +126,7 @@ const Onboarding = () => {
             <motion.h1
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.3 }}
+              transition={{ delay: 0.3, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
               className="font-display text-2xl font-bold tracking-[0.2em] text-foreground"
             >
               DRIPFITCHECK
@@ -131,7 +134,7 @@ const Onboarding = () => {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.5 }}
-              transition={{ delay: 0.6, duration: 0.3 }}
+              transition={{ delay: 0.6, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
               className="text-sm text-muted-foreground mt-2"
             >
               The smarter way to shop fashion.
@@ -167,7 +170,7 @@ const Onboarding = () => {
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  transition={{ duration: 0.3 }}
+                  transition={smoothTransition}
                   drag="x"
                   dragConstraints={{ left: 0, right: 0 }}
                   dragElastic={0.2}
@@ -245,9 +248,10 @@ const Onboarding = () => {
         {screen === 'auth' && (
           <motion.div
             key="auth"
-            initial={{ opacity: 0, x: 40 }}
+            initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -40 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={screenTransition}
             className="w-full h-screen flex flex-col items-center justify-center px-6"
           >
             <AuthInline onComplete={onAuthDone} />
@@ -264,9 +268,10 @@ const Onboarding = () => {
         {screen === 'personalize' && (
           <motion.div
             key="personalize"
-            initial={{ opacity: 0, x: 40 }}
+            initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -40 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={screenTransition}
             className="w-full h-screen flex flex-col px-6 pt-16 pb-8"
           >
             <p className="text-[10px] text-primary font-bold uppercase tracking-wider mb-1">Almost there</p>
@@ -311,9 +316,10 @@ const Onboarding = () => {
         {screen === 'scan-prompt' && (
           <motion.div
             key="scan-prompt"
-            initial={{ opacity: 0, x: 40 }}
+            initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -40 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={screenTransition}
             className="w-full h-screen flex flex-col items-center justify-center px-6"
           >
             <div className="max-w-[320px] w-full flex flex-col items-center">
