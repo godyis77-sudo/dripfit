@@ -158,7 +158,7 @@ const Onboarding = () => {
             </div>
 
             {/* Slide content — illustration takes top 55% */}
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col overflow-y-auto">
               <AnimatePresence mode="wait" custom={slideDir}>
                 <motion.div
                   key={slideIdx}
@@ -182,23 +182,23 @@ const Onboarding = () => {
                   }}
                   className="flex-1 flex flex-col cursor-grab active:cursor-grabbing"
                 >
-                  {/* Illustration area — 55% */}
-                  <div className="flex-[70] flex items-center justify-center bg-card/30 mx-4 rounded-3xl overflow-hidden">
+                  {/* Illustration area */}
+                  <div className="flex-shrink-0 flex items-center justify-center mx-4 py-4">
                     {slideIdx === 0 ? (
-                      <div className="border-2 border-primary bg-primary rounded-[2rem] p-4 overflow-hidden">
-                        <DecorativeSilhouette height={416} className="!rounded-[2rem]" />
+                      <div className="border-2 border-primary bg-primary rounded-[2rem] p-3 overflow-hidden">
+                        <DecorativeSilhouette height={320} className="!rounded-[2rem]" />
                       </div>
                     ) : (
                       <img
                         src={SLIDES[slideIdx].image}
                         alt={SLIDES[slideIdx].title}
-                        className="w-[70%] h-[70%] object-cover rounded-2xl"
+                        className="max-h-[45vh] w-auto object-contain rounded-2xl"
                       />
                     )}
                   </div>
 
-                  {/* Text area — 45% */}
-                  <div className="flex-[35] flex flex-col items-center justify-center px-8 text-center">
+                  {/* Text area */}
+                  <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
                     <div className="h-10 w-10 rounded-xl gradient-drip flex items-center justify-center mb-3">
                       {(() => { const Icon = SLIDES[slideIdx].icon; return <Icon className="h-5 w-5 text-primary-foreground" />; })()}
                     </div>
