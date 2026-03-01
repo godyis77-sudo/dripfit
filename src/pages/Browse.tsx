@@ -270,16 +270,22 @@ const Browse = () => {
                 }}
                 className="bg-card border border-border rounded-xl overflow-hidden active:scale-[0.97] transition-transform text-left"
               >
-                <div className="aspect-square bg-muted">
+                <div className="aspect-square bg-muted relative">
                   <img
                     src={product.image_url}
                     alt={product.name}
                     className="w-full h-full object-cover"
                     loading="lazy"
                     onError={(e) => {
-                      (e.currentTarget.parentElement!.parentElement as HTMLElement).style.display = 'none';
+                      const img = e.currentTarget;
+                      img.style.display = 'none';
+                      const fallback = img.parentElement?.querySelector('.fallback-badge');
+                      if (fallback) (fallback as HTMLElement).style.display = 'flex';
                     }}
                   />
+                  <div className="fallback-badge hidden absolute inset-0 items-center justify-center bg-muted">
+                    <span className="text-[10px] text-muted-foreground font-semibold capitalize">{product.brand}</span>
+                  </div>
                 </div>
                 <div className="p-2.5">
                   <p className="text-[10px] text-muted-foreground capitalize">{product.brand}</p>
