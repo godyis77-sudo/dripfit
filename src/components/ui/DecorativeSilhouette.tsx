@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import bodySilhouette from '@/assets/body-silhouette-clean.png';
 
 const MOCK_LINES = [
@@ -23,12 +24,16 @@ interface Props {
   height?: number;
 }
 
-const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => (
-  <div className={`relative overflow-hidden rounded-[4rem] border-[10px] border-black ${className}`} style={{ width: height * (2 / 3), height }}>
+const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => {
+  const [loaded, setLoaded] = useState(false);
+
+  return (
+  <div className={`relative overflow-hidden rounded-[4rem] border-[10px] border-black ${className}`} style={{ width: height * (2 / 3), height, opacity: loaded ? 1 : 0, transition: 'opacity 0.3s ease' }}>
     <img
       src={bodySilhouette}
       alt="Body measurement silhouette"
       className="w-full h-full object-contain rounded-3xl"
+      onLoad={() => setLoaded(true)}
     />
 
     {/* SVG measurement lines + dots */}
@@ -90,6 +95,7 @@ const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => (
       <p className="text-[5px] leading-none mt-px" style={{ color: 'hsl(0 0% 35%)' }}>175 cm</p>
     </div>
   </div>
-);
+  );
+};
 
 export default DecorativeSilhouette;
