@@ -252,6 +252,13 @@ const CATEGORY_MAP: Record<string, Record<string, string[]>> = {
   },
 };
 
+// Brands that block direct scraping — use search fallback
+const ANTI_SCRAPE_BRANDS = new Set([
+  'burberry', 'patagonia', 'supreme', 'palace', 'louis vuitton',
+  'prada', 'dior', 'balenciaga', 'saint laurent', 'off-white',
+  'essentials', 'cartier', 'tiffany & co', 'pandora', 'new era',
+]);
+
 // (Stage 3 prompts removed — now uses deterministic URL scoring)
 // ─────────────────────────────────────────────────────────────────────────────
 // STAGES 1+2 — Firecrawl scrapes + extracts structured product data
@@ -262,11 +269,23 @@ async function scrapeProducts(
   category: string,
   firecrawlApiKey: string
 ): Promise<RawProduct[]> {
+  // Try search fallback first for known anti-scrape brands
+  if (ANTI_SCRAPE_BRANDS.has(brand.toLowerCase())) {
+    console.log(`[scrape] ${brand} is anti-scrape, using search fallback`);
+    return searchProducts(brand, category, firecrawlApiKey);
+  }
+
   const brandUrls = CATEGORY_MAP[brand.toLowerCase()];
-  if (!brandUrls) throw new Error(`No retailer config for brand: ${brand}. Available: ${Object.keys(CATEGORY_MAP).join(', ')}`);
+  if (!brandUrls) {
+    console.log(`[scrape] No URL config for ${brand}, using search fallback`);
+    return searchProducts(brand, category, firecrawlApiKey);
+  }
 
   const urls = brandUrls[category.toLowerCase()];
-  if (!urls?.length) throw new Error(`No URLs for ${brand}/${category}. Available categories: ${Object.keys(brandUrls).join(', ')}`);
+  if (!urls?.length) {
+    console.log(`[scrape] No URLs for ${brand}/${category}, using search fallback`);
+    return searchProducts(brand, category, firecrawlApiKey);
+  }
 
   const allProducts: RawProduct[] = [];
 
@@ -372,7 +391,131 @@ async function scrapeProducts(
     await delay(1000);
   }
 
+  // If direct scrape returned nothing, fall back to search
+  if (!allProducts.length) {
+    console.log(`[scrape] Direct scrape returned 0 for ${brand}/${category}, trying search fallback`);
+    return searchProducts(brand, category, firecrawlApiKey);
+  }
+
   return allProducts;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SEARCH FALLBACK — Uses Firecrawl search to find products on multi-brand retailers
+// ─────────────────────────────────────────────────────────────────────────────
+
+const CATEGORY_TERMS: Record<string, string> = {
+  tops: 't-shirt shirt top hoodie sweatshirt',
+  bottoms: 'pants jeans trousers shorts joggers',
+  outerwear: 'jacket coat blazer puffer vest',
+  dresses: 'dress gown jumpsuit',
+  shoes: 'shoes sneakers boots',
+  accessories: 'bag belt hat sunglasses wallet',
+};
+
+async function searchProducts(
+  brand: string,
+  category: string,
+  firecrawlApiKey: string
+): Promise<RawProduct[]> {
+  const catTerms = CATEGORY_TERMS[category.toLowerCase()] || category;
+  const searchQuery = `${brand} ${catTerms} site:ssense.com OR site:farfetch.com OR site:nordstrom.com OR site:net-a-porter.com OR site:mrporter.com`;
+
+  console.log(`[search-fallback] Query: "${searchQuery}"`);
+
+  try {
+    const resp = await fetch('https://api.firecrawl.dev/v1/search', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${firecrawlApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: searchQuery,
+        limit: 20,
+        lang: 'en',
+        country: 'us',
+        scrapeOptions: {
+          formats: ['markdown', 'links'],
+          onlyMainContent: true,
+        },
+      }),
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok) {
+      console.warn(`[search-fallback] Firecrawl search error: ${JSON.stringify(data).slice(0, 300)}`);
+      return [];
+    }
+
+    const results = data.data || [];
+    console.log(`[search-fallback] Got ${results.length} search results`);
+
+    const allProducts: RawProduct[] = [];
+
+    for (const result of results) {
+      if (!result.url) continue;
+
+      // Skip non-product pages
+      const url = result.url.toLowerCase();
+      if (/\/search|\/category|\/collection|\/shop\/?$/i.test(url)) continue;
+
+      // Extract product info from the search result
+      const title = result.title || '';
+      const markdown = result.markdown || '';
+
+      // Try to extract price from markdown
+      const priceMatch = markdown.match(/\$\s*([\d,]+(?:\.\d{2})?)/);
+      const priceCents = priceMatch ? Math.round(parseFloat(priceMatch[1].replace(',', '')) * 100) : null;
+
+      // Extract image URLs from markdown
+      const imgRegex = /!\[.*?\]\((https?:\/\/[^\s)]+)\)/g;
+      const imageUrls: string[] = [];
+      let imgMatch;
+      while ((imgMatch = imgRegex.exec(markdown)) !== null) {
+        const imgUrl = imgMatch[1];
+        if (!/logo|icon|sprite|favicon|banner|pixel|tracking/i.test(imgUrl)) {
+          imageUrls.push(imgUrl);
+        }
+      }
+
+      // Also check result metadata for og:image
+      if (result.metadata?.ogImage) {
+        imageUrls.unshift(result.metadata.ogImage);
+      }
+
+      // Clean the product name from the title
+      let productName = title
+        .replace(/\s*[-|]\s*(SSENSE|Farfetch|Nordstrom|NET-A-PORTER|MR PORTER).*$/i, '')
+        .replace(/\s*Buy\s.*$/i, '')
+        .trim();
+
+      if (!productName || productName.length < 3) continue;
+
+      // Make sure the brand is actually in the product
+      if (!productName.toLowerCase().includes(brand.toLowerCase()) && !title.toLowerCase().includes(brand.toLowerCase())) {
+        continue;
+      }
+
+      allProducts.push({
+        name: productName,
+        brand,
+        product_url: result.url,
+        price_cents: priceCents,
+        currency: 'USD',
+        image_urls: imageUrls.slice(0, 8),
+        category_raw: category,
+        colour: null,
+      });
+    }
+
+    console.log(`[search-fallback] Extracted ${allProducts.length} products for ${brand}/${category}`);
+    return allProducts;
+  } catch (err) {
+    console.warn(`[search-fallback] Error:`, err);
+    return [];
+  }
 }
 
 // Extract all image URLs from raw HTML
