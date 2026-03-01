@@ -22,7 +22,7 @@ interface MeasurementLine {
 }
 
 const measurementLines: MeasurementLine[] = [
-  { key: 'shoulder', label: 'Shoulder', labelSide: 'right', x1: '36%', y1: '24.5%', x2: '64%', y2: '24.5%', labelTop: '23%', labelEdgeX: 76, leaderX: 64, leaderY: 24.5 },
+  { key: 'shoulder', label: 'Shoulder', labelSide: 'right', x1: '36%', y1: '22.5%', x2: '64%', y2: '22.5%', labelTop: '21%', labelEdgeX: 76, leaderX: 64, leaderY: 22.5 },
   { key: 'chest', label: 'Chest', labelSide: 'left', x1: '40%', y1: '27%', x2: '60%', y2: '27%', labelTop: '25%', labelEdgeX: 16, leaderX: 40, leaderY: 27 },
   { key: 'bust', label: 'Bust', labelSide: 'right', x1: '40%', y1: '32%', x2: '60%', y2: '32%', labelTop: '30%', labelEdgeX: 88, leaderX: 60, leaderY: 31.5 },
   { key: 'waist', label: 'Waist', labelSide: 'right', x1: '42%', y1: '42.5%', x2: '58%', y2: '42.5%', labelTop: '41%', labelEdgeX: 85, leaderX: 58, leaderY: 42.5 },
