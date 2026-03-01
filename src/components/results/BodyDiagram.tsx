@@ -1,5 +1,5 @@
 import type { MeasurementRange } from '@/lib/types';
-import bodySilhouette from '@/assets/body-silhouette-scan.jpg';
+import bodySilhouette from '@/assets/body-silhouette-clean.png';
 
 const CM_TO_IN = 0.3937;
 const fmt = (r: MeasurementRange) => `${r.min.toFixed(0)}–${r.max.toFixed(0)} cm`;
@@ -32,6 +32,10 @@ const measurementLines: MeasurementLine[] = [
 ];
 
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
+  // Clear old AI-generated cache so it doesn't interfere
+  if (typeof localStorage !== 'undefined') {
+    localStorage.removeItem('dripcheck_body_silhouette_v2');
+  }
   const m = measurements;
 
   return (
