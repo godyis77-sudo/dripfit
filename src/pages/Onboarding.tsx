@@ -70,7 +70,7 @@ const Onboarding = () => {
   // Auto-advance splash after 1.5s
   useEffect(() => {
     if (screen !== 'splash') return;
-    const t = setTimeout(() => { trackEvent('onboarding_splash_done'); setScreen('carousel'); }, 1500);
+    const t = setTimeout(() => { trackEvent('onboarding_splash_done'); setScreen('carousel'); }, 3500);
     return () => clearTimeout(t);
   }, [screen]);
 
@@ -135,7 +135,7 @@ const Onboarding = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.5 }}
               transition={{ delay: 0.6, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-              className="text-sm text-muted-foreground mt-2"
+              className="text-sm text-foreground mt-2"
             >
               The smarter way to shop fashion.
             </motion.p>
