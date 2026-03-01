@@ -185,17 +185,17 @@ const Onboarding = () => {
                   }}
                   className="flex-1 flex flex-col min-h-0 cursor-grab active:cursor-grabbing"
                 >
-                  {/* Image — fills available space consistently */}
+                  {/* Image — capped at 48% of viewport */}
                   <div className="flex-1 flex items-center justify-center mx-4 min-h-0">
                     {slideIdx === 0 ? (
-                      <div className="border-2 border-primary bg-primary rounded-[2rem] p-2 overflow-hidden max-h-full flex items-center justify-center" style={{ height: '100%', maxHeight: '100%' }}>
-                        <DecorativeSilhouette height={420} className="!rounded-[2rem] max-h-full" />
+                      <div className="border-2 border-primary bg-primary rounded-[2rem] p-2 overflow-hidden max-h-full">
+                        <DecorativeSilhouette height={280} className="!rounded-[2rem]" />
                       </div>
                     ) : (
                       <img
                         src={SLIDES[slideIdx].image}
                         alt={SLIDES[slideIdx].title}
-                        className="max-h-full max-w-full object-cover rounded-2xl"
+                        className="max-h-full max-w-[85%] object-contain rounded-2xl"
                       />
                     )}
                   </div>
