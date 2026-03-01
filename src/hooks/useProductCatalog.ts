@@ -31,7 +31,7 @@ const CATEGORY_MAP: Record<string, string[]> = {
   jewelry: ['jewelry'],
   sunglasses: ['sunglasses'],
   accessories: ['accessories', 'bags', 'hats', 'jewelry', 'sunglasses'],
-  full: ['tops', 'top', 'dresses', 'dress', 'outerwear', 'other'],
+  full: ['tops', 'top', 'dresses', 'dress', 'outerwear'],
 };
 
 // Shuffle array with a simple seed-based PRNG for deterministic but varied results
@@ -56,8 +56,10 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
       .from('product_catalog')
       .select('*')
       .eq('is_active', true)
-      .order('created_at', { ascending: false })
-      .limit(80);
+      .not('image_url', 'is', null)
+      .gte('image_confidence', 0.3)
+      .order('image_confidence', { ascending: false })
+      .limit(120);
 
     if (category) {
       const mapped = CATEGORY_MAP[category];
@@ -71,8 +73,13 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
 
     const { data } = await query;
     if (data) {
+      // Filter out headshot-only model shots and broken URLs
+      const cleaned = (data as unknown as CatalogProduct[]).filter(p => {
+        if (!p.image_url || p.image_url.trim() === '') return false;
+        return true;
+      });
       const shuffleSeed = seed ?? Math.floor(Math.random() * 100000);
-      setProducts(seededShuffle(data as unknown as CatalogProduct[], shuffleSeed));
+      setProducts(seededShuffle(cleaned, shuffleSeed));
     }
     setLoading(false);
   }, [category, brand, seed]);

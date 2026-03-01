@@ -69,6 +69,9 @@ const CategoryProductGrid = ({
                 alt={product.name}
                 className="w-full h-full object-cover"
                 loading="lazy"
+                onError={(e) => {
+                  (e.currentTarget.parentElement!.parentElement as HTMLElement).style.display = 'none';
+                }}
               />
             </div>
             <div className="p-1">
