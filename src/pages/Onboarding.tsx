@@ -185,7 +185,9 @@ const Onboarding = () => {
                   {/* Illustration area — 55% */}
                   <div className="flex-[70] flex items-center justify-center bg-card/30 mx-4 rounded-3xl overflow-hidden">
                     {slideIdx === 0 ? (
-                      <DecorativeSilhouette height={360} />
+                      <div className="border-2 border-primary rounded-2xl p-4">
+                        <DecorativeSilhouette height={320} />
+                      </div>
                     ) : (
                       <img
                         src={SLIDES[slideIdx].image}
