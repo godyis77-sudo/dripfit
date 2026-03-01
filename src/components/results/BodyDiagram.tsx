@@ -22,13 +22,13 @@ interface MeasurementLine {
 }
 
 const measurementLines: MeasurementLine[] = [
-  { key: 'shoulder', label: 'Shoulder', labelSide: 'right', x1: '37.7%', y1: '18%', x2: '62.3%', y2: '18%', labelTop: '16.7%', labelEdgeX: 76, leaderX: 62.3, leaderY: 18 },
-  { key: 'chest', label: 'Chest', labelSide: 'left', x1: '41.2%', y1: '23.7%', x2: '58.8%', y2: '23.7%', labelTop: '21.9%', labelEdgeX: 16, leaderX: 41.2, leaderY: 23.7 },
-  { key: 'bust', label: 'Bust', labelSide: 'right', x1: '41.2%', y1: '25.4%', x2: '58.8%', y2: '25.4%', labelTop: '24.1%', labelEdgeX: 88, leaderX: 58.8, leaderY: 25.4 },
-  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '43%', y1: '37.3%', x2: '57%', y2: '37.3%', labelTop: '36%', labelEdgeX: 85, leaderX: 57, leaderY: 37.3 },
-  { key: 'hips', label: 'Hips', labelSide: 'right', x1: '40.4%', y1: '45.2%', x2: '59.6%', y2: '45.2%', labelTop: '43.9%', labelEdgeX: 88, leaderX: 59.6, leaderY: 45.2 },
-  { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '36.8%', y1: '21.9%', x2: '34.2%', y2: '43.9%', labelTop: '31.6%', labelEdgeX: 22, leaderX: 34.2, leaderY: 32.9 },
-  { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '47.4%', y1: '48.2%', x2: '44.7%', y2: '80.7%', labelTop: '60.5%', labelEdgeX: 18, leaderX: 45.6, leaderY: 61.8 },
+  { key: 'shoulder', label: 'Shoulder', labelSide: 'right', x1: '37.7%', y1: '20.2%', x2: '62.3%', y2: '20.2%', labelTop: '18.9%', labelEdgeX: 76, leaderX: 62.3, leaderY: 20.2 },
+  { key: 'chest', label: 'Chest', labelSide: 'left', x1: '41.2%', y1: '25.9%', x2: '58.8%', y2: '25.9%', labelTop: '24.1%', labelEdgeX: 16, leaderX: 41.2, leaderY: 25.9 },
+  { key: 'bust', label: 'Bust', labelSide: 'right', x1: '41.2%', y1: '27.6%', x2: '58.8%', y2: '27.6%', labelTop: '26.3%', labelEdgeX: 88, leaderX: 58.8, leaderY: 27.6 },
+  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '43%', y1: '39.5%', x2: '57%', y2: '39.5%', labelTop: '38.2%', labelEdgeX: 85, leaderX: 57, leaderY: 39.5 },
+  { key: 'hips', label: 'Hips', labelSide: 'right', x1: '40.4%', y1: '47.4%', x2: '59.6%', y2: '47.4%', labelTop: '46.1%', labelEdgeX: 88, leaderX: 59.6, leaderY: 47.4 },
+  { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '36.8%', y1: '24.1%', x2: '34.2%', y2: '46.1%', labelTop: '33.8%', labelEdgeX: 22, leaderX: 34.2, leaderY: 35.1 },
+  { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '47.4%', y1: '50.4%', x2: '44.7%', y2: '82.9%', labelTop: '62.7%', labelEdgeX: 18, leaderX: 45.6, leaderY: 64 },
 ];
 
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
@@ -51,7 +51,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             src={bodySilhouette}
             alt="Body silhouette for measurements"
             className="w-full h-full mx-auto block rounded-lg"
-            style={{ objectFit: 'contain', objectPosition: 'center top' }}
+            style={{ objectFit: 'cover', objectPosition: 'center top' }}
           />
 
           {/* Height indicator */}
