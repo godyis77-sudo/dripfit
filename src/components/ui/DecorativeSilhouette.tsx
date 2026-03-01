@@ -22,7 +22,7 @@ interface Props {
 }
 
 const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => (
-  <div className={`relative ${className}`} style={{ width: height * 0.85, height }}>
+  <div className={`relative ${className}`} style={{ width: height * (2 / 3), height }}>
     <img
       src={bodySilhouette}
       alt="Body measurement silhouette"
