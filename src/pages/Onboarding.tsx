@@ -12,7 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
 import { useToast } from '@/hooks/use-toast';
 
-import heroScanResults from '@/assets/hero-scan-results.png';
+import heroScan from '@/assets/body-silhouette-clean.png';
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
 import heroTryon from '@/assets/hero-tryon-mirror.jpg';
 import heroCommunity from '@/assets/hero-community-feedback.jpg';
@@ -25,7 +25,7 @@ const SLIDES = [
     title: 'Know your exact size in every brand',
     highlight: '',
     desc: 'Stop guessing. Two photos and 60 seconds gives you precise measurements across SHEIN, Zara, H&M, Lululemon, and 10+ more.',
-    image: heroScanResults,
+    image: heroScan,
   },
   {
     icon: Sparkles,
@@ -187,11 +187,17 @@ const Onboarding = () => {
                 >
                   {/* Image — capped at 48% of viewport */}
                   <div className="flex-1 flex items-center justify-center mx-4 min-h-0">
-                    <img
-                      src={SLIDES[slideIdx].image}
-                      alt={SLIDES[slideIdx].title}
-                      className={`max-h-full object-contain rounded-2xl ${slideIdx === 0 ? 'max-w-[70%]' : 'max-w-[85%]'}`}
-                    />
+                    {slideIdx === 0 ? (
+                      <div className="border-2 border-primary bg-primary rounded-[2rem] p-2 overflow-hidden max-h-full">
+                        <DecorativeSilhouette height={280} className="!rounded-[2rem]" />
+                      </div>
+                    ) : (
+                      <img
+                        src={SLIDES[slideIdx].image}
+                        alt={SLIDES[slideIdx].title}
+                        className="max-h-full max-w-[85%] object-contain rounded-2xl"
+                      />
+                    )}
                   </div>
 
                   {/* Text — compact */}
