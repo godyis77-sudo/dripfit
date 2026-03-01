@@ -185,8 +185,9 @@ const Onboarding = () => {
                   {/* Illustration area — 55% */}
                   <div className="flex-[70] flex items-center justify-center bg-card/30 mx-4 rounded-3xl overflow-hidden">
                     {slideIdx === 0 ? (
-                      <div className="border-2 border-primary bg-primary/80 rounded-[2rem] p-4 overflow-hidden">
-                        <DecorativeSilhouette height={320} className="!rounded-[2rem]" />
+                      <div className="border-2 border-primary bg-primary/80 rounded-[2rem] p-4 overflow-hidden relative">
+                        <p className="text-center font-display text-[22px] font-bold uppercase tracking-wider mb-2" style={{ color: 'hsl(45 60% 35%)' }}>Scan Results</p>
+                        <DecorativeSilhouette height={290} className="!rounded-[2rem]" />
                       </div>
                     ) : (
                       <img
