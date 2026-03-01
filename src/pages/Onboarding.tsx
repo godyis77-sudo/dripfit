@@ -188,7 +188,7 @@ const Onboarding = () => {
                   {/* Image — capped at 48% of viewport */}
                   <div className="flex-1 flex items-center justify-center mx-4 min-h-0">
                     {slideIdx === 0 ? (
-                      <div className="border-2 border-primary bg-background rounded-[2rem] p-2 overflow-hidden max-h-full">
+                      <div className="border-2 border-primary bg-primary rounded-[2rem] p-2 overflow-hidden max-h-full">
                         <DecorativeSilhouette height={280} className="!rounded-[2rem]" />
                       </div>
                     ) : (
