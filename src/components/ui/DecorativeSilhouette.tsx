@@ -24,11 +24,11 @@ interface Props {
 }
 
 const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => (
-  <div className={`relative ${className}`} style={{ width: height * (2 / 3), height }}>
+  <div className={`relative overflow-hidden rounded-3xl ${className}`} style={{ width: height * (2 / 3), height }}>
     <img
       src={bodySilhouette}
       alt="Body measurement silhouette"
-      className="w-full h-full object-contain rounded-xl"
+      className="w-full h-full object-contain rounded-3xl"
     />
 
     {/* SVG measurement lines + dots */}
