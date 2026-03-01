@@ -242,8 +242,8 @@ const Results = () => {
           </TabsList>
 
           <TabsContent value="body" className="mt-3 space-y-3">
-            <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
             <BodyDiagram measurements={measurements} heightCm={result.heightCm} />
+            <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
           </TabsContent>
 
           <TabsContent value="more" className="mt-3 space-y-3">
