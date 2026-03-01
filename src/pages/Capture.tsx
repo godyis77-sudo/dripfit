@@ -41,7 +41,7 @@ function clearScanState() {
   try { sessionStorage.removeItem(SCAN_STATE_KEY); } catch {}
 }
 
-import bodySilhouetteScan from '@/assets/body-silhouette-scan.jpg';
+import bodySilhouetteScan from '@/assets/body-silhouette-clean.png';
 
 /* Animated silhouette for intro */
 const AnimatedSilhouette = () => (

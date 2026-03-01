@@ -12,7 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
 import { useToast } from '@/hooks/use-toast';
 
-import heroScan from '@/assets/hero-measurements.png';
+import heroScan from '@/assets/body-silhouette-clean.png';
 import heroTryon from '@/assets/hero-preview.png';
 import heroCommunity from '@/assets/icon-community.png';
 
