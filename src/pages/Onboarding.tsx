@@ -13,6 +13,7 @@ import { lovable } from '@/integrations/lovable/index';
 import { useToast } from '@/hooks/use-toast';
 
 import heroScan from '@/assets/body-silhouette-clean.png';
+import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
 import heroTryon from '@/assets/hero-preview.png';
 import heroCommunity from '@/assets/icon-community.png';
 
@@ -182,12 +183,16 @@ const Onboarding = () => {
                   className="flex-1 flex flex-col cursor-grab active:cursor-grabbing"
                 >
                   {/* Illustration area — 55% */}
-                  <div className="flex-[55] flex items-center justify-center bg-card/30 mx-4 rounded-3xl overflow-hidden">
-                    <img
-                      src={SLIDES[slideIdx].image}
-                      alt={SLIDES[slideIdx].title}
-                      className="h-48 w-48 object-contain"
-                    />
+                  <div className="flex-[55] flex items-center justify-center bg-card/30 mx-4 rounded-3xl overflow-hidden py-4">
+                    {slideIdx === 0 ? (
+                      <DecorativeSilhouette height={220} />
+                    ) : (
+                      <img
+                        src={SLIDES[slideIdx].image}
+                        alt={SLIDES[slideIdx].title}
+                        className="h-48 w-48 object-contain"
+                      />
+                    )}
                   </div>
 
                   {/* Text area — 45% */}
@@ -311,8 +316,8 @@ const Onboarding = () => {
           >
             <div className="max-w-[320px] w-full flex flex-col items-center">
               {/* Illustration */}
-              <div className="h-32 w-32 rounded-3xl bg-card border border-border flex items-center justify-center mb-5 overflow-hidden">
-                <img src={heroScan} alt="Body scan" className="h-24 w-24 object-contain" />
+              <div className="h-40 w-40 rounded-3xl bg-card border border-border flex items-center justify-center mb-5 overflow-hidden">
+                <DecorativeSilhouette height={150} />
               </div>
 
               <h2 className="font-display text-xl font-bold text-foreground mb-1 text-center">Let's get your measurements</h2>

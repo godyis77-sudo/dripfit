@@ -42,6 +42,7 @@ function clearScanState() {
 }
 
 import bodySilhouetteScan from '@/assets/body-silhouette-clean.png';
+import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
 
 /* Animated silhouette for intro */
 const AnimatedSilhouette = () => (
@@ -51,7 +52,7 @@ const AnimatedSilhouette = () => (
     transition={{ duration: 0.6, ease: 'easeOut' }}
     className="flex items-center justify-center"
   >
-    <img src={bodySilhouetteScan} alt="Body measurement silhouette" className="h-[200px] w-auto rounded-xl object-contain" />
+    <DecorativeSilhouette height={240} />
   </motion.div>
 );
 
