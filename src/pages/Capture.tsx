@@ -41,8 +41,7 @@ function clearScanState() {
   try { sessionStorage.removeItem(SCAN_STATE_KEY); } catch {}
 }
 
-import bodySilhouetteScan from '@/assets/body-silhouette-clean.png';
-import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
+import scanResultsPreview from '@/assets/scan-results-preview.png';
 
 /* Animated silhouette for intro */
 const AnimatedSilhouette = () => (
@@ -52,7 +51,11 @@ const AnimatedSilhouette = () => (
     transition={{ duration: 0.6, ease: 'easeOut' }}
     className="flex items-center justify-center"
   >
-    <DecorativeSilhouette height={300} />
+    <img
+      src={scanResultsPreview}
+      alt="Scan results preview"
+      className="h-[300px] w-auto object-contain rounded-2xl"
+    />
   </motion.div>
 );
 
