@@ -32,7 +32,7 @@ const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => {
     <img
       src={bodySilhouette}
       alt="Body measurement silhouette"
-      className="w-full h-full object-contain rounded-3xl"
+      className="w-full h-full object-contain"
       onLoad={() => setLoaded(true)}
     />
 
