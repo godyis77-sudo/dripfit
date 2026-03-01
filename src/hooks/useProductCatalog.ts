@@ -17,21 +17,21 @@ export interface CatalogProduct {
 
 // Map app-facing category keys to actual DB category values
 const CATEGORY_MAP: Record<string, string[]> = {
+  tops: ['tops', 'top'],
   top: ['tops', 'top'],
   bottom: ['bottoms', 'bottom'],
+  bottoms: ['bottoms', 'bottom'],
   dress: ['dresses', 'dress'],
+  dresses: ['dresses', 'dress'],
   outerwear: ['outerwear'],
   shoes: ['footwear', 'shoes'],
-  bags: ['bags', 'accessories'],
-  hats: ['hats', 'accessories'],
-  jewelry: ['jewelry', 'accessories'],
-  sunglasses: ['sunglasses', 'accessories'],
-  necklace: ['jewelry', 'accessories'],
-  earrings: ['jewelry', 'accessories'],
-  bracelet: ['jewelry', 'accessories'],
-  watch: ['jewelry', 'accessories'],
-  full: ['tops', 'dresses', 'outerwear', 'other'],
-  accessories: ['accessories', 'footwear', 'bags', 'hats', 'jewelry', 'sunglasses'],
+  footwear: ['footwear', 'shoes'],
+  bags: ['bags'],
+  hats: ['hats'],
+  jewelry: ['jewelry'],
+  sunglasses: ['sunglasses'],
+  accessories: ['accessories', 'bags', 'hats', 'jewelry', 'sunglasses'],
+  full: ['tops', 'top', 'dresses', 'dress', 'outerwear', 'other'],
 };
 
 // Shuffle array with a simple seed-based PRNG for deterministic but varied results
