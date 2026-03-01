@@ -14,8 +14,8 @@ import { useToast } from '@/hooks/use-toast';
 
 import heroScan from '@/assets/body-silhouette-clean.png';
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
-import heroTryon from '@/assets/hero-preview.png';
-import heroCommunity from '@/assets/icon-community.png';
+import heroTryon from '@/assets/hero-tryon-mirror.jpg';
+import heroCommunity from '@/assets/hero-community-feedback.jpg';
 
 type Screen = 'splash' | 'carousel' | 'auth' | 'personalize' | 'scan-prompt';
 
