@@ -38,7 +38,7 @@ const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => (
         const leaderY = key === 'inseam' ? (y1 + y2) / 2 : y1;
         return (
           <g key={key}>
-            <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="hsl(42 45% 50%)" strokeWidth="0.5" strokeDasharray="1.2 0.8" strokeLinecap="round" />
+            <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="hsl(42 60% 40%)" strokeWidth="0.7" strokeDasharray="1.2 0.8" strokeLinecap="round" opacity="1" />
             <circle cx={x1} cy={y1} r="0.9" fill="hsl(0 0% 15%)" />
             <circle cx={x2} cy={y2} r="0.9" fill="hsl(0 0% 15%)" />
             <line
@@ -46,8 +46,9 @@ const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => (
               y1={leaderY}
               x2={leaderFromX}
               y2={leaderY}
-              stroke="hsl(42 45% 55%)"
-              strokeWidth="0.25"
+              stroke="hsl(42 60% 35%)"
+              strokeWidth="0.4"
+              opacity="1"
               strokeLinecap="round"
             />
           </g>
