@@ -27,6 +27,7 @@ import SavedItems from "./pages/SavedItems";
 import NotFound from "./pages/NotFound";
 import PublicProfile from "./pages/PublicProfile";
 import Browse from "./pages/Browse";
+import ProfileSettings from "./pages/ProfileSettings";
 
 const queryClient = new QueryClient();
 
@@ -59,8 +60,10 @@ const App = () => (
                 <Route path="/saved" element={<Navigate to="/profile/saved" replace />} />
                 <Route path="/size-guide" element={<SizeGuide />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/profile/settings" element={<ProfileSettings />} />
                 <Route path="/profile/saved" element={<SavedItems />} />
                 <Route path="/profile/history" element={<History />} />
+                <Route path="/profile/body" element={<ProfileBody />} />
                 <Route path="/profile/body" element={<ProfileBody />} />
                 <Route path="/profile/:username" element={<PublicProfile />} />
                 <Route path="/browse/:category" element={<Browse />} />
