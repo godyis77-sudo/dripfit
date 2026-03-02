@@ -10,21 +10,28 @@ interface NetworkErrorProps {
 }
 
 /**
- * Network error with retry option.
+ * Network error — consistent empty state pattern.
  */
-export const NetworkError = ({ onRetry, message = "Something went wrong. Check your connection.", className }: NetworkErrorProps) => (
+export const NetworkError = ({ onRetry, message, className }: NetworkErrorProps) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.95 }}
-    animate={{ opacity: 1, scale: 1 }}
-    className={cn("flex flex-col items-center justify-center py-12 px-6 text-center", className)}
+    initial={{ opacity: 0, y: 12 }}
+    animate={{ opacity: 1, y: 0 }}
+    className={cn("flex flex-col items-center justify-center py-16 px-6 text-center", className)}
   >
-    <div className="h-12 w-12 rounded-xl bg-destructive/10 border border-destructive/20 flex items-center justify-center mb-3">
-      <WifiOff className="h-5 w-5 text-destructive" />
+    <div className="h-12 w-12 rounded-2xl bg-muted border border-border flex items-center justify-center mb-4">
+      <WifiOff className="h-6 w-6 text-primary/50" />
     </div>
-    <p className="text-[13px] text-muted-foreground mb-4 max-w-[240px]">{message}</p>
+    <h2 className="text-[18px] font-bold text-foreground mb-1">Couldn't load</h2>
+    <p className="text-[14px] text-muted-foreground max-w-[260px] mb-5">
+      {message || 'Check your connection and try again.'}
+    </p>
     <motion.div whileTap={{ scale: 0.97 }}>
-      <Button variant="outline" onClick={onRetry} className="h-10 px-5 rounded-lg text-sm font-semibold min-h-[44px]">
-        Try Again
+      <Button
+        variant="outline"
+        onClick={onRetry}
+        className="h-11 px-6 rounded-full text-sm font-bold min-h-[44px]"
+      >
+        Retry
       </Button>
     </motion.div>
   </motion.div>

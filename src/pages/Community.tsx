@@ -565,7 +565,7 @@ const Community = () => {
           retailersLoading ? (
             <div className="space-y-2">
               {[1, 2, 3].map(i => (
-                <div key={i} className="h-14 rounded-xl skeleton-gold" />
+                <div key={i} className="h-14 rounded-xl" style={{ background: 'linear-gradient(110deg, #1A1A1A 30%, #272727 50%, #1A1A1A 70%)', backgroundSize: '200% 100%', animation: 'skeleton-shimmer 1.4s ease-in-out infinite' }} />
               ))}
             </div>
           ) : retailers.length === 0 ? (
@@ -597,16 +597,14 @@ const Community = () => {
           )
         ) : loading ? (
           <div className="space-y-3">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="bg-card border border-border rounded-xl overflow-hidden">
-                <div className="w-full aspect-[4/5] skeleton-gold" />
+            {[1, 2].map(i => (
+              <div key={i} className="rounded-xl border border-border overflow-hidden">
+                <div className="w-full aspect-[4/5]" style={{ background: 'linear-gradient(110deg, #1A1A1A 30%, #272727 50%, #1A1A1A 70%)', backgroundSize: '200% 100%', animation: 'skeleton-shimmer 1.4s ease-in-out infinite' }} />
                 <div className="p-3 space-y-2">
-                  <div className="h-3 w-2/3 rounded skeleton-gold" />
-                  <div className="h-3 w-1/2 rounded skeleton-gold" />
-                  <div className="flex gap-1.5 mt-2">
-                    <div className="h-8 flex-1 rounded-lg skeleton-gold" />
-                    <div className="h-8 flex-1 rounded-lg skeleton-gold" />
-                    <div className="h-8 flex-1 rounded-lg skeleton-gold" />
+                  <div className="flex gap-1.5">
+                    {[1,2,3].map(j => (
+                      <div key={j} className="h-8 flex-1 rounded-lg" style={{ background: 'linear-gradient(110deg, #1A1A1A 30%, #272727 50%, #1A1A1A 70%)', backgroundSize: '200% 100%', animation: 'skeleton-shimmer 1.4s ease-in-out infinite' }} />
+                    ))}
                   </div>
                 </div>
               </div>
@@ -682,13 +680,13 @@ const Community = () => {
           if (filter === 'new' && visiblePosts.length === 0) {
             return (
               <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-                  <Sparkles className="h-6 w-6 text-primary" />
+                <div className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
+                  <Users className="h-6 w-6 text-primary/60" />
                 </div>
-                <h2 className="text-[18px] font-bold text-foreground mb-1.5">No new looks today — yet</h2>
-                <p className="text-[14px] text-muted-foreground max-w-[280px] mb-5">New posts appear here as community members share their try-ons. Check back soon or be the first to post.</p>
-                <Button className="w-4/5 h-12 rounded-xl text-sm font-bold btn-luxury text-primary-foreground" onClick={() => { if (!user) { navigate('/auth'); return; } setShowPostFlow(true); }}>
-                  Be the First to Post
+                <h2 className="text-[18px] font-bold text-foreground mb-1.5">Be the first to post a look</h2>
+                <p className="text-[14px] text-muted-foreground max-w-[280px] mb-5">Get honest feedback from people with your body type.</p>
+                <Button className="w-4/5 h-12 rounded-full text-sm font-bold btn-luxury text-primary-foreground" onClick={() => { if (!user) { navigate('/auth'); return; } setShowPostFlow(true); }}>
+                  Post a Look
                 </Button>
               </div>
             );
@@ -845,10 +843,12 @@ const Community = () => {
                     {VOTE_OPTIONS.map(v => {
                       const active = (votes[post.id] || []).includes(v.key);
                       return (
-                        <button
+                        <motion.button
                           key={v.key}
+                          whileTap={{ scale: 1.18 }}
+                          transition={{ duration: 0.2 }}
                           onClick={() => handleVote(post.id, v.key)}
-                          className={`flex-1 py-1.5 rounded-md text-[9px] font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${
+                          className={`flex-1 py-1.5 rounded-md text-[9px] font-bold border transition-all flex flex-col items-center gap-0.5 ${
                             active
                               ? 'border-primary bg-primary/10 text-primary'
                               : 'border-border text-muted-foreground'
@@ -856,7 +856,7 @@ const Community = () => {
                         >
                           {v.emoji}
                           <span className="text-[8px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
-                        </button>
+                        </motion.button>
                       );
                     })}
                   </div>
@@ -887,17 +887,19 @@ const Community = () => {
                       {FIT_OPTIONS.map(f => {
                         const active = (votes[post.id] || []).includes(f.key);
                         return (
-                          <button
+                          <motion.button
                             key={f.key}
+                            whileTap={{ scale: 1.18 }}
+                            transition={{ duration: 0.2 }}
                             onClick={() => handleVote(post.id, f.key)}
-                            className={`flex-1 py-1 rounded-md text-[8px] font-bold border transition-all active:scale-95 ${
+                            className={`flex-1 py-1 rounded-md text-[8px] font-bold border transition-all ${
                               active
                                 ? 'border-primary/60 bg-primary/5 text-primary'
                                 : 'border-border/50 text-muted-foreground/60'
                             }`}
                           >
                             {f.label}
-                          </button>
+                          </motion.button>
                         );
                       })}
                     </div>

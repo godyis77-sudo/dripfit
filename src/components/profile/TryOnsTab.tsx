@@ -129,21 +129,24 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
       {loading ? (
         <div className="grid grid-cols-2 gap-2">
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="rounded-xl border border-border bg-card animate-pulse">
-              <div className="aspect-[3/4] bg-muted rounded-t-xl" />
-              <div className="p-2 space-y-1"><div className="h-2 bg-muted rounded w-2/3" /><div className="h-2 bg-muted rounded w-1/3" /></div>
+            <div key={i} className="rounded-xl border border-border overflow-hidden">
+              <div className="aspect-[3/4]" style={{ background: 'linear-gradient(110deg, #1A1A1A 30%, #272727 50%, #1A1A1A 70%)', backgroundSize: '200% 100%', animation: 'skeleton-shimmer 1.4s ease-in-out infinite' }} />
+              <div className="p-2 space-y-1">
+                <div className="h-2 rounded w-2/3" style={{ background: 'linear-gradient(110deg, #1A1A1A 30%, #272727 50%, #1A1A1A 70%)', backgroundSize: '200% 100%', animation: 'skeleton-shimmer 1.4s ease-in-out infinite' }} />
+                <div className="h-2 rounded w-1/3" style={{ background: 'linear-gradient(110deg, #1A1A1A 30%, #272727 50%, #1A1A1A 70%)', backgroundSize: '200% 100%', animation: 'skeleton-shimmer 1.4s ease-in-out infinite' }} />
+              </div>
             </div>
           ))}
         </div>
       ) : tryOnPosts.length === 0 ? (
-        <div className="text-center py-10">
-          <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
-            <Sparkles className="h-6 w-6 text-primary/50" />
+        <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+          <div className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
+            <Sparkles className="h-6 w-6 text-primary/60" />
           </div>
-          <p className="text-[14px] font-bold text-foreground mb-1">No Try-Ons yet</p>
-          <p className="text-[12px] text-muted-foreground max-w-[200px] mx-auto mb-4">Upload a photo and a clothing item to see how it looks on you.</p>
-          <Button className="rounded-lg btn-luxury text-primary-foreground text-sm h-10 px-5 font-bold" onClick={() => navigate('/tryon')}>
-            <Sparkles className="mr-1.5 h-4 w-4" /> Create Your First Try-On
+          <h2 className="text-[18px] font-bold text-foreground mb-1">No try-ons yet</h2>
+          <p className="text-[14px] text-muted-foreground max-w-[260px] mb-5">See any outfit on your body before you buy.</p>
+          <Button className="rounded-full btn-luxury text-primary-foreground text-sm h-11 px-6 font-bold" onClick={() => navigate('/tryon')}>
+            Start Your First Try-On
           </Button>
         </div>
       ) : (

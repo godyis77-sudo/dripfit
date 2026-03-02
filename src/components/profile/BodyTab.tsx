@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Ruler, Camera, Info } from 'lucide-react';
+import { motion } from 'framer-motion';
+import bodySilhouette from '@/assets/body-silhouette-clean.png';
 import type { BodyScanResult, FitPreference } from '@/lib/types';
 import BodyDiagram from '@/components/results/BodyDiagram';
 import ShareResultsButton from '@/components/results/ShareResultsButton';
@@ -37,16 +39,18 @@ const BodyTab = ({ savedProfile, fit, scanConfidence }: BodyTabProps) => {
 
   if (!savedProfile) {
     return (
-      <div className="text-center py-10">
-        <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
-          <Ruler className="h-6 w-6 text-primary/50" />
-        </div>
-        <p className="text-[14px] font-bold text-foreground mb-1">No body scan yet</p>
-        <p className="text-[12px] text-muted-foreground max-w-[220px] mx-auto mb-4">Complete a quick scan to see your measurements and body diagram here.</p>
-        <Button className="rounded-lg btn-luxury text-primary-foreground text-sm h-10 px-5 font-bold" onClick={() => navigate('/capture')}>
-          <Camera className="mr-1.5 h-4 w-4" /> Start Scan
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col items-center justify-center py-12 px-6 text-center"
+      >
+        <img src={bodySilhouette} alt="" className="h-32 opacity-30 mb-4" />
+        <h2 className="text-[18px] font-bold text-foreground mb-1">No body scan on file</h2>
+        <p className="text-[14px] text-muted-foreground max-w-[280px] mb-5">Get your exact measurements in 60 seconds with 2 photos.</p>
+        <Button className="rounded-full btn-luxury text-primary-foreground text-sm h-11 px-6 font-bold" onClick={() => navigate('/capture')}>
+          Get My Measurements
         </Button>
-      </div>
+      </motion.div>
     );
   }
 
