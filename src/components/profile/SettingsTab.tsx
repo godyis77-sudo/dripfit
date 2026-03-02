@@ -65,7 +65,10 @@ const SettingsTab = ({
     { value: 'ca', label: 'Canada', flag: '🇨🇦' },
     { value: 'gb', label: 'United Kingdom', flag: '🇬🇧' },
     { value: 'au', label: 'Australia', flag: '🇦🇺' },
-    { value: 'eu', label: 'Europe', flag: '🇪🇺' },
+    { value: 'fr', label: 'France', flag: '🇫🇷' },
+    { value: 'de', label: 'Germany', flag: '🇩🇪' },
+    { value: 'it', label: 'Italy', flag: '🇮🇹' },
+    { value: 'es', label: 'Spain', flag: '🇪🇸' },
     { value: 'other', label: 'Other', flag: '🌍' },
   ];
 

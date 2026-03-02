@@ -58,13 +58,13 @@ export function setShoppingHabit(habit: ShoppingHabit): void {
 // Region / country detection
 const REGION_KEY = 'dripcheck_region';
 
-export type UserRegion = 'us' | 'ca' | 'gb' | 'au' | 'eu' | 'other';
+export type UserRegion = 'us' | 'ca' | 'gb' | 'au' | 'fr' | 'de' | 'it' | 'es' | 'other';
 
 const TIMEZONE_REGION_MAP: Record<string, UserRegion> = {
   'America/New_York': 'us', 'America/Chicago': 'us', 'America/Denver': 'us', 'America/Los_Angeles': 'us',
   'America/Toronto': 'ca', 'America/Vancouver': 'ca', 'America/Edmonton': 'ca', 'America/Montreal': 'ca',
   'Europe/London': 'gb', 'Australia/Sydney': 'au', 'Australia/Melbourne': 'au',
-  'Europe/Berlin': 'eu', 'Europe/Paris': 'eu', 'Europe/Madrid': 'eu', 'Europe/Rome': 'eu', 'Europe/Amsterdam': 'eu',
+  'Europe/Berlin': 'de', 'Europe/Paris': 'fr', 'Europe/Madrid': 'es', 'Europe/Rome': 'it', 'Europe/Amsterdam': 'de',
 };
 
 export function detectRegion(): UserRegion {
@@ -74,14 +74,17 @@ export function detectRegion(): UserRegion {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const region = TIMEZONE_REGION_MAP[tz];
     if (region) { localStorage.setItem(REGION_KEY, region); return region; }
-    // Fallback: check language
     const lang = navigator.language.toLowerCase();
     if (lang.includes('en-us')) return setAndReturn('us');
     if (lang.includes('en-ca') || lang.includes('fr-ca')) return setAndReturn('ca');
     if (lang.includes('en-gb')) return setAndReturn('gb');
     if (lang.includes('en-au')) return setAndReturn('au');
+    if (lang.includes('fr-fr')) return setAndReturn('fr');
+    if (lang.includes('de-de')) return setAndReturn('de');
+    if (lang.includes('it-it')) return setAndReturn('it');
+    if (lang.includes('es-es')) return setAndReturn('es');
   } catch { /* ignore */ }
-  return 'us'; // default
+  return 'us';
 }
 
 function setAndReturn(r: UserRegion): UserRegion {
@@ -95,4 +98,24 @@ export function getUserRegion(): UserRegion {
 
 export function setUserRegion(region: UserRegion): void {
   localStorage.setItem(REGION_KEY, region);
+}
+
+// Premium banner dismiss logic
+const PREMIUM_DISMISS_KEY = 'dripcheck_premium_dismiss';
+const PREMIUM_DISMISS_COUNT_KEY = 'dripcheck_premium_dismiss_count';
+
+export function getPremiumBannerDismissed(): boolean {
+  const dismissedAt = localStorage.getItem(PREMIUM_DISMISS_KEY);
+  const dismissCount = parseInt(localStorage.getItem(PREMIUM_DISMISS_COUNT_KEY) || '0');
+  if (dismissCount >= 2) return true; // permanent
+  if (!dismissedAt) return false;
+  const elapsed = Date.now() - parseInt(dismissedAt);
+  const fourteenDays = 14 * 24 * 60 * 60 * 1000;
+  return elapsed < fourteenDays;
+}
+
+export function dismissPremiumBanner(): void {
+  const count = parseInt(localStorage.getItem(PREMIUM_DISMISS_COUNT_KEY) || '0') + 1;
+  localStorage.setItem(PREMIUM_DISMISS_KEY, Date.now().toString());
+  localStorage.setItem(PREMIUM_DISMISS_COUNT_KEY, count.toString());
 }

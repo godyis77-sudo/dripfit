@@ -11,9 +11,27 @@ import ConfidenceSheet from '@/components/results/ConfidenceSheet';
 interface BodyTabProps {
   savedProfile: BodyScanResult | null;
   fit: FitPreference;
+  scanConfidence?: number | null;
 }
 
-const BodyTab = ({ savedProfile, fit }: BodyTabProps) => {
+function confidenceToPercent(conf: string, numeric?: number | null): number {
+  if (numeric != null && numeric > 0) return Math.round(numeric * 100);
+  switch (conf) {
+    case 'high': return 92;
+    case 'medium': return 75;
+    case 'low': return 54;
+    default: return 75;
+  }
+}
+
+function confidenceTier(pct: number): { label: string; color: string } {
+  if (pct >= 85) return { label: 'High', color: '#22C55E' };
+  if (pct >= 70) return { label: 'Good', color: '#F59E0B' };
+  if (pct >= 60) return { label: 'Fair', color: '#F59E0B' };
+  return { label: 'Low', color: '#EF4444' };
+}
+
+const BodyTab = ({ savedProfile, fit, scanConfidence }: BodyTabProps) => {
   const navigate = useNavigate();
   const [showConfidence, setShowConfidence] = useState(false);
 
@@ -41,6 +59,9 @@ const BodyTab = ({ savedProfile, fit }: BodyTabProps) => {
   if (savedProfile.inseam) m.inseam = savedProfile.inseam;
   if (savedProfile.sleeve) m.sleeve = savedProfile.sleeve;
 
+  const pct = confidenceToPercent(savedProfile.confidence, scanConfidence);
+  const tier = confidenceTier(pct);
+
   return (
     <>
       <div className="relative">
@@ -64,24 +85,35 @@ const BodyTab = ({ savedProfile, fit }: BodyTabProps) => {
           <p className="text-[13px] font-bold text-foreground">Fit Identity</p>
         </div>
         <div className="grid grid-cols-4 gap-1.5">
-          {[
-            { label: 'Size', value: savedProfile.recommendedSize },
-            { label: 'Fit', value: fit, cls: 'capitalize' },
-            { label: 'Confidence', value: savedProfile.confidence, cls: 'capitalize', tappable: true },
-            { label: 'Height', value: `${savedProfile.heightCm}cm` },
-          ].map(d => (
-            <button
-              key={d.label}
-              onClick={d.tappable ? () => setShowConfidence(true) : undefined}
-              className={`bg-background rounded-lg py-1.5 text-center ${d.tappable ? 'active:scale-95 transition-transform cursor-pointer' : 'cursor-default'}`}
-            >
-              <p className="text-[9px] text-muted-foreground uppercase tracking-wider flex items-center justify-center gap-0.5">
-                {d.label}
-                {d.tappable && <Info className="h-2.5 w-2.5 text-primary opacity-80" />}
-              </p>
-              <p className={`text-[12px] font-bold text-foreground ${d.cls || ''}`}>{d.value}</p>
-            </button>
-          ))}
+          <div className="bg-background rounded-lg py-1.5 text-center cursor-default">
+            <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Fit</p>
+            <p className="text-[12px] font-bold text-foreground capitalize">{fit}</p>
+          </div>
+          <div className="bg-background rounded-lg py-1.5 text-center cursor-default">
+            <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Size</p>
+            <p className="text-[12px] font-bold text-foreground">{savedProfile.recommendedSize}</p>
+          </div>
+          <div className="bg-background rounded-lg py-1.5 text-center cursor-default">
+            <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Height</p>
+            <p className="text-[12px] font-bold text-foreground">{savedProfile.heightCm}cm</p>
+          </div>
+          <button
+            onClick={() => setShowConfidence(true)}
+            className="bg-background rounded-lg py-1.5 text-center active:scale-95 transition-transform cursor-pointer"
+          >
+            <p className="text-[9px] text-muted-foreground uppercase tracking-wider flex items-center justify-center gap-0.5">
+              Confidence
+              <Info className="h-2.5 w-2.5 text-primary opacity-80" />
+            </p>
+            <div className="flex items-center justify-center gap-1">
+              <span
+                className="inline-block h-2 w-2 rounded-full shrink-0"
+                style={{ backgroundColor: tier.color }}
+              />
+              <span className="text-[12px] font-bold text-foreground">{pct}%</span>
+              <span className="text-[9px] text-muted-foreground">{tier.label}</span>
+            </div>
+          </button>
         </div>
         <p className="text-[9px] text-muted-foreground mt-2">Last scan: {new Date(savedProfile.date).toLocaleDateString()}</p>
       </div>

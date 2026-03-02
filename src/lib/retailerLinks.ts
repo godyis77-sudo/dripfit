@@ -2,11 +2,11 @@ import { getUserRegion, type UserRegion } from '@/lib/session';
 
 /** Region-specific domain overrides */
 const REGION_DOMAINS: Partial<Record<string, Partial<Record<UserRegion, string>>>> = {
-  'Zara': { us: 'www.zara.com/us', ca: 'www.zara.com/ca', gb: 'www.zara.com/uk', au: 'www.zara.com/au', eu: 'www.zara.com/de' },
-  'H&M': { us: 'www2.hm.com/en_us', ca: 'www2.hm.com/en_ca', gb: 'www2.hm.com/en_gb', au: 'www2.hm.com/en_au', eu: 'www2.hm.com/en_gb' },
-  'ASOS': { us: 'www.asos.com/us', ca: 'www.asos.com', gb: 'www.asos.com', au: 'www.asos.com/au', eu: 'www.asos.com' },
-  'Nike': { us: 'www.nike.com', ca: 'www.nike.com/ca', gb: 'www.nike.com/gb', au: 'www.nike.com/au', eu: 'www.nike.com/de' },
-  'Adidas': { us: 'www.adidas.com/us', ca: 'www.adidas.ca', gb: 'www.adidas.co.uk', au: 'www.adidas.com.au', eu: 'www.adidas.de' },
+  'Zara': { us: 'www.zara.com/us', ca: 'www.zara.com/ca', gb: 'www.zara.com/uk', au: 'www.zara.com/au', fr: 'www.zara.com/fr', de: 'www.zara.com/de', it: 'www.zara.com/it', es: 'www.zara.com/es' },
+  'H&M': { us: 'www2.hm.com/en_us', ca: 'www2.hm.com/en_ca', gb: 'www2.hm.com/en_gb', au: 'www2.hm.com/en_au', fr: 'www2.hm.com/fr_fr', de: 'www2.hm.com/de_de', it: 'www2.hm.com/it_it', es: 'www2.hm.com/es_es' },
+  'ASOS': { us: 'www.asos.com/us', ca: 'www.asos.com', gb: 'www.asos.com', au: 'www.asos.com/au', fr: 'www.asos.com/fr', de: 'www.asos.com/de', it: 'www.asos.com/it', es: 'www.asos.com/es' },
+  'Nike': { us: 'www.nike.com', ca: 'www.nike.com/ca', gb: 'www.nike.com/gb', au: 'www.nike.com/au', fr: 'www.nike.com/fr', de: 'www.nike.com/de', it: 'www.nike.com/it', es: 'www.nike.com/es' },
+  'Adidas': { us: 'www.adidas.com/us', ca: 'www.adidas.ca', gb: 'www.adidas.co.uk', au: 'www.adidas.com.au', fr: 'www.adidas.fr', de: 'www.adidas.de', it: 'www.adidas.it', es: 'www.adidas.es' },
 };
 
 /** Build a deep search URL for a retailer + product query */

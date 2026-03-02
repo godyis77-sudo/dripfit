@@ -3,12 +3,11 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Shirt, Crown, Camera, Settings, ShoppingBag, User, Globe } from 'lucide-react';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { LogOut, Shirt, Crown, Camera, Settings, ShoppingBag, User, Globe, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import PremiumBadge from '@/components/monetization/PremiumBadge';
 import { supabase } from '@/integrations/supabase/client';
-import { getFitPreference, setFitPreference } from '@/lib/session';
+import { getFitPreference, setFitPreference, getPremiumBannerDismissed, dismissPremiumBanner } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import type { FitPreference, BodyScanResult } from '@/lib/types';
 import BottomTabBar from '@/components/BottomTabBar';
@@ -48,14 +47,16 @@ const Profile = () => {
   const [tryOnPosts, setTryOnPosts] = useState<TryOnPost[]>([]);
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
   const [favoriteRetailers, setFavoriteRetailers] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<'tryons' | 'body' | 'wardrobe' | 'settings'>('tryons');
+  const [activeTab, setActiveTab] = useState<'tryons' | 'body' | 'wardrobe'>('tryons');
   const [loading, setLoading] = useState(true);
   const [useCm, setUseCm] = useState(true);
   const [fit, setFit] = useState<FitPreference>(getFitPreference());
   const [savedProfile, setSavedProfile] = useState<BodyScanResult | null>(null);
+  const [scanConfidence, setScanConfidence] = useState<number | null>(null);
   const [savedItemCount, setSavedItemCount] = useState(0);
   const [showAvatarSheet, setShowAvatarSheet] = useState(false);
   const [instagramHandle, setInstagramHandle] = useState('');
+  const [bannerDismissed, setBannerDismissed] = useState(getPremiumBannerDismissed());
 
   useEffect(() => {
     if (!user) { navigate('/auth', { replace: true }); return; }
@@ -69,12 +70,13 @@ const Profile = () => {
   const fetchProfile = async () => {
     if (!user) return;
     const [profileRes, postsRes] = await Promise.all([
-      supabase.from('profiles').select('display_name, avatar_url').eq('user_id', user.id).single(),
+      supabase.from('profiles').select('display_name, avatar_url, scan_confidence').eq('user_id', user.id).single(),
       supabase.from('tryon_posts').select('id, result_photo_url, clothing_photo_url, caption, is_public, created_at, product_url').eq('user_id', user.id).order('created_at', { ascending: false }),
     ]);
     if (profileRes.data) {
       setDisplayName(profileRes.data.display_name || user.email?.split('@')[0] || 'User');
       setAvatarUrl(profileRes.data.avatar_url);
+      setScanConfidence((profileRes.data as any).scan_confidence ?? null);
       setInstagramHandle((profileRes.data as any).instagram_handle || '');
     }
     if (postsRes.data) setTryOnPosts(postsRes.data);
@@ -83,7 +85,6 @@ const Profile = () => {
 
   const loadSavedProfile = async () => {
     if (!user) {
-      // Fallback: try localStorage for guests
       try { const scans = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]'); if (scans.length > 0) setSavedProfile(scans[0]); } catch { /* ignore */ }
       return;
     }
@@ -150,14 +151,12 @@ const Profile = () => {
   const handleFitChange = (newFit: FitPreference) => { setFit(newFit); setFitPreference(newFit); toast({ title: 'Updated', description: `Default fit set to ${newFit}.` }); };
   const handleDeletePhotos = async () => {
     if (!user) return;
-    // Delete from database
     const { error } = await supabase.from('body_scans').delete().eq('user_id', user.id);
     if (error) {
       console.error('Failed to delete scans:', error);
       toast({ title: 'Error', description: 'Could not delete scan data.' });
       return;
     }
-    // Also clear localStorage fallback
     localStorage.removeItem('dripcheck_scans');
     setSavedProfile(null);
     toast({ title: 'Deleted', description: 'All scan data has been permanently removed.' });
@@ -172,9 +171,7 @@ const Profile = () => {
     trackEvent('profile_export');
     toast({ title: 'Data exported' });
   };
-  const handleAvatarUploaded = (url: string) => {
-    setAvatarUrl(url);
-  };
+  const handleAvatarUploaded = (url: string) => { setAvatarUrl(url); };
   const handleDisplayNameSave = async (name: string) => {
     if (!user) return;
     const { error } = await supabase.from('profiles').update({ display_name: name }).eq('user_id', user.id);
@@ -203,16 +200,24 @@ const Profile = () => {
             <span className="text-[11px] font-bold text-foreground flex-1 text-left">DRIPFITCHECK PREMIUM</span>
             <PremiumBadge label="Active" />
           </div>
-        ) : (
-          <button
-            onClick={() => { trackEvent('premium_viewed', { source: 'profile_banner' }); navigate('/premium'); }}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-primary/20 bg-primary/5 mb-3 active:scale-[0.98] transition-transform"
-          >
-            <Crown className="h-4 w-4 text-primary shrink-0" />
-            <span className="text-[11px] font-bold text-foreground flex-1 text-left">Go Premium</span>
-            <span className="text-[9px] text-primary font-bold">7-day free trial →</span>
-          </button>
-        )}
+        ) : !bannerDismissed ? (
+          <div className="relative w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-primary/20 bg-primary/5 mb-3">
+            <button
+              onClick={() => { trackEvent('premium_viewed', { source: 'profile_banner' }); navigate('/premium'); }}
+              className="flex items-center gap-2 flex-1 active:scale-[0.98] transition-transform"
+            >
+              <Crown className="h-4 w-4 text-primary shrink-0" />
+              <span className="text-[11px] font-bold text-foreground flex-1 text-left">Go Premium</span>
+              <span className="text-[9px] text-primary font-bold">7-day free trial →</span>
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); dismissPremiumBanner(); setBannerDismissed(true); }}
+              className="h-5 w-5 rounded-full flex items-center justify-center hover:bg-muted/50 transition-colors shrink-0"
+            >
+              <X className="h-3 w-3 text-muted-foreground" />
+            </button>
+          </div>
+        ) : null}
 
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
@@ -249,18 +254,27 @@ const Profile = () => {
               </button>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={handleSignOut} className="text-muted-foreground h-8 w-8 rounded-lg">
-            <LogOut className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/profile/settings')}
+              className="text-muted-foreground h-8 w-8 rounded-lg"
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={handleSignOut} className="text-muted-foreground h-8 w-8 rounded-lg">
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
-        {/* Tab switcher */}
+        {/* Tab switcher — 3 tabs, Settings moved to gear icon */}
         <div className="flex gap-0.5 bg-card rounded-lg p-0.5 mb-4 border border-border/40">
           {[
             { key: 'tryons' as const, icon: Shirt, label: 'Try-Ons' },
             { key: 'body' as const, icon: User, label: 'Body' },
             { key: 'wardrobe' as const, icon: ShoppingBag, label: 'Wardrobe' },
-            { key: 'settings' as const, icon: Settings, label: 'Settings' },
           ].map(t => (
             <button
               key={t.key}
@@ -279,37 +293,11 @@ const Profile = () => {
             </motion.div>
           ) : activeTab === 'body' ? (
             <motion.div key="body" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
-              <BodyTab savedProfile={savedProfile} fit={fit} />
-            </motion.div>
-          ) : activeTab === 'wardrobe' ? (
-            <motion.div key="wardrobe" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
-              <WardrobeTab wardrobeItems={wardrobeItems} onDeleteItem={deleteWardrobeItem} favoriteRetailers={favoriteRetailers} />
+              <BodyTab savedProfile={savedProfile} fit={fit} scanConfidence={scanConfidence} />
             </motion.div>
           ) : (
-            <motion.div key="settings" initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }}>
-              <SettingsTab
-                user={user}
-                displayName={displayName}
-                avatarUrl={avatarUrl}
-                savedProfile={savedProfile}
-                fit={fit}
-                useCm={useCm}
-                savedItemCount={savedItemCount}
-                isSubscribed={isSubscribed}
-                subscriptionEnd={subscriptionEnd}
-                productId={productId}
-                favoriteRetailers={favoriteRetailers}
-                instagramHandle={instagramHandle}
-                onFavoriteRetailersChange={setFavoriteRetailers}
-                onFitChange={handleFitChange}
-                onUnitToggle={(v) => setUseCm(!v)}
-                onExport={handleExport}
-                onDeletePhotos={handleDeletePhotos}
-                onDeleteAccount={handleDeleteAccount}
-                onAvatarTap={() => setShowAvatarSheet(true)}
-                onDisplayNameSave={handleDisplayNameSave}
-                onInstagramSave={handleInstagramSave}
-              />
+            <motion.div key="wardrobe" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
+              <WardrobeTab wardrobeItems={wardrobeItems} onDeleteItem={deleteWardrobeItem} favoriteRetailers={favoriteRetailers} />
             </motion.div>
           )}
         </AnimatePresence>

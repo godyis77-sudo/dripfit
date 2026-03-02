@@ -357,6 +357,7 @@ export type Database = {
           display_name: string | null
           id: string
           instagram_handle: string | null
+          scan_confidence: number | null
           updated_at: string
           user_id: string
         }
@@ -366,6 +367,7 @@ export type Database = {
           display_name?: string | null
           id?: string
           instagram_handle?: string | null
+          scan_confidence?: number | null
           updated_at?: string
           user_id: string
         }
@@ -375,6 +377,7 @@ export type Database = {
           display_name?: string | null
           id?: string
           instagram_handle?: string | null
+          scan_confidence?: number | null
           updated_at?: string
           user_id?: string
         }
