@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ConfidenceBarProps {
   confidence: number;
@@ -14,19 +14,35 @@ function getBarColor(confidence: number): string {
 
 export function ConfidenceBar({ confidence, showLabel = false }: ConfidenceBarProps) {
   const [width, setWidth] = useState(0);
+  const mountedRef = useRef(false);
   const pct = Math.round(confidence * 100);
 
   useEffect(() => {
-    const frame = requestAnimationFrame(() => setWidth(pct));
-    return () => cancelAnimationFrame(frame);
+    if (!mountedRef.current) {
+      // First mount: animate from 0 with 500ms
+      mountedRef.current = true;
+      const frame = requestAnimationFrame(() => setWidth(pct));
+      return () => cancelAnimationFrame(frame);
+    } else {
+      // Subsequent changes (fit preference): animate directly
+      setWidth(pct);
+    }
   }, [pct]);
+
+  const duration = mountedRef.current ? "400ms" : "500ms";
 
   return (
     <div>
       <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
         <div
-          className="h-full rounded-full transition-all duration-500 ease-out"
-          style={{ width: `${width}%`, backgroundColor: getBarColor(confidence) }}
+          className="h-full rounded-full ease-out"
+          style={{
+            width: `${width}%`,
+            backgroundColor: getBarColor(confidence),
+            transitionProperty: "width, background-color",
+            transitionDuration: duration,
+            transitionTimingFunction: "ease-out",
+          }}
           role="progressbar"
           aria-valuenow={pct}
           aria-valuemin={0}
