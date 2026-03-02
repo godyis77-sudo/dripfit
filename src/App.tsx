@@ -11,6 +11,7 @@ import Onboarding from "./pages/Onboarding";
 import Capture from "./pages/Capture";
 import Analyze from "./pages/Analyze";
 import Results from "./pages/Results";
+import ScanSuccess from "./pages/ScanSuccess";
 import History from "./pages/History";
 import Auth from "./pages/Auth";
 import TryOn from "./pages/TryOn";
@@ -44,6 +45,7 @@ const App = () => (
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/capture" element={<Capture />} />
                 <Route path="/analyze" element={<Analyze />} />
+                <Route path="/scan-success" element={<ScanSuccess />} />
                 <Route path="/results" element={<Results />} />
                 <Route path="/results/:scanId" element={<ResultsDetail />} />
                 <Route path="/history" element={<Navigate to="/profile/history" replace />} />

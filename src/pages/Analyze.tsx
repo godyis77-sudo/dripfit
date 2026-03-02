@@ -159,12 +159,12 @@ const Analyze = () => {
   const navigateToResults = (data: any) => {
     setRealData(data);
     setProgress(100);
-    // Reveal all remaining measurements instantly
     setRevealedKeys(REVEAL_ORDER);
     saveToDatabase(data);
+    const scanResult = { id: crypto.randomUUID(), date: new Date().toISOString(), ...data };
     setTimeout(() => {
-      navigate('/results', {
-        state: { result: { id: crypto.randomUUID(), date: new Date().toISOString(), ...data } },
+      navigate('/scan-success', {
+        state: { result: scanResult },
         replace: true,
       });
     }, 800);
