@@ -25,7 +25,9 @@ import FitFeedbackSheet from '@/components/monetization/FitFeedbackSheet';
 import PostScanGuide from '@/components/results/PostScanGuide';
 import ProfilePhotoPrompt from '@/components/results/ProfilePhotoPrompt';
 import ShareResultsButton from '@/components/results/ShareResultsButton';
+import { SizeMatchCard, SizeMatchCardSkeleton } from '@/components/results/SizeMatchCard';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 const SIZE_LADDER = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL'];
 
 function shiftSize(size: string, delta: number): string {
@@ -53,12 +55,57 @@ const Results = () => {
     return !localStorage.getItem('profile_photo_prompted');
   });
 
+  // Live size recommendation from edge function
+  const [sizeRec, setSizeRec] = useState<{
+    recommended_size: string;
+    confidence: number;
+    fit_status: 'true_to_size' | 'good_fit' | 'between_sizes' | 'out_of_range';
+    fit_notes: string;
+    second_option: string | null;
+    brand_slug: string;
+    category: string;
+  } | null>(null);
+  const [sizeRecLoading, setSizeRecLoading] = useState(false);
+  const [sizeRecError, setSizeRecError] = useState<string | null>(null);
+
+  const brandSlug = state?.retailer?.toLowerCase().replace(/\s+/g, '-') || '';
+  const categoryKey = state?.category?.toLowerCase() || 'tops';
+
+  const fetchSizeRecommendation = useCallback(async (fit: string) => {
+    if (!user?.id || !brandSlug) return;
+    setSizeRecLoading(true);
+    setSizeRecError(null);
+    try {
+      const { data, error } = await supabase.functions.invoke('get-size-recommendation', {
+        body: { user_id: user.id, brand_slug: brandSlug, category: categoryKey, fit_preference: fit },
+      });
+      if (error) throw error;
+      if (data?.error) {
+        setSizeRecError(data.error);
+        setSizeRec(null);
+      } else {
+        setSizeRec(data);
+      }
+    } catch (e: any) {
+      setSizeRecError(e.message || 'Failed to get recommendation');
+    } finally {
+      setSizeRecLoading(false);
+    }
+  }, [user?.id, brandSlug, categoryKey]);
+
   useEffect(() => {
     if (result) {
       trackEvent('results_viewed');
       trackEvent('result_viewed');
     }
   }, [result]);
+
+  // Fetch live recommendation on mount
+  useEffect(() => {
+    if (user?.id && brandSlug) {
+      fetchSizeRecommendation(fitPref === 'fitted' ? 'slim' : fitPref);
+    }
+  }, [user?.id, brandSlug]);
 
   const adjustedSize = useMemo(() => {
     if (!result) return '';
@@ -161,6 +208,33 @@ const Results = () => {
             />
           )}
         </AnimatePresence>
+
+        {/* Live SizeMatchCard from edge function */}
+        {user && brandSlug ? (
+          <div className="mb-3">
+            <SizeMatchCard
+              brandName={state?.retailer || brandSlug}
+              category={categoryKey}
+              recommendedSize={sizeRec?.recommended_size || adjustedSize}
+              confidence={sizeRec?.confidence ?? 0}
+              fitStatus={sizeRec?.fit_status || 'good_fit'}
+              fitNotes={sizeRec?.fit_notes || ''}
+              secondOption={sizeRec?.second_option}
+              fitPreference={fitPref === 'fitted' ? 'slim' : (fitPref as 'slim' | 'regular' | 'relaxed')}
+              sourceUrl={null}
+              updatedAt={new Date().toISOString()}
+              loading={sizeRecLoading}
+              onFitChange={(fit) => {
+                setFitPref(fit === 'slim' ? 'fitted' : fit as FitPreference);
+                fetchSizeRecommendation(fit);
+                trackEvent('fit_preference_changed', { fit });
+              }}
+            />
+            {sizeRecError && (
+              <p className="mt-1 text-xs text-destructive">{sizeRecError}</p>
+            )}
+          </div>
+        ) : null}
 
         <SizeHero retailer={state?.retailer} category={state?.category} recommendedSize={adjustedSize} confidence={confidence} whyLine={fitWhyLine} fitPreference={fitPref} />
 
