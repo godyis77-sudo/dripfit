@@ -1,9 +1,5 @@
 {
-  "appId": "app.lovable.59950fa0bc4643db91cb9fc1835fcc45",
-  "appName": "BodyMeasure",
-  "webDir": "dist",
-  "server": {
-    "url": "https://59950fa0-bc46-43db-91cb-9fc1835fcc45.lovableproject.com?forceHideBadge=true",
-    "cleartext": true
-  }
+  "appId": "app.lovable.b553285535644058bfa7f16633b8e311",
+  "appName": "DripFitCheck",
+  "webDir": "dist"
 }
