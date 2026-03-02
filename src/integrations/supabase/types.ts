@@ -95,6 +95,75 @@ export type Database = {
         }
         Relationships: []
       }
+      brand_requests: {
+        Row: {
+          brand_name: string
+          id: string
+          requested_at: string | null
+          requested_by: string | null
+          status: string | null
+        }
+        Insert: {
+          brand_name: string
+          id?: string
+          requested_at?: string | null
+          requested_by?: string | null
+          status?: string | null
+        }
+        Update: {
+          brand_name?: string
+          id?: string
+          requested_at?: string | null
+          requested_by?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
+      brand_size_charts: {
+        Row: {
+          brand_name: string
+          brand_slug: string
+          category: string
+          confidence: number | null
+          id: string
+          is_active: boolean | null
+          notes: string | null
+          region: string
+          scraped_at: string | null
+          size_data: Json
+          size_system: string
+          source_url: string | null
+        }
+        Insert: {
+          brand_name: string
+          brand_slug: string
+          category: string
+          confidence?: number | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          region?: string
+          scraped_at?: string | null
+          size_data?: Json
+          size_system?: string
+          source_url?: string | null
+        }
+        Update: {
+          brand_name?: string
+          brand_slug?: string
+          category?: string
+          confidence?: number | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          region?: string
+          scraped_at?: string | null
+          size_data?: Json
+          size_system?: string
+          source_url?: string | null
+        }
+        Relationships: []
+      }
       clothing_wardrobe: {
         Row: {
           brand: string | null
@@ -507,6 +576,62 @@ export type Database = {
           units?: string
         }
         Relationships: []
+      }
+      size_recommendations_cache: {
+        Row: {
+          brand_slug: string
+          category: string
+          chart_id: string | null
+          confidence: number
+          created_at: string | null
+          expires_at: string | null
+          fit_notes: string | null
+          fit_status: string
+          id: string
+          measurements_snapshot: Json
+          recommended_size: string
+          second_option: string | null
+          user_id: string
+        }
+        Insert: {
+          brand_slug: string
+          category: string
+          chart_id?: string | null
+          confidence: number
+          created_at?: string | null
+          expires_at?: string | null
+          fit_notes?: string | null
+          fit_status: string
+          id?: string
+          measurements_snapshot: Json
+          recommended_size: string
+          second_option?: string | null
+          user_id: string
+        }
+        Update: {
+          brand_slug?: string
+          category?: string
+          chart_id?: string | null
+          confidence?: number
+          created_at?: string | null
+          expires_at?: string | null
+          fit_notes?: string | null
+          fit_status?: string
+          id?: string
+          measurements_snapshot?: Json
+          recommended_size?: string
+          second_option?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "size_recommendations_cache_chart_id_fkey"
+            columns: ["chart_id"]
+            isOneToOne: false
+            referencedRelation: "brand_size_charts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tryon_posts: {
         Row: {
