@@ -42,13 +42,13 @@ interface Post {
 const VOTE_OPTIONS = [
   { key: 'buy_yes', label: 'Buy it', emoji: '🔥' },
   { key: 'buy_no', label: 'Pass', emoji: '👎' },
-  { key: 'keep_shopping', label: 'Keep shopping', emoji: '🛒' },
+  { key: 'keep_shopping', label: 'Save it', emoji: '🛒' },
 ] as const;
 
 const FIT_OPTIONS = [
-  { key: 'too_tight', label: 'Too tight' },
-  { key: 'perfect', label: 'Perfect' },
-  { key: 'too_loose', label: 'Too loose' },
+  { key: 'too_tight', label: 'Too small' },
+  { key: 'perfect', label: 'Looks right' },
+  { key: 'too_loose', label: 'Too big' },
 ] as const;
 
 type TrendingSort = 'hot' | 'love' | 'buy' | 'newest' | 'user';
@@ -168,6 +168,15 @@ const Community = () => {
   const [retailersLoading, setRetailersLoading] = useState(false);
   const [followingIds, setFollowingIds] = useState<string[]>([]);
   const [followToggles, setFollowToggles] = useState<Record<string, boolean>>({});
+  const [hasScan, setHasScan] = useState(false);
+  const [similarFitTooltip, setSimilarFitTooltip] = useState(false);
+  // Check scan status
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('body_scans').select('id').eq('user_id', user.id).limit(1).then(({ data }) => {
+      setHasScan(!!data && data.length > 0);
+    });
+  }, [user]);
 
   useEffect(() => {
     if (filter === 'shop') {
@@ -421,7 +430,7 @@ const Community = () => {
         </div>
 
         {/* Filter tabs */}
-        <div className="flex border-b border-border mb-4 overflow-x-auto no-scrollbar">
+        <div className="flex border-b border-border mb-4 overflow-x-auto no-scrollbar relative">
           {([
             { key: 'new' as FilterType, label: 'New' },
             { key: 'following' as FilterType, label: 'Following' },
@@ -432,16 +441,49 @@ const Community = () => {
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
-              className={`flex-1 py-2 text-[12px] font-semibold transition-all relative whitespace-nowrap px-2 ${
+              className={`flex-1 py-2 text-[12px] font-semibold transition-all relative whitespace-nowrap px-2 flex items-center justify-center gap-0.5 ${
                 filter === f.key ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               {f.label}
+              {f.key === 'similar' && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); setSimilarFitTooltip(!similarFitTooltip); }}
+                  className="text-[9px] text-muted-foreground/60 ml-0.5"
+                >
+                  ⓘ
+                </button>
+              )}
               {filter === f.key && (
                 <motion.div layoutId="fitcheck-tab" className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full" />
               )}
             </button>
           ))}
+
+          {/* Similar Fit tooltip */}
+          <AnimatePresence>
+            {similarFitTooltip && (
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-50"
+                  onClick={() => setSimilarFitTooltip(false)}
+                />
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 4 }}
+                  className="absolute top-full mt-1 right-[20%] z-50 w-[240px] bg-card border border-border rounded-xl p-3 shadow-xl"
+                >
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    Similar Fit shows outfits posted by people with measurements closest to yours. Their ratings are more relevant to how clothes will fit you specifically.
+                  </p>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Trending sub-sort pills */}
@@ -533,41 +575,24 @@ const Community = () => {
               <p className="text-[13px] text-muted-foreground">Retailers will appear here soon</p>
             </div>
           ) : (
-            <div className="rounded-xl border border-border overflow-hidden">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="border-b border-border bg-muted/30">
-                    <th className="py-2.5 px-3 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Retailer</th>
-                    <th className="py-2.5 px-3 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Category</th>
-                    <th className="py-2.5 px-3 text-[11px] font-bold text-muted-foreground uppercase tracking-wider text-right">Link</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {retailers.map((r, idx) => (
-                    <tr key={r.id} className={`${idx < retailers.length - 1 ? 'border-b border-border' : ''} hover:bg-muted/20 transition-colors`}>
-                      <td className="py-2.5 px-3">
-                        <span className="text-[13px] font-semibold text-foreground">{r.name}</span>
-                      </td>
-                      <td className="py-2.5 px-3">
-                        <span className="text-[11px] text-muted-foreground capitalize">{r.category}</span>
-                      </td>
-                      <td className="py-2.5 px-3 text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-7 px-2.5 text-[11px] font-bold text-primary hover:text-primary"
-                          onClick={() => {
-                            trackEvent('retailer_click', { retailer: r.name });
-                            window.open(r.website_url, '_blank', 'noopener');
-                          }}
-                        >
-                          Shop →
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="grid grid-cols-2 gap-2">
+              {retailers.map(r => (
+                <button
+                  key={r.id}
+                  onClick={() => {
+                    trackEvent('retailer_click', { retailer: r.name });
+                    window.open(r.website_url, '_blank', 'noopener');
+                  }}
+                  className="bg-[hsl(0_0%_10%)] border border-[hsl(0_0%_15%)] rounded-xl p-3 text-left active:scale-[0.97] transition-transform"
+                >
+                  <p className="text-[14px] font-bold text-foreground mb-1">{r.name}</p>
+                  <span className="inline-block text-[9px] font-bold uppercase tracking-wider text-muted-foreground bg-muted/30 border border-border rounded-full px-2 py-0.5 mb-2 capitalize">
+                    {r.category}
+                  </span>
+                  <p className="text-[11px] font-bold text-muted-foreground mb-2">—</p>
+                  <p className="text-[11px] font-bold text-primary text-right">Shop →</p>
+                </button>
+              ))}
             </div>
           )
         ) : loading ? (
@@ -786,6 +811,20 @@ const Community = () => {
                       {post.caption || getPrompt(post.id, idx)}
                     </p>
                   </div>
+                  {/* Try On button — top-left */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (post.product_url) {
+                        navigate('/tryon', { state: { productUrl: post.product_url } });
+                      } else {
+                        toast({ title: 'No product linked to this look' });
+                      }
+                    }}
+                    className="absolute top-1.5 left-1.5 text-[9px] font-bold text-white bg-black/65 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 active:scale-95 transition-transform"
+                  >
+                    <Sparkles className="h-2.5 w-2.5" /> Try On
+                  </button>
                   {/* Retailer badge */}
                   {(() => {
                     const retailer = post.product_url
@@ -799,9 +838,9 @@ const Community = () => {
                   })()}
                 </button>
 
-                {/* Buy vote row */}
+                {/* Section A: WOULD YOU BUY IT? */}
                 <div className="px-1.5 pt-1.5">
-                  <p className="text-[8px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Buy it?</p>
+                  <p className="text-[8px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Would you buy it?</p>
                   <div className="flex gap-1">
                     {VOTE_OPTIONS.map(v => {
                       const active = (votes[post.id] || []).includes(v.key);
@@ -837,26 +876,39 @@ const Community = () => {
                   })()}
                 </div>
 
-                {/* Optional fit vote */}
-                <div className="px-1.5 pt-1">
-                  <div className="flex gap-1">
-                    {FIT_OPTIONS.map(f => {
-                      const active = (votes[post.id] || []).includes(f.key);
-                      return (
-                        <button
-                          key={f.key}
-                          onClick={() => handleVote(post.id, f.key)}
-                          className={`flex-1 py-1 rounded-md text-[8px] font-bold border transition-all active:scale-95 ${
-                            active
-                              ? 'border-primary/60 bg-primary/5 text-primary'
-                              : 'border-border/50 text-muted-foreground/60'
-                          }`}
-                        >
-                          {f.label}
-                        </button>
-                      );
-                    })}
-                  </div>
+                {/* Divider */}
+                <div className="mx-1.5 my-1 h-px bg-[hsl(0_0%_13%)]" />
+
+                {/* Section B: HOW DOES IT FIT? */}
+                <div className="px-1.5 pb-1">
+                  <p className="text-[8px] text-muted-foreground font-bold uppercase tracking-wider mb-1">How does it fit?</p>
+                  {hasScan ? (
+                    <div className="flex gap-1">
+                      {FIT_OPTIONS.map(f => {
+                        const active = (votes[post.id] || []).includes(f.key);
+                        return (
+                          <button
+                            key={f.key}
+                            onClick={() => handleVote(post.id, f.key)}
+                            className={`flex-1 py-1 rounded-md text-[8px] font-bold border transition-all active:scale-95 ${
+                              active
+                                ? 'border-primary/60 bg-primary/5 text-primary'
+                                : 'border-border/50 text-muted-foreground/60'
+                            }`}
+                          >
+                            {f.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => navigate('/capture')}
+                      className="text-[9px] text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+                    >
+                      Complete a scan to rate the fit →
+                    </button>
+                  )}
                 </div>
 
                 {/* Mini comment */}
