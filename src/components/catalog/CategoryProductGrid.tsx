@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, ChevronUp, ShoppingBag, Sparkles, ExternalLink, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Sparkles, ExternalLink, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 import { trackEvent } from '@/lib/analytics';
@@ -14,6 +14,7 @@ interface CategoryProductGridProps {
   maxItems?: number;
   seed?: number;
   showViewAll?: boolean;
+  priceFilter?: { min: number; max: number } | null;
 }
 
 const CategoryProductGrid = ({
@@ -24,6 +25,7 @@ const CategoryProductGrid = ({
   maxItems = 8,
   seed,
   showViewAll = false,
+  priceFilter,
 }: CategoryProductGridProps) => {
   const navigate = useNavigate();
   const { products, loading } = useProductCatalog(category, undefined, seed);
@@ -44,13 +46,22 @@ const CategoryProductGrid = ({
     });
   };
 
-  const visibleProducts = products.filter(product => !hiddenProductIds.has(product.id));
+  let visibleProducts = products.filter(product => !hiddenProductIds.has(product.id));
+
+  // Apply price filter
+  if (priceFilter) {
+    visibleProducts = visibleProducts.filter(p => {
+      if (!p.price_cents) return false;
+      const dollars = p.price_cents / 100;
+      return dollars >= priceFilter.min && dollars <= priceFilter.max;
+    });
+  }
 
   if (loading && visibleProducts.length === 0) {
     return (
-      <div className="flex gap-2 overflow-x-auto pb-1">
+      <div className="grid grid-cols-2 gap-2">
         {[1, 2, 3, 4].map(i => (
-          <div key={i} className="shrink-0 w-[80px] aspect-square rounded-lg skeleton-gold" />
+          <div key={i} className="rounded-xl skeleton-gold aspect-[3/4]" />
         ))}
       </div>
     );
@@ -66,7 +77,7 @@ const CategoryProductGrid = ({
         <div className="flex items-center justify-between mb-2">
           <button
             onClick={() => setExpanded(!expanded)}
-            className="flex items-center gap-1.5"
+            className="flex items-center gap-1.5 min-h-[44px]"
           >
             <p className="text-[11px] font-bold text-foreground capitalize">{title}</p>
             {visibleProducts.length > 4 && (
@@ -76,14 +87,14 @@ const CategoryProductGrid = ({
           {showViewAll && visibleProducts.length > 0 && (
             <button
               onClick={() => navigate(`/browse/${category}`)}
-              className="text-[10px] text-primary font-semibold"
+              className="text-[10px] text-primary font-semibold min-h-[44px] flex items-center"
             >
               View all →
             </button>
           )}
         </div>
       )}
-      <div className="grid grid-cols-4 gap-1.5">
+      <div className="grid grid-cols-2 gap-2.5">
         {displayed.map(product => (
           <button
             key={product.id}
@@ -91,9 +102,10 @@ const CategoryProductGrid = ({
               trackEvent('catalog_product_preview', { brand: product.brand, category: product.category });
               setPreviewProduct(product);
             }}
-            className="relative rounded-lg overflow-hidden border border-border bg-card active:scale-95 transition-transform group"
+            className="relative rounded-xl overflow-hidden border border-border bg-card active:scale-[0.97] transition-transform group text-left"
           >
-            <div className="aspect-square bg-muted">
+            {/* Image area — 3:4 aspect, ~68% of card */}
+            <div className="relative aspect-[3/4] bg-muted overflow-hidden">
               <img
                 src={product.image_url}
                 alt={product.name}
@@ -107,12 +119,19 @@ const CategoryProductGrid = ({
                 }}
                 onError={() => hideProduct(product.id)}
               />
+              {/* Brand pill — bottom right of image */}
+              <div className="absolute bottom-1.5 right-1.5 bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5">
+                <span className="text-[8px] font-bold text-foreground uppercase tracking-wider">{product.brand}</span>
+              </div>
+              {/* Size badge slot — top right, empty for now */}
+              <div className="absolute top-1.5 right-1.5" />
             </div>
-            <div className="p-1">
-              <p className="text-[8px] text-muted-foreground truncate">{product.brand}</p>
-              <p className="text-[9px] font-medium text-foreground truncate">{product.name}</p>
+            {/* Info area */}
+            <div className="p-2.5">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-0.5">{product.brand}</p>
+              <p className="text-[11px] font-bold text-foreground line-clamp-2 leading-tight min-h-[28px]">{product.name}</p>
               {product.price_cents && (
-                <p className="text-[9px] font-bold text-primary">
+                <p className="text-[12px] font-bold text-primary mt-1">
                   ${(product.price_cents / 100).toFixed(0)}
                 </p>
               )}
@@ -150,7 +169,6 @@ const CategoryProductGrid = ({
               onClick={(e) => e.stopPropagation()}
             />
 
-            {/* Product info */}
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -167,7 +185,6 @@ const CategoryProductGrid = ({
               )}
             </motion.div>
 
-            {/* Action buttons */}
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
