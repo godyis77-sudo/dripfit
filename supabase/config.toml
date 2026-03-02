@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.get-size-recommendation]
 verify_jwt = false
+
+[functions.scrape-size-charts]
+verify_jwt = false
