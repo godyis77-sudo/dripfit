@@ -45,7 +45,13 @@ function relativeTime(dateStr?: string): string {
 /* ── Loading skeleton ── */
 export function SizeMatchCardSkeleton() {
   return (
-    <div className="w-full rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+    <div
+      className="w-full rounded-2xl border border-gray-100 bg-white p-4 shadow-sm"
+      role="status"
+      aria-busy="true"
+      aria-label="Loading size recommendation"
+    >
+      <span className="sr-only">Loading size recommendation…</span>
       <div className="flex items-center justify-between">
         <div className="h-3 w-36 animate-pulse rounded bg-gray-200" />
         <div className="h-4 w-4 animate-pulse rounded-full bg-gray-200" />
@@ -97,6 +103,7 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
     return (
       <div
         ref={ref}
+        role="region"
         className="w-full rounded-2xl border border-gray-100 bg-white p-4 shadow-sm animate-fade-in"
         style={{ animationDuration: "300ms" }}
         aria-label={`Size ${recommendedSize} recommended for ${brandName} ${category} — ${pct}% confidence`}
@@ -129,7 +136,7 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
 
         {isOutOfRange ? (
           <div className="mt-4 flex flex-col items-center gap-3 py-4 text-center">
-            <AlertCircle size={20} className="text-red-400" />
+            <AlertCircle size={20} className="text-red-600" aria-hidden="true" />
             <p className="text-sm text-gray-600">
               Your measurements fall outside {brandName}'s standard range.
             </p>
@@ -205,12 +212,12 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
                 <button
                   key={opt.value}
                   onClick={() => handleFitChange(opt.value)}
-                  className="cursor-pointer px-4 min-h-[44px] text-xs font-medium transition-colors duration-200"
-                  style={
-                    activeFit === opt.value
-                      ? { backgroundColor: "#946F00", color: "#fff" }
-                      : undefined
-                  }
+                   className="cursor-pointer px-4 min-h-[44px] text-xs font-medium transition-colors duration-200"
+                   style={
+                     activeFit === opt.value
+                       ? { backgroundColor: "#946F00", color: "#fff" }
+                       : { backgroundColor: "#fff", color: "#4B5563" }
+                   }
                   aria-pressed={activeFit === opt.value}
                 >
                   {opt.label}
@@ -221,7 +228,7 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
         )}
 
         {/* Row 6 — Footer */}
-        <p className="mt-3 text-xs text-gray-400">
+        <p className="mt-3 text-xs text-gray-500">
           Based on your scan · Updated {relativeTime(updatedAt)}
         </p>
       </div>
