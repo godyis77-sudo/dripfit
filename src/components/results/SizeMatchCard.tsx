@@ -99,23 +99,27 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
         ref={ref}
         className="w-full rounded-2xl border border-gray-100 bg-white p-4 shadow-sm animate-fade-in"
         style={{ animationDuration: "300ms" }}
+        aria-label={`Size ${recommendedSize} recommended for ${brandName} ${category} — ${pct}% confidence`}
       >
         {/* Row 1 — Header */}
         <div className="flex items-center justify-between">
           <span
             className="text-xs font-bold tracking-widest uppercase"
-            style={{ color: "#B8960C" }}
+            style={{ color: "#946F00" }}
           >
             DRIP FIT SIZE MATCH
           </span>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <button className="p-1 -m-1" aria-label="How confidence is calculated">
+                <button
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center -m-3"
+                  aria-label="How confidence is calculated"
+                >
                   <Info size={14} className="text-gray-400" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="bottom" className="max-w-[220px] text-xs">
+              <TooltipContent side="bottom" className="max-w-[220px] text-xs" role="tooltip">
                 Confidence is based on how closely your body scan measurements match this
                 brand's size chart.
               </TooltipContent>
@@ -134,8 +138,8 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
                 href={sourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm font-medium"
-                style={{ color: "#B8960C" }}
+                className="text-sm font-medium min-h-[44px] flex items-center"
+                style={{ color: "#946F00" }}
               >
                 View {brandName} Size Guide →
               </a>
@@ -149,13 +153,13 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
                 Your size in {brandName} {category}:
               </span>
               {isBetween && secondOption ? (
-                <span className="text-2xl font-black" style={{ color: "#B8960C" }}>
+                <span className="text-2xl font-black" style={{ color: "#946F00" }}>
                   {recommendedSize}{" "}
-                  <span className="text-base font-medium text-gray-400">or</span>{" "}
+                  <span className="text-base font-medium text-gray-500">or</span>{" "}
                   {secondOption}
                 </span>
               ) : (
-                <span className="text-3xl font-black" style={{ color: "#B8960C" }}>
+                <span className="text-3xl font-black" style={{ color: "#946F00" }}>
                   {recommendedSize}
                 </span>
               )}
@@ -196,15 +200,15 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
             </p>
 
             {/* Row 5 — Fit preference toggle */}
-            <div className="mt-3 inline-flex overflow-hidden rounded-full border border-gray-200">
+            <div className="mt-3 inline-flex overflow-hidden rounded-full border border-gray-200" role="group" aria-label="Fit preference">
               {FIT_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
                   onClick={() => handleFitChange(opt.value)}
-                  className="cursor-pointer px-3 py-1 text-xs font-medium transition-colors duration-200"
+                  className="cursor-pointer px-4 min-h-[44px] text-xs font-medium transition-colors duration-200"
                   style={
                     activeFit === opt.value
-                      ? { backgroundColor: "#B8960C", color: "#fff" }
+                      ? { backgroundColor: "#946F00", color: "#fff" }
                       : undefined
                   }
                   aria-pressed={activeFit === opt.value}
