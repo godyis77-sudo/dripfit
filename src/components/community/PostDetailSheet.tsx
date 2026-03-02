@@ -23,13 +23,13 @@ interface Post {
 const VOTE_OPTIONS = [
   { key: 'buy_yes', label: 'Buy it', emoji: '🔥' },
   { key: 'buy_no', label: 'Pass', emoji: '👎' },
-  { key: 'keep_shopping', label: 'Keep shopping', emoji: '🛒' },
+  { key: 'keep_shopping', label: 'Save it', emoji: '🛒' },
 ] as const;
 
 const FIT_OPTIONS = [
-  { key: 'too_tight', label: 'Too tight' },
-  { key: 'perfect', label: 'Perfect' },
-  { key: 'too_loose', label: 'Too loose' },
+  { key: 'too_tight', label: 'Too small' },
+  { key: 'perfect', label: 'Looks right' },
+  { key: 'too_loose', label: 'Too big' },
 ] as const;
 
 interface PostDetailSheetProps {
@@ -245,7 +245,8 @@ export const PostDetailSheet = ({
               </div>
             )}
 
-            {/* Buy votes */}
+            {/* Section A: WOULD YOU BUY IT? */}
+            <p className="text-[11px] text-white/50 font-bold uppercase tracking-wider">Would you buy it?</p>
             <div className="flex gap-2">
               {VOTE_OPTIONS.map(v => {
                 const active = (votes[post.id] || []).includes(v.key);
@@ -265,7 +266,11 @@ export const PostDetailSheet = ({
               })}
             </div>
 
-            {/* Optional fit vote */}
+            {/* Divider */}
+            <div className="h-px bg-[hsl(0_0%_13%)]" />
+
+            {/* Section B: HOW DOES IT FIT? */}
+            <p className="text-[11px] text-white/50 font-bold uppercase tracking-wider">How does it fit?</p>
             <div className="flex gap-2">
               {FIT_OPTIONS.map(f => {
                 const active = (votes[post.id] || []).includes(f.key);
