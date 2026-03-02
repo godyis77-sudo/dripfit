@@ -19,28 +19,27 @@ export function ConfidenceBar({ confidence, showLabel = false }: ConfidenceBarPr
 
   useEffect(() => {
     if (!mountedRef.current) {
-      // First mount: animate from 0 with 500ms
       mountedRef.current = true;
-      const frame = requestAnimationFrame(() => setWidth(pct));
-      return () => cancelAnimationFrame(frame);
+      // 200ms delay, then animate to final value
+      const timer = setTimeout(() => {
+        requestAnimationFrame(() => setWidth(pct));
+      }, 200);
+      return () => clearTimeout(timer);
     } else {
-      // Subsequent changes (fit preference): animate directly
       setWidth(pct);
     }
   }, [pct]);
 
-  const duration = mountedRef.current ? "400ms" : "500ms";
-
   return (
     <div>
-      <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+      <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: '#1A1A1A' }}>
         <div
-          className="h-full rounded-full ease-out"
+          className="h-full rounded-full"
           style={{
             width: `${width}%`,
             backgroundColor: getBarColor(confidence),
             transitionProperty: "width, background-color",
-            transitionDuration: duration,
+            transitionDuration: "600ms",
             transitionTimingFunction: "ease-out",
           }}
           role="progressbar"
@@ -51,7 +50,7 @@ export function ConfidenceBar({ confidence, showLabel = false }: ConfidenceBarPr
         />
       </div>
       {showLabel && (
-        <p className="text-xs text-gray-500 mt-0.5">{pct}% size match</p>
+        <p className="text-xs text-muted-foreground mt-0.5">{pct}% size match</p>
       )}
     </div>
   );
