@@ -150,29 +150,50 @@ const Capture = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      {/* Header with progress */}
-      <div className="flex items-center gap-3 px-4 pt-4 pb-2">
-        <Button variant="ghost" size="icon" onClick={goBack} className="h-8 w-8 rounded-xl min-h-[44px] min-w-[44px]">
+      {/* Header */}
+      <div className="px-4 pt-4 pb-1">
+        <Button variant="ghost" size="icon" onClick={goBack} className="h-8 w-8 rounded-xl min-h-[44px] min-w-[44px] mb-2">
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <div className="flex-1">
-          <p className="text-[11px] font-medium text-muted-foreground mb-1.5">Scan</p>
-          <div className="flex items-center gap-1">
-            {FLOW_STEPS.map((s, i) => (
-              <div key={s.key} className="flex-1">
-                <div className={`h-1.5 rounded-full transition-colors ${
-                  i < flowIdx ? 'bg-primary' : i === flowIdx ? 'bg-primary/60' : 'bg-border'
-                }`} />
+
+        {/* Numbered circle stepper */}
+        <div className="flex items-center justify-between h-14">
+          {FLOW_STEPS.map((s, i) => {
+            const completed = i < flowIdx;
+            const active = i === flowIdx;
+            return (
+              <div key={s.key} className="flex flex-col items-center flex-1 relative">
+                {/* Connecting line (not on first step) */}
+                {i > 0 && (
+                  <div
+                    className={`absolute top-[14px] right-1/2 w-full h-[2px] -z-10 transition-colors ${
+                      i <= flowIdx ? 'bg-primary' : 'bg-border'
+                    }`}
+                  />
+                )}
+                {/* Circle */}
+                <div
+                  className={`h-7 w-7 rounded-full flex items-center justify-center text-[11px] font-bold transition-all shrink-0 ${
+                    completed
+                      ? 'bg-primary text-primary-foreground'
+                      : active
+                        ? 'border-2 border-primary text-primary'
+                        : 'border border-border text-muted-foreground'
+                  }`}
+                >
+                  {completed ? <Check className="h-3.5 w-3.5" /> : i + 1}
+                </div>
+                {/* Label */}
+                <span
+                  className={`text-[9px] mt-1 font-semibold ${
+                    completed ? 'text-primary' : active ? 'text-primary font-bold' : 'text-muted-foreground'
+                  }`}
+                >
+                  {s.label}
+                </span>
               </div>
-            ))}
-          </div>
-          <div className="flex justify-between mt-1">
-            {FLOW_STEPS.map((s, i) => (
-              <span key={s.key} className={`text-[9px] font-semibold ${
-                i <= flowIdx ? 'text-primary' : 'text-muted-foreground'
-              }`}>{s.label}</span>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
 
@@ -209,14 +230,22 @@ const Capture = () => {
                 ))}
               </div>
 
+              {/* Privacy trust panel */}
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}
-                className="flex items-center gap-1.5 mt-6 text-muted-foreground"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+                className="w-full bg-card border border-border rounded-xl px-4 py-3 mt-5 flex items-start gap-3"
               >
-                <Shield className="h-3.5 w-3.5 text-primary/70" />
-                <span className="text-[11px]">Photos processed privately — never stored without your consent</span>
+                <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                  <Shield className="h-3.5 w-3.5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-[12px] font-bold text-foreground leading-tight mb-0.5">Your privacy is protected</p>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    Photos are processed on-device. Nothing is stored without your consent.
+                  </p>
+                </div>
               </motion.div>
             </motion.div>
           )}
