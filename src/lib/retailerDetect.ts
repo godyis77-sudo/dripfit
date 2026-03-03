@@ -252,21 +252,86 @@ const RETAILERS: Record<string, string> = {
 
 export function detectRetailer(url: string): string | null {
   try {
-    const hostname = new URL(url).hostname.toLowerCase();
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.toLowerCase();
     // Check known retailers first
     for (const [key, label] of Object.entries(RETAILERS)) {
       if (hostname.includes(key)) return label;
     }
     // Fallback: extract a clean brand name from the domain
     const parts = hostname.replace(/^www\d?\./, '').split('.');
-    // Use the main domain part (e.g. "farfetch" from "www.farfetch.com")
     const domain = parts.length >= 2 ? parts[parts.length - 2] : parts[0];
     if (domain && domain.length > 2) {
-      // Capitalise first letter for display
       return domain.charAt(0).toUpperCase() + domain.slice(1);
     }
     return 'Shop';
   } catch {
     return null;
   }
+}
+
+// Multi-brand retailers where brand info lives in the URL path
+const MULTI_BRAND_RETAILERS = ['farfetch', 'nordstrom', 'ssense', 'mrporter', 'net-a-porter', 'mytheresa', 'matchesfashion', 'asos', 'revolve', 'shopbop', 'saksfifthavenue', 'saks', 'neimanmarcus', 'bloomingdales', 'macys'];
+
+/**
+ * Extract a brand label from a URL. For multi-brand retailers (Farfetch, Nordstrom, etc.),
+ * attempts to parse the brand/designer from the URL path. Falls back to the retailer name.
+ */
+export function detectBrandFromUrl(url: string): { brand: string; retailer: string | null; url: string } {
+  const retailer = detectRetailer(url);
+  try {
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.toLowerCase();
+    const path = decodeURIComponent(parsed.pathname.toLowerCase());
+
+    // Check if it's a multi-brand retailer
+    const isMultiBrand = MULTI_BRAND_RETAILERS.some(r => hostname.includes(r));
+    if (!isMultiBrand) return { brand: retailer || 'Shop', retailer, url };
+
+    // Farfetch: /shopping/.../designer-{brand}/... or /{brand}-...
+    const farfetchDesigner = path.match(/\/designer-([a-z0-9-]+)\//);
+    if (farfetchDesigner) {
+      const raw = farfetchDesigner[1].replace(/-/g, ' ');
+      return { brand: titleCase(raw), retailer, url };
+    }
+
+    // Farfetch pre-owned: /shopping/.../christian-dior-pre-owned/...
+    const farfetchPreOwned = path.match(/\/([a-z][\w-]+)-pre-owned/);
+    if (farfetchPreOwned) {
+      const raw = farfetchPreOwned[1].replace(/-/g, ' ');
+      return { brand: titleCase(raw), retailer, url };
+    }
+
+    // Nordstrom: filterByBrand=... in query string
+    const brandParam = parsed.searchParams.get('filterByBrand');
+    if (brandParam) {
+      return { brand: titleCase(brandParam.replace(/-/g, ' ')), retailer, url };
+    }
+
+    // Nordstrom product page: /s/{product-name}/{id} — try to find known brands in the slug
+    const nordstromProduct = path.match(/\/s\/([a-z0-9-]+)\//);
+    if (nordstromProduct) {
+      const slug = nordstromProduct[1];
+      for (const [key, label] of Object.entries(RETAILERS)) {
+        if (slug.includes(key)) return { brand: label, retailer, url };
+      }
+    }
+
+    // SSENSE: /en-ca/men/product/{brand}/...
+    const ssenseMatch = path.match(/\/product\/([a-z0-9-]+)\//);
+    if (ssenseMatch) {
+      return { brand: titleCase(ssenseMatch[1].replace(/-/g, ' ')), retailer, url };
+    }
+
+    return { brand: retailer || 'Shop', retailer, url };
+  } catch {
+    return { brand: retailer || 'Shop', retailer, url };
+  }
+}
+
+function titleCase(str: string): string {
+  return str
+    .split(' ')
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
 }

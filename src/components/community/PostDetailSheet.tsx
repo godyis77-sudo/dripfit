@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, UserPlus, UserCheck, ExternalLink, Pencil, Check, ZoomIn, ZoomOut, Sparkles } from 'lucide-react';
-import { detectRetailer } from '@/lib/retailerDetect';
+import { detectBrandFromUrl } from '@/lib/retailerDetect';
 
 interface Post {
   id: string;
@@ -122,12 +122,12 @@ export const PostDetailSheet = ({
 
   if (!post) return null;
 
-  // Collect unique retailer→url pairs from product_urls
+  // Collect unique brand→url pairs from product_urls
   const allUrls = (post.product_urls && post.product_urls.length > 0) ? post.product_urls : (post.product_url ? [post.product_url] : []);
   const retailerUrlMap = new Map<string, string>();
   allUrls.forEach(u => {
-    const r = detectRetailer(u);
-    if (r && !retailerUrlMap.has(r)) retailerUrlMap.set(r, u);
+    const { brand } = detectBrandFromUrl(u);
+    if (brand && !retailerUrlMap.has(brand)) retailerUrlMap.set(brand, u);
   });
   const retailers = [...retailerUrlMap.keys()];
 
