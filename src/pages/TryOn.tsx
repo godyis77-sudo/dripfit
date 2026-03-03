@@ -627,6 +627,16 @@ const TryOn = () => {
             <div className="mb-3">
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Category</p>
               <div className="flex gap-1.5 flex-wrap">
+                <button
+                  onClick={() => setCategory('all')}
+                  className={`px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${
+                    category === 'all'
+                      ? 'border-primary bg-primary text-primary-foreground font-bold'
+                      : 'border-border text-muted-foreground hover:border-primary/30'
+                  }`}
+                >
+                  🛍️ All
+                </button>
                 {CATEGORIES.map(c => (
                   <button
                     key={c.key}
@@ -643,33 +653,44 @@ const TryOn = () => {
               </div>
             </div>
 
-            {/* All categories — expandable sections */}
+            {/* Product catalog browse */}
             {!clothingPhoto && (
               <div className="mb-3 space-y-2">
-                <p className="section-label mb-1.5">Browse Products</p>
-                {ALL_PRODUCT_CATEGORIES.map(cat => (
+                <p className="section-label mb-1.5">{category === 'all' ? 'All Products' : `Shop ${CATEGORIES.find(c => c.key === category)?.label || category}`}</p>
+                {category === 'all' ? (
+                  ALL_PRODUCT_CATEGORIES.map(cat => (
+                    <CategoryProductGrid
+                      key={cat.key}
+                      category={cat.key}
+                      title={cat.label}
+                      collapsed={true}
+                      maxItems={20}
+                      seed={1234}
+                      onSelectProduct={async (product) => {
+                        setSelectedQuickPick(product);
+                        if (product.product_url) setProductLink(product.product_url);
+                        trackEvent('tryon_clothing_uploaded');
+                        const base64 = await imageUrlToBase64(product.image_url);
+                        setClothingPhoto(base64);
+                      }}
+                    />
+                  ))
+                ) : (
                   <CategoryProductGrid
-                    key={cat.key}
-                    category={cat.key}
-                    title={cat.label}
-                    collapsed={cat.key !== category}
+                    category={category}
+                    title={`Shop ${CATEGORIES.find(c => c.key === category)?.label || category}`}
+                    collapsed={false}
                     maxItems={20}
                     seed={1234}
                     onSelectProduct={async (product) => {
                       setSelectedQuickPick(product);
-                      setCategory(
-                        CATEGORIES.find(c => c.key === cat.key)?.key ||
-                        (['tops','top','t-shirts','shirts','hoodies','polos','sweaters'].includes(cat.key) ? 'top' :
-                         ['bottoms','bottom','jeans','pants','shorts'].includes(cat.key) ? 'bottom' :
-                         ['dresses','dress'].includes(cat.key) ? 'dress' : cat.key)
-                      );
                       if (product.product_url) setProductLink(product.product_url);
                       trackEvent('tryon_clothing_uploaded');
                       const base64 = await imageUrlToBase64(product.image_url);
                       setClothingPhoto(base64);
                     }}
                   />
-                ))}
+                )}
               </div>
             )}
 
