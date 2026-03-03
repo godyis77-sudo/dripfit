@@ -122,6 +122,7 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
         '/navi/', 'pm_',
         'doubleclick.net', 'ad.doubleclick', 'googlesyndication', 'googleadservices',
         'facebook.com/tr', 'criteo', 'taboola',
+        'static.zara.net',
       ];
       const HARD_MIN_CONFIDENCE = 0.05;
       const PREFERRED_MIN_CONFIDENCE = 0.15;
