@@ -184,6 +184,7 @@ const TryOn = () => {
   const [shared, setShared] = useState(false);
   const [autoSaved, setAutoSaved] = useState(false);
   const [productLink, setProductLink] = useState('');
+  const [lookItems, setLookItems] = useState<Array<{ brand: string; name: string; url: string; price_cents?: number | null }>>([]);
   const [category, setCategory] = useState<string>('top');
   const [clothingSaved, setClothingSaved] = useState(false);
   const [wardrobeItems, setWardrobeItems] = useState<Array<{ id: string; image_url: string; category: string; product_link: string | null }>>([]);
@@ -398,7 +399,10 @@ const TryOn = () => {
         uploadBase64ToStorage(clothingPhoto!, 'clothing'),
         uploadBase64ToStorage(resultBase64, 'result'),
       ]);
-      const { error } = await supabase.from('tryon_posts').insert({ user_id: user!.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false, product_url: productLink || selectedQuickPick?.product_url || null });
+      const allUrls = lookItems.map(i => i.url).filter(Boolean);
+      const primaryUrl = productLink || selectedQuickPick?.product_url || null;
+      if (primaryUrl && !allUrls.includes(primaryUrl)) allUrls.unshift(primaryUrl);
+      const { error } = await supabase.from('tryon_posts').insert({ user_id: user!.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false, product_url: primaryUrl, product_urls: allUrls });
       if (error) throw error;
       setAutoSaved(true);
       trackEvent('tryon_saved');
@@ -413,14 +417,20 @@ const TryOn = () => {
     try {
       if (autoSaved) {
         const { data: latestPosts } = await supabase.from('tryon_posts').select('id').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
-        if (latestPosts && latestPosts.length > 0) await supabase.from('tryon_posts').update({ caption: caption || null, is_public: isPublic, product_url: productLink || selectedQuickPick?.product_url || null }).eq('id', latestPosts[0].id);
+        const allUrls = lookItems.map(i => i.url).filter(Boolean);
+        const primaryUrl = productLink || selectedQuickPick?.product_url || null;
+        if (primaryUrl && !allUrls.includes(primaryUrl)) allUrls.unshift(primaryUrl);
+        if (latestPosts && latestPosts.length > 0) await supabase.from('tryon_posts').update({ caption: caption || null, is_public: isPublic, product_url: primaryUrl, product_urls: allUrls }).eq('id', latestPosts[0].id);
       } else {
         const [userUrl, clothingUrl, resultUrl] = await Promise.all([
           uploadBase64ToStorage(userPhoto!, 'user'),
           uploadBase64ToStorage(clothingPhoto!, 'clothing'),
           uploadBase64ToStorage(resultImage!, 'result'),
         ]);
-        await supabase.from('tryon_posts').insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic, product_url: productLink || selectedQuickPick?.product_url || null });
+        const allUrls = lookItems.map(i => i.url).filter(Boolean);
+        const primaryUrl = productLink || selectedQuickPick?.product_url || null;
+        if (primaryUrl && !allUrls.includes(primaryUrl)) allUrls.unshift(primaryUrl);
+        await supabase.from('tryon_posts').insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic, product_url: primaryUrl, product_urls: allUrls });
       }
       toast({ title: isPublic ? 'Posted to Style Check!' : 'Saved!', description: isPublic ? 'Your look is live — get feedback from the community.' : 'Caption updated.' });
     } catch (err: any) {
@@ -439,6 +449,7 @@ const TryOn = () => {
     setShared(false);
     setAutoSaved(false);
     setProductLink('');
+    setLookItems([]);
     setClothingSaved(false);
     setSavedToItems(false);
     setShowPostUI(false);
@@ -720,7 +731,10 @@ const TryOn = () => {
                       seed={1234}
                       onSelectProduct={async (product) => {
                         setSelectedQuickPick(product);
-                        if (product.product_url) setProductLink(product.product_url);
+                        if (product.product_url) {
+                          setProductLink(product.product_url);
+                          setLookItems([{ brand: product.brand, name: product.name, url: product.product_url, price_cents: product.price_cents }]);
+                        }
                         trackEvent('tryon_clothing_uploaded');
                         const base64 = await imageUrlToBase64(product.image_url);
                         setClothingPhoto(base64);
@@ -736,7 +750,10 @@ const TryOn = () => {
                     seed={1234}
                     onSelectProduct={async (product) => {
                       setSelectedQuickPick(product);
-                      if (product.product_url) setProductLink(product.product_url);
+                      if (product.product_url) {
+                        setProductLink(product.product_url);
+                        setLookItems([{ brand: product.brand, name: product.name, url: product.product_url, price_cents: product.price_cents }]);
+                      }
                       trackEvent('tryon_clothing_uploaded');
                       const base64 = await imageUrlToBase64(product.image_url);
                       setClothingPhoto(base64);
@@ -867,7 +884,10 @@ const TryOn = () => {
                 >
                   <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                     What's in this look{' '}
-                    {(selectedQuickPick || productLink) ? '— 1 item' : '— 0 items'}
+                    {(() => {
+                      const totalItems = lookItems.length || ((selectedQuickPick || productLink) ? 1 : 0);
+                      return `— ${totalItems} item${totalItems !== 1 ? 's' : ''}`;
+                    })()}
                   </span>
                   <ChevronDown
                     className="h-3.5 w-3.5 text-muted-foreground transition-transform duration-200"
@@ -884,15 +904,35 @@ const TryOn = () => {
                       className="overflow-hidden"
                     >
                       <div className="px-4 py-3 space-y-2" style={{ background: '#1A1A1A', borderLeft: '1px solid #252525', borderRight: '1px solid #252525', borderBottom: '1px solid #252525', borderRadius: '0 0 12px 12px' }}>
-                        {(selectedQuickPick || productLink) ? (
+                        {lookItems.length > 0 ? lookItems.map((item, idx) => (
+                          <div key={idx} className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border"
+                                style={{ background: 'hsl(var(--primary) / 0.12)', borderColor: 'hsl(var(--primary) / 0.3)', color: 'hsl(var(--primary))' }}>
+                                {item.brand}
+                              </span>
+                              <span className="text-[13px] text-foreground truncate">
+                                {item.name.length > 35 ? item.name.slice(0, 35) + '…' : item.name}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              {item.price_cents && (
+                                <span className="text-[13px] font-bold text-primary">
+                                  ${(item.price_cents / 100).toFixed(2)}
+                                </span>
+                              )}
+                              <button onClick={() => window.open(item.url, '_blank', 'noopener')} className="text-[11px] font-bold text-primary">
+                                Shop →
+                              </button>
+                            </div>
+                          </div>
+                        )) : (selectedQuickPick || productLink) ? (
                           <div className="flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2 min-w-0">
-                              {/* Brand pill — gold */}
                               <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border"
                                 style={{ background: 'hsl(var(--primary) / 0.12)', borderColor: 'hsl(var(--primary) / 0.3)', color: 'hsl(var(--primary))' }}>
                                 {selectedQuickPick?.brand || (() => { try { return new URL(productLink).hostname.replace('www.', ''); } catch { return 'Product'; } })()}
                               </span>
-                              {/* Product name */}
                               <span className="text-[13px] text-foreground truncate">
                                 {selectedQuickPick?.name
                                   ? (selectedQuickPick.name.length > 35 ? selectedQuickPick.name.slice(0, 35) + '…' : selectedQuickPick.name)
@@ -906,13 +946,7 @@ const TryOn = () => {
                                   ${(selectedQuickPick.price_cents / 100).toFixed(2)}
                                 </span>
                               )}
-                              <button
-                                onClick={() => {
-                                  const url = productLink || selectedQuickPick?.product_url;
-                                  if (url) window.open(url, '_blank', 'noopener');
-                                }}
-                                className="text-[11px] font-bold text-primary"
-                              >
+                              <button onClick={() => { const url = productLink || selectedQuickPick?.product_url; if (url) window.open(url, '_blank', 'noopener'); }} className="text-[11px] font-bold text-primary">
                                 Shop →
                               </button>
                             </div>
@@ -1047,13 +1081,21 @@ const TryOn = () => {
                   variant="outline"
                   className="flex-1 h-9 rounded-xl text-[11px]"
                   onClick={() => {
-                    trackEvent('shop_clickout', { source: 'tryon', hasLink: !!productLink });
-                    const url = productLink || selectedQuickPick?.product_url || 'https://www.google.com/search?tbm=shop&q=outfit';
-                    window.open(url, '_blank', 'noopener');
+                    const totalItems = lookItems.length || ((productLink || selectedQuickPick?.product_url) ? 1 : 0);
+                    trackEvent('shop_clickout', { source: 'tryon', hasLink: !!productLink, itemCount: totalItems });
+                    const url = productLink || selectedQuickPick?.product_url || lookItems[0]?.url;
+                    if (url) {
+                      window.open(url, '_blank', 'noopener');
+                    } else {
+                      window.open('https://www.google.com/search?tbm=shop&q=outfit', '_blank', 'noopener');
+                    }
                   }}
                 >
                   <ShoppingBag className="mr-1 h-3 w-3" />
-                  {(productLink || selectedQuickPick?.product_url) ? 'Shop All Items (1)' : 'Find Similar Items'}
+                  {(() => {
+                    const totalItems = lookItems.length || ((productLink || selectedQuickPick?.product_url) ? 1 : 0);
+                    return totalItems > 0 ? `Shop All Items (${totalItems})` : 'Find Similar Items';
+                  })()}
                 </Button>
               </div>
 
@@ -1160,8 +1202,10 @@ const TryOn = () => {
                                     maxItems={8}
                                     seed={7777}
                                     showViewAll={true}
-                                    onSelectProduct={async (product) => {
-                                      if (product.product_url) setProductLink(product.product_url);
+                                     onSelectProduct={async (product) => {
+                                      if (product.product_url) {
+                                        setLookItems(prev => [...prev, { brand: product.brand, name: product.name, url: product.product_url!, price_cents: product.price_cents }]);
+                                      }
                                       trackEvent('catalog_product_clicked', { brand: product.brand, category: cat.key });
                                       const base64 = await imageUrlToBase64(product.image_url);
                                       setAccessoryPhoto(base64);
@@ -1180,8 +1224,10 @@ const TryOn = () => {
                                   collapsed={false}
                                   maxItems={4}
                                   seed={9999}
-                                  onSelectProduct={async (product) => {
-                                    if (product.product_url) setProductLink(product.product_url);
+                                   onSelectProduct={async (product) => {
+                                    if (product.product_url) {
+                                      setLookItems(prev => [...prev, { brand: product.brand, name: product.name, url: product.product_url!, price_cents: product.price_cents }]);
+                                    }
                                     trackEvent('catalog_product_clicked', { brand: product.brand, category: accessoryCategory });
                                     const base64 = await imageUrlToBase64(product.image_url);
                                     setAccessoryPhoto(base64);

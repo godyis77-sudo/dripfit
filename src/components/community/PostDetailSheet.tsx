@@ -11,6 +11,7 @@ interface Post {
   caption: string | null;
   created_at: string;
   product_url?: string | null;
+  product_urls?: string[] | null;
   profile?: { display_name: string | null; avatar_url?: string | null };
   avg_style?: number;
   avg_color?: number;
@@ -121,7 +122,9 @@ export const PostDetailSheet = ({
 
   if (!post) return null;
 
-  const retailer = post.product_url ? detectRetailer(post.product_url) : null;
+  // Collect all unique retailers from product_urls or fallback to product_url
+  const allUrls = (post.product_urls && post.product_urls.length > 0) ? post.product_urls : (post.product_url ? [post.product_url] : []);
+  const retailers = [...new Set(allUrls.map(u => detectRetailer(u)).filter(Boolean))] as string[];
 
   const displayQuestion = questionText || post.caption || prompt;
 
@@ -201,11 +204,15 @@ export const PostDetailSheet = ({
             <button onClick={toggleZoom} className="absolute bottom-3 right-4 h-8 w-8 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform">
               {zoom > 1 ? <ZoomOut className="h-4 w-4 text-white" /> : <ZoomIn className="h-4 w-4 text-white" />}
             </button>
-            {retailer && zoom <= 1 && (
-              <button onClick={() => onShopLook(post)} className="absolute top-3 right-4 text-[11px] font-bold text-white bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1.5 active:scale-95 transition-transform">
-                {retailer}
-                <ExternalLink className="h-3 w-3" />
-              </button>
+            {retailers.length > 0 && zoom <= 1 && (
+              <div className="absolute top-3 right-4 flex flex-col gap-1 items-end">
+                {retailers.map((r) => (
+                  <button key={r} onClick={() => onShopLook(post)} className="text-[11px] font-bold text-white bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1.5 active:scale-95 transition-transform">
+                    {r}
+                    <ExternalLink className="h-3 w-3" />
+                  </button>
+                ))}
+              </div>
             )}
             {/* Try On chip */}
             {!isOwnPost && zoom <= 1 && onTryOn && (

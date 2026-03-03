@@ -647,6 +647,7 @@ export type Database = {
           id: string
           is_public: boolean
           product_url: string | null
+          product_urls: string[] | null
           result_photo_url: string
           user_id: string
           user_photo_url: string
@@ -658,6 +659,7 @@ export type Database = {
           id?: string
           is_public?: boolean
           product_url?: string | null
+          product_urls?: string[] | null
           result_photo_url: string
           user_id: string
           user_photo_url: string
@@ -669,6 +671,7 @@ export type Database = {
           id?: string
           is_public?: boolean
           product_url?: string | null
+          product_urls?: string[] | null
           result_photo_url?: string
           user_id?: string
           user_photo_url?: string

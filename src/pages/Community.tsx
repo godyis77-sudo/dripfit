@@ -32,6 +32,7 @@ interface Post {
   caption: string | null;
   created_at: string;
   product_url?: string | null;
+  product_urls?: string[] | null;
   profile?: { display_name: string | null; avatar_url?: string | null };
   avg_style?: number;
   avg_color?: number;
@@ -397,12 +398,10 @@ const Community = () => {
   };
 
   const handleShopLook = (post: Post) => {
-    trackEvent('shop_clickout', { source: 'fitcheck', hasProductUrl: !!post.product_url });
-    if (post.product_url) {
-      window.open(post.product_url, '_blank', 'noopener');
-    } else {
-      const query = encodeURIComponent(post.caption || 'outfit');
-      window.open(`https://www.google.com/search?tbm=shop&q=${query}`, '_blank', 'noopener');
+    const urls = (post.product_urls && post.product_urls.length > 0) ? post.product_urls : (post.product_url ? [post.product_url] : []);
+    trackEvent('shop_clickout', { source: 'fitcheck', hasProductUrl: urls.length > 0, itemCount: urls.length });
+    if (urls.length > 0) {
+      window.open(urls[0], '_blank', 'noopener');
     }
   };
 
@@ -829,13 +828,18 @@ const Community = () => {
                       <Sparkles className="h-2.5 w-2.5" /> Try On
                     </button>
                   )}
-                  {/* Retailer badge — only when a real product URL exists */}
-                  {post.product_url && (() => {
-                    const retailer = detectRetailer(post.product_url);
-                    return retailer ? (
-                      <span className="absolute top-1.5 right-1.5 text-[8px] font-bold text-white bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
-                        {retailer}
-                      </span>
+                  {/* Retailer badges — show all unique retailers from product_urls */}
+                  {(() => {
+                    const urls = (post as any).product_urls?.length > 0 ? (post as any).product_urls : (post.product_url ? [post.product_url] : []);
+                    const retailers = [...new Set(urls.map((u: string) => detectRetailer(u)).filter(Boolean))] as string[];
+                    return retailers.length > 0 ? (
+                      <div className="absolute top-1.5 right-1.5 flex flex-col gap-0.5 items-end">
+                        {retailers.map((r) => (
+                          <span key={r} className="text-[8px] font-bold text-white bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
+                            {r}
+                          </span>
+                        ))}
+                      </div>
                     ) : null;
                   })()}
                 </button>
