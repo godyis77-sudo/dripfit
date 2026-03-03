@@ -29,7 +29,7 @@ const VOTE_OPTIONS = [
 
 const FIT_OPTIONS = [
   { key: 'too_tight', label: 'Too small' },
-  { key: 'perfect', label: 'Looks right' },
+  { key: 'perfect', label: 'Perfect' },
   { key: 'too_loose', label: 'Too big' },
 ] as const;
 
