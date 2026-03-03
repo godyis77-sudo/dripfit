@@ -23,6 +23,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 import PostLookFlow from '@/components/community/PostLookFlow';
 import { PostDetailSheet } from '@/components/community/PostDetailSheet';
 import { ShopSizeInfo } from '@/components/community/ShopSizeInfo';
+import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 
 interface Post {
   id: string;
@@ -966,6 +967,14 @@ const Community = () => {
                     </button>
                   )}
                 </div>
+
+                {/* What's In This Look */}
+                <WhatsInThisLook
+                  productUrls={(post as any).product_urls}
+                  productUrl={post.product_url}
+                  clothingPhotoUrl={post.clothing_photo_url}
+                  variant="card"
+                />
 
                 {/* Mini comment */}
                 <div className="px-1.5 pt-1 pb-1.5">

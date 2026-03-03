@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, UserPlus, UserCheck, ExternalLink, Pencil, Check, ZoomIn, ZoomOut, Sparkles, Trash2 } from 'lucide-react';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
+import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 
 interface Post {
   id: string;
@@ -237,6 +238,16 @@ export const PostDetailSheet = ({
               </button>
             )}
           </motion.div>
+
+          {/* What's In This Look */}
+          <div className="px-4 pt-2" onClick={(e) => e.stopPropagation()}>
+            <WhatsInThisLook
+              productUrls={post.product_urls || undefined}
+              productUrl={post.product_url}
+              clothingPhotoUrl={post.clothing_photo_url}
+              variant="detail"
+            />
+          </div>
 
           {/* Bottom panel */}
           <motion.div

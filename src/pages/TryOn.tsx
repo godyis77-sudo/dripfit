@@ -15,6 +15,7 @@ import { buildRetailerSearchUrl } from '@/lib/retailerLinks';
 import BottomTabBar from '@/components/BottomTabBar';
 import { FullscreenImage } from '@/components/ui/fullscreen-image';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
+import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 
@@ -184,7 +185,7 @@ const TryOn = () => {
   const [shared, setShared] = useState(false);
   const [autoSaved, setAutoSaved] = useState(false);
   const [productLink, setProductLink] = useState('');
-  const [lookItems, setLookItems] = useState<Array<{ brand: string; name: string; url: string; price_cents?: number | null }>>([]);
+  const [lookItems, setLookItems] = useState<Array<{ brand: string; name: string; url: string; price_cents?: number | null; image_url?: string | null }>>([]);
   const [category, setCategory] = useState<string>('top');
   const [clothingSaved, setClothingSaved] = useState(false);
   const [wardrobeItems, setWardrobeItems] = useState<Array<{ id: string; image_url: string; category: string; product_link: string | null }>>([]);
@@ -740,7 +741,7 @@ const TryOn = () => {
                         setSelectedQuickPick(product);
                         if (product.product_url) {
                           setProductLink(product.product_url);
-                          setLookItems([{ brand: product.brand, name: product.name, url: product.product_url, price_cents: product.price_cents }]);
+                          setLookItems([{ brand: product.brand, name: product.name, url: product.product_url, price_cents: product.price_cents, image_url: product.image_url }]);
                         }
                         trackEvent('tryon_clothing_uploaded');
                         try {
@@ -764,7 +765,7 @@ const TryOn = () => {
                       setSelectedQuickPick(product);
                       if (product.product_url) {
                         setProductLink(product.product_url);
-                        setLookItems([{ brand: product.brand, name: product.name, url: product.product_url, price_cents: product.price_cents }]);
+                        setLookItems([{ brand: product.brand, name: product.name, url: product.product_url, price_cents: product.price_cents, image_url: product.image_url }]);
                       }
                       trackEvent('tryon_clothing_uploaded');
                       try {
@@ -892,89 +893,29 @@ const TryOn = () => {
               </FullscreenImage>
 
               {/* ── What's In This Look (expandable) ── */}
-              <div className="mb-3">
-                <button
-                  onClick={() => setShowLookItems(!showLookItems)}
-                  className="w-full flex items-center justify-between rounded-xl active:scale-[0.98] transition-transform"
-                  style={{ background: '#1A1A1A', border: '1px solid #252525', borderRadius: '12px', padding: '14px 16px' }}
-                >
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                    What's in this look{' '}
-                    {(() => {
-                      const totalItems = lookItems.length || ((selectedQuickPick || productLink) ? 1 : 0);
-                      return `— ${totalItems} item${totalItems !== 1 ? 's' : ''}`;
-                    })()}
-                  </span>
-                  <ChevronDown
-                    className="h-3.5 w-3.5 text-muted-foreground transition-transform duration-200"
-                    style={{ transform: showLookItems ? 'rotate(180deg)' : 'rotate(0deg)' }}
+              {(() => {
+                // Build items for the component
+                const displayItems = lookItems.length > 0 
+                  ? lookItems 
+                  : (selectedQuickPick || productLink) 
+                    ? [{
+                        brand: selectedQuickPick?.brand || (() => { try { return new URL(productLink).hostname.replace('www.', ''); } catch { return 'Product'; } })(),
+                        name: selectedQuickPick?.name || (() => { try { return new URL(productLink).hostname.replace('www.', ''); } catch { return 'Product'; } })(),
+                        url: productLink || selectedQuickPick?.product_url || '',
+                        price_cents: selectedQuickPick?.price_cents,
+                        image_url: selectedQuickPick?.image_url || null,
+                      }]
+                    : [];
+
+                return (
+                  <WhatsInThisLook
+                    items={displayItems}
+                    clothingPhotoUrl={clothingPhoto}
+                    defaultOpen={showLookItems}
+                    variant="detail"
                   />
-                </button>
-                <AnimatePresence>
-                  {showLookItems && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2, ease: 'easeOut' }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-4 py-3 space-y-2" style={{ background: '#1A1A1A', borderLeft: '1px solid #252525', borderRight: '1px solid #252525', borderBottom: '1px solid #252525', borderRadius: '0 0 12px 12px' }}>
-                        {lookItems.length > 0 ? lookItems.map((item, idx) => (
-                          <div key={idx} className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2 min-w-0">
-                              <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border"
-                                style={{ background: 'hsl(var(--primary) / 0.12)', borderColor: 'hsl(var(--primary) / 0.3)', color: 'hsl(var(--primary))' }}>
-                                {item.brand}
-                              </span>
-                              <span className="text-[13px] text-foreground truncate">
-                                {item.name.length > 35 ? item.name.slice(0, 35) + '…' : item.name}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 shrink-0">
-                              {item.price_cents && (
-                                <span className="text-[13px] font-bold text-primary">
-                                  ${(item.price_cents / 100).toFixed(2)}
-                                </span>
-                              )}
-                              <button onClick={() => window.open(item.url, '_blank', 'noopener')} className="text-[11px] font-bold text-primary">
-                                Shop →
-                              </button>
-                            </div>
-                          </div>
-                        )) : (selectedQuickPick || productLink) ? (
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2 min-w-0">
-                              <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border"
-                                style={{ background: 'hsl(var(--primary) / 0.12)', borderColor: 'hsl(var(--primary) / 0.3)', color: 'hsl(var(--primary))' }}>
-                                {selectedQuickPick?.brand || (() => { try { return new URL(productLink).hostname.replace('www.', ''); } catch { return 'Product'; } })()}
-                              </span>
-                              <span className="text-[13px] text-foreground truncate">
-                                {selectedQuickPick?.name
-                                  ? (selectedQuickPick.name.length > 35 ? selectedQuickPick.name.slice(0, 35) + '…' : selectedQuickPick.name)
-                                  : (() => { try { return new URL(productLink).hostname.replace('www.', ''); } catch { return 'Product'; } })()
-                                }
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 shrink-0">
-                              {selectedQuickPick?.price_cents && (
-                                <span className="text-[13px] font-bold text-primary">
-                                  ${(selectedQuickPick.price_cents / 100).toFixed(2)}
-                                </span>
-                              )}
-                              <button onClick={() => { const url = productLink || selectedQuickPick?.product_url; if (url) window.open(url, '_blank', 'noopener'); }} className="text-[11px] font-bold text-primary">
-                                Shop →
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <p className="text-[11px] text-muted-foreground">No product linked to this try-on</p>
-                        )}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                );
+              })()}
 
               {/* ── PRIMARY CTA: Save & Post to Style Check ── */}
               {!shared && !showPostUI && (
