@@ -643,24 +643,33 @@ const TryOn = () => {
               </div>
             </div>
 
-            {/* Quick picks — powered by product catalog */}
+            {/* All categories — expandable sections */}
             {!clothingPhoto && (
-              <div className="mb-3">
-                <p className="section-label mb-1.5">Quick Picks</p>
-                <CategoryProductGrid
-                  category={category}
-                  title={`Shop ${CATEGORIES.find(c => c.key === category)?.label || category}`}
-                  collapsed={false}
-                  maxItems={8}
-                  seed={1234}
-                  onSelectProduct={async (product) => {
-                    setSelectedQuickPick(product);
-                    if (product.product_url) setProductLink(product.product_url);
-                    trackEvent('tryon_clothing_uploaded');
-                    const base64 = await imageUrlToBase64(product.image_url);
-                    setClothingPhoto(base64);
-                  }}
-                />
+              <div className="mb-3 space-y-2">
+                <p className="section-label mb-1.5">Browse Products</p>
+                {ALL_PRODUCT_CATEGORIES.map(cat => (
+                  <CategoryProductGrid
+                    key={cat.key}
+                    category={cat.key}
+                    title={cat.label}
+                    collapsed={cat.key !== category}
+                    maxItems={20}
+                    seed={1234}
+                    onSelectProduct={async (product) => {
+                      setSelectedQuickPick(product);
+                      setCategory(
+                        CATEGORIES.find(c => c.key === cat.key)?.key ||
+                        (['tops','top','t-shirts','shirts','hoodies','polos','sweaters'].includes(cat.key) ? 'top' :
+                         ['bottoms','bottom','jeans','pants','shorts'].includes(cat.key) ? 'bottom' :
+                         ['dresses','dress'].includes(cat.key) ? 'dress' : cat.key)
+                      );
+                      if (product.product_url) setProductLink(product.product_url);
+                      trackEvent('tryon_clothing_uploaded');
+                      const base64 = await imageUrlToBase64(product.image_url);
+                      setClothingPhoto(base64);
+                    }}
+                  />
+                ))}
               </div>
             )}
 
