@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, UserPlus, UserCheck, ExternalLink, Pencil, Check, ZoomIn, ZoomOut, Sparkles } from 'lucide-react';
+import { X, Send, UserPlus, UserCheck, ExternalLink, Pencil, Check, ZoomIn, ZoomOut, Sparkles, Trash2 } from 'lucide-react';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 
 interface Post {
@@ -45,6 +45,7 @@ interface PostDetailSheetProps {
   onNavigateProfile: (post: Post) => void;
   onShopLook: (post: Post) => void;
   onTryOn?: (post: Post) => void;
+  onDelete?: (postId: string) => void;
   isFollowing: boolean;
   isOwnPost: boolean;
   isPlaceholder: boolean;
@@ -64,6 +65,7 @@ export const PostDetailSheet = ({
   onNavigateProfile,
   onShopLook,
   onTryOn,
+  onDelete,
   isFollowing,
   isOwnPost,
   isPlaceholder,
@@ -180,6 +182,11 @@ export const PostDetailSheet = ({
               </div>
             </button>
             <div className="flex items-center gap-2">
+              {isOwnPost && !isPlaceholder && onDelete && (
+                <button onClick={(e) => { e.stopPropagation(); onDelete(post.id); }} className="h-8 px-3 rounded-full bg-red-500/20 text-red-400 text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95">
+                  <Trash2 className="h-3 w-3" /> Remove
+                </button>
+              )}
               {!isOwnPost && !isPlaceholder && (
                 <button onClick={(e) => { e.stopPropagation(); onFollow(post.user_id); }} className={`h-8 px-3 rounded-full text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95 ${isFollowing ? 'bg-white/10 text-white' : 'bg-white text-black'}`}>
                   {isFollowing ? <UserCheck className="h-3 w-3" /> : <UserPlus className="h-3 w-3" />}
