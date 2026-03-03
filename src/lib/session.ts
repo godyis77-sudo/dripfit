@@ -100,6 +100,31 @@ export function setUserRegion(region: UserRegion): void {
   localStorage.setItem(REGION_KEY, region);
 }
 
+/** Persist region to profiles table (fire-and-forget). */
+export async function persistRegionToDb(userId: string, region: UserRegion): Promise<void> {
+  const { supabase } = await import('@/integrations/supabase/client');
+  await supabase
+    .from('profiles')
+    .update({ shopping_region: region } as any)
+    .eq('user_id', userId);
+}
+
+/** Load region from profiles table, falling back to localStorage. */
+export async function loadRegionFromDb(userId: string): Promise<UserRegion> {
+  const { supabase } = await import('@/integrations/supabase/client');
+  const { data } = await supabase
+    .from('profiles')
+    .select('shopping_region')
+    .eq('user_id', userId)
+    .single();
+  const dbRegion = (data as any)?.shopping_region as UserRegion | null;
+  if (dbRegion) {
+    localStorage.setItem(REGION_KEY, dbRegion);
+    return dbRegion;
+  }
+  return getUserRegion();
+}
+
 // Premium banner dismiss logic
 const PREMIUM_DISMISS_KEY = 'dripcheck_premium_dismiss';
 const PREMIUM_DISMISS_COUNT_KEY = 'dripcheck_premium_dismiss_count';

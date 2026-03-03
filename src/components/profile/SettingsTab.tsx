@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react';
+import { forwardRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,7 @@ import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { STRIPE_TIERS } from '@/hooks/useAuth';
-import { getUserRegion, setUserRegion, type UserRegion } from '@/lib/session';
+import { getUserRegion, setUserRegion, loadRegionFromDb, persistRegionToDb, type UserRegion } from '@/lib/session';
 import FavoriteRetailers from './FavoriteRetailers';
 import PreferredBrands from './PreferredBrands';
 
@@ -59,6 +59,11 @@ const SettingsTab = ({
   const [editingIg, setEditingIg] = useState(false);
   const [igValue, setIgValue] = useState(instagramHandle);
   const [region, setRegion] = useState<UserRegion>(getUserRegion());
+
+  // Load region from DB on mount
+  useEffect(() => {
+    loadRegionFromDb(user.id).then(r => setRegion(r));
+  }, [user.id]);
 
   const REGION_OPTIONS: { value: UserRegion; label: string; flag: string }[] = [
     { value: 'us', label: 'United States', flag: '🇺🇸' },
@@ -241,7 +246,7 @@ const SettingsTab = ({
           {REGION_OPTIONS.map(r => (
             <button
               key={r.value}
-              onClick={() => { setRegion(r.value); setUserRegion(r.value); trackEvent('region_changed' as any, { region: r.value }); toast({ title: `Region set to ${r.label}` }); }}
+              onClick={() => { setRegion(r.value); setUserRegion(r.value); persistRegionToDb(user.id, r.value); trackEvent('region_changed' as any, { region: r.value }); toast({ title: `Region set to ${r.label}` }); }}
               className={`flex flex-col items-center gap-0.5 py-2 rounded-lg text-center transition-all active:scale-95 ${
                 region === r.value
                   ? 'gradient-drip text-primary-foreground'
