@@ -139,7 +139,7 @@ const TryOn = () => {
   const accessoryCameraRef = useRef<HTMLInputElement>(null);
 
   const FREE_MONTHLY_LIMIT = 3;
-  const hasUnlimitedTryOns = isSubscribed || user?.email?.toLowerCase() === 'godyis77@gmail.com';
+  const hasUnlimitedTryOns = isSubscribed;
 
   const getMonthlyTryOnCount = (): number => {
     const now = new Date();
