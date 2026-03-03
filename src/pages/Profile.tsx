@@ -152,7 +152,12 @@ const Profile = () => {
   };
 
   const deleteWardrobeItem = async (id: string) => {
-    await supabase.from('clothing_wardrobe').delete().eq('id', id);
+    if (!user) return;
+    const { error } = await supabase.from('clothing_wardrobe').delete().eq('id', id).eq('user_id', user.id);
+    if (error) {
+      toast({ title: 'Error', description: 'Could not remove item. Try again.', variant: 'destructive' });
+      return;
+    }
     setWardrobeItems(prev => prev.filter(i => i.id !== id));
     toast({ title: 'Removed', description: 'Item removed from wardrobe.' });
   };
