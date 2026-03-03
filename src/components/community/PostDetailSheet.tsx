@@ -246,6 +246,7 @@ export const PostDetailSheet = ({
               productUrl={post.product_url}
               clothingPhotoUrl={post.clothing_photo_url}
               variant="detail"
+              onTryOn={onTryOn ? () => onTryOn(post) : undefined}
             />
           </div>
 
