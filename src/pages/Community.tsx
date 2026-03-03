@@ -829,11 +829,9 @@ const Community = () => {
                       <Sparkles className="h-2.5 w-2.5" /> Try On
                     </button>
                   )}
-                  {/* Retailer badge */}
-                  {(() => {
-                    const retailer = post.product_url
-                      ? detectRetailer(post.product_url)
-                      : getBestRetailerForItem(null, post.caption?.toLowerCase().includes('dress') ? 'dress' : 'top');
+                  {/* Retailer badge — only when a real product URL exists */}
+                  {post.product_url && (() => {
+                    const retailer = detectRetailer(post.product_url);
                     return retailer ? (
                       <span className="absolute top-1.5 right-1.5 text-[8px] font-bold text-white bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
                         {retailer}
