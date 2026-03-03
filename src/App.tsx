@@ -28,6 +28,7 @@ import NotFound from "./pages/NotFound";
 import PublicProfile from "./pages/PublicProfile";
 import Browse from "./pages/Browse";
 import ProfileSettings from "./pages/ProfileSettings";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -64,7 +65,7 @@ const App = () => (
                 <Route path="/profile/saved" element={<SavedItems />} />
                 <Route path="/profile/history" element={<History />} />
                 <Route path="/profile/body" element={<ProfileBody />} />
-                <Route path="/profile/body" element={<ProfileBody />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/profile/:username" element={<PublicProfile />} />
                 <Route path="/browse/:category" element={<Browse />} />
                 <Route path="/premium" element={<Premium />} />
