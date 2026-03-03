@@ -398,7 +398,7 @@ const TryOn = () => {
         uploadBase64ToStorage(clothingPhoto!, 'clothing'),
         uploadBase64ToStorage(resultBase64, 'result'),
       ]);
-      const { error } = await supabase.from('tryon_posts').insert({ user_id: user!.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false });
+      const { error } = await supabase.from('tryon_posts').insert({ user_id: user!.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false, product_url: productLink || selectedQuickPick?.product_url || null });
       if (error) throw error;
       setAutoSaved(true);
       trackEvent('tryon_saved');
@@ -413,14 +413,14 @@ const TryOn = () => {
     try {
       if (autoSaved) {
         const { data: latestPosts } = await supabase.from('tryon_posts').select('id').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
-        if (latestPosts && latestPosts.length > 0) await supabase.from('tryon_posts').update({ caption: caption || null, is_public: isPublic }).eq('id', latestPosts[0].id);
+        if (latestPosts && latestPosts.length > 0) await supabase.from('tryon_posts').update({ caption: caption || null, is_public: isPublic, product_url: productLink || selectedQuickPick?.product_url || null }).eq('id', latestPosts[0].id);
       } else {
         const [userUrl, clothingUrl, resultUrl] = await Promise.all([
           uploadBase64ToStorage(userPhoto!, 'user'),
           uploadBase64ToStorage(clothingPhoto!, 'clothing'),
           uploadBase64ToStorage(resultImage!, 'result'),
         ]);
-        await supabase.from('tryon_posts').insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic });
+        await supabase.from('tryon_posts').insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic, product_url: productLink || selectedQuickPick?.product_url || null });
       }
       toast({ title: isPublic ? 'Posted to Style Check!' : 'Saved!', description: isPublic ? 'Your look is live — get feedback from the community.' : 'Caption updated.' });
     } catch (err: any) {
