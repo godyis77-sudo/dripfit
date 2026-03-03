@@ -46,15 +46,15 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const [activePriceIdx, setActivePriceIdx] = useState(0);
 
   useEffect(() => {
+    let stale = false;
+
     const fetchTrending = async () => {
       const TARGET = 6;
       let posts: TrendingPost[] = [];
 
-      // Fetch community posts from OTHER users ordered by votes in last 7 days
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
       if (user) {
-        // Get public try-on posts from other users
         const { data: livePosts } = await supabase
           .from('tryon_posts')
           .select('id, user_id, caption, result_photo_url, created_at, is_public')
@@ -72,7 +72,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             .in('user_id', userIds);
           const nameMap = new Map(profiles?.map(p => [p.user_id, p.display_name]) || []);
 
-          // Get vote counts for these posts
           const postIds = livePosts.map(p => p.id);
           const { data: votes } = await supabase
             .from('community_votes')
@@ -95,7 +94,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
         }
       }
 
-      // Fill remaining with seed posts
       if (posts.length < TARGET) {
         const remaining = TARGET - posts.length;
         const { data: seeds } = await supabase
@@ -109,13 +107,13 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
         }
       }
 
-      setTrendingFits(posts);
+      if (!stale) setTrendingFits(posts);
     };
 
     const fetchProfileName = async () => {
       if (!user) return;
       const { data } = await supabase.from('profiles').select('display_name').eq('user_id', user.id).maybeSingle();
-      if (data?.display_name) setProfileName(data.display_name);
+      if (!stale && data?.display_name) setProfileName(data.display_name);
     };
 
     const checkScanStatus = async () => {
@@ -126,12 +124,14 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
         .eq('user_id', user.id)
         .limit(1)
         .maybeSingle();
-      setHasScan(!!data);
+      if (!stale) setHasScan(!!data);
     };
 
     fetchTrending();
     fetchProfileName();
     checkScanStatus();
+
+    return () => { stale = true; };
   }, [user]);
 
   const displayName = profileName || user?.email?.split('@')[0] || '';
