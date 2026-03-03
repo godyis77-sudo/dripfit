@@ -180,6 +180,9 @@ const Community = () => {
     });
   }, [user]);
 
+  // Serialize followingIds to avoid re-render loops from new array references
+  const followingIdsKey = followingIds.join(',');
+
   useEffect(() => {
     if (filter === 'shop') {
       fetchRetailers();
@@ -188,7 +191,8 @@ const Community = () => {
     } else {
       fetchPosts();
     }
-  }, [filter, user?.id, followingIds]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, user?.id, followingIdsKey]);
 
   // Load following IDs for follow buttons
   useEffect(() => {
@@ -331,12 +335,14 @@ const Community = () => {
     setVotes(prev => ({ ...prev, ...userVotes }));
   };
 
-  // Load counts when posts change
+  // Load counts when posts change — use serialized IDs to avoid loops
+  const postIdsKey = posts.map(p => p.id).join(',');
   useEffect(() => {
     if (posts.length > 0) {
       loadVoteCounts(posts.map(p => p.id));
     }
-  }, [posts, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [postIdsKey, user?.id]);
 
   const handleVote = async (postId: string, key: string) => {
     if (!user) { toast({ title: 'Sign in to vote', description: 'Create a free account to share your opinion.', variant: 'destructive' }); return; }
