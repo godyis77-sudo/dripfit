@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.scrape-size-charts]
 verify_jwt = false
+
+[functions.categorize-products]
+verify_jwt = false
