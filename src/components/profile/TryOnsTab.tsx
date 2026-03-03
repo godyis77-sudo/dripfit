@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import TryOnDetailSheet from './TryOnDetailSheet';
+import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 
 interface TryOnPost {
   id: string;
@@ -16,6 +17,7 @@ interface TryOnPost {
   is_public: boolean;
   created_at: string;
   product_url?: string | null;
+  product_urls?: string[] | null;
   clothing_photo_url?: string;
 }
 
@@ -226,6 +228,14 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                       </div>
                     </div>
                   )}
+
+                  {/* What's In This Look */}
+                  <WhatsInThisLook
+                    productUrls={post.product_urls || undefined}
+                    productUrl={post.product_url}
+                    clothingPhotoUrl={post.clothing_photo_url}
+                    variant="card"
+                  />
                 </div>
               </motion.div>
             ))}
