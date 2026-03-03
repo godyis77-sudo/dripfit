@@ -67,6 +67,7 @@ const Analyze = () => {
   const [realData, setRealData] = useState<any>(null);
   const minTimeElapsed = useRef(false);
   const resultReady = useRef<any>(null);
+  const effectRan = useRef(false);
 
   // Generate placeholder shimmer values for each measurement
   const getDisplayValue = useCallback((key: string) => {
@@ -86,6 +87,10 @@ const Analyze = () => {
       return;
     }
 
+    // Guard: only run once (adding deps for correctness but preventing re-execution)
+    if (effectRan.current) return;
+    effectRan.current = true;
+
     const msgInterval = setInterval(() => setMsgIdx(p => (p + 1) % MESSAGES.length), 2000);
 
     const progressInterval = setInterval(() => {
@@ -101,7 +106,6 @@ const Analyze = () => {
       });
     }, SCAN_TICK);
 
-    // Progressively reveal measurements spread across total scan time
     const revealInterval = TOTAL_SCAN_TIME / REVEAL_ORDER.length;
     REVEAL_ORDER.forEach((key, i) => {
       setTimeout(() => {
@@ -121,7 +125,7 @@ const Analyze = () => {
       clearInterval(progressInterval);
       clearInterval(scanInterval);
     };
-  }, []);
+  }, [state, navigate, user]);
 
   const saveToDatabase = async (data: any) => {
     if (!user) return;
