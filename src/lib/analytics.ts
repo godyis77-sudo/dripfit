@@ -77,7 +77,8 @@ type FunnelEvent =
   | 'browse_product_preview'
   | 'browse_product_clicked'
   | 'catalog_product_tryon'
-  | 'fit_preference_changed';
+  | 'fit_preference_changed'
+  | 'badge_clickout';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
