@@ -34,14 +34,22 @@ const CATEGORY_MAP: Record<string, Record<string, string[]>> = {
   zara: {
     tops:       ['https://www.zara.com/us/en/man-tshirts-l855.html', 'https://www.zara.com/us/en/woman-tshirts-l1362.html'],
     bottoms:    ['https://www.zara.com/us/en/man-trousers-l838.html', 'https://www.zara.com/us/en/woman-trousers-l1335.html'],
+    shorts:     ['https://www.zara.com/us/en/man-shorts-l838.html', 'https://www.zara.com/us/en/woman-shorts-l1355.html'],
+    skirts:     ['https://www.zara.com/us/en/woman-skirts-l1299.html'],
+    swimwear:   ['https://www.zara.com/us/en/man-swimwear-l4393.html', 'https://www.zara.com/us/en/woman-swimwear-l1352.html'],
     outerwear:  ['https://www.zara.com/us/en/man-jackets-l825.html', 'https://www.zara.com/us/en/woman-jackets-l1114.html'],
     dresses:    ['https://www.zara.com/us/en/woman-dresses-l1066.html'],
     shoes:      ['https://www.zara.com/us/en/man-shoes-l769.html', 'https://www.zara.com/us/en/woman-shoes-l1251.html'],
     accessories:['https://www.zara.com/us/en/man-accessories-l4734.html'],
+    scarves:    ['https://www.zara.com/us/en/woman-accessories-scarves-l1412.html'],
   },
   hm: {
     tops:       ['https://www2.hm.com/en_us/men/products/t-shirts-and-tanks.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
     bottoms:    ['https://www2.hm.com/en_us/men/products/pants.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
+    shorts:     ['https://www2.hm.com/en_us/men/products/shorts.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
+    skirts:     ['https://www2.hm.com/en_us/women/products/skirts.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
+    swimwear:   ['https://www2.hm.com/en_us/men/products/swimwear.html?sort=stock&image-size=small&image=model&offset=0&page-size=36', 'https://www2.hm.com/en_us/women/products/swimwear.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
+    loungewear: ['https://www2.hm.com/en_us/men/products/loungewear.html?sort=stock&image-size=small&image=model&offset=0&page-size=36', 'https://www2.hm.com/en_us/women/products/loungewear.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
     outerwear:  ['https://www2.hm.com/en_us/men/products/jackets-and-coats.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
     dresses:    ['https://www2.hm.com/en_us/women/products/dresses.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
     shoes:      ['https://www2.hm.com/en_us/men/products/shoes.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
@@ -50,29 +58,44 @@ const CATEGORY_MAP: Record<string, Record<string, string[]>> = {
   uniqlo: {
     tops:       ['https://www.uniqlo.com/us/en/men/tops/t-shirts', 'https://www.uniqlo.com/us/en/women/tops/t-shirts'],
     bottoms:    ['https://www.uniqlo.com/us/en/men/bottoms/pants', 'https://www.uniqlo.com/us/en/women/bottoms/pants'],
+    shorts:     ['https://www.uniqlo.com/us/en/men/bottoms/shorts', 'https://www.uniqlo.com/us/en/women/bottoms/shorts'],
+    swimwear:   ['https://www.uniqlo.com/us/en/men/innerwear-and-loungewear/swimwear'],
+    loungewear: ['https://www.uniqlo.com/us/en/men/innerwear-and-loungewear/loungewear', 'https://www.uniqlo.com/us/en/women/innerwear-and-loungewear/loungewear'],
     outerwear:  ['https://www.uniqlo.com/us/en/men/outerwear', 'https://www.uniqlo.com/us/en/women/outerwear'],
     dresses:    ['https://www.uniqlo.com/us/en/women/dresses-and-jumpsuits'],
     shoes:      ['https://www.uniqlo.com/us/en/men/shoes-and-bags', 'https://www.uniqlo.com/us/en/women/shoes-and-bags'],
     accessories:['https://www.uniqlo.com/us/en/men/accessories-and-shoes'],
+    skirts:     ['https://www.uniqlo.com/us/en/women/bottoms/skirts'],
   },
   shein: {
     tops:       ['https://us.shein.com/Men-T-Shirts-c-12206.html', 'https://us.shein.com/Women-T-Shirts-c-1738.html'],
     bottoms:    ['https://us.shein.com/Men-Pants-c-12207.html', 'https://us.shein.com/Women-Pants-Leggings-c-1740.html'],
+    shorts:     ['https://us.shein.com/Men-Shorts-c-12209.html', 'https://us.shein.com/Women-Shorts-c-1912.html'],
+    skirts:     ['https://us.shein.com/Women-Skirts-c-1732.html'],
+    swimwear:   ['https://us.shein.com/Men-Swimwear-c-12210.html', 'https://us.shein.com/Women-Swimwear-c-1866.html'],
     outerwear:  ['https://us.shein.com/Men-Jackets-Coats-c-12201.html', 'https://us.shein.com/Women-Jackets-c-1735.html'],
     dresses:    ['https://us.shein.com/Women-Dresses-c-1727.html'],
     shoes:      ['https://us.shein.com/Men-Shoes-c-12211.html', 'https://us.shein.com/Women-Shoes-c-1745.html'],
     accessories:['https://us.shein.com/Men-Accessories-c-12214.html'],
+    loungewear: ['https://us.shein.com/Women-Loungewear-c-2189.html'],
   },
   nike: {
     tops:       ['https://www.nike.com/w/mens-tops-t-shirts-9om13zav4s6', 'https://www.nike.com/w/womens-tops-t-shirts-5e1x6z9om13'],
     bottoms:    ['https://www.nike.com/w/mens-pants-tights-2kq19z6o5re', 'https://www.nike.com/w/womens-pants-tights-2kq19z5e1x6'],
+    shorts:     ['https://www.nike.com/w/mens-shorts-38fphz6o5re', 'https://www.nike.com/w/womens-shorts-38fphz5e1x6'],
+    swimwear:   ['https://www.nike.com/w/mens-swimwear-3glsmz6o5re'],
     outerwear:  ['https://www.nike.com/w/mens-jackets-vests-50r7yz6o5re', 'https://www.nike.com/w/womens-jackets-vests-50r7yz5e1x6'],
     shoes:      ['https://www.nike.com/w/mens-shoes-nik1zy7ok', 'https://www.nike.com/w/womens-shoes-5e1x6zy7ok'],
     accessories:['https://www.nike.com/w/mens-accessories-equipment-6o5rezawwv'],
+    skirts:     ['https://www.nike.com/w/womens-skirts-dresses-5e1x6z8y3qp'],
   },
   asos: {
     tops:       ['https://www.asos.com/us/men/t-shirts-vests/cat/?cid=7616', 'https://www.asos.com/us/women/tops/cat/?cid=4169'],
     bottoms:    ['https://www.asos.com/us/men/pants-chinos/cat/?cid=4910', 'https://www.asos.com/us/women/pants-leggings/cat/?cid=7212'],
+    shorts:     ['https://www.asos.com/us/men/shorts/cat/?cid=7078', 'https://www.asos.com/us/women/shorts/cat/?cid=9263'],
+    skirts:     ['https://www.asos.com/us/women/skirts/cat/?cid=2639'],
+    swimwear:   ['https://www.asos.com/us/men/swimwear/cat/?cid=13210', 'https://www.asos.com/us/women/swimwear-beachwear/cat/?cid=2238'],
+    loungewear: ['https://www.asos.com/us/men/loungewear/cat/?cid=28286', 'https://www.asos.com/us/women/loungewear/cat/?cid=21849'],
     outerwear:  ['https://www.asos.com/us/men/jackets-coats/cat/?cid=3606', 'https://www.asos.com/us/women/jackets-coats/cat/?cid=2641'],
     dresses:    ['https://www.asos.com/us/women/dresses/cat/?cid=8799'],
     shoes:      ['https://www.asos.com/us/men/shoes/cat/?cid=1935', 'https://www.asos.com/us/women/shoes/cat/?cid=1931'],
@@ -257,12 +280,14 @@ const ANTI_SCRAPE_BRANDS = new Set([
   'burberry', 'patagonia', 'supreme', 'palace', 'louis vuitton',
   'prada', 'dior', 'balenciaga', 'saint laurent', 'off-white',
   'essentials', 'cartier', 'tiffany & co', 'pandora', 'new era',
-  // Extended list — these all work better via SSENSE/Farfetch/Nordstrom search
+  // Luxury — search on SSENSE/Farfetch/Nordstrom
   'fendi', 'givenchy', 'valentino', 'alexander mcqueen', 'bottega veneta',
   'celine', 'loewe', 'moncler', 'stone island', 'acne studios',
   'ami paris', 'jacquemus', 'rick owens', 'maison margiela',
   'a bathing ape', 'kith', 'corteiz', 'trapstar', 'fear of god',
+  // Athletic — search on brand sites via general web search
   'jordan', 'under armour', 'reebok', 'asics', 'on running', 'hoka', 'saucony',
+  // Mass-market — search on their own sites + general shopping
   'mango', 'cos', '& other stories', 'urban outfitters', 'forever 21',
   'fashion nova', 'prettylittlething', 'boohoo', 'missguided', 'topshop',
   'columbia', 'arc\'teryx', 'gap', 'banana republic', 'old navy',
@@ -271,6 +296,9 @@ const ANTI_SCRAPE_BRANDS = new Set([
   'abercrombie', 'american eagle', 'hollister',
   'birkenstock', 'crocs', 'timberland', 'steve madden', 'allbirds', 'clarks',
   'swarovski', 'kendra_scott',
+  // Added: these retailers block Firecrawl direct scraping
+  'macys', "macy's", 'bloomingdales', "bloomingdale's", 'jcpenney',
+  'target', 'walmart', 'kohls', "kohl's",
 ]);
 
 // (Stage 3 prompts removed — now uses deterministic URL scoring)
@@ -290,20 +318,37 @@ const CATEGORY_TO_URL_KEY: Record<string, string> = {
   swimwear: 'tops', activewear: 'tops', loungewear: 'tops', underwear: 'tops',
 };
 
+// Normalize brand names for CATEGORY_MAP lookup (e.g., "H&M" → "hm")
+const BRAND_ALIASES: Record<string, string> = {
+  'h&m': 'hm', 'h and m': 'hm', 'hennes & mauritz': 'hm',
+  "levi's": "levi's", 'levis': "levi's",
+  'dr martens': 'dr. martens', 'doc martens': 'dr. martens',
+  'ray ban': 'ray-ban',
+  'north face': 'the north face',
+  'stussy': 'stüssy', 'stüssy': 'stüssy',
+};
+
+function normalizeBrandKey(brand: string): string {
+  const lower = brand.toLowerCase().trim();
+  return BRAND_ALIASES[lower] || lower;
+}
+
 async function scrapeProducts(
   brand: string,
   category: string,
   firecrawlApiKey: string
 ): Promise<RawProduct[]> {
+  const brandKey = normalizeBrandKey(brand);
+
   // Try search fallback first for known anti-scrape brands
-  if (ANTI_SCRAPE_BRANDS.has(brand.toLowerCase())) {
+  if (ANTI_SCRAPE_BRANDS.has(brandKey)) {
     console.log(`[scrape] ${brand} is anti-scrape, using search fallback`);
     return searchProducts(brand, category, firecrawlApiKey);
   }
 
-  const brandUrls = CATEGORY_MAP[brand.toLowerCase()];
+  const brandUrls = CATEGORY_MAP[brandKey];
   if (!brandUrls) {
-    console.log(`[scrape] No URL config for ${brand}, using search fallback`);
+    console.log(`[scrape] No URL config for ${brand} (key: ${brandKey}), using search fallback`);
     return searchProducts(brand, category, firecrawlApiKey);
   }
 
@@ -473,13 +518,32 @@ const CATEGORY_TERMS: Record<string, string> = {
   underwear: 'underwear boxers briefs bra lingerie socks',
 };
 
+// Luxury brands that are sold on multi-brand aggregators
+const LUXURY_SEARCH_BRANDS = new Set([
+  'gucci', 'prada', 'dior', 'balenciaga', 'saint laurent', 'louis vuitton',
+  'fendi', 'givenchy', 'valentino', 'alexander mcqueen', 'bottega veneta',
+  'celine', 'loewe', 'moncler', 'stone island', 'acne studios',
+  'ami paris', 'jacquemus', 'rick owens', 'maison margiela', 'versace',
+  'burberry', 'off-white', 'fear of god', 'essentials', 'a bathing ape',
+  'kith', 'supreme', 'palace', 'corteiz', 'trapstar',
+  'cartier', 'tiffany & co', 'pandora', 'swarovski',
+]);
+
+const LUXURY_SITES = 'site:ssense.com OR site:farfetch.com OR site:nordstrom.com OR site:net-a-porter.com OR site:mrporter.com OR site:saksoff5th.com OR site:bloomingdales.com';
+const GENERAL_SITES = 'site:nordstrom.com OR site:macys.com OR site:zappos.com OR site:amazon.com OR site:target.com OR site:kohls.com';
+
 async function searchProducts(
   brand: string,
   category: string,
   firecrawlApiKey: string
 ): Promise<RawProduct[]> {
   const catTerms = CATEGORY_TERMS[category.toLowerCase()] || category;
-  const searchQuery = `${brand} ${catTerms} site:ssense.com OR site:farfetch.com OR site:nordstrom.com OR site:net-a-porter.com OR site:mrporter.com OR site:saksoff5th.com OR site:bloomingdales.com`;
+  const isLuxury = LUXURY_SEARCH_BRANDS.has(brand.toLowerCase());
+  const sites = isLuxury ? LUXURY_SITES : GENERAL_SITES;
+  // For general brands, also try their own site directly
+  const searchQuery = isLuxury
+    ? `${brand} ${catTerms} ${sites}`
+    : `"${brand}" ${catTerms} ${sites}`;
 
   console.log(`[search-fallback] Query: "${searchQuery}"`);
 
@@ -547,14 +611,17 @@ async function searchProducts(
 
       // Clean the product name from the title
       let productName = title
-        .replace(/\s*[-|]\s*(SSENSE|Farfetch|Nordstrom|NET-A-PORTER|MR PORTER).*$/i, '')
+        .replace(/\s*[-|]\s*(SSENSE|Farfetch|Nordstrom|NET-A-PORTER|MR PORTER|Macy's|Macys|Zappos|Amazon|Target|Kohl's|Saks).*$/i, '')
         .replace(/\s*Buy\s.*$/i, '')
         .trim();
 
       if (!productName || productName.length < 3) continue;
 
-      // Make sure the brand is actually in the product
-      if (!productName.toLowerCase().includes(brand.toLowerCase()) && !title.toLowerCase().includes(brand.toLowerCase())) {
+      // For luxury brands, require brand name in the product listing
+      // For mass-market retailers (Nordstrom, Macys, etc.), brand may be the retailer itself so skip this check
+      const brandLower = brand.toLowerCase();
+      const isRetailerBrand = ['nordstrom', 'macys', "macy's", 'bloomingdales', "bloomingdale's", 'target', 'kohls', "kohl's", 'jcpenney', 'walmart', 'saks', 'net-a-porter'].includes(brandLower);
+      if (!isRetailerBrand && !productName.toLowerCase().includes(brandLower) && !title.toLowerCase().includes(brandLower)) {
         continue;
       }
 
