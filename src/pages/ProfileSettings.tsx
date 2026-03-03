@@ -38,7 +38,7 @@ const ProfileSettings = () => {
     const [profileRes, countRes, retailersRes] = await Promise.all([
       supabase.from('profiles').select('display_name, avatar_url').eq('user_id', user.id).single(),
       supabase.from('saved_items').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
-      supabase.from('user_favorite_retailers' as any).select('retailer_name').eq('user_id', user.id),
+      supabase.from('user_favorite_retailers').select('retailer_name').eq('user_id', user.id),
     ]);
     if (profileRes.data) {
       setDisplayName(profileRes.data.display_name || user.email?.split('@')[0] || 'User');
@@ -46,7 +46,7 @@ const ProfileSettings = () => {
       setInstagramHandle((profileRes.data as any).instagram_handle || '');
     }
     setSavedItemCount(countRes.count || 0);
-    if (retailersRes.data) setFavoriteRetailers((retailersRes.data as any[]).map((r: any) => r.retailer_name));
+    if (retailersRes.data) setFavoriteRetailers(retailersRes.data.map(r => r.retailer_name));
 
     // Load scan
     const { data } = await supabase.from('body_scans').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle();

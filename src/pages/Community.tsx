@@ -219,11 +219,11 @@ const Community = () => {
     const isCurrentlyFollowing = followToggles[targetUserId];
     setFollowToggles(prev => ({ ...prev, [targetUserId]: !isCurrentlyFollowing }));
     if (isCurrentlyFollowing) {
-      await supabase.from('user_follows' as any).delete().eq('follower_id', user.id).eq('following_id', targetUserId);
+      await supabase.from('user_follows').delete().eq('follower_id', user.id).eq('following_id', targetUserId);
       setFollowingIds(prev => prev.filter(id => id !== targetUserId));
       trackEvent('user_unfollowed');
     } else {
-      await supabase.from('user_follows' as any).insert({ follower_id: user.id, following_id: targetUserId } as any);
+      await supabase.from('user_follows').insert({ follower_id: user.id, following_id: targetUserId });
       setFollowingIds(prev => [...prev, targetUserId]);
       trackEvent('user_followed');
     }
@@ -313,11 +313,11 @@ const Community = () => {
   // Load vote counts and user's own votes from DB
   const loadVoteCounts = async (postIds: string[]) => {
     if (postIds.length === 0) return;
-    const { data: allVotes } = await supabase.from('community_votes' as any).select('post_id, vote_key, user_id').in('post_id', postIds);
+    const { data: allVotes } = await supabase.from('community_votes').select('post_id, vote_key, user_id').in('post_id', postIds);
     if (!allVotes) return;
     const counts: Record<string, Record<string, number>> = {};
     const userVotes: Record<string, string[]> = {};
-    (allVotes as any[]).forEach((v: any) => {
+    allVotes.forEach(v => {
       if (!counts[v.post_id]) counts[v.post_id] = { buy_yes: 0, buy_no: 0, keep_shopping: 0, too_tight: 0, perfect: 0, too_loose: 0 };
       counts[v.post_id][v.vote_key] = (counts[v.post_id][v.vote_key] || 0) + 1;
       if (user && v.user_id === user.id) {
@@ -353,7 +353,7 @@ const Community = () => {
       } else {
         // Remove existing fit votes from DB
         for (const k of currentVotes.filter(v => ['too_tight', 'perfect', 'too_loose'].includes(v))) {
-          await supabase.from('community_votes' as any).delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', k);
+          await supabase.from('community_votes').delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', k);
         }
         newVotes = [...otherFit, key];
       }
@@ -365,7 +365,7 @@ const Community = () => {
       } else {
         // Remove existing buy votes from DB
         for (const k of currentVotes.filter(v => ['buy_yes', 'buy_no', 'keep_shopping'].includes(v))) {
-          await supabase.from('community_votes' as any).delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', k);
+          await supabase.from('community_votes').delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', k);
         }
         newVotes = [...otherBuy, key];
       }
@@ -386,9 +386,9 @@ const Community = () => {
     
     // Persist: toggle in DB
     if (hasKey) {
-      await supabase.from('community_votes' as any).delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', key);
+      await supabase.from('community_votes').delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', key);
     } else {
-      await supabase.from('community_votes' as any).insert({ post_id: postId, user_id: user.id, vote_key: key } as any);
+      await supabase.from('community_votes').insert({ post_id: postId, user_id: user.id, vote_key: key });
     }
     
     trackEvent('vote_submitted', { vote: key, source: 'fitcheck' });

@@ -49,11 +49,11 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
     if (publicPosts.length === 0) return;
     const postIds = publicPosts.map(p => p.id);
     (async () => {
-      const { data } = await supabase.from('community_votes' as any).select('post_id, vote_key, user_id').in('post_id', postIds);
+      const { data } = await supabase.from('community_votes').select('post_id, vote_key, user_id').in('post_id', postIds);
       if (!data) return;
       const counts: Record<string, Record<string, number>> = {};
       const userVotes: Record<string, string[]> = {};
-      (data as any[]).forEach((v: any) => {
+      data.forEach(v => {
         if (!counts[v.post_id]) counts[v.post_id] = { love: 0, buy: 0, keep_shopping: 0 };
         counts[v.post_id][v.vote_key] = (counts[v.post_id][v.vote_key] || 0) + 1;
         if (user && v.user_id === user.id) {
@@ -75,13 +75,13 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
       if (hasKey) { newVotes = []; } else {
         newVotes = ['keep_shopping'];
         for (const k of currentVotes) {
-          if (k !== 'keep_shopping') await supabase.from('community_votes' as any).delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', k);
+          if (k !== 'keep_shopping') await supabase.from('community_votes').delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', k);
         }
       }
     } else {
       if (hasKey) { newVotes = currentVotes.filter(v => v !== key); } else {
         newVotes = [...currentVotes.filter(v => v !== 'keep_shopping'), key];
-        if (currentVotes.includes('keep_shopping')) await supabase.from('community_votes' as any).delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', 'keep_shopping');
+        if (currentVotes.includes('keep_shopping')) await supabase.from('community_votes').delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', 'keep_shopping');
       }
     }
     setVotes(prev => ({ ...prev, [postId]: newVotes }));
@@ -91,8 +91,8 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
       for (const k of newVotes) { if (!currentVotes.includes(k)) pc[k] = (pc[k] || 0) + 1; }
       return { ...prev, [postId]: pc };
     });
-    if (hasKey) { await supabase.from('community_votes' as any).delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', key); }
-    else { await supabase.from('community_votes' as any).insert({ post_id: postId, user_id: user.id, vote_key: key } as any); }
+    if (hasKey) { await supabase.from('community_votes').delete().eq('post_id', postId).eq('user_id', user.id).eq('vote_key', key); }
+    else { await supabase.from('community_votes').insert({ post_id: postId, user_id: user.id, vote_key: key }); }
     trackEvent('vote_cast', { vote: key, source: 'profile_tryons' });
   };
 

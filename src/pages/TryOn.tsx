@@ -202,8 +202,8 @@ const TryOn = () => {
 
   useEffect(() => {
     if (user) {
-      supabase.from('clothing_wardrobe' as any).select('id, image_url, category, product_link').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20)
-        .then(({ data }) => { if (data) setWardrobeItems(data as any); });
+      supabase.from('clothing_wardrobe').select('id, image_url, category, product_link').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20)
+        .then(({ data }) => { if (data) setWardrobeItems(data); });
     }
   }, [user]);
 
@@ -308,13 +308,13 @@ const TryOn = () => {
     if (!user || !clothingPhoto || clothingSaved) return;
     try {
       const imageUrl = await uploadBase64ToStorage(clothingPhoto, 'wardrobe');
-      await supabase.from('clothing_wardrobe' as any).insert({
+      await supabase.from('clothing_wardrobe').insert({
         user_id: user.id,
         image_url: imageUrl,
         category,
         product_link: productLink || null,
         retailer: (() => { try { const h = new URL(productLink).hostname; const m = ['shein','zara','hm','gap','nordstrom','lululemon','macys','jcpenney','aritzia','simons'].find(r => h.includes(r)); return m || null; } catch { return null; } })(),
-      } as any);
+      });
       setClothingSaved(true);
       trackEvent('saved_item_added', { source: 'tryon_wardrobe', category });
       toast({ title: 'Saved to Wardrobe', description: 'Clothing saved as a potential buy outfit.' });
