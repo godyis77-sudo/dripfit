@@ -12,7 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { detectRetailer } from '@/lib/retailerDetect';
+import { detectRetailer, detectBrandFromUrl } from '@/lib/retailerDetect';
 import { getBestRetailerForItem } from '@/lib/retailerLinks';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -406,11 +406,11 @@ const Community = () => {
   const handleShopLook = (post: Post) => {
     const urls = (post.product_urls && post.product_urls.length > 0) ? post.product_urls : (post.product_url ? [post.product_url] : []);
     trackEvent('shop_clickout', { source: 'fitcheck', hasProductUrl: urls.length > 0, itemCount: urls.length });
-    // Open each unique retailer URL
+    // Open each unique brand URL
     const seen = new Set<string>();
     urls.forEach((u: string) => {
-      const r = detectRetailer(u);
-      const key = r || u;
+      const { brand } = detectBrandFromUrl(u);
+      const key = brand || u;
       if (!seen.has(key)) {
         seen.add(key);
         window.open(u, '_blank', 'noopener');
@@ -841,24 +841,24 @@ const Community = () => {
                       <Sparkles className="h-2.5 w-2.5" /> Try On
                     </button>
                   )}
-                  {/* Retailer badges — each links to its own product URL */}
+                  {/* Brand badges — each links to its own product URL */}
                   {(() => {
                     const urls = (post as any).product_urls?.length > 0 ? (post as any).product_urls : (post.product_url ? [post.product_url] : []);
-                    // Build unique retailer→url pairs (first URL per retailer wins)
+                    // Build unique brand→url pairs (one badge per URL, dedup by brand label)
                     const seen = new Map<string, string>();
                     urls.forEach((u: string) => {
-                      const r = detectRetailer(u);
-                      if (r && !seen.has(r)) seen.set(r, u);
+                      const { brand } = detectBrandFromUrl(u);
+                      if (brand && !seen.has(brand)) seen.set(brand, u);
                     });
                     return seen.size > 0 ? (
                       <div className="absolute top-1.5 right-1.5 flex flex-col gap-0.5 items-end">
-                        {[...seen.entries()].map(([retailer, url]) => (
+                        {[...seen.entries()].map(([brand, url]) => (
                           <button
-                            key={retailer}
-                            onClick={(e) => { e.stopPropagation(); window.open(url, '_blank', 'noopener'); trackEvent('badge_clickout', { retailer, source: 'fitcheck' }); }}
+                            key={brand}
+                            onClick={(e) => { e.stopPropagation(); window.open(url, '_blank', 'noopener'); trackEvent('badge_clickout', { retailer: brand, source: 'fitcheck' }); }}
                             className="text-[8px] font-bold text-white bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded-full active:scale-95 transition-transform"
                           >
-                            {retailer}
+                            {brand}
                           </button>
                         ))}
                       </div>
