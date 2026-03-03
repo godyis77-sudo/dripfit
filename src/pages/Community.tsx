@@ -74,39 +74,6 @@ interface Retailer {
   is_active: boolean;
 }
 
-const PROMPTS = [
-  'Would you wear this?',
-  'Date night — yes or no?',
-  'Should I buy this for work?',
-  'Too bold or just right?',
-  'Casual Friday vibes?',
-  'Wedding guest — yay or nay?',
-  'Could you pull this off?',
-  'Brunch outfit material?',
-  'Festival ready or nah?',
-  'Office appropriate?',
-  'First date energy?',
-  'Streetwear or try again?',
-  'Summer vacation fit?',
-  'Would you rock this to the gym?',
-  'Cozy enough for a movie night?',
-  'Drip or skip?',
-  'Airport outfit check',
-  'Night out — cop or drop?',
-  'Is this giving main character?',
-  'Rate this vibe 1-10',
-  'Hot take — overdressed or perfect?',
-  'Would you steal this look?',
-  'Dinner party ready?',
-  'Spring wardrobe essential?',
-  'Weekend errand fit?',
-];
-
-const getPrompt = (postId: string, idx: number) => {
-  // Hash-based selection for variety — same post always gets same prompt
-  const hash = postId.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-  return PROMPTS[(hash + idx) % PROMPTS.length];
-};
 
 const StarRating = ({ value, onChange }: { value: number; onChange: (v: number) => void }) => (
   <div className="flex gap-0.5">
@@ -843,12 +810,14 @@ const Community = () => {
                     className="w-full aspect-square object-cover" 
                     onError={() => handleImageError(post.id)}
                   />
-                  {/* Caption overlay */}
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent pt-6 pb-1.5 px-2">
-                    <p className="text-white font-bold text-[10px] leading-snug line-clamp-2">
-                      {post.caption || getPrompt(post.id, idx)}
-                    </p>
-                  </div>
+                  {/* Caption overlay — only if user wrote one */}
+                  {post.caption && (
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent pt-6 pb-1.5 px-2">
+                      <p className="text-white font-bold text-[10px] leading-snug line-clamp-2">
+                        {post.caption}
+                      </p>
+                    </div>
+                  )}
                    {/* Try On chip — top-left */}
                   {!(user && post.user_id === user.id) && (
                     <button
@@ -866,29 +835,6 @@ const Community = () => {
                       <Sparkles className="h-2.5 w-2.5" /> Try On
                     </button>
                   )}
-                  {/* Brand badges — each links to its own product URL */}
-                  {(() => {
-                    const urls = (post as any).product_urls?.length > 0 ? (post as any).product_urls : (post.product_url ? [post.product_url] : []);
-                    // Build unique brand→url pairs (one badge per URL, dedup by brand label)
-                    const seen = new Map<string, string>();
-                    urls.forEach((u: string) => {
-                      const { brand } = detectBrandFromUrl(u);
-                      if (brand && !seen.has(brand)) seen.set(brand, u);
-                    });
-                    return seen.size > 0 ? (
-                      <div className="absolute top-1.5 right-1.5 flex flex-col gap-0.5 items-end">
-                        {[...seen.entries()].map(([brand, url]) => (
-                          <button
-                            key={brand}
-                            onClick={(e) => { e.stopPropagation(); window.open(url, '_blank', 'noopener'); trackEvent('badge_clickout', { retailer: brand, source: 'fitcheck' }); }}
-                            className="text-[8px] font-bold text-white bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded-full active:scale-95 transition-transform"
-                          >
-                            {brand}
-                          </button>
-                        ))}
-                      </div>
-                    ) : null;
-                  })()}
                 </button>
 
                 {/* Section A: WOULD YOU BUY IT? */}
@@ -1020,7 +966,7 @@ const Community = () => {
         post={detailPost}
         open={!!detailPost}
         onClose={() => setDetailPost(null)}
-        prompt={detailPost ? getPrompt(detailPost.id, posts.indexOf(detailPost)) : ''}
+        prompt={detailPost?.caption || ''}
         votes={votes}
         voteCounts={voteCounts}
         onVote={handleVote}
