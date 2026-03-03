@@ -51,7 +51,7 @@ const CATEGORY_MAP: Record<string, string[]> = {
   heels: ['heels'],
   bags: ['bags'],
   hats: ['hats'],
-  jewelry: ['jewelry'],
+  jewelry: ['jewelry', 'watches'],
   necklace: ['jewelry'],
   earrings: ['jewelry'],
   bracelet: ['jewelry'],
