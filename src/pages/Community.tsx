@@ -834,16 +834,25 @@ const Community = () => {
                       <Sparkles className="h-2.5 w-2.5" /> Try On
                     </button>
                   )}
-                  {/* Retailer badges — show all unique retailers from product_urls */}
+                  {/* Retailer badges — each links to its own product URL */}
                   {(() => {
                     const urls = (post as any).product_urls?.length > 0 ? (post as any).product_urls : (post.product_url ? [post.product_url] : []);
-                    const retailers = [...new Set(urls.map((u: string) => detectRetailer(u)).filter(Boolean))] as string[];
-                    return retailers.length > 0 ? (
+                    // Build unique retailer→url pairs (first URL per retailer wins)
+                    const seen = new Map<string, string>();
+                    urls.forEach((u: string) => {
+                      const r = detectRetailer(u);
+                      if (r && !seen.has(r)) seen.set(r, u);
+                    });
+                    return seen.size > 0 ? (
                       <div className="absolute top-1.5 right-1.5 flex flex-col gap-0.5 items-end">
-                        {retailers.map((r) => (
-                          <span key={r} className="text-[8px] font-bold text-white bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded-full">
-                            {r}
-                          </span>
+                        {[...seen.entries()].map(([retailer, url]) => (
+                          <button
+                            key={retailer}
+                            onClick={(e) => { e.stopPropagation(); window.open(url, '_blank', 'noopener'); trackEvent('badge_clickout', { retailer, source: 'fitcheck' }); }}
+                            className="text-[8px] font-bold text-white bg-black/60 backdrop-blur-sm px-1.5 py-0.5 rounded-full active:scale-95 transition-transform"
+                          >
+                            {retailer}
+                          </button>
                         ))}
                       </div>
                     ) : null;
