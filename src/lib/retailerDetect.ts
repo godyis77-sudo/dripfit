@@ -253,8 +253,17 @@ const RETAILERS: Record<string, string> = {
 export function detectRetailer(url: string): string | null {
   try {
     const hostname = new URL(url).hostname.toLowerCase();
+    // Check known retailers first
     for (const [key, label] of Object.entries(RETAILERS)) {
       if (hostname.includes(key)) return label;
+    }
+    // Fallback: extract a clean brand name from the domain
+    const parts = hostname.replace(/^www\d?\./, '').split('.');
+    // Use the main domain part (e.g. "farfetch" from "www.farfetch.com")
+    const domain = parts.length >= 2 ? parts[parts.length - 2] : parts[0];
+    if (domain && domain.length > 2) {
+      // Capitalise first letter for display
+      return domain.charAt(0).toUpperCase() + domain.slice(1);
     }
     return 'Shop';
   } catch {
