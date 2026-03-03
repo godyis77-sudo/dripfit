@@ -358,6 +358,7 @@ export type Database = {
           id: string
           instagram_handle: string | null
           scan_confidence: number | null
+          shopping_region: string | null
           updated_at: string
           user_id: string
         }
@@ -368,6 +369,7 @@ export type Database = {
           id?: string
           instagram_handle?: string | null
           scan_confidence?: number | null
+          shopping_region?: string | null
           updated_at?: string
           user_id: string
         }
@@ -378,6 +380,7 @@ export type Database = {
           id?: string
           instagram_handle?: string | null
           scan_confidence?: number | null
+          shopping_region?: string | null
           updated_at?: string
           user_id?: string
         }
