@@ -113,7 +113,7 @@ const WhatsInThisLook = ({
         }}
       >
         <span className={`${isCompact ? 'text-[9px]' : 'text-[11px]'} font-bold uppercase tracking-widest text-muted-foreground`}>
-          What's in this look — {items.length} item{items.length !== 1 ? 's' : ''}
+          Shop This Style
         </span>
         <ChevronDown
           className={`${isCompact ? 'h-3 w-3' : 'h-3.5 w-3.5'} text-muted-foreground transition-transform duration-200`}
