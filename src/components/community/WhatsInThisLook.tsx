@@ -26,6 +26,10 @@ interface WhatsInThisLookProps {
   defaultOpen?: boolean;
   /** Variant: 'card' for feed cards (compact), 'detail' for detail sheets */
   variant?: 'card' | 'detail';
+  /** Callback when user taps Try On from fullscreen */
+  onTryOn?: (item: LookItem) => void;
+  /** Callback when user taps Add to Wardrobe from fullscreen */
+  onAddToWardrobe?: (item: LookItem) => void;
 }
 
 function deriveItemsFromUrls(urls: string[]): LookItem[] {
@@ -57,6 +61,8 @@ const WhatsInThisLook = ({
   clothingPhotoUrl,
   defaultOpen = false,
   variant = 'detail',
+  onTryOn,
+  onAddToWardrobe,
 }: WhatsInThisLookProps) => {
   const [open, setOpen] = useState(defaultOpen);
 
@@ -116,7 +122,13 @@ const WhatsInThisLook = ({
                   {(() => {
                     const imgSrc = item.image_url || clothingPhotoUrl;
                     return imgSrc ? (
-                      <FullscreenImage src={imgSrc} alt={item.name}>
+                      <FullscreenImage
+                        src={imgSrc}
+                        alt={item.name}
+                        onShop={item.url ? () => { window.open(item.url, '_blank', 'noopener'); trackEvent('badge_clickout', { retailer: item.brand, source: 'fullscreen_look' }); } : undefined}
+                        onTryOn={onTryOn ? () => onTryOn(item) : undefined}
+                        onAddToWardrobe={onAddToWardrobe ? () => onAddToWardrobe(item) : undefined}
+                      >
                         <div className={`shrink-0 ${isCompact ? 'h-8 w-8' : 'h-10 w-10'} rounded-lg overflow-hidden bg-[#252525] border border-[#333] flex items-center justify-center cursor-pointer active:scale-95 transition-transform`}>
                           <img src={imgSrc} alt={item.name} className="h-full w-full object-cover" />
                         </div>
