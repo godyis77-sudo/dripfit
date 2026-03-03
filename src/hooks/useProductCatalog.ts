@@ -52,7 +52,12 @@ const CATEGORY_MAP: Record<string, string[]> = {
   bags: ['bags'],
   hats: ['hats'],
   jewelry: ['jewelry'],
-  watches: ['watches'],
+  necklace: ['jewelry'],
+  earrings: ['jewelry'],
+  bracelet: ['jewelry'],
+  ring: ['jewelry'],
+  watch: ['jewelry'],
+  watches: ['jewelry'],
   sunglasses: ['sunglasses'],
   belts: ['belts'],
   scarves: ['scarves'],
@@ -61,6 +66,7 @@ const CATEGORY_MAP: Record<string, string[]> = {
   loungewear: ['loungewear'],
   underwear: ['underwear'],
   accessories: ['accessories', 'bags', 'hats', 'jewelry', 'watches', 'sunglasses', 'belts', 'scarves'],
+  other: ['other'],
   full: ['tops', 'top', 't-shirts', 'shirts', 'hoodies', 'dresses', 'dress', 'outerwear', 'jackets', 'coats'],
 };
 

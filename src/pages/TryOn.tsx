@@ -58,6 +58,20 @@ const ACCESSORY_CATEGORIES = [
   { key: 'sunglasses', label: '🕶️ Sunglasses', icon: '🕶️' },
 ] as const;
 
+const ALL_PRODUCT_CATEGORIES = [
+  { key: 'tops', label: '👕 Tops' },
+  { key: 'bottoms', label: '👖 Bottoms' },
+  { key: 'dresses', label: '👗 Dresses' },
+  { key: 'outerwear', label: '🧥 Outerwear' },
+  { key: 'shoes', label: '👟 Shoes' },
+  { key: 'bags', label: '👜 Bags' },
+  { key: 'hats', label: '🧢 Hats' },
+  { key: 'jewelry', label: '💎 Jewelry' },
+  { key: 'sunglasses', label: '🕶️ Sunglasses' },
+  { key: 'activewear', label: '🏃 Activewear' },
+  { key: 'swimwear', label: '🏊 Swimwear' },
+] as const;
+
 // Quick picks now powered by product catalog — no static assets needed
 
 // buildRetailerSearchUrl is imported from @/lib/retailerLinks
@@ -133,6 +147,7 @@ const TryOn = () => {
   // Multi-item accessory layering
   const [accessoryPhoto, setAccessoryPhoto] = useState<string | null>(null);
   const [accessoryCategory, setAccessoryCategory] = useState<string | null>(null);
+  const [showAllCategories, setShowAllCategories] = useState(false);
   const [addingAccessory, setAddingAccessory] = useState(false);
   const [layerHistory, setLayerHistory] = useState<string[]>([]);
   const accessoryPhotoRef = useRef<HTMLInputElement>(null);
@@ -993,12 +1008,23 @@ const TryOn = () => {
                         <p className="text-[10px] text-muted-foreground mb-2">Layer one item at a time — shoes, hat, jewelry, and more</p>
 
                         <div className="flex gap-1.5 flex-wrap mb-2">
+                          {/* All Products tab */}
+                          <button
+                            onClick={() => { setShowAllCategories(prev => !prev); setAccessoryCategory(null); }}
+                            className={`px-2.5 py-1.5 rounded-lg text-[10px] font-medium border transition-all active:scale-95 ${
+                              showAllCategories
+                                ? 'border-primary bg-primary text-primary-foreground font-bold'
+                                : 'border-border text-muted-foreground hover:border-primary/30'
+                            }`}
+                          >
+                            🛍️ All Products
+                          </button>
                           {ACCESSORY_CATEGORIES.map(c => (
                             <button
                               key={c.key}
-                              onClick={() => setAccessoryCategory(prev => prev === c.key ? null : c.key)}
+                              onClick={() => { setAccessoryCategory(prev => prev === c.key ? null : c.key); setShowAllCategories(false); }}
                               className={`px-2.5 py-1.5 rounded-lg text-[10px] font-medium border transition-all active:scale-95 ${
-                                accessoryCategory === c.key
+                                accessoryCategory === c.key && !showAllCategories
                                   ? 'border-primary bg-primary text-primary-foreground font-bold'
                                   : 'border-border text-muted-foreground hover:border-primary/30'
                               }`}
@@ -1039,7 +1065,32 @@ const TryOn = () => {
                                 <span className="text-[10px] font-bold">Gallery</span>
                               </button>
                             </div>
-                            {accessoryCategory && (
+
+                            {/* All Products — expandable categories */}
+                            {showAllCategories && (
+                              <div className="space-y-2 mb-2">
+                                {ALL_PRODUCT_CATEGORIES.map(cat => (
+                                  <CategoryProductGrid
+                                    key={cat.key}
+                                    category={cat.key}
+                                    title={cat.label}
+                                    collapsed={true}
+                                    maxItems={8}
+                                    seed={7777}
+                                    showViewAll={true}
+                                    onSelectProduct={async (product) => {
+                                      if (product.product_url) setProductLink(product.product_url);
+                                      trackEvent('catalog_product_clicked', { brand: product.brand, category: cat.key });
+                                      const base64 = await imageUrlToBase64(product.image_url);
+                                      setAccessoryPhoto(base64);
+                                    }}
+                                  />
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Single category view */}
+                            {accessoryCategory && !showAllCategories && (
                               <div className="mb-2">
                                 <CategoryProductGrid
                                   category={accessoryCategory}
