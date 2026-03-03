@@ -186,7 +186,7 @@ const Community = () => {
     } else {
       fetchPosts();
     }
-  }, [filter]);
+  }, [filter, user?.id, followingIds]);
 
   // Load following IDs for follow buttons
   useEffect(() => {
