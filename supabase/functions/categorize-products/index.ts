@@ -60,9 +60,9 @@ serve(async (req) => {
       query = query.eq("category", category);
     }
 
-    // Use tags to track verified status — skip items already tagged 'ai_verified'
+    // Skip already-verified AND previously-failed items to avoid infinite loops
     if (onlyUnchecked) {
-      query = query.not("tags", "cs", '{"ai_verified"}');
+      query = query.not("tags", "cs", '{"ai_verified"}').not("tags", "cs", '{"ai_failed"}');
     }
 
     const { data: products, error: fetchError } = await query;
@@ -90,6 +90,12 @@ serve(async (req) => {
             return result;
           } catch (e) {
             console.error(`Error analyzing ${product.id}:`, e);
+            // Tag as ai_failed so it's skipped on next run
+            const existingTags: string[] = Array.isArray(product.tags) ? product.tags : [];
+            await supabase
+              .from("product_catalog")
+              .update({ tags: [...new Set([...existingTags, "ai_failed"])] })
+              .eq("id", product.id);
             return null;
           }
         })
