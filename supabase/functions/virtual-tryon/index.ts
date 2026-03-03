@@ -26,15 +26,34 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const makeImagePart = (base64: string) => {
-      const match = base64.match(/^data:(image\/\w+);base64,(.+)$/);
-      const mediaType = match ? match[1] : "image/jpeg";
-      const data = match ? match[2] : base64;
+    // Convert a URL or base64 string into a proper base64 data URI
+    const toBase64DataUri = async (input: string): Promise<string> => {
+      // Already a data URI
+      if (input.startsWith("data:")) return input;
+      // Raw URL — fetch server-side and convert
+      if (input.startsWith("http://") || input.startsWith("https://")) {
+        const res = await fetch(input);
+        if (!res.ok) throw new Error(`Failed to fetch image: ${res.status}`);
+        const buf = await res.arrayBuffer();
+        const contentType = res.headers.get("content-type") || "image/jpeg";
+        const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+        return `data:${contentType};base64,${b64}`;
+      }
+      // Raw base64 without prefix
+      return `data:image/jpeg;base64,${input}`;
+    };
+
+    const makeImagePart = (dataUri: string) => {
       return {
         type: "image_url" as const,
-        image_url: { url: `data:${mediaType};base64,${data}` },
+        image_url: { url: dataUri },
       };
     };
+
+    const [userDataUri, clothingDataUri] = await Promise.all([
+      toBase64DataUri(userPhoto),
+      toBase64DataUri(clothingPhoto),
+    ]);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -50,8 +69,8 @@ serve(async (req) => {
             role: "user",
             content: [
               { type: "text", text: "I have two images: the first is a photo of a person (or a person already wearing an outfit), and the second is an item (clothing or accessory like shoes, hat, jewelry, necklace, earrings, bracelet, watch, bag, or sunglasses). Generate a new image showing this exact person wearing/using the item from the second image in addition to whatever they are already wearing. Keep the person's face, body, pose, background, and existing outfit exactly the same. Only add the new item from the second image. Output the resulting image." },
-              makeImagePart(userPhoto),
-              makeImagePart(clothingPhoto),
+              makeImagePart(userDataUri),
+              makeImagePart(clothingDataUri),
             ],
           },
         ],
