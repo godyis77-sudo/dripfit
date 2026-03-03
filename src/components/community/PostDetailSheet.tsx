@@ -122,9 +122,14 @@ export const PostDetailSheet = ({
 
   if (!post) return null;
 
-  // Collect all unique retailers from product_urls or fallback to product_url
+  // Collect unique retailer→url pairs from product_urls
   const allUrls = (post.product_urls && post.product_urls.length > 0) ? post.product_urls : (post.product_url ? [post.product_url] : []);
-  const retailers = [...new Set(allUrls.map(u => detectRetailer(u)).filter(Boolean))] as string[];
+  const retailerUrlMap = new Map<string, string>();
+  allUrls.forEach(u => {
+    const r = detectRetailer(u);
+    if (r && !retailerUrlMap.has(r)) retailerUrlMap.set(r, u);
+  });
+  const retailers = [...retailerUrlMap.keys()];
 
   const displayQuestion = questionText || post.caption || prompt;
 
@@ -207,7 +212,7 @@ export const PostDetailSheet = ({
             {retailers.length > 0 && zoom <= 1 && (
               <div className="absolute top-3 right-4 flex flex-col gap-1 items-end">
                 {retailers.map((r) => (
-                  <button key={r} onClick={() => onShopLook(post)} className="text-[11px] font-bold text-white bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1.5 active:scale-95 transition-transform">
+                  <button key={r} onClick={() => { window.open(retailerUrlMap.get(r), '_blank', 'noopener'); }} className="text-[11px] font-bold text-white bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1.5 active:scale-95 transition-transform">
                     {r}
                     <ExternalLink className="h-3 w-3" />
                   </button>
