@@ -765,12 +765,17 @@ const TryOn = () => {
               <div className="mb-3">
                 <button
                   onClick={() => setShowLookItems(!showLookItems)}
-                  className="w-full flex items-center justify-between bg-card border border-border rounded-xl px-3 py-2.5 active:scale-[0.98] transition-transform"
+                  className="w-full flex items-center justify-between rounded-xl active:scale-[0.98] transition-transform"
+                  style={{ background: '#1A1A1A', border: '1px solid #252525', borderRadius: '12px', padding: '14px 16px' }}
                 >
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                    What's in this look {selectedQuickPick ? '(1 item)' : productLink ? '(1 item)' : ''}
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                    What's in this look{' '}
+                    {(selectedQuickPick || productLink) ? '— 1 item' : '— 0 items'}
                   </span>
-                  {showLookItems ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
+                  <ChevronDown
+                    className="h-3.5 w-3.5 text-muted-foreground transition-transform duration-200"
+                    style={{ transform: showLookItems ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                  />
                 </button>
                 <AnimatePresence>
                   {showLookItems && (
@@ -778,23 +783,29 @@ const TryOn = () => {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
+                      transition={{ duration: 0.2, ease: 'easeOut' }}
                       className="overflow-hidden"
                     >
-                      <div className="bg-card border border-t-0 border-border rounded-b-xl px-3 py-2 space-y-2">
+                      <div className="px-4 py-3 space-y-2" style={{ background: '#1A1A1A', borderLeft: '1px solid #252525', borderRight: '1px solid #252525', borderBottom: '1px solid #252525', borderRadius: '0 0 12px 12px' }}>
                         {(selectedQuickPick || productLink) ? (
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              {selectedQuickPick && (
-                                <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground bg-muted/30 border border-border rounded-full px-2 py-0.5">
-                                  {selectedQuickPick.brand}
-                                </span>
-                              )}
-                              <span className="text-[11px] text-foreground">{selectedQuickPick?.name || 'Product'}</span>
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              {/* Brand pill — gold */}
+                              <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border"
+                                style={{ background: 'hsl(var(--primary) / 0.12)', borderColor: 'hsl(var(--primary) / 0.3)', color: 'hsl(var(--primary))' }}>
+                                {selectedQuickPick?.brand || (() => { try { return new URL(productLink).hostname.replace('www.', ''); } catch { return 'Product'; } })()}
+                              </span>
+                              {/* Product name */}
+                              <span className="text-[13px] text-foreground truncate">
+                                {selectedQuickPick?.name
+                                  ? (selectedQuickPick.name.length > 35 ? selectedQuickPick.name.slice(0, 35) + '…' : selectedQuickPick.name)
+                                  : (() => { try { return new URL(productLink).hostname.replace('www.', ''); } catch { return 'Product'; } })()
+                                }
+                              </span>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 shrink-0">
                               {selectedQuickPick?.price_cents && (
-                                <span className="text-[11px] font-bold text-primary">
+                                <span className="text-[13px] font-bold text-primary">
                                   ${(selectedQuickPick.price_cents / 100).toFixed(2)}
                                 </span>
                               )}
@@ -803,14 +814,14 @@ const TryOn = () => {
                                   const url = productLink || selectedQuickPick?.product_url;
                                   if (url) window.open(url, '_blank', 'noopener');
                                 }}
-                                className="text-[10px] font-bold text-primary"
+                                className="text-[11px] font-bold text-primary"
                               >
                                 Shop →
                               </button>
                             </div>
                           </div>
                         ) : (
-                          <p className="text-[10px] text-muted-foreground">No items tagged yet. Add a product link above to track items.</p>
+                          <p className="text-[11px] text-muted-foreground">No product linked to this try-on</p>
                         )}
                       </div>
                     </motion.div>

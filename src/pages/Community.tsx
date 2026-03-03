@@ -22,6 +22,7 @@ import { getFollowingIds } from '@/hooks/useFollow';
 import BottomTabBar from '@/components/BottomTabBar';
 import PostLookFlow from '@/components/community/PostLookFlow';
 import { PostDetailSheet } from '@/components/community/PostDetailSheet';
+import { ShopSizeInfo } from '@/components/community/ShopSizeInfo';
 
 interface Post {
   id: string;
@@ -575,7 +576,7 @@ const Community = () => {
               <p className="text-[13px] text-muted-foreground">Retailers will appear here soon</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-2">
+             <div className="grid grid-cols-2 gap-2">
               {retailers.map(r => (
                 <button
                   key={r.id}
@@ -589,7 +590,9 @@ const Community = () => {
                   <span className="inline-block text-[9px] font-bold uppercase tracking-wider text-muted-foreground bg-muted/30 border border-border rounded-full px-2 py-0.5 mb-2 capitalize">
                     {r.category}
                   </span>
-                  <p className="text-[11px] font-bold text-muted-foreground mb-2">—</p>
+                  <div className="flex items-center justify-between mb-2">
+                    <ShopSizeInfo retailerName={r.name} userId={user?.id} hasScan={hasScan} />
+                  </div>
                   <p className="text-[11px] font-bold text-primary text-right">Shop →</p>
                 </button>
               ))}
@@ -809,20 +812,23 @@ const Community = () => {
                       {post.caption || getPrompt(post.id, idx)}
                     </p>
                   </div>
-                  {/* Try On button — top-left */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (post.product_url) {
-                        navigate('/tryon', { state: { productUrl: post.product_url } });
-                      } else {
-                        toast({ title: 'No product linked to this look' });
-                      }
-                    }}
-                    className="absolute top-1.5 left-1.5 text-[9px] font-bold text-white bg-black/65 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 active:scale-95 transition-transform"
-                  >
-                    <Sparkles className="h-2.5 w-2.5" /> Try On
-                  </button>
+                   {/* Try On chip — top-left */}
+                  {!(user && post.user_id === user.id) && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (post.product_url) {
+                          navigate('/tryon', { state: { productUrl: post.product_url } });
+                        } else {
+                          toast({ title: 'No product linked to this look' });
+                        }
+                      }}
+                      className="absolute top-2 left-2 text-[11px] font-bold text-white rounded-[100px] flex items-center gap-1 active:scale-95 transition-transform"
+                      style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.12)', padding: '4px 10px' }}
+                    >
+                      <Sparkles className="h-2.5 w-2.5" /> Try On
+                    </button>
+                  )}
                   {/* Retailer badge */}
                   {(() => {
                     const retailer = post.product_url
@@ -974,6 +980,14 @@ const Community = () => {
           navigate(`/profile/${encodeURIComponent(name)}`);
         }}
         onShopLook={handleShopLook}
+        onTryOn={(p) => {
+          setDetailPost(null);
+          if (p.product_url) {
+            navigate('/tryon', { state: { productUrl: p.product_url } });
+          } else {
+            toast({ title: 'No product linked to this look' });
+          }
+        }}
         isFollowing={detailPost ? !!followToggles[detailPost.user_id] : false}
         isOwnPost={detailPost ? user?.id === detailPost.user_id : false}
         isPlaceholder={detailPost ? isPlaceholder(detailPost) : false}
