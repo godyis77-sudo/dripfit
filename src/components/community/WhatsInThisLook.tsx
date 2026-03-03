@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ExternalLink, ShoppingBag } from 'lucide-react';
 import { FullscreenImage } from '@/components/ui/fullscreen-image';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { trackEvent } from '@/lib/analytics';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface LookItem {
   brand: string;
@@ -65,6 +66,7 @@ const WhatsInThisLook = ({
   onAddToWardrobe,
 }: WhatsInThisLookProps) => {
   const [open, setOpen] = useState(defaultOpen);
+  const [catalogImages, setCatalogImages] = useState<Record<string, string>>({});
 
   // Build items list
   let items: LookItem[] = propItems || [];
@@ -72,6 +74,27 @@ const WhatsInThisLook = ({
     const urls = productUrls?.length ? productUrls : (productUrl ? [productUrl] : []);
     items = deriveItemsFromUrls(urls);
   }
+
+  // Enrich items missing image_url by looking up product_catalog
+  const urlsNeedingImages = items.filter(i => !i.image_url).map(i => i.url).filter(Boolean);
+
+  useEffect(() => {
+    if (urlsNeedingImages.length === 0) return;
+    let cancelled = false;
+    supabase
+      .from('product_catalog')
+      .select('product_url, image_url')
+      .in('product_url', urlsNeedingImages)
+      .then(({ data }) => {
+        if (cancelled || !data) return;
+        const map: Record<string, string> = {};
+        data.forEach(row => {
+          if (row.product_url && row.image_url) map[row.product_url] = row.image_url;
+        });
+        if (Object.keys(map).length > 0) setCatalogImages(map);
+      });
+    return () => { cancelled = true; };
+  }, [urlsNeedingImages.join(',')]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (items.length === 0) return null;
 
@@ -120,7 +143,7 @@ const WhatsInThisLook = ({
                 <div key={idx} className="flex items-center gap-2">
                   {/* Product thumbnail — tap for fullscreen */}
                   {(() => {
-                    const imgSrc = item.image_url || clothingPhotoUrl;
+                    const imgSrc = item.image_url || catalogImages[item.url] || (idx === 0 ? clothingPhotoUrl : null);
                     return imgSrc ? (
                       <FullscreenImage
                         src={imgSrc}
