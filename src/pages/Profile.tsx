@@ -60,11 +60,20 @@ const Profile = () => {
 
   useEffect(() => {
     if (!user) { navigate('/auth', { replace: true }); return; }
-    fetchProfile();
-    loadSavedProfile();
-    fetchSavedItemCount();
-    fetchWardrobe();
-    fetchFavoriteRetailers();
+    let stale = false;
+
+    const run = async () => {
+      await Promise.all([
+        fetchProfile().then(() => { if (stale) return; }),
+        loadSavedProfile(),
+        fetchSavedItemCount(),
+        fetchWardrobe(),
+        fetchFavoriteRetailers(),
+      ]);
+    };
+    run();
+
+    return () => { stale = true; };
   }, [user]);
 
   const fetchProfile = async () => {

@@ -30,7 +30,13 @@ const ProfileSettings = () => {
 
   useEffect(() => {
     if (!user) { navigate('/auth', { replace: true }); return; }
-    fetchData();
+    let stale = false;
+    const run = async () => {
+      await fetchData();
+      if (stale) return;
+    };
+    run();
+    return () => { stale = true; };
   }, [user]);
 
   const fetchData = async () => {
