@@ -12,7 +12,7 @@ export function useFollow(targetUserId: string | null) {
     let cancelled = false;
     (async () => {
       const { data } = await supabase
-        .from('user_follows' as any)
+        .from('user_follows')
         .select('id')
         .eq('follower_id', user.id)
         .eq('following_id', targetUserId)
@@ -27,15 +27,15 @@ export function useFollow(targetUserId: string | null) {
     setLoading(true);
     if (isFollowing) {
       await supabase
-        .from('user_follows' as any)
+        .from('user_follows')
         .delete()
         .eq('follower_id', user.id)
         .eq('following_id', targetUserId);
       setIsFollowing(false);
     } else {
       await supabase
-        .from('user_follows' as any)
-        .insert({ follower_id: user.id, following_id: targetUserId } as any);
+        .from('user_follows')
+        .insert({ follower_id: user.id, following_id: targetUserId });
       setIsFollowing(true);
     }
     setLoading(false);
@@ -47,20 +47,20 @@ export function useFollow(targetUserId: string | null) {
 /** Fetch IDs of users the current user follows */
 export async function getFollowingIds(userId: string): Promise<string[]> {
   const { data } = await supabase
-    .from('user_follows' as any)
+    .from('user_follows')
     .select('following_id')
     .eq('follower_id', userId);
-  return (data as any[] || []).map((r: any) => r.following_id);
+  return (data || []).map(r => r.following_id);
 }
 
 /** Fetch follower / following counts for a user */
 export async function getFollowCounts(userId: string): Promise<{ followers: number; following: number }> {
   const [followersRes, followingRes] = await Promise.all([
-    supabase.from('user_follows' as any).select('id', { count: 'exact', head: true }).eq('following_id', userId),
-    supabase.from('user_follows' as any).select('id', { count: 'exact', head: true }).eq('follower_id', userId),
+    supabase.from('user_follows').select('id', { count: 'exact', head: true }).eq('following_id', userId),
+    supabase.from('user_follows').select('id', { count: 'exact', head: true }).eq('follower_id', userId),
   ]);
   return {
-    followers: (followersRes as any).count || 0,
-    following: (followingRes as any).count || 0,
+    followers: followersRes.count || 0,
+    following: followingRes.count || 0,
   };
 }

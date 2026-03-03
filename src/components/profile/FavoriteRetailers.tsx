@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Star, Plus, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -27,7 +27,7 @@ const FavoriteRetailers = ({ userId, favorites, onFavoritesChange }: FavoriteRet
 
     if (isFav) {
       const { error } = await supabase
-        .from('user_favorite_retailers' as any)
+        .from('user_favorite_retailers')
         .delete()
         .eq('user_id', userId)
         .eq('retailer_name', name);
@@ -36,12 +36,11 @@ const FavoriteRetailers = ({ userId, favorites, onFavoritesChange }: FavoriteRet
       }
     } else {
       const { error } = await supabase
-        .from('user_favorite_retailers' as any)
-        .insert({ user_id: userId, retailer_name: name } as any);
+        .from('user_favorite_retailers')
+        .insert({ user_id: userId, retailer_name: name });
       if (!error) {
         onFavoritesChange([...favorites, name]);
       } else if (error.code === '23505') {
-        // Already exists
         onFavoritesChange([...favorites, name]);
       } else {
         toast({ title: 'Error', description: 'Could not save retailer.', variant: 'destructive' });
@@ -52,7 +51,6 @@ const FavoriteRetailers = ({ userId, favorites, onFavoritesChange }: FavoriteRet
 
   return (
     <div>
-      {/* Selected favorites */}
       {favorites.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-2">
           {favorites.map(name => (
@@ -70,7 +68,6 @@ const FavoriteRetailers = ({ userId, favorites, onFavoritesChange }: FavoriteRet
         </div>
       )}
 
-      {/* All retailers to pick from */}
       <div className="flex flex-wrap gap-1">
         {ALL_RETAILERS.filter(r => !favorites.includes(r)).map(name => (
           <button

@@ -132,18 +132,18 @@ const Profile = () => {
 
   const fetchWardrobe = async () => {
     if (!user) return;
-    const { data } = await supabase.from('clothing_wardrobe' as any).select('*').eq('user_id', user.id).order('created_at', { ascending: false });
-    if (data) setWardrobeItems(data as any as WardrobeItem[]);
+    const { data } = await supabase.from('clothing_wardrobe').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+    if (data) setWardrobeItems(data);
   };
 
   const fetchFavoriteRetailers = async () => {
     if (!user) return;
-    const { data } = await supabase.from('user_favorite_retailers' as any).select('retailer_name').eq('user_id', user.id);
-    if (data) setFavoriteRetailers((data as any[]).map((r: any) => r.retailer_name));
+    const { data } = await supabase.from('user_favorite_retailers').select('retailer_name').eq('user_id', user.id);
+    if (data) setFavoriteRetailers(data.map(r => r.retailer_name));
   };
 
   const deleteWardrobeItem = async (id: string) => {
-    await supabase.from('clothing_wardrobe' as any).delete().eq('id', id);
+    await supabase.from('clothing_wardrobe').delete().eq('id', id);
     setWardrobeItems(prev => prev.filter(i => i.id !== id));
     toast({ title: 'Removed', description: 'Item removed from wardrobe.' });
   };
