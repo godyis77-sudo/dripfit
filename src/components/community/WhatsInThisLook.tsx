@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ExternalLink, ShoppingBag } from 'lucide-react';
+import { FullscreenImage } from '@/components/ui/fullscreen-image';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { trackEvent } from '@/lib/analytics';
 
@@ -111,28 +112,21 @@ const WhatsInThisLook = ({
             >
               {items.map((item, idx) => (
                 <div key={idx} className="flex items-center gap-2">
-                  {/* Product thumbnail */}
-                  <div className={`shrink-0 ${isCompact ? 'h-8 w-8' : 'h-10 w-10'} rounded-lg overflow-hidden bg-[#252525] border border-[#333] flex items-center justify-center`}>
-                    {item.image_url ? (
-                      <img
-                        src={item.image_url}
-                        alt={item.name}
-                        className="h-full w-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = 'none';
-                          (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
-                        }}
-                      />
-                    ) : clothingPhotoUrl ? (
-                      <img
-                        src={clothingPhotoUrl}
-                        alt={item.name}
-                        className="h-full w-full object-cover"
-                      />
+                  {/* Product thumbnail — tap for fullscreen */}
+                  {(() => {
+                    const imgSrc = item.image_url || clothingPhotoUrl;
+                    return imgSrc ? (
+                      <FullscreenImage src={imgSrc} alt={item.name}>
+                        <div className={`shrink-0 ${isCompact ? 'h-8 w-8' : 'h-10 w-10'} rounded-lg overflow-hidden bg-[#252525] border border-[#333] flex items-center justify-center cursor-pointer active:scale-95 transition-transform`}>
+                          <img src={imgSrc} alt={item.name} className="h-full w-full object-cover" />
+                        </div>
+                      </FullscreenImage>
                     ) : (
-                      <ShoppingBag className={`${isCompact ? 'h-3 w-3' : 'h-4 w-4'} text-muted-foreground/40`} />
-                    )}
-                  </div>
+                      <div className={`shrink-0 ${isCompact ? 'h-8 w-8' : 'h-10 w-10'} rounded-lg overflow-hidden bg-[#252525] border border-[#333] flex items-center justify-center`}>
+                        <ShoppingBag className={`${isCompact ? 'h-3 w-3' : 'h-4 w-4'} text-muted-foreground/40`} />
+                      </div>
+                    );
+                  })()}
 
                   {/* Brand + Name */}
                   <div className="flex-1 min-w-0">
