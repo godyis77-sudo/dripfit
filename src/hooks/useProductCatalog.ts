@@ -114,14 +114,14 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
         'topper', 'courtesypage', 'navi/image', 'lineup/', 'width=36',
         'new-stores', 'miffy', 'placeholder', 'dress_toppers', 'dress-topper',
         'share-image', 'flags/', 'entrance/assets', '/icons/', 'swatch',
-        'pixel', 'spacer', 'banner', 'badge', 'app-store', 'download-on',
-        'demandware.static', '.gif', '1x1', 'tracking', 'promo', 'hero',
+        'pixel', 'spacer', 'badge', 'app-store', 'download-on',
+        '.gif', '1x1', 'tracking', 'promo',
         'paymentmethods', 'asos-finance', 'klarna',
         'visa.png', 'mastercard.png', 'paypal.png', 'amex.png',
         'afterpay', 'discover.png', 'dinersclub', 'apple-pay',
         '/navi/', 'pm_',
         'doubleclick.net', 'ad.doubleclick', 'googlesyndication', 'googleadservices',
-        'facebook.com/tr', 'analytics', 'criteo', 'taboola',
+        'facebook.com/tr', 'criteo', 'taboola',
       ];
       const HARD_MIN_CONFIDENCE = 0.05;
       const PREFERRED_MIN_CONFIDENCE = 0.15;
