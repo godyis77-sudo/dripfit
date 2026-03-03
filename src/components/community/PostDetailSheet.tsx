@@ -2,7 +2,6 @@ import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, UserPlus, UserCheck, ExternalLink, Pencil, Check, ZoomIn, ZoomOut, Sparkles } from 'lucide-react';
 import { detectRetailer } from '@/lib/retailerDetect';
-import { getBestRetailerForItem } from '@/lib/retailerLinks';
 
 interface Post {
   id: string;
@@ -122,9 +121,7 @@ export const PostDetailSheet = ({
 
   if (!post) return null;
 
-  const retailer = post.product_url
-    ? detectRetailer(post.product_url)
-    : getBestRetailerForItem(null, post.caption?.toLowerCase().includes('dress') ? 'dress' : 'top');
+  const retailer = post.product_url ? detectRetailer(post.product_url) : null;
 
   const displayQuestion = questionText || post.caption || prompt;
 
