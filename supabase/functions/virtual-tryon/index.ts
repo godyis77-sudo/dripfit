@@ -26,33 +26,45 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    // Convert a URL or base64 string into a proper base64 data URI
-    const toBase64DataUri = async (input: string): Promise<string> => {
-      // Already a data URI
+    // Convert a URL or base64 string into a data URI, falling back to raw URL
+    const toImageInput = async (input: string): Promise<string> => {
       if (input.startsWith("data:")) return input;
-      // Raw URL — fetch server-side and convert
       if (input.startsWith("http://") || input.startsWith("https://")) {
-        const res = await fetch(input);
-        if (!res.ok) throw new Error(`Failed to fetch image: ${res.status}`);
-        const buf = await res.arrayBuffer();
-        const contentType = res.headers.get("content-type") || "image/jpeg";
-        const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
-        return `data:${contentType};base64,${b64}`;
+        // Try to fetch & convert; if CDN rejects, pass the raw URL
+        for (let attempt = 0; attempt < 2; attempt++) {
+          try {
+            const res = await fetch(input);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const buf = await res.arrayBuffer();
+            const contentType = res.headers.get("content-type") || "image/jpeg";
+            const bytes = new Uint8Array(buf);
+            let binary = "";
+            for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+            return `data:${contentType};base64,${btoa(binary)}`;
+          } catch (e) {
+            console.warn(`Fetch attempt ${attempt + 1} failed for ${input}: ${e}`);
+            if (attempt === 1) {
+              // Fallback: let the AI gateway fetch it directly
+              console.log("Falling back to raw URL for AI gateway");
+              return input;
+            }
+            await new Promise(r => setTimeout(r, 500));
+          }
+        }
       }
-      // Raw base64 without prefix
       return `data:image/jpeg;base64,${input}`;
     };
 
-    const makeImagePart = (dataUri: string) => {
+    const makeImagePart = (input: string) => {
       return {
         type: "image_url" as const,
-        image_url: { url: dataUri },
+        image_url: { url: input },
       };
     };
 
-    const [userDataUri, clothingDataUri] = await Promise.all([
-      toBase64DataUri(userPhoto),
-      toBase64DataUri(clothingPhoto),
+    const [userImageInput, clothingImageInput] = await Promise.all([
+      toImageInput(userPhoto),
+      toImageInput(clothingPhoto),
     ]);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -69,8 +81,8 @@ serve(async (req) => {
             role: "user",
             content: [
               { type: "text", text: "I have two images: the first is a photo of a person (or a person already wearing an outfit), and the second is an item (clothing or accessory like shoes, hat, jewelry, necklace, earrings, bracelet, watch, bag, or sunglasses). Generate a new image showing this exact person wearing/using the item from the second image in addition to whatever they are already wearing. Keep the person's face, body, pose, background, and existing outfit exactly the same. Only add the new item from the second image. Output the resulting image." },
-              makeImagePart(userDataUri),
-              makeImagePart(clothingDataUri),
+              makeImagePart(userImageInput),
+              makeImagePart(clothingImageInput),
             ],
           },
         ],
