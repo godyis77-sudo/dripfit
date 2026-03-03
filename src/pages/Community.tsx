@@ -839,7 +839,6 @@ const Community = () => {
 
                 {/* Section A: WOULD YOU BUY IT? */}
                 <div className="px-1.5 pt-1.5">
-                  <p className="text-[8px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Would you buy it?</p>
                   <div className="flex gap-1">
                     {VOTE_OPTIONS.map(v => {
                       const active = (votes[post.id] || []).includes(v.key);
