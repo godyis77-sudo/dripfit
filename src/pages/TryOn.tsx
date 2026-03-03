@@ -736,8 +736,13 @@ const TryOn = () => {
                           setLookItems([{ brand: product.brand, name: product.name, url: product.product_url, price_cents: product.price_cents }]);
                         }
                         trackEvent('tryon_clothing_uploaded');
-                        const base64 = await imageUrlToBase64(product.image_url);
-                        setClothingPhoto(base64);
+                        try {
+                          const base64 = await imageUrlToBase64(product.image_url);
+                          setClothingPhoto(base64);
+                        } catch {
+                          // CORS blocked — use raw URL; will be converted to base64 during generation
+                          setClothingPhoto(product.image_url);
+                        }
                       }}
                     />
                   ))
@@ -755,8 +760,12 @@ const TryOn = () => {
                         setLookItems([{ brand: product.brand, name: product.name, url: product.product_url, price_cents: product.price_cents }]);
                       }
                       trackEvent('tryon_clothing_uploaded');
-                      const base64 = await imageUrlToBase64(product.image_url);
-                      setClothingPhoto(base64);
+                      try {
+                        const base64 = await imageUrlToBase64(product.image_url);
+                        setClothingPhoto(base64);
+                      } catch {
+                        setClothingPhoto(product.image_url);
+                      }
                     }}
                   />
                 )}
@@ -1207,8 +1216,12 @@ const TryOn = () => {
                                         setLookItems(prev => [...prev, { brand: product.brand, name: product.name, url: product.product_url!, price_cents: product.price_cents }]);
                                       }
                                       trackEvent('catalog_product_clicked', { brand: product.brand, category: cat.key });
-                                      const base64 = await imageUrlToBase64(product.image_url);
-                                      setAccessoryPhoto(base64);
+                                      try {
+                                        const base64 = await imageUrlToBase64(product.image_url);
+                                        setAccessoryPhoto(base64);
+                                      } catch {
+                                        setAccessoryPhoto(product.image_url);
+                                      }
                                     }}
                                   />
                                 ))}
@@ -1229,8 +1242,12 @@ const TryOn = () => {
                                       setLookItems(prev => [...prev, { brand: product.brand, name: product.name, url: product.product_url!, price_cents: product.price_cents }]);
                                     }
                                     trackEvent('catalog_product_clicked', { brand: product.brand, category: accessoryCategory });
-                                    const base64 = await imageUrlToBase64(product.image_url);
-                                    setAccessoryPhoto(base64);
+                                    try {
+                                      const base64 = await imageUrlToBase64(product.image_url);
+                                      setAccessoryPhoto(base64);
+                                    } catch {
+                                      setAccessoryPhoto(product.image_url);
+                                    }
                                   }}
                                 />
                               </div>
