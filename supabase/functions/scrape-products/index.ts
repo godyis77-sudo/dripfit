@@ -1004,6 +1004,18 @@ Deno.serve(async (req) => {
         }
       }
       results.inserted = rows.length;
+
+      // Fire-and-forget: trigger AI categorization for newly inserted products
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+      fetch(`${supabaseUrl}/functions/v1/categorize-products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${anonKey}`,
+        },
+        body: JSON.stringify({ batch_size: 15, only_unchecked: true }),
+      }).catch(e => console.warn(`[run:${runId}] Categorize trigger failed:`, e));
     }
 
     console.log(`[run:${runId}] Done. Inserted ${results.inserted}`);
