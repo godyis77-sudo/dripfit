@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Heart, MessageSquare, ShoppingBag, X, Share2, Instagram } from 'lucide-react';
+import { Heart, MessageSquare, ShoppingBag, X, Share2, Instagram, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -22,9 +22,10 @@ interface TryOnDetailSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onPostUpdated?: () => void;
+  onDelete?: (id: string) => void;
 }
 
-const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated }: TryOnDetailSheetProps) => {
+const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }: TryOnDetailSheetProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [liked, setLiked] = useState(false);
@@ -179,6 +180,20 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated }: TryOnDeta
               <MessageSquare className="h-3.5 w-3.5 text-primary" />
               <p className="text-[11px] text-muted-foreground">Already shared in Fit Check Feed</p>
             </div>
+          )}
+
+          {/* Delete */}
+          {onDelete && (
+            <Button
+              variant="outline"
+              className="w-full h-9 rounded-xl text-[11px] text-destructive border-destructive/20 hover:bg-destructive/10 gap-1.5"
+              onClick={() => {
+                const confirmed = window.confirm('Delete this try-on? This cannot be undone.');
+                if (confirmed) onDelete(post.id);
+              }}
+            >
+              <Trash2 className="h-3.5 w-3.5" /> Delete Try-On
+            </Button>
           )}
         </div>
       </SheetContent>

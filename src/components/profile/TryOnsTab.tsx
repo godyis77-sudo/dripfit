@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Sparkles, MessageSquare, ShoppingBag, Send } from 'lucide-react';
+import { Sparkles, MessageSquare, ShoppingBag, Send, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -246,6 +246,18 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
         open={!!selectedPost}
         onOpenChange={(open) => { if (!open) setSelectedPost(null); }}
         onPostUpdated={() => { setSelectedPost(null); onPostUpdated?.(); }}
+        onDelete={async (id) => {
+          if (!user) return;
+          const { error } = await supabase.from('tryon_posts').delete().eq('id', id).eq('user_id', user.id);
+          if (error) {
+            toast({ title: 'Delete failed', description: error.message, variant: 'destructive' });
+            return;
+          }
+          trackEvent('fitcheck_post_deleted', { postId: id, source: 'profile_tryons' });
+          toast({ title: 'Deleted', description: 'Try-on removed permanently.' });
+          setSelectedPost(null);
+          onPostUpdated?.();
+        }}
       />
     </>
   );
