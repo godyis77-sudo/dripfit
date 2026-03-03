@@ -406,9 +406,16 @@ const Community = () => {
   const handleShopLook = (post: Post) => {
     const urls = (post.product_urls && post.product_urls.length > 0) ? post.product_urls : (post.product_url ? [post.product_url] : []);
     trackEvent('shop_clickout', { source: 'fitcheck', hasProductUrl: urls.length > 0, itemCount: urls.length });
-    if (urls.length > 0) {
-      window.open(urls[0], '_blank', 'noopener');
-    }
+    // Open each unique retailer URL
+    const seen = new Set<string>();
+    urls.forEach((u: string) => {
+      const r = detectRetailer(u);
+      const key = r || u;
+      if (!seen.has(key)) {
+        seen.add(key);
+        window.open(u, '_blank', 'noopener');
+      }
+    });
   };
 
   const isPlaceholder = (post: Post) => post.id.startsWith('seed-');
