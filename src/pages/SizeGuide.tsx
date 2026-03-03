@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Camera, Image, Loader2, CheckCircle2, AlertTriangle, ChevronDown, ChevronUp, Ruler } from 'lucide-react';
+import { ArrowLeft, Camera, Image, Loader2, CheckCircle2, AlertTriangle, ChevronDown, ChevronUp, Ruler, LogIn } from 'lucide-react';
 import { getMeasurements } from '@/lib/storage';
 import { MeasurementResult, MEASUREMENT_LABELS } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import BottomTabBar from '@/components/BottomTabBar';
 import { useToast } from '@/hooks/use-toast';
 
@@ -18,10 +19,26 @@ interface SizeRecommendation { recommendedSize: string; confidence: string; brea
 const fitColors: Record<string, string> = { tight: 'text-orange-500', good: 'text-green-500', loose: 'text-blue-500' };
 const fitLabels: Record<string, string> = { tight: 'Tight', good: 'Good', loose: 'Loose' };
 
+function bodyScansToMeasurement(scan: any): MeasurementResult {
+  return {
+    id: scan.id,
+    date: scan.created_at,
+    shoulder: Math.round(((scan.shoulder_min + scan.shoulder_max) / 2) * 10) / 10,
+    chest: Math.round(((scan.chest_min + scan.chest_max) / 2) * 10) / 10,
+    waist: Math.round(((scan.waist_min + scan.waist_max) / 2) * 10) / 10,
+    hips: Math.round(((scan.hip_min + scan.hip_max) / 2) * 10) / 10,
+    inseam: Math.round(((scan.inseam_min + scan.inseam_max) / 2) * 10) / 10,
+    height: scan.height_cm,
+    unit: 'cm' as const,
+    sizeRecommendation: scan.recommended_size || 'M',
+  };
+}
+
 const SizeGuide = () => {
   const navigate = useNavigate();
   usePageTitle('Size Guide Match');
   const { toast } = useToast();
+  const { user, loading: authLoading } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const [brandName, setBrandName] = useState('');
@@ -32,7 +49,45 @@ const SizeGuide = () => {
   const [error, setError] = useState<string | null>(null);
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
-  const measurements = getMeasurements();
+  const [measurements, setMeasurements] = useState<MeasurementResult[]>([]);
+  const [measurementsLoading, setMeasurementsLoading] = useState(true);
+
+  // Load measurements: DB first, localStorage fallback
+  useEffect(() => {
+    const loadMeasurements = async () => {
+      setMeasurementsLoading(true);
+      try {
+        if (user) {
+          const { data: scans } = await supabase
+            .from('body_scans')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false });
+
+          if (scans && scans.length > 0) {
+            const mapped = scans.map(bodyScansToMeasurement);
+            setMeasurements(mapped);
+            setSelectedMeasurement(mapped[0]);
+            setMeasurementsLoading(false);
+            return;
+          }
+        }
+        // Fallback to localStorage
+        const local = getMeasurements();
+        setMeasurements(local);
+        if (local.length > 0) setSelectedMeasurement(local[0]);
+      } catch (err) {
+        console.error('Failed to load measurements:', err);
+        const local = getMeasurements();
+        setMeasurements(local);
+        if (local.length > 0) setSelectedMeasurement(local[0]);
+      } finally {
+        setMeasurementsLoading(false);
+      }
+    };
+
+    if (!authLoading) loadMeasurements();
+  }, [user, authLoading]);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; if (!file) return;
@@ -56,12 +111,6 @@ const SizeGuide = () => {
     } catch (err: any) { setError(err.message || 'Analysis failed.'); }
     finally { setLoading(false); }
   };
-
-  useEffect(() => {
-    if (measurements.length > 0 && !selectedMeasurement) {
-      setSelectedMeasurement(measurements[0]);
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-bottom">
@@ -98,11 +147,22 @@ const SizeGuide = () => {
         {/* Step 2 */}
         <div className="mb-4">
           <p className="section-label mb-1.5">2. Select measurements</p>
-          {measurements.length === 0 ? (
+          {measurementsLoading ? (
+            <Card className="rounded-xl"><CardContent className="p-3 flex items-center justify-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              <p className="text-[13px] text-muted-foreground">Loading measurements…</p>
+            </CardContent></Card>
+          ) : measurements.length === 0 ? (
             <Card className="rounded-xl"><CardContent className="p-3 text-center">
               <Ruler className="h-6 w-6 text-muted-foreground/30 mx-auto mb-1.5" />
-               <p className="text-[13px] text-muted-foreground mb-2">No scan data yet</p>
-               <Button size="sm" className="rounded-lg text-[12px] h-8" onClick={() => navigate('/capture')}>Start a Scan</Button>
+              <p className="text-[13px] text-muted-foreground mb-2">No scan data yet</p>
+              {!user ? (
+                <Button size="sm" className="rounded-lg text-[12px] h-8" onClick={() => navigate('/auth')}>
+                  <LogIn className="h-3 w-3 mr-1" /> Sign in to see your measurements
+                </Button>
+              ) : (
+                <Button size="sm" className="rounded-lg text-[12px] h-8" onClick={() => navigate('/capture')}>Start a Scan</Button>
+              )}
             </CardContent></Card>
           ) : (
             <>
