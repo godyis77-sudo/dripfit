@@ -120,7 +120,8 @@ const WhatsInThisLook = ({
                 <div key={idx} className="flex items-center gap-2">
                   {/* Product thumbnail — tap for fullscreen */}
                   {(() => {
-                    const imgSrc = item.image_url || clothingPhotoUrl;
+                    // Only use clothingPhotoUrl as fallback when there's a single item
+                    const imgSrc = item.image_url || (items.length === 1 ? clothingPhotoUrl : null);
                     return imgSrc ? (
                       <FullscreenImage
                         src={imgSrc}
