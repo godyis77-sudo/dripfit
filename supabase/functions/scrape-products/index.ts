@@ -277,6 +277,7 @@ const CATEGORY_MAP: Record<string, Record<string, string[]>> = {
 
 // Brands that block direct scraping — use search fallback
 const ANTI_SCRAPE_BRANDS = new Set([
+  'hm', 'h&m', 'zara', 'uniqlo', 'shein', 'nike', 'asos',
   'burberry', 'patagonia', 'supreme', 'palace', 'louis vuitton',
   'prada', 'dior', 'balenciaga', 'saint laurent', 'off-white',
   'essentials', 'cartier', 'tiffany & co', 'pandora', 'new era',
@@ -540,10 +541,22 @@ async function searchProducts(
   const catTerms = CATEGORY_TERMS[category.toLowerCase()] || category;
   const isLuxury = LUXURY_SEARCH_BRANDS.has(brand.toLowerCase());
   const sites = isLuxury ? LUXURY_SITES : GENERAL_SITES;
-  // For general brands, also try their own site directly
-  const searchQuery = isLuxury
-    ? `${brand} ${catTerms} ${sites}`
-    : `"${brand}" ${catTerms} ${sites}`;
+  
+  // Brand-specific site overrides for better search results
+  const BRAND_SITE_OVERRIDES: Record<string, string> = {
+    'hm': 'site:hm.com OR site:nordstrom.com OR site:macys.com OR site:zappos.com',
+    'h&m': 'site:hm.com OR site:nordstrom.com OR site:macys.com OR site:zappos.com',
+    'zara': 'site:zara.com OR site:nordstrom.com',
+    'uniqlo': 'site:uniqlo.com OR site:nordstrom.com',
+    'shein': 'site:shein.com',
+    'nike': 'site:nike.com OR site:nordstrom.com OR site:zappos.com',
+    'asos': 'site:asos.com',
+  };
+  const brandKey = normalizeBrandKey(brand);
+  const effectiveSites = BRAND_SITE_OVERRIDES[brandKey] || BRAND_SITE_OVERRIDES[brand.toLowerCase()] || sites;
+  
+  // Use brand name as-is for search (search engines handle "H&M" fine)
+  const searchQuery = `${brand} ${catTerms} ${effectiveSites}`;
 
   console.log(`[search-fallback] Query: "${searchQuery}"`);
 
@@ -620,8 +633,14 @@ async function searchProducts(
       // For luxury brands, require brand name in the product listing
       // For mass-market retailers (Nordstrom, Macys, etc.), brand may be the retailer itself so skip this check
       const brandLower = brand.toLowerCase();
+      const brandSearchable = brandLower.replace(/&/g, '').replace(/[^a-z0-9]/g, '');
       const isRetailerBrand = ['nordstrom', 'macys', "macy's", 'bloomingdales', "bloomingdale's", 'target', 'kohls', "kohl's", 'jcpenney', 'walmart', 'saks', 'net-a-porter'].includes(brandLower);
-      if (!isRetailerBrand && !productName.toLowerCase().includes(brandLower) && !title.toLowerCase().includes(brandLower)) {
+      const titleLower = title.toLowerCase();
+      const nameLower = productName.toLowerCase();
+      const brandInResult = nameLower.includes(brandLower) || titleLower.includes(brandLower) 
+        || nameLower.replace(/[^a-z0-9]/g, '').includes(brandSearchable) 
+        || titleLower.replace(/[^a-z0-9]/g, '').includes(brandSearchable);
+      if (!isRetailerBrand && !brandInResult) {
         continue;
       }
 
