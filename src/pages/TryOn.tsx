@@ -489,12 +489,15 @@ const TryOn = () => {
         trackEvent('tryon_accessory_generated', { category: accessoryCategory });
         toast({ title: `${accessoryCategory || 'Accessory'} added!`, description: 'Keep adding items or finish your look.' });
         if (user) {
-          // Update the saved post with new result
+          // Update the saved post with new result AND accumulated product_urls
           try {
             const resultUrl = await uploadBase64ToStorage(data.resultImage, 'result');
+            const allUrls = lookItems.map(i => i.url).filter(Boolean);
+            const primaryUrl = productLink || selectedQuickPick?.product_url || null;
+            if (primaryUrl && !allUrls.includes(primaryUrl)) allUrls.unshift(primaryUrl);
             const { data: latestPosts } = await supabase.from('tryon_posts').select('id').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
             if (latestPosts && latestPosts.length > 0) {
-              await supabase.from('tryon_posts').update({ result_photo_url: resultUrl }).eq('id', latestPosts[0].id);
+              await supabase.from('tryon_posts').update({ result_photo_url: resultUrl, product_urls: allUrls, product_url: primaryUrl }).eq('id', latestPosts[0].id);
             }
           } catch { /* silent */ }
         }
