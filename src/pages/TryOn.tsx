@@ -359,11 +359,15 @@ const TryOn = () => {
     } finally { setLoading(false); }
   };
 
-  const uploadBase64ToStorage = async (base64: string, folder: string): Promise<string> => {
-    const match = base64.match(/^data:(image\/\w+);base64,(.+)$/);
+  const uploadBase64ToStorage = async (input: string, folder: string): Promise<string> => {
+    // If it's already a URL (not base64), return it directly
+    if (input.startsWith('http://') || input.startsWith('https://')) {
+      return input;
+    }
+    const match = input.match(/^data:(image\/\w+);base64,(.+)$/);
     const ext = match ? match[1].split('/')[1] : 'jpeg';
-    const data = match ? match[2] : base64;
-    const bytes = Uint8Array.from(atob(data), c => c.charCodeAt(0));
+    const rawB64 = match ? match[2] : input;
+    const bytes = Uint8Array.from(atob(rawB64), c => c.charCodeAt(0));
     const fileName = `${user!.id}/${folder}/${crypto.randomUUID()}.${ext}`;
     const { error } = await supabase.storage.from('tryon-images').upload(fileName, bytes, { contentType: match ? match[1] : 'image/jpeg' });
     if (error) throw error;
