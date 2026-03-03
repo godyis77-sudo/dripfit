@@ -26,6 +26,9 @@ const AuthContext = createContext<AuthContextType>({
   checkSubscription: async () => {},
 });
 
+// Admin user IDs that always get premium access (for troubleshooting)
+const ADMIN_USER_IDS = ['f83b26d7-453c-411a-aba8-5688fc8baa18'];
+
 export const STRIPE_TIERS = {
   monthly: {
     price_id: "price_1T56IXQaG3oYhM6e5KPtbzma",
@@ -47,6 +50,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [subscriptionEnd, setSubscriptionEnd] = useState<string | null>(null);
 
   const checkSubscription = useCallback(async () => {
+    // Admin override — grant premium without hitting Stripe
+    if (user && ADMIN_USER_IDS.includes(user.id)) {
+      setIsSubscribed(true);
+      setProductId('admin_override');
+      setSubscriptionEnd(null);
+      setSubscriptionLoading(false);
+      return;
+    }
     try {
       const { data, error } = await supabase.functions.invoke('check-subscription');
       if (error) throw error;
@@ -59,7 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setSubscriptionLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
