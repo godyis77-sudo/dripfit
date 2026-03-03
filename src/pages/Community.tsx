@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown, Bookmark, Camera, MessageSquare, Flame, Search, Ruler, UserPlus, UserCheck, User } from 'lucide-react';
+import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown, Bookmark, Camera, MessageSquare, Flame, Search, Ruler, UserPlus, UserCheck, User, Trash2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -418,6 +418,22 @@ const Community = () => {
     });
   };
 
+  const handleDeletePost = async (postId: string) => {
+    if (!user) return;
+    const confirmed = window.confirm('Delete this post from Style Check? This only removes it from the feed — your try-on and wardrobe are not affected.');
+    if (!confirmed) return;
+    try {
+      const { error } = await supabase.from('tryon_posts').update({ is_public: false, caption: null }).eq('id', postId).eq('user_id', user.id);
+      if (error) throw error;
+      setPosts(prev => prev.filter(p => p.id !== postId));
+      setDetailPost(null);
+      trackEvent('fitcheck_post_deleted', { postId });
+      toast({ title: 'Removed from Style Check', description: 'Your try-on is still saved in your profile.' });
+    } catch (err: any) {
+      toast({ title: 'Delete failed', description: err.message, variant: 'destructive' });
+    }
+  };
+
   const isPlaceholder = (post: Post) => post.id.startsWith('seed-');
 
   return (
@@ -798,6 +814,14 @@ const Community = () => {
                           </DropdownMenuItem>
                         </>
                       )}
+                      {user && post.user_id === user.id && !isPlaceholder(post) && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleDeletePost(post.id)} className="text-destructive focus:text-destructive">
+                            <Trash2 className="mr-2 h-3.5 w-3.5" /> Remove Post
+                          </DropdownMenuItem>
+                        </>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <span className="flex-1" />
@@ -1004,6 +1028,7 @@ const Community = () => {
           navigate(`/profile/${encodeURIComponent(name)}`);
         }}
         onShopLook={handleShopLook}
+        onDelete={handleDeletePost}
         onTryOn={(p) => {
           setDetailPost(null);
           if (p.product_url) {
