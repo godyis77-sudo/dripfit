@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     let genderFetched = false;
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -102,11 +102,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setTimeout(() => checkSubscription(), 0);
         if (!genderFetched) {
           genderFetched = true;
+          setGenderLoaded(false);
           fetchGender(session.user.id);
         }
       } else {
         setUserGender(null);
-        setGenderLoaded(true);
+        // Only mark loaded on explicit sign-out/delete; avoid startup null-session race
+        if (event === 'SIGNED_OUT') {
+          setGenderLoaded(true);
+        }
         setIsSubscribed(false);
         setSubscriptionLoading(false);
       }
@@ -120,6 +124,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         checkSubscription();
         if (!genderFetched) {
           genderFetched = true;
+          setGenderLoaded(false);
           fetchGender(session.user.id);
         }
       } else {
@@ -129,7 +134,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     return () => subscription.unsubscribe();
-  }, [checkSubscription]);
+  }, [checkSubscription, fetchGender]);
 
   // Auto-refresh subscription status every 60 seconds
   useEffect(() => {

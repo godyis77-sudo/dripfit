@@ -113,13 +113,10 @@ const CategoryProductGrid = ({
                 alt={product.name}
                 className="w-full h-full object-cover"
                 loading="lazy"
-                onLoad={(e) => {
-                  const img = e.currentTarget;
-                  if (img.naturalWidth < 120 || img.naturalHeight < 120) {
-                    hideProduct(product.id);
-                  }
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/placeholder.svg';
                 }}
-                onError={() => hideProduct(product.id)}
               />
               {/* Brand pill — bottom right of image */}
               <div className="absolute bottom-1.5 right-1.5 bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5">
