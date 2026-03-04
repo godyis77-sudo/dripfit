@@ -16,6 +16,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 import { FullscreenImage } from '@/components/ui/fullscreen-image';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
+import { useUserGender } from '@/hooks/useUserGender';
 
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 
@@ -168,6 +169,7 @@ const TryOn = () => {
   usePageTitle('Virtual Try-On');
   const location = useLocation();
   const { user, isSubscribed } = useAuth();
+  const { gender: userGender } = useUserGender();
   const { toast } = useToast();
   const userPhotoRef = useRef<HTMLInputElement>(null);
   const userCameraRef = useRef<HTMLInputElement>(null);
@@ -737,6 +739,7 @@ const TryOn = () => {
                       collapsed={true}
                       maxItems={20}
                       seed={1234}
+                      gender={userGender || undefined}
                       onSelectProduct={async (product) => {
                         setSelectedQuickPick(product);
                         if (product.product_url) {
@@ -761,6 +764,7 @@ const TryOn = () => {
                     collapsed={false}
                     maxItems={20}
                     seed={1234}
+                    gender={userGender || undefined}
                     onSelectProduct={async (product) => {
                       setSelectedQuickPick(product);
                       if (product.product_url) {
@@ -1159,6 +1163,7 @@ const TryOn = () => {
                                     maxItems={8}
                                     seed={7777}
                                     showViewAll={true}
+                                    gender={userGender || undefined}
                                      onSelectProduct={async (product) => {
                                       if (product.product_url) {
                                         setLookItems(prev => [...prev, { brand: product.brand, name: product.name, url: product.product_url!, price_cents: product.price_cents }]);
@@ -1185,6 +1190,7 @@ const TryOn = () => {
                                   collapsed={false}
                                   maxItems={4}
                                   seed={9999}
+                                  gender={userGender || undefined}
                                    onSelectProduct={async (product) => {
                                     if (product.product_url) {
                                       setLookItems(prev => [...prev, { brand: product.brand, name: product.name, url: product.product_url!, price_cents: product.price_cents }]);
