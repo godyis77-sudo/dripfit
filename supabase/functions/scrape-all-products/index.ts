@@ -16,6 +16,10 @@ const BRAND_CATEGORIES: Record<string, string[]> = {
   'urban outfitters': ['t-shirts', 'hoodies', 'sweaters', 'jeans', 'pants', 'shorts', 'jackets', 'dresses', 'hats', 'sunglasses'],
   'fashion nova':  ['t-shirts', 'hoodies', 'jeans', 'pants', 'shorts', 'skirts', 'leggings', 'dresses', 'jumpsuits', 'heels', 'sandals', 'bags', 'jewelry', 'swimwear'],
   'prettylittlething': ['t-shirts', 'shirts', 'hoodies', 'jeans', 'pants', 'skirts', 'leggings', 'dresses', 'jumpsuits', 'heels', 'boots', 'bags', 'jewelry', 'swimwear'],
+  boohoo:         ['t-shirts', 'shirts', 'hoodies', 'jeans', 'pants', 'skirts', 'dresses', 'jumpsuits', 'heels', 'boots', 'bags', 'jewelry', 'swimwear'],
+  'forever 21':   ['t-shirts', 'shirts', 'hoodies', 'jeans', 'pants', 'shorts', 'skirts', 'dresses', 'jumpsuits', 'jackets', 'sneakers', 'sandals', 'bags', 'jewelry', 'swimwear'],
+  topshop:        ['t-shirts', 'shirts', 'jeans', 'pants', 'skirts', 'dresses', 'jackets', 'coats', 'boots', 'heels', 'bags', 'jewelry'],
+  nastygal:       ['t-shirts', 'shirts', 'hoodies', 'jeans', 'pants', 'skirts', 'dresses', 'jumpsuits', 'jackets', 'boots', 'heels', 'bags', 'jewelry', 'swimwear'],
 
   // ── Sportswear & Athletic ──
   nike:           ['t-shirts', 'hoodies', 'polos', 'pants', 'shorts', 'leggings', 'jackets', 'vests', 'sneakers', 'sandals', 'hats', 'bags', 'socks', 'activewear', 'swimwear'],
@@ -122,6 +126,47 @@ const BRAND_CATEGORIES: Record<string, string[]> = {
   'jacquemus':     ['t-shirts', 'shirts', 'sweaters', 'pants', 'shorts', 'dresses', 'jackets', 'sandals', 'bags', 'hats', 'sunglasses'],
   'rick owens':    ['t-shirts', 'hoodies', 'jackets', 'coats', 'pants', 'shorts', 'sneakers', 'boots', 'bags'],
   'maison margiela': ['t-shirts', 'sweaters', 'jackets', 'pants', 'sneakers', 'boots', 'bags', 'jewelry'],
+
+  // ── Mens-Only Retailers ──
+  bonobos:        ['t-shirts', 'shirts', 'polos', 'sweaters', 'pants', 'jeans', 'shorts', 'jackets', 'blazers', 'coats', 'sneakers', 'loafers', 'belts', 'swimwear'],
+  'buck mason':   ['t-shirts', 'shirts', 'sweaters', 'jeans', 'pants', 'shorts', 'jackets', 'coats', 'boots'],
+  'bylt basics':  ['t-shirts', 'polos', 'hoodies', 'pants', 'shorts', 'joggers'],
+  'charles tyrwhitt': ['shirts', 'polos', 'sweaters', 'pants', 'blazers', 'coats', 'belts', 'ties'],
+  'cuts clothing': ['t-shirts', 'polos', 'hoodies', 'pants', 'shorts', 'jackets'],
+  huckberry:      ['t-shirts', 'shirts', 'sweaters', 'hoodies', 'jeans', 'pants', 'shorts', 'jackets', 'coats', 'vests', 'boots', 'sneakers', 'belts', 'hats', 'bags'],
+  indochino:      ['shirts', 'blazers', 'pants', 'coats'],
+  'jos. a. bank': ['shirts', 'polos', 'sweaters', 'pants', 'blazers', 'coats', 'belts', 'ties'],
+  "men's wearhouse": ['shirts', 'pants', 'blazers', 'coats', 'belts', 'ties'],
+  'mizzen+main':  ['shirts', 'polos', 'pants', 'shorts', 'jackets'],
+  'mr porter':    ['t-shirts', 'shirts', 'sweaters', 'hoodies', 'jeans', 'pants', 'shorts', 'jackets', 'blazers', 'coats', 'sneakers', 'boots', 'loafers', 'bags', 'belts', 'watches', 'sunglasses'],
+  'peter manning': ['t-shirts', 'shirts', 'polos', 'sweaters', 'pants', 'jeans', 'shorts', 'jackets', 'blazers'],
+  'proper cloth':  ['shirts', 'pants', 'blazers'],
+  rhone:          ['t-shirts', 'polos', 'hoodies', 'pants', 'shorts', 'jackets', 'activewear'],
+  suitsupply:     ['shirts', 'blazers', 'pants', 'coats', 'belts', 'ties', 'sneakers', 'loafers'],
+  'todd snyder':  ['t-shirts', 'shirts', 'sweaters', 'hoodies', 'jeans', 'pants', 'shorts', 'jackets', 'blazers', 'coats', 'sneakers', 'boots', 'bags'],
+  'true classic': ['t-shirts', 'polos', 'hoodies', 'pants', 'shorts', 'jackets', 'activewear'],
+  untuckit:       ['shirts', 'polos', 'sweaters', 'pants', 'shorts', 'jackets', 'blazers'],
+  vuori:          ['t-shirts', 'hoodies', 'pants', 'shorts', 'jackets', 'activewear', 'joggers'],
+
+  // ── Womens-Only Retailers ──
+  'net-a-porter':  ['t-shirts', 'shirts', 'sweaters', 'jeans', 'pants', 'skirts', 'dresses', 'jumpsuits', 'jackets', 'coats', 'blazers', 'heels', 'boots', 'sandals', 'bags', 'jewelry', 'sunglasses'],
+  "victoria's secret": ['bras', 'underwear', 'loungewear', 'sleepwear', 'swimwear', 'activewear'],
+  fabletics:      ['leggings', 't-shirts', 'hoodies', 'shorts', 'jackets', 'activewear', 'swimwear'],
+  torrid:         ['t-shirts', 'shirts', 'sweaters', 'hoodies', 'jeans', 'pants', 'shorts', 'skirts', 'dresses', 'jumpsuits', 'jackets', 'coats', 'swimwear', 'activewear', 'loungewear'],
+  'lane bryant':  ['t-shirts', 'shirts', 'sweaters', 'jeans', 'pants', 'skirts', 'dresses', 'jackets', 'coats', 'swimwear', 'activewear', 'loungewear'],
+  'eileen fisher': ['t-shirts', 'shirts', 'sweaters', 'pants', 'skirts', 'dresses', 'jackets', 'coats', 'scarves'],
+  'girlfriend collective': ['leggings', 't-shirts', 'hoodies', 'shorts', 'jackets', 'activewear', 'swimwear'],
+  'rent the runway': ['dresses', 'jumpsuits', 'jackets', 'coats', 'blazers', 'skirts', 'pants', 'tops', 'bags', 'jewelry'],
+  thirdlove:      ['bras', 'underwear', 'loungewear', 'sleepwear'],
+  'savage x fenty': ['bras', 'underwear', 'loungewear', 'sleepwear', 'activewear'],
+  eloquii:        ['t-shirts', 'shirts', 'sweaters', 'jeans', 'pants', 'skirts', 'dresses', 'jumpsuits', 'jackets', 'coats', 'swimwear'],
+  "altar'd state": ['t-shirts', 'sweaters', 'jeans', 'pants', 'skirts', 'dresses', 'jackets', 'jewelry', 'bags'],
+  'white house black market': ['t-shirts', 'shirts', 'sweaters', 'pants', 'jeans', 'skirts', 'dresses', 'jumpsuits', 'jackets', 'blazers', 'coats'],
+  'ann taylor':   ['t-shirts', 'shirts', 'sweaters', 'pants', 'jeans', 'skirts', 'dresses', 'jackets', 'blazers', 'coats'],
+  loft:           ['t-shirts', 'shirts', 'sweaters', 'pants', 'jeans', 'skirts', 'dresses', 'jackets', 'blazers'],
+  "chico's":      ['t-shirts', 'shirts', 'sweaters', 'pants', 'jeans', 'skirts', 'dresses', 'jackets', 'coats', 'jewelry', 'scarves'],
+  'lucy paris':   ['t-shirts', 'sweaters', 'pants', 'skirts', 'dresses', 'jumpsuits', 'jackets'],
+  skims:          ['t-shirts', 'leggings', 'dresses', 'loungewear', 'underwear', 'swimwear'],
 };
 
 Deno.serve(async (req) => {
