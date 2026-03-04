@@ -83,7 +83,7 @@ function seededShuffle<T>(arr: T[], seed: number): T[] {
   return copy;
 }
 
-export function useProductCatalog(category?: string, brand?: string, seed?: number, gender?: string) {
+export function useProductCatalog(category?: string, brand?: string, seed?: number, gender?: string, skipClientFilter?: boolean) {
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [loading, setLoading] = useState(false);
   // Stable random seed — generated once per hook instance to prevent flickering on re-fetch
@@ -122,37 +122,47 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
       if (requestId !== fetchRequestIdRef.current) return;
 
       if (data) {
-        // Filter out junk URLs and low-quality entries
-        const JUNK_PATTERNS = [
-          'down_for_maintenance', 'navigation', 'imagesother', 'chip/goods',
-          'topper', 'courtesypage', 'navi/image', 'lineup/', 'width=36',
-          'new-stores', 'miffy', 'placeholder', 'dress_toppers', 'dress-topper',
-          'share-image', 'flags/', 'entrance/assets', '/icons/', 'swatch',
-          'pixel', 'spacer', 'badge', 'app-store', 'download-on',
-          '.gif', '1x1', 'tracking', 'promo',
-          'paymentmethods', 'asos-finance', 'klarna',
-          'visa.png', 'mastercard.png', 'paypal.png', 'amex.png',
-          'afterpay', 'discover.png', 'dinersclub', 'apple-pay',
-          '/navi/', 'pm_',
-          'doubleclick.net', 'ad.doubleclick', 'googlesyndication', 'googleadservices',
-          'facebook.com/tr', 'criteo', 'taboola',
-          'static.zara.net',
-        ];
-        const HARD_MIN_CONFIDENCE = 0.05;
-        const seen = new Set<string>();
-        const cleaned = (data as unknown as CatalogProduct[]).filter(p => {
-          if (!p.image_url || p.image_url.trim() === '') return false;
-          const normalizedUrl = p.image_url.trim().toLowerCase();
-          if (JUNK_PATTERNS.some(pat => normalizedUrl.includes(pat))) return false;
-
-          const conf = p.image_confidence;
-          if (typeof conf === 'number' && conf < HARD_MIN_CONFIDENCE) return false;
-
-          // Deduplicate by image URL (case-insensitive)
-          if (seen.has(normalizedUrl)) return false;
-          seen.add(normalizedUrl);
-          return true;
-        });
+        let cleaned: CatalogProduct[];
+        if (skipClientFilter) {
+          // For try-on: skip junk filtering, just deduplicate
+          const seen = new Set<string>();
+          cleaned = (data as unknown as CatalogProduct[]).filter(p => {
+            if (!p.image_url || p.image_url.trim() === '') return false;
+            const normalizedUrl = p.image_url.trim().toLowerCase();
+            if (seen.has(normalizedUrl)) return false;
+            seen.add(normalizedUrl);
+            return true;
+          });
+        } else {
+          // Standard filtering with junk patterns and confidence
+          const JUNK_PATTERNS = [
+            'down_for_maintenance', 'navigation', 'imagesother', 'chip/goods',
+            'topper', 'courtesypage', 'navi/image', 'lineup/', 'width=36',
+            'new-stores', 'miffy', 'placeholder', 'dress_toppers', 'dress-topper',
+            'share-image', 'flags/', 'entrance/assets', '/icons/', 'swatch',
+            'pixel', 'spacer', 'badge', 'app-store', 'download-on',
+            '.gif', '1x1', 'tracking', 'promo',
+            'paymentmethods', 'asos-finance', 'klarna',
+            'visa.png', 'mastercard.png', 'paypal.png', 'amex.png',
+            'afterpay', 'discover.png', 'dinersclub', 'apple-pay',
+            '/navi/', 'pm_',
+            'doubleclick.net', 'ad.doubleclick', 'googlesyndication', 'googleadservices',
+            'facebook.com/tr', 'criteo', 'taboola',
+            'static.zara.net',
+          ];
+          const HARD_MIN_CONFIDENCE = 0.05;
+          const seen = new Set<string>();
+          cleaned = (data as unknown as CatalogProduct[]).filter(p => {
+            if (!p.image_url || p.image_url.trim() === '') return false;
+            const normalizedUrl = p.image_url.trim().toLowerCase();
+            if (JUNK_PATTERNS.some(pat => normalizedUrl.includes(pat))) return false;
+            const conf = p.image_confidence;
+            if (typeof conf === 'number' && conf < HARD_MIN_CONFIDENCE) return false;
+            if (seen.has(normalizedUrl)) return false;
+            seen.add(normalizedUrl);
+            return true;
+          });
+        }
 
         const shuffleSeed = seed ?? stableSeedRef.current;
         setProducts(seededShuffle(cleaned, shuffleSeed));
@@ -164,7 +174,7 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
         setLoading(false);
       }
     }
-  }, [category, brand, seed, gender]);
+  }, [category, brand, seed, gender, skipClientFilter]);
 
   useEffect(() => {
     fetchProducts();
