@@ -44,13 +44,14 @@ interface SettingsTabProps {
   onAvatarTap: () => void;
   onDisplayNameSave?: (name: string) => void;
   onInstagramSave?: (handle: string) => void;
+  onGenderChange?: (g: string) => void;
 }
 
 const SettingsTab = ({
   user, displayName, avatarUrl, savedProfile, fit, useCm, savedItemCount,
   isSubscribed, subscriptionEnd, productId, favoriteRetailers, instagramHandle,
   onFavoriteRetailersChange,
-  onFitChange, onUnitToggle, onExport, onDeletePhotos, onDeleteAccount, onAvatarTap, onDisplayNameSave, onInstagramSave,
+  onFitChange, onUnitToggle, onExport, onDeletePhotos, onDeleteAccount, onAvatarTap, onDisplayNameSave, onInstagramSave, onGenderChange,
 }: SettingsTabProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -194,6 +195,7 @@ const SettingsTab = ({
                 onClick={async () => {
                   setGender(g.value);
                   await supabase.from('profiles').update({ gender: g.value } as any).eq('user_id', user.id);
+                  onGenderChange?.(g.value);
                   toast({ title: `Shopping section set to ${g.label}` });
                 }}
                 className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all active:scale-95 ${

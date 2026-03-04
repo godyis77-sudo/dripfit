@@ -1,0 +1,1 @@
+ALTER TABLE retailers ADD COLUMN IF NOT EXISTS gender_focus text DEFAULT 'unisex';

@@ -16,7 +16,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 const ProfileSettings = () => {
   const navigate = useNavigate();
   usePageTitle('Settings');
-  const { user, isSubscribed, subscriptionEnd, productId } = useAuth();
+  const { user, isSubscribed, subscriptionEnd, productId, updateGender } = useAuth();
   const { toast } = useToast();
   const [displayName, setDisplayName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -133,8 +133,9 @@ const ProfileSettings = () => {
           onDeleteAccount={handleDeleteAccount}
           onAvatarTap={() => setShowAvatarSheet(true)}
           onDisplayNameSave={handleDisplayNameSave}
-          onInstagramSave={handleInstagramSave}
-        />
+           onInstagramSave={handleInstagramSave}
+           onGenderChange={(g) => updateGender(g)}
+         />
       </div>
       <BottomTabBar />
       {user && (

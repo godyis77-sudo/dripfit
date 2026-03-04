@@ -16,7 +16,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 import { FullscreenImage } from '@/components/ui/fullscreen-image';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
-import { useUserGender } from '@/hooks/useUserGender';
+
 
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 
@@ -168,8 +168,8 @@ const TryOn = () => {
   const navigate = useNavigate();
   usePageTitle('Virtual Try-On');
   const location = useLocation();
-  const { user, isSubscribed } = useAuth();
-  const { gender: userGender } = useUserGender();
+  const { user, isSubscribed, userGender: authGender } = useAuth();
+  const userGender = authGender === 'male' ? 'mens' : authGender === 'female' ? 'womens' : null;
   const { toast } = useToast();
   const userPhotoRef = useRef<HTMLInputElement>(null);
   const userCameraRef = useRef<HTMLInputElement>(null);

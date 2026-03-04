@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { usePageTitle } from '@/hooks/usePageTitle';
-import { useUserGender } from '@/hooks/useUserGender';
+import { useAuth } from '@/hooks/useAuth';
 
 const CATEGORY_LABELS: Record<string, string> = {
   tops: 'Tops',
@@ -46,11 +46,12 @@ type GenderKey = typeof GENDER_OPTIONS[number]['key'];
 const Browse = () => {
   const { category = 'tops' } = useParams<{ category: string }>();
   const navigate = useNavigate();
-  const { gender: userGender } = useUserGender();
+  const { userGender } = useAuth();
+  const defaultGender: GenderKey = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : 'all';
   const [genderOverride, setGenderOverride] = useState<GenderKey | null>(null);
 
   // Use override if user manually selected, otherwise default to profile preference
-  const genderFilter: GenderKey = genderOverride ?? (userGender as GenderKey) ?? 'all';
+  const genderFilter: GenderKey = genderOverride ?? defaultGender;
   const effectiveGender = genderFilter === 'all' ? undefined : genderFilter;
 
   const { products, loading } = useProductCatalog(category, undefined, undefined, effectiveGender);
