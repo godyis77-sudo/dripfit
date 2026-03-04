@@ -42,8 +42,11 @@ const Premium = () => {
         supabase.from('premium_testimonials' as any).select('quote_text, attribution, star_rating').eq('is_active', true).limit(3),
       ]);
       if (testimonialsRes.data) setTestimonials(testimonialsRes.data as any);
-      // For member count, we'd need a view or function; for now use null (hidden)
-      // TODO: Add actual premium member count when is_premium field exists
+      const { count } = await supabase
+        .from('user_subscriptions')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_active', true);
+      if (count !== null) setMemberCount(count);
     };
     fetchSocialProof();
   }, []);

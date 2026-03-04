@@ -178,7 +178,7 @@ const Community = () => {
     setLoading(true);
     const ids = followingIds.length > 0 ? followingIds : await getFollowingIds(user.id);
     if (ids.length === 0) { setPosts([]); setLoading(false); return; }
-    const { data } = await supabase.from('tryon_posts').select('*').eq('is_public', true).in('user_id', ids).order('created_at', { ascending: false }).limit(50);
+    const { data } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_url, product_urls').eq('is_public', true).in('user_id', ids).order('created_at', { ascending: false }).limit(50);
     if (!data || data.length === 0) { setPosts([]); setLoading(false); return; }
     const userIds = [...new Set(data.map(p => p.user_id))];
     const { data: profiles } = await supabase.from('profiles').select('user_id, display_name, avatar_url').in('user_id', userIds);
@@ -236,7 +236,7 @@ const Community = () => {
 
   const fetchPosts = async () => {
     setLoading(true);
-    const { data, error } = await supabase.from('tryon_posts').select('*').eq('is_public', true).order('created_at', { ascending: false }).limit(50);
+    const { data, error } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_url, product_urls').eq('is_public', true).order('created_at', { ascending: false }).limit(50);
     if (error) { console.error(error); setLoading(false); return; }
     if (!data || data.length === 0) {
       // Fetch seed posts as fallback
@@ -977,10 +977,16 @@ const Community = () => {
         votes={votes}
         voteCounts={voteCounts}
         onVote={handleVote}
-        onComment={(postId, val) => {
+        onComment={async (postId, val) => {
           if (!user) { toast({ title: 'Sign in to comment', variant: 'destructive' }); return; }
-          trackEvent('fitcheck_reaction', { postId, comment: val });
-          toast({ title: 'Sent!', description: val });
+          if (!val.trim()) return;
+          const { error } = await supabase.from('post_comments').insert({ post_id: postId, user_id: user.id, comment_text: val.trim() });
+          if (error) {
+            toast({ title: 'Could not post comment', variant: 'destructive' });
+          } else {
+            trackEvent('fitcheck_comment', { postId });
+            toast({ title: 'Comment posted!' });
+          }
         }}
         onFollow={handleFollowToggle}
         onNavigateProfile={(p) => {

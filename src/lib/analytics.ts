@@ -80,7 +80,8 @@ type FunnelEvent =
   | 'fit_preference_changed'
   | 'badge_clickout'
   | 'fitcheck_post_deleted'
-  | 'wardrobe_add_from_look';
+  | 'wardrobe_add_from_look'
+  | 'fitcheck_comment';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
