@@ -4,9 +4,17 @@ import { supabase } from '@/integrations/supabase/client';
 
 export type GenderPreference = 'mens' | 'womens' | null;
 
+// Map profile gender values to catalog filter values
+const GENDER_MAP: Record<string, GenderPreference> = {
+  male: 'mens',
+  mens: 'mens',
+  female: 'womens',
+  womens: 'womens',
+};
+
 /**
- * Returns the authenticated user's saved gender/shopping preference.
- * Falls back to null (meaning "all") if unset or not logged in.
+ * Returns the authenticated user's saved gender/shopping preference
+ * mapped to catalog filter values ('mens' | 'womens' | null).
  */
 export function useUserGender() {
   const { user } = useAuth();
@@ -25,9 +33,8 @@ export function useUserGender() {
       .eq('user_id', user.id)
       .single()
       .then(({ data }) => {
-        if (data?.gender === 'mens' || data?.gender === 'womens') {
-          setGender(data.gender as GenderPreference);
-        }
+        const mapped = GENDER_MAP[data?.gender ?? ''] ?? null;
+        setGender(mapped);
         setLoaded(true);
       });
   }, [user]);
