@@ -102,7 +102,7 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
         .not('image_url', 'is', null)
         .order('image_confidence', { ascending: false })
         .order('id', { ascending: true })
-        .limit(1000);
+        .limit(2000);
 
       if (category) {
         const mapped = CATEGORY_MAP[category];

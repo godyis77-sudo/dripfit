@@ -737,7 +737,7 @@ const TryOn = () => {
                       category={cat.key}
                       title={cat.label}
                       collapsed={true}
-                      maxItems={20}
+                      maxItems={40}
                       seed={1234}
                       gender={userGender || undefined}
                       onSelectProduct={async (product) => {
@@ -762,7 +762,7 @@ const TryOn = () => {
                     category={category}
                     title={`Shop ${CATEGORIES.find(c => c.key === category)?.label || category}`}
                     collapsed={false}
-                    maxItems={20}
+                    maxItems={40}
                     seed={1234}
                     gender={userGender || undefined}
                     onSelectProduct={async (product) => {
