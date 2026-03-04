@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, SlidersHorizontal, X, Sparkles, ExternalLink, Search } from 'lucide-react';
@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 const CATEGORY_LABELS: Record<string, string> = {
   tops: 'Tops',
@@ -45,7 +47,25 @@ type GenderKey = typeof GENDER_OPTIONS[number]['key'];
 const Browse = () => {
   const { category = 'tops' } = useParams<{ category: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [genderFilter, setGenderFilter] = useState<GenderKey>('all');
+  const [genderLoaded, setGenderLoaded] = useState(false);
+
+  // Default gender filter to user's saved preference
+  useEffect(() => {
+    if (!user) { setGenderLoaded(true); return; }
+    supabase
+      .from('profiles')
+      .select('gender')
+      .eq('user_id', user.id)
+      .single()
+      .then(({ data }) => {
+        if (data?.gender === 'mens' || data?.gender === 'womens') {
+          setGenderFilter(data.gender as GenderKey);
+        }
+        setGenderLoaded(true);
+      });
+  }, [user]);
   const { products, loading } = useProductCatalog(category, undefined, undefined, genderFilter === 'all' ? undefined : genderFilter);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortKey>('default');
