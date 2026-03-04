@@ -88,72 +88,82 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
   const [loading, setLoading] = useState(false);
   // Stable random seed — generated once per hook instance to prevent flickering on re-fetch
   const stableSeedRef = useRef(seed ?? Math.floor(Math.random() * 100000));
+  const fetchRequestIdRef = useRef(0);
 
   const fetchProducts = useCallback(async () => {
+    const requestId = ++fetchRequestIdRef.current;
     setLoading(true);
-    let query = supabase
-      .from('product_catalog')
-      .select('id, brand, retailer, category, name, image_url, product_url, price_cents, currency, tags, presentation, image_confidence, gender')
-      .eq('is_active', true)
-      .not('image_url', 'is', null)
-      .order('image_confidence', { ascending: false })
-      .limit(1000);
 
-    if (category) {
-      const mapped = CATEGORY_MAP[category];
-      if (mapped && mapped.length > 0) {
-        query = query.in('category', mapped);
+    try {
+      let query = supabase
+        .from('product_catalog')
+        .select('id, brand, retailer, category, name, image_url, product_url, price_cents, currency, tags, presentation, image_confidence, gender')
+        .eq('is_active', true)
+        .not('image_url', 'is', null)
+        .order('image_confidence', { ascending: false })
+        .order('id', { ascending: true })
+        .limit(1000);
+
+      if (category) {
+        const mapped = CATEGORY_MAP[category];
+        if (mapped && mapped.length > 0) {
+          query = query.in('category', mapped);
+        } else {
+          query = query.eq('category', category);
+        }
+      }
+      if (brand) query = query.eq('brand', brand);
+      if (gender && gender !== 'all') {
+        query = query.in('gender', [gender, 'unisex']);
+      }
+
+      const { data } = await query;
+
+      if (requestId !== fetchRequestIdRef.current) return;
+
+      if (data) {
+        // Filter out junk URLs and low-quality entries
+        const JUNK_PATTERNS = [
+          'down_for_maintenance', 'navigation', 'imagesother', 'chip/goods',
+          'topper', 'courtesypage', 'navi/image', 'lineup/', 'width=36',
+          'new-stores', 'miffy', 'placeholder', 'dress_toppers', 'dress-topper',
+          'share-image', 'flags/', 'entrance/assets', '/icons/', 'swatch',
+          'pixel', 'spacer', 'badge', 'app-store', 'download-on',
+          '.gif', '1x1', 'tracking', 'promo',
+          'paymentmethods', 'asos-finance', 'klarna',
+          'visa.png', 'mastercard.png', 'paypal.png', 'amex.png',
+          'afterpay', 'discover.png', 'dinersclub', 'apple-pay',
+          '/navi/', 'pm_',
+          'doubleclick.net', 'ad.doubleclick', 'googlesyndication', 'googleadservices',
+          'facebook.com/tr', 'criteo', 'taboola',
+          'static.zara.net',
+        ];
+        const HARD_MIN_CONFIDENCE = 0.05;
+        const seen = new Set<string>();
+        const cleaned = (data as unknown as CatalogProduct[]).filter(p => {
+          if (!p.image_url || p.image_url.trim() === '') return false;
+          const normalizedUrl = p.image_url.trim().toLowerCase();
+          if (JUNK_PATTERNS.some(pat => normalizedUrl.includes(pat))) return false;
+
+          const conf = p.image_confidence;
+          if (typeof conf === 'number' && conf < HARD_MIN_CONFIDENCE) return false;
+
+          // Deduplicate by image URL (case-insensitive)
+          if (seen.has(normalizedUrl)) return false;
+          seen.add(normalizedUrl);
+          return true;
+        });
+
+        const shuffleSeed = seed ?? stableSeedRef.current;
+        setProducts(seededShuffle(cleaned, shuffleSeed));
       } else {
-        query = query.eq('category', category);
+        setProducts([]);
+      }
+    } finally {
+      if (requestId === fetchRequestIdRef.current) {
+        setLoading(false);
       }
     }
-    if (brand) query = query.eq('brand', brand);
-    if (gender && gender !== 'all') {
-      query = query.in('gender', [gender, 'unisex']);
-    }
-
-    const { data } = await query;
-    if (data) {
-      // Filter out junk URLs and low-quality entries
-      const JUNK_PATTERNS = [
-        'down_for_maintenance', 'navigation', 'imagesother', 'chip/goods',
-        'topper', 'courtesypage', 'navi/image', 'lineup/', 'width=36',
-        'new-stores', 'miffy', 'placeholder', 'dress_toppers', 'dress-topper',
-        'share-image', 'flags/', 'entrance/assets', '/icons/', 'swatch',
-        'pixel', 'spacer', 'badge', 'app-store', 'download-on',
-        '.gif', '1x1', 'tracking', 'promo',
-        'paymentmethods', 'asos-finance', 'klarna',
-        'visa.png', 'mastercard.png', 'paypal.png', 'amex.png',
-        'afterpay', 'discover.png', 'dinersclub', 'apple-pay',
-        '/navi/', 'pm_',
-        'doubleclick.net', 'ad.doubleclick', 'googlesyndication', 'googleadservices',
-        'facebook.com/tr', 'criteo', 'taboola',
-        'static.zara.net',
-      ];
-      const HARD_MIN_CONFIDENCE = 0.05;
-      const PREFERRED_MIN_CONFIDENCE = 0.15;
-      const seen = new Set<string>();
-      const cleaned = (data as unknown as CatalogProduct[]).filter(p => {
-        if (!p.image_url || p.image_url.trim() === '') return false;
-        const normalizedUrl = p.image_url.trim().toLowerCase();
-        if (JUNK_PATTERNS.some(pat => normalizedUrl.includes(pat))) return false;
-
-        const conf = p.image_confidence;
-        if (typeof conf === 'number' && conf < HARD_MIN_CONFIDENCE) return false;
-
-        // Deduplicate by image URL (case-insensitive)
-        if (seen.has(normalizedUrl)) return false;
-        seen.add(normalizedUrl);
-        return true;
-      });
-
-      // Prefer high-confidence entries first to avoid blank / banner-like results.
-      const finalPool = cleaned;
-
-      const shuffleSeed = seed ?? stableSeedRef.current;
-      setProducts(seededShuffle(finalPool, shuffleSeed));
-    }
-    setLoading(false);
   }, [category, brand, seed, gender]);
 
   useEffect(() => {

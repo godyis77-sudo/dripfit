@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -56,20 +56,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [subscriptionEnd, setSubscriptionEnd] = useState<string | null>(null);
   const [userGender, setUserGender] = useState<'male' | 'female' | 'non-binary' | null>(null);
   const [genderLoaded, setGenderLoaded] = useState(false);
+  const currentUserIdRef = useRef<string | null>(null);
+  const fetchedGenderUserIdRef = useRef<string | null>(null);
 
   const updateGender = useCallback((g: string | null) => {
     setUserGender(g as 'male' | 'female' | 'non-binary' | null);
   }, []);
 
-  const checkSubscription = useCallback(async () => {
+  const checkSubscription = useCallback(async (userId?: string | null) => {
+    const targetUserId = userId ?? currentUserIdRef.current;
+
+    if (!targetUserId) {
+      setIsSubscribed(false);
+      setProductId(null);
+      setSubscriptionEnd(null);
+      setSubscriptionLoading(false);
+      return;
+    }
+
     // Admin override — grant premium without hitting Stripe
-    if (user && ADMIN_USER_IDS.includes(user.id)) {
+    if (ADMIN_USER_IDS.includes(targetUserId)) {
       setIsSubscribed(true);
       setProductId('admin_override');
       setSubscriptionEnd(null);
       setSubscriptionLoading(false);
       return;
     }
+
     try {
       const { data, error } = await supabase.functions.invoke('check-subscription');
       if (error) throw error;
@@ -79,53 +92,76 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (e) {
       console.error('Subscription check failed:', e);
       setIsSubscribed(false);
+      setProductId(null);
+      setSubscriptionEnd(null);
     } finally {
       setSubscriptionLoading(false);
     }
-  }, [user]);
+  }, []);
 
   // Fetch gender once per user to avoid duplicate requests
   const fetchGender = useCallback(async (userId: string) => {
-    const { data } = await supabase.from('profiles').select('gender').eq('user_id', userId).single();
-    setUserGender((data?.gender as any) ?? null);
-    setGenderLoaded(true);
+    try {
+      const { data } = await supabase.from('profiles').select('gender').eq('user_id', userId).single();
+      setUserGender((data?.gender as any) ?? null);
+    } catch (e) {
+      console.error('Gender fetch failed:', e);
+      setUserGender(null);
+    } finally {
+      setGenderLoaded(true);
+    }
   }, []);
 
   useEffect(() => {
-    let genderFetched = false;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      const nextUser = nextSession?.user ?? null;
+      const nextUserId = nextUser?.id ?? null;
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+      currentUserIdRef.current = nextUserId;
+      setSession(nextSession);
+      setUser(nextUser);
       setLoading(false);
-      if (session?.user) {
-        setTimeout(() => checkSubscription(), 0);
-        if (!genderFetched) {
-          genderFetched = true;
+
+      if (nextUserId) {
+        setSubscriptionLoading(true);
+        setTimeout(() => checkSubscription(nextUserId), 0);
+
+        if (fetchedGenderUserIdRef.current !== nextUserId) {
+          fetchedGenderUserIdRef.current = nextUserId;
           setGenderLoaded(false);
-          fetchGender(session.user.id);
+          fetchGender(nextUserId);
         }
       } else {
+        fetchedGenderUserIdRef.current = null;
         setUserGender(null);
         // Only mark loaded on explicit sign-out/delete; avoid startup null-session race
         if (event === 'SIGNED_OUT') {
           setGenderLoaded(true);
         }
         setIsSubscribed(false);
+        setProductId(null);
+        setSubscriptionEnd(null);
         setSubscriptionLoading(false);
       }
     });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      const currentUser = currentSession?.user ?? null;
+      const currentUserId = currentUser?.id ?? null;
+
+      currentUserIdRef.current = currentUserId;
+      setSession(currentSession);
+      setUser(currentUser);
       setLoading(false);
-      if (session?.user) {
-        checkSubscription();
-        if (!genderFetched) {
-          genderFetched = true;
+
+      if (currentUserId) {
+        setSubscriptionLoading(true);
+        checkSubscription(currentUserId);
+
+        if (fetchedGenderUserIdRef.current !== currentUserId) {
+          fetchedGenderUserIdRef.current = currentUserId;
           setGenderLoaded(false);
-          fetchGender(session.user.id);
+          fetchGender(currentUserId);
         }
       } else {
         setGenderLoaded(true);
@@ -138,10 +174,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Auto-refresh subscription status every 60 seconds
   useEffect(() => {
-    if (!user) return;
-    const interval = setInterval(checkSubscription, 60000);
+    if (!user?.id) return;
+    const interval = setInterval(() => checkSubscription(user.id), 60000);
     return () => clearInterval(interval);
-  }, [user, checkSubscription]);
+  }, [user?.id, checkSubscription]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -155,3 +191,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
+

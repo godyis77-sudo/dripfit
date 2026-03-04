@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { forwardRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Sparkles, ExternalLink, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -18,7 +18,7 @@ interface CategoryProductGridProps {
   gender?: string;
 }
 
-const CategoryProductGrid = ({
+const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>(({
   category,
   title,
   collapsed = true,
@@ -28,27 +28,18 @@ const CategoryProductGrid = ({
   showViewAll = false,
   priceFilter,
   gender,
-}: CategoryProductGridProps) => {
+}, ref) => {
   const navigate = useNavigate();
   const { products, loading } = useProductCatalog(category, undefined, seed, gender);
   const [expanded, setExpanded] = useState(!collapsed);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
-  const [hiddenProductIds, setHiddenProductIds] = useState<Set<string>>(new Set());
+  const [failedImageIds, setFailedImageIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    setHiddenProductIds(new Set());
+    setFailedImageIds(new Set());
   }, [category, products.length]);
 
-  const hideProduct = (productId: string) => {
-    setHiddenProductIds(prev => {
-      if (prev.has(productId)) return prev;
-      const next = new Set(prev);
-      next.add(productId);
-      return next;
-    });
-  };
-
-  let visibleProducts = products.filter(product => !hiddenProductIds.has(product.id));
+  let visibleProducts = products;
 
   // Apply price filter
   if (priceFilter) {
@@ -74,7 +65,7 @@ const CategoryProductGrid = ({
   const displayed = expanded ? visibleProducts.slice(0, maxItems) : visibleProducts.slice(0, 4);
 
   return (
-    <div>
+    <div ref={ref}>
       {title && (
         <div className="flex items-center justify-between mb-2">
           <button
@@ -108,16 +99,28 @@ const CategoryProductGrid = ({
           >
             {/* Image area — 3:4 aspect, ~68% of card */}
             <div className="relative aspect-[3/4] bg-muted overflow-hidden">
-              <img
-                src={product.image_url}
-                alt={product.name}
-                className="w-full h-full object-cover"
-                loading="lazy"
-                onError={(e) => {
-                  e.currentTarget.onerror = null;
-                  e.currentTarget.src = '/placeholder.svg';
-                }}
-              />
+              {failedImageIds.has(product.id) ? (
+                <div className="w-full h-full flex items-center justify-center p-2 bg-muted text-center">
+                  <span className="text-[10px] font-semibold text-muted-foreground line-clamp-2 uppercase tracking-wide">
+                    {product.brand}
+                  </span>
+                </div>
+              ) : (
+                <img
+                  src={product.image_url}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                  onError={() => {
+                    setFailedImageIds(prev => {
+                      if (prev.has(product.id)) return prev;
+                      const next = new Set(prev);
+                      next.add(product.id);
+                      return next;
+                    });
+                  }}
+                />
+              )}
               {/* Brand pill — bottom right of image */}
               <div className="absolute bottom-1.5 right-1.5 bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5">
                 <span className="text-[8px] font-bold text-foreground uppercase tracking-wider">{product.brand}</span>
@@ -222,6 +225,8 @@ const CategoryProductGrid = ({
       </AnimatePresence>
     </div>
   );
-};
+});
+
+CategoryProductGrid.displayName = 'CategoryProductGrid';
 
 export default CategoryProductGrid;
