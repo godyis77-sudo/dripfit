@@ -34,10 +34,19 @@ const SORT_OPTIONS = [
 
 type SortKey = typeof SORT_OPTIONS[number]['key'];
 
+const GENDER_OPTIONS = [
+  { key: 'all', label: 'All' },
+  { key: 'mens', label: "Men's" },
+  { key: 'womens', label: "Women's" },
+] as const;
+
+type GenderKey = typeof GENDER_OPTIONS[number]['key'];
+
 const Browse = () => {
   const { category = 'tops' } = useParams<{ category: string }>();
   const navigate = useNavigate();
-  const { products, loading } = useProductCatalog(category);
+  const [genderFilter, setGenderFilter] = useState<GenderKey>('all');
+  const { products, loading } = useProductCatalog(category, undefined, undefined, genderFilter === 'all' ? undefined : genderFilter);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortKey>('default');
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
@@ -84,7 +93,7 @@ const Browse = () => {
     return result;
   }, [products, search, sort, brandFilter]);
 
-  const activeFilterCount = (brandFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0);
+  const activeFilterCount = (brandFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-background pb-safe-bottom">
@@ -137,7 +146,24 @@ const Browse = () => {
           </div>
         </div>
 
-        {/* Category pills (quick switch) */}
+        {/* Gender toggle */}
+        <div className="px-4 pb-2 flex gap-1.5">
+          {GENDER_OPTIONS.map(opt => (
+            <button
+              key={opt.key}
+              onClick={() => setGenderFilter(opt.key)}
+              className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
+                genderFilter === opt.key
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-card border border-border text-muted-foreground'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+
+
         <div className="px-4 pb-3 flex gap-1.5 overflow-x-auto scrollbar-hide">
           {[
             { key: 'tops', label: 'Tops' },
