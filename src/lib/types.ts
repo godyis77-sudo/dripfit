@@ -79,8 +79,15 @@ export const MEASUREMENT_LABELS: Record<string, string> = {
 };
 
 export const SUPPORTED_RETAILERS = [
-  'SHEIN', 'Macys', 'Gap', 'Nordstrom', 'JCPenney',
-  'Lululemon', 'Zara', 'H&M', 'Aritzia', 'Simons',
+  // Mass-market & fast fashion
+  'SHEIN', 'Zara', 'H&M', 'Gap', 'Old Navy', 'Banana Republic',
+  'Uniqlo', 'Mango', 'Forever 21', 'Boohoo', 'PrettyLittleThing',
+  'Fashion Nova', 'Target', 'Topshop',
+  // Department & multi-brand
+  'Nordstrom', 'ASOS', 'Revolve', 'Amazon Fashion', 'Urban Outfitters',
+  'Abercrombie & Fitch', 'J.Crew',
+  // Athletic & activewear
+  'Nike', 'Adidas', 'Puma', 'Lululemon',
   // Luxury
   'Gucci', 'Louis Vuitton', 'Prada', 'Balenciaga', 'Dior',
   'Burberry', 'Versace', 'Saint Laurent', 'Givenchy', 'Fendi',
