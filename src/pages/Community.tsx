@@ -75,7 +75,16 @@ interface Retailer {
   website_url: string;
   category: string;
   is_active: boolean;
+  gender_focus?: string;
 }
+
+const GENDER_OPTIONS = [
+  { key: 'all', label: 'All' },
+  { key: 'mens', label: "Men's" },
+  { key: 'womens', label: "Women's" },
+] as const;
+
+type GenderKey = typeof GENDER_OPTIONS[number]['key'];
 
 
 const StarRating = ({ value, onChange }: { value: number; onChange: (v: number) => void }) => (
@@ -119,6 +128,7 @@ const Community = () => {
   usePageTitle('Style Check');
   const { user } = useAuth();
   const { toast } = useToast();
+  const [shopGender, setShopGender] = useState<GenderKey>('all');
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterType>('new');
@@ -326,11 +336,17 @@ const Community = () => {
   const fetchRetailers = async () => {
     setRetailersLoading(true);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('retailers')
         .select('*')
         .eq('is_active', true)
         .order('name');
+
+      if (shopGender !== 'all') {
+        query = query.in('gender_focus', [shopGender, 'unisex']);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       setRetailers((data as unknown as Retailer[]) || []);
     } catch (e) {

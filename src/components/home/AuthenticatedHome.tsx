@@ -6,7 +6,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
-import { useUserGender } from '@/hooks/useUserGender';
 
 const PROMPTS = [
   'Should I buy this for work?',
@@ -39,8 +38,8 @@ const PRICE_FILTERS = [
 
 const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { gender: userGender } = useUserGender();
+  const { user, userGender } = useAuth();
+  const mappedGender = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : undefined;
   const [fabOpen, setFabOpen] = useState(false);
   const [trendingFits, setTrendingFits] = useState<TrendingPost[]>([]);
   const [profileName, setProfileName] = useState<string | null>(null);
@@ -360,7 +359,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                 seed={section.seed}
                 showViewAll={true}
                 priceFilter={priceFilter}
-                gender={userGender || undefined}
+                gender={mappedGender}
                 onSelectProduct={(product) => {
                   trackEvent('catalog_product_tryon', { brand: product.brand, category: product.category });
                   navigate('/tryon', { state: { clothingUrl: product.image_url, productUrl: product.product_url } });
@@ -369,6 +368,30 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             </div>
           ))}
         </motion.div>
+
+        {/* Gender nudge banner */}
+        {!userGender && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.22 }}
+            className="mb-4"
+          >
+            <button
+              onClick={() => navigate('/profile/settings')}
+              className="w-full bg-card border border-primary/20 rounded-xl p-3.5 flex items-center gap-3 active:scale-[0.98] transition-transform"
+            >
+              <div className="h-9 w-9 rounded-xl gradient-drip flex items-center justify-center shrink-0">
+                <ShoppingBag className="h-4 w-4 text-primary-foreground" />
+              </div>
+              <div className="text-left flex-1">
+                <p className="text-[12px] font-bold text-foreground">Personalize your picks</p>
+                <p className="text-[10px] text-muted-foreground">Tell us how you shop for better recommendations</p>
+              </div>
+              <span className="text-[10px] font-bold text-primary shrink-0">Set →</span>
+            </button>
+          </motion.div>
+        )}
 
         {/* ━━━ FIX 6: Recently Saved removed ━━━ */}
         {/* Contextual upsell if user hasn't scanned */}
