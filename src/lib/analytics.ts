@@ -81,7 +81,8 @@ type FunnelEvent =
   | 'badge_clickout'
   | 'fitcheck_post_deleted'
   | 'wardrobe_add_from_look'
-  | 'fitcheck_comment';
+  | 'fitcheck_comment'
+  | 'onboarding_gender_selected';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {

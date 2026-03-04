@@ -18,7 +18,13 @@ import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
 import heroTryon from '@/assets/hero-tryon-mirror.jpg';
 import heroCommunity from '@/assets/hero-community-feedback.jpg';
 
-type Screen = 'splash' | 'carousel' | 'auth' | 'personalize' | 'scan-prompt';
+type Screen = 'splash' | 'carousel' | 'auth' | 'personalize' | 'gender' | 'scan-prompt';
+
+const GENDER_CHOICES = [
+  { value: 'male', label: "Men's", desc: 'Show me menswear & sizing' },
+  { value: 'female', label: "Women's", desc: 'Show me womenswear & sizing' },
+  { value: 'both', label: 'Both', desc: "I shop across both sections" },
+] as const;
 
 const SLIDES = [
   {
@@ -67,6 +73,7 @@ const Onboarding = () => {
   const [slideIdx, setSlideIdx] = useState(0);
   const [slideDir, setSlideDir] = useState(1);
   const [habit, setHabit] = useState<ShoppingHabit | null>(null);
+  const [genderChoice, setGenderChoice] = useState<string | null>(null);
 
   // Auto-advance splash after 1.5s
   useEffect(() => {
@@ -95,6 +102,18 @@ const Onboarding = () => {
 
   const confirmHabit = () => {
     if (habit) { setShoppingHabit(habit); trackEvent('onboarding_shopping_habit', { habit }); }
+    setScreen('gender');
+  };
+
+  const confirmGender = async () => {
+    if (genderChoice) {
+      trackEvent('onboarding_gender_selected', { gender: genderChoice });
+      // Save to profile if authenticated
+      if (user) {
+        const mapped = genderChoice === 'both' ? null : genderChoice;
+        await supabase.from('profiles').upsert({ user_id: user.id, gender: mapped }, { onConflict: 'user_id' });
+      }
+    }
     setScreen('scan-prompt');
   };
 
@@ -316,7 +335,55 @@ const Onboarding = () => {
           </motion.div>
         )}
 
-        {/* ── Screen 5: Scan Prompt — overcome the barrier ── */}
+        {/* ── Screen 5: Gender Preference ── */}
+        {screen === 'gender' && (
+          <motion.div
+            key="gender"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={screenTransition}
+            className="w-full h-screen flex flex-col px-6 pt-16 pb-8"
+          >
+            <p className="text-[10px] text-primary font-bold uppercase tracking-wider mb-1">One more thing</p>
+            <h2 className="font-display text-xl font-bold text-foreground mb-1">I shop in the…</h2>
+            <p className="text-[13px] text-muted-foreground mb-6">We'll show you the right products & sizing.</p>
+
+            <div className="flex flex-col gap-2.5 flex-1 content-start">
+              {GENDER_CHOICES.map(g => {
+                const selected = genderChoice === g.value;
+                return (
+                  <button
+                    key={g.value}
+                    onClick={() => setGenderChoice(g.value)}
+                    className={`flex items-center gap-4 p-4 rounded-xl border-2 transition-all active:scale-[0.97] ${
+                      selected ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/30'
+                    }`}
+                  >
+                    <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${
+                      selected ? 'gradient-drip' : 'bg-card border border-border'
+                    }`}>
+                      <ShoppingBag className={`h-5 w-5 ${selected ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-bold text-[14px] text-foreground leading-tight">{g.label}</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">{g.desc}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            <Button
+              onClick={confirmGender}
+              className="w-full h-12 rounded-xl btn-luxury text-primary-foreground font-display font-bold text-base uppercase tracking-wider active:scale-[0.97] transition-transform mt-4"
+            >
+              Continue <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </motion.div>
+        )}
+
+        {/* ── Screen 6: Scan Prompt — overcome the barrier ── */}
         {screen === 'scan-prompt' && (
           <motion.div
             key="scan-prompt"
