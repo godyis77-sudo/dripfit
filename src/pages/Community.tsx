@@ -286,7 +286,7 @@ const Community = () => {
       fetchPosts();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, user?.id, followingIdsKey]);
+  }, [filter, user?.id, followingIdsKey, shopGender]);
 
   // Load following IDs for follow buttons
   useEffect(() => {
@@ -336,7 +336,7 @@ const Community = () => {
   const fetchRetailers = async () => {
     setRetailersLoading(true);
     try {
-      let query = supabase
+      let query: any = supabase
         .from('retailers')
         .select('*')
         .eq('is_active', true)
@@ -691,7 +691,24 @@ const Community = () => {
         )}
 
         {filter === 'shop' ? (
-          retailersLoading ? (
+          <>
+            {/* Gender toggle for shop */}
+            <div className="flex gap-1.5 mb-3">
+              {GENDER_OPTIONS.map(opt => (
+                <button
+                  key={opt.key}
+                  onClick={() => setShopGender(opt.key)}
+                  className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
+                    shopGender === opt.key
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-card border border-border text-muted-foreground'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          {retailersLoading ? (
             <div className="space-y-2">
               {[1, 2, 3].map(i => (
                 <div key={i} className="h-14 rounded-xl" style={{ background: 'linear-gradient(110deg, #1A1A1A 30%, #272727 50%, #1A1A1A 70%)', backgroundSize: '200% 100%', animation: 'skeleton-shimmer 1.4s ease-in-out infinite' }} />
@@ -725,7 +742,8 @@ const Community = () => {
                 </button>
               ))}
             </div>
-          )
+          )}
+          </>
         ) : loading ? (
           <div className="space-y-3">
             {[1, 2].map(i => (
