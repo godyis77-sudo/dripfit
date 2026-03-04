@@ -4,10 +4,9 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Valid product categories matching the app's category system
 const VALID_CATEGORIES = [
   "t-shirts", "shirts", "hoodies", "polos", "sweaters", "tops",
   "jeans", "pants", "shorts", "skirts", "leggings", "bottoms",
@@ -18,12 +17,30 @@ const VALID_CATEGORIES = [
   "activewear", "swimwear", "loungewear", "underwear",
 ] as const;
 
+const VALID_GENDERS = ["mens", "womens", "unisex"] as const;
 const CATEGORY_LIST = VALID_CATEGORIES.join(", ");
+
+// Map DB retailer names for matching (lowercase -> proper)
+const RETAILER_NORMALIZE: Record<string, string> = {
+  "h&m": "H&M",
+  "hm": "H&M",
+  "shein": "SHEIN",
+  "asos": "ASOS",
+  "prettylittlething": "PrettyLittleThing",
+  "a bathing ape": "A Bathing Ape",
+  "stüssy": "Stüssy",
+  "stussy": "Stüssy",
+  "abercrombie & fitch": "Abercrombie & Fitch",
+  "abercrombie": "Abercrombie & Fitch",
+  "j.crew": "J.Crew",
+  "jcrew": "J.Crew",
+};
 
 interface AnalysisResult {
   id: string;
   old_category: string;
   new_category: string;
+  gender: string;
   is_valid_product: boolean;
   confidence: number;
   reason: string;
@@ -44,13 +61,13 @@ serve(async (req) => {
 
     const body = await req.json();
     const batchSize = body.batch_size ?? 20;
-    const category = body.category; // optional: only process specific category
-    const onlyUnchecked = body.only_unchecked ?? true; // skip already-verified items
+    const category = body.category;
+    const onlyUnchecked = body.only_unchecked ?? true;
 
-    // Fetch products to analyze
+    // Fetch products — use array containment operator properly
     let query = supabase
       .from("product_catalog")
-      .select("id, name, brand, category, image_url, image_confidence, tags")
+      .select("id, name, brand, retailer, category, image_url, image_confidence, tags, gender")
       .eq("is_active", true)
       .not("image_url", "is", null)
       .order("image_confidence", { ascending: true, nullsFirst: true })
@@ -60,7 +77,7 @@ serve(async (req) => {
       query = query.eq("category", category);
     }
 
-    // Skip already-verified AND previously-failed items to avoid infinite loops
+    // Use array containment to check tags — fixed from SIMILAR TO
     if (onlyUnchecked) {
       query = query.not("tags", "cs", '{"ai_verified"}').not("tags", "cs", '{"ai_failed"}');
     }
@@ -77,8 +94,7 @@ serve(async (req) => {
     console.log(`Processing ${products.length} products...`);
 
     const results: AnalysisResult[] = [];
-    let reclassified = 0;
-    let deactivated = 0;
+    const failedIds: { id: string; tags: string[] }[] = [];
 
     // Process in mini-batches of 5 for parallelism
     for (let i = 0; i < products.length; i += 5) {
@@ -86,16 +102,11 @@ serve(async (req) => {
       const chunkResults = await Promise.allSettled(
         chunk.map(async (product) => {
           try {
-            const result = await analyzeProduct(product, LOVABLE_API_KEY);
-            return result;
+            return await analyzeProduct(product, LOVABLE_API_KEY);
           } catch (e) {
             console.error(`Error analyzing ${product.id}:`, e);
-            // Tag as ai_failed so it's skipped on next run
             const existingTags: string[] = Array.isArray(product.tags) ? product.tags : [];
-            await supabase
-              .from("product_catalog")
-              .update({ tags: [...new Set([...existingTags, "ai_failed"])] })
-              .eq("id", product.id);
+            failedIds.push({ id: product.id, tags: [...new Set([...existingTags, "ai_failed"])] });
             return null;
           }
         })
@@ -108,50 +119,63 @@ serve(async (req) => {
       }
     }
 
-    // Apply updates
+    // Batch update failed items
+    for (const item of failedIds) {
+      await supabase.from("product_catalog").update({ tags: item.tags }).eq("id", item.id);
+    }
+
+    // Apply updates — batch by update type to reduce round-trips
+    let reclassified = 0;
+    let deactivated = 0;
+
     for (const result of results) {
       const product = products.find((p) => p.id === result.id);
       if (!product) continue;
 
       const existingTags: string[] = Array.isArray(product.tags) ? product.tags : [];
-      const newTags = [...new Set([...existingTags.filter(t => t !== "ai_verified" && t !== "ai_invalid"), "ai_verified"])];
+      const baseTags = existingTags.filter(t => t !== "ai_verified" && t !== "ai_invalid" && t !== "ai_failed");
+      const newTags = [...new Set([...baseTags, "ai_verified"])];
+
+      // Normalize retailer name if needed
+      const normalizedRetailer = normalizeRetailer(product.retailer);
+      const retailerUpdate = normalizedRetailer !== product.retailer
+        ? { retailer: normalizedRetailer } : {};
 
       if (!result.is_valid_product) {
-        // Deactivate non-product images (banners, logos, lifestyle shots without product)
         await supabase
           .from("product_catalog")
           .update({
             is_active: false,
             tags: [...newTags, "ai_invalid"],
             image_confidence: Math.min(result.confidence, 0.1),
+            gender: result.gender,
+            ...retailerUpdate,
           })
           .eq("id", result.id);
         deactivated++;
-      } else if (result.new_category !== result.old_category) {
-        // Reclassify
-        await supabase
-          .from("product_catalog")
-          .update({
-            category: result.new_category,
-            tags: newTags,
-            image_confidence: result.confidence,
-          })
-          .eq("id", result.id);
-        reclassified++;
       } else {
-        // Just mark as verified
+        const updatePayload: Record<string, unknown> = {
+          tags: newTags,
+          image_confidence: Math.max(result.confidence, product.image_confidence ?? 0),
+          gender: result.gender,
+          ...retailerUpdate,
+        };
+
+        if (result.new_category !== result.old_category) {
+          updatePayload.category = result.new_category;
+          reclassified++;
+        }
+
         await supabase
           .from("product_catalog")
-          .update({
-            tags: newTags,
-            image_confidence: Math.max(result.confidence, product.image_confidence ?? 0),
-          })
+          .update(updatePayload)
           .eq("id", result.id);
       }
     }
 
     const summary = {
       processed: results.length,
+      failed: failedIds.length,
       reclassified,
       deactivated,
       verified: results.length - reclassified - deactivated,
@@ -159,13 +183,14 @@ serve(async (req) => {
         id: r.id,
         old: r.old_category,
         new: r.new_category,
+        gender: r.gender,
         valid: r.is_valid_product,
         confidence: r.confidence,
         reason: r.reason,
       })),
     };
 
-    console.log(`Done: ${results.length} processed, ${reclassified} reclassified, ${deactivated} deactivated`);
+    console.log(`Done: ${results.length} processed, ${reclassified} reclassified, ${deactivated} deactivated, ${failedIds.length} failed`);
 
     return new Response(JSON.stringify(summary), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -179,8 +204,13 @@ serve(async (req) => {
   }
 });
 
+function normalizeRetailer(name: string): string {
+  const lower = name.toLowerCase().trim();
+  return RETAILER_NORMALIZE[lower] ?? name;
+}
+
 async function analyzeProduct(
-  product: { id: string; name: string; brand: string; category: string; image_url: string },
+  product: { id: string; name: string; brand: string; retailer: string; category: string; image_url: string },
   apiKey: string
 ): Promise<AnalysisResult> {
   const prompt = `You are a fashion product image classifier. Analyze this product image and determine:
@@ -191,15 +221,21 @@ async function analyzeProduct(
 2. What specific category does this product belong to? Choose EXACTLY ONE from:
    ${CATEGORY_LIST}
 
+3. What gender is this product designed for? Choose EXACTLY ONE from: mens, womens, unisex
+   - Use contextual clues: silhouette, styling, model, brand positioning
+   - Default to "unisex" if ambiguous
+
 The product is currently listed as:
 - Name: "${product.name}"
-- Brand: "${product.brand}"  
+- Brand: "${product.brand}"
+- Retailer: "${product.retailer}"
 - Current category: "${product.category}"
 
 Respond ONLY with valid JSON (no markdown):
 {
   "is_valid_product": true/false,
   "category": "one of the valid categories",
+  "gender": "mens/womens/unisex",
   "confidence": 0.0-1.0,
   "reason": "brief explanation"
 }`;
@@ -232,7 +268,6 @@ Respond ONLY with valid JSON (no markdown):
   const data = await response.json();
   const raw = data.choices?.[0]?.message?.content ?? "";
   
-  // Extract JSON from response (handle markdown code blocks)
   const jsonMatch = raw.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
     throw new Error(`No JSON in response: ${raw.slice(0, 200)}`);
@@ -240,15 +275,19 @@ Respond ONLY with valid JSON (no markdown):
 
   const parsed = JSON.parse(jsonMatch[0]);
   
-  // Validate category
-  const validCategory = VALID_CATEGORIES.includes(parsed.category) 
-    ? parsed.category 
+  const validCategory = VALID_CATEGORIES.includes(parsed.category)
+    ? parsed.category
     : product.category;
+
+  const validGender = VALID_GENDERS.includes(parsed.gender)
+    ? parsed.gender
+    : "unisex";
 
   return {
     id: product.id,
     old_category: product.category,
     new_category: validCategory,
+    gender: validGender,
     is_valid_product: Boolean(parsed.is_valid_product),
     confidence: Math.max(0, Math.min(1, Number(parsed.confidence) || 0.5)),
     reason: String(parsed.reason || ""),
