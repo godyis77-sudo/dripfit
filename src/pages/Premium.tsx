@@ -115,7 +115,7 @@ const Premium = () => {
           <Button variant="ghost" size="icon" onClick={handleBack} className="h-8 w-8 rounded-lg">
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <PremiumBadge label="DRIP FIT Premium" />
+          <PremiumBadge label="DRIPFITCHECK Premium" />
         </div>
 
         {/* Hero */}

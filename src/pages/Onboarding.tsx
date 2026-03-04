@@ -510,7 +510,7 @@ const AuthInline = ({ onComplete }: { onComplete: () => void }) => {
         <div className="h-11 w-11 rounded-xl gradient-drip glow-primary flex items-center justify-center ring-2 ring-primary/20 mb-2">
           <Crown className="h-5 w-5 text-primary-foreground" />
         </div>
-        <h2 className="font-display text-xl font-bold text-foreground">Join DRIP FIT</h2>
+        <h2 className="font-display text-xl font-bold text-foreground">Join DRIPFITCHECK</h2>
         <p className="text-[13px] text-muted-foreground text-center mt-1">Create your free account to save results</p>
       </div>
 

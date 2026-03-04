@@ -114,7 +114,7 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
             className="text-xs font-bold tracking-widest uppercase"
             style={{ color: "#946F00" }}
           >
-            DRIP FIT SIZE MATCH
+            DRIPFITCHECK SIZE MATCH
           </span>
           <TooltipProvider>
             <Tooltip>

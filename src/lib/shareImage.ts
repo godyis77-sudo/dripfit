@@ -136,17 +136,17 @@ export async function generateShareImage(data: ShareImageData): Promise<Blob> {
   // Crown logo watermark
   drawCrown(ctx, W - 120, H - 200, 60);
 
-  // DRIP FIT wordmark
+  // DRIPFITCHECK wordmark
   ctx.textAlign = 'right';
   ctx.fillStyle = '#B8960C';
   ctx.font = 'bold 32px Inter, system-ui, sans-serif';
-  ctx.fillText('DRIP FIT', W - 60, H - 130);
+  ctx.fillText('DRIPFITCHECK', W - 60, H - 130);
 
   // CTA at bottom
   ctx.textAlign = 'center';
   ctx.fillStyle = '#666666';
   ctx.font = '24px Inter, system-ui, sans-serif';
-  ctx.fillText('Get your exact measurements at dripfit.com', W / 2, H - 50);
+  ctx.fillText('Get your exact measurements at dripfitcheck.lovable.app', W / 2, H - 50);
 
   return new Promise((resolve) => {
     canvas.toBlob((blob) => resolve(blob!), 'image/png');

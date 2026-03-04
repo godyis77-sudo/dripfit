@@ -15,8 +15,8 @@ interface ShareResultsButtonProps {
   variant?: 'button' | 'icon';
 }
 
-const SHARE_TEXT = "I just got my exact measurements across every brand. Measured with DRIP FIT — try it free: dripfit.com";
-const SHARE_URL = "https://dripfit.com";
+const SHARE_TEXT = "I just got my exact measurements across every brand. Measured with DRIPFITCHECK — try it free: dripfitcheck.lovable.app";
+const SHARE_URL = "https://dripfitcheck.lovable.app";
 
 const ShareResultsButton = ({ measurements, heightCm, recommendedSize, fitPreference, variant = 'button' }: ShareResultsButtonProps) => {
   const [generating, setGenerating] = useState(false);
