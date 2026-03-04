@@ -59,7 +59,7 @@ const Welcome = () => {
   return (
     <div className="relative min-h-screen bg-background overflow-hidden pb-safe-bottom">
       {/* Sticky top nav bar */}
-      <nav className="sticky top-0 z-50 h-[52px] flex items-center justify-between px-5 bg-background/80 backdrop-blur-lg border-b border-[hsl(0,0%,10%)]">
+      <nav className="sticky top-0 z-50 h-[52px] flex items-center justify-between px-5 bg-background/80 backdrop-blur-lg border-b border-border">
         <div className="flex items-center gap-2">
           <Crown className="h-4 w-4 text-primary" />
           <span className="font-display font-bold text-[16px] tracking-[2px] text-foreground">DRIPFITCHECK</span>
@@ -145,7 +145,7 @@ const Welcome = () => {
 
         {/* Separator */}
         <div className="w-full max-w-[300px] my-6">
-          <div className="h-px bg-[hsl(0,0%,16%)]" />
+          <div className="h-px bg-border" />
         </div>
 
         {/* What You'll Get */}
