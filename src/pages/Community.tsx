@@ -140,22 +140,89 @@ const Community = () => {
   const [followToggles, setFollowToggles] = useState<Record<string, boolean>>({});
   const [hasScan, setHasScan] = useState(false);
   const [similarFitTooltip, setSimilarFitTooltip] = useState(false);
-  // Check scan status
-  useEffect(() => {
-    if (!user) return;
-    supabase.from('body_scans').select('id').eq('user_id', user.id).limit(1).then(({ data }) => {
-      setHasScan(!!data && data.length > 0);
-    });
-  }, [user]);
+  // hasScan is now set by fetchSimilarFitPosts
 
   // Serialize followingIds to avoid re-render loops from new array references
   const followingIdsKey = followingIds.join(',');
+
+  const fetchSimilarFitPosts = async () => {
+    if (!user) { setPosts([]); setLoading(false); return; }
+    setLoading(true);
+
+    const { data: scan } = await supabase
+      .from('body_scans')
+      .select('chest_min, chest_max, waist_min, waist_max, hip_min, hip_max')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (!scan) {
+      setHasScan(false);
+      setPosts([]);
+      setLoading(false);
+      return;
+    }
+
+    setHasScan(true);
+
+    const chestMid = (scan.chest_min + scan.chest_max) / 2;
+    const tolerance = 5;
+
+    const { data: similarScans } = await supabase
+      .from('body_scans')
+      .select('user_id')
+      .gte('chest_min', chestMid - tolerance)
+      .lte('chest_max', chestMid + tolerance)
+      .neq('user_id', user.id)
+      .limit(50);
+
+    if (!similarScans || similarScans.length === 0) {
+      setPosts([]);
+      setLoading(false);
+      return;
+    }
+
+    const similarUserIds = [...new Set(similarScans.map(s => s.user_id).filter(Boolean))] as string[];
+
+    const { data } = await supabase
+      .from('tryon_posts')
+      .select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_url, product_urls')
+      .eq('is_public', true)
+      .in('user_id', similarUserIds)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (!data || data.length === 0) {
+      setPosts([]);
+      setLoading(false);
+      return;
+    }
+
+    const userIds = [...new Set(data.map(p => p.user_id))];
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('user_id, display_name, avatar_url')
+      .in('user_id', userIds);
+
+    const profileMap = new Map((profiles || []).map(p => [p.user_id, p]));
+    const enriched = data.map(p => ({
+      ...p,
+      profile: profileMap.get(p.user_id) || { display_name: 'Anonymous' },
+      rating_count: 0,
+    }));
+
+    setPosts(enriched);
+    setLoading(false);
+  };
 
   useEffect(() => {
     if (filter === 'shop') {
       fetchRetailers();
     } else if (filter === 'following') {
       fetchFollowingFeed();
+    } else if (filter === 'similar') {
+      fetchSimilarFitPosts();
     } else {
       fetchPosts();
     }
