@@ -13,6 +13,7 @@ interface AuthContextType {
   subscriptionEnd: string | null;
   checkSubscription: () => Promise<void>;
   userGender: 'male' | 'female' | 'non-binary' | null;
+  genderLoaded: boolean;
   updateGender: (g: string | null) => void;
 }
 
@@ -27,6 +28,7 @@ const AuthContext = createContext<AuthContextType>({
   subscriptionEnd: null,
   checkSubscription: async () => {},
   userGender: null,
+  genderLoaded: false,
   updateGender: () => {},
 });
 
@@ -53,6 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [productId, setProductId] = useState<string | null>(null);
   const [subscriptionEnd, setSubscriptionEnd] = useState<string | null>(null);
   const [userGender, setUserGender] = useState<'male' | 'female' | 'non-binary' | null>(null);
+  const [genderLoaded, setGenderLoaded] = useState(false);
 
   const updateGender = useCallback((g: string | null) => {
     setUserGender(g as 'male' | 'female' | 'non-binary' | null);
@@ -81,18 +84,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user]);
 
+  // Fetch gender once per user to avoid duplicate requests
+  const fetchGender = useCallback(async (userId: string) => {
+    const { data } = await supabase.from('profiles').select('gender').eq('user_id', userId).single();
+    setUserGender((data?.gender as any) ?? null);
+    setGenderLoaded(true);
+  }, []);
+
   useEffect(() => {
+    let genderFetched = false;
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
       if (session?.user) {
         setTimeout(() => checkSubscription(), 0);
-        supabase.from('profiles').select('gender').eq('user_id', session.user.id).single().then(({ data }) => {
-          setUserGender((data?.gender as any) ?? null);
-        });
+        if (!genderFetched) {
+          genderFetched = true;
+          fetchGender(session.user.id);
+        }
       } else {
         setUserGender(null);
+        setGenderLoaded(true);
         setIsSubscribed(false);
         setSubscriptionLoading(false);
       }
@@ -104,10 +118,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
       if (session?.user) {
         checkSubscription();
-        supabase.from('profiles').select('gender').eq('user_id', session.user.id).single().then(({ data }) => {
-          setUserGender((data?.gender as any) ?? null);
-        });
+        if (!genderFetched) {
+          genderFetched = true;
+          fetchGender(session.user.id);
+        }
       } else {
+        setGenderLoaded(true);
         setSubscriptionLoading(false);
       }
     });
@@ -127,7 +143,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signOut, isSubscribed, subscriptionLoading, productId, subscriptionEnd, checkSubscription, userGender, updateGender }}>
+    <AuthContext.Provider value={{ user, session, loading, signOut, isSubscribed, subscriptionLoading, productId, subscriptionEnd, checkSubscription, userGender, genderLoaded, updateGender }}>
       {children}
     </AuthContext.Provider>
   );
