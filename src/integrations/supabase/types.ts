@@ -387,6 +387,7 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           display_name: string | null
+          gender: string | null
           id: string
           instagram_handle: string | null
           scan_confidence: number | null
@@ -398,6 +399,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
+          gender?: string | null
           id?: string
           instagram_handle?: string | null
           scan_confidence?: number | null
@@ -409,6 +411,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
+          gender?: string | null
           id?: string
           instagram_handle?: string | null
           scan_confidence?: number | null
@@ -674,6 +677,7 @@ export type Database = {
       tryon_posts: {
         Row: {
           caption: string | null
+          clothing_category: string | null
           clothing_photo_url: string
           created_at: string
           id: string
@@ -686,6 +690,7 @@ export type Database = {
         }
         Insert: {
           caption?: string | null
+          clothing_category?: string | null
           clothing_photo_url: string
           created_at?: string
           id?: string
@@ -698,6 +703,7 @@ export type Database = {
         }
         Update: {
           caption?: string | null
+          clothing_category?: string | null
           clothing_photo_url?: string
           created_at?: string
           id?: string
@@ -888,7 +894,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_similar_fit_users: {
+        Args: {
+          p_bust_mid?: number
+          p_chest_mid: number
+          p_gender: string
+          p_hip_mid: number
+          p_inseam_mid: number
+          p_sleeve_mid?: number
+          p_tolerance?: number
+          p_user_id: string
+          p_waist_mid: number
+        }
+        Returns: {
+          match_score: number
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

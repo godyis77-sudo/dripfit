@@ -59,6 +59,14 @@ const SettingsTab = ({
   const [editingIg, setEditingIg] = useState(false);
   const [igValue, setIgValue] = useState(instagramHandle);
   const [region, setRegion] = useState<UserRegion>(getUserRegion());
+  const [gender, setGender] = useState<string | null>(null);
+
+  // Load gender from DB
+  useEffect(() => {
+    supabase.from('profiles').select('gender').eq('user_id', user.id).single().then(({ data }) => {
+      if (data) setGender((data as any).gender || null);
+    });
+  }, [user.id]);
 
   // Load region from DB on mount
   useEffect(() => {
@@ -172,6 +180,34 @@ const SettingsTab = ({
             </div>
           </button>
         )}
+        {/* Gender / shopping section */}
+        <div className="px-3 py-2.5">
+          <span className="text-[12px] text-foreground font-medium block mb-1.5">I shop in the…</span>
+          <div className="flex gap-1.5">
+            {[
+              { value: 'male', label: "Men's" },
+              { value: 'female', label: "Women's" },
+              { value: 'non-binary', label: 'Both' },
+            ].map(g => (
+              <button
+                key={g.value}
+                onClick={async () => {
+                  setGender(g.value);
+                  await supabase.from('profiles').update({ gender: g.value } as any).eq('user_id', user.id);
+                  toast({ title: `Shopping section set to ${g.label}` });
+                }}
+                className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all active:scale-95 ${
+                  gender === g.value
+                    ? 'gradient-drip text-primary-foreground'
+                    : 'bg-background border border-border text-muted-foreground'
+                }`}
+              >
+                {g.label}
+              </button>
+            ))}
+          </div>
+          {!gender && <p className="text-[9px] text-muted-foreground mt-1">Not set</p>}
+        </div>
         {/* Instagram handle */}
         {editingIg ? (
           <div className="flex items-center gap-2 px-3 py-2">

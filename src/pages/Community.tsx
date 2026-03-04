@@ -34,12 +34,15 @@ interface Post {
   created_at: string;
   product_url?: string | null;
   product_urls?: string[] | null;
+  clothing_category?: string | null;
   profile?: { display_name: string | null; avatar_url?: string | null };
   avg_style?: number;
   avg_color?: number;
   avg_buy?: number;
   avg_suitability?: number;
   rating_count?: number;
+  match_score?: number;
+  is_bottoms?: boolean;
 }
 
 const VOTE_OPTIONS = [
@@ -149,9 +152,19 @@ const Community = () => {
     if (!user) { setPosts([]); setLoading(false); return; }
     setLoading(true);
 
+    // Get user's profile for gender
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('gender')
+      .eq('user_id', user.id)
+      .single();
+
+    const gender = (profile as any)?.gender || 'unknown';
+
+    // Get user's latest body scan
     const { data: scan } = await supabase
       .from('body_scans')
-      .select('chest_min, chest_max, waist_min, waist_max, hip_min, hip_max')
+      .select('chest_min, chest_max, waist_min, waist_max, hip_min, hip_max, inseam_min, inseam_max, sleeve_min, sleeve_max, bust_min, bust_max')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(1)
@@ -166,28 +179,56 @@ const Community = () => {
 
     setHasScan(true);
 
-    const chestMid = (scan.chest_min + scan.chest_max) / 2;
-    const tolerance = 5;
+    const mid = (a: number, b: number) => (a + b) / 2;
+    const chestMid = mid(scan.chest_min, scan.chest_max);
+    const waistMid = mid(scan.waist_min, scan.waist_max);
+    const hipMid = mid(scan.hip_min, scan.hip_max);
+    const inseamMid = mid(scan.inseam_min, scan.inseam_max);
+    const sleeveMid = scan.sleeve_min && scan.sleeve_max ? mid(scan.sleeve_min, scan.sleeve_max) : null;
+    const bustMid = scan.bust_min && scan.bust_max ? mid(scan.bust_min, scan.bust_max) : null;
 
-    const { data: similarScans } = await supabase
-      .from('body_scans')
-      .select('user_id')
-      .gte('chest_min', chestMid - tolerance)
-      .lte('chest_max', chestMid + tolerance)
-      .neq('user_id', user.id)
-      .limit(50);
+    // Call SECURITY DEFINER function — bypasses RLS safely
+    const { data: similarUsers, error: fnError } = await supabase.rpc('get_similar_fit_users', {
+      p_user_id: user.id,
+      p_gender: gender,
+      p_chest_mid: chestMid,
+      p_waist_mid: waistMid,
+      p_hip_mid: hipMid,
+      p_inseam_mid: inseamMid,
+      p_bust_mid: bustMid,
+      p_sleeve_mid: sleeveMid,
+      p_tolerance: 5.0,
+    } as any);
 
-    if (!similarScans || similarScans.length === 0) {
+    if (fnError) {
+      console.error('Similar fit function error:', fnError);
       setPosts([]);
       setLoading(false);
       return;
     }
 
-    const similarUserIds = [...new Set(similarScans.map(s => s.user_id).filter(Boolean))] as string[];
+    if (!similarUsers || (similarUsers as any[]).length === 0) {
+      setPosts([]);
+      setLoading(false);
+      return;
+    }
 
+    // Filter to users with score >= 4
+    const maxScore = gender === 'female' ? 12 : 9;
+    const qualifiedUsers = (similarUsers as any[]).filter((u: any) => u.match_score >= 4);
+    const scoreMap = new Map(qualifiedUsers.map((u: any) => [u.user_id, u.match_score]));
+    const similarUserIds = qualifiedUsers.map((u: any) => u.user_id).filter(Boolean) as string[];
+
+    if (similarUserIds.length === 0) {
+      setPosts([]);
+      setLoading(false);
+      return;
+    }
+
+    // Fetch public posts from matching users
     const { data } = await supabase
       .from('tryon_posts')
-      .select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_url, product_urls')
+      .select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_url, product_urls, clothing_category')
       .eq('is_public', true)
       .in('user_id', similarUserIds)
       .order('created_at', { ascending: false })
@@ -199,6 +240,7 @@ const Community = () => {
       return;
     }
 
+    const BOTTOM_CATEGORIES = ['bottoms'];
     const userIds = [...new Set(data.map(p => p.user_id))];
     const { data: profiles } = await supabase
       .from('profiles')
@@ -206,12 +248,19 @@ const Community = () => {
       .in('user_id', userIds);
 
     const profileMap = new Map((profiles || []).map(p => [p.user_id, p]));
-    const enriched = data.map(p => ({
-      ...p,
-      profile: profileMap.get(p.user_id) || { display_name: 'Anonymous' },
-      rating_count: 0,
-    }));
+    const enriched: Post[] = data.map(p => {
+      const rawScore = scoreMap.get(p.user_id) || 0;
+      const matchPct = Math.min(Math.round((rawScore / maxScore) * 100), 99);
+      return {
+        ...p,
+        profile: profileMap.get(p.user_id) || { display_name: 'Anonymous' },
+        rating_count: 0,
+        match_score: matchPct,
+        is_bottoms: BOTTOM_CATEGORIES.includes((p as any).clothing_category || ''),
+      };
+    });
 
+    enriched.sort((a, b) => (b.match_score || 0) - (a.match_score || 0));
     setPosts(enriched);
     setLoading(false);
   };
@@ -883,6 +932,20 @@ const Community = () => {
                       <p className="text-white font-bold text-[10px] leading-snug line-clamp-2">
                         {post.caption}
                       </p>
+                    </div>
+                  )}
+                  {/* Match badge — Similar Fit tab */}
+                  {filter === 'similar' && (post as any).match_score && (
+                    <div
+                      className="absolute top-2 right-2 text-[10px] font-bold text-white rounded-full px-2 py-0.5"
+                      style={{
+                        background: 'rgba(184, 150, 12, 0.92)',
+                        backdropFilter: 'blur(4px)',
+                        WebkitBackdropFilter: 'blur(4px)',
+                        border: '1px solid rgba(255,255,255,0.15)',
+                      }}
+                    >
+                      {(post as any).match_score}% match
                     </div>
                   )}
                    {/* Try On chip — top-left */}

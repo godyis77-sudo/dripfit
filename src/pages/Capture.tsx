@@ -13,6 +13,8 @@ import {
 import { CaptureStep, STEP_CONFIG, PhotoSet, ReferenceObject, REFERENCE_OBJECTS } from '@/lib/types';
 import { getFitPreference } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 type FlowStep = 'intro' | 'height' | 'front' | 'side' | 'review';
 const FLOW_STEPS: { key: FlowStep; label: string }[] = [
@@ -61,6 +63,7 @@ const AnimatedSilhouette = () => (
 
 const Capture = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   usePageTitle('Scan');
   const saved = loadScanState();
   const [flowStep, setFlowStep] = useState<FlowStep>(saved?.flowStep || 'intro');
@@ -72,6 +75,24 @@ const Capture = () => {
   const [refObject, setRefObject] = useState<ReferenceObject>(saved?.refObject || 'none');
   const [reviewing, setReviewing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [genderSet, setGenderSet] = useState<string | null>(null);
+  const [genderLoaded, setGenderLoaded] = useState(false);
+
+  // Load existing gender from profile
+  useEffect(() => {
+    if (!user) { setGenderLoaded(true); return; }
+    supabase.from('profiles').select('gender').eq('user_id', user.id).single().then(({ data }) => {
+      if (data) setGenderSet((data as any).gender || null);
+      setGenderLoaded(true);
+    });
+  }, [user]);
+
+  const handleGenderSelect = async (value: string) => {
+    setGenderSet(value);
+    if (user) {
+      await supabase.from('profiles').update({ gender: value } as any).eq('user_id', user.id);
+    }
+  };
 
   useEffect(() => { trackEvent('scan_started'); }, []);
   useEffect(() => {
@@ -255,6 +276,32 @@ const Capture = () => {
             <motion.div key="height" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm pt-4">
               <h2 className="text-xl font-bold text-foreground mb-1">What's your height?</h2>
               <p className="text-[12px] text-muted-foreground mb-6">This improves accuracy by 23%</p>
+
+              {/* Gender selector — only if not already set */}
+              {genderLoaded && !genderSet && (
+                <div className="mb-6">
+                  <p className="text-[13px] font-bold text-foreground mb-2">I typically shop in the…</p>
+                  <div className="flex gap-1.5">
+                    {[
+                      { value: 'male', label: "Men's section" },
+                      { value: 'female', label: "Women's section" },
+                      { value: 'non-binary', label: 'Both' },
+                    ].map(g => (
+                      <button
+                        key={g.value}
+                        onClick={() => handleGenderSelect(g.value)}
+                        className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-all active:scale-95 ${
+                          genderSet === g.value
+                            ? 'border-primary bg-primary/10 text-primary'
+                            : 'border-border text-muted-foreground'
+                        }`}
+                      >
+                        {g.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="flex items-center justify-between mb-3">
                 <p className="text-[13px] font-bold text-foreground flex items-center gap-1.5">

@@ -50,6 +50,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
   const [linkExpanded, setLinkExpanded] = useState(false);
   const [igPostUrl, setIgPostUrl] = useState('');
   const [igExpanded, setIgExpanded] = useState(false);
+  const [clothingCategory, setClothingCategory] = useState('other');
 
   const detectedRetailer = productUrl.length > 10 ? detectRetailer(productUrl) : null;
 
@@ -63,6 +64,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
       setLinkExpanded(false);
       setIgPostUrl('');
       setIgExpanded(false);
+      setClothingCategory('other');
       fetchUserTryOns();
     }
   }, [open, user]);
@@ -86,6 +88,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
     const updatePayload: Record<string, any> = {
       caption: caption || null,
       is_public: isPublic,
+      clothing_category: clothingCategory,
     };
     if (productUrl.length > 5) {
       updatePayload.product_url = productUrl;
@@ -269,6 +272,33 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                     </p>
                   </div>
                 )}
+              </div>
+
+              {/* Clothing category selector */}
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">What type of clothing is this?</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    { key: 'tops', label: 'Tops' },
+                    { key: 'bottoms', label: 'Bottoms' },
+                    { key: 'outerwear', label: 'Outerwear' },
+                    { key: 'dress', label: 'Dress' },
+                    { key: 'jumpsuit', label: 'Jumpsuit' },
+                    { key: 'other', label: 'Other' },
+                  ].map(cat => (
+                    <button
+                      key={cat.key}
+                      onClick={() => setClothingCategory(cat.key)}
+                      className={`px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all active:scale-95 ${
+                        clothingCategory === cat.key
+                          ? 'border-primary bg-primary/10 text-primary'
+                          : 'border-border text-muted-foreground'
+                      }`}
+                    >
+                      {cat.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <Button
