@@ -1,0 +1,1 @@
+ALTER TABLE public.product_catalog ADD COLUMN IF NOT EXISTS gender text DEFAULT 'unisex';

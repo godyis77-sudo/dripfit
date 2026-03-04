@@ -328,6 +328,7 @@ export type Database = {
           category: string
           created_at: string
           currency: string | null
+          gender: string | null
           id: string
           image_confidence: number | null
           image_url: string
@@ -347,6 +348,7 @@ export type Database = {
           category: string
           created_at?: string
           currency?: string | null
+          gender?: string | null
           id?: string
           image_confidence?: number | null
           image_url: string
@@ -366,6 +368,7 @@ export type Database = {
           category?: string
           created_at?: string
           currency?: string | null
+          gender?: string | null
           id?: string
           image_confidence?: number | null
           image_url?: string

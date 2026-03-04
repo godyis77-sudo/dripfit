@@ -15,6 +15,7 @@ export interface CatalogProduct {
   tags: string[];
   presentation?: string | null;
   image_confidence?: number | null;
+  gender?: string | null;
 }
 
 // Map app-facing category keys to actual DB category values
@@ -82,7 +83,7 @@ function seededShuffle<T>(arr: T[], seed: number): T[] {
   return copy;
 }
 
-export function useProductCatalog(category?: string, brand?: string, seed?: number) {
+export function useProductCatalog(category?: string, brand?: string, seed?: number, gender?: string) {
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -90,7 +91,7 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
     setLoading(true);
     let query = supabase
       .from('product_catalog')
-      .select('id, brand, retailer, category, name, image_url, product_url, price_cents, currency, tags, presentation, image_confidence')
+      .select('id, brand, retailer, category, name, image_url, product_url, price_cents, currency, tags, presentation, image_confidence, gender')
       .eq('is_active', true)
       .not('image_url', 'is', null)
       .order('image_confidence', { ascending: false })
@@ -105,6 +106,9 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
       }
     }
     if (brand) query = query.eq('brand', brand);
+    if (gender && gender !== 'all') {
+      query = query.in('gender', [gender, 'unisex']);
+    }
 
     const { data } = await query;
     if (data) {
@@ -148,7 +152,7 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
       setProducts(seededShuffle(finalPool, shuffleSeed));
     }
     setLoading(false);
-  }, [category, brand, seed]);
+  }, [category, brand, seed, gender]);
 
   useEffect(() => {
     fetchProducts();
