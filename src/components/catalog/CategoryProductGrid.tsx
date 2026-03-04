@@ -16,6 +16,7 @@ interface CategoryProductGridProps {
   showViewAll?: boolean;
   priceFilter?: { min: number; max: number } | null;
   gender?: string;
+  skipClientFilter?: boolean;
 }
 
 const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>(({
@@ -28,9 +29,10 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
   showViewAll = false,
   priceFilter,
   gender,
+  skipClientFilter,
 }, ref) => {
   const navigate = useNavigate();
-  const { products, loading } = useProductCatalog(category, undefined, seed, gender);
+  const { products, loading } = useProductCatalog(category, undefined, seed, gender, skipClientFilter);
   const [expanded, setExpanded] = useState(!collapsed);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
   const [failedImageIds, setFailedImageIds] = useState<Set<string>>(new Set());
