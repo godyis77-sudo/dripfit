@@ -740,7 +740,6 @@ const TryOn = () => {
                       maxItems={40}
                       seed={1234}
                       gender={userGender || undefined}
-                      skipClientFilter
                       onSelectProduct={async (product) => {
                         setSelectedQuickPick(product);
                         if (product.product_url) {
@@ -766,7 +765,6 @@ const TryOn = () => {
                     maxItems={40}
                     seed={1234}
                     gender={userGender || undefined}
-                    skipClientFilter
                     onSelectProduct={async (product) => {
                       setSelectedQuickPick(product);
                       if (product.product_url) {
