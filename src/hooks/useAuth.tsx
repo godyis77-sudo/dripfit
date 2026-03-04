@@ -12,6 +12,8 @@ interface AuthContextType {
   productId: string | null;
   subscriptionEnd: string | null;
   checkSubscription: () => Promise<void>;
+  userGender: 'male' | 'female' | 'non-binary' | null;
+  updateGender: (g: string | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -24,6 +26,8 @@ const AuthContext = createContext<AuthContextType>({
   productId: null,
   subscriptionEnd: null,
   checkSubscription: async () => {},
+  userGender: null,
+  updateGender: () => {},
 });
 
 // Admin user IDs that always get premium access (for troubleshooting)
@@ -48,6 +52,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [subscriptionLoading, setSubscriptionLoading] = useState(true);
   const [productId, setProductId] = useState<string | null>(null);
   const [subscriptionEnd, setSubscriptionEnd] = useState<string | null>(null);
+  const [userGender, setUserGender] = useState<'male' | 'female' | 'non-binary' | null>(null);
+
+  const updateGender = useCallback((g: string | null) => {
+    setUserGender(g as 'male' | 'female' | 'non-binary' | null);
+  }, []);
 
   const checkSubscription = useCallback(async () => {
     // Admin override — grant premium without hitting Stripe
@@ -79,7 +88,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
       if (session?.user) {
         setTimeout(() => checkSubscription(), 0);
+        supabase.from('profiles').select('gender').eq('user_id', session.user.id).single().then(({ data }) => {
+          setUserGender((data?.gender as any) ?? null);
+        });
       } else {
+        setUserGender(null);
         setIsSubscribed(false);
         setSubscriptionLoading(false);
       }
@@ -91,6 +104,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
       if (session?.user) {
         checkSubscription();
+        supabase.from('profiles').select('gender').eq('user_id', session.user.id).single().then(({ data }) => {
+          setUserGender((data?.gender as any) ?? null);
+        });
       } else {
         setSubscriptionLoading(false);
       }
@@ -111,7 +127,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signOut, isSubscribed, subscriptionLoading, productId, subscriptionEnd, checkSubscription }}>
+    <AuthContext.Provider value={{ user, session, loading, signOut, isSubscribed, subscriptionLoading, productId, subscriptionEnd, checkSubscription, userGender, updateGender }}>
       {children}
     </AuthContext.Provider>
   );
