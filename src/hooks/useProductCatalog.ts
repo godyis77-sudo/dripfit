@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -86,6 +86,8 @@ function seededShuffle<T>(arr: T[], seed: number): T[] {
 export function useProductCatalog(category?: string, brand?: string, seed?: number, gender?: string) {
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [loading, setLoading] = useState(false);
+  // Stable random seed — generated once per hook instance to prevent flickering on re-fetch
+  const stableSeedRef = useRef(seed ?? Math.floor(Math.random() * 100000));
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -148,7 +150,7 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
       // Prefer high-confidence entries first to avoid blank / banner-like results.
       const finalPool = cleaned;
 
-      const shuffleSeed = seed ?? Math.floor(Math.random() * 100000);
+      const shuffleSeed = seed ?? stableSeedRef.current;
       setProducts(seededShuffle(finalPool, shuffleSeed));
     }
     setLoading(false);
