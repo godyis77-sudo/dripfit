@@ -38,7 +38,7 @@ const PRICE_FILTERS = [
 
 const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const navigate = useNavigate();
-  const { user, userGender } = useAuth();
+  const { user, userGender, genderLoaded } = useAuth();
   const mappedGender = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : undefined;
   const [fabOpen, setFabOpen] = useState(false);
   const [trendingFits, setTrendingFits] = useState<TrendingPost[]>([]);
@@ -342,7 +342,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               Try on →
             </button>
           </div>
-          {[
+          {genderLoaded && [
             { category: 'tops', title: 'Tops', seed: 42 },
             { category: 'bottom', title: 'Bottoms', seed: 314 },
             { category: 'dress', title: 'Dresses', seed: 628 },
@@ -367,6 +367,13 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               />
             </div>
           ))}
+          {!genderLoaded && (
+            <div className="grid grid-cols-2 gap-2">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="rounded-xl skeleton-gold aspect-[3/4]" />
+              ))}
+            </div>
+          )}
         </motion.div>
 
         {/* Gender nudge banner */}
