@@ -103,7 +103,7 @@ const Auth = () => {
 
         <Card className="rounded-xl border-border/40">
           <CardHeader className="text-center pb-1.5 pt-4 px-4">
-            <CardTitle className="font-display text-xl">{isLogin ? 'Welcome Back' : 'Join DRIP FIT'}</CardTitle>
+            <CardTitle className="font-display text-xl">{isLogin ? 'Welcome Back' : 'Join DRIPFITCHECK'}</CardTitle>
             <CardDescription className="text-[13px] text-muted-foreground">
               {isLogin
                 ? 'Sign in to access your saved sizes, Try-Ons, and Fit Checks'
