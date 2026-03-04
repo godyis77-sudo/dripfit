@@ -15,6 +15,7 @@ interface CategoryProductGridProps {
   seed?: number;
   showViewAll?: boolean;
   priceFilter?: { min: number; max: number } | null;
+  gender?: string;
 }
 
 const CategoryProductGrid = ({
@@ -26,9 +27,10 @@ const CategoryProductGrid = ({
   seed,
   showViewAll = false,
   priceFilter,
+  gender,
 }: CategoryProductGridProps) => {
   const navigate = useNavigate();
-  const { products, loading } = useProductCatalog(category, undefined, seed);
+  const { products, loading } = useProductCatalog(category, undefined, seed, gender);
   const [expanded, setExpanded] = useState(!collapsed);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
   const [hiddenProductIds, setHiddenProductIds] = useState<Set<string>>(new Set());

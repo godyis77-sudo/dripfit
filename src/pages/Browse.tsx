@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, SlidersHorizontal, X, Sparkles, ExternalLink, Search } from 'lucide-react';
@@ -8,8 +8,7 @@ import { Button } from '@/components/ui/button';
 import { AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { usePageTitle } from '@/hooks/usePageTitle';
-import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
+import { useUserGender } from '@/hooks/useUserGender';
 
 const CATEGORY_LABELS: Record<string, string> = {
   tops: 'Tops',
@@ -47,26 +46,14 @@ type GenderKey = typeof GENDER_OPTIONS[number]['key'];
 const Browse = () => {
   const { category = 'tops' } = useParams<{ category: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [genderFilter, setGenderFilter] = useState<GenderKey>('all');
-  const [genderLoaded, setGenderLoaded] = useState(false);
+  const { gender: userGender } = useUserGender();
+  const [genderOverride, setGenderOverride] = useState<GenderKey | null>(null);
 
-  // Default gender filter to user's saved preference
-  useEffect(() => {
-    if (!user) { setGenderLoaded(true); return; }
-    supabase
-      .from('profiles')
-      .select('gender')
-      .eq('user_id', user.id)
-      .single()
-      .then(({ data }) => {
-        if (data?.gender === 'mens' || data?.gender === 'womens') {
-          setGenderFilter(data.gender as GenderKey);
-        }
-        setGenderLoaded(true);
-      });
-  }, [user]);
-  const { products, loading } = useProductCatalog(category, undefined, undefined, genderFilter === 'all' ? undefined : genderFilter);
+  // Use override if user manually selected, otherwise default to profile preference
+  const genderFilter: GenderKey = genderOverride ?? (userGender as GenderKey) ?? 'all';
+  const effectiveGender = genderFilter === 'all' ? undefined : genderFilter;
+
+  const { products, loading } = useProductCatalog(category, undefined, undefined, effectiveGender);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortKey>('default');
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
@@ -171,7 +158,7 @@ const Browse = () => {
           {GENDER_OPTIONS.map(opt => (
             <button
               key={opt.key}
-              onClick={() => setGenderFilter(opt.key)}
+              onClick={() => setGenderOverride(opt.key)}
               className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
                 genderFilter === opt.key
                   ? 'bg-primary text-primary-foreground'

@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
+import { useUserGender } from '@/hooks/useUserGender';
 
 const PROMPTS = [
   'Should I buy this for work?',
@@ -39,6 +40,7 @@ const PRICE_FILTERS = [
 const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { gender: userGender } = useUserGender();
   const [fabOpen, setFabOpen] = useState(false);
   const [trendingFits, setTrendingFits] = useState<TrendingPost[]>([]);
   const [profileName, setProfileName] = useState<string | null>(null);
@@ -358,6 +360,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                 seed={section.seed}
                 showViewAll={true}
                 priceFilter={priceFilter}
+                gender={userGender || undefined}
                 onSelectProduct={(product) => {
                   trackEvent('catalog_product_tryon', { brand: product.brand, category: product.category });
                   navigate('/tryon', { state: { clothingUrl: product.image_url, productUrl: product.product_url } });
