@@ -33,11 +33,21 @@ const FORCE_WOMENS_NAME_PATTERNS = [
   "sports bra", "sport bra", "bralette", "bikini", "yoga pant",
   "crop top", "tankini", "romper", "lingerie", "maternity",
   "camisole", "seamless bra", "women's", "womens ", "for women",
-  "for her",
+  "for her", "midi dress", "maxi dress", "mini dress", "wrap dress",
+  "slip dress", "pencil skirt", "mini skirt", "pleated skirt",
+  "bodycon", "babydoll", "corset", "bustier", "peplum",
+  "ballerina", "ballet flat", "kitten heel", "platform heel",
+  "shapewear", "off shoulder", "smocked", "ruched",
+  "sarong", "kaftan", "caftan", "culottes", "playsuit",
+  "rash guard", "plus size swim", "swimsuit",
+  "tote bag", "clutch bag", "crossbody bag", "satchel bag",
 ];
 const FORCE_MENS_NAME_PATTERNS = [
   "boxer", "men's underwear", "compression short", "athletic supporter",
   "men's ", "mens ", "for men", "for him",
+  "swim trunk", "swim short", "board short",
+  "oxford shirt", "henley ", "muscle tee", "muscle fit",
+  "flat front", "cargo short", "necktie", "bow tie", "suspender",
 ];
 
 // Hostnames / URL patterns that are tracking pixels, CAPTCHAs, or non-product images
@@ -58,18 +68,36 @@ const JUNK_IMAGE_PATTERNS = [
   "bat.bing.com",
 ];
 
+// Keywords indicating kids/junior products — deactivate entirely
+const KIDS_PATTERNS = [
+  "junior", "juniors", " kids ", "kid's", "children", "child ",
+  " boys ", " girls ", "toddler", "infant", "baby ", "teen boy",
+  "teen girl", " youth ", " jr ", "2-6 years", "little kids",
+  "mini me", "boys'", "girls'",
+];
+
 // Product names that indicate category/listing pages, not actual products
 const CATEGORY_PAGE_PATTERNS = [
   "accessories for", "wallets for", "watches for",
   " | shop ", " | farfetch", "shop now on",
   "quick shipping to", " - shop ", "page 2 |",
   "shop farfetch", " | zara canada", " | zara mexico",
-  " | zara united states",
+  " | zara united states", "for women |", "for men |",
+  "sale & clearance", "designer ", " selection",
+  "everything you need to know", "shop now",
+  "women's designer", "men's designer",
+  " | nordstrom", " | net-a-porter", " | ssense",
+  " | asos", " | uniqlo", " | mango",
 ];
 
 function isJunkImageUrl(url: string): boolean {
   const lower = url.toLowerCase();
   return JUNK_IMAGE_PATTERNS.some(p => lower.includes(p));
+}
+
+function isKidsProduct(name: string): boolean {
+  const lower = name.toLowerCase();
+  return KIDS_PATTERNS.some(p => lower.includes(p));
 }
 
 function isCategoryPage(name: string): boolean {
@@ -186,9 +214,28 @@ serve(async (req) => {
     const results: AnalysisResult[] = [];
     const failedIds: { id: string; tags: string[] }[] = [];
 
+    // Pre-filter 0: Deactivate kids products
+    const kidsProducts = products.filter(p => isKidsProduct(p.name));
+    const adultProducts = products.filter(p => !isKidsProduct(p.name));
+
+    if (kidsProducts.length > 0) {
+      console.log(`Deactivating ${kidsProducts.length} kids/junior products`);
+      for (const kp of kidsProducts) {
+        const existingTags: string[] = Array.isArray(kp.tags) ? kp.tags : [];
+        await supabase
+          .from("product_catalog")
+          .update({
+            is_active: false,
+            tags: [...new Set([...existingTags, "kids_product", "ai_failed"])],
+            image_confidence: 0,
+          })
+          .eq("id", kp.id);
+      }
+    }
+
     // Pre-filter 1: Deactivate category pages before wasting AI calls
-    const categoryPages = products.filter(p => isCategoryPage(p.name));
-    const nonPageProducts = products.filter(p => !isCategoryPage(p.name));
+    const categoryPages = adultProducts.filter(p => isCategoryPage(p.name));
+    const nonPageProducts = adultProducts.filter(p => !isCategoryPage(p.name));
 
     if (categoryPages.length > 0) {
       console.log(`Deactivating ${categoryPages.length} category/listing pages`);
@@ -497,16 +544,33 @@ function remapCategory(aiCategory: string, productName: string): string {
     if (name.includes("heel")) return "heels";
     return "shoes";
   }
-  if (cat === "wallet" || cat === "wallets" || cat === "belt bag" || cat === "fanny pack") return "bags";
+  if (cat === "wallet" || cat === "wallets" || cat === "belt bag" || cat === "fanny pack" || cat === "clutch" || cat === "tote" || cat === "backpack" || cat === "crossbody" || cat === "satchel") return "bags";
   if (cat === "eyewear" || cat === "glasses") return "sunglasses";
   if (cat === "sweatshirt" || cat === "sweatshirts" || cat === "hoodie") return "hoodies";
-  if (cat === "trousers" || cat === "chinos") return "pants";
+  if (cat === "trousers" || cat === "chinos" || cat === "joggers" || cat === "sweatpants") return "pants";
   if (cat === "tee" || cat === "tees" || cat === "t-shirt") return "t-shirts";
-  if (cat === "pullover" || cat === "cardigan" || cat === "knitwear") return "sweaters";
+  if (cat === "pullover" || cat === "cardigan" || cat === "knitwear" || cat === "knit") return "sweaters";
   if (cat === "romper" || cat === "rompers" || cat === "playsuit") return "jumpsuits";
-  if (cat === "parka" || cat === "puffer") return "coats";
-  if (cat === "cap" || cat === "caps" || cat === "beanie") return "hats";
+  if (cat === "parka" || cat === "puffer" || cat === "overcoat" || cat === "trench") return "coats";
+  if (cat === "cap" || cat === "caps" || cat === "beanie" || cat === "bucket hat") return "hats";
+  if (cat === "wrap" || cat === "shawl" || cat === "stole") return "scarves";
+  if (cat === "gilet" || cat === "waistcoat") return "vests";
+  if (cat === "tank" || cat === "tank top" || cat === "camisole" || cat === "blouse") return "tops";
+  if (cat === "culottes" || cat === "palazzo") return "pants";
+  if (cat === "mule" || cat === "mules" || cat === "flat" || cat === "flats" || cat === "oxford" || cat === "oxfords" || cat === "derby") return "shoes";
+  if (cat === "slide" || cat === "slides" || cat === "flip flop" || cat === "flip flops") return "sandals";
+  if (cat === "trainer" || cat === "trainers" || cat === "running shoe" || cat === "running shoes") return "sneakers";
+  if (cat === "bomber" || cat === "windbreaker" || cat === "anorak") return "jackets";
+  if (cat === "bodysuit") return "tops";
+  if (cat === "swim trunks" || cat === "board shorts") return "swimwear";
 
-  // Fallback: keep current category from DB
+  // Fallback: use name-based heuristics
+  if (name.includes("sneaker") || name.includes("trainer")) return "sneakers";
+  if (name.includes("jacket") || name.includes("puffer")) return "jackets";
+  if (name.includes("pant") || name.includes("trouser")) return "pants";
+  if (name.includes("dress")) return "dresses";
+  if (name.includes("shirt")) return "shirts";
+
+  // Final fallback
   return "other";
 }
