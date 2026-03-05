@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.classify-gender-image]
 verify_jwt = false
+
+[functions.scrape-all-products]
+verify_jwt = false
