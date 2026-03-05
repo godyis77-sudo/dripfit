@@ -529,15 +529,22 @@ async function crawlBrandCategory(
 ): Promise<RawProduct[]> {
   if (!startUrls.length) return [];
 
-  // Use the first URL as crawl entry; include paths to scope the crawl
-  const crawlUrl = startUrls[0];
-  const catKey = category.toLowerCase();
-  const parentKey = CATEGORY_TO_URL_KEY[catKey] || catKey;
-  const keywords = MAP_CATEGORY_KEYWORDS[parentKey] || MAP_CATEGORY_KEYWORDS[catKey] || [category];
+  const brandKey = normalizeBrandKey(brand);
+  const domain = BRAND_DOMAINS[brandKey];
+  
+  // Use the brand domain root as crawl entry (not a deep product URL)
+  // and use includePaths from the discovered URLs to scope the crawl
+  const crawlUrl = domain || new URL(startUrls[0]).origin;
 
-  // Build includePaths from the discovered URLs' common path patterns
+  // Build includePaths from discovered URLs' common path prefixes
   const includePaths = [...new Set(startUrls.map(u => {
-    try { return new URL(u).pathname.split('/').slice(0, 3).join('/'); } catch { return ''; }
+    try { 
+      const path = new URL(u).pathname;
+      // Use the first 2-3 path segments as category-level paths
+      const segments = path.split('/').filter(Boolean);
+      if (segments.length >= 2) return '/' + segments.slice(0, 2).join('/');
+      return '/' + segments[0];
+    } catch { return ''; }
   }).filter(Boolean))].slice(0, 10);
 
   console.log(`[crawl] Crawling ${crawlUrl} with ${includePaths.length} include paths, limit 30`);
@@ -697,28 +704,27 @@ async function scrapeProducts(
 ): Promise<RawProduct[]> {
   const brandKey = normalizeBrandKey(brand);
 
-  // Try search fallback first for known anti-scrape brands
+  // Anti-scrape brands: go straight to search (map+crawl too slow for edge fn timeout)
   if (ANTI_SCRAPE_BRANDS.has(brandKey)) {
-    console.log(`[scrape] ${brand} is anti-scrape, trying map+crawl first`);
-    // Try map discovery → crawl before falling back to search
-    const mapUrls = await mapBrandUrls(brand, category, firecrawlApiKey);
-    if (mapUrls.length > 0) {
-      const crawled = await crawlBrandCategory(brand, category, mapUrls, firecrawlApiKey);
-      if (crawled.length > 0) return crawled;
-    }
-    console.log(`[scrape] Map+crawl yielded nothing for ${brand}/${category}, falling back to search`);
+    console.log(`[scrape] ${brand} is anti-scrape, using search fallback`);
     return searchProducts(brand, category, firecrawlApiKey);
   }
 
   const brandUrls = CATEGORY_MAP[brandKey];
   if (!brandUrls) {
-    console.log(`[scrape] No URL config for ${brand} (key: ${brandKey}), trying map+crawl`);
+    console.log(`[scrape] No URL config for ${brand} (key: ${brandKey}), trying map→scrape`);
     const mapUrls = await mapBrandUrls(brand, category, firecrawlApiKey);
     if (mapUrls.length > 0) {
-      const crawled = await crawlBrandCategory(brand, category, mapUrls, firecrawlApiKey);
-      if (crawled.length > 0) return crawled;
+      // Scrape the top 3 discovered category pages directly (faster than crawl)
+      const categoryPages = mapUrls.filter(u => /\/c\/|\/cat\/|\/collection|\/shop\/|\/category/i.test(u)).slice(0, 3);
+      if (categoryPages.length > 0) {
+        // Use these as urlConfigs for the standard scrape pipeline
+        const urlConfigs = categoryPages.map(url => ({ url, waitFor: 3000 }));
+        const mapProducts = await scrapeUrlConfigs(brand, category, urlConfigs, firecrawlApiKey);
+        if (mapProducts.length > 0) return mapProducts;
+      }
     }
-    console.log(`[scrape] Map+crawl yielded nothing, falling back to search`);
+    console.log(`[scrape] Map yielded nothing, falling back to search`);
     return searchProducts(brand, category, firecrawlApiKey);
   }
 
@@ -731,6 +737,32 @@ async function scrapeProducts(
     return searchProducts(brand, category, firecrawlApiKey);
   }
 
+  const allProducts = await scrapeUrlConfigs(brand, category, urlConfigs, firecrawlApiKey);
+
+  // If direct scrape returned nothing, try map→scrape then search
+  if (!allProducts.length) {
+    console.log(`[scrape] Direct scrape returned 0 for ${brand}/${category}, trying map→scrape`);
+    const mapUrls = await mapBrandUrls(brand, category, firecrawlApiKey);
+    const categoryPages = mapUrls.filter(u => /\/c\/|\/cat\/|\/collection|\/shop\/|\/category/i.test(u)).slice(0, 3);
+    if (categoryPages.length > 0) {
+      const mapConfigs = categoryPages.map(url => ({ url, waitFor: 3000 }));
+      const mapProducts = await scrapeUrlConfigs(brand, category, mapConfigs, firecrawlApiKey);
+      if (mapProducts.length > 0) return mapProducts;
+    }
+    console.log(`[scrape] Map yielded nothing, falling back to search`);
+    return searchProducts(brand, category, firecrawlApiKey);
+  }
+
+  return allProducts;
+}
+
+// Reusable: scrape a list of CategoryUrl configs and extract products
+async function scrapeUrlConfigs(
+  brand: string,
+  category: string,
+  urlConfigs: CategoryUrl[],
+  firecrawlApiKey: string
+): Promise<RawProduct[]> {
   const allProducts: RawProduct[] = [];
 
   const jsonSchema = {
@@ -770,7 +802,6 @@ async function scrapeProducts(
         },
       };
 
-      // Add Firecrawl actions if configured (for clicking dropdowns, load-more, scrolling)
       if (urlConfig.actions?.length) {
         scrapeBody.actions = urlConfig.actions;
       }
@@ -794,23 +825,19 @@ async function scrapeProducts(
       const extracted = data.data?.extract || data.extract || {};
       const products = extracted?.products || [];
       
-      // Extract ALL image URLs from rawHtml
       const rawHtml = data.data?.rawHtml || data.rawHtml || '';
       const allImageUrls = extractImageUrlsFromHtml(rawHtml);
       
       console.log(`[scrape] extracted ${products.length} products, ${allImageUrls.length} image URLs from rawHtml of ${urlConfig.url}`);
 
-      // Try ID-based matching first, then fall back to positional assignment
       const usedImages = new Set<string>();
       
       for (let i = 0; i < products.length; i++) {
         const p = products[i];
         if (!p.name || !p.product_url) continue;
 
-        // 1. Try ID-based matching
         let productImages = matchImagesToProduct(p.product_url, p.name, allImageUrls, brand);
         
-        // 2. If no ID match, try positional: assign ~N images per product
         if (!productImages.length && allImageUrls.length > 0) {
           const imagesPerProduct = Math.max(1, Math.floor(allImageUrls.length / Math.max(products.length, 1)));
           const start = i * imagesPerProduct;
@@ -818,7 +845,6 @@ async function scrapeProducts(
           productImages = allImageUrls.slice(start, end).filter(img => !usedImages.has(img));
         }
         
-        // Filter out already-used images
         productImages = productImages.filter(img => !usedImages.has(img));
         productImages.forEach(img => usedImages.add(img));
 
@@ -840,18 +866,6 @@ async function scrapeProducts(
     }
 
     await delay(1500);
-  }
-
-  // If direct scrape returned nothing, try map+crawl then search
-  if (!allProducts.length) {
-    console.log(`[scrape] Direct scrape returned 0 for ${brand}/${category}, trying map+crawl`);
-    const mapUrls = await mapBrandUrls(brand, category, firecrawlApiKey);
-    if (mapUrls.length > 0) {
-      const crawled = await crawlBrandCategory(brand, category, mapUrls, firecrawlApiKey);
-      if (crawled.length > 0) return crawled;
-    }
-    console.log(`[scrape] Map+crawl yielded nothing, falling back to search`);
-    return searchProducts(brand, category, firecrawlApiKey);
   }
 
   return allProducts;
