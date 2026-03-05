@@ -195,12 +195,19 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Defer slow brands to cron/background processing to avoid edge timeout
+    const SLOW_BACKGROUND_BRANDS = new Set(['puma', 'vans', 'gucci']);
+
     // Slice for this batch
     const jobsPerBatch = Math.ceil(allJobs.length / batchTotal);
     const start = batchNumber * jobsPerBatch;
-    const jobs = allJobs.slice(start, start + jobsPerBatch);
+    const batchJobs = allJobs.slice(start, start + jobsPerBatch);
+    const deferredJobs = batchJobs.filter((job) => SLOW_BACKGROUND_BRANDS.has(job.brand.toLowerCase()));
+    const jobs = batchJobs.filter((job) => !SLOW_BACKGROUND_BRANDS.has(job.brand.toLowerCase()));
 
-    console.log(`[scrape-all] Batch ${batchNumber + 1}/${batchTotal}: ${jobs.length} jobs (of ${allJobs.length} total)`);
+    console.log(
+      `[scrape-all] Batch ${batchNumber + 1}/${batchTotal}: ${jobs.length} real-time jobs, ${deferredJobs.length} deferred jobs (of ${allJobs.length} total)`
+    );
 
     const results: { brand: string; category: string; inserted: number; error?: string }[] = [];
     let totalInserted = 0;
@@ -251,7 +258,10 @@ Deno.serve(async (req) => {
       success: true,
       batch: batchNumber,
       totalBatches: batchTotal,
-      totalJobs: jobs.length,
+      totalJobs: batchJobs.length,
+      processedJobs: jobs.length,
+      deferredJobs: deferredJobs.length,
+      deferredBrands: [...new Set(deferredJobs.map((j) => j.brand))],
       totalInserted,
       results,
     }), {
