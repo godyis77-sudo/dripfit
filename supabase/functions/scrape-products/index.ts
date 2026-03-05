@@ -27,251 +27,319 @@ interface ClassifiedProduct extends RawProduct {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// RETAILER CATEGORY URLs
+// RETAILER CATEGORY URLs — with Firecrawl actions for JS-rendered pages
 // ─────────────────────────────────────────────────────────────────────────────
 
-const CATEGORY_MAP: Record<string, Record<string, string[]>> = {
+interface CategoryUrl {
+  url: string;
+  waitFor?: number;
+  actions?: Array<{ type: string; selector?: string; milliseconds?: number }>;
+}
+
+// Helper to convert string URLs to CategoryUrl objects
+function toUrlConfig(urls: string[], opts?: { waitFor?: number; actions?: Array<{ type: string; selector?: string; milliseconds?: number }> }): CategoryUrl[] {
+  return urls.map(url => ({ url, ...opts }));
+}
+
+// Actions for common JS-rendered dropdown/filter patterns
+const CLICK_LOAD_MORE: Array<{ type: string; selector: string; milliseconds: number }> = [
+  { type: 'wait', selector: '', milliseconds: 2000 },
+  { type: 'click', selector: 'button[data-testid="load-more"], button.load-more, [aria-label="Load more"], a.show-more, button:has-text("Show More"), button:has-text("Load More"), button:has-text("View More")', milliseconds: 1500 },
+];
+
+const SCROLL_TO_LOAD: Array<{ type: string; selector: string; milliseconds: number }> = [
+  { type: 'wait', selector: '', milliseconds: 2000 },
+  { type: 'scroll', selector: '', milliseconds: 3000 },
+];
+
+const CATEGORY_MAP: Record<string, Record<string, CategoryUrl[]>> = {
   zara: {
-    tops:       ['https://www.zara.com/us/en/man-tshirts-l855.html', 'https://www.zara.com/us/en/woman-tshirts-l1362.html'],
-    bottoms:    ['https://www.zara.com/us/en/man-trousers-l838.html', 'https://www.zara.com/us/en/woman-trousers-l1335.html'],
-    shorts:     ['https://www.zara.com/us/en/man-shorts-l838.html', 'https://www.zara.com/us/en/woman-shorts-l1355.html'],
-    skirts:     ['https://www.zara.com/us/en/woman-skirts-l1299.html'],
-    swimwear:   ['https://www.zara.com/us/en/man-swimwear-l4393.html', 'https://www.zara.com/us/en/woman-swimwear-l1352.html'],
-    outerwear:  ['https://www.zara.com/us/en/man-jackets-l825.html', 'https://www.zara.com/us/en/woman-jackets-l1114.html'],
-    dresses:    ['https://www.zara.com/us/en/woman-dresses-l1066.html'],
-    shoes:      ['https://www.zara.com/us/en/man-shoes-l769.html', 'https://www.zara.com/us/en/woman-shoes-l1251.html'],
-    accessories:['https://www.zara.com/us/en/man-accessories-l4734.html'],
-    scarves:    ['https://www.zara.com/us/en/woman-accessories-scarves-l1412.html'],
+    tops:       toUrlConfig(['https://www.zara.com/us/en/man-tshirts-l855.html', 'https://www.zara.com/us/en/woman-tshirts-l1362.html'], { waitFor: 5000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://www.zara.com/us/en/man-trousers-l838.html', 'https://www.zara.com/us/en/woman-trousers-l1335.html'], { waitFor: 5000, actions: SCROLL_TO_LOAD }),
+    shorts:     toUrlConfig(['https://www.zara.com/us/en/man-shorts-l838.html', 'https://www.zara.com/us/en/woman-shorts-l1355.html'], { waitFor: 5000 }),
+    skirts:     toUrlConfig(['https://www.zara.com/us/en/woman-skirts-l1299.html'], { waitFor: 5000 }),
+    swimwear:   toUrlConfig(['https://www.zara.com/us/en/man-swimwear-l4393.html', 'https://www.zara.com/us/en/woman-swimwear-l1352.html'], { waitFor: 5000 }),
+    outerwear:  toUrlConfig(['https://www.zara.com/us/en/man-jackets-l825.html', 'https://www.zara.com/us/en/woman-jackets-l1114.html'], { waitFor: 5000 }),
+    dresses:    toUrlConfig(['https://www.zara.com/us/en/woman-dresses-l1066.html'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://www.zara.com/us/en/man-shoes-l769.html', 'https://www.zara.com/us/en/woman-shoes-l1251.html'], { waitFor: 5000 }),
+    accessories:toUrlConfig(['https://www.zara.com/us/en/man-accessories-l4734.html'], { waitFor: 5000 }),
+    scarves:    toUrlConfig(['https://www.zara.com/us/en/woman-accessories-scarves-l1412.html'], { waitFor: 5000 }),
   },
   hm: {
-    tops:       ['https://www2.hm.com/en_us/men/products/t-shirts-and-tanks.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
-    bottoms:    ['https://www2.hm.com/en_us/men/products/pants.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
-    shorts:     ['https://www2.hm.com/en_us/men/products/shorts.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
-    skirts:     ['https://www2.hm.com/en_us/women/products/skirts.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
-    swimwear:   ['https://www2.hm.com/en_us/men/products/swimwear.html?sort=stock&image-size=small&image=model&offset=0&page-size=36', 'https://www2.hm.com/en_us/women/products/swimwear.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
-    loungewear: ['https://www2.hm.com/en_us/men/products/loungewear.html?sort=stock&image-size=small&image=model&offset=0&page-size=36', 'https://www2.hm.com/en_us/women/products/loungewear.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
-    outerwear:  ['https://www2.hm.com/en_us/men/products/jackets-and-coats.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
-    dresses:    ['https://www2.hm.com/en_us/women/products/dresses.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
-    shoes:      ['https://www2.hm.com/en_us/men/products/shoes.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
-    accessories:['https://www2.hm.com/en_us/men/products/accessories.html?sort=stock&image-size=small&image=model&offset=0&page-size=36'],
+    tops:       toUrlConfig(['https://www2.hm.com/en_us/men/products/t-shirts-and-tanks.html?sort=stock&image-size=small&image=model&offset=0&page-size=72', 'https://www2.hm.com/en_us/women/products/tops.html?sort=stock&image-size=small&image=model&offset=0&page-size=72'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://www2.hm.com/en_us/men/products/pants.html?sort=stock&image-size=small&image=model&offset=0&page-size=72'], { waitFor: 3000 }),
+    shorts:     toUrlConfig(['https://www2.hm.com/en_us/men/products/shorts.html?sort=stock&image-size=small&image=model&offset=0&page-size=72'], { waitFor: 3000 }),
+    skirts:     toUrlConfig(['https://www2.hm.com/en_us/women/products/skirts.html?sort=stock&image-size=small&image=model&offset=0&page-size=72'], { waitFor: 3000 }),
+    swimwear:   toUrlConfig(['https://www2.hm.com/en_us/men/products/swimwear.html?sort=stock&image-size=small&image=model&offset=0&page-size=72', 'https://www2.hm.com/en_us/women/products/swimwear.html?sort=stock&image-size=small&image=model&offset=0&page-size=72'], { waitFor: 3000 }),
+    loungewear: toUrlConfig(['https://www2.hm.com/en_us/men/products/loungewear.html?sort=stock&image-size=small&image=model&offset=0&page-size=72', 'https://www2.hm.com/en_us/women/products/loungewear.html?sort=stock&image-size=small&image=model&offset=0&page-size=72'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www2.hm.com/en_us/men/products/jackets-and-coats.html?sort=stock&image-size=small&image=model&offset=0&page-size=72'], { waitFor: 3000 }),
+    dresses:    toUrlConfig(['https://www2.hm.com/en_us/women/products/dresses.html?sort=stock&image-size=small&image=model&offset=0&page-size=72'], { waitFor: 3000 }),
+    shoes:      toUrlConfig(['https://www2.hm.com/en_us/men/products/shoes.html?sort=stock&image-size=small&image=model&offset=0&page-size=72'], { waitFor: 3000 }),
+    accessories:toUrlConfig(['https://www2.hm.com/en_us/men/products/accessories.html?sort=stock&image-size=small&image=model&offset=0&page-size=72'], { waitFor: 3000 }),
   },
   uniqlo: {
-    tops:       ['https://www.uniqlo.com/us/en/men/tops/t-shirts', 'https://www.uniqlo.com/us/en/women/tops/t-shirts'],
-    bottoms:    ['https://www.uniqlo.com/us/en/men/bottoms/pants', 'https://www.uniqlo.com/us/en/women/bottoms/pants'],
-    shorts:     ['https://www.uniqlo.com/us/en/men/bottoms/shorts', 'https://www.uniqlo.com/us/en/women/bottoms/shorts'],
-    swimwear:   ['https://www.uniqlo.com/us/en/men/innerwear-and-loungewear/swimwear'],
-    loungewear: ['https://www.uniqlo.com/us/en/men/innerwear-and-loungewear/loungewear', 'https://www.uniqlo.com/us/en/women/innerwear-and-loungewear/loungewear'],
-    outerwear:  ['https://www.uniqlo.com/us/en/men/outerwear', 'https://www.uniqlo.com/us/en/women/outerwear'],
-    dresses:    ['https://www.uniqlo.com/us/en/women/dresses-and-jumpsuits'],
-    shoes:      ['https://www.uniqlo.com/us/en/men/shoes-and-bags', 'https://www.uniqlo.com/us/en/women/shoes-and-bags'],
-    accessories:['https://www.uniqlo.com/us/en/men/accessories-and-shoes'],
-    skirts:     ['https://www.uniqlo.com/us/en/women/bottoms/skirts'],
+    tops:       toUrlConfig(['https://www.uniqlo.com/us/en/men/tops/t-shirts', 'https://www.uniqlo.com/us/en/women/tops/t-shirts'], { waitFor: 4000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://www.uniqlo.com/us/en/men/bottoms/pants', 'https://www.uniqlo.com/us/en/women/bottoms/pants'], { waitFor: 4000 }),
+    shorts:     toUrlConfig(['https://www.uniqlo.com/us/en/men/bottoms/shorts', 'https://www.uniqlo.com/us/en/women/bottoms/shorts'], { waitFor: 4000 }),
+    swimwear:   toUrlConfig(['https://www.uniqlo.com/us/en/men/innerwear-and-loungewear/swimwear'], { waitFor: 4000 }),
+    loungewear: toUrlConfig(['https://www.uniqlo.com/us/en/men/innerwear-and-loungewear/loungewear', 'https://www.uniqlo.com/us/en/women/innerwear-and-loungewear/loungewear'], { waitFor: 4000 }),
+    outerwear:  toUrlConfig(['https://www.uniqlo.com/us/en/men/outerwear', 'https://www.uniqlo.com/us/en/women/outerwear'], { waitFor: 4000 }),
+    dresses:    toUrlConfig(['https://www.uniqlo.com/us/en/women/dresses-and-jumpsuits'], { waitFor: 4000 }),
+    shoes:      toUrlConfig(['https://www.uniqlo.com/us/en/men/shoes-and-bags', 'https://www.uniqlo.com/us/en/women/shoes-and-bags'], { waitFor: 4000 }),
+    accessories:toUrlConfig(['https://www.uniqlo.com/us/en/men/accessories-and-shoes'], { waitFor: 4000 }),
+    skirts:     toUrlConfig(['https://www.uniqlo.com/us/en/women/bottoms/skirts'], { waitFor: 4000 }),
   },
   shein: {
-    tops:       ['https://us.shein.com/Men-T-Shirts-c-12206.html', 'https://us.shein.com/Women-T-Shirts-c-1738.html'],
-    bottoms:    ['https://us.shein.com/Men-Pants-c-12207.html', 'https://us.shein.com/Women-Pants-Leggings-c-1740.html'],
-    shorts:     ['https://us.shein.com/Men-Shorts-c-12209.html', 'https://us.shein.com/Women-Shorts-c-1912.html'],
-    skirts:     ['https://us.shein.com/Women-Skirts-c-1732.html'],
-    swimwear:   ['https://us.shein.com/Men-Swimwear-c-12210.html', 'https://us.shein.com/Women-Swimwear-c-1866.html'],
-    outerwear:  ['https://us.shein.com/Men-Jackets-Coats-c-12201.html', 'https://us.shein.com/Women-Jackets-c-1735.html'],
-    dresses:    ['https://us.shein.com/Women-Dresses-c-1727.html'],
-    shoes:      ['https://us.shein.com/Men-Shoes-c-12211.html', 'https://us.shein.com/Women-Shoes-c-1745.html'],
-    accessories:['https://us.shein.com/Men-Accessories-c-12214.html'],
-    loungewear: ['https://us.shein.com/Women-Loungewear-c-2189.html'],
+    tops:       toUrlConfig(['https://us.shein.com/Men-T-Shirts-c-12206.html', 'https://us.shein.com/Women-T-Shirts-c-1738.html'], { waitFor: 5000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://us.shein.com/Men-Pants-c-12207.html', 'https://us.shein.com/Women-Pants-Leggings-c-1740.html'], { waitFor: 5000 }),
+    shorts:     toUrlConfig(['https://us.shein.com/Men-Shorts-c-12209.html', 'https://us.shein.com/Women-Shorts-c-1912.html'], { waitFor: 5000 }),
+    skirts:     toUrlConfig(['https://us.shein.com/Women-Skirts-c-1732.html'], { waitFor: 5000 }),
+    swimwear:   toUrlConfig(['https://us.shein.com/Men-Swimwear-c-12210.html', 'https://us.shein.com/Women-Swimwear-c-1866.html'], { waitFor: 5000 }),
+    outerwear:  toUrlConfig(['https://us.shein.com/Men-Jackets-Coats-c-12201.html', 'https://us.shein.com/Women-Jackets-c-1735.html'], { waitFor: 5000 }),
+    dresses:    toUrlConfig(['https://us.shein.com/Women-Dresses-c-1727.html'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://us.shein.com/Men-Shoes-c-12211.html', 'https://us.shein.com/Women-Shoes-c-1745.html'], { waitFor: 5000 }),
+    accessories:toUrlConfig(['https://us.shein.com/Men-Accessories-c-12214.html'], { waitFor: 5000 }),
+    loungewear: toUrlConfig(['https://us.shein.com/Women-Loungewear-c-2189.html'], { waitFor: 5000 }),
   },
   nike: {
-    tops:       ['https://www.nike.com/w/mens-tops-t-shirts-9om13zav4s6', 'https://www.nike.com/w/womens-tops-t-shirts-5e1x6z9om13'],
-    bottoms:    ['https://www.nike.com/w/mens-pants-tights-2kq19z6o5re', 'https://www.nike.com/w/womens-pants-tights-2kq19z5e1x6'],
-    shorts:     ['https://www.nike.com/w/mens-shorts-38fphz6o5re', 'https://www.nike.com/w/womens-shorts-38fphz5e1x6'],
-    swimwear:   ['https://www.nike.com/w/mens-swimwear-3glsmz6o5re'],
-    outerwear:  ['https://www.nike.com/w/mens-jackets-vests-50r7yz6o5re', 'https://www.nike.com/w/womens-jackets-vests-50r7yz5e1x6'],
-    shoes:      ['https://www.nike.com/w/mens-shoes-nik1zy7ok', 'https://www.nike.com/w/womens-shoes-5e1x6zy7ok'],
-    accessories:['https://www.nike.com/w/mens-accessories-equipment-6o5rezawwv'],
-    skirts:     ['https://www.nike.com/w/womens-skirts-dresses-5e1x6z8y3qp'],
+    tops:       toUrlConfig(['https://www.nike.com/w/mens-tops-t-shirts-9om13zav4s6', 'https://www.nike.com/w/womens-tops-t-shirts-5e1x6z9om13'], { waitFor: 4000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://www.nike.com/w/mens-pants-tights-2kq19z6o5re', 'https://www.nike.com/w/womens-pants-tights-2kq19z5e1x6'], { waitFor: 4000 }),
+    shorts:     toUrlConfig(['https://www.nike.com/w/mens-shorts-38fphz6o5re', 'https://www.nike.com/w/womens-shorts-38fphz5e1x6'], { waitFor: 4000 }),
+    swimwear:   toUrlConfig(['https://www.nike.com/w/mens-swimwear-3glsmz6o5re'], { waitFor: 4000 }),
+    outerwear:  toUrlConfig(['https://www.nike.com/w/mens-jackets-vests-50r7yz6o5re', 'https://www.nike.com/w/womens-jackets-vests-50r7yz5e1x6'], { waitFor: 4000 }),
+    shoes:      toUrlConfig(['https://www.nike.com/w/mens-shoes-nik1zy7ok', 'https://www.nike.com/w/womens-shoes-5e1x6zy7ok'], { waitFor: 4000 }),
+    accessories:toUrlConfig(['https://www.nike.com/w/mens-accessories-equipment-6o5rezawwv'], { waitFor: 4000 }),
+    skirts:     toUrlConfig(['https://www.nike.com/w/womens-skirts-dresses-5e1x6z8y3qp'], { waitFor: 4000 }),
   },
   asos: {
-    tops:       ['https://www.asos.com/us/men/t-shirts-vests/cat/?cid=7616', 'https://www.asos.com/us/women/tops/cat/?cid=4169'],
-    bottoms:    ['https://www.asos.com/us/men/pants-chinos/cat/?cid=4910', 'https://www.asos.com/us/women/pants-leggings/cat/?cid=7212'],
-    shorts:     ['https://www.asos.com/us/men/shorts/cat/?cid=7078', 'https://www.asos.com/us/women/shorts/cat/?cid=9263'],
-    skirts:     ['https://www.asos.com/us/women/skirts/cat/?cid=2639'],
-    swimwear:   ['https://www.asos.com/us/men/swimwear/cat/?cid=13210', 'https://www.asos.com/us/women/swimwear-beachwear/cat/?cid=2238'],
-    loungewear: ['https://www.asos.com/us/men/loungewear/cat/?cid=28286', 'https://www.asos.com/us/women/loungewear/cat/?cid=21849'],
-    outerwear:  ['https://www.asos.com/us/men/jackets-coats/cat/?cid=3606', 'https://www.asos.com/us/women/jackets-coats/cat/?cid=2641'],
-    dresses:    ['https://www.asos.com/us/women/dresses/cat/?cid=8799'],
-    shoes:      ['https://www.asos.com/us/men/shoes/cat/?cid=1935', 'https://www.asos.com/us/women/shoes/cat/?cid=1931'],
-    accessories:['https://www.asos.com/us/men/accessories/cat/?cid=4210'],
+    tops:       toUrlConfig(['https://www.asos.com/us/men/t-shirts-vests/cat/?cid=7616&page=1', 'https://www.asos.com/us/women/tops/cat/?cid=4169&page=1'], { waitFor: 3000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://www.asos.com/us/men/pants-chinos/cat/?cid=4910', 'https://www.asos.com/us/women/pants-leggings/cat/?cid=7212'], { waitFor: 3000 }),
+    shorts:     toUrlConfig(['https://www.asos.com/us/men/shorts/cat/?cid=7078', 'https://www.asos.com/us/women/shorts/cat/?cid=9263'], { waitFor: 3000 }),
+    skirts:     toUrlConfig(['https://www.asos.com/us/women/skirts/cat/?cid=2639'], { waitFor: 3000 }),
+    swimwear:   toUrlConfig(['https://www.asos.com/us/men/swimwear/cat/?cid=13210', 'https://www.asos.com/us/women/swimwear-beachwear/cat/?cid=2238'], { waitFor: 3000 }),
+    loungewear: toUrlConfig(['https://www.asos.com/us/men/loungewear/cat/?cid=28286', 'https://www.asos.com/us/women/loungewear/cat/?cid=21849'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.asos.com/us/men/jackets-coats/cat/?cid=3606', 'https://www.asos.com/us/women/jackets-coats/cat/?cid=2641'], { waitFor: 3000 }),
+    dresses:    toUrlConfig(['https://www.asos.com/us/women/dresses/cat/?cid=8799'], { waitFor: 3000 }),
+    shoes:      toUrlConfig(['https://www.asos.com/us/men/shoes/cat/?cid=1935', 'https://www.asos.com/us/women/shoes/cat/?cid=1931'], { waitFor: 3000 }),
+    accessories:toUrlConfig(['https://www.asos.com/us/men/accessories/cat/?cid=4210'], { waitFor: 3000 }),
   },
   // ── Sportswear & Athletic ──
   adidas: {
-    tops:       ['https://www.adidas.com/us/men-t_shirts'],
-    bottoms:    ['https://www.adidas.com/us/men-pants'],
-    outerwear:  ['https://www.adidas.com/us/men-jackets'],
-    shoes:      ['https://www.adidas.com/us/men-shoes'],
-    accessories:['https://www.adidas.com/us/men-accessories'],
+    tops:       toUrlConfig(['https://www.adidas.com/us/men-t_shirts'], { waitFor: 4000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://www.adidas.com/us/men-pants'], { waitFor: 4000 }),
+    outerwear:  toUrlConfig(['https://www.adidas.com/us/men-jackets'], { waitFor: 4000 }),
+    shoes:      toUrlConfig(['https://www.adidas.com/us/men-shoes'], { waitFor: 4000 }),
+    accessories:toUrlConfig(['https://www.adidas.com/us/men-accessories'], { waitFor: 4000 }),
   },
   'new balance': {
-    tops:       ['https://www.newbalance.com/men/clothing/tops/'],
-    bottoms:    ['https://www.newbalance.com/men/clothing/pants-and-tights/'],
-    outerwear:  ['https://www.newbalance.com/men/clothing/jackets-and-vests/'],
-    shoes:      ['https://www.newbalance.com/men/shoes/'],
-    accessories:['https://www.newbalance.com/men/accessories/'],
+    tops:       toUrlConfig(['https://www.newbalance.com/men/clothing/tops/']),
+    bottoms:    toUrlConfig(['https://www.newbalance.com/men/clothing/pants-and-tights/']),
+    outerwear:  toUrlConfig(['https://www.newbalance.com/men/clothing/jackets-and-vests/']),
+    shoes:      toUrlConfig(['https://www.newbalance.com/men/shoes/']),
+    accessories:toUrlConfig(['https://www.newbalance.com/men/accessories/']),
   },
   converse: {
-    tops:       ['https://www.converse.com/shop/mens-clothing'],
-    shoes:      ['https://www.converse.com/shop/mens-sneakers'],
-    accessories:['https://www.converse.com/shop/bags-and-backpacks'],
+    tops:       toUrlConfig(['https://www.converse.com/shop/mens-clothing']),
+    shoes:      toUrlConfig(['https://www.converse.com/shop/mens-sneakers']),
+    accessories:toUrlConfig(['https://www.converse.com/shop/bags-and-backpacks']),
   },
   vans: {
-    tops:       ['https://www.vans.com/en-us/categories/mens-clothing-c3702'],
-    shoes:      ['https://www.vans.com/en-us/categories/mens-shoes-c5702'],
-    accessories:['https://www.vans.com/en-us/categories/accessories-c22220'],
+    tops:       toUrlConfig(['https://www.vans.com/en-us/categories/mens-clothing-c3702']),
+    shoes:      toUrlConfig(['https://www.vans.com/en-us/categories/mens-shoes-c5702']),
+    accessories:toUrlConfig(['https://www.vans.com/en-us/categories/accessories-c22220']),
   },
   puma: {
-    tops:       ['https://us.puma.com/us/en/men/clothing/t-shirts'],
-    bottoms:    ['https://us.puma.com/us/en/men/clothing/pants'],
-    shoes:      ['https://us.puma.com/us/en/men/shoes'],
-    accessories:['https://us.puma.com/us/en/men/accessories'],
+    tops:       toUrlConfig(['https://us.puma.com/us/en/men/clothing/t-shirts']),
+    bottoms:    toUrlConfig(['https://us.puma.com/us/en/men/clothing/pants']),
+    shoes:      toUrlConfig(['https://us.puma.com/us/en/men/shoes']),
+    accessories:toUrlConfig(['https://us.puma.com/us/en/men/accessories']),
   },
   // ── Outdoor & Active ──
   'the north face': {
-    tops:       ['https://www.thenorthface.com/en-us/mens/mens-tops-c211501'],
-    bottoms:    ['https://www.thenorthface.com/en-us/mens/mens-bottoms-c211502'],
-    outerwear:  ['https://www.thenorthface.com/en-us/mens/mens-jackets-and-vests-c211500'],
-    shoes:      ['https://www.thenorthface.com/en-us/mens/mens-footwear-c211504'],
-    accessories:['https://www.thenorthface.com/en-us/mens/mens-accessories-c211506'],
+    tops:       toUrlConfig(['https://www.thenorthface.com/en-us/mens/mens-tops-c211501'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://www.thenorthface.com/en-us/mens/mens-bottoms-c211502'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.thenorthface.com/en-us/mens/mens-jackets-and-vests-c211500'], { waitFor: 3000 }),
+    shoes:      toUrlConfig(['https://www.thenorthface.com/en-us/mens/mens-footwear-c211504'], { waitFor: 3000 }),
+    accessories:toUrlConfig(['https://www.thenorthface.com/en-us/mens/mens-accessories-c211506'], { waitFor: 3000 }),
   },
   patagonia: {
-    tops:       ['https://www.patagonia.com/shop/mens-t-shirts-tanks'],
-    bottoms:    ['https://www.patagonia.com/shop/mens-pants-jeans'],
-    outerwear:  ['https://www.patagonia.com/shop/mens-jackets-vests'],
-    accessories:['https://www.patagonia.com/shop/mens-hats'],
+    tops:       toUrlConfig(['https://www.patagonia.com/shop/mens-t-shirts-tanks']),
+    bottoms:    toUrlConfig(['https://www.patagonia.com/shop/mens-pants-jeans']),
+    outerwear:  toUrlConfig(['https://www.patagonia.com/shop/mens-jackets-vests']),
+    accessories:toUrlConfig(['https://www.patagonia.com/shop/mens-hats']),
   },
   lululemon: {
-    tops:       ['https://shop.lululemon.com/c/men-tops/_/N-8r6'],
-    bottoms:    ['https://shop.lululemon.com/c/mens-pants/_/N-8s3'],
-    outerwear:  ['https://shop.lululemon.com/c/men-outerwear/_/N-8q3'],
-    shoes:      ['https://shop.lululemon.com/c/men-shoes/_/N-8r8'],
-    accessories:['https://shop.lululemon.com/c/men-accessories/_/N-8q5'],
+    tops:       toUrlConfig(['https://shop.lululemon.com/c/men-tops/_/N-8r6'], { waitFor: 4000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://shop.lululemon.com/c/mens-pants/_/N-8s3'], { waitFor: 4000 }),
+    outerwear:  toUrlConfig(['https://shop.lululemon.com/c/men-outerwear/_/N-8q3'], { waitFor: 4000 }),
+    shoes:      toUrlConfig(['https://shop.lululemon.com/c/men-shoes/_/N-8r8'], { waitFor: 4000 }),
+    accessories:toUrlConfig(['https://shop.lululemon.com/c/men-accessories/_/N-8q5'], { waitFor: 4000 }),
   },
   salomon: {
-    shoes:      ['https://www.salomon.com/en-us/shop/men/shoes/trail-running-shoes.html'],
-    outerwear:  ['https://www.salomon.com/en-us/shop/men/clothing/jackets.html'],
-    accessories:['https://www.salomon.com/en-us/shop/men/accessories.html'],
+    shoes:      toUrlConfig(['https://www.salomon.com/en-us/shop/men/shoes/trail-running-shoes.html']),
+    outerwear:  toUrlConfig(['https://www.salomon.com/en-us/shop/men/clothing/jackets.html']),
+    accessories:toUrlConfig(['https://www.salomon.com/en-us/shop/men/accessories.html']),
   },
   // ── Denim & Casual ──
   "levi's": {
-    tops:       ['https://www.levi.com/US/en_US/clothing/men/shirts/c/levi_clothing_men_shirts'],
-    bottoms:    ['https://www.levi.com/US/en_US/clothing/men/jeans/c/levi_clothing_men_jeans'],
-    outerwear:  ['https://www.levi.com/US/en_US/clothing/men/trucker-jackets/c/levi_clothing_men_702trucker_jackets'],
-    accessories:['https://www.levi.com/US/en_US/accessories/c/levi_accessories'],
+    tops:       toUrlConfig(['https://www.levi.com/US/en_US/clothing/men/shirts/c/levi_clothing_men_shirts']),
+    bottoms:    toUrlConfig(['https://www.levi.com/US/en_US/clothing/men/jeans/c/levi_clothing_men_jeans']),
+    outerwear:  toUrlConfig(['https://www.levi.com/US/en_US/clothing/men/trucker-jackets/c/levi_clothing_men_702trucker_jackets']),
+    accessories:toUrlConfig(['https://www.levi.com/US/en_US/accessories/c/levi_accessories']),
   },
   carhartt: {
-    tops:       ['https://www.carhartt.com/search?q=t-shirt&cgid=men-shirts'],
-    bottoms:    ['https://www.carhartt.com/search?q=pants&cgid=men-pants'],
-    outerwear:  ['https://www.carhartt.com/search?q=jacket&cgid=men-outerwear'],
-    accessories:['https://www.carhartt.com/men-accessories'],
+    tops:       toUrlConfig(['https://www.carhartt.com/search?q=t-shirt&cgid=men-shirts']),
+    bottoms:    toUrlConfig(['https://www.carhartt.com/search?q=pants&cgid=men-pants']),
+    outerwear:  toUrlConfig(['https://www.carhartt.com/search?q=jacket&cgid=men-outerwear']),
+    accessories:toUrlConfig(['https://www.carhartt.com/men-accessories']),
   },
   // ── Boots & Footwear ──
   'dr. martens': {
-    shoes:      ['https://www.drmartens.com/us/en/boots/c/04010000'],
+    shoes:      toUrlConfig(['https://www.drmartens.com/us/en/boots/c/04010000']),
   },
   // ── Eyewear ──
   'ray-ban': {
-    accessories:['https://www.ray-ban.com/usa/sunglasses'],
+    accessories:toUrlConfig(['https://www.ray-ban.com/usa/sunglasses']),
   },
   oakley: {
-    accessories:['https://www.oakley.com/en-us/category/sunglasses'],
+    accessories:toUrlConfig(['https://www.oakley.com/en-us/category/sunglasses']),
   },
   // ── Jewelry ──
   pandora: {
-    accessories:['https://us.pandora.net/en/jewelry/'],
+    accessories:toUrlConfig(['https://us.pandora.net/en/jewelry/']),
   },
   mejuri: {
-    accessories:['https://mejuri.com/shop/t/type/necklaces'],
+    accessories:toUrlConfig(['https://mejuri.com/shop/t/type/necklaces']),
   },
   'tiffany & co': {
-    accessories:['https://www.tiffany.com/jewelry/necklaces-pendants/'],
+    accessories:toUrlConfig(['https://www.tiffany.com/jewelry/necklaces-pendants/']),
   },
   cartier: {
-    accessories:['https://www.cartier.com/en-us/jewelry/bracelets/'],
+    accessories:toUrlConfig(['https://www.cartier.com/en-us/jewelry/bracelets/']),
   },
   // ── Headwear ──
   'new era': {
-    accessories:['https://www.neweracap.com/collections/59fifty-fitted'],
+    accessories:toUrlConfig(['https://www.neweracap.com/collections/59fifty-fitted']),
   },
   // ── Streetwear ──
   supreme: {
-    tops:       ['https://www.supremenewyork.com/shop/all/tops-sweaters'],
-    outerwear:  ['https://www.supremenewyork.com/shop/all/jackets'],
-    accessories:['https://www.supremenewyork.com/shop/all/hats'],
+    tops:       toUrlConfig(['https://www.supremenewyork.com/shop/all/tops-sweaters']),
+    outerwear:  toUrlConfig(['https://www.supremenewyork.com/shop/all/jackets']),
+    accessories:toUrlConfig(['https://www.supremenewyork.com/shop/all/hats']),
   },
   palace: {
-    tops:       ['https://www.palaceskateboards.com/range/tops/'],
-    outerwear:  ['https://www.palaceskateboards.com/range/jackets/'],
-    accessories:['https://www.palaceskateboards.com/range/hats/'],
+    tops:       toUrlConfig(['https://www.palaceskateboards.com/range/tops/']),
+    outerwear:  toUrlConfig(['https://www.palaceskateboards.com/range/jackets/']),
+    accessories:toUrlConfig(['https://www.palaceskateboards.com/range/hats/']),
   },
   "stüssy": {
-    tops:       ['https://www.stussy.com/collections/tops'],
-    bottoms:    ['https://www.stussy.com/collections/bottoms'],
-    outerwear:  ['https://www.stussy.com/collections/outerwear'],
-    accessories:['https://www.stussy.com/collections/accessories'],
+    tops:       toUrlConfig(['https://www.stussy.com/collections/tops']),
+    bottoms:    toUrlConfig(['https://www.stussy.com/collections/bottoms']),
+    outerwear:  toUrlConfig(['https://www.stussy.com/collections/outerwear']),
+    accessories:toUrlConfig(['https://www.stussy.com/collections/accessories']),
   },
   'off-white': {
-    tops:       ['https://www.off---white.com/en-us/collections/man-t-shirts'],
-    outerwear:  ['https://www.off---white.com/en-us/collections/man-outerwear'],
-    shoes:      ['https://www.off---white.com/en-us/collections/man-shoes'],
+    tops:       toUrlConfig(['https://www.off---white.com/en-us/collections/man-t-shirts']),
+    outerwear:  toUrlConfig(['https://www.off---white.com/en-us/collections/man-outerwear']),
+    shoes:      toUrlConfig(['https://www.off---white.com/en-us/collections/man-shoes']),
   },
   essentials: {
-    tops:       ['https://www.essentialsfog.com/collections/tops'],
-    bottoms:    ['https://www.essentialsfog.com/collections/bottoms'],
-    outerwear:  ['https://www.essentialsfog.com/collections/outerwear'],
+    tops:       toUrlConfig(['https://www.essentialsfog.com/collections/tops']),
+    bottoms:    toUrlConfig(['https://www.essentialsfog.com/collections/bottoms']),
+    outerwear:  toUrlConfig(['https://www.essentialsfog.com/collections/outerwear']),
   },
   // ── Luxury ──
   gucci: {
-    tops:       ['https://www.gucci.com/us/en/ca/men/ready-to-wear/t-shirts-and-polos-c-men-readytowear-t-shirts-polos'],
-    shoes:      ['https://www.gucci.com/us/en/ca/men/shoes-c-men-shoes'],
-    accessories:['https://www.gucci.com/us/en/ca/men/accessories/hats-and-gloves-c-men-accessories-hatsgloves'],
+    tops:       toUrlConfig(['https://www.gucci.com/us/en/ca/men/ready-to-wear/t-shirts-and-polos-c-men-readytowear-t-shirts-polos'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://www.gucci.com/us/en/ca/men/shoes-c-men-shoes'], { waitFor: 5000 }),
+    accessories:toUrlConfig(['https://www.gucci.com/us/en/ca/men/accessories/hats-and-gloves-c-men-accessories-hatsgloves'], { waitFor: 5000 }),
   },
   prada: {
-    shoes:      ['https://www.prada.com/us/en/men/shoes.html'],
-    accessories:['https://www.prada.com/us/en/men/accessories.html'],
+    shoes:      toUrlConfig(['https://www.prada.com/us/en/men/shoes.html'], { waitFor: 5000 }),
+    accessories:toUrlConfig(['https://www.prada.com/us/en/men/accessories.html'], { waitFor: 5000 }),
   },
   dior: {
-    accessories:['https://www.dior.com/en_us/fashion/mens-fashion/bags'],
-    shoes:      ['https://www.dior.com/en_us/fashion/mens-fashion/shoes'],
+    accessories:toUrlConfig(['https://www.dior.com/en_us/fashion/mens-fashion/bags'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://www.dior.com/en_us/fashion/mens-fashion/shoes'], { waitFor: 5000 }),
   },
   'louis vuitton': {
-    accessories:['https://us.louisvuitton.com/eng-us/men/bags/_/N-1eoopfs'],
-    shoes:      ['https://us.louisvuitton.com/eng-us/men/shoes/_/N-1i09sii'],
+    accessories:toUrlConfig(['https://us.louisvuitton.com/eng-us/men/bags/_/N-1eoopfs'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://us.louisvuitton.com/eng-us/men/shoes/_/N-1i09sii'], { waitFor: 5000 }),
   },
   balenciaga: {
-    shoes:      ['https://www.balenciaga.com/en-us/men/shoes'],
-    tops:       ['https://www.balenciaga.com/en-us/men/ready-to-wear/t-shirts'],
+    shoes:      toUrlConfig(['https://www.balenciaga.com/en-us/men/shoes'], { waitFor: 5000 }),
+    tops:       toUrlConfig(['https://www.balenciaga.com/en-us/men/ready-to-wear/t-shirts'], { waitFor: 5000 }),
   },
   'saint laurent': {
-    outerwear:  ['https://www.ysl.com/en-us/men/ready-to-wear/coats-and-trench-coats'],
-    shoes:      ['https://www.ysl.com/en-us/men/shoes'],
+    outerwear:  toUrlConfig(['https://www.ysl.com/en-us/men/ready-to-wear/coats-and-trench-coats'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://www.ysl.com/en-us/men/shoes'], { waitFor: 5000 }),
   },
   versace: {
-    tops:       ['https://www.versace.com/us/en/men/clothing/t-shirts/'],
-    shoes:      ['https://www.versace.com/us/en/men/shoes/'],
-    accessories:['https://www.versace.com/us/en/men/accessories/'],
+    tops:       toUrlConfig(['https://www.versace.com/us/en/men/clothing/t-shirts/'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://www.versace.com/us/en/men/shoes/'], { waitFor: 5000 }),
+    accessories:toUrlConfig(['https://www.versace.com/us/en/men/accessories/'], { waitFor: 5000 }),
   },
   burberry: {
-    outerwear:  ['https://us.burberry.com/mens-coats-jackets/'],
-    tops:       ['https://us.burberry.com/mens-t-shirts/'],
-    accessories:['https://us.burberry.com/mens-accessories/'],
+    outerwear:  toUrlConfig(['https://us.burberry.com/mens-coats-jackets/'], { waitFor: 5000 }),
+    tops:       toUrlConfig(['https://us.burberry.com/mens-t-shirts/'], { waitFor: 5000 }),
+    accessories:toUrlConfig(['https://us.burberry.com/mens-accessories/'], { waitFor: 5000 }),
   },
   // ── Women's Fashion ──
   'free people': {
-    tops:       ['https://www.freepeople.com/tops/'],
-    dresses:    ['https://www.freepeople.com/dresses/'],
-    outerwear:  ['https://www.freepeople.com/jackets/'],
+    tops:       toUrlConfig(['https://www.freepeople.com/tops/']),
+    dresses:    toUrlConfig(['https://www.freepeople.com/dresses/']),
+    outerwear:  toUrlConfig(['https://www.freepeople.com/jackets/']),
   },
   reformation: {
-    dresses:    ['https://www.thereformation.com/categories/dresses'],
-    tops:       ['https://www.thereformation.com/categories/tops'],
-    bottoms:    ['https://www.thereformation.com/categories/bottoms'],
+    dresses:    toUrlConfig(['https://www.thereformation.com/categories/dresses'], { waitFor: 4000, actions: SCROLL_TO_LOAD }),
+    tops:       toUrlConfig(['https://www.thereformation.com/categories/tops'], { waitFor: 4000 }),
+    bottoms:    toUrlConfig(['https://www.thereformation.com/categories/bottoms'], { waitFor: 4000 }),
+  },
+  // ── Additional brands with direct URLs ──
+  'fabletics': {
+    tops:       toUrlConfig(['https://www.fabletics.com/shop/tops'], { waitFor: 4000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://www.fabletics.com/shop/bottoms'], { waitFor: 4000 }),
+    outerwear:  toUrlConfig(['https://www.fabletics.com/shop/jackets'], { waitFor: 4000 }),
+  },
+  'kith': {
+    tops:       toUrlConfig(['https://kith.com/collections/mens-tops'], { waitFor: 4000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://kith.com/collections/mens-bottoms'], { waitFor: 4000 }),
+    outerwear:  toUrlConfig(['https://kith.com/collections/mens-outerwear'], { waitFor: 4000 }),
+    shoes:      toUrlConfig(['https://kith.com/collections/mens-footwear'], { waitFor: 4000 }),
+    accessories:toUrlConfig(['https://kith.com/collections/mens-accessories'], { waitFor: 4000 }),
+  },
+  'gymshark': {
+    tops:       toUrlConfig(['https://www.gymshark.com/collections/t-shirts-tops/mens'], { waitFor: 4000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://www.gymshark.com/collections/bottoms/mens'], { waitFor: 4000 }),
+    shorts:     toUrlConfig(['https://www.gymshark.com/collections/shorts/mens'], { waitFor: 4000 }),
+    outerwear:  toUrlConfig(['https://www.gymshark.com/collections/hoodies-jackets/mens'], { waitFor: 4000 }),
+  },
+  'alo yoga': {
+    tops:       toUrlConfig(['https://www.aloyoga.com/collections/mens-tops'], { waitFor: 4000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://www.aloyoga.com/collections/mens-pants'], { waitFor: 4000 }),
+    outerwear:  toUrlConfig(['https://www.aloyoga.com/collections/mens-jackets-coats'], { waitFor: 4000 }),
+  },
+  'skims': {
+    tops:       toUrlConfig(['https://skims.com/collections/tops'], { waitFor: 4000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://skims.com/collections/bottoms'], { waitFor: 4000 }),
+    dresses:    toUrlConfig(['https://skims.com/collections/dresses'], { waitFor: 4000 }),
+  },
+  'everlane': {
+    tops:       toUrlConfig(['https://www.everlane.com/collections/womens-tees', 'https://www.everlane.com/collections/mens-tees'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://www.everlane.com/collections/womens-jeans', 'https://www.everlane.com/collections/mens-jeans'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.everlane.com/collections/womens-outerwear', 'https://www.everlane.com/collections/mens-outerwear'], { waitFor: 3000 }),
+    shoes:      toUrlConfig(['https://www.everlane.com/collections/womens-shoes', 'https://www.everlane.com/collections/mens-shoes'], { waitFor: 3000 }),
+  },
+  'allsaints': {
+    tops:       toUrlConfig(['https://www.allsaints.com/men/t-shirts/', 'https://www.allsaints.com/women/tops/'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.allsaints.com/men/leather-jackets/', 'https://www.allsaints.com/women/leather-jackets/'], { waitFor: 3000 }),
+    dresses:    toUrlConfig(['https://www.allsaints.com/women/dresses/'], { waitFor: 3000 }),
+  },
+  'vuori': {
+    tops:       toUrlConfig(['https://vuori.com/collections/mens-tops'], { waitFor: 3000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://vuori.com/collections/mens-joggers-pants'], { waitFor: 3000 }),
+    shorts:     toUrlConfig(['https://vuori.com/collections/mens-shorts'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://vuori.com/collections/mens-hoodies-jackets'], { waitFor: 3000 }),
   },
 };
 
@@ -281,14 +349,11 @@ const ANTI_SCRAPE_BRANDS = new Set([
   'burberry', 'patagonia', 'supreme', 'palace', 'louis vuitton',
   'prada', 'dior', 'balenciaga', 'saint laurent', 'off-white',
   'essentials', 'cartier', 'tiffany & co', 'pandora', 'new era',
-  // Luxury — search on SSENSE/Farfetch/Nordstrom
   'fendi', 'givenchy', 'valentino', 'alexander mcqueen', 'bottega veneta',
   'celine', 'loewe', 'moncler', 'stone island', 'acne studios',
   'ami paris', 'jacquemus', 'rick owens', 'maison margiela',
   'a bathing ape', 'kith', 'corteiz', 'trapstar', 'fear of god',
-  // Athletic — search on brand sites via general web search
   'jordan', 'under armour', 'reebok', 'asics', 'on running', 'hoka', 'saucony',
-  // Mass-market — search on their own sites + general shopping
   'mango', 'cos', '& other stories', 'urban outfitters', 'forever 21',
   'fashion nova', 'prettylittlething', 'boohoo', 'missguided', 'topshop',
   'columbia', 'arc\'teryx', 'gap', 'banana republic', 'old navy',
@@ -297,12 +362,50 @@ const ANTI_SCRAPE_BRANDS = new Set([
   'abercrombie', 'american eagle', 'hollister',
   'birkenstock', 'crocs', 'timberland', 'steve madden', 'allbirds', 'clarks',
   'swarovski', 'kendra_scott',
-  // Added: these retailers block Firecrawl direct scraping
   'macys', "macy's", 'bloomingdales', "bloomingdale's", 'jcpenney',
   'target', 'walmart', 'kohls', "kohl's",
+  // Additional blocked brands
+  'fabletics', 'gymshark', 'alo yoga', 'skims', 'allsaints', 'vuori',
 ]);
 
-// (Stage 3 prompts removed — now uses deterministic URL scoring)
+// ─────────────────────────────────────────────────────────────────────────────
+// RETRY LOGIC WITH EXPONENTIAL BACKOFF
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit,
+  maxRetries = 3,
+  baseDelayMs = 1000
+): Promise<Response> {
+  let lastError: Error | null = null;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const resp = await fetch(url, options);
+      // Retry on 429 (rate limit) and 5xx server errors
+      if (resp.status === 429 || resp.status >= 500) {
+        const retryAfter = resp.headers.get('retry-after');
+        const delayMs = retryAfter
+          ? parseInt(retryAfter) * 1000
+          : baseDelayMs * Math.pow(2, attempt) + Math.random() * 500;
+        console.warn(`[retry] ${resp.status} on attempt ${attempt + 1}, waiting ${Math.round(delayMs)}ms`);
+        await resp.text(); // consume body
+        await delay(delayMs);
+        continue;
+      }
+      return resp;
+    } catch (err) {
+      lastError = err as Error;
+      if (attempt < maxRetries) {
+        const delayMs = baseDelayMs * Math.pow(2, attempt) + Math.random() * 500;
+        console.warn(`[retry] Network error on attempt ${attempt + 1}: ${(err as Error).message}, waiting ${Math.round(delayMs)}ms`);
+        await delay(delayMs);
+      }
+    }
+  }
+  throw lastError || new Error('All retries exhausted');
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // STAGES 1+2 — Firecrawl scrapes + extracts structured product data
 // ─────────────────────────────────────────────────────────────────────────────
@@ -310,7 +413,7 @@ const ANTI_SCRAPE_BRANDS = new Set([
 // Map granular category keys to parent URL keys used in CATEGORY_MAP
 const CATEGORY_TO_URL_KEY: Record<string, string> = {
   't-shirts': 'tops', shirts: 'tops', hoodies: 'tops', polos: 'tops', sweaters: 'tops',
-  jeans: 'bottoms', pants: 'bottoms', shorts: 'bottoms', skirts: 'bottoms', leggings: 'bottoms',
+  jeans: 'bottoms', pants: 'bottoms', shorts: 'shorts', skirts: 'bottoms', leggings: 'bottoms',
   jackets: 'outerwear', coats: 'outerwear', blazers: 'outerwear', vests: 'outerwear',
   jumpsuits: 'dresses',
   sneakers: 'shoes', boots: 'shoes', sandals: 'shoes', loafers: 'shoes', heels: 'shoes',
@@ -319,7 +422,7 @@ const CATEGORY_TO_URL_KEY: Record<string, string> = {
   swimwear: 'tops', activewear: 'tops', loungewear: 'tops', underwear: 'tops',
 };
 
-// Normalize brand names for CATEGORY_MAP lookup (e.g., "H&M" → "hm")
+// Normalize brand names for CATEGORY_MAP lookup
 const BRAND_ALIASES: Record<string, string> = {
   'h&m': 'hm', 'h and m': 'hm', 'hennes & mauritz': 'hm',
   "levi's": "levi's", 'levis': "levi's",
@@ -327,6 +430,7 @@ const BRAND_ALIASES: Record<string, string> = {
   'ray ban': 'ray-ban',
   'north face': 'the north face',
   'stussy': 'stüssy', 'stüssy': 'stüssy',
+  'alo': 'alo yoga',
 };
 
 function normalizeBrandKey(brand: string): string {
@@ -356,8 +460,8 @@ async function scrapeProducts(
   // Try exact category key first, then parent key
   const catKey = category.toLowerCase();
   const parentKey = CATEGORY_TO_URL_KEY[catKey] || catKey;
-  const urls = brandUrls[catKey] || brandUrls[parentKey];
-  if (!urls?.length) {
+  const urlConfigs = brandUrls[catKey] || brandUrls[parentKey];
+  if (!urlConfigs?.length) {
     console.log(`[scrape] No URLs for ${brand}/${category} (tried ${catKey}→${parentKey}), using search fallback`);
     return searchProducts(brand, category, firecrawlApiKey);
   }
@@ -386,32 +490,39 @@ async function scrapeProducts(
     required: ['products'],
   };
 
-  for (const url of urls) {
+  for (const urlConfig of urlConfigs) {
     try {
-      console.log(`[scrape] Firecrawl extract+links: ${url}`);
+      console.log(`[scrape] Firecrawl extract+links: ${urlConfig.url}`);
 
-      const resp = await fetch('https://api.firecrawl.dev/v1/scrape', {
+      const scrapeBody: Record<string, unknown> = {
+        url: urlConfig.url,
+        formats: ['extract', 'rawHtml'],
+        waitFor: urlConfig.waitFor ?? 3000,
+        timeout: 45000,
+        extract: {
+          schema: jsonSchema,
+          prompt: `Extract all fashion products visible on this ${brand} category page. For each product, get the exact product name, product detail page URL (absolute), price in cents, category, and colour. Include items loaded via infinite scroll or lazy loading.`,
+        },
+      };
+
+      // Add Firecrawl actions if configured (for clicking dropdowns, load-more, scrolling)
+      if (urlConfig.actions?.length) {
+        scrapeBody.actions = urlConfig.actions;
+      }
+
+      const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/scrape', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${firecrawlApiKey}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          url,
-          formats: ['extract', 'rawHtml'],
-          waitFor: brand.toLowerCase() === 'hm' ? 1000 : 3000,
-          timeout: 30000,
-          extract: {
-            schema: jsonSchema,
-            prompt: `Extract all fashion products visible on this ${brand} category page. For each product, get the exact product name, product detail page URL (absolute), price in cents, category, and colour.`,
-          },
-        }),
+        body: JSON.stringify(scrapeBody),
       });
 
       const data = await resp.json();
 
       if (!resp.ok) {
-        console.warn(`[scrape] Firecrawl error for ${url}: ${JSON.stringify(data).slice(0, 300)}`);
+        console.warn(`[scrape] Firecrawl error for ${urlConfig.url}: ${JSON.stringify(data).slice(0, 300)}`);
         continue;
       }
 
@@ -422,7 +533,7 @@ async function scrapeProducts(
       const rawHtml = data.data?.rawHtml || data.rawHtml || '';
       const allImageUrls = extractImageUrlsFromHtml(rawHtml);
       
-      console.log(`[scrape] extracted ${products.length} products, ${allImageUrls.length} image URLs from rawHtml of ${url}`);
+      console.log(`[scrape] extracted ${products.length} products, ${allImageUrls.length} image URLs from rawHtml of ${urlConfig.url}`);
 
       // Try ID-based matching first, then fall back to positional assignment
       const usedImages = new Set<string>();
@@ -460,10 +571,10 @@ async function scrapeProducts(
         }
       }
     } catch (err) {
-      console.warn(`[scrape] failed for ${url}:`, err);
+      console.warn(`[scrape] failed for ${urlConfig.url}:`, err);
     }
 
-    await delay(1000);
+    await delay(1500);
   }
 
   // If direct scrape returned nothing, fall back to search
@@ -476,47 +587,47 @@ async function scrapeProducts(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SEARCH FALLBACK — Uses Firecrawl search to find products on multi-brand retailers
+// SEARCH FALLBACK — Enhanced with shopping-intent queries + expanded sites
 // ─────────────────────────────────────────────────────────────────────────────
 
 const CATEGORY_TERMS: Record<string, string> = {
-  tops: 't-shirt shirt top hoodie sweatshirt polo tank crop-top blouse henley',
-  't-shirts': 't-shirt tee graphic-tee',
-  shirts: 'shirt button-down oxford flannel dress-shirt',
-  hoodies: 'hoodie sweatshirt pullover crewneck fleece',
-  polos: 'polo shirt pique',
-  sweaters: 'sweater knit cardigan pullover turtleneck',
-  bottoms: 'pants jeans trousers shorts joggers',
-  jeans: 'jeans denim skinny straight slim bootcut',
-  pants: 'pants trousers chinos cargo dress-pants',
-  shorts: 'shorts swim-trunks board-shorts cargo-shorts',
-  skirts: 'skirt mini-skirt midi-skirt maxi-skirt',
-  leggings: 'leggings tights yoga-pants',
-  outerwear: 'jacket coat blazer puffer vest windbreaker parka',
-  jackets: 'jacket bomber denim-jacket trucker varsity',
-  coats: 'coat trench overcoat peacoat wool-coat',
-  blazers: 'blazer sport-coat suit-jacket',
-  vests: 'vest gilet puffer-vest down-vest',
-  dresses: 'dress gown jumpsuit romper maxi midi mini',
-  'jumpsuits': 'jumpsuit romper overalls playsuit',
-  shoes: 'shoes sneakers boots loafers sandals',
-  sneakers: 'sneakers trainers running-shoes athletic-shoes',
-  boots: 'boots ankle-boots chelsea-boots combat-boots hiking-boots',
-  sandals: 'sandals slides flip-flops mules',
-  loafers: 'loafers moccasins slip-on driving-shoes',
-  heels: 'heels pumps stilettos wedges platforms',
-  accessories: 'bag belt hat sunglasses wallet',
-  bags: 'bag handbag tote crossbody backpack clutch shoulder-bag',
-  hats: 'hat cap beanie bucket-hat snapback baseball-cap',
-  sunglasses: 'sunglasses eyewear aviator wayfarer',
-  jewelry: 'jewelry necklace bracelet ring earrings pendant chain',
-  watches: 'watch timepiece chronograph smartwatch',
-  belts: 'belt leather-belt woven-belt dress-belt',
-  scarves: 'scarf shawl wrap bandana',
-  swimwear: 'swimsuit bikini swim-trunks one-piece boardshorts rashguard',
-  activewear: 'activewear gym workout training sports-bra compression',
-  loungewear: 'loungewear pajamas robe sleepwear sweatpants',
-  underwear: 'underwear boxers briefs bra lingerie socks',
+  tops: 'buy t-shirt shirt top hoodie sweatshirt polo tank',
+  't-shirts': 'buy t-shirt tee graphic-tee shop',
+  shirts: 'buy shirt button-down oxford flannel dress-shirt shop',
+  hoodies: 'buy hoodie sweatshirt pullover crewneck fleece shop',
+  polos: 'buy polo shirt pique shop',
+  sweaters: 'buy sweater knit cardigan pullover turtleneck shop',
+  bottoms: 'buy pants jeans trousers shorts joggers shop',
+  jeans: 'buy jeans denim skinny straight slim bootcut shop',
+  pants: 'buy pants trousers chinos cargo dress-pants shop',
+  shorts: 'buy shorts swim-trunks board-shorts cargo-shorts shop',
+  skirts: 'buy skirt mini-skirt midi-skirt maxi-skirt shop',
+  leggings: 'buy leggings tights yoga-pants shop',
+  outerwear: 'buy jacket coat blazer puffer vest windbreaker parka shop',
+  jackets: 'buy jacket bomber denim-jacket trucker varsity shop',
+  coats: 'buy coat trench overcoat peacoat wool-coat shop',
+  blazers: 'buy blazer sport-coat suit-jacket shop',
+  vests: 'buy vest gilet puffer-vest down-vest shop',
+  dresses: 'buy dress gown jumpsuit romper maxi midi mini shop',
+  'jumpsuits': 'buy jumpsuit romper overalls playsuit shop',
+  shoes: 'buy shoes sneakers boots loafers sandals shop',
+  sneakers: 'buy sneakers trainers running-shoes athletic-shoes shop',
+  boots: 'buy boots ankle-boots chelsea-boots combat-boots shop',
+  sandals: 'buy sandals slides flip-flops mules shop',
+  loafers: 'buy loafers moccasins slip-on driving-shoes shop',
+  heels: 'buy heels pumps stilettos wedges platforms shop',
+  accessories: 'buy bag belt hat sunglasses wallet shop',
+  bags: 'buy bag handbag tote crossbody backpack clutch shop',
+  hats: 'buy hat cap beanie bucket-hat snapback shop',
+  sunglasses: 'buy sunglasses eyewear aviator wayfarer shop',
+  jewelry: 'buy jewelry necklace bracelet ring earrings pendant shop',
+  watches: 'buy watch timepiece chronograph shop',
+  belts: 'buy belt leather-belt woven-belt shop',
+  scarves: 'buy scarf shawl wrap bandana shop',
+  swimwear: 'buy swimsuit bikini swim-trunks one-piece shop',
+  activewear: 'buy activewear gym workout training sports-bra shop',
+  loungewear: 'buy loungewear pajamas robe sleepwear shop',
+  underwear: 'buy underwear boxers briefs bra lingerie shop',
 };
 
 // Luxury brands that are sold on multi-brand aggregators
@@ -530,8 +641,75 @@ const LUXURY_SEARCH_BRANDS = new Set([
   'cartier', 'tiffany & co', 'pandora', 'swarovski',
 ]);
 
-const LUXURY_SITES = 'site:ssense.com OR site:farfetch.com OR site:nordstrom.com OR site:net-a-porter.com OR site:mrporter.com OR site:saksoff5th.com OR site:bloomingdales.com';
-const GENERAL_SITES = 'site:nordstrom.com OR site:macys.com OR site:zappos.com OR site:amazon.com OR site:target.com OR site:kohls.com';
+// Expanded site lists for better coverage
+const LUXURY_SITES = 'site:ssense.com OR site:farfetch.com OR site:nordstrom.com OR site:net-a-porter.com OR site:mrporter.com OR site:saksoff5th.com OR site:bloomingdales.com OR site:mytheresa.com OR site:matchesfashion.com OR site:endclothing.com';
+const GENERAL_SITES = 'site:nordstrom.com OR site:macys.com OR site:zappos.com OR site:amazon.com OR site:target.com OR site:kohls.com OR site:revolve.com OR site:asos.com';
+const ATHLETIC_SITES = 'site:nordstrom.com OR site:zappos.com OR site:dickssportinggoods.com OR site:amazon.com OR site:footlocker.com OR site:finishline.com';
+const WOMENS_SITES = 'site:nordstrom.com OR site:revolve.com OR site:asos.com OR site:shopbop.com OR site:net-a-porter.com OR site:freepeople.com OR site:anthropologie.com';
+
+// Athletic brands need sport-specific search sites
+const ATHLETIC_BRANDS = new Set([
+  'nike', 'adidas', 'puma', 'under armour', 'reebok', 'asics',
+  'on running', 'hoka', 'saucony', 'new balance', 'jordan',
+  'lululemon', 'gymshark', 'alo yoga', 'fabletics', 'vuori',
+  'girlfriend collective', 'outdoor voices',
+]);
+
+const WOMENS_BRANDS = new Set([
+  'reformation', 'free people', 'anthropologie', 'aritzia',
+  'skims', 'fabletics', 'girlfriend collective', 'eloquii',
+  'eileen fisher', 'savage x fenty', "victoria's secret",
+]);
+
+// Expanded brand-specific site overrides for all major anti-scrape brands
+const BRAND_SITE_OVERRIDES: Record<string, string> = {
+  'hm': 'site:hm.com OR site:nordstrom.com OR site:macys.com',
+  'h&m': 'site:hm.com OR site:nordstrom.com OR site:macys.com',
+  'zara': 'site:zara.com OR site:nordstrom.com',
+  'uniqlo': 'site:uniqlo.com OR site:nordstrom.com',
+  'shein': 'site:shein.com OR site:us.shein.com',
+  'nike': 'site:nike.com OR site:nordstrom.com OR site:zappos.com OR site:footlocker.com',
+  'asos': 'site:asos.com OR site:us.asos.com',
+  'gap': 'site:gap.com OR site:nordstrom.com',
+  'banana republic': 'site:bananarepublic.com OR site:nordstrom.com',
+  'old navy': 'site:oldnavy.com OR site:amazon.com',
+  'j.crew': 'site:jcrew.com OR site:nordstrom.com',
+  'ralph lauren': 'site:ralphlauren.com OR site:nordstrom.com OR site:macys.com',
+  'tommy hilfiger': 'site:tommy.com OR site:nordstrom.com OR site:macys.com',
+  'calvin klein': 'site:calvinklein.us OR site:nordstrom.com OR site:macys.com',
+  'hugo boss': 'site:hugoboss.com OR site:nordstrom.com',
+  'mango': 'site:shop.mango.com OR site:nordstrom.com',
+  'cos': 'site:cos.com OR site:nordstrom.com',
+  'urban outfitters': 'site:urbanoutfitters.com',
+  'forever 21': 'site:forever21.com OR site:amazon.com',
+  'fashion nova': 'site:fashionnova.com',
+  'prettylittlething': 'site:prettylittlething.us',
+  'boohoo': 'site:us.boohoo.com',
+  'abercrombie': 'site:abercrombie.com OR site:nordstrom.com',
+  'american eagle': 'site:ae.com OR site:nordstrom.com',
+  'hollister': 'site:hollisterco.com',
+  'nordstrom': 'site:nordstrom.com',
+  'anthropologie': 'site:anthropologie.com',
+  'aritzia': 'site:aritzia.com OR site:nordstrom.com',
+  'revolve': 'site:revolve.com',
+  'everlane': 'site:everlane.com OR site:nordstrom.com',
+  'under armour': 'site:underarmour.com OR site:nordstrom.com OR site:zappos.com',
+  'lululemon': 'site:lululemon.com OR site:nordstrom.com',
+  'gymshark': 'site:gymshark.com OR site:nordstrom.com',
+  'alo yoga': 'site:aloyoga.com OR site:nordstrom.com',
+  'fabletics': 'site:fabletics.com OR site:nordstrom.com OR site:amazon.com',
+  'vuori': 'site:vuori.com OR site:nordstrom.com',
+  'skims': 'site:skims.com OR site:nordstrom.com',
+  'allsaints': 'site:allsaints.com OR site:nordstrom.com',
+  'columbia': 'site:columbia.com OR site:nordstrom.com OR site:zappos.com',
+  "arc'teryx": 'site:arcteryx.com OR site:nordstrom.com OR site:moosejaw.com',
+  'birkenstock': 'site:birkenstock.com OR site:nordstrom.com OR site:zappos.com',
+  'crocs': 'site:crocs.com OR site:nordstrom.com OR site:zappos.com',
+  'dr. martens': 'site:drmartens.com OR site:nordstrom.com OR site:zappos.com',
+  'reformation': 'site:thereformation.com OR site:nordstrom.com OR site:revolve.com',
+  'kith': 'site:kith.com OR site:ssense.com OR site:endclothing.com',
+  'fear of god': 'site:fearofgod.com OR site:ssense.com OR site:nordstrom.com',
+};
 
 async function searchProducts(
   brand: string,
@@ -539,29 +717,23 @@ async function searchProducts(
   firecrawlApiKey: string
 ): Promise<RawProduct[]> {
   const catTerms = CATEGORY_TERMS[category.toLowerCase()] || category;
-  const isLuxury = LUXURY_SEARCH_BRANDS.has(brand.toLowerCase());
-  const sites = isLuxury ? LUXURY_SITES : GENERAL_SITES;
+  const brandLower = brand.toLowerCase();
+  const isLuxury = LUXURY_SEARCH_BRANDS.has(brandLower);
+  const isAthletic = ATHLETIC_BRANDS.has(brandLower);
+  const isWomens = WOMENS_BRANDS.has(brandLower);
   
-  // Brand-specific site overrides for better search results
-  const BRAND_SITE_OVERRIDES: Record<string, string> = {
-    'hm': 'site:hm.com OR site:nordstrom.com OR site:macys.com OR site:zappos.com',
-    'h&m': 'site:hm.com OR site:nordstrom.com OR site:macys.com OR site:zappos.com',
-    'zara': 'site:zara.com OR site:nordstrom.com',
-    'uniqlo': 'site:uniqlo.com OR site:nordstrom.com',
-    'shein': 'site:shein.com',
-    'nike': 'site:nike.com OR site:nordstrom.com OR site:zappos.com',
-    'asos': 'site:asos.com',
-  };
   const brandKey = normalizeBrandKey(brand);
-  const effectiveSites = BRAND_SITE_OVERRIDES[brandKey] || BRAND_SITE_OVERRIDES[brand.toLowerCase()] || sites;
+  const effectiveSites = BRAND_SITE_OVERRIDES[brandKey] 
+    || BRAND_SITE_OVERRIDES[brandLower] 
+    || (isLuxury ? LUXURY_SITES : isAthletic ? ATHLETIC_SITES : isWomens ? WOMENS_SITES : GENERAL_SITES);
   
-  // Use brand name as-is for search (search engines handle "H&M" fine)
+  // Use shopping-intent query format for better product results
   const searchQuery = `${brand} ${catTerms} ${effectiveSites}`;
 
   console.log(`[search-fallback] Query: "${searchQuery}"`);
 
   try {
-    const resp = await fetch('https://api.firecrawl.dev/v1/search', {
+    const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/search', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${firecrawlApiKey}`,
@@ -583,85 +755,151 @@ async function searchProducts(
 
     if (!resp.ok) {
       console.warn(`[search-fallback] Firecrawl search error: ${JSON.stringify(data).slice(0, 300)}`);
-      return [];
+      // If primary search fails, try a simplified query without site restrictions
+      return searchProductsFallback(brand, category, firecrawlApiKey);
     }
 
     const results = data.data || [];
     console.log(`[search-fallback] Got ${results.length} search results`);
 
-    const allProducts: RawProduct[] = [];
+    const allProducts = parseSearchResults(results, brand, category);
 
-    for (const result of results) {
-      if (!result.url) continue;
-
-      // Skip non-product pages
-      const url = result.url.toLowerCase();
-      if (/\/search|\/category|\/collection|\/shop\/?$/i.test(url)) continue;
-
-      // Extract product info from the search result
-      const title = result.title || '';
-      const markdown = result.markdown || '';
-
-      // Try to extract price from markdown
-      const priceMatch = markdown.match(/\$\s*([\d,]+(?:\.\d{2})?)/);
-      const priceCents = priceMatch ? Math.round(parseFloat(priceMatch[1].replace(',', '')) * 100) : null;
-
-      // Extract image URLs from markdown
-      const imgRegex = /!\[.*?\]\((https?:\/\/[^\s)]+)\)/g;
-      const imageUrls: string[] = [];
-      let imgMatch;
-      while ((imgMatch = imgRegex.exec(markdown)) !== null) {
-        const imgUrl = imgMatch[1];
-        if (!/logo|icon|sprite|favicon|banner|pixel|tracking/i.test(imgUrl)) {
-          imageUrls.push(imgUrl);
+    // If we got very few results, try the fallback query too
+    if (allProducts.length < 3) {
+      console.log(`[search-fallback] Only ${allProducts.length} results, trying broader query`);
+      const fallbackProducts = await searchProductsFallback(brand, category, firecrawlApiKey);
+      // Merge without duplication
+      const existingUrls = new Set(allProducts.map(p => p.product_url.toLowerCase()));
+      for (const p of fallbackProducts) {
+        if (!existingUrls.has(p.product_url.toLowerCase())) {
+          allProducts.push(p);
         }
       }
-
-      // Also check result metadata for og:image
-      if (result.metadata?.ogImage) {
-        imageUrls.unshift(result.metadata.ogImage);
-      }
-
-      // Clean the product name from the title
-      let productName = title
-        .replace(/\s*[-|]\s*(SSENSE|Farfetch|Nordstrom|NET-A-PORTER|MR PORTER|Macy's|Macys|Zappos|Amazon|Target|Kohl's|Saks).*$/i, '')
-        .replace(/\s*Buy\s.*$/i, '')
-        .trim();
-
-      if (!productName || productName.length < 3) continue;
-
-      // For luxury brands, require brand name in the product listing
-      // For mass-market retailers (Nordstrom, Macys, etc.), brand may be the retailer itself so skip this check
-      const brandLower = brand.toLowerCase();
-      const brandSearchable = brandLower.replace(/&/g, '').replace(/[^a-z0-9]/g, '');
-      const isRetailerBrand = ['nordstrom', 'macys', "macy's", 'bloomingdales', "bloomingdale's", 'target', 'kohls', "kohl's", 'jcpenney', 'walmart', 'saks', 'net-a-porter'].includes(brandLower);
-      const titleLower = title.toLowerCase();
-      const nameLower = productName.toLowerCase();
-      const brandInResult = nameLower.includes(brandLower) || titleLower.includes(brandLower) 
-        || nameLower.replace(/[^a-z0-9]/g, '').includes(brandSearchable) 
-        || titleLower.replace(/[^a-z0-9]/g, '').includes(brandSearchable);
-      if (!isRetailerBrand && !brandInResult) {
-        continue;
-      }
-
-      allProducts.push({
-        name: productName,
-        brand,
-        product_url: result.url,
-        price_cents: priceCents,
-        currency: 'USD',
-        image_urls: imageUrls.slice(0, 8),
-        category_raw: category,
-        colour: null,
-      });
     }
 
     console.log(`[search-fallback] Extracted ${allProducts.length} products for ${brand}/${category}`);
     return allProducts;
   } catch (err) {
     console.warn(`[search-fallback] Error:`, err);
+    // Try fallback on error
+    return searchProductsFallback(brand, category, firecrawlApiKey);
+  }
+}
+
+// Broader fallback search without site restrictions — catches products on any retailer
+async function searchProductsFallback(
+  brand: string,
+  category: string,
+  firecrawlApiKey: string
+): Promise<RawProduct[]> {
+  const catTerms = CATEGORY_TERMS[category.toLowerCase()] || category;
+  // Simple shopping-intent query without site restrictions
+  const searchQuery = `"${brand}" ${catTerms} buy online`;
+
+  console.log(`[search-fallback-broad] Query: "${searchQuery}"`);
+
+  try {
+    const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/search', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${firecrawlApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: searchQuery,
+        limit: 20,
+        lang: 'en',
+        country: 'us',
+        scrapeOptions: {
+          formats: ['markdown', 'links'],
+          onlyMainContent: true,
+        },
+      }),
+    });
+
+    const data = await resp.json();
+    if (!resp.ok) {
+      console.warn(`[search-fallback-broad] Error: ${JSON.stringify(data).slice(0, 200)}`);
+      return [];
+    }
+
+    const results = data.data || [];
+    return parseSearchResults(results, brand, category);
+  } catch (err) {
+    console.warn(`[search-fallback-broad] Error:`, err);
     return [];
   }
+}
+
+// Shared parser for search results
+function parseSearchResults(results: any[], brand: string, category: string): RawProduct[] {
+  const allProducts: RawProduct[] = [];
+
+  for (const result of results) {
+    if (!result.url) continue;
+
+    // Skip non-product pages
+    const url = result.url.toLowerCase();
+    if (/\/search|\/category|\/collection|\/shop\/?$/i.test(url)) continue;
+
+    // Extract product info from the search result
+    const title = result.title || '';
+    const markdown = result.markdown || '';
+
+    // Try to extract price from markdown
+    const priceMatch = markdown.match(/\$\s*([\d,]+(?:\.\d{2})?)/);
+    const priceCents = priceMatch ? Math.round(parseFloat(priceMatch[1].replace(',', '')) * 100) : null;
+
+    // Extract image URLs from markdown
+    const imgRegex = /!\[.*?\]\((https?:\/\/[^\s)]+)\)/g;
+    const imageUrls: string[] = [];
+    let imgMatch;
+    while ((imgMatch = imgRegex.exec(markdown)) !== null) {
+      const imgUrl = imgMatch[1];
+      if (!/logo|icon|sprite|favicon|banner|pixel|tracking/i.test(imgUrl)) {
+        imageUrls.push(imgUrl);
+      }
+    }
+
+    // Also check result metadata for og:image
+    if (result.metadata?.ogImage) {
+      imageUrls.unshift(result.metadata.ogImage);
+    }
+
+    // Clean the product name from the title
+    let productName = title
+      .replace(/\s*[-|]\s*(SSENSE|Farfetch|Nordstrom|NET-A-PORTER|MR PORTER|Macy's|Macys|Zappos|Amazon|Target|Kohl's|Saks|Revolve|ASOS|Shopbop|Mytheresa|END\.|Foot Locker|Dick's|REI).*$/i, '')
+      .replace(/\s*Buy\s.*$/i, '')
+      .trim();
+
+    if (!productName || productName.length < 3) continue;
+
+    // For luxury brands, require brand name in the product listing
+    const brandLower = brand.toLowerCase();
+    const brandSearchable = brandLower.replace(/&/g, '').replace(/[^a-z0-9]/g, '');
+    const isRetailerBrand = ['nordstrom', 'macys', "macy's", 'bloomingdales', "bloomingdale's", 'target', 'kohls', "kohl's", 'jcpenney', 'walmart', 'saks', 'net-a-porter', 'revolve', 'asos'].includes(brandLower);
+    const titleLower = title.toLowerCase();
+    const nameLower = productName.toLowerCase();
+    const brandInResult = nameLower.includes(brandLower) || titleLower.includes(brandLower) 
+      || nameLower.replace(/[^a-z0-9]/g, '').includes(brandSearchable) 
+      || titleLower.replace(/[^a-z0-9]/g, '').includes(brandSearchable);
+    if (!isRetailerBrand && !brandInResult) {
+      continue;
+    }
+
+    allProducts.push({
+      name: productName,
+      brand,
+      product_url: result.url,
+      price_cents: priceCents,
+      currency: 'USD',
+      image_urls: imageUrls.slice(0, 8),
+      category_raw: category,
+      colour: null,
+    });
+  }
+
+  return allProducts;
 }
 
 // Extract all image URLs from raw HTML
@@ -681,12 +919,39 @@ function extractImageUrlsFromHtml(rawHtml: string): string[] {
     if (imgUrl.startsWith('//')) imgUrl = 'https:' + imgUrl;
     if (imgUrl.startsWith('http')) allImageUrls.push(imgUrl);
   }
+  // Also extract from JSON-LD structured data (many modern sites embed product images here)
+  const jsonLdRegex = /<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  while ((match = jsonLdRegex.exec(rawHtml)) !== null) {
+    try {
+      const jsonData = JSON.parse(match[1]);
+      extractImagesFromJsonLd(jsonData, allImageUrls);
+    } catch { /* ignore invalid JSON-LD */ }
+  }
   // Filter out tiny icons, sprites, logos
   const filtered = [...new Set(allImageUrls)].filter(url => {
     const lower = url.toLowerCase();
     return !/logo|icon|sprite|favicon|banner|promo|placeholder|pixel|tracking|analytics|1x1/i.test(lower);
   });
   return filtered;
+}
+
+// Extract images from JSON-LD structured data
+function extractImagesFromJsonLd(data: any, images: string[]): void {
+  if (!data) return;
+  if (Array.isArray(data)) {
+    data.forEach(item => extractImagesFromJsonLd(item, images));
+    return;
+  }
+  if (typeof data === 'object') {
+    if (data.image) {
+      const imgs = Array.isArray(data.image) ? data.image : [data.image];
+      for (const img of imgs) {
+        const url = typeof img === 'string' ? img : img?.url;
+        if (url && url.startsWith('http')) images.push(url);
+      }
+    }
+    if (data['@graph']) extractImagesFromJsonLd(data['@graph'], images);
+  }
 }
 
 // Match page image URLs to a specific product using URL slug patterns
@@ -729,31 +994,36 @@ function extractProductIdentifiers(productUrl: string, brand: string): string[] 
     const path = u.pathname;
 
     if (b === 'zara') {
-      // Zara: /us/en/product-name-pXXXXXXXX.html → pXXXXXXXX
       const m = path.match(/p(\d{7,})/);
       if (m) ids.push(`p${m[1]}`, m[1]);
-    } else if (b === 'hm') {
-      // H&M: /productpage.XXXXXXX.html or /en_us/productpage.XXXXXXX.html → XXXXXXX
+    } else if (b === 'hm' || b === 'h&m') {
       const m = path.match(/(\d{7,})/);
       if (m) ids.push(m[1]);
-      // Also try shorter article codes (6 digits)
       const m2 = path.match(/(\d{6,})/);
       if (m2 && !ids.includes(m2[1])) ids.push(m2[1]);
     } else if (b === 'uniqlo') {
-      // Uniqlo: /products/EXXXXXXX → EXXXXXXX or numeric ID
       const m = path.match(/(E?\d{6,})/i);
       if (m) ids.push(m[1].toLowerCase());
     } else if (b === 'shein') {
-      // SHEIN: /product-pXXXXXXX-cat-XXXX.html
       const m = path.match(/p(\d{5,})/);
       if (m) ids.push(`p${m[1]}`, m[1]);
     } else if (b === 'nike') {
-      // Nike: /t/product-name/XXXXXX-XXX
       const m = path.match(/([A-Z0-9]{6,}-[A-Z0-9]{3})/i);
       if (m) ids.push(m[1].toLowerCase());
     } else if (b === 'asos') {
-      // ASOS: /product/XXXXXXX
       const m = path.match(/\/(\d{6,})/);
+      if (m) ids.push(m[1]);
+    } else if (b === 'nordstrom') {
+      // Nordstrom: /s/product-name/XXXXXXX
+      const m = path.match(/\/s\/[^\/]+\/(\d{5,})/);
+      if (m) ids.push(m[1]);
+    } else if (b === 'ssense') {
+      // SSENSE: /product/brand/name-XXXXXXXX
+      const m = path.match(/(\d{6,})/);
+      if (m) ids.push(m[1]);
+    } else if (b === 'farfetch') {
+      // Farfetch: /shopping/.../itemXXXXXXXX.aspx
+      const m = path.match(/item(\d{6,})/);
       if (m) ids.push(m[1]);
     }
 
@@ -794,17 +1064,14 @@ function selectBestImage(product: RawProduct): ClassifiedProduct | null {
       score += 10;
       presentation = 'ghost_mannequin';
     }
-    // Zara-specific: -p00 or first image
     if (/static\.zara\.net/i.test(lower) && /-e\d+/i.test(lower)) {
       score += 5;
       presentation = 'ghost_mannequin';
     }
-    // H&M: main.jpg
     if (/lp2\.hm\.com/i.test(lower) && /main/i.test(lower)) {
       score += 8;
       presentation = 'ghost_mannequin';
     }
-    // Uniqlo: goods image, not sub
     if (/image\.uniqlo/i.test(lower) && !/-sub/i.test(lower)) {
       score += 6;
       presentation = 'ghost_mannequin';
@@ -822,14 +1089,13 @@ function selectBestImage(product: RawProduct): ClassifiedProduct | null {
       presentation = 'model_shot';
     }
 
-    // Prefer larger images (query params like w=, width=)
+    // Prefer larger images
     const widthMatch = lower.match(/[?&]w(?:idth)?=(\d+)/);
     if (widthMatch && parseInt(widthMatch[1]) >= 500) score += 2;
 
-    // Prefer first image in sequence (_1, _01, -01)
+    // Prefer first image in sequence
     if (/[_-]0?1\b/i.test(lower)) score += 4;
 
-    // Base score for being a valid image
     score += 1;
 
     if (score > bestScore) {
@@ -840,7 +1106,6 @@ function selectBestImage(product: RawProduct): ClassifiedProduct | null {
   }
 
   if (!bestUrl) {
-    // Just pick the first image as fallback
     bestUrl = product.image_urls[0];
     bestPresentation = 'model_shot';
     bestScore = 1;
@@ -948,7 +1213,6 @@ function imagePriority(p: string | null): number {
 function normaliseCategory(raw: string | null): string {
   if (!raw) return 'other';
   const r = raw.toLowerCase();
-  // Specific sub-categories first for better accuracy
   if (/\bt-?shirt|tee\b/.test(r)) return 't-shirts';
   if (/\bhoodie|sweatshirt|fleece|crewneck\b/.test(r)) return 'hoodies';
   if (/\bsweater|knit|cardigan|turtleneck|pullover\b/.test(r)) return 'sweaters';
@@ -1058,7 +1322,6 @@ Deno.serve(async (req) => {
 
     // ── DEDUPLICATION ────────────────────────────────────────────────
     const withinRun = deduplicateProducts(classified);
-    // Filter junk image URLs before DB insert
     const JUNK_URL_PATTERNS = [
       "fls-na.amazon.com", "doubleclick.net", "/risk/challenge",
       "/page-designer/", "/uedata", "/captcha", "/batch/1/",
@@ -1105,7 +1368,7 @@ Deno.serve(async (req) => {
       }
       results.inserted = rows.length;
 
-      // Fire-and-forget: trigger QC pipeline for newly inserted products
+      // Fire-and-forget: trigger QC pipeline
       const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
       const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
       const qcHeaders = {
@@ -1113,14 +1376,12 @@ Deno.serve(async (req) => {
         'Authorization': `Bearer ${anonKey}`,
       };
 
-      // 1) AI categorization
       fetch(`${supabaseUrl}/functions/v1/categorize-products`, {
         method: 'POST',
         headers: qcHeaders,
         body: JSON.stringify({ batch_size: 15, only_unchecked: true }),
       }).catch(e => console.warn(`[run:${runId}] Categorize trigger failed:`, e));
 
-      // 2) Gender backfill
       fetch(`${supabaseUrl}/functions/v1/backfill-gender`, {
         method: 'POST',
         headers: qcHeaders,
