@@ -16,20 +16,27 @@ const BrandFilter = ({ gender, selectedBrand, onBrandChange }: BrandFilterProps)
   const [loading, setLoading] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Fetch distinct brands from product_catalog filtered by gender
+  // Fetch distinct brands using paginated approach to avoid 1000-row limit
   const fetchBrands = useCallback(async () => {
     setLoading(true);
     try {
-      let query = supabase
-        .from('product_catalog')
-        .select('brand, gender')
-        .eq('is_active', true);
+      const brandGenderMap = new Map<string, Set<string>>();
+      const PAGE_SIZE = 1000;
+      let offset = 0;
+      let hasMore = true;
 
-      const { data } = await query;
+      while (hasMore) {
+        const { data } = await supabase
+          .from('product_catalog')
+          .select('brand, gender')
+          .eq('is_active', true)
+          .range(offset, offset + PAGE_SIZE - 1);
 
-      if (data) {
-        // Filter brands by gender relevance
-        const brandGenderMap = new Map<string, Set<string>>();
+        if (!data || data.length === 0) {
+          hasMore = false;
+          break;
+        }
+
         for (const row of data) {
           if (!brandGenderMap.has(row.brand)) {
             brandGenderMap.set(row.brand, new Set());
@@ -37,21 +44,22 @@ const BrandFilter = ({ gender, selectedBrand, onBrandChange }: BrandFilterProps)
           brandGenderMap.get(row.brand)!.add(row.gender || 'unisex');
         }
 
-        const filtered: string[] = [];
-        for (const [brand, genders] of brandGenderMap) {
-          if (gender === 'mens') {
-            // Exclude brands that ONLY have womens products
-            if (genders.size === 1 && genders.has('womens')) continue;
-          } else if (gender === 'womens') {
-            // Exclude brands that ONLY have mens products
-            if (genders.size === 1 && genders.has('mens')) continue;
-          }
-          filtered.push(brand);
-        }
-
-        filtered.sort((a, b) => a.localeCompare(b));
-        setAllBrands(filtered);
+        offset += PAGE_SIZE;
+        if (data.length < PAGE_SIZE) hasMore = false;
       }
+
+      const filtered: string[] = [];
+      for (const [brand, genders] of brandGenderMap) {
+        if (gender === 'mens') {
+          if (genders.size === 1 && genders.has('womens')) continue;
+        } else if (gender === 'womens') {
+          if (genders.size === 1 && genders.has('mens')) continue;
+        }
+        filtered.push(brand);
+      }
+
+      filtered.sort((a, b) => a.localeCompare(b));
+      setAllBrands(filtered);
     } finally {
       setLoading(false);
     }
