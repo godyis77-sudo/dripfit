@@ -626,7 +626,6 @@ const Community = () => {
             {([
               { key: 'hot' as TrendingSort, label: '🔥 Hot' },
               { key: 'love' as TrendingSort, label: '👍 Top Buy' },
-              { key: 'buy' as TrendingSort, label: '🛍️ Top Pass' },
               { key: 'newest' as TrendingSort, label: '🕐 Newest' },
               { key: 'user' as TrendingSort, label: '👤 By User' },
             ]).map(s => (
@@ -677,7 +676,6 @@ const Community = () => {
               { key: 'newest' as TrendingSort, label: '🕐 Newest' },
               { key: 'hot' as TrendingSort, label: '🔥 Hot' },
               { key: 'love' as TrendingSort, label: '👍 Top Buy' },
-              { key: 'buy' as TrendingSort, label: '🛍️ Top Pass' },
               { key: 'user' as TrendingSort, label: '👤 By User' },
             ]).map(s => (
               <button
