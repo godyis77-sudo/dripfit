@@ -1,14 +1,14 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, SlidersHorizontal, X, Sparkles, ExternalLink, Search } from 'lucide-react';
+import { ArrowLeft, SlidersHorizontal, X, Sparkles, ExternalLink } from 'lucide-react';
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
 import { AnimatePresence } from 'framer-motion';
-import { Input } from '@/components/ui/input';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useAuth } from '@/hooks/useAuth';
+import BrandFilter from '@/components/tryon/BrandFilter';
 
 const CATEGORY_LABELS: Record<string, string> = {
   tops: 'Tops',
@@ -55,7 +55,7 @@ const Browse = () => {
   const effectiveGender = genderFilter === 'all' ? undefined : genderFilter;
 
   const { products, loading } = useProductCatalog(category, undefined, undefined, effectiveGender);
-  const [search, setSearch] = useState('');
+  // search state removed — brand filter handled by BrandFilter component
   const [sort, setSort] = useState<SortKey>('default');
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -74,13 +74,7 @@ const Browse = () => {
   const displayed = useMemo(() => {
     let result = [...products];
 
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      result = result.filter(p =>
-        p.name.toLowerCase().includes(q) ||
-        p.brand.toLowerCase().includes(q)
-      );
-    }
+    // Brand filtering is handled via brandFilter state below
 
     if (brandFilter) {
       result = result.filter(p => p.brand === brandFilter);
@@ -99,7 +93,7 @@ const Browse = () => {
     }
 
     return result;
-  }, [products, search, sort, brandFilter]);
+  }, [products, sort, brandFilter]);
 
   const activeFilterCount = (brandFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0);
 
@@ -133,25 +127,13 @@ const Browse = () => {
           </button>
         </div>
 
-        {/* Search bar */}
-        <div className="px-4 pb-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder={`Search ${title.toLowerCase()}...`}
-              className="pl-9 h-9 text-[12px] bg-card border-border rounded-xl"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2"
-              >
-                <X className="h-3.5 w-3.5 text-muted-foreground" />
-              </button>
-            )}
-          </div>
+        {/* Brand search filter */}
+        <div className="px-4 pb-2">
+          <BrandFilter
+            gender={genderFilter === 'all' ? null : genderFilter}
+            selectedBrand={brandFilter}
+            onBrandChange={setBrandFilter}
+          />
         </div>
 
         {/* Gender toggle */}
@@ -283,9 +265,9 @@ const Browse = () => {
         ) : displayed.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground text-sm">No items found</p>
-            {(search || brandFilter) && (
+            {brandFilter && (
               <button
-                onClick={() => { setSearch(''); setBrandFilter(null); }}
+                onClick={() => { setBrandFilter(null); }}
                 className="text-primary text-[11px] font-semibold mt-2"
               >
                 Clear filters
