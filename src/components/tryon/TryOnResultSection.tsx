@@ -71,6 +71,7 @@ const TryOnResultSection = ({
   const [accessoryPhoto, setAccessoryPhoto] = useState<string | null>(null);
   const [accessoryCategory, setAccessoryCategory] = useState<string | null>(null);
   const [showAllCategories, setShowAllCategories] = useState(false);
+  const [showShopPicker, setShowShopPicker] = useState(false);
   const accessoryPhotoRef = useRef<HTMLInputElement>(null);
   const accessoryCameraRef = useRef<HTMLInputElement>(null);
 
@@ -193,21 +194,43 @@ const TryOnResultSection = ({
             <RotateCcw className="mr-1 h-3 w-3" /> Try Another
           </Button>
           <Button variant="outline" className="flex-1 h-9 rounded-xl text-[11px]" onClick={() => {
-            const totalItems = lookItems.length || ((productLink || selectedQuickPick?.product_url) ? 1 : 0);
+            const totalItems = displayItems.length;
             trackEvent('shop_clickout', { source: 'tryon', hasLink: !!productLink, itemCount: totalItems });
-            const url = productLink || selectedQuickPick?.product_url || lookItems[0]?.url;
-            if (url) window.open(url, '_blank', 'noopener');
-            else window.open('https://www.google.com/search?tbm=shop&q=outfit', '_blank', 'noopener');
+            if (totalItems > 1) {
+              setShowShopPicker(true);
+            } else if (totalItems === 1 && displayItems[0].url) {
+              window.open(displayItems[0].url, '_blank', 'noopener');
+            } else {
+              window.open('https://www.google.com/search?tbm=shop&q=outfit', '_blank', 'noopener');
+            }
           }}>
             <ShoppingBag className="mr-1 h-3 w-3" />
-            {(() => {
-              const totalItems = lookItems.length || ((productLink || selectedQuickPick?.product_url) ? 1 : 0);
-              return totalItems > 0 ? `Shop All Items (${totalItems})` : 'Find Similar Items';
-            })()}
+            {displayItems.length > 0 ? `Shop All Items (${displayItems.length})` : 'Find Similar Items'}
           </Button>
         </div>
 
-        {/* Add Accessory */}
+        {/* Shop item picker */}
+        <AnimatePresence>
+          {showShopPicker && displayItems.length > 1 && (
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden mb-3">
+              <div className="bg-card border border-border rounded-xl p-3 space-y-1.5">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Choose item to shop</p>
+                {displayItems.map((item, i) => (
+                  <button key={i} onClick={() => { if (item.url) window.open(item.url, '_blank', 'noopener'); setShowShopPicker(false); }} className="w-full flex items-center gap-3 p-2 rounded-lg border border-border hover:border-primary/40 active:scale-[0.98] transition-all text-left">
+                    {item.image_url && <img src={item.image_url} alt="" className="w-10 h-10 rounded-md object-cover border border-border shrink-0" />}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{item.brand}</p>
+                      <p className="text-[11px] font-bold text-foreground truncate">{item.name}</p>
+                      {item.price_cents && <p className="text-[11px] font-bold text-primary">${(item.price_cents / 100).toFixed(0)}</p>}
+                    </div>
+                    <ShoppingBag className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                  </button>
+                ))}
+                <button onClick={() => setShowShopPicker(false)} className="w-full text-[10px] text-muted-foreground text-center py-1.5">Cancel</button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         <div className="mb-3">
           <button onClick={() => setShowAccessorySection(!showAccessorySection)} className="w-full flex items-center justify-between bg-card border border-border rounded-xl px-3 py-2.5 active:scale-[0.98] transition-transform">
             <span className="text-[12px] font-bold text-foreground flex items-center gap-1.5">
@@ -263,7 +286,7 @@ const TryOnResultSection = ({
                           {ALL_PRODUCT_CATEGORIES.map(cat => (
                             <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={true} maxItems={1000} seed={7777} showViewAll={true} gender={userGender || undefined}
                               onSelectProduct={async (product) => {
-                                if (product.product_url) onSetLookItems(prev => [...prev, { brand: product.brand, name: product.name, url: product.product_url!, price_cents: product.price_cents }]);
+                                if (product.product_url) onSetLookItems(prev => [...prev, { brand: product.brand, name: product.name, url: product.product_url!, price_cents: product.price_cents, image_url: product.image_url }]);
                                 trackEvent('catalog_product_clicked', { brand: product.brand, category: cat.key });
                                 try { setAccessoryPhoto(await imageUrlToBase64(product.image_url)); } catch { setAccessoryPhoto(product.image_url); }
                               }}
@@ -275,7 +298,7 @@ const TryOnResultSection = ({
                         <div className="mb-2">
                           <CategoryProductGrid category={accessoryCategory} title={`Shop ${accessoryCategory}`} collapsed={false} maxItems={1000} seed={9999} gender={userGender || undefined}
                             onSelectProduct={async (product) => {
-                              if (product.product_url) onSetLookItems(prev => [...prev, { brand: product.brand, name: product.name, url: product.product_url!, price_cents: product.price_cents }]);
+                              if (product.product_url) onSetLookItems(prev => [...prev, { brand: product.brand, name: product.name, url: product.product_url!, price_cents: product.price_cents, image_url: product.image_url }]);
                               trackEvent('catalog_product_clicked', { brand: product.brand, category: accessoryCategory });
                               try { setAccessoryPhoto(await imageUrlToBase64(product.image_url)); } catch { setAccessoryPhoto(product.image_url); }
                             }}
@@ -285,8 +308,8 @@ const TryOnResultSection = ({
                     </>
                   )}
 
-                  <Button className="w-full h-10 rounded-lg text-[12px] font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30" onClick={() => onAddAccessory(accessoryPhoto!, accessoryCategory)} disabled={!accessoryPhoto || addingAccessory}>
-                    {addingAccessory ? <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> Adding {accessoryCategory || 'accessory'}…</> : <><Sparkles className="mr-1.5 h-3.5 w-3.5" /> Add {accessoryCategory || 'Accessory'} to Look</>}
+                  <Button className="w-full h-10 rounded-lg text-[12px] font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30" onClick={() => { onAddAccessory(accessoryPhoto!, accessoryCategory); setAccessoryPhoto(null); setAccessoryCategory(null); }} disabled={!accessoryPhoto || addingAccessory}>
+                    {addingAccessory ? <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> Adding {accessoryCategory || 'accessory'}…</> : <><Sparkles className="mr-1.5 h-3.5 w-3.5" /> {layerHistory.length > 0 ? 'Add Another Accessory to Look' : `Add ${accessoryCategory || 'Accessory'} to Look`}</>}
                   </Button>
                 </div>
               </motion.div>
