@@ -1058,7 +1058,21 @@ Deno.serve(async (req) => {
 
     // ── DEDUPLICATION ────────────────────────────────────────────────
     const withinRun = deduplicateProducts(classified);
-    const newProducts = await filterExistingProducts(withinRun, supabase);
+    // Filter junk image URLs before DB insert
+    const JUNK_URL_PATTERNS = [
+      "fls-na.amazon.com", "doubleclick.net", "/risk/challenge",
+      "/page-designer/", "/uedata", "/captcha", "/batch/1/",
+      "/pixel", "/tracking", "static.zara.net", "googleads.",
+      "googlesyndication.", "facebook.com/tr", "bat.bing.com",
+    ];
+    const cleanProducts = withinRun.filter(p => {
+      const lower = p.image_url.toLowerCase();
+      return !JUNK_URL_PATTERNS.some(pat => lower.includes(pat));
+    });
+    if (cleanProducts.length < withinRun.length) {
+      console.log(`[run:${runId}] Filtered ${withinRun.length - cleanProducts.length} junk image URLs`);
+    }
+    const newProducts = await filterExistingProducts(cleanProducts, supabase);
     results.deduped = newProducts.length;
 
     // ── DB INSERT ────────────────────────────────────────────────────
