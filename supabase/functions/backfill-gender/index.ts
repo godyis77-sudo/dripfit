@@ -94,6 +94,19 @@ const MENS_KEYWORDS = [
   " grooming ", " shaving ",
 ];
 
+// URL path segments that indicate gender
+const URL_WOMENS_PATTERNS = [
+  "/women/", "/womens/", "/woman/", "/women-", "/womens-",
+  "/woman-", "women+clothing", "women+apparel", "women-clothing",
+  "women-apparel", "/ladies/", "/ladies-", "/female/",
+  "shopping/women", "/womenswear/", "cat/women",
+];
+const URL_MENS_PATTERNS = [
+  "/men/", "/mens/", "/man/", "/men-", "/mens-", "/man-",
+  "men+clothing", "men+apparel", "men-clothing", "men-apparel",
+  "/male/", "shopping/men", "/menswear/", "cat/men",
+];
+
 // Keywords that indicate kids/junior products — should be deactivated entirely
 const KIDS_KEYWORDS = [
   " junior ", " juniors ", " kids ", " kid s ", " children ", " child ",
@@ -121,7 +134,17 @@ function isKidsProduct(text: string): boolean {
   return KIDS_KEYWORDS.some(kw => text.includes(kw));
 }
 
-function classifyGender(name: string, brand: string, retailer: string, category: string): GenderLabel | "kids" {
+function detectGenderFromUrl(productUrl: string | null): "mens" | "womens" | null {
+  if (!productUrl) return null;
+  const lower = productUrl.toLowerCase();
+  const womensHits = URL_WOMENS_PATTERNS.filter(p => lower.includes(p)).length;
+  const mensHits = URL_MENS_PATTERNS.filter(p => lower.includes(p)).length;
+  if (womensHits > 0 && mensHits === 0) return "womens";
+  if (mensHits > 0 && womensHits === 0) return "mens";
+  return null;
+}
+
+function classifyGender(name: string, brand: string, retailer: string, category: string, productUrl?: string | null): GenderLabel | "kids" {
   const text = normalizeText(`${name} ${brand} ${retailer} ${category}`);
 
   // Kids check first
@@ -139,6 +162,18 @@ function classifyGender(name: string, brand: string, retailer: string, category:
   const categoryKey = normalizeText(category).trim();
   if (WOMENS_CATEGORIES.has(categoryKey)) return "womens";
   if (MENS_CATEGORIES.has(categoryKey)) return "mens";
+
+  // URL-based detection — retailer breadcrumbs are very reliable
+  const urlGender = detectGenderFromUrl(productUrl ?? null);
+  if (urlGender) {
+    // If URL clearly says one gender, trust it unless name strongly contradicts
+    const womensScore = scoreKeywords(text, WOMENS_KEYWORDS);
+    const mensScore = scoreKeywords(text, MENS_KEYWORDS);
+    if (urlGender === "womens" && mensScore <= womensScore) return "womens";
+    if (urlGender === "mens" && womensScore <= mensScore) return "mens";
+    // If scores contradict URL, still prefer URL (retailers know their taxonomy)
+    return urlGender;
+  }
 
   // Keyword scoring
   const womensScore = scoreKeywords(text, WOMENS_KEYWORDS);
@@ -165,7 +200,7 @@ serve(async (req) => {
 
     let productsQuery = supabase
       .from("product_catalog")
-      .select("id, name, brand, retailer, category, gender, tags")
+      .select("id, name, brand, retailer, category, gender, tags, product_url")
       .eq("is_active", true)
       .eq("gender", "unisex")
       .order("id", { ascending: true })
@@ -188,7 +223,7 @@ serve(async (req) => {
     let updated = 0;
     let deactivated = 0;
     for (const p of products) {
-      const result = classifyGender(p.name, p.brand, p.retailer, p.category);
+      const result = classifyGender(p.name, p.brand, p.retailer, p.category, p.product_url);
       
       if (result === "kids") {
         // Deactivate kids products

@@ -68,6 +68,34 @@ const JUNK_IMAGE_PATTERNS = [
   "bat.bing.com",
 ];
 
+// URL path segments that indicate gender — used to parse retailer breadcrumbs
+const URL_WOMENS_PATTERNS = [
+  "/women/", "/womens/", "/woman/", "/women-", "/womens-",
+  "/woman-", "women+clothing", "women+apparel", "women-clothing",
+  "women-apparel", "/ladies/", "/ladies-", "/female/",
+  "shopping/women", "/womenswear/", "cat/women",
+];
+const URL_MENS_PATTERNS = [
+  "/men/", "/mens/", "/man/", "/men-", "/mens-", "/man-",
+  "men+clothing", "men+apparel", "men-clothing", "men-apparel",
+  "/male/", "shopping/men", "/menswear/", "cat/men",
+];
+
+/**
+ * Extract gender signal from product URL path/breadcrumb structure.
+ * Returns 'mens', 'womens', or null if no clear signal.
+ */
+function detectGenderFromUrl(productUrl: string | null): "mens" | "womens" | null {
+  if (!productUrl) return null;
+  const lower = productUrl.toLowerCase();
+  const womensHits = URL_WOMENS_PATTERNS.filter(p => lower.includes(p)).length;
+  const mensHits = URL_MENS_PATTERNS.filter(p => lower.includes(p)).length;
+  // Only use URL signal if it's unambiguous
+  if (womensHits > 0 && mensHits === 0) return "womens";
+  if (mensHits > 0 && womensHits === 0) return "mens";
+  return null;
+}
+
 // Keywords indicating kids/junior products — deactivate entirely
 const KIDS_PATTERNS = [
   "junior", "juniors", " kids ", "kid's", "children", "child ",
@@ -132,30 +160,47 @@ interface AnalysisResult {
 }
 
 /**
- * Apply deterministic gender override based on category and product name.
+ * Apply deterministic gender override based on category, product name, and URL.
  * This runs AFTER AI classification to catch misgendered items.
  */
 function enforceGender(
   name: string,
   category: string,
-  aiGender: string
+  aiGender: string,
+  productUrl?: string | null
 ): string {
-  // Category-level overrides
+  // Category-level overrides (highest priority)
   if (ALWAYS_WOMENS_CATEGORIES.has(category)) return "womens";
   if (ALWAYS_MENS_CATEGORIES.has(category)) return "mens";
 
   const lower = name.toLowerCase();
 
+  // URL-based gender detection — retailer breadcrumbs are very reliable
+  const urlGender = detectGenderFromUrl(productUrl ?? null);
+  if (urlGender) {
+    // URL says womens but AI said mens — trust URL (retailers know their own taxonomy)
+    // Unless name explicitly has strong men's keywords
+    if (urlGender === "womens" && aiGender !== "womens") {
+      if (!FORCE_MENS_NAME_PATTERNS.some(p => lower.includes(p))) {
+        return "womens";
+      }
+    }
+    if (urlGender === "mens" && aiGender !== "mens") {
+      if (!FORCE_WOMENS_NAME_PATTERNS.some(p => lower.includes(p))) {
+        return "mens";
+      }
+    }
+  }
+
   // Name-level overrides — women's patterns
   if (FORCE_WOMENS_NAME_PATTERNS.some(p => lower.includes(p))) {
-    // Don't override if AI said mens and name also has mens keywords
     if (aiGender === "mens" && FORCE_MENS_NAME_PATTERNS.some(p => lower.includes(p))) {
       return aiGender; // ambiguous, trust AI
     }
     return "womens";
   }
 
-  // Name-level overrides — men's patterns (only if no women's keywords)
+  // Name-level overrides — men's patterns
   if (FORCE_MENS_NAME_PATTERNS.some(p => lower.includes(p))) {
     if (!FORCE_WOMENS_NAME_PATTERNS.some(p => lower.includes(p))) {
       return "mens";
@@ -186,7 +231,7 @@ serve(async (req) => {
     // Fetch products
     let query = supabase
       .from("product_catalog")
-      .select("id, name, brand, retailer, category, image_url, image_confidence, tags, gender")
+      .select("id, name, brand, retailer, category, image_url, image_confidence, tags, gender, product_url")
       .eq("is_active", true)
       .not("image_url", "is", null)
       .order("image_confidence", { ascending: true, nullsFirst: true })
@@ -358,7 +403,7 @@ serve(async (req) => {
         ? { retailer: normalizedRetailer } : {};
 
       // Apply deterministic gender enforcement AFTER AI classification
-      const enforcedGender = enforceGender(product.name, result.new_category, result.gender);
+      const enforcedGender = enforceGender(product.name, result.new_category, result.gender, product.product_url);
       if (enforcedGender !== result.gender) {
         genderFixed++;
         console.log(`Gender override: ${product.name.slice(0, 50)} | AI=${result.gender} -> ${enforcedGender}`);
