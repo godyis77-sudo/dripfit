@@ -750,23 +750,6 @@ const Community = () => {
               ))}
             </div>
 
-            {/* Brand site link when a brand is selected */}
-            {shopBrand && (() => {
-              // Find website_url from retailers table if available
-              const retailer = retailers.find(r => r.name.toLowerCase() === shopBrand.toLowerCase());
-              const siteUrl = retailer?.website_url;
-              return siteUrl ? (
-                <a
-                  href={siteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 mb-3 px-3 py-2 rounded-lg bg-card border border-border text-[11px] font-bold text-primary active:scale-[0.98] transition-transform"
-                >
-                  <ExternalLink className="h-3 w-3" />
-                  Visit {shopBrand} website
-                </a>
-              ) : null;
-            })()}
 
             {/* Product grid */}
             <CategoryProductGrid
