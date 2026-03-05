@@ -407,6 +407,258 @@ async function fetchWithRetry(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// MAP + CRAWL — Firecrawl site discovery & recursive scraping
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Brand domain mapping for /v1/map
+const BRAND_DOMAINS: Record<string, string> = {
+  zara: 'https://www.zara.com', hm: 'https://www2.hm.com', 'h&m': 'https://www2.hm.com',
+  uniqlo: 'https://www.uniqlo.com', nike: 'https://www.nike.com', adidas: 'https://www.adidas.com',
+  asos: 'https://www.asos.com', shein: 'https://us.shein.com', mango: 'https://shop.mango.com',
+  cos: 'https://www.cos.com', gap: 'https://www.gap.com', 'banana republic': 'https://www.bananarepublic.com',
+  'old navy': 'https://www.oldnavy.com', 'j.crew': 'https://www.jcrew.com',
+  'ralph lauren': 'https://www.ralphlauren.com', 'tommy hilfiger': 'https://www.tommy.com',
+  'calvin klein': 'https://www.calvinklein.us', 'hugo boss': 'https://www.hugoboss.com',
+  'the north face': 'https://www.thenorthface.com', patagonia: 'https://www.patagonia.com',
+  lululemon: 'https://shop.lululemon.com', 'new balance': 'https://www.newbalance.com',
+  puma: 'https://us.puma.com', converse: 'https://www.converse.com', vans: 'https://www.vans.com',
+  "levi's": 'https://www.levi.com', carhartt: 'https://www.carhartt.com',
+  nordstrom: 'https://www.nordstrom.com', anthropologie: 'https://www.anthropologie.com',
+  'free people': 'https://www.freepeople.com', reformation: 'https://www.thereformation.com',
+  aritzia: 'https://www.aritzia.com', revolve: 'https://www.revolve.com',
+  everlane: 'https://www.everlane.com', abercrombie: 'https://www.abercrombie.com',
+  'american eagle': 'https://www.ae.com', hollister: 'https://www.hollisterco.com',
+  'under armour': 'https://www.underarmour.com', columbia: 'https://www.columbia.com',
+  'dr. martens': 'https://www.drmartens.com', birkenstock: 'https://www.birkenstock.com',
+  crocs: 'https://www.crocs.com', timberland: 'https://www.timberland.com',
+  'steve madden': 'https://www.stevemadden.com', allbirds: 'https://www.allbirds.com',
+  vuori: 'https://vuori.com', gymshark: 'https://www.gymshark.com',
+  'alo yoga': 'https://www.aloyoga.com', skims: 'https://skims.com',
+  allsaints: 'https://www.allsaints.com', fabletics: 'https://www.fabletics.com',
+  "stüssy": 'https://www.stussy.com', kith: 'https://kith.com',
+};
+
+// Category keywords for map search filtering
+const MAP_CATEGORY_KEYWORDS: Record<string, string[]> = {
+  tops: ['t-shirt', 'tee', 'top', 'shirt', 'polo', 'hoodie', 'sweatshirt', 'blouse', 'tank'],
+  bottoms: ['pant', 'trouser', 'jean', 'denim', 'chino', 'cargo', 'jogger', 'legging', 'tight'],
+  shorts: ['short'],
+  skirts: ['skirt'],
+  outerwear: ['jacket', 'coat', 'blazer', 'vest', 'puffer', 'windbreaker', 'parka', 'outerwear'],
+  dresses: ['dress', 'gown', 'jumpsuit', 'romper'],
+  shoes: ['shoe', 'sneaker', 'boot', 'sandal', 'loafer', 'heel', 'footwear', 'trainer'],
+  accessories: ['accessori', 'bag', 'hat', 'cap', 'sunglasses', 'belt', 'jewelry', 'watch', 'scarf'],
+  swimwear: ['swim', 'bikini', 'trunk'],
+  activewear: ['active', 'workout', 'gym', 'training', 'sport'],
+  loungewear: ['lounge', 'pajama', 'sleep', 'robe'],
+};
+
+/**
+ * Use Firecrawl /v1/map to discover product category URLs on a brand's website.
+ * Returns URLs that match the target category.
+ */
+async function mapBrandUrls(
+  brand: string,
+  category: string,
+  firecrawlApiKey: string
+): Promise<string[]> {
+  const brandKey = normalizeBrandKey(brand);
+  const domain = BRAND_DOMAINS[brandKey];
+  if (!domain) return [];
+
+  const catKey = category.toLowerCase();
+  const parentKey = CATEGORY_TO_URL_KEY[catKey] || catKey;
+  const keywords = MAP_CATEGORY_KEYWORDS[parentKey] || MAP_CATEGORY_KEYWORDS[catKey] || [category];
+
+  console.log(`[map] Discovering URLs on ${domain} for ${category} (keywords: ${keywords.join(',')})`);
+
+  try {
+    const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/map', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${firecrawlApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        url: domain,
+        search: keywords.join(' '),
+        limit: 200,
+        includeSubdomains: true,
+      }),
+    });
+
+    const data = await resp.json();
+    if (!resp.ok) {
+      console.warn(`[map] Firecrawl map error: ${JSON.stringify(data).slice(0, 300)}`);
+      return [];
+    }
+
+    const links: string[] = data.links || data.data?.links || [];
+    console.log(`[map] Found ${links.length} total URLs on ${domain}`);
+
+    // Filter to product-like URLs matching the category
+    const productUrls = links.filter(url => {
+      const lower = url.toLowerCase();
+      // Must contain at least one category keyword
+      const hasKeyword = keywords.some(kw => lower.includes(kw));
+      // Looks like a product page (has path segments, not just a collection/category index)
+      const pathSegments = new URL(url).pathname.split('/').filter(Boolean);
+      const isProductPage = pathSegments.length >= 2;
+      // Skip non-product patterns
+      const isExcluded = /\/search|\/cart|\/checkout|\/account|\/login|\/help|\/faq|\/about|\/blog|\/press|\/careers|\/legal|\/privacy|\/terms/i.test(lower);
+      return hasKeyword && isProductPage && !isExcluded;
+    });
+
+    console.log(`[map] Filtered to ${productUrls.length} category-relevant URLs`);
+    return productUrls.slice(0, 50); // Cap to avoid excessive crawling
+  } catch (err) {
+    console.warn(`[map] Error mapping ${domain}:`, err);
+    return [];
+  }
+}
+
+/**
+ * Use Firecrawl /v1/crawl to recursively scrape product pages from discovered URLs.
+ * Returns parsed RawProduct[].
+ */
+async function crawlBrandCategory(
+  brand: string,
+  category: string,
+  startUrls: string[],
+  firecrawlApiKey: string
+): Promise<RawProduct[]> {
+  if (!startUrls.length) return [];
+
+  // Use the first URL as crawl entry; include paths to scope the crawl
+  const crawlUrl = startUrls[0];
+  const catKey = category.toLowerCase();
+  const parentKey = CATEGORY_TO_URL_KEY[catKey] || catKey;
+  const keywords = MAP_CATEGORY_KEYWORDS[parentKey] || MAP_CATEGORY_KEYWORDS[catKey] || [category];
+
+  // Build includePaths from the discovered URLs' common path patterns
+  const includePaths = [...new Set(startUrls.map(u => {
+    try { return new URL(u).pathname.split('/').slice(0, 3).join('/'); } catch { return ''; }
+  }).filter(Boolean))].slice(0, 10);
+
+  console.log(`[crawl] Crawling ${crawlUrl} with ${includePaths.length} include paths, limit 30`);
+
+  try {
+    const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/crawl', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${firecrawlApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        url: crawlUrl,
+        limit: 30,
+        maxDepth: 2,
+        includePaths,
+        excludePaths: ['/cart', '/checkout', '/account', '/login', '/search', '/help', '/blog'],
+        scrapeOptions: {
+          formats: ['markdown', 'rawHtml'],
+          onlyMainContent: true,
+          waitFor: 3000,
+        },
+      }),
+    });
+
+    const data = await resp.json();
+    if (!resp.ok) {
+      console.warn(`[crawl] Firecrawl crawl error: ${JSON.stringify(data).slice(0, 300)}`);
+      return [];
+    }
+
+    // Crawl may return immediately with a job ID for async crawling,
+    // or return results directly for small jobs
+    let pages = data.data || [];
+    
+    // If async job, poll for results (up to 60s)
+    if (data.id && data.status === 'scraping') {
+      console.log(`[crawl] Async job ${data.id}, polling for results...`);
+      const jobId = data.id;
+      for (let poll = 0; poll < 12; poll++) {
+        await delay(5000);
+        try {
+          const pollResp = await fetchWithRetry(`https://api.firecrawl.dev/v1/crawl/${jobId}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${firecrawlApiKey}` },
+          });
+          const pollData = await pollResp.json();
+          if (pollData.status === 'completed') {
+            pages = pollData.data || [];
+            console.log(`[crawl] Job completed with ${pages.length} pages`);
+            break;
+          }
+          if (pollData.status === 'failed') {
+            console.warn(`[crawl] Job failed`);
+            return [];
+          }
+          console.log(`[crawl] Poll ${poll + 1}: status=${pollData.status}, completed=${pollData.completed}/${pollData.total}`);
+        } catch (e) {
+          console.warn(`[crawl] Poll error:`, e);
+        }
+      }
+    } else {
+      console.log(`[crawl] Got ${pages.length} pages directly`);
+    }
+
+    // Parse crawled pages into products
+    const allProducts: RawProduct[] = [];
+    for (const page of pages) {
+      const pageUrl = page.metadata?.sourceURL || page.url || '';
+      const markdown = page.markdown || '';
+      const rawHtml = page.rawHtml || page.html || '';
+
+      // Skip non-product pages
+      if (/\/search|\/category|\/collection|\/shop\/?$/i.test(pageUrl)) continue;
+
+      // Extract price
+      const priceMatch = markdown.match(/\$\s*([\d,]+(?:\.\d{2})?)/);
+      const priceCents = priceMatch ? Math.round(parseFloat(priceMatch[1].replace(',', '')) * 100) : null;
+
+      // Extract product name from page title
+      let productName = (page.metadata?.title || '')
+        .replace(/\s*[-|]\s*(Zara|H&M|Nike|Adidas|Nordstrom|ASOS|Uniqlo|Gap|Lululemon|Puma|Converse|Vans).*$/i, '')
+        .trim();
+
+      if (!productName || productName.length < 3) continue;
+
+      // Extract images from rawHtml
+      const imageUrls = rawHtml ? extractImageUrlsFromHtml(rawHtml) : [];
+      
+      // Also extract from markdown
+      const mdImgRegex = /!\[.*?\]\((https?:\/\/[^\s)]+)\)/g;
+      let imgMatch;
+      while ((imgMatch = mdImgRegex.exec(markdown)) !== null) {
+        if (!/logo|icon|sprite|favicon/i.test(imgMatch[1])) {
+          imageUrls.push(imgMatch[1]);
+        }
+      }
+
+      if (page.metadata?.ogImage) imageUrls.unshift(page.metadata.ogImage);
+
+      allProducts.push({
+        name: productName,
+        brand,
+        product_url: pageUrl,
+        price_cents: priceCents,
+        currency: 'USD',
+        image_urls: [...new Set(imageUrls)].slice(0, 8),
+        category_raw: category,
+        colour: null,
+      });
+    }
+
+    console.log(`[crawl] Parsed ${allProducts.length} products from ${pages.length} crawled pages`);
+    return allProducts;
+  } catch (err) {
+    console.warn(`[crawl] Error:`, err);
+    return [];
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // STAGES 1+2 — Firecrawl scrapes + extracts structured product data
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -447,13 +699,26 @@ async function scrapeProducts(
 
   // Try search fallback first for known anti-scrape brands
   if (ANTI_SCRAPE_BRANDS.has(brandKey)) {
-    console.log(`[scrape] ${brand} is anti-scrape, using search fallback`);
+    console.log(`[scrape] ${brand} is anti-scrape, trying map+crawl first`);
+    // Try map discovery → crawl before falling back to search
+    const mapUrls = await mapBrandUrls(brand, category, firecrawlApiKey);
+    if (mapUrls.length > 0) {
+      const crawled = await crawlBrandCategory(brand, category, mapUrls, firecrawlApiKey);
+      if (crawled.length > 0) return crawled;
+    }
+    console.log(`[scrape] Map+crawl yielded nothing for ${brand}/${category}, falling back to search`);
     return searchProducts(brand, category, firecrawlApiKey);
   }
 
   const brandUrls = CATEGORY_MAP[brandKey];
   if (!brandUrls) {
-    console.log(`[scrape] No URL config for ${brand} (key: ${brandKey}), using search fallback`);
+    console.log(`[scrape] No URL config for ${brand} (key: ${brandKey}), trying map+crawl`);
+    const mapUrls = await mapBrandUrls(brand, category, firecrawlApiKey);
+    if (mapUrls.length > 0) {
+      const crawled = await crawlBrandCategory(brand, category, mapUrls, firecrawlApiKey);
+      if (crawled.length > 0) return crawled;
+    }
+    console.log(`[scrape] Map+crawl yielded nothing, falling back to search`);
     return searchProducts(brand, category, firecrawlApiKey);
   }
 
@@ -577,9 +842,15 @@ async function scrapeProducts(
     await delay(1500);
   }
 
-  // If direct scrape returned nothing, fall back to search
+  // If direct scrape returned nothing, try map+crawl then search
   if (!allProducts.length) {
-    console.log(`[scrape] Direct scrape returned 0 for ${brand}/${category}, trying search fallback`);
+    console.log(`[scrape] Direct scrape returned 0 for ${brand}/${category}, trying map+crawl`);
+    const mapUrls = await mapBrandUrls(brand, category, firecrawlApiKey);
+    if (mapUrls.length > 0) {
+      const crawled = await crawlBrandCategory(brand, category, mapUrls, firecrawlApiKey);
+      if (crawled.length > 0) return crawled;
+    }
+    console.log(`[scrape] Map+crawl yielded nothing, falling back to search`);
     return searchProducts(brand, category, firecrawlApiKey);
   }
 
