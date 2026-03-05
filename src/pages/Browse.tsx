@@ -176,7 +176,9 @@ const Browse = () => {
           {[
             { key: 'tops', label: 'Tops' },
             { key: 'bottom', label: 'Bottoms' },
-            { key: 'dress', label: 'Dresses' },
+            ...(genderFilter === 'mens'
+              ? [{ key: 'blazers', label: 'Suits & Blazers' }]
+              : [{ key: 'dress', label: 'Dresses' }]),
             { key: 'outerwear', label: 'Outerwear' },
             { key: 'shoes', label: 'Shoes' },
             { key: 'accessories', label: 'Accessories' },
