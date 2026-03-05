@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.categorize-products]
 verify_jwt = false
+
+[functions.backfill-gender]
+verify_jwt = false
