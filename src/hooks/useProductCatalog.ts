@@ -137,6 +137,7 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
           'doubleclick.net', 'ad.doubleclick', 'googlesyndication', 'googleadservices',
           'facebook.com/tr', 'criteo', 'taboola',
           'static.zara.net',
+          '/risk/challenge', 'captcha_type',
         ];
         const HARD_MIN_CONFIDENCE = 0.05;
         const seen = new Set<string>();
