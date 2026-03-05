@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown, Bookmark, Camera, MessageSquare, Flame, Search, Ruler, UserPlus, UserCheck, User, Trash2 } from 'lucide-react';
+import { ArrowLeft, Star, Send, Shirt, Sparkles, ShoppingBag, TrendingUp, Users, ChevronDown, Bookmark, Camera, MessageSquare, Flame, Search, Ruler, UserPlus, UserCheck, User, Trash2, ExternalLink } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -24,6 +24,9 @@ import PostLookFlow from '@/components/community/PostLookFlow';
 import { PostDetailSheet } from '@/components/community/PostDetailSheet';
 import { ShopSizeInfo } from '@/components/community/ShopSizeInfo';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
+import BrandFilter from '@/components/tryon/BrandFilter';
+import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
+import { useProductCatalog } from '@/hooks/useProductCatalog';
 
 interface Post {
   id: string;
@@ -129,6 +132,8 @@ const Community = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [shopGender, setShopGender] = useState<GenderKey>('all');
+  const [shopBrand, setShopBrand] = useState<string | null>(null);
+  const [shopCategory, setShopCategory] = useState('tops');
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterType>('new');
@@ -708,41 +713,72 @@ const Community = () => {
                 </button>
               ))}
             </div>
-          {retailersLoading ? (
-            <div className="space-y-2">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="h-14 rounded-xl" style={{ background: 'linear-gradient(110deg, #1A1A1A 30%, #272727 50%, #1A1A1A 70%)', backgroundSize: '200% 100%', animation: 'skeleton-shimmer 1.4s ease-in-out infinite' }} />
-              ))}
-            </div>
-          ) : retailers.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <ShoppingBag className="h-8 w-8 text-primary mb-3" />
-              <h2 className="font-display text-base font-bold mb-1">No retailers yet</h2>
-              <p className="text-[13px] text-muted-foreground">Retailers will appear here soon</p>
-            </div>
-          ) : (
-             <div className="grid grid-cols-2 gap-2">
-              {retailers.map(r => (
+
+            {/* Brand filter */}
+            <BrandFilter
+              gender={shopGender === 'all' ? null : shopGender}
+              selectedBrand={shopBrand}
+              onBrandChange={(b) => { setShopBrand(b); }}
+            />
+
+            {/* Category pills */}
+            <div className="flex gap-1.5 overflow-x-auto pb-2 mb-3 scrollbar-none">
+              {(shopGender === 'mens'
+                ? [
+                    { key: 'tops', label: 'Tops' }, { key: 'bottoms', label: 'Bottoms' },
+                    { key: 'outerwear', label: 'Outerwear' }, { key: 'shoes', label: 'Shoes' },
+                    { key: 'activewear', label: 'Activewear' }, { key: 'accessories', label: 'Accessories' },
+                  ]
+                : [
+                    { key: 'tops', label: 'Tops' }, { key: 'bottoms', label: 'Bottoms' },
+                    { key: 'dresses', label: 'Dresses' }, { key: 'outerwear', label: 'Outerwear' },
+                    { key: 'shoes', label: 'Shoes' }, { key: 'activewear', label: 'Activewear' },
+                    { key: 'accessories', label: 'Accessories' },
+                  ]
+              ).map(cat => (
                 <button
-                  key={r.id}
-                  onClick={() => {
-                    trackEvent('retailer_click', { retailer: r.name });
-                    window.open(r.website_url, '_blank', 'noopener');
-                  }}
-                  className="bg-[hsl(0_0%_10%)] border border-[hsl(0_0%_15%)] rounded-xl p-3 text-left active:scale-[0.97] transition-transform"
+                  key={cat.key}
+                  onClick={() => setShopCategory(cat.key)}
+                  className={`px-3 py-1 rounded-full text-[10px] font-bold whitespace-nowrap transition-colors ${
+                    shopCategory === cat.key
+                      ? 'bg-primary/15 border border-primary/30 text-primary'
+                      : 'bg-card border border-border text-muted-foreground'
+                  }`}
                 >
-                  <p className="text-[14px] font-bold text-foreground mb-1">{r.name}</p>
-                  <span className="inline-block text-[9px] font-bold uppercase tracking-wider text-muted-foreground bg-muted/30 border border-border rounded-full px-2 py-0.5 mb-2 capitalize">
-                    {r.category}
-                  </span>
-                  <div className="flex items-center justify-between mb-2">
-                    <ShopSizeInfo retailerName={r.name} userId={user?.id} hasScan={hasScan} />
-                  </div>
-                  <p className="text-[11px] font-bold text-primary text-right">Shop →</p>
+                  {cat.label}
                 </button>
               ))}
             </div>
-          )}
+
+            {/* Brand site link when a brand is selected */}
+            {shopBrand && (() => {
+              // Find website_url from retailers table if available
+              const retailer = retailers.find(r => r.name.toLowerCase() === shopBrand.toLowerCase());
+              const siteUrl = retailer?.website_url;
+              return siteUrl ? (
+                <a
+                  href={siteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 mb-3 px-3 py-2 rounded-lg bg-card border border-border text-[11px] font-bold text-primary active:scale-[0.98] transition-transform"
+                >
+                  <ExternalLink className="h-3 w-3" />
+                  Visit {shopBrand} website
+                </a>
+              ) : null;
+            })()}
+
+            {/* Product grid */}
+            <CategoryProductGrid
+              category={shopCategory}
+              collapsed={false}
+              maxItems={50}
+              gender={shopGender === 'all' ? undefined : shopGender}
+              brand={shopBrand || undefined}
+              onSelectProduct={(product) => {
+                navigate('/tryon', { state: { productUrl: product.product_url || product.image_url } });
+              }}
+            />
           </>
         ) : loading ? (
           <div className="space-y-3">
