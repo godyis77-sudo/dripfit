@@ -364,8 +364,9 @@ const ANTI_SCRAPE_BRANDS = new Set([
   'swarovski', 'kendra_scott',
   'macys', "macy's", 'bloomingdales', "bloomingdale's", 'jcpenney',
   'target', 'walmart', 'kohls', "kohl's",
-  // Additional blocked brands
+  // Additional blocked brands + known timeout offenders
   'fabletics', 'gymshark', 'alo yoga', 'skims', 'allsaints', 'vuori',
+  'puma', 'vans', 'gucci',
 ]);
 
 // ─────────────────────────────────────────────────────────────────────────────
