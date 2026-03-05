@@ -345,7 +345,7 @@ const TryOn = () => {
                 <p className="section-label mb-1.5">{category === 'all' ? 'All Products' : `Shop ${CATEGORIES.find(c => c.key === category)?.label || category}`}</p>
                 {category === 'all' ? (
                   ALL_PRODUCT_CATEGORIES.map(cat => (
-                    <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={true} maxItems={1000} seed={1234} gender={userGender || undefined} onSelectProduct={handleSelectProduct} />
+                    <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={false} maxItems={1000} seed={1234} gender={userGender || undefined} onSelectProduct={handleSelectProduct} />
                   ))
                 ) : (
                   <CategoryProductGrid category={category} title={`Shop ${CATEGORIES.find(c => c.key === category)?.label || category}`} collapsed={false} maxItems={1000} seed={1234} gender={userGender || undefined} onSelectProduct={handleSelectProduct} />
