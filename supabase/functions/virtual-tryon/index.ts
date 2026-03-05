@@ -31,11 +31,21 @@ serve(async (req) => {
       if (input.startsWith("data:")) return input;
       if (input.startsWith("http://") || input.startsWith("https://")) {
         // Try to fetch & convert; if CDN rejects, pass the raw URL
-        for (let attempt = 0; attempt < 2; attempt++) {
+        for (let attempt = 0; attempt < 3; attempt++) {
           try {
-            const res = await fetch(input);
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 10000);
+            const res = await fetch(input, { 
+              signal: controller.signal,
+              headers: { 
+                'User-Agent': 'Mozilla/5.0 (compatible; DripCheck/1.0)',
+                'Accept': 'image/*',
+              },
+            });
+            clearTimeout(timeout);
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const buf = await res.arrayBuffer();
+            if (buf.byteLength < 100) throw new Error("Image too small, likely invalid");
             const contentType = res.headers.get("content-type") || "image/jpeg";
             const bytes = new Uint8Array(buf);
             let binary = "";
@@ -43,12 +53,12 @@ serve(async (req) => {
             return `data:${contentType};base64,${btoa(binary)}`;
           } catch (e) {
             console.warn(`Fetch attempt ${attempt + 1} failed for ${input}: ${e}`);
-            if (attempt === 1) {
+            if (attempt === 2) {
               // Fallback: let the AI gateway fetch it directly
               console.log("Falling back to raw URL for AI gateway");
               return input;
             }
-            await new Promise(r => setTimeout(r, 500));
+            await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
           }
         }
       }

@@ -324,6 +324,8 @@ const TryOn = () => {
               onSelectFromWardrobe={selectFromWardrobe}
               onToggleWardrobe={() => setShowWardrobe(!showWardrobe)}
               onToast={toast}
+              onRemoveClothing={() => { setClothingPhoto(null); setSelectedQuickPick(null); setProductLink(''); setClothingSaved(false); setLookItems([]); }}
+              onBrowseProducts={() => { setClothingPhoto(null); setSelectedQuickPick(null); setProductLink(''); setClothingSaved(false); setLookItems([]); }}
             />
 
             {/* Category selector */}
