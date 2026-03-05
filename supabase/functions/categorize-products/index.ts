@@ -20,6 +20,26 @@ const VALID_CATEGORIES = [
 const VALID_GENDERS = ["mens", "womens", "unisex"] as const;
 const CATEGORY_LIST = VALID_CATEGORIES.join(", ");
 
+// Categories that are ALWAYS a specific gender — override AI if it disagrees
+const ALWAYS_WOMENS_CATEGORIES = new Set([
+  "dresses", "skirts", "heels", "jumpsuits", "leggings",
+]);
+const ALWAYS_MENS_CATEGORIES = new Set<string>([
+  // currently none that are absolute, but reserved
+]);
+
+// Keywords in product name that force a gender regardless of AI output
+const FORCE_WOMENS_NAME_PATTERNS = [
+  "sports bra", "sport bra", "bralette", "bikini", "yoga pant",
+  "crop top", "tankini", "romper", "lingerie", "maternity",
+  "camisole", "seamless bra", "women's", "womens ", "for women",
+  "for her",
+];
+const FORCE_MENS_NAME_PATTERNS = [
+  "boxer", "men's underwear", "compression short", "athletic supporter",
+  "men's ", "mens ", "for men", "for him",
+];
+
 // Hostnames / URL patterns that are tracking pixels, CAPTCHAs, or non-product images
 const JUNK_IMAGE_PATTERNS = [
   "fls-na.amazon.com",
@@ -38,9 +58,23 @@ const JUNK_IMAGE_PATTERNS = [
   "bat.bing.com",
 ];
 
+// Product names that indicate category/listing pages, not actual products
+const CATEGORY_PAGE_PATTERNS = [
+  "accessories for", "wallets for", "watches for",
+  " | shop ", " | farfetch", "shop now on",
+  "quick shipping to", " - shop ", "page 2 |",
+  "shop farfetch", " | zara canada", " | zara mexico",
+  " | zara united states",
+];
+
 function isJunkImageUrl(url: string): boolean {
   const lower = url.toLowerCase();
   return JUNK_IMAGE_PATTERNS.some(p => lower.includes(p));
+}
+
+function isCategoryPage(name: string): boolean {
+  const lower = name.toLowerCase();
+  return CATEGORY_PAGE_PATTERNS.some(p => lower.includes(p));
 }
 
 // Map DB retailer names for matching (lowercase -> proper)
@@ -69,6 +103,40 @@ interface AnalysisResult {
   reason: string;
 }
 
+/**
+ * Apply deterministic gender override based on category and product name.
+ * This runs AFTER AI classification to catch misgendered items.
+ */
+function enforceGender(
+  name: string,
+  category: string,
+  aiGender: string
+): string {
+  // Category-level overrides
+  if (ALWAYS_WOMENS_CATEGORIES.has(category)) return "womens";
+  if (ALWAYS_MENS_CATEGORIES.has(category)) return "mens";
+
+  const lower = name.toLowerCase();
+
+  // Name-level overrides — women's patterns
+  if (FORCE_WOMENS_NAME_PATTERNS.some(p => lower.includes(p))) {
+    // Don't override if AI said mens and name also has mens keywords
+    if (aiGender === "mens" && FORCE_MENS_NAME_PATTERNS.some(p => lower.includes(p))) {
+      return aiGender; // ambiguous, trust AI
+    }
+    return "womens";
+  }
+
+  // Name-level overrides — men's patterns (only if no women's keywords)
+  if (FORCE_MENS_NAME_PATTERNS.some(p => lower.includes(p))) {
+    if (!FORCE_WOMENS_NAME_PATTERNS.some(p => lower.includes(p))) {
+      return "mens";
+    }
+  }
+
+  return aiGender;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -87,7 +155,7 @@ serve(async (req) => {
     const category = body.category;
     const onlyUnchecked = body.only_unchecked ?? true;
 
-    // Fetch products — use array containment operator properly
+    // Fetch products
     let query = supabase
       .from("product_catalog")
       .select("id, name, brand, retailer, category, image_url, image_confidence, tags, gender")
@@ -100,7 +168,6 @@ serve(async (req) => {
       query = query.eq("category", category);
     }
 
-    // Use array containment to check tags — fixed from SIMILAR TO
     if (onlyUnchecked) {
       query = query.not("tags", "cs", '{"ai_verified"}').not("tags", "cs", '{"ai_failed"}');
     }
@@ -119,9 +186,28 @@ serve(async (req) => {
     const results: AnalysisResult[] = [];
     const failedIds: { id: string; tags: string[] }[] = [];
 
-    // Pre-filter: deactivate products with junk image URLs before wasting AI calls
-    const junkProducts = products.filter(p => isJunkImageUrl(p.image_url));
-    const validProducts = products.filter(p => !isJunkImageUrl(p.image_url));
+    // Pre-filter 1: Deactivate category pages before wasting AI calls
+    const categoryPages = products.filter(p => isCategoryPage(p.name));
+    const nonPageProducts = products.filter(p => !isCategoryPage(p.name));
+
+    if (categoryPages.length > 0) {
+      console.log(`Deactivating ${categoryPages.length} category/listing pages`);
+      for (const cp of categoryPages) {
+        const existingTags: string[] = Array.isArray(cp.tags) ? cp.tags : [];
+        await supabase
+          .from("product_catalog")
+          .update({
+            is_active: false,
+            tags: [...new Set([...existingTags, "category_page", "ai_failed"])],
+            image_confidence: 0,
+          })
+          .eq("id", cp.id);
+      }
+    }
+
+    // Pre-filter 2: Deactivate products with junk image URLs
+    const junkProducts = nonPageProducts.filter(p => isJunkImageUrl(p.image_url));
+    const validProducts = nonPageProducts.filter(p => !isJunkImageUrl(p.image_url));
 
     if (junkProducts.length > 0) {
       console.log(`Deactivating ${junkProducts.length} products with junk image URLs`);
@@ -152,7 +238,6 @@ serve(async (req) => {
           });
           clearTimeout(timeout);
           const ct = resp.headers.get("content-type") || "";
-          // Accept if status OK — some CDNs don't return content-type on HEAD
           if (resp.ok && (ct.startsWith("image/") || ct === "")) {
             return { product, reachable: true };
           }
@@ -176,9 +261,9 @@ serve(async (req) => {
       }
     }
 
-    console.log(`${reachableProducts.length} reachable, ${junkProducts.length} junk, ${validProducts.length - reachableProducts.length} unreachable`);
+    console.log(`${reachableProducts.length} reachable, ${junkProducts.length} junk, ${categoryPages.length} cat-pages, ${validProducts.length - reachableProducts.length} unreachable`);
 
-    // Process reachable products in mini-batches of 5 for parallelism
+    // Process reachable products in mini-batches of 5
     for (let i = 0; i < reachableProducts.length; i += 5) {
       const chunk = reachableProducts.slice(i, i + 5);
       const chunkResults = await Promise.allSettled(
@@ -189,7 +274,6 @@ serve(async (req) => {
             console.error(`Error analyzing ${product.id}:`, e);
             const existingTags: string[] = Array.isArray(product.tags) ? product.tags : [];
             const failTags = [...new Set([...existingTags, "ai_failed"])];
-            // Tag immediately so poison products don't block future batches
             await supabase.from("product_catalog").update({ tags: failTags }).eq("id", product.id);
             failedIds.push({ id: product.id, tags: failTags });
             return null;
@@ -209,9 +293,10 @@ serve(async (req) => {
       await supabase.from("product_catalog").update({ tags: item.tags }).eq("id", item.id);
     }
 
-    // Apply updates — batch by update type to reduce round-trips
+    // Apply updates
     let reclassified = 0;
     let deactivated = 0;
+    let genderFixed = 0;
 
     for (const result of results) {
       const product = products.find((p) => p.id === result.id);
@@ -221,10 +306,16 @@ serve(async (req) => {
       const baseTags = existingTags.filter(t => t !== "ai_verified" && t !== "ai_invalid" && t !== "ai_failed");
       const newTags = [...new Set([...baseTags, "ai_verified"])];
 
-      // Normalize retailer name if needed
       const normalizedRetailer = normalizeRetailer(product.retailer);
       const retailerUpdate = normalizedRetailer !== product.retailer
         ? { retailer: normalizedRetailer } : {};
+
+      // Apply deterministic gender enforcement AFTER AI classification
+      const enforcedGender = enforceGender(product.name, result.new_category, result.gender);
+      if (enforcedGender !== result.gender) {
+        genderFixed++;
+        console.log(`Gender override: ${product.name.slice(0, 50)} | AI=${result.gender} -> ${enforcedGender}`);
+      }
 
       if (!result.is_valid_product) {
         await supabase
@@ -233,7 +324,7 @@ serve(async (req) => {
             is_active: false,
             tags: [...newTags, "ai_invalid"],
             image_confidence: Math.min(result.confidence, 0.1),
-            gender: result.gender,
+            gender: enforcedGender,
             ...retailerUpdate,
           })
           .eq("id", result.id);
@@ -242,7 +333,7 @@ serve(async (req) => {
         const updatePayload: Record<string, unknown> = {
           tags: newTags,
           image_confidence: Math.max(result.confidence, product.image_confidence ?? 0),
-          gender: result.gender,
+          gender: enforcedGender,
           ...retailerUpdate,
         };
 
@@ -263,6 +354,8 @@ serve(async (req) => {
       failed: failedIds.length,
       reclassified,
       deactivated,
+      genderFixed,
+      categoryPagesRemoved: categoryPages.length,
       verified: results.length - reclassified - deactivated,
       details: results.map((r) => ({
         id: r.id,
@@ -275,7 +368,7 @@ serve(async (req) => {
       })),
     };
 
-    console.log(`Done: ${results.length} processed, ${reclassified} reclassified, ${deactivated} deactivated, ${failedIds.length} failed`);
+    console.log(`Done: ${results.length} processed, ${reclassified} reclassified, ${deactivated} deactivated, ${genderFixed} gender-fixed, ${categoryPages.length} cat-pages, ${failedIds.length} failed`);
 
     return new Response(JSON.stringify(summary), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -301,15 +394,22 @@ async function analyzeProduct(
   const prompt = `You are a fashion product image classifier. Analyze this product image and determine:
 
 1. Is this a real product photo (a single clothing item, shoe, bag, or accessory clearly visible)? 
-   - Answer NO if it's a banner, logo, lifestyle/editorial photo without a clear product, a payment icon, a size chart, a model group shot, or any non-product image.
+   - Answer NO if it's a banner, logo, lifestyle/editorial photo without a clear product, a payment icon, a size chart, a model group shot, a category listing page, or any non-product image.
+   - Answer NO if the product name looks like a category page (e.g. "Men's Polo Shirts - ASOS", "Accessories for Women")
    
 2. What specific category does this product belong to? Choose EXACTLY ONE from:
    ${CATEGORY_LIST}
+   - IMPORTANT: Do NOT use "footwear" or "other". Map to the most specific category.
+   - Sneakers, running shoes, trainers → "sneakers"
+   - Dress shoes, oxfords → "shoes"  
+   - Wallets, belt bags, fanny packs → "bags"
+   - Sunglasses, eyewear → "sunglasses"
 
 3. What gender is this product designed for? Choose EXACTLY ONE from: mens, womens, unisex
    - Use contextual clues: silhouette, styling, model, brand positioning
    - Sports bras, bralettes, bikinis, leggings, yoga pants, crop tops are ALWAYS "womens" — never "unisex"
    - Boxers, briefs, compression shorts, men's underwear are ALWAYS "mens" — never "unisex"
+   - Dresses, skirts, heels, jumpsuits, rompers are ALWAYS "womens"
    - Only use "unisex" for truly gender-neutral items (basic tees, sneakers, outerwear without gendered styling)
 
 The product is currently listed as:
@@ -362,9 +462,10 @@ Respond ONLY with valid JSON (no markdown):
 
   const parsed = JSON.parse(jsonMatch[0]);
   
-  const validCategory = VALID_CATEGORIES.includes(parsed.category)
+  // Remap invalid categories to closest valid one
+  let validCategory = VALID_CATEGORIES.includes(parsed.category)
     ? parsed.category
-    : product.category;
+    : remapCategory(parsed.category, product.name);
 
   const validGender = VALID_GENDERS.includes(parsed.gender)
     ? parsed.gender
@@ -379,4 +480,33 @@ Respond ONLY with valid JSON (no markdown):
     confidence: Math.max(0, Math.min(1, Number(parsed.confidence) || 0.5)),
     reason: String(parsed.reason || ""),
   };
+}
+
+/**
+ * Remap non-standard categories returned by AI to valid ones.
+ */
+function remapCategory(aiCategory: string, productName: string): string {
+  const cat = (aiCategory || "").toLowerCase();
+  const name = productName.toLowerCase();
+
+  if (cat === "footwear") {
+    if (name.includes("sneaker") || name.includes("running")) return "sneakers";
+    if (name.includes("boot")) return "boots";
+    if (name.includes("loafer")) return "loafers";
+    if (name.includes("sandal")) return "sandals";
+    if (name.includes("heel")) return "heels";
+    return "shoes";
+  }
+  if (cat === "wallet" || cat === "wallets" || cat === "belt bag" || cat === "fanny pack") return "bags";
+  if (cat === "eyewear" || cat === "glasses") return "sunglasses";
+  if (cat === "sweatshirt" || cat === "sweatshirts" || cat === "hoodie") return "hoodies";
+  if (cat === "trousers" || cat === "chinos") return "pants";
+  if (cat === "tee" || cat === "tees" || cat === "t-shirt") return "t-shirts";
+  if (cat === "pullover" || cat === "cardigan" || cat === "knitwear") return "sweaters";
+  if (cat === "romper" || cat === "rompers" || cat === "playsuit") return "jumpsuits";
+  if (cat === "parka" || cat === "puffer") return "coats";
+  if (cat === "cap" || cat === "caps" || cat === "beanie") return "hats";
+
+  // Fallback: keep current category from DB
+  return "other";
 }
