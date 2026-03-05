@@ -31,6 +31,7 @@ const WOMENS_CATEGORIES = new Set([
   "dress", "dresses", "skirt", "skirts", "heels", "lingerie", "maternity",
   "bras", "bra", "bralettes", "bralette", "bikini", "bikinis", "swimsuit",
   "swimsuits", "tankini", "tankinis", "camisole", "camisoles", "romper", "rompers",
+  "leggings",
 ]);
 
 const MENS_CATEGORIES = new Set([
@@ -41,11 +42,15 @@ const WOMENS_KEYWORDS = [
   " women ", " women s ", " womens ", " womenswear ", " woman ", " ladies ", " for her ", " female ", " girl ",
   " dress ", " skirt ", " bralette ", " lingerie ", " maternity ", " bodysuit ",
   " heel ", " stiletto ", " wedge ", " camisole ", " chemise ", " pumps ",
+  " sports bra ", " sport bra ", " sports bras ", " yoga pant ", " crop top ",
+  " bikini ", " tankini ", " romper ", " legging ", " plus size sports ",
+  " for women ", " seamless bra ",
 ];
 
 const MENS_KEYWORDS = [
   " men ", " men s ", " mens ", " menswear ", " male ", " for men ", " for him ", " guys ", " boy ",
   " boxer ", " brief ", " chino ", " dress shirt ", " sport coat ", " tuxedo ", " waistcoat ",
+  " men s underwear ", " compression short ", " athletic supporter ",
 ];
 
 function normalizeText(value: string): string {

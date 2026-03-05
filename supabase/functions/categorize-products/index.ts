@@ -308,7 +308,9 @@ async function analyzeProduct(
 
 3. What gender is this product designed for? Choose EXACTLY ONE from: mens, womens, unisex
    - Use contextual clues: silhouette, styling, model, brand positioning
-   - Default to "unisex" if ambiguous
+   - Sports bras, bralettes, bikinis, leggings, yoga pants, crop tops are ALWAYS "womens" — never "unisex"
+   - Boxers, briefs, compression shorts, men's underwear are ALWAYS "mens" — never "unisex"
+   - Only use "unisex" for truly gender-neutral items (basic tees, sneakers, outerwear without gendered styling)
 
 The product is currently listed as:
 - Name: "${product.name}"
