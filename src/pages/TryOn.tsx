@@ -261,19 +261,22 @@ const TryOn = () => {
   };
 
   const handleSaveToItems = async () => {
-    if (!user) return;
+    if (!user || !clothingPhoto) return;
     try {
-      await supabase.from('saved_items').insert({
-        user_id: user.id, product_link: productLink || null,
-        retailer: selectedQuickPick?.retailer || null, brand: selectedQuickPick?.brand || null,
-        category: category || null, size_recommendation: null, confidence: null,
-        product_image_url: clothingPhoto,
+      const imageUrl = await uploadBase64ToStorage(clothingPhoto, 'wardrobe');
+      await supabase.from('clothing_wardrobe').insert({
+        user_id: user.id,
+        image_url: imageUrl,
+        category: category || 'top',
+        product_link: productLink || null,
+        brand: selectedQuickPick?.brand || null,
+        retailer: selectedQuickPick?.retailer || (() => { try { const h = new URL(productLink).hostname; const m = ['shein','zara','hm','gap','nordstrom','lululemon','macys','jcpenney','aritzia','simons'].find(r => h.includes(r)); return m || null; } catch { return null; } })(),
       });
       setSavedToItems(true);
-      trackEvent('saved_item_added', { source: 'tryon' });
+      trackEvent('saved_item_added', { source: 'tryon_wardrobe', category });
       toast({
-        title: '✓ Saved to your items', description: 'View your saved items anytime.',
-        action: <button onClick={() => navigate('/profile/saved')} className="text-[11px] font-bold text-primary underline">View Saved Items</button>,
+        title: '✓ Saved to Wardrobe', description: 'View in your wardrobe anytime.',
+        action: <button onClick={() => navigate('/profile', { state: { tab: 'wardrobe' } })} className="text-[11px] font-bold text-primary underline">View Wardrobe</button>,
       });
     } catch {
       toast({ title: 'Could not save', variant: 'destructive' });
