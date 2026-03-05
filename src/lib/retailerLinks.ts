@@ -38,6 +38,26 @@ export function buildRetailerSearchUrl(retailerName: string, baseUrl: string, qu
     'Puma': (q) => `https://us.puma.com/us/en/search?q=${q}`,
     'Boohoo': (q) => `https://us.boohoo.com/search?q=${q}`,
     'Target': (q) => `https://www.target.com/s?searchTerm=${q}&category=5xtg6`,
+    'Fabletics': (q) => `https://www.fabletics.com/search?q=${q}`,
+    'Kith': (q) => `https://kith.com/search?q=${q}`,
+    'Reformation': (q) => `https://www.thereformation.com/search?q=${q}`,
+    'Gymshark': (q) => `https://www.gymshark.com/search?q=${q}`,
+    'Alo Yoga': (q) => `https://www.aloyoga.com/search?q=${q}`,
+    'Everlane': (q) => `https://www.everlane.com/search?q=${q}`,
+    'COS': (q) => `https://www.cos.com/en_usd/search.html?q=${q}`,
+    'AllSaints': (q) => `https://www.allsaints.com/search?q=${q}`,
+    'Free People': (q) => `https://www.freepeople.com/search/?q=${q}`,
+    'Vuori': (q) => `https://vuori.com/search?q=${q}`,
+    'SKIMS': (q) => `https://skims.com/search?q=${q}`,
+    'Aritzia': (q) => `https://www.aritzia.com/search?q=${q}`,
+    'Carhartt': (q) => `https://www.carhartt.com/search?q=${q}`,
+    'Vans': (q) => `https://www.vans.com/search?q=${q}`,
+    'Converse': (q) => `https://www.converse.com/search?q=${q}`,
+    'Dr. Martens': (q) => `https://www.drmartens.com/us/en/search?q=${q}`,
+    'Birkenstock': (q) => `https://www.birkenstock.com/us/search?q=${q}`,
+    'On': (q) => `https://www.on.com/en-us/search?q=${q}`,
+    'HOKA': (q) => `https://www.hoka.com/en/us/search?q=${q}`,
+    'Anthropologie': (q) => `https://www.anthropologie.com/search?q=${q}`,
   };
   return searchPaths[retailerName]?.(q) || `${baseUrl.replace(/\/$/, '')}/?q=${q}`;
 }
@@ -71,6 +91,13 @@ export function getBestRetailerForItem(brand: string | null, category: string): 
     'levi': 'Nordstrom', "levi's": 'Nordstrom',
     'champion': 'Amazon Fashion', 'hanes': 'Amazon Fashion',
     'target': 'Target',
+    'fabletics': 'Fabletics', 'kith': 'Kith', 'reformation': 'Reformation',
+    'gymshark': 'Gymshark', 'alo yoga': 'Alo Yoga', 'alo': 'Alo Yoga',
+    'everlane': 'Everlane', 'cos': 'COS', 'allsaints': 'AllSaints',
+    'free people': 'Free People', 'vuori': 'Vuori', 'skims': 'SKIMS',
+    'aritzia': 'Aritzia', 'carhartt': 'Carhartt', 'vans': 'Vans',
+    'converse': 'Converse', 'dr. martens': 'Dr. Martens', 'birkenstock': 'Birkenstock',
+    'on running': 'On', 'hoka': 'HOKA', 'anthropologie': 'Anthropologie',
   };
 
   if (brand) {
