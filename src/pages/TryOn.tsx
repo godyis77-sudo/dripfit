@@ -13,6 +13,7 @@ import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import TryOnUploadSection from '@/components/tryon/TryOnUploadSection';
 import TryOnResultSection from '@/components/tryon/TryOnResultSection';
 import TryOnPremiumGate from '@/components/tryon/TryOnPremiumGate';
+import BrandFilter from '@/components/tryon/BrandFilter';
 import {
   CATEGORIES, ALL_PRODUCT_CATEGORIES,
   getDefaultSharePreference, imageUrlToBase64,
@@ -51,6 +52,7 @@ const TryOn = () => {
   const [showLookItems, setShowLookItems] = useState(false);
   const [selectedQuickPick, setSelectedQuickPick] = useState<CatalogProduct | null>(null);
   const [layerHistory, setLayerHistory] = useState<string[]>([]);
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
 
   const hasUnlimitedTryOns = isSubscribed;
   const remainingTryOns = Math.max(0, FREE_MONTHLY_LIMIT - getMonthlyTryOnCount());
@@ -339,16 +341,25 @@ const TryOn = () => {
               </div>
             </div>
 
+            {/* Brand filter */}
+            {!clothingPhoto && (
+              <BrandFilter
+                gender={userGender}
+                selectedBrand={selectedBrand}
+                onBrandChange={setSelectedBrand}
+              />
+            )}
+
             {/* Product catalog browse */}
             {!clothingPhoto && (
               <div className="mb-3 space-y-2">
                 <p className="section-label mb-1.5">{category === 'all' ? 'All Products' : `Shop ${CATEGORIES.find(c => c.key === category)?.label || category}`}</p>
                 {category === 'all' ? (
                   ALL_PRODUCT_CATEGORIES.map(cat => (
-                    <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={false} maxItems={1000} seed={1234} gender={userGender || undefined} onSelectProduct={handleSelectProduct} />
+                    <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={false} maxItems={1000} seed={1234} gender={userGender || undefined} brand={selectedBrand || undefined} onSelectProduct={handleSelectProduct} />
                   ))
                 ) : (
-                  <CategoryProductGrid category={category} title={`Shop ${CATEGORIES.find(c => c.key === category)?.label || category}`} collapsed={false} maxItems={1000} seed={1234} gender={userGender || undefined} onSelectProduct={handleSelectProduct} />
+                  <CategoryProductGrid category={category} title={`Shop ${CATEGORIES.find(c => c.key === category)?.label || category}`} collapsed={false} maxItems={1000} seed={1234} gender={userGender || undefined} brand={selectedBrand || undefined} onSelectProduct={handleSelectProduct} />
                 )}
               </div>
             )}
