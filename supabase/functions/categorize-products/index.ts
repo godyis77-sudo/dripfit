@@ -20,6 +20,29 @@ const VALID_CATEGORIES = [
 const VALID_GENDERS = ["mens", "womens", "unisex"] as const;
 const CATEGORY_LIST = VALID_CATEGORIES.join(", ");
 
+// Hostnames / URL patterns that are tracking pixels, CAPTCHAs, or non-product images
+const JUNK_IMAGE_PATTERNS = [
+  "fls-na.amazon.com",
+  "doubleclick.net",
+  "/risk/challenge",
+  "/page-designer/",
+  "/uedata",
+  "/captcha",
+  "/batch/1/",
+  "/pixel",
+  "/tracking",
+  "static.zara.net",
+  "googleads.",
+  "googlesyndication.",
+  "facebook.com/tr",
+  "bat.bing.com",
+];
+
+function isJunkImageUrl(url: string): boolean {
+  const lower = url.toLowerCase();
+  return JUNK_IMAGE_PATTERNS.some(p => lower.includes(p));
+}
+
 // Map DB retailer names for matching (lowercase -> proper)
 const RETAILER_NORMALIZE: Record<string, string> = {
   "h&m": "H&M",
@@ -96,9 +119,68 @@ serve(async (req) => {
     const results: AnalysisResult[] = [];
     const failedIds: { id: string; tags: string[] }[] = [];
 
-    // Process in mini-batches of 5 for parallelism
-    for (let i = 0; i < products.length; i += 5) {
-      const chunk = products.slice(i, i + 5);
+    // Pre-filter: deactivate products with junk image URLs before wasting AI calls
+    const junkProducts = products.filter(p => isJunkImageUrl(p.image_url));
+    const validProducts = products.filter(p => !isJunkImageUrl(p.image_url));
+
+    if (junkProducts.length > 0) {
+      console.log(`Deactivating ${junkProducts.length} products with junk image URLs`);
+      for (const jp of junkProducts) {
+        const existingTags: string[] = Array.isArray(jp.tags) ? jp.tags : [];
+        await supabase
+          .from("product_catalog")
+          .update({
+            is_active: false,
+            tags: [...new Set([...existingTags, "junk_image", "ai_failed"])],
+            image_confidence: 0,
+          })
+          .eq("id", jp.id);
+      }
+    }
+
+    // Pre-validate: HEAD-check image URLs to skip unreachable ones
+    const reachableProducts: typeof validProducts = [];
+    const headChecks = await Promise.allSettled(
+      validProducts.map(async (product) => {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 3000);
+          const resp = await fetch(product.image_url, {
+            method: "HEAD",
+            redirect: "follow",
+            signal: controller.signal,
+          });
+          clearTimeout(timeout);
+          const ct = resp.headers.get("content-type") || "";
+          // Accept if status OK — some CDNs don't return content-type on HEAD
+          if (resp.ok && (ct.startsWith("image/") || ct === "")) {
+            return { product, reachable: true };
+          }
+          return { product, reachable: false };
+        } catch {
+          return { product, reachable: false };
+        }
+      })
+    );
+
+    for (const result of headChecks) {
+      if (result.status === "fulfilled") {
+        if (result.value.reachable) {
+          reachableProducts.push(result.value.product);
+        } else {
+          const p = result.value.product;
+          const existingTags: string[] = Array.isArray(p.tags) ? p.tags : [];
+          failedIds.push({ id: p.id, tags: [...new Set([...existingTags, "ai_failed", "unreachable_image"])] });
+          console.warn(`Unreachable image for ${p.id}: ${p.image_url.slice(0, 80)}`);
+        }
+      }
+    }
+
+    console.log(`${reachableProducts.length} reachable, ${junkProducts.length} junk, ${validProducts.length - reachableProducts.length} unreachable`);
+
+    // Process reachable products in mini-batches of 5 for parallelism
+    for (let i = 0; i < reachableProducts.length; i += 5) {
+      const chunk = reachableProducts.slice(i, i + 5);
       const chunkResults = await Promise.allSettled(
         chunk.map(async (product) => {
           try {
@@ -106,7 +188,10 @@ serve(async (req) => {
           } catch (e) {
             console.error(`Error analyzing ${product.id}:`, e);
             const existingTags: string[] = Array.isArray(product.tags) ? product.tags : [];
-            failedIds.push({ id: product.id, tags: [...new Set([...existingTags, "ai_failed"])] });
+            const failTags = [...new Set([...existingTags, "ai_failed"])];
+            // Tag immediately so poison products don't block future batches
+            await supabase.from("product_catalog").update({ tags: failTags }).eq("id", product.id);
+            failedIds.push({ id: product.id, tags: failTags });
             return null;
           }
         })
