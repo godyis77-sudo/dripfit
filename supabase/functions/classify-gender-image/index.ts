@@ -40,7 +40,7 @@ serve(async (req) => {
     // Fetch products to classify — prioritize unisex items and low-confidence ones
     let query = supabase
       .from("product_catalog")
-      .select("id, name, brand, retailer, category, image_url, gender, image_confidence, tags")
+      .select("id, name, brand, retailer, category, image_url, gender, image_confidence, tags, product_url")
       .eq("is_active", true)
       .not("image_url", "is", null)
       .order("image_confidence", { ascending: false, nullsFirst: false })
@@ -85,18 +85,21 @@ serve(async (req) => {
               return null; // skip unreachable
             }
 
+            const urlHint = product.product_url ? `\n- Product URL: "${product.product_url}" (check URL path for /women/, /men/, /womens/, /mens/ segments — retailers encode gender in their URL taxonomy)` : "";
             const prompt = `Look at this product image carefully. Your ONLY task is to determine the target gender audience.
 
 Rules:
 - "womens" if: the product is modeled on/designed for women, has feminine styling (dresses, heels, bikinis, bras, leggings, clutches, women's cuts)
 - "mens" if: the product is modeled on/designed for men, has masculine styling (suits, boxers, men's cuts, ties, swim trunks)  
 - "unisex" ONLY if the product is truly gender-neutral with NO gendered cues (basic sneakers, plain accessories, simple outerwear)
+- IMPORTANT: If the product URL contains "/women/" or "women-clothing" or "women+apparel", it is almost certainly "womens"
+- IMPORTANT: If the product URL contains "/men/" or "men-clothing" or "men+apparel", it is almost certainly "mens"
 
 Product context:
 - Name: "${product.name}"
 - Brand: "${product.brand}"  
 - Category: "${product.category}"
-- Current gender: "${product.gender}"
+- Current gender: "${product.gender}"${urlHint}
 
 Respond ONLY with valid JSON (no markdown):
 {"gender": "mens/womens/unisex", "confidence": 0.0-1.0, "reason": "brief explanation"}`;
