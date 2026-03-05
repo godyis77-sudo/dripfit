@@ -345,7 +345,8 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           {genderLoaded && [
             { category: 'tops', title: 'Tops', seed: 42 },
             { category: 'bottom', title: 'Bottoms', seed: 314 },
-            { category: 'dress', title: 'Dresses', seed: 628 },
+            // Only show dresses for women's / unset gender
+            ...(mappedGender !== 'mens' ? [{ category: 'dress', title: 'Dresses', seed: 628 }] : []),
             { category: 'outerwear', title: 'Outerwear', seed: 1597 },
             { category: 'shoes', title: 'Shoes', seed: 2718 },
             { category: 'accessories', title: 'Trending Accessories', seed: 7777 },
