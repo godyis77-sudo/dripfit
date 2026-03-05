@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.backfill-gender]
 verify_jwt = false
+
+[functions.classify-gender-image]
+verify_jwt = false
