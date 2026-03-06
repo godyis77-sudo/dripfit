@@ -17,6 +17,7 @@ import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import PostCard from '@/components/community/PostCard';
 import EmptyStates from '@/components/community/EmptyStates';
 import { useCommunityFeed } from '@/hooks/useCommunityFeed';
+import { useCart } from '@/hooks/useCart';
 import type { Post, FilterType, TrendingSort, GenderKey } from '@/components/community/community-types';
 import { GENDER_OPTIONS, isValidImageUrl } from '@/components/community/community-types';
 
