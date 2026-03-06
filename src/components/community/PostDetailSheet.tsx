@@ -87,6 +87,7 @@ export const PostDetailSheet = ({
   currentUserId,
 }: PostDetailSheetProps) => {
   const [commentText, setCommentText] = useState('');
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(false);
