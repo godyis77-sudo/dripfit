@@ -32,6 +32,7 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
             <button
               key={tab.path}
               onClick={() => navigate(tab.path)}
+              aria-label={tab.label}
               className={cn(
                 'relative flex flex-col items-center gap-0.5 rounded-lg px-3 py-1.5 min-h-[44px] min-w-[44px] transition-colors duration-150',
                 isActive

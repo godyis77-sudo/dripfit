@@ -144,7 +144,7 @@ const Community = () => {
             >
               {f.label}
               {f.key === 'similar' && (
-                <button onClick={(e) => { e.stopPropagation(); setSimilarFitTooltip(!similarFitTooltip); }} className="text-[9px] text-muted-foreground/60 ml-0.5">ⓘ</button>
+                <button onClick={(e) => { e.stopPropagation(); setSimilarFitTooltip(!similarFitTooltip); }} aria-label="What is Similar Fit?" className="text-[9px] text-muted-foreground/60 ml-0.5">ⓘ</button>
               )}
               {filter === f.key && <motion.div layoutId="fitcheck-tab" className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full" />}
             </button>

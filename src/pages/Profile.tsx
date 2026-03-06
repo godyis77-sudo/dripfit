@@ -226,6 +226,7 @@ const Profile = () => {
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); dismissPremiumBanner(); setBannerDismissed(true); }}
+              aria-label="Dismiss banner"
               className="h-5 w-5 rounded-full flex items-center justify-center hover:bg-muted/50 transition-colors shrink-0"
             >
               <X className="h-3 w-3 text-muted-foreground" />

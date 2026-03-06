@@ -379,7 +379,7 @@ const TryOn = () => {
                   <p className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
                     <ShoppingBag className="h-3.5 w-3.5" /> Shop {selectedQuickPick.name}
                   </p>
-                  <button onClick={() => setSelectedQuickPick(null)} className="text-muted-foreground hover:text-foreground">
+                  <button onClick={() => setSelectedQuickPick(null)} aria-label="Remove product" className="text-muted-foreground hover:text-foreground">
                     <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
