@@ -108,21 +108,18 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
   }, [cursor, hasMore, loadingMore, filter]);
 
   // ── FOLLOWING feed ──
-  const fetchFollowingFeed = useCallback(async () => {
-    if (!userId) { setPosts([]); setLoading(false); return; }
-    setLoading(true);
+  const fetchFollowingFeed = useCallback(async (): Promise<Post[]> => {
+    if (!userId) return [];
     resetPagination();
     const ids = followingIdsRef.current.length > 0 ? followingIdsRef.current : await getFollowingIds(userId);
-    if (ids.length === 0) { setPosts([]); setLoading(false); setHasMore(false); return; }
+    if (ids.length === 0) { setHasMore(false); return []; }
     const { data } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_urls').eq('is_public', true).in('user_id', ids).order('created_at', { ascending: false }).limit(PAGE_SIZE);
-    if (!data || data.length === 0) { setPosts([]); setLoading(false); setHasMore(false); return; }
+    if (!data || data.length === 0) { setHasMore(false); return []; }
     processBatch(data);
     const userIds = [...new Set(data.map(p => p.user_id))];
     const { data: profiles } = await supabase.from('profiles').select('user_id, display_name, avatar_url').in('user_id', userIds);
     const profileMap = new Map((profiles || []).map(p => [p.user_id, p]));
-    const enriched = data.map(p => ({ ...p, profile: profileMap.get(p.user_id) || { display_name: 'Anonymous' }, rating_count: 0 }));
-    setPosts(enriched);
-    setLoading(false);
+    return data.map(p => ({ ...p, profile: profileMap.get(p.user_id) || { display_name: 'Anonymous' }, rating_count: 0 }));
   }, [userId]);
 
   const loadMoreFollowing = useCallback(async () => {
