@@ -14,7 +14,7 @@ interface TryOnPost {
   caption: string | null;
   is_public: boolean;
   created_at: string;
-  product_url?: string | null;
+  product_urls?: string[] | null;
 }
 
 interface TryOnDetailSheetProps {
