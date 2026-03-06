@@ -232,8 +232,8 @@ const PostCard = ({
         )}
         {filter === 'similar' && (post as any).match_score && (
           <div
-            className="absolute top-2 right-2 text-[10px] font-bold text-white rounded-full px-2 py-0.5"
-            style={{ background: 'rgba(184, 150, 12, 0.92)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.15)' }}
+            className="absolute top-2 right-2 text-[8px] font-bold rounded-full px-1.5 py-0.5"
+            style={{ background: 'hsl(var(--primary))', color: '#000' }}
           >
             {(post as any).match_score}% match
           </div>
