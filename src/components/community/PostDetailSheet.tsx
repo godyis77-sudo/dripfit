@@ -11,7 +11,6 @@ interface Post {
   clothing_photo_url: string;
   caption: string | null;
   created_at: string;
-  product_url?: string | null;
   product_urls?: string[] | null;
   profile?: { display_name: string | null; avatar_url?: string | null };
   avg_style?: number;
