@@ -1,6 +1,10 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, UserPlus, UserCheck, ExternalLink, Pencil, Check, ZoomIn, ZoomOut, Sparkles, Trash2, MessageCircle } from 'lucide-react';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { GENERIC_PROMPTS } from './community-types';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
