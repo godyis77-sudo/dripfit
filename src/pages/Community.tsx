@@ -123,10 +123,23 @@ const Community = () => {
               <p className="text-[10px] text-muted-foreground">Get real opinions before you buy</p>
             </div>
           </div>
-          <Button className="rounded-lg btn-luxury text-primary-foreground h-8 px-3 text-[11px] font-bold active:scale-95 transition-transform" onClick={onPostLook}>
-            <Sparkles className="mr-1 h-3 w-3" /> Post a Look
-          </Button>
-        </div>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => navigate('/cart')}
+              className="relative h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Cart"
+            >
+              <ShoppingCart className="h-4 w-4" />
+              {cartCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 h-4 min-w-[16px] px-1 rounded-full bg-primary text-primary-foreground text-[8px] font-bold flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+            <Button className="rounded-lg btn-luxury text-primary-foreground h-8 px-3 text-[11px] font-bold active:scale-95 transition-transform" onClick={onPostLook}>
+              <Sparkles className="mr-1 h-3 w-3" /> Post a Look
+            </Button>
+          </div>
 
         {/* Filter tabs */}
         <div className="flex border-b border-border mb-4 overflow-x-auto no-scrollbar relative">
