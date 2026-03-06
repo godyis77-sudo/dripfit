@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { BodyScanResult, FitPreference, MeasurementRange } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
-import SizeHero from '@/components/results/SizeHero';
+
 import BottomTabBar from '@/components/BottomTabBar';
 import FitPreferenceToggle from '@/components/results/FitPreferenceToggle';
 import AlternativeSizes from '@/components/results/AlternativeSizes';
@@ -236,7 +236,7 @@ const Results = () => {
           </div>
         ) : null}
 
-        <SizeHero retailer={state?.retailer} category={state?.category} recommendedSize={adjustedSize} confidence={confidence} whyLine={fitWhyLine} fitPreference={fitPref} />
+        
 
         {/* Post-scan profile photo prompt */}
         <AnimatePresence>
