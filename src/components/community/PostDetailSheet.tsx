@@ -33,7 +33,7 @@ interface Comment {
 const VOTE_OPTIONS = [
   { key: 'buy_yes', label: 'Buy it', emoji: '🔥' },
   { key: 'buy_no', label: 'Pass', emoji: '👎' },
-  { key: 'keep_shopping', label: 'Save it', emoji: '🛒' },
+  { key: 'keep_shopping', label: 'Add to Cart', emoji: '🛒' },
 ] as const;
 
 const FIT_OPTIONS = [
@@ -198,7 +198,9 @@ export const PostDetailSheet = ({
   const handleSaveQuestion = () => { setEditingQuestion(false); };
 
   const buyYes = voteCounts[post.id]?.buy_yes ?? 0;
-  const totalBuy = buyYes + (voteCounts[post.id]?.buy_no ?? 0) + (voteCounts[post.id]?.keep_shopping ?? 0);
+  const buyNo = voteCounts[post.id]?.buy_no ?? 0;
+  const addToCartCount = voteCounts[post.id]?.keep_shopping ?? 0;
+  const totalBuy = buyYes + buyNo;
   const buyPct = totalBuy > 0 ? Math.round((buyYes / totalBuy) * 100) : 0;
 
   const timeAgo = (dateStr: string) => {
@@ -337,10 +339,17 @@ export const PostDetailSheet = ({
             </div>
 
             {/* Outcome summary */}
-            {totalBuy > 0 && (
+            {(totalBuy > 0 || addToCartCount > 0) && (
               <div className="text-center">
-                <p className="text-[16px] font-bold text-white">{buyPct}% Buy it</p>
-                <p className="text-[11px] text-white/50">{totalBuy} vote{totalBuy !== 1 ? 's' : ''}</p>
+                {totalBuy > 0 && (
+                  <>
+                    <p className="text-[16px] font-bold text-white">{buyPct}% Buy it</p>
+                    <p className="text-[11px] text-white/50">{totalBuy} vote{totalBuy !== 1 ? 's' : ''}</p>
+                  </>
+                )}
+                {addToCartCount > 0 && (
+                  <p className="text-[11px] font-semibold text-white/80">{addToCartCount} added to cart</p>
+                )}
               </div>
             )}
 

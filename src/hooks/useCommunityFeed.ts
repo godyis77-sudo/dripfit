@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getFollowingIds } from '@/hooks/useFollow';
 import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
+import { useCart } from '@/hooks/useCart';
 import type { Post, SeedPost, Retailer, FilterType, GenderKey } from '@/components/community/community-types';
 import { seedToPost, isValidImageUrl } from '@/components/community/community-types';
 
@@ -37,6 +38,7 @@ async function enrichPosts(data: any[], filter?: string) {
 
 export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFeedOptions) {
   const { toast } = useToast();
+  const { addToCart } = useCart();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -311,11 +313,18 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
         }
         newVotes = [...otherFit, key];
       }
+    } else if (key === 'keep_shopping') {
+      if (hasKey) {
+        newVotes = currentVotes.filter(v => v !== 'keep_shopping');
+      } else {
+        newVotes = [...currentVotes, 'keep_shopping'];
+      }
     } else {
-      const otherBuy = currentVotes.filter(v => !['buy_yes', 'buy_no', 'keep_shopping'].includes(v));
-      if (hasKey) { newVotes = [...otherBuy]; }
-      else {
-        for (const k of currentVotes.filter(v => ['buy_yes', 'buy_no', 'keep_shopping'].includes(v))) {
+      const otherBuy = currentVotes.filter(v => !['buy_yes', 'buy_no'].includes(v));
+      if (hasKey) {
+        newVotes = [...otherBuy];
+      } else {
+        for (const k of currentVotes.filter(v => ['buy_yes', 'buy_no'].includes(v))) {
           await supabase.from('community_votes').delete().eq('post_id', postId).eq('user_id', userId).eq('vote_key', k);
         }
         newVotes = [...otherBuy, key];
@@ -335,9 +344,23 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     } else {
       await supabase.from('community_votes').insert({ post_id: postId, user_id: userId, vote_key: key });
     }
+
+    if (key === 'keep_shopping' && !hasKey) {
+      const post = posts.find(p => p.id === postId);
+      if (post) {
+        addToCart({
+          post_id: post.id,
+          image_url: post.result_photo_url,
+          caption: post.caption,
+          product_urls: post.product_urls || null,
+          clothing_photo_url: post.clothing_photo_url,
+        });
+      }
+    }
+
     trackEvent('vote_submitted', { vote: key, source: 'fitcheck' });
     trackEvent('fitcheck_voted', { vote: key });
-  }, [userId, votes, toast]);
+  }, [userId, votes, posts, toast, addToCart]);
 
   const handleFollowToggle = useCallback(async (targetUserId: string) => {
     if (!userId) { toast({ title: 'Sign in to follow', variant: 'destructive' }); return; }
