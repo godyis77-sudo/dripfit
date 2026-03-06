@@ -319,22 +319,23 @@ export const PostDetailSheet = ({
             className="px-4 pb-6 pt-3 space-y-3"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Editable question */}
-            <div className="flex items-start gap-2">
+            {/* Editable caption */}
+            <div className="flex items-center gap-2">
               {editingQuestion ? (
-                <div className="flex-1 flex items-center gap-2">
-                  <input type="text" value={questionText} onChange={(e) => setQuestionText(e.target.value)} className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" autoFocus onKeyDown={(e) => { if (e.key === 'Enter') handleSaveQuestion(); }} />
-                  <button onClick={handleSaveQuestion} aria-label="Save question" className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center active:scale-90">
-                    <Check className="h-4 w-4 text-white" />
-                  </button>
-                </div>
-              ) : (
                 <>
-                  <p className="flex-1 text-white font-bold text-sm leading-snug">{displayQuestion}</p>
-                  <button onClick={handleStartEditQuestion} aria-label="Edit question" className="shrink-0 h-7 w-7 rounded-full bg-white/10 flex items-center justify-center active:scale-90 transition-transform">
-                    <Pencil className="h-3 w-3 text-white/70" />
+                  <input type="text" value={questionText} onChange={(e) => setQuestionText(e.target.value)} placeholder="Add Caption / Comment…" className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" autoFocus maxLength={300} onKeyDown={(e) => { if (e.key === 'Enter') handleSaveQuestion(); }} />
+                  <button onClick={handleSaveQuestion} className="h-8 px-3 rounded-lg bg-primary text-primary-foreground text-[11px] font-bold active:scale-95 transition-transform">
+                    Post
                   </button>
                 </>
+              ) : questionText ? (
+                <button onClick={handleStartEditQuestion} className="flex-1 text-left">
+                  <p className="text-white font-bold text-sm leading-snug">{questionText}</p>
+                </button>
+              ) : (
+                <button onClick={() => { setQuestionText(''); setEditingQuestion(true); }} className="flex-1 h-10 rounded-lg bg-white/10 border border-white/20 px-3 flex items-center">
+                  <span className="text-sm text-white/40">Add Caption / Comment…</span>
+                </button>
               )}
             </div>
 
