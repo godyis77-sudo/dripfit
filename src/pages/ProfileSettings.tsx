@@ -119,7 +119,7 @@ const ProfileSettings = () => {
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-bottom">
       <div className="max-w-sm mx-auto">
         <div className="flex items-center gap-2 mb-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/profile')} className="h-8 w-8 rounded-lg text-muted-foreground">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/profile')} className="h-8 w-8 rounded-lg text-muted-foreground" aria-label="Go back">
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <h1 className="text-[15px] font-bold text-foreground">Settings</h1>

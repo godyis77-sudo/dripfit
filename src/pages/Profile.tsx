@@ -226,6 +226,7 @@ const Profile = () => {
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); dismissPremiumBanner(); setBannerDismissed(true); }}
+              aria-label="Dismiss banner"
               className="h-5 w-5 rounded-full flex items-center justify-center hover:bg-muted/50 transition-colors shrink-0"
             >
               <X className="h-3 w-3 text-muted-foreground" />
@@ -236,7 +237,7 @@ const Profile = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <button onClick={() => setShowAvatarSheet(true)} className="relative group">
+            <button onClick={() => setShowAvatarSheet(true)} aria-label="Change profile photo" className="relative group">
               <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-primary/30 bg-card">
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
@@ -274,10 +275,11 @@ const Profile = () => {
               size="icon"
               onClick={() => navigate('/profile/settings')}
               className="text-muted-foreground h-8 w-8 rounded-lg"
+              aria-label="Settings"
             >
               <Settings className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={handleSignOut} className="text-muted-foreground h-8 w-8 rounded-lg">
+            <Button variant="ghost" size="icon" onClick={handleSignOut} className="text-muted-foreground h-8 w-8 rounded-lg" aria-label="Sign out">
               <LogOut className="h-4 w-4" />
             </Button>
           </div>

@@ -62,7 +62,7 @@ const TryOnDetail = () => {
     <div className="min-h-screen bg-background pb-safe-bottom">
       <div className="max-w-sm mx-auto px-4 pt-4">
         <div className="flex items-center gap-2 mb-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg">
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg" aria-label="Go back">
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <h1 className="text-base font-bold text-foreground">Try-On Detail</h1>

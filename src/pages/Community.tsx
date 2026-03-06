@@ -113,7 +113,7 @@ const Community = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg">
+            <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg" aria-label="Go back">
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
@@ -144,7 +144,7 @@ const Community = () => {
             >
               {f.label}
               {f.key === 'similar' && (
-                <button onClick={(e) => { e.stopPropagation(); setSimilarFitTooltip(!similarFitTooltip); }} className="text-[9px] text-muted-foreground/60 ml-0.5">ⓘ</button>
+                <button onClick={(e) => { e.stopPropagation(); setSimilarFitTooltip(!similarFitTooltip); }} aria-label="What is Similar Fit?" className="text-[9px] text-muted-foreground/60 ml-0.5">ⓘ</button>
               )}
               {filter === f.key && <motion.div layoutId="fitcheck-tab" className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full" />}
             </button>

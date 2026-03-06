@@ -294,7 +294,7 @@ const TryOn = () => {
       <div className="max-w-sm mx-auto">
         {/* Header */}
         <div className="flex items-center gap-2 mb-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg" aria-label="Go back">
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>
@@ -379,7 +379,7 @@ const TryOn = () => {
                   <p className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
                     <ShoppingBag className="h-3.5 w-3.5" /> Shop {selectedQuickPick.name}
                   </p>
-                  <button onClick={() => setSelectedQuickPick(null)} className="text-muted-foreground hover:text-foreground">
+                  <button onClick={() => setSelectedQuickPick(null)} aria-label="Remove product" className="text-muted-foreground hover:text-foreground">
                     <X className="h-3.5 w-3.5" />
                   </button>
                 </div>

@@ -97,7 +97,7 @@ const PostCard = ({
       </div>
 
       {/* Image */}
-      <button onClick={() => onOpenDetail(post)} className="relative w-full text-left">
+      <button onClick={() => onOpenDetail(post)} aria-label="View post detail" className="relative w-full text-left">
         <img
           src={post.result_photo_url}
           alt={post.caption || "Try-on look"}
@@ -233,6 +233,7 @@ const PostCard = ({
             }}
           />
           <button
+            aria-label="Send comment"
             className="shrink-0 h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center active:scale-90 transition-transform"
             onClick={(e) => {
               const input = (e.currentTarget.previousSibling as HTMLInputElement);
@@ -246,6 +247,7 @@ const PostCard = ({
           >
             <Send className="h-2.5 w-2.5 text-primary" />
           </button>
+
         </div>
       </div>
     </motion.div>

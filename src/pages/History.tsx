@@ -39,7 +39,7 @@ const History = () => {
     <div className="min-h-screen bg-background px-4 pt-4 pb-8">
       <div className="max-w-sm mx-auto">
         <div className="flex items-center gap-2 mb-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg" aria-label="Go back">
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <h1 className="text-base font-bold text-foreground">Scan History</h1>
@@ -62,7 +62,7 @@ const History = () => {
                         <p className="text-[13px] font-medium text-foreground">{new Date(m.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                         <div className="flex items-center gap-1.5">
                           <span className="text-[11px] bg-primary/10 text-primary px-2 py-0.5 rounded-md font-medium">{m.sizeRecommendation}</span>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={(e) => { e.stopPropagation(); handleDelete(m.id); }}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={(e) => { e.stopPropagation(); handleDelete(m.id); }} aria-label="Delete scan">
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         </div>
