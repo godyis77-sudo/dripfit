@@ -403,7 +403,7 @@ export const PostDetailSheet = ({
                   className="flex items-center gap-1.5 text-[11px] text-white/50 font-bold uppercase tracking-wider"
                 >
                   <MessageCircle className="h-3 w-3" />
-                  {comments.length} Comment{comments.length !== 1 ? 's' : ''}
+                  {comments.length} Comment{comments.length !== 1 ? 's' : ''} · {showComments ? 'Hide' : 'Show'}
                 </button>
                 {showComments && (
                   <div className="space-y-2 max-h-[200px] overflow-y-auto">
