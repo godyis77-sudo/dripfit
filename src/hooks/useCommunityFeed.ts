@@ -76,30 +76,24 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
   };
 
   // ── NEW / TRENDING feed ──
-  const fetchPosts = useCallback(async () => {
-    setLoading(true);
+  const fetchPosts = useCallback(async (): Promise<Post[]> => {
     resetPagination();
     const { data, error } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_urls').eq('is_public', true).order('created_at', { ascending: false }).limit(PAGE_SIZE);
-    if (error) { console.error(error); setLoading(false); return; }
+    if (error) { console.error(error); return []; }
     if (!data || data.length === 0) {
       const { data: seeds } = await supabase.from('seed_posts').select('*').eq('is_public', true).order('created_at', { ascending: false });
       if (seeds && seeds.length > 0) {
         const validSeeds = (seeds as SeedPost[]).filter(s => isValidImageUrl(s.image_url));
         const seedPosts = validSeeds.map(seedToPost);
         if (filter === 'trending') seedPosts.sort((a, b) => (b.rating_count || 0) - (a.rating_count || 0));
-        setPosts(seedPosts);
         setHasMore(false);
-      } else {
-        setPosts([]);
-        setHasMore(false);
+        return seedPosts;
       }
-      setLoading(false);
-      return;
+      setHasMore(false);
+      return [];
     }
     processBatch(data);
-    const enriched = await enrichPosts(data, filter);
-    setPosts(enriched);
-    setLoading(false);
+    return enrichPosts(data, filter);
   }, [filter]);
 
   const loadMorePosts = useCallback(async () => {
