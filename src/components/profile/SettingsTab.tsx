@@ -56,6 +56,7 @@ const SettingsTab = ({
 }: SettingsTabProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { theme: themeVal, toggleTheme } = useTheme();
   const [editingName, setEditingName] = useState(false);
   const [nameValue, setNameValue] = useState(displayName);
   const [editingIg, setEditingIg] = useState(false);
