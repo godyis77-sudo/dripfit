@@ -42,7 +42,9 @@ const ScrollToTop = () => {
   return null;
 };
 
-const App = () => (
+const App = () => {
+  useTheme();
+  return (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
