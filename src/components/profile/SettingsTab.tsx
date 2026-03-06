@@ -167,8 +167,9 @@ const SettingsTab = ({
               <Check className="h-3 w-3 text-primary-foreground" />
             </button>
             <button
-              onClick={() => { setNameValue(displayName); setEditingName(false); }}
-              className="h-6 w-6 rounded-md bg-muted flex items-center justify-center active:scale-90 transition-transform"
+               onClick={() => { setNameValue(displayName); setEditingName(false); }}
+               aria-label="Cancel editing name"
+               className="h-6 w-6 rounded-md bg-muted flex items-center justify-center active:scale-90 transition-transform"
             >
               <X className="h-3 w-3 text-muted-foreground" />
             </button>
