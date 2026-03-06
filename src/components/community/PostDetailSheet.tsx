@@ -198,7 +198,9 @@ export const PostDetailSheet = ({
   const handleSaveQuestion = () => { setEditingQuestion(false); };
 
   const buyYes = voteCounts[post.id]?.buy_yes ?? 0;
-  const totalBuy = buyYes + (voteCounts[post.id]?.buy_no ?? 0) + (voteCounts[post.id]?.keep_shopping ?? 0);
+  const buyNo = voteCounts[post.id]?.buy_no ?? 0;
+  const addToCartCount = voteCounts[post.id]?.keep_shopping ?? 0;
+  const totalBuy = buyYes + buyNo;
   const buyPct = totalBuy > 0 ? Math.round((buyYes / totalBuy) * 100) : 0;
 
   const timeAgo = (dateStr: string) => {
