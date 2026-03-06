@@ -172,7 +172,7 @@ const TryOn = () => {
     setDescription(null);
     trackEvent('tryon_started');
     try {
-      const { data, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto, clothingPhoto } });
+      const { data, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto, clothingPhoto, itemType: category || 'clothing' } });
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
       trackEvent('tryon_generated');
