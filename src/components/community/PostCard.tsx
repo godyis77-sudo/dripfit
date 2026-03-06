@@ -10,6 +10,7 @@ import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 import type { Post, FilterType } from './community-types';
+import { GENERIC_PROMPTS } from './community-types';
 import { VOTE_OPTIONS, FIT_OPTIONS } from './community-types';
 
 interface PostCardProps {
