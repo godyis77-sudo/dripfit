@@ -344,9 +344,23 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     } else {
       await supabase.from('community_votes').insert({ post_id: postId, user_id: userId, vote_key: key });
     }
+
+    if (key === 'keep_shopping' && !hasKey) {
+      const post = posts.find(p => p.id === postId);
+      if (post) {
+        addToCart({
+          post_id: post.id,
+          image_url: post.result_photo_url,
+          caption: post.caption,
+          product_urls: post.product_urls || null,
+          clothing_photo_url: post.clothing_photo_url,
+        });
+      }
+    }
+
     trackEvent('vote_submitted', { vote: key, source: 'fitcheck' });
     trackEvent('fitcheck_voted', { vote: key });
-  }, [userId, votes, toast]);
+  }, [userId, votes, posts, toast, addToCart]);
 
   const handleFollowToggle = useCallback(async (targetUserId: string) => {
     if (!userId) { toast({ title: 'Sign in to follow', variant: 'destructive' }); return; }
