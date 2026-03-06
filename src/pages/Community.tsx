@@ -3,7 +3,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2, ShoppingCart } from 'lucide-react';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -17,6 +17,7 @@ import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import PostCard from '@/components/community/PostCard';
 import EmptyStates from '@/components/community/EmptyStates';
 import { useCommunityFeed } from '@/hooks/useCommunityFeed';
+import { useCart } from '@/hooks/useCart';
 import type { Post, FilterType, TrendingSort, GenderKey } from '@/components/community/community-types';
 import { GENDER_OPTIONS, isValidImageUrl } from '@/components/community/community-types';
 
@@ -42,6 +43,7 @@ const Community = () => {
     votes, voteCounts, followToggles, failedImages,
     hasScan, handleVote, handleFollowToggle, handleDeletePost, handleImageError, fetchPosts,
   } = useCommunityFeed({ userId: user?.id, filter, shopGender });
+  const { count: cartCount } = useCart();
 
   const handleShopLook = (post: Post) => {
     const urls = (post.product_urls && post.product_urls.length > 0) ? post.product_urls : [];
@@ -121,9 +123,23 @@ const Community = () => {
               <p className="text-[10px] text-muted-foreground">Get real opinions before you buy</p>
             </div>
           </div>
-          <Button className="rounded-lg btn-luxury text-primary-foreground h-8 px-3 text-[11px] font-bold active:scale-95 transition-transform" onClick={onPostLook}>
-            <Sparkles className="mr-1 h-3 w-3" /> Post a Look
-          </Button>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => navigate('/cart')}
+              className="relative h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Cart"
+            >
+              <ShoppingCart className="h-4 w-4" />
+              {cartCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 h-4 min-w-[16px] px-1 rounded-full bg-primary text-primary-foreground text-[8px] font-bold flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+            <Button className="rounded-lg btn-luxury text-primary-foreground h-8 px-3 text-[11px] font-bold active:scale-95 transition-transform" onClick={onPostLook}>
+              <Sparkles className="mr-1 h-3 w-3" /> Post a Look
+            </Button>
+          </div>
         </div>
 
         {/* Filter tabs */}

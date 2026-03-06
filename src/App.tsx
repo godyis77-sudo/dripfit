@@ -26,6 +26,7 @@ import Profile from "./pages/Profile";
 import ProfileBody from "./pages/ProfileBody";
 import Premium from "./pages/Premium";
 import SavedItems from "./pages/SavedItems";
+import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
 import PublicProfile from "./pages/PublicProfile";
 import Browse from "./pages/Browse";
@@ -77,6 +78,7 @@ const App = () => {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/profile/settings" element={<ProfileSettings />} />
                 <Route path="/profile/saved" element={<SavedItems />} />
+                <Route path="/cart" element={<Cart />} />
                 <Route path="/profile/history" element={<History />} />
                 <Route path="/profile/body" element={<ProfileBody />} />
                 <Route path="/reset-password" element={<ResetPassword />} />

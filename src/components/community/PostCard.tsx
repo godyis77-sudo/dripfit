@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
+import { useCart } from '@/hooks/useCart';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 import type { Post, FilterType } from './community-types';
 import { VOTE_OPTIONS, FIT_OPTIONS } from './community-types';
@@ -36,6 +37,20 @@ const PostCard = ({
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { addToCart } = useCart();
+
+  const handleVoteWithCart = (postId: string, key: string) => {
+    onVote(postId, key);
+    if (key === 'keep_shopping') {
+      addToCart({
+        post_id: post.id,
+        image_url: post.result_photo_url,
+        caption: post.caption,
+        product_urls: (post as any).product_urls || null,
+        clothing_photo_url: post.clothing_photo_url,
+      });
+    }
+  };
 
   return (
     <motion.div
@@ -150,7 +165,7 @@ const PostCard = ({
                 key={v.key}
                 whileTap={{ scale: 1.18 }}
                 transition={{ duration: 0.2 }}
-                onClick={() => onVote(post.id, v.key)}
+                onClick={() => handleVoteWithCart(post.id, v.key)}
                 className={`flex-1 py-1.5 rounded-md text-[9px] font-bold border transition-all flex flex-col items-center gap-0.5 ${
                   active ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'
                 }`}
