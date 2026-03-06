@@ -125,7 +125,7 @@ export const PostDetailSheet = ({
   if (!post) return null;
 
   // Collect unique brand→url pairs from product_urls
-  const allUrls = (post.product_urls && post.product_urls.length > 0) ? post.product_urls : (post.product_url ? [post.product_url] : []);
+  const allUrls = (post.product_urls && post.product_urls.length > 0) ? post.product_urls : [];
   const retailerUrlMap = new Map<string, string>();
   allUrls.forEach(u => {
     const { brand } = detectBrandFromUrl(u);
