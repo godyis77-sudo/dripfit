@@ -63,6 +63,16 @@ const TryOn = () => {
     try { return JSON.parse(localStorage.getItem('dripcheck_scans') || '[]').length > 0; } catch { return false; }
   });
 
+  // Loading step progression
+  useEffect(() => {
+    if (!loading) { setLoadingStepIndex(0); return; }
+    const timers = [
+      setTimeout(() => setLoadingStepIndex(1), 3000),
+      setTimeout(() => setLoadingStepIndex(2), 7000),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [loading]);
+
   useEffect(() => {
     if (user && !hasSavedProfile) {
       supabase.from('body_scans').select('id').eq('user_id', user.id).limit(1).then(({ data }) => {
