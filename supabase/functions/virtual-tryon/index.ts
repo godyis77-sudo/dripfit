@@ -22,6 +22,9 @@ serve(async (req) => {
       );
     }
     const { userPhoto, clothingPhoto } = parsed.data;
+    const itemType: string = raw.itemType || "clothing";
+    const isAccessory = ["accessory", "jewelry", "necklace", "bracelet", "earrings", "ring", "watch", "hat", "cap", "sunglasses", "glasses", "bag", "purse", "handbag", "belt", "scarf", "shoes", "sneakers", "boots", "heels"].includes(itemType.toLowerCase());
+    const isLayering = raw.isLayering === true;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
