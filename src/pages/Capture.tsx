@@ -476,7 +476,19 @@ const Capture = () => {
 
               {/* Use existing photo link */}
               <button
-                onClick={handleCapture}
+                onClick={async () => {
+                  if (isNativePlatform()) {
+                    try {
+                      const result = await takeNativePhoto('gallery');
+                      const key = flowStep === 'side' ? 'side' : 'front';
+                      setPhotos(prev => ({ ...prev, [key]: result.dataUrl }));
+                      setReviewing(true);
+                      trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
+                    } catch { /* cancelled */ }
+                  } else {
+                    fileInputRef.current?.click();
+                  }
+                }}
                 className="text-[11px] text-primary font-medium flex items-center gap-1 min-h-[44px]"
               >
                 <Upload className="h-3 w-3" /> Use existing photo

@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Check, User, Shirt, Camera, ImageIcon, Link2, Store, Bookmark, FolderOpen } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
 import { compressImage } from './tryon-constants';
+import { isNativePlatform, takeNativePhoto } from '@/lib/nativeCamera';
 
 interface WardrobeItem {
   id: string;
