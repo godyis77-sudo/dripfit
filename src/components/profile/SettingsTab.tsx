@@ -434,10 +434,28 @@ const SettingsTab = ({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-        <button onClick={onDeleteAccount} className="w-full flex items-center gap-2 px-3 py-2.5 active:bg-destructive/5 transition-colors">
-          <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="text-[12px] text-muted-foreground">Delete account</span>
-        </button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button className="w-full flex items-center gap-2 px-3 py-2.5 active:bg-destructive/5 transition-colors">
+              <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
+              <span className="text-[12px] text-muted-foreground">Delete account</span>
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent className="max-w-[320px] bg-card border-border">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-foreground text-sm">Delete your account?</AlertDialogTitle>
+              <AlertDialogDescription className="text-muted-foreground text-xs">
+                This will permanently delete your account, all body scans, wardrobe items, try-on posts, and saved data. This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="text-xs h-9">Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={onDeleteAccount} className="bg-destructive text-destructive-foreground text-xs h-9 hover:bg-destructive/90">
+                Delete Forever
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
       <p className="text-[10px] text-muted-foreground text-center flex items-center justify-center gap-1 pb-2">
