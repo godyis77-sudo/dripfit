@@ -36,21 +36,9 @@ const PostCard = ({
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
-  const { addToCart } = useCart();
 
   const handleVoteWithCart = (postId: string, key: string) => {
-    const isAddingToCart = key === 'keep_shopping' && !(votes[postId] || []).includes('keep_shopping');
     onVote(postId, key);
-
-    if (isAddingToCart) {
-      addToCart({
-        post_id: post.id,
-        image_url: post.result_photo_url,
-        caption: post.caption,
-        product_urls: (post as any).product_urls || null,
-        clothing_photo_url: post.clothing_photo_url,
-      });
-    }
   };
 
   return (
