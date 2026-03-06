@@ -156,7 +156,7 @@ const TryOn = () => {
       const allUrls = lookItems.map(i => i.url).filter(Boolean);
       const primaryUrl = productLink || selectedQuickPick?.product_url || null;
       if (primaryUrl && !allUrls.includes(primaryUrl)) allUrls.unshift(primaryUrl);
-      const { error } = await supabase.from('tryon_posts').insert({ user_id: user!.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false, product_url: primaryUrl, product_urls: allUrls });
+      const { error } = await supabase.from('tryon_posts').insert({ user_id: user!.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false, product_urls: allUrls });
       if (error) throw error;
       setAutoSaved(true);
       trackEvent('tryon_saved');
@@ -194,7 +194,7 @@ const TryOn = () => {
         const allUrls = lookItems.map(i => i.url).filter(Boolean);
         const primaryUrl = productLink || selectedQuickPick?.product_url || null;
         if (primaryUrl && !allUrls.includes(primaryUrl)) allUrls.unshift(primaryUrl);
-        if (latestPosts && latestPosts.length > 0) await supabase.from('tryon_posts').update({ caption: caption || null, is_public: isPublic, product_url: primaryUrl, product_urls: allUrls }).eq('id', latestPosts[0].id);
+        if (latestPosts && latestPosts.length > 0) await supabase.from('tryon_posts').update({ caption: caption || null, is_public: isPublic, product_urls: allUrls }).eq('id', latestPosts[0].id);
       } else {
         const [userUrl, clothingUrl, resultUrl] = await Promise.all([
           uploadBase64ToStorage(userPhoto!, 'user'),
@@ -204,7 +204,7 @@ const TryOn = () => {
         const allUrls = lookItems.map(i => i.url).filter(Boolean);
         const primaryUrl = productLink || selectedQuickPick?.product_url || null;
         if (primaryUrl && !allUrls.includes(primaryUrl)) allUrls.unshift(primaryUrl);
-        await supabase.from('tryon_posts').insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic, product_url: primaryUrl, product_urls: allUrls });
+        await supabase.from('tryon_posts').insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic, product_urls: allUrls });
       }
       toast({ title: isPublic ? 'Posted to Style Check!' : 'Saved!', description: isPublic ? 'Your look is live — get feedback from the community.' : 'Caption updated.' });
     } catch (err: any) {
@@ -244,7 +244,7 @@ const TryOn = () => {
               const newUrls = lookItems.map(i => i.url).filter(Boolean);
               const primaryUrl = productLink || selectedQuickPick?.product_url || null;
               const merged = [...new Set([...(primaryUrl ? [primaryUrl] : []), ...existingUrls, ...newUrls])];
-              await supabase.from('tryon_posts').update({ result_photo_url: resultUrl, product_urls: merged, product_url: primaryUrl }).eq('id', latestPosts[0].id);
+              await supabase.from('tryon_posts').update({ result_photo_url: resultUrl, product_urls: merged }).eq('id', latestPosts[0].id);
             }
           } catch { /* silent */ }
         }
