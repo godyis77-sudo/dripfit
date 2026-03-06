@@ -203,7 +203,6 @@ const PostCard = ({
       {/* What's In This Look */}
       <WhatsInThisLook
         productUrls={(post as any).product_urls}
-        productUrl={post.product_url}
         clothingPhotoUrl={post.clothing_photo_url}
         variant="card"
         onTryOn={() => navigate('/tryon')}

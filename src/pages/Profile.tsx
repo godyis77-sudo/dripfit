@@ -80,7 +80,7 @@ const Profile = () => {
     if (!user) return;
     const [profileRes, postsRes] = await Promise.all([
       supabase.from('profiles').select('display_name, avatar_url, scan_confidence').eq('user_id', user.id).single(),
-      supabase.from('tryon_posts').select('id, result_photo_url, clothing_photo_url, caption, is_public, created_at, product_url').eq('user_id', user.id).order('created_at', { ascending: false }),
+      supabase.from('tryon_posts').select('id, result_photo_url, clothing_photo_url, caption, is_public, created_at, product_urls').eq('user_id', user.id).order('created_at', { ascending: false }),
     ]);
     if (profileRes.data) {
       setDisplayName(profileRes.data.display_name || user.email?.split('@')[0] || 'User');

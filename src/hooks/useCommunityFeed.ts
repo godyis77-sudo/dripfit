@@ -216,7 +216,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     if (similarUserIds.length === 0) { setHasMore(false); return; }
     setLoadingMore(true);
     const { data } = await supabase.from('tryon_posts')
-      .select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_url, product_urls, clothing_category')
+      .select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_urls, clothing_category')
       .eq('is_public', true).in('user_id', similarUserIds).order('created_at', { ascending: false }).lt('created_at', cursor).limit(PAGE_SIZE);
     if (!data || data.length === 0) { setHasMore(false); setLoadingMore(false); return; }
     processBatch(data);

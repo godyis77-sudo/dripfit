@@ -242,7 +242,6 @@ export const PostDetailSheet = ({
           <div className="px-4 pt-2" onClick={(e) => e.stopPropagation()}>
             <WhatsInThisLook
               productUrls={post.product_urls || undefined}
-              productUrl={post.product_url}
               clothingPhotoUrl={post.clothing_photo_url}
               variant="detail"
               onTryOn={onTryOn ? () => onTryOn(post) : undefined}
