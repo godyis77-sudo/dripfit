@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ExternalLink, ShoppingBag } from 'lucide-react';
+import { ChevronDown, ExternalLink, ShoppingBag, ShoppingCart } from 'lucide-react';
 import { FullscreenImage } from '@/components/ui/fullscreen-image';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { trackEvent } from '@/lib/analytics';
