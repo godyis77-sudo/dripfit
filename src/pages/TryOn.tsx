@@ -244,7 +244,7 @@ const TryOn = () => {
               const newUrls = lookItems.map(i => i.url).filter(Boolean);
               const primaryUrl = productLink || selectedQuickPick?.product_url || null;
               const merged = [...new Set([...(primaryUrl ? [primaryUrl] : []), ...existingUrls, ...newUrls])];
-              await supabase.from('tryon_posts').update({ result_photo_url: resultUrl, product_urls: merged, product_url: primaryUrl }).eq('id', latestPosts[0].id);
+              await supabase.from('tryon_posts').update({ result_photo_url: resultUrl, product_urls: merged }).eq('id', latestPosts[0].id);
             }
           } catch { /* silent */ }
         }

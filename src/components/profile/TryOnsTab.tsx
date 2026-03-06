@@ -163,7 +163,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                   >
                     <div className="relative">
                       <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
-                      {post.product_url && (
+                      {post.product_urls?.[0] && (
                         <div className="absolute top-1.5 right-1.5 bg-black/50 backdrop-blur-sm rounded-full p-1">
                           <ShoppingBag className="h-3 w-3 text-white" />
                         </div>
