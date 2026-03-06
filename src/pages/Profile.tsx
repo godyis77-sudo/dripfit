@@ -16,6 +16,7 @@ import TryOnsTab from '@/components/profile/TryOnsTab';
 import BodyTab from '@/components/profile/BodyTab';
 import WardrobeTab from '@/components/profile/WardrobeTab';
 import SettingsTab from '@/components/profile/SettingsTab';
+import CartTab from '@/components/profile/CartTab';
 import AvatarUploadSheet from '@/components/profile/AvatarUploadSheet';
 
 interface TryOnPost {
