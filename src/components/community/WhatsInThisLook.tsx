@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ExternalLink, ShoppingBag } from 'lucide-react';
+import { ChevronDown, ExternalLink, ShoppingBag, ShoppingCart } from 'lucide-react';
 import { FullscreenImage } from '@/components/ui/fullscreen-image';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { trackEvent } from '@/lib/analytics';
@@ -112,7 +112,8 @@ const WhatsInThisLook = ({
           padding: isCompact ? '8px 12px' : '16px 20px',
         }}
       >
-        <span className={`${isCompact ? 'text-[9px] text-muted-foreground' : 'text-[13px] text-primary-foreground'} font-bold uppercase tracking-widest`}>
+        <span className={`${isCompact ? 'text-[9px] text-muted-foreground' : 'text-[13px] text-primary-foreground'} font-bold uppercase tracking-widest flex items-center gap-2`}>
+          {!isCompact && <ShoppingCart className="h-4 w-4" />}
           Shop This Style
         </span>
         <ChevronDown
