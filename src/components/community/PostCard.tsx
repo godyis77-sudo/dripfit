@@ -233,6 +233,7 @@ const PostCard = ({
             }}
           />
           <button
+            aria-label="Send comment"
             className="shrink-0 h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center active:scale-90 transition-transform"
             onClick={(e) => {
               const input = (e.currentTarget.previousSibling as HTMLInputElement);
