@@ -3,7 +3,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Shirt, Crown, Camera, Settings, ShoppingBag, User, Globe, X } from 'lucide-react';
+import { LogOut, Shirt, Crown, Camera, Settings, ShoppingBag, ShoppingCart, User, Globe, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import PremiumBadge from '@/components/monetization/PremiumBadge';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,6 +16,7 @@ import TryOnsTab from '@/components/profile/TryOnsTab';
 import BodyTab from '@/components/profile/BodyTab';
 import WardrobeTab from '@/components/profile/WardrobeTab';
 import SettingsTab from '@/components/profile/SettingsTab';
+import CartTab from '@/components/profile/CartTab';
 import AvatarUploadSheet from '@/components/profile/AvatarUploadSheet';
 
 interface TryOnPost {
@@ -47,7 +48,7 @@ const Profile = () => {
   const [tryOnPosts, setTryOnPosts] = useState<TryOnPost[]>([]);
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
   const [favoriteRetailers, setFavoriteRetailers] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<'tryons' | 'body' | 'wardrobe'>('tryons');
+  const [activeTab, setActiveTab] = useState<'tryons' | 'body' | 'wardrobe' | 'cart'>('tryons');
   const [loading, setLoading] = useState(true);
   const [useCm, setUseCm] = useState(true);
   const [fit, setFit] = useState<FitPreference>(getFitPreference());
@@ -291,6 +292,7 @@ const Profile = () => {
             { key: 'tryons' as const, icon: Shirt, label: 'Try-Ons' },
             { key: 'body' as const, icon: User, label: 'Body' },
             { key: 'wardrobe' as const, icon: ShoppingBag, label: 'Wardrobe' },
+            { key: 'cart' as const, icon: ShoppingCart, label: 'Cart' },
           ].map(t => (
             <button
               key={t.key}
@@ -311,9 +313,13 @@ const Profile = () => {
             <motion.div key="body" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
               <BodyTab savedProfile={savedProfile} fit={fit} scanConfidence={scanConfidence} />
             </motion.div>
-          ) : (
+          ) : activeTab === 'wardrobe' ? (
             <motion.div key="wardrobe" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
               <WardrobeTab wardrobeItems={wardrobeItems} onDeleteItem={deleteWardrobeItem} favoriteRetailers={favoriteRetailers} />
+            </motion.div>
+          ) : (
+            <motion.div key="cart" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
+              <CartTab />
             </motion.div>
           )}
         </AnimatePresence>
