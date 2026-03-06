@@ -255,6 +255,21 @@ const SettingsTab = ({
         )}
       </div>
 
+      {/* Appearance */}
+      <SectionHeader>Appearance</SectionHeader>
+      <div className="bg-card border border-border rounded-xl mb-1">
+        <div className="flex items-center justify-between px-3 py-2.5">
+          <div className="flex items-center gap-2">
+            {themeVal === 'dark' ? <Moon className="h-3.5 w-3.5 text-primary" /> : <Sun className="h-3.5 w-3.5 text-primary" />}
+            <span className="text-[12px] text-foreground font-medium">Theme</span>
+          </div>
+          <button onClick={toggleTheme} className="flex items-center gap-1.5 text-[11px] text-muted-foreground active:scale-95 transition-transform">
+            <span className="capitalize">{themeVal}</span>
+            <ChevronRight className="h-3 w-3" />
+          </button>
+        </div>
+      </div>
+
       {/* Fit Preferences */}
       <SectionHeader>Fit Preferences</SectionHeader>
       <div className="bg-card border border-border rounded-xl divide-y divide-border mb-1">
