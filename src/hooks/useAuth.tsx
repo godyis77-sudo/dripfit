@@ -131,6 +131,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (nextUserId) {
         identify(nextUserId, { email: nextUser?.email });
         setSubscriptionLoading(true);
+        setTimeout(() => checkSubscription(nextUserId), 0);
 
         if (fetchedGenderUserIdRef.current !== nextUserId) {
           fetchedGenderUserIdRef.current = nextUserId;
