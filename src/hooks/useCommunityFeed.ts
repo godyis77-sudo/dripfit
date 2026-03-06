@@ -380,8 +380,6 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
 
   const handleDeletePost = useCallback(async (postId: string) => {
     if (!userId) return;
-    const confirmed = window.confirm('Delete this post from Style Check? This only removes it from the feed — your try-on and wardrobe are not affected.');
-    if (!confirmed) return;
     try {
       const { error } = await supabase.from('tryon_posts').update({ is_public: false, caption: null }).eq('id', postId).eq('user_id', userId);
       if (error) throw error;

@@ -91,7 +91,7 @@ const PostCard = ({
             {user && post.user_id === user.id && !isPlaceholder(post) && (
               <>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => onDeletePost(post.id)} className="text-destructive focus:text-destructive">
+                <DropdownMenuItem onClick={() => setConfirmDeleteId(post.id)} className="text-destructive focus:text-destructive">
                   <Trash2 className="mr-2 h-3.5 w-3.5" /> Remove Post
                 </DropdownMenuItem>
               </>

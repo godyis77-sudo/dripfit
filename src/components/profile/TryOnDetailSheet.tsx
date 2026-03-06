@@ -184,16 +184,27 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
 
           {/* Delete */}
           {onDelete && (
-            <Button
-              variant="outline"
-              className="w-full h-9 rounded-xl text-[11px] text-destructive border-destructive/20 hover:bg-destructive/10 gap-1.5"
-              onClick={() => {
-                const confirmed = window.confirm('Delete this try-on? This cannot be undone.');
-                if (confirmed) onDelete(post.id);
-              }}
-            >
-              <Trash2 className="h-3.5 w-3.5" /> Delete Try-On
-            </Button>
+            <>
+              <Button
+                variant="outline"
+                className="w-full h-9 rounded-xl text-[11px] text-destructive border-destructive/20 hover:bg-destructive/10 gap-1.5"
+                onClick={() => setConfirmDeleteId(post.id)}
+              >
+                <Trash2 className="h-3.5 w-3.5" /> Delete Try-On
+              </Button>
+              <AlertDialog open={!!confirmDeleteId} onOpenChange={(open) => !open && setConfirmDeleteId(null)}>
+                <AlertDialogContent className="max-w-[320px] rounded-2xl">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-[15px]">Delete try-on?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-[13px]">This cannot be undone.</AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="rounded-xl text-[12px]">Cancel</AlertDialogCancel>
+                    <AlertDialogAction className="rounded-xl text-[12px] bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => { if (confirmDeleteId) onDelete(confirmDeleteId); setConfirmDeleteId(null); }}>Delete</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>
           )}
         </div>
       </SheetContent>

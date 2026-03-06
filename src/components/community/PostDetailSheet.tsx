@@ -255,7 +255,7 @@ export const PostDetailSheet = ({
             </button>
             <div className="flex items-center gap-2">
               {isOwnPost && !isPlaceholder && onDelete && (
-                <button onClick={(e) => { e.stopPropagation(); onDelete(post.id); }} aria-label="Remove post" className="h-8 px-3 rounded-full bg-red-500/20 text-red-400 text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95">
+                <button onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(post.id); }} aria-label="Remove post" className="h-8 px-3 rounded-full bg-red-500/20 text-red-400 text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95">
                   <Trash2 className="h-3 w-3" /> Remove
                 </button>
               )}
