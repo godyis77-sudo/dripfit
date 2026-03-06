@@ -236,7 +236,7 @@ const Results = () => {
           </div>
         ) : null}
 
-        <SizeHero retailer={state?.retailer} category={state?.category} recommendedSize={adjustedSize} confidence={confidence} whyLine={fitWhyLine} fitPreference={fitPref} />
+        
 
         {/* Post-scan profile photo prompt */}
         <AnimatePresence>
