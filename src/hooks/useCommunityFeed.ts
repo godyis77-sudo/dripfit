@@ -78,7 +78,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
   const fetchPosts = useCallback(async () => {
     setLoading(true);
     resetPagination();
-    const { data, error } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_url, product_urls').eq('is_public', true).order('created_at', { ascending: false }).limit(PAGE_SIZE);
+    const { data, error } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_urls').eq('is_public', true).order('created_at', { ascending: false }).limit(PAGE_SIZE);
     if (error) { console.error(error); setLoading(false); return; }
     if (!data || data.length === 0) {
       const { data: seeds } = await supabase.from('seed_posts').select('*').eq('is_public', true).order('created_at', { ascending: false });
