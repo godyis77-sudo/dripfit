@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
+import { useCart } from '@/hooks/useCart';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 import type { Post, FilterType } from './community-types';
 import { VOTE_OPTIONS, FIT_OPTIONS } from './community-types';
