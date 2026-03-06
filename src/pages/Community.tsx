@@ -140,6 +140,7 @@ const Community = () => {
               <Sparkles className="mr-1 h-3 w-3" /> Post a Look
             </Button>
           </div>
+        </div>
 
         {/* Filter tabs */}
         <div className="flex border-b border-border mb-4 overflow-x-auto no-scrollbar relative">
