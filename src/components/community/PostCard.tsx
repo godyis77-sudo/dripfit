@@ -187,35 +187,6 @@ const PostCard = ({
         })()}
       </div>
 
-      {/* Fit votes */}
-      <div className="mx-1.5 my-1 h-px bg-[hsl(0_0%_13%)]" />
-      <div className="px-1.5 pb-1">
-        <p className="text-[8px] text-muted-foreground font-bold uppercase tracking-wider mb-1">How does it fit?</p>
-        {hasScan ? (
-          <div className="flex gap-1">
-            {FIT_OPTIONS.map(f => {
-              const active = (votes[post.id] || []).includes(f.key);
-              return (
-                <motion.button
-                  key={f.key}
-                  whileTap={{ scale: 1.18 }}
-                  transition={{ duration: 0.2 }}
-                  onClick={() => onVote(post.id, f.key)}
-                  className={`flex-1 py-1 rounded-md text-[8px] font-bold border transition-all ${
-                    active ? 'border-primary/60 bg-primary/5 text-primary' : 'border-border/50 text-muted-foreground/60'
-                  }`}
-                >
-                  {f.label}
-                </motion.button>
-              );
-            })}
-          </div>
-        ) : (
-          <button onClick={() => navigate('/capture')} className="text-[9px] text-muted-foreground/60 hover:text-muted-foreground transition-colors">
-            Complete a scan to rate the fit →
-          </button>
-        )}
-      </div>
 
       {/* What's In This Look */}
       <WhatsInThisLook
