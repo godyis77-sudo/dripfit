@@ -35,6 +35,7 @@ const TryOn = () => {
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [description, setDescription] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadingStepIndex, setLoadingStepIndex] = useState(0);
   const [caption, setCaption] = useState('');
   const [isPublic, setIsPublic] = useState(() => getDefaultSharePreference());
   const [shared, setShared] = useState(false);
@@ -61,6 +62,16 @@ const TryOn = () => {
   const [hasSavedProfile, setHasSavedProfile] = useState(() => {
     try { return JSON.parse(localStorage.getItem('dripcheck_scans') || '[]').length > 0; } catch { return false; }
   });
+
+  // Loading step progression
+  useEffect(() => {
+    if (!loading) { setLoadingStepIndex(0); return; }
+    const timers = [
+      setTimeout(() => setLoadingStepIndex(1), 3000),
+      setTimeout(() => setLoadingStepIndex(2), 7000),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [loading]);
 
   useEffect(() => {
     if (user && !hasSavedProfile) {
@@ -396,6 +407,24 @@ const TryOn = () => {
             <Button className="w-full h-11 rounded-lg text-sm font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30" onClick={handleTryOn} disabled={loading || !canGenerate}>
               {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating your preview…</> : <><Sparkles className="mr-2 h-4 w-4" /> Generate Try-On</>}
             </Button>
+
+            {loading && (
+              <div className="flex flex-col items-center mt-3 mb-1 gap-2">
+                <p className="text-[11px] text-muted-foreground font-medium">
+                  {loadingStepIndex === 0 && 'Analysing your body scan…'}
+                  {loadingStepIndex === 1 && 'Compositing the outfit…'}
+                  {loadingStepIndex === 2 && 'Finalising your preview…'}
+                </p>
+                <div className="flex gap-1.5">
+                  {[0, 1, 2].map(i => (
+                    <div
+                      key={i}
+                      className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${i <= loadingStepIndex ? 'bg-primary' : 'border border-muted-foreground/40'}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {!canGenerate && !loading && (
               <p className="text-[10px] text-muted-foreground text-center mt-1.5 mb-1">
