@@ -17,7 +17,6 @@ interface TryOnPost {
   is_public: boolean;
   created_at: string;
   product_urls?: string[] | null;
-  product_urls?: string[] | null;
   clothing_photo_url?: string;
 }
 
