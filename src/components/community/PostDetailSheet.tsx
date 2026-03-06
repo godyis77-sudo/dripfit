@@ -193,7 +193,7 @@ export const PostDetailSheet = ({
                   {isFollowing ? 'Following' : 'Follow'}
                 </button>
               )}
-              <button onClick={onClose} className="h-8 w-8 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform">
+              <button onClick={onClose} aria-label="Close" className="h-8 w-8 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform">
                 <X className="h-4 w-4 text-white" />
               </button>
             </div>
