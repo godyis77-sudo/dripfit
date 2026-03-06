@@ -33,7 +33,7 @@ interface Comment {
 const VOTE_OPTIONS = [
   { key: 'buy_yes', label: 'Buy it', emoji: '🔥' },
   { key: 'buy_no', label: 'Pass', emoji: '👎' },
-  { key: 'keep_shopping', label: 'Save it', emoji: '🛒' },
+  { key: 'keep_shopping', label: 'Add to Cart', emoji: '🛒' },
 ] as const;
 
 const FIT_OPTIONS = [
