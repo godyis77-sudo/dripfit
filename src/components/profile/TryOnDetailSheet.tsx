@@ -35,6 +35,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
   const [liked, setLiked] = useState(false);
   const [posting, setPosting] = useState(false);
   const [addingToWardrobe, setAddingToWardrobe] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   if (!post) return null;
 
