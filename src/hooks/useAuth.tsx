@@ -79,7 +79,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Admin override — grant premium without hitting Stripe
-    if (ADMIN_USER_IDS.includes(targetUserId)) {
+    const isAdmin = await checkIsAdmin(targetUserId);
+    if (isAdmin) {
       setIsSubscribed(true);
       setProductId('admin_override');
       setSubscriptionEnd(null);
