@@ -172,7 +172,8 @@ const Auth = () => {
             </p>
 
             <p className="text-[9px] text-muted-foreground/50 text-center">
-              By continuing, you agree to our Terms & Privacy Policy.
+              By continuing, you agree to our Terms &{' '}
+              <button onClick={() => navigate('/privacy')} className="underline hover:text-muted-foreground">Privacy Policy</button>.
             </p>
 
             <button
