@@ -216,7 +216,7 @@ const Community = () => {
         ) : shouldShowEmpty(filter) ? (
           <EmptyStates filter={filter} hasScan={hasScan} userId={user?.id} onPostLook={onPostLook} />
         ) : (
-          <div className="grid grid-cols-2 gap-2 pb-20">
+          <div className="grid grid-cols-2 gap-2 pb-4">
             {visiblePosts.map((post, idx) => (
               <PostCard
                 key={post.id}
@@ -235,6 +235,21 @@ const Community = () => {
               />
             ))}
           </div>
+          {hasMore && !loading && (
+            <div className="flex justify-center pb-20 pt-2">
+              <Button
+                className="rounded-lg btn-luxury text-primary-foreground h-10 px-6 text-xs font-bold"
+                onClick={loadMore}
+                disabled={loadingMore}
+              >
+                {loadingMore ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                {loadingMore ? 'Loading…' : 'Load More'}
+              </Button>
+            </div>
+          )}
+          {!hasMore && visiblePosts.length > 0 && (
+            <p className="text-center text-[10px] text-muted-foreground pb-20 pt-2">You've seen it all ✨</p>
+          )}
         )}
       </div>
 
