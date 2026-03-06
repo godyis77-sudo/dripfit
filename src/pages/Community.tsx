@@ -3,7 +3,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Sparkles } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -38,7 +38,8 @@ const Community = () => {
   const [similarFitTooltip, setSimilarFitTooltip] = useState(false);
 
   const {
-    posts, loading, votes, voteCounts, followToggles, failedImages,
+    posts, loading, loadingMore, hasMore, loadMore,
+    votes, voteCounts, followToggles, failedImages,
     hasScan, handleVote, handleFollowToggle, handleDeletePost, handleImageError, fetchPosts,
   } = useCommunityFeed({ userId: user?.id, filter, shopGender });
 
@@ -215,25 +216,42 @@ const Community = () => {
         ) : shouldShowEmpty(filter) ? (
           <EmptyStates filter={filter} hasScan={hasScan} userId={user?.id} onPostLook={onPostLook} />
         ) : (
-          <div className="grid grid-cols-2 gap-2 pb-20">
-            {visiblePosts.map((post, idx) => (
-              <PostCard
-                key={post.id}
-                post={post}
-                index={idx}
-                filter={filter}
-                votes={votes}
-                voteCounts={voteCounts}
-                followToggles={followToggles}
-                hasScan={hasScan}
-                onVote={handleVote}
-                onFollowToggle={handleFollowToggle}
-                onDeletePost={handleDeletePost}
-                onImageError={handleImageError}
-                onOpenDetail={setDetailPost}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 gap-2 pb-4">
+              {visiblePosts.map((post, idx) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  index={idx}
+                  filter={filter}
+                  votes={votes}
+                  voteCounts={voteCounts}
+                  followToggles={followToggles}
+                  hasScan={hasScan}
+                  onVote={handleVote}
+                  onFollowToggle={handleFollowToggle}
+                  onDeletePost={handleDeletePost}
+                  onImageError={handleImageError}
+                  onOpenDetail={setDetailPost}
+                />
+              ))}
+            </div>
+            {hasMore && !loading && (
+              <div className="flex justify-center pb-20 pt-2">
+                <Button
+                  className="rounded-lg btn-luxury text-primary-foreground h-10 px-6 text-xs font-bold"
+                  onClick={loadMore}
+                  disabled={loadingMore}
+                >
+                  {loadingMore ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                  {loadingMore ? 'Loading…' : 'Load More'}
+                </Button>
+              </div>
+            )}
+            {!hasMore && visiblePosts.length > 0 && (
+              <p className="text-center text-[10px] text-muted-foreground pb-20 pt-2">You've seen it all ✨</p>
+            )}
+          </>
         )}
       </div>
 
