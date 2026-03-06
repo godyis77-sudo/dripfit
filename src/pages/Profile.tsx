@@ -313,9 +313,13 @@ const Profile = () => {
             <motion.div key="body" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
               <BodyTab savedProfile={savedProfile} fit={fit} scanConfidence={scanConfidence} />
             </motion.div>
-          ) : (
+          ) : activeTab === 'wardrobe' ? (
             <motion.div key="wardrobe" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
               <WardrobeTab wardrobeItems={wardrobeItems} onDeleteItem={deleteWardrobeItem} favoriteRetailers={favoriteRetailers} />
+            </motion.div>
+          ) : (
+            <motion.div key="cart" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
+              <CartTab />
             </motion.div>
           )}
         </AnimatePresence>
