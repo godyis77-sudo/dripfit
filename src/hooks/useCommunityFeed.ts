@@ -311,11 +311,18 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
         }
         newVotes = [...otherFit, key];
       }
+    } else if (key === 'keep_shopping') {
+      if (hasKey) {
+        newVotes = currentVotes.filter(v => v !== 'keep_shopping');
+      } else {
+        newVotes = [...currentVotes, 'keep_shopping'];
+      }
     } else {
-      const otherBuy = currentVotes.filter(v => !['buy_yes', 'buy_no', 'keep_shopping'].includes(v));
-      if (hasKey) { newVotes = [...otherBuy]; }
-      else {
-        for (const k of currentVotes.filter(v => ['buy_yes', 'buy_no', 'keep_shopping'].includes(v))) {
+      const otherBuy = currentVotes.filter(v => !['buy_yes', 'buy_no'].includes(v));
+      if (hasKey) {
+        newVotes = [...otherBuy];
+      } else {
+        for (const k of currentVotes.filter(v => ['buy_yes', 'buy_no'].includes(v))) {
           await supabase.from('community_votes').delete().eq('post_id', postId).eq('user_id', userId).eq('vote_key', k);
         }
         newVotes = [...otherBuy, key];

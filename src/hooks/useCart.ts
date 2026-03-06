@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
@@ -15,55 +14,80 @@ export interface CartItem {
   brand?: string | null;
 }
 
+const STORAGE_KEY = 'drip_cart';
+const CART_UPDATED_EVENT = 'drip_cart_updated';
+
 export function useCart() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const STORAGE_KEY = 'drip_cart';
+  const storageKey = user ? `${STORAGE_KEY}_${user.id}` : null;
 
-  // Load cart from localStorage (keyed by user)
-  const loadCart = useCallback(() => {
-    if (!user) { setItems([]); setLoading(false); return; }
+  const readCart = useCallback((): CartItem[] => {
+    if (!storageKey) return [];
     try {
-      const raw = localStorage.getItem(`${STORAGE_KEY}_${user.id}`);
-      setItems(raw ? JSON.parse(raw) : []);
+      const raw = localStorage.getItem(storageKey);
+      return raw ? JSON.parse(raw) : [];
     } catch {
-      setItems([]);
+      return [];
     }
-    setLoading(false);
-  }, [user]);
+  }, [storageKey]);
 
-  useEffect(() => { loadCart(); }, [loadCart]);
+  const loadCart = useCallback(() => {
+    setItems(readCart());
+    setLoading(false);
+  }, [readCart]);
+
+  useEffect(() => {
+    loadCart();
+  }, [loadCart]);
+
+  useEffect(() => {
+    const handleCartUpdated = () => loadCart();
+    window.addEventListener(CART_UPDATED_EVENT, handleCartUpdated);
+    return () => window.removeEventListener(CART_UPDATED_EVENT, handleCartUpdated);
+  }, [loadCart]);
 
   const saveCart = useCallback((newItems: CartItem[]) => {
-    if (!user) return;
-    localStorage.setItem(`${STORAGE_KEY}_${user.id}`, JSON.stringify(newItems));
+    if (!storageKey) return;
+    localStorage.setItem(storageKey, JSON.stringify(newItems));
     setItems(newItems);
-  }, [user]);
+    window.dispatchEvent(new CustomEvent(CART_UPDATED_EVENT));
+  }, [storageKey]);
 
   const addToCart = useCallback((item: Omit<CartItem, 'id' | 'created_at'>) => {
-    if (!user) { toast({ title: 'Sign in to add to cart', variant: 'destructive' }); return; }
-    const exists = items.some(i => i.post_id === item.post_id);
-    if (exists) { toast({ title: 'Already in cart' }); return; }
+    if (!user) {
+      toast({ title: 'Sign in to add to cart', variant: 'destructive' });
+      return;
+    }
+
+    const current = readCart();
+    const exists = current.some(i => i.post_id === item.post_id);
+    if (exists) {
+      toast({ title: 'Already in cart' });
+      return;
+    }
+
     const newItem: CartItem = {
       ...item,
       id: crypto.randomUUID(),
       created_at: new Date().toISOString(),
     };
-    const updated = [newItem, ...items];
+
+    const updated = [newItem, ...current];
     saveCart(updated);
     trackEvent('cart_add', { post_id: item.post_id });
     toast({ title: '🛒 Added to cart' });
-  }, [user, items, saveCart, toast]);
+  }, [user, readCart, saveCart, toast]);
 
   const removeFromCart = useCallback((postId: string) => {
-    const updated = items.filter(i => i.post_id !== postId);
+    const updated = readCart().filter(i => i.post_id !== postId);
     saveCart(updated);
     trackEvent('cart_remove', { post_id: postId });
     toast({ title: 'Removed from cart' });
-  }, [items, saveCart, toast]);
+  }, [readCart, saveCart, toast]);
 
   const clearCart = useCallback(() => {
     saveCart([]);
