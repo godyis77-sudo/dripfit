@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getFollowingIds } from '@/hooks/useFollow';
 import { trackEvent } from '@/lib/analytics';
@@ -75,30 +76,24 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
   };
 
   // ── NEW / TRENDING feed ──
-  const fetchPosts = useCallback(async () => {
-    setLoading(true);
+  const fetchPosts = useCallback(async (): Promise<Post[]> => {
     resetPagination();
     const { data, error } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_urls').eq('is_public', true).order('created_at', { ascending: false }).limit(PAGE_SIZE);
-    if (error) { console.error(error); setLoading(false); return; }
+    if (error) { console.error(error); return []; }
     if (!data || data.length === 0) {
       const { data: seeds } = await supabase.from('seed_posts').select('*').eq('is_public', true).order('created_at', { ascending: false });
       if (seeds && seeds.length > 0) {
         const validSeeds = (seeds as SeedPost[]).filter(s => isValidImageUrl(s.image_url));
         const seedPosts = validSeeds.map(seedToPost);
         if (filter === 'trending') seedPosts.sort((a, b) => (b.rating_count || 0) - (a.rating_count || 0));
-        setPosts(seedPosts);
         setHasMore(false);
-      } else {
-        setPosts([]);
-        setHasMore(false);
+        return seedPosts;
       }
-      setLoading(false);
-      return;
+      setHasMore(false);
+      return [];
     }
     processBatch(data);
-    const enriched = await enrichPosts(data, filter);
-    setPosts(enriched);
-    setLoading(false);
+    return enrichPosts(data, filter);
   }, [filter]);
 
   const loadMorePosts = useCallback(async () => {
@@ -113,21 +108,18 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
   }, [cursor, hasMore, loadingMore, filter]);
 
   // ── FOLLOWING feed ──
-  const fetchFollowingFeed = useCallback(async () => {
-    if (!userId) { setPosts([]); setLoading(false); return; }
-    setLoading(true);
+  const fetchFollowingFeed = useCallback(async (): Promise<Post[]> => {
+    if (!userId) return [];
     resetPagination();
     const ids = followingIdsRef.current.length > 0 ? followingIdsRef.current : await getFollowingIds(userId);
-    if (ids.length === 0) { setPosts([]); setLoading(false); setHasMore(false); return; }
+    if (ids.length === 0) { setHasMore(false); return []; }
     const { data } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_urls').eq('is_public', true).in('user_id', ids).order('created_at', { ascending: false }).limit(PAGE_SIZE);
-    if (!data || data.length === 0) { setPosts([]); setLoading(false); setHasMore(false); return; }
+    if (!data || data.length === 0) { setHasMore(false); return []; }
     processBatch(data);
     const userIds = [...new Set(data.map(p => p.user_id))];
     const { data: profiles } = await supabase.from('profiles').select('user_id, display_name, avatar_url').in('user_id', userIds);
     const profileMap = new Map((profiles || []).map(p => [p.user_id, p]));
-    const enriched = data.map(p => ({ ...p, profile: profileMap.get(p.user_id) || { display_name: 'Anonymous' }, rating_count: 0 }));
-    setPosts(enriched);
-    setLoading(false);
+    return data.map(p => ({ ...p, profile: profileMap.get(p.user_id) || { display_name: 'Anonymous' }, rating_count: 0 }));
   }, [userId]);
 
   const loadMoreFollowing = useCallback(async () => {
@@ -149,9 +141,8 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
   // ── SIMILAR FIT feed ──
   const similarMetaRef = useRef<{ similarUserIds: string[]; scoreMap: Map<string, number>; maxScore: number } | null>(null);
 
-  const fetchSimilarFitPosts = useCallback(async () => {
-    if (!userId) { setPosts([]); setLoading(false); return; }
-    setLoading(true);
+  const fetchSimilarFitPosts = useCallback(async (): Promise<Post[]> => {
+    if (!userId) return [];
     resetPagination();
 
     const { data: profile } = await supabase.from('profiles').select('gender').eq('user_id', userId).single();
@@ -161,7 +152,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
       .select('chest_min, chest_max, waist_min, waist_max, hip_min, hip_max, inseam_min, inseam_max, sleeve_min, sleeve_max, bust_min, bust_max')
       .eq('user_id', userId).order('created_at', { ascending: false }).limit(1).single();
 
-    if (!scan) { setHasScan(false); setPosts([]); setLoading(false); setHasMore(false); return; }
+    if (!scan) { setHasScan(false); setHasMore(false); return []; }
     setHasScan(true);
 
     const mid = (a: number, b: number) => (a + b) / 2;
@@ -175,7 +166,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     } as any);
 
     if (fnError || !similarUsers || (similarUsers as any[]).length === 0) {
-      setPosts([]); setLoading(false); setHasMore(false); return;
+      setHasMore(false); return [];
     }
 
     const maxScore = gender === 'female' ? 12 : 9;
@@ -184,13 +175,13 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     const similarUserIds = qualifiedUsers.map((u: any) => u.user_id).filter(Boolean) as string[];
     similarMetaRef.current = { similarUserIds, scoreMap, maxScore };
 
-    if (similarUserIds.length === 0) { setPosts([]); setLoading(false); setHasMore(false); return; }
+    if (similarUserIds.length === 0) { setHasMore(false); return []; }
 
     const { data } = await supabase.from('tryon_posts')
       .select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_urls, clothing_category')
       .eq('is_public', true).in('user_id', similarUserIds).order('created_at', { ascending: false }).limit(PAGE_SIZE);
 
-    if (!data || data.length === 0) { setPosts([]); setLoading(false); setHasMore(false); return; }
+    if (!data || data.length === 0) { setHasMore(false); return []; }
     processBatch(data);
 
     const BOTTOM_CATEGORIES = ['bottoms'];
@@ -206,8 +197,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
       };
     });
     enriched.sort((a, b) => (b.match_score || 0) - (a.match_score || 0));
-    setPosts(enriched);
-    setLoading(false);
+    return enriched;
   }, [userId]);
 
   const loadMoreSimilar = useCallback(async () => {
@@ -256,14 +246,30 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     return loadMorePosts();
   }, [filter, loadMorePosts, loadMoreFollowing, loadMoreSimilar]);
 
-  // Main fetch effect
+  // ── useQuery for initial feed fetch ──
+  const feedQueryFn = useCallback(async (): Promise<Post[]> => {
+    if (filter === 'shop') { fetchRetailers(); return []; }
+    if (filter === 'following') return fetchFollowingFeed();
+    if (filter === 'similar') return fetchSimilarFitPosts();
+    return fetchPosts();
+  }, [filter, fetchPosts, fetchFollowingFeed, fetchSimilarFitPosts, fetchRetailers]);
+
+  const feedQuery = useQuery({
+    queryKey: ['community-feed', filter, shopGender, userId],
+    queryFn: feedQueryFn,
+    enabled: filter !== 'shop' || true,
+  });
+
+  // Sync query results into existing state so the rest of the hook + UI stays unchanged
   useEffect(() => {
-    if (filter === 'shop') fetchRetailers();
-    else if (filter === 'following') fetchFollowingFeed();
-    else if (filter === 'similar') fetchSimilarFitPosts();
-    else fetchPosts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, userId, followingIdsKey, shopGender]);
+    if (feedQuery.data !== undefined) {
+      setPosts(feedQuery.data);
+    }
+  }, [feedQuery.data]);
+
+  useEffect(() => {
+    setLoading(feedQuery.isLoading || feedQuery.isFetching);
+  }, [feedQuery.isLoading, feedQuery.isFetching]);
 
   // Load vote counts
   const postIdsKey = posts.map(p => p.id).join(',');

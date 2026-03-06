@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import SaveBanner from '@/components/ui/save-banner';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -55,43 +56,36 @@ const Results = () => {
     return !localStorage.getItem('profile_photo_prompted');
   });
 
-  // Live size recommendation from edge function
-  const [sizeRec, setSizeRec] = useState<{
-    recommended_size: string;
-    confidence: number;
-    fit_status: 'true_to_size' | 'good_fit' | 'between_sizes' | 'out_of_range';
-    fit_notes: string;
-    second_option: string | null;
-    brand_slug: string;
-    category: string;
-  } | null>(null);
-  const [sizeRecLoading, setSizeRecLoading] = useState(false);
-  const [sizeRecError, setSizeRecError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   const brandSlug = state?.retailer?.toLowerCase().replace(/\s+/g, '-') || '';
   const categoryKey = state?.category?.toLowerCase() || 'tops';
+  const fitQueryValue = fitPref === 'fitted' ? 'slim' : fitPref;
 
-  const fetchSizeRecommendation = useCallback(async (fit: string) => {
-    if (!user?.id || !brandSlug) return;
-    setSizeRecLoading(true);
-    setSizeRecError(null);
-    try {
+  const sizeRecQuery = useQuery({
+    queryKey: ['size-recommendation', user?.id, brandSlug, categoryKey, fitQueryValue],
+    queryFn: async () => {
       const { data, error } = await supabase.functions.invoke('get-size-recommendation', {
-        body: { user_id: user.id, brand_slug: brandSlug, category: categoryKey, fit_preference: fit },
+        body: { user_id: user!.id, brand_slug: brandSlug, category: categoryKey, fit_preference: fitQueryValue },
       });
       if (error) throw error;
-      if (data?.error) {
-        setSizeRecError(data.error);
-        setSizeRec(null);
-      } else {
-        setSizeRec(data);
-      }
-    } catch (e: any) {
-      setSizeRecError(e.message || 'Failed to get recommendation');
-    } finally {
-      setSizeRecLoading(false);
-    }
-  }, [user?.id, brandSlug, categoryKey]);
+      if (data?.error) throw new Error(data.error);
+      return data as {
+        recommended_size: string;
+        confidence: number;
+        fit_status: 'true_to_size' | 'good_fit' | 'between_sizes' | 'out_of_range';
+        fit_notes: string;
+        second_option: string | null;
+        brand_slug: string;
+        category: string;
+      };
+    },
+    enabled: !!user?.id && !!brandSlug,
+  });
+
+  const sizeRec = sizeRecQuery.data ?? null;
+  const sizeRecLoading = sizeRecQuery.isLoading;
+  const sizeRecError = sizeRecQuery.error ? (sizeRecQuery.error as Error).message : null;
 
   useEffect(() => {
     if (result) {
@@ -99,13 +93,6 @@ const Results = () => {
       trackEvent('result_viewed');
     }
   }, [result]);
-
-  // Fetch live recommendation whenever user, brand, or fit preference changes
-  useEffect(() => {
-    if (!user?.id || !brandSlug) return;
-    const fit = fitPref === 'fitted' ? 'slim' : fitPref;
-    fetchSizeRecommendation(fit);
-  }, [user?.id, brandSlug, categoryKey, fitPref, fetchSizeRecommendation]);
 
   const adjustedSize = useMemo(() => {
     if (!result) return '';
@@ -226,7 +213,7 @@ const Results = () => {
               loading={sizeRecLoading}
               onFitChange={(fit) => {
                 setFitPref(fit === 'slim' ? 'fitted' : fit as FitPreference);
-                fetchSizeRecommendation(fit);
+                queryClient.invalidateQueries({ queryKey: ['size-recommendation'] });
                 trackEvent('fit_preference_changed', { fit });
               }}
             />
