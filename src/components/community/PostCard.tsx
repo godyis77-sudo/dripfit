@@ -180,12 +180,22 @@ const PostCard = ({
         </div>
         {(() => {
           const buyYes = voteCounts[post.id]?.buy_yes ?? 0;
-          const total = buyYes + (voteCounts[post.id]?.buy_no ?? 0) + (voteCounts[post.id]?.keep_shopping ?? 0);
-          if (total > 0) {
-            const pct = Math.round((buyYes / total) * 100);
-            return <p className="text-[9px] font-bold text-primary mt-1 text-center">{pct}% Buy it · {total} vote{total !== 1 ? 's' : ''}</p>;
+          const buyNo = voteCounts[post.id]?.buy_no ?? 0;
+          const addToCartCount = voteCounts[post.id]?.keep_shopping ?? 0;
+          const totalBuyVotes = buyYes + buyNo;
+
+          if (totalBuyVotes === 0 && addToCartCount === 0) return null;
+
+          const parts: string[] = [];
+          if (totalBuyVotes > 0) {
+            const pct = Math.round((buyYes / totalBuyVotes) * 100);
+            parts.push(`${pct}% Buy it · ${totalBuyVotes} vote${totalBuyVotes !== 1 ? 's' : ''}`);
           }
-          return null;
+          if (addToCartCount > 0) {
+            parts.push(`${addToCartCount} added to cart`);
+          }
+
+          return <p className="text-[9px] font-bold text-primary mt-1 text-center">{parts.join(' · ')}</p>;
         })()}
       </div>
 
