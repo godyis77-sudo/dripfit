@@ -19,8 +19,6 @@ interface WhatsInThisLookProps {
   items?: LookItem[];
   /** Raw product URLs (from Style Check posts) — items will be derived */
   productUrls?: string[];
-  /** Single product URL fallback */
-  productUrl?: string | null;
   /** Clothing photo URL (used as fallback thumbnail) */
   clothingPhotoUrl?: string | null;
   /** Whether to start expanded */
