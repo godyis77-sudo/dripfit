@@ -35,6 +35,7 @@ const TryOn = () => {
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [description, setDescription] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadingStepIndex, setLoadingStepIndex] = useState(0);
   const [caption, setCaption] = useState('');
   const [isPublic, setIsPublic] = useState(() => getDefaultSharePreference());
   const [shared, setShared] = useState(false);
