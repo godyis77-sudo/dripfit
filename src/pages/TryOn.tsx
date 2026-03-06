@@ -226,7 +226,7 @@ const TryOn = () => {
     if (!hasUnlimitedTryOns && getMonthlyTryOnCount() >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return; }
     trackEvent('tryon_accessory_started', { category: accessoryCategory });
     try {
-      const { data, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto: resultImage, clothingPhoto: accessoryPhoto } });
+      const { data, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto: resultImage, clothingPhoto: accessoryPhoto, itemType: accessoryCategory || 'accessory', isLayering: true } });
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
       if (!hasUnlimitedTryOns) incrementTryOnCount();
