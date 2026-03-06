@@ -69,7 +69,7 @@ const WhatsInThisLook = ({
   // Build items list
   let items: LookItem[] = propItems || [];
   if (items.length === 0) {
-    const urls = productUrls?.length ? productUrls : (productUrl ? [productUrl] : []);
+    const urls = productUrls?.length ? productUrls : [];
     items = deriveItemsFromUrls(urls);
   }
 
