@@ -261,7 +261,7 @@ export const PostDetailSheet = ({
               {editingQuestion ? (
                 <div className="flex-1 flex items-center gap-2">
                   <input type="text" value={questionText} onChange={(e) => setQuestionText(e.target.value)} className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" autoFocus onKeyDown={(e) => { if (e.key === 'Enter') handleSaveQuestion(); }} />
-                  <button onClick={handleSaveQuestion} className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center active:scale-90">
+                  <button onClick={handleSaveQuestion} aria-label="Save question" className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center active:scale-90">
                     <Check className="h-4 w-4 text-white" />
                   </button>
                 </div>
