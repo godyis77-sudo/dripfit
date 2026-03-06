@@ -339,10 +339,17 @@ export const PostDetailSheet = ({
             </div>
 
             {/* Outcome summary */}
-            {totalBuy > 0 && (
+            {(totalBuy > 0 || addToCartCount > 0) && (
               <div className="text-center">
-                <p className="text-[16px] font-bold text-white">{buyPct}% Buy it</p>
-                <p className="text-[11px] text-white/50">{totalBuy} vote{totalBuy !== 1 ? 's' : ''}</p>
+                {totalBuy > 0 && (
+                  <>
+                    <p className="text-[16px] font-bold text-white">{buyPct}% Buy it</p>
+                    <p className="text-[11px] text-white/50">{totalBuy} vote{totalBuy !== 1 ? 's' : ''}</p>
+                  </>
+                )}
+                {addToCartCount > 0 && (
+                  <p className="text-[11px] font-semibold text-white/80">{addToCartCount} added to cart</p>
+                )}
               </div>
             )}
 
