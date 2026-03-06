@@ -279,7 +279,7 @@ const Community = () => {
           navigate(`/profile/${encodeURIComponent(name)}`);
         }}
         onShopLook={handleShopLook}
-        onDelete={handleDeletePost}
+        onDelete={(postId) => { setDetailPost(null); handleDeletePost(postId); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
         onTryOn={(p) => {
           setDetailPost(null);
           const urls = p.product_urls;
