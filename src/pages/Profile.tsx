@@ -236,7 +236,7 @@ const Profile = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <button onClick={() => setShowAvatarSheet(true)} className="relative group">
+            <button onClick={() => setShowAvatarSheet(true)} aria-label="Change profile photo" className="relative group">
               <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-primary/30 bg-card">
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
