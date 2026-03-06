@@ -72,7 +72,7 @@ const Cart = () => {
           </div>
         ) : (
           <div className="space-y-2 pb-4">
-            {items.map(item => {
+            {items.map(item => (
                 <div key={item.id} className="bg-card border border-border rounded-xl p-2.5 flex gap-3">
                   {/* Thumbnail */}
                   <button
