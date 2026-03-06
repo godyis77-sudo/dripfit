@@ -23,7 +23,8 @@ serve(async (req) => {
     }
     const { userPhoto, clothingPhoto } = parsed.data;
     const itemType: string = raw.itemType || "clothing";
-    const isAccessory = ["accessory", "jewelry", "necklace", "bracelet", "earrings", "ring", "watch", "hat", "cap", "sunglasses", "glasses", "bag", "purse", "handbag", "belt", "scarf", "shoes", "sneakers", "boots", "heels"].includes(itemType.toLowerCase());
+    const ACCESSORY_TYPES = ["accessory", "jewelry", "necklace", "bracelet", "earrings", "ring", "watch", "hat", "hats", "cap", "sunglasses", "glasses", "bag", "bags", "purse", "handbag", "belt", "belts", "scarf", "scarves", "shoes", "sneakers", "boots", "heels", "loafers", "sandals"];
+    const isAccessory = ACCESSORY_TYPES.includes(itemType.toLowerCase());
     const isLayering = raw.isLayering === true;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
