@@ -226,8 +226,9 @@ const SettingsTab = ({
               placeholder="username"
             />
             <button
-              onClick={() => { if (onInstagramSave) { onInstagramSave(igValue.trim()); } setEditingIg(false); }}
-              className="h-6 w-6 rounded-md bg-primary flex items-center justify-center active:scale-90 transition-transform"
+               onClick={() => { if (onInstagramSave) { onInstagramSave(igValue.trim()); } setEditingIg(false); }}
+               aria-label="Save Instagram handle"
+               className="h-6 w-6 rounded-md bg-primary flex items-center justify-center active:scale-90 transition-transform"
             >
               <Check className="h-3 w-3 text-primary-foreground" />
             </button>
