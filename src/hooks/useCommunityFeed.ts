@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getFollowingIds } from '@/hooks/useFollow';
 import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
+import { useCart } from '@/hooks/useCart';
 import type { Post, SeedPost, Retailer, FilterType, GenderKey } from '@/components/community/community-types';
 import { seedToPost, isValidImageUrl } from '@/components/community/community-types';
 
