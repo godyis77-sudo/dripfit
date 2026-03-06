@@ -160,8 +160,9 @@ const SettingsTab = ({
               maxLength={30}
             />
             <button
-              onClick={() => { if (nameValue.trim() && onDisplayNameSave) { onDisplayNameSave(nameValue.trim()); } setEditingName(false); }}
-              className="h-6 w-6 rounded-md bg-primary flex items-center justify-center active:scale-90 transition-transform"
+               onClick={() => { if (nameValue.trim() && onDisplayNameSave) { onDisplayNameSave(nameValue.trim()); } setEditingName(false); }}
+               aria-label="Save display name"
+               className="h-6 w-6 rounded-md bg-primary flex items-center justify-center active:scale-90 transition-transform"
             >
               <Check className="h-3 w-3 text-primary-foreground" />
             </button>
