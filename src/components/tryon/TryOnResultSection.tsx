@@ -318,7 +318,7 @@ const TryOnResultSection = ({
                     </>
                   )}
 
-                  <Button className="w-full h-10 rounded-lg text-[12px] font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30" onClick={() => { onAddAccessory(accessoryPhoto!, accessoryCategory); setAccessoryPhoto(null); setAccessoryCategory(null); }} disabled={!accessoryPhoto || addingAccessory}>
+                  <Button className="w-full h-10 rounded-lg text-[12px] font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30" onClick={() => { onAddAccessory(accessoryPhoto!, accessoryCategory); setAccessoryPhoto(null); setAccessoryCategory(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }} disabled={!accessoryPhoto || addingAccessory}>
                     {addingAccessory ? <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> Adding {accessoryCategory || 'accessory'}…</> : <><Sparkles className="mr-1.5 h-3.5 w-3.5" /> {layerHistory.length > 0 ? 'Add Another Accessory to Look' : `Add ${accessoryCategory || 'Accessory'} to Look`}</>}
                   </Button>
 
