@@ -416,6 +416,7 @@ export const PostDetailSheet = ({
                         </div>
                       </div>
                     ))}
+                    <div ref={commentsEndRef} />
                   </div>
                 )}
               </>
