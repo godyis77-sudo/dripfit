@@ -90,7 +90,6 @@ const Results = () => {
   useEffect(() => {
     if (result) {
       trackEvent('results_viewed');
-      trackEvent('result_viewed');
     }
   }, [result]);
 

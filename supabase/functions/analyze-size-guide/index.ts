@@ -119,9 +119,9 @@ Please analyze the size chart and recommend the best size for me.`;
     const jsonMatch = content.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("Could not parse recommendation from AI response");
 
-    const parsed = JSON.parse(jsonMatch[0]);
+    const recommendation = JSON.parse(jsonMatch[0]);
 
-    return new Response(JSON.stringify(parsed), {
+    return new Response(JSON.stringify(recommendation), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

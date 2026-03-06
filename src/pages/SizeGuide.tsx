@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import BottomTabBar from '@/components/BottomTabBar';
 import { useToast } from '@/hooks/use-toast';
+import { isNativePlatform, takeNativePhoto } from '@/lib/nativeCamera';
 
 interface SizeBreakdown { measurement: string; userValue: string; chartRange: string; fitsSize: string; fit: 'tight' | 'good' | 'loose'; }
 interface SizeRecommendation { recommendedSize: string; confidence: string; breakdown: SizeBreakdown[]; notes: string; alternativeSize?: string; alternativeReason?: string; }
@@ -132,10 +133,28 @@ const SizeGuide = () => {
             </motion.div>
           ) : (
             <div className="flex gap-2">
-              <Button variant="outline" className="flex-1 h-20 rounded-xl flex-col gap-1.5" onClick={() => fileInputRef.current?.click()}>
+              <Button variant="outline" className="flex-1 h-20 rounded-xl flex-col gap-1.5" onClick={async () => {
+                if (isNativePlatform()) {
+                  try {
+                    const { dataUrl } = await takeNativePhoto('gallery');
+                    setSizeGuideImage(dataUrl); setRecommendation(null); setError(null);
+                  } catch {}
+                  return;
+                }
+                fileInputRef.current?.click();
+              }}>
                 <Image className="h-4 w-4 text-muted-foreground" /><span className="text-[11px] text-muted-foreground">Gallery</span>
               </Button>
-              <Button variant="outline" className="flex-1 h-20 rounded-xl flex-col gap-1.5" onClick={() => cameraInputRef.current?.click()}>
+              <Button variant="outline" className="flex-1 h-20 rounded-xl flex-col gap-1.5" onClick={async () => {
+                if (isNativePlatform()) {
+                  try {
+                    const { dataUrl } = await takeNativePhoto('camera');
+                    setSizeGuideImage(dataUrl); setRecommendation(null); setError(null);
+                  } catch {}
+                  return;
+                }
+                cameraInputRef.current?.click();
+              }}>
                 <Camera className="h-4 w-4 text-muted-foreground" /><span className="text-[11px] text-muted-foreground">Camera</span>
               </Button>
             </div>
