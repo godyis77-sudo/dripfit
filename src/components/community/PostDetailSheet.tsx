@@ -277,18 +277,18 @@ export const PostDetailSheet = ({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="flex items-center justify-center px-2 relative overflow-hidden touch-none"
-            style={{ minHeight: '40vh' }}
+            className="px-2"
             onClick={(e) => e.stopPropagation()}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
             onDoubleClick={handleDoubleClick}
           >
-            <img src={post.result_photo_url} alt={post.caption || 'Try-on look'} className="max-w-full max-h-[60vh] object-contain rounded-xl transition-transform duration-100" style={{ transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)` }} draggable={false} />
-            <button onClick={toggleZoom} aria-label={zoom > 1 ? "Zoom out" : "Zoom in"} className="absolute bottom-3 right-4 h-8 w-8 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform">
-              {zoom > 1 ? <ZoomOut className="h-4 w-4 text-white" /> : <ZoomIn className="h-4 w-4 text-white" />}
-            </button>
+            <div className="relative mx-auto w-full max-w-sm aspect-[3/4] overflow-hidden rounded-xl bg-background touch-none">
+              <img src={post.result_photo_url} alt={post.caption || 'Try-on look'} className="absolute inset-0 h-full w-full object-contain object-top transition-transform duration-100" style={{ transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)` }} draggable={false} />
+              <button onClick={toggleZoom} aria-label={zoom > 1 ? "Zoom out" : "Zoom in"} className="absolute bottom-3 right-4 h-8 w-8 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform">
+                {zoom > 1 ? <ZoomOut className="h-4 w-4 text-white" /> : <ZoomIn className="h-4 w-4 text-white" />}
+              </button>
             {retailers.length > 0 && zoom <= 1 && (
               <div className="absolute top-3 right-4 flex flex-col gap-1 items-end">
                 {retailers.map((r) => (
