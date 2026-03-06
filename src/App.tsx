@@ -83,6 +83,7 @@ const App = () => {
                 <Route path="/profile/:username" element={<PublicProfile />} />
                 <Route path="/browse/:category" element={<Browse />} />
                 <Route path="/premium" element={<Premium />} />
+                <Route path="/privacy" element={<Privacy />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </AnimatePresence>
