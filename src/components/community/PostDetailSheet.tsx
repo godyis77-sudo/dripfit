@@ -268,7 +268,7 @@ export const PostDetailSheet = ({
               ) : (
                 <>
                   <p className="flex-1 text-white font-bold text-sm leading-snug">{displayQuestion}</p>
-                  <button onClick={handleStartEditQuestion} className="shrink-0 h-7 w-7 rounded-full bg-white/10 flex items-center justify-center active:scale-90 transition-transform">
+                  <button onClick={handleStartEditQuestion} aria-label="Edit question" className="shrink-0 h-7 w-7 rounded-full bg-white/10 flex items-center justify-center active:scale-90 transition-transform">
                     <Pencil className="h-3 w-3 text-white/70" />
                   </button>
                 </>
