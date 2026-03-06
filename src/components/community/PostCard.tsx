@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Star, Send, Sparkles, Trash2, User, UserPlus, UserCheck } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Star, Send, Sparkles, Trash2, User, UserPlus, UserCheck, ChevronUp, ShoppingBag } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
+import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import type { Post, FilterType } from './community-types';
 import { GENERIC_PROMPTS } from './community-types';
 import { VOTE_OPTIONS, FIT_OPTIONS } from './community-types';

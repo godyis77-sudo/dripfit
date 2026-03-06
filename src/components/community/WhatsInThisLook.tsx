@@ -109,7 +109,7 @@ const WhatsInThisLook = ({
         }}
       >
         <span className={`${isCompact ? 'text-[9px]' : 'text-[13px]'} font-bold uppercase tracking-widest flex items-center gap-2 text-primary-foreground`}>
-          {!isCompact && <ShoppingCart className="h-4 w-4" />}
+          <ShoppingCart className={isCompact ? 'h-3 w-3' : 'h-4 w-4'} />
           Shop This Style
         </span>
         <ChevronDown
