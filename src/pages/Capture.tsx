@@ -15,6 +15,7 @@ import { getFitPreference } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { isNativePlatform, takeNativePhoto } from '@/lib/nativeCamera';
 
 type FlowStep = 'intro' | 'height' | 'front' | 'side' | 'review';
 const FLOW_STEPS: { key: FlowStep; label: string }[] = [
@@ -119,7 +120,23 @@ const Capture = () => {
   const captureStep: CaptureStep = flowStep === 'side' ? 'side' : 'front';
   const config = STEP_CONFIG[captureStep];
 
-  const handleCapture = () => fileInputRef.current?.click();
+  const handleCapture = async () => {
+    if (isNativePlatform()) {
+      try {
+        const result = await takeNativePhoto('camera');
+        const key = flowStep === 'side' ? 'side' : 'front';
+        setPhotos(prev => ({ ...prev, [key]: result.dataUrl }));
+        setReviewing(true);
+        trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
+      } catch (err: any) {
+        // User cancelled or camera error — silently ignore cancellation
+        if (err?.message?.includes('cancelled') || err?.message?.includes('canceled')) return;
+        console.error('Native camera error:', err);
+      }
+    } else {
+      fileInputRef.current?.click();
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -459,7 +476,19 @@ const Capture = () => {
 
               {/* Use existing photo link */}
               <button
-                onClick={handleCapture}
+                onClick={async () => {
+                  if (isNativePlatform()) {
+                    try {
+                      const result = await takeNativePhoto('gallery');
+                      const key = flowStep === 'side' ? 'side' : 'front';
+                      setPhotos(prev => ({ ...prev, [key]: result.dataUrl }));
+                      setReviewing(true);
+                      trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
+                    } catch { /* cancelled */ }
+                  } else {
+                    fileInputRef.current?.click();
+                  }
+                }}
                 className="text-[11px] text-primary font-medium flex items-center gap-1 min-h-[44px]"
               >
                 <Upload className="h-3 w-3" /> Use existing photo

@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Check, User, Shirt, Camera, ImageIcon, Link2, Store, Bookmark, FolderOpen } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
 import { compressImage } from './tryon-constants';
+import { isNativePlatform, takeNativePhoto } from '@/lib/nativeCamera';
 
 interface WardrobeItem {
   id: string;
@@ -55,6 +56,17 @@ const TryOnUploadSection = ({
     }
   };
 
+  const handleNativeCapture = async (setter: (v: string) => void, type: 'photo' | 'clothing', source: 'camera' | 'gallery') => {
+    try {
+      const result = await takeNativePhoto(source);
+      setter(result.dataUrl);
+      trackEvent(type === 'photo' ? 'tryon_photo_uploaded' : 'tryon_clothing_uploaded');
+    } catch (err: any) {
+      if (err?.message?.includes('cancelled') || err?.message?.includes('canceled')) return;
+      onToast({ title: 'Camera error', description: 'Try again or use gallery.', variant: 'destructive' });
+    }
+  };
+
   return (
     <>
       <div className="grid grid-cols-2 gap-2 mb-3">
@@ -84,10 +96,16 @@ const TryOnUploadSection = ({
                 </div>
                 <p className="text-[9px] text-muted-foreground text-center">Full body · front facing · well lit</p>
                 <div className="flex gap-1.5 w-full">
-                  <button onClick={() => userCameraRef.current?.click()} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 border border-primary/20 text-primary active:scale-95 transition-transform">
+                  <button onClick={() => {
+                    if (isNativePlatform()) handleNativeCapture(onUserPhotoChange, 'photo', 'camera');
+                    else userCameraRef.current?.click();
+                  }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 border border-primary/20 text-primary active:scale-95 transition-transform">
                     <Camera className="h-3.5 w-3.5" /><span className="text-[10px] font-bold">Camera</span>
                   </button>
-                  <button onClick={() => userPhotoRef.current?.click()} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-card border border-border text-muted-foreground active:scale-95 transition-transform">
+                  <button onClick={() => {
+                    if (isNativePlatform()) handleNativeCapture(onUserPhotoChange, 'photo', 'gallery');
+                    else userPhotoRef.current?.click();
+                  }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-card border border-border text-muted-foreground active:scale-95 transition-transform">
                     <ImageIcon className="h-3.5 w-3.5" /><span className="text-[10px] font-bold">Gallery</span>
                   </button>
                 </div>
@@ -131,10 +149,16 @@ const TryOnUploadSection = ({
                 </div>
                 <p className="text-[9px] text-muted-foreground text-center">Product photo · clean background</p>
                 <div className="flex gap-1.5 w-full">
-                  <button onClick={() => clothingCameraRef.current?.click()} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 border border-primary/20 text-primary active:scale-95 transition-transform">
+                  <button onClick={() => {
+                    if (isNativePlatform()) handleNativeCapture(onClothingPhotoChange, 'clothing', 'camera');
+                    else clothingCameraRef.current?.click();
+                  }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 border border-primary/20 text-primary active:scale-95 transition-transform">
                     <Camera className="h-3.5 w-3.5" /><span className="text-[10px] font-bold">Camera</span>
                   </button>
-                  <button onClick={() => clothingPhotoRef.current?.click()} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-card border border-border text-muted-foreground active:scale-95 transition-transform">
+                  <button onClick={() => {
+                    if (isNativePlatform()) handleNativeCapture(onClothingPhotoChange, 'clothing', 'gallery');
+                    else clothingPhotoRef.current?.click();
+                  }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-card border border-border text-muted-foreground active:scale-95 transition-transform">
                     <ImageIcon className="h-3.5 w-3.5" /><span className="text-[10px] font-bold">Gallery</span>
                   </button>
                 </div>
