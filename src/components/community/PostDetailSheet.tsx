@@ -91,6 +91,7 @@ export const PostDetailSheet = ({
   const [isPanning, setIsPanning] = useState(false);
   const lastTouch = useRef<{ x: number; y: number } | null>(null);
   const lastDist = useRef<number | null>(null);
+  const commentsEndRef = useRef<HTMLDivElement>(null);
 
   // Fetch comments when sheet opens
   useEffect(() => {
@@ -188,6 +189,8 @@ export const PostDetailSheet = ({
       setComments(prev => [...prev, newComment]);
       setShowComments(true);
       setCommentText('');
+      // Scroll to new comment without shifting image
+      setTimeout(() => commentsEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
     }
   };
 
@@ -413,6 +416,7 @@ export const PostDetailSheet = ({
                         </div>
                       </div>
                     ))}
+                    <div ref={commentsEndRef} />
                   </div>
                 )}
               </>
