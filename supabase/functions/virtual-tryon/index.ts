@@ -22,6 +22,9 @@ serve(async (req) => {
       );
     }
     const { userPhoto, clothingPhoto } = parsed.data;
+    const itemType: string = raw.itemType || "clothing";
+    const isAccessory = ["accessory", "jewelry", "necklace", "bracelet", "earrings", "ring", "watch", "hat", "cap", "sunglasses", "glasses", "bag", "purse", "handbag", "belt", "scarf", "shoes", "sneakers", "boots", "heels"].includes(itemType.toLowerCase());
+    const isLayering = raw.isLayering === true;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
@@ -90,7 +93,9 @@ serve(async (req) => {
           {
             role: "user",
             content: [
-              { type: "text", text: "I have two images: the first is a photo of a person (or a person already wearing an outfit), and the second is an item (clothing or accessory like shoes, hat, jewelry, necklace, earrings, bracelet, watch, bag, or sunglasses). Generate a new image showing this exact person wearing/using the item from the second image in addition to whatever they are already wearing. Keep the person's face, body, pose, background, and existing outfit exactly the same. Only add the new item from the second image. Output the resulting image." },
+              { type: "text", text: isAccessory || isLayering
+                ? `I have two images. The first image shows a person${isLayering ? " already wearing an outfit" : ""}. The second image shows an accessory item (${itemType}). Generate a photorealistic image of the EXACT same person (same face, skin tone, hair, body proportions, pose, and background) with the accessory from the second image naturally added. CRITICAL RULES: 1) Do NOT change the person's face, body shape, skin color, or proportions in any way. 2) Do NOT change their existing clothing or outfit. 3) Place the accessory realistically (correct size, position, lighting, shadows). 4) The result must look like a real photograph, not AI-generated. 5) Maintain the exact same image quality, lighting, and color temperature. Output only the resulting image.`
+                : `I have two images. The first image shows a person. The second image shows a clothing item. Generate a photorealistic image of the EXACT same person (same face, skin tone, hair, body proportions, pose, and background) wearing the clothing item from the second image. CRITICAL RULES: 1) Do NOT change the person's face, body shape, skin color, or proportions in any way. 2) The clothing must fit naturally on the person's body with realistic draping, folds, and shadows. 3) The result must look like a real photograph, not AI-generated. 4) Maintain the exact same image quality, lighting, and color temperature. Output only the resulting image.` },
               makeImagePart(userImageInput),
               makeImagePart(clothingImageInput),
             ],
