@@ -165,7 +165,7 @@ const PostCard = ({
                 key={v.key}
                 whileTap={{ scale: 1.18 }}
                 transition={{ duration: 0.2 }}
-                onClick={() => onVote(post.id, v.key)}
+                onClick={() => handleVoteWithCart(post.id, v.key)}
                 className={`flex-1 py-1.5 rounded-md text-[9px] font-bold border transition-all flex flex-col items-center gap-0.5 ${
                   active ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'
                 }`}
