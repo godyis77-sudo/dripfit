@@ -258,6 +258,7 @@ const TryOn = () => {
 
   const handleSelectProduct = async (product: CatalogProduct) => {
     setSelectedQuickPick(product);
+    if (product.category) setCategory(product.category);
     if (product.product_url) {
       setProductLink(product.product_url);
       setLookItems([{ brand: product.brand, name: product.name, url: product.product_url, price_cents: product.price_cents, image_url: product.image_url }]);
