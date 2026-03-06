@@ -156,7 +156,7 @@ const TryOn = () => {
       const allUrls = lookItems.map(i => i.url).filter(Boolean);
       const primaryUrl = productLink || selectedQuickPick?.product_url || null;
       if (primaryUrl && !allUrls.includes(primaryUrl)) allUrls.unshift(primaryUrl);
-      const { error } = await supabase.from('tryon_posts').insert({ user_id: user!.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false, product_url: primaryUrl, product_urls: allUrls });
+      const { error } = await supabase.from('tryon_posts').insert({ user_id: user!.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false, product_urls: allUrls });
       if (error) throw error;
       setAutoSaved(true);
       trackEvent('tryon_saved');
