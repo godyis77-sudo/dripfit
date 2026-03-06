@@ -40,8 +40,10 @@ const PostCard = ({
   const { addToCart } = useCart();
 
   const handleVoteWithCart = (postId: string, key: string) => {
+    const isAddingToCart = key === 'keep_shopping' && !(votes[postId] || []).includes('keep_shopping');
     onVote(postId, key);
-    if (key === 'keep_shopping') {
+
+    if (isAddingToCart) {
       addToCart({
         post_id: post.id,
         image_url: post.result_photo_url,
