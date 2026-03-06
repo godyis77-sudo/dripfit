@@ -121,6 +121,12 @@ export const PostDetailSheet = ({
     fetchComments();
   }, [open, post?.id]);
 
+  useEffect(() => {
+    if (!open || !post) return;
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  }, [open, post?.id]);
+
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if (e.touches.length === 2) {
       const dx = e.touches[0].clientX - e.touches[1].clientX;
