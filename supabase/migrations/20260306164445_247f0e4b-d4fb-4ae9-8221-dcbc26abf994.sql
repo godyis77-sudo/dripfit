@@ -1,0 +1,1 @@
+ALTER TABLE public.tryon_posts DROP COLUMN IF EXISTS product_url;
