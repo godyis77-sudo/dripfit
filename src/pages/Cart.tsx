@@ -73,8 +73,6 @@ const Cart = () => {
         ) : (
           <div className="space-y-2 pb-4">
             {items.map(item => {
-              const brand = item.product_urls?.[0] ? detectBrandFromUrl(item.product_urls[0]) : null;
-              return (
                 <div key={item.id} className="bg-card border border-border rounded-xl p-2.5 flex gap-3">
                   {/* Thumbnail */}
                   <button
