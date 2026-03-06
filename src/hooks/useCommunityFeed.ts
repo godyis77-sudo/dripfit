@@ -104,7 +104,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
   const loadMorePosts = useCallback(async () => {
     if (!cursor || !hasMore || loadingMore) return;
     setLoadingMore(true);
-    const { data } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_url, product_urls').eq('is_public', true).order('created_at', { ascending: false }).lt('created_at', cursor).limit(PAGE_SIZE);
+    const { data } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_urls').eq('is_public', true).order('created_at', { ascending: false }).lt('created_at', cursor).limit(PAGE_SIZE);
     if (!data || data.length === 0) { setHasMore(false); setLoadingMore(false); return; }
     processBatch(data);
     const enriched = await enrichPosts(data, filter);
