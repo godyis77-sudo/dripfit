@@ -97,7 +97,11 @@ type FunnelEvent =
   | 'fitcheck_post_deleted'
   | 'wardrobe_add_from_look'
   | 'fitcheck_comment'
-  | 'onboarding_gender_selected';
+  | 'onboarding_gender_selected'
+  | 'cart_add'
+  | 'cart_remove'
+  | 'cart_clear'
+  | 'cart_shop_clickout';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {

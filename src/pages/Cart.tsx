@@ -90,9 +90,9 @@ const Cart = () => {
                   {/* Details */}
                   <div className="flex-1 min-w-0 flex flex-col justify-between">
                     <div>
-                      {brand && (
+                      {item.product_urls?.[0] && (
                         <span className="text-[10px] px-2 py-0.5 rounded-md bg-primary/10 text-primary font-bold inline-block mb-1">
-                          {brand}
+                          {detectBrandFromUrl(item.product_urls[0]) || 'Shop'}
                         </span>
                       )}
                       {item.caption && (
