@@ -130,7 +130,7 @@ const TryOnClothingBadge = ({ post, navigate, toast }: { post: Post; navigate: R
         className="flex items-center gap-0.5 rounded-[100px] text-[9px] font-bold active:scale-95 transition-transform"
         style={{ background: 'hsl(var(--primary))', color: '#000', padding: '3px 8px' }}
       >
-        <Sparkles className="h-2.5 w-2.5" />
+        <Sparkles className="h-2 w-2" />
         Try On
         {items.length > 1 && (
           <>
