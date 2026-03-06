@@ -115,7 +115,7 @@ export const PostDetailSheet = ({
         ...c,
         profile: profileMap.get(c.user_id) || { display_name: null, avatar_url: null },
       })));
-      if (data.length > 0) setShowComments(true);
+      setShowComments(false);
     };
     fetchComments();
   }, [open, post?.id]);
