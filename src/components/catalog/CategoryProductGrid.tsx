@@ -131,14 +131,12 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
               <div className="absolute top-1.5 right-1.5" />
             </div>
             {/* Info area */}
-            <div className="p-2.5">
+            <div className="p-2.5 flex flex-col">
               <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-0.5">{product.brand}</p>
-              <p className="text-[11px] font-bold text-foreground line-clamp-2 leading-tight min-h-[28px]">{product.name}</p>
-              {product.price_cents && (
-                <p className="text-[12px] font-bold text-primary mt-1">
-                  ${(product.price_cents / 100).toFixed(0)}
-                </p>
-              )}
+              <p className="text-[11px] font-bold text-foreground line-clamp-2 leading-tight h-[28px]">{product.name}</p>
+              <p className="text-[12px] font-bold text-primary mt-1 h-[18px]">
+                {product.price_cents ? `$${(product.price_cents / 100).toFixed(0)}` : '\u00A0'}
+              </p>
             </div>
           </button>
         ))}
