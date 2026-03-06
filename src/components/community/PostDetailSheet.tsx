@@ -366,33 +366,13 @@ export const PostDetailSheet = ({
                   <button
                     key={v.key}
                     onClick={() => onVote(post.id, v.key)}
-                    className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${active ? 'border-white bg-white/20 text-white' : 'border-white/20 text-white/70'}`}
+                    className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${active ? 'border-primary bg-primary/20 text-primary' : 'border-border text-muted-foreground'}`}
                   >
                     <div>
                       <span className="mr-1">{v.emoji}</span>
                       <span className="text-[11px]">{v.label}</span>
                     </div>
-                    <span className="text-[10px] font-medium text-white/60">{voteCounts[post.id]?.[v.key] ?? 0}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Divider */}
-            <div className="h-px bg-[hsl(0_0%_13%)]" />
-
-            {/* Section B: HOW DOES IT FIT? */}
-            <p className="text-[11px] text-white/50 font-bold uppercase tracking-wider">How does it fit?</p>
-            <div className="flex gap-2">
-              {FIT_OPTIONS.map(f => {
-                const active = (votes[post.id] || []).includes(f.key);
-                return (
-                  <button
-                    key={f.key}
-                    onClick={() => onVote(post.id, f.key)}
-                    className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all active:scale-95 ${active ? 'border-white/60 bg-white/10 text-white' : 'border-white/10 text-white/40'}`}
-                  >
-                    {f.label}
+                    <span className="text-[10px] font-medium text-muted-foreground">{voteCounts[post.id]?.[v.key] ?? 0}</span>
                   </button>
                 );
               })}
