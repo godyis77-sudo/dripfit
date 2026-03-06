@@ -43,6 +43,7 @@ const Community = () => {
     votes, voteCounts, followToggles, failedImages,
     hasScan, handleVote, handleFollowToggle, handleDeletePost, handleImageError, fetchPosts,
   } = useCommunityFeed({ userId: user?.id, filter, shopGender });
+  const { count: cartCount } = useCart();
 
   const handleShopLook = (post: Post) => {
     const urls = (post.product_urls && post.product_urls.length > 0) ? post.product_urls : [];
