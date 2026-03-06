@@ -84,15 +84,16 @@ const TryOn = () => {
   // Pre-populate clothing from catalog product selection
   useEffect(() => {
     const state = location.state as any;
-    if (state?.clothingUrl && !clothingPhoto) {
-      imageUrlToBase64(state.clothingUrl)
+    const clothingUrl = state?.clothingUrl || state?.clothingImageUrl;
+    if (clothingUrl && !clothingPhoto) {
+      imageUrlToBase64(clothingUrl)
         .then(base64 => {
           setClothingPhoto(base64);
           if (state.productUrl) setProductLink(state.productUrl);
           trackEvent('tryon_clothing_uploaded');
         })
         .catch(() => {
-          setClothingPhoto(state.clothingUrl);
+          setClothingPhoto(clothingUrl);
           if (state.productUrl) setProductLink(state.productUrl);
         });
       window.history.replaceState({}, document.title);
