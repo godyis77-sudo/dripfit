@@ -37,6 +37,20 @@ const PostCard = ({
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { addToCart } = useCart();
+
+  const handleVoteWithCart = (postId: string, key: string) => {
+    onVote(postId, key);
+    if (key === 'keep_shopping') {
+      addToCart({
+        post_id: post.id,
+        image_url: post.result_photo_url,
+        caption: post.caption,
+        product_urls: (post as any).product_urls || null,
+        clothing_photo_url: post.clothing_photo_url,
+      });
+    }
+  };
 
   return (
     <motion.div
