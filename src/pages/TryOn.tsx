@@ -204,7 +204,7 @@ const TryOn = () => {
         const allUrls = lookItems.map(i => i.url).filter(Boolean);
         const primaryUrl = productLink || selectedQuickPick?.product_url || null;
         if (primaryUrl && !allUrls.includes(primaryUrl)) allUrls.unshift(primaryUrl);
-        await supabase.from('tryon_posts').insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic, product_url: primaryUrl, product_urls: allUrls });
+        await supabase.from('tryon_posts').insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic, product_urls: allUrls });
       }
       toast({ title: isPublic ? 'Posted to Style Check!' : 'Saved!', description: isPublic ? 'Your look is live — get feedback from the community.' : 'Caption updated.' });
     } catch (err: any) {
