@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Sparkles, ExternalLink, XCircle, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { FullscreenImage } from '@/components/ui/fullscreen-image';
+import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 import { useCart } from '@/hooks/useCart';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { trackEvent } from '@/lib/analytics';
@@ -41,62 +43,79 @@ const CartTab = () => {
       </div>
 
       {items.map(item => (
-        <div key={item.id} className="bg-card border border-border rounded-xl p-2.5 flex gap-3">
-          <button
-            onClick={() => navigate('/style-check')}
-            className="shrink-0 w-16 h-20 rounded-lg overflow-hidden bg-muted/30"
-          >
-            <img
+        <div key={item.id} className="bg-card border border-border rounded-xl overflow-hidden">
+          <div className="p-2.5 flex gap-3">
+            {/* Fullscreen-enabled thumbnail */}
+            <FullscreenImage
               src={item.image_url}
               alt={item.caption || 'Look'}
-              className="w-full h-full object-cover object-top"
-              loading="lazy"
-            />
-          </button>
+              onShop={item.product_urls?.[0] ? () => handleShop(item.product_urls![0]) : undefined}
+              onTryOn={() => navigate('/tryon', { state: { productUrl: item.product_urls?.[0] } })}
+            >
+              <div className="shrink-0 w-16 h-20 rounded-lg overflow-hidden bg-muted/30 cursor-pointer active:scale-95 transition-transform">
+                <img
+                  src={item.image_url}
+                  alt={item.caption || 'Look'}
+                  className="w-full h-full object-cover object-top"
+                  loading="lazy"
+                />
+              </div>
+            </FullscreenImage>
 
-          <div className="flex-1 min-w-0 flex flex-col justify-between">
-            <div>
-              {item.product_urls?.[0] && (
-                <span className="text-[10px] px-2 py-0.5 rounded-md bg-primary/10 text-primary font-bold inline-block mb-1">
-                  {detectBrandFromUrl(item.product_urls[0]).brand || 'Shop'}
-                </span>
-              )}
-              {item.caption && (
-                <p className="text-[11px] font-semibold text-foreground line-clamp-2 leading-snug">{item.caption}</p>
-              )}
-              <p className="text-[9px] text-muted-foreground mt-0.5">
-                Added {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-              </p>
-            </div>
+            <div className="flex-1 min-w-0 flex flex-col justify-between">
+              <div>
+                {item.product_urls?.[0] && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-primary/10 text-primary font-bold inline-block mb-1">
+                    {detectBrandFromUrl(item.product_urls[0]).brand || 'Shop'}
+                  </span>
+                )}
+                {item.caption && (
+                  <p className="text-[11px] font-semibold text-foreground line-clamp-2 leading-snug">{item.caption}</p>
+                )}
+                <p className="text-[9px] text-muted-foreground mt-0.5">
+                  Added {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </p>
+              </div>
 
-            <div className="flex gap-1.5 mt-1.5">
-              {item.product_urls && item.product_urls.length > 0 && (
+              <div className="flex gap-1.5 mt-1.5">
+                {item.product_urls && item.product_urls.length > 0 && (
+                  <Button
+                    size="sm"
+                    className="h-7 rounded-lg btn-luxury text-primary-foreground text-[9px] font-bold flex-1"
+                    onClick={() => handleShop(item.product_urls![0])}
+                  >
+                    Shop <ExternalLink className="ml-1 h-2.5 w-2.5" />
+                  </Button>
+                )}
                 <Button
                   size="sm"
-                  className="h-7 rounded-lg btn-luxury text-primary-foreground text-[9px] font-bold flex-1"
-                  onClick={() => handleShop(item.product_urls![0])}
+                  variant="outline"
+                  className="h-7 rounded-lg text-[9px] font-bold"
+                  onClick={() => navigate('/tryon', { state: { productUrl: item.product_urls?.[0] } })}
                 >
-                  Shop <ExternalLink className="ml-1 h-2.5 w-2.5" />
+                  <Sparkles className="mr-1 h-2.5 w-2.5" /> Try On
                 </Button>
-              )}
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-7 rounded-lg text-[9px] font-bold"
-                onClick={() => navigate('/tryon', { state: { productUrl: item.product_urls?.[0] } })}
-              >
-                <Sparkles className="mr-1 h-2.5 w-2.5" /> Try On
-              </Button>
+              </div>
             </div>
+
+            <button
+              onClick={() => removeFromCart(item.post_id)}
+              className="shrink-0 self-start text-muted-foreground/40 hover:text-destructive transition-colors p-0.5"
+              aria-label="Remove from cart"
+            >
+              <XCircle className="h-4 w-4" />
+            </button>
           </div>
 
-          <button
-            onClick={() => removeFromCart(item.post_id)}
-            className="shrink-0 self-start text-muted-foreground/40 hover:text-destructive transition-colors p-0.5"
-            aria-label="Remove from cart"
-          >
-            <XCircle className="h-4 w-4" />
-          </button>
+          {/* Shop This Style — lists all clothing & accessories */}
+          {item.product_urls && item.product_urls.length > 0 && (
+            <WhatsInThisLook
+              productUrls={item.product_urls}
+              clothingPhotoUrl={item.clothing_photo_url}
+              variant="card"
+              onTryOn={(lookItem) => navigate('/tryon', { state: { productUrl: lookItem.url } })}
+            />
+          )}
         </div>
       ))}
 
