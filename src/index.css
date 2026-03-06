@@ -49,6 +49,49 @@
     --sidebar-border: 0 0% 14%;
     --sidebar-ring: 45 88% 40%;
   }
+
+  :root.light {
+    --background: 40 33% 97%;
+    --foreground: 240 20% 7%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 20% 7%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 20% 7%;
+
+    --primary: 45 88% 40%;
+    --primary-foreground: 240 20% 7%;
+
+    --secondary: 40 20% 92%;
+    --secondary-foreground: 240 20% 7%;
+
+    --muted: 40 18% 93%;
+    --muted-foreground: 40 8% 38%;
+
+    --accent: 45 70% 42%;
+    --accent-foreground: 240 20% 7%;
+
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 40 14% 85%;
+    --input: 40 14% 85%;
+    --ring: 45 88% 40%;
+
+    --drip-glow: 45 88% 40%;
+    --drip-accent: 45 70% 42%;
+    --drip-gold: 45 80% 48%;
+
+    --sidebar-background: 40 33% 97%;
+    --sidebar-foreground: 40 8% 38%;
+    --sidebar-primary: 45 88% 40%;
+    --sidebar-primary-foreground: 240 20% 7%;
+    --sidebar-accent: 40 20% 92%;
+    --sidebar-accent-foreground: 240 20% 7%;
+    --sidebar-border: 40 14% 85%;
+    --sidebar-ring: 45 88% 40%;
+  }
 }
 
 @layer base {

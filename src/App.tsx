@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 import { MobileShell } from "@/components/layout/MobileShell";
 import Welcome from "./pages/Welcome";
 import Onboarding from "./pages/Onboarding";
@@ -41,7 +42,9 @@ const ScrollToTop = () => {
   return null;
 };
 
-const App = () => (
+const App = () => {
+  useTheme();
+  return (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
@@ -87,6 +90,8 @@ const App = () => (
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
-);
+
+  );
+};
 
 export default App;

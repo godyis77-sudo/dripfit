@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Switch } from '@/components/ui/switch';
-import { Crown, Trash2, Shield, Download, Ruler, Camera, ChevronRight, Bookmark, Pencil, Check, X, Star, Instagram, Globe } from 'lucide-react';
+import { Crown, Trash2, Shield, Download, Ruler, Camera, ChevronRight, Bookmark, Pencil, Check, X, Star, Instagram, Globe, Sun, Moon } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 import type { FitPreference, BodyScanResult } from '@/lib/types';
 import { SUPPORTED_RETAILERS } from '@/lib/types';
 import { trackEvent } from '@/lib/analytics';
@@ -55,6 +56,7 @@ const SettingsTab = ({
 }: SettingsTabProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { theme: themeVal, toggleTheme } = useTheme();
   const [editingName, setEditingName] = useState(false);
   const [nameValue, setNameValue] = useState(displayName);
   const [editingIg, setEditingIg] = useState(false);
@@ -252,6 +254,21 @@ const SettingsTab = ({
             </div>
           </button>
         )}
+      </div>
+
+      {/* Appearance */}
+      <SectionHeader>Appearance</SectionHeader>
+      <div className="bg-card border border-border rounded-xl mb-1">
+        <div className="flex items-center justify-between px-3 py-2.5">
+          <div className="flex items-center gap-2">
+            {themeVal === 'dark' ? <Moon className="h-3.5 w-3.5 text-primary" /> : <Sun className="h-3.5 w-3.5 text-primary" />}
+            <span className="text-[12px] text-foreground font-medium">Theme</span>
+          </div>
+          <button onClick={toggleTheme} className="flex items-center gap-1.5 text-[11px] text-muted-foreground active:scale-95 transition-transform">
+            <span className="capitalize">{themeVal}</span>
+            <ChevronRight className="h-3 w-3" />
+          </button>
+        </div>
       </div>
 
       {/* Fit Preferences */}
