@@ -113,7 +113,7 @@ const Community = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg">
+            <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg" aria-label="Go back">
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
