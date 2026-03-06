@@ -78,6 +78,7 @@ const App = () => {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/profile/settings" element={<ProfileSettings />} />
                 <Route path="/profile/saved" element={<SavedItems />} />
+                <Route path="/cart" element={<Cart />} />
                 <Route path="/profile/history" element={<History />} />
                 <Route path="/profile/body" element={<ProfileBody />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
