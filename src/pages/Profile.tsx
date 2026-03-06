@@ -3,7 +3,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Shirt, Crown, Camera, Settings, ShoppingBag, User, Globe, X } from 'lucide-react';
+import { LogOut, Shirt, Crown, Camera, Settings, ShoppingBag, ShoppingCart, User, Globe, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import PremiumBadge from '@/components/monetization/PremiumBadge';
 import { supabase } from '@/integrations/supabase/client';
