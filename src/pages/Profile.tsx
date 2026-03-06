@@ -292,6 +292,7 @@ const Profile = () => {
             { key: 'tryons' as const, icon: Shirt, label: 'Try-Ons' },
             { key: 'body' as const, icon: User, label: 'Body' },
             { key: 'wardrobe' as const, icon: ShoppingBag, label: 'Wardrobe' },
+            { key: 'cart' as const, icon: ShoppingCart, label: 'Cart' },
           ].map(t => (
             <button
               key={t.key}
