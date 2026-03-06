@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Star, Send, Sparkles, Trash2, User, UserPlus, UserCheck } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Star, Send, Sparkles, Trash2, User, UserPlus, UserCheck, ChevronUp, ShoppingBag } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
+import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import type { Post, FilterType } from './community-types';
 import { GENERIC_PROMPTS } from './community-types';
 import { VOTE_OPTIONS, FIT_OPTIONS } from './community-types';
@@ -35,6 +36,112 @@ interface PostCardProps {
 
 const isPlaceholder = (post: Post) => post.id.startsWith('seed-');
 
+/** Bottom-right badge showing clothing items — expandable, auto-populates try-on */
+const TryOnClothingBadge = ({ post, navigate, toast }: { post: Post; navigate: ReturnType<typeof useNavigate>; toast: ReturnType<typeof useToast>['toast'] }) => {
+  const [expanded, setExpanded] = useState(false);
+  const [catalogItems, setCatalogItems] = useState<{ url: string; brand: string; name: string; image_url: string | null }[]>([]);
+
+  const urls = (post as any).product_urls as string[] | null;
+
+  useEffect(() => {
+    if (!urls?.length) return;
+    let cancelled = false;
+    // Derive basic info from URLs
+    const derived = urls.map(url => {
+      const { brand } = detectBrandFromUrl(url);
+      let name = 'Product';
+      try {
+        const u = new URL(url);
+        const segments = u.pathname.split('/').filter(Boolean);
+        const last = segments[segments.length - 1] || '';
+        name = last.replace(/[-_]/g, ' ').replace(/\.[^.]+$/, '').replace(/\b\w/g, c => c.toUpperCase()).slice(0, 30) || u.hostname.replace('www.', '');
+      } catch {}
+      return { url, brand: brand || 'Shop', name, image_url: null as string | null };
+    });
+
+    // Try to enrich from catalog
+    supabase
+      .from('product_catalog')
+      .select('product_url, image_url, name, brand')
+      .in('product_url', urls)
+      .then(({ data }) => {
+        if (cancelled) return;
+        const enriched = derived.map(d => {
+          const match = data?.find(r => r.product_url === d.url);
+          return match ? { ...d, image_url: match.image_url, name: match.name || d.name, brand: match.brand || d.brand } : d;
+        });
+        setCatalogItems(enriched);
+      });
+
+    if (!catalogItems.length) setCatalogItems(derived);
+    return () => { cancelled = true; };
+  }, [urls?.join(',')]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleSelectItem = (item: typeof catalogItems[0], e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Navigate to try-on with the clothing image/url pre-populated
+    const imgUrl = item.image_url || post.clothing_photo_url;
+    navigate('/tryon', { state: { productUrl: item.url, clothingImageUrl: imgUrl } });
+    trackEvent('catalog_product_tryon', { source: 'style_check_badge' });
+  };
+
+  if (!urls?.length) return null;
+  const items = catalogItems.length ? catalogItems : [];
+  if (!items.length) return null;
+
+  return (
+    <div className="absolute bottom-2 right-2 z-10" onClick={e => e.stopPropagation()}>
+      <AnimatePresence>
+        {expanded && items.length > 1 && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.15 }}
+            className="mb-1 flex flex-col gap-1"
+          >
+            {items.slice(1).map((item, idx) => (
+              <button
+                key={idx}
+                onClick={(e) => handleSelectItem(item, e)}
+                className="flex items-center gap-1.5 rounded-lg text-[9px] font-bold text-white active:scale-95 transition-transform"
+                style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.15)', padding: '4px 8px' }}
+              >
+                {item.image_url ? (
+                  <img src={item.image_url} alt="" className="h-5 w-5 rounded object-cover" />
+                ) : (
+                  <ShoppingBag className="h-3 w-3" />
+                )}
+                <span className="truncate max-w-[80px]">{item.brand}</span>
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          if (items.length > 1) {
+            setExpanded(!expanded);
+          } else {
+            handleSelectItem(items[0], e);
+          }
+        }}
+        className="flex items-center gap-1 rounded-[100px] text-[11px] font-bold text-white active:scale-95 transition-transform"
+        style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.15)', padding: '4px 10px' }}
+      >
+        <Sparkles className="h-2.5 w-2.5" />
+        Try On
+        {items.length > 1 && (
+          <>
+            <span className="text-[9px] opacity-70">({items.length})</span>
+            <ChevronUp className={`h-2.5 w-2.5 transition-transform ${expanded ? '' : 'rotate-180'}`} />
+          </>
+        )}
+      </button>
+    </div>
+  );
+};
 const PostCard = ({
   post, index, filter, votes, voteCounts, followToggles, hasScan,
   onVote, onFollowToggle, onDeletePost, onImageError, onOpenDetail,
@@ -131,23 +238,8 @@ const PostCard = ({
             {(post as any).match_score}% match
           </div>
         )}
-        {!(user && post.user_id === user.id) && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              const urls = (post as any).product_urls;
-              if (urls && urls.length > 0) {
-                navigate('/tryon', { state: { productUrl: urls[0] } });
-              } else {
-                toast({ title: 'No product linked to this look' });
-              }
-            }}
-            className="absolute top-2 left-2 text-[11px] font-bold text-white rounded-[100px] flex items-center gap-1 active:scale-95 transition-transform"
-            style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.12)', padding: '4px 10px' }}
-          >
-            <Sparkles className="h-2.5 w-2.5" /> Try On
-          </button>
-        )}
+        {/* Try On badge — bottom right, linked to clothing data */}
+        <TryOnClothingBadge post={post} navigate={navigate} toast={toast} />
       </button>
 
       {/* Mini comment */}
