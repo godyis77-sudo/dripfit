@@ -213,7 +213,7 @@ const Results = () => {
               loading={sizeRecLoading}
               onFitChange={(fit) => {
                 setFitPref(fit === 'slim' ? 'fitted' : fit as FitPreference);
-                fetchSizeRecommendation(fit);
+                queryClient.invalidateQueries({ queryKey: ['size-recommendation'] });
                 trackEvent('fit_preference_changed', { fit });
               }}
             />

@@ -246,14 +246,30 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     return loadMorePosts();
   }, [filter, loadMorePosts, loadMoreFollowing, loadMoreSimilar]);
 
-  // Main fetch effect
+  // ── useQuery for initial feed fetch ──
+  const feedQueryFn = useCallback(async (): Promise<Post[]> => {
+    if (filter === 'shop') { fetchRetailers(); return []; }
+    if (filter === 'following') return fetchFollowingFeed();
+    if (filter === 'similar') return fetchSimilarFitPosts();
+    return fetchPosts();
+  }, [filter, fetchPosts, fetchFollowingFeed, fetchSimilarFitPosts, fetchRetailers]);
+
+  const feedQuery = useQuery({
+    queryKey: ['community-feed', filter, shopGender, userId],
+    queryFn: feedQueryFn,
+    enabled: filter !== 'shop' || true,
+  });
+
+  // Sync query results into existing state so the rest of the hook + UI stays unchanged
   useEffect(() => {
-    if (filter === 'shop') fetchRetailers();
-    else if (filter === 'following') fetchFollowingFeed();
-    else if (filter === 'similar') fetchSimilarFitPosts();
-    else fetchPosts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, userId, followingIdsKey, shopGender]);
+    if (feedQuery.data !== undefined) {
+      setPosts(feedQuery.data);
+    }
+  }, [feedQuery.data]);
+
+  useEffect(() => {
+    setLoading(feedQuery.isLoading || feedQuery.isFetching);
+  }, [feedQuery.isLoading, feedQuery.isFetching]);
 
   // Load vote counts
   const postIdsKey = posts.map(p => p.id).join(',');
