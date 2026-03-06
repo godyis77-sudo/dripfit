@@ -194,7 +194,7 @@ const TryOn = () => {
         const allUrls = lookItems.map(i => i.url).filter(Boolean);
         const primaryUrl = productLink || selectedQuickPick?.product_url || null;
         if (primaryUrl && !allUrls.includes(primaryUrl)) allUrls.unshift(primaryUrl);
-        if (latestPosts && latestPosts.length > 0) await supabase.from('tryon_posts').update({ caption: caption || null, is_public: isPublic, product_url: primaryUrl, product_urls: allUrls }).eq('id', latestPosts[0].id);
+        if (latestPosts && latestPosts.length > 0) await supabase.from('tryon_posts').update({ caption: caption || null, is_public: isPublic, product_urls: allUrls }).eq('id', latestPosts[0].id);
       } else {
         const [userUrl, clothingUrl, resultUrl] = await Promise.all([
           uploadBase64ToStorage(userPhoto!, 'user'),
