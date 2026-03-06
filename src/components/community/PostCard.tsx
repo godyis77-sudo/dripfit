@@ -42,7 +42,7 @@ const PostCard = ({
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
-
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const handleVoteWithCart = (postId: string, key: string) => {
     onVote(postId, key);
   };
