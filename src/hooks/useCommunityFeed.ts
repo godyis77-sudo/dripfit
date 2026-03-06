@@ -38,6 +38,7 @@ async function enrichPosts(data: any[], filter?: string) {
 
 export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFeedOptions) {
   const { toast } = useToast();
+  const { addToCart } = useCart();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
