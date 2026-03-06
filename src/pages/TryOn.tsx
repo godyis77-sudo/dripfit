@@ -233,6 +233,7 @@ const TryOn = () => {
       if (data.resultImage) {
         setLayerHistory(prev => [...prev, resultImage!]);
         setResultImage(data.resultImage);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         trackEvent('tryon_accessory_generated', { category: accessoryCategory });
         toast({ title: `${accessoryCategory || 'Accessory'} added!`, description: 'Keep adding items or finish your look.' });
         if (user) {
