@@ -75,11 +75,11 @@ const TryOnDetail = () => {
             <p className="text-[9px] text-muted-foreground">
               {new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </p>
-            {post.product_url && (
+            {post.product_urls?.[0] && (
               <Button
                 variant="outline"
                 className="w-full h-9 rounded-lg text-[11px] font-bold"
-                onClick={() => window.open(post.product_url, '_blank', 'noopener')}
+                onClick={() => window.open(post.product_urls[0], '_blank', 'noopener')}
               >
                 Shop This Item
               </Button>
