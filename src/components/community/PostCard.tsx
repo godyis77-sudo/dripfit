@@ -103,7 +103,7 @@ const PostCard = ({
           alt={post.caption || "Try-on look"}
           loading="lazy"
           decoding="async"
-          className="w-full object-contain bg-black/20"
+          className="w-full aspect-[3/4] object-contain bg-black/30"
           onError={() => onImageError(post.id)}
         />
         {post.caption && (
