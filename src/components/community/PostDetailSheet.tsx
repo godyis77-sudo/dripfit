@@ -173,7 +173,12 @@ export const PostDetailSheet = ({
   });
   const retailers = [...retailerUrlMap.keys()];
 
-  const displayQuestion = questionText || post.caption || prompt;
+  const GENERIC_PROMPTS_SET = new Set([
+    'Should I buy this for work?', 'Date night — yes or no?', 'Would you wear this?',
+    'Too bold or just right?', 'Casual Friday vibes?', 'Wedding guest — yay or nay?',
+  ]);
+  const userCaption = post.caption && !GENERIC_PROMPTS_SET.has(post.caption) ? post.caption : '';
+  const displayQuestion = questionText || userCaption;
 
   const handleSendComment = () => {
     if (commentText.trim()) {

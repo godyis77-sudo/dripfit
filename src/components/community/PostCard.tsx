@@ -113,7 +113,7 @@ const PostCard = ({
             onError={() => onImageError(post.id)}
           />
         </div>
-        {post.caption && (
+        {post.caption && !GENERIC_PROMPTS.includes(post.caption) && (
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent pt-6 pb-1.5 px-2">
             <p className="text-white font-bold text-[10px] leading-snug line-clamp-2">{post.caption}</p>
           </div>
