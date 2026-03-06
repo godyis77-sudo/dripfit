@@ -98,14 +98,16 @@ const PostCard = ({
 
       {/* Image */}
       <button onClick={() => onOpenDetail(post)} aria-label="View post detail" className="relative w-full text-left">
-        <img
-          src={post.result_photo_url}
-          alt={post.caption || "Try-on look"}
-          loading="lazy"
-          decoding="async"
-          className="w-full aspect-[3/4] object-contain bg-black/30"
-          onError={() => onImageError(post.id)}
-        />
+        <div className="relative w-full aspect-[3/4] bg-muted/30">
+          <img
+            src={post.result_photo_url}
+            alt={post.caption || "Try-on look"}
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-contain"
+            onError={() => onImageError(post.id)}
+          />
+        </div>
         {post.caption && (
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent pt-6 pb-1.5 px-2">
             <p className="text-white font-bold text-[10px] leading-snug line-clamp-2">{post.caption}</p>
