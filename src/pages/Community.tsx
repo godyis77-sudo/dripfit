@@ -44,7 +44,7 @@ const Community = () => {
   } = useCommunityFeed({ userId: user?.id, filter, shopGender });
 
   const handleShopLook = (post: Post) => {
-    const urls = (post.product_urls && post.product_urls.length > 0) ? post.product_urls : (post.product_url ? [post.product_url] : []);
+    const urls = (post.product_urls && post.product_urls.length > 0) ? post.product_urls : [];
     trackEvent('shop_clickout', { source: 'fitcheck', hasProductUrl: urls.length > 0, itemCount: urls.length });
     const seen = new Set<string>();
     urls.forEach((u: string) => {
