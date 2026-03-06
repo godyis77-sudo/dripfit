@@ -3,6 +3,7 @@ import { Camera, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { isNativePlatform, takeNativePhoto } from '@/lib/nativeCamera';
 
 interface AvatarUploadSheetProps {
   open: boolean;
