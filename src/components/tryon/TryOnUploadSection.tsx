@@ -56,6 +56,17 @@ const TryOnUploadSection = ({
     }
   };
 
+  const handleNativeCapture = async (setter: (v: string) => void, type: 'photo' | 'clothing', source: 'camera' | 'gallery') => {
+    try {
+      const result = await takeNativePhoto(source);
+      setter(result.dataUrl);
+      trackEvent(type === 'photo' ? 'tryon_photo_uploaded' : 'tryon_clothing_uploaded');
+    } catch (err: any) {
+      if (err?.message?.includes('cancelled') || err?.message?.includes('canceled')) return;
+      onToast({ title: 'Camera error', description: 'Try again or use gallery.', variant: 'destructive' });
+    }
+  };
+
   return (
     <>
       <div className="grid grid-cols-2 gap-2 mb-3">
