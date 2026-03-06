@@ -96,10 +96,16 @@ const TryOnUploadSection = ({
                 </div>
                 <p className="text-[9px] text-muted-foreground text-center">Full body · front facing · well lit</p>
                 <div className="flex gap-1.5 w-full">
-                  <button onClick={() => userCameraRef.current?.click()} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 border border-primary/20 text-primary active:scale-95 transition-transform">
+                  <button onClick={() => {
+                    if (isNativePlatform()) handleNativeCapture(onUserPhotoChange, 'photo', 'camera');
+                    else userCameraRef.current?.click();
+                  }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 border border-primary/20 text-primary active:scale-95 transition-transform">
                     <Camera className="h-3.5 w-3.5" /><span className="text-[10px] font-bold">Camera</span>
                   </button>
-                  <button onClick={() => userPhotoRef.current?.click()} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-card border border-border text-muted-foreground active:scale-95 transition-transform">
+                  <button onClick={() => {
+                    if (isNativePlatform()) handleNativeCapture(onUserPhotoChange, 'photo', 'gallery');
+                    else userPhotoRef.current?.click();
+                  }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-card border border-border text-muted-foreground active:scale-95 transition-transform">
                     <ImageIcon className="h-3.5 w-3.5" /><span className="text-[10px] font-bold">Gallery</span>
                   </button>
                 </div>
