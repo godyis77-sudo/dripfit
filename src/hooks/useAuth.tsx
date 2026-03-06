@@ -32,8 +32,12 @@ const AuthContext = createContext<AuthContextType>({
   updateGender: () => {},
 });
 
-// Admin user IDs that always get premium access (for troubleshooting)
-const ADMIN_USER_IDS = ['f83b26d7-453c-411a-aba8-5688fc8baa18'];
+// Check admin role from user_roles table (security definer function)
+const checkIsAdmin = async (userId: string): Promise<boolean> => {
+  const { data, error } = await supabase.rpc('has_role', { _user_id: userId, _role: 'admin' });
+  if (error) { console.error('Admin check failed:', error); return false; }
+  return !!data;
+};
 
 export const STRIPE_TIERS = {
   monthly: {
@@ -75,7 +79,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Admin override — grant premium without hitting Stripe
-    if (ADMIN_USER_IDS.includes(targetUserId)) {
+    const isAdmin = await checkIsAdmin(targetUserId);
+    if (isAdmin) {
       setIsSubscribed(true);
       setProductId('admin_override');
       setSubscriptionEnd(null);
