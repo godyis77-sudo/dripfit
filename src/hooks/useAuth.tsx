@@ -142,6 +142,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUserGender(null);
         // Only mark loaded on explicit sign-out/delete; avoid startup null-session race
         if (event === 'SIGNED_OUT') {
+          resetAnalytics();
           setGenderLoaded(true);
         }
         setIsSubscribed(false);
