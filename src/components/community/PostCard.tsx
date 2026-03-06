@@ -10,6 +10,7 @@ import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 import type { Post, FilterType } from './community-types';
+import { GENERIC_PROMPTS } from './community-types';
 import { VOTE_OPTIONS, FIT_OPTIONS } from './community-types';
 
 interface PostCardProps {
@@ -112,7 +113,7 @@ const PostCard = ({
             onError={() => onImageError(post.id)}
           />
         </div>
-        {post.caption && (
+        {post.caption && !GENERIC_PROMPTS.includes(post.caption) && (
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent pt-6 pb-1.5 px-2">
             <p className="text-white font-bold text-[10px] leading-snug line-clamp-2">{post.caption}</p>
           </div>
