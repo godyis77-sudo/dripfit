@@ -222,7 +222,15 @@ export type Database = {
           user_id?: string
           vote_key?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_community_votes_post"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "tryon_posts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       fit_feedback: {
         Row: {
@@ -688,7 +696,6 @@ export type Database = {
           created_at: string
           id: string
           is_public: boolean
-          product_url: string | null
           product_urls: string[] | null
           result_photo_url: string
           user_id: string
@@ -701,7 +708,6 @@ export type Database = {
           created_at?: string
           id?: string
           is_public?: boolean
-          product_url?: string | null
           product_urls?: string[] | null
           result_photo_url: string
           user_id: string
@@ -714,7 +720,6 @@ export type Database = {
           created_at?: string
           id?: string
           is_public?: boolean
-          product_url?: string | null
           product_urls?: string[] | null
           result_photo_url?: string
           user_id?: string

@@ -5,7 +5,6 @@ export interface Post {
   clothing_photo_url: string;
   caption: string | null;
   created_at: string;
-  product_url?: string | null;
   product_urls?: string[] | null;
   clothing_category?: string | null;
   profile?: { display_name: string | null; avatar_url?: string | null };

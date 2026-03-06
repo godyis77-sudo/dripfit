@@ -123,8 +123,9 @@ const PostCard = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              if (post.product_url) {
-                navigate('/tryon', { state: { productUrl: post.product_url } });
+              const urls = (post as any).product_urls;
+              if (urls && urls.length > 0) {
+                navigate('/tryon', { state: { productUrl: urls[0] } });
               } else {
                 toast({ title: 'No product linked to this look' });
               }
@@ -202,7 +203,6 @@ const PostCard = ({
       {/* What's In This Look */}
       <WhatsInThisLook
         productUrls={(post as any).product_urls}
-        productUrl={post.product_url}
         clothingPhotoUrl={post.clothing_photo_url}
         variant="card"
         onTryOn={() => navigate('/tryon')}

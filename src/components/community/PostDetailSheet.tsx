@@ -11,7 +11,6 @@ interface Post {
   clothing_photo_url: string;
   caption: string | null;
   created_at: string;
-  product_url?: string | null;
   product_urls?: string[] | null;
   profile?: { display_name: string | null; avatar_url?: string | null };
   avg_style?: number;
@@ -126,7 +125,7 @@ export const PostDetailSheet = ({
   if (!post) return null;
 
   // Collect unique brand→url pairs from product_urls
-  const allUrls = (post.product_urls && post.product_urls.length > 0) ? post.product_urls : (post.product_url ? [post.product_url] : []);
+  const allUrls = (post.product_urls && post.product_urls.length > 0) ? post.product_urls : [];
   const retailerUrlMap = new Map<string, string>();
   allUrls.forEach(u => {
     const { brand } = detectBrandFromUrl(u);
@@ -243,7 +242,6 @@ export const PostDetailSheet = ({
           <div className="px-4 pt-2" onClick={(e) => e.stopPropagation()}>
             <WhatsInThisLook
               productUrls={post.product_urls || undefined}
-              productUrl={post.product_url}
               clothingPhotoUrl={post.clothing_photo_url}
               variant="detail"
               onTryOn={onTryOn ? () => onTryOn(post) : undefined}

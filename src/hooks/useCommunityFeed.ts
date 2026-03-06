@@ -78,7 +78,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
   const fetchPosts = useCallback(async () => {
     setLoading(true);
     resetPagination();
-    const { data, error } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_url, product_urls').eq('is_public', true).order('created_at', { ascending: false }).limit(PAGE_SIZE);
+    const { data, error } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_urls').eq('is_public', true).order('created_at', { ascending: false }).limit(PAGE_SIZE);
     if (error) { console.error(error); setLoading(false); return; }
     if (!data || data.length === 0) {
       const { data: seeds } = await supabase.from('seed_posts').select('*').eq('is_public', true).order('created_at', { ascending: false });
@@ -104,7 +104,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
   const loadMorePosts = useCallback(async () => {
     if (!cursor || !hasMore || loadingMore) return;
     setLoadingMore(true);
-    const { data } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_url, product_urls').eq('is_public', true).order('created_at', { ascending: false }).lt('created_at', cursor).limit(PAGE_SIZE);
+    const { data } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_urls').eq('is_public', true).order('created_at', { ascending: false }).lt('created_at', cursor).limit(PAGE_SIZE);
     if (!data || data.length === 0) { setHasMore(false); setLoadingMore(false); return; }
     processBatch(data);
     const enriched = await enrichPosts(data, filter);
@@ -119,7 +119,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     resetPagination();
     const ids = followingIdsRef.current.length > 0 ? followingIdsRef.current : await getFollowingIds(userId);
     if (ids.length === 0) { setPosts([]); setLoading(false); setHasMore(false); return; }
-    const { data } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_url, product_urls').eq('is_public', true).in('user_id', ids).order('created_at', { ascending: false }).limit(PAGE_SIZE);
+    const { data } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_urls').eq('is_public', true).in('user_id', ids).order('created_at', { ascending: false }).limit(PAGE_SIZE);
     if (!data || data.length === 0) { setPosts([]); setLoading(false); setHasMore(false); return; }
     processBatch(data);
     const userIds = [...new Set(data.map(p => p.user_id))];
@@ -135,7 +135,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     setLoadingMore(true);
     const ids = followingIdsRef.current.length > 0 ? followingIdsRef.current : await getFollowingIds(userId);
     if (ids.length === 0) { setHasMore(false); setLoadingMore(false); return; }
-    const { data } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_url, product_urls').eq('is_public', true).in('user_id', ids).order('created_at', { ascending: false }).lt('created_at', cursor).limit(PAGE_SIZE);
+    const { data } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_urls').eq('is_public', true).in('user_id', ids).order('created_at', { ascending: false }).lt('created_at', cursor).limit(PAGE_SIZE);
     if (!data || data.length === 0) { setHasMore(false); setLoadingMore(false); return; }
     processBatch(data);
     const userIds = [...new Set(data.map(p => p.user_id))];
@@ -187,7 +187,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     if (similarUserIds.length === 0) { setPosts([]); setLoading(false); setHasMore(false); return; }
 
     const { data } = await supabase.from('tryon_posts')
-      .select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_url, product_urls, clothing_category')
+      .select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_urls, clothing_category')
       .eq('is_public', true).in('user_id', similarUserIds).order('created_at', { ascending: false }).limit(PAGE_SIZE);
 
     if (!data || data.length === 0) { setPosts([]); setLoading(false); setHasMore(false); return; }
@@ -216,7 +216,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     if (similarUserIds.length === 0) { setHasMore(false); return; }
     setLoadingMore(true);
     const { data } = await supabase.from('tryon_posts')
-      .select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_url, product_urls, clothing_category')
+      .select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_urls, clothing_category')
       .eq('is_public', true).in('user_id', similarUserIds).order('created_at', { ascending: false }).lt('created_at', cursor).limit(PAGE_SIZE);
     if (!data || data.length === 0) { setHasMore(false); setLoadingMore(false); return; }
     processBatch(data);

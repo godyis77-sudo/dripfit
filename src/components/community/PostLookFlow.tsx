@@ -91,7 +91,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
       clothing_category: clothingCategory,
     };
     if (productUrl.length > 5) {
-      updatePayload.product_url = productUrl;
+      updatePayload.product_urls = [productUrl];
     }
     const { error } = await supabase
       .from('tryon_posts')

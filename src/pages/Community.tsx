@@ -44,7 +44,7 @@ const Community = () => {
   } = useCommunityFeed({ userId: user?.id, filter, shopGender });
 
   const handleShopLook = (post: Post) => {
-    const urls = (post.product_urls && post.product_urls.length > 0) ? post.product_urls : (post.product_url ? [post.product_url] : []);
+    const urls = (post.product_urls && post.product_urls.length > 0) ? post.product_urls : [];
     trackEvent('shop_clickout', { source: 'fitcheck', hasProductUrl: urls.length > 0, itemCount: urls.length });
     const seen = new Set<string>();
     urls.forEach((u: string) => {
@@ -282,7 +282,8 @@ const Community = () => {
         onDelete={handleDeletePost}
         onTryOn={(p) => {
           setDetailPost(null);
-          if (p.product_url) { navigate('/tryon', { state: { productUrl: p.product_url } }); }
+          const urls = p.product_urls;
+          if (urls && urls.length > 0) { navigate('/tryon', { state: { productUrl: urls[0] } }); }
           else { toast({ title: 'No product linked to this look' }); }
         }}
         isFollowing={detailPost ? !!followToggles[detailPost.user_id] : false}

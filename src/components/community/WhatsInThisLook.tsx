@@ -19,8 +19,6 @@ interface WhatsInThisLookProps {
   items?: LookItem[];
   /** Raw product URLs (from Style Check posts) — items will be derived */
   productUrls?: string[];
-  /** Single product URL fallback */
-  productUrl?: string | null;
   /** Clothing photo URL (used as fallback thumbnail) */
   clothingPhotoUrl?: string | null;
   /** Whether to start expanded */
@@ -58,7 +56,7 @@ function deriveItemsFromUrls(urls: string[]): LookItem[] {
 const WhatsInThisLook = ({
   items: propItems,
   productUrls,
-  productUrl,
+  
   clothingPhotoUrl,
   defaultOpen = false,
   variant = 'detail',
@@ -71,7 +69,7 @@ const WhatsInThisLook = ({
   // Build items list
   let items: LookItem[] = propItems || [];
   if (items.length === 0) {
-    const urls = productUrls?.length ? productUrls : (productUrl ? [productUrl] : []);
+    const urls = productUrls?.length ? productUrls : [];
     items = deriveItemsFromUrls(urls);
   }
 
