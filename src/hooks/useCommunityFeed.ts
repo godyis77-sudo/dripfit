@@ -141,9 +141,8 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
   // ── SIMILAR FIT feed ──
   const similarMetaRef = useRef<{ similarUserIds: string[]; scoreMap: Map<string, number>; maxScore: number } | null>(null);
 
-  const fetchSimilarFitPosts = useCallback(async () => {
-    if (!userId) { setPosts([]); setLoading(false); return; }
-    setLoading(true);
+  const fetchSimilarFitPosts = useCallback(async (): Promise<Post[]> => {
+    if (!userId) return [];
     resetPagination();
 
     const { data: profile } = await supabase.from('profiles').select('gender').eq('user_id', userId).single();
@@ -153,7 +152,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
       .select('chest_min, chest_max, waist_min, waist_max, hip_min, hip_max, inseam_min, inseam_max, sleeve_min, sleeve_max, bust_min, bust_max')
       .eq('user_id', userId).order('created_at', { ascending: false }).limit(1).single();
 
-    if (!scan) { setHasScan(false); setPosts([]); setLoading(false); setHasMore(false); return; }
+    if (!scan) { setHasScan(false); setHasMore(false); return []; }
     setHasScan(true);
 
     const mid = (a: number, b: number) => (a + b) / 2;
@@ -167,7 +166,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     } as any);
 
     if (fnError || !similarUsers || (similarUsers as any[]).length === 0) {
-      setPosts([]); setLoading(false); setHasMore(false); return;
+      setHasMore(false); return [];
     }
 
     const maxScore = gender === 'female' ? 12 : 9;
@@ -176,13 +175,13 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     const similarUserIds = qualifiedUsers.map((u: any) => u.user_id).filter(Boolean) as string[];
     similarMetaRef.current = { similarUserIds, scoreMap, maxScore };
 
-    if (similarUserIds.length === 0) { setPosts([]); setLoading(false); setHasMore(false); return; }
+    if (similarUserIds.length === 0) { setHasMore(false); return []; }
 
     const { data } = await supabase.from('tryon_posts')
       .select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_urls, clothing_category')
       .eq('is_public', true).in('user_id', similarUserIds).order('created_at', { ascending: false }).limit(PAGE_SIZE);
 
-    if (!data || data.length === 0) { setPosts([]); setLoading(false); setHasMore(false); return; }
+    if (!data || data.length === 0) { setHasMore(false); return []; }
     processBatch(data);
 
     const BOTTOM_CATEGORIES = ['bottoms'];
@@ -198,8 +197,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
       };
     });
     enriched.sort((a, b) => (b.match_score || 0) - (a.match_score || 0));
-    setPosts(enriched);
-    setLoading(false);
+    return enriched;
   }, [userId]);
 
   const loadMoreSimilar = useCallback(async () => {
