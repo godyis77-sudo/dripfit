@@ -102,19 +102,23 @@ const WhatsInThisLook = ({
     <div className={isCompact ? 'mx-1.5 mb-1.5' : 'mb-3'}>
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between active:scale-[0.98] transition-transform"
+        className={`w-full flex items-center justify-between active:scale-[0.98] transition-transform ${
+          isCompact
+            ? ''
+            : 'bg-primary/15 border-primary/40 text-primary'
+        }`}
         style={{
-          background: '#1A1A1A',
-          border: '1px solid #252525',
+          background: isCompact ? '#1A1A1A' : undefined,
+          border: isCompact ? '1px solid #252525' : '1.5px solid hsl(var(--primary) / 0.4)',
           borderRadius: open ? '12px 12px 0 0' : '12px',
-          padding: isCompact ? '8px 12px' : '14px 16px',
+          padding: isCompact ? '8px 12px' : '16px 20px',
         }}
       >
-        <span className={`${isCompact ? 'text-[9px]' : 'text-[11px]'} font-bold uppercase tracking-widest text-muted-foreground`}>
+        <span className={`${isCompact ? 'text-[9px] text-muted-foreground' : 'text-[13px] text-primary'} font-bold uppercase tracking-widest`}>
           Shop This Style
         </span>
         <ChevronDown
-          className={`${isCompact ? 'h-3 w-3' : 'h-3.5 w-3.5'} text-muted-foreground transition-transform duration-200`}
+          className={`${isCompact ? 'h-3 w-3 text-muted-foreground' : 'h-4 w-4 text-primary'} transition-transform duration-200`}
           style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
         />
       </button>
