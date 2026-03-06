@@ -1,6 +1,11 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Star, Send, Sparkles, Trash2, User, UserPlus, UserCheck } from 'lucide-react';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
@@ -37,7 +42,7 @@ const PostCard = ({
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
-
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const handleVoteWithCart = (postId: string, key: string) => {
     onVote(postId, key);
   };
@@ -86,7 +91,7 @@ const PostCard = ({
             {user && post.user_id === user.id && !isPlaceholder(post) && (
               <>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => onDeletePost(post.id)} className="text-destructive focus:text-destructive">
+                <DropdownMenuItem onClick={() => setConfirmDeleteId(post.id)} className="text-destructive focus:text-destructive">
                   <Trash2 className="mr-2 h-3.5 w-3.5" /> Remove Post
                 </DropdownMenuItem>
               </>
@@ -241,6 +246,19 @@ const PostCard = ({
           trackEvent('wardrobe_add_from_look', { brand: item.brand });
         }}
       />
+
+      <AlertDialog open={!!confirmDeleteId} onOpenChange={(open) => !open && setConfirmDeleteId(null)}>
+        <AlertDialogContent className="max-w-[320px] rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-[15px]">Remove from Style Check?</AlertDialogTitle>
+            <AlertDialogDescription className="text-[13px]">This only removes it from the feed — your try-on and wardrobe are not affected.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl text-[12px]">Cancel</AlertDialogCancel>
+            <AlertDialogAction className="rounded-xl text-[12px] bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => { if (confirmDeleteId) onDeletePost(confirmDeleteId); setConfirmDeleteId(null); }}>Remove</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </motion.div>
   );
 };

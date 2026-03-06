@@ -1,6 +1,10 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, UserPlus, UserCheck, ExternalLink, Pencil, Check, ZoomIn, ZoomOut, Sparkles, Trash2, MessageCircle } from 'lucide-react';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { GENERIC_PROMPTS } from './community-types';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
@@ -83,6 +87,7 @@ export const PostDetailSheet = ({
   currentUserId,
 }: PostDetailSheetProps) => {
   const [commentText, setCommentText] = useState('');
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(false);
@@ -255,7 +260,7 @@ export const PostDetailSheet = ({
             </button>
             <div className="flex items-center gap-2">
               {isOwnPost && !isPlaceholder && onDelete && (
-                <button onClick={(e) => { e.stopPropagation(); onDelete(post.id); }} aria-label="Remove post" className="h-8 px-3 rounded-full bg-red-500/20 text-red-400 text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95">
+                <button onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(post.id); }} aria-label="Remove post" className="h-8 px-3 rounded-full bg-red-500/20 text-red-400 text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95">
                   <Trash2 className="h-3 w-3" /> Remove
                 </button>
               )}
@@ -428,6 +433,19 @@ export const PostDetailSheet = ({
           </motion.div>
         </motion.div>
       )}
+
+      <AlertDialog open={!!confirmDeleteId} onOpenChange={(open) => !open && setConfirmDeleteId(null)}>
+        <AlertDialogContent className="max-w-[320px] rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-[15px]">Remove from Style Check?</AlertDialogTitle>
+            <AlertDialogDescription className="text-[13px]">This only removes it from the feed — your try-on and wardrobe are not affected.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl text-[12px]">Cancel</AlertDialogCancel>
+            <AlertDialogAction className="rounded-xl text-[12px] bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => { if (confirmDeleteId && onDelete) onDelete(confirmDeleteId); setConfirmDeleteId(null); }}>Remove</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AnimatePresence>
   );
 };
