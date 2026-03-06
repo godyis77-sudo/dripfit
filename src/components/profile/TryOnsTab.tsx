@@ -232,7 +232,6 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                   {/* What's In This Look */}
                   <WhatsInThisLook
                     productUrls={post.product_urls || undefined}
-                    productUrl={post.product_url}
                     clothingPhotoUrl={post.clothing_photo_url}
                     variant="card"
                     onTryOn={(item) => navigate('/tryon')}
