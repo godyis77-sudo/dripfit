@@ -103,33 +103,9 @@ const Results = () => {
   // Fetch live recommendation whenever user, brand, or fit preference changes
   useEffect(() => {
     if (!user?.id || !brandSlug) return;
-    let cancelled = false;
     const fit = fitPref === 'fitted' ? 'slim' : fitPref;
-
-    (async () => {
-      setSizeRecLoading(true);
-      setSizeRecError(null);
-      try {
-        const { data, error } = await supabase.functions.invoke('get-size-recommendation', {
-          body: { user_id: user.id, brand_slug: brandSlug, category: categoryKey, fit_preference: fit },
-        });
-        if (cancelled) return;
-        if (error) throw error;
-        if (data?.error) {
-          setSizeRecError(data.error);
-          setSizeRec(null);
-        } else {
-          setSizeRec(data);
-        }
-      } catch (e: any) {
-        if (!cancelled) setSizeRecError(e.message || 'Failed to get recommendation');
-      } finally {
-        if (!cancelled) setSizeRecLoading(false);
-      }
-    })();
-
-    return () => { cancelled = true; };
-  }, [user?.id, brandSlug, categoryKey, fitPref]);
+    fetchSizeRecommendation(fit);
+  }, [user?.id, brandSlug, categoryKey, fitPref, fetchSizeRecommendation]);
 
   const adjustedSize = useMemo(() => {
     if (!result) return '';
