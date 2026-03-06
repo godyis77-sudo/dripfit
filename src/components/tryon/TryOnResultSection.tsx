@@ -74,6 +74,16 @@ const TryOnResultSection = ({
   const [showShopPicker, setShowShopPicker] = useState(false);
   const accessoryPhotoRef = useRef<HTMLInputElement>(null);
   const accessoryCameraRef = useRef<HTMLInputElement>(null);
+  const [accessoryStepIndex, setAccessoryStepIndex] = useState(0);
+
+  useEffect(() => {
+    if (!addingAccessory) { setAccessoryStepIndex(0); return; }
+    const timers = [
+      setTimeout(() => setAccessoryStepIndex(1), 3000),
+      setTimeout(() => setAccessoryStepIndex(2), 7000),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [addingAccessory]);
 
   const handleFileSelect = (setter: (v: string) => void) => async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
