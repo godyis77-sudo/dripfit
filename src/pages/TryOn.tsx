@@ -264,6 +264,7 @@ const TryOn = () => {
       setLookItems([{ brand: product.brand, name: product.name, url: product.product_url, price_cents: product.price_cents, image_url: product.image_url }]);
     }
     trackEvent('tryon_clothing_uploaded');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     try {
       const base64 = await imageUrlToBase64(product.image_url);
       setClothingPhoto(base64);
