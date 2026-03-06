@@ -1,4 +1,21 @@
-// Lightweight funnel analytics — logs events for now, can be wired to any backend later.
+// PostHog analytics — falls back to console.log if key is not set
+
+import posthog from 'posthog-js';
+
+const POSTHOG_KEY = import.meta.env.VITE_POSTHOG_KEY as string | undefined;
+const POSTHOG_HOST = (import.meta.env.VITE_POSTHOG_HOST as string) || 'https://app.posthog.com';
+
+let initialized = false;
+
+if (POSTHOG_KEY) {
+  posthog.init(POSTHOG_KEY, {
+    api_host: POSTHOG_HOST,
+    autocapture: false,
+    capture_pageview: true,
+    persistence: 'localStorage+cookie',
+  });
+  initialized = true;
+}
 
 type FunnelEvent =
   | 'home_start_scan_click'
@@ -30,7 +47,6 @@ type FunnelEvent =
   | 'profile_export'
   | 'share_action'
   | 'save_action'
-  // Monetization events
   | 'product_link_pasted'
   | 'retailer_selected'
   | 'shop_clickout'
@@ -39,7 +55,6 @@ type FunnelEvent =
   | 'premium_viewed'
   | 'premium_started'
   | 'fit_feedback_submitted'
-  // Standardized funnel events
   | 'result_viewed'
   | 'save_item'
   | 'vote_cast'
@@ -86,6 +101,10 @@ type FunnelEvent =
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
+    if (initialized) {
+      posthog.capture(event, meta);
+    }
+
     // Log to console in dev
     if (import.meta.env.DEV) {
       console.log(`[analytics] ${event}`, meta ?? '');
@@ -95,6 +114,29 @@ export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
     const log = JSON.parse(sessionStorage.getItem('df_events') || '[]');
     log.push({ event, ts: Date.now(), ...(meta ?? {}) });
     sessionStorage.setItem('df_events', JSON.stringify(log.slice(-100)));
+  } catch {
+    // never break UI over analytics
+  }
+}
+
+export function identify(userId: string, traits?: Record<string, unknown>) {
+  try {
+    if (initialized) {
+      posthog.identify(userId, traits);
+    }
+    if (import.meta.env.DEV) {
+      console.log(`[analytics] identify`, userId, traits ?? '');
+    }
+  } catch {
+    // never break UI over analytics
+  }
+}
+
+export function resetAnalytics() {
+  try {
+    if (initialized) {
+      posthog.reset();
+    }
   } catch {
     // never break UI over analytics
   }
