@@ -38,7 +38,8 @@ const Community = () => {
   const [similarFitTooltip, setSimilarFitTooltip] = useState(false);
 
   const {
-    posts, loading, votes, voteCounts, followToggles, failedImages,
+    posts, loading, loadingMore, hasMore, loadMore,
+    votes, voteCounts, followToggles, failedImages,
     hasScan, handleVote, handleFollowToggle, handleDeletePost, handleImageError, fetchPosts,
   } = useCommunityFeed({ userId: user?.id, filter, shopGender });
 
