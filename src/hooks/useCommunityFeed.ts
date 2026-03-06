@@ -255,9 +255,9 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
   }, [filter, fetchPosts, fetchFollowingFeed, fetchSimilarFitPosts, fetchRetailers]);
 
   const feedQuery = useQuery({
-    queryKey: ['community-feed', filter, shopGender, userId],
+    queryKey: ['community-feed', filter, shopGender, userId, followingIdsKey],
     queryFn: feedQueryFn,
-    enabled: filter !== 'shop' || true,
+    refetchOnWindowFocus: false,
   });
 
   // Sync query results into existing state so the rest of the hook + UI stays unchanged
