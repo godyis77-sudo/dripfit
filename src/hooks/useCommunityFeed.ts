@@ -119,7 +119,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     resetPagination();
     const ids = followingIdsRef.current.length > 0 ? followingIdsRef.current : await getFollowingIds(userId);
     if (ids.length === 0) { setPosts([]); setLoading(false); setHasMore(false); return; }
-    const { data } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_url, product_urls').eq('is_public', true).in('user_id', ids).order('created_at', { ascending: false }).limit(PAGE_SIZE);
+    const { data } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_urls').eq('is_public', true).in('user_id', ids).order('created_at', { ascending: false }).limit(PAGE_SIZE);
     if (!data || data.length === 0) { setPosts([]); setLoading(false); setHasMore(false); return; }
     processBatch(data);
     const userIds = [...new Set(data.map(p => p.user_id))];
