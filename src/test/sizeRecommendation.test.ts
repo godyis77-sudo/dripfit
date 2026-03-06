@@ -19,7 +19,7 @@ describe("shiftSize", () => {
   });
 
   it("does not go below smallest size", () => {
-    expect(shiftSize("XS", -1)).toBe("XS");
+    expect(shiftSize("XXS", -1)).toBe("XXS");
   });
 
   it("does not go above largest size", () => {
