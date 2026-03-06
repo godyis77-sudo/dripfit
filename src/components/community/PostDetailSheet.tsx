@@ -189,6 +189,8 @@ export const PostDetailSheet = ({
       setComments(prev => [...prev, newComment]);
       setShowComments(true);
       setCommentText('');
+      // Scroll to new comment without shifting image
+      setTimeout(() => commentsEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
     }
   };
 
