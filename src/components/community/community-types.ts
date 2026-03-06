@@ -85,3 +85,12 @@ export const isValidImageUrl = (url: string | null | undefined): boolean => {
   if (url.includes('placeholder') || url.includes('undefined')) return false;
   return true;
 };
+
+export const GENERIC_PROMPTS = [
+  'Should I buy this for work?',
+  'Date night — yes or no?',
+  'Would you wear this?',
+  'Too bold or just right?',
+  'Casual Friday vibes?',
+  'Wedding guest — yay or nay?',
+];
