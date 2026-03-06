@@ -56,7 +56,7 @@ function deriveItemsFromUrls(urls: string[]): LookItem[] {
 const WhatsInThisLook = ({
   items: propItems,
   productUrls,
-  productUrl,
+  
   clothingPhotoUrl,
   defaultOpen = false,
   variant = 'detail',
