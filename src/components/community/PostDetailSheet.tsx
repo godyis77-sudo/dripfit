@@ -1,8 +1,9 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, UserPlus, UserCheck, ExternalLink, Pencil, Check, ZoomIn, ZoomOut, Sparkles, Trash2 } from 'lucide-react';
+import { X, Send, UserPlus, UserCheck, ExternalLink, Pencil, Check, ZoomIn, ZoomOut, Sparkles, Trash2, MessageCircle } from 'lucide-react';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Post {
   id: string;
@@ -20,6 +21,15 @@ interface Post {
   rating_count?: number;
 }
 
+interface Comment {
+  id: string;
+  comment_text: string;
+  created_at: string;
+  user_id: string;
+  profile?: { display_name: string | null; avatar_url?: string | null };
+}
+
+// ... keep existing code (VOTE_OPTIONS, FIT_OPTIONS, interface PostDetailSheetProps)
 const VOTE_OPTIONS = [
   { key: 'buy_yes', label: 'Buy it', emoji: '🔥' },
   { key: 'buy_no', label: 'Pass', emoji: '👎' },
@@ -69,8 +79,11 @@ export const PostDetailSheet = ({
   isFollowing,
   isOwnPost,
   isPlaceholder,
+  currentUserId,
 }: PostDetailSheetProps) => {
   const [commentText, setCommentText] = useState('');
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [showComments, setShowComments] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(false);
   const [questionText, setQuestionText] = useState('');
   const [zoom, setZoom] = useState(1);
@@ -78,6 +91,33 @@ export const PostDetailSheet = ({
   const [isPanning, setIsPanning] = useState(false);
   const lastTouch = useRef<{ x: number; y: number } | null>(null);
   const lastDist = useRef<number | null>(null);
+
+  // Fetch comments when sheet opens
+  useEffect(() => {
+    if (!open || !post) { setComments([]); setShowComments(false); return; }
+    const fetchComments = async () => {
+      const { data } = await supabase
+        .from('post_comments')
+        .select('id, comment_text, created_at, user_id')
+        .eq('post_id', post.id)
+        .order('created_at', { ascending: true })
+        .limit(50);
+      if (!data || data.length === 0) { setComments([]); return; }
+      // Fetch profiles for commenters
+      const userIds = [...new Set(data.map(c => c.user_id))];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, display_name, avatar_url')
+        .in('user_id', userIds);
+      const profileMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
+      setComments(data.map(c => ({
+        ...c,
+        profile: profileMap.get(c.user_id) || { display_name: null, avatar_url: null },
+      })));
+      if (data.length > 0) setShowComments(true);
+    };
+    fetchComments();
+  }, [open, post?.id]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if (e.touches.length === 2) {
@@ -124,7 +164,6 @@ export const PostDetailSheet = ({
 
   if (!post) return null;
 
-  // Collect unique brand→url pairs from product_urls
   const allUrls = (post.product_urls && post.product_urls.length > 0) ? post.product_urls : [];
   const retailerUrlMap = new Map<string, string>();
   allUrls.forEach(u => {
@@ -138,6 +177,16 @@ export const PostDetailSheet = ({
   const handleSendComment = () => {
     if (commentText.trim()) {
       onComment(post.id, commentText.trim());
+      // Optimistically add the comment
+      const newComment: Comment = {
+        id: crypto.randomUUID(),
+        comment_text: commentText.trim(),
+        created_at: new Date().toISOString(),
+        user_id: currentUserId || '',
+        profile: { display_name: 'You', avatar_url: null },
+      };
+      setComments(prev => [...prev, newComment]);
+      setShowComments(true);
       setCommentText('');
     }
   };
@@ -145,10 +194,19 @@ export const PostDetailSheet = ({
   const handleStartEditQuestion = () => { setQuestionText(displayQuestion); setEditingQuestion(true); };
   const handleSaveQuestion = () => { setEditingQuestion(false); };
 
-  // Compute outcome summary
   const buyYes = voteCounts[post.id]?.buy_yes ?? 0;
   const totalBuy = buyYes + (voteCounts[post.id]?.buy_no ?? 0) + (voteCounts[post.id]?.keep_shopping ?? 0);
   const buyPct = totalBuy > 0 ? Math.round((buyYes / totalBuy) * 100) : 0;
+
+  const timeAgo = (dateStr: string) => {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'now';
+    if (mins < 60) return `${mins}m`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h`;
+    return `${Math.floor(hrs / 24)}d`;
+  };
 
   return (
     <AnimatePresence>
@@ -158,7 +216,7 @@ export const PostDetailSheet = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[100] bg-black flex flex-col"
+          className="fixed inset-0 z-[100] bg-black flex flex-col overflow-y-auto"
           onClick={onClose}
         >
           {/* Top bar */}
@@ -205,14 +263,15 @@ export const PostDetailSheet = ({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="flex-1 flex items-center justify-center px-2 relative overflow-hidden touch-none"
+            className="flex items-center justify-center px-2 relative overflow-hidden touch-none"
+            style={{ minHeight: '40vh' }}
             onClick={(e) => e.stopPropagation()}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
             onDoubleClick={handleDoubleClick}
           >
-            <img src={post.result_photo_url} alt={post.caption || 'Try-on look'} className="max-w-full max-h-full object-contain rounded-xl transition-transform duration-100" style={{ transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)` }} draggable={false} />
+            <img src={post.result_photo_url} alt={post.caption || 'Try-on look'} className="max-w-full max-h-[50vh] object-contain rounded-xl transition-transform duration-100" style={{ transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)` }} draggable={false} />
             <button onClick={toggleZoom} aria-label={zoom > 1 ? "Zoom out" : "Zoom in"} className="absolute bottom-3 right-4 h-8 w-8 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform">
               {zoom > 1 ? <ZoomOut className="h-4 w-4 text-white" /> : <ZoomIn className="h-4 w-4 text-white" />}
             </button>
@@ -226,7 +285,6 @@ export const PostDetailSheet = ({
                 ))}
               </div>
             )}
-            {/* Try On chip */}
             {!isOwnPost && zoom <= 1 && onTryOn && (
               <button
                 onClick={() => onTryOn(post)}
@@ -324,9 +382,45 @@ export const PostDetailSheet = ({
               })}
             </div>
 
+            {/* Comments section */}
+            {comments.length > 0 && (
+              <>
+                <div className="h-px bg-[hsl(0_0%_13%)]" />
+                <button
+                  onClick={() => setShowComments(!showComments)}
+                  className="flex items-center gap-1.5 text-[11px] text-white/50 font-bold uppercase tracking-wider"
+                >
+                  <MessageCircle className="h-3 w-3" />
+                  {comments.length} Comment{comments.length !== 1 ? 's' : ''}
+                </button>
+                {showComments && (
+                  <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                    {comments.map(c => (
+                      <div key={c.id} className="flex items-start gap-2">
+                        {c.profile?.avatar_url ? (
+                          <img src={c.profile.avatar_url} alt="" className="h-6 w-6 rounded-full object-cover border border-white/10 shrink-0 mt-0.5" />
+                        ) : (
+                          <div className="h-6 w-6 rounded-full bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
+                            <span className="text-[9px] font-bold text-white/70">{(c.profile?.display_name || 'A')[0].toUpperCase()}</span>
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-baseline gap-1.5">
+                            <span className="text-[11px] font-bold text-white/80">{c.profile?.display_name || 'Anonymous'}</span>
+                            <span className="text-[9px] text-white/30">{timeAgo(c.created_at)}</span>
+                          </div>
+                          <p className="text-[12px] text-white/70 leading-snug break-words">{c.comment_text}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+
             {/* Chat input */}
             <div className="flex items-center gap-2">
-              <input type="text" placeholder="Drop a comment…" value={commentText} onChange={(e) => setCommentText(e.target.value)} className="flex-1 h-10 rounded-xl bg-white/10 border border-white/20 px-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 transition-colors" onKeyDown={(e) => { if (e.key === 'Enter') handleSendComment(); }} />
+              <input type="text" placeholder="Drop a comment…" value={commentText} onChange={(e) => setCommentText(e.target.value)} className="flex-1 h-10 rounded-xl bg-white/10 border border-white/20 px-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 transition-colors" maxLength={500} onKeyDown={(e) => { if (e.key === 'Enter') handleSendComment(); }} />
               <button onClick={handleSendComment} aria-label="Send comment" className="shrink-0 h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center active:scale-90 transition-transform">
                 <Send className="h-4 w-4 text-white" />
               </button>
