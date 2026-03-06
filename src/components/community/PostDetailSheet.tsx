@@ -308,6 +308,7 @@ export const PostDetailSheet = ({
                 <Sparkles className="h-2.5 w-2.5" /> Try On
               </button>
             )}
+            </div>
           </motion.div>
 
           {/* What's In This Look */}
