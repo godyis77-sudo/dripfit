@@ -62,7 +62,7 @@ const History = () => {
                         <p className="text-[13px] font-medium text-foreground">{new Date(m.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                         <div className="flex items-center gap-1.5">
                           <span className="text-[11px] bg-primary/10 text-primary px-2 py-0.5 rounded-md font-medium">{m.sizeRecommendation}</span>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={(e) => { e.stopPropagation(); handleDelete(m.id); }}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={(e) => { e.stopPropagation(); handleDelete(m.id); }} aria-label="Delete scan">
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         </div>

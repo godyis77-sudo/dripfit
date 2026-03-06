@@ -90,7 +90,7 @@ const Auth = () => {
       </div>
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 w-full max-w-[320px]">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="mb-3 h-8 w-8 rounded-lg text-muted-foreground">
+        <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="mb-3 h-8 w-8 rounded-lg text-muted-foreground" aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
         </Button>
 
