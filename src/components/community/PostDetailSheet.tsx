@@ -327,7 +327,7 @@ export const PostDetailSheet = ({
             {/* Chat input */}
             <div className="flex items-center gap-2">
               <input type="text" placeholder="Drop a comment…" value={commentText} onChange={(e) => setCommentText(e.target.value)} className="flex-1 h-10 rounded-xl bg-white/10 border border-white/20 px-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 transition-colors" onKeyDown={(e) => { if (e.key === 'Enter') handleSendComment(); }} />
-              <button onClick={handleSendComment} className="shrink-0 h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center active:scale-90 transition-transform">
+              <button onClick={handleSendComment} aria-label="Send comment" className="shrink-0 h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center active:scale-90 transition-transform">
                 <Send className="h-4 w-4 text-white" />
               </button>
             </div>
