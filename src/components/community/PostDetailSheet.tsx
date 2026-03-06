@@ -311,25 +311,8 @@ export const PostDetailSheet = ({
             </div>
           </motion.div>
 
-          {/* What's In This Look */}
+          {/* Editable caption */}
           <div className="px-4 pt-2" onClick={(e) => e.stopPropagation()}>
-            <WhatsInThisLook
-              productUrls={post.product_urls || undefined}
-              clothingPhotoUrl={post.clothing_photo_url}
-              variant="detail"
-              onTryOn={onTryOn ? () => onTryOn(post) : undefined}
-            />
-          </div>
-
-          {/* Bottom panel */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="px-4 pb-6 pt-3 space-y-3"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Editable caption */}
             <div className="flex items-center gap-2">
               {editingQuestion ? (
                 <>
@@ -348,6 +331,26 @@ export const PostDetailSheet = ({
                 </button>
               )}
             </div>
+          </div>
+
+          {/* What's In This Look */}
+          <div className="px-4 pt-2" onClick={(e) => e.stopPropagation()}>
+            <WhatsInThisLook
+              productUrls={post.product_urls || undefined}
+              clothingPhotoUrl={post.clothing_photo_url}
+              variant="detail"
+              onTryOn={onTryOn ? () => onTryOn(post) : undefined}
+            />
+          </div>
+
+          {/* Bottom panel */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="px-4 pb-6 pt-3 space-y-3"
+            onClick={(e) => e.stopPropagation()}
+          >
 
             {/* Outcome summary */}
             {totalBuy > 0 && (
