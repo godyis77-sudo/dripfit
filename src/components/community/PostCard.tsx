@@ -132,23 +132,8 @@ const PostCard = ({
             {(post as any).match_score}% match
           </div>
         )}
-        {!(user && post.user_id === user.id) && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              const urls = (post as any).product_urls;
-              if (urls && urls.length > 0) {
-                navigate('/tryon', { state: { productUrl: urls[0] } });
-              } else {
-                toast({ title: 'No product linked to this look' });
-              }
-            }}
-            className="absolute top-2 left-2 text-[11px] font-bold text-white rounded-[100px] flex items-center gap-1 active:scale-95 transition-transform"
-            style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.12)', padding: '4px 10px' }}
-          >
-            <Sparkles className="h-2.5 w-2.5" /> Try On
-          </button>
-        )}
+        {/* Try On badge — bottom right, linked to clothing data */}
+        <TryOnClothingBadge post={post} navigate={navigate} toast={toast} />
       </button>
 
       {/* Mini comment */}
