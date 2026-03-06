@@ -26,6 +26,7 @@ import Profile from "./pages/Profile";
 import ProfileBody from "./pages/ProfileBody";
 import Premium from "./pages/Premium";
 import SavedItems from "./pages/SavedItems";
+import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
 import PublicProfile from "./pages/PublicProfile";
 import Browse from "./pages/Browse";
