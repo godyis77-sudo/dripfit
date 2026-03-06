@@ -48,7 +48,7 @@ const Profile = () => {
   const [tryOnPosts, setTryOnPosts] = useState<TryOnPost[]>([]);
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
   const [favoriteRetailers, setFavoriteRetailers] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<'tryons' | 'body' | 'wardrobe'>('tryons');
+  const [activeTab, setActiveTab] = useState<'tryons' | 'body' | 'wardrobe' | 'cart'>('tryons');
   const [loading, setLoading] = useState(true);
   const [useCm, setUseCm] = useState(true);
   const [fit, setFit] = useState<FitPreference>(getFitPreference());
