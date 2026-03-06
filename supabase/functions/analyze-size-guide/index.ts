@@ -121,7 +121,7 @@ Please analyze the size chart and recommend the best size for me.`;
 
     const recommendation = JSON.parse(jsonMatch[0]);
 
-    return new Response(JSON.stringify(parsed), {
+    return new Response(JSON.stringify(recommendation), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

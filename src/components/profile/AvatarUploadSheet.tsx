@@ -38,7 +38,21 @@ const AvatarUploadSheet = ({ open, onOpenChange, userId, onUploaded }: AvatarUpl
     }
   };
 
-  const openPicker = (capture?: boolean) => {
+  const openPicker = async (capture?: boolean) => {
+    if (isNativePlatform()) {
+      try {
+        const { dataUrl } = await takeNativePhoto(capture ? 'camera' : 'gallery');
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+        const file = new File([blob], `avatar.${blob.type.split('/')[1] || 'jpg'}`, { type: blob.type });
+        handleFile(file);
+      } catch (err: any) {
+        if (!err.message?.includes('cancel')) {
+          toast({ title: 'Camera error', description: err.message, variant: 'destructive' });
+        }
+      }
+      return;
+    }
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
