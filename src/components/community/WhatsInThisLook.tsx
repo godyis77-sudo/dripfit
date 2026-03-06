@@ -178,7 +178,7 @@ const WhatsInThisLook = ({
                     </p>
                   </div>
 
-                  {/* Price + Shop */}
+                    {/* Price + Shop + Try On */}
                   <div className="flex items-center gap-1.5 shrink-0">
                     {item.price_cents && (
                       <span className={`${isCompact ? 'text-[10px]' : 'text-[13px]'} font-bold text-primary`}>
@@ -194,6 +194,15 @@ const WhatsInThisLook = ({
                     >
                       Shop <ExternalLink className={`${isCompact ? 'h-2 w-2' : 'h-2.5 w-2.5'}`} />
                     </button>
+                    {onTryOn && (
+                      <button
+                        onClick={() => onTryOn(item)}
+                        className={`${isCompact ? 'text-[9px]' : 'text-[11px]'} font-bold text-accent-foreground flex items-center gap-0.5 active:opacity-70 ml-1`}
+                        style={{ color: 'hsl(var(--primary))' }}
+                      >
+                        Try On
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
