@@ -480,7 +480,8 @@ const SettingsTab = ({
       </div>
 
       <p className="text-[10px] text-muted-foreground text-center flex items-center justify-center gap-1 pb-2">
-        <Shield className="h-3 w-3" /> Private by default · delete anytime
+        <Shield className="h-3 w-3" /> Private by default · delete anytime ·{' '}
+        <button onClick={() => navigate('/privacy')} className="underline hover:text-foreground">Privacy Policy</button>
       </p>
     </>
   );
