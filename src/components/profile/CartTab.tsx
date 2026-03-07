@@ -14,6 +14,33 @@ const CartTab = () => {
   const navigate = useNavigate();
   const { items, removeFromCart, clearCart } = useCart();
 
+  // Collect all unique product URLs across cart items and fetch their catalog images
+  const allProductUrls = useMemo(() => {
+    const urls = new Set<string>();
+    items.forEach(item => item.product_urls?.forEach(u => urls.add(u)));
+    return Array.from(urls);
+  }, [items]);
+
+  const [urlImageMap, setUrlImageMap] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (allProductUrls.length === 0) return;
+    supabase
+      .from('product_catalog')
+      .select('product_url, image_url')
+      .in('product_url', allProductUrls)
+      .then(({ data }) => {
+        if (!data) return;
+        const map: Record<string, string> = {};
+        data.forEach(row => { if (row.product_url) map[row.product_url] = row.image_url; });
+        setUrlImageMap(map);
+      });
+  }, [allProductUrls]);
+
+  const getClothingImageForUrl = (url: string, fallback: string) => {
+    return urlImageMap[url] || fallback;
+  };
+
   const handleTryOn = (productUrl?: string, clothingImageUrl?: string) => {
     trackEvent('cart_tryon_click', { productUrl });
     navigate('/tryon', { 
