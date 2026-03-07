@@ -52,7 +52,7 @@ const CartTab = () => {
               onShop={item.product_urls?.[0] ? () => handleShop(item.product_urls![0]) : undefined}
               onTryOn={() => navigate('/tryon', { state: { productUrl: item.product_urls?.[0] } })}
             >
-              <div className="shrink-0 w-16 h-20 rounded-lg overflow-hidden bg-muted/30 cursor-pointer active:scale-95 transition-transform">
+              <div className="shrink-0 w-32 h-40 rounded-lg overflow-hidden bg-muted/30 cursor-pointer active:scale-95 transition-transform">
                 <img
                   src={item.image_url}
                   alt={item.caption || 'Look'}
