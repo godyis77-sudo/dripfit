@@ -80,7 +80,33 @@ const CartTab = () => {
               </div>
 
               <div className="flex gap-1.5 mt-1.5">
-                {item.product_urls && item.product_urls.length > 0 && (
+                {item.product_urls && item.product_urls.length > 1 ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        size="sm"
+                        className="h-7 rounded-lg btn-luxury text-primary-foreground text-[9px] font-bold flex-1"
+                      >
+                        Buy! <ChevronDown className="ml-1 h-2.5 w-2.5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="min-w-[160px]">
+                      {item.product_urls.map((url, idx) => {
+                        const { brand } = detectBrandFromUrl(url);
+                        return (
+                          <DropdownMenuItem
+                            key={idx}
+                            onClick={() => handleShop(url)}
+                            className="text-[11px] font-semibold gap-2"
+                          >
+                            <ExternalLink className="h-3 w-3 text-primary" />
+                            {brand || `Item ${idx + 1}`}
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : item.product_urls && item.product_urls.length === 1 ? (
                   <Button
                     size="sm"
                     className="h-7 rounded-lg btn-luxury text-primary-foreground text-[9px] font-bold flex-1"
@@ -88,7 +114,7 @@ const CartTab = () => {
                   >
                     Buy! <ExternalLink className="ml-1 h-2.5 w-2.5" />
                   </Button>
-                )}
+                ) : null}
                 {item.product_urls && item.product_urls.length > 1 ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
