@@ -40,10 +40,25 @@ const ALL_RETAILERS = [
 const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetailers = [] }: WardrobeDetailSheetProps) => {
   const [retailerSearch, setRetailerSearch] = useState('');
 
+  const searchQuery = item?.category ?? '';
+  const categoryRetailers = getRetailersForCategory(item?.category ?? 'top');
+
+  const suggestions = [
+    ...favoriteRetailers,
+    ...categoryRetailers.filter(r => !favoriteRetailers.includes(r)),
+  ].slice(0, 4);
+
+  const filteredRetailers = useMemo(() => {
+    if (!retailerSearch.trim()) return [];
+    const term = retailerSearch.toLowerCase();
+    return ALL_RETAILERS.filter(
+      r => r.toLowerCase().includes(term) && !suggestions.includes(r)
+    );
+  }, [retailerSearch, suggestions]);
+
   if (!item) return null;
 
-  const searchQuery = item.category;
-  const categoryRetailers = getRetailersForCategory(item.category);
+  const displayRetailer = item.retailer || (favoriteRetailers.length > 0 ? favoriteRetailers[0] : getBestRetailerForItem(item.brand, item.category));
 
   // Show only 4 category-based suggestions (no random fallback)
   const suggestions = [
