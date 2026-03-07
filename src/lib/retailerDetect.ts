@@ -369,7 +369,7 @@ const CATEGORY_SLUG_MAP: Record<string, string> = {
   coat: 'coats', coats: 'coats', parka: 'coats', trench: 'coats',
   blazer: 'blazers', blazers: 'blazers',
   vest: 'vests', vests: 'vests', gilet: 'vests',
-  shirt: 'shirts', shirts: 'shirts', blouse: 'shirts',
+  shirt: 'shirts', shirts: 'shirts', blouse: 'shirts', 'dress-shirt': 'shirts',
   polo: 'polos', polos: 'polos',
   sweater: 'sweaters', sweaters: 'sweaters', cardigan: 'sweaters', pullover: 'sweaters', jumper: 'sweaters',
   tee: 't-shirts', tshirt: 't-shirts',
@@ -402,6 +402,12 @@ export function detectCategoryFromUrl(url: string): string | null {
     const parsed = new URL(url);
     const path = decodeURIComponent(parsed.pathname.toLowerCase());
     const slugParts = path.replace(/\.[^.]+$/, '').split(/[\/-]/);
+    // Check two-word compounds first (e.g., "dress-shirt")
+    for (let i = 0; i < slugParts.length - 1; i++) {
+      const compound = `${slugParts[i]}-${slugParts[i + 1]}`;
+      const match = CATEGORY_SLUG_MAP[compound];
+      if (match) return match;
+    }
     for (const part of slugParts) {
       const match = CATEGORY_SLUG_MAP[part];
       if (match) return match;
