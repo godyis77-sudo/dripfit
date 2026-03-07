@@ -59,7 +59,7 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
 
   if (!item) return null;
 
-  const displayRetailer = item.retailer || (favoriteRetailers.length > 0 ? favoriteRetailers[0] : getBestRetailerForItem(item.brand, item.category));
+  const displayRetailer = item.brand || (item.product_link ? detectBrandFromUrl(item.product_link).brand : null) || item.retailer;
 
 
   const handleShop = (retailerName: string) => {
