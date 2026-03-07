@@ -44,9 +44,10 @@ function findScrollableAncestor(el: HTMLElement): HTMLElement | null {
 
 function getContainerBounds(container: ScrollContainer, buffer: number) {
   if (container === window) {
+    const obstruction = getViewportBottomObstruction();
     return {
       top: buffer,
-      bottom: window.innerHeight - buffer,
+      bottom: window.innerHeight - obstruction - buffer,
       scrollBy: (delta: number, behavior: ScrollBehavior) =>
         window.scrollBy({ top: delta, behavior }),
     };

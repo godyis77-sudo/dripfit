@@ -19,6 +19,7 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
   return (
     <motion.nav
       ref={ref}
+      data-scroll-obstruction="bottom"
       initial={{ y: 80 }}
       animate={{ y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.3 }}
