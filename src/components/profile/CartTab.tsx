@@ -180,7 +180,7 @@ const CartTab = () => {
               productUrls={item.product_urls}
               clothingPhotoUrl={item.clothing_photo_url}
               variant="card"
-              onTryOn={(lookItem) => navigate('/tryon', { state: { productUrl: lookItem.url } })}
+              onTryOn={(lookItem) => handleTryOn(lookItem.url, lookItem.image_url || item.clothing_photo_url)}
             />
           )}
         </div>
