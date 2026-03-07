@@ -306,6 +306,10 @@ const Community = () => {
             navigateToTryOn(navigate, { fallbackClothingImageUrl: p.clothing_photo_url, source: 'style_check_detail' });
           }
         }}
+        onTryOnItem={(item, p) => {
+          setDetailPost(null);
+          navigateToTryOn(navigate, { productUrl: item.url, fallbackClothingImageUrl: item.image_url || p.clothing_photo_url, source: 'style_check_detail_item' });
+        }}
         isFollowing={detailPost ? !!followToggles[detailPost.user_id] : false}
         isOwnPost={detailPost ? user?.id === detailPost.user_id : false}
         isPlaceholder={detailPost ? isPlaceholder(detailPost) : false}
