@@ -1,34 +1,37 @@
 
 
-## Plan: Apply Home Screen Recommended Grid Badge Style to Wardrobe & Cart
+# Body Diagram as Generated Image
 
-### What the home screen "Recommended for you" cards look like
-Each product card in `CategoryProductGrid` has:
-- **3:4 aspect ratio** image area
-- **Bottom-right of image**: Brand pill (`bg-background/80 backdrop-blur-sm`, `text-[8px] font-bold uppercase`)
-- **Below image**: Brand name (muted, uppercase, `text-[9px]`), product name (bold, `text-[11px]`, 2-line clamp), and price (primary color, `text-[12px] font-bold`)
+## Overview
+Replace the current SVG-based body diagram with an AI-generated realistic body silhouette image, with measurement labels overlaid using HTML/CSS positioning instead of SVG text elements.
 
-### Changes
+## Approach
 
-#### 1. Wardrobe Tab Grid (`src/components/profile/WardrobeTab.tsx`)
-Restructure each wardrobe card to match the recommended grid card layout:
-- Wrap image in `aspect-[3/4]` container
-- Move the retailer badge from `bg-primary` to the home screen style: `bg-background/80 backdrop-blur-sm rounded-md` with `text-[8px] font-bold uppercase` brand text
-- Below image: add the same info section with brand (muted uppercase `text-[9px]`), item name/notes (bold `text-[11px]` with 2-line clamp), and date (where price would be, `text-[12px]`)
+1. **Create an edge function** (`generate-body-diagram`) that calls the Lovable AI image generation model (`google/gemini-2.5-flash-image`) to produce a clean, minimal body silhouette image -- a neutral, front-facing human figure on a transparent/dark background, suitable for overlaying measurement annotations.
 
-#### 2. Wardrobe Detail Sheet (`src/components/profile/WardrobeDetailSheet.tsx`)
-Add matching overlay badges on the detail image:
-- **Bottom-right**: Brand pill in `bg-background/80 backdrop-blur-sm` style (replacing the current `bg-primary` retailer badge)
-- Keep info chips below but style the brand/category to match the recommended card typography
+2. **Update `BodyDiagram.tsx`** to:
+   - Call the edge function on mount (with caching in state/localStorage so it doesn't regenerate every time)
+   - Display the generated image as an `<img>` tag
+   - Overlay measurement labels using absolutely-positioned HTML `<div>` elements with CSS lines/connectors
+   - Show a loading skeleton while the image generates
+   - Fall back gracefully if generation fails
 
-#### 3. Cart Tab Detail Card (`src/components/profile/CartTab.tsx`)
-Add overlay badge on the cart item thumbnail image:
-- **Bottom-right of thumbnail**: Brand pill (`bg-background/80 backdrop-blur-sm`) showing detected brand from URL
-- Move the existing brand chip from the text area to the image overlay
-- Style the text info area below to match: brand (muted uppercase), caption (bold), date
+3. **Measurement overlay** will use CSS `position: absolute` divs placed at percentage-based coordinates over the image, with thin CSS border lines as connectors -- replicating the same label layout (shoulder, bust, chest, sleeve, waist, hips, inseam, height) but in HTML instead of SVG.
 
-### Files to edit
-1. `src/components/profile/WardrobeTab.tsx` — restructure grid cards to match recommended product card layout
-2. `src/components/profile/WardrobeDetailSheet.tsx` — update detail image badge styling
-3. `src/components/profile/CartTab.tsx` — add brand badge overlay on thumbnail, restyle info area
+## Technical Details
+
+### New Edge Function: `supabase/functions/generate-body-diagram/index.ts`
+- Accepts a POST with optional gender parameter
+- Calls `google/gemini-2.5-flash-image` with a prompt for a clean anatomical silhouette figure
+- Returns the base64 image data
+- Uses `LOVABLE_API_KEY` (already available)
+
+### Updated Component: `src/components/results/BodyDiagram.tsx`
+- Fetches image once, caches the base64 result in `localStorage` (key: `dripcheck_body_silhouette`)
+- Renders image inside a `relative` container
+- Positions measurement annotations as `absolute` HTML elements at percentage-based top/left coordinates
+- Displays cm and inch values using the same formatting logic
+- Shows skeleton loader during generation
+
+### No database changes required.
 
