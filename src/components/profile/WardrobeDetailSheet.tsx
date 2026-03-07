@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { ExternalLink, Trash2, X, ShoppingBag, Tag, Calendar, Store, Star, ChevronDown, Search } from 'lucide-react';
-import { buildRetailerSearchUrl, getRetailersForCategory, getBestRetailerForItem } from '@/lib/retailerLinks';
+import { buildRetailerSearchUrl, getRetailersForCategory } from '@/lib/retailerLinks';
+import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { trackEvent } from '@/lib/analytics';
 
 interface WardrobeItem {
@@ -58,7 +59,7 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
 
   if (!item) return null;
 
-  const displayRetailer = item.retailer || (favoriteRetailers.length > 0 ? favoriteRetailers[0] : getBestRetailerForItem(item.brand, item.category));
+  const displayRetailer = item.brand || (item.product_link ? detectBrandFromUrl(item.product_link).brand : null) || item.retailer;
 
 
   const handleShop = (retailerName: string) => {

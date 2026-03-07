@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shirt, Sparkles, Store, ExternalLink, Trash2, MoreHorizontal } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
-import { getBestRetailerForItem } from '@/lib/retailerLinks';
+import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import WardrobeDetailSheet from './WardrobeDetailSheet';
 
 interface WardrobeItem {
@@ -82,10 +82,10 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                       </div>
                     )}
                     {(() => {
-                      const displayRetailer = item.retailer || (favoriteRetailers.length > 0 ? favoriteRetailers[0] : getBestRetailerForItem(item.brand, item.category));
-                      return displayRetailer ? (
+                      const displayBrand = item.brand || (item.product_link ? detectBrandFromUrl(item.product_link).brand : null) || item.retailer;
+                      return displayBrand ? (
                         <div className="absolute bottom-1.5 right-1.5 bg-primary rounded-md px-2 py-0.5 shadow-lg border border-primary-foreground/20">
-                          <span className="text-[9px] font-extrabold text-primary-foreground uppercase tracking-wide">{displayRetailer}</span>
+                          <span className="text-[9px] font-extrabold text-primary-foreground uppercase tracking-wide">{displayBrand}</span>
                         </div>
                       ) : null;
                     })()}
