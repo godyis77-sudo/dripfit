@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -38,6 +38,24 @@ const Community = () => {
   const [followingSort, setFollowingSort] = useState<TrendingSort>('newest');
   const [filterUserId, setFilterUserId] = useState<string | null>(null);
   const [similarFitTooltip, setSimilarFitTooltip] = useState(false);
+
+  // Close detail sheet on browser/hardware back button
+  const closeDetail = useCallback(() => setDetailPost(null), []);
+
+  useEffect(() => {
+    if (detailPost) {
+      window.history.pushState({ detailOpen: true }, '');
+      const onPopState = () => closeDetail();
+      window.addEventListener('popstate', onPopState);
+      return () => window.removeEventListener('popstate', onPopState);
+    }
+  }, [detailPost, closeDetail]);
+
+  const handleCloseDetail = useCallback(() => {
+    if (detailPost) {
+      window.history.back();
+    }
+  }, [detailPost]);
 
   const {
     posts, loading, loadingMore, hasMore, loadMore,
@@ -276,7 +294,7 @@ const Community = () => {
       <PostDetailSheet
         post={detailPost}
         open={!!detailPost}
-        onClose={() => setDetailPost(null)}
+        onClose={handleCloseDetail}
         prompt={detailPost?.caption || ''}
         votes={votes}
         voteCounts={voteCounts}
