@@ -3,8 +3,9 @@ import { useEffect, useState } from 'react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Sparkles } from 'lucide-react';
 import { PostDetailSheet } from '@/components/community/PostDetailSheet';
+import { navigateToTryOn } from '@/lib/tryonNavigate';
 import BottomTabBar from '@/components/BottomTabBar';
 
 const StyleCheckDetail = () => {
@@ -79,6 +80,20 @@ const StyleCheckDetail = () => {
             <p className="text-[9px] text-muted-foreground mt-1">
               {new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </p>
+            <Button
+              size="sm"
+              className="mt-2 rounded-lg btn-luxury text-primary-foreground text-[11px] h-8 px-4 font-bold"
+              onClick={() => {
+                const urls = post.product_urls as string[] | null;
+                navigateToTryOn(navigate, {
+                  productUrl: urls?.[0],
+                  fallbackClothingImageUrl: post.clothing_photo_url,
+                  source: 'style_check_detail_page',
+                });
+              }}
+            >
+              <Sparkles className="mr-1 h-3 w-3" /> Try On This Look
+            </Button>
           </div>
         </div>
       </div>

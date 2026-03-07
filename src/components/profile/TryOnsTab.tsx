@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
+import { navigateToTryOn } from '@/lib/tryonNavigate';
 import TryOnDetailSheet from './TryOnDetailSheet';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 
@@ -233,7 +234,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                     productUrls={post.product_urls || undefined}
                     clothingPhotoUrl={post.clothing_photo_url}
                     variant="card"
-                    onTryOn={(item) => navigate('/tryon')}
+                    onTryOn={(item) => navigateToTryOn(navigate, { productUrl: item.url, fallbackClothingImageUrl: item.image_url || post.clothing_photo_url, source: 'profile_tryons' })}
                     onAddToWardrobe={async (item) => {
                       if (!user) return;
                       const imgUrl = item.image_url || post.clothing_photo_url || '';

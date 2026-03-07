@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
+import { navigateToTryOn } from '@/lib/tryonNavigate';
 import BottomTabBar from '@/components/BottomTabBar';
 import PostLookFlow from '@/components/community/PostLookFlow';
 import { PostDetailSheet } from '@/components/community/PostDetailSheet';
@@ -216,7 +217,7 @@ const Community = () => {
                 <button key={cat.key} onClick={() => setShopCategory(cat.key)} className={`px-3 py-1 rounded-full text-[10px] font-bold whitespace-nowrap transition-colors ${shopCategory === cat.key ? 'bg-primary/15 border border-primary/30 text-primary' : 'bg-card border border-border text-muted-foreground'}`}>{cat.label}</button>
               ))}
             </div>
-            <CategoryProductGrid category={shopCategory} collapsed={false} maxItems={50} gender={shopGender === 'all' ? undefined : shopGender} brand={shopBrand || undefined} onSelectProduct={(product) => navigate('/tryon', { state: { productUrl: product.product_url || product.image_url } })} />
+            <CategoryProductGrid category={shopCategory} collapsed={false} maxItems={50} gender={shopGender === 'all' ? undefined : shopGender} brand={shopBrand || undefined} onSelectProduct={(product) => navigateToTryOn(navigate, { productUrl: product.product_url || undefined, fallbackClothingImageUrl: product.image_url, source: 'style_check_shop' })} />
           </>
         ) : loading ? (
           <div className="space-y-3">
@@ -299,8 +300,11 @@ const Community = () => {
         onTryOn={(p) => {
           setDetailPost(null);
           const urls = p.product_urls;
-          if (urls && urls.length > 0) { navigate('/tryon', { state: { productUrl: urls[0] } }); }
-          else { toast({ title: 'No product linked to this look' }); }
+          if (urls && urls.length > 0) {
+            navigateToTryOn(navigate, { productUrl: urls[0], fallbackClothingImageUrl: p.clothing_photo_url, source: 'style_check_detail' });
+          } else {
+            navigateToTryOn(navigate, { fallbackClothingImageUrl: p.clothing_photo_url, source: 'style_check_detail' });
+          }
         }}
         isFollowing={detailPost ? !!followToggles[detailPost.user_id] : false}
         isOwnPost={detailPost ? user?.id === detailPost.user_id : false}
