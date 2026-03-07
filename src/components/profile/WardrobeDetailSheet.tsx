@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Trash2, X, ShoppingBag, Tag, Calendar, Store, Star } from 'lucide-react';
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
+import { ExternalLink, Trash2, X, ShoppingBag, Tag, Calendar, Store, Star, ChevronDown } from 'lucide-react';
 import { buildRetailerSearchUrl, getRetailersForCategory, getBestRetailerForItem } from '@/lib/retailerLinks';
 import { trackEvent } from '@/lib/analytics';
 
