@@ -121,12 +121,12 @@ const CartTab = () => {
                 {item.product_urls && item.product_urls.length > 1 ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button
-                        size="sm"
-                        className="h-7 rounded-lg btn-luxury text-primary-foreground text-[9px] font-bold flex-1"
+                      <button
+                        type="button"
+                        className="inline-flex h-7 flex-1 items-center justify-center rounded-lg btn-luxury px-3 text-[9px] font-bold text-primary-foreground"
                       >
                         Buy! <ChevronDown className="ml-1 h-2.5 w-2.5" />
-                      </Button>
+                      </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="min-w-[160px]">
                       {item.product_urls.map((url, idx) => {
