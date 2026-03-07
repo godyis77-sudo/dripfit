@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import type { NavigateFunction } from 'react-router-dom';
 import { trackEvent } from '@/lib/analytics';
 
 /** Normalize a product URL for fuzzy matching against product_catalog */
