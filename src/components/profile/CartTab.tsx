@@ -1,4 +1,3 @@
-import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Sparkles, ExternalLink, XCircle, Trash2, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,44 +9,45 @@ import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
 
+const normalizeProductUrl = (url: string) => {
+  try {
+    const parsed = new URL(url);
+    return `${parsed.origin}${parsed.pathname}`.replace(/\/+$/, '').toLowerCase();
+  } catch {
+    return url.split('?')[0].split('#')[0].replace(/\/+$/, '').toLowerCase();
+  }
+};
+
 const CartTab = () => {
   const navigate = useNavigate();
   const { items, removeFromCart, clearCart } = useCart();
 
-  // Collect all unique product URLs across cart items and fetch their catalog images
-  const allProductUrls = useMemo(() => {
-    const urls = new Set<string>();
-    items.forEach(item => item.product_urls?.forEach(u => urls.add(u)));
-    return Array.from(urls);
-  }, [items]);
-
-  const [urlImageMap, setUrlImageMap] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    if (allProductUrls.length === 0) return;
-    supabase
-      .from('product_catalog')
-      .select('product_url, image_url')
-      .in('product_url', allProductUrls)
-      .then(({ data }) => {
-        if (!data) return;
-        const map: Record<string, string> = {};
-        data.forEach(row => { if (row.product_url) map[row.product_url] = row.image_url; });
-        setUrlImageMap(map);
-      });
-  }, [allProductUrls]);
-
-  const getClothingImageForUrl = (url: string, fallback: string) => {
-    return urlImageMap[url] || fallback;
-  };
-
-  const handleTryOn = (productUrl?: string, clothingImageUrl?: string) => {
+  const handleTryOn = async (productUrl?: string, fallbackClothingImageUrl?: string) => {
     trackEvent('cart_tryon_click', { productUrl });
-    navigate('/tryon', { 
-      state: { 
-        productUrl, 
+
+    let clothingImageUrl = fallbackClothingImageUrl;
+
+    if (productUrl) {
+      try {
+        const normalizedUrl = normalizeProductUrl(productUrl);
+        const { data } = await supabase
+          .from('product_catalog')
+          .select('image_url, product_url')
+          .ilike('product_url', `${normalizedUrl}%`)
+          .eq('is_active', true)
+          .limit(1);
+
+        if (data?.[0]?.image_url) clothingImageUrl = data[0].image_url;
+      } catch {
+        // fallback keeps existing clothing image URL
+      }
+    }
+
+    navigate('/tryon', {
+      state: {
+        productUrl,
         clothingImageUrl: clothingImageUrl || undefined,
-      } 
+      },
     });
   };
 
