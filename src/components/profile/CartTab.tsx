@@ -84,7 +84,7 @@ const CartTab = () => {
                     className="h-7 rounded-lg btn-luxury text-primary-foreground text-[9px] font-bold flex-1"
                     onClick={() => handleShop(item.product_urls![0])}
                   >
-                    Shop <ExternalLink className="ml-1 h-2.5 w-2.5" />
+                    Buy! <ExternalLink className="ml-1 h-2.5 w-2.5" />
                   </Button>
                 )}
                 <Button
