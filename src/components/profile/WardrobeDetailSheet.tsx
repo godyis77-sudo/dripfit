@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Trash2, X, ShoppingBag, Tag, Calendar, Store, Star } from 'lucide-react';
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
+import { ExternalLink, Trash2, X, ShoppingBag, Tag, Calendar, Store, Star, ChevronDown } from 'lucide-react';
 import { buildRetailerSearchUrl, getRetailersForCategory, getBestRetailerForItem } from '@/lib/retailerLinks';
 import { trackEvent } from '@/lib/analytics';
 
@@ -96,27 +97,34 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
             </Button>
           )}
 
-          {/* Retailer grid */}
-          <div>
-            <p className="text-[11px] font-bold text-foreground mb-2 flex items-center gap-1">
-              <ShoppingBag className="h-3.5 w-3.5 text-primary" /> Shop at Retailers
-            </p>
-            <div className="grid grid-cols-2 gap-1.5">
-              {mergedRetailers.map(name => (
-                <button
-                  key={name}
-                  onClick={() => handleShop(name)}
-                  className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-border bg-card hover:border-primary/40 active:scale-[0.97] transition-all text-left"
-                >
-                  <ExternalLink className="h-3 w-3 text-primary shrink-0" />
-                  <span className="text-[11px] font-bold text-foreground truncate">{name}</span>
-                  {favoriteRetailers.includes(name) && (
-                    <Star className="h-2.5 w-2.5 text-primary fill-primary ml-auto shrink-0" />
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
+          {/* Retailer accordion */}
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <Button variant="outline" className="w-full h-10 rounded-xl text-[12px] font-bold gap-1.5 justify-between">
+                <span className="flex items-center gap-1.5">
+                  <ShoppingBag className="h-3.5 w-3.5 text-primary" /> Shop All Retailers Similar Style
+                </span>
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pt-2">
+              <div className="grid grid-cols-2 gap-1.5">
+                {mergedRetailers.map(name => (
+                  <button
+                    key={name}
+                    onClick={() => handleShop(name)}
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-border bg-card hover:border-primary/40 active:scale-[0.97] transition-all text-left"
+                  >
+                    <ExternalLink className="h-3 w-3 text-primary shrink-0" />
+                    <span className="text-[11px] font-bold text-foreground truncate">{name}</span>
+                    {favoriteRetailers.includes(name) && (
+                      <Star className="h-2.5 w-2.5 text-primary fill-primary ml-auto shrink-0" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
 
           {/* Delete */}
           <Button
