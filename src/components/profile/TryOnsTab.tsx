@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
+import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { navigateToTryOn } from '@/lib/tryonNavigate';
 import TryOnDetailSheet from './TryOnDetailSheet';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
