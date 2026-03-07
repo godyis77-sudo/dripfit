@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { scrollIntoViewIfNeeded } from '@/lib/autoScroll';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ExternalLink, ShoppingBag, ShoppingCart } from 'lucide-react';
 import { FullscreenImage } from '@/components/ui/fullscreen-image';
@@ -75,22 +76,7 @@ const WhatsInThisLook = ({
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           if (contentRef.current) {
-            const rect = contentRef.current.getBoundingClientRect();
-            const viewportH = window.innerHeight;
-            const overflow = rect.bottom - viewportH + 16;
-            if (overflow > 0) {
-              // Find the nearest scrollable ancestor (for fixed overlays)
-              let scrollParent: HTMLElement | null = contentRef.current.parentElement;
-              while (scrollParent && scrollParent !== document.body) {
-                const style = getComputedStyle(scrollParent);
-                if (/(auto|scroll)/.test(style.overflowY) && scrollParent.scrollHeight > scrollParent.clientHeight) {
-                  scrollParent.scrollBy({ top: overflow, behavior: 'smooth' });
-                  return;
-                }
-                scrollParent = scrollParent.parentElement;
-              }
-              window.scrollBy({ top: overflow, behavior: 'smooth' });
-            }
+            scrollIntoViewIfNeeded(contentRef.current);
           }
         });
       });
