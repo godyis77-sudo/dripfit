@@ -9,6 +9,7 @@ import {
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { GENERIC_PROMPTS } from './community-types';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
+import type { LookItem } from '@/components/community/WhatsInThisLook';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Post {
@@ -61,6 +62,7 @@ interface PostDetailSheetProps {
   onNavigateProfile: (post: Post) => void;
   onShopLook: (post: Post) => void;
   onTryOn?: (post: Post) => void;
+  onTryOnItem?: (item: LookItem, post: Post) => void;
   onDelete?: (postId: string) => void;
   isFollowing: boolean;
   isOwnPost: boolean;
@@ -81,6 +83,7 @@ export const PostDetailSheet = ({
   onNavigateProfile,
   onShopLook,
   onTryOn,
+  onTryOnItem,
   onDelete,
   isFollowing,
   isOwnPost,
@@ -348,7 +351,7 @@ export const PostDetailSheet = ({
               productUrls={post.product_urls || undefined}
               clothingPhotoUrl={post.clothing_photo_url}
               variant="detail"
-              onTryOn={onTryOn ? () => onTryOn(post) : undefined}
+              onTryOn={onTryOnItem ? (item: LookItem) => onTryOnItem(item, post) : (onTryOn ? () => onTryOn(post) : undefined)}
             />
           </div>
 

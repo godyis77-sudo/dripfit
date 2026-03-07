@@ -14,7 +14,9 @@ import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
+import type { LookItem } from '@/components/community/WhatsInThisLook';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
+import { navigateToTryOn } from '@/lib/tryonNavigate';
 import type { Post, FilterType } from './community-types';
 import { GENERIC_PROMPTS } from './community-types';
 import { VOTE_OPTIONS, FIT_OPTIONS } from './community-types';
@@ -329,7 +331,7 @@ const PostCard = ({
         productUrls={(post as any).product_urls}
         clothingPhotoUrl={post.clothing_photo_url}
         variant="card"
-        onTryOn={() => navigate('/tryon')}
+        onTryOn={(item: LookItem) => navigateToTryOn(navigate, { productUrl: item.url, fallbackClothingImageUrl: item.image_url || post.clothing_photo_url, source: 'style_check_shop_style' })}
         onAddToWardrobe={async (item) => {
           if (!user) { toast({ title: 'Sign in first', variant: 'destructive' }); return; }
           const imgUrl = item.image_url || post.clothing_photo_url || '';
