@@ -402,6 +402,12 @@ export function detectCategoryFromUrl(url: string): string | null {
     const parsed = new URL(url);
     const path = decodeURIComponent(parsed.pathname.toLowerCase());
     const slugParts = path.replace(/\.[^.]+$/, '').split(/[\/-]/);
+    // Check two-word compounds first (e.g., "dress-shirt")
+    for (let i = 0; i < slugParts.length - 1; i++) {
+      const compound = `${slugParts[i]}-${slugParts[i + 1]}`;
+      const match = CATEGORY_SLUG_MAP[compound];
+      if (match) return match;
+    }
     for (const part of slugParts) {
       const match = CATEGORY_SLUG_MAP[part];
       if (match) return match;
