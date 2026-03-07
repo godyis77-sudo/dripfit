@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Sparkles, ExternalLink, XCircle, Trash2, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,10 +8,38 @@ import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 import { useCart } from '@/hooks/useCart';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { trackEvent } from '@/lib/analytics';
+import { supabase } from '@/integrations/supabase/client';
 
 const CartTab = () => {
   const navigate = useNavigate();
   const { items, removeFromCart, clearCart } = useCart();
+
+  // Collect all unique product URLs across cart items and fetch their catalog images
+  const allProductUrls = useMemo(() => {
+    const urls = new Set<string>();
+    items.forEach(item => item.product_urls?.forEach(u => urls.add(u)));
+    return Array.from(urls);
+  }, [items]);
+
+  const [urlImageMap, setUrlImageMap] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (allProductUrls.length === 0) return;
+    supabase
+      .from('product_catalog')
+      .select('product_url, image_url')
+      .in('product_url', allProductUrls)
+      .then(({ data }) => {
+        if (!data) return;
+        const map: Record<string, string> = {};
+        data.forEach(row => { if (row.product_url) map[row.product_url] = row.image_url; });
+        setUrlImageMap(map);
+      });
+  }, [allProductUrls]);
+
+  const getClothingImageForUrl = (url: string, fallback: string) => {
+    return urlImageMap[url] || fallback;
+  };
 
   const handleTryOn = (productUrl?: string, clothingImageUrl?: string) => {
     trackEvent('cart_tryon_click', { productUrl });
@@ -142,7 +170,7 @@ const CartTab = () => {
                         return (
                           <DropdownMenuItem
                             key={idx}
-                            onClick={() => handleTryOn(url, item.clothing_photo_url)}
+                            onClick={() => handleTryOn(url, getClothingImageForUrl(url, item.clothing_photo_url))}
                             className="text-[11px] font-semibold gap-2"
                           >
                             <Sparkles className="h-3 w-3 text-primary" />
