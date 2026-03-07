@@ -93,7 +93,7 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
                 window.open(item.product_link!, '_blank', 'noopener');
               }}
             >
-              <ExternalLink className="h-4 w-4" /> Shop Direct Link
+              <ExternalLink className="h-4 w-4" /> Buy Now!
             </Button>
           )}
 
