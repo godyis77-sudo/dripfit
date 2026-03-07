@@ -369,7 +369,7 @@ const CATEGORY_SLUG_MAP: Record<string, string> = {
   coat: 'coats', coats: 'coats', parka: 'coats', trench: 'coats',
   blazer: 'blazers', blazers: 'blazers',
   vest: 'vests', vests: 'vests', gilet: 'vests',
-  shirt: 'shirts', shirts: 'shirts', blouse: 'shirts',
+  shirt: 'shirts', shirts: 'shirts', blouse: 'shirts', 'dress-shirt': 'shirts',
   polo: 'polos', polos: 'polos',
   sweater: 'sweaters', sweaters: 'sweaters', cardigan: 'sweaters', pullover: 'sweaters', jumper: 'sweaters',
   tee: 't-shirts', tshirt: 't-shirts',
