@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { scrollIntoViewIfNeeded } from '@/lib/autoScroll';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, UserPlus, UserCheck, ExternalLink, Pencil, Check, ZoomIn, ZoomOut, Sparkles, Trash2, MessageCircle } from 'lucide-react';
 import {
@@ -399,8 +400,10 @@ export const PostDetailSheet = ({
                     setShowComments(next);
                     if (next) {
                       setTimeout(() => {
-                        commentsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                      }, 50);
+                        if (commentsSectionRef.current) {
+                          scrollIntoViewIfNeeded(commentsSectionRef.current);
+                        }
+                      }, 100);
                     }
                   }}
                   className="flex items-center gap-1.5 text-[11px] text-white/50 font-bold uppercase tracking-wider py-1"

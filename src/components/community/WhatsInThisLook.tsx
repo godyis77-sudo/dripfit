@@ -73,13 +73,12 @@ const WhatsInThisLook = ({
     const willOpen = !open;
     setOpen(willOpen);
     if (willOpen) {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          if (contentRef.current) {
-            scrollIntoViewIfNeeded(contentRef.current);
-          }
-        });
-      });
+      // Wait for framer-motion animation (200ms) + buffer before measuring
+      setTimeout(() => {
+        if (contentRef.current) {
+          scrollIntoViewIfNeeded(contentRef.current);
+        }
+      }, 250);
     }
   }, [open]);
 
