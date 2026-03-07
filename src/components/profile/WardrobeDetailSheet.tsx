@@ -60,22 +60,6 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
 
   const displayRetailer = item.retailer || (favoriteRetailers.length > 0 ? favoriteRetailers[0] : getBestRetailerForItem(item.brand, item.category));
 
-  // Show only 4 category-based suggestions (no random fallback)
-  const suggestions = [
-    ...favoriteRetailers,
-    ...categoryRetailers.filter(r => !favoriteRetailers.includes(r)),
-  ].slice(0, 4);
-
-  const displayRetailer = item.retailer || (favoriteRetailers.length > 0 ? favoriteRetailers[0] : getBestRetailerForItem(item.brand, item.category));
-
-  // Filter all retailers by search term
-  const filteredRetailers = useMemo(() => {
-    if (!retailerSearch.trim()) return [];
-    const term = retailerSearch.toLowerCase();
-    return ALL_RETAILERS.filter(
-      r => r.toLowerCase().includes(term) && !suggestions.includes(r)
-    );
-  }, [retailerSearch, suggestions]);
 
   const handleShop = (retailerName: string) => {
     trackEvent('shop_clickout', { source: 'wardrobe_detail', retailer: retailerName });
