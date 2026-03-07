@@ -431,7 +431,7 @@ export const PostDetailSheet = ({
                     <div ref={commentsEndRef} />
                   </div>
                 )}
-              </>
+              </div>
             )}
 
             {/* Chat input */}
