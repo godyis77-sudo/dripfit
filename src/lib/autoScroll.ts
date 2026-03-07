@@ -2,6 +2,28 @@ import type { MutableRefObject, Ref, RefObject } from "react";
 
 type ScrollContainer = HTMLElement | Window;
 
+function getViewportBottomObstruction(): number {
+  const elements = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-scroll-obstruction="bottom"]'),
+  );
+
+  let maxOverlap = 0;
+
+  for (const el of elements) {
+    const style = getComputedStyle(el);
+    if (style.display === "none" || style.visibility === "hidden") continue;
+    if (style.position !== "fixed" && style.position !== "sticky") continue;
+
+    const rect = el.getBoundingClientRect();
+    if (rect.height <= 0) continue;
+
+    const overlap = Math.max(0, window.innerHeight - rect.top);
+    maxOverlap = Math.max(maxOverlap, overlap);
+  }
+
+  return maxOverlap;
+}
+
 function findScrollableAncestor(el: HTMLElement): HTMLElement | null {
   let parent = el.parentElement;
 
