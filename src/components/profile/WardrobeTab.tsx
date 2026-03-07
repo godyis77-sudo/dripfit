@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shirt, Sparkles, Store, ExternalLink, Trash2, MoreHorizontal } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
-import { getBestRetailerForItem } from '@/lib/retailerLinks';
 import WardrobeDetailSheet from './WardrobeDetailSheet';
 
 interface WardrobeItem {
