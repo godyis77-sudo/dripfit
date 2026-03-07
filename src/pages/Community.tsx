@@ -39,7 +39,25 @@ const Community = () => {
   const [filterUserId, setFilterUserId] = useState<string | null>(null);
   const [similarFitTooltip, setSimilarFitTooltip] = useState(false);
 
-  const {
+  // Close detail sheet on browser/hardware back button
+  const closeDetail = useCallback(() => setDetailPost(null), []);
+
+  useEffect(() => {
+    if (detailPost) {
+      window.history.pushState({ detailOpen: true }, '');
+      const onPopState = () => closeDetail();
+      window.addEventListener('popstate', onPopState);
+      return () => window.removeEventListener('popstate', onPopState);
+    }
+  }, [detailPost, closeDetail]);
+
+  const handleCloseDetail = useCallback(() => {
+    if (detailPost) {
+      window.history.back();
+    }
+  }, [detailPost]);
+
+  const
     posts, loading, loadingMore, hasMore, loadMore,
     votes, voteCounts, followToggles, failedImages,
     hasScan, handleVote, handleFollowToggle, handleDeletePost, handleImageError, fetchPosts,
