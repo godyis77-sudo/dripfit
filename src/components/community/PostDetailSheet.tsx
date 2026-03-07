@@ -400,8 +400,10 @@ export const PostDetailSheet = ({
                     setShowComments(next);
                     if (next) {
                       setTimeout(() => {
-                        commentsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                      }, 50);
+                        if (commentsSectionRef.current) {
+                          scrollIntoViewIfNeeded(commentsSectionRef.current);
+                        }
+                      }, 100);
                     }
                   }}
                   className="flex items-center gap-1.5 text-[11px] text-white/50 font-bold uppercase tracking-wider py-1"
