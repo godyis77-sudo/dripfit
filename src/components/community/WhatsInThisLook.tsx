@@ -146,6 +146,7 @@ const WhatsInThisLook = ({
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
             className="overflow-hidden"
+            ref={contentRef}
           >
             <div
               className={`${isCompact ? 'px-3 py-2' : 'px-4 py-3'} space-y-2`}
