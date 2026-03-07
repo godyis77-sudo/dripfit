@@ -294,7 +294,7 @@ const Community = () => {
       <PostDetailSheet
         post={detailPost}
         open={!!detailPost}
-        onClose={() => setDetailPost(null)}
+        onClose={handleCloseDetail}
         prompt={detailPost?.caption || ''}
         votes={votes}
         voteCounts={voteCounts}
