@@ -98,6 +98,8 @@ export const PostDetailSheet = ({
   const lastTouch = useRef<{ x: number; y: number } | null>(null);
   const lastDist = useRef<number | null>(null);
   const commentsEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const commentsSectionRef = useRef<HTMLDivElement>(null);
 
   // Fetch comments when sheet opens
   useEffect(() => {
@@ -236,6 +238,7 @@ export const PostDetailSheet = ({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           className="fixed inset-0 z-[100] bg-black flex flex-col overflow-y-auto"
+          ref={scrollContainerRef}
           onClick={onClose}
         >
           {/* Top bar */}
@@ -388,11 +391,19 @@ export const PostDetailSheet = ({
 
             {/* Comments section */}
             {comments.length > 0 && (
-              <>
+              <div ref={commentsSectionRef}>
                 <div className="h-px bg-[hsl(0_0%_13%)]" />
                 <button
-                  onClick={() => setShowComments(!showComments)}
-                  className="flex items-center gap-1.5 text-[11px] text-white/50 font-bold uppercase tracking-wider"
+                  onClick={() => {
+                    const next = !showComments;
+                    setShowComments(next);
+                    if (next) {
+                      setTimeout(() => {
+                        commentsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                      }, 50);
+                    }
+                  }}
+                  className="flex items-center gap-1.5 text-[11px] text-white/50 font-bold uppercase tracking-wider py-1"
                 >
                   <MessageCircle className="h-3 w-3" />
                   {comments.length} Comment{comments.length !== 1 ? 's' : ''} · {showComments ? 'Hide' : 'Show'}
@@ -420,7 +431,7 @@ export const PostDetailSheet = ({
                     <div ref={commentsEndRef} />
                   </div>
                 )}
-              </>
+              </div>
             )}
 
             {/* Chat input */}
