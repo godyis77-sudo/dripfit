@@ -242,7 +242,45 @@ const PostCard = ({
         )}
       </button>
 
-
+      {/* Mini comment — only for own posts */}
+      {user && post.user_id === user.id && (
+        <div className="px-1.5 pt-1.5 pb-1">
+          <div className="flex items-center gap-1">
+            <input
+              type="text"
+              placeholder="Add caption…"
+              maxLength={500}
+              className="flex-1 h-6 rounded-md bg-muted/50 border border-border px-2 text-[9px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
+              onKeyDown={async (e) => {
+                if (e.key === 'Enter' && (e.target as HTMLInputElement).value.trim()) {
+                  const val = (e.target as HTMLInputElement).value.trim();
+                  const { error } = await supabase.from('post_comments').insert({ post_id: post.id, user_id: user.id, comment_text: val });
+                  if (error) { toast({ title: 'Could not post comment', variant: 'destructive' }); return; }
+                  trackEvent('fitcheck_comment', { postId: post.id });
+                  toast({ title: 'Comment posted!' });
+                  (e.target as HTMLInputElement).value = '';
+                }
+              }}
+            />
+            <button
+              aria-label="Send comment"
+              className="shrink-0 h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center active:scale-90 transition-transform"
+              onClick={async (e) => {
+                const input = (e.currentTarget.previousSibling as HTMLInputElement);
+                if (input?.value?.trim()) {
+                  const { error } = await supabase.from('post_comments').insert({ post_id: post.id, user_id: user.id, comment_text: input.value.trim() });
+                  if (error) { toast({ title: 'Could not post comment', variant: 'destructive' }); return; }
+                  trackEvent('fitcheck_comment', { postId: post.id });
+                  toast({ title: 'Comment posted!' });
+                  input.value = '';
+                }
+              }}
+            >
+              <Send className="h-2.5 w-2.5 text-primary" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Buy votes */}
       <div className="px-1.5 pt-1">
