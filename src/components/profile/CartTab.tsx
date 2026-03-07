@@ -85,35 +85,43 @@ const CartTab = () => {
       {items.map(item => (
         <div key={item.id} className="bg-card border border-border rounded-xl overflow-hidden">
           <div className="p-2.5 flex gap-3">
-            {/* Fullscreen-enabled thumbnail */}
+            {/* Fullscreen-enabled thumbnail with brand badge */}
             <FullscreenImage
               src={item.image_url}
               alt={item.caption || 'Look'}
               onShop={item.product_urls?.[0] ? () => handleShop(item.product_urls![0]) : undefined}
               onTryOn={() => handleTryOn(item.product_urls?.[0], item.clothing_photo_url)}
             >
-              <div className="shrink-0 w-32 h-40 rounded-lg overflow-hidden bg-muted/30 cursor-pointer active:scale-95 transition-transform">
+              <div className="relative shrink-0 w-32 h-40 rounded-lg overflow-hidden bg-muted/30 cursor-pointer active:scale-95 transition-transform">
                 <img
                   src={item.image_url}
                   alt={item.caption || 'Look'}
                   className="w-full h-full object-cover object-top"
                   loading="lazy"
                 />
+                {/* Brand pill — bottom right of thumbnail */}
+                {item.product_urls?.[0] && (
+                  <div className="absolute bottom-1.5 right-1.5 bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5">
+                    <span className="text-[8px] font-bold text-foreground uppercase tracking-wider">
+                      {detectBrandFromUrl(item.product_urls[0]).brand || 'Shop'}
+                    </span>
+                  </div>
+                )}
               </div>
             </FullscreenImage>
 
             <div className="flex-1 min-w-0 flex flex-col justify-between">
               <div>
                 {item.product_urls?.[0] && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-primary/10 text-primary font-bold inline-block mb-1">
+                  <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-0.5">
                     {detectBrandFromUrl(item.product_urls[0]).brand || 'Shop'}
-                  </span>
+                  </p>
                 )}
                 {item.caption && (
-                  <p className="text-[11px] font-semibold text-foreground line-clamp-2 leading-snug">{item.caption}</p>
+                  <p className="text-[11px] font-bold text-foreground line-clamp-2 leading-tight">{item.caption}</p>
                 )}
-                <p className="text-[9px] text-muted-foreground mt-0.5">
-                  Added {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                <p className="text-[12px] font-bold text-primary mt-1">
+                  {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </p>
               </div>
 
