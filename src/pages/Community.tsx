@@ -300,8 +300,11 @@ const Community = () => {
         onTryOn={(p) => {
           setDetailPost(null);
           const urls = p.product_urls;
-          if (urls && urls.length > 0) { navigate('/tryon', { state: { productUrl: urls[0] } }); }
-          else { toast({ title: 'No product linked to this look' }); }
+          if (urls && urls.length > 0) {
+            navigateToTryOn(navigate, { productUrl: urls[0], fallbackClothingImageUrl: p.clothing_photo_url, source: 'style_check_detail' });
+          } else {
+            navigateToTryOn(navigate, { fallbackClothingImageUrl: p.clothing_photo_url, source: 'style_check_detail' });
+          }
         }}
         isFollowing={detailPost ? !!followToggles[detailPost.user_id] : false}
         isOwnPost={detailPost ? user?.id === detailPost.user_id : false}
