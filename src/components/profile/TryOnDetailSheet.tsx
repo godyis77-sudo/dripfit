@@ -7,7 +7,6 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
-import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
@@ -72,14 +71,11 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
   const handleAddToWardrobe = async () => {
     if (!user) return;
     setAddingToWardrobe(true);
-    const firstUrl = (post.product_urls && post.product_urls.length > 0) ? post.product_urls[0] : null;
-    const retailerName = firstUrl ? (detectBrandFromUrl(firstUrl).brand || null) : null;
     const { error } = await supabase.from('clothing_wardrobe').insert({
       user_id: user.id,
       image_url: post.clothing_photo_url || post.result_photo_url,
       category: 'top',
-      product_link: firstUrl,
-      retailer: retailerName,
+      product_link: (post.product_urls && post.product_urls.length > 0) ? post.product_urls[0] : null,
     });
     setAddingToWardrobe(false);
     if (error) {

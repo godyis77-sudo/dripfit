@@ -335,9 +335,7 @@ const PostCard = ({
         onAddToWardrobe={async (item) => {
           if (!user) { toast({ title: 'Sign in first', variant: 'destructive' }); return; }
           const imgUrl = item.image_url || post.clothing_photo_url || '';
-          const itemBrand = item.brand !== 'Shop' ? item.brand : null;
-          const retailerName = item.url ? (detectBrandFromUrl(item.url).brand || null) : null;
-          await supabase.from('clothing_wardrobe').insert({ user_id: user.id, image_url: imgUrl, category: 'top', brand: itemBrand, product_link: item.url || null, retailer: retailerName });
+          await supabase.from('clothing_wardrobe').insert({ user_id: user.id, image_url: imgUrl, category: 'top', brand: item.brand !== 'Shop' ? item.brand : null, product_link: item.url || null });
           toast({ title: 'Added', description: 'Saved to your wardrobe.' });
           trackEvent('wardrobe_add_from_look', { brand: item.brand });
         }}

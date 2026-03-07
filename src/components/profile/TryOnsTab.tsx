@@ -7,7 +7,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
-import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { navigateToTryOn } from '@/lib/tryonNavigate';
 import TryOnDetailSheet from './TryOnDetailSheet';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
@@ -239,9 +238,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                     onAddToWardrobe={async (item) => {
                       if (!user) return;
                       const imgUrl = item.image_url || post.clothing_photo_url || '';
-                      const itemBrand = item.brand !== 'Shop' ? item.brand : null;
-                      const retailerName = item.url ? (detectBrandFromUrl(item.url).brand || null) : null;
-                      await supabase.from('clothing_wardrobe').insert({ user_id: user.id, image_url: imgUrl, category: 'top', brand: itemBrand, product_link: item.url || null, retailer: retailerName });
+                      await supabase.from('clothing_wardrobe').insert({ user_id: user.id, image_url: imgUrl, category: 'top', brand: item.brand !== 'Shop' ? item.brand : null, product_link: item.url || null });
                       toast({ title: 'Added', description: 'Saved to your wardrobe.' });
                       trackEvent('wardrobe_add_from_look', { brand: item.brand });
                     }}

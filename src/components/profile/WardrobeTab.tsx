@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shirt, Sparkles, Store, ExternalLink, Trash2, MoreHorizontal } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
+import { getBestRetailerForItem } from '@/lib/retailerLinks';
 import WardrobeDetailSheet from './WardrobeDetailSheet';
 
 interface WardrobeItem {
@@ -80,11 +81,14 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                         <ExternalLink className="h-3 w-3 text-white" />
                       </div>
                     )}
-                    {item.retailer && (
-                      <div className="absolute bottom-1.5 right-1.5 bg-primary rounded-md px-2 py-0.5 shadow-lg border border-primary-foreground/20">
-                        <span className="text-[9px] font-extrabold text-primary-foreground uppercase tracking-wide">{item.retailer}</span>
-                      </div>
-                    )}
+                    {(() => {
+                      const displayRetailer = item.retailer || (favoriteRetailers.length > 0 ? favoriteRetailers[0] : getBestRetailerForItem(item.brand, item.category));
+                      return displayRetailer ? (
+                        <div className="absolute bottom-1.5 right-1.5 bg-primary rounded-md px-2 py-0.5 shadow-lg border border-primary-foreground/20">
+                          <span className="text-[9px] font-extrabold text-primary-foreground uppercase tracking-wide">{displayRetailer}</span>
+                        </div>
+                      ) : null;
+                    })()}
                   </div>
                   <div className="p-2 space-y-0.5">
                     <p className="text-[11px] font-bold text-foreground capitalize truncate">
