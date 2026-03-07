@@ -57,7 +57,7 @@ const Community = () => {
     }
   }, [detailPost]);
 
-  const
+  const {
     posts, loading, loadingMore, hasMore, loadMore,
     votes, voteCounts, followToggles, failedImages,
     hasScan, handleVote, handleFollowToggle, handleDeletePost, handleImageError, fetchPosts,
