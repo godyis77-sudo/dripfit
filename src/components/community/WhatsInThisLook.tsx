@@ -65,6 +65,27 @@ const WhatsInThisLook = ({
 }: WhatsInThisLookProps) => {
   const [open, setOpen] = useState(defaultOpen);
   const [catalogImages, setCatalogImages] = useState<Record<string, string>>({});
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to reveal expanded content
+  const handleToggle = useCallback(() => {
+    const willOpen = !open;
+    setOpen(willOpen);
+    if (willOpen) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (contentRef.current) {
+            const rect = contentRef.current.getBoundingClientRect();
+            const viewportH = window.innerHeight;
+            const overflow = rect.bottom - viewportH + 16;
+            if (overflow > 0) {
+              window.scrollBy({ top: overflow, behavior: 'smooth' });
+            }
+          }
+        });
+      });
+    }
+  }, [open]);
 
   // Build items list
   let items: LookItem[] = propItems || [];
