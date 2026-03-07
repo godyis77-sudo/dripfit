@@ -217,7 +217,7 @@ const Community = () => {
                 <button key={cat.key} onClick={() => setShopCategory(cat.key)} className={`px-3 py-1 rounded-full text-[10px] font-bold whitespace-nowrap transition-colors ${shopCategory === cat.key ? 'bg-primary/15 border border-primary/30 text-primary' : 'bg-card border border-border text-muted-foreground'}`}>{cat.label}</button>
               ))}
             </div>
-            <CategoryProductGrid category={shopCategory} collapsed={false} maxItems={50} gender={shopGender === 'all' ? undefined : shopGender} brand={shopBrand || undefined} onSelectProduct={(product) => navigate('/tryon', { state: { productUrl: product.product_url || product.image_url } })} />
+            <CategoryProductGrid category={shopCategory} collapsed={false} maxItems={50} gender={shopGender === 'all' ? undefined : shopGender} brand={shopBrand || undefined} onSelectProduct={(product) => navigateToTryOn(navigate, { productUrl: product.product_url || undefined, fallbackClothingImageUrl: product.image_url, source: 'style_check_shop' })} />
           </>
         ) : loading ? (
           <div className="space-y-3">
