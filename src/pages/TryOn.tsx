@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
+import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import BottomTabBar from '@/components/BottomTabBar';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import TryOnUploadSection from '@/components/tryon/TryOnUploadSection';
@@ -125,9 +126,11 @@ const TryOn = () => {
     if (!user || !clothingPhoto || clothingSaved) return;
     try {
       const imageUrl = await uploadBase64ToStorage(clothingPhoto, 'wardrobe');
+      const detected = productLink ? detectBrandFromUrl(productLink) : null;
       await supabase.from('clothing_wardrobe').insert({
         user_id: user.id, image_url: imageUrl, category, product_link: productLink || null,
-        retailer: (() => { try { const h = new URL(productLink).hostname; const m = ['shein','zara','hm','gap','nordstrom','lululemon','macys','jcpenney','aritzia','simons'].find(r => h.includes(r)); return m || null; } catch { return null; } })(),
+        brand: detected?.brand && detected.brand !== detected.retailer ? detected.brand : null,
+        retailer: detected?.retailer || null,
       });
       setClothingSaved(true);
       trackEvent('saved_item_added', { source: 'tryon_wardrobe', category });
@@ -279,13 +282,14 @@ const TryOn = () => {
     if (!user || !clothingPhoto) return;
     try {
       const imageUrl = await uploadBase64ToStorage(clothingPhoto, 'wardrobe');
+      const detected = productLink ? detectBrandFromUrl(productLink) : null;
       await supabase.from('clothing_wardrobe').insert({
         user_id: user.id,
         image_url: imageUrl,
         category: category || 'top',
         product_link: productLink || null,
-        brand: selectedQuickPick?.brand || null,
-        retailer: selectedQuickPick?.retailer || (() => { try { const h = new URL(productLink).hostname; const m = ['shein','zara','hm','gap','nordstrom','lululemon','macys','jcpenney','aritzia','simons'].find(r => h.includes(r)); return m || null; } catch { return null; } })(),
+        brand: selectedQuickPick?.brand || (detected?.brand && detected.brand !== detected.retailer ? detected.brand : null),
+        retailer: selectedQuickPick?.retailer || detected?.retailer || null,
       });
       setSavedToItems(true);
       trackEvent('saved_item_added', { source: 'tryon_wardrobe', category });

@@ -302,6 +302,32 @@ export function detectBrandFromUrl(url: string): { brand: string; retailer: stri
       return { brand: titleCase(raw), retailer, url };
     }
 
+    // Farfetch product slug: /shopping/men/{brand}-{product}-item-{id}.aspx
+    // Also handles /ca/shopping/... or /us/shopping/...
+    if (hostname.includes('farfetch')) {
+      const itemSlug = path.match(/\/([a-z][a-z0-9-]+-item-\d+)/);
+      if (itemSlug) {
+        const slug = itemSlug[1];
+        // Try to match known brands from the slug
+        for (const [key, label] of Object.entries(RETAILERS)) {
+          if (slug.startsWith(key + '-') || slug.includes('-' + key + '-')) {
+            return { brand: label, retailer, url };
+          }
+        }
+        // Fall back to first word(s) before common product terms
+        const productTerms = ['logo', 'print', 'hoodie', 'jacket', 'shirt', 'pants', 'dress', 'top', 'coat', 'sneakers', 'boots', 'bag', 'belt', 'scarf', 'sweater', 'cardigan', 'blazer', 'shorts', 'skirt', 'polo', 'tee', 'knit', 'wool', 'cotton', 'leather', 'denim', 'slim', 'wide', 'long', 'short', 'mini', 'midi', 'maxi', 'zip', 'button', 'crew', 'v-neck', 'round', 'item'];
+        const parts = slug.split('-');
+        let brandParts: string[] = [];
+        for (const part of parts) {
+          if (productTerms.includes(part)) break;
+          brandParts.push(part);
+        }
+        if (brandParts.length > 0 && brandParts.length <= 3) {
+          return { brand: titleCase(brandParts.join(' ')), retailer, url };
+        }
+      }
+    }
+
     // Nordstrom: filterByBrand=... in query string
     const brandParam = parsed.searchParams.get('filterByBrand');
     if (brandParam) {
