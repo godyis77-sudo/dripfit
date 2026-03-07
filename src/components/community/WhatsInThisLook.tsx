@@ -122,7 +122,7 @@ const WhatsInThisLook = ({
   return (
     <div className={isCompact ? 'mx-1.5 mb-1.5' : 'mb-3'}>
       <button
-        onClick={() => setOpen(!open)}
+        onClick={handleToggle}
         className="w-full flex items-center justify-between active:scale-[0.98] transition-transform bg-primary text-primary-foreground"
         style={{
           borderRadius: open ? '12px 12px 0 0' : '12px',
