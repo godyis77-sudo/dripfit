@@ -3,8 +3,9 @@ import { useEffect, useState } from 'react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Sparkles } from 'lucide-react';
 import { PostDetailSheet } from '@/components/community/PostDetailSheet';
+import { navigateToTryOn } from '@/lib/tryonNavigate';
 import BottomTabBar from '@/components/BottomTabBar';
 
 const StyleCheckDetail = () => {
