@@ -361,3 +361,53 @@ function titleCase(str: string): string {
     .map(w => w.charAt(0).toUpperCase() + w.slice(1))
     .join(' ');
 }
+
+/** Map of URL slug keywords to canonical wardrobe categories */
+const CATEGORY_SLUG_MAP: Record<string, string> = {
+  hoodie: 'hoodies', hoodies: 'hoodies', sweatshirt: 'hoodies',
+  jacket: 'jackets', jackets: 'jackets',
+  coat: 'coats', coats: 'coats', parka: 'coats', trench: 'coats',
+  blazer: 'blazers', blazers: 'blazers',
+  vest: 'vests', vests: 'vests', gilet: 'vests',
+  shirt: 'shirts', shirts: 'shirts', blouse: 'shirts',
+  polo: 'polos', polos: 'polos',
+  sweater: 'sweaters', sweaters: 'sweaters', cardigan: 'sweaters', pullover: 'sweaters', jumper: 'sweaters',
+  tee: 't-shirts', tshirt: 't-shirts',
+  jeans: 'jeans', jean: 'jeans',
+  pants: 'pants', trouser: 'pants', trousers: 'pants', chino: 'pants', chinos: 'pants',
+  shorts: 'shorts', short: 'shorts',
+  skirt: 'skirts', skirts: 'skirts',
+  legging: 'leggings', leggings: 'leggings',
+  dress: 'dresses', dresses: 'dresses', gown: 'dresses',
+  jumpsuit: 'jumpsuits', jumpsuits: 'jumpsuits', romper: 'jumpsuits',
+  sneaker: 'sneakers', sneakers: 'sneakers', trainer: 'sneakers', trainers: 'sneakers',
+  boot: 'boots', boots: 'boots',
+  sandal: 'sandals', sandals: 'sandals',
+  loafer: 'loafers', loafers: 'loafers', moccasin: 'loafers',
+  heel: 'heels', heels: 'heels', pump: 'heels', pumps: 'heels',
+  bag: 'bags', bags: 'bags', tote: 'bags', backpack: 'bags', clutch: 'bags', handbag: 'bags',
+  hat: 'hats', hats: 'hats', cap: 'hats', beanie: 'hats',
+  sunglasses: 'sunglasses',
+  belt: 'belts', belts: 'belts',
+  scarf: 'scarves', scarves: 'scarves',
+  swimsuit: 'swimwear', bikini: 'swimwear', swimwear: 'swimwear', trunks: 'swimwear',
+};
+
+/**
+ * Attempt to detect clothing category from a product URL slug.
+ * Returns a canonical category string or null if undetectable.
+ */
+export function detectCategoryFromUrl(url: string): string | null {
+  try {
+    const parsed = new URL(url);
+    const path = decodeURIComponent(parsed.pathname.toLowerCase());
+    const slugParts = path.replace(/\.[^.]+$/, '').split(/[\/-]/);
+    for (const part of slugParts) {
+      const match = CATEGORY_SLUG_MAP[part];
+      if (match) return match;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
