@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
-import { ExternalLink, Trash2, X, ShoppingBag, Tag, Calendar, Store, Star, ChevronDown } from 'lucide-react';
+import { ExternalLink, Trash2, X, ShoppingBag, Tag, Calendar, Store, Star, ChevronDown, Search } from 'lucide-react';
 import { buildRetailerSearchUrl, getRetailersForCategory, getBestRetailerForItem } from '@/lib/retailerLinks';
 import { trackEvent } from '@/lib/analytics';
 
@@ -25,17 +26,41 @@ interface WardrobeDetailSheetProps {
   favoriteRetailers?: string[];
 }
 
+const ALL_RETAILERS = [
+  'Zara', 'H&M', 'Uniqlo', 'Gap', 'ASOS', 'Mango', 'Nike', 'Adidas',
+  'Nordstrom', 'Revolve', 'Fashion Nova', 'SHEIN', 'Lululemon', 'Amazon Fashion',
+  'PrettyLittleThing', 'Abercrombie & Fitch', 'Urban Outfitters', 'Forever 21',
+  'J.Crew', 'Banana Republic', 'Old Navy', 'Puma', 'Boohoo', 'Target',
+  'Fabletics', 'Kith', 'Reformation', 'Gymshark', 'Alo Yoga', 'Everlane',
+  'COS', 'AllSaints', 'Free People', 'Vuori', 'SKIMS', 'Aritzia',
+  'Carhartt', 'Vans', 'Converse', 'Dr. Martens', 'Birkenstock', 'On',
+  'HOKA', 'Anthropologie',
+];
+
 const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetailers = [] }: WardrobeDetailSheetProps) => {
+  const [retailerSearch, setRetailerSearch] = useState('');
+
   if (!item) return null;
 
   const searchQuery = item.category;
   const categoryRetailers = getRetailersForCategory(item.category);
-  // Merge: show favorite retailers first, then category suggestions (deduped)
-  const mergedRetailers = [
+
+  // Show only 4 category-based suggestions (no random fallback)
+  const suggestions = [
     ...favoriteRetailers,
     ...categoryRetailers.filter(r => !favoriteRetailers.includes(r)),
-  ];
+  ].slice(0, 4);
+
   const displayRetailer = item.retailer || (favoriteRetailers.length > 0 ? favoriteRetailers[0] : getBestRetailerForItem(item.brand, item.category));
+
+  // Filter all retailers by search term
+  const filteredRetailers = useMemo(() => {
+    if (!retailerSearch.trim()) return [];
+    const term = retailerSearch.toLowerCase();
+    return ALL_RETAILERS.filter(
+      r => r.toLowerCase().includes(term) && !suggestions.includes(r)
+    );
+  }, [retailerSearch, suggestions]);
 
   const handleShop = (retailerName: string) => {
     trackEvent('shop_clickout', { source: 'wardrobe_detail', retailer: retailerName });
@@ -107,9 +132,21 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
                 <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
               </Button>
             </CollapsibleTrigger>
-            <CollapsibleContent className="pt-2">
+            <CollapsibleContent className="pt-2 space-y-2">
+              {/* Search field */}
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input
+                  placeholder="Search retailers..."
+                  value={retailerSearch}
+                  onChange={(e) => setRetailerSearch(e.target.value)}
+                  className="h-8 pl-8 text-[11px] rounded-lg bg-card border-border"
+                />
+              </div>
+
+              {/* Suggested retailers (max 4) */}
               <div className="grid grid-cols-2 gap-1.5">
-                {mergedRetailers.map(name => (
+                {suggestions.map(name => (
                   <button
                     key={name}
                     onClick={() => handleShop(name)}
@@ -123,6 +160,22 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
                   </button>
                 ))}
               </div>
+
+              {/* Search results */}
+              {filteredRetailers.length > 0 && (
+                <div className="grid grid-cols-2 gap-1.5">
+                  {filteredRetailers.map(name => (
+                    <button
+                      key={name}
+                      onClick={() => handleShop(name)}
+                      className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-border bg-card hover:border-primary/40 active:scale-[0.97] transition-all text-left"
+                    >
+                      <ExternalLink className="h-3 w-3 text-primary shrink-0" />
+                      <span className="text-[11px] font-bold text-foreground truncate">{name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </CollapsibleContent>
           </Collapsible>
 
