@@ -62,6 +62,7 @@ interface PostDetailSheetProps {
   onNavigateProfile: (post: Post) => void;
   onShopLook: (post: Post) => void;
   onTryOn?: (post: Post) => void;
+  onTryOnItem?: (item: LookItem, post: Post) => void;
   onDelete?: (postId: string) => void;
   isFollowing: boolean;
   isOwnPost: boolean;
