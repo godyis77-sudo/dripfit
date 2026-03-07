@@ -156,13 +156,12 @@ const CartTab = () => {
                 {item.product_urls && item.product_urls.length > 1 ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-7 rounded-lg text-[9px] font-bold"
+                      <button
+                        type="button"
+                        className="inline-flex h-7 items-center justify-center rounded-lg border border-input bg-background px-3 text-[9px] font-bold text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                       >
                         <Sparkles className="mr-1 h-2.5 w-2.5" /> Try On <ChevronDown className="ml-1 h-2.5 w-2.5" />
-                      </Button>
+                      </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="min-w-[160px]">
                       {item.product_urls.map((url, idx) => {

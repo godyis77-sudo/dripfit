@@ -85,7 +85,7 @@ const TryOn = () => {
   useEffect(() => {
     const state = location.state as any;
     const clothingUrl = state?.clothingUrl || state?.clothingImageUrl;
-    if (clothingUrl && !clothingPhoto) {
+    if (clothingUrl) {
       imageUrlToBase64(clothingUrl)
         .then(base64 => {
           setClothingPhoto(base64);
