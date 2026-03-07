@@ -83,6 +83,7 @@ export const PostDetailSheet = ({
   onNavigateProfile,
   onShopLook,
   onTryOn,
+  onTryOnItem,
   onDelete,
   isFollowing,
   isOwnPost,
