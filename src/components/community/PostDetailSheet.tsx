@@ -9,6 +9,7 @@ import {
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { GENERIC_PROMPTS } from './community-types';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
+import type { LookItem } from '@/components/community/WhatsInThisLook';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Post {
