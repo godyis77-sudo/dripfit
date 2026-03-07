@@ -35,6 +35,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
   const [liked, setLiked] = useState(false);
   const [posting, setPosting] = useState(false);
   const [addingToWardrobe, setAddingToWardrobe] = useState(false);
+  const [addedToWardrobe, setAddedToWardrobe] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   if (!post) return null;
@@ -79,12 +80,14 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
     setAddingToWardrobe(false);
     if (error) {
       if (error.code === '23505') {
+        setAddedToWardrobe(true);
         toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
       } else {
         toast({ title: 'Error', description: 'Could not add to wardrobe.', variant: 'destructive' });
       }
       return;
     }
+    setAddedToWardrobe(true);
     trackEvent('wardrobe_added_from_tryon', { post_id: post.id });
     toast({ title: '👕 Added to Wardrobe!', description: 'You can find it in your Wardrobe tab.' });
   };
@@ -136,13 +139,13 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
             </Button>
 
             <Button
-              variant="outline"
-              className="h-11 rounded-xl text-[12px] font-bold gap-1.5"
+              variant={addedToWardrobe ? 'default' : 'outline'}
+              className={`h-11 rounded-xl text-[12px] font-bold gap-1.5 ${addedToWardrobe ? 'bg-primary/20 text-primary border-primary/30' : ''}`}
               onClick={handleAddToWardrobe}
-              disabled={addingToWardrobe}
+              disabled={addingToWardrobe || addedToWardrobe}
             >
               <ShoppingBag className="h-4 w-4" />
-              {addingToWardrobe ? 'Adding…' : 'Add to Wardrobe'}
+              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added to Wardrobe ✓' : 'Add to Wardrobe'}
             </Button>
 
             <Button
