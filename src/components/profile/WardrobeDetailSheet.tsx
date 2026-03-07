@@ -98,6 +98,9 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
 
           {/* Retailer grid */}
           <div>
+            <p className="text-[11px] font-bold text-foreground mb-2 flex items-center gap-1">
+              <ShoppingBag className="h-3.5 w-3.5 text-primary" /> Shop at Retailers
+            </p>
             <div className="grid grid-cols-2 gap-1.5">
               {mergedRetailers.map(name => (
                 <button
