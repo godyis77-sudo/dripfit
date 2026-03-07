@@ -126,7 +126,7 @@ const WhatsInThisLook = ({
       >
         <span className={`${isCompact ? 'text-[9px]' : 'text-[13px]'} font-bold uppercase tracking-widest flex items-center gap-2 text-primary-foreground`}>
           <ShoppingCart className={isCompact ? 'h-3 w-3' : 'h-4 w-4'} />
-          Shop This Style
+          Shop Try On This Style
         </span>
         <ChevronDown
           className={`${isCompact ? 'h-3 w-3' : 'h-4 w-4'} text-primary-foreground transition-transform duration-200`}
