@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { scrollIntoViewIfNeeded } from '@/lib/autoScroll';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ExternalLink, ShoppingBag, ShoppingCart } from 'lucide-react';
 import { FullscreenImage } from '@/components/ui/fullscreen-image';
