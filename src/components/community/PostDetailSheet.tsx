@@ -391,11 +391,19 @@ export const PostDetailSheet = ({
 
             {/* Comments section */}
             {comments.length > 0 && (
-              <>
+              <div ref={commentsSectionRef}>
                 <div className="h-px bg-[hsl(0_0%_13%)]" />
                 <button
-                  onClick={() => setShowComments(!showComments)}
-                  className="flex items-center gap-1.5 text-[11px] text-white/50 font-bold uppercase tracking-wider"
+                  onClick={() => {
+                    const next = !showComments;
+                    setShowComments(next);
+                    if (next) {
+                      setTimeout(() => {
+                        commentsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                      }, 50);
+                    }
+                  }}
+                  className="flex items-center gap-1.5 text-[11px] text-white/50 font-bold uppercase tracking-wider py-1"
                 >
                   <MessageCircle className="h-3 w-3" />
                   {comments.length} Comment{comments.length !== 1 ? 's' : ''} · {showComments ? 'Hide' : 'Show'}
