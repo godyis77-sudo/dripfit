@@ -286,7 +286,7 @@ const TryOn = () => {
       await supabase.from('clothing_wardrobe').insert({
         user_id: user.id,
         image_url: imageUrl,
-        category: category || 'top',
+        category: category || (productLink ? detectCategoryFromUrl(productLink) : null) || 'top',
         product_link: productLink || null,
         brand: selectedQuickPick?.brand || (detected?.brand && detected.brand !== detected.retailer ? detected.brand : null),
         retailer: selectedQuickPick?.retailer || detected?.retailer || null,
