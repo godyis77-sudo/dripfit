@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shirt, Sparkles, Store, ExternalLink, Trash2, MoreHorizontal } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
-import { detectBrandFromUrl } from '@/lib/retailerDetect';
+import { detectBrandFromUrl, detectCategoryFromUrl } from '@/lib/retailerDetect';
 import WardrobeDetailSheet from './WardrobeDetailSheet';
 
 interface WardrobeItem {
@@ -92,7 +92,7 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                   </div>
                   <div className="p-2 space-y-0.5">
                     <p className="text-[11px] font-bold text-foreground capitalize truncate">
-                      {item.notes || item.category}
+                      {item.notes || (item.category === 'top' && item.product_link ? detectCategoryFromUrl(item.product_link) || item.category : item.category)}
                     </p>
                     {item.brand && (
                       <p className="text-[9px] text-primary font-bold flex items-center gap-0.5">

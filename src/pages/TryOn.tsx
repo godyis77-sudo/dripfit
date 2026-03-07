@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
-import { detectBrandFromUrl } from '@/lib/retailerDetect';
+import { detectBrandFromUrl, detectCategoryFromUrl } from '@/lib/retailerDetect';
 import BottomTabBar from '@/components/BottomTabBar';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import TryOnUploadSection from '@/components/tryon/TryOnUploadSection';
@@ -128,7 +128,7 @@ const TryOn = () => {
       const imageUrl = await uploadBase64ToStorage(clothingPhoto, 'wardrobe');
       const detected = productLink ? detectBrandFromUrl(productLink) : null;
       await supabase.from('clothing_wardrobe').insert({
-        user_id: user.id, image_url: imageUrl, category, product_link: productLink || null,
+        user_id: user.id, image_url: imageUrl, category: category || (productLink ? detectCategoryFromUrl(productLink) : null) || 'top', product_link: productLink || null,
         brand: detected?.brand && detected.brand !== detected.retailer ? detected.brand : null,
         retailer: detected?.retailer || null,
       });
@@ -286,7 +286,7 @@ const TryOn = () => {
       await supabase.from('clothing_wardrobe').insert({
         user_id: user.id,
         image_url: imageUrl,
-        category: category || 'top',
+        category: category || (productLink ? detectCategoryFromUrl(productLink) : null) || 'top',
         product_link: productLink || null,
         brand: selectedQuickPick?.brand || (detected?.brand && detected.brand !== detected.retailer ? detected.brand : null),
         retailer: selectedQuickPick?.retailer || detected?.retailer || null,
