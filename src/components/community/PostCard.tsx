@@ -331,7 +331,7 @@ const PostCard = ({
         productUrls={(post as any).product_urls}
         clothingPhotoUrl={post.clothing_photo_url}
         variant="card"
-        onTryOn={() => navigate('/tryon')}
+        onTryOn={(item: LookItem) => navigateToTryOn(navigate, { productUrl: item.url, fallbackClothingImageUrl: item.image_url || post.clothing_photo_url, source: 'style_check_shop_style' })}
         onAddToWardrobe={async (item) => {
           if (!user) { toast({ title: 'Sign in first', variant: 'destructive' }); return; }
           const imgUrl = item.image_url || post.clothing_photo_url || '';
