@@ -1,4 +1,3 @@
-import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Sparkles, ExternalLink, XCircle, Trash2, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,44 +9,45 @@ import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
 
+const normalizeProductUrl = (url: string) => {
+  try {
+    const parsed = new URL(url);
+    return `${parsed.origin}${parsed.pathname}`.replace(/\/+$/, '').toLowerCase();
+  } catch {
+    return url.split('?')[0].split('#')[0].replace(/\/+$/, '').toLowerCase();
+  }
+};
+
 const CartTab = () => {
   const navigate = useNavigate();
   const { items, removeFromCart, clearCart } = useCart();
 
-  // Collect all unique product URLs across cart items and fetch their catalog images
-  const allProductUrls = useMemo(() => {
-    const urls = new Set<string>();
-    items.forEach(item => item.product_urls?.forEach(u => urls.add(u)));
-    return Array.from(urls);
-  }, [items]);
-
-  const [urlImageMap, setUrlImageMap] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    if (allProductUrls.length === 0) return;
-    supabase
-      .from('product_catalog')
-      .select('product_url, image_url')
-      .in('product_url', allProductUrls)
-      .then(({ data }) => {
-        if (!data) return;
-        const map: Record<string, string> = {};
-        data.forEach(row => { if (row.product_url) map[row.product_url] = row.image_url; });
-        setUrlImageMap(map);
-      });
-  }, [allProductUrls]);
-
-  const getClothingImageForUrl = (url: string, fallback: string) => {
-    return urlImageMap[url] || fallback;
-  };
-
-  const handleTryOn = (productUrl?: string, clothingImageUrl?: string) => {
+  const handleTryOn = async (productUrl?: string, fallbackClothingImageUrl?: string) => {
     trackEvent('cart_tryon_click', { productUrl });
-    navigate('/tryon', { 
-      state: { 
-        productUrl, 
+
+    let clothingImageUrl = fallbackClothingImageUrl;
+
+    if (productUrl) {
+      try {
+        const normalizedUrl = normalizeProductUrl(productUrl);
+        const { data } = await supabase
+          .from('product_catalog')
+          .select('image_url, product_url')
+          .ilike('product_url', `${normalizedUrl}%`)
+          .eq('is_active', true)
+          .limit(1);
+
+        if (data?.[0]?.image_url) clothingImageUrl = data[0].image_url;
+      } catch {
+        // fallback keeps existing clothing image URL
+      }
+    }
+
+    navigate('/tryon', {
+      state: {
+        productUrl,
         clothingImageUrl: clothingImageUrl || undefined,
-      } 
+      },
     });
   };
 
@@ -121,12 +121,12 @@ const CartTab = () => {
                 {item.product_urls && item.product_urls.length > 1 ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button
-                        size="sm"
-                        className="h-7 rounded-lg btn-luxury text-primary-foreground text-[9px] font-bold flex-1"
+                      <button
+                        type="button"
+                        className="inline-flex h-7 flex-1 items-center justify-center rounded-lg btn-luxury px-3 text-[9px] font-bold text-primary-foreground"
                       >
                         Buy! <ChevronDown className="ml-1 h-2.5 w-2.5" />
-                      </Button>
+                      </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="min-w-[160px]">
                       {item.product_urls.map((url, idx) => {
@@ -156,13 +156,12 @@ const CartTab = () => {
                 {item.product_urls && item.product_urls.length > 1 ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-7 rounded-lg text-[9px] font-bold"
+                      <button
+                        type="button"
+                        className="inline-flex h-7 items-center justify-center rounded-lg border border-input bg-background px-3 text-[9px] font-bold text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                       >
                         <Sparkles className="mr-1 h-2.5 w-2.5" /> Try On <ChevronDown className="ml-1 h-2.5 w-2.5" />
-                      </Button>
+                      </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="min-w-[160px]">
                       {item.product_urls.map((url, idx) => {
@@ -170,7 +169,7 @@ const CartTab = () => {
                         return (
                           <DropdownMenuItem
                             key={idx}
-                            onClick={() => handleTryOn(url, getClothingImageForUrl(url, item.clothing_photo_url))}
+                            onClick={() => handleTryOn(url, item.clothing_photo_url)}
                             className="text-[11px] font-semibold gap-2"
                           >
                             <Sparkles className="h-3 w-3 text-primary" />
