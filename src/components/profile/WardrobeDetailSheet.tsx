@@ -28,7 +28,7 @@ interface WardrobeDetailSheetProps {
 const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetailers = [] }: WardrobeDetailSheetProps) => {
   if (!item) return null;
 
-  const searchQuery = [item.brand, item.category].filter(Boolean).join(' ');
+  const searchQuery = item.category;
   const categoryRetailers = getRetailersForCategory(item.category);
   // Merge: show favorite retailers first, then category suggestions (deduped)
   const mergedRetailers = [
