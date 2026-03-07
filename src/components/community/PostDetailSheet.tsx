@@ -98,6 +98,8 @@ export const PostDetailSheet = ({
   const lastTouch = useRef<{ x: number; y: number } | null>(null);
   const lastDist = useRef<number | null>(null);
   const commentsEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const commentsSectionRef = useRef<HTMLDivElement>(null);
 
   // Fetch comments when sheet opens
   useEffect(() => {
