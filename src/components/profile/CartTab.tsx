@@ -157,7 +157,7 @@ const CartTab = () => {
                     size="sm"
                     variant="outline"
                     className="h-7 rounded-lg text-[9px] font-bold"
-                    onClick={() => navigate('/tryon', { state: { productUrl: item.product_urls?.[0] } })}
+                    onClick={() => handleTryOn(item.product_urls?.[0], item.clothing_photo_url)}
                   >
                     <Sparkles className="mr-1 h-2.5 w-2.5" /> Try On
                   </Button>
