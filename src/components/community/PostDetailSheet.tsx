@@ -238,6 +238,7 @@ export const PostDetailSheet = ({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           className="fixed inset-0 z-[100] bg-black flex flex-col overflow-y-auto"
+          ref={scrollContainerRef}
           onClick={onClose}
         >
           {/* Top bar */}
