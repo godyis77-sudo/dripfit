@@ -30,12 +30,13 @@ function getContainerBounds(container: ScrollContainer, buffer: number) {
     };
   }
 
-  const rect = container.getBoundingClientRect();
+  const elementContainer = container as HTMLElement;
+  const rect = elementContainer.getBoundingClientRect();
   return {
     top: rect.top + buffer,
     bottom: rect.bottom - buffer,
     scrollBy: (delta: number, behavior: ScrollBehavior) =>
-      container.scrollBy({ top: delta, behavior }),
+      elementContainer.scrollBy({ top: delta, behavior }),
   };
 }
 
