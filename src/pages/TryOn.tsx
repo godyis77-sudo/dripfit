@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
-import { detectBrandFromUrl } from '@/lib/retailerDetect';
+import { detectBrandFromUrl, detectCategoryFromUrl } from '@/lib/retailerDetect';
 import BottomTabBar from '@/components/BottomTabBar';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import TryOnUploadSection from '@/components/tryon/TryOnUploadSection';
