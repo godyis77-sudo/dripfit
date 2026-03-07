@@ -13,6 +13,16 @@ const CartTab = () => {
   const navigate = useNavigate();
   const { items, removeFromCart, clearCart } = useCart();
 
+  const handleTryOn = (productUrl?: string, clothingImageUrl?: string) => {
+    trackEvent('cart_tryon_click', { productUrl });
+    navigate('/tryon', { 
+      state: { 
+        productUrl, 
+        clothingImageUrl: clothingImageUrl || undefined,
+      } 
+    });
+  };
+
   const handleShop = (url: string) => {
     trackEvent('cart_shop_clickout', { url });
     window.open(url, '_blank', 'noopener');
