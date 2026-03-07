@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ExternalLink, ShoppingBag, ShoppingCart } from 'lucide-react';
 import { FullscreenImage } from '@/components/ui/fullscreen-image';
@@ -65,6 +65,27 @@ const WhatsInThisLook = ({
 }: WhatsInThisLookProps) => {
   const [open, setOpen] = useState(defaultOpen);
   const [catalogImages, setCatalogImages] = useState<Record<string, string>>({});
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to reveal expanded content
+  const handleToggle = useCallback(() => {
+    const willOpen = !open;
+    setOpen(willOpen);
+    if (willOpen) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (contentRef.current) {
+            const rect = contentRef.current.getBoundingClientRect();
+            const viewportH = window.innerHeight;
+            const overflow = rect.bottom - viewportH + 16;
+            if (overflow > 0) {
+              window.scrollBy({ top: overflow, behavior: 'smooth' });
+            }
+          }
+        });
+      });
+    }
+  }, [open]);
 
   // Build items list
   let items: LookItem[] = propItems || [];
@@ -101,7 +122,7 @@ const WhatsInThisLook = ({
   return (
     <div className={isCompact ? 'mx-1.5 mb-1.5' : 'mb-3'}>
       <button
-        onClick={() => setOpen(!open)}
+        onClick={handleToggle}
         className="w-full flex items-center justify-between active:scale-[0.98] transition-transform bg-primary text-primary-foreground"
         style={{
           borderRadius: open ? '12px 12px 0 0' : '12px',
@@ -125,6 +146,7 @@ const WhatsInThisLook = ({
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
             className="overflow-hidden"
+            ref={contentRef}
           >
             <div
               className={`${isCompact ? 'px-3 py-2' : 'px-4 py-3'} space-y-2`}
