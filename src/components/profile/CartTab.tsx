@@ -142,7 +142,7 @@ const CartTab = () => {
                         return (
                           <DropdownMenuItem
                             key={idx}
-                            onClick={() => navigate('/tryon', { state: { productUrl: url } })}
+                            onClick={() => handleTryOn(url, item.clothing_photo_url)}
                             className="text-[11px] font-semibold gap-2"
                           >
                             <Sparkles className="h-3 w-3 text-primary" />
