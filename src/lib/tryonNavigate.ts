@@ -17,7 +17,7 @@ const normalizeProductUrl = (url: string) => {
  * then navigate to /tryon with the image pre-populated.
  */
 export async function navigateToTryOn(
-  navigate: (path: string, opts?: any) => void,
+  navigate: NavigateFunction,
   opts: {
     productUrl?: string;
     fallbackClothingImageUrl?: string;
