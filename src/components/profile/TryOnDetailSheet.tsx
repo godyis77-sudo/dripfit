@@ -139,13 +139,13 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
             </Button>
 
             <Button
-              variant="outline"
-              className="h-11 rounded-xl text-[12px] font-bold gap-1.5"
+              variant={addedToWardrobe ? 'default' : 'outline'}
+              className={`h-11 rounded-xl text-[12px] font-bold gap-1.5 ${addedToWardrobe ? 'bg-primary/20 text-primary border-primary/30' : ''}`}
               onClick={handleAddToWardrobe}
-              disabled={addingToWardrobe}
+              disabled={addingToWardrobe || addedToWardrobe}
             >
               <ShoppingBag className="h-4 w-4" />
-              {addingToWardrobe ? 'Adding…' : 'Add to Wardrobe'}
+              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added to Wardrobe ✓' : 'Add to Wardrobe'}
             </Button>
 
             <Button
