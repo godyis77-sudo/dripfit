@@ -13,6 +13,16 @@ const CartTab = () => {
   const navigate = useNavigate();
   const { items, removeFromCart, clearCart } = useCart();
 
+  const handleTryOn = (productUrl?: string, clothingImageUrl?: string) => {
+    trackEvent('cart_tryon_click', { productUrl });
+    navigate('/tryon', { 
+      state: { 
+        productUrl, 
+        clothingImageUrl: clothingImageUrl || undefined,
+      } 
+    });
+  };
+
   const handleShop = (url: string) => {
     trackEvent('cart_shop_clickout', { url });
     window.open(url, '_blank', 'noopener');
@@ -52,7 +62,7 @@ const CartTab = () => {
               src={item.image_url}
               alt={item.caption || 'Look'}
               onShop={item.product_urls?.[0] ? () => handleShop(item.product_urls![0]) : undefined}
-              onTryOn={() => navigate('/tryon', { state: { productUrl: item.product_urls?.[0] } })}
+              onTryOn={() => handleTryOn(item.product_urls?.[0], item.clothing_photo_url)}
             >
               <div className="shrink-0 w-32 h-40 rounded-lg overflow-hidden bg-muted/30 cursor-pointer active:scale-95 transition-transform">
                 <img
@@ -132,7 +142,7 @@ const CartTab = () => {
                         return (
                           <DropdownMenuItem
                             key={idx}
-                            onClick={() => navigate('/tryon', { state: { productUrl: url } })}
+                            onClick={() => handleTryOn(url, item.clothing_photo_url)}
                             className="text-[11px] font-semibold gap-2"
                           >
                             <Sparkles className="h-3 w-3 text-primary" />
@@ -147,7 +157,7 @@ const CartTab = () => {
                     size="sm"
                     variant="outline"
                     className="h-7 rounded-lg text-[9px] font-bold"
-                    onClick={() => navigate('/tryon', { state: { productUrl: item.product_urls?.[0] } })}
+                    onClick={() => handleTryOn(item.product_urls?.[0], item.clothing_photo_url)}
                   >
                     <Sparkles className="mr-1 h-2.5 w-2.5" /> Try On
                   </Button>
@@ -170,7 +180,7 @@ const CartTab = () => {
               productUrls={item.product_urls}
               clothingPhotoUrl={item.clothing_photo_url}
               variant="card"
-              onTryOn={(lookItem) => navigate('/tryon', { state: { productUrl: lookItem.url } })}
+              onTryOn={(lookItem) => handleTryOn(lookItem.url, lookItem.image_url || item.clothing_photo_url)}
             />
           )}
         </div>

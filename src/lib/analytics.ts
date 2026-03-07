@@ -101,7 +101,8 @@ type FunnelEvent =
   | 'cart_add'
   | 'cart_remove'
   | 'cart_clear'
-  | 'cart_shop_clickout';
+  | 'cart_shop_clickout'
+  | 'cart_tryon_click';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
