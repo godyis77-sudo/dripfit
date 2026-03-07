@@ -240,8 +240,6 @@ const PostCard = ({
             {(post as any).match_score}% match
           </div>
         )}
-        {/* Try On badge — bottom right, linked to clothing data */}
-        <TryOnClothingBadge post={post} navigate={navigate} toast={toast} />
       </button>
 
       {/* Mini comment */}
