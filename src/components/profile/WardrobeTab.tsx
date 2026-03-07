@@ -48,7 +48,7 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
 
   return (
     <>
-      <p className="text-[11px] text-muted-foreground mb-3">Your saved clothing and potential buys.</p>
+      
       {wardrobeItems.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
           <div className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
