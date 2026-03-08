@@ -208,7 +208,7 @@ const Onboarding = () => {
                   {/* Image — capped at 48% of viewport */}
                   <div className="flex-1 flex items-center justify-center mx-4 min-h-0">
                     {slideIdx === 0 ? (
-                      <div className="relative max-h-full max-w-[85%] rounded-2xl overflow-hidden">
+                      <div className="relative max-h-full max-w-[85%] rounded-2xl" style={{ boxShadow: '0 0 24px 6px hsl(45 88% 40% / 0.45), 0 0 60px 12px hsl(45 88% 40% / 0.15)', border: '2px solid hsl(45 88% 40% / 0.5)' }}>
                         <img
                           src={heroScan}
                           alt={SLIDES[0].title}
@@ -216,7 +216,7 @@ const Onboarding = () => {
                         />
                       </div>
                     ) : (
-                      <div className="relative max-h-full max-w-[85%] rounded-2xl overflow-hidden">
+                      <div className="relative max-h-full max-w-[85%] rounded-2xl overflow-hidden" style={{ boxShadow: '0 0 24px 6px hsl(45 88% 40% / 0.45), 0 0 60px 12px hsl(45 88% 40% / 0.15)', border: '2px solid hsl(45 88% 40% / 0.5)' }}>
                         <img
                           src={SLIDES[slideIdx].image}
                           alt={SLIDES[slideIdx].title}
