@@ -51,17 +51,10 @@ const ScanSuccess = () => {
   const navigate = useNavigate();
   const state = location.state as { result: BodyScanResult } | undefined;
   const result = state?.result;
-  const autoAdvanceRef = useRef<ReturnType<typeof setTimeout>>();
-
   useEffect(() => {
     if (!result) {
       navigate('/capture', { replace: true });
-      return;
     }
-    autoAdvanceRef.current = setTimeout(() => {
-      navigate('/profile/body', { replace: true });
-    }, 5000);
-    return () => clearTimeout(autoAdvanceRef.current);
   }, [result, navigate]);
 
   if (!result) return null;
