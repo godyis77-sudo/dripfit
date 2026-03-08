@@ -445,8 +445,8 @@ const Capture = () => {
                           className="absolute inset-0"
                           style={{
                             backgroundImage: 'linear-gradient(180deg, hsl(var(--primary) / 0.98) 0%, hsl(var(--primary) / 0.78) 55%, hsl(var(--primary) / 0.9) 100%)',
-                            WebkitMaskImage: `url(${bodySilhouetteMask})`,
-                            maskImage: `url(${bodySilhouetteMask})`,
+                            WebkitMaskImage: `url(${captureStep === 'side' ? bodySilhouetteSideMask : bodySilhouetteFrontMask})`,
+                            maskImage: `url(${captureStep === 'side' ? bodySilhouetteSideMask : bodySilhouetteFrontMask})`,
                             WebkitMaskRepeat: 'no-repeat',
                             maskRepeat: 'no-repeat',
                             WebkitMaskPosition: 'center',
