@@ -44,7 +44,7 @@ function clearScanState() {
   try { sessionStorage.removeItem(SCAN_STATE_KEY); } catch {}
 }
 
-import scanResultsPreview from '@/assets/scan-results-preview.png';
+import scanResultsPreview from '@/assets/scan-results-full.jpg';
 
 /* Animated silhouette for intro */
 const AnimatedSilhouette = () => (
