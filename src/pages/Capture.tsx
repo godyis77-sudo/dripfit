@@ -45,6 +45,7 @@ function clearScanState() {
 }
 
 import scanResultsPreview from '@/assets/scan-results-preview.png';
+import bodySilhouetteGlow from '@/assets/body-silhouette-glow.png';
 
 /* Animated silhouette for intro */
 const AnimatedSilhouette = () => (
