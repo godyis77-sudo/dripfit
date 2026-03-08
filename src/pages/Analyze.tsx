@@ -1,9 +1,8 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-// Video asset loaded from public/videos/body-scan-animation.mp4
 import { PhotoSet, BodyScanResult, FitPreference, ReferenceObject, MeasurementRange } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -14,34 +13,6 @@ const MESSAGES = [
   'Estimating measurements…',
   'Matching size charts…',
   'Generating recommendations…',
-];
-
-const CM_TO_IN = 0.3937;
-const fmtHeightFtIn = (cm: number) => {
-  const totalIn = Math.round(cm * CM_TO_IN);
-  return `${Math.floor(totalIn / 12)}' ${totalIn % 12}"`;
-};
-const fmtRange = (r: MeasurementRange) => `${(r.min * CM_TO_IN).toFixed(1)}–${(r.max * CM_TO_IN).toFixed(1)} in`;
-
-interface MeasurementOverlay {
-  key: string;
-  label: string;
-  side: 'left' | 'right';
-  topPct: string;
-  /** Leader line: start X% on body, end X% at label edge */
-  bodyX: number;
-  labelX: number;
-  lineY: number;
-}
-
-const OVERLAYS: MeasurementOverlay[] = [
-  { key: 'height', label: 'Height', side: 'left', topPct: '8%', bodyX: 38, labelX: 6, lineY: 15 },
-  { key: 'shoulder', label: 'Shoulder', side: 'right', topPct: '18.5%', bodyX: 62, labelX: 94, lineY: 25.2 },
-  { key: 'chest', label: 'Chest', side: 'left', topPct: '24.5%', bodyX: 41, labelX: 6, lineY: 31 },
-  { key: 'bust', label: 'Bust', side: 'right', topPct: '27.5%', bodyX: 57, labelX: 94, lineY: 34 },
-  { key: 'waist', label: 'Waist', side: 'right', topPct: '38%', bodyX: 57, labelX: 94, lineY: 44.5 },
-  { key: 'hips', label: 'Hips', side: 'right', topPct: '46%', bodyX: 60, labelX: 94, lineY: 52.4 },
-  { key: 'inseam', label: 'Inseam', side: 'left', topPct: '63%', bodyX: 46, labelX: 6, lineY: 70 },
 ];
 
 const TOTAL_SCAN_TIME = 8000;
@@ -62,7 +33,6 @@ const Analyze = () => {
   const [msgIdx, setMsgIdx] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
-  const [scanPos, setScanPos] = useState(0);
   const [revealedKeys, setRevealedKeys] = useState<string[]>([]);
   const [realData, setRealData] = useState<any>(null);
   const minTimeElapsed = useRef(false);
