@@ -136,7 +136,7 @@ const ScanSuccess = () => {
           onLoad={() => setImageLoaded(true)}
         />
 
-        {/* Dynamic measurement overlays */}
+        {/* Cover old baked-in values and show dynamic ones */}
         {imageLoaded && OVERLAYS.map((overlay) => {
           const val = overlay.getValue(result);
           if (!val) return null;
@@ -146,42 +146,36 @@ const ScanSuccess = () => {
               key={overlay.key}
               className="absolute"
               style={{
-                top: overlay.top,
+                top: overlay.valTop,
                 ...(overlay.side === 'left'
-                  ? { left: '3%' }
-                  : { right: '3%' }),
+                  ? { left: '2%' }
+                  : { right: '2%' }),
               }}
-              initial={{ opacity: 0, x: overlay.side === 'left' ? -12 : 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: overlay.delay + 0.4, duration: 0.4, ease: 'easeOut' }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: overlay.delay + 0.4, duration: 0.35, ease: 'easeOut' }}
             >
-              <p
-                className="text-[10px] font-extrabold tracking-wider leading-none"
+              {/* Opaque gold cover to hide old static values + new dynamic values */}
+              <div
+                className="px-1 py-0.5 rounded-sm"
                 style={{
-                  color: 'hsl(30 10% 15%)',
+                  background: 'linear-gradient(135deg, hsl(43 45% 56%), hsl(40 40% 52%))',
                   textAlign: overlay.side === 'left' ? 'left' : 'right',
                 }}
               >
-                {overlay.label}
-              </p>
-              <p
-                className="text-[9px] font-bold leading-tight mt-0.5"
-                style={{
-                  color: 'hsl(30 10% 20%)',
-                  textAlign: overlay.side === 'left' ? 'left' : 'right',
-                }}
-              >
-                {val.line1}
-              </p>
-              <p
-                className="text-[8px] font-medium leading-tight"
-                style={{
-                  color: 'hsl(30 10% 28%)',
-                  textAlign: overlay.side === 'left' ? 'left' : 'right',
-                }}
-              >
-                {val.line2}
-              </p>
+                <p
+                  className="text-[10px] font-bold leading-tight"
+                  style={{ color: 'hsl(30 15% 12%)' }}
+                >
+                  {val.line1}
+                </p>
+                <p
+                  className="text-[8.5px] font-semibold leading-tight"
+                  style={{ color: 'hsl(30 12% 22%)' }}
+                >
+                  {val.line2}
+                </p>
+              </div>
             </motion.div>
           );
         })}
