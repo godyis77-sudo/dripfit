@@ -452,7 +452,9 @@ const Capture = () => {
                             maskPosition: 'center',
                             WebkitMaskSize: 'contain',
                             maskSize: 'contain',
-                          }}
+                            WebkitMaskMode: 'luminance',
+                            maskMode: 'luminance',
+                          } as React.CSSProperties}
                         />
                         <motion.div
                           animate={{ backgroundPosition: ['50% -10%', '50% 110%', '50% -10%'], opacity: [0.35, 0.65, 0.35] }}
