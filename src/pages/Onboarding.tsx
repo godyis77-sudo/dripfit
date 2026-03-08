@@ -207,30 +207,42 @@ const Onboarding = () => {
                 >
                   {/* Image — capped at 48dvh */}
                   <div className="flex-1 flex items-center justify-center mx-4 min-h-0" style={{ maxHeight: '48dvh' }}>
-                    <div
-                      className="relative rounded-2xl overflow-hidden"
-                      style={{
-                        maxHeight: '100%',
-                        maxWidth: '85%',
-                        boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15), inset 0 0 14px 3px hsl(45 88% 50% / 0.2)',
-                        border: '2px solid hsl(45 88% 55% / 0.8)',
-                      }}
-                    >
-                      <img
-                        src={SLIDES[slideIdx].image}
-                        alt={SLIDES[slideIdx].title}
-                        className="w-full h-full object-cover rounded-2xl"
+                    {slideIdx === 0 ? (
+                      <div
+                        className="relative"
                         style={{
-                          maxHeight: '48dvh',
-                          ...(slideIdx === 1 ? { filter: 'brightness(0.8)' } : {}),
+                          boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15)',
+                          borderRadius: '1.25rem',
                         }}
-                      />
-                      {slideIdx === 1 && (
-                        <div className="absolute inset-0 rounded-2xl pointer-events-none" style={{
-                          boxShadow: 'inset 0 0 60px 35px rgba(0,0,0,0.4)',
-                        }} />
-                      )}
-                    </div>
+                      >
+                        <DecorativeSilhouette height={320} />
+                      </div>
+                    ) : (
+                      <div
+                        className="relative rounded-2xl overflow-hidden"
+                        style={{
+                          maxHeight: '100%',
+                          maxWidth: '85%',
+                          boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15), inset 0 0 14px 3px hsl(45 88% 50% / 0.2)',
+                          border: '2px solid hsl(45 88% 55% / 0.8)',
+                        }}
+                      >
+                        <img
+                          src={SLIDES[slideIdx].image}
+                          alt={SLIDES[slideIdx].title}
+                          className="w-full h-full object-cover rounded-2xl"
+                          style={{
+                            maxHeight: '48dvh',
+                            ...(slideIdx === 1 ? { filter: 'brightness(0.8)' } : {}),
+                          }}
+                        />
+                        {slideIdx === 1 && (
+                          <div className="absolute inset-0 rounded-2xl pointer-events-none" style={{
+                            boxShadow: 'inset 0 0 60px 35px rgba(0,0,0,0.4)',
+                          }} />
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Text — compact */}
