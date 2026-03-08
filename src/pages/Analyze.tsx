@@ -223,27 +223,15 @@ const Analyze = () => {
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
       {/* Animated body silhouette with live measurement overlays */}
       <div className="relative mb-5 w-full max-w-[380px] aspect-[2/3] rounded-xl overflow-hidden bg-background">
-        {/* Base dimmed image */}
-        <img
-          src={bodySilhouetteScan}
-          alt="Body scan analysis"
-          className="absolute inset-0 w-full h-full object-contain opacity-30 mix-blend-luminosity"
+        {/* Scan animation video */}
+        <video
+          src="/videos/body-scan-animation.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-contain"
         />
-
-        {/* Revealed portion */}
-        <div
-          className="absolute inset-0"
-          style={{
-            clipPath: `inset(0 0 ${Math.max(0, 100 - (progress / 90) * 100)}% 0)`,
-            transition: 'clip-path 0.4s ease-out',
-          }}
-        >
-          <img
-            src={bodySilhouetteScan}
-            alt="Body scan analysis"
-            className="w-full h-full object-contain mix-blend-luminosity"
-          />
-        </div>
 
         {/* SVG leader lines */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
