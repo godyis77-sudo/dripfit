@@ -206,9 +206,28 @@ const Analyze = () => {
           loop
           muted
           playsInline
-          onLoadedData={() => { videoRef.current?.play().catch(() => {}); }}
+          preload="auto"
+          onCanPlay={attemptPlayVideo}
+          onLoadedData={attemptPlayVideo}
+          onPlay={() => {
+            setShowVideoPlayFallback(false);
+            setVideoFailed(false);
+          }}
+          onError={() => {
+            setVideoFailed(true);
+            setShowVideoPlayFallback(false);
+          }}
           className="absolute inset-0 w-full h-full object-contain"
         />
+
+        {showVideoPlayFallback && !videoFailed ? (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/20">
+            <Button type="button" onClick={attemptPlayVideo} className="rounded-xl h-10 px-4 text-xs font-semibold">
+              Tap to play animation
+            </Button>
+          </div>
+        ) : null}
+
         {/* Vignette overlay */}
         <div
           className="absolute inset-0 pointer-events-none rounded-xl"
