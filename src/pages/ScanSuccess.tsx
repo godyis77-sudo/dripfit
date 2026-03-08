@@ -155,7 +155,7 @@ const ScanSuccess = () => {
               key={overlay.key}
               className="absolute"
               style={{
-                top: `calc(${overlay.valTop} + 3px)`,
+                top: `calc(${overlay.valTop} + ${overlay.offset ?? 3}px)`,
                 ...(overlay.side === 'left'
                   ? { left: '2%' }
                   : { right: '2%' }),
