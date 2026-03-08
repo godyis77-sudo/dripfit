@@ -425,6 +425,7 @@ const Capture = () => {
                     </div>
 
                     {/* Glowing body silhouette overlay with pulsing shimmer */}
+                    {(() => { const activeMask = captureStep === 'side' ? bodySilhouetteSideMask : bodySilhouetteFrontMask; return (
                     <div className="relative h-[70%] w-full flex items-center justify-center pointer-events-none">
                       <motion.div
                         animate={{ opacity: [0.7, 1, 0.7], scale: [1, 1.05, 1] }}
