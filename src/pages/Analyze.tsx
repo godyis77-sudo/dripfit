@@ -38,6 +38,7 @@ const Analyze = () => {
   const minTimeElapsed = useRef(false);
   const resultReady = useRef<any>(null);
   const effectRan = useRef(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
 
   useEffect(() => {
