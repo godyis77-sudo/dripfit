@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
@@ -38,6 +38,7 @@ const Analyze = () => {
   const minTimeElapsed = useRef(false);
   const resultReady = useRef<any>(null);
   const effectRan = useRef(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
 
   useEffect(() => {
@@ -175,11 +176,13 @@ const Analyze = () => {
       <div className="relative mb-5 w-full max-w-[380px] aspect-[2/3] rounded-xl overflow-hidden bg-background">
         {/* Scan animation video */}
         <video
+          ref={videoRef}
           src="/videos/body-scan-animation.mp4"
           autoPlay
           loop
           muted
           playsInline
+          onLoadedData={() => { videoRef.current?.play().catch(() => {}); }}
           className="absolute inset-0 w-full h-full object-contain"
         />
 
