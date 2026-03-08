@@ -45,6 +45,7 @@ function clearScanState() {
 }
 
 import scanResultsPreview from '@/assets/scan-results-preview.png';
+import bodySilhouetteGlow from '@/assets/body-silhouette-glow.png';
 
 /* Animated silhouette for intro */
 const AnimatedSilhouette = () => (
@@ -424,24 +425,8 @@ const Capture = () => {
                       <div className="absolute left-[15%] right-[15%] top-[75%] h-px border-t border-dashed border-primary/15" />
                     </div>
 
-                    {/* Translucent silhouette overlay */}
-                    <svg viewBox="0 0 120 220" className="h-[60%] opacity-20" fill="none" stroke="currentColor" strokeWidth="1.5">
-                      {captureStep === 'front' ? (
-                        <>
-                          <ellipse cx="60" cy="22" rx="14" ry="16" />
-                          <path d="M54 48 L30 56 L28 58 L30 60 L38 62 L38 100 L42 130 L48 130 L54 100 L54 48" />
-                          <path d="M66 48 L90 56 L92 58 L90 60 L82 62 L82 100 L78 130 L72 130 L66 100 L66 48" />
-                          <path d="M42 130 L38 180 L34 210 L46 210 L50 180 L54 130" />
-                          <path d="M78 130 L82 180 L86 210 L74 210 L70 180 L66 130" />
-                        </>
-                      ) : (
-                        <>
-                          <ellipse cx="60" cy="22" rx="12" ry="16" />
-                          <path d="M56 48 L48 56 L46 100 L48 130 L44 180 L40 210 L52 210 L56 180 L58 130 L58 48" />
-                          <path d="M64 48 L72 56 L74 100 L72 130 L76 180 L80 210 L68 210 L64 180 L62 130 L62 48" />
-                        </>
-                      )}
-                    </svg>
+                    {/* Glowing body silhouette overlay */}
+                    <img src={bodySilhouetteGlow} alt="" className="h-[60%] opacity-30 object-contain pointer-events-none" />
 
                     {/* Positioning tips overlaid on corners */}
                     <div className="absolute top-2 left-2 flex items-center gap-1 bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5">
