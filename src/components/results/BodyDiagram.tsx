@@ -1,5 +1,5 @@
 import type { MeasurementRange } from '@/lib/types';
-import bodySilhouette from '@/assets/body-silhouette-clean.png';
+import scanResultsFull from '@/assets/scan-results-full.jpg';
 
 const CM_TO_IN = 0.3937;
 const fmt = (r: MeasurementRange) => `${r.min.toFixed(0)}–${r.max.toFixed(0)} cm`;
