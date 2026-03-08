@@ -176,11 +176,13 @@ const Analyze = () => {
       <div className="relative mb-5 w-full max-w-[380px] aspect-[2/3] rounded-xl overflow-hidden bg-background">
         {/* Scan animation video */}
         <video
+          ref={videoRef}
           src="/videos/body-scan-animation.mp4"
           autoPlay
           loop
           muted
           playsInline
+          onLoadedData={() => { videoRef.current?.play().catch(() => {}); }}
           className="absolute inset-0 w-full h-full object-contain"
         />
 
