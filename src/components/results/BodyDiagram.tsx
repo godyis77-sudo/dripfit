@@ -1,5 +1,5 @@
 import type { MeasurementRange } from '@/lib/types';
-import bodySilhouette from '@/assets/body-silhouette-clean.png';
+import scanResultsFull from '@/assets/scan-results-full.jpg';
 
 const CM_TO_IN = 0.3937;
 const fmt = (r: MeasurementRange) => `${r.min.toFixed(0)}–${r.max.toFixed(0)} cm`;
@@ -45,90 +45,16 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
   return (
     <div className="mb-4">
       <p className="section-label mb-2">Body Measurement Map</p>
-      <div className="border border-primary/20 rounded-xl overflow-hidden" style={{ background: 'linear-gradient(180deg, hsl(0 0% 100%), hsl(42 45% 92%), hsl(42 35% 85%))' }}>
-        <div className="relative w-full max-w-[380px] mx-auto aspect-[2/3]">
-          {/* Title overlay */}
-          <p className="absolute top-3 left-0 right-0 text-center text-[18px] font-bold uppercase tracking-widest z-10" style={{ color: 'hsl(42 45% 45%)' }}>Scan Results</p>
-          
-          {/* Static body silhouette */}
-          <img
-            src={bodySilhouette}
-            alt="Body silhouette for measurements"
-            className="w-full h-full mx-auto block rounded-lg"
-            style={{ objectFit: 'cover', objectPosition: '50% 100%' }}
-          />
-
-          {/* Height indicator */}
-          <div className="absolute top-[8%] text-left" style={{ left: 4 }}>
-            <div className="rounded px-1.5 py-0.5">
-              <p className="text-[14px] font-bold uppercase tracking-wide leading-none" style={{ color: 'hsl(42 45% 45%)' }}>Height</p>
-              <p className="text-[12px] font-bold leading-none mt-0.5" style={{ color: 'hsl(0 0% 20%)' }}>{fmtHeightFtIn(heightCm)}</p>
-              <p className="text-[12px] font-bold leading-none mt-0.5" style={{ color: 'hsl(0 0% 40%)' }}>{heightCm.toFixed(0)} cm</p>
-            </div>
+      <div className="flex justify-center">
+        <div className="relative rounded-[1rem] border-[3px] border-primary" style={{ boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15), inset 0 0 14px 3px hsl(45 88% 50% / 0.2)' }}>
+          <div className="overflow-hidden rounded-[calc(1rem-3px)]">
+            <img
+              src={scanResultsFull}
+              alt="Body measurement scan results"
+              className="w-full max-w-[380px] object-cover"
+            />
           </div>
-
-          {/* SVG measurement lines */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
-            {measurementLines.map(({ key, x1, y1, x2, y2 }) => {
-              if (!m[key]) return null;
-              return (
-                <line
-                  key={key}
-                  x1={parseFloat(x1)} y1={parseFloat(y1)}
-                  x2={parseFloat(x2)} y2={parseFloat(y2)}
-                  stroke="hsl(42 45% 50%)"
-                  strokeWidth="0.4"
-                  strokeDasharray="1.2 0.8"
-                  strokeLinecap="round"
-                />
-              );
-            })}
-            {measurementLines.map(({ key, x1, y1, x2, y2 }) => {
-              if (!m[key]) return null;
-              return (
-                <g key={`dots-${key}`}>
-                  <circle cx={parseFloat(x1)} cy={parseFloat(y1)} r="0.8" fill="hsl(42 45% 45%)" />
-                  <circle cx={parseFloat(x2)} cy={parseFloat(y2)} r="0.8" fill="hsl(42 45% 45%)" />
-                </g>
-              );
-            })}
-            {measurementLines.map(({ key, labelEdgeX, leaderX, leaderY }) => {
-              if (!m[key]) return null;
-              return (
-                <line
-                  key={`leader-${key}`}
-                  x1={labelEdgeX} y1={leaderY}
-                  x2={leaderX} y2={leaderY}
-                  stroke="hsl(42 45% 55%)"
-                  strokeWidth="0.25"
-                  strokeLinecap="round"
-                />
-              );
-            })}
-          </svg>
-
-          {/* Measurement labels */}
-          {measurementLines.map(({ key, label, labelSide, labelTop }) => {
-            if (!m[key]) return null;
-            const isLeft = labelSide === 'left';
-
-            return (
-              <div
-                key={`label-${key}`}
-                className="absolute"
-                style={{
-                  top: labelTop,
-                  ...(isLeft ? { left: 4 } : { right: 4 }),
-                }}
-              >
-                <div className={`${isLeft ? 'text-left' : 'text-right'} rounded px-1.5 py-0.5`}>
-                  <p className="text-[14px] font-bold uppercase tracking-wide leading-none" style={{ color: 'hsl(42 45% 45%)' }}>{label}</p>
-                  <p className="text-[12px] font-bold leading-none mt-0.5" style={{ color: 'hsl(0 0% 20%)' }}>{fmtIn(m[key])}</p>
-                  <p className="text-[12px] font-bold leading-none mt-0.5" style={{ color: 'hsl(0 0% 40%)' }}>{fmt(m[key])}</p>
-                </div>
-              </div>
-            );
-          })}
+          <div className="absolute -inset-[7px] rounded-[calc(1rem+4px)] border-[4px] border-black pointer-events-none" style={{ boxShadow: 'inset 0 0 8px 2px hsl(45 88% 50% / 0.7), 0 0 10px 2px hsl(45 88% 50% / 0.6), 0 0 20px 4px hsl(45 88% 50% / 0.25)' }} />
         </div>
       </div>
     </div>
