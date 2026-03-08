@@ -416,44 +416,49 @@ const Capture = () => {
                   <img src={photos[captureStep]!} alt={config.title} className="w-full h-full object-cover img-normalize" />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-muted-foreground relative">
-                    {/* Center crosshair guides */}
+                    {/* Center crosshair guides — thicker, higher contrast */}
                     <div className="absolute inset-0 pointer-events-none">
-                      {/* Vertical center line */}
-                      <div className="absolute left-1/2 top-[8%] bottom-[8%] w-px border-l border-dashed border-primary/20" />
-                      {/* Horizontal thirds */}
-                      <div className="absolute left-[15%] right-[15%] top-[25%] h-px border-t border-dashed border-primary/15" />
-                      <div className="absolute left-[15%] right-[15%] top-[75%] h-px border-t border-dashed border-primary/15" />
+                      <div className="absolute left-1/2 top-[8%] bottom-[8%] w-[1.5px] bg-primary/30" />
+                      <div className="absolute left-[15%] right-[15%] top-[25%] h-[1.5px] bg-primary/25" />
+                      <div className="absolute left-[15%] right-[15%] top-[75%] h-[1.5px] bg-primary/25" />
                     </div>
 
-                    {/* Glowing body silhouette overlay */}
+                    {/* Glowing body silhouette overlay with pulsing shimmer */}
                     <div className="relative h-[70%] w-full flex items-center justify-center pointer-events-none">
-                      <div className="absolute inset-y-[4%] inset-x-[22%] rounded-full bg-primary/30 blur-3xl opacity-80" />
-                      <img
+                      <motion.div
+                        animate={{ opacity: [0.7, 1, 0.7], scale: [1, 1.05, 1] }}
+                        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                        className="absolute inset-y-[2%] inset-x-[18%] rounded-full bg-primary/40 blur-3xl"
+                      />
+                      <motion.img
                         src={bodySilhouetteGlow}
                         alt=""
+                        animate={{ filter: [
+                          'brightness(1.8) contrast(1.35) drop-shadow(0 0 6px hsl(45 88% 50% / 1)) drop-shadow(0 0 16px hsl(45 88% 40% / 0.85)) drop-shadow(0 0 36px hsl(45 80% 45% / 0.55)) drop-shadow(0 0 70px hsl(45 70% 42% / 0.3))',
+                          'brightness(2.0) contrast(1.4) drop-shadow(0 0 8px hsl(45 88% 55% / 1)) drop-shadow(0 0 20px hsl(45 88% 45% / 0.9)) drop-shadow(0 0 44px hsl(45 80% 50% / 0.6)) drop-shadow(0 0 80px hsl(45 70% 42% / 0.35))',
+                          'brightness(1.8) contrast(1.35) drop-shadow(0 0 6px hsl(45 88% 50% / 1)) drop-shadow(0 0 16px hsl(45 88% 40% / 0.85)) drop-shadow(0 0 36px hsl(45 80% 45% / 0.55)) drop-shadow(0 0 70px hsl(45 70% 42% / 0.3))',
+                        ]}}
+                        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
                         className="relative h-full object-contain mix-blend-darken"
-                        style={{
-                          filter: 'brightness(1.5) contrast(1.25) drop-shadow(0 0 4px hsl(45 88% 50% / 0.9)) drop-shadow(0 0 12px hsl(45 88% 40% / 0.7)) drop-shadow(0 0 30px hsl(45 80% 45% / 0.45)) drop-shadow(0 0 60px hsl(45 70% 42% / 0.25))',
-                        }}
                       />
                     </div>
 
-                    {/* Positioning tips overlaid on corners */}
-                    <div className="absolute top-2 left-2 flex items-center gap-1 bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5">
-                      <Eye className="h-2.5 w-2.5 text-primary" />
-                      <span className="text-[8px] font-bold text-foreground">Head visible</span>
+                    {/* Corner badges — larger, more readable */}
+                    <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 bg-background/90 backdrop-blur-sm rounded-lg px-2.5 py-1.5 border border-primary/20">
+                      <Eye className="h-3.5 w-3.5 text-primary" />
+                      <span className="text-[10px] font-bold text-foreground">Head visible</span>
                     </div>
-                    <div className="absolute top-2 right-2 flex items-center gap-1 bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5">
-                      <Sun className="h-2.5 w-2.5 text-primary" />
-                      <span className="text-[8px] font-bold text-foreground">Even light</span>
+                    <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 bg-background/90 backdrop-blur-sm rounded-lg px-2.5 py-1.5 border border-primary/20">
+                      <Sun className="h-3.5 w-3.5 text-primary" />
+                      <span className="text-[10px] font-bold text-foreground">Even light</span>
                     </div>
-                    <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5">
-                      <Maximize className="h-2.5 w-2.5 text-primary" />
-                      <span className="text-[8px] font-bold text-foreground">Feet visible</span>
+                    <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 bg-background/90 backdrop-blur-sm rounded-lg px-2.5 py-1.5 border border-primary/20">
+                      <Maximize className="h-3.5 w-3.5 text-primary" />
+                      <span className="text-[10px] font-bold text-foreground">Feet visible</span>
                     </div>
-                    <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5">
-                      <Ruler className="h-2.5 w-2.5 text-primary" />
-                      <span className="text-[8px] font-bold text-foreground">6-8 ft away</span>
+                    <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1.5 bg-background/90 backdrop-blur-sm rounded-lg px-2.5 py-1.5 border border-primary/20">
+                      <Ruler className="h-3.5 w-3.5 text-primary" />
+                      <span className="text-[10px] font-bold text-foreground">6-8 ft away</span>
                     </div>
 
                     {/* Animated guide text */}
