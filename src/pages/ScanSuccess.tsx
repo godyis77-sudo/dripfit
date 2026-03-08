@@ -155,23 +155,20 @@ const ScanSuccess = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: overlay.delay + 0.4, duration: 0.35, ease: 'easeOut' }}
             >
-              {/* Opaque gold cover to hide old static values + new dynamic values */}
               <div
-                className="px-1 py-0.5 rounded-sm"
                 style={{
-                  background: 'linear-gradient(135deg, hsl(43 45% 56%), hsl(40 40% 52%))',
                   textAlign: overlay.side === 'left' ? 'left' : 'right',
                 }}
               >
                 <p
-                  className="text-[10px] font-bold leading-tight"
-                  style={{ color: 'hsl(30 15% 12%)' }}
+                  className="text-[11px] font-black leading-tight"
+                  style={{ color: '#000' }}
                 >
                   {val.line1}
                 </p>
                 <p
-                  className="text-[8.5px] font-semibold leading-tight"
-                  style={{ color: 'hsl(30 12% 22%)' }}
+                  className="text-[9px] font-bold leading-tight"
+                  style={{ color: 'hsl(30 10% 25%)' }}
                 >
                   {val.line2}
                 </p>
