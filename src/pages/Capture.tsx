@@ -45,7 +45,8 @@ function clearScanState() {
 }
 
 import scanResultsPreview from '@/assets/scan-results-preview.png';
-import bodySilhouetteMask from '@/assets/body-silhouette-mask.png';
+import bodySilhouetteFrontMask from '@/assets/body-silhouette-mask.png';
+import bodySilhouetteSideMask from '@/assets/body-silhouette-side-mask.png';
 
 /* Animated silhouette for intro */
 const AnimatedSilhouette = () => (
@@ -444,8 +445,8 @@ const Capture = () => {
                           className="absolute inset-0"
                           style={{
                             backgroundImage: 'linear-gradient(180deg, hsl(var(--primary) / 0.98) 0%, hsl(var(--primary) / 0.78) 55%, hsl(var(--primary) / 0.9) 100%)',
-                            WebkitMaskImage: `url(${bodySilhouetteMask})`,
-                            maskImage: `url(${bodySilhouetteMask})`,
+                            WebkitMaskImage: `url(${captureStep === 'side' ? bodySilhouetteSideMask : bodySilhouetteFrontMask})`,
+                            maskImage: `url(${captureStep === 'side' ? bodySilhouetteSideMask : bodySilhouetteFrontMask})`,
                             WebkitMaskRepeat: 'no-repeat',
                             maskRepeat: 'no-repeat',
                             WebkitMaskPosition: 'center',
@@ -464,8 +465,8 @@ const Capture = () => {
                             backgroundImage: 'linear-gradient(180deg, hsl(var(--background) / 0) 20%, hsl(var(--primary-foreground) / 0.75) 50%, hsl(var(--background) / 0) 80%)',
                             backgroundSize: '100% 220%',
                             mixBlendMode: 'screen',
-                            WebkitMaskImage: `url(${bodySilhouetteMask})`,
-                            maskImage: `url(${bodySilhouetteMask})`,
+                            WebkitMaskImage: `url(${captureStep === 'side' ? bodySilhouetteSideMask : bodySilhouetteFrontMask})`,
+                            maskImage: `url(${captureStep === 'side' ? bodySilhouetteSideMask : bodySilhouetteFrontMask})`,
                             WebkitMaskRepeat: 'no-repeat',
                             maskRepeat: 'no-repeat',
                             WebkitMaskPosition: 'center',
