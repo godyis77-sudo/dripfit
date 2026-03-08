@@ -475,6 +475,7 @@ const Capture = () => {
                             WebkitMaskMode: 'luminance',
                             maskMode: 'luminance',
                           } as React.CSSProperties}
+                        />
                       </div>
                     </div>
 
