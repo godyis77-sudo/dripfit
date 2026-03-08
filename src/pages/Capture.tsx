@@ -45,7 +45,7 @@ function clearScanState() {
 }
 
 import scanResultsPreview from '@/assets/scan-results-preview.png';
-import bodySilhouetteGlow from '@/assets/body-silhouette-glow.png';
+import bodySilhouetteMask from '@/assets/body-silhouette-clean.png';
 
 /* Animated silhouette for intro */
 const AnimatedSilhouette = () => (
@@ -430,17 +430,49 @@ const Capture = () => {
                         transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
                         className="absolute inset-y-[2%] inset-x-[18%] rounded-full bg-primary/40 blur-3xl"
                       />
-                      <motion.img
-                        src={bodySilhouetteGlow}
-                        alt=""
-                        animate={{ filter: [
-                          'brightness(1.8) contrast(1.35) drop-shadow(0 0 6px hsl(45 88% 50% / 1)) drop-shadow(0 0 16px hsl(45 88% 40% / 0.85)) drop-shadow(0 0 36px hsl(45 80% 45% / 0.55)) drop-shadow(0 0 70px hsl(45 70% 42% / 0.3))',
-                          'brightness(2.0) contrast(1.4) drop-shadow(0 0 8px hsl(45 88% 55% / 1)) drop-shadow(0 0 20px hsl(45 88% 45% / 0.9)) drop-shadow(0 0 44px hsl(45 80% 50% / 0.6)) drop-shadow(0 0 80px hsl(45 70% 42% / 0.35))',
-                          'brightness(1.8) contrast(1.35) drop-shadow(0 0 6px hsl(45 88% 50% / 1)) drop-shadow(0 0 16px hsl(45 88% 40% / 0.85)) drop-shadow(0 0 36px hsl(45 80% 45% / 0.55)) drop-shadow(0 0 70px hsl(45 70% 42% / 0.3))',
-                        ]}}
-                        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-                        className="relative h-full object-contain mix-blend-lighten"
-                      />
+                      <div className="relative h-full w-full">
+                        <motion.div
+                          animate={{
+                            opacity: [0.9, 1, 0.9],
+                            filter: [
+                              'brightness(1.2) contrast(1.4) drop-shadow(0 0 8px hsl(var(--primary) / 0.95)) drop-shadow(0 0 20px hsl(var(--primary) / 0.8)) drop-shadow(0 0 42px hsl(var(--primary) / 0.55)) drop-shadow(0 0 80px hsl(var(--primary) / 0.32))',
+                              'brightness(1.35) contrast(1.5) drop-shadow(0 0 10px hsl(var(--primary) / 1)) drop-shadow(0 0 24px hsl(var(--primary) / 0.88)) drop-shadow(0 0 50px hsl(var(--primary) / 0.62)) drop-shadow(0 0 92px hsl(var(--primary) / 0.38))',
+                              'brightness(1.2) contrast(1.4) drop-shadow(0 0 8px hsl(var(--primary) / 0.95)) drop-shadow(0 0 20px hsl(var(--primary) / 0.8)) drop-shadow(0 0 42px hsl(var(--primary) / 0.55)) drop-shadow(0 0 80px hsl(var(--primary) / 0.32))',
+                            ],
+                          }}
+                          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                          className="absolute inset-0"
+                          style={{
+                            backgroundImage: 'linear-gradient(180deg, hsl(var(--primary) / 0.98) 0%, hsl(var(--primary) / 0.78) 55%, hsl(var(--primary) / 0.9) 100%)',
+                            WebkitMaskImage: `url(${bodySilhouetteMask})`,
+                            maskImage: `url(${bodySilhouetteMask})`,
+                            WebkitMaskRepeat: 'no-repeat',
+                            maskRepeat: 'no-repeat',
+                            WebkitMaskPosition: 'center',
+                            maskPosition: 'center',
+                            WebkitMaskSize: 'contain',
+                            maskSize: 'contain',
+                          }}
+                        />
+                        <motion.div
+                          animate={{ backgroundPosition: ['50% -10%', '50% 110%', '50% -10%'], opacity: [0.35, 0.65, 0.35] }}
+                          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                          className="absolute inset-0"
+                          style={{
+                            backgroundImage: 'linear-gradient(180deg, hsl(var(--background) / 0) 20%, hsl(var(--primary-foreground) / 0.75) 50%, hsl(var(--background) / 0) 80%)',
+                            backgroundSize: '100% 220%',
+                            mixBlendMode: 'screen',
+                            WebkitMaskImage: `url(${bodySilhouetteMask})`,
+                            maskImage: `url(${bodySilhouetteMask})`,
+                            WebkitMaskRepeat: 'no-repeat',
+                            maskRepeat: 'no-repeat',
+                            WebkitMaskPosition: 'center',
+                            maskPosition: 'center',
+                            WebkitMaskSize: 'contain',
+                            maskSize: 'contain',
+                          }}
+                        />
+                      </div>
                     </div>
 
                     {/* Corner badges — larger, more readable */}
