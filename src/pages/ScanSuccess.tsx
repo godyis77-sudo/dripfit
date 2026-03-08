@@ -21,7 +21,7 @@ interface MeasurementOverlay {
   key: string;
   label: string;
   side: 'left' | 'right';
-  top: string;
+  valTop: string;  // position for the value overlay (covers old baked-in numbers)
   delay: number;
   getValue: (r: BodyScanResult) => { line1: string; line2: string } | null;
 }
@@ -31,7 +31,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'height',
     label: 'HEIGHT',
     side: 'left',
-    top: '7%',
+    valTop: '9.5%',
     delay: 0,
     getValue: (r) => ({ line1: fmtHeightFtIn(r.heightCm), line2: `${r.heightCm} cm` }),
   },
@@ -39,7 +39,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'shoulder',
     label: 'SHOULDER',
     side: 'right',
-    top: '20%',
+    valTop: '22%',
     delay: 0.15,
     getValue: (r) => ({ line1: fmtIn(r.shoulder), line2: fmtCm(r.shoulder) }),
   },
@@ -47,7 +47,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'chest',
     label: 'CHEST',
     side: 'left',
-    top: '28.5%',
+    valTop: '30.5%',
     delay: 0.25,
     getValue: (r) => ({ line1: fmtIn(r.chest), line2: fmtCm(r.chest) }),
   },
@@ -55,7 +55,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'bust',
     label: 'BUST',
     side: 'right',
-    top: '31%',
+    valTop: '33.5%',
     delay: 0.35,
     getValue: (r) => r.bust ? ({ line1: fmtIn(r.bust), line2: fmtCm(r.bust) }) : null,
   },
@@ -63,7 +63,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'sleeve',
     label: 'SLEEVE',
     side: 'left',
-    top: '41%',
+    valTop: '43%',
     delay: 0.45,
     getValue: (r) => r.sleeve ? ({ line1: fmtIn(r.sleeve), line2: fmtCm(r.sleeve) }) : null,
   },
@@ -71,7 +71,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'waist',
     label: 'WAIST',
     side: 'right',
-    top: '47%',
+    valTop: '49.5%',
     delay: 0.55,
     getValue: (r) => ({ line1: fmtIn(r.waist), line2: fmtCm(r.waist) }),
   },
@@ -79,7 +79,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'hips',
     label: 'HIPS',
     side: 'right',
-    top: '55%',
+    valTop: '57%',
     delay: 0.65,
     getValue: (r) => ({ line1: fmtIn(r.hips), line2: fmtCm(r.hips) }),
   },
@@ -87,7 +87,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'inseam',
     label: 'INSEAM',
     side: 'left',
-    top: '73%',
+    valTop: '76%',
     delay: 0.75,
     getValue: (r) => ({ line1: fmtIn(r.inseam), line2: fmtCm(r.inseam) }),
   },
@@ -136,7 +136,7 @@ const ScanSuccess = () => {
           onLoad={() => setImageLoaded(true)}
         />
 
-        {/* Dynamic measurement overlays */}
+        {/* Cover old baked-in values and show dynamic ones */}
         {imageLoaded && OVERLAYS.map((overlay) => {
           const val = overlay.getValue(result);
           if (!val) return null;
@@ -146,42 +146,36 @@ const ScanSuccess = () => {
               key={overlay.key}
               className="absolute"
               style={{
-                top: overlay.top,
+                top: overlay.valTop,
                 ...(overlay.side === 'left'
-                  ? { left: '3%' }
-                  : { right: '3%' }),
+                  ? { left: '2%' }
+                  : { right: '2%' }),
               }}
-              initial={{ opacity: 0, x: overlay.side === 'left' ? -12 : 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: overlay.delay + 0.4, duration: 0.4, ease: 'easeOut' }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: overlay.delay + 0.4, duration: 0.35, ease: 'easeOut' }}
             >
-              <p
-                className="text-[10px] font-extrabold tracking-wider leading-none"
+              {/* Opaque gold cover to hide old static values + new dynamic values */}
+              <div
+                className="px-1 py-0.5 rounded-sm"
                 style={{
-                  color: 'hsl(30 10% 15%)',
+                  background: 'linear-gradient(135deg, hsl(43 45% 56%), hsl(40 40% 52%))',
                   textAlign: overlay.side === 'left' ? 'left' : 'right',
                 }}
               >
-                {overlay.label}
-              </p>
-              <p
-                className="text-[9px] font-bold leading-tight mt-0.5"
-                style={{
-                  color: 'hsl(30 10% 20%)',
-                  textAlign: overlay.side === 'left' ? 'left' : 'right',
-                }}
-              >
-                {val.line1}
-              </p>
-              <p
-                className="text-[8px] font-medium leading-tight"
-                style={{
-                  color: 'hsl(30 10% 28%)',
-                  textAlign: overlay.side === 'left' ? 'left' : 'right',
-                }}
-              >
-                {val.line2}
-              </p>
+                <p
+                  className="text-[10px] font-bold leading-tight"
+                  style={{ color: 'hsl(30 15% 12%)' }}
+                >
+                  {val.line1}
+                </p>
+                <p
+                  className="text-[8.5px] font-semibold leading-tight"
+                  style={{ color: 'hsl(30 12% 22%)' }}
+                >
+                  {val.line2}
+                </p>
+              </div>
             </motion.div>
           );
         })}
