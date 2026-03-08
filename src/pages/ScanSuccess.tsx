@@ -39,7 +39,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'shoulder',
     label: 'SHOULDER',
     side: 'right',
-    valTop: '20.5%',
+    valTop: '21%',
     delay: 0.15,
     getValue: (r) => ({ line1: fmtIn(r.shoulder), line2: fmtCm(r.shoulder) }),
   },
