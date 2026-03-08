@@ -79,7 +79,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'hips',
     label: 'HIPS',
     side: 'right',
-    valTop: '51.5%',
+    valTop: '52.5%',
     delay: 0.65,
     getValue: (r) => ({ line1: fmtIn(r.hips), line2: fmtCm(r.hips) }),
   },
