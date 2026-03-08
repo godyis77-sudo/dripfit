@@ -244,7 +244,6 @@ const Analyze = () => {
           ref={videoRef}
           src="/videos/body-scan-animation.mp4"
           autoPlay
-          defaultMuted
           loop
           muted
           playsInline
