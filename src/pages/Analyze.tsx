@@ -45,6 +45,8 @@ const Analyze = () => {
   const attemptPlayVideo = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
+    // Ensure muted is set programmatically (some browsers ignore the HTML attribute)
+    video.muted = true;
     video.play()
       .then(() => {
         setShowVideoPlayFallback(false);
@@ -55,14 +57,32 @@ const Analyze = () => {
       });
   }, []);
 
+  // Aggressively attempt autoplay on mount
   useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = true;
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    // Try playing immediately, then retry after a short delay
+    const tryPlay = () => {
+      video.play()
+        .then(() => {
+          setShowVideoPlayFallback(false);
+          setVideoFailed(false);
+        })
+        .catch(() => {});
+    };
+    tryPlay();
+    const retryTimer = window.setTimeout(tryPlay, 300);
     const fallbackTimer = window.setTimeout(() => {
-      if (!videoRef.current || videoRef.current.paused) {
-        setShowVideoPlayFallback(true);
-      }
-    }, 1200);
+      if (video.paused) setShowVideoPlayFallback(true);
+    }, 1500);
 
-    return () => window.clearTimeout(fallbackTimer);
+    return () => {
+      window.clearTimeout(retryTimer);
+      window.clearTimeout(fallbackTimer);
+    };
   }, []);
 
   useEffect(() => {
