@@ -45,7 +45,7 @@ function clearScanState() {
 }
 
 import scanResultsPreview from '@/assets/scan-results-preview.png';
-import bodySilhouetteGlow from '@/assets/body-silhouette-glow.png';
+import bodySilhouetteGlow from '@/assets/body-silhouette-glow-cutout.png';
 
 /* Animated silhouette for intro */
 const AnimatedSilhouette = () => (
@@ -426,7 +426,10 @@ const Capture = () => {
                     </div>
 
                     {/* Glowing body silhouette overlay */}
-                    <img src={bodySilhouetteGlow} alt="" className="h-[70%] object-contain pointer-events-none opacity-85" />
+                    <div className="relative h-[70%] w-full flex items-center justify-center pointer-events-none">
+                      <div className="absolute inset-y-[8%] inset-x-[30%] rounded-full bg-primary/20 blur-2xl opacity-70" />
+                      <img src={bodySilhouetteGlow} alt="" className="relative h-full object-contain mix-blend-darken" />
+                    </div>
 
                     {/* Positioning tips overlaid on corners */}
                     <div className="absolute top-2 left-2 flex items-center gap-1 bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5">
