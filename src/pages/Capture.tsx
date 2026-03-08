@@ -45,7 +45,8 @@ function clearScanState() {
 }
 
 import scanResultsPreview from '@/assets/scan-results-preview.png';
-import bodySilhouetteMask from '@/assets/body-silhouette-mask.png';
+import bodySilhouetteFrontMask from '@/assets/body-silhouette-mask.png';
+import bodySilhouetteSideMask from '@/assets/body-silhouette-side-mask.png';
 
 /* Animated silhouette for intro */
 const AnimatedSilhouette = () => (
