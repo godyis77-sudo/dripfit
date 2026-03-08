@@ -74,7 +74,6 @@ const Analyze = () => {
     return () => {
       clearInterval(msgInterval);
       clearInterval(progressInterval);
-      clearInterval(scanInterval);
     };
   }, [state, navigate, user]);
 
