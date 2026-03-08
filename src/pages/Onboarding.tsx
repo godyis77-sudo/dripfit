@@ -212,8 +212,8 @@ const Onboarding = () => {
                       style={{
                         maxHeight: '100%',
                         maxWidth: '85%',
-                        boxShadow: '0 0 24px 6px hsl(45 88% 40% / 0.45), 0 0 60px 12px hsl(45 88% 40% / 0.15)',
-                        border: '2px solid hsl(45 88% 40% / 0.5)',
+                        boxShadow: '0 0 20px 4px hsl(0 0% 100% / 0.6), 0 0 60px 15px hsl(0 0% 100% / 0.2), inset 0 0 12px 2px hsl(0 0% 100% / 0.15)',
+                        border: '1.5px solid hsl(0 0% 100% / 0.7)',
                       }}
                     >
                       <img
