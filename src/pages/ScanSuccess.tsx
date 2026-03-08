@@ -86,7 +86,7 @@ const ScanSuccess = () => {
 
       {/* Silhouette */}
       <motion.img
-        src={bodySilhouette}
+        src={scanResultsFull}
         alt="Body silhouette"
         className="w-[280px] h-auto object-contain mb-6"
         initial={{ opacity: 0, scale: 0.85 }}
