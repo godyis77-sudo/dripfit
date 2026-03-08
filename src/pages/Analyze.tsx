@@ -65,6 +65,7 @@ const Analyze = () => {
     return () => window.clearTimeout(fallbackTimer);
   }, []);
 
+  useEffect(() => {
     if (!state?.photos?.front || !state?.photos?.side) {
       navigate('/capture', { replace: true });
       return;
