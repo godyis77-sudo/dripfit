@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -51,17 +51,10 @@ const ScanSuccess = () => {
   const navigate = useNavigate();
   const state = location.state as { result: BodyScanResult } | undefined;
   const result = state?.result;
-  const autoAdvanceRef = useRef<ReturnType<typeof setTimeout>>();
-
   useEffect(() => {
     if (!result) {
       navigate('/capture', { replace: true });
-      return;
     }
-    autoAdvanceRef.current = setTimeout(() => {
-      navigate('/profile/body', { replace: true });
-    }, 5000);
-    return () => clearTimeout(autoAdvanceRef.current);
   }, [result, navigate]);
 
   if (!result) return null;
@@ -78,7 +71,6 @@ const ScanSuccess = () => {
   ];
 
   const handleNavigate = (path: string) => {
-    clearTimeout(autoAdvanceRef.current);
     navigate(path, { replace: true });
   };
 
