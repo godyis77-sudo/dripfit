@@ -54,7 +54,7 @@ const AnimatedSilhouette = () => (
     transition={{ duration: 0.6, ease: 'easeOut' }}
     className="flex items-center justify-center"
   >
-    <div className="relative rounded-[1rem] border-[3px] border-primary" style={{ boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15), inset 0 0 14px 3px hsl(45 88% 50% / 0.2)' }}>
+    <div className="relative rounded-[1rem] border-[3px] border-black" style={{ boxShadow: 'inset 0 0 6px 1px hsl(45 88% 50% / 0.5), 0 0 6px 1px hsl(45 88% 50% / 0.4)' }}>
       <div className="overflow-hidden rounded-[calc(1rem-3px)]">
         <img
           src={scanResultsPreview}
