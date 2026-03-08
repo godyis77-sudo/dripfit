@@ -45,6 +45,8 @@ const Analyze = () => {
   const attemptPlayVideo = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
+    // Ensure muted is set programmatically (some browsers ignore the HTML attribute)
+    video.muted = true;
     video.play()
       .then(() => {
         setShowVideoPlayFallback(false);
