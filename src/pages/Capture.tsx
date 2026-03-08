@@ -54,11 +54,13 @@ const AnimatedSilhouette = () => (
     transition={{ duration: 0.6, ease: 'easeOut' }}
     className="flex items-center justify-center"
   >
-    <img
-      src={scanResultsPreview}
-      alt="Scan results preview"
-      className="h-[300px] w-auto object-contain rounded-2xl"
-    />
+    <div className="overflow-hidden rounded-[1rem] border-x-[18px] border-y-[15px] border-black">
+      <img
+        src={scanResultsPreview}
+        alt="Scan results preview"
+        className="h-[300px] w-auto object-cover"
+      />
+    </div>
   </motion.div>
 );
 
