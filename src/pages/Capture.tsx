@@ -433,7 +433,7 @@ const Capture = () => {
                         alt=""
                         className="relative h-full object-contain mix-blend-darken"
                         style={{
-                          filter: 'brightness(1.5) contrast(1.25) drop-shadow(0 0 12px hsl(45 88% 40% / 0.6)) drop-shadow(0 0 30px hsl(45 88% 40% / 0.35))',
+                          filter: 'brightness(1.5) contrast(1.25) drop-shadow(0 0 4px hsl(45 88% 50% / 0.9)) drop-shadow(0 0 12px hsl(45 88% 40% / 0.7)) drop-shadow(0 0 30px hsl(45 80% 45% / 0.45)) drop-shadow(0 0 60px hsl(45 70% 42% / 0.25))',
                         }}
                       />
                     </div>
