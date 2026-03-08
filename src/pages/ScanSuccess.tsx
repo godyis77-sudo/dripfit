@@ -22,6 +22,7 @@ interface MeasurementOverlay {
   label: string;
   side: 'left' | 'right';
   valTop: string;  // position for the value overlay (covers old baked-in numbers)
+  offset?: number;
   delay: number;
   getValue: (r: BodyScanResult) => { line1: string; line2: string } | null;
 }
@@ -32,6 +33,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     label: 'HEIGHT',
     side: 'left',
     valTop: '12%',
+    offset: 6,
     delay: 0,
     getValue: (r) => ({ line1: fmtHeightFtIn(r.heightCm), line2: `${r.heightCm} cm` }),
   },
@@ -40,6 +42,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     label: 'SHOULDER',
     side: 'right',
     valTop: '19.5%',
+    offset: 3,
     delay: 0.15,
     getValue: (r) => ({ line1: fmtIn(r.shoulder), line2: fmtCm(r.shoulder) }),
   },
@@ -48,6 +51,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     label: 'CHEST',
     side: 'left',
     valTop: '28%',
+    offset: 6,
     delay: 0.25,
     getValue: (r) => ({ line1: fmtIn(r.chest), line2: fmtCm(r.chest) }),
   },
@@ -56,6 +60,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     label: 'BUST',
     side: 'right',
     valTop: '27%',
+    offset: 3,
     delay: 0.35,
     getValue: (r) => r.bust ? ({ line1: fmtIn(r.bust), line2: fmtCm(r.bust) }) : null,
   },
@@ -64,6 +69,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     label: 'SLEEVE',
     side: 'left',
     valTop: '39%',
+    offset: 6,
     delay: 0.45,
     getValue: (r) => r.sleeve ? ({ line1: fmtIn(r.sleeve), line2: fmtCm(r.sleeve) }) : null,
   },
@@ -72,6 +78,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     label: 'WAIST',
     side: 'right',
     valTop: '39%',
+    offset: 3,
     delay: 0.55,
     getValue: (r) => ({ line1: fmtIn(r.waist), line2: fmtCm(r.waist) }),
   },
@@ -80,6 +87,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     label: 'HIPS',
     side: 'right',
     valTop: '47%',
+    offset: 3,
     delay: 0.65,
     getValue: (r) => ({ line1: fmtIn(r.hips), line2: fmtCm(r.hips) }),
   },
@@ -88,6 +96,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     label: 'INSEAM',
     side: 'left',
     valTop: '58%',
+    offset: 6,
     delay: 0.75,
     getValue: (r) => ({ line1: fmtIn(r.inseam), line2: fmtCm(r.inseam) }),
   },
@@ -146,7 +155,7 @@ const ScanSuccess = () => {
               key={overlay.key}
               className="absolute"
               style={{
-                top: `calc(${overlay.valTop} + 3px)`,
+                top: `calc(${overlay.valTop} + ${overlay.offset ?? 3}px)`,
                 ...(overlay.side === 'left'
                   ? { left: '2%' }
                   : { right: '2%' }),
