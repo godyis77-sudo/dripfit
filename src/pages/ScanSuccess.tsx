@@ -21,7 +21,7 @@ interface MeasurementOverlay {
   key: string;
   label: string;
   side: 'left' | 'right';
-  top: string;
+  valTop: string;  // position for the value overlay (covers old baked-in numbers)
   delay: number;
   getValue: (r: BodyScanResult) => { line1: string; line2: string } | null;
 }
