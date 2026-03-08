@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Check, ChevronRight } from 'lucide-react';
-import bodySilhouette from '@/assets/body-silhouette-clean.png';
+import scanResultsFull from '@/assets/scan-results-full.jpg';
 import type { BodyScanResult, MeasurementRange } from '@/lib/types';
 
 const CM_TO_IN = 0.3937;
