@@ -244,12 +244,15 @@ const Analyze = () => {
           ref={videoRef}
           src="/videos/body-scan-animation.mp4"
           autoPlay
+          defaultMuted
           loop
           muted
           playsInline
           preload="auto"
-          onCanPlay={attemptPlayVideo}
-          onLoadedData={attemptPlayVideo}
+          onLoadedMetadata={() => { void attemptPlayVideo(); }}
+          onCanPlay={() => { void attemptPlayVideo(); }}
+          onCanPlayThrough={() => { void attemptPlayVideo(); }}
+          onLoadedData={() => { void attemptPlayVideo(); }}
           onPlay={() => {
             setShowVideoPlayFallback(false);
             setVideoFailed(false);
