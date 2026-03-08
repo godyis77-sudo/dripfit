@@ -71,7 +71,6 @@ const ScanSuccess = () => {
   ];
 
   const handleNavigate = (path: string) => {
-    clearTimeout(autoAdvanceRef.current);
     navigate(path, { replace: true });
   };
 
