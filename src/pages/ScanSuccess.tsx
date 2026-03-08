@@ -31,7 +31,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'height',
     label: 'HEIGHT',
     side: 'left',
-    valTop: '22%',
+    valTop: '11.5%',
     delay: 0,
     getValue: (r) => ({ line1: fmtHeightFtIn(r.heightCm), line2: `${r.heightCm} cm` }),
   },
@@ -39,7 +39,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'shoulder',
     label: 'SHOULDER',
     side: 'right',
-    valTop: '28%',
+    valTop: '19%',
     delay: 0.15,
     getValue: (r) => ({ line1: fmtIn(r.shoulder), line2: fmtCm(r.shoulder) }),
   },
@@ -47,7 +47,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'chest',
     label: 'CHEST',
     side: 'left',
-    valTop: '38%',
+    valTop: '27%',
     delay: 0.25,
     getValue: (r) => ({ line1: fmtIn(r.chest), line2: fmtCm(r.chest) }),
   },
@@ -55,7 +55,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'bust',
     label: 'BUST',
     side: 'right',
-    valTop: '38%',
+    valTop: '27%',
     delay: 0.35,
     getValue: (r) => r.bust ? ({ line1: fmtIn(r.bust), line2: fmtCm(r.bust) }) : null,
   },
@@ -63,7 +63,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'sleeve',
     label: 'SLEEVE',
     side: 'left',
-    valTop: '50%',
+    valTop: '38%',
     delay: 0.45,
     getValue: (r) => r.sleeve ? ({ line1: fmtIn(r.sleeve), line2: fmtCm(r.sleeve) }) : null,
   },
@@ -71,7 +71,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'waist',
     label: 'WAIST',
     side: 'right',
-    valTop: '50%',
+    valTop: '40%',
     delay: 0.55,
     getValue: (r) => ({ line1: fmtIn(r.waist), line2: fmtCm(r.waist) }),
   },
@@ -79,7 +79,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'hips',
     label: 'HIPS',
     side: 'right',
-    valTop: '66%',
+    valTop: '50%',
     delay: 0.65,
     getValue: (r) => ({ line1: fmtIn(r.hips), line2: fmtCm(r.hips) }),
   },
@@ -87,7 +87,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'inseam',
     label: 'INSEAM',
     side: 'left',
-    valTop: '66%',
+    valTop: '60%',
     delay: 0.75,
     getValue: (r) => ({ line1: fmtIn(r.inseam), line2: fmtCm(r.inseam) }),
   },
@@ -155,23 +155,20 @@ const ScanSuccess = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: overlay.delay + 0.4, duration: 0.35, ease: 'easeOut' }}
             >
-              {/* Opaque gold cover to hide old static values + new dynamic values */}
               <div
-                className="px-1 py-0.5 rounded-sm"
                 style={{
-                  background: 'linear-gradient(135deg, hsl(43 45% 56%), hsl(40 40% 52%))',
                   textAlign: overlay.side === 'left' ? 'left' : 'right',
                 }}
               >
                 <p
-                  className="text-[10px] font-bold leading-tight"
-                  style={{ color: 'hsl(30 15% 12%)' }}
+                  className="text-[11px] font-black leading-tight"
+                  style={{ color: '#000' }}
                 >
                   {val.line1}
                 </p>
                 <p
-                  className="text-[8.5px] font-semibold leading-tight"
-                  style={{ color: 'hsl(30 12% 22%)' }}
+                  className="text-[9px] font-bold leading-tight"
+                  style={{ color: 'hsl(30 10% 25%)' }}
                 >
                   {val.line2}
                 </p>
