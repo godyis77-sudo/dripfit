@@ -45,7 +45,7 @@ function clearScanState() {
 }
 
 import scanResultsPreview from '@/assets/scan-results-preview.png';
-import bodySilhouetteGlow from '@/assets/body-silhouette-glow-cutout.png';
+import bodySilhouetteGlow from '@/assets/body-silhouette-glow.png';
 
 /* Animated silhouette for intro */
 const AnimatedSilhouette = () => (
@@ -439,7 +439,7 @@ const Capture = () => {
                           'brightness(1.8) contrast(1.35) drop-shadow(0 0 6px hsl(45 88% 50% / 1)) drop-shadow(0 0 16px hsl(45 88% 40% / 0.85)) drop-shadow(0 0 36px hsl(45 80% 45% / 0.55)) drop-shadow(0 0 70px hsl(45 70% 42% / 0.3))',
                         ]}}
                         transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-                        className="relative h-full object-contain mix-blend-darken"
+                        className="relative h-full object-contain mix-blend-lighten"
                       />
                     </div>
 
