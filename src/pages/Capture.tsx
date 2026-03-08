@@ -427,8 +427,8 @@ const Capture = () => {
 
                     {/* Glowing body silhouette overlay */}
                     <div className="relative h-[70%] w-full flex items-center justify-center pointer-events-none">
-                      <div className="absolute inset-y-[5%] inset-x-[25%] rounded-full blur-3xl opacity-90" style={{ background: 'radial-gradient(ellipse, hsl(45 88% 50% / 0.5) 0%, hsl(45 88% 40% / 0.25) 50%, transparent 80%)' }} />
-                      <img src={bodySilhouetteGlow} alt="" className="relative h-full object-contain brightness-150 contrast-125" style={{ filter: 'brightness(1.5) contrast(1.25) drop-shadow(0 0 12px hsl(45 88% 50% / 0.8)) drop-shadow(0 0 30px hsl(45 88% 45% / 0.4))' }} />
+                      <div className="absolute inset-y-[8%] inset-x-[30%] rounded-full bg-primary/20 blur-2xl opacity-70" />
+                      <img src={bodySilhouetteGlow} alt="" className="relative h-full object-contain mix-blend-darken" />
                     </div>
 
                     {/* Positioning tips overlaid on corners */}
