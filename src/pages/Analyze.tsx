@@ -35,11 +35,35 @@ const Analyze = () => {
   const [progress, setProgress] = useState(0);
   const [revealedKeys, setRevealedKeys] = useState<string[]>([]);
   const [realData, setRealData] = useState<any>(null);
+  const [showVideoPlayFallback, setShowVideoPlayFallback] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
   const minTimeElapsed = useRef(false);
   const resultReady = useRef<any>(null);
   const effectRan = useRef(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  const attemptPlayVideo = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.play()
+      .then(() => {
+        setShowVideoPlayFallback(false);
+        setVideoFailed(false);
+      })
+      .catch(() => {
+        setShowVideoPlayFallback(true);
+      });
+  }, []);
+
+  useEffect(() => {
+    const fallbackTimer = window.setTimeout(() => {
+      if (!videoRef.current || videoRef.current.paused) {
+        setShowVideoPlayFallback(true);
+      }
+    }, 1200);
+
+    return () => window.clearTimeout(fallbackTimer);
+  }, []);
 
   useEffect(() => {
     if (!state?.photos?.front || !state?.photos?.side) {
@@ -182,9 +206,28 @@ const Analyze = () => {
           loop
           muted
           playsInline
-          onLoadedData={() => { videoRef.current?.play().catch(() => {}); }}
+          preload="auto"
+          onCanPlay={attemptPlayVideo}
+          onLoadedData={attemptPlayVideo}
+          onPlay={() => {
+            setShowVideoPlayFallback(false);
+            setVideoFailed(false);
+          }}
+          onError={() => {
+            setVideoFailed(true);
+            setShowVideoPlayFallback(false);
+          }}
           className="absolute inset-0 w-full h-full object-contain"
         />
+
+        {showVideoPlayFallback && !videoFailed ? (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/20">
+            <Button type="button" onClick={attemptPlayVideo} className="rounded-xl h-10 px-4 text-xs font-semibold">
+              Tap to play animation
+            </Button>
+          </div>
+        ) : null}
+
         {/* Vignette overlay */}
         <div
           className="absolute inset-0 pointer-events-none rounded-xl"
