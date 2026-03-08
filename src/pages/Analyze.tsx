@@ -1,9 +1,8 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-// Video asset loaded from public/videos/body-scan-animation.mp4
 import { PhotoSet, BodyScanResult, FitPreference, ReferenceObject, MeasurementRange } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -14,34 +13,6 @@ const MESSAGES = [
   'Estimating measurements…',
   'Matching size charts…',
   'Generating recommendations…',
-];
-
-const CM_TO_IN = 0.3937;
-const fmtHeightFtIn = (cm: number) => {
-  const totalIn = Math.round(cm * CM_TO_IN);
-  return `${Math.floor(totalIn / 12)}' ${totalIn % 12}"`;
-};
-const fmtRange = (r: MeasurementRange) => `${(r.min * CM_TO_IN).toFixed(1)}–${(r.max * CM_TO_IN).toFixed(1)} in`;
-
-interface MeasurementOverlay {
-  key: string;
-  label: string;
-  side: 'left' | 'right';
-  topPct: string;
-  /** Leader line: start X% on body, end X% at label edge */
-  bodyX: number;
-  labelX: number;
-  lineY: number;
-}
-
-const OVERLAYS: MeasurementOverlay[] = [
-  { key: 'height', label: 'Height', side: 'left', topPct: '8%', bodyX: 38, labelX: 6, lineY: 15 },
-  { key: 'shoulder', label: 'Shoulder', side: 'right', topPct: '18.5%', bodyX: 62, labelX: 94, lineY: 25.2 },
-  { key: 'chest', label: 'Chest', side: 'left', topPct: '24.5%', bodyX: 41, labelX: 6, lineY: 31 },
-  { key: 'bust', label: 'Bust', side: 'right', topPct: '27.5%', bodyX: 57, labelX: 94, lineY: 34 },
-  { key: 'waist', label: 'Waist', side: 'right', topPct: '38%', bodyX: 57, labelX: 94, lineY: 44.5 },
-  { key: 'hips', label: 'Hips', side: 'right', topPct: '46%', bodyX: 60, labelX: 94, lineY: 52.4 },
-  { key: 'inseam', label: 'Inseam', side: 'left', topPct: '63%', bodyX: 46, labelX: 6, lineY: 70 },
 ];
 
 const TOTAL_SCAN_TIME = 8000;
@@ -62,24 +33,12 @@ const Analyze = () => {
   const [msgIdx, setMsgIdx] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
-  const [scanPos, setScanPos] = useState(0);
   const [revealedKeys, setRevealedKeys] = useState<string[]>([]);
   const [realData, setRealData] = useState<any>(null);
   const minTimeElapsed = useRef(false);
   const resultReady = useRef<any>(null);
   const effectRan = useRef(false);
 
-  // Generate placeholder shimmer values for each measurement
-  const getDisplayValue = useCallback((key: string) => {
-    if (realData) {
-      if (key === 'height') return fmtHeightFtIn(realData.heightCm || state?.heightCm || 170);
-      const range = realData[key] as MeasurementRange | undefined;
-      if (range) return fmtRange(range);
-    }
-    // Placeholder while waiting
-    if (key === 'height') return fmtHeightFtIn(state?.heightCm || 170);
-    return '';
-  }, [realData, state]);
 
   useEffect(() => {
     if (!state?.photos?.front || !state?.photos?.side) {
@@ -97,14 +56,6 @@ const Analyze = () => {
       setProgress(p => Math.min(p + (90 / (TOTAL_SCAN_TIME / 100)), 90));
     }, 100);
 
-    const SCAN_DURATION = 3000;
-    const SCAN_TICK = 30;
-    const scanInterval = setInterval(() => {
-      setScanPos(p => {
-        const next = p + (SCAN_TICK / SCAN_DURATION) * 100;
-        return next >= 100 ? 0 : next;
-      });
-    }, SCAN_TICK);
 
     const revealInterval = TOTAL_SCAN_TIME / REVEAL_ORDER.length;
     REVEAL_ORDER.forEach((key, i) => {
@@ -123,7 +74,6 @@ const Analyze = () => {
     return () => {
       clearInterval(msgInterval);
       clearInterval(progressInterval);
-      clearInterval(scanInterval);
     };
   }, [state, navigate, user]);
 
@@ -233,100 +183,6 @@ const Analyze = () => {
           className="absolute inset-0 w-full h-full object-contain"
         />
 
-        {/* SVG leader lines */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
-          {OVERLAYS.map(({ key, bodyX, labelX, lineY }) => {
-            if (!revealedKeys.includes(key)) return null;
-            return (
-              <motion.line
-                key={`leader-${key}`}
-                x1={labelX} y1={lineY}
-                x2={bodyX} y2={lineY}
-                stroke="hsl(42 45% 55%)"
-                strokeWidth="0.3"
-                strokeDasharray="1.2 0.8"
-                strokeLinecap="round"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                transition={{ duration: 0.4 }}
-              />
-            );
-          })}
-          {OVERLAYS.map(({ key, bodyX, lineY }) => {
-            if (!revealedKeys.includes(key)) return null;
-            return (
-              <motion.circle
-                key={`dot-${key}`}
-                cx={bodyX} cy={lineY} r="0.7"
-                fill="hsl(42 45% 50%)"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              />
-            );
-          })}
-        </svg>
-
-        {/* Live measurement labels appearing on the silhouette */}
-        <AnimatePresence>
-          {OVERLAYS.map(({ key, label, side, topPct }) => {
-            if (!revealedKeys.includes(key)) return null;
-            const isLeft = side === 'left';
-            const value = getDisplayValue(key);
-            const hasRealValue = realData != null && value !== '';
-
-            return (
-              <motion.div
-                key={key}
-                initial={{ opacity: 0, x: isLeft ? -12 : 12, scale: 0.9 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                transition={{ type: 'spring', damping: 20, stiffness: 200 }}
-                className="absolute"
-                style={{
-                  top: topPct,
-                  ...(isLeft ? { left: '2%' } : { right: '2%' }),
-                }}
-              >
-                <div className={`${isLeft ? 'text-left' : 'text-right'} px-1.5 py-0.5`}>
-                  <p className="text-[22px] font-bold uppercase tracking-wider leading-none" style={{ color: 'hsl(42 45% 50%)' }}>
-                    {label}
-                  </p>
-                  {value ? (
-                    <motion.p
-                      key={value}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-[24px] font-bold leading-none mt-0.5"
-                      style={{ color: hasRealValue ? 'hsl(0 0% 95%)' : 'hsl(0 0% 50%)' }}
-                    >
-                      {value}
-                    </motion.p>
-                  ) : null}
-                </div>
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
-
-        {/* Looping scan line */}
-        <motion.div
-          className="absolute left-0 right-0 h-[2px] bg-primary shadow-[0_0_16px_hsl(var(--primary)),0_0_4px_hsl(var(--primary))]"
-          style={{ top: `${scanPos}%` }}
-          animate={{ opacity: progress >= 90 ? 0 : [0.5, 1, 0.5] }}
-          transition={{ duration: 0.6, repeat: Infinity }}
-        />
-
-        {/* Subtle glow trailing the scan line */}
-        <div
-          className="absolute left-0 right-0 h-8 bg-gradient-to-b from-primary/20 to-transparent pointer-events-none"
-          style={{ top: `${scanPos}%`, transition: 'top 30ms linear' }}
-        />
-
-        {/* Pulsing glow behind */}
-        <motion.div
-          className="absolute inset-0 rounded-xl blur-[40px] bg-primary/10 -z-10"
-          animate={{ scale: [1, 1.05, 1], opacity: [0.2, 0.4, 0.2] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
       </div>
 
       <h2 className="text-xl font-bold text-foreground mb-2">Analyzing Your Scan</h2>
