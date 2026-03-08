@@ -62,7 +62,7 @@ const AnimatedSilhouette = () => (
           className="h-[300px] w-auto object-cover"
         />
       </div>
-      <div className="absolute -inset-[7px] rounded-[calc(1rem+4px)] border-[4px] border-black pointer-events-none" style={{ boxShadow: 'inset 0 0 6px 1px hsl(45 88% 50% / 0.5), 0 0 6px 1px hsl(45 88% 50% / 0.4)' }} />
+      <div className="absolute -inset-[7px] rounded-[calc(1rem+4px)] border-[4px] border-black pointer-events-none" style={{ boxShadow: 'inset 0 0 8px 2px hsl(45 88% 50% / 0.7), 0 0 10px 2px hsl(45 88% 50% / 0.6), 0 0 20px 4px hsl(45 88% 50% / 0.25)' }} />
     </div>
   </motion.div>
 );
