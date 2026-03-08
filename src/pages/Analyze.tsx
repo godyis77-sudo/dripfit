@@ -56,14 +56,6 @@ const Analyze = () => {
       setProgress(p => Math.min(p + (90 / (TOTAL_SCAN_TIME / 100)), 90));
     }, 100);
 
-    const SCAN_DURATION = 3000;
-    const SCAN_TICK = 30;
-    const scanInterval = setInterval(() => {
-      setScanPos(p => {
-        const next = p + (SCAN_TICK / SCAN_DURATION) * 100;
-        return next >= 100 ? 0 : next;
-      });
-    }, SCAN_TICK);
 
     const revealInterval = TOTAL_SCAN_TIME / REVEAL_ORDER.length;
     REVEAL_ORDER.forEach((key, i) => {
