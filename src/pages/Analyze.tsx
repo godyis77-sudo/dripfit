@@ -42,48 +42,69 @@ const Analyze = () => {
   const effectRan = useRef(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const attemptPlayVideo = useCallback(() => {
+  const attemptPlayVideo = useCallback(async () => {
     const video = videoRef.current;
-    if (!video) return;
-    // Ensure muted is set programmatically (some browsers ignore the HTML attribute)
+    if (!video) return false;
+
+    // Force autoplay-friendly flags at runtime for stricter mobile browsers
     video.muted = true;
-    video.play()
-      .then(() => {
-        setShowVideoPlayFallback(false);
-        setVideoFailed(false);
-      })
-      .catch(() => {
-        setShowVideoPlayFallback(true);
-      });
+    video.defaultMuted = true;
+    video.volume = 0;
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('autoplay', '');
+
+    try {
+      await video.play();
+      setShowVideoPlayFallback(false);
+      setVideoFailed(false);
+      return true;
+    } catch {
+      return false;
+    }
   }, []);
 
-  // Aggressively attempt autoplay on mount
+  // Retry autoplay a few times before showing manual fallback
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    video.muted = true;
-    video.setAttribute('muted', '');
-    video.setAttribute('playsinline', '');
-    // Try playing immediately, then retry after a short delay
-    const tryPlay = () => {
-      video.play()
-        .then(() => {
-          setShowVideoPlayFallback(false);
-          setVideoFailed(false);
-        })
-        .catch(() => {});
+
+    let cancelled = false;
+    let retryTimer: number | null = null;
+    let attempts = 0;
+    const MAX_ATTEMPTS = 10;
+    const RETRY_MS = 400;
+
+    const tryAutoplay = async () => {
+      if (cancelled) return;
+      const didPlay = await attemptPlayVideo();
+      if (cancelled || didPlay) return;
+
+      attempts += 1;
+      if (attempts < MAX_ATTEMPTS) {
+        retryTimer = window.setTimeout(() => {
+          void tryAutoplay();
+        }, RETRY_MS);
+      } else if (video.paused) {
+        setShowVideoPlayFallback(true);
+      }
     };
-    tryPlay();
-    const retryTimer = window.setTimeout(tryPlay, 300);
-    const fallbackTimer = window.setTimeout(() => {
-      if (video.paused) setShowVideoPlayFallback(true);
-    }, 1500);
+
+    void tryAutoplay();
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        void tryAutoplay();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      window.clearTimeout(retryTimer);
-      window.clearTimeout(fallbackTimer);
+      cancelled = true;
+      if (retryTimer) window.clearTimeout(retryTimer);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, []);
+  }, [attemptPlayVideo]);
 
   useEffect(() => {
     if (!state?.photos?.front || !state?.photos?.side) {
@@ -227,8 +248,10 @@ const Analyze = () => {
           muted
           playsInline
           preload="auto"
-          onCanPlay={attemptPlayVideo}
-          onLoadedData={attemptPlayVideo}
+          onLoadedMetadata={() => { void attemptPlayVideo(); }}
+          onCanPlay={() => { void attemptPlayVideo(); }}
+          onCanPlayThrough={() => { void attemptPlayVideo(); }}
+          onLoadedData={() => { void attemptPlayVideo(); }}
           onPlay={() => {
             setShowVideoPlayFallback(false);
             setVideoFailed(false);
