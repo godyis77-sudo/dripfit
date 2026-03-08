@@ -39,17 +39,6 @@ const Analyze = () => {
   const resultReady = useRef<any>(null);
   const effectRan = useRef(false);
 
-  // Generate placeholder shimmer values for each measurement
-  const getDisplayValue = useCallback((key: string) => {
-    if (realData) {
-      if (key === 'height') return fmtHeightFtIn(realData.heightCm || state?.heightCm || 170);
-      const range = realData[key] as MeasurementRange | undefined;
-      if (range) return fmtRange(range);
-    }
-    // Placeholder while waiting
-    if (key === 'height') return fmtHeightFtIn(state?.heightCm || 170);
-    return '';
-  }, [realData, state]);
 
   useEffect(() => {
     if (!state?.photos?.front || !state?.photos?.side) {
