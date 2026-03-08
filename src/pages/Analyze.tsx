@@ -35,13 +35,36 @@ const Analyze = () => {
   const [progress, setProgress] = useState(0);
   const [revealedKeys, setRevealedKeys] = useState<string[]>([]);
   const [realData, setRealData] = useState<any>(null);
+  const [showVideoPlayFallback, setShowVideoPlayFallback] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
   const minTimeElapsed = useRef(false);
   const resultReady = useRef<any>(null);
   const effectRan = useRef(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  const attemptPlayVideo = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.play()
+      .then(() => {
+        setShowVideoPlayFallback(false);
+        setVideoFailed(false);
+      })
+      .catch(() => {
+        setShowVideoPlayFallback(true);
+      });
+  }, []);
 
   useEffect(() => {
+    const fallbackTimer = window.setTimeout(() => {
+      if (!videoRef.current || videoRef.current.paused) {
+        setShowVideoPlayFallback(true);
+      }
+    }, 1200);
+
+    return () => window.clearTimeout(fallbackTimer);
+  }, []);
+
     if (!state?.photos?.front || !state?.photos?.side) {
       navigate('/capture', { replace: true });
       return;
