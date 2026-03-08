@@ -426,7 +426,7 @@ const Capture = () => {
                     </div>
 
                     {/* Glowing body silhouette overlay */}
-                    <img src={bodySilhouetteGlow} alt="" className="h-[60%] opacity-40 object-contain pointer-events-none mix-blend-lighten" />
+                    <img src={bodySilhouetteGlow} alt="" className="h-[60%] object-contain pointer-events-none mix-blend-screen" />
 
                     {/* Positioning tips overlaid on corners */}
                     <div className="absolute top-2 left-2 flex items-center gap-1 bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5">
