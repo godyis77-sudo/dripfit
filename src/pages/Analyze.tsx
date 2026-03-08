@@ -185,7 +185,16 @@ const Analyze = () => {
           onLoadedData={() => { videoRef.current?.play().catch(() => {}); }}
           className="absolute inset-0 w-full h-full object-contain"
         />
-
+        {/* Vignette overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none rounded-xl"
+          style={{ boxShadow: 'inset 0 0 60px 20px hsl(var(--background) / 0.7), inset 0 0 120px 40px hsl(var(--background) / 0.4)' }}
+        />
+        {/* Outer gold border glow */}
+        <div
+          className="absolute inset-0 pointer-events-none rounded-xl"
+          style={{ boxShadow: '0 0 20px 2px hsl(var(--primary) / 0.25), 0 0 50px 8px hsl(var(--primary) / 0.1)' }}
+        />
       </div>
 
       <h2 className="text-xl font-bold text-foreground mb-2">Analyzing Your Scan</h2>
