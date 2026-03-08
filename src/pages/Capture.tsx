@@ -427,8 +427,15 @@ const Capture = () => {
 
                     {/* Glowing body silhouette overlay */}
                     <div className="relative h-[70%] w-full flex items-center justify-center pointer-events-none">
-                      <div className="absolute inset-y-[8%] inset-x-[30%] rounded-full bg-primary/20 blur-2xl opacity-70" />
-                      <img src={bodySilhouetteGlow} alt="" className="relative h-full object-contain mix-blend-darken" />
+                      <div className="absolute inset-y-[4%] inset-x-[22%] rounded-full bg-primary/30 blur-3xl opacity-80" />
+                      <img
+                        src={bodySilhouetteGlow}
+                        alt=""
+                        className="relative h-full object-contain mix-blend-darken"
+                        style={{
+                          filter: 'brightness(1.5) contrast(1.25) drop-shadow(0 0 12px hsl(45 88% 40% / 0.6)) drop-shadow(0 0 30px hsl(45 88% 40% / 0.35))',
+                        }}
+                      />
                     </div>
 
                     {/* Positioning tips overlaid on corners */}
