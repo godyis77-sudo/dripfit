@@ -60,7 +60,7 @@ const AnimatedSilhouette = () => (
         alt="Scan results preview"
         className="h-[300px] w-auto object-cover"
       />
-      <div className="absolute inset-0 rounded-[calc(1rem-3px)] border-[4px] border-black pointer-events-none" />
+      <div className="absolute inset-0 rounded-[calc(1rem-3px)] border-[4px] border-black pointer-events-none" style={{ boxShadow: 'inset 0 0 6px 1px hsl(45 88% 50% / 0.5), 0 0 6px 1px hsl(45 88% 50% / 0.4)' }} />
     </div>
   </motion.div>
 );
