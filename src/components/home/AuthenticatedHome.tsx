@@ -151,6 +151,12 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
+  const dismissRescanNudge = useCallback(() => {
+    const key = `rescan_nudge_dismissed_${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
+    localStorage.setItem(key, 'true');
+    setRescanDismissed(true);
+  }, []);
+
   const priceFilter = activePriceIdx === 0 ? null : { min: PRICE_FILTERS[activePriceIdx].min, max: PRICE_FILTERS[activePriceIdx].max };
 
   const closeFab = useCallback(() => setFabOpen(false), []);
