@@ -8,6 +8,7 @@ import PremiumBadge from '@/components/monetization/PremiumBadge';
 import { motion } from 'framer-motion';
 import { useAuth, STRIPE_TIERS } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 
 const PLANS = [
   { key: 'annual' as const, label: 'Annual', price: '$4.17', period: '/mo', badge: 'Best Value', total: 'Billed $49.99/year (save 48%)', trial: '7-day free trial' },
