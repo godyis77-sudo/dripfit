@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import scanResultsFull from '@/assets/scan-results-full.jpg';
+import bodySilhouette from '@/assets/body-silhouette-clean.png';
 
 interface Props {
   scanLineY: number;
