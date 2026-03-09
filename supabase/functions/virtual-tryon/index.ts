@@ -14,11 +14,25 @@ serve(async (req) => {
 
   try {
     const raw = await req.json();
+
+    // Validate required fields
+    const { userPhoto, clothingPhoto } = raw;
+    if (!userPhoto || typeof userPhoto !== 'string' || userPhoto.length > 5_000_000) {
+      return errorResponse('Invalid user photo', 'VALIDATION_ERROR', 400, corsHeaders);
+    }
+    if (!clothingPhoto || typeof clothingPhoto !== 'string' || clothingPhoto.length > 5_000_000) {
+      return errorResponse('Invalid clothing photo', 'VALIDATION_ERROR', 400, corsHeaders);
+    }
+
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return errorResponse('Unauthorized', 'AUTH_ERROR', 401, corsHeaders);
+    }
+
     const parsed = parseOrError(VirtualTryonSchema, raw);
     if (!parsed.success) {
       return errorResponse(parsed.error, "VALIDATION_ERROR", 400, corsHeaders);
     }
-    const { userPhoto, clothingPhoto } = parsed.data;
     const itemType: string = raw.itemType || "clothing";
     const ACCESSORY_TYPES = ["accessory", "jewelry", "necklace", "bracelet", "earrings", "ring", "watch", "hat", "hats", "cap", "sunglasses", "glasses", "bag", "bags", "purse", "handbag", "belt", "belts", "scarf", "scarves", "shoes", "sneakers", "boots", "heels", "loafers", "sandals"];
     const isAccessory = ACCESSORY_TYPES.includes(itemType.toLowerCase());
