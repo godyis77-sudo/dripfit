@@ -59,8 +59,15 @@ const TryOn = () => {
   const [tryOnError, setTryOnError] = useState<string | null>(null);
 
   const hasUnlimitedTryOns = isSubscribed;
-  const remainingTryOns = Math.max(0, FREE_MONTHLY_LIMIT - getMonthlyTryOnCount(user?.id));
+  const [serverCount, setServerCount] = useState<number | null>(null);
+  const remainingTryOns = Math.max(0, FREE_MONTHLY_LIMIT - (user ? (serverCount ?? 0) : getMonthlyTryOnCount()));
   const canGenerate = !!userPhoto && !!clothingPhoto;
+
+  // Fetch server count on mount / user change
+  useEffect(() => {
+    if (!user || hasUnlimitedTryOns) return;
+    getServerTryOnCount(supabase, user.id).then(setServerCount);
+  }, [user, hasUnlimitedTryOns]);
 
   const [hasSavedProfile, setHasSavedProfile] = useState(() => {
     try { return JSON.parse(localStorage.getItem('dripcheck_scans') || '[]').length > 0; } catch { return false; }
