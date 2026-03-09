@@ -227,7 +227,7 @@ const TryOn = () => {
 
   const handleAddAccessory = async (accessoryPhoto: string, accessoryCategory: string | null) => {
     if (!resultImage || !accessoryPhoto) return;
-    if (!hasUnlimitedTryOns && getMonthlyTryOnCount() >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return; }
+    if (!hasUnlimitedTryOns && getMonthlyTryOnCount(user?.id) >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return; }
     trackEvent('tryon_accessory_started', { category: accessoryCategory });
     try {
       const { data, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto: resultImage, clothingPhoto: accessoryPhoto, itemType: accessoryCategory || 'accessory', isLayering: true } });
