@@ -247,10 +247,7 @@ serve(async (req) => {
     const nextCursor = products[products.length - 1]?.id ?? null;
     const hasMore = products.length === batchSize;
 
-    return new Response(
-      JSON.stringify({ processed: products.length, updated, deactivated, nextCursor, hasMore }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return successResponse({ processed: products.length, updated, deactivated, nextCursor, hasMore }, 200, corsHeaders);
 
   } catch (e) {
     console.error("backfill-gender error:", e);
