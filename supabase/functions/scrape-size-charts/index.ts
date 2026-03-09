@@ -106,10 +106,7 @@ Deno.serve(async (req) => {
 
     const openRouterKey = Deno.env.get("OPENROUTER_API_KEY");
     if (!openRouterKey) {
-      return new Response(
-        JSON.stringify({ error: "OPENROUTER_API_KEY not configured" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return errorResponse("OPENROUTER_API_KEY not configured", "CONFIG_ERROR", 500, corsHeaders);
     }
 
     const supabase = createClient(
