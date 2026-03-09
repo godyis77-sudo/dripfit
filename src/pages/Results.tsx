@@ -166,7 +166,7 @@ const Results = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 py-4 pb-24">
+    <div className="min-h-screen bg-background px-4 py-4 pb-safe-tab">
       <SaveBanner
         visible={showSaveBanner}
         onDismiss={() => setShowSaveBanner(false)}
