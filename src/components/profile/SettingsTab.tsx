@@ -376,16 +376,7 @@ const SettingsTab = ({
               {subscriptionEnd ? ` — renews ${new Date(subscriptionEnd).toLocaleDateString()}` : ''}
             </p>
             <button
-              onClick={async () => {
-                try {
-                  const { data: resp, error } = await supabase.functions.invoke('customer-portal');
-                  if (error) throw error;
-                  const payload = resp?.data ?? resp;
-                  if (payload?.url) window.open(payload.url, '_blank');
-                } catch (e: any) {
-                  toast({ title: 'Error', description: e.message || 'Could not open portal', variant: 'destructive' });
-                }
-              }}
+              onClick={() => setShowWinBack(true)}
               className="text-[10px] text-primary font-bold mt-1 ml-5.5 active:opacity-70"
             >
               Manage →
