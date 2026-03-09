@@ -75,11 +75,31 @@ const Onboarding = () => {
   const smoothTransition = { duration: reduceMotion ? 0 : 0.65, ease: [0.22, 1, 0.36, 1] as const };
   const screenTransition = { duration: reduceMotion ? 0 : 0.7, ease: [0.22, 1, 0.36, 1] as const };
 
-  // Auto-advance splash after 1.5s
+  // Preload hero images, then advance splash
   useEffect(() => {
     if (screen !== 'splash') return;
-    const t = setTimeout(() => { trackEvent('onboarding_splash_done'); setScreen('carousel'); }, 1500);
-    return () => clearTimeout(t);
+    let advanced = false;
+    const advance = () => {
+      if (advanced) return;
+      advanced = true;
+      trackEvent('onboarding_splash_done');
+      setScreen('carousel');
+    };
+
+    // Race: all images loaded vs 3s timeout
+    const timeout = window.setTimeout(advance, 3000);
+    const imageUrls = SLIDES.map(s => s.image);
+    let loaded = 0;
+    imageUrls.forEach(src => {
+      const img = new Image();
+      img.onload = img.onerror = () => {
+        loaded++;
+        if (loaded >= imageUrls.length) advance();
+      };
+      img.src = src;
+    });
+
+    return () => { advanced = true; window.clearTimeout(timeout); };
   }, [screen]);
 
   const tapSplash = useCallback(() => { trackEvent('onboarding_splash_done'); setScreen('carousel'); }, []);
