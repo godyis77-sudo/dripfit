@@ -155,12 +155,16 @@ const ScanSuccess = () => {
         animate={{ opacity: imageLoaded ? 1 : 0, scale: imageLoaded ? 1 : 0.92 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
-        <img
-          src={scanResultsFull}
-          alt="Scan Results"
-          className="w-full h-auto"
-          onLoad={() => setImageLoaded(true)}
-        />
+        <div className="relative rounded-[1rem] border-[3px] border-primary" style={{ boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15), inset 0 0 14px 3px hsl(45 88% 50% / 0.2)' }}>
+          <div className="overflow-hidden rounded-[calc(1rem-3px)]">
+            <img
+              src={scanResultsFull}
+              alt="Scan Results"
+              className="w-full h-auto"
+              onLoad={() => setImageLoaded(true)}
+            />
+          </div>
+          <div className="absolute -inset-[7px] rounded-[calc(1rem+4px)] border-[4px] border-black pointer-events-none" style={{ boxShadow: 'inset 0 0 8px 2px hsl(45 88% 50% / 0.7), 0 0 10px 2px hsl(45 88% 50% / 0.6), 0 0 20px 4px hsl(45 88% 50% / 0.25)' }} />
 
         {/* Cover old baked-in values and show dynamic ones */}
         {imageLoaded && OVERLAYS.map((overlay) => {
@@ -202,6 +206,7 @@ const ScanSuccess = () => {
             </motion.div>
           );
         })}
+        </div>
       </motion.div>
 
       {/* Bottom section */}
