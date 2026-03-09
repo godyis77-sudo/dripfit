@@ -106,6 +106,7 @@ const Browse = () => {
             <button
               onClick={() => navigate(-1)}
               className="h-9 w-9 rounded-full bg-card border border-border flex items-center justify-center active:scale-90 transition-transform"
+              aria-label="Go back"
             >
               <ArrowLeft className="h-4 w-4 text-foreground" />
             </button>

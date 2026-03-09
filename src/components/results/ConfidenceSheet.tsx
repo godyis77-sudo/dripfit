@@ -25,7 +25,7 @@ const ConfidenceSheet = ({ open, onOpenChange, confidence }: ConfidenceSheetProp
                 What is scan confidence?
               </SheetTitle>
             </div>
-            <button onClick={() => onOpenChange(false)} className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-muted transition-colors">
+            <button onClick={() => onOpenChange(false)} className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-muted transition-colors" aria-label="Close">
               <X className="h-4 w-4 text-muted-foreground" />
             </button>
           </div>
