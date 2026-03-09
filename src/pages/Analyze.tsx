@@ -265,9 +265,9 @@ const Analyze = () => {
         />
 
         {showVideoPlayFallback && !videoFailed ? (
-          <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/20">
-            <Button type="button" onClick={attemptPlayVideo} className="rounded-xl h-10 px-4 text-xs font-semibold">
-              Tap to play animation
+          <div className="absolute bottom-3 left-0 right-0 z-20 flex justify-center">
+            <Button type="button" onClick={attemptPlayVideo} className="rounded-xl h-10 px-4 text-xs font-semibold shadow-lg">
+              Tap to play scan animation
             </Button>
           </div>
         ) : null}
