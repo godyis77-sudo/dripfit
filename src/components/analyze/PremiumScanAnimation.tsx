@@ -31,7 +31,7 @@ const PARTICLES = Array.from({ length: 12 }, (_, i) => ({
   size: 2 + Math.random() * 3,
 }));
 
-const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount, totalCount }: Props) => {
+const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount, totalCount, scanComplete = false }: Props) => {
   const [flashKey, setFlashKey] = useState(0);
   const prevCount = useRef(0);
 
