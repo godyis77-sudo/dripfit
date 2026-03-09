@@ -126,11 +126,18 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
       if (!user) return;
       const { data } = await supabase
         .from('body_scans')
-        .select('id')
+        .select('id, created_at')
         .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
-      if (!stale) setHasScan(!!data);
+      if (!stale) {
+        setHasScan(!!data);
+        if (data?.created_at) {
+          const daysDiff = Math.floor((Date.now() - new Date(data.created_at).getTime()) / (1000 * 60 * 60 * 24));
+          setDaysSinceLastScan(daysDiff);
+        }
+      }
     };
 
     fetchTrending();
