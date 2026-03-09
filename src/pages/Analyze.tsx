@@ -7,6 +7,7 @@ import { PhotoSet, BodyScanResult, FitPreference, ReferenceObject, MeasurementRa
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { compressPhoto } from '@/lib/imageUtils';
+import bodySilhouette from '@/assets/body-silhouette-clean.png';
 
 const MESSAGES = [
   'Detecting body landmarks…',
