@@ -34,6 +34,7 @@ import Browse from "./pages/Browse";
 import ProfileSettings from "./pages/ProfileSettings";
 import ResetPassword from "./pages/ResetPassword";
 import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 
 const queryClient = new QueryClient();
 
@@ -100,6 +101,7 @@ const App = () => {
                 <Route path="/browse/:category" element={<Browse />} />
                 <Route path="/premium" element={<Premium />} />
                 <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </AnimatePresence>
