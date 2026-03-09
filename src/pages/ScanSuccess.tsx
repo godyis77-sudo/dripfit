@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Check, ChevronRight } from 'lucide-react';
 import scanResultsFull from '@/assets/scan-results-full.jpg';
 import type { BodyScanResult, MeasurementRange } from '@/lib/types';
+import { Capacitor } from '@capacitor/core';
 
 const CM_TO_IN = 0.3937;
 
