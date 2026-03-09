@@ -396,11 +396,11 @@ const TryOn = () => {
             <div className="mb-3">
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Category</p>
               <div className="flex gap-1.5 flex-wrap">
-                <button onClick={() => setCategory('all')} className={`px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${category === 'all' ? 'border-primary bg-primary text-primary-foreground font-bold' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
+                <button onClick={() => setCategory('all')} aria-label="Show all categories" className={`px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${category === 'all' ? 'border-primary bg-primary text-primary-foreground font-bold' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
                   🛍️ All
                 </button>
                 {CATEGORIES.map(c => (
-                  <button key={c.key} onClick={() => setCategory(c.key)} className={`px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${category === c.key ? 'border-primary bg-primary text-primary-foreground font-bold' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
+                  <button key={c.key} onClick={() => setCategory(c.key)} aria-label={`Filter by ${c.label}`} className={`px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${category === c.key ? 'border-primary bg-primary text-primary-foreground font-bold' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
                     {c.label}
                   </button>
                 ))}
