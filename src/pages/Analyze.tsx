@@ -177,18 +177,7 @@ const Analyze = () => {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-black px-4 overflow-hidden">
-      {/* Ambient background glow */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: `
-            radial-gradient(ellipse at 50% 30%, hsl(180 80% 15% / 0.15) 0%, transparent 60%),
-            radial-gradient(ellipse at 30% 70%, hsl(var(--primary) / 0.08) 0%, transparent 50%),
-            radial-gradient(ellipse at 70% 80%, hsl(200 70% 15% / 0.1) 0%, transparent 40%)
-          `,
-        }}
-      />
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background px-4 overflow-hidden">
 
       <Button
         variant="ghost"
