@@ -90,11 +90,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     try {
-      const { data, error } = await supabase.functions.invoke('check-subscription');
+      const { data: resp, error } = await supabase.functions.invoke('check-subscription');
       if (error) throw error;
-      setIsSubscribed(data?.subscribed ?? false);
-      setProductId(data?.product_id ?? null);
-      setSubscriptionEnd(data?.subscription_end ?? null);
+      const payload = resp?.data ?? resp;
+      setIsSubscribed(payload?.subscribed ?? false);
+      setProductId(payload?.product_id ?? null);
+      setSubscriptionEnd(payload?.subscription_end ?? null);
     } catch (e) {
       console.error('Subscription check failed:', e);
       setIsSubscribed(false);

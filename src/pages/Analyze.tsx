@@ -192,7 +192,7 @@ const Analyze = () => {
 
   const analyzePhotos = async () => {
     try {
-      const { data, error: fnError } = await supabase.functions.invoke('analyze-body', {
+      const { data: resp, error: fnError } = await supabase.functions.invoke('analyze-body', {
         body: {
           frontPhoto: state!.photos.front,
           sidePhoto: state!.photos.side,
@@ -202,15 +202,16 @@ const Analyze = () => {
         },
       });
       if (fnError) throw new Error(fnError.message);
-      if (data?.error) throw new Error(data.error);
+      if (resp?.error) throw new Error(resp.error.message || resp.error);
+      const payload = resp?.data ?? resp;
 
       // Store real data so labels update with actual values
-      setRealData(data);
+      setRealData(payload);
 
       if (minTimeElapsed.current) {
-        navigateToResults(data);
+        navigateToResults(payload);
       } else {
-        resultReady.current = data;
+        resultReady.current = payload;
       }
     } catch (err: any) {
       console.error('Analysis failed:', err);

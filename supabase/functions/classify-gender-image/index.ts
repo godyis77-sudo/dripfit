@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { successResponse, errorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -26,7 +27,7 @@ serve(async (req) => {
 
   try {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+    if (!LOVABLE_API_KEY) return errorResponse("LOVABLE_API_KEY not configured", "CONFIG_ERROR", 500, corsHeaders);
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -34,10 +35,9 @@ serve(async (req) => {
 
     const body = await req.json();
     const batchSize = Math.min(body.batch_size ?? 10, 20);
-    const dryRun = body.dry_run ?? true; // Default: don't write, just report
-    const targetGender = body.target_gender; // optional: only check specific gender
+    const dryRun = body.dry_run ?? true;
+    const targetGender = body.target_gender;
 
-    // Fetch products to classify — prioritize unisex items and low-confidence ones
     let query = supabase
       .from("product_catalog")
       .select("id, name, brand, retailer, category, image_url, gender, image_confidence, tags, product_url")
@@ -52,29 +52,23 @@ serve(async (req) => {
       query = query.eq("gender", "unisex");
     }
 
-    // Skip already gender-verified items
     query = query.not("tags", "cs", '{"gender_ai_verified"}');
 
     const { data: products, error } = await query;
-    if (error) throw new Error(error.message);
+    if (error) return errorResponse(error.message, "DB_ERROR", 500, corsHeaders);
     if (!products?.length) {
-      return new Response(
-        JSON.stringify({ message: "No products to classify", results: [] }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return successResponse({ message: "No products to classify", results: [] }, 200, corsHeaders);
     }
 
     console.log(`Classifying gender for ${products.length} products (dry_run=${dryRun})...`);
 
     const results: ClassifyResult[] = [];
 
-    // Process in mini-batches of 5
     for (let i = 0; i < products.length; i += 5) {
       const chunk = products.slice(i, i + 5);
       const settled = await Promise.allSettled(
         chunk.map(async (product) => {
           try {
-            // HEAD check image reachability
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 3000);
             const headResp = await fetch(product.image_url, {
@@ -82,7 +76,7 @@ serve(async (req) => {
             });
             clearTimeout(timeout);
             if (!headResp.ok) {
-              return null; // skip unreachable
+              return null;
             }
 
             const urlHint = product.product_url ? `\n- Product URL: "${product.product_url}" (check URL path for /women/, /men/, /womens/, /mens/ segments — retailers encode gender in their URL taxonomy)` : "";
@@ -158,7 +152,6 @@ Respond ONLY with valid JSON (no markdown):
       }
     }
 
-    // Apply updates if not dry run
     let updated = 0;
     if (!dryRun) {
       for (const r of results) {
@@ -173,7 +166,6 @@ Respond ONLY with valid JSON (no markdown):
             .eq("id", r.id);
           updated++;
         } else {
-          // Tag as verified even if agreed (so we don't re-check)
           const product = products.find(p => p.id === r.id);
           const existingTags: string[] = Array.isArray(product?.tags) ? product.tags : [];
           const newTags = [...new Set([...existingTags, "gender_ai_verified"])];
@@ -218,14 +210,9 @@ Respond ONLY with valid JSON (no markdown):
 
     console.log(`Gender classify: ${results.length} processed, ${accuracy}% agreement, ${disagreements.length} disagreements`);
 
-    return new Response(JSON.stringify(summary), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return successResponse(summary, 200, corsHeaders);
   } catch (e) {
     console.error("classify-gender-image error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return errorResponse(e instanceof Error ? e.message : "Unknown", "INTERNAL_ERROR", 500, corsHeaders);
   }
 });

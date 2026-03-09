@@ -103,12 +103,13 @@ const SizeGuide = () => {
     if (!selectedMeasurement) { toast({ title: 'No measurements', variant: 'destructive' }); return; }
     setLoading(true); setError(null); setRecommendation(null);
     try {
-      const { data, error: fnError } = await supabase.functions.invoke('analyze-size-guide', {
+      const { data: resp, error: fnError } = await supabase.functions.invoke('analyze-size-guide', {
         body: { sizeGuideImage, measurements: { shoulder: selectedMeasurement.shoulder, chest: selectedMeasurement.chest, waist: selectedMeasurement.waist, hips: selectedMeasurement.hips, inseam: selectedMeasurement.inseam, height: selectedMeasurement.height }, brandName: brandName || undefined },
       });
       if (fnError) throw new Error(fnError.message);
-      if (data?.error) throw new Error(data.error);
-      setRecommendation(data as SizeRecommendation);
+      if (resp?.error) throw new Error(resp.error.message || resp.error);
+      const payload = resp?.data ?? resp;
+      setRecommendation(payload as SizeRecommendation);
     } catch (err: any) { setError(err.message || 'Analysis failed.'); }
     finally { setLoading(false); }
   };

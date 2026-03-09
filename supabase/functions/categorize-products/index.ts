@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { successResponse, errorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -246,12 +247,9 @@ serve(async (req) => {
     }
 
     const { data: products, error: fetchError } = await query;
-    if (fetchError) throw new Error(`Fetch error: ${fetchError.message}`);
+    if (fetchError) return errorResponse(`Fetch error: ${fetchError.message}`, "DB_ERROR", 500, corsHeaders);
     if (!products || products.length === 0) {
-      return new Response(
-        JSON.stringify({ message: "No products to process", processed: 0 }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return successResponse({ message: "No products to process", processed: 0 }, 200, corsHeaders);
     }
 
     console.log(`Processing ${products.length} products...`);
@@ -462,15 +460,10 @@ serve(async (req) => {
 
     console.log(`Done: ${results.length} processed, ${reclassified} reclassified, ${deactivated} deactivated, ${genderFixed} gender-fixed, ${categoryPages.length} cat-pages, ${failedIds.length} failed`);
 
-    return new Response(JSON.stringify(summary), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return successResponse(summary, 200, corsHeaders);
   } catch (e) {
     console.error("categorize-products error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return errorResponse(e instanceof Error ? e.message : "Unknown error", "INTERNAL_ERROR", 500, corsHeaders);
   }
 });
 

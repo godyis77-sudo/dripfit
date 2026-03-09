@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { successResponse, errorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -212,12 +213,9 @@ serve(async (req) => {
 
     const { data: products, error } = await productsQuery;
 
-    if (error) throw new Error(error.message);
+    if (error) return errorResponse(error.message, "DB_ERROR", 500, corsHeaders);
     if (!products?.length) {
-      return new Response(
-        JSON.stringify({ message: "No more products", processed: 0, updated: 0, deactivated: 0, nextCursor: null, hasMore: false }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return successResponse({ message: "No more products", processed: 0, updated: 0, deactivated: 0, nextCursor: null, hasMore: false }, 200, corsHeaders);
     }
 
     let updated = 0;
@@ -249,16 +247,10 @@ serve(async (req) => {
     const nextCursor = products[products.length - 1]?.id ?? null;
     const hasMore = products.length === batchSize;
 
-    return new Response(
-      JSON.stringify({ processed: products.length, updated, deactivated, nextCursor, hasMore }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return successResponse({ processed: products.length, updated, deactivated, nextCursor, hasMore }, 200, corsHeaders);
 
   } catch (e) {
     console.error("backfill-gender error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return errorResponse(e instanceof Error ? e.message : "Unknown", "INTERNAL_ERROR", 500, corsHeaders);
   }
 });

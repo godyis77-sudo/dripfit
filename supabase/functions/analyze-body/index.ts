@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { AnalyzeBodySchema, parseOrError } from "../_shared/validation.ts";
+import { AnalyzeBodySchema, parseOrError, successResponse, errorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -69,15 +69,12 @@ serve(async (req) => {
     const raw = await req.json();
     const parsed = parseOrError(AnalyzeBodySchema, raw);
     if (!parsed.success) {
-      return new Response(
-        JSON.stringify({ error: parsed.error }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return errorResponse(parsed.error, "VALIDATION_ERROR", 400, corsHeaders);
     }
     const { frontPhoto, sidePhoto, heightCm, referenceObject, fitPreference } = parsed.data;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    if (!LOVABLE_API_KEY) return errorResponse("LOVABLE_API_KEY is not configured", "CONFIG_ERROR", 500, corsHeaders);
 
     const makeImagePart = (base64: string, label: string) => {
       const match = base64.match(/^data:(image\/\w+);base64,(.+)$/);
@@ -117,40 +114,29 @@ serve(async (req) => {
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limited. Please try again in a moment." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return errorResponse("Rate limited. Please try again in a moment.", "RATE_LIMITED", 429, corsHeaders);
       }
       if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "AI credits exhausted. Please add credits." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return errorResponse("AI credits exhausted. Please add credits.", "PAYMENT_REQUIRED", 402, corsHeaders);
       }
       const errText = await response.text();
       console.error("AI gateway error:", response.status, errText);
-      throw new Error(`AI gateway returned ${response.status}`);
+      return errorResponse(`AI gateway returned ${response.status}`, "AI_ERROR", 502, corsHeaders);
     }
 
     const aiResponse = await response.json();
     const content = aiResponse.choices?.[0]?.message?.content;
 
-    if (!content) throw new Error("No content in AI response");
+    if (!content) return errorResponse("No content in AI response", "AI_ERROR", 502, corsHeaders);
 
     const jsonMatch = content.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("Could not parse measurements from AI response");
+    if (!jsonMatch) return errorResponse("Could not parse measurements from AI response", "PARSE_ERROR", 502, corsHeaders);
 
     const measurements = JSON.parse(jsonMatch[0]);
 
-    return new Response(JSON.stringify(measurements), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return successResponse(measurements, 200, corsHeaders);
   } catch (e) {
     console.error("analyze-body error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Analysis failed" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return errorResponse(e instanceof Error ? e.message : "Analysis failed", "INTERNAL_ERROR", 500, corsHeaders);
   }
 });

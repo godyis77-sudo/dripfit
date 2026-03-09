@@ -192,9 +192,10 @@ const TryOn = () => {
     trackEvent('tryon_started');
     try {
       setTryOnError(null);
-      const { data, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto, clothingPhoto, itemType: category || 'clothing' } });
+      const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto, clothingPhoto, itemType: category || 'clothing' } });
       if (error) throw new Error(error.message);
-      if (data?.error) throw new Error(data.error);
+      if (resp?.error) throw new Error(resp.error.message || resp.error);
+      const payload = resp?.data ?? resp;
       trackEvent('tryon_generated');
       if (!hasUnlimitedTryOns) {
         if (user) {
@@ -204,8 +205,8 @@ const TryOn = () => {
           incrementTryOnCount();
         }
       }
-      if (data.resultImage) { setResultImage(data.resultImage); setShowSuccessOverlay(true); setTimeout(() => setShowSuccessOverlay(false), 1500); if (user) autoSaveToProfile(data.resultImage); }
-      else if (data.description) { setDescription(data.description); }
+      if (payload.resultImage) { setResultImage(payload.resultImage); setShowSuccessOverlay(true); setTimeout(() => setShowSuccessOverlay(false), 1500); if (user) autoSaveToProfile(payload.resultImage); }
+      else if (payload.description) { setDescription(payload.description); }
     } catch (err: any) {
       const msg = err.message || 'Generation failed. Please try again.';
       setTryOnError(msg);
@@ -260,9 +261,10 @@ const TryOn = () => {
     }
     trackEvent('tryon_accessory_started', { category: accessoryCategory });
     try {
-      const { data, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto: resultImage, clothingPhoto: accessoryPhoto, itemType: accessoryCategory || 'accessory', isLayering: true } });
+      const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto: resultImage, clothingPhoto: accessoryPhoto, itemType: accessoryCategory || 'accessory', isLayering: true } });
       if (error) throw new Error(error.message);
-      if (data?.error) throw new Error(data.error);
+      if (resp?.error) throw new Error(resp.error.message || resp.error);
+      const payload = resp?.data ?? resp;
       if (!hasUnlimitedTryOns) {
         if (user) {
           await incrementServerTryOnCount(supabase, user.id);
@@ -271,15 +273,15 @@ const TryOn = () => {
           incrementTryOnCount();
         }
       }
-      if (data.resultImage) {
+      if (payload.resultImage) {
         setLayerHistory(prev => [...prev, resultImage!]);
-        setResultImage(data.resultImage);
+        setResultImage(payload.resultImage);
         window.scrollTo({ top: 0, behavior: 'smooth' });
         trackEvent('tryon_accessory_generated', { category: accessoryCategory });
         toast({ title: `${accessoryCategory || 'Accessory'} added!`, description: 'Keep adding items or finish your look.' });
         if (user) {
           try {
-            const resultUrl = await uploadBase64ToStorage(data.resultImage, 'result');
+            const resultUrl = await uploadBase64ToStorage(payload.resultImage, 'result');
             const { data: latestPosts } = await supabase.from('tryon_posts').select('id, product_urls').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
             if (latestPosts && latestPosts.length > 0) {
               const existingUrls: string[] = (latestPosts[0].product_urls as string[]) || [];
@@ -291,7 +293,7 @@ const TryOn = () => {
           } catch { /* silent */ }
         }
       } else {
-        toast({ title: 'Could not add accessory', description: data?.description || 'Try a clearer photo.', variant: 'destructive' });
+        toast({ title: 'Could not add accessory', description: payload?.description || 'Try a clearer photo.', variant: 'destructive' });
       }
     } catch (err: any) {
       toast({ title: 'Accessory failed', description: err.message, variant: 'destructive' });
