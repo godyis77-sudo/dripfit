@@ -44,6 +44,11 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const [trendingFits, setTrendingFits] = useState<TrendingPost[]>([]);
   const [profileName, setProfileName] = useState<string | null>(null);
   const [hasScan, setHasScan] = useState<boolean | null>(null);
+  const [daysSinceLastScan, setDaysSinceLastScan] = useState<number | null>(null);
+  const [rescanDismissed, setRescanDismissed] = useState(() => {
+    const key = `rescan_nudge_dismissed_${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
+    return localStorage.getItem(key) === 'true';
+  });
   const [activePriceIdx, setActivePriceIdx] = useState(0);
 
   useEffect(() => {
