@@ -265,7 +265,7 @@ const Welcome = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="w-full max-w-[300px] mb-6"
+          className="w-full max-w-[360px] mb-6"
         >
           <button
             onClick={() => {
