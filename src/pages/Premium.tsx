@@ -79,12 +79,13 @@ const Premium = () => {
 
     try {
       const priceId = STRIPE_TIERS[selectedPlan].price_id;
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
+      const { data: resp, error } = await supabase.functions.invoke('create-checkout', {
         body: { priceId },
       });
       if (error) throw error;
-      if (data?.url) {
-        window.location.href = data.url;
+      const payload = resp?.data ?? resp;
+      if (payload?.url) {
+        window.location.href = payload.url;
       }
     } catch (e: any) {
       toast({ title: 'Error', description: e.message || 'Could not start checkout', variant: 'destructive' });
