@@ -199,7 +199,7 @@ const Results = () => {
         {/* Live SizeMatchCard from edge function */}
         {user && brandSlug ? (
           <div className="mb-3">
-            <SizeMatchCard
+            {sizeRecLoading ? <SizeMatchCardSkeleton /> : <SizeMatchCard
               brandName={state?.retailer || brandSlug}
               category={categoryKey}
               recommendedSize={sizeRec?.recommended_size || adjustedSize}
