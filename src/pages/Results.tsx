@@ -65,12 +65,13 @@ const Results = () => {
   const sizeRecQuery = useQuery({
     queryKey: ['size-recommendation', user?.id, brandSlug, categoryKey, fitQueryValue],
     queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke('get-size-recommendation', {
+      const { data: resp, error } = await supabase.functions.invoke('get-size-recommendation', {
         body: { user_id: user!.id, brand_slug: brandSlug, category: categoryKey, fit_preference: fitQueryValue },
       });
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      return data as {
+      if (resp?.error) throw new Error(resp.error.message || resp.error);
+      const payload = resp?.data ?? resp;
+      return payload as {
         recommended_size: string;
         confidence: number;
         fit_status: 'true_to_size' | 'good_fit' | 'between_sizes' | 'out_of_range';

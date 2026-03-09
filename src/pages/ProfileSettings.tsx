@@ -84,9 +84,9 @@ const ProfileSettings = () => {
   const handleDeleteAccount = async () => {
     if (!user) return;
     try {
-      const { data, error } = await supabase.functions.invoke('delete-account');
+      const { data: resp, error } = await supabase.functions.invoke('delete-account');
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      if (resp?.error) throw new Error(resp.error.message || resp.error);
       localStorage.clear();
       toast({ title: 'Account deleted', description: 'Your account and all data have been permanently removed.' });
       navigate('/');

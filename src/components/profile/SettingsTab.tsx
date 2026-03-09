@@ -376,9 +376,10 @@ const SettingsTab = ({
             <button
               onClick={async () => {
                 try {
-                  const { data, error } = await supabase.functions.invoke('customer-portal');
+                  const { data: resp, error } = await supabase.functions.invoke('customer-portal');
                   if (error) throw error;
-                  if (data?.url) window.open(data.url, '_blank');
+                  const payload = resp?.data ?? resp;
+                  if (payload?.url) window.open(payload.url, '_blank');
                 } catch (e: any) {
                   toast({ title: 'Error', description: e.message || 'Could not open portal', variant: 'destructive' });
                 }

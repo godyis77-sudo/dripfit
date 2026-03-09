@@ -261,9 +261,10 @@ const TryOn = () => {
     }
     trackEvent('tryon_accessory_started', { category: accessoryCategory });
     try {
-      const { data, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto: resultImage, clothingPhoto: accessoryPhoto, itemType: accessoryCategory || 'accessory', isLayering: true } });
+      const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto: resultImage, clothingPhoto: accessoryPhoto, itemType: accessoryCategory || 'accessory', isLayering: true } });
       if (error) throw new Error(error.message);
-      if (data?.error) throw new Error(data.error);
+      if (resp?.error) throw new Error(resp.error.message || resp.error);
+      const payload = resp?.data ?? resp;
       if (!hasUnlimitedTryOns) {
         if (user) {
           await incrementServerTryOnCount(supabase, user.id);
@@ -272,9 +273,9 @@ const TryOn = () => {
           incrementTryOnCount();
         }
       }
-      if (data.resultImage) {
+      if (payload.resultImage) {
         setLayerHistory(prev => [...prev, resultImage!]);
-        setResultImage(data.resultImage);
+        setResultImage(payload.resultImage);
         window.scrollTo({ top: 0, behavior: 'smooth' });
         trackEvent('tryon_accessory_generated', { category: accessoryCategory });
         toast({ title: `${accessoryCategory || 'Accessory'} added!`, description: 'Keep adding items or finish your look.' });

@@ -96,10 +96,11 @@ const Premium = () => {
 
   const handleManage = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('customer-portal');
+      const { data: resp, error } = await supabase.functions.invoke('customer-portal');
       if (error) throw error;
-      if (data?.url) {
-        window.location.href = data.url;
+      const payload = resp?.data ?? resp;
+      if (payload?.url) {
+        window.location.href = payload.url;
       }
     } catch (e: any) {
       toast({ title: 'Error', description: e.message || 'Could not open subscription management', variant: 'destructive' });
