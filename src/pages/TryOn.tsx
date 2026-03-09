@@ -420,6 +420,15 @@ const TryOn = () => {
               {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating your preview…</> : <><Sparkles className="mr-2 h-4 w-4" /> Generate Try-On</>}
             </Button>
 
+            {tryOnError && !loading && (
+              <div className="flex flex-col items-center gap-2 mt-2">
+                <p className="text-[12px] text-destructive text-center">{tryOnError}</p>
+                <Button variant="outline" size="sm" className="rounded-lg text-[12px] border-destructive/30 text-destructive hover:bg-destructive/5" onClick={handleTryOn}>
+                  Try again
+                </Button>
+              </div>
+            )}
+
             {loading && (
               <div className="flex flex-col items-center mt-3 mb-1 gap-2">
                 <p className="text-[11px] text-muted-foreground font-medium">
