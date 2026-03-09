@@ -101,6 +101,7 @@ const App = () => {
                 <Route path="/browse/:category" element={<Browse />} />
                 <Route path="/premium" element={<Premium />} />
                 <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </AnimatePresence>

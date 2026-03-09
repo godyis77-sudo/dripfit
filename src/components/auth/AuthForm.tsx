@@ -232,7 +232,8 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
 
           {/* Legal */}
           <p className="text-[9px] text-muted-foreground/50 text-center">
-            By continuing, you agree to our Terms &{' '}
+            By continuing, you agree to our{' '}
+            <button onClick={() => navigate('/terms')} className="underline hover:text-muted-foreground">Terms</button> &{' '}
             <button onClick={() => navigate('/privacy')} className="underline hover:text-muted-foreground">Privacy Policy</button>.
           </p>
 
