@@ -10,6 +10,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { BodyScanResult, FitPreference, MeasurementRange } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
+import { isGuestMode } from '@/lib/session';
 
 import BottomTabBar from '@/components/BottomTabBar';
 import FitPreferenceToggle from '@/components/results/FitPreferenceToggle';
@@ -55,7 +56,7 @@ const Results = () => {
   const [showPhotoPrompt, setShowPhotoPrompt] = useState(() => {
     try { return !localStorage.getItem('profile_photo_prompted'); } catch { return false; }
   });
-
+  const [guestNudgeDismissed, setGuestNudgeDismissed] = useState(false);
   const queryClient = useQueryClient();
 
   const brandSlug = state?.retailer?.toLowerCase().replace(/\s+/g, '-') || '';
@@ -227,7 +228,26 @@ const Results = () => {
           </div>
         ) : null}
 
-        
+        {/* Guest sign-up nudge */}
+        {isGuestMode() && !user && !guestNudgeDismissed && (
+          <div className="mb-3 rounded-xl border border-primary/20 bg-primary/5 p-4 relative">
+            <button
+              onClick={() => setGuestNudgeDismissed(true)}
+              className="absolute top-2 right-2 text-muted-foreground text-xs"
+              aria-label="Dismiss"
+            >
+              ✕
+            </button>
+            <p className="text-sm font-medium text-foreground mb-2">Save your size. Sign up to access your results on any device.</p>
+            <Button
+              size="sm"
+              className="btn-luxury"
+              onClick={() => navigate('/auth')}
+            >
+              Create free account
+            </Button>
+          </div>
+        )}
 
         {/* Post-scan profile photo prompt */}
         <AnimatePresence>
