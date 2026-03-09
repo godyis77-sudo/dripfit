@@ -243,7 +243,14 @@ const Results = () => {
         <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
         <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} fitPreference={fitPref} />
 
-        {/* Trust panel — confidence, between sizes, brand notes, quick adjust */}
+        {/* Primary CTA above fold */}
+        <ShopThisSize
+          recommendedSize={adjustedSize}
+          confidence={confidence}
+          retailer={state?.retailer}
+          category={state?.category}
+        />
+
         {/* Return Risk warning */}
         {(confidence === 'low' || confidence === 'medium') && (
           <div className={`rounded-xl border px-3 py-2.5 mb-3 ${confidence === 'low' ? 'bg-orange-500/10 border-orange-500/30' : 'bg-primary/5 border-primary/20'}`}>
@@ -270,14 +277,6 @@ const Results = () => {
         />
 
         {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
-
-        {/* Primary CTA above fold */}
-        <ShopThisSize
-          recommendedSize={adjustedSize}
-          confidence={confidence}
-          retailer={state?.retailer}
-          category={state?.category}
-        />
 
         <ResultActions
           saved={saved}
