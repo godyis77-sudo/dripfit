@@ -341,6 +341,38 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           </div>
         </motion.div>
 
+        {/* Re-scan nudge banner (30+ days since last scan) */}
+        {hasScan && daysSinceLastScan !== null && daysSinceLastScan >= 30 && !rescanDismissed && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.19 }}
+            className="mb-3 bg-primary/10 border border-primary/20 rounded-xl p-3"
+          >
+            <div className="flex items-start gap-3">
+              <Camera className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] text-foreground leading-snug">
+                  Your last scan was {daysSinceLastScan} days ago — re-scan to check your fit
+                </p>
+                <button
+                  onClick={() => navigate('/capture')}
+                  className="mt-2 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-[11px] font-bold active:scale-95 transition-transform"
+                >
+                  Re-Scan Now
+                </button>
+              </div>
+              <button
+                onClick={dismissRescanNudge}
+                className="h-6 w-6 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                aria-label="Dismiss re-scan nudge"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+
         {/* ━━━ FIX 1: Product grids — 2 column layout ━━━ */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
