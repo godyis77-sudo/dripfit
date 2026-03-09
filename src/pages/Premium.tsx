@@ -98,7 +98,7 @@ const Premium = () => {
       const { data, error } = await supabase.functions.invoke('customer-portal');
       if (error) throw error;
       if (data?.url) {
-        window.open(data.url, '_blank');
+        window.location.href = data.url;
       }
     } catch (e: any) {
       toast({ title: 'Error', description: e.message || 'Could not open subscription management', variant: 'destructive' });
