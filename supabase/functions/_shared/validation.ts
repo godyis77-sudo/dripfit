@@ -39,3 +39,23 @@ export function parseOrError<T>(schema: z.ZodSchema<T>, data: unknown): { succes
   const messages = result.error.issues.map(i => `${i.path.join(".")}: ${i.message}`).join("; ");
   return { success: false, error: `Validation failed: ${messages}` };
 }
+
+const defaultCorsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+};
+
+export function successResponse(data: unknown, status = 200, corsHeaders?: Record<string, string>) {
+  return new Response(JSON.stringify({ data, error: null }), {
+    status,
+    headers: { ...(corsHeaders || defaultCorsHeaders), "Content-Type": "application/json" },
+  });
+}
+
+export function errorResponse(message: string, code?: string, status = 400, corsHeaders?: Record<string, string>) {
+  return new Response(JSON.stringify({ data: null, error: { message, code: code || "ERROR" } }), {
+    status,
+    headers: { ...(corsHeaders || defaultCorsHeaders), "Content-Type": "application/json" },
+  });
+}
