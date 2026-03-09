@@ -203,7 +203,7 @@ const Welcome = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.35 }}
-          className="w-full max-w-[300px] mb-5 text-center"
+          className="w-full max-w-[360px] mb-5 text-center"
         >
           <button
             onClick={() => { trackEvent('home_tryon_click'); navigate('/tryon'); }}
