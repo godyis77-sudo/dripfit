@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { PhotoSet, BodyScanResult, FitPreference, ReferenceObject, MeasurementRange } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { compressPhoto } from '@/lib/imageUtils';
 
 const MESSAGES = [
   'Detecting body landmarks…',
