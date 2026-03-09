@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Check, ChevronRight } from 'lucide-react';
 import scanResultsFull from '@/assets/scan-results-full.jpg';
 import type { BodyScanResult, MeasurementRange } from '@/lib/types';
+import { Capacitor } from '@capacitor/core';
 
 const CM_TO_IN = 0.3937;
 
@@ -114,6 +115,36 @@ const ScanSuccess = () => {
       navigate('/capture', { replace: true });
     }
   }, [result, navigate]);
+
+  // App Store rating prompt — fires once after conditions are met
+  useEffect(() => {
+    if (!result) return;
+    if (!Capacitor.isNativePlatform()) return;
+
+    const prompted = localStorage.getItem('rating_prompted');
+    if (prompted === 'true') return;
+
+    // Must have at least 1 previous scan
+    const scansRaw = localStorage.getItem('dripcheck_scans');
+    const prevScans = scansRaw ? JSON.parse(scansRaw) : [];
+    if (prevScans.length === 0) return;
+
+    // Must have been using app for at least 3 days
+    const FIRST_LAUNCH_KEY = 'first_launch_date';
+    let firstLaunch = localStorage.getItem(FIRST_LAUNCH_KEY);
+    if (!firstLaunch) {
+      localStorage.setItem(FIRST_LAUNCH_KEY, new Date().toISOString());
+      return;
+    }
+    const daysSince = (Date.now() - new Date(firstLaunch).getTime()) / (1000 * 60 * 60 * 24);
+    if (daysSince < 3) return;
+
+    // All conditions met — request review
+    import('@capawesome/capacitor-app-review').then(({ AppReview }) => {
+      AppReview.requestReview().catch(() => {});
+      localStorage.setItem('rating_prompted', 'true');
+    });
+  }, [result]);
 
   if (!result) return null;
 
