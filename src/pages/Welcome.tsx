@@ -218,7 +218,7 @@ const Welcome = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="w-full max-w-[300px] flex items-center justify-between mb-5"
+          className="w-full max-w-[360px] flex items-center justify-between mb-5"
         >
           {TRUST.map((t) => (
             <div key={t.text} className="flex items-center gap-1">
