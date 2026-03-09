@@ -203,73 +203,13 @@ const Analyze = () => {
         ✕ ABORT
       </Button>
 
-      {/* Premium scan animation */}
-      <div className="relative w-full max-w-[380px] mx-auto rounded-xl overflow-hidden mb-6"
-        style={{ boxShadow: '0 0 40px 8px hsl(45 88% 50% / 0.3), 0 0 80px 20px hsl(45 88% 50% / 0.15)' }}>
-
-        {/* Base image */}
-        <img src={scanResultsFull} className="w-full h-auto block" alt="body scan" />
-
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-background/40" />
-
-        {/* Scan line */}
-        <div className="absolute inset-x-0 pointer-events-none"
-          style={{
-            top: `${scanLineY}%`,
-            height: '2px',
-            background: 'linear-gradient(to right, transparent 0%, hsl(45 88% 50%) 20%, hsl(45 88% 60%) 50%, hsl(45 88% 50%) 80%, transparent 100%)',
-            boxShadow: '0 0 8px 3px hsl(45 88% 50% / 0.9), 0 0 20px 6px hsl(45 88% 50% / 0.5)',
-          }} />
-
-        {/* Scanned area — gold tint above scan line */}
-        <div className="absolute inset-x-0 top-0 pointer-events-none transition-all duration-100"
-          style={{
-            height: `${scanLineY}%`,
-            background: 'linear-gradient(to bottom, hsl(45 88% 50% / 0.08), hsl(45 88% 50% / 0.04))',
-          }} />
-
-        {/* Corner targeting brackets */}
-        {[['top-3 left-3', 'border-t-2 border-l-2'], ['top-3 right-3', 'border-t-2 border-r-2'],
-          ['bottom-3 left-3', 'border-b-2 border-l-2'], ['bottom-3 right-3', 'border-b-2 border-r-2']
-        ].map(([pos, border], i) => (
-          <div key={i} className={`absolute ${pos} ${border} border-primary w-5 h-5 opacity-80`} />
-        ))}
-
-        {/* Measurement labels revealed as scan passes */}
-        {revealedKeys.map((key) => {
-          const positions: Record<string, { top: string; side: string; align: string }> = {
-            height:   { top: '8%',  side: 'left: 4%',  align: 'left' },
-            shoulder: { top: '20%', side: 'right: 4%', align: 'right' },
-            chest:    { top: '26%', side: 'left: 4%',  align: 'left' },
-            bust:     { top: '30%', side: 'right: 4%', align: 'right' },
-            sleeve:   { top: '36%', side: 'left: 4%',  align: 'left' },
-            waist:    { top: '42%', side: 'right: 4%', align: 'right' },
-            hips:     { top: '49%', side: 'right: 4%', align: 'right' },
-            inseam:   { top: '65%', side: 'left: 4%',  align: 'left' },
-          };
-          const pos = positions[key];
-          if (!pos) return null;
-          const val = realData?.[key];
-          const sideKey = pos.side.split(':')[0].trim();
-          const sideVal = pos.side.split(': ')[1]?.trim();
-          return (
-            <motion.div key={key} className="absolute pointer-events-none"
-              style={{ top: pos.top, [sideKey]: sideVal }}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}>
-              <div style={{ textAlign: pos.align as 'left' | 'right' }}>
-                <p className="text-[9px] font-bold tracking-widest uppercase"
-                  style={{ color: 'hsl(45 88% 60%)' }}>{key}</p>
-                {val && <p className="text-[10px] font-black text-foreground leading-tight">
-                  {val.min?.toFixed(0)}–{val.max?.toFixed(0)} cm
-                </p>}
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
+      <PremiumScanAnimation
+        scanLineY={scanLineY}
+        revealedKeys={revealedKeys}
+        realData={realData}
+        revealedCount={revealedKeys.length}
+        totalCount={REVEAL_ORDER.length}
+      />
 
       {/* Status text */}
       <motion.p
