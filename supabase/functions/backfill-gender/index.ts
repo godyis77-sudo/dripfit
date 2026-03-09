@@ -213,12 +213,9 @@ serve(async (req) => {
 
     const { data: products, error } = await productsQuery;
 
-    if (error) throw new Error(error.message);
+    if (error) return errorResponse(error.message, "DB_ERROR", 500, corsHeaders);
     if (!products?.length) {
-      return new Response(
-        JSON.stringify({ message: "No more products", processed: 0, updated: 0, deactivated: 0, nextCursor: null, hasMore: false }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return successResponse({ message: "No more products", processed: 0, updated: 0, deactivated: 0, nextCursor: null, hasMore: false }, 200, corsHeaders);
     }
 
     let updated = 0;
