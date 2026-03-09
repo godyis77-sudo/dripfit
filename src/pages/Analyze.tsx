@@ -211,6 +211,7 @@ const Analyze = () => {
         realData={realData}
         revealedCount={revealedKeys.length}
         totalCount={REVEAL_ORDER.length}
+        scanComplete={scanComplete}
       />
 
       {/* Status text */}

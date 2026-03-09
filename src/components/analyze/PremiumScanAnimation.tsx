@@ -225,6 +225,57 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
         );
       })}
 
+      {/* Completion sequence — dramatic gold illumination */}
+      <AnimatePresence>
+        {scanComplete && (
+          <>
+            {/* Initial white flash */}
+            <motion.div
+              className="absolute inset-0 pointer-events-none z-30"
+              style={{ background: 'hsl(45 90% 70%)' }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0.9, 0] }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+            />
+
+            {/* Gold illumination that stays */}
+            <motion.div
+              className="absolute inset-0 pointer-events-none z-25"
+              style={{
+                background: 'radial-gradient(ellipse at 50% 40%, hsl(45 90% 55% / 0.5) 0%, hsl(45 88% 50% / 0.2) 50%, transparent 80%)',
+              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 1, 0.6, 1, 0.7] }}
+              transition={{ duration: 2.2, ease: 'easeInOut', times: [0, 0.15, 0.4, 0.65, 1] }}
+            />
+
+            {/* Pulsing gold ring burst */}
+            <motion.div
+              className="absolute inset-0 pointer-events-none z-25"
+              style={{
+                border: '3px solid hsl(45 90% 55%)',
+                borderRadius: '0.75rem',
+                boxShadow: 'inset 0 0 40px 10px hsl(45 88% 50% / 0.4), 0 0 60px 15px hsl(45 88% 50% / 0.5)',
+              }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: [0, 1, 0.6, 1], scale: [0.95, 1.02, 0.99, 1] }}
+              transition={{ duration: 2, ease: 'easeOut' }}
+            />
+
+            {/* Radial rays burst */}
+            <motion.div
+              className="absolute inset-0 pointer-events-none z-24"
+              style={{
+                background: 'conic-gradient(from 0deg, transparent 0%, hsl(45 88% 50% / 0.1) 5%, transparent 10%, hsl(45 88% 50% / 0.08) 15%, transparent 20%, hsl(45 88% 50% / 0.1) 25%, transparent 30%, hsl(45 88% 50% / 0.08) 35%, transparent 40%, hsl(45 88% 50% / 0.1) 45%, transparent 50%, hsl(45 88% 50% / 0.08) 55%, transparent 60%, hsl(45 88% 50% / 0.1) 65%, transparent 70%, hsl(45 88% 50% / 0.08) 75%, transparent 80%, hsl(45 88% 50% / 0.1) 85%, transparent 90%, hsl(45 88% 50% / 0.08) 95%, transparent 100%)',
+              }}
+              initial={{ opacity: 0, rotate: 0 }}
+              animate={{ opacity: [0, 0.8, 0.5], rotate: 30 }}
+              transition={{ duration: 2.5, ease: 'easeOut' }}
+            />
+          </>
+        )}
+      </AnimatePresence>
+
       {/* Bottom progress glow bar */}
       <div className="absolute bottom-0 left-0 right-0 h-[3px] z-20">
         <motion.div
