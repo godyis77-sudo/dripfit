@@ -9,6 +9,7 @@ import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import { MobileShell } from "@/components/layout/MobileShell";
+import { OfflineBanner } from "@/components/layout/OfflineBanner";
 import Welcome from "./pages/Welcome";
 import Onboarding from "./pages/Onboarding";
 import Capture from "./pages/Capture";
