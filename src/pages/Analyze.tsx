@@ -240,7 +240,15 @@ const Analyze = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background px-4">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="absolute top-4 right-4 z-50 text-muted-foreground"
+        onClick={() => navigate('/capture', { replace: true })}
+      >
+        Cancel scan
+      </Button>
       {/* Animated body silhouette with live measurement overlays */}
       <div className="relative mb-5 w-full max-w-[380px] aspect-[2/3] rounded-xl overflow-hidden bg-background">
         {/* Scan animation video */}
