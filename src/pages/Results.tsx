@@ -236,7 +236,10 @@ const Results = () => {
         {isGuestMode() && !user && !guestNudgeDismissed && (
           <div className="mb-3 rounded-xl border border-primary/20 bg-primary/5 p-4 relative">
             <button
-              onClick={() => setGuestNudgeDismissed(true)}
+              onClick={() => {
+                setGuestNudgeDismissed(true);
+                try { sessionStorage.setItem('guest_nudge_dismissed', 'true'); } catch {}
+              }}
               className="absolute top-2 right-2 text-muted-foreground text-xs"
               aria-label="Dismiss"
             >
