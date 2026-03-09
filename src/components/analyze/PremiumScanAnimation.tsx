@@ -55,8 +55,8 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
         src={scanResultsFull}
         className="w-full h-auto block"
         alt="body scan"
-        animate={{ filter: `brightness(${0.7 + revealedCount * 0.05})` }}
-        transition={{ duration: 0.6 }}
+        animate={{ filter: scanComplete ? 'brightness(1.3) saturate(1.2)' : `brightness(${0.7 + revealedCount * 0.05})` }}
+        transition={{ duration: scanComplete ? 0.8 : 0.6 }}
       />
 
       {/* Dark overlay — fades as scan progresses */}
