@@ -144,7 +144,7 @@ const Welcome = () => {
         </motion.div>
 
         {/* Separator */}
-        <div className="w-full max-w-[300px] my-6">
+        <div className="w-full max-w-[360px] my-6">
           <div className="h-px bg-border" />
         </div>
 
