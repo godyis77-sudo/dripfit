@@ -57,7 +57,7 @@ const TryOn = () => {
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
 
   const hasUnlimitedTryOns = isSubscribed;
-  const remainingTryOns = Math.max(0, FREE_MONTHLY_LIMIT - getMonthlyTryOnCount());
+  const remainingTryOns = Math.max(0, FREE_MONTHLY_LIMIT - getMonthlyTryOnCount(user?.id));
   const canGenerate = !!userPhoto && !!clothingPhoto;
 
   const [hasSavedProfile, setHasSavedProfile] = useState(() => {
