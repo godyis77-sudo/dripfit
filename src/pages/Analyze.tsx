@@ -10,14 +10,21 @@ import { compressPhoto } from '@/lib/imageUtils';
 import PremiumScanAnimation from '@/components/analyze/PremiumScanAnimation';
 
 const MESSAGES = [
+  'Initializing body scan…',
   'Detecting body landmarks…',
-  'Cross-referencing views…',
-  'Estimating measurements…',
+  'Mapping skeletal structure…',
+  'Cross-referencing front view…',
+  'Cross-referencing side view…',
+  'Calibrating reference points…',
+  'Estimating upper body…',
+  'Estimating lower body…',
+  'Refining proportions…',
   'Matching size charts…',
+  'Analyzing fit preferences…',
   'Generating recommendations…',
 ];
 
-const TOTAL_SCAN_TIME = 8000;
+const TOTAL_SCAN_TIME = 30000;
 const REVEAL_ORDER = ['height', 'shoulder', 'chest', 'bust', 'waist', 'hips', 'inseam'];
 
 interface AnalyzeState {
@@ -53,7 +60,7 @@ const Analyze = () => {
     if (effectRan.current) return;
     effectRan.current = true;
 
-    const msgInterval = setInterval(() => setMsgIdx(p => (p + 1) % MESSAGES.length), 2000);
+    const msgInterval = setInterval(() => setMsgIdx(p => (p + 1) % MESSAGES.length), 2500);
 
     const progressInterval = setInterval(() => {
       setProgress(p => Math.min(p + (90 / (TOTAL_SCAN_TIME / 100)), 90));
@@ -63,7 +70,7 @@ const Analyze = () => {
     const scanStart = Date.now();
     const scanLineInterval = setInterval(() => {
       const elapsed = Date.now() - scanStart;
-      const cycleMs = 3000; // one full sweep cycle
+      const cycleMs = 4500; // one full sweep cycle — slower for 30s
       const phase = (elapsed % cycleMs) / cycleMs; // 0→1
       // Triangle wave: 0→1→0
       const tri = phase < 0.5 ? phase * 2 : 2 - phase * 2;
