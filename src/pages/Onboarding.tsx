@@ -78,7 +78,7 @@ const Onboarding = () => {
   // Auto-advance splash after 1.5s
   useEffect(() => {
     if (screen !== 'splash') return;
-    const t = setTimeout(() => { trackEvent('onboarding_splash_done'); setScreen('carousel'); }, 3500);
+    const t = setTimeout(() => { trackEvent('onboarding_splash_done'); setScreen('carousel'); }, 1500);
     return () => clearTimeout(t);
   }, [screen]);
 
