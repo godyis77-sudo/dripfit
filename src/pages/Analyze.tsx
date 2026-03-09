@@ -37,6 +37,7 @@ const Analyze = () => {
   const [progress, setProgress] = useState(0);
   const [revealedKeys, setRevealedKeys] = useState<string[]>([]);
   const [realData, setRealData] = useState<any>(null);
+  const [scanComplete, setScanComplete] = useState(false);
   const [scanLineY, setScanLineY] = useState(0);
   const minTimeElapsed = useRef(false);
   const resultReady = useRef<any>(null);
@@ -131,6 +132,7 @@ const Analyze = () => {
     setRealData(data);
     setProgress(100);
     setRevealedKeys(REVEAL_ORDER);
+    setScanComplete(true);
     saveToDatabase(data);
     const scanResult = { id: crypto.randomUUID(), date: new Date().toISOString(), ...data };
     setTimeout(() => {
@@ -138,7 +140,7 @@ const Analyze = () => {
         state: { result: scanResult },
         replace: true,
       });
-    }, 800);
+    }, 2800);
   };
 
   const analyzePhotos = async () => {
@@ -209,6 +211,7 @@ const Analyze = () => {
         realData={realData}
         revealedCount={revealedKeys.length}
         totalCount={REVEAL_ORDER.length}
+        scanComplete={scanComplete}
       />
 
       {/* Status text */}
