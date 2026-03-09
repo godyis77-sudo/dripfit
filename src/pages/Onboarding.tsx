@@ -411,6 +411,7 @@ const Onboarding = () => {
             transition={screenTransition}
             className="w-full h-screen flex flex-col items-center justify-center px-6"
           >
+            <p className="text-[11px] text-primary font-bold uppercase tracking-wider mb-1">Step 3 of 3</p>
             <div className="max-w-[320px] w-full flex flex-col items-center">
               {/* Illustration */}
               <div className="relative rounded-[1rem] border-[3px] border-primary mb-5" style={{ boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15), inset 0 0 14px 3px hsl(45 88% 50% / 0.2)' }}>
