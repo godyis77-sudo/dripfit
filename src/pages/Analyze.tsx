@@ -58,10 +58,6 @@ const Analyze = () => {
     video.setAttribute('webkit-playsinline', '');
 
     try {
-      // Reset to start if needed
-      if (video.paused && video.currentTime === 0) {
-        video.load();
-      }
       await video.play();
       setShowVideoPlayFallback(false);
       setVideoFailed(false);
