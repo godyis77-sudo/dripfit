@@ -123,9 +123,9 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
         className="absolute inset-x-0 pointer-events-none z-[9] transition-all duration-100"
         style={{
           top: `${Math.max(0, scanLineY - 3)}%`,
-          height: '6%',
+          height: '3%',
           background: `linear-gradient(to bottom, transparent, hsl(45 88% 50% / 0.12), transparent)`,
-          opacity: scanComplete ? 0 : 0.8,
+          opacity: scanComplete ? 0 : 0.5,
         }}
       />
 
