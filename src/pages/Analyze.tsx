@@ -125,11 +125,11 @@ const Analyze = () => {
 
 
     const revealInterval = TOTAL_SCAN_TIME / REVEAL_ORDER.length;
-    REVEAL_ORDER.forEach((key, i) => {
-      setTimeout(() => {
+    revealTimers.current = REVEAL_ORDER.map((key, i) =>
+      window.setTimeout(() => {
         setRevealedKeys(prev => [...prev, key]);
-      }, revealInterval * (i + 0.5));
-    });
+      }, revealInterval * (i + 0.5))
+    );
 
     setTimeout(() => {
       minTimeElapsed.current = true;
