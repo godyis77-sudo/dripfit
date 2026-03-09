@@ -155,7 +155,7 @@ const Community = () => {
                 </span>
               )}
             </button>
-            <Button className="rounded-lg btn-luxury text-primary-foreground h-8 px-3 text-[11px] font-bold active:scale-95 transition-transform" onClick={onPostLook}>
+            <Button className="rounded-lg btn-luxury text-primary-foreground h-8 px-3 text-[11px] font-bold active:scale-95 transition-transform" onClick={onPostLook} aria-label="Create new post">
               <Sparkles className="mr-1 h-3 w-3" /> Post a Look
             </Button>
           </div>
