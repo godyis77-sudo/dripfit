@@ -177,18 +177,7 @@ const Analyze = () => {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-black px-4 overflow-hidden">
-      {/* Ambient background glow */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: `
-            radial-gradient(ellipse at 50% 30%, hsl(180 80% 15% / 0.15) 0%, transparent 60%),
-            radial-gradient(ellipse at 30% 70%, hsl(var(--primary) / 0.08) 0%, transparent 50%),
-            radial-gradient(ellipse at 70% 80%, hsl(200 70% 15% / 0.1) 0%, transparent 40%)
-          `,
-        }}
-      />
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background px-4 overflow-hidden">
 
       <Button
         variant="ghost"
@@ -201,54 +190,39 @@ const Analyze = () => {
 
       {/* Scan frame container */}
       <div className="relative mb-6 w-full max-w-[380px] aspect-[2/3]">
-        {/* Animated rotating border — dual-colour conic */}
-        <motion.div
-          className="absolute -inset-[2px] rounded-xl pointer-events-none z-0"
+        {/* Gold border glow */}
+        <div
+          className="absolute -inset-[1px] rounded-xl pointer-events-none z-0"
           style={{
-            background: `conic-gradient(from 0deg, hsl(180 80% 50%), hsl(var(--primary) / 0.4), hsl(180 80% 50% / 0.2), hsl(var(--primary)), hsl(180 80% 50%))`,
-            filter: 'blur(0.5px)',
+            border: '1px solid hsl(45 88% 50%)',
+            boxShadow: '0 0 20px 6px hsl(45 88% 50% / 0.4)',
+            borderRadius: '0.75rem',
           }}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-        />
-
-        {/* Outer glow pulse — cyan + gold */}
-        <motion.div
-          className="absolute -inset-[8px] rounded-xl pointer-events-none z-0"
-          animate={{
-            boxShadow: [
-              '0 0 20px 4px hsl(180 80% 50% / 0.25), 0 0 50px 10px hsl(180 80% 50% / 0.08), 0 0 15px 2px hsl(var(--primary) / 0.15)',
-              '0 0 35px 8px hsl(180 80% 50% / 0.4), 0 0 80px 20px hsl(180 80% 50% / 0.15), 0 0 25px 6px hsl(var(--primary) / 0.25)',
-              '0 0 20px 4px hsl(180 80% 50% / 0.25), 0 0 50px 10px hsl(180 80% 50% / 0.08), 0 0 15px 2px hsl(var(--primary) / 0.15)',
-            ],
-          }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
         />
 
         {/* Inner container */}
-        <div className="relative w-full h-full rounded-lg overflow-hidden z-[1]">
+        <div className="relative w-full h-full rounded-lg overflow-hidden z-[1] bg-background">
           <ScanAnimation revealedCount={revealedKeys.length} />
         </div>
       </div>
 
-      {/* Status text — monospaced, tech feel */}
+      {/* Status text */}
       <motion.p
         key={msgIdx}
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0 }}
-        className="text-xs font-mono tracking-widest text-[hsl(180_80%_60%_/_0.8)] text-center mb-5 uppercase"
+        className="text-xs font-mono tracking-widest text-primary/70 text-center mb-5 uppercase"
       >
-        {'>'} {MESSAGES[msgIdx]}
+        {MESSAGES[msgIdx]}
       </motion.p>
 
-      {/* Progress bar — glowing cyan */}
-      <div className="w-full max-w-[260px] h-[3px] bg-[hsl(180_80%_50%_/_0.1)] rounded-full overflow-hidden border border-[hsl(180_80%_50%_/_0.15)]">
+      {/* Progress bar — gold */}
+      <div className="w-full max-w-[260px] h-[3px] bg-primary/10 rounded-full overflow-hidden border border-primary/20">
         <motion.div
-          className="h-full rounded-full"
+          className="h-full rounded-full bg-primary"
           style={{
-            background: 'linear-gradient(90deg, hsl(180 80% 50%), hsl(var(--primary)))',
-            boxShadow: '0 0 10px 2px hsl(180 80% 50% / 0.5)',
+            boxShadow: '0 0 10px 2px hsl(45 88% 50% / 0.5)',
           }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.3 }}
@@ -256,8 +230,8 @@ const Analyze = () => {
       </div>
 
       {/* Measurement count */}
-      <p className="text-[10px] font-mono text-[hsl(180_80%_60%_/_0.5)] mt-3 tracking-wider">
-        DATAPOINTS: {revealedKeys.length}/{REVEAL_ORDER.length} CAPTURED
+      <p className="text-[10px] font-mono text-primary/50 mt-3 tracking-wider">
+        {revealedKeys.length} of {REVEAL_ORDER.length} measurements found
       </p>
     </div>
   );
