@@ -257,7 +257,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
               </div>
             </div>
             {isLogin && (
-              <button type="button" onClick={handleForgotPassword} className="text-[11px] text-primary font-semibold hover:underline py-1 px-1 -ml-1">
+              <button type="button" onClick={() => { setShowForgot(true); setForgotEmail(email); }} className="text-[11px] text-primary underline self-end -mt-1 mb-1">
                 Forgot password?
               </button>
             )}
