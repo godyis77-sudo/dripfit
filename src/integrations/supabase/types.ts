@@ -771,6 +771,24 @@ export type Database = {
           },
         ]
       }
+      tryon_usage: {
+        Row: {
+          count: number
+          month_key: string
+          user_id: string
+        }
+        Insert: {
+          count?: number
+          month_key: string
+          user_id: string
+        }
+        Update: {
+          count?: number
+          month_key?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_favorite_retailers: {
         Row: {
           created_at: string

@@ -19,6 +19,7 @@ import {
   CATEGORIES, ALL_PRODUCT_CATEGORIES,
   getDefaultSharePreference, imageUrlToBase64,
   FREE_MONTHLY_LIMIT, getMonthlyTryOnCount, incrementTryOnCount,
+  getServerTryOnCount, incrementServerTryOnCount,
 } from '@/components/tryon/tryon-constants';
 import type { CatalogProduct } from '@/hooks/useProductCatalog';
 
@@ -58,8 +59,15 @@ const TryOn = () => {
   const [tryOnError, setTryOnError] = useState<string | null>(null);
 
   const hasUnlimitedTryOns = isSubscribed;
-  const remainingTryOns = Math.max(0, FREE_MONTHLY_LIMIT - getMonthlyTryOnCount(user?.id));
+  const [serverCount, setServerCount] = useState<number | null>(null);
+  const remainingTryOns = Math.max(0, FREE_MONTHLY_LIMIT - (user ? (serverCount ?? 0) : getMonthlyTryOnCount()));
   const canGenerate = !!userPhoto && !!clothingPhoto;
+
+  // Fetch server count on mount / user change
+  useEffect(() => {
+    if (!user || hasUnlimitedTryOns) return;
+    getServerTryOnCount(supabase, user.id).then(setServerCount);
+  }, [user, hasUnlimitedTryOns]);
 
   const [hasSavedProfile, setHasSavedProfile] = useState(() => {
     try { return JSON.parse(localStorage.getItem('dripcheck_scans') || '[]').length > 0; } catch { return false; }
@@ -171,7 +179,13 @@ const TryOn = () => {
 
   const handleTryOn = async () => {
     if (!canGenerate) return;
-    if (!hasUnlimitedTryOns && getMonthlyTryOnCount(user?.id) >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return; }
+    if (!hasUnlimitedTryOns) {
+      if (user) {
+        const count = await getServerTryOnCount(supabase, user.id);
+        setServerCount(count);
+        if (count >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return; }
+      } else if (getMonthlyTryOnCount() >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return; }
+    }
     setLoading(true);
     setResultImage(null);
     setDescription(null);
@@ -182,7 +196,14 @@ const TryOn = () => {
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
       trackEvent('tryon_generated');
-      if (!hasUnlimitedTryOns) incrementTryOnCount(user?.id);
+      if (!hasUnlimitedTryOns) {
+        if (user) {
+          await incrementServerTryOnCount(supabase, user.id);
+          setServerCount(prev => (prev ?? 0) + 1);
+        } else {
+          incrementTryOnCount();
+        }
+      }
       if (data.resultImage) { setResultImage(data.resultImage); setShowSuccessOverlay(true); setTimeout(() => setShowSuccessOverlay(false), 1500); if (user) autoSaveToProfile(data.resultImage); }
       else if (data.description) { setDescription(data.description); }
     } catch (err: any) {
@@ -231,13 +252,25 @@ const TryOn = () => {
 
   const handleAddAccessory = async (accessoryPhoto: string, accessoryCategory: string | null) => {
     if (!resultImage || !accessoryPhoto) return;
-    if (!hasUnlimitedTryOns && getMonthlyTryOnCount(user?.id) >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return; }
+    if (!hasUnlimitedTryOns) {
+      if (user) {
+        const count = await getServerTryOnCount(supabase, user.id);
+        if (count >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return; }
+      } else if (getMonthlyTryOnCount() >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return; }
+    }
     trackEvent('tryon_accessory_started', { category: accessoryCategory });
     try {
       const { data, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto: resultImage, clothingPhoto: accessoryPhoto, itemType: accessoryCategory || 'accessory', isLayering: true } });
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
-      if (!hasUnlimitedTryOns) incrementTryOnCount(user?.id);
+      if (!hasUnlimitedTryOns) {
+        if (user) {
+          await incrementServerTryOnCount(supabase, user.id);
+          setServerCount(prev => (prev ?? 0) + 1);
+        } else {
+          incrementTryOnCount();
+        }
+      }
       if (data.resultImage) {
         setLayerHistory(prev => [...prev, resultImage!]);
         setResultImage(data.resultImage);
