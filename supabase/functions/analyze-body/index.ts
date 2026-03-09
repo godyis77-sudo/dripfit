@@ -66,12 +66,33 @@ serve(async (req) => {
   }
 
   try {
-    const raw = await req.json();
+    const body = await req.json();
+
+    // Validate required fields
+    const { frontPhoto, sidePhoto, heightCm } = body;
+
+    if (!frontPhoto || typeof frontPhoto !== 'string' || frontPhoto.length > 5_000_000) {
+      return errorResponse('Invalid front photo', 'VALIDATION_ERROR', 400, corsHeaders);
+    }
+    if (!sidePhoto || typeof sidePhoto !== 'string' || sidePhoto.length > 5_000_000) {
+      return errorResponse('Invalid side photo', 'VALIDATION_ERROR', 400, corsHeaders);
+    }
+    if (!heightCm || typeof heightCm !== 'number' || heightCm < 120 || heightCm > 230) {
+      return errorResponse('Invalid height. Must be 120–230 cm', 'VALIDATION_ERROR', 400, corsHeaders);
+    }
+
+    // Validate authenticated user
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return errorResponse('Unauthorized', 'AUTH_ERROR', 401, corsHeaders);
+    }
+
+    const raw = body;
     const parsed = parseOrError(AnalyzeBodySchema, raw);
     if (!parsed.success) {
       return errorResponse(parsed.error, "VALIDATION_ERROR", 400, corsHeaders);
     }
-    const { frontPhoto, sidePhoto, heightCm, referenceObject, fitPreference } = parsed.data;
+    const { referenceObject, fitPreference } = parsed.data;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) return errorResponse("LOVABLE_API_KEY is not configured", "CONFIG_ERROR", 500, corsHeaders);
