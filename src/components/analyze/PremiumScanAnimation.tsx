@@ -8,6 +8,7 @@ interface Props {
   realData: any;
   revealedCount: number;
   totalCount: number;
+  scanComplete?: boolean;
 }
 
 const MEASUREMENT_POSITIONS: Record<string, { top: string; side: string; align: string }> = {
