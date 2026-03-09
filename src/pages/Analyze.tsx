@@ -132,6 +132,7 @@ const Analyze = () => {
     setRealData(data);
     setProgress(100);
     setRevealedKeys(REVEAL_ORDER);
+    setScanComplete(true);
     saveToDatabase(data);
     const scanResult = { id: crypto.randomUUID(), date: new Date().toISOString(), ...data };
     setTimeout(() => {
@@ -139,7 +140,7 @@ const Analyze = () => {
         state: { result: scanResult },
         replace: true,
       });
-    }, 800);
+    }, 2800);
   };
 
   const analyzePhotos = async () => {
