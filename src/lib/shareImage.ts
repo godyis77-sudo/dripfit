@@ -68,7 +68,7 @@ export async function generateShareImage(data: ShareImageData): Promise<Blob> {
   ctx.stroke();
 
   // Draw body silhouette outline
-  drawSilhouette(ctx, GOLD_DIM);
+  drawSilhouette(ctx);
 
   // Height indicator
   ctx.textAlign = 'left';
