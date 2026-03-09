@@ -79,7 +79,7 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center max-w-[300px] mb-6"
+          className="text-center max-w-[360px] mb-6"
         >
           <h1 className="font-display text-[28px] font-bold tracking-tight mb-2 leading-[1.12] text-foreground">
             Know your size{' '}
