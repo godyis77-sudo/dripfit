@@ -134,6 +134,8 @@ const SettingsTab = ({
         </div>
       )}
 
+      <ReferralCard />
+
       {/* Account */}
       <SectionHeader>Account</SectionHeader>
       <div className="bg-card border border-border rounded-xl divide-y divide-border mb-1">
