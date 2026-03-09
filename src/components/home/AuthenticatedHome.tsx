@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Sparkles, Camera, Heart, ShoppingBag, TrendingUp, MessageSquare, Bookmark } from 'lucide-react';
+import { Plus, Sparkles, Camera, Heart, ShoppingBag, TrendingUp, MessageSquare, Bookmark, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
@@ -44,6 +44,11 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const [trendingFits, setTrendingFits] = useState<TrendingPost[]>([]);
   const [profileName, setProfileName] = useState<string | null>(null);
   const [hasScan, setHasScan] = useState<boolean | null>(null);
+  const [daysSinceLastScan, setDaysSinceLastScan] = useState<number | null>(null);
+  const [rescanDismissed, setRescanDismissed] = useState(() => {
+    const key = `rescan_nudge_dismissed_${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
+    return localStorage.getItem(key) === 'true';
+  });
   const [activePriceIdx, setActivePriceIdx] = useState(0);
 
   useEffect(() => {
@@ -121,11 +126,18 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
       if (!user) return;
       const { data } = await supabase
         .from('body_scans')
-        .select('id')
+        .select('id, created_at')
         .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
-      if (!stale) setHasScan(!!data);
+      if (!stale) {
+        setHasScan(!!data);
+        if (data?.created_at) {
+          const daysDiff = Math.floor((Date.now() - new Date(data.created_at).getTime()) / (1000 * 60 * 60 * 24));
+          setDaysSinceLastScan(daysDiff);
+        }
+      }
     };
 
     fetchTrending();
@@ -138,6 +150,12 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const displayName = profileName || user?.email?.split('@')[0] || '';
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+
+  const dismissRescanNudge = useCallback(() => {
+    const key = `rescan_nudge_dismissed_${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
+    localStorage.setItem(key, 'true');
+    setRescanDismissed(true);
+  }, []);
 
   const priceFilter = activePriceIdx === 0 ? null : { min: PRICE_FILTERS[activePriceIdx].min, max: PRICE_FILTERS[activePriceIdx].max };
 
@@ -322,6 +340,38 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             ))}
           </div>
         </motion.div>
+
+        {/* Re-scan nudge banner (30+ days since last scan) */}
+        {hasScan && daysSinceLastScan !== null && daysSinceLastScan >= 30 && !rescanDismissed && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.19 }}
+            className="mb-3 bg-primary/10 border border-primary/20 rounded-xl p-3"
+          >
+            <div className="flex items-start gap-3">
+              <Camera className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] text-foreground leading-snug">
+                  Your last scan was {daysSinceLastScan} days ago — re-scan to check your fit
+                </p>
+                <button
+                  onClick={() => navigate('/capture')}
+                  className="mt-2 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-[11px] font-bold active:scale-95 transition-transform"
+                >
+                  Re-Scan Now
+                </button>
+              </div>
+              <button
+                onClick={dismissRescanNudge}
+                className="h-6 w-6 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                aria-label="Dismiss re-scan nudge"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </motion.div>
+        )}
 
         {/* ━━━ FIX 1: Product grids — 2 column layout ━━━ */}
         <motion.div
