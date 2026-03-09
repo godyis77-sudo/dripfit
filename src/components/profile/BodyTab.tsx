@@ -42,14 +42,22 @@ const BodyTab = ({ savedProfile, fit, scanConfidence }: BodyTabProps) => {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col items-center justify-center py-12 px-6 text-center"
+        className="relative flex flex-col items-center justify-center py-16 px-6 text-center overflow-hidden"
       >
-        <img src={bodySilhouette} alt="" className="h-32 opacity-30 mb-4" />
-        <h2 className="text-[18px] font-bold text-foreground mb-1">No body scan on file</h2>
-        <p className="text-[14px] text-muted-foreground max-w-[280px] mb-5">Get your exact measurements in 60 seconds with 2 photos.</p>
-        <Button className="rounded-full btn-luxury text-primary-foreground text-sm h-11 px-6 font-bold" onClick={() => navigate('/capture')}>
-          Get My Measurements
-        </Button>
+        {/* Ghost silhouette */}
+        <img
+          src={bodySilhouette}
+          alt=""
+          className="absolute inset-0 w-full h-full object-contain opacity-[0.06] pointer-events-none select-none"
+        />
+        <div className="relative z-10 flex flex-col items-center">
+          <Ruler className="h-8 w-8 text-primary/40 mb-3" />
+          <h2 className="text-[18px] font-bold text-foreground mb-1">No body scan on file</h2>
+          <p className="text-[14px] text-muted-foreground max-w-[280px] mb-5">Get your exact measurements in 60 seconds with 2 photos.</p>
+          <Button className="rounded-full btn-luxury text-primary-foreground text-sm h-11 px-6 font-bold" onClick={() => navigate('/capture')}>
+            Get My Measurements
+          </Button>
+        </div>
       </motion.div>
     );
   }
