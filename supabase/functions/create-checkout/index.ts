@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
-import { CreateCheckoutSchema, parseOrError } from "../_shared/validation.ts";
+import { CreateCheckoutSchema, parseOrError, successResponse, errorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -23,11 +23,11 @@ serve(async (req) => {
     const token = authHeader.replace("Bearer ", "");
     const { data } = await supabaseClient.auth.getUser(token);
     const user = data.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
+    if (!user?.email) return errorResponse("User not authenticated or email not available", "AUTH_ERROR", 401, corsHeaders);
 
     const raw = await req.json();
     const parsed = parseOrError(CreateCheckoutSchema, raw);
-    if (!parsed.success) throw new Error(parsed.error);
+    if (!parsed.success) return errorResponse(parsed.error, "VALIDATION_ERROR", 400, corsHeaders);
     const { priceId } = parsed.data;
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2025-08-27.basil" });
@@ -49,15 +49,9 @@ serve(async (req) => {
       subscription_data: { trial_period_days: 7 },
     });
 
-    return new Response(JSON.stringify({ url: session.url }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    return successResponse({ url: session.url }, 200, corsHeaders);
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    return new Response(JSON.stringify({ error: msg }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    return errorResponse(msg, "INTERNAL_ERROR", 500, corsHeaders);
   }
 });

@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { successResponse, errorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -52,18 +53,14 @@ Deno.serve(async (req) => {
     const { user_id, brand_slug, category, fit_preference = "regular" } = await req.json();
 
     if (!user_id || !brand_slug || !category) {
-      return new Response(JSON.stringify({ error: "user_id, brand_slug, and category are required." }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse("user_id, brand_slug, and category are required.", "VALIDATION_ERROR", 400, corsHeaders);
     }
 
     const validFits = ["slim", "regular", "relaxed"];
     const fit = validFits.includes(fit_preference) ? fit_preference : "regular";
     const validCategories = Object.keys(CATEGORY_WEIGHTS);
     if (!validCategories.includes(category)) {
-      return new Response(JSON.stringify({ error: `Invalid category. Must be one of: ${validCategories.join(", ")}` }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse(`Invalid category. Must be one of: ${validCategories.join(", ")}`, "VALIDATION_ERROR", 400, corsHeaders);
     }
 
     const supabase = createClient(
@@ -83,7 +80,7 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (cached) {
-      return new Response(JSON.stringify({
+      return successResponse({
         recommended_size: cached.recommended_size,
         confidence: Number(Number(cached.confidence).toFixed(2)),
         fit_status: cached.fit_status,
@@ -94,7 +91,7 @@ Deno.serve(async (req) => {
         category,
         all_sizes: [],
         cached: true,
-      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }, 200, corsHeaders);
     }
 
     // STEP 2 — Fetch user measurements from latest body_scan
@@ -107,9 +104,7 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (!scan) {
-      return new Response(JSON.stringify({ error: "No body scan data found. Complete a body scan first." }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse("No body scan data found. Complete a body scan first.", "NOT_FOUND", 400, corsHeaders);
     }
 
     const userMeasurements: Record<string, number> = {};
@@ -137,16 +132,12 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (!chart) {
-      return new Response(JSON.stringify({ error: "Size chart not available for this brand and category yet." }), {
-        status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse("Size chart not available for this brand and category yet.", "NOT_FOUND", 404, corsHeaders);
     }
 
     const sizeData: SizeEntry[] = Array.isArray(chart.size_data) ? chart.size_data as SizeEntry[] : [];
     if (sizeData.length === 0) {
-      return new Response(JSON.stringify({ error: "Size chart has no size entries." }), {
-        status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return errorResponse("Size chart has no size entries.", "NOT_FOUND", 404, corsHeaders);
     }
 
     // STEP 4 — Score every size
@@ -234,7 +225,7 @@ Deno.serve(async (req) => {
       expires_at: expiresAt,
     }, { onConflict: "user_id,brand_slug,category" });
 
-    return new Response(JSON.stringify({
+    return successResponse({
       recommended_size: best.label,
       confidence,
       fit_status: fitStatus,
@@ -244,11 +235,9 @@ Deno.serve(async (req) => {
       brand_slug,
       category,
       all_sizes: allSizes,
-    }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }, 200, corsHeaders);
 
   } catch (e) {
-    return new Response(JSON.stringify({ error: e.message || "Internal server error" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return errorResponse((e as Error).message || "Internal server error", "INTERNAL_ERROR", 500, corsHeaders);
   }
 });

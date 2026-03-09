@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { successResponse, errorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,7 +14,7 @@ serve(async (req) => {
 
   try {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+    if (!LOVABLE_API_KEY) return errorResponse("LOVABLE_API_KEY not configured", "CONFIG_ERROR", 500, corsHeaders);
 
     const response = await fetch(
       "https://ai.gateway.lovable.dev/v1/chat/completions",
@@ -42,22 +43,13 @@ serve(async (req) => {
       console.error("AI gateway error:", response.status, errText);
 
       if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limited, please try again later." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return errorResponse("Rate limited, please try again later.", "RATE_LIMITED", 429, corsHeaders);
       }
       if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Payment required." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return errorResponse("Payment required.", "PAYMENT_REQUIRED", 402, corsHeaders);
       }
 
-      return new Response(
-        JSON.stringify({ error: "Failed to generate image" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return errorResponse("Failed to generate image", "AI_ERROR", 500, corsHeaders);
     }
 
     const data = await response.json();
@@ -65,21 +57,12 @@ serve(async (req) => {
 
     if (!imageUrl) {
       console.error("No image in response:", JSON.stringify(data).slice(0, 500));
-      return new Response(
-        JSON.stringify({ error: "No image generated" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return errorResponse("No image generated", "AI_ERROR", 500, corsHeaders);
     }
 
-    return new Response(
-      JSON.stringify({ image: imageUrl }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return successResponse({ image: imageUrl }, 200, corsHeaders);
   } catch (e) {
     console.error("generate-body-diagram error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return errorResponse(e instanceof Error ? e.message : "Unknown error", "INTERNAL_ERROR", 500, corsHeaders);
   }
 });

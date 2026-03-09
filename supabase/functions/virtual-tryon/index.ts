@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { VirtualTryonSchema, parseOrError } from "../_shared/validation.ts";
+import { VirtualTryonSchema, parseOrError, successResponse, errorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -16,10 +16,7 @@ serve(async (req) => {
     const raw = await req.json();
     const parsed = parseOrError(VirtualTryonSchema, raw);
     if (!parsed.success) {
-      return new Response(
-        JSON.stringify({ error: parsed.error }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return errorResponse(parsed.error, "VALIDATION_ERROR", 400, corsHeaders);
     }
     const { userPhoto, clothingPhoto } = parsed.data;
     const itemType: string = raw.itemType || "clothing";
@@ -28,7 +25,7 @@ serve(async (req) => {
     const isLayering = raw.isLayering === true;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    if (!LOVABLE_API_KEY) return errorResponse("LOVABLE_API_KEY is not configured", "CONFIG_ERROR", 500, corsHeaders);
 
     // Convert a URL or base64 string into a data URI, falling back to raw URL
     const toImageInput = async (input: string): Promise<string> => {
@@ -58,7 +55,6 @@ serve(async (req) => {
           } catch (e) {
             console.warn(`Fetch attempt ${attempt + 1} failed for ${input}: ${e}`);
             if (attempt === 2) {
-              // Fallback: let the AI gateway fetch it directly
               console.log("Falling back to raw URL for AI gateway");
               return input;
             }
@@ -107,27 +103,20 @@ serve(async (req) => {
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limited. Please try again in a moment." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return errorResponse("Rate limited. Please try again in a moment.", "RATE_LIMITED", 429, corsHeaders);
       }
       if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "AI credits exhausted. Please add credits." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return errorResponse("AI credits exhausted. Please add credits.", "PAYMENT_REQUIRED", 402, corsHeaders);
       }
       const errText = await response.text();
       console.error("AI gateway error:", response.status, errText);
-      throw new Error(`AI gateway returned ${response.status}`);
+      return errorResponse(`AI gateway returned ${response.status}`, "AI_ERROR", 502, corsHeaders);
     }
 
     const aiResponse = await response.json();
     const message = aiResponse.choices?.[0]?.message;
     let resultImage: string | null = null;
 
-    // The gateway returns images in message.images array
     if (message?.images && Array.isArray(message.images) && message.images.length > 0) {
       const img = message.images[0];
       if (img?.image_url?.url) {
@@ -137,24 +126,15 @@ serve(async (req) => {
 
     if (!resultImage) {
       const textContent = typeof message?.content === "string" ? message.content : "";
-      return new Response(
-        JSON.stringify({ 
-          description: textContent || "The AI was unable to generate a try-on image. Try with clearer photos.",
-          resultImage: null 
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return successResponse({ 
+        description: textContent || "The AI was unable to generate a try-on image. Try with clearer photos.",
+        resultImage: null 
+      }, 200, corsHeaders);
     }
 
-    return new Response(
-      JSON.stringify({ resultImage }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return successResponse({ resultImage }, 200, corsHeaders);
   } catch (e) {
     console.error("virtual-tryon error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Try-on failed" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return errorResponse(e instanceof Error ? e.message : "Try-on failed", "INTERNAL_ERROR", 500, corsHeaders);
   }
 });
