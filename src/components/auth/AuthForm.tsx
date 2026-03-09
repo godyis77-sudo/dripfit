@@ -66,7 +66,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
         trackEvent('auth_completed', { method: 'email' });
         if (!onComplete) navigate('/');
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -76,7 +76,19 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
         });
         if (error) throw error;
         trackEvent('auth_completed', { method: 'email_signup' });
-        toast({ title: 'Check your email', description: 'We sent a confirmation link to verify your account.' });
+
+        // Handle referral tracking
+        const refId = new URLSearchParams(window.location.search).get('ref');
+        if (refId && data.user) {
+          supabase.from('referrals').insert({
+            referrer_id: refId,
+            referee_id: data.user.id,
+          }).then(() => {
+            toast({ title: 'Welcome! 🎉', description: 'You and your friend both get 5 extra try-ons this month' });
+          });
+        } else {
+          toast({ title: 'Check your email', description: 'We sent a confirmation link to verify your account.' });
+        }
       }
     } catch (err: any) {
       const msg = err.message?.includes('Invalid login credentials')
