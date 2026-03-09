@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Switch } from '@/components/ui/switch';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Crown, Trash2, Shield, Download, Ruler, Camera, ChevronRight, Bookmark, Pencil, Check, X, Star, Instagram, Globe, Sun, Moon } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import type { FitPreference, BodyScanResult } from '@/lib/types';
@@ -63,6 +64,7 @@ const SettingsTab = ({
   const [igValue, setIgValue] = useState(instagramHandle);
   const [region, setRegion] = useState<UserRegion>(getUserRegion());
   const [gender, setGender] = useState<string | null>(null);
+  const [showWinBack, setShowWinBack] = useState(false);
 
   // Load gender from DB
   useEffect(() => {
@@ -374,16 +376,7 @@ const SettingsTab = ({
               {subscriptionEnd ? ` — renews ${new Date(subscriptionEnd).toLocaleDateString()}` : ''}
             </p>
             <button
-              onClick={async () => {
-                try {
-                  const { data: resp, error } = await supabase.functions.invoke('customer-portal');
-                  if (error) throw error;
-                  const payload = resp?.data ?? resp;
-                  if (payload?.url) window.open(payload.url, '_blank');
-                } catch (e: any) {
-                  toast({ title: 'Error', description: e.message || 'Could not open portal', variant: 'destructive' });
-                }
-              }}
+              onClick={() => setShowWinBack(true)}
               className="text-[10px] text-primary font-bold mt-1 ml-5.5 active:opacity-70"
             >
               Manage →
@@ -399,6 +392,32 @@ const SettingsTab = ({
           </button>
         )}
       </div>
+
+      <Sheet open={showWinBack} onOpenChange={setShowWinBack}>
+        <SheetContent side="bottom" className="rounded-t-2xl bg-card p-6">
+          <SheetHeader>
+            <SheetTitle className="text-foreground text-base font-bold">Before you go...</SheetTitle>
+          </SheetHeader>
+          <p className="text-[13px] text-muted-foreground mt-2 mb-5">
+            Pause instead of cancelling — keep all your data and Premium features for 30 days.
+          </p>
+          <div className="flex flex-col gap-2">
+            <Button className="w-full h-11 btn-luxury text-primary-foreground font-bold rounded-xl text-sm"
+              onClick={() => setShowWinBack(false)}>
+              Keep My Premium ✓
+            </Button>
+            <Button variant="ghost" className="w-full h-11 text-muted-foreground text-sm"
+              onClick={async () => {
+                setShowWinBack(false);
+                const { data: resp, error } = await supabase.functions.invoke('customer-portal');
+                if (error || !resp?.url) { toast({ title: 'Error', description: 'Could not open portal', variant: 'destructive' }); return; }
+                window.location.href = resp.url;
+              }}>
+              Cancel Subscription
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* Favorite Retailers */}
       <SectionHeader>
