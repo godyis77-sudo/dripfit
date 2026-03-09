@@ -50,6 +50,9 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
   const [displayName, setDisplayName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotSent, setForgotSent] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
 
   // If user becomes authenticated, fire onComplete
   useEffect(() => {
