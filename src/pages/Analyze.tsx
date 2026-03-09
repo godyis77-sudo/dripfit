@@ -274,6 +274,12 @@ const Analyze = () => {
       </Button>
       {/* Animated body silhouette with live measurement overlays */}
       <div className="relative mb-5 w-full max-w-[380px] aspect-[2/3] rounded-xl overflow-hidden bg-background">
+        {/* Static silhouette fallback (always visible behind video) */}
+        <img
+          src={bodySilhouette}
+          alt=""
+          className="absolute inset-0 w-full h-full object-contain opacity-40 mix-blend-luminosity"
+        />
         {/* Scan animation video */}
         <video
           ref={videoRef}
@@ -291,16 +297,29 @@ const Analyze = () => {
             setShowVideoPlayFallback(false);
             setVideoFailed(false);
           }}
-          onError={() => {
+          onError={(e) => {
+            console.error('[video] error event:', e);
             setVideoFailed(true);
             setShowVideoPlayFallback(false);
           }}
-          className="absolute inset-0 w-full h-full object-contain"
+          className="absolute inset-0 w-full h-full object-contain z-[1]"
         />
 
         {showVideoPlayFallback && !videoFailed ? (
           <div className="absolute bottom-3 left-0 right-0 z-20 flex justify-center">
-            <Button type="button" onClick={attemptPlayVideo} className="rounded-xl h-10 px-4 text-xs font-semibold shadow-lg">
+            <Button
+              type="button"
+              onClick={() => {
+                const video = videoRef.current;
+                if (video) {
+                  video.muted = true;
+                  video.play().then(() => {
+                    setShowVideoPlayFallback(false);
+                  }).catch(err => console.warn('[video] manual play failed:', err));
+                }
+              }}
+              className="rounded-xl h-10 px-4 text-xs font-semibold shadow-lg"
+            >
               Tap to play scan animation
             </Button>
           </div>
