@@ -58,6 +58,10 @@ const Analyze = () => {
       setProgress(p => Math.min(p + (90 / (TOTAL_SCAN_TIME / 100)), 90));
     }, 100);
 
+    const scanLineInterval = setInterval(() => {
+      setScanLineY(p => Math.min(p + (100 / (TOTAL_SCAN_TIME / 50)), 100));
+    }, 50);
+
     const revealInterval = TOTAL_SCAN_TIME / REVEAL_ORDER.length;
     revealTimers.current = REVEAL_ORDER.map((key, i) =>
       window.setTimeout(() => {
@@ -75,6 +79,7 @@ const Analyze = () => {
     return () => {
       clearInterval(msgInterval);
       clearInterval(progressInterval);
+      clearInterval(scanLineInterval);
       revealTimers.current.forEach(id => window.clearTimeout(id));
       revealTimers.current = [];
     };
