@@ -182,11 +182,12 @@ const ScanSuccess = () => {
               transition={{ delay: overlay.delay + 0.4, duration: 0.35, ease: 'easeOut' }}
             >
               <div
-                style={{
-                  textAlign: overlay.side === 'left' ? 'left' : 'right',
-                }}
-              >
-                <p
+                 className="bg-background/80 rounded px-1 py-0.5 backdrop-blur-sm"
+                 style={{
+                   textAlign: overlay.side === 'left' ? 'left' : 'right',
+                 }}
+               >
+                 <p
                   className="text-[11px] font-black leading-tight"
                   style={{ color: '#000' }}
                 >
