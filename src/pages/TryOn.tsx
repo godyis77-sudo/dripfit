@@ -293,7 +293,7 @@ const TryOn = () => {
           } catch { /* silent */ }
         }
       } else {
-        toast({ title: 'Could not add accessory', description: data?.description || 'Try a clearer photo.', variant: 'destructive' });
+        toast({ title: 'Could not add accessory', description: payload?.description || 'Try a clearer photo.', variant: 'destructive' });
       }
     } catch (err: any) {
       toast({ title: 'Accessory failed', description: err.message, variant: 'destructive' });
