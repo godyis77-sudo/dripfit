@@ -72,7 +72,7 @@ const Analyze = () => {
     let cancelled = false;
     let retryTimer: number | null = null;
     let attempts = 0;
-    const MAX_ATTEMPTS = 10;
+    const MAX_ATTEMPTS = 2;
     const RETRY_MS = 400;
 
     const tryAutoplay = async () => {
