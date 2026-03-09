@@ -1,8 +1,10 @@
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 import type { MeasurementRange } from '@/lib/types';
 import scanResultsFull from '@/assets/scan-results-full.jpg';
 
 const CM_TO_IN = 0.3937;
-const fmt = (r: MeasurementRange) => `${r.min.toFixed(0)}–${r.max.toFixed(0)} cm`;
+const fmtCm = (r: MeasurementRange) => `${r.min.toFixed(0)}–${r.max.toFixed(0)} cm`;
 const fmtIn = (r: MeasurementRange) => `${(r.min * CM_TO_IN).toFixed(1)}–${(r.max * CM_TO_IN).toFixed(1)} in`;
 const fmtHeightFtIn = (cm: number) => {
   const totalIn = Math.round(cm * CM_TO_IN);
@@ -14,33 +16,36 @@ interface BodyDiagramProps {
   heightCm: number;
 }
 
-interface MeasurementLine {
+interface MeasurementOverlay {
   key: string;
   label: string;
-  labelSide: 'left' | 'right';
-  x1: string; y1: string; x2: string; y2: string;
-  labelTop: string;
-  labelEdgeX: number;
-  leaderX: number;
-  leaderY: number;
+  side: 'left' | 'right';
+  valTop: string;
+  delay: number;
 }
 
-const measurementLines: MeasurementLine[] = [
-  { key: 'shoulder', label: 'Shoulder', labelSide: 'right', x1: '37.7%', y1: '20.2%', x2: '62.3%', y2: '20.2%', labelTop: '18.9%', labelEdgeX: 76, leaderX: 62.3, leaderY: 20.2 },
-  { key: 'chest', label: 'Chest', labelSide: 'left', x1: '41.2%', y1: '25.9%', x2: '58.8%', y2: '25.9%', labelTop: '24.1%', labelEdgeX: 16, leaderX: 41.2, leaderY: 25.9 },
-  { key: 'bust', label: 'Bust', labelSide: 'right', x1: '41.2%', y1: '27.6%', x2: '58.8%', y2: '27.6%', labelTop: '26.3%', labelEdgeX: 88, leaderX: 58.8, leaderY: 27.6 },
-  { key: 'waist', label: 'Waist', labelSide: 'right', x1: '43%', y1: '39.5%', x2: '57%', y2: '39.5%', labelTop: '38.2%', labelEdgeX: 85, leaderX: 57, leaderY: 39.5 },
-  { key: 'hips', label: 'Hips', labelSide: 'right', x1: '40.4%', y1: '47.4%', x2: '59.6%', y2: '47.4%', labelTop: '46.1%', labelEdgeX: 88, leaderX: 59.6, leaderY: 47.4 },
-  { key: 'sleeve', label: 'Sleeve', labelSide: 'left', x1: '36.8%', y1: '24.1%', x2: '34.2%', y2: '46.1%', labelTop: '33.8%', labelEdgeX: 18, leaderX: 34.2, leaderY: 35.1 },
-  { key: 'inseam', label: 'Inseam', labelSide: 'left', x1: '47.4%', y1: '50.4%', x2: '44.7%', y2: '90%', labelTop: '62.7%', labelEdgeX: 18, leaderX: 45.6, leaderY: 64 },
+const OVERLAYS: MeasurementOverlay[] = [
+  { key: 'height', label: 'HEIGHT', side: 'left', valTop: '12%', delay: 0 },
+  { key: 'shoulder', label: 'SHOULDER', side: 'right', valTop: '18.9%', delay: 0.05 },
+  { key: 'chest', label: 'CHEST', side: 'left', valTop: '24.1%', delay: 0.1 },
+  { key: 'bust', label: 'BUST', side: 'right', valTop: '26.3%', delay: 0.15 },
+  { key: 'sleeve', label: 'SLEEVE', side: 'left', valTop: '33.8%', delay: 0.2 },
+  { key: 'waist', label: 'WAIST', side: 'right', valTop: '38.2%', delay: 0.25 },
+  { key: 'hips', label: 'HIPS', side: 'right', valTop: '46.1%', delay: 0.3 },
+  { key: 'inseam', label: 'INSEAM', side: 'left', valTop: '62.7%', delay: 0.35 },
 ];
 
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
-  // Clear old AI-generated cache so it doesn't interfere
-  if (typeof localStorage !== 'undefined') {
-    localStorage.removeItem('dripcheck_body_silhouette_v2');
-  }
-  const m = measurements;
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  const getValue = (key: string): { line1: string; line2: string } | null => {
+    if (key === 'height') {
+      return { line1: fmtHeightFtIn(heightCm), line2: `${heightCm} cm` };
+    }
+    const range = measurements[key];
+    if (!range) return null;
+    return { line1: fmtIn(range), line2: fmtCm(range) };
+  };
 
   return (
     <div className="mb-4">
@@ -50,9 +55,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           <span className="sr-only">
             {`Body measurements diagram: ${[
               `Height ${heightCm} cm`,
-              ...measurementLines
-                .filter(l => m[l.key])
-                .map(l => `${l.label} ${m[l.key].min.toFixed(0)}–${m[l.key].max.toFixed(0)} cm`),
+              ...OVERLAYS
+                .filter(l => l.key !== 'height' && measurements[l.key])
+                .map(l => `${l.label} ${measurements[l.key].min.toFixed(0)}–${measurements[l.key].max.toFixed(0)} cm`),
             ].join(', ')}.`}
           </span>
           <div className="overflow-hidden rounded-[calc(1rem-3px)]">
@@ -60,8 +65,47 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               src={scanResultsFull}
               alt="Body measurement scan results"
               className="w-full max-w-[380px] object-cover"
+              onLoad={() => setImageLoaded(true)}
             />
           </div>
+
+          {/* Dynamic measurement value overlays */}
+          {imageLoaded && OVERLAYS.map((overlay) => {
+            const val = getValue(overlay.key);
+            if (!val) return null;
+
+            return (
+              <motion.div
+                key={overlay.key}
+                className="absolute"
+                style={{
+                  top: `calc(${overlay.valTop} + 3px)`,
+                  ...(overlay.side === 'left'
+                    ? { left: '2%' }
+                    : { right: '2%' }),
+                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: overlay.delay + 0.3, duration: 0.3, ease: 'easeOut' }}
+              >
+                <div style={{ textAlign: overlay.side === 'left' ? 'left' : 'right' }}>
+                  <p
+                    className="text-[11px] font-black leading-tight"
+                    style={{ color: '#000' }}
+                  >
+                    {val.line1}
+                  </p>
+                  <p
+                    className="text-[9px] font-bold leading-tight"
+                    style={{ color: 'hsl(30 10% 25%)' }}
+                  >
+                    {val.line2}
+                  </p>
+                </div>
+              </motion.div>
+            );
+          })}
+
           <div className="absolute -inset-[7px] rounded-[calc(1rem+4px)] border-[4px] border-black pointer-events-none" style={{ boxShadow: 'inset 0 0 8px 2px hsl(45 88% 50% / 0.7), 0 0 10px 2px hsl(45 88% 50% / 0.6), 0 0 20px 4px hsl(45 88% 50% / 0.25)' }} />
         </div>
       </div>
