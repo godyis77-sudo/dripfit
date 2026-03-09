@@ -334,7 +334,7 @@ const TryOn = () => {
       trackEvent('saved_item_added', { source: 'tryon_wardrobe', category });
       toast({
         title: '✓ Saved to Wardrobe', description: 'View in your wardrobe anytime.',
-        action: <button onClick={() => navigate('/profile', { state: { tab: 'wardrobe' } })} className="text-[11px] font-bold text-primary underline">View Wardrobe</button>,
+        action: <button onClick={() => navigate('/profile', { state: { tab: 'wardrobe' } })} className="text-[11px] font-bold text-primary underline" aria-label="View your wardrobe">View Wardrobe</button>,
       });
     } catch {
       toast({ title: 'Could not save', variant: 'destructive' });
