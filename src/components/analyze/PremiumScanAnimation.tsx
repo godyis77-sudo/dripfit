@@ -110,9 +110,9 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
         className="absolute inset-x-0 pointer-events-none z-10"
         style={{
           top: `${scanLineY}%`,
-          height: '2px',
+          height: '1px',
           background: 'linear-gradient(to right, transparent 0%, hsl(45 90% 55%) 10%, hsl(45 95% 70%) 50%, hsl(45 90% 55%) 90%, transparent 100%)',
-          boxShadow: '0 0 14px 5px hsl(45 88% 50% / 1), 0 0 35px 10px hsl(45 88% 50% / 0.6), 0 0 70px 20px hsl(45 88% 50% / 0.2)',
+          boxShadow: '0 0 6px 3px hsl(45 88% 50% / 0.95), 0 0 16px 6px hsl(45 88% 50% / 0.5), 0 0 40px 12px hsl(45 88% 50% / 0.2)',
         }}
         animate={{ opacity: scanComplete ? 0 : 1 }}
         transition={{ duration: 0.5 }}
@@ -123,9 +123,9 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
         className="absolute inset-x-0 pointer-events-none z-[9] transition-all duration-100"
         style={{
           top: `${Math.max(0, scanLineY - 3)}%`,
-          height: '6%',
+          height: '3%',
           background: `linear-gradient(to bottom, transparent, hsl(45 88% 50% / 0.12), transparent)`,
-          opacity: scanComplete ? 0 : 0.8,
+          opacity: scanComplete ? 0 : 0.5,
         }}
       />
 
@@ -146,7 +146,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
         className="absolute inset-x-0 top-0 pointer-events-none transition-all duration-150 z-[7]"
         style={{
           height: `${scanLineY}%`,
-          background: 'linear-gradient(to bottom, hsl(45 88% 50% / 0.04), hsl(45 88% 50% / 0.08), hsl(45 88% 50% / 0.02))',
+          background: 'linear-gradient(to bottom, transparent, hsl(45 88% 50% / 0.03), hsl(45 88% 50% / 0.05))',
           opacity: scanComplete ? 0 : 1,
         }}
       />
