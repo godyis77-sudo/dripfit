@@ -174,8 +174,8 @@ const ScanSuccess = () => {
               style={{
                 top: overlay.valTop,
                 ...(overlay.side === 'left'
-                   ? { left: '-1px' }
-                   : { right: '-1px' }),
+                   ? { left: '1.5%' }
+                   : { right: '1.5%' }),
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
