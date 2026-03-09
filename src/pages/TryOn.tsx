@@ -57,7 +57,7 @@ const TryOn = () => {
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
 
   const hasUnlimitedTryOns = isSubscribed;
-  const remainingTryOns = Math.max(0, FREE_MONTHLY_LIMIT - getMonthlyTryOnCount());
+  const remainingTryOns = Math.max(0, FREE_MONTHLY_LIMIT - getMonthlyTryOnCount(user?.id));
   const canGenerate = !!userPhoto && !!clothingPhoto;
 
   const [hasSavedProfile, setHasSavedProfile] = useState(() => {
@@ -170,7 +170,7 @@ const TryOn = () => {
 
   const handleTryOn = async () => {
     if (!canGenerate) return;
-    if (!hasUnlimitedTryOns && getMonthlyTryOnCount() >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return; }
+    if (!hasUnlimitedTryOns && getMonthlyTryOnCount(user?.id) >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return; }
     setLoading(true);
     setResultImage(null);
     setDescription(null);
@@ -180,7 +180,7 @@ const TryOn = () => {
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
       trackEvent('tryon_generated');
-      if (!hasUnlimitedTryOns) incrementTryOnCount();
+      if (!hasUnlimitedTryOns) incrementTryOnCount(user?.id);
       if (data.resultImage) { setResultImage(data.resultImage); setShowSuccessOverlay(true); setTimeout(() => setShowSuccessOverlay(false), 1500); if (user) autoSaveToProfile(data.resultImage); }
       else if (data.description) { setDescription(data.description); }
     } catch (err: any) {
@@ -227,13 +227,13 @@ const TryOn = () => {
 
   const handleAddAccessory = async (accessoryPhoto: string, accessoryCategory: string | null) => {
     if (!resultImage || !accessoryPhoto) return;
-    if (!hasUnlimitedTryOns && getMonthlyTryOnCount() >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return; }
+    if (!hasUnlimitedTryOns && getMonthlyTryOnCount(user?.id) >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return; }
     trackEvent('tryon_accessory_started', { category: accessoryCategory });
     try {
       const { data, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto: resultImage, clothingPhoto: accessoryPhoto, itemType: accessoryCategory || 'accessory', isLayering: true } });
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
-      if (!hasUnlimitedTryOns) incrementTryOnCount();
+      if (!hasUnlimitedTryOns) incrementTryOnCount(user?.id);
       if (data.resultImage) {
         setLayerHistory(prev => [...prev, resultImage!]);
         setResultImage(data.resultImage);
