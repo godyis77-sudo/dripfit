@@ -288,6 +288,8 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
               Continue as Guest →
             </button>
           )}
+          </>
+          )}
         </CardContent>
       </Card>
     </div>
