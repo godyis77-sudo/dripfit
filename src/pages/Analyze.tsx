@@ -10,14 +10,21 @@ import { compressPhoto } from '@/lib/imageUtils';
 import PremiumScanAnimation from '@/components/analyze/PremiumScanAnimation';
 
 const MESSAGES = [
+  'Initializing body scan…',
   'Detecting body landmarks…',
-  'Cross-referencing views…',
-  'Estimating measurements…',
+  'Mapping skeletal structure…',
+  'Cross-referencing front view…',
+  'Cross-referencing side view…',
+  'Calibrating reference points…',
+  'Estimating upper body…',
+  'Estimating lower body…',
+  'Refining proportions…',
   'Matching size charts…',
+  'Analyzing fit preferences…',
   'Generating recommendations…',
 ];
 
-const TOTAL_SCAN_TIME = 8000;
+const TOTAL_SCAN_TIME = 30000;
 const REVEAL_ORDER = ['height', 'shoulder', 'chest', 'bust', 'waist', 'hips', 'inseam'];
 
 interface AnalyzeState {
