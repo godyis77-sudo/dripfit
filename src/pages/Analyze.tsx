@@ -188,19 +188,39 @@ const Analyze = () => {
       </Button>
 
       {/* Animated body silhouette with CSS scan effect */}
-      <div className="relative mb-5 w-full max-w-[380px] aspect-[2/3] rounded-xl overflow-hidden bg-background">
-        <ScanAnimation />
+      <div className="relative mb-5 w-full max-w-[380px] aspect-[2/3]">
+        {/* Animated rotating border glow */}
+        <motion.div
+          className="absolute -inset-[3px] rounded-2xl pointer-events-none z-0"
+          style={{
+            background: `conic-gradient(from 0deg, hsl(var(--primary)), hsl(var(--primary) / 0.2), hsl(var(--primary)), hsl(var(--primary) / 0.2), hsl(var(--primary)))`,
+            filter: 'blur(1px)',
+          }}
+          animate={{ rotate: 360 }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+        />
+        {/* Outer glow pulse */}
+        <motion.div
+          className="absolute -inset-[6px] rounded-2xl pointer-events-none z-0"
+          animate={{
+            boxShadow: [
+              '0 0 15px 2px hsl(var(--primary) / 0.3), 0 0 40px 8px hsl(var(--primary) / 0.1)',
+              '0 0 25px 6px hsl(var(--primary) / 0.5), 0 0 60px 15px hsl(var(--primary) / 0.2)',
+              '0 0 15px 2px hsl(var(--primary) / 0.3), 0 0 40px 8px hsl(var(--primary) / 0.1)',
+            ],
+          }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        {/* Inner container */}
+        <div className="relative w-full h-full rounded-xl overflow-hidden bg-background z-[1]">
+          <ScanAnimation revealedCount={revealedKeys.length} />
 
-        {/* Vignette overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none rounded-xl z-20"
-          style={{ boxShadow: 'inset 0 0 60px 20px hsl(var(--background) / 0.7), inset 0 0 120px 40px hsl(var(--background) / 0.4)' }}
-        />
-        {/* Outer gold border glow */}
-        <div
-          className="absolute inset-0 pointer-events-none rounded-xl z-20"
-          style={{ boxShadow: '0 0 20px 2px hsl(var(--primary) / 0.25), 0 0 50px 8px hsl(var(--primary) / 0.1)' }}
-        />
+          {/* Vignette overlay */}
+          <div
+            className="absolute inset-0 pointer-events-none rounded-xl z-20"
+            style={{ boxShadow: 'inset 0 0 60px 20px hsl(var(--background) / 0.7), inset 0 0 120px 40px hsl(var(--background) / 0.4)' }}
+          />
+        </div>
       </div>
 
       <h2 className="text-xl font-bold text-foreground mb-2">Analyzing Your Scan</h2>
