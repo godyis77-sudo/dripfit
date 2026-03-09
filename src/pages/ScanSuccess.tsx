@@ -60,7 +60,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'bust',
     label: 'BUST',
     side: 'right',
-    valTop: '26.3%',
+    valTop: '29%',
     offset: 3,
     delay: 0.35,
     getValue: (r) => (r.bust ? { line1: fmtIn(r.bust), line2: fmtCm(r.bust) } : null),
@@ -150,7 +150,7 @@ const ScanSuccess = () => {
 
       {/* Scan results image with measurement overlays */}
       <motion.div
-        className="relative w-full max-w-[400px] mx-auto mt-2"
+        className="relative w-full max-w-[400px] mx-auto mt-2 px-2"
         initial={{ opacity: 0, scale: 0.92 }}
         animate={{ opacity: imageLoaded ? 1 : 0, scale: imageLoaded ? 1 : 0.92 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -174,19 +174,20 @@ const ScanSuccess = () => {
               style={{
                 top: `calc(${overlay.valTop} + ${overlay.offset ?? 3}px)`,
                 ...(overlay.side === 'left'
-                  ? { left: '2%' }
-                  : { right: '2%' }),
+                   ? { left: '-1px' }
+                   : { right: '-1px' }),
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: overlay.delay + 0.4, duration: 0.35, ease: 'easeOut' }}
             >
               <div
-                style={{
-                  textAlign: overlay.side === 'left' ? 'left' : 'right',
-                }}
-              >
-                <p
+                 className="bg-background/80 rounded px-1 py-0.5 backdrop-blur-sm"
+                 style={{
+                   textAlign: overlay.side === 'left' ? 'left' : 'right',
+                 }}
+               >
+                 <p
                   className="text-[11px] font-black leading-tight"
                   style={{ color: '#000' }}
                 >
