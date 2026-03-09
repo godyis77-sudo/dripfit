@@ -56,6 +56,7 @@ const Results = () => {
   const [showPhotoPrompt, setShowPhotoPrompt] = useState(() => {
     try { return !localStorage.getItem('profile_photo_prompted'); } catch { return false; }
   });
+  const [guestNudgeDismissed, setGuestNudgeDismissed] = useState(false);
 
   const queryClient = useQueryClient();
 
