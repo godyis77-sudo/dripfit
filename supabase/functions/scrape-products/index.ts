@@ -1677,14 +1677,10 @@ Deno.serve(async (req) => {
     }
 
     console.log(`[run:${runId}] Done. Inserted ${results.inserted}`);
-    return new Response(JSON.stringify({ success: true, ...results }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return successResponse(results, 200, corsHeaders);
 
   } catch (err: any) {
     console.error('Pipeline error:', err);
-    return new Response(JSON.stringify({ success: false, error: err.message }), {
-      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return errorResponse(err.message, "INTERNAL_ERROR", 500, corsHeaders);
   }
 });
