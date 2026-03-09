@@ -247,12 +247,9 @@ serve(async (req) => {
     }
 
     const { data: products, error: fetchError } = await query;
-    if (fetchError) throw new Error(`Fetch error: ${fetchError.message}`);
+    if (fetchError) return errorResponse(`Fetch error: ${fetchError.message}`, "DB_ERROR", 500, corsHeaders);
     if (!products || products.length === 0) {
-      return new Response(
-        JSON.stringify({ message: "No products to process", processed: 0 }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return successResponse({ message: "No products to process", processed: 0 }, 200, corsHeaders);
     }
 
     console.log(`Processing ${products.length} products...`);
