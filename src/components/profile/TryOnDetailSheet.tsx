@@ -153,16 +153,31 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               variant="outline"
               className="h-11 rounded-xl text-[12px] font-bold gap-1.5 col-span-2"
               onClick={async () => {
-                if (navigator.share) {
-                  try {
-                    const response = await fetch(post.result_photo_url);
-                    const blob = await response.blob();
-                    const file = new File([blob], 'drip-fit-tryon.jpg', { type: 'image/jpeg' });
-                    await navigator.share({ title: post.caption || 'Check my fit!', files: [file] });
+                try {
+                  const blob = await generateTryOnShareCard({
+                    resultImageUrl: post.result_photo_url,
+                    caption: post.caption,
+                  });
+                  const file = new File([blob], 'drip-fit-tryon.png', { type: 'image/png' });
+
+                  if (navigator.share && navigator.canShare?.({ files: [file] })) {
+                    await navigator.share({
+                      title: post.caption || 'Check my fit on DRIPFITCHECK!',
+                      files: [file],
+                    });
                     trackEvent('tryon_shared_instagram', { post_id: post.id });
-                  } catch { /* user cancelled */ }
-                } else {
-                  // Fallback: copy image URL
+                  } else {
+                    // Fallback: download the branded image
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'drip-fit-tryon.png';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    toast({ title: 'Image downloaded!', description: 'Share it to Instagram Stories.' });
+                  }
+                } catch {
+                  // Fallback: copy URL
                   await navigator.clipboard.writeText(post.result_photo_url);
                   toast({ title: 'Link copied!', description: 'Paste it into Instagram Stories.' });
                 }
