@@ -177,9 +177,9 @@ const ScanSuccess = () => {
               className="absolute"
               style={{
                 top: overlay.valTop,
-                ...(overlay.side === 'left'
-                   ? { left: '1.5%' }
-                   : { right: '1.5%' }),
+                 ...(overlay.side === 'left'
+                    ? { left: '3.5%' }
+                    : { right: '3.5%' }),
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
