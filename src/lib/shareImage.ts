@@ -28,6 +28,7 @@ function fmtIn(r: MeasurementRange): string {
 }
 
 export async function generateShareImage(data: ShareImageData): Promise<Blob> {
+  await document.fonts.load('bold 56px Inter');
   const canvas = document.createElement('canvas');
   canvas.width = W;
   canvas.height = H;
