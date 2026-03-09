@@ -28,7 +28,11 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
     >
       <div className="flex items-center justify-around px-2 py-2 pb-[max(0.625rem,env(safe-area-inset-bottom))]">
         {tabs.map((tab) => {
-          const isActive = location.pathname === tab.path;
+          const isActive = tab.path === '/'
+            ? location.pathname === '/'
+            : tab.path === '/capture'
+              ? ['/capture', '/analyze', '/scan-success', '/results'].some(p => location.pathname.startsWith(p))
+              : location.pathname.startsWith(tab.path);
           return (
             <button
               key={tab.path}
