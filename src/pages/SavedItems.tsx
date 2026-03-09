@@ -57,7 +57,7 @@ const SavedItems = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 pt-4 pb-safe-bottom">
+    <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
       <div className="max-w-sm mx-auto">
         <div className="flex items-center gap-2 mb-4">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg" aria-label="Go back">

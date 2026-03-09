@@ -57,7 +57,7 @@ const Welcome = () => {
   }
 
   return (
-    <div className="relative min-h-screen bg-background overflow-hidden pb-safe-bottom">
+    <div className="relative min-h-screen bg-background overflow-hidden pb-safe-tab">
       {/* Sticky top nav bar */}
       <nav className="sticky top-0 z-50 h-[52px] flex items-center justify-between px-5 bg-background/80 backdrop-blur-lg border-b border-border">
         <div className="flex items-center gap-2">

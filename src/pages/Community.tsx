@@ -129,7 +129,7 @@ const Community = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-safe-bottom">
+    <div className="min-h-screen bg-background pb-safe-tab">
       <div className="max-w-sm mx-auto px-4 pt-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-3">

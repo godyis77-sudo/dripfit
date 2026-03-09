@@ -36,7 +36,7 @@ const History = () => {
   const handleDelete = (id: string) => { deleteMeasurement(id); setMeasurements(prev => prev.filter(m => m.id !== id)); };
 
   return (
-    <div className="min-h-screen bg-background px-4 pt-4 pb-8">
+    <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
       <div className="max-w-sm mx-auto">
         <div className="flex items-center gap-2 mb-4">
           <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg" aria-label="Go back">
