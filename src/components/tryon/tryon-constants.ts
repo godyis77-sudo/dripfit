@@ -122,6 +122,46 @@ export function getCaptionSuggestions(category: string): string[] {
 
 export const FREE_MONTHLY_LIMIT = 3;
 
+function getCurrentMonthKey(): string {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+}
+
+/** Server-side: fetch current month's try-on count from tryon_usage table */
+export async function getServerTryOnCount(
+  supabaseClient: { from: (table: string) => any },
+  userId: string,
+): Promise<number> {
+  const monthKey = getCurrentMonthKey();
+  const { data } = await supabaseClient
+    .from('tryon_usage')
+    .select('count')
+    .eq('user_id', userId)
+    .eq('month_key', monthKey)
+    .single();
+  return data?.count ?? 0;
+}
+
+/** Server-side: upsert +1 to current month's try-on count */
+export async function incrementServerTryOnCount(
+  supabaseClient: { from: (table: string) => any },
+  userId: string,
+): Promise<void> {
+  const monthKey = getCurrentMonthKey();
+  const current = await getServerTryOnCount(supabaseClient, userId);
+  if (current === 0) {
+    await supabaseClient
+      .from('tryon_usage')
+      .insert({ user_id: userId, month_key: monthKey, count: 1 });
+  } else {
+    await supabaseClient
+      .from('tryon_usage')
+      .update({ count: current + 1 })
+      .eq('user_id', userId)
+      .eq('month_key', monthKey);
+  }
+}
+
 export function getMonthlyTryOnCount(userId?: string): number {
   const now = new Date();
   const key = userId
