@@ -197,7 +197,7 @@ const ScanSuccess = () => {
                     {val.line1}
                   </p>
                   <p
-                    className="text-[8px] font-black leading-tight"
+                    className="text-[9px] font-black leading-tight"
                     style={{ color: 'hsl(30 10% 25%)' }}
                   >
                     {val.line2}
