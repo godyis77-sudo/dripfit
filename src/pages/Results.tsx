@@ -56,7 +56,9 @@ const Results = () => {
   const [showPhotoPrompt, setShowPhotoPrompt] = useState(() => {
     try { return !localStorage.getItem('profile_photo_prompted'); } catch { return false; }
   });
-  const [guestNudgeDismissed, setGuestNudgeDismissed] = useState(false);
+  const [guestNudgeDismissed, setGuestNudgeDismissed] = useState(() => {
+    try { return sessionStorage.getItem('guest_nudge_dismissed') === 'true'; } catch { return false; }
+  });
   const queryClient = useQueryClient();
 
   const brandSlug = state?.retailer?.toLowerCase().replace(/\s+/g, '-') || '';
