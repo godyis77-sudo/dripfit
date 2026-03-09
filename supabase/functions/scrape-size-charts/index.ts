@@ -5,6 +5,7 @@ const corsHeaders = {
 };
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { successResponse, errorResponse } from "../_shared/validation.ts";
 
 interface RetailerConfig {
   brand_name: string;
