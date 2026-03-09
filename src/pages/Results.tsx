@@ -10,6 +10,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { BodyScanResult, FitPreference, MeasurementRange } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
+import { isGuestMode } from '@/lib/session';
 
 import BottomTabBar from '@/components/BottomTabBar';
 import FitPreferenceToggle from '@/components/results/FitPreferenceToggle';
