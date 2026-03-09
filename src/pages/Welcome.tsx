@@ -233,7 +233,7 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.42 }}
-          className="w-full max-w-[300px] mb-5"
+          className="w-full max-w-[360px] mb-5"
         >
           <div className="grid grid-cols-3 gap-2">
             {SOCIAL_PROOF.map((s) => (
