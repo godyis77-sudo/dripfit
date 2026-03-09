@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Crown, Ruler, Sparkles, Users, ShoppingBag, Store, Shuffle, Eye, Shield, Camera, Mail, Lock, EyeOff as EyeOffIcon, Eye as EyeIcon } from 'lucide-react';
+import { ArrowRight, Crown, Ruler, Sparkles, Users, ShoppingBag, Store, Shuffle, Eye, Shield, Camera } from 'lucide-react';
 import { setOnboarded, setShoppingHabit, setGuestMode, type ShoppingHabit } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import { useAuth } from '@/hooks/useAuth';
