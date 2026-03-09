@@ -19,6 +19,7 @@ import {
   CATEGORIES, ALL_PRODUCT_CATEGORIES,
   getDefaultSharePreference, imageUrlToBase64,
   FREE_MONTHLY_LIMIT, getMonthlyTryOnCount, incrementTryOnCount,
+  getServerTryOnCount, incrementServerTryOnCount,
 } from '@/components/tryon/tryon-constants';
 import type { CatalogProduct } from '@/hooks/useProductCatalog';
 
