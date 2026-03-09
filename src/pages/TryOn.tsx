@@ -55,6 +55,7 @@ const TryOn = () => {
   const [selectedQuickPick, setSelectedQuickPick] = useState<CatalogProduct | null>(null);
   const [layerHistory, setLayerHistory] = useState<string[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [tryOnError, setTryOnError] = useState<string | null>(null);
 
   const hasUnlimitedTryOns = isSubscribed;
   const remainingTryOns = Math.max(0, FREE_MONTHLY_LIMIT - getMonthlyTryOnCount(user?.id));
