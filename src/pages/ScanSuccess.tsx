@@ -191,17 +191,17 @@ const ScanSuccess = () => {
                  }}
                 >
                  <p
-                   className="text-[9px] font-black leading-tight"
-                   style={{ color: '#000' }}
-                 >
-                   {val.line1}
-                 </p>
-                 <p
-                   className="text-[7px] font-bold leading-tight"
-                   style={{ color: 'hsl(30 10% 25%)' }}
-                 >
-                   {val.line2}
-                 </p>
+                    className="text-[10px] font-black leading-tight"
+                    style={{ color: '#000' }}
+                  >
+                    {val.line1}
+                  </p>
+                  <p
+                    className="text-[8px] font-black leading-tight"
+                    style={{ color: 'hsl(30 10% 25%)' }}
+                  >
+                    {val.line2}
+                  </p>
                </div>
             </motion.div>
           );
