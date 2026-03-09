@@ -55,18 +55,24 @@ const Analyze = () => {
     video.setAttribute('muted', '');
     video.setAttribute('playsinline', '');
     video.setAttribute('autoplay', '');
+    video.setAttribute('webkit-playsinline', '');
 
     try {
+      // Reset to start if needed
+      if (video.paused && video.currentTime === 0) {
+        video.load();
+      }
       await video.play();
       setShowVideoPlayFallback(false);
       setVideoFailed(false);
       return true;
-    } catch {
+    } catch (e) {
+      console.warn('[video] play() rejected:', e);
       return false;
     }
   }, []);
 
-  // Retry autoplay a few times before showing manual fallback
+  // Retry autoplay with increasing delays before showing manual fallback
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -74,8 +80,8 @@ const Analyze = () => {
     let cancelled = false;
     let retryTimer: number | null = null;
     let attempts = 0;
-    const MAX_ATTEMPTS = 2;
-    const RETRY_MS = 400;
+    const MAX_ATTEMPTS = 4;
+    const RETRY_DELAYS = [200, 500, 1000, 2000];
 
     const tryAutoplay = async () => {
       if (cancelled) return;
@@ -86,13 +92,16 @@ const Analyze = () => {
       if (attempts < MAX_ATTEMPTS) {
         retryTimer = window.setTimeout(() => {
           void tryAutoplay();
-        }, RETRY_MS);
+        }, RETRY_DELAYS[attempts] || 1000);
       } else if (video.paused) {
         setShowVideoPlayFallback(true);
       }
     };
 
-    void tryAutoplay();
+    // Wait for DOM to settle, then try
+    retryTimer = window.setTimeout(() => {
+      void tryAutoplay();
+    }, 100);
 
     const handleVisibilityChange = () => {
       if (!document.hidden) {
@@ -101,10 +110,21 @@ const Analyze = () => {
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
+    // Also listen for any user interaction on the page to auto-trigger play
+    const handleUserGesture = () => {
+      if (video.paused) {
+        void attemptPlayVideo();
+      }
+    };
+    document.addEventListener('touchstart', handleUserGesture, { once: true });
+    document.addEventListener('click', handleUserGesture, { once: true });
+
     return () => {
       cancelled = true;
       if (retryTimer) window.clearTimeout(retryTimer);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener('touchstart', handleUserGesture);
+      document.removeEventListener('click', handleUserGesture);
     };
   }, [attemptPlayVideo]);
 
