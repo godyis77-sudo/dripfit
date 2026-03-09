@@ -183,6 +183,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-5"
         >
+          <p className="text-2xl font-bold text-primary tracking-tight">DripFit</p>
           <p className="text-muted-foreground text-[12px]">{greeting}{displayName ? ',' : '!'}</p>
           {displayName && <h1 className="font-display text-xl font-bold text-foreground">{displayName}</h1>}
         </motion.div>
