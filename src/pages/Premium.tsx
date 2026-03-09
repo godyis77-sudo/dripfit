@@ -8,6 +8,7 @@ import PremiumBadge from '@/components/monetization/PremiumBadge';
 import { motion } from 'framer-motion';
 import { useAuth, STRIPE_TIERS } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 
 const PLANS = [
   { key: 'annual' as const, label: 'Annual', price: '$4.17', period: '/mo', badge: 'Best Value', total: 'Billed $49.99/year (save 48%)', trial: '7-day free trial' },
@@ -31,6 +32,7 @@ const Premium = () => {
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const { user, isSubscribed, subscriptionEnd, checkSubscription } = useAuth();
+  const [showWinback, setShowWinback] = useState(false);
   const [searchParams] = useSearchParams();
   const [memberCount, setMemberCount] = useState<number | null>(null);
   const [testimonials, setTestimonials] = useState<{ quote_text: string; attribution: string; star_rating: number }[]>([]);
@@ -94,9 +96,15 @@ const Premium = () => {
     }
   };
 
-  const handleManage = async () => {
+  const handleManage = () => {
+    setShowWinback(true);
+  };
+
+  const goToPortal = async (action?: 'pause') => {
+    setShowWinback(false);
     try {
-      const { data: resp, error } = await supabase.functions.invoke('customer-portal');
+      const body = action ? { action } : undefined;
+      const { data: resp, error } = await supabase.functions.invoke('customer-portal', { body });
       if (error) throw error;
       const payload = resp?.data ?? resp;
       if (payload?.url) {
@@ -298,6 +306,33 @@ const Premium = () => {
           </p>
         </div>
       </div>
+
+      {/* Win-back intercept sheet */}
+      <Sheet open={showWinback} onOpenChange={setShowWinback}>
+        <SheetContent side="bottom" className="rounded-t-2xl px-5 pb-8 pt-5">
+          <SheetHeader className="text-left mb-4">
+            <SheetTitle className="text-[17px] font-bold text-foreground">Before you go…</SheetTitle>
+          </SheetHeader>
+          <p className="text-[13px] text-muted-foreground leading-relaxed mb-6">
+            Pause your subscription for 30 days instead of cancelling — you keep all your data and Premium features during the pause.
+          </p>
+          <div className="space-y-2">
+            <Button
+              className="w-full h-11 rounded-xl btn-luxury text-primary-foreground font-bold"
+              onClick={() => goToPortal('pause')}
+            >
+              Pause Instead
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full h-11 rounded-xl font-semibold"
+              onClick={() => goToPortal()}
+            >
+              Continue to Portal
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
