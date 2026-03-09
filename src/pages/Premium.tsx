@@ -39,9 +39,9 @@ const Premium = () => {
   useEffect(() => {
     const fetchSocialProof = async () => {
       const [testimonialsRes] = await Promise.all([
-        supabase.from('premium_testimonials' as any).select('quote_text, attribution, star_rating').eq('is_active', true).limit(3),
+        supabase.from('premium_testimonials').select('quote_text, attribution, star_rating').eq('is_active', true).limit(3),
       ]);
-      if (testimonialsRes.data) setTestimonials(testimonialsRes.data as any);
+      if (testimonialsRes.data) setTestimonials(testimonialsRes.data);
       const { count } = await supabase
         .from('user_subscriptions')
         .select('*', { count: 'exact', head: true })
