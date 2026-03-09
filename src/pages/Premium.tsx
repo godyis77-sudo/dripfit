@@ -47,7 +47,8 @@ const Premium = () => {
       const { count } = await supabase
         .from('user_subscriptions')
         .select('*', { count: 'exact', head: true })
-        .eq('is_active', true);
+        .eq('is_active', true)
+        .gte('current_period_end', new Date().toISOString());
       if (count !== null) setMemberCount(count);
     };
     fetchSocialProof();
