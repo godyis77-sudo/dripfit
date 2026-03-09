@@ -47,6 +47,14 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
       <p className="section-label mb-2">Body Measurement Map</p>
       <div className="flex justify-center">
         <div className="relative rounded-[1rem] border-[3px] border-primary" style={{ boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15), inset 0 0 14px 3px hsl(45 88% 50% / 0.2)' }}>
+          <span className="sr-only">
+            {`Body measurements diagram: ${[
+              `Height ${heightCm} cm`,
+              ...measurementLines
+                .filter(l => m[l.key])
+                .map(l => `${l.label} ${m[l.key].min.toFixed(0)}–${m[l.key].max.toFixed(0)} cm`),
+            ].join(', ')}.`}
+          </span>
           <div className="overflow-hidden rounded-[calc(1rem-3px)]">
             <img
               src={scanResultsFull}
