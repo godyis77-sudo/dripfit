@@ -306,7 +306,6 @@ const Premium = () => {
           </p>
         </div>
       </div>
-      </div>
 
       {/* Win-back intercept sheet */}
       <Sheet open={showWinback} onOpenChange={setShowWinback}>
@@ -337,4 +336,5 @@ const Premium = () => {
     </div>
   );
 };
+
 export default Premium;
