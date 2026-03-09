@@ -255,3 +255,7 @@
     }
   }
 }
+
+.pb-safe-tab {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+}
