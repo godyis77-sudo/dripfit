@@ -33,39 +33,52 @@ export async function generateShareImage(data: ShareImageData): Promise<Blob> {
   canvas.height = H;
   const ctx = canvas.getContext('2d')!;
 
-  // Background gradient
-  const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, '#1A1A1A');
-  grad.addColorStop(1, '#0A0A0A');
-  ctx.fillStyle = grad;
+  const GOLD = '#C9A84C';
+  const GOLD_DIM = 'rgba(201, 168, 76, 0.25)';
+  const GOLD_FAINT = 'rgba(201, 168, 76, 0.08)';
+  const BG = '#0D0D0D';
+  const WHITE = '#FFFFFF';
+  const GRAY = '#999999';
+  const DARK_GRAY = '#666666';
+
+  // Background
+  ctx.fillStyle = BG;
   ctx.fillRect(0, 0, W, H);
 
-  // Title
-  ctx.fillStyle = '#B8960C';
-  ctx.font = 'bold 48px Inter, system-ui, sans-serif';
+  // ── Top: DripFit wordmark ──
+  ctx.fillStyle = GOLD;
+  ctx.font = 'bold 56px Inter, system-ui, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('SCAN RESULTS', W / 2, 100);
+  ctx.fillText('DripFit', W / 2, 100);
+
+  // Subtle divider
+  ctx.strokeStyle = GOLD_DIM;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(200, 130);
+  ctx.lineTo(W - 200, 130);
+  ctx.stroke();
 
   // Subtle center line for body silhouette area
-  ctx.strokeStyle = 'rgba(184, 150, 12, 0.15)';
+  ctx.strokeStyle = 'rgba(201, 168, 76, 0.12)';
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(W / 2, 160);
+  ctx.moveTo(W / 2, 180);
   ctx.lineTo(W / 2, 1400);
   ctx.stroke();
 
-  // Draw body silhouette outline (simplified stylized shape)
-  drawSilhouette(ctx);
+  // Draw body silhouette outline
+  drawSilhouette(ctx, GOLD_DIM);
 
   // Height indicator
   ctx.textAlign = 'left';
-  ctx.fillStyle = '#B8960C';
+  ctx.fillStyle = GOLD;
   ctx.font = 'bold 28px Inter, system-ui, sans-serif';
   ctx.fillText('HEIGHT', 60, 370);
-  ctx.fillStyle = '#FFFFFF';
+  ctx.fillStyle = WHITE;
   ctx.font = 'bold 24px Inter, system-ui, sans-serif';
   ctx.fillText(`${(data.heightCm * CM_TO_IN).toFixed(1)} in`, 60, 400);
-  ctx.fillStyle = '#999999';
+  ctx.fillStyle = GRAY;
   ctx.font = '22px Inter, system-ui, sans-serif';
   ctx.fillText(`${data.heightCm.toFixed(0)} cm`, 60, 428);
 
@@ -78,7 +91,7 @@ export async function generateShareImage(data: ShareImageData): Promise<Blob> {
     const bodyEdge = pos.side === 'left' ? 360 : 720;
 
     // Leader line
-    ctx.strokeStyle = 'rgba(184, 150, 12, 0.4)';
+    ctx.strokeStyle = 'rgba(201, 168, 76, 0.35)';
     ctx.lineWidth = 1.5;
     ctx.setLineDash([8, 4]);
     ctx.beginPath();
@@ -87,31 +100,31 @@ export async function generateShareImage(data: ShareImageData): Promise<Blob> {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Dots at endpoints
-    ctx.fillStyle = '#B8960C';
+    // Dot at body edge
+    ctx.fillStyle = GOLD;
     ctx.beginPath();
     ctx.arc(bodyEdge, pos.y + 8, 5, 0, Math.PI * 2);
     ctx.fill();
 
     // Label
     ctx.textAlign = pos.side === 'left' ? 'left' : 'right';
-    ctx.fillStyle = '#B8960C';
+    ctx.fillStyle = GOLD;
     ctx.font = 'bold 26px Inter, system-ui, sans-serif';
     ctx.fillText(pos.label, labelX, pos.y);
-    ctx.fillStyle = '#FFFFFF';
+    ctx.fillStyle = WHITE;
     ctx.font = 'bold 22px Inter, system-ui, sans-serif';
     ctx.fillText(fmtIn(m), labelX, pos.y + 30);
-    ctx.fillStyle = '#888888';
+    ctx.fillStyle = GRAY;
     ctx.font = '20px Inter, system-ui, sans-serif';
     ctx.fillText(fmt(m), labelX, pos.y + 56);
   }
 
   // Fit Identity card
   const cardY = 1460;
-  ctx.fillStyle = 'rgba(184, 150, 12, 0.08)';
+  ctx.fillStyle = GOLD_FAINT;
   roundRect(ctx, 80, cardY, W - 160, 120, 20);
   ctx.fill();
-  ctx.strokeStyle = 'rgba(184, 150, 12, 0.3)';
+  ctx.strokeStyle = 'rgba(201, 168, 76, 0.3)';
   ctx.lineWidth = 2;
   roundRect(ctx, 80, cardY, W - 160, 120, 20);
   ctx.stroke();
@@ -125,28 +138,28 @@ export async function generateShareImage(data: ShareImageData): Promise<Blob> {
   items.forEach((item, i) => {
     const cx = 80 + colW * i + colW / 2;
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#999999';
+    ctx.fillStyle = GRAY;
     ctx.font = '18px Inter, system-ui, sans-serif';
     ctx.fillText(item.label, cx, cardY + 45);
-    ctx.fillStyle = '#FFFFFF';
+    ctx.fillStyle = WHITE;
     ctx.font = 'bold 36px Inter, system-ui, sans-serif';
     ctx.fillText(item.value, cx, cardY + 90);
   });
 
-  // Crown logo watermark
+  // Crown watermark
   drawCrown(ctx, W - 120, H - 200, 60);
 
   // DRIPFITCHECK wordmark
   ctx.textAlign = 'right';
-  ctx.fillStyle = '#B8960C';
+  ctx.fillStyle = GOLD;
   ctx.font = 'bold 32px Inter, system-ui, sans-serif';
   ctx.fillText('DRIPFITCHECK', W - 60, H - 130);
 
-  // CTA at bottom
+  // App Store CTA
   ctx.textAlign = 'center';
-  ctx.fillStyle = '#666666';
+  ctx.fillStyle = DARK_GRAY;
   ctx.font = '24px Inter, system-ui, sans-serif';
-  ctx.fillText('Get your exact measurements at dripfitcheck.lovable.app', W / 2, H - 50);
+  ctx.fillText('Download free — dripfitcheck.lovable.app', W / 2, H - 50);
 
   return new Promise((resolve) => {
     canvas.toBlob((blob) => resolve(blob!), 'image/png');
