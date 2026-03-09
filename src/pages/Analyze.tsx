@@ -228,13 +228,12 @@ const Analyze = () => {
         {'>'} {MESSAGES[msgIdx]}
       </motion.p>
 
-      {/* Progress bar — glowing cyan */}
-      <div className="w-full max-w-[260px] h-[3px] bg-[hsl(180_80%_50%_/_0.1)] rounded-full overflow-hidden border border-[hsl(180_80%_50%_/_0.15)]">
+      {/* Progress bar — gold */}
+      <div className="w-full max-w-[260px] h-[3px] bg-primary/10 rounded-full overflow-hidden border border-primary/20">
         <motion.div
-          className="h-full rounded-full"
+          className="h-full rounded-full bg-primary"
           style={{
-            background: 'linear-gradient(90deg, hsl(180 80% 50%), hsl(var(--primary)))',
-            boxShadow: '0 0 10px 2px hsl(180 80% 50% / 0.5)',
+            boxShadow: '0 0 10px 2px hsl(45 88% 50% / 0.5)',
           }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.3 }}
@@ -242,8 +241,8 @@ const Analyze = () => {
       </div>
 
       {/* Measurement count */}
-      <p className="text-[10px] font-mono text-[hsl(180_80%_60%_/_0.5)] mt-3 tracking-wider">
-        DATAPOINTS: {revealedKeys.length}/{REVEAL_ORDER.length} CAPTURED
+      <p className="text-[10px] font-mono text-primary/50 mt-3 tracking-wider">
+        {revealedKeys.length} of {REVEAL_ORDER.length} measurements found
       </p>
     </div>
   );
