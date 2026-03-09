@@ -9,8 +9,7 @@ import { setOnboarded, setShoppingHabit, setGuestMode, type ShoppingHabit } from
 import { trackEvent } from '@/lib/analytics';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { lovable } from '@/integrations/lovable/index';
-import { useToast } from '@/hooks/use-toast';
+import AuthForm from '@/components/auth/AuthForm';
 
 import heroScan from '@/assets/onboarding-scan-results.jpg';
 import scanResultsPreview from '@/assets/scan-results-preview.png';
