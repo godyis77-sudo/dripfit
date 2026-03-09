@@ -37,6 +37,7 @@ const Analyze = () => {
   const [progress, setProgress] = useState(0);
   const [revealedKeys, setRevealedKeys] = useState<string[]>([]);
   const [realData, setRealData] = useState<any>(null);
+  const [scanLineY, setScanLineY] = useState(0);
   const minTimeElapsed = useRef(false);
   const resultReady = useRef<any>(null);
   const effectRan = useRef(false);
