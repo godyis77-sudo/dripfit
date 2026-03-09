@@ -70,7 +70,7 @@ const Analyze = () => {
     const scanStart = Date.now();
     const scanLineInterval = setInterval(() => {
       const elapsed = Date.now() - scanStart;
-      const cycleMs = 3000; // one full sweep cycle
+      const cycleMs = 4500; // one full sweep cycle — slower for 30s
       const phase = (elapsed % cycleMs) / cycleMs; // 0→1
       // Triangle wave: 0→1→0
       const tri = phase < 0.5 ? phase * 2 : 2 - phase * 2;
