@@ -96,9 +96,15 @@ const Premium = () => {
     }
   };
 
-  const handleManage = async () => {
+  const handleManage = () => {
+    setShowWinback(true);
+  };
+
+  const goToPortal = async (action?: 'pause') => {
+    setShowWinback(false);
     try {
-      const { data: resp, error } = await supabase.functions.invoke('customer-portal');
+      const body = action ? { action } : undefined;
+      const { data: resp, error } = await supabase.functions.invoke('customer-portal', { body });
       if (error) throw error;
       const payload = resp?.data ?? resp;
       if (payload?.url) {
