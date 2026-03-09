@@ -18,10 +18,12 @@ const FitPreferenceToggle = ({ value, onChange }: FitPreferenceToggleProps) => {
   return (
     <div className="mb-4">
       <p className="section-label mb-1.5">Fit Preference</p>
-      <div className="relative flex bg-card rounded-lg p-0.5 border border-border">
+      <div role="radiogroup" aria-label="Fit preference" className="relative flex bg-card rounded-lg p-0.5 border border-border">
         {options.map(opt => (
           <button
             key={opt.value}
+            role="radio"
+            aria-checked={value === opt.value}
             onClick={() => onChange(opt.value)}
             className={`relative z-10 flex-1 py-2 text-[12px] font-semibold rounded-md transition-colors ${
               value === opt.value ? 'text-primary-foreground' : 'text-muted-foreground'
