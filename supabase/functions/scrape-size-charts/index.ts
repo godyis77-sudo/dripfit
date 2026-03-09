@@ -255,15 +255,9 @@ Deno.serve(async (req) => {
       await delay(1500);
     }
 
-    return new Response(
-      JSON.stringify({ scraped, inserted, skipped, failed }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return successResponse({ scraped, inserted, skipped, failed }, 200, corsHeaders);
   } catch (e) {
     console.error("scrape-size-charts error:", e);
-    return new Response(
-      JSON.stringify({ error: e.message || "Internal server error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return errorResponse((e as any).message || "Internal server error", "INTERNAL_ERROR", 500, corsHeaders);
   }
 });

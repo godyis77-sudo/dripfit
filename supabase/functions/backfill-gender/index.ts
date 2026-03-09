@@ -251,9 +251,6 @@ serve(async (req) => {
 
   } catch (e) {
     console.error("backfill-gender error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return errorResponse(e instanceof Error ? e.message : "Unknown", "INTERNAL_ERROR", 500, corsHeaders);
   }
 });

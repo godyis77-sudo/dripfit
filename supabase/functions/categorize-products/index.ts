@@ -460,15 +460,10 @@ serve(async (req) => {
 
     console.log(`Done: ${results.length} processed, ${reclassified} reclassified, ${deactivated} deactivated, ${genderFixed} gender-fixed, ${categoryPages.length} cat-pages, ${failedIds.length} failed`);
 
-    return new Response(JSON.stringify(summary), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return successResponse(summary, 200, corsHeaders);
   } catch (e) {
     console.error("categorize-products error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return errorResponse(e instanceof Error ? e.message : "Unknown error", "INTERNAL_ERROR", 500, corsHeaders);
   }
 });
 

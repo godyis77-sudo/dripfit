@@ -256,8 +256,7 @@ Deno.serve(async (req) => {
 
     console.log(`[scrape-all] Batch ${batchNumber + 1} done. Inserted: ${totalInserted}`);
 
-    return new Response(JSON.stringify({
-      success: true,
+    return successResponse({
       batch: batchNumber,
       totalBatches: batchTotal,
       totalJobs: batchJobs.length,
@@ -266,14 +265,9 @@ Deno.serve(async (req) => {
       deferredBrands: [...new Set(deferredJobs.map((j) => j.brand))],
       totalInserted,
       results,
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    }, 200, corsHeaders);
   } catch (err: any) {
     console.error('[scrape-all] Error:', err);
-    return new Response(JSON.stringify({ success: false, error: err.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return errorResponse(err.message, "INTERNAL_ERROR", 500, corsHeaders);
   }
 });
