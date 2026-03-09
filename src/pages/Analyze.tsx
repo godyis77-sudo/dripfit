@@ -60,7 +60,7 @@ const Analyze = () => {
     if (effectRan.current) return;
     effectRan.current = true;
 
-    const msgInterval = setInterval(() => setMsgIdx(p => (p + 1) % MESSAGES.length), 2000);
+    const msgInterval = setInterval(() => setMsgIdx(p => (p + 1) % MESSAGES.length), 2500);
 
     const progressInterval = setInterval(() => {
       setProgress(p => Math.min(p + (90 / (TOTAL_SCAN_TIME / 100)), 90));
