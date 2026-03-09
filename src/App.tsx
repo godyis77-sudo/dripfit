@@ -34,6 +34,7 @@ import Browse from "./pages/Browse";
 import ProfileSettings from "./pages/ProfileSettings";
 import ResetPassword from "./pages/ResetPassword";
 import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 
 const queryClient = new QueryClient();
 
