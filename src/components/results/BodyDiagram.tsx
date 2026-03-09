@@ -88,18 +88,15 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 animate={{ opacity: 1 }}
                 transition={{ delay: overlay.delay + 0.3, duration: 0.3, ease: 'easeOut' }}
               >
-                <div
-                  className="bg-background/80 rounded px-1 py-0.5 backdrop-blur-sm"
-                  style={{ textAlign: overlay.side === 'left' ? 'left' : 'right' }}
-                >
+                <div style={{ textAlign: overlay.side === 'left' ? 'left' : 'right' }}>
                   <p
-                    className="text-[11px] font-black leading-tight"
+                    className="text-[9px] font-black leading-tight"
                     style={{ color: '#000' }}
                   >
                     {val.line1}
                   </p>
                   <p
-                    className="text-[9px] font-bold leading-tight"
+                    className="text-[7px] font-bold leading-tight"
                     style={{ color: 'hsl(30 10% 25%)' }}
                   >
                     {val.line2}
