@@ -401,6 +401,9 @@ export type Database = {
           gender: string | null
           id: string
           instagram_handle: string | null
+          referral_code: string | null
+          referral_credits: number
+          referred_by: string | null
           scan_confidence: number | null
           shopping_region: string | null
           updated_at: string
@@ -413,6 +416,9 @@ export type Database = {
           gender?: string | null
           id?: string
           instagram_handle?: string | null
+          referral_code?: string | null
+          referral_credits?: number
+          referred_by?: string | null
           scan_confidence?: number | null
           shopping_region?: string | null
           updated_at?: string
@@ -425,6 +431,9 @@ export type Database = {
           gender?: string | null
           id?: string
           instagram_handle?: string | null
+          referral_code?: string | null
+          referral_credits?: number
+          referred_by?: string | null
           scan_confidence?: number | null
           shopping_region?: string | null
           updated_at?: string
