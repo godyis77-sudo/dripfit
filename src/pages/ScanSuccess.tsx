@@ -150,7 +150,7 @@ const ScanSuccess = () => {
 
       {/* Scan results image with measurement overlays */}
       <motion.div
-        className="relative w-full max-w-[400px] mx-auto mt-2"
+        className="relative w-full max-w-[400px] mx-auto mt-2 px-2"
         initial={{ opacity: 0, scale: 0.92 }}
         animate={{ opacity: imageLoaded ? 1 : 0, scale: imageLoaded ? 1 : 0.92 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
