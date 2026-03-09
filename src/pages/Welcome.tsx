@@ -114,7 +114,7 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.4 }}
-          className="w-full max-w-[300px] mb-6 mt-4"
+          className="w-full max-w-[360px] mb-6 mt-4"
         >
           <p className="section-label mb-2">How it works</p>
           <div className="space-y-1.5">
