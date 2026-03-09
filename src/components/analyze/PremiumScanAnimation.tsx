@@ -110,9 +110,9 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
         className="absolute inset-x-0 pointer-events-none z-10"
         style={{
           top: `${scanLineY}%`,
-          height: '2px',
+          height: '1px',
           background: 'linear-gradient(to right, transparent 0%, hsl(45 90% 55%) 10%, hsl(45 95% 70%) 50%, hsl(45 90% 55%) 90%, transparent 100%)',
-          boxShadow: '0 0 14px 5px hsl(45 88% 50% / 1), 0 0 35px 10px hsl(45 88% 50% / 0.6), 0 0 70px 20px hsl(45 88% 50% / 0.2)',
+          boxShadow: '0 0 6px 3px hsl(45 88% 50% / 0.95), 0 0 16px 6px hsl(45 88% 50% / 0.5), 0 0 40px 12px hsl(45 88% 50% / 0.2)',
         }}
         animate={{ opacity: scanComplete ? 0 : 1 }}
         transition={{ duration: 0.5 }}
