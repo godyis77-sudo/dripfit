@@ -16,6 +16,7 @@ import { STRIPE_TIERS } from '@/hooks/useAuth';
 import { getUserRegion, setUserRegion, loadRegionFromDb, persistRegionToDb, type UserRegion } from '@/lib/session';
 import FavoriteRetailers from './FavoriteRetailers';
 import PreferredBrands from './PreferredBrands';
+import { ReferralCard } from './ReferralCard';
 
 const SectionHeader = forwardRef<HTMLParagraphElement, { children: React.ReactNode }>(
   ({ children }, ref) => (
@@ -132,6 +133,8 @@ const SettingsTab = ({
           </Button>
         </div>
       )}
+
+      <ReferralCard />
 
       {/* Account */}
       <SectionHeader>Account</SectionHeader>
