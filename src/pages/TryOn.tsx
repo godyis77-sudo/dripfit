@@ -281,7 +281,7 @@ const TryOn = () => {
         toast({ title: `${accessoryCategory || 'Accessory'} added!`, description: 'Keep adding items or finish your look.' });
         if (user) {
           try {
-            const resultUrl = await uploadBase64ToStorage(data.resultImage, 'result');
+            const resultUrl = await uploadBase64ToStorage(payload.resultImage, 'result');
             const { data: latestPosts } = await supabase.from('tryon_posts').select('id, product_urls').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
             if (latestPosts && latestPosts.length > 0) {
               const existingUrls: string[] = (latestPosts[0].product_urls as string[]) || [];
