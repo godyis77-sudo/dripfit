@@ -25,14 +25,14 @@ interface MeasurementOverlay {
 }
 
 const OVERLAYS: MeasurementOverlay[] = [
-  { key: 'height', label: 'HEIGHT', side: 'left', valTop: '12%', delay: 0 },
-  { key: 'shoulder', label: 'SHOULDER', side: 'right', valTop: '18.9%', delay: 0.05 },
-  { key: 'chest', label: 'CHEST', side: 'left', valTop: '24.1%', delay: 0.1 },
-  { key: 'bust', label: 'BUST', side: 'right', valTop: '26.3%', delay: 0.15 },
-  { key: 'sleeve', label: 'SLEEVE', side: 'left', valTop: '33.8%', delay: 0.2 },
-  { key: 'waist', label: 'WAIST', side: 'right', valTop: '38.2%', delay: 0.25 },
-  { key: 'hips', label: 'HIPS', side: 'right', valTop: '46.1%', delay: 0.3 },
-  { key: 'inseam', label: 'INSEAM', side: 'left', valTop: '62.7%', delay: 0.35 },
+  { key: 'height', label: 'HEIGHT', side: 'left', valTop: '14.5%', delay: 0 },
+  { key: 'shoulder', label: 'SHOULDER', side: 'right', valTop: '21.5%', delay: 0.05 },
+  { key: 'chest', label: 'CHEST', side: 'left', valTop: '27%', delay: 0.1 },
+  { key: 'bust', label: 'BUST', side: 'right', valTop: '30%', delay: 0.15 },
+  { key: 'sleeve', label: 'SLEEVE', side: 'left', valTop: '36.5%', delay: 0.2 },
+  { key: 'waist', label: 'WAIST', side: 'right', valTop: '41%', delay: 0.25 },
+  { key: 'hips', label: 'HIPS', side: 'right', valTop: '49%', delay: 0.3 },
+  { key: 'inseam', label: 'INSEAM', side: 'left', valTop: '65.5%', delay: 0.35 },
 ];
 
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
@@ -79,16 +79,19 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 key={overlay.key}
                 className="absolute"
                 style={{
-                  top: `calc(${overlay.valTop} + 3px)`,
+                  top: overlay.valTop,
                   ...(overlay.side === 'left'
-                    ? { left: '2%' }
-                    : { right: '2%' }),
+                    ? { left: '-1px' }
+                    : { right: '-1px' }),
                 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: overlay.delay + 0.3, duration: 0.3, ease: 'easeOut' }}
               >
-                <div style={{ textAlign: overlay.side === 'left' ? 'left' : 'right' }}>
+                <div
+                  className="bg-background/80 rounded px-1 py-0.5 backdrop-blur-sm"
+                  style={{ textAlign: overlay.side === 'left' ? 'left' : 'right' }}
+                >
                   <p
                     className="text-[11px] font-black leading-tight"
                     style={{ color: '#000' }}
