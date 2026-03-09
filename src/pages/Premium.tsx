@@ -112,7 +112,7 @@ const Premium = () => {
       <div className="max-w-sm mx-auto">
         {/* Header */}
         <div className="flex items-center gap-2 mb-4">
-          <Button variant="ghost" size="icon" onClick={handleBack} className="h-8 w-8 rounded-lg">
+          <Button variant="ghost" size="icon" onClick={handleBack} className="h-8 w-8 rounded-lg" aria-label="Go back">
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <PremiumBadge label="DRIPFITCHECK Premium" />

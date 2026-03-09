@@ -215,6 +215,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                         />
                         <button
                           className="shrink-0 h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center active:scale-90 transition-transform"
+                          aria-label="Send comment"
                           onClick={(e) => {
                             const input = (e.currentTarget.previousSibling as HTMLInputElement);
                             if (input?.value?.trim()) {
