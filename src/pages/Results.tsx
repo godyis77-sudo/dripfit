@@ -227,8 +227,8 @@ const Results = () => {
             )}
           </div>
         ) : null}
+  const [guestNudgeDismissed, setGuestNudgeDismissed] = useState(false);
 
-        
 
         {/* Post-scan profile photo prompt */}
         <AnimatePresence>
