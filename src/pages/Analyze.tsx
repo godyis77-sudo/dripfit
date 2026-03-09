@@ -41,6 +41,7 @@ const Analyze = () => {
   const resultReady = useRef<any>(null);
   const effectRan = useRef(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const revealTimers = useRef<number[]>([]);
 
   const attemptPlayVideo = useCallback(async () => {
     const video = videoRef.current;
@@ -124,11 +125,11 @@ const Analyze = () => {
 
 
     const revealInterval = TOTAL_SCAN_TIME / REVEAL_ORDER.length;
-    REVEAL_ORDER.forEach((key, i) => {
-      setTimeout(() => {
+    revealTimers.current = REVEAL_ORDER.map((key, i) =>
+      window.setTimeout(() => {
         setRevealedKeys(prev => [...prev, key]);
-      }, revealInterval * (i + 0.5));
-    });
+      }, revealInterval * (i + 0.5))
+    );
 
     setTimeout(() => {
       minTimeElapsed.current = true;
@@ -140,6 +141,8 @@ const Analyze = () => {
     return () => {
       clearInterval(msgInterval);
       clearInterval(progressInterval);
+      revealTimers.current.forEach(id => window.clearTimeout(id));
+      revealTimers.current = [];
     };
   }, [state, navigate, user]);
 
