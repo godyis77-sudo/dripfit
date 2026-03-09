@@ -50,6 +50,9 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
   const [displayName, setDisplayName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotSent, setForgotSent] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
 
   // If user becomes authenticated, fire onComplete
   useEffect(() => {
@@ -114,16 +117,19 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
   };
 
   const handleForgotPassword = async () => {
-    if (!email) {
-      toast({ title: 'Enter your email first', description: 'Type your email above, then tap "Forgot password?" again.' });
+    if (!forgotEmail) {
+      toast({ title: 'Enter your email', description: 'Please type your email address above.', variant: 'destructive' });
       return;
     }
+    setLoading(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` });
+      const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, { redirectTo: `${window.location.origin}/reset-password` });
       if (error) throw error;
-      toast({ title: 'Reset link sent', description: 'Check your inbox for the password reset link.' });
+      setForgotSent(true);
     } catch (err: any) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -160,6 +166,42 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 px-4 pb-4">
+          {/* Forgot password inline flow */}
+          {isLogin && showForgot ? (
+            <div className="space-y-3 py-2">
+              {forgotSent ? (
+                <div className="text-center space-y-3">
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                    <Mail className="h-5 w-5 text-primary" />
+                  </div>
+                  <p className="text-[13px] font-semibold text-foreground">Check your email</p>
+                  <p className="text-[12px] text-muted-foreground">We sent a reset link to <span className="font-medium text-foreground">{forgotEmail}</span></p>
+                  <button type="button" onClick={() => { setShowForgot(false); setForgotSent(false); }} className="text-[11px] text-primary font-semibold hover:underline">
+                    ← Back to sign in
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <p className="text-[13px] font-semibold text-foreground">Reset your password</p>
+                  <p className="text-[11px] text-muted-foreground">Enter your email and we'll send a reset link.</p>
+                  <div className="space-y-1">
+                    <Label htmlFor="forgot-email" className="text-[11px] text-foreground/70">Email</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                      <Input id="forgot-email" type="email" placeholder="you@example.com" value={forgotEmail} onChange={e => setForgotEmail(e.target.value)} className="pl-8 rounded-lg h-9 text-[13px] border-border/60 focus:border-primary" required />
+                    </div>
+                  </div>
+                  <Button type="button" onClick={handleForgotPassword} className="w-full h-10 rounded-lg btn-luxury text-primary-foreground font-display font-bold text-[13px]" disabled={loading}>
+                    {loading ? 'Sending…' : 'Send Reset Link'}
+                  </Button>
+                  <button type="button" onClick={() => { setShowForgot(false); setForgotSent(false); }} className="text-[11px] text-primary font-semibold hover:underline block mx-auto">
+                    ← Back to sign in
+                  </button>
+                </>
+              )}
+            </div>
+          ) : (
+          <>
           {/* Value props for sign up */}
           {!isLogin && (
             <div className="flex items-center justify-center gap-3 py-1">
@@ -215,7 +257,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
               </div>
             </div>
             {isLogin && (
-              <button type="button" onClick={handleForgotPassword} className="text-[11px] text-primary font-semibold hover:underline py-1 px-1 -ml-1">
+              <button type="button" onClick={() => { setShowForgot(true); setForgotEmail(email); }} className="text-[11px] text-primary underline self-end -mt-1 mb-1">
                 Forgot password?
               </button>
             )}
@@ -245,6 +287,8 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
             >
               Continue as Guest →
             </button>
+          )}
+          </>
           )}
         </CardContent>
       </Card>
