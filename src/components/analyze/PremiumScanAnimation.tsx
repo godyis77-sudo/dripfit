@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import scanResultsFull from '@/assets/scan-results-full.jpg';
+import bodySilhouette from '@/assets/body-silhouette-clean.png';
 
 interface Props {
   scanLineY: number;
@@ -66,7 +66,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
     >
       {/* Base image with progressive brightness */}
       <motion.img
-        src={scanResultsFull}
+        src={bodySilhouette}
         className="w-full h-auto block"
         alt="body scan"
         animate={{
