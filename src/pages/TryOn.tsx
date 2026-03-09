@@ -55,6 +55,7 @@ const TryOn = () => {
   const [selectedQuickPick, setSelectedQuickPick] = useState<CatalogProduct | null>(null);
   const [layerHistory, setLayerHistory] = useState<string[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [tryOnError, setTryOnError] = useState<string | null>(null);
 
   const hasUnlimitedTryOns = isSubscribed;
   const remainingTryOns = Math.max(0, FREE_MONTHLY_LIMIT - getMonthlyTryOnCount(user?.id));
@@ -176,6 +177,7 @@ const TryOn = () => {
     setDescription(null);
     trackEvent('tryon_started');
     try {
+      setTryOnError(null);
       const { data, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto, clothingPhoto, itemType: category || 'clothing' } });
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
@@ -184,7 +186,9 @@ const TryOn = () => {
       if (data.resultImage) { setResultImage(data.resultImage); setShowSuccessOverlay(true); setTimeout(() => setShowSuccessOverlay(false), 1500); if (user) autoSaveToProfile(data.resultImage); }
       else if (data.description) { setDescription(data.description); }
     } catch (err: any) {
-      toast({ title: 'Try-On failed', description: err.message, variant: 'destructive' });
+      const msg = err.message || 'Generation failed. Please try again.';
+      setTryOnError(msg);
+      toast({ title: 'Try-On failed', description: msg, variant: 'destructive' });
     } finally { setLoading(false); }
   };
 
@@ -415,6 +419,15 @@ const TryOn = () => {
             <Button className="w-full h-11 rounded-lg text-sm font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30" onClick={handleTryOn} disabled={loading || !canGenerate}>
               {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating your preview…</> : <><Sparkles className="mr-2 h-4 w-4" /> Generate Try-On</>}
             </Button>
+
+            {tryOnError && !loading && (
+              <div className="flex flex-col items-center gap-2 mt-2">
+                <p className="text-[12px] text-destructive text-center">{tryOnError}</p>
+                <Button variant="outline" size="sm" className="rounded-lg text-[12px] border-destructive/30 text-destructive hover:bg-destructive/5" onClick={handleTryOn}>
+                  Try again
+                </Button>
+              </div>
+            )}
 
             {loading && (
               <div className="flex flex-col items-center mt-3 mb-1 gap-2">
