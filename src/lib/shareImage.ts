@@ -167,7 +167,7 @@ export async function generateShareImage(data: ShareImageData): Promise<Blob> {
 }
 
 function drawSilhouette(ctx: CanvasRenderingContext2D) {
-  ctx.strokeStyle = 'rgba(184, 150, 12, 0.25)';
+  ctx.strokeStyle = 'rgba(201, 168, 76, 0.25)';
   ctx.lineWidth = 3;
   ctx.beginPath();
   // Head
