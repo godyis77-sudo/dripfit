@@ -227,7 +227,7 @@ const Results = () => {
             )}
           </div>
         ) : null}
-  const [guestNudgeDismissed, setGuestNudgeDismissed] = useState(false);
+
         {/* Guest sign-up nudge */}
         {isGuestMode() && !user && !guestNudgeDismissed && (
           <div className="mb-3 rounded-xl border border-primary/20 bg-primary/5 p-4 relative">
