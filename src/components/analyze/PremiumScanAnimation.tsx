@@ -146,7 +146,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
         className="absolute inset-x-0 top-0 pointer-events-none transition-all duration-150 z-[7]"
         style={{
           height: `${scanLineY}%`,
-          background: 'linear-gradient(to bottom, hsl(45 88% 50% / 0.04), hsl(45 88% 50% / 0.08), hsl(45 88% 50% / 0.02))',
+          background: 'linear-gradient(to bottom, transparent, hsl(45 88% 50% / 0.03), hsl(45 88% 50% / 0.05))',
           opacity: scanComplete ? 0 : 1,
         }}
       />
