@@ -79,7 +79,7 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center max-w-[300px] mb-6"
+          className="text-center max-w-[360px] mb-6"
         >
           <h1 className="font-display text-[28px] font-bold tracking-tight mb-2 leading-[1.12] text-foreground">
             Know your size{' '}
@@ -95,7 +95,7 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.4 }}
-          className="w-full max-w-[300px] mb-2"
+          className="w-full max-w-[360px] mb-2"
         >
           <Button
             onClick={handleStartScan}
@@ -114,7 +114,7 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.4 }}
-          className="w-full max-w-[300px] mb-6 mt-4"
+          className="w-full max-w-[360px] mb-6 mt-4"
         >
           <p className="section-label mb-2">How it works</p>
           <div className="space-y-1.5">
@@ -144,7 +144,7 @@ const Welcome = () => {
         </motion.div>
 
         {/* Separator */}
-        <div className="w-full max-w-[300px] my-6">
+        <div className="w-full max-w-[360px] my-6">
           <div className="h-px bg-border" />
         </div>
 
@@ -153,7 +153,7 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.4 }}
-          className="w-full max-w-[300px] mb-5"
+          className="w-full max-w-[360px] mb-5"
         >
           <p className="section-label mb-2">What you'll get</p>
           <div className="bg-card border border-border rounded-xl p-3">
@@ -203,7 +203,7 @@ const Welcome = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.35 }}
-          className="w-full max-w-[300px] mb-5 text-center"
+          className="w-full max-w-[360px] mb-5 text-center"
         >
           <button
             onClick={() => { trackEvent('home_tryon_click'); navigate('/tryon'); }}
@@ -218,7 +218,7 @@ const Welcome = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="w-full max-w-[300px] flex items-center justify-between mb-5"
+          className="w-full max-w-[360px] flex items-center justify-between mb-5"
         >
           {TRUST.map((t) => (
             <div key={t.text} className="flex items-center gap-1">
@@ -233,7 +233,7 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.42 }}
-          className="w-full max-w-[300px] mb-5"
+          className="w-full max-w-[360px] mb-5"
         >
           <div className="grid grid-cols-3 gap-2">
             {SOCIAL_PROOF.map((s) => (
@@ -251,7 +251,7 @@ const Welcome = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.45 }}
           onClick={() => navigate('/size-guide')}
-          className="w-full max-w-[300px] flex items-center justify-between bg-card border border-border rounded-xl px-4 py-3 mb-3 group active:scale-[0.98] transition-transform min-h-[44px]"
+          className="w-full max-w-[360px] flex items-center justify-between bg-card border border-border rounded-xl px-4 py-3 mb-3 group active:scale-[0.98] transition-transform min-h-[44px]"
         >
           <div>
             <p className="text-[13px] font-semibold text-foreground">Size Guide Match</p>
@@ -265,7 +265,7 @@ const Welcome = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="w-full max-w-[300px] mb-6"
+          className="w-full max-w-[360px] mb-6"
         >
           <button
             onClick={() => {
