@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { PhotoSet, BodyScanResult, FitPreference, ReferenceObject, MeasurementRange } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { compressPhoto } from '@/lib/imageUtils';
 
 const MESSAGES = [
   'Detecting body landmarks…',
@@ -195,10 +196,15 @@ const Analyze = () => {
 
   const analyzePhotos = async () => {
     try {
+      const [compressedFront, compressedSide] = await Promise.all([
+        compressPhoto(state!.photos.front!),
+        compressPhoto(state!.photos.side!),
+      ]);
+
       const { data: resp, error: fnError } = await supabase.functions.invoke('analyze-body', {
         body: {
-          frontPhoto: state!.photos.front,
-          sidePhoto: state!.photos.side,
+          frontPhoto: compressedFront,
+          sidePhoto: compressedSide,
           heightCm: state!.heightCm,
           referenceObject: state!.referenceObject,
           fitPreference: state!.fitPreference,
