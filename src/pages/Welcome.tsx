@@ -95,7 +95,7 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.4 }}
-          className="w-full max-w-[300px] mb-2"
+          className="w-full max-w-[360px] mb-2"
         >
           <Button
             onClick={handleStartScan}
