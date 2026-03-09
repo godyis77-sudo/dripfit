@@ -295,13 +295,7 @@ const Onboarding = () => {
             transition={screenTransition}
             className="w-full h-screen flex flex-col items-center justify-center px-6"
           >
-            <AuthInline onComplete={onAuthDone} />
-            <button
-              onClick={continueAsGuest}
-              className="mt-4 text-[13px] text-muted-foreground font-semibold hover:text-foreground transition-colors"
-            >
-              Continue as Guest →
-            </button>
+            <AuthForm onComplete={onAuthDone} showGuestContinue />
           </motion.div>
         )}
 
