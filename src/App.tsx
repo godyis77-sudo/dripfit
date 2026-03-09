@@ -64,6 +64,7 @@ const App = () => {
   useTheme();
   return (
   <QueryClientProvider client={queryClient}>
+    <OfflineBanner />
     <AuthProvider>
       <TooltipProvider>
         <Toaster />
