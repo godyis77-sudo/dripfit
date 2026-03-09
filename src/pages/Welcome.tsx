@@ -153,7 +153,7 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.4 }}
-          className="w-full max-w-[300px] mb-5"
+          className="w-full max-w-[360px] mb-5"
         >
           <p className="section-label mb-2">What you'll get</p>
           <div className="bg-card border border-border rounded-xl p-3">
