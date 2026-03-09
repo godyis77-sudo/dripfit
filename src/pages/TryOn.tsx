@@ -233,7 +233,7 @@ const TryOn = () => {
       const { data, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto: resultImage, clothingPhoto: accessoryPhoto, itemType: accessoryCategory || 'accessory', isLayering: true } });
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
-      if (!hasUnlimitedTryOns) incrementTryOnCount();
+      if (!hasUnlimitedTryOns) incrementTryOnCount(user?.id);
       if (data.resultImage) {
         setLayerHistory(prev => [...prev, resultImage!]);
         setResultImage(data.resultImage);

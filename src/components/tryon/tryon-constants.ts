@@ -122,16 +122,20 @@ export function getCaptionSuggestions(category: string): string[] {
 
 export const FREE_MONTHLY_LIMIT = 3;
 
-export function getMonthlyTryOnCount(): number {
+export function getMonthlyTryOnCount(userId?: string): number {
   const now = new Date();
-  const key = `drip_tryons_${now.getFullYear()}_${now.getMonth()}`;
+  const key = userId
+    ? `drip_tryon_count_${userId}_${now.getFullYear()}_${now.getMonth()}`
+    : `drip_tryons_${now.getFullYear()}_${now.getMonth()}`;
   return parseInt(localStorage.getItem(key) || '0', 10);
 }
 
-export function incrementTryOnCount() {
+export function incrementTryOnCount(userId?: string) {
   const now = new Date();
-  const key = `drip_tryons_${now.getFullYear()}_${now.getMonth()}`;
-  localStorage.setItem(key, String(getMonthlyTryOnCount() + 1));
+  const key = userId
+    ? `drip_tryon_count_${userId}_${now.getFullYear()}_${now.getMonth()}`
+    : `drip_tryons_${now.getFullYear()}_${now.getMonth()}`;
+  localStorage.setItem(key, String(getMonthlyTryOnCount(userId) + 1));
 }
 
 export function imageUrlToBase64(url: string): Promise<string> {
