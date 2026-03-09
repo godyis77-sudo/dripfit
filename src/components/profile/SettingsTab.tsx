@@ -393,6 +393,32 @@ const SettingsTab = ({
         )}
       </div>
 
+      <Sheet open={showWinBack} onOpenChange={setShowWinBack}>
+        <SheetContent side="bottom" className="rounded-t-2xl bg-card p-6">
+          <SheetHeader>
+            <SheetTitle className="text-foreground text-base font-bold">Before you go...</SheetTitle>
+          </SheetHeader>
+          <p className="text-[13px] text-muted-foreground mt-2 mb-5">
+            Pause instead of cancelling — keep all your data and Premium features for 30 days.
+          </p>
+          <div className="flex flex-col gap-2">
+            <Button className="w-full h-11 btn-luxury text-primary-foreground font-bold rounded-xl text-sm"
+              onClick={() => setShowWinBack(false)}>
+              Keep My Premium ✓
+            </Button>
+            <Button variant="ghost" className="w-full h-11 text-muted-foreground text-sm"
+              onClick={async () => {
+                setShowWinBack(false);
+                const { data: resp, error } = await supabase.functions.invoke('customer-portal');
+                if (error || !resp?.url) { toast({ title: 'Error', description: 'Could not open portal', variant: 'destructive' }); return; }
+                window.location.href = resp.url;
+              }}>
+              Cancel Subscription
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
       {/* Favorite Retailers */}
       <SectionHeader>
         <span className="flex items-center gap-1">
