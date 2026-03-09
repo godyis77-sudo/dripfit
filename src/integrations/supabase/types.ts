@@ -998,6 +998,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_referral_credits: {
+        Args: { target_user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

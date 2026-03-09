@@ -132,6 +132,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (nextUserId) {
         identify(nextUserId, { email: nextUser?.email });
         setSubscriptionLoading(true);
+
+        // Claim referral code if present and this is a brand-new account
+        const refCode = new URLSearchParams(window.location.search).get('ref');
+        const isNewUser = nextUser?.created_at &&
+          (Date.now() - new Date(nextUser.created_at).getTime()) < 30_000;
+        if (refCode && isNewUser) {
+          supabase.functions.invoke('claim-referral', {
+            body: { code: refCode },
+          }).catch(() => {});
+          window.history.replaceState({}, '', window.location.pathname);
+        }
         setTimeout(() => checkSubscription(nextUserId), 0);
 
         if (fetchedGenderUserIdRef.current !== nextUserId) {
