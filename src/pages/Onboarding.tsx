@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Crown, Ruler, Sparkles, Users, ShoppingBag, Store, Shuffle, Eye, Shield, Camera } from 'lucide-react';
 import { setOnboarded, setShoppingHabit, setGuestMode, type ShoppingHabit } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
@@ -56,23 +56,24 @@ const HABITS: { value: ShoppingHabit; icon: typeof ShoppingBag; label: string; d
   { value: 'browser', icon: Eye, label: 'I Browse, Rarely Buy', desc: 'Sizing uncertainty stops me' },
 ];
 
-const slideVariants = {
-  enter: (dir: number) => ({ x: dir > 0 ? 24 : -24, opacity: 0 }),
-  center: { x: 0, opacity: 1 },
-  exit: (dir: number) => ({ x: dir > 0 ? -24 : 24, opacity: 0 }),
-};
-
-const smoothTransition = { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const };
-const screenTransition = { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const };
-
 const Onboarding = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const reduceMotion = useReducedMotion();
   const [screen, setScreen] = useState<Screen>('splash');
   const [slideIdx, setSlideIdx] = useState(0);
   const [slideDir, setSlideDir] = useState(1);
   const [habit, setHabit] = useState<ShoppingHabit | null>(null);
   const [genderChoice, setGenderChoice] = useState<string | null>(null);
+
+  const slideVariants = {
+    enter: (dir: number) => ({ x: reduceMotion ? 0 : (dir > 0 ? 24 : -24), opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (dir: number) => ({ x: reduceMotion ? 0 : (dir > 0 ? -24 : 24), opacity: 0 }),
+  };
+
+  const smoothTransition = { duration: reduceMotion ? 0 : 0.65, ease: [0.22, 1, 0.36, 1] as const };
+  const screenTransition = { duration: reduceMotion ? 0 : 0.7, ease: [0.22, 1, 0.36, 1] as const };
 
   // Auto-advance splash after 1.5s
   useEffect(() => {
@@ -130,12 +131,12 @@ const Onboarding = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: reduceMotion ? 0 : 0.6, ease: [0.4, 0, 0.2, 1] }}
             onClick={tapSplash}
             className="flex flex-col items-center justify-center w-full h-screen bg-background cursor-pointer select-none"
           >
             <motion.div
-              initial={{ scale: 0.96, opacity: 0 }}
+              initial={{ scale: reduceMotion ? 1 : 0.96, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={screenTransition}
               className="h-20 w-20 rounded-2xl gradient-drip glow-primary flex items-center justify-center mb-5"
@@ -145,7 +146,7 @@ const Onboarding = () => {
             <motion.h1
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.25, ...screenTransition }}
+              transition={{ delay: reduceMotion ? 0 : 0.25, ...screenTransition }}
               className="font-display text-2xl font-bold tracking-[0.2em] text-foreground"
             >
               DRIPFITCHECK
@@ -153,7 +154,7 @@ const Onboarding = () => {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+              transition={{ delay: reduceMotion ? 0 : 0.6, duration: reduceMotion ? 0 : 0.5, ease: [0.4, 0, 0.2, 1] }}
               className="text-sm text-foreground mt-2"
             >
               The smarter way to shop fashion.
@@ -288,9 +289,9 @@ const Onboarding = () => {
         {screen === 'auth' && (
           <motion.div
             key="auth"
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: reduceMotion ? 0 : 30 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -30 }}
+            exit={{ opacity: 0, x: reduceMotion ? 0 : -30 }}
             transition={screenTransition}
             className="w-full h-screen flex flex-col items-center justify-center px-6"
           >
@@ -302,9 +303,9 @@ const Onboarding = () => {
         {screen === 'personalize' && (
           <motion.div
             key="personalize"
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: reduceMotion ? 0 : 30 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -30 }}
+            exit={{ opacity: 0, x: reduceMotion ? 0 : -30 }}
             transition={screenTransition}
             className="w-full h-screen flex flex-col px-6 pt-16 pb-8"
           >
@@ -350,9 +351,9 @@ const Onboarding = () => {
         {screen === 'gender' && (
           <motion.div
             key="gender"
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: reduceMotion ? 0 : 30 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -30 }}
+            exit={{ opacity: 0, x: reduceMotion ? 0 : -30 }}
             transition={screenTransition}
             className="w-full h-screen flex flex-col px-6 pt-16 pb-8"
           >
@@ -398,9 +399,9 @@ const Onboarding = () => {
         {screen === 'scan-prompt' && (
           <motion.div
             key="scan-prompt"
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: reduceMotion ? 0 : 30 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -30 }}
+            exit={{ opacity: 0, x: reduceMotion ? 0 : -30 }}
             transition={screenTransition}
             className="w-full h-screen flex flex-col items-center justify-center px-6"
           >
