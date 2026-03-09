@@ -219,3 +219,135 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
   ctx.quadraticCurveTo(x, y, x + r, y);
   ctx.closePath();
 }
+
+// ─── Try-On Share Card ───────────────────────────────────────
+
+interface TryOnShareCardParams {
+  resultImageUrl: string;
+  brandName?: string;
+  recommendedSize?: string;
+  caption?: string | null;
+}
+
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+export async function generateTryOnShareCard(params: TryOnShareCardParams): Promise<Blob> {
+  const { resultImageUrl, brandName, recommendedSize, caption } = params;
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d')!;
+
+  // Dark background
+  ctx.fillStyle = '#111111';
+  ctx.fillRect(0, 0, W, H);
+
+  // ── Top: DRIPFITCHECK wordmark with crown ──
+  drawCrown(ctx, W / 2 - 180, 80, 36);
+  ctx.fillStyle = '#B8960C';
+  ctx.font = 'bold 40px Inter, system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('DRIPFITCHECK', W / 2 + 10, 92);
+
+  // Subtle divider
+  ctx.strokeStyle = 'rgba(184, 150, 12, 0.25)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(100, 130);
+  ctx.lineTo(W - 100, 130);
+  ctx.stroke();
+
+  // ── Center: Try-on result image ──
+  const imgTop = 160;
+  const imgMaxH = 1320;
+  const imgMaxW = W - 120;
+
+  try {
+    const img = await loadImage(resultImageUrl);
+    const scale = Math.min(imgMaxW / img.width, imgMaxH / img.height);
+    const drawW = img.width * scale;
+    const drawH = img.height * scale;
+    const drawX = (W - drawW) / 2;
+    const drawY = imgTop + (imgMaxH - drawH) / 2;
+
+    // Rounded clipping
+    ctx.save();
+    roundRect(ctx, drawX, drawY, drawW, drawH, 20);
+    ctx.clip();
+    ctx.drawImage(img, drawX, drawY, drawW, drawH);
+    ctx.restore();
+
+    // Border
+    ctx.strokeStyle = 'rgba(184, 150, 12, 0.35)';
+    ctx.lineWidth = 2;
+    roundRect(ctx, drawX, drawY, drawW, drawH, 20);
+    ctx.stroke();
+  } catch {
+    // If image can't load, show placeholder text
+    ctx.fillStyle = '#333333';
+    roundRect(ctx, 60, imgTop, W - 120, imgMaxH, 20);
+    ctx.fill();
+    ctx.fillStyle = '#666666';
+    ctx.font = '28px Inter, system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Try-On Result', W / 2, imgTop + imgMaxH / 2);
+  }
+
+  // ── Bottom panel ──
+  const bottomY = 1520;
+
+  // Brand name
+  if (brandName) {
+    ctx.fillStyle = '#999999';
+    ctx.font = '24px Inter, system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(brandName.toUpperCase(), W / 2, bottomY);
+  }
+
+  // Recommended size — big gold text
+  if (recommendedSize) {
+    ctx.fillStyle = '#B8960C';
+    ctx.font = 'bold 72px Inter, system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(recommendedSize, W / 2, bottomY + 80);
+
+    ctx.fillStyle = '#666666';
+    ctx.font = '22px Inter, system-ui, sans-serif';
+    ctx.fillText('MY SIZE', W / 2, bottomY + 110);
+  }
+
+  // Caption (if provided, truncated)
+  if (caption) {
+    ctx.fillStyle = '#AAAAAA';
+    ctx.font = '22px Inter, system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    const truncated = caption.length > 60 ? caption.slice(0, 57) + '…' : caption;
+    ctx.fillText(`"${truncated}"`, W / 2, bottomY + 160);
+  }
+
+  // Gold divider above CTA
+  ctx.strokeStyle = 'rgba(184, 150, 12, 0.2)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(200, H - 100);
+  ctx.lineTo(W - 200, H - 100);
+  ctx.stroke();
+
+  // CTA
+  ctx.fillStyle = '#555555';
+  ctx.font = '22px Inter, system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Try yours free at dripfitcheck.lovable.app', W / 2, H - 60);
+
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => resolve(blob!), 'image/png');
+  });
+}
