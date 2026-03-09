@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
@@ -7,7 +7,7 @@ import { PhotoSet, BodyScanResult, FitPreference, ReferenceObject, MeasurementRa
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { compressPhoto } from '@/lib/imageUtils';
-import bodySilhouette from '@/assets/body-silhouette-clean.png';
+import ScanAnimation from '@/components/analyze/ScanAnimation';
 
 const MESSAGES = [
   'Detecting body landmarks…',
@@ -37,93 +37,10 @@ const Analyze = () => {
   const [progress, setProgress] = useState(0);
   const [revealedKeys, setRevealedKeys] = useState<string[]>([]);
   const [realData, setRealData] = useState<any>(null);
-  const [showVideoPlayFallback, setShowVideoPlayFallback] = useState(false);
-  const [videoFailed, setVideoFailed] = useState(false);
   const minTimeElapsed = useRef(false);
   const resultReady = useRef<any>(null);
   const effectRan = useRef(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const revealTimers = useRef<number[]>([]);
-
-  const attemptPlayVideo = useCallback(async () => {
-    const video = videoRef.current;
-    if (!video) return false;
-
-    // Force autoplay-friendly flags at runtime for stricter mobile browsers
-    video.muted = true;
-    video.defaultMuted = true;
-    video.volume = 0;
-    video.setAttribute('muted', '');
-    video.setAttribute('playsinline', '');
-    video.setAttribute('autoplay', '');
-    video.setAttribute('webkit-playsinline', '');
-
-    try {
-      await video.play();
-      setShowVideoPlayFallback(false);
-      setVideoFailed(false);
-      return true;
-    } catch (e) {
-      console.warn('[video] play() rejected:', e);
-      return false;
-    }
-  }, []);
-
-  // Retry autoplay with increasing delays before showing manual fallback
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    let cancelled = false;
-    let retryTimer: number | null = null;
-    let attempts = 0;
-    const MAX_ATTEMPTS = 4;
-    const RETRY_DELAYS = [200, 500, 1000, 2000];
-
-    const tryAutoplay = async () => {
-      if (cancelled) return;
-      const didPlay = await attemptPlayVideo();
-      if (cancelled || didPlay) return;
-
-      attempts += 1;
-      if (attempts < MAX_ATTEMPTS) {
-        retryTimer = window.setTimeout(() => {
-          void tryAutoplay();
-        }, RETRY_DELAYS[attempts] || 1000);
-      } else if (video.paused) {
-        setShowVideoPlayFallback(true);
-      }
-    };
-
-    // Wait for DOM to settle, then try
-    retryTimer = window.setTimeout(() => {
-      void tryAutoplay();
-    }, 100);
-
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        void tryAutoplay();
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    // Also listen for any user interaction on the page to auto-trigger play
-    const handleUserGesture = () => {
-      if (video.paused) {
-        void attemptPlayVideo();
-      }
-    };
-    document.addEventListener('touchstart', handleUserGesture, { once: true });
-    document.addEventListener('click', handleUserGesture, { once: true });
-
-    return () => {
-      cancelled = true;
-      if (retryTimer) window.clearTimeout(retryTimer);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      document.removeEventListener('touchstart', handleUserGesture);
-      document.removeEventListener('click', handleUserGesture);
-    };
-  }, [attemptPlayVideo]);
 
   useEffect(() => {
     if (!state?.photos?.front || !state?.photos?.side) {
@@ -131,7 +48,6 @@ const Analyze = () => {
       return;
     }
 
-    // Guard: only run once (adding deps for correctness but preventing re-execution)
     if (effectRan.current) return;
     effectRan.current = true;
 
@@ -140,7 +56,6 @@ const Analyze = () => {
     const progressInterval = setInterval(() => {
       setProgress(p => Math.min(p + (90 / (TOTAL_SCAN_TIME / 100)), 90));
     }, 100);
-
 
     const revealInterval = TOTAL_SCAN_TIME / REVEAL_ORDER.length;
     revealTimers.current = REVEAL_ORDER.map((key, i) =>
@@ -231,7 +146,6 @@ const Analyze = () => {
       if (resp?.error) throw new Error(resp.error.message || resp.error);
       const payload = resp?.data ?? resp;
 
-      // Store real data so labels update with actual values
       setRealData(payload);
 
       if (minTimeElapsed.current) {
@@ -272,67 +186,19 @@ const Analyze = () => {
       >
         Cancel scan
       </Button>
-      {/* Animated body silhouette with live measurement overlays */}
-      <div className="relative mb-5 w-full max-w-[380px] aspect-[2/3] rounded-xl overflow-hidden bg-background">
-        {/* Static silhouette fallback (always visible behind video) */}
-        <img
-          src={bodySilhouette}
-          alt=""
-          className="absolute inset-0 w-full h-full object-contain opacity-40 mix-blend-luminosity"
-        />
-        {/* Scan animation video */}
-        <video
-          ref={videoRef}
-          src="/videos/body-scan-animation.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          onLoadedMetadata={() => { void attemptPlayVideo(); }}
-          onCanPlay={() => { void attemptPlayVideo(); }}
-          onCanPlayThrough={() => { void attemptPlayVideo(); }}
-          onLoadedData={() => { void attemptPlayVideo(); }}
-          onPlay={() => {
-            setShowVideoPlayFallback(false);
-            setVideoFailed(false);
-          }}
-          onError={(e) => {
-            console.error('[video] error event:', e);
-            setVideoFailed(true);
-            setShowVideoPlayFallback(false);
-          }}
-          className="absolute inset-0 w-full h-full object-contain z-[1]"
-        />
 
-        {showVideoPlayFallback && !videoFailed ? (
-          <div className="absolute bottom-3 left-0 right-0 z-20 flex justify-center">
-            <Button
-              type="button"
-              onClick={() => {
-                const video = videoRef.current;
-                if (video) {
-                  video.muted = true;
-                  video.play().then(() => {
-                    setShowVideoPlayFallback(false);
-                  }).catch(err => console.warn('[video] manual play failed:', err));
-                }
-              }}
-              className="rounded-xl h-10 px-4 text-xs font-semibold shadow-lg"
-            >
-              Tap to play scan animation
-            </Button>
-          </div>
-        ) : null}
+      {/* Animated body silhouette with CSS scan effect */}
+      <div className="relative mb-5 w-full max-w-[380px] aspect-[2/3] rounded-xl overflow-hidden bg-background">
+        <ScanAnimation />
 
         {/* Vignette overlay */}
         <div
-          className="absolute inset-0 pointer-events-none rounded-xl"
+          className="absolute inset-0 pointer-events-none rounded-xl z-20"
           style={{ boxShadow: 'inset 0 0 60px 20px hsl(var(--background) / 0.7), inset 0 0 120px 40px hsl(var(--background) / 0.4)' }}
         />
         {/* Outer gold border glow */}
         <div
-          className="absolute inset-0 pointer-events-none rounded-xl"
+          className="absolute inset-0 pointer-events-none rounded-xl z-20"
           style={{ boxShadow: '0 0 20px 2px hsl(var(--primary) / 0.25), 0 0 50px 8px hsl(var(--primary) / 0.1)' }}
         />
       </div>
