@@ -25,7 +25,7 @@ interface MeasurementOverlay {
 }
 
 const OVERLAYS: MeasurementOverlay[] = [
-  { key: 'height', label: 'HEIGHT', side: 'left', valTop: '14.5%', delay: 0 },
+  { key: 'height', label: 'HEIGHT', side: 'left', valTop: '10.5%', delay: 0 },
   { key: 'shoulder', label: 'SHOULDER', side: 'right', valTop: '21.5%', delay: 0.05 },
   { key: 'chest', label: 'CHEST', side: 'left', valTop: '27%', delay: 0.1 },
   { key: 'bust', label: 'BUST', side: 'right', valTop: '29%', delay: 0.15 },

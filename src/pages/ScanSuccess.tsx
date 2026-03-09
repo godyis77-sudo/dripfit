@@ -33,7 +33,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'height',
     label: 'HEIGHT',
     side: 'left',
-    valTop: '14.5%',
+    valTop: '10.5%',
     offset: 0,
     delay: 0,
     getValue: (r) => ({ line1: fmtHeightFtIn(r.heightCm), line2: `${r.heightCm} cm` }),
