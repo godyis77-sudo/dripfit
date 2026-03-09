@@ -206,6 +206,7 @@ const ScanSuccess = () => {
             </motion.div>
           );
         })}
+        </div>
       </motion.div>
 
       {/* Bottom section */}
