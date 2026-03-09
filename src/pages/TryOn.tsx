@@ -177,6 +177,7 @@ const TryOn = () => {
     setDescription(null);
     trackEvent('tryon_started');
     try {
+      setTryOnError(null);
       const { data, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto, clothingPhoto, itemType: category || 'clothing' } });
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
@@ -185,7 +186,9 @@ const TryOn = () => {
       if (data.resultImage) { setResultImage(data.resultImage); setShowSuccessOverlay(true); setTimeout(() => setShowSuccessOverlay(false), 1500); if (user) autoSaveToProfile(data.resultImage); }
       else if (data.description) { setDescription(data.description); }
     } catch (err: any) {
-      toast({ title: 'Try-On failed', description: err.message, variant: 'destructive' });
+      const msg = err.message || 'Generation failed. Please try again.';
+      setTryOnError(msg);
+      toast({ title: 'Try-On failed', description: msg, variant: 'destructive' });
     } finally { setLoading(false); }
   };
 
