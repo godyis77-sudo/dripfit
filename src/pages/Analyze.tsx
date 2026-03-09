@@ -41,6 +41,7 @@ const Analyze = () => {
   const resultReady = useRef<any>(null);
   const effectRan = useRef(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const revealTimers = useRef<number[]>([]);
 
   const attemptPlayVideo = useCallback(async () => {
     const video = videoRef.current;
