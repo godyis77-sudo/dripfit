@@ -7,7 +7,7 @@ import { PhotoSet, BodyScanResult, FitPreference, ReferenceObject, MeasurementRa
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { compressPhoto } from '@/lib/imageUtils';
-import scanResultsFull from '@/assets/scan-results-full.jpg';
+import PremiumScanAnimation from '@/components/analyze/PremiumScanAnimation';
 
 const MESSAGES = [
   'Detecting body landmarks…',
