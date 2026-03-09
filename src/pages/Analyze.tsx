@@ -141,6 +141,8 @@ const Analyze = () => {
     return () => {
       clearInterval(msgInterval);
       clearInterval(progressInterval);
+      revealTimers.current.forEach(id => window.clearTimeout(id));
+      revealTimers.current = [];
     };
   }, [state, navigate, user]);
 
