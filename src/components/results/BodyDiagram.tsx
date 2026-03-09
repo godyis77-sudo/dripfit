@@ -28,7 +28,7 @@ const OVERLAYS: MeasurementOverlay[] = [
   { key: 'height', label: 'HEIGHT', side: 'left', valTop: '14.5%', delay: 0 },
   { key: 'shoulder', label: 'SHOULDER', side: 'right', valTop: '21.5%', delay: 0.05 },
   { key: 'chest', label: 'CHEST', side: 'left', valTop: '27%', delay: 0.1 },
-  { key: 'bust', label: 'BUST', side: 'right', valTop: '28.5%', delay: 0.15 },
+  { key: 'bust', label: 'BUST', side: 'right', valTop: '29%', delay: 0.15 },
   { key: 'sleeve', label: 'SLEEVE', side: 'left', valTop: '36.5%', delay: 0.2 },
   { key: 'waist', label: 'WAIST', side: 'right', valTop: '41%', delay: 0.25 },
   { key: 'hips', label: 'HIPS', side: 'right', valTop: '49%', delay: 0.3 },

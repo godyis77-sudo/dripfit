@@ -60,7 +60,7 @@ const OVERLAYS: MeasurementOverlay[] = [
     key: 'bust',
     label: 'BUST',
     side: 'right',
-    valTop: '28.5%',
+    valTop: '29%',
     offset: 0,
     delay: 0.35,
     getValue: (r) => (r.bust ? { line1: fmtIn(r.bust), line2: fmtCm(r.bust) } : null),
