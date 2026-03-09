@@ -192,9 +192,10 @@ const TryOn = () => {
     trackEvent('tryon_started');
     try {
       setTryOnError(null);
-      const { data, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto, clothingPhoto, itemType: category || 'clothing' } });
+      const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto, clothingPhoto, itemType: category || 'clothing' } });
       if (error) throw new Error(error.message);
-      if (data?.error) throw new Error(data.error);
+      if (resp?.error) throw new Error(resp.error.message || resp.error);
+      const payload = resp?.data ?? resp;
       trackEvent('tryon_generated');
       if (!hasUnlimitedTryOns) {
         if (user) {
@@ -204,8 +205,8 @@ const TryOn = () => {
           incrementTryOnCount();
         }
       }
-      if (data.resultImage) { setResultImage(data.resultImage); setShowSuccessOverlay(true); setTimeout(() => setShowSuccessOverlay(false), 1500); if (user) autoSaveToProfile(data.resultImage); }
-      else if (data.description) { setDescription(data.description); }
+      if (payload.resultImage) { setResultImage(payload.resultImage); setShowSuccessOverlay(true); setTimeout(() => setShowSuccessOverlay(false), 1500); if (user) autoSaveToProfile(payload.resultImage); }
+      else if (payload.description) { setDescription(payload.description); }
     } catch (err: any) {
       const msg = err.message || 'Generation failed. Please try again.';
       setTryOnError(msg);
