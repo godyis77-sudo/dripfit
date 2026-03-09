@@ -273,6 +273,30 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     setLoading(feedQuery.isLoading || feedQuery.isFetching);
   }, [feedQuery.isLoading, feedQuery.isFetching]);
 
+  // Realtime: prepend new public posts as they arrive
+  useEffect(() => {
+    const channel = supabase
+      .channel('community-posts')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'tryon_posts' },
+        async (payload) => {
+          const newRow = payload.new as any;
+          if (!newRow.is_public) return;
+          const { data: profiles } = await supabase.from('profiles').select('user_id, display_name, avatar_url').eq('user_id', newRow.user_id).limit(1);
+          const profile = profiles?.[0] || { display_name: 'Anonymous' };
+          const post: Post = { ...newRow, profile, rating_count: 0 };
+          setPosts(prev => {
+            if (prev.some(p => p.id === post.id)) return prev;
+            return [post, ...prev];
+          });
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
   // Load vote counts
   const postIdsKey = posts.map(p => p.id).join(',');
   useEffect(() => {
