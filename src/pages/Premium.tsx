@@ -307,6 +307,34 @@ const Premium = () => {
         </div>
       </div>
     </div>
+
+      {/* Win-back intercept sheet */}
+      <Sheet open={showWinback} onOpenChange={setShowWinback}>
+        <SheetContent side="bottom" className="rounded-t-2xl px-5 pb-8 pt-5">
+          <SheetHeader className="text-left mb-4">
+            <SheetTitle className="text-[17px] font-bold text-foreground">Before you go…</SheetTitle>
+          </SheetHeader>
+          <p className="text-[13px] text-muted-foreground leading-relaxed mb-6">
+            Pause your subscription for 30 days instead of cancelling — you keep all your data and Premium features during the pause.
+          </p>
+          <div className="space-y-2">
+            <Button
+              className="w-full h-11 rounded-xl btn-luxury text-primary-foreground font-bold"
+              onClick={() => goToPortal('pause')}
+            >
+              Pause Instead
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full h-11 rounded-xl font-semibold"
+              onClick={() => goToPortal()}
+            >
+              Continue to Portal
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
+    </div>
   );
 };
 
