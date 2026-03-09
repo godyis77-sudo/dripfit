@@ -58,9 +58,18 @@ const Analyze = () => {
       setProgress(p => Math.min(p + (90 / (TOTAL_SCAN_TIME / 100)), 90));
     }, 100);
 
+    // Oscillating scan line: bounces top→bottom→top continuously
+    const scanStart = Date.now();
     const scanLineInterval = setInterval(() => {
-      setScanLineY(p => Math.min(p + (100 / (TOTAL_SCAN_TIME / 50)), 100));
-    }, 50);
+      const elapsed = Date.now() - scanStart;
+      const cycleMs = 3000; // one full sweep cycle
+      const phase = (elapsed % cycleMs) / cycleMs; // 0→1
+      // Triangle wave: 0→1→0
+      const tri = phase < 0.5 ? phase * 2 : 2 - phase * 2;
+      // Ease in-out for smoothness
+      const eased = tri < 0.5 ? 2 * tri * tri : 1 - Math.pow(-2 * tri + 2, 2) / 2;
+      setScanLineY(eased * 100);
+    }, 16);
 
     const revealInterval = TOTAL_SCAN_TIME / REVEAL_ORDER.length;
     revealTimers.current = REVEAL_ORDER.map((key, i) =>
