@@ -348,7 +348,7 @@ const TryOn = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 pt-4 pb-safe-bottom">
+    <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
       <div className="max-w-sm mx-auto">
         {/* Header */}
         <div className="flex items-center gap-2 mb-3">

@@ -98,7 +98,7 @@ const Browse = () => {
   const activeFilterCount = (brandFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0);
 
   return (
-    <div className="min-h-screen bg-background pb-safe-bottom">
+    <div className="min-h-screen bg-background pb-safe-tab">
       {/* Header */}
       <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center justify-between px-4 py-3">
