@@ -83,6 +83,8 @@ const Results = () => {
       };
     },
     enabled: !!user?.id && !!brandSlug,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   const sizeRec = sizeRecQuery.data ?? null;
