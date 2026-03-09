@@ -64,6 +64,7 @@ const SettingsTab = ({
   const [igValue, setIgValue] = useState(instagramHandle);
   const [region, setRegion] = useState<UserRegion>(getUserRegion());
   const [gender, setGender] = useState<string | null>(null);
+  const [showWinBack, setShowWinBack] = useState(false);
 
   // Load gender from DB
   useEffect(() => {
