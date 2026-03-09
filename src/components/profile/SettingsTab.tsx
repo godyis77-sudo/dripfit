@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Switch } from '@/components/ui/switch';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Crown, Trash2, Shield, Download, Ruler, Camera, ChevronRight, Bookmark, Pencil, Check, X, Star, Instagram, Globe, Sun, Moon } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import type { FitPreference, BodyScanResult } from '@/lib/types';
