@@ -170,7 +170,7 @@ const TryOn = () => {
 
   const handleTryOn = async () => {
     if (!canGenerate) return;
-    if (!hasUnlimitedTryOns && getMonthlyTryOnCount() >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return; }
+    if (!hasUnlimitedTryOns && getMonthlyTryOnCount(user?.id) >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return; }
     setLoading(true);
     setResultImage(null);
     setDescription(null);
