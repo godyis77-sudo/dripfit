@@ -432,6 +432,30 @@ export type Database = {
         }
         Relationships: []
       }
+      referrals: {
+        Row: {
+          bonus_granted: boolean | null
+          created_at: string | null
+          id: string
+          referee_id: string
+          referrer_id: string
+        }
+        Insert: {
+          bonus_granted?: boolean | null
+          created_at?: string | null
+          id?: string
+          referee_id: string
+          referrer_id: string
+        }
+        Update: {
+          bonus_granted?: boolean | null
+          created_at?: string | null
+          id?: string
+          referee_id?: string
+          referrer_id?: string
+        }
+        Relationships: []
+      }
       retailers: {
         Row: {
           category: string

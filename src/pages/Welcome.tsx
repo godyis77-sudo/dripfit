@@ -269,12 +269,13 @@ const Welcome = () => {
         >
           <button
             onClick={() => {
-              const url = window.location.origin;
+              const baseUrl = window.location.origin;
+              const url = user ? `${baseUrl}?ref=${user.id}` : baseUrl;
               if (navigator.share) {
-                navigator.share({ title: 'DripFitCheck — Know your size before you buy', text: 'Get AI body measurements, virtual try-on, and real fit feedback.', url });
+                navigator.share({ title: 'DripFitCheck — Know your size before you buy', text: 'Get AI body measurements, virtual try-on, and real fit feedback. We both get 5 extra try-ons!', url });
               } else {
                 navigator.clipboard.writeText(url);
-                toast({ title: 'Link copied!', description: 'Share it with friends to help them find their size.' });
+                toast({ title: 'Link copied!', description: 'Share it with friends — you both get 5 extra try-ons.' });
               }
               trackEvent('share_action', { source: 'home_referral' });
             }}
@@ -285,7 +286,7 @@ const Welcome = () => {
             </div>
             <div className="flex-1 text-left">
               <p className="text-[12px] font-bold text-foreground">Invite Friends</p>
-              <p className="text-[10px] text-muted-foreground">Share DripFitCheck — help your crew find their size</p>
+              <p className="text-[10px] text-muted-foreground">Invite friends — you both get 5 extra try-ons this month</p>
             </div>
             <Share2 className="h-3.5 w-3.5 text-primary shrink-0" />
           </button>
