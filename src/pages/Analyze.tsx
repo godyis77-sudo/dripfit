@@ -217,15 +217,15 @@ const Analyze = () => {
         </div>
       </div>
 
-      {/* Status text — monospaced, tech feel */}
+      {/* Status text */}
       <motion.p
         key={msgIdx}
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0 }}
-        className="text-xs font-mono tracking-widest text-[hsl(180_80%_60%_/_0.8)] text-center mb-5 uppercase"
+        className="text-xs font-mono tracking-widest text-primary/70 text-center mb-5 uppercase"
       >
-        {'>'} {MESSAGES[msgIdx]}
+        {MESSAGES[msgIdx]}
       </motion.p>
 
       {/* Progress bar — gold */}
