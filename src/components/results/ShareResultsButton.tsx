@@ -94,18 +94,40 @@ const ShareResultsButton = ({ measurements, heightCm, recommendedSize, fitPrefer
         {generating ? 'Generating…' : 'Share My Results'}
       </Button>
 
-      <Dialog open={fallbackOpen} onOpenChange={(open) => { if (!open) setFallbackOpen(false); }}>
-        <DialogContent className="max-w-sm bg-card border-border p-4">
-          <DialogTitle className="text-foreground text-sm font-bold mb-2">Share Your Results</DialogTitle>
+      <Dialog open={fallbackOpen} onOpenChange={(open) => { if (!open) { setFallbackOpen(false); if (imageUrl) { URL.revokeObjectURL(imageUrl); setImageUrl(null); } } }}>
+        <DialogContent className="max-w-[320px] bg-card border-border p-4 rounded-2xl">
+          <DialogTitle className="text-foreground text-sm font-bold mb-3 text-center">
+            Share Your Results
+          </DialogTitle>
+
           {imageUrl && (
-            <img src={imageUrl} alt="Shareable measurement results" className="w-full rounded-lg border border-border mb-3" />
+            <div className="w-full rounded-xl overflow-hidden border border-border mb-4"
+              style={{ aspectRatio: '9/16' }}>
+              <img
+                src={imageUrl}
+                alt="Shareable measurement results"
+                className="w-full h-full object-cover"
+              />
+            </div>
           )}
-          <div className="flex gap-2">
-            <Button onClick={handleDownload} className="flex-1 h-10 rounded-lg btn-luxury text-primary-foreground text-xs font-bold">
-              <Download className="mr-1.5 h-3.5 w-3.5" /> Download
+
+          <p className="text-xs text-muted-foreground text-center mb-3">
+            Save the image, then share to Instagram Stories, WhatsApp or anywhere.
+          </p>
+
+          <div className="flex flex-col gap-2">
+            <Button
+              onClick={handleDownload}
+              className="w-full h-11 rounded-xl btn-luxury text-primary-foreground font-bold"
+            >
+              <Download className="mr-2 h-4 w-4" /> Save to Photos
             </Button>
-            <Button variant="outline" onClick={handleCopyLink} className="flex-1 h-10 rounded-lg border-primary/30 text-primary text-xs font-bold">
-              <Copy className="mr-1.5 h-3.5 w-3.5" /> Copy Link
+            <Button
+              variant="outline"
+              onClick={handleCopyLink}
+              className="w-full h-10 rounded-xl border-primary/30 text-primary text-sm font-semibold"
+            >
+              <Copy className="mr-2 h-3.5 w-3.5" /> Copy Link
             </Button>
           </div>
         </DialogContent>
