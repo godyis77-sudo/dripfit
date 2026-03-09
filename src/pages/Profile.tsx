@@ -276,7 +276,7 @@ const Profile = () => {
               size="icon"
               onClick={() => navigate('/profile/settings')}
               className="text-muted-foreground h-8 w-8 rounded-lg"
-              aria-label="Settings"
+              aria-label="Open settings"
             >
               <Settings className="h-4 w-4" />
             </Button>

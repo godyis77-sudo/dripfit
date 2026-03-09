@@ -100,6 +100,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
         <button
           onClick={() => onOpenChange(false)}
           className="absolute top-3 right-3 z-50 h-8 w-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center"
+          aria-label="Close"
         >
           <X className="h-4 w-4 text-white" />
         </button>
