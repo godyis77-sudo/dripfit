@@ -201,32 +201,18 @@ const Analyze = () => {
 
       {/* Scan frame container */}
       <div className="relative mb-6 w-full max-w-[380px] aspect-[2/3]">
-        {/* Animated rotating border — dual-colour conic */}
-        <motion.div
-          className="absolute -inset-[2px] rounded-xl pointer-events-none z-0"
+        {/* Gold border glow */}
+        <div
+          className="absolute -inset-[1px] rounded-xl pointer-events-none z-0"
           style={{
-            background: `conic-gradient(from 0deg, hsl(180 80% 50%), hsl(var(--primary) / 0.4), hsl(180 80% 50% / 0.2), hsl(var(--primary)), hsl(180 80% 50%))`,
-            filter: 'blur(0.5px)',
+            border: '1px solid hsl(45 88% 50%)',
+            boxShadow: '0 0 20px 6px hsl(45 88% 50% / 0.4)',
+            borderRadius: '0.75rem',
           }}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-        />
-
-        {/* Outer glow pulse — cyan + gold */}
-        <motion.div
-          className="absolute -inset-[8px] rounded-xl pointer-events-none z-0"
-          animate={{
-            boxShadow: [
-              '0 0 20px 4px hsl(180 80% 50% / 0.25), 0 0 50px 10px hsl(180 80% 50% / 0.08), 0 0 15px 2px hsl(var(--primary) / 0.15)',
-              '0 0 35px 8px hsl(180 80% 50% / 0.4), 0 0 80px 20px hsl(180 80% 50% / 0.15), 0 0 25px 6px hsl(var(--primary) / 0.25)',
-              '0 0 20px 4px hsl(180 80% 50% / 0.25), 0 0 50px 10px hsl(180 80% 50% / 0.08), 0 0 15px 2px hsl(var(--primary) / 0.15)',
-            ],
-          }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
         />
 
         {/* Inner container */}
-        <div className="relative w-full h-full rounded-lg overflow-hidden z-[1]">
+        <div className="relative w-full h-full rounded-lg overflow-hidden z-[1] bg-background">
           <ScanAnimation revealedCount={revealedKeys.length} />
         </div>
       </div>
