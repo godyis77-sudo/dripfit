@@ -252,13 +252,25 @@ const TryOn = () => {
 
   const handleAddAccessory = async (accessoryPhoto: string, accessoryCategory: string | null) => {
     if (!resultImage || !accessoryPhoto) return;
-    if (!hasUnlimitedTryOns && getMonthlyTryOnCount(user?.id) >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return; }
+    if (!hasUnlimitedTryOns) {
+      if (user) {
+        const count = await getServerTryOnCount(supabase, user.id);
+        if (count >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return; }
+      } else if (getMonthlyTryOnCount() >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return; }
+    }
     trackEvent('tryon_accessory_started', { category: accessoryCategory });
     try {
       const { data, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto: resultImage, clothingPhoto: accessoryPhoto, itemType: accessoryCategory || 'accessory', isLayering: true } });
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
-      if (!hasUnlimitedTryOns) incrementTryOnCount(user?.id);
+      if (!hasUnlimitedTryOns) {
+        if (user) {
+          await incrementServerTryOnCount(supabase, user.id);
+          setServerCount(prev => (prev ?? 0) + 1);
+        } else {
+          incrementTryOnCount();
+        }
+      }
       if (data.resultImage) {
         setLayerHistory(prev => [...prev, resultImage!]);
         setResultImage(data.resultImage);
