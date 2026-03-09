@@ -363,7 +363,7 @@ const Onboarding = () => {
             transition={screenTransition}
             className="w-full h-screen flex flex-col px-6 pt-16 pb-8"
           >
-            <p className="text-[10px] text-primary font-bold uppercase tracking-wider mb-1">One more thing</p>
+            <p className="text-[11px] text-primary font-bold uppercase tracking-wider mb-1">Step 2 of 3</p>
             <h2 className="font-display text-xl font-bold text-foreground mb-1">I shop in the…</h2>
             <p className="text-[13px] text-muted-foreground mb-6">We'll show you the right products & sizing.</p>
 
