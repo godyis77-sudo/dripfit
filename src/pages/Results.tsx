@@ -228,7 +228,26 @@ const Results = () => {
           </div>
         ) : null}
   const [guestNudgeDismissed, setGuestNudgeDismissed] = useState(false);
-
+        {/* Guest sign-up nudge */}
+        {isGuestMode() && !user && !guestNudgeDismissed && (
+          <div className="mb-3 rounded-xl border border-primary/20 bg-primary/5 p-4 relative">
+            <button
+              onClick={() => setGuestNudgeDismissed(true)}
+              className="absolute top-2 right-2 text-muted-foreground text-xs"
+              aria-label="Dismiss"
+            >
+              ✕
+            </button>
+            <p className="text-sm font-medium text-foreground mb-2">Save your size. Sign up to access your results on any device.</p>
+            <Button
+              size="sm"
+              className="btn-luxury"
+              onClick={() => navigate('/auth')}
+            >
+              Create free account
+            </Button>
+          </div>
+        )}
 
         {/* Post-scan profile photo prompt */}
         <AnimatePresence>
