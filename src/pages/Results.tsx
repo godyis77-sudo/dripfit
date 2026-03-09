@@ -53,7 +53,7 @@ const Results = () => {
   const [adjustedMeasurements, setAdjustedMeasurements] = useState<Record<string, MeasurementRange>>({});
   const [showGuide, setShowGuide] = useState(true);
   const [showPhotoPrompt, setShowPhotoPrompt] = useState(() => {
-    return !localStorage.getItem('profile_photo_prompted');
+    try { return !localStorage.getItem('profile_photo_prompted'); } catch { return false; }
   });
 
   const queryClient = useQueryClient();
