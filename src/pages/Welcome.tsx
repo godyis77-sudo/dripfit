@@ -251,7 +251,7 @@ const Welcome = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.45 }}
           onClick={() => navigate('/size-guide')}
-          className="w-full max-w-[300px] flex items-center justify-between bg-card border border-border rounded-xl px-4 py-3 mb-3 group active:scale-[0.98] transition-transform min-h-[44px]"
+          className="w-full max-w-[360px] flex items-center justify-between bg-card border border-border rounded-xl px-4 py-3 mb-3 group active:scale-[0.98] transition-transform min-h-[44px]"
         >
           <div>
             <p className="text-[13px] font-semibold text-foreground">Size Guide Match</p>
