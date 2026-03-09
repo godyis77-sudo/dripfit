@@ -79,16 +79,19 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 key={overlay.key}
                 className="absolute"
                 style={{
-                  top: `calc(${overlay.valTop} + 3px)`,
+                  top: overlay.valTop,
                   ...(overlay.side === 'left'
-                    ? { left: '2%' }
-                    : { right: '2%' }),
+                    ? { left: '-1px' }
+                    : { right: '-1px' }),
                 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: overlay.delay + 0.3, duration: 0.3, ease: 'easeOut' }}
               >
-                <div style={{ textAlign: overlay.side === 'left' ? 'left' : 'right' }}>
+                <div
+                  className="bg-background/80 rounded px-1 py-0.5 backdrop-blur-sm"
+                  style={{ textAlign: overlay.side === 'left' ? 'left' : 'right' }}
+                >
                   <p
                     className="text-[11px] font-black leading-tight"
                     style={{ color: '#000' }}
