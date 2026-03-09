@@ -199,24 +199,28 @@ const Results = () => {
         {/* Live SizeMatchCard from edge function */}
         {user && brandSlug ? (
           <div className="mb-3">
-            <SizeMatchCard
-              brandName={state?.retailer || brandSlug}
-              category={categoryKey}
-              recommendedSize={sizeRec?.recommended_size || adjustedSize}
-              confidence={sizeRec?.confidence ?? 0}
-              fitStatus={sizeRec?.fit_status || 'good_fit'}
-              fitNotes={sizeRec?.fit_notes || ''}
-              secondOption={sizeRec?.second_option}
-              fitPreference={fitPref === 'fitted' ? 'slim' : (fitPref as 'slim' | 'regular' | 'relaxed')}
-              sourceUrl={null}
-              updatedAt={new Date().toISOString()}
-              loading={sizeRecLoading}
-              onFitChange={(fit) => {
-                setFitPref(fit === 'slim' ? 'fitted' : fit as FitPreference);
-                queryClient.invalidateQueries({ queryKey: ['size-recommendation'] });
-                trackEvent('fit_preference_changed', { fit });
-              }}
-            />
+            {sizeRecLoading ? (
+              <SizeMatchCardSkeleton />
+            ) : (
+              <SizeMatchCard
+                brandName={state?.retailer || brandSlug}
+                category={categoryKey}
+                recommendedSize={sizeRec?.recommended_size || adjustedSize}
+                confidence={sizeRec?.confidence ?? 0}
+                fitStatus={sizeRec?.fit_status || 'good_fit'}
+                fitNotes={sizeRec?.fit_notes || ''}
+                secondOption={sizeRec?.second_option}
+                fitPreference={fitPref === 'fitted' ? 'slim' : (fitPref as 'slim' | 'regular' | 'relaxed')}
+                sourceUrl={null}
+                updatedAt={new Date().toISOString()}
+                loading={false}
+                onFitChange={(fit) => {
+                  setFitPref(fit === 'slim' ? 'fitted' : fit as FitPreference);
+                  queryClient.invalidateQueries({ queryKey: ['size-recommendation'] });
+                  trackEvent('fit_preference_changed', { fit });
+                }}
+              />
+            )}
             {sizeRecError && (
               <p className="mt-1 text-xs text-destructive">{sizeRecError}</p>
             )}
