@@ -18,7 +18,7 @@ interface TrendingFit {
   caption: string | null;
   username: string;
   like_count: number;
-  isLive: boolean;
+  isLive?: boolean;
 }
 
 interface TrendingFitsGridProps {
