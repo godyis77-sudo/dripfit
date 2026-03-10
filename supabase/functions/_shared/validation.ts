@@ -50,6 +50,7 @@ const ALLOWED_ORIGINS = [
   "https://dripfitcheck.com",
   "https://dripfitcheck.lovable.app",
   "https://id-preview--b5532855-3564-4058-bfa7-f16633b8e311.lovable.app",
+  "https://b5532855-3564-4058-bfa7-f16633b8e311.lovableproject.com",
   "http://localhost:5173",
 ];
 
