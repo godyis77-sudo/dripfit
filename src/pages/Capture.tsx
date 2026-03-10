@@ -430,6 +430,43 @@ const Capture = () => {
           <Shield className="h-3 w-3" /> Private by default · delete anytime
         </p>
       </div>
+      {/* Auth guard sheet */}
+      <Sheet open={authSheetOpen} onOpenChange={setAuthSheetOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl px-5 pb-8">
+          <SheetHeader className="text-left mb-4">
+            <SheetTitle className="text-base font-bold">Sign in to save your measurements</SheetTitle>
+            <SheetDescription className="text-[12px] text-muted-foreground">
+              Your scan results will be saved to your profile and used for size recommendations.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="space-y-2">
+            <Button
+              className="w-full h-11 rounded-xl text-sm font-semibold"
+              onClick={() => {
+                setAuthSheetOpen(false);
+                navigate('/auth?returnTo=/capture');
+              }}
+            >
+              <LogIn className="mr-2 h-4 w-4" /> Sign In
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full h-11 rounded-xl text-sm font-semibold"
+              onClick={() => {
+                setAuthSheetOpen(false);
+                setGuestMode();
+                setFlowStep('height');
+                toast({
+                  title: "Scan results won't be saved without an account",
+                  variant: 'destructive',
+                });
+              }}
+            >
+              Continue as Guest
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
