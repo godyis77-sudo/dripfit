@@ -8,7 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Camera, ArrowLeft, RotateCcw, Check, Shield, AlertTriangle,
-  Ruler, Sun, Maximize, Shirt, ChevronRight, Eye, Upload,
+  Ruler, Sun, Maximize, Shirt, ChevronRight, Eye, Upload, Lock,
 } from 'lucide-react';
 import { CaptureStep, STEP_CONFIG, PhotoSet, ReferenceObject, REFERENCE_OBJECTS } from '@/lib/types';
 import { getFitPreference } from '@/lib/session';
