@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, Crown, LogIn, LogOut, Shield, Sparkles, Users, Ruler, Star, ChevronRight, ArrowRight, TrendingUp, Share2, Gift, ChevronUp } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { isOnboarded, isGuestMode } from '@/lib/session';
