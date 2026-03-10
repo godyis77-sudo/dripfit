@@ -571,10 +571,16 @@ Deno.serve(async (req) => {
         try {
           parsed = JSON.parse(cleaned);
         } catch {
-          console.error(`JSON parse failed for ${key}:`, cleaned.slice(0, 200));
-          failed.push(key);
-          await delay(1500);
-          continue;
+          // Try repairing truncated JSON
+          try {
+            parsed = JSON.parse(repairJson(cleaned));
+            console.log(`Repaired truncated JSON for ${key}`);
+          } catch {
+            console.error(`JSON parse failed for ${key}:`, cleaned.slice(0, 200));
+            failed.push(key);
+            await delay(1500);
+            continue;
+          }
         }
 
         if (!Array.isArray(parsed) || parsed.length < 2) {
