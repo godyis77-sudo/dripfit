@@ -452,6 +452,56 @@ Deno.serve(async (req) => {
     let skipped = 0;
     const failed: string[] = [];
 
+    const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY");
+
+    // Fetch HTML via Firecrawl (handles JS + anti-bot), fallback to raw fetch
+    async function fetchPageHtml(url: string): Promise<string | null> {
+      // Try Firecrawl first
+      if (firecrawlKey) {
+        try {
+          const fcResp = await fetch("https://api.firecrawl.dev/v1/scrape", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${firecrawlKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              url,
+              formats: ["html"],
+              onlyMainContent: true,
+              waitFor: 3000,
+            }),
+          });
+          if (fcResp.ok) {
+            const fcData = await fcResp.json();
+            const html = fcData?.data?.html || fcData?.html;
+            if (html && html.length > 200) {
+              console.log(`Firecrawl OK for ${url} (${html.length} chars)`);
+              return html;
+            }
+          } else {
+            const errText = await fcResp.text();
+            console.warn(`Firecrawl ${fcResp.status} for ${url}: ${errText.slice(0, 100)}`);
+          }
+        } catch (fcErr) {
+          console.warn(`Firecrawl error for ${url}:`, fcErr);
+        }
+      }
+
+      // Fallback: raw fetch
+      try {
+        const resp = await fetch(url, { headers: FETCH_HEADERS });
+        if (!resp.ok) {
+          console.error(`Raw fetch failed for ${url}: ${resp.status}`);
+          return null;
+        }
+        return await resp.text();
+      } catch (fetchErr) {
+        console.error(`Raw fetch error for ${url}:`, fetchErr);
+        return null;
+      }
+    }
+
     // Cache fetched HTML per URL to avoid re-fetching for same brand with multiple categories
     const htmlCache: Record<string, string | null> = {};
 
@@ -464,18 +514,7 @@ Deno.serve(async (req) => {
         // Fetch HTML (with cache)
         let html = htmlCache[item.config.url];
         if (html === undefined) {
-          try {
-            const resp = await fetch(item.config.url, { headers: FETCH_HEADERS });
-            if (!resp.ok) {
-              console.error(`Fetch failed for ${item.config.url}: ${resp.status}`);
-              htmlCache[item.config.url] = null;
-            } else {
-              htmlCache[item.config.url] = await resp.text();
-            }
-          } catch (fetchErr) {
-            console.error(`Fetch error for ${item.config.url}:`, fetchErr);
-            htmlCache[item.config.url] = null;
-          }
+          htmlCache[item.config.url] = await fetchPageHtml(item.config.url);
           html = htmlCache[item.config.url];
         }
 
