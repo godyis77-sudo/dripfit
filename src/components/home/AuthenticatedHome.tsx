@@ -1,21 +1,13 @@
 import { forwardRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Sparkles, Camera, Heart, ShoppingBag, TrendingUp, MessageSquare, Bookmark, X } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Sparkles, Camera, ShoppingBag, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import { useProfileInfo, useLatestScan, useTrendingFits } from '@/hooks/useProfileData';
-
-const PROMPTS = [
-  'Should I buy this for work?',
-  'Date night — yes or no?',
-  'Would you wear this?',
-  'Too bold or just right?',
-  'Casual Friday vibes?',
-  'Wedding guest — yay or nay?',
-];
-const getPrompt = (idx: number) => PROMPTS[idx % PROMPTS.length];
+import TrendingFitsGrid from '@/components/home/TrendingFitsGrid';
+import HomeFAB from '@/components/home/HomeFAB';
 
 /* ── Price filter config ── */
 const PRICE_FILTERS = [
@@ -30,7 +22,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const navigate = useNavigate();
   const { user, userGender, genderLoaded } = useAuth();
   const mappedGender = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : undefined;
-  const [fabOpen, setFabOpen] = useState(false);
   const [activePriceIdx, setActivePriceIdx] = useState(0);
   const [rescanDismissed, setRescanDismissed] = useState(() => {
     const key = `rescan_nudge_dismissed_${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
@@ -58,22 +49,8 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
 
   const priceFilter = activePriceIdx === 0 ? null : { min: PRICE_FILTERS[activePriceIdx].min, max: PRICE_FILTERS[activePriceIdx].max };
 
-  const closeFab = useCallback(() => setFabOpen(false), []);
-
   return (
     <div ref={ref} className="relative min-h-screen bg-background pb-safe-bottom">
-      {/* Scrim for FAB */}
-      <AnimatePresence>
-        {fabOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-black/50"
-            onClick={closeFab}
-          />
-        )}
-      </AnimatePresence>
 
       <div className="relative z-10 px-5 pt-5">
         {/* Greeting */}
@@ -152,72 +129,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
         </motion.div>
 
         {/* Trending Fits */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="mb-6"
-        >
-          <div className="flex items-center justify-between mb-2.5">
-            <div className="flex items-center gap-1.5">
-              <TrendingUp className="h-3.5 w-3.5 text-primary" />
-              <p className="section-label mb-0">Trending Fits</p>
-            </div>
-            <button
-              onClick={() => navigate('/style-check')}
-              className="text-[10px] text-primary font-semibold min-h-[44px] flex items-center"
-            >
-              See all
-            </button>
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            {trendingFits.slice(0, 6).map((fit, idx) => {
-              const question = fit.caption || getPrompt(idx);
-              return (
-                <button
-                  key={fit.id}
-                  onClick={() => navigate('/style-check')}
-                  className="relative bg-card border border-border rounded-xl overflow-hidden aspect-[3/4] group active:scale-[0.97] transition-transform"
-                >
-                  <img
-                    src={fit.image_url}
-                    alt={fit.caption || 'Trending fit'}
-                    loading="lazy"
-                    decoding="async"
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/20" />
-                  <div className="absolute inset-x-0 bottom-6 px-1.5">
-                    <p className="text-white font-bold text-[11px] leading-tight line-clamp-2">
-                      {question.endsWith('?') && (
-                        <MessageSquare className="inline h-2.5 w-2.5 mr-0.5 opacity-50 -mt-0.5" />
-                      )}
-                      {question}
-                    </p>
-                  </div>
-                  <div className="absolute bottom-1.5 left-1.5 flex items-center gap-0.5 bg-background/80 backdrop-blur-sm rounded-lg px-1.5 py-0.5">
-                    <Heart className="h-2.5 w-2.5 text-primary" />
-                    <span className="text-[9px] font-bold text-foreground">{fit.like_count}</span>
-                  </div>
-                  <div className="absolute top-1.5 left-1.5">
-                    <span className="text-[8px] font-bold text-white bg-black/40 backdrop-blur-sm rounded-lg px-1 py-0.5">{fit.username}</span>
-                  </div>
-                </button>
-              );
-            })}
-            {trendingFits.filter(f => f.isLive).length < 3 &&
-              Array.from({ length: Math.max(0, Math.min(1, 3 - trendingFits.filter(f => f.isLive).length)) }).map((_, i) => (
-                <button
-                  key={`placeholder-${i}`}
-                  onClick={() => navigate('/tryon')}
-                  className="relative bg-card border border-dashed border-border rounded-xl overflow-hidden aspect-[3/4] flex flex-col items-center justify-center gap-2 active:scale-[0.97] transition-transform"
-                >
-                  <Sparkles className="h-5 w-5 text-primary" />
-                  <p className="text-[10px] font-medium text-muted-foreground text-center px-2">Be first to post a look</p>
-                </button>
-              ))}
-          </div>
-        </motion.div>
+        <TrendingFitsGrid fits={trendingFits} />
 
         {/* Price filter chips */}
         <motion.div
@@ -376,53 +288,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
         )}
       </div>
 
-      {/* Speed-dial FAB */}
-      <div className="fixed bottom-20 right-5 z-50 lg:right-[calc(50%-195px+20px)]">
-        <AnimatePresence>
-          {fabOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="mb-3 flex flex-col gap-2.5 items-end"
-            >
-              {[
-                { icon: <span className="text-sm">📷</span>, label: 'New Body Scan', action: () => navigate('/capture') },
-                { icon: <Sparkles className="h-4 w-4 text-primary-foreground" />, label: 'New Try-On', action: () => navigate('/tryon') },
-                { icon: <Bookmark className="h-4 w-4 text-primary-foreground" />, label: 'Save a Look', action: () => navigate('/style-check') },
-              ].map((item, idx) => (
-                <motion.div
-                  key={item.label}
-                  initial={{ opacity: 0, y: 12, scale: 0.8 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 12, scale: 0.8 }}
-                  transition={{ delay: idx * 0.06, duration: 0.2 }}
-                  className="flex items-center gap-2"
-                >
-                  <span className="text-[11px] font-semibold text-foreground bg-card border border-border rounded-lg px-3 py-1.5 shadow-lg whitespace-nowrap">
-                    {item.label}
-                  </span>
-                  <button
-                    onClick={() => { closeFab(); item.action(); }}
-                    className="h-11 w-11 rounded-full bg-primary shadow-lg flex items-center justify-center active:scale-90 transition-transform"
-                  >
-                    {item.icon}
-                  </button>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <motion.button
-          whileTap={{ scale: 0.93 }}
-          onClick={() => setFabOpen(!fabOpen)}
-          className="h-12 w-12 rounded-full bg-primary shadow-lg flex items-center justify-center"
-          style={{ boxShadow: '0 0 24px -4px hsl(45 88% 40% / 0.4)' }}
-          aria-label={fabOpen ? 'Close menu' : 'Quick actions'}
-        >
-          <Plus className={`h-5 w-5 text-primary-foreground transition-transform duration-200 ease-in-out ${fabOpen ? 'rotate-45' : ''}`} />
-        </motion.button>
-      </div>
+      <HomeFAB />
     </div>
   );
 });
