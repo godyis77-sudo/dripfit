@@ -25,12 +25,6 @@ const FLOW_STEPS: { key: FlowStep; label: string }[] = [
   { key: 'review', label: 'Review' },
 ];
 
-const GUIDANCE = [
-  { icon: Shirt, text: 'Wear fitted clothing' },
-  { icon: Maximize, text: 'Stand 6–8 ft away' },
-  { icon: Sun, text: 'Good, even lighting' },
-  { icon: Eye, text: 'Full body in frame' },
-];
 
 const SCAN_STATE_KEY = 'dripcheck_scan_state';
 function loadScanState() {
