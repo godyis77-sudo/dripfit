@@ -112,7 +112,7 @@ const Community = () => {
         <button
           key={s.key}
           onClick={() => { setSort(s.key); if (s.key !== 'user') setFilterUserId(null); }}
-          className={`whitespace-nowrap px-2.5 py-1 rounded-full text-[10px] font-bold border transition-all active:scale-95 ${
+          className={`whitespace-nowrap px-2.5 py-1 min-h-[44px] rounded-full text-[10px] font-bold border transition-all active:scale-95 ${
             activeSort === s.key ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'
           }`}
         >

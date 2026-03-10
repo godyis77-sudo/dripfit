@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import BottomTabBar from '@/components/BottomTabBar';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Crown, Check, Sparkles, Ruler, Shirt, MessageSquare, Store, Shield, Zap, BarChart3, Eye, Star, Ban, Loader2, Quote } from 'lucide-react';
@@ -119,7 +120,7 @@ const Premium = () => {
   const currentPlan = PLANS.find(p => p.key === selectedPlan)!;
 
   return (
-    <div className="min-h-screen bg-background px-4 py-4 pb-8">
+    <div className="min-h-screen bg-background px-4 py-4 pb-safe-tab">
       <div className="max-w-sm mx-auto">
         {/* Header */}
         <div className="flex items-center gap-2 mb-4">
@@ -334,6 +335,7 @@ const Premium = () => {
           </div>
         </SheetContent>
       </Sheet>
+      <BottomTabBar />
     </div>
   );
 };
