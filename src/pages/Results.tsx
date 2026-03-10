@@ -234,7 +234,7 @@ const Results = () => {
               <SizeMatchCardSkeleton />
             ) : (
               <SizeMatchCard
-                brandName={state?.retailer || brandSlug}
+                brandName={cachedState?.retailer || brandSlug}
                 category={categoryKey}
                 recommendedSize={sizeRec?.recommended_size || adjustedSize}
                 confidence={sizeRec?.confidence ?? 0}
