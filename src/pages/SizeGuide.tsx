@@ -313,6 +313,24 @@ const SizeGuide = () => {
                   </div>
                 )}
 
+                {/* Fit preference */}
+                {selectedBrand && (
+                  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mb-3">
+                    <p className="section-label mb-1.5">4. Fit preference</p>
+                    <div className="flex rounded-lg border border-border overflow-hidden" role="radiogroup" aria-label="Fit preference">
+                      {(['slim', 'regular', 'relaxed'] as const).map(fit => (
+                        <button
+                          key={fit}
+                          role="radio"
+                          aria-checked={fitPreference === fit}
+                          className={`flex-1 py-2 text-[12px] font-medium capitalize transition-colors min-h-[44px] ${fitPreference === fit ? 'bg-primary text-primary-foreground' : 'bg-background text-muted-foreground hover:bg-muted'}`}
+                          onClick={() => { setFitPreference(fit); setDbResult(null); }}
+                        >{fit}</button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+
                 {/* Analyze button */}
                 {selectedBrand && (
                   <Button
