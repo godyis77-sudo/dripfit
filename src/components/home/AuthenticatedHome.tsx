@@ -1,11 +1,11 @@
-import { forwardRef, useEffect, useState, useCallback } from 'react';
+import { forwardRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Sparkles, Camera, Heart, ShoppingBag, TrendingUp, MessageSquare, Bookmark, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
-import { supabase } from '@/integrations/supabase/client';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
+import { useProfileInfo, useLatestScan, useTrendingFits } from '@/hooks/useProfileData';
 
 const PROMPTS = [
   'Should I buy this for work?',
@@ -16,16 +16,6 @@ const PROMPTS = [
   'Wedding guest — yay or nay?',
 ];
 const getPrompt = (idx: number) => PROMPTS[idx % PROMPTS.length];
-
-interface TrendingPost {
-  id: string;
-  username: string;
-  caption: string | null;
-  image_url: string;
-  like_count: number;
-  created_at: string;
-  isLive?: boolean;
-}
 
 /* ── Price filter config ── */
 const PRICE_FILTERS = [
@@ -41,113 +31,22 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const { user, userGender, genderLoaded } = useAuth();
   const mappedGender = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : undefined;
   const [fabOpen, setFabOpen] = useState(false);
-  const [trendingFits, setTrendingFits] = useState<TrendingPost[]>([]);
-  const [profileName, setProfileName] = useState<string | null>(null);
-  const [hasScan, setHasScan] = useState<boolean | null>(null);
-  const [daysSinceLastScan, setDaysSinceLastScan] = useState<number | null>(null);
+  const [activePriceIdx, setActivePriceIdx] = useState(0);
   const [rescanDismissed, setRescanDismissed] = useState(() => {
     const key = `rescan_nudge_dismissed_${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
     return localStorage.getItem(key) === 'true';
   });
-  const [activePriceIdx, setActivePriceIdx] = useState(0);
 
-  useEffect(() => {
-    let stale = false;
+  const { data: profileData } = useProfileInfo(user?.id);
+  const { data: scanData } = useLatestScan(user?.id);
+  const { data: trendingFits = [] } = useTrendingFits(user?.id);
 
-    const fetchTrending = async () => {
-      const TARGET = 6;
-      let posts: TrendingPost[] = [];
+  const hasScan = scanData !== undefined ? !!scanData : null;
+  const daysSinceLastScan = scanData?.createdAt
+    ? Math.floor((Date.now() - new Date(scanData.createdAt).getTime()) / (1000 * 60 * 60 * 24))
+    : null;
 
-      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-
-      if (user) {
-        const { data: livePosts } = await supabase
-          .from('tryon_posts')
-          .select('id, user_id, caption, result_photo_url, created_at, is_public')
-          .eq('is_public', true)
-          .neq('user_id', user.id)
-          .gte('created_at', sevenDaysAgo)
-          .order('created_at', { ascending: false })
-          .limit(TARGET);
-
-        if (livePosts && livePosts.length > 0) {
-          const userIds = [...new Set(livePosts.map(p => p.user_id))];
-          const { data: profiles } = await supabase
-            .from('profiles')
-            .select('user_id, display_name')
-            .in('user_id', userIds);
-          const nameMap = new Map(profiles?.map(p => [p.user_id, p.display_name]) || []);
-
-          const postIds = livePosts.map(p => p.id);
-          const { data: votes } = await supabase
-            .from('community_votes')
-            .select('post_id')
-            .in('post_id', postIds);
-          const voteCounts = new Map<string, number>();
-          votes?.forEach(v => voteCounts.set(v.post_id, (voteCounts.get(v.post_id) || 0) + 1));
-
-          posts = livePosts
-            .map(p => ({
-              id: p.id,
-              username: nameMap.get(p.user_id) || 'User',
-              caption: p.caption,
-              image_url: p.result_photo_url,
-              like_count: voteCounts.get(p.id) || 0,
-              created_at: p.created_at,
-              isLive: true,
-            }))
-            .sort((a, b) => b.like_count - a.like_count);
-        }
-      }
-
-      if (posts.length < TARGET) {
-        const remaining = TARGET - posts.length;
-        const { data: seeds } = await supabase
-          .from('seed_posts')
-          .select('*')
-          .eq('is_public', true)
-          .order('like_count', { ascending: false })
-          .limit(remaining);
-        if (seeds) {
-          posts = [...posts, ...seeds.map(s => ({ ...s, isLive: false }))];
-        }
-      }
-
-      if (!stale) setTrendingFits(posts);
-    };
-
-    const fetchProfileName = async () => {
-      if (!user) return;
-      const { data } = await supabase.from('profiles').select('display_name').eq('user_id', user.id).maybeSingle();
-      if (!stale && data?.display_name) setProfileName(data.display_name);
-    };
-
-    const checkScanStatus = async () => {
-      if (!user) return;
-      const { data } = await supabase
-        .from('body_scans')
-        .select('id, created_at')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (!stale) {
-        setHasScan(!!data);
-        if (data?.created_at) {
-          const daysDiff = Math.floor((Date.now() - new Date(data.created_at).getTime()) / (1000 * 60 * 60 * 24));
-          setDaysSinceLastScan(daysDiff);
-        }
-      }
-    };
-
-    fetchTrending();
-    fetchProfileName();
-    checkScanStatus();
-
-    return () => { stale = true; };
-  }, [user]);
-
-  const displayName = profileName || user?.email?.split('@')[0] || '';
+  const displayName = profileData?.display_name || user?.email?.split('@')[0] || '';
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
@@ -188,7 +87,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           {displayName && <h1 className="font-display text-xl font-bold text-foreground">{displayName}</h1>}
         </motion.div>
 
-        {/* ━━━ FIX 2: Context-aware Quick Actions ━━━ */}
+        {/* Context-aware Quick Actions */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -252,7 +151,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           )}
         </motion.div>
 
-        {/* ━━━ FIX 3: Trending Fits — community content ━━━ */}
+        {/* Trending Fits */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -306,7 +205,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                 </button>
               );
             })}
-            {/* Placeholder cards if fewer than 3 community posts */}
             {trendingFits.filter(f => f.isLive).length < 3 &&
               Array.from({ length: Math.max(0, Math.min(1, 3 - trendingFits.filter(f => f.isLive).length)) }).map((_, i) => (
                 <button
@@ -321,7 +219,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           </div>
         </motion.div>
 
-        {/* ━━━ FIX 5: Price filter chips ━━━ */}
+        {/* Price filter chips */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -345,7 +243,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           </div>
         </motion.div>
 
-        {/* Re-scan nudge banner (30+ days since last scan) */}
+        {/* Re-scan nudge banner */}
         {hasScan && daysSinceLastScan !== null && daysSinceLastScan >= 30 && !rescanDismissed && (
           <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -377,7 +275,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           </motion.div>
         )}
 
-        {/* ━━━ FIX 1: Product grids — 2 column layout ━━━ */}
+        {/* Product grids */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -399,7 +297,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           {genderLoaded && [
             { category: 'tops', title: 'Tops', seed: 42 },
             { category: 'bottom', title: 'Bottoms', seed: 314 },
-            // Only show dresses for women's / unset gender
             ...(mappedGender !== 'mens' ? [{ category: 'dress', title: 'Dresses', seed: 628 }] : []),
             { category: 'outerwear', title: 'Outerwear', seed: 1597 },
             { category: 'shoes', title: 'Shoes', seed: 2718 },
@@ -455,7 +352,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           </motion.div>
         )}
 
-        {/* ━━━ FIX 6: Recently Saved removed ━━━ */}
         {/* Contextual upsell if user hasn't scanned */}
         {hasScan === false && (
           <motion.div
@@ -480,7 +376,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
         )}
       </div>
 
-      {/* ━━━ FIX 4: Speed-dial FAB ━━━ */}
+      {/* Speed-dial FAB */}
       <div className="fixed bottom-20 right-5 z-50 lg:right-[calc(50%-195px+20px)]">
         <AnimatePresence>
           {fabOpen && (

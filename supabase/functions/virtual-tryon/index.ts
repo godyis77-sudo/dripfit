@@ -1,4 +1,4 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { VirtualTryonSchema, parseOrError, successResponse, errorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
@@ -7,7 +7,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -24,8 +24,21 @@ serve(async (req) => {
       return errorResponse('Invalid clothing photo', 'VALIDATION_ERROR', 400, corsHeaders);
     }
 
+    // JWT verification
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
+    if (!authHeader?.startsWith('Bearer ')) {
+      return errorResponse('Unauthorized', 'AUTH_ERROR', 401, corsHeaders);
+    }
+
+    const supabaseAnon = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabaseAnon.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
       return errorResponse('Unauthorized', 'AUTH_ERROR', 401, corsHeaders);
     }
 
@@ -45,7 +58,6 @@ serve(async (req) => {
     const toImageInput = async (input: string): Promise<string> => {
       if (input.startsWith("data:")) return input;
       if (input.startsWith("http://") || input.startsWith("https://")) {
-        // Try to fetch & convert; if CDN rejects, pass the raw URL
         for (let attempt = 0; attempt < 3; attempt++) {
           try {
             const controller = new AbortController();
