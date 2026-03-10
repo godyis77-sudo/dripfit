@@ -287,28 +287,27 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               }}
             >
               <p
-                className="text-[9px] font-bold tracking-[0.15em] uppercase mb-0.5"
+                className="text-[7px] font-bold tracking-[0.15em] uppercase opacity-70"
                 style={{ color: 'hsl(45 88% 60%)' }}
               >
                 {key}
               </p>
               {val ? (
                 <motion.p
-                  className="text-[13px] font-black text-foreground leading-tight"
+                  className="text-[12px] font-black text-foreground leading-tight"
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.15, duration: 0.4 }}
                 >
-                  {val.min?.toFixed(0)}–{val.max?.toFixed(0)}<span className="text-[9px] font-bold ml-0.5 opacity-60">cm</span>
+                  {val.min?.toFixed(0)}–{val.max?.toFixed(0)}<span className="text-[8px] font-bold ml-0.5 opacity-60">cm</span>
                 </motion.p>
               ) : (
                 <div className="flex items-center gap-1 h-4">
                   {[0, 1, 2].map(i => (
                     <motion.div
                       key={i}
-                      className="w-1 h-1 rounded-full"
-                      style={{ background: 'hsl(45 88% 60%)' }}
-                      animate={{ opacity: [0.2, 1, 0.2] }}
+                      className="w-1 h-1 rounded-full bg-primary"
+                      animate={{ opacity: [0.3, 1, 0.3] }}
                       transition={{ duration: 1, delay: i * 0.2, repeat: Infinity }}
                     />
                   ))}
