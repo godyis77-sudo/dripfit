@@ -326,14 +326,18 @@ const Premium = () => {
             <Button
               className="w-full h-11 rounded-xl btn-luxury text-primary-foreground font-bold"
               onClick={() => goToPortal('pause')}
+              disabled={portalLoading}
             >
+              {portalLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Pause Instead
             </Button>
             <Button
               variant="outline"
               className="w-full h-11 rounded-xl font-semibold"
               onClick={() => goToPortal()}
+              disabled={portalLoading}
             >
+              {portalLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Continue to Portal
             </Button>
           </div>
