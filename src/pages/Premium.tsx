@@ -335,6 +335,7 @@ const Premium = () => {
           </div>
         </SheetContent>
       </Sheet>
+      <BottomTabBar />
     </div>
   );
 };

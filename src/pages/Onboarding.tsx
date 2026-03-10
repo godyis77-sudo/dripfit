@@ -229,7 +229,7 @@ const Onboarding = () => {
                   className="flex-1 flex flex-col min-h-0 cursor-grab active:cursor-grabbing"
                 >
                   {/* Image — maximized */}
-                  <div className="flex-[2] flex items-end justify-center mx-4 mb-[10px] mt-[155px] min-h-0 max-w-[480px] w-full self-center">
+                  <div className="flex-[2] flex items-end justify-center mx-4 mb-[10px] mt-auto min-h-0 max-w-[480px] w-full self-center pt-4">
                     {slideIdx === 0 ? (
                       <ScanPreviewCard height={356} />
                     ) : (

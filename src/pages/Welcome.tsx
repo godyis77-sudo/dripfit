@@ -207,7 +207,7 @@ const Welcome = () => {
         >
           <button
             onClick={() => { trackEvent('home_tryon_click'); navigate('/tryon'); }}
-            className="text-[13px] text-muted-foreground active:opacity-70 transition-opacity"
+            className="text-[13px] text-muted-foreground active:opacity-70 transition-opacity underline underline-offset-4"
           >
             Or skip to Try-On →
           </button>
