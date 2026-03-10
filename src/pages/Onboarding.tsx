@@ -97,12 +97,12 @@ const Onboarding = () => {
       const img = new Image();
       img.onload = img.onerror = () => {
         loaded++;
-        if (loaded >= imageUrls.length) advance();
+        if (loaded >= imageUrls.length) { imagesReady = true; if (minElapsed) advance(); }
       };
       img.src = src;
     });
 
-    return () => { advanced = true; window.clearTimeout(timeout); };
+    return () => { advanced = true; window.clearTimeout(timeout); window.clearTimeout(minDelay); };
   }, [screen]);
 
   const tapSplash = useCallback(() => { trackEvent('onboarding_splash_done'); setScreen('carousel'); }, []);
