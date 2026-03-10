@@ -474,7 +474,7 @@ Deno.serve(async (req) => {
           });
           if (fcResp.ok) {
             const fcData = await fcResp.json();
-            const html = fcData?.data?.html || fcData?.html;
+            const html = fcData?.data?.rawHtml || fcData?.data?.html || fcData?.rawHtml || fcData?.html;
             if (html && html.length > 200) {
               console.log(`Firecrawl OK for ${url} (${html.length} chars)`);
               return html;
