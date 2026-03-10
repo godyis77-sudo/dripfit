@@ -480,7 +480,7 @@ const Onboarding = () => {
                 Skip for now — I'll do this later
               </button>
             </div>
-          </motion.div>
+            <div className="flex-1" />
         )}
 
       </AnimatePresence>
