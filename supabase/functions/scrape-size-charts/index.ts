@@ -405,6 +405,20 @@ function stripFences(text: string): string {
   return cleaned.trim();
 }
 
+// Attempt to repair truncated JSON arrays by closing open brackets
+function repairJson(text: string): string {
+  let s = text.trim();
+  // If it starts with [ but doesn't end with ], try to close it
+  if (s.startsWith("[") && !s.endsWith("]")) {
+    // Remove trailing incomplete object (after last })
+    const lastBrace = s.lastIndexOf("}");
+    if (lastBrace > 0) {
+      s = s.slice(0, lastBrace + 1) + "]";
+    }
+  }
+  return s;
+}
+
 async function delay(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
