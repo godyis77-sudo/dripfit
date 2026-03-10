@@ -1,11 +1,13 @@
 import { forwardRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Sparkles, Camera, Heart, ShoppingBag, TrendingUp, MessageSquare, Bookmark, X } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Sparkles, Camera, ShoppingBag, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import { useProfileInfo, useLatestScan, useTrendingFits } from '@/hooks/useProfileData';
+import TrendingFitsGrid from '@/components/home/TrendingFitsGrid';
+import HomeFAB from '@/components/home/HomeFAB';
 
 const PROMPTS = [
   'Should I buy this for work?',
