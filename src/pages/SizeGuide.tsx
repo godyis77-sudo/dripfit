@@ -69,6 +69,7 @@ const SizeGuide = () => {
   const [brandSearch, setBrandSearch] = useState('');
   const [selectedBrand, setSelectedBrand] = useState<BrandOption | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('tops');
+  const [fitPreference, setFitPreference] = useState<'slim' | 'regular' | 'relaxed'>('regular');
   const [dbResult, setDbResult] = useState<DbSizeResult | null>(null);
   const [dbLoading, setDbLoading] = useState(false);
   const [dbError, setDbError] = useState<string | null>(null);
@@ -165,7 +166,7 @@ const SizeGuide = () => {
     setDbLoading(true); setDbError(null); setDbResult(null);
     try {
       const { data: resp, error: fnError } = await supabase.functions.invoke('get-size-recommendation', {
-        body: { user_id: user.id, brand_slug: selectedBrand.brand_slug, category: selectedCategory, fit_preference: 'regular' },
+        body: { user_id: user.id, brand_slug: selectedBrand.brand_slug, category: selectedCategory, fit_preference: fitPreference },
       });
       if (fnError) throw new Error(fnError.message);
       if (resp?.error) throw new Error(resp.error.message || resp.error);
@@ -310,6 +311,24 @@ const SizeGuide = () => {
                     <p className="section-label mb-1.5">3. Your measurements</p>
                     <MeasurementSelector />
                   </div>
+                )}
+
+                {/* Fit preference */}
+                {selectedBrand && (
+                  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mb-3">
+                    <p className="section-label mb-1.5">4. Fit preference</p>
+                    <div className="flex rounded-lg border border-border overflow-hidden" role="radiogroup" aria-label="Fit preference">
+                      {(['slim', 'regular', 'relaxed'] as const).map(fit => (
+                        <button
+                          key={fit}
+                          role="radio"
+                          aria-checked={fitPreference === fit}
+                          className={`flex-1 py-2 text-[12px] font-medium capitalize transition-colors min-h-[44px] ${fitPreference === fit ? 'bg-primary text-primary-foreground' : 'bg-background text-muted-foreground hover:bg-muted'}`}
+                          onClick={() => { setFitPreference(fit); setDbResult(null); }}
+                        >{fit}</button>
+                      ))}
+                    </div>
+                  </motion.div>
                 )}
 
                 {/* Analyze button */}
