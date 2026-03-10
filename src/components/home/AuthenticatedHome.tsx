@@ -69,20 +69,26 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="grid grid-cols-2 gap-2 mb-6"
+          className="grid grid-cols-3 gap-2 mb-6"
         >
           {[
             {
               onClick: () => { trackEvent('home_quick_scan'); navigate('/capture'); },
               icon: hasScan ? <span className="text-base">📐</span> : <span className="text-base">📷</span>,
               title: hasScan ? 'Update Scan' : 'Get Your Size',
-              subtitle: hasScan ? 'Refresh your measurements' : '2 photos · 60 seconds',
+              subtitle: hasScan ? 'Refresh measurements' : '2 photos · 60s',
             },
             {
               onClick: () => { trackEvent('home_quick_tryon'); navigate('/tryon'); },
               icon: <Sparkles className="h-4 w-4 text-primary-foreground" />,
               title: 'Try-On',
               subtitle: 'See it on you',
+            },
+            {
+              onClick: () => { trackEvent('home_quick_sizeguide'); navigate('/size-guide'); },
+              icon: <span className="text-base">📏</span>,
+              title: 'Size Guide',
+              subtitle: 'Check your fit',
             },
           ].map((action) => (
             <button
