@@ -305,7 +305,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             })}
             {/* Placeholder cards if fewer than 3 community posts */}
             {trendingFits.filter(f => f.isLive).length < 3 &&
-              Array.from({ length: Math.max(0, 3 - trendingFits.filter(f => f.isLive).length) }).map((_, i) => (
+              Array.from({ length: Math.max(0, Math.min(1, 3 - trendingFits.filter(f => f.isLive).length)) }).map((_, i) => (
                 <button
                   key={`placeholder-${i}`}
                   onClick={() => navigate('/tryon')}
