@@ -11,6 +11,7 @@ const HomeFAB = () => {
   const items = [
     { icon: <span className="text-sm">📷</span>, label: 'New Body Scan', action: () => navigate('/capture') },
     { icon: <Sparkles className="h-4 w-4 text-primary-foreground" />, label: 'New Try-On', action: () => navigate('/tryon') },
+    { icon: <span className="text-sm">📏</span>, label: 'Size Guide', action: () => navigate('/size-guide') },
     { icon: <Bookmark className="h-4 w-4 text-primary-foreground" />, label: 'Save a Look', action: () => navigate('/style-check') },
   ];
 

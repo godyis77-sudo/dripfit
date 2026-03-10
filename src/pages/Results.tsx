@@ -364,6 +364,18 @@ const Results = () => {
           </TabsContent>
 
           <TabsContent value="more" className="mt-3 space-y-3">
+            <button
+              onClick={() => navigate('/size-guide')}
+              className="w-full flex items-center gap-3 rounded-xl border border-border bg-card p-3 active:scale-[0.98] transition-transform"
+            >
+              <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <span className="text-base">📏</span>
+              </div>
+              <div className="text-left">
+                <p className="text-[12px] font-bold text-foreground">Size Guide Tool</p>
+                <p className="text-[10px] text-muted-foreground">Check your size for any brand</p>
+              </div>
+            </button>
             {(saved || confidence === 'low') && (
               <UpgradePrompt
                 headline={confidence === 'low' ? 'Low confidence? Get smarter sizing.' : 'Want higher confidence?'}
