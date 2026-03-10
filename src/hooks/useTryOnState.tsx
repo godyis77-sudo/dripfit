@@ -1,0 +1,372 @@
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
+import { trackEvent } from '@/lib/analytics';
+import { detectBrandFromUrl, detectCategoryFromUrl } from '@/lib/retailerDetect';
+import {
+  getDefaultSharePreference, imageUrlToBase64,
+  FREE_MONTHLY_LIMIT, getMonthlyTryOnCount, incrementTryOnCount,
+  getServerTryOnCount, incrementServerTryOnCount,
+} from '@/components/tryon/tryon-constants';
+import type { CatalogProduct } from '@/hooks/useProductCatalog';
+
+export type LookItem = { brand: string; name: string; url: string; price_cents?: number | null; image_url?: string | null };
+export type WardrobeItem = { id: string; image_url: string; category: string; product_link: string | null };
+
+export function useTryOnState() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user, isSubscribed, userGender: authGender } = useAuth();
+  const userGender = authGender === 'male' ? 'mens' : authGender === 'female' ? 'womens' : null;
+  const { toast } = useToast();
+  const bodyProfile = (location.state as { bodyProfile?: unknown })?.bodyProfile;
+
+  const [userPhoto, setUserPhoto] = useState<string | null>(null);
+  const [clothingPhoto, setClothingPhoto] = useState<string | null>(null);
+  const [resultImage, setResultImage] = useState<string | null>(null);
+  const [description, setDescription] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [loadingStepIndex, setLoadingStepIndex] = useState(0);
+  const [caption, setCaption] = useState('');
+  const [isPublic, setIsPublic] = useState(() => getDefaultSharePreference());
+  const [shared, setShared] = useState(false);
+  const [autoSaved, setAutoSaved] = useState(false);
+  const [productLink, setProductLink] = useState('');
+  const [lookItems, setLookItems] = useState<LookItem[]>([]);
+  const [category, setCategory] = useState<string>('top');
+  const [clothingSaved, setClothingSaved] = useState(false);
+  const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
+  const [showWardrobe, setShowWardrobe] = useState(false);
+  const [showPremiumGate, setShowPremiumGate] = useState(false);
+  const [savedToItems, setSavedToItems] = useState(false);
+  const [showSuccessOverlay, setShowSuccessOverlay] = useState(false);
+  const [showPostUI, setShowPostUI] = useState(false);
+  const [showLookItems, setShowLookItems] = useState(false);
+  const [selectedQuickPick, setSelectedQuickPick] = useState<CatalogProduct | null>(null);
+  const [layerHistory, setLayerHistory] = useState<string[]>([]);
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [tryOnError, setTryOnError] = useState<string | null>(null);
+  const [addingAccessory, setAddingAccessory] = useState(false);
+
+  const hasUnlimitedTryOns = isSubscribed;
+  const [serverCount, setServerCount] = useState<number | null>(null);
+  const remainingTryOns = Math.max(0, FREE_MONTHLY_LIMIT - (user ? (serverCount ?? 0) : getMonthlyTryOnCount()));
+  const canGenerate = !!userPhoto && !!clothingPhoto;
+
+  const [hasSavedProfile, setHasSavedProfile] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('dripcheck_scans') || '[]').length > 0; } catch { return false; }
+  });
+
+  // Fetch server count on mount
+  useEffect(() => {
+    if (!user || hasUnlimitedTryOns) return;
+    getServerTryOnCount(supabase, user.id).then(setServerCount);
+  }, [user, hasUnlimitedTryOns]);
+
+  // Loading step progression
+  useEffect(() => {
+    if (!loading) { setLoadingStepIndex(0); return; }
+    const timers = [
+      setTimeout(() => setLoadingStepIndex(1), 3000),
+      setTimeout(() => setLoadingStepIndex(2), 7000),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [loading]);
+
+  // Check for saved body scan
+  useEffect(() => {
+    if (user && !hasSavedProfile) {
+      supabase.from('body_scans').select('id').eq('user_id', user.id).limit(1).then(({ data }) => {
+        if (data && data.length > 0) setHasSavedProfile(true);
+      });
+    }
+  }, [user]);
+
+  // Pre-populate clothing from catalog product selection
+  useEffect(() => {
+    const state = location.state as { clothingUrl?: string; clothingImageUrl?: string; productUrl?: string } | null;
+    const clothingUrl = state?.clothingUrl || state?.clothingImageUrl;
+    if (clothingUrl) {
+      imageUrlToBase64(clothingUrl)
+        .then(base64 => {
+          setClothingPhoto(base64);
+          if (state?.productUrl) setProductLink(state.productUrl);
+          trackEvent('tryon_clothing_uploaded');
+        })
+        .catch(() => {
+          setClothingPhoto(clothingUrl);
+          if (state?.productUrl) setProductLink(state.productUrl);
+        });
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
+
+  // Fetch wardrobe
+  useEffect(() => {
+    if (user) {
+      supabase.from('clothing_wardrobe').select('id, image_url, category, product_link').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20)
+        .then(({ data }) => { if (data) setWardrobeItems(data); });
+    }
+  }, [user]);
+
+  const uploadBase64ToStorage = async (input: string, folder: string): Promise<string> => {
+    if (input.startsWith('http://') || input.startsWith('https://')) return input;
+    const match = input.match(/^data:(image\/\w+);base64,(.+)$/);
+    const ext = match ? match[1].split('/')[1] : 'jpeg';
+    const rawB64 = match ? match[2] : input;
+    const bytes = Uint8Array.from(atob(rawB64), c => c.charCodeAt(0));
+    const fileName = `${user!.id}/${folder}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from('tryon-images').upload(fileName, bytes, { contentType: match ? match[1] : 'image/jpeg' });
+    if (error) throw error;
+    const { data: signedData, error: signError } = await supabase.storage.from('tryon-images').createSignedUrl(fileName, 60 * 60 * 24 * 365);
+    if (signError || !signedData?.signedUrl) throw signError || new Error('Failed to create signed URL');
+    return signedData.signedUrl;
+  };
+
+  const getAllUrls = () => {
+    const allUrls = lookItems.map(i => i.url).filter(Boolean);
+    const primaryUrl = productLink || selectedQuickPick?.product_url || null;
+    if (primaryUrl && !allUrls.includes(primaryUrl)) allUrls.unshift(primaryUrl);
+    return allUrls;
+  };
+
+  const saveClothingToWardrobe = async () => {
+    if (!user || !clothingPhoto || clothingSaved) return;
+    try {
+      const imageUrl = await uploadBase64ToStorage(clothingPhoto, 'wardrobe');
+      const detected = productLink ? detectBrandFromUrl(productLink) : null;
+      await supabase.from('clothing_wardrobe').insert({
+        user_id: user.id, image_url: imageUrl, category: category || (productLink ? detectCategoryFromUrl(productLink) : null) || 'top', product_link: productLink || null,
+        brand: detected?.brand && detected.brand !== detected.retailer ? detected.brand : null,
+        retailer: detected?.retailer || null,
+      });
+      setClothingSaved(true);
+      trackEvent('saved_item_added', { source: 'tryon_wardrobe', category });
+      toast({ title: 'Saved to Wardrobe', description: 'Clothing saved as a potential buy outfit.' });
+    } catch (err: unknown) {
+      toast({ title: 'Save failed', description: (err as Error).message, variant: 'destructive' });
+    }
+  };
+
+  const selectFromWardrobe = async (item: { image_url: string; product_link: string | null; category: string }) => {
+    if (item.product_link) setProductLink(item.product_link);
+    setCategory(item.category);
+    const base64 = await imageUrlToBase64(item.image_url);
+    setClothingPhoto(base64);
+    setShowWardrobe(false);
+    setClothingSaved(true);
+    trackEvent('tryon_clothing_uploaded');
+  };
+
+  const autoSaveToProfile = async (resultBase64: string) => {
+    try {
+      const [userUrl, clothingUrl, resultUrl] = await Promise.all([
+        uploadBase64ToStorage(userPhoto!, 'user'),
+        uploadBase64ToStorage(clothingPhoto!, 'clothing'),
+        uploadBase64ToStorage(resultBase64, 'result'),
+      ]);
+      const { error } = await supabase.from('tryon_posts').insert({ user_id: user!.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false, product_urls: getAllUrls() });
+      if (error) throw error;
+      setAutoSaved(true);
+      trackEvent('tryon_saved');
+      toast({ title: 'Saved to Profile', description: 'Your Try-On is saved privately.' });
+    } catch (err: unknown) { console.error('Auto-save failed:', err); }
+  };
+
+  const checkUsageLimit = async (): Promise<boolean> => {
+    if (hasUnlimitedTryOns) return true;
+    if (user) {
+      const count = await getServerTryOnCount(supabase, user.id);
+      setServerCount(count);
+      if (count >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return false; }
+    } else if (getMonthlyTryOnCount() >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return false; }
+    return true;
+  };
+
+  const incrementUsage = async () => {
+    if (hasUnlimitedTryOns) return;
+    if (user) {
+      await incrementServerTryOnCount(supabase, user.id);
+      setServerCount(prev => (prev ?? 0) + 1);
+    } else {
+      incrementTryOnCount();
+    }
+  };
+
+  const handleTryOn = async () => {
+    if (!canGenerate) return;
+    if (!(await checkUsageLimit())) return;
+    setLoading(true);
+    setResultImage(null);
+    setDescription(null);
+    trackEvent('tryon_started');
+    try {
+      setTryOnError(null);
+      const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto, clothingPhoto, itemType: category || 'clothing' } });
+      if (error) throw new Error(error.message);
+      if (resp?.error) throw new Error(resp.error.message || resp.error);
+      const payload = resp?.data ?? resp;
+      trackEvent('tryon_generated');
+      await incrementUsage();
+      if (payload.resultImage) {
+        setResultImage(payload.resultImage);
+        setShowSuccessOverlay(true);
+        setTimeout(() => setShowSuccessOverlay(false), 1500);
+        if (user) autoSaveToProfile(payload.resultImage);
+      } else if (payload.description) {
+        setDescription(payload.description);
+      }
+    } catch (err: unknown) {
+      const msg = (err as Error).message || 'Generation failed. Please try again.';
+      setTryOnError(msg);
+      toast({ title: 'Try-On failed', description: msg, variant: 'destructive' });
+    } finally { setLoading(false); }
+  };
+
+  const handleShare = async () => {
+    if (!user) { toast({ title: 'Sign in to share', description: 'Create a free account to post your look.', variant: 'destructive' }); navigate('/auth'); return; }
+    setShared(true);
+    trackEvent('tryon_posted', { isPublic });
+    try {
+      const allUrls = getAllUrls();
+      if (autoSaved) {
+        const { data: latestPosts } = await supabase.from('tryon_posts').select('id').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
+        if (latestPosts && latestPosts.length > 0) await supabase.from('tryon_posts').update({ caption: caption || null, is_public: isPublic, product_urls: allUrls }).eq('id', latestPosts[0].id);
+      } else {
+        const [userUrl, clothingUrl, resultUrl] = await Promise.all([
+          uploadBase64ToStorage(userPhoto!, 'user'),
+          uploadBase64ToStorage(clothingPhoto!, 'clothing'),
+          uploadBase64ToStorage(resultImage!, 'result'),
+        ]);
+        await supabase.from('tryon_posts').insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic, product_urls: allUrls });
+      }
+      toast({ title: isPublic ? 'Posted to Style Check!' : 'Saved!', description: isPublic ? 'Your look is live — get feedback from the community.' : 'Caption updated.' });
+    } catch (err: unknown) {
+      setShared(false);
+      toast({ title: 'Share failed', description: (err as Error).message, variant: 'destructive' });
+    }
+  };
+
+  const handleTryAnother = () => {
+    setUserPhoto(null); setClothingPhoto(null); setResultImage(null); setDescription(null);
+    setCaption(''); setIsPublic(getDefaultSharePreference()); setShared(false); setAutoSaved(false);
+    setProductLink(''); setLookItems([]); setClothingSaved(false); setSavedToItems(false);
+    setShowPostUI(false); setShowLookItems(false); setLayerHistory([]);
+    setSelectedQuickPick(null);
+  };
+
+  const handleAddAccessory = async (accessoryPhoto: string, accessoryCategory: string | null) => {
+    if (!resultImage || !accessoryPhoto) return;
+    if (!(await checkUsageLimit())) return;
+    setAddingAccessory(true);
+    trackEvent('tryon_accessory_started', { category: accessoryCategory });
+    try {
+      const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto: resultImage, clothingPhoto: accessoryPhoto, itemType: accessoryCategory || 'accessory', isLayering: true } });
+      if (error) throw new Error(error.message);
+      if (resp?.error) throw new Error(resp.error.message || resp.error);
+      const payload = resp?.data ?? resp;
+      await incrementUsage();
+      if (payload.resultImage) {
+        setLayerHistory(prev => [...prev, resultImage!]);
+        setResultImage(payload.resultImage);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        trackEvent('tryon_accessory_generated', { category: accessoryCategory });
+        toast({ title: `${accessoryCategory || 'Accessory'} added!`, description: 'Keep adding items or finish your look.' });
+        if (user) {
+          try {
+            const resultUrl = await uploadBase64ToStorage(payload.resultImage, 'result');
+            const { data: latestPosts } = await supabase.from('tryon_posts').select('id, product_urls').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
+            if (latestPosts && latestPosts.length > 0) {
+              const existingUrls: string[] = (latestPosts[0].product_urls as string[]) || [];
+              const merged = [...new Set([...getAllUrls(), ...existingUrls])];
+              await supabase.from('tryon_posts').update({ result_photo_url: resultUrl, product_urls: merged }).eq('id', latestPosts[0].id);
+            }
+          } catch { /* silent */ }
+        }
+      } else {
+        toast({ title: 'Could not add accessory', description: payload?.description || 'Try a clearer photo.', variant: 'destructive' });
+      }
+    } catch (err: unknown) {
+      toast({ title: 'Accessory failed', description: (err as Error).message, variant: 'destructive' });
+    } finally {
+      setAddingAccessory(false);
+    }
+  };
+
+  const handleSelectProduct = async (product: CatalogProduct) => {
+    setSelectedQuickPick(product);
+    if (product.category) setCategory(product.category);
+    if (product.product_url) {
+      setProductLink(product.product_url);
+      setLookItems([{ brand: product.brand, name: product.name, url: product.product_url, price_cents: product.price_cents, image_url: product.image_url }]);
+    }
+    trackEvent('tryon_clothing_uploaded');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    try {
+      const base64 = await imageUrlToBase64(product.image_url);
+      setClothingPhoto(base64);
+    } catch {
+      setClothingPhoto(product.image_url);
+    }
+  };
+
+  const handleSaveToItems = async () => {
+    if (!user || !clothingPhoto) return;
+    try {
+      const imageUrl = await uploadBase64ToStorage(clothingPhoto, 'wardrobe');
+      const detected = productLink ? detectBrandFromUrl(productLink) : null;
+      await supabase.from('clothing_wardrobe').insert({
+        user_id: user.id,
+        image_url: imageUrl,
+        category: category || (productLink ? detectCategoryFromUrl(productLink) : null) || 'top',
+        product_link: productLink || null,
+        brand: selectedQuickPick?.brand || (detected?.brand && detected.brand !== detected.retailer ? detected.brand : null),
+        retailer: selectedQuickPick?.retailer || detected?.retailer || null,
+      });
+      setSavedToItems(true);
+      trackEvent('saved_item_added', { source: 'tryon_wardrobe', category });
+      toast({
+        title: '✓ Saved to Wardrobe', description: 'View in your wardrobe anytime.',
+        action: <button onClick={() => navigate('/profile', { state: { tab: 'wardrobe' } })} className="text-[11px] font-bold text-primary underline" aria-label="View your wardrobe">View Wardrobe</button>,
+      });
+    } catch {
+      toast({ title: 'Could not save', variant: 'destructive' });
+    }
+  };
+
+  const removeClothing = () => {
+    setClothingPhoto(null);
+    setSelectedQuickPick(null);
+    setProductLink('');
+    setClothingSaved(false);
+    setLookItems([]);
+  };
+
+  return {
+    // Auth & context
+    user, userGender, bodyProfile, navigate, toast,
+    // Photos
+    userPhoto, setUserPhoto, clothingPhoto, setClothingPhoto,
+    resultImage, description,
+    // Loading
+    loading, loadingStepIndex,
+    // Post UI
+    caption, setCaption, isPublic, setIsPublic, shared, showPostUI, setShowPostUI,
+    // Product
+    productLink, setProductLink, lookItems, setLookItems, category, setCategory,
+    selectedQuickPick, selectedBrand, setSelectedBrand,
+    // Wardrobe
+    clothingSaved, wardrobeItems, showWardrobe, setShowWardrobe,
+    // State flags
+    showPremiumGate, setShowPremiumGate, savedToItems, showSuccessOverlay,
+    showLookItems, layerHistory, hasSavedProfile,
+    canGenerate, remainingTryOns, hasUnlimitedTryOns: !!hasUnlimitedTryOns,
+    addingAccessory, tryOnError, autoSaved,
+    // Handlers
+    handleTryOn, handleShare, handleTryAnother, handleAddAccessory,
+    handleSelectProduct, handleSaveToItems,
+    saveClothingToWardrobe, selectFromWardrobe, removeClothing,
+  };
+}
