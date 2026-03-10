@@ -24,7 +24,7 @@ const fitColors: Record<string, string> = { tight: 'text-orange-500', good: 'tex
 const fitLabels: Record<string, string> = { tight: 'Tight', good: 'Good', loose: 'Loose' };
 const fitStatusColors: Record<string, string> = { true_to_size: 'text-green-500', good_fit: 'text-green-400', between_sizes: 'text-amber-500', out_of_range: 'text-red-400' };
 const fitStatusLabels: Record<string, string> = { true_to_size: 'True to Size', good_fit: 'Good Fit', between_sizes: 'Between Sizes', out_of_range: 'Out of Range' };
-const CATEGORY_OPTIONS = ['tops', 'bottoms', 'dresses', 'outerwear', 'activewear'] as const;
+const CATEGORY_OPTIONS = ['tops', 'bottoms', 'dresses', 'outerwear', 'activewear', 'footwear'] as const;
 
 function bodyScansToMeasurement(scan: any): MeasurementResult {
   return {
