@@ -228,8 +228,8 @@ const Onboarding = () => {
                   }}
                   className="flex-1 flex flex-col min-h-0 cursor-grab active:cursor-grabbing"
                 >
-                  {/* Image — capped at 48dvh */}
-                  <div className="flex-1 flex items-center justify-center mx-4 min-h-0 max-w-[420px] self-center" style={{ maxHeight: '48dvh' }}>
+                  {/* Image — maximized */}
+                  <div className="flex-[3] flex items-center justify-center mx-4 min-h-0 max-w-[480px] w-full self-center">
                     {slideIdx === 0 ? (
                       <div className="relative rounded-[1rem] border-[3px] border-primary" style={{ boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15), inset 0 0 14px 3px hsl(45 88% 50% / 0.2)' }}>
                         <div className="overflow-hidden rounded-[calc(1rem-3px)]">
@@ -269,8 +269,8 @@ const Onboarding = () => {
                     )}
                   </div>
 
-                  {/* Text — compact */}
-                  <div className="shrink-0 flex flex-col items-center justify-end px-8 pb-[13%] text-center" style={{ flex: 1 }}>
+                  {/* Text — centered between image and button */}
+                  <div className="flex-[2] flex flex-col items-center justify-center px-8 text-center">
                     <div className="h-9 w-9 rounded-xl gradient-drip flex items-center justify-center mb-2">
                       {(() => { const Icon = SLIDES[slideIdx].icon; return <Icon className="h-4 w-4 text-primary-foreground" />; })()}
                     </div>
