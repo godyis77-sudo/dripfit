@@ -107,20 +107,38 @@ const SizeGuide = () => {
     if (!authLoading) loadMeasurements();
   }, [user, authLoading]);
 
-  // Load available brands
+  // User's preferred / favorite brands for prioritisation
+  const [userBrandNames, setUserBrandNames] = useState<Set<string>>(new Set());
+
+  // Load available brands + user preferences in parallel
   useEffect(() => {
     const loadBrands = async () => {
       setBrandsLoading(true);
-      const { data } = await supabase
+      const chartsPromise = supabase
         .from('brand_size_charts')
         .select('brand_name, brand_slug, category')
         .eq('is_active', true)
         .order('brand_name');
+
+      let prefNames: string[] = [];
+      if (user) {
+        const [prefRes, favRes] = await Promise.all([
+          supabase.from('user_preferred_brands').select('brand_name').eq('user_id', user.id),
+          supabase.from('user_favorite_retailers').select('retailer_name').eq('user_id', user.id),
+        ]);
+        prefNames = [
+          ...(prefRes.data?.map(r => r.brand_name) ?? []),
+          ...(favRes.data?.map(r => r.retailer_name) ?? []),
+        ];
+      }
+      setUserBrandNames(new Set(prefNames.map(n => n.toLowerCase())));
+
+      const { data } = await chartsPromise;
       if (data) setBrands(data);
       setBrandsLoading(false);
     };
     loadBrands();
-  }, []);
+  }, [user]);
 
   // Unique brand names for the picker
   const uniqueBrands = brands.reduce<{ name: string; slug: string; categories: string[] }[]>((acc, b) => {
@@ -133,9 +151,17 @@ const SizeGuide = () => {
     return acc;
   }, []);
 
+  // Sort: user's preferred/favorite brands first
+  const sortedUniqueBrands = [...uniqueBrands].sort((a, b) => {
+    const aFav = userBrandNames.has(a.name.toLowerCase()) ? 0 : 1;
+    const bFav = userBrandNames.has(b.name.toLowerCase()) ? 0 : 1;
+    if (aFav !== bFav) return aFav - bFav;
+    return a.name.localeCompare(b.name);
+  });
+
   const filteredBrands = brandSearch
-    ? uniqueBrands.filter(b => b.name.toLowerCase().includes(brandSearch.toLowerCase()))
-    : uniqueBrands;
+    ? sortedUniqueBrands.filter(b => b.name.toLowerCase().includes(brandSearch.toLowerCase()))
+    : sortedUniqueBrands;
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; if (!file) return;
@@ -275,7 +301,10 @@ const SizeGuide = () => {
                           onClick={() => { setSelectedBrand({ brand_name: b.name, brand_slug: b.slug, category: b.categories[0] }); setDbResult(null); setDbError(null); if (b.categories.length === 1) setSelectedCategory(b.categories[0]); }}
                         >
                           <CardContent className="p-2 flex items-center justify-between">
-                            <p className="text-[13px] font-medium text-foreground">{b.name}</p>
+                            <div className="flex items-center gap-1.5">
+                              {userBrandNames.has(b.name.toLowerCase()) && <span className="text-[10px]">⭐</span>}
+                              <p className="text-[13px] font-medium text-foreground">{b.name}</p>
+                            </div>
                             <p className="text-[10px] text-muted-foreground">{b.categories.length} {b.categories.length === 1 ? 'category' : 'categories'}</p>
                           </CardContent>
                         </Card>
