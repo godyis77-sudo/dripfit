@@ -8,6 +8,8 @@ import {
   Shirt, ChevronRight, Upload,
 } from 'lucide-react';
 import { CaptureStep, STEP_CONFIG, PhotoSet, ReferenceObject, REFERENCE_OBJECTS } from '@/lib/types';
+import CaptureHeightStep from '@/components/capture/CaptureHeightStep';
+import CaptureReviewStep from '@/components/capture/CaptureReviewStep';
 import { getFitPreference } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
