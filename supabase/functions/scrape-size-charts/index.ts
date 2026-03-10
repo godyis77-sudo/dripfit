@@ -18,366 +18,366 @@ const RETAILERS: Record<string, RetailerConfig> = {
   zara: {
     brand_name: "Zara",
     url: "https://www.zara.com/us/en/help/size-guide",
-    categories: ["tops", "bottoms", "dresses", "outerwear"],
+    categories: ["tops", "bottoms", "dresses", "outerwear", "suits", "swimwear", "underwear", "knitwear"],
   },
   hm: {
     brand_name: "H&M",
     url: "https://www2.hm.com/en_us/women/editorial/size-guide.html",
-    categories: ["tops", "bottoms", "dresses", "outerwear", "activewear"],
+    categories: ["tops", "bottoms", "dresses", "outerwear", "activewear", "swimwear", "underwear", "sleepwear", "suits"],
   },
   uniqlo: {
     brand_name: "Uniqlo",
     url: "https://www.uniqlo.com/us/en/size-chart",
-    categories: ["tops", "bottoms", "outerwear"],
+    categories: ["tops", "bottoms", "outerwear", "innerwear", "loungewear", "knitwear"],
   },
   shein: {
     brand_name: "SHEIN",
     url: "https://us.shein.com/Size-Guide-a-281.html",
-    categories: ["tops", "bottoms", "dresses", "outerwear", "activewear"],
+    categories: ["tops", "bottoms", "dresses", "outerwear", "activewear", "swimwear", "underwear", "sleepwear", "jumpsuits"],
   },
   "forever-21": {
     brand_name: "Forever 21",
     url: "https://www.forever21.com/us/size-guide",
-    categories: ["tops", "bottoms", "dresses"],
+    categories: ["tops", "bottoms", "dresses", "swimwear", "activewear"],
   },
   boohoo: {
     brand_name: "Boohoo",
     url: "https://us.boohoo.com/page/size-guide.html",
-    categories: ["tops", "bottoms", "dresses"],
+    categories: ["tops", "bottoms", "dresses", "swimwear", "jumpsuits"],
   },
   prettylittlething: {
     brand_name: "PrettyLittleThing",
     url: "https://www.prettylittlething.us/size-guide",
-    categories: ["tops", "bottoms", "dresses"],
+    categories: ["tops", "bottoms", "dresses", "swimwear", "jumpsuits", "underwear"],
   },
   "fashion-nova": {
     brand_name: "Fashion Nova",
     url: "https://www.fashionnova.com/pages/size-chart",
-    categories: ["tops", "bottoms", "dresses"],
+    categories: ["tops", "bottoms", "dresses", "swimwear", "jumpsuits", "activewear"],
   },
   mango: {
     brand_name: "Mango",
     url: "https://shop.mango.com/us/size-guide",
-    categories: ["tops", "bottoms", "dresses", "outerwear"],
+    categories: ["tops", "bottoms", "dresses", "outerwear", "suits", "knitwear", "swimwear"],
   },
   cos: {
     brand_name: "COS",
     url: "https://www.cos.com/en_usd/customer-service/size-guide.html",
-    categories: ["tops", "bottoms", "dresses"],
+    categories: ["tops", "bottoms", "dresses", "knitwear", "outerwear"],
   },
 
   // ── Mid-Range / Mall Brands ──
   gap: {
     brand_name: "Gap",
     url: "https://www.gap.com/browse/sizeChart.do",
-    categories: ["tops", "bottoms", "dresses", "outerwear"],
+    categories: ["tops", "bottoms", "dresses", "outerwear", "activewear", "sleepwear", "swimwear"],
   },
   "old-navy": {
     brand_name: "Old Navy",
     url: "https://oldnavy.gap.com/browse/sizeChart.do",
-    categories: ["tops", "bottoms", "dresses"],
+    categories: ["tops", "bottoms", "dresses", "activewear", "swimwear", "sleepwear"],
   },
   "banana-republic": {
     brand_name: "Banana Republic",
     url: "https://bananarepublic.gap.com/browse/sizeChart.do",
-    categories: ["tops", "bottoms", "dresses"],
+    categories: ["tops", "bottoms", "dresses", "suits", "outerwear", "knitwear"],
   },
   abercrombie: {
     brand_name: "Abercrombie & Fitch",
     url: "https://www.abercrombie.com/shop/us/size-charts",
-    categories: ["tops", "bottoms", "dresses"],
+    categories: ["tops", "bottoms", "dresses", "outerwear", "swimwear", "activewear"],
   },
   hollister: {
     brand_name: "Hollister",
     url: "https://www.hollisterco.com/shop/us/size-charts",
-    categories: ["tops", "bottoms", "dresses"],
+    categories: ["tops", "bottoms", "dresses", "swimwear", "activewear"],
   },
   "american-eagle": {
     brand_name: "American Eagle",
     url: "https://www.ae.com/us/en/content/help/men-size-chart",
-    categories: ["tops", "bottoms"],
+    categories: ["tops", "bottoms", "swimwear", "underwear", "activewear"],
   },
   jcrew: {
     brand_name: "J.Crew",
     url: "https://www.jcrew.com/r/size-charts",
-    categories: ["tops", "bottoms", "dresses"],
+    categories: ["tops", "bottoms", "dresses", "suits", "outerwear", "swimwear", "knitwear"],
   },
   "calvin-klein": {
     brand_name: "Calvin Klein",
     url: "https://www.calvinklein.us/size-guide",
-    categories: ["tops", "bottoms", "dresses", "outerwear"],
+    categories: ["tops", "bottoms", "dresses", "outerwear", "underwear", "swimwear", "suits", "sleepwear"],
   },
   "ralph-lauren": {
     brand_name: "Ralph Lauren",
     url: "https://www.ralphlauren.com/size-charts",
-    categories: ["tops", "bottoms", "outerwear"],
+    categories: ["tops", "bottoms", "outerwear", "suits", "dresses", "knitwear", "swimwear"],
   },
   "hugo-boss": {
     brand_name: "Hugo Boss",
     url: "https://www.hugoboss.com/us/size-guide/",
-    categories: ["tops", "bottoms", "outerwear"],
+    categories: ["tops", "bottoms", "outerwear", "suits", "knitwear", "underwear"],
   },
   everlane: {
     brand_name: "Everlane",
     url: "https://www.everlane.com/size-guide",
-    categories: ["tops", "bottoms"],
+    categories: ["tops", "bottoms", "dresses", "outerwear", "knitwear", "jumpsuits"],
   },
   anthropologie: {
     brand_name: "Anthropologie",
     url: "https://www.anthropologie.com/help/size-charts",
-    categories: ["tops", "dresses"],
+    categories: ["tops", "dresses", "bottoms", "swimwear", "jumpsuits", "sleepwear"],
   },
   "free-people": {
     brand_name: "Free People",
     url: "https://www.freepeople.com/size-chart/",
-    categories: ["tops", "dresses"],
+    categories: ["tops", "dresses", "bottoms", "activewear", "swimwear", "jumpsuits"],
   },
   reformation: {
     brand_name: "Reformation",
     url: "https://www.thereformation.com/pages/size-chart",
-    categories: ["tops", "bottoms", "dresses"],
+    categories: ["tops", "bottoms", "dresses", "swimwear", "jumpsuits", "knitwear"],
   },
   aritzia: {
     brand_name: "Aritzia",
     url: "https://www.aritzia.com/en/size-guide",
-    categories: ["tops", "bottoms", "dresses", "outerwear"],
+    categories: ["tops", "bottoms", "dresses", "outerwear", "activewear", "knitwear", "jumpsuits"],
   },
   nordstrom: {
     brand_name: "Nordstrom",
     url: "https://www.nordstrom.com/browse/content/size-charts",
-    categories: ["tops", "bottoms", "dresses", "outerwear"],
+    categories: ["tops", "bottoms", "dresses", "outerwear", "swimwear", "suits", "activewear", "underwear"],
   },
   jcpenney: {
     brand_name: "JCPenney",
     url: "https://www.jcpenney.com/m/size-charts",
-    categories: ["tops", "bottoms", "dresses"],
+    categories: ["tops", "bottoms", "dresses", "suits", "swimwear", "sleepwear"],
   },
 
   // ── Denim ──
   levis: {
     brand_name: "Levi's",
     url: "https://www.levi.com/US/en_US/size-charts/",
-    categories: ["tops", "bottoms"],
+    categories: ["tops", "bottoms", "outerwear", "dresses", "jumpsuits"],
   },
 
   // ── Sportswear / Activewear ──
   nike: {
     brand_name: "Nike",
     url: "https://www.nike.com/size-fit/womens-apparel",
-    categories: ["tops", "bottoms", "activewear", "footwear", "outerwear"],
+    categories: ["tops", "bottoms", "activewear", "footwear", "outerwear", "swimwear", "sports-bras", "hoodies"],
   },
   adidas: {
     brand_name: "Adidas",
     url: "https://www.adidas.com/us/help/size_charts",
-    categories: ["tops", "bottoms", "activewear", "footwear", "outerwear"],
+    categories: ["tops", "bottoms", "activewear", "footwear", "outerwear", "swimwear", "sports-bras", "hoodies"],
   },
   puma: {
     brand_name: "Puma",
     url: "https://us.puma.com/us/en/size-guide",
-    categories: ["tops", "activewear", "footwear", "outerwear"],
+    categories: ["tops", "activewear", "footwear", "outerwear", "bottoms", "swimwear", "hoodies"],
   },
   "new-balance": {
     brand_name: "New Balance",
     url: "https://www.newbalance.com/size-chart",
-    categories: ["tops", "bottoms", "activewear", "footwear", "outerwear"],
+    categories: ["tops", "bottoms", "activewear", "footwear", "outerwear", "sports-bras", "hoodies"],
   },
   champion: {
     brand_name: "Champion",
     url: "https://www.champion.com/size-chart",
-    categories: ["tops", "bottoms", "activewear", "outerwear"],
+    categories: ["tops", "bottoms", "activewear", "outerwear", "hoodies", "underwear"],
   },
   lululemon: {
     brand_name: "Lululemon",
     url: "https://shop.lululemon.com/help/size-guide",
-    categories: ["tops", "bottoms", "activewear"],
+    categories: ["tops", "bottoms", "activewear", "sports-bras", "outerwear", "swimwear", "dresses"],
   },
   "the-north-face": {
     brand_name: "The North Face",
     url: "https://www.thenorthface.com/help/size-chart.html",
-    categories: ["tops", "outerwear", "activewear"],
+    categories: ["tops", "outerwear", "activewear", "bottoms", "footwear", "fleece"],
   },
   patagonia: {
     brand_name: "Patagonia",
     url: "https://www.patagonia.com/size-fit-guide.html",
-    categories: ["tops", "outerwear"],
+    categories: ["tops", "outerwear", "bottoms", "activewear", "swimwear", "fleece"],
   },
   arcteryx: {
     brand_name: "Arc'teryx",
     url: "https://arcteryx.com/us/en/help/size-chart",
-    categories: ["tops", "bottoms", "outerwear"],
+    categories: ["tops", "bottoms", "outerwear", "activewear", "footwear", "fleece"],
   },
   "under-armour": {
     brand_name: "Under Armour",
     url: "https://www.underarmour.com/en-us/size-charts",
-    categories: ["tops", "bottoms", "activewear", "footwear"],
+    categories: ["tops", "bottoms", "activewear", "footwear", "sports-bras", "hoodies", "outerwear"],
   },
 
   // ── Streetwear ──
   stussy: {
     brand_name: "Stüssy",
     url: "https://www.stussy.com/pages/size-guide",
-    categories: ["tops", "bottoms", "outerwear"],
+    categories: ["tops", "bottoms", "outerwear", "hoodies", "knitwear"],
   },
   supreme: {
     brand_name: "Supreme",
     url: "https://www.supremenewyork.com/shop/sizing",
-    categories: ["tops", "bottoms", "outerwear"],
+    categories: ["tops", "bottoms", "outerwear", "hoodies", "knitwear"],
   },
   kith: {
     brand_name: "Kith",
     url: "https://kith.com/pages/size-guide",
-    categories: ["tops", "bottoms", "outerwear"],
+    categories: ["tops", "bottoms", "outerwear", "hoodies", "knitwear", "footwear"],
   },
   "carhartt-wip": {
     brand_name: "Carhartt WIP",
     url: "https://www.carhartt-wip.com/en/size-guide",
-    categories: ["tops", "bottoms", "outerwear"],
+    categories: ["tops", "bottoms", "outerwear", "hoodies"],
   },
   "fear-of-god": {
     brand_name: "Fear of God",
     url: "https://fearofgod.com/pages/size-guide",
-    categories: ["tops", "bottoms", "outerwear"],
+    categories: ["tops", "bottoms", "outerwear", "hoodies", "knitwear"],
   },
   "off-white": {
     brand_name: "Off-White",
     url: "https://www.off---white.com/en-us/size-guide",
-    categories: ["tops", "outerwear"],
+    categories: ["tops", "outerwear", "hoodies", "bottoms", "knitwear"],
   },
 
   // ── Luxury / Designer ──
   gucci: {
     brand_name: "Gucci",
     url: "https://www.gucci.com/us/en/st/size-guide",
-    categories: ["tops", "bottoms", "dresses", "outerwear"],
+    categories: ["tops", "bottoms", "dresses", "outerwear", "suits", "knitwear", "swimwear", "footwear"],
   },
   "louis-vuitton": {
     brand_name: "Louis Vuitton",
     url: "https://us.louisvuitton.com/eng-us/stories/size-guide",
-    categories: ["tops", "bottoms", "outerwear"],
+    categories: ["tops", "bottoms", "outerwear", "knitwear", "suits", "footwear"],
   },
   prada: {
     brand_name: "Prada",
     url: "https://www.prada.com/us/en/customer-service/size-guide.html",
-    categories: ["tops", "outerwear"],
+    categories: ["tops", "outerwear", "bottoms", "knitwear", "footwear", "dresses"],
   },
   burberry: {
     brand_name: "Burberry",
     url: "https://us.burberry.com/c/size-guide/",
-    categories: ["tops", "outerwear"],
+    categories: ["tops", "outerwear", "bottoms", "dresses", "knitwear", "suits"],
   },
   dior: {
     brand_name: "Dior",
     url: "https://www.dior.com/en_us/fashion/size-guide",
-    categories: ["tops", "dresses", "outerwear"],
+    categories: ["tops", "dresses", "outerwear", "suits", "knitwear", "footwear"],
   },
   "saint-laurent": {
     brand_name: "Saint Laurent",
     url: "https://www.ysl.com/en-us/size-guide",
-    categories: ["tops", "outerwear"],
+    categories: ["tops", "outerwear", "bottoms", "dresses", "footwear", "knitwear"],
   },
   balenciaga: {
     brand_name: "Balenciaga",
     url: "https://www.balenciaga.com/en-us/size-guide",
-    categories: ["tops", "bottoms", "outerwear"],
+    categories: ["tops", "bottoms", "outerwear", "hoodies", "knitwear", "footwear", "dresses"],
   },
   fendi: {
     brand_name: "Fendi",
     url: "https://www.fendi.com/us-en/size-guide",
-    categories: ["tops"],
+    categories: ["tops", "outerwear", "bottoms", "knitwear", "dresses", "footwear"],
   },
   givenchy: {
     brand_name: "Givenchy",
     url: "https://www.givenchy.com/us/en-US/size-guide",
-    categories: ["tops"],
+    categories: ["tops", "outerwear", "bottoms", "knitwear", "dresses", "footwear"],
   },
   moncler: {
     brand_name: "Moncler",
     url: "https://www.moncler.com/en-us/size-guide.html",
-    categories: ["tops", "outerwear"],
+    categories: ["tops", "outerwear", "bottoms", "knitwear", "footwear"],
   },
   "acne-studios": {
     brand_name: "Acne Studios",
     url: "https://www.acnestudios.com/us/en/size-guide.html",
-    categories: ["tops", "bottoms", "outerwear"],
+    categories: ["tops", "bottoms", "outerwear", "knitwear", "dresses", "footwear"],
   },
   "ami-paris": {
     brand_name: "AMI Paris",
     url: "https://www.amiparis.com/us/size-guide",
-    categories: ["tops", "outerwear"],
+    categories: ["tops", "outerwear", "bottoms", "knitwear"],
   },
   jacquemus: {
     brand_name: "Jacquemus",
     url: "https://www.jacquemus.com/size-guide",
-    categories: ["tops", "dresses"],
+    categories: ["tops", "dresses", "bottoms", "knitwear", "swimwear"],
   },
   versace: {
     brand_name: "Versace",
     url: "https://www.versace.com/us/en/size-guide/",
-    categories: ["tops", "bottoms", "outerwear"],
+    categories: ["tops", "bottoms", "outerwear", "dresses", "swimwear", "knitwear", "footwear"],
   },
   valentino: {
     brand_name: "Valentino",
     url: "https://www.valentino.com/en-us/size-guide",
-    categories: ["tops", "dresses", "outerwear"],
+    categories: ["tops", "dresses", "outerwear", "knitwear", "footwear"],
   },
   "stone-island": {
     brand_name: "Stone Island",
     url: "https://www.stoneisland.com/en-us/size-guide",
-    categories: ["tops", "bottoms", "outerwear"],
+    categories: ["tops", "bottoms", "outerwear", "knitwear", "hoodies", "fleece"],
   },
 
   // ── Multi-Brand Retailers ──
   asos: {
     brand_name: "ASOS",
     url: "https://www.asos.com/us/discover/size-charts/",
-    categories: ["tops", "bottoms", "dresses", "outerwear"],
+    categories: ["tops", "bottoms", "dresses", "outerwear", "suits", "swimwear", "underwear", "activewear", "jumpsuits"],
   },
   revolve: {
     brand_name: "Revolve",
     url: "https://www.revolve.com/content/sizechart",
-    categories: ["tops", "bottoms", "dresses"],
+    categories: ["tops", "bottoms", "dresses", "swimwear", "jumpsuits", "activewear"],
   },
   simons: {
     brand_name: "Simons",
     url: "https://www.simons.ca/en/size-charts",
-    categories: ["tops", "bottoms", "outerwear"],
+    categories: ["tops", "bottoms", "outerwear", "suits", "swimwear", "underwear"],
   },
 
   // ── Additional brands ──
   topshop: {
     brand_name: "Topshop",
     url: "https://www.asos.com/us/discover/topshop-size-guide/",
-    categories: ["tops", "bottoms", "dresses"],
+    categories: ["tops", "bottoms", "dresses", "swimwear", "jumpsuits"],
   },
   tommy: {
     brand_name: "Tommy Hilfiger",
     url: "https://usa.tommy.com/en/size-guide",
-    categories: ["tops", "bottoms", "outerwear"],
+    categories: ["tops", "bottoms", "outerwear", "suits", "underwear", "swimwear", "dresses", "activewear"],
   },
-  "vans": {
+  vans: {
     brand_name: "Vans",
     url: "https://www.vans.com/size-chart",
-    categories: ["tops", "footwear"],
+    categories: ["tops", "footwear", "hoodies", "bottoms"],
   },
   converse: {
     brand_name: "Converse",
     url: "https://www.converse.com/size-chart",
-    categories: ["footwear"],
+    categories: ["footwear", "tops", "hoodies"],
   },
   reebok: {
     brand_name: "Reebok",
     url: "https://www.reebok.com/us/size_charts",
-    categories: ["tops", "activewear", "footwear"],
+    categories: ["tops", "activewear", "footwear", "bottoms", "sports-bras", "hoodies"],
   },
   "urban-outfitters": {
     brand_name: "Urban Outfitters",
     url: "https://www.urbanoutfitters.com/help/size-charts",
-    categories: ["tops", "bottoms", "dresses"],
+    categories: ["tops", "bottoms", "dresses", "swimwear", "jumpsuits", "underwear"],
   },
   zara_man: {
     brand_name: "Zara Man",
     url: "https://www.zara.com/us/en/help/size-guide",
-    categories: ["tops", "bottoms", "outerwear"],
+    categories: ["tops", "bottoms", "outerwear", "suits", "knitwear", "swimwear"],
   },
 };
 
