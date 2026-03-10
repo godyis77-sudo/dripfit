@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Crown } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import AuthForm from '@/components/auth/AuthForm';
 
