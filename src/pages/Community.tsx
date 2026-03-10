@@ -239,12 +239,13 @@ const Community = () => {
             <CategoryProductGrid category={shopCategory} collapsed={false} maxItems={50} gender={shopGender === 'all' ? undefined : shopGender} brand={shopBrand || undefined} onSelectProduct={(product) => navigateToTryOn(navigate, { productUrl: product.product_url || undefined, fallbackClothingImageUrl: product.image_url, source: 'style_check_shop' })} />
           </>
         ) : loading ? (
-          <div className="space-y-3">
-            {[1, 2].map(i => (
+          <div className="grid grid-cols-2 gap-2">
+            {[1, 2, 3, 4].map(i => (
               <div key={i} className="rounded-xl border border-border overflow-hidden">
-                <div className="w-full aspect-[4/5]" style={{ background: 'linear-gradient(110deg, #1A1A1A 30%, #272727 50%, #1A1A1A 70%)', backgroundSize: '200% 100%', animation: 'skeleton-shimmer 1.4s ease-in-out infinite' }} />
-                <div className="p-3 space-y-2">
-                  <div className="flex gap-1.5">{[1,2,3].map(j => <div key={j} className="h-8 flex-1 rounded-lg" style={{ background: 'linear-gradient(110deg, #1A1A1A 30%, #272727 50%, #1A1A1A 70%)', backgroundSize: '200% 100%', animation: 'skeleton-shimmer 1.4s ease-in-out infinite' }} />)}</div>
+                <div className="w-full aspect-[4/5] skeleton-gold" />
+                <div className="p-2.5 space-y-1.5">
+                  <div className="h-3 w-3/4 rounded skeleton-gold" />
+                  <div className="flex gap-1.5">{[1,2,3].map(j => <div key={j} className="h-7 flex-1 rounded-lg skeleton-gold" />)}</div>
                 </div>
               </div>
             ))}
