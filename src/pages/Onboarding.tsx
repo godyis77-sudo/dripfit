@@ -270,7 +270,7 @@ const Onboarding = () => {
                   </div>
 
                   {/* Text — compact */}
-                  <div className="shrink-0 flex flex-col items-center justify-end px-8 pb-[10%] text-center" style={{ flex: 1 }}>
+                  <div className="shrink-0 flex flex-col items-center justify-end px-8 pb-[13%] text-center" style={{ flex: 1 }}>
                     <div className="h-9 w-9 rounded-xl gradient-drip flex items-center justify-center mb-2">
                       {(() => { const Icon = SLIDES[slideIdx].icon; return <Icon className="h-4 w-4 text-primary-foreground" />; })()}
                     </div>
