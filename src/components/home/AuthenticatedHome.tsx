@@ -9,16 +9,6 @@ import { useProfileInfo, useLatestScan, useTrendingFits } from '@/hooks/useProfi
 import TrendingFitsGrid from '@/components/home/TrendingFitsGrid';
 import HomeFAB from '@/components/home/HomeFAB';
 
-const PROMPTS = [
-  'Should I buy this for work?',
-  'Date night — yes or no?',
-  'Would you wear this?',
-  'Too bold or just right?',
-  'Casual Friday vibes?',
-  'Wedding guest — yay or nay?',
-];
-const getPrompt = (idx: number) => PROMPTS[idx % PROMPTS.length];
-
 /* ── Price filter config ── */
 const PRICE_FILTERS = [
   { label: 'All Prices', min: 0, max: Infinity },
