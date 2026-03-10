@@ -256,7 +256,7 @@ const Onboarding = () => {
                           alt={SLIDES[slideIdx].title}
                           className="w-full h-full object-cover rounded-2xl"
                           style={{
-                            maxHeight: '48dvh',
+                            maxHeight: '58dvh',
                             ...(slideIdx === 1 ? { filter: 'brightness(0.8)' } : {}),
                           }}
                         />
