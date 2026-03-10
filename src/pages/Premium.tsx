@@ -104,7 +104,7 @@ const Premium = () => {
   };
 
   const goToPortal = async (action?: 'pause') => {
-    setShowWinback(false);
+    setPortalLoading(true);
     try {
       const body = action ? { action } : undefined;
       const { data: resp, error } = await supabase.functions.invoke('customer-portal', { body });
@@ -115,6 +115,9 @@ const Premium = () => {
       }
     } catch (e: any) {
       toast({ title: 'Error', description: e.message || 'Could not open subscription management', variant: 'destructive' });
+    } finally {
+      setPortalLoading(false);
+      setShowWinback(false);
     }
   };
 
