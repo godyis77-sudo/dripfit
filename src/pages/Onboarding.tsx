@@ -270,7 +270,7 @@ const Onboarding = () => {
                   </div>
 
                   {/* Text — centered between image and button */}
-                  <div className="flex-[2] flex flex-col items-center justify-center px-8 pt-[30px] text-center">
+                  <div className="flex-[2] flex flex-col items-center justify-center px-8 pt-[40px] text-center">
                     <div className="h-9 w-9 rounded-xl gradient-drip flex items-center justify-center mb-2">
                       {(() => { const Icon = SLIDES[slideIdx].icon; return <Icon className="h-4 w-4 text-primary-foreground" />; })()}
                     </div>
