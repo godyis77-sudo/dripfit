@@ -45,7 +45,33 @@ const Results = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const state = location.state as { result: BodyScanResult; retailer?: string; category?: string } | undefined;
-  const result = state?.result;
+
+  // Persist scan result in sessionStorage so the page survives refresh
+  const result = useMemo(() => {
+    if (state?.result) {
+      try { sessionStorage.setItem('dripcheck_last_result', JSON.stringify(state)); } catch {}
+      return state.result;
+    }
+    // Fallback: restore from sessionStorage if location.state is missing (e.g. page refresh)
+    try {
+      const cached = sessionStorage.getItem('dripcheck_last_result');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        return parsed.result as BodyScanResult;
+      }
+    } catch {}
+    return undefined;
+  }, [state]);
+
+  // Also restore retailer/category from sessionStorage
+  const cachedState = useMemo(() => {
+    if (state) return state;
+    try {
+      const cached = sessionStorage.getItem('dripcheck_last_result');
+      if (cached) return JSON.parse(cached) as typeof state;
+    } catch {}
+    return undefined;
+  }, [state]);
   const [fitPref, setFitPref] = useState<FitPreference>(result?.fitPreference || 'regular');
   const [saved, setSaved] = useState(false);
   const [showSaveBanner, setShowSaveBanner] = useState(false);
