@@ -176,7 +176,25 @@ const Profile = () => {
     setSavedProfile(null);
     toast({ title: 'Deleted', description: 'All scan data has been permanently removed.' });
   };
-  const handleDeleteAccount = () => { toast({ title: 'Contact support', description: 'Account deletion requires contacting support.' }); };
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+    const confirmed = window.confirm('Are you sure you want to permanently delete your account? This cannot be undone.');
+    if (!confirmed) return;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const { error } = await supabase.functions.invoke('delete-account', {
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+      });
+      if (error) throw error;
+      trackEvent('account_deleted');
+      await signOut();
+      navigate('/', { replace: true });
+      toast({ title: 'Account deleted', description: 'Your account and all data have been permanently removed.' });
+    } catch (e: any) {
+      console.error('Account deletion failed:', e);
+      toast({ title: 'Error', description: 'Could not delete account. Please try again.', variant: 'destructive' });
+    }
+  };
   const handleExport = () => {
     const scans = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]');
     const blob = new Blob([JSON.stringify(scans, null, 2)], { type: 'application/json' });

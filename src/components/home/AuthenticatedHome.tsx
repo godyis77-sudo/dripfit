@@ -236,15 +236,18 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                   <p className="text-[10px] text-muted-foreground">2 photos · 60 seconds</p>
                 </div>
               </button>
-              <div className="flex items-center gap-2.5 bg-card border border-border rounded-xl p-3 opacity-55">
+              <button
+                onClick={() => { trackEvent('home_quick_tryon'); navigate('/tryon'); }}
+                className="flex items-center gap-2.5 bg-card border border-border rounded-xl p-3 active:scale-[0.97] transition-transform min-h-[44px]"
+              >
                 <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center shrink-0">
                   <Sparkles className="h-4 w-4 text-primary-foreground" />
                 </div>
                 <div className="text-left">
                   <p className="text-[12px] font-bold text-foreground">Try-On</p>
-                  <p className="text-[10px] text-muted-foreground">Complete a scan first</p>
+                  <p className="text-[10px] text-muted-foreground">See it on you</p>
                 </div>
-              </div>
+              </button>
             </>
           )}
         </motion.div>
