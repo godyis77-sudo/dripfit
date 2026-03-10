@@ -60,6 +60,8 @@ const Capture = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [genderSet, setGenderSet] = useState<string | null>(null);
   const [genderLoaded, setGenderLoaded] = useState(false);
+  const [authSheetOpen, setAuthSheetOpen] = useState(false);
+  const { toast } = useToast();
 
   // Load existing gender from profile
   useEffect(() => {
