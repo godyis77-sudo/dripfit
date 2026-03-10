@@ -54,7 +54,7 @@ const Cart = () => {
         ) : loading ? (
           <div className="space-y-2">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-24 bg-card border border-border rounded-xl animate-pulse" />
+              <div key={i} className="h-24 bg-card border border-border rounded-xl skeleton-gold" />
             ))}
           </div>
         ) : items.length === 0 ? (

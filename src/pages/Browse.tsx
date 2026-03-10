@@ -6,6 +6,7 @@ import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalo
 import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
 import { AnimatePresence } from 'framer-motion';
+import BottomTabBar from '@/components/BottomTabBar';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useAuth } from '@/hooks/useAuth';
 import BrandFilter from '@/components/tryon/BrandFilter';
@@ -400,6 +401,7 @@ const Browse = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      <BottomTabBar />
     </div>
   );
 };
