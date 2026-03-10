@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Crown } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import AuthForm from '@/components/auth/AuthForm';
 
@@ -28,6 +29,11 @@ const Auth = () => {
       </div>
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 w-full max-w-[320px] flex flex-col items-center">
+        {/* Brand wordmark */}
+        <div className="flex items-center gap-2 mb-6">
+          <Crown className="h-5 w-5 text-primary" />
+          <span className="font-display font-bold text-[18px] tracking-[2px] text-foreground">DRIPFITCHECK</span>
+        </div>
         <AuthForm showBackButton onComplete={() => navigate(returnTo, { replace: true })} />
       </motion.div>
     </div>
