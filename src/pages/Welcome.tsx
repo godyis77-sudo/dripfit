@@ -301,6 +301,22 @@ const Welcome = () => {
         </motion.div>
       </div>
 
+      {/* Scroll to top FAB */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="fixed bottom-24 right-4 z-40 h-10 w-10 rounded-full bg-card border border-border flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+            aria-label="Scroll to top"
+          >
+            <ChevronUp className="h-4 w-4 text-foreground" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
       <BottomTabBar />
     </div>
   );
