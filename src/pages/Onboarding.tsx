@@ -417,7 +417,7 @@ const Onboarding = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: reduceMotion ? 0 : -30 }}
             transition={screenTransition}
-            className="w-full min-h-screen flex flex-col items-center px-6 py-10 overflow-y-auto"
+            className="w-full min-h-screen flex flex-col items-center px-6 pt-4 pb-8 overflow-y-auto"
           >
             <p className="text-[11px] text-primary font-bold uppercase tracking-wider mb-3">Step 3 of 3</p>
             <div className="max-w-[320px] w-full flex flex-col items-center">
