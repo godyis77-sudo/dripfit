@@ -417,12 +417,13 @@ const Onboarding = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: reduceMotion ? 0 : -30 }}
             transition={screenTransition}
-            className="w-full h-screen flex flex-col items-center justify-center px-6"
+            className="w-full min-h-screen flex flex-col items-center px-6 py-10 overflow-y-auto"
           >
-            <p className="text-[11px] text-primary font-bold uppercase tracking-wider mb-1">Step 3 of 3</p>
+            <div className="flex-1" />
+            <p className="text-[11px] text-primary font-bold uppercase tracking-wider mb-3">Step 3 of 3</p>
             <div className="max-w-[320px] w-full flex flex-col items-center">
               {/* Illustration */}
-              <ScanPreviewCard height={300} />
+              <ScanPreviewCard height={260} />
 
               <h2 className="font-display text-xl font-bold text-foreground mb-1 text-center">Let's get your measurements</h2>
               <p className="text-[12px] text-muted-foreground text-center mb-5">See exactly how Zara M fits your 96cm chest.</p>
@@ -479,6 +480,7 @@ const Onboarding = () => {
                 Skip for now — I'll do this later
               </button>
             </div>
+            <div className="flex-1" />
           </motion.div>
         )}
 
