@@ -36,6 +36,7 @@ import ProfileSettings from "./pages/ProfileSettings";
 import ResetPassword from "./pages/ResetPassword";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -101,12 +102,12 @@ const App = () => {
                 <Route path="/community/:postId" element={<Navigate to="/style-check" replace />} />
                 <Route path="/saved" element={<Navigate to="/profile/saved" replace />} />
                 <Route path="/size-guide" element={<SizeGuide />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/profile/settings" element={<ProfileSettings />} />
-                <Route path="/profile/saved" element={<SavedItems />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/profile/history" element={<History />} />
-                <Route path="/profile/body" element={<ProfileBody />} />
+                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                <Route path="/profile/settings" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
+                <Route path="/profile/saved" element={<ProtectedRoute><SavedItems /></ProtectedRoute>} />
+                <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+                <Route path="/profile/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+                <Route path="/profile/body" element={<ProtectedRoute><ProfileBody /></ProtectedRoute>} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/profile/:username" element={<PublicProfile />} />
                 <Route path="/browse/:category" element={<Browse />} />
