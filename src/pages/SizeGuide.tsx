@@ -166,7 +166,7 @@ const SizeGuide = () => {
     setDbLoading(true); setDbError(null); setDbResult(null);
     try {
       const { data: resp, error: fnError } = await supabase.functions.invoke('get-size-recommendation', {
-        body: { user_id: user.id, brand_slug: selectedBrand.brand_slug, category: selectedCategory, fit_preference: 'regular' },
+        body: { user_id: user.id, brand_slug: selectedBrand.brand_slug, category: selectedCategory, fit_preference: fitPreference },
       });
       if (fnError) throw new Error(fnError.message);
       if (resp?.error) throw new Error(resp.error.message || resp.error);
