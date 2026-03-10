@@ -4,8 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Camera, ArrowLeft, RotateCcw, Check, Shield, ChevronRight, Upload,
+  Camera, ArrowLeft, RotateCcw, Check, Shield, ChevronRight, Upload, LogIn,
 } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { useToast } from '@/hooks/use-toast';
+import { setGuestMode } from '@/lib/session';
 import { CaptureStep, STEP_CONFIG, PhotoSet, ReferenceObject, REFERENCE_OBJECTS } from '@/lib/types';
 import CaptureHeightStep from '@/components/capture/CaptureHeightStep';
 import CaptureReviewStep from '@/components/capture/CaptureReviewStep';
