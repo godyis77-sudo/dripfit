@@ -51,18 +51,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
 
   return (
     <div ref={ref} className="relative min-h-screen bg-background pb-safe-bottom">
-      {/* Scrim for FAB */}
-      <AnimatePresence>
-        {fabOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-black/50"
-            onClick={closeFab}
-          />
-        )}
-      </AnimatePresence>
 
       <div className="relative z-10 px-5 pt-5">
         {/* Greeting */}
