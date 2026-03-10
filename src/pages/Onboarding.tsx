@@ -481,6 +481,7 @@ const Onboarding = () => {
               </button>
             </div>
             <div className="flex-1" />
+          </motion.div>
         )}
 
       </AnimatePresence>
