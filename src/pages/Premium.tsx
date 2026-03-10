@@ -34,6 +34,7 @@ const Premium = () => {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const { user, isSubscribed, subscriptionEnd, checkSubscription } = useAuth();
   const [showWinback, setShowWinback] = useState(false);
+  const [portalLoading, setPortalLoading] = useState(false);
   const [searchParams] = useSearchParams();
   const [memberCount, setMemberCount] = useState<number | null>(null);
   const [testimonials, setTestimonials] = useState<{ quote_text: string; attribution: string; star_rating: number }[]>([]);
