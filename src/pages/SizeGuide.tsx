@@ -107,20 +107,38 @@ const SizeGuide = () => {
     if (!authLoading) loadMeasurements();
   }, [user, authLoading]);
 
-  // Load available brands
+  // User's preferred / favorite brands for prioritisation
+  const [userBrandNames, setUserBrandNames] = useState<Set<string>>(new Set());
+
+  // Load available brands + user preferences in parallel
   useEffect(() => {
     const loadBrands = async () => {
       setBrandsLoading(true);
-      const { data } = await supabase
+      const chartsPromise = supabase
         .from('brand_size_charts')
         .select('brand_name, brand_slug, category')
         .eq('is_active', true)
         .order('brand_name');
+
+      let prefNames: string[] = [];
+      if (user) {
+        const [prefRes, favRes] = await Promise.all([
+          supabase.from('user_preferred_brands').select('brand_name').eq('user_id', user.id),
+          supabase.from('user_favorite_retailers').select('retailer_name').eq('user_id', user.id),
+        ]);
+        prefNames = [
+          ...(prefRes.data?.map(r => r.brand_name) ?? []),
+          ...(favRes.data?.map(r => r.retailer_name) ?? []),
+        ];
+      }
+      setUserBrandNames(new Set(prefNames.map(n => n.toLowerCase())));
+
+      const { data } = await chartsPromise;
       if (data) setBrands(data);
       setBrandsLoading(false);
     };
     loadBrands();
-  }, []);
+  }, [user]);
 
   // Unique brand names for the picker
   const uniqueBrands = brands.reduce<{ name: string; slug: string; categories: string[] }[]>((acc, b) => {
