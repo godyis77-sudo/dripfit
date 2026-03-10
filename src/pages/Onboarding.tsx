@@ -423,7 +423,7 @@ const Onboarding = () => {
             <p className="text-[11px] text-primary font-bold uppercase tracking-wider mb-3">Step 3 of 3</p>
             <div className="max-w-[320px] w-full flex flex-col items-center">
               {/* Illustration */}
-              <ScanPreviewCard height={260} />
+              <ScanPreviewCard height={320} />
 
               <h2 className="font-display text-xl font-bold text-foreground mb-1 text-center">Let's get your measurements</h2>
               <p className="text-[12px] text-muted-foreground text-center mb-5">See exactly how Zara M fits your 96cm chest.</p>
