@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { usePageTitle } from '@/hooks/usePageTitle';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import AuthForm from '@/components/auth/AuthForm';
@@ -8,14 +8,18 @@ import AuthForm from '@/components/auth/AuthForm';
 const Auth = () => {
   usePageTitle('Sign In');
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, loading: authLoading } = useAuth();
+
+  const rawReturn = searchParams.get('returnTo') || '/';
+  const returnTo = rawReturn.startsWith('/') && !rawReturn.startsWith('//') ? rawReturn : '/';
 
   // Redirect if already logged in
   useEffect(() => {
     if (!authLoading && user) {
-      navigate('/');
+      navigate(returnTo, { replace: true });
     }
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading, navigate, returnTo]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5">
@@ -24,7 +28,7 @@ const Auth = () => {
       </div>
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 w-full max-w-[320px] flex flex-col items-center">
-        <AuthForm showBackButton onComplete={() => navigate('/')} />
+        <AuthForm showBackButton onComplete={() => navigate(returnTo, { replace: true })} />
       </motion.div>
     </div>
   );
