@@ -405,6 +405,20 @@ function stripFences(text: string): string {
   return cleaned.trim();
 }
 
+// Attempt to repair truncated JSON arrays by closing open brackets
+function repairJson(text: string): string {
+  let s = text.trim();
+  // If it starts with [ but doesn't end with ], try to close it
+  if (s.startsWith("[") && !s.endsWith("]")) {
+    // Remove trailing incomplete object (after last })
+    const lastBrace = s.lastIndexOf("}");
+    if (lastBrace > 0) {
+      s = s.slice(0, lastBrace + 1) + "]";
+    }
+  }
+  return s;
+}
+
 async function delay(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
@@ -467,14 +481,14 @@ Deno.serve(async (req) => {
             },
             body: JSON.stringify({
               url,
-              formats: ["html"],
-              onlyMainContent: true,
-              waitFor: 3000,
+              formats: ["html", "rawHtml"],
+              onlyMainContent: false,
+              waitFor: 5000,
             }),
           });
           if (fcResp.ok) {
             const fcData = await fcResp.json();
-            const html = fcData?.data?.html || fcData?.html;
+            const html = fcData?.data?.rawHtml || fcData?.data?.html || fcData?.rawHtml || fcData?.html;
             if (html && html.length > 200) {
               console.log(`Firecrawl OK for ${url} (${html.length} chars)`);
               return html;
@@ -532,6 +546,7 @@ Deno.serve(async (req) => {
           },
           body: JSON.stringify({
             model: "google/gemini-2.5-flash",
+            max_tokens: 4096,
             temperature: 0.0,
             messages: [
               { role: "system", content: SYSTEM_PROMPT },
@@ -556,10 +571,16 @@ Deno.serve(async (req) => {
         try {
           parsed = JSON.parse(cleaned);
         } catch {
-          console.error(`JSON parse failed for ${key}:`, cleaned.slice(0, 200));
-          failed.push(key);
-          await delay(1500);
-          continue;
+          // Try repairing truncated JSON
+          try {
+            parsed = JSON.parse(repairJson(cleaned));
+            console.log(`Repaired truncated JSON for ${key}`);
+          } catch {
+            console.error(`JSON parse failed for ${key}:`, cleaned.slice(0, 200));
+            failed.push(key);
+            await delay(1500);
+            continue;
+          }
         }
 
         if (!Array.isArray(parsed) || parsed.length < 2) {
