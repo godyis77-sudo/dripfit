@@ -300,8 +300,8 @@ const Results = () => {
         <ShopThisSize
           recommendedSize={adjustedSize}
           confidence={confidence}
-          retailer={state?.retailer}
-          category={state?.category}
+          retailer={cachedState?.retailer}
+          category={cachedState?.category}
         />
 
         {/* Return Risk warning */}
