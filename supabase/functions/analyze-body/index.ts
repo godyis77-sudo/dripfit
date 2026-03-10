@@ -57,6 +57,8 @@ Return ONLY a JSON object:
 }
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -166,6 +168,6 @@ serve(async (req) => {
     return successResponse(measurements, 200, corsHeaders);
   } catch (e) {
     console.error("analyze-body error:", e);
-    return errorResponse(e instanceof Error ? e.message : "Analysis failed", "INTERNAL_ERROR", 500, corsHeaders);
+    return errorResponse(e instanceof Error ? e.message : "Analysis failed", "INTERNAL_ERROR", 500, getCorsHeaders(req));
   }
 });

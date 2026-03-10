@@ -40,6 +40,8 @@ function applyFitOffset(val: number, fit: string): number {
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -256,6 +258,6 @@ Deno.serve(async (req) => {
     }, 200, corsHeaders);
 
   } catch (e) {
-    return errorResponse((e as Error).message || "Internal server error", "INTERNAL_ERROR", 500, corsHeaders);
+    return errorResponse((e as Error).message || "Internal server error", "INTERNAL_ERROR", 500, getCorsHeaders(req));
   }
 });

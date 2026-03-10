@@ -2,8 +2,9 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { successResponse, errorResponse, getCorsHeaders } from "../_shared/validation.ts";
 
-
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -77,6 +78,6 @@ serve(async (req) => {
     return successResponse({ image: imageUrl }, 200, corsHeaders);
   } catch (e) {
     console.error("generate-body-diagram error:", e);
-    return errorResponse(e instanceof Error ? e.message : "Unknown error", "INTERNAL_ERROR", 500, corsHeaders);
+    return errorResponse(e instanceof Error ? e.message : "Unknown error", "INTERNAL_ERROR", 500, getCorsHeaders(req));
   }
 });
