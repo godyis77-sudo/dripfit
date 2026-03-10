@@ -425,7 +425,7 @@ const Onboarding = () => {
               {/* Illustration */}
               <ScanPreviewCard height={320} />
 
-              <h2 className="font-display text-xl font-bold text-foreground mb-1 text-center">Let's get your measurements</h2>
+              <h2 className="font-display text-xl font-bold text-foreground mb-1 text-center mt-4">Let's get your measurements</h2>
               <p className="text-[12px] text-muted-foreground text-center mb-5">See exactly how Zara M fits your 96cm chest.</p>
 
               {/* FAST */}
