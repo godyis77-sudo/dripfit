@@ -4,8 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Camera, ArrowLeft, RotateCcw, Check, Shield, ChevronRight, Upload,
+  Camera, ArrowLeft, RotateCcw, Check, Shield, ChevronRight, Upload, LogIn,
 } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { useToast } from '@/hooks/use-toast';
+import { setGuestMode } from '@/lib/session';
 import { CaptureStep, STEP_CONFIG, PhotoSet, ReferenceObject, REFERENCE_OBJECTS } from '@/lib/types';
 import CaptureHeightStep from '@/components/capture/CaptureHeightStep';
 import CaptureReviewStep from '@/components/capture/CaptureReviewStep';
@@ -57,6 +60,8 @@ const Capture = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [genderSet, setGenderSet] = useState<string | null>(null);
   const [genderLoaded, setGenderLoaded] = useState(false);
+  const [authSheetOpen, setAuthSheetOpen] = useState(false);
+  const { toast } = useToast();
 
   // Load existing gender from profile
   useEffect(() => {
@@ -351,7 +356,13 @@ const Capture = () => {
           <motion.div whileTap={{ scale: 0.97 }}>
             <Button
               className="w-full h-12 rounded-xl text-sm font-semibold uppercase tracking-wider"
-              onClick={() => setFlowStep('height')}
+              onClick={() => {
+                if (!user) {
+                  setAuthSheetOpen(true);
+                } else {
+                  setFlowStep('height');
+                }
+              }}
             >
               <Camera className="mr-2 h-4 w-4" /> Start Scan
             </Button>
@@ -419,6 +430,43 @@ const Capture = () => {
           <Shield className="h-3 w-3" /> Private by default · delete anytime
         </p>
       </div>
+      {/* Auth guard sheet */}
+      <Sheet open={authSheetOpen} onOpenChange={setAuthSheetOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl px-5 pb-8">
+          <SheetHeader className="text-left mb-4">
+            <SheetTitle className="text-base font-bold">Sign in to save your measurements</SheetTitle>
+            <SheetDescription className="text-[12px] text-muted-foreground">
+              Your scan results will be saved to your profile and used for size recommendations.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="space-y-2">
+            <Button
+              className="w-full h-11 rounded-xl text-sm font-semibold"
+              onClick={() => {
+                setAuthSheetOpen(false);
+                navigate('/auth?returnTo=/capture');
+              }}
+            >
+              <LogIn className="mr-2 h-4 w-4" /> Sign In
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full h-11 rounded-xl text-sm font-semibold"
+              onClick={() => {
+                setAuthSheetOpen(false);
+                setGuestMode();
+                setFlowStep('height');
+                toast({
+                  title: "Scan results won't be saved without an account",
+                  variant: 'destructive',
+                });
+              }}
+            >
+              Continue as Guest
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
