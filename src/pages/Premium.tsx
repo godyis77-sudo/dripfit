@@ -34,6 +34,7 @@ const Premium = () => {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const { user, isSubscribed, subscriptionEnd, checkSubscription } = useAuth();
   const [showWinback, setShowWinback] = useState(false);
+  const [portalLoading, setPortalLoading] = useState(false);
   const [searchParams] = useSearchParams();
   const [memberCount, setMemberCount] = useState<number | null>(null);
   const [testimonials, setTestimonials] = useState<{ quote_text: string; attribution: string; star_rating: number }[]>([]);
@@ -103,7 +104,7 @@ const Premium = () => {
   };
 
   const goToPortal = async (action?: 'pause') => {
-    setShowWinback(false);
+    setPortalLoading(true);
     try {
       const body = action ? { action } : undefined;
       const { data: resp, error } = await supabase.functions.invoke('customer-portal', { body });
@@ -114,6 +115,9 @@ const Premium = () => {
       }
     } catch (e: any) {
       toast({ title: 'Error', description: e.message || 'Could not open subscription management', variant: 'destructive' });
+    } finally {
+      setPortalLoading(false);
+      setShowWinback(false);
     }
   };
 
@@ -322,14 +326,18 @@ const Premium = () => {
             <Button
               className="w-full h-11 rounded-xl btn-luxury text-primary-foreground font-bold"
               onClick={() => goToPortal('pause')}
+              disabled={portalLoading}
             >
+              {portalLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Pause Instead
             </Button>
             <Button
               variant="outline"
               className="w-full h-11 rounded-xl font-semibold"
               onClick={() => goToPortal()}
+              disabled={portalLoading}
             >
+              {portalLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Continue to Portal
             </Button>
           </div>

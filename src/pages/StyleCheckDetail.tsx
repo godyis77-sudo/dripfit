@@ -46,7 +46,7 @@ const StyleCheckDetail = () => {
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-background px-4 pt-4 pb-safe-bottom">
+      <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
         <div className="max-w-sm mx-auto text-center pt-20">
           <p className="text-base font-bold text-foreground mb-1">Post not found</p>
           <p className="text-[12px] text-muted-foreground mb-4">This post may have been removed or made private.</p>
@@ -60,7 +60,7 @@ const StyleCheckDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-safe-bottom">
+    <div className="min-h-screen bg-background pb-safe-tab">
       <div className="max-w-sm mx-auto px-4 pt-4">
         <div className="flex items-center gap-2 mb-4">
           <Button variant="ghost" size="icon" onClick={() => navigate('/style-check')} className="h-8 w-8 rounded-lg" aria-label="Go back">

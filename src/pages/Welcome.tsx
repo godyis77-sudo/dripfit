@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
-import { Camera, Crown, LogIn, LogOut, Shield, Sparkles, Users, Ruler, Star, ChevronRight, ArrowRight, TrendingUp, Share2, Gift } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Camera, Crown, LogIn, LogOut, Shield, Sparkles, Users, Ruler, Star, ChevronRight, ArrowRight, TrendingUp, Share2, Gift, ChevronUp } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { isOnboarded, isGuestMode } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
@@ -33,7 +33,14 @@ const Welcome = () => {
   const navigate = useNavigate();
   const { user, loading, signOut } = useAuth();
   const { toast } = useToast();
+  const [showScrollTop, setShowScrollTop] = useState(false);
   usePageTitle();
+
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > 400);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   // Redirect first-time visitors to onboarding (only after auth finishes loading)
   useEffect(() => {
@@ -293,6 +300,22 @@ const Welcome = () => {
           </button>
         </motion.div>
       </div>
+
+      {/* Scroll to top FAB */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="fixed bottom-24 right-4 z-40 h-10 w-10 rounded-full bg-card border border-border flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+            aria-label="Scroll to top"
+          >
+            <ChevronUp className="h-4 w-4 text-foreground" />
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       <BottomTabBar />
     </div>

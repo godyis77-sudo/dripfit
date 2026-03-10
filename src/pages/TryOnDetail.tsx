@@ -44,7 +44,7 @@ const TryOnDetail = () => {
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-background px-4 pt-4 pb-safe-bottom">
+      <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
         <div className="max-w-sm mx-auto text-center pt-20">
           <Shirt className="h-8 w-8 text-muted-foreground/30 mx-auto mb-3" />
           <p className="text-base font-bold text-foreground mb-1">Try-On not found</p>
@@ -59,7 +59,7 @@ const TryOnDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-safe-bottom">
+    <div className="min-h-screen bg-background pb-safe-tab">
       <div className="max-w-sm mx-auto px-4 pt-4">
         <div className="flex items-center gap-2 mb-4">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg" aria-label="Go back">
