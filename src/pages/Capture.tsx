@@ -4,8 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Camera, ArrowLeft, RotateCcw, Check, Shield,
-  Shirt, ChevronRight, Upload,
+  Camera, ArrowLeft, RotateCcw, Check, Shield, ChevronRight, Upload,
 } from 'lucide-react';
 import { CaptureStep, STEP_CONFIG, PhotoSet, ReferenceObject, REFERENCE_OBJECTS } from '@/lib/types';
 import CaptureHeightStep from '@/components/capture/CaptureHeightStep';
