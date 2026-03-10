@@ -356,7 +356,13 @@ const Capture = () => {
           <motion.div whileTap={{ scale: 0.97 }}>
             <Button
               className="w-full h-12 rounded-xl text-sm font-semibold uppercase tracking-wider"
-              onClick={() => setFlowStep('height')}
+              onClick={() => {
+                if (!user) {
+                  setAuthSheetOpen(true);
+                } else {
+                  setFlowStep('height');
+                }
+              }}
             >
               <Camera className="mr-2 h-4 w-4" /> Start Scan
             </Button>
