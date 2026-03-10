@@ -8,7 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Camera, ArrowLeft, RotateCcw, Check, Shield, AlertTriangle,
-  Ruler, Sun, Maximize, Shirt, ChevronRight, Eye, Upload,
+  Ruler, Sun, Maximize, Shirt, ChevronRight, Eye, Upload, Lock,
 } from 'lucide-react';
 import { CaptureStep, STEP_CONFIG, PhotoSet, ReferenceObject, REFERENCE_OBJECTS } from '@/lib/types';
 import { getFitPreference } from '@/lib/session';
@@ -401,6 +401,16 @@ const Capture = () => {
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
+              </div>
+
+              {/* Privacy tip card */}
+              <div className="mt-4 rounded-xl p-4 bg-card border border-border/40">
+                <div className="flex items-start gap-2.5">
+                  <Lock className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+                  <p className="text-xs text-muted-foreground">
+                    Your height improves scan accuracy by 23%. We never store or share this data.
+                  </p>
+                </div>
               </div>
             </motion.div>
           )}
