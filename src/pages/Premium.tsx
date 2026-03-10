@@ -120,7 +120,7 @@ const Premium = () => {
   const currentPlan = PLANS.find(p => p.key === selectedPlan)!;
 
   return (
-    <div className="min-h-screen bg-background px-4 py-4 pb-8">
+    <div className="min-h-screen bg-background px-4 py-4 pb-safe-tab">
       <div className="max-w-sm mx-auto">
         {/* Header */}
         <div className="flex items-center gap-2 mb-4">
