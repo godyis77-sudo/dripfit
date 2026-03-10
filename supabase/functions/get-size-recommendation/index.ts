@@ -50,10 +50,33 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // JWT verification
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return errorResponse('Unauthorized', 'AUTH_ERROR', 401, corsHeaders);
+    }
+
+    const supabaseAnon = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabaseAnon.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return errorResponse('Unauthorized', 'AUTH_ERROR', 401, corsHeaders);
+    }
+
     const { user_id, brand_slug, category, fit_preference = "regular" } = await req.json();
 
     if (!user_id || !brand_slug || !category) {
       return errorResponse("user_id, brand_slug, and category are required.", "VALIDATION_ERROR", 400, corsHeaders);
+    }
+
+    // Verify the requested user_id matches the authenticated user
+    if (user_id !== claimsData.claims.sub) {
+      return errorResponse("Cannot access another user's data", "AUTH_ERROR", 403, corsHeaders);
     }
 
     const validFits = ["slim", "regular", "relaxed"];
