@@ -326,7 +326,7 @@ const Results = () => {
           recommendedSize={adjustedSize}
           measurements={measurements}
           onAdjust={handleMeasurementAdjust}
-          retailer={state?.retailer}
+          retailer={cachedState?.retailer}
         />
 
         {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
