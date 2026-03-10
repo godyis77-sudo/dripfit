@@ -70,7 +70,7 @@ const Capture = () => {
   useEffect(() => {
     if (!user) { setGenderLoaded(true); return; }
     supabase.from('profiles').select('gender').eq('user_id', user.id).single().then(({ data }) => {
-      if (data) setGenderSet((data as any).gender || null);
+      if (data) setGenderSet(data.gender || null);
       setGenderLoaded(true);
     });
   }, [user]);
