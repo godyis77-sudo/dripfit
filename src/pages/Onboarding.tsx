@@ -236,7 +236,7 @@ const Onboarding = () => {
                           <img
                             src={scanResultsPreview}
                             alt="Scan results preview"
-                            className="h-[340px] w-auto object-cover"
+                            className="h-[357px] w-auto object-cover"
                           />
                         </div>
                         <div className="absolute -inset-[7px] rounded-[calc(1rem+4px)] border-[4px] border-black pointer-events-none" style={{ boxShadow: 'inset 0 0 8px 2px hsl(45 88% 50% / 0.7), 0 0 10px 2px hsl(45 88% 50% / 0.6), 0 0 20px 4px hsl(45 88% 50% / 0.25)' }} />
