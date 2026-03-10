@@ -467,9 +467,9 @@ Deno.serve(async (req) => {
             },
             body: JSON.stringify({
               url,
-              formats: ["html"],
-              onlyMainContent: true,
-              waitFor: 3000,
+              formats: ["html", "rawHtml"],
+              onlyMainContent: false,
+              waitFor: 5000,
             }),
           });
           if (fcResp.ok) {
