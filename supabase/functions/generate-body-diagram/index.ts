@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { successResponse, errorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
@@ -13,6 +14,24 @@ serve(async (req) => {
   }
 
   try {
+    // JWT verification
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return errorResponse('Unauthorized', 'AUTH_ERROR', 401, corsHeaders);
+    }
+
+    const supabaseAnon = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabaseAnon.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return errorResponse('Unauthorized', 'AUTH_ERROR', 401, corsHeaders);
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) return errorResponse("LOVABLE_API_KEY not configured", "CONFIG_ERROR", 500, corsHeaders);
 

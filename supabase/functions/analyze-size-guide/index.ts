@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { AnalyzeSizeGuideSchema, parseOrError, successResponse, errorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
@@ -13,6 +14,24 @@ serve(async (req) => {
   }
 
   try {
+    // JWT verification
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return errorResponse('Unauthorized', 'AUTH_ERROR', 401, corsHeaders);
+    }
+
+    const supabaseAnon = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabaseAnon.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return errorResponse('Unauthorized', 'AUTH_ERROR', 401, corsHeaders);
+    }
+
     const raw = await req.json();
     const parsed = parseOrError(AnalyzeSizeGuideSchema, raw);
     if (!parsed.success) {
