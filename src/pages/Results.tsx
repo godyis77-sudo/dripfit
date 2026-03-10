@@ -381,7 +381,7 @@ const Results = () => {
                 </button>
                 {showFeedback && (
                   <FitFeedbackSheet
-                    retailer={state?.retailer || 'Unknown'}
+                    retailer={cachedState?.retailer || 'Unknown'}
                     recommendedSize={adjustedSize}
                   />
                 )}
