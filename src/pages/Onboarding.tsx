@@ -229,7 +229,7 @@ const Onboarding = () => {
                   className="flex-1 flex flex-col min-h-0 cursor-grab active:cursor-grabbing"
                 >
                   {/* Image — maximized */}
-                  <div className="flex-[3] flex items-center justify-center mx-4 min-h-0 max-w-[480px] w-full self-center">
+                  <div className="flex-[2.7] flex items-center justify-center mx-4 min-h-0 max-w-[480px] w-full self-center">
                     {slideIdx === 0 ? (
                       <div className="relative rounded-[1rem] border-[3px] border-primary" style={{ boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15), inset 0 0 14px 3px hsl(45 88% 50% / 0.2)' }}>
                         <div className="overflow-hidden rounded-[calc(1rem-3px)]">
