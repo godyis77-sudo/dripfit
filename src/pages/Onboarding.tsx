@@ -417,69 +417,75 @@ const Onboarding = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: reduceMotion ? 0 : -30 }}
             transition={screenTransition}
-            className="w-full min-h-screen flex flex-col items-center px-6 pt-4 pb-8 overflow-y-auto"
+            className="w-full h-[100dvh] flex flex-col items-center px-6 pt-3 pb-4 overflow-hidden"
           >
-            <p className="text-[11px] text-primary font-bold uppercase tracking-wider mb-3">Step 3 of 3</p>
-            <div className="max-w-[320px] w-full flex flex-col items-center">
-              {/* Illustration */}
-              <ScanPreviewCard height={320} />
-
-              <h2 className="font-display text-xl font-bold text-foreground mb-1 text-center mt-4">Let's get your measurements</h2>
-              <p className="text-[12px] text-muted-foreground text-center mb-2">See exactly how Zara M fits your 96cm chest.</p>
-
-              {/* FAST */}
-              <div className="flex items-center gap-5 mb-4">
-                {[
-                  { val: '60s', label: 'seconds' },
-                  { val: '2', label: 'photos' },
-                  { val: '✓', label: "that's it" },
-                ].map(s => (
-                  <div key={s.label} className="text-center">
-                    <p className="font-display text-lg font-bold gradient-drip-text">{s.val}</p>
-                    <p className="text-[10px] text-muted-foreground">{s.label}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* SAFE */}
-              <div className="w-full bg-card border border-border rounded-xl p-3 mb-4 space-y-1.5">
-                <div className="flex items-center gap-2">
-                  <Shield className="h-3.5 w-3.5 text-primary shrink-0" />
-                  <p className="text-[11px] text-foreground font-medium">Photos processed privately — never stored without your consent.</p>
+            <p className="text-[11px] text-primary font-bold uppercase tracking-wider mb-1 shrink-0">Step 3 of 3</p>
+            <div className="max-w-[320px] w-full flex flex-col items-center flex-1 min-h-0 justify-between">
+              {/* Top section: image + text */}
+              <div className="flex flex-col items-center min-h-0 flex-1">
+                <div className="min-h-0 flex-1 flex items-center">
+                  <ScanPreviewCard height={280} />
                 </div>
-                <p className="text-[10px] text-muted-foreground pl-5.5">Delete anytime from Settings.</p>
-              </div>
 
-              {/* WORTH IT — measurement preview */}
-              <div className="w-full bg-card border border-border rounded-xl p-3 mb-5">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5">What you'll get</p>
-                <div className="grid grid-cols-4 gap-1.5">
+                <h2 className="font-display text-lg font-bold text-foreground mb-0.5 text-center mt-1 shrink-0">Let's get your measurements</h2>
+                <p className="text-[11px] text-muted-foreground text-center mb-1.5 shrink-0">See exactly how Zara M fits your 96cm chest.</p>
+
+                {/* FAST */}
+                <div className="flex items-center gap-5 mb-2 shrink-0">
                   {[
-                    { label: 'Chest', val: '96cm' },
-                    { label: 'Waist', val: '82cm' },
-                    { label: 'Hips', val: '100cm' },
-                    { label: 'Size', val: 'M' },
-                  ].map(m => (
-                    <div key={m.label} className="bg-background rounded-lg py-1.5 text-center">
-                      <p className="text-[9px] text-muted-foreground uppercase">{m.label}</p>
-                      <p className="text-[12px] font-bold text-foreground">{m.val}</p>
+                    { val: '60s', label: 'seconds' },
+                    { val: '2', label: 'photos' },
+                    { val: '✓', label: "that's it" },
+                  ].map(s => (
+                    <div key={s.label} className="text-center">
+                      <p className="font-display text-base font-bold gradient-drip-text">{s.val}</p>
+                      <p className="text-[9px] text-muted-foreground">{s.label}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* CTA */}
-              <Button
-                onClick={startScan}
-                className="w-full h-12 rounded-xl btn-luxury text-primary-foreground font-display font-bold text-base uppercase tracking-wider active:scale-[0.97] transition-transform"
-              >
-                <Camera className="mr-2 h-4 w-4" /> Get My Size
-              </Button>
-              <button onClick={skipScan} className="text-[12px] text-muted-foreground font-semibold mt-3 hover:text-foreground transition-colors">
-                Skip for now — I'll do this later
-              </button>
+              {/* Bottom section: cards + CTA */}
+              <div className="w-full flex flex-col items-center shrink-0">
+                {/* SAFE */}
+                <div className="w-full bg-card border border-border rounded-xl p-2.5 mb-2 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Shield className="h-3.5 w-3.5 text-primary shrink-0" />
+                    <p className="text-[10px] text-foreground font-medium">Photos processed privately — never stored without your consent.</p>
+                  </div>
+                  <p className="text-[9px] text-muted-foreground pl-5.5">Delete anytime from Settings.</p>
+                </div>
+
+                {/* WORTH IT */}
+                <div className="w-full bg-card border border-border rounded-xl p-2.5 mb-3">
+                  <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">What you'll get</p>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {[
+                      { label: 'Chest', val: '96cm' },
+                      { label: 'Waist', val: '82cm' },
+                      { label: 'Hips', val: '100cm' },
+                      { label: 'Size', val: 'M' },
+                    ].map(m => (
+                      <div key={m.label} className="bg-background rounded-lg py-1 text-center">
+                        <p className="text-[8px] text-muted-foreground uppercase">{m.label}</p>
+                        <p className="text-[11px] font-bold text-foreground">{m.val}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <Button
+                  onClick={startScan}
+                  className="w-full h-11 rounded-xl btn-luxury text-primary-foreground font-display font-bold text-base uppercase tracking-wider active:scale-[0.97] transition-transform"
+                >
+                  <Camera className="mr-2 h-4 w-4" /> Get My Size
+                </Button>
+                <button onClick={skipScan} className="text-[11px] text-muted-foreground font-semibold mt-2 hover:text-foreground transition-colors">
+                  Skip for now — I'll do this later
+                </button>
+              </div>
             </div>
-            <div className="flex-1" />
           </motion.div>
         )}
 
