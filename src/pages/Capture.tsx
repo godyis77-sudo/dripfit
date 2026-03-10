@@ -2,13 +2,10 @@ import { useState, useRef, useMemo, useEffect } from 'react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Camera, ArrowLeft, RotateCcw, Check, Shield, AlertTriangle,
-  Ruler, Sun, Maximize, Shirt, ChevronRight, Eye, Upload, Lock,
+  Camera, ArrowLeft, RotateCcw, Check, Shield,
+  Shirt, ChevronRight, Upload,
 } from 'lucide-react';
 import { CaptureStep, STEP_CONFIG, PhotoSet, ReferenceObject, REFERENCE_OBJECTS } from '@/lib/types';
 import { getFitPreference } from '@/lib/session';
