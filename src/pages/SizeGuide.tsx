@@ -69,6 +69,7 @@ const SizeGuide = () => {
   const [brandSearch, setBrandSearch] = useState('');
   const [selectedBrand, setSelectedBrand] = useState<BrandOption | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('tops');
+  const [fitPreference, setFitPreference] = useState<'slim' | 'regular' | 'relaxed'>('regular');
   const [dbResult, setDbResult] = useState<DbSizeResult | null>(null);
   const [dbLoading, setDbLoading] = useState(false);
   const [dbError, setDbError] = useState<string | null>(null);
