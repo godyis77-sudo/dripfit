@@ -401,6 +401,7 @@ const Browse = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      <BottomTabBar />
     </div>
   );
 };
