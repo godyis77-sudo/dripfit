@@ -123,7 +123,7 @@ const PublicProfile = () => {
   const displayName = profile?.display_name || username || 'User';
 
   return (
-    <div className="min-h-screen bg-background pb-safe-bottom">
+    <div className="min-h-screen bg-background pb-safe-tab">
       <div className="max-w-sm mx-auto px-4 pt-4">
         {/* Header */}
         <div className="flex items-center gap-2 mb-4">

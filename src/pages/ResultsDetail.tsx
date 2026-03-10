@@ -62,7 +62,7 @@ const ResultsDetail = () => {
 
   if (!scan) {
     return (
-      <div className="min-h-screen bg-background px-4 pt-4 pb-safe-bottom">
+      <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
         <div className="max-w-sm mx-auto text-center pt-20">
           <Ruler className="h-8 w-8 text-muted-foreground/30 mx-auto mb-3" />
           <p className="text-base font-bold text-foreground mb-1">Scan not found</p>
