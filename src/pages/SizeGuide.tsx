@@ -151,9 +151,17 @@ const SizeGuide = () => {
     return acc;
   }, []);
 
+  // Sort: user's preferred/favorite brands first
+  const sortedUniqueBrands = [...uniqueBrands].sort((a, b) => {
+    const aFav = userBrandNames.has(a.name.toLowerCase()) ? 0 : 1;
+    const bFav = userBrandNames.has(b.name.toLowerCase()) ? 0 : 1;
+    if (aFav !== bFav) return aFav - bFav;
+    return a.name.localeCompare(b.name);
+  });
+
   const filteredBrands = brandSearch
-    ? uniqueBrands.filter(b => b.name.toLowerCase().includes(brandSearch.toLowerCase()))
-    : uniqueBrands;
+    ? sortedUniqueBrands.filter(b => b.name.toLowerCase().includes(brandSearch.toLowerCase()))
+    : sortedUniqueBrands;
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; if (!file) return;
