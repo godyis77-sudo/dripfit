@@ -86,20 +86,23 @@ const Onboarding = () => {
       setScreen('carousel');
     };
 
-    // Race: all images loaded vs 3s timeout
-    const timeout = window.setTimeout(advance, 3000);
+    // Show splash for at least 2.5s, then advance once images are ready or after 5s max
+    const minDelay = window.setTimeout(() => { minElapsed = true; if (imagesReady) advance(); }, 2500);
+    let minElapsed = false;
+    let imagesReady = false;
+    const timeout = window.setTimeout(advance, 5000);
     const imageUrls = SLIDES.map(s => s.image);
     let loaded = 0;
     imageUrls.forEach(src => {
       const img = new Image();
       img.onload = img.onerror = () => {
         loaded++;
-        if (loaded >= imageUrls.length) advance();
+        if (loaded >= imageUrls.length) { imagesReady = true; if (minElapsed) advance(); }
       };
       img.src = src;
     });
 
-    return () => { advanced = true; window.clearTimeout(timeout); };
+    return () => { advanced = true; window.clearTimeout(timeout); window.clearTimeout(minDelay); };
   }, [screen]);
 
   const tapSplash = useCallback(() => { trackEvent('onboarding_splash_done'); setScreen('carousel'); }, []);
