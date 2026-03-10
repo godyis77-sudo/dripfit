@@ -1,12 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { AnalyzeBodySchema, parseOrError, successResponse, errorResponse } from "../_shared/validation.ts";
+import { AnalyzeBodySchema, parseOrError, successResponse, errorResponse, getCorsHeaders } from "../_shared/validation.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
 
 const REFERENCE_SIZES: Record<string, string> = {
   credit_card: "a standard credit card (85.6 × 53.98 mm)",
@@ -62,6 +57,8 @@ Return ONLY a JSON object:
 }
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -171,6 +168,6 @@ serve(async (req) => {
     return successResponse(measurements, 200, corsHeaders);
   } catch (e) {
     console.error("analyze-body error:", e);
-    return errorResponse(e instanceof Error ? e.message : "Analysis failed", "INTERNAL_ERROR", 500, corsHeaders);
+    return errorResponse(e instanceof Error ? e.message : "Analysis failed", "INTERNAL_ERROR", 500, getCorsHeaders(req));
   }
 });

@@ -46,6 +46,21 @@ const defaultCorsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const ALLOWED_ORIGINS = [
+  "https://dripfitcheck.com",
+  "https://dripfitcheck.lovable.app",
+  "https://id-preview--b5532855-3564-4058-bfa7-f16633b8e311.lovable.app",
+  "http://localhost:5173",
+];
+
+export function getCorsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get("Origin") || "";
+  return {
+    "Access-Control-Allow-Origin": ALLOWED_ORIGINS.includes(origin) ? origin : "",
+    "Access-Control-Allow-Headers": defaultCorsHeaders["Access-Control-Allow-Headers"],
+  };
+}
+
 export function successResponse(data: unknown, status = 200, corsHeaders?: Record<string, string>) {
   return new Response(JSON.stringify({ data, error: null }), {
     status,

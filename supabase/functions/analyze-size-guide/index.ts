@@ -1,14 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { AnalyzeSizeGuideSchema, parseOrError, successResponse, errorResponse } from "../_shared/validation.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+import { AnalyzeSizeGuideSchema, parseOrError, successResponse, errorResponse, getCorsHeaders } from "../_shared/validation.ts";
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -134,6 +130,6 @@ Please analyze the size chart and recommend the best size for me.`;
     return successResponse(recommendation, 200, corsHeaders);
   } catch (e) {
     console.error("analyze-size-guide error:", e);
-    return errorResponse(e instanceof Error ? e.message : "Analysis failed", "INTERNAL_ERROR", 500, corsHeaders);
+    return errorResponse(e instanceof Error ? e.message : "Analysis failed", "INTERNAL_ERROR", 500, getCorsHeaders(req));
   }
 });
