@@ -111,7 +111,7 @@ const PublicProfile = () => {
 
   if (notFound) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 pb-safe-bottom">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 pb-safe-tab">
         <p className="text-base font-bold text-foreground mb-1">Profile not found</p>
         <p className="text-[12px] text-muted-foreground mb-4">This user doesn't exist or their profile is private.</p>
         <Button variant="outline" className="rounded-xl" onClick={() => navigate(-1)}>Go Back</Button>
