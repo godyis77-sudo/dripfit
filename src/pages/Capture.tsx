@@ -44,7 +44,7 @@ function clearScanState() {
   try { sessionStorage.removeItem(SCAN_STATE_KEY); } catch {}
 }
 
-import scanResultsPreview from '@/assets/scan-results-preview.png';
+import scanResultsPreview from '@/assets/scan-results-preview.webp';
 import bodySilhouetteFrontMask from '@/assets/body-silhouette-mask.png';
 import bodySilhouetteSideMask from '@/assets/body-silhouette-side-mask.png';
 

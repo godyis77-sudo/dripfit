@@ -12,7 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import AuthForm from '@/components/auth/AuthForm';
 
 import heroScan from '@/assets/onboarding-scan-results.jpg';
-import scanResultsPreview from '@/assets/scan-results-preview.png';
+import scanResultsPreview from '@/assets/scan-results-preview.webp';
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
 import heroTryon from '@/assets/hero-tryon-mirror.jpg';
 import heroCommunity from '@/assets/hero-community-feedback.jpg';
