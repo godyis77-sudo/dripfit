@@ -23,8 +23,7 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
       initial={{ y: 80 }}
       animate={{ y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.3 }}
-      className="fixed bottom-0 left-0 right-0 z-50 lg:max-w-[390px] lg:left-1/2 lg:-translate-x-1/2"
-      style={{ background: 'hsl(var(--background))', borderTop: '1px solid hsl(var(--border))' }}
+      className="fixed bottom-0 left-0 right-0 z-50 lg:max-w-[390px] lg:left-1/2 lg:-translate-x-1/2 bg-background border-t border-border"
     >
       <div className="flex items-center justify-around px-2 py-2 pb-[max(0.625rem,env(safe-area-inset-bottom))]">
         {tabs.map((tab) => {
