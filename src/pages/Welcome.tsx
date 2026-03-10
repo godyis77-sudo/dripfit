@@ -37,7 +37,7 @@ const Welcome = () => {
 
   // Redirect first-time visitors to onboarding (only after auth finishes loading)
   useEffect(() => {
-    if (!loading && !user && !isGuestMode()) {
+    if (!loading && !user && !isGuestMode() && !isOnboarded()) {
       navigate('/onboarding', { replace: true });
     }
   }, [user, loading, navigate]);
