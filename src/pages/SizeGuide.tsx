@@ -301,7 +301,10 @@ const SizeGuide = () => {
                           onClick={() => { setSelectedBrand({ brand_name: b.name, brand_slug: b.slug, category: b.categories[0] }); setDbResult(null); setDbError(null); if (b.categories.length === 1) setSelectedCategory(b.categories[0]); }}
                         >
                           <CardContent className="p-2 flex items-center justify-between">
-                            <p className="text-[13px] font-medium text-foreground">{b.name}</p>
+                            <div className="flex items-center gap-1.5">
+                              {userBrandNames.has(b.name.toLowerCase()) && <span className="text-[10px]">⭐</span>}
+                              <p className="text-[13px] font-medium text-foreground">{b.name}</p>
+                            </div>
                             <p className="text-[10px] text-muted-foreground">{b.categories.length} {b.categories.length === 1 ? 'category' : 'categories'}</p>
                           </CardContent>
                         </Card>
