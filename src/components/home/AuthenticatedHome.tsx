@@ -71,61 +71,34 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           transition={{ delay: 0.1 }}
           className="grid grid-cols-2 gap-2 mb-6"
         >
-          {hasScan ? (
-            <>
-              <button
-                onClick={() => { trackEvent('home_quick_scan'); navigate('/capture'); }}
-                className="flex items-center gap-2.5 bg-card border border-border rounded-xl p-3 active:scale-[0.97] transition-transform min-h-[44px]"
-              >
-                <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center shrink-0">
-                  <span className="text-base">📐</span>
-                </div>
-                <div className="text-left">
-                  <p className="text-[12px] font-bold text-foreground">Update Scan</p>
-                  <p className="text-[10px] text-muted-foreground">Refresh your measurements</p>
-                </div>
-              </button>
-              <button
-                onClick={() => { trackEvent('home_quick_tryon'); navigate('/tryon'); }}
-                className="flex items-center gap-2.5 bg-card border border-border rounded-xl p-3 active:scale-[0.97] transition-transform min-h-[44px]"
-              >
-                <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center shrink-0">
-                  <Sparkles className="h-4 w-4 text-primary-foreground" />
-                </div>
-                <div className="text-left">
-                  <p className="text-[12px] font-bold text-foreground">Try-On</p>
-                  <p className="text-[10px] text-muted-foreground">See it on you</p>
-                </div>
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => { trackEvent('home_quick_scan'); navigate('/capture'); }}
-                className="flex items-center gap-2.5 bg-card border border-border rounded-xl p-3 active:scale-[0.97] transition-transform min-h-[44px]"
-              >
-                <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center shrink-0">
-                  <span className="text-base">📷</span>
-                </div>
-                <div className="text-left">
-                  <p className="text-[12px] font-bold text-foreground">Get Your Size</p>
-                  <p className="text-[10px] text-muted-foreground">2 photos · 60 seconds</p>
-                </div>
-              </button>
-              <button
-                onClick={() => { trackEvent('home_quick_tryon'); navigate('/tryon'); }}
-                className="flex items-center gap-2.5 bg-card border border-border rounded-xl p-3 active:scale-[0.97] transition-transform min-h-[44px]"
-              >
-                <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center shrink-0">
-                  <Sparkles className="h-4 w-4 text-primary-foreground" />
-                </div>
-                <div className="text-left">
-                  <p className="text-[12px] font-bold text-foreground">Try-On</p>
-                  <p className="text-[10px] text-muted-foreground">See it on you</p>
-                </div>
-              </button>
-            </>
-          )}
+          {[
+            {
+              onClick: () => { trackEvent('home_quick_scan'); navigate('/capture'); },
+              icon: hasScan ? <span className="text-base">📐</span> : <span className="text-base">📷</span>,
+              title: hasScan ? 'Update Scan' : 'Get Your Size',
+              subtitle: hasScan ? 'Refresh your measurements' : '2 photos · 60 seconds',
+            },
+            {
+              onClick: () => { trackEvent('home_quick_tryon'); navigate('/tryon'); },
+              icon: <Sparkles className="h-4 w-4 text-primary-foreground" />,
+              title: 'Try-On',
+              subtitle: 'See it on you',
+            },
+          ].map((action) => (
+            <button
+              key={action.title}
+              onClick={action.onClick}
+              className="flex items-center gap-2.5 bg-card border border-border rounded-xl p-3 active:scale-[0.97] transition-transform min-h-[44px]"
+            >
+              <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center shrink-0">
+                {action.icon}
+              </div>
+              <div className="text-left">
+                <p className="text-[12px] font-bold text-foreground">{action.title}</p>
+                <p className="text-[10px] text-muted-foreground">{action.subtitle}</p>
+              </div>
+            </button>
+          ))}
         </motion.div>
 
         {/* Trending Fits */}

@@ -211,6 +211,7 @@ const Welcome = () => {
           >
             Or skip to Try-On →
           </button>
+          
         </motion.div>
 
         {/* Trust bar */}

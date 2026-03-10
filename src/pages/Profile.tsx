@@ -186,12 +186,12 @@ const Profile = () => {
               variant="ghost"
               size="icon"
               onClick={() => navigate('/profile/settings')}
-              className="text-muted-foreground h-8 w-8 rounded-lg"
+              className="text-muted-foreground h-8 w-8 min-h-[44px] min-w-[44px] rounded-lg"
               aria-label="Open settings"
             >
               <Settings className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={handleSignOut} className="text-muted-foreground h-8 w-8 rounded-lg" aria-label="Sign out">
+            <Button variant="ghost" size="icon" onClick={handleSignOut} className="text-muted-foreground h-8 w-8 min-h-[44px] min-w-[44px] rounded-lg" aria-label="Sign out">
               <LogOut className="h-4 w-4" />
             </Button>
           </div>
