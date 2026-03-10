@@ -87,8 +87,8 @@ const Results = () => {
   });
   const queryClient = useQueryClient();
 
-  const brandSlug = state?.retailer?.toLowerCase().replace(/\s+/g, '-') || '';
-  const categoryKey = state?.category?.toLowerCase() || 'tops';
+  const brandSlug = cachedState?.retailer?.toLowerCase().replace(/\s+/g, '-') || '';
+  const categoryKey = cachedState?.category?.toLowerCase() || 'tops';
   const fitQueryValue = fitPref === 'fitted' ? 'slim' : fitPref;
 
   const sizeRecQuery = useQuery({
