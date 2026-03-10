@@ -78,7 +78,7 @@ const Capture = () => {
   const handleGenderSelect = async (value: string) => {
     setGenderSet(value);
     if (user) {
-      await supabase.from('profiles').update({ gender: value } as any).eq('user_id', user.id);
+      await supabase.from('profiles').update({ gender: value }).eq('user_id', user.id);
     }
   };
 
