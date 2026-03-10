@@ -402,6 +402,16 @@ const Capture = () => {
                   </AccordionItem>
                 </Accordion>
               </div>
+
+              {/* Privacy tip card */}
+              <div className="mt-4 rounded-xl p-4 bg-card border border-border/40">
+                <div className="flex items-start gap-2.5">
+                  <Lock className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+                  <p className="text-xs text-muted-foreground">
+                    Your height improves scan accuracy by 23%. We never store or share this data.
+                  </p>
+                </div>
+              </div>
             </motion.div>
           )}
 
