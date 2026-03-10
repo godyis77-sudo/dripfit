@@ -22,7 +22,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const navigate = useNavigate();
   const { user, userGender, genderLoaded } = useAuth();
   const mappedGender = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : undefined;
-  const [fabOpen, setFabOpen] = useState(false);
   const [activePriceIdx, setActivePriceIdx] = useState(0);
   const [rescanDismissed, setRescanDismissed] = useState(() => {
     const key = `rescan_nudge_dismissed_${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
