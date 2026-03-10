@@ -419,7 +419,6 @@ const Onboarding = () => {
             transition={screenTransition}
             className="w-full min-h-screen flex flex-col items-center px-6 py-10 overflow-y-auto"
           >
-            <div className="flex-1" />
             <p className="text-[11px] text-primary font-bold uppercase tracking-wider mb-3">Step 3 of 3</p>
             <div className="max-w-[320px] w-full flex flex-col items-center">
               {/* Illustration */}
