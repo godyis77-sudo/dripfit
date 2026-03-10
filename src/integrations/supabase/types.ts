@@ -729,6 +729,7 @@ export type Database = {
           created_at: string
           id: string
           is_public: boolean
+          moderation_status: string
           product_urls: string[] | null
           result_photo_url: string
           user_id: string
@@ -741,6 +742,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_public?: boolean
+          moderation_status?: string
           product_urls?: string[] | null
           result_photo_url: string
           user_id: string
@@ -753,6 +755,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_public?: boolean
+          moderation_status?: string
           product_urls?: string[] | null
           result_photo_url?: string
           user_id?: string
