@@ -230,7 +230,7 @@ const Capture = () => {
           {/* ─── STEP 1: INTRO ─── */}
           {flowStep === 'intro' && (
             <motion.div key="intro" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm flex flex-col items-center text-center pt-4">
-              <AnimatedSilhouette />
+              <ScanPreviewCard height={300} animated />
 
               <h2 className="text-xl font-bold text-foreground mt-6 mb-2">
                 Get your exact measurements in 60 seconds
