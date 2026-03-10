@@ -422,12 +422,7 @@ const Onboarding = () => {
             <p className="text-[11px] text-primary font-bold uppercase tracking-wider mb-1">Step 3 of 3</p>
             <div className="max-w-[320px] w-full flex flex-col items-center">
               {/* Illustration */}
-              <div className="relative rounded-[1rem] border-[3px] border-primary mb-5" style={{ boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15), inset 0 0 14px 3px hsl(45 88% 50% / 0.2)' }}>
-                <div className="overflow-hidden rounded-[calc(1rem-3px)]">
-                  <img src={scanResultsPreview} alt="Scan results preview" className="h-[300px] w-auto object-cover" />
-                </div>
-                <div className="absolute -inset-[7px] rounded-[calc(1rem+4px)] border-[4px] border-black pointer-events-none" style={{ boxShadow: 'inset 0 0 8px 2px hsl(45 88% 50% / 0.7), 0 0 10px 2px hsl(45 88% 50% / 0.6), 0 0 20px 4px hsl(45 88% 50% / 0.25)' }} />
-              </div>
+              <ScanPreviewCard height={300} />
 
               <h2 className="font-display text-xl font-bold text-foreground mb-1 text-center">Let's get your measurements</h2>
               <p className="text-[12px] text-muted-foreground text-center mb-5">See exactly how Zara M fits your 96cm chest.</p>
