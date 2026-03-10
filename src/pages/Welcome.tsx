@@ -33,7 +33,14 @@ const Welcome = () => {
   const navigate = useNavigate();
   const { user, loading, signOut } = useAuth();
   const { toast } = useToast();
+  const [showScrollTop, setShowScrollTop] = useState(false);
   usePageTitle();
+
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > 400);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   // Redirect first-time visitors to onboarding (only after auth finishes loading)
   useEffect(() => {
