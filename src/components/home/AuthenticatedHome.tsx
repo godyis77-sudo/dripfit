@@ -49,8 +49,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
 
   const priceFilter = activePriceIdx === 0 ? null : { min: PRICE_FILTERS[activePriceIdx].min, max: PRICE_FILTERS[activePriceIdx].max };
 
-  const closeFab = useCallback(() => setFabOpen(false), []);
-
   return (
     <div ref={ref} className="relative min-h-screen bg-background pb-safe-bottom">
       {/* Scrim for FAB */}
