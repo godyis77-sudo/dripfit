@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import bodySilhouette from '@/assets/body-silhouette-clean.png';
+import bodySilhouette from '@/assets/body-silhouette-clean.webp';
 
 interface ScanAnimationProps {
   revealedCount?: number;
