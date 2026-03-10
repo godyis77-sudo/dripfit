@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -87,10 +87,10 @@ const Onboarding = () => {
     };
 
     // Show splash for at least 2.5s, then advance once images are ready or after 5s max
-    const minDelay = window.setTimeout(() => { minElapsed = true; if (imagesReady) advance(); }, 2500);
+    const minDelay = window.setTimeout(() => { minElapsed = true; if (imagesReady) advance(); }, 1800);
     let minElapsed = false;
     let imagesReady = false;
-    const timeout = window.setTimeout(advance, 5000);
+    const timeout = window.setTimeout(advance, 3500);
     const imageUrls = SLIDES.map(s => s.image);
     let loaded = 0;
     imageUrls.forEach(src => {
@@ -143,8 +143,27 @@ const Onboarding = () => {
   const startScan = () => { setOnboarded(); trackEvent('onboarding_completed', { action: 'scan' }); navigate('/capture'); };
   const skipScan = () => { setOnboarded(); trackEvent('onboarding_scan_prompt_skip'); navigate('/'); };
 
+  const totalSlides = SLIDES.length;
+  const progress = useMemo(() => {
+    if (screen === 'splash') return 0;
+    if (screen === 'carousel') return 33 + (slideIdx + 1) * (34 / totalSlides);
+    if (screen === 'auth' || screen === 'personalize') return 50;
+    if (screen === 'gender') return 67;
+    if (screen === 'scan-prompt') return 100;
+    return 0;
+  }, [screen, slideIdx, totalSlides]);
+
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center overflow-hidden">
+      {/* Progress bar */}
+      {screen !== 'splash' && (
+        <div className="fixed top-0 left-0 right-0 z-[60] h-1 bg-muted">
+          <div
+            className="h-full bg-primary rounded-r-full transition-all duration-500"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      )}
       <AnimatePresence mode="wait">
 
         {/* ── Screen 1: Splash — luxury brand reveal ── */}
