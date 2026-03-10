@@ -18,9 +18,9 @@ describe('compressImage', () => {
       return document.createElement(tag);
     });
 
-    // Mock URL.createObjectURL / revokeObjectURL
-    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-url');
-    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+    // jsdom doesn't have these — define them
+    URL.createObjectURL = vi.fn(() => 'blob:mock-url');
+    URL.revokeObjectURL = vi.fn();
   });
 
   it('should return a compressed data URL', async () => {
