@@ -38,7 +38,7 @@ interface ProductPreviewModalProps {
  * Unified fullscreen product preview modal.
  * Portaled to document.body, scroll-locked, maximized image.
  */
-const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, lookItems, onLookItemTryOn, onLookItemShop }: ProductPreviewModalProps) => {
+const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookItems, onLookItemTryOn, onLookItemShop }: ProductPreviewModalProps) => {
   const [lookOpen, setLookOpen] = useState(false);
 
   useEffect(() => {
