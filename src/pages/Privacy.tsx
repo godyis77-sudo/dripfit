@@ -3,6 +3,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
+import BottomTabBar from '@/components/BottomTabBar';
 
 const Privacy = () => {
   const navigate = useNavigate();
@@ -142,6 +143,7 @@ const Privacy = () => {
           </AccordionItem>
         </Accordion>
       </div>
+      <BottomTabBar />
     </div>
   );
 };
