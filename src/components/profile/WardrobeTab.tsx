@@ -63,7 +63,7 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
       ) : (
         <div className="grid grid-cols-2 gap-2">
           {wardrobeItems.map(item => (
-            <motion.div key={item.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="break-inside-avoid">
+            <motion.div key={item.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
               <div
                 className="relative w-full rounded-xl overflow-hidden border border-border bg-card text-left"
                 onPointerDown={() => handlePointerDown(item.id)}
