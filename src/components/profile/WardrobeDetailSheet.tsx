@@ -116,6 +116,18 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
             <p className="text-[12px] text-muted-foreground">{item.notes}</p>
           )}
 
+          {/* Try On button */}
+          <Button
+            className="w-full h-10 rounded-xl text-[12px] font-bold gap-1.5 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20"
+            onClick={() => {
+              trackEvent('tryon_from_wardrobe_detail', { item_id: item.id });
+              onOpenChange(false);
+              navigate('/tryon', { state: { clothingUrl: item.image_url, productUrl: item.product_link || undefined } });
+            }}
+          >
+            <Sparkles className="h-4 w-4" /> Try On
+          </Button>
+
           {/* Direct product link */}
           {item.product_link && (
             <Button
