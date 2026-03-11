@@ -212,9 +212,9 @@ const Community = () => {
         {/* User filter chips */}
         {((filter === 'trending' && trendingSort === 'user') || (filter === 'following' && followingSort === 'user')) && (
           <div className="flex gap-1.5 mb-3 overflow-x-auto no-scrollbar">
-            <button onClick={() => setFilterUserId(null)} aria-label="Show all users" className={`whitespace-nowrap px-2.5 py-1 rounded-full text-[10px] font-bold border transition-all active:scale-95 ${!filterUserId ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'}`}>All</button>
+            <button onClick={() => setFilterUserId(null)} aria-label="Show all users" className={`whitespace-nowrap px-3 py-2 min-h-[44px] rounded-full text-[11px] font-bold border transition-all active:scale-95 ${!filterUserId ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'}`}>All</button>
             {[...new Map(posts.filter(p => p.profile?.display_name).map(p => [p.user_id, p.profile?.display_name])).entries()].map(([uid, name]) => (
-              <button key={uid} onClick={() => setFilterUserId(filterUserId === uid ? null : uid)} aria-label={`Filter by ${name}`} className={`whitespace-nowrap px-2.5 py-1 rounded-full text-[10px] font-bold border transition-all active:scale-95 ${filterUserId === uid ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'}`}>{name}</button>
+              <button key={uid} onClick={() => setFilterUserId(filterUserId === uid ? null : uid)} aria-label={`Filter by ${name}`} className={`whitespace-nowrap px-3 py-2 min-h-[44px] rounded-full text-[11px] font-bold border transition-all active:scale-95 ${filterUserId === uid ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'}`}>{name}</button>
             ))}
           </div>
         )}
