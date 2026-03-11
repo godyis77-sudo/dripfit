@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, SlidersHorizontal, X, Sparkles, ExternalLink } from 'lucide-react';
@@ -61,6 +62,21 @@ const Browse = () => {
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
+
+  useEffect(() => {
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+
+    if (previewProduct) {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+    };
+  }, [previewProduct]);
 
   const title = CATEGORY_LABELS[category] || category.charAt(0).toUpperCase() + category.slice(1);
   usePageTitle(`Browse ${title}`);
@@ -324,13 +340,13 @@ const Browse = () => {
 
       {/* Fullscreen product preview */}
       <AnimatePresence>
-        {previewProduct && (
+        {previewProduct && createPortal(
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center"
+            className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden overscroll-none bg-black/95 flex flex-col items-center justify-center"
             onClick={() => setPreviewProduct(null)}
           >
             <button
@@ -398,7 +414,8 @@ const Browse = () => {
                 </Button>
               )}
             </motion.div>
-          </motion.div>
+          </motion.div>,
+          document.body
         )}
       </AnimatePresence>
       <BottomTabBar />
