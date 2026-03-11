@@ -17,6 +17,7 @@ import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { isNativePlatform, takeNativePhoto } from '@/lib/nativeCamera';
+import { compressPhoto } from '@/lib/imageUtils';
 
 type FlowStep = 'intro' | 'height' | 'front' | 'side' | 'review';
 const FLOW_STEPS: { key: FlowStep; label: string }[] = [
@@ -50,7 +51,8 @@ const Capture = () => {
   usePageTitle('Scan');
   const saved = loadScanState();
   const [flowStep, setFlowStep] = useState<FlowStep>(saved?.flowStep || 'intro');
-  const [photos, setPhotos] = useState<PhotoSet>(saved?.photos || { front: null, side: null });
+  const [photos, setPhotos] = useState<PhotoSet>({ front: null, side: null });
+  // Photos are NOT restored from sessionStorage — they are too large to persist
   const [heightCm, setHeightCm] = useState(saved?.heightCm || '');
   const [heightFt, setHeightFt] = useState(saved?.heightFt || '');
   const [heightIn, setHeightIn] = useState(saved?.heightIn || '');
@@ -81,8 +83,14 @@ const Capture = () => {
 
   useEffect(() => { trackEvent('scan_started'); }, []);
   useEffect(() => {
-    if (flowStep !== 'intro') saveScanState({ flowStep, photos, heightCm, heightFt, heightIn, useCm, refObject });
-  }, [flowStep, photos, heightCm, heightFt, heightIn, useCm, refObject]);
+    // Never persist photos to sessionStorage — they are multi-MB base64 strings
+    // that freeze the main thread during JSON.stringify and exceed the 5 MB quota.
+    if (flowStep !== 'intro') saveScanState({
+      flowStep,
+      hasPhotos: { front: !!photos.front, side: !!photos.side },
+      heightCm, heightFt, heightIn, useCm, refObject,
+    });
+  }, [flowStep, photos.front, photos.side, heightCm, heightFt, heightIn, useCm, refObject]);
 
   const getHeightCm = (): number => {
     if (useCm) return parseFloat(heightCm) || 0;
@@ -109,11 +117,11 @@ const Capture = () => {
       try {
         const result = await takeNativePhoto('camera');
         const key = flowStep === 'side' ? 'side' : 'front';
-        setPhotos(prev => ({ ...prev, [key]: result.dataUrl }));
+        const compressed = await compressPhoto(result.dataUrl, 1280, 0.8);
+        setPhotos(prev => ({ ...prev, [key]: compressed }));
         setReviewing(true);
         trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
       } catch (err: any) {
-        // User cancelled or camera error — silently ignore cancellation
         if (err?.message?.includes('cancelled') || err?.message?.includes('canceled')) return;
         console.error('Native camera error:', err);
       }
@@ -126,10 +134,11 @@ const Capture = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onloadend = () => {
+    reader.onloadend = async () => {
       const base64 = reader.result as string;
       const key = flowStep === 'side' ? 'side' : 'front';
-      setPhotos(prev => ({ ...prev, [key]: base64 }));
+      const compressed = await compressPhoto(base64, 1280, 0.8);
+      setPhotos(prev => ({ ...prev, [key]: compressed }));
       setReviewing(true);
       trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
     };
@@ -302,7 +311,8 @@ const Capture = () => {
                     try {
                       const result = await takeNativePhoto('gallery');
                       const key = flowStep === 'side' ? 'side' : 'front';
-                      setPhotos(prev => ({ ...prev, [key]: result.dataUrl }));
+                      const compressed = await compressPhoto(result.dataUrl, 1280, 0.8);
+                      setPhotos(prev => ({ ...prev, [key]: compressed }));
                       setReviewing(true);
                       trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
                     } catch { /* cancelled */ }
