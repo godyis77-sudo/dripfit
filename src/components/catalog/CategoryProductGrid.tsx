@@ -191,21 +191,21 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
               transition={{ duration: 0.2 }}
               src={previewProduct.image_url}
               alt={previewProduct.name}
-              className="max-w-[70%] max-h-[40vh] object-contain rounded-xl"
+              className="max-w-[65%] max-h-[35vh] object-contain rounded-xl"
               onClick={(e) => e.stopPropagation()}
             />
 
             <motion.div
-              initial={{ y: 20, opacity: 0 }}
+              initial={{ y: 12, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="mt-4 text-center px-6"
+              className="mt-3 text-center px-6"
               onClick={(e) => e.stopPropagation()}
             >
-              <p className="text-xs text-white/60 uppercase tracking-wider">{previewProduct.brand}</p>
-              <p className="text-base font-semibold text-white mt-0.5">{previewProduct.name}</p>
+              <p className="text-[10px] text-white/60 uppercase tracking-wider">{previewProduct.brand}</p>
+              <p className="text-sm font-semibold text-white mt-0.5 line-clamp-2">{previewProduct.name}</p>
               {previewProduct.price_cents && (
-                <p className="text-sm font-bold text-primary mt-1">
+                <p className="text-xs font-bold text-primary mt-0.5">
                   ${(previewProduct.price_cents / 100).toFixed(0)}
                 </p>
               )}
