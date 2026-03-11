@@ -311,7 +311,7 @@ export const PostDetailSheet = ({
                 ))}
               </div>
             )}
-            {!isOwnPost && zoom <= 1 && onTryOn && (
+            {zoom <= 1 && onTryOn && (
               <button
                 onClick={() => onTryOn(post)}
                 className="absolute top-3 left-4 text-[11px] font-bold text-white rounded-[100px] flex items-center gap-1 active:scale-95 transition-transform"
