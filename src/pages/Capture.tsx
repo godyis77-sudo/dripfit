@@ -172,7 +172,10 @@ const Capture = () => {
   };
 
   const goBack = () => {
-    if (flowStep === 'intro') navigate(-1);
+    if (flowStep === 'intro') {
+      if (window.history.length > 1) navigate(-1);
+      else navigate('/', { replace: true });
+    }
     else if (flowStep === 'height') setFlowStep('intro');
     else if (flowStep === 'front') setFlowStep('height');
     else if (flowStep === 'side') setFlowStep('front');
