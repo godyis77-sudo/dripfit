@@ -143,7 +143,7 @@ const ScanSuccess = () => {
       {/* Skip button */}
       <button
         onClick={() => handleNavigate('/profile/body')}
-        className="absolute top-5 right-5 text-[11px] text-muted-foreground font-medium z-20"
+        className="absolute top-5 right-5 text-[11px] text-muted-foreground font-medium z-20 min-h-[44px] min-w-[44px] flex items-center justify-center"
       >
         Skip →
       </button>
