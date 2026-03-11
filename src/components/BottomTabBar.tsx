@@ -23,7 +23,7 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
       initial={{ y: 80 }}
       animate={{ y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.3 }}
-      className="fixed bottom-0 left-0 right-0 z-50 lg:max-w-[390px] lg:left-1/2 lg:-translate-x-1/2 bg-background border-t border-border"
+      className="fixed bottom-0 left-0 right-0 z-50 lg:max-w-[390px] lg:left-1/2 lg:-translate-x-1/2 bg-background/80 backdrop-blur-2xl border-t border-border/50"
     >
       <div className="flex items-center justify-around px-2 py-2 pb-[max(0.625rem,env(safe-area-inset-bottom))]">
         {tabs.map((tab) => {
@@ -38,18 +38,18 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
               onClick={() => navigate(tab.path)}
               aria-label={tab.label}
               className={cn(
-                'relative flex flex-col items-center gap-0.5 rounded-lg px-3 py-1.5 min-h-[44px] min-w-[44px] transition-colors duration-150',
+                'relative flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 min-h-[44px] min-w-[44px] transition-all duration-200',
                 isActive
                   ? 'text-primary'
                   : 'text-muted-foreground active:text-foreground'
               )}
             >
-              <tab.icon className={cn('h-5 w-5', isActive && 'drop-shadow-[0_0_6px_hsl(45_88%_40%/0.5)]')} />
-              <span className="text-[10px] font-semibold tracking-wide">{tab.label}</span>
+              <tab.icon className={cn('h-5 w-5 transition-all duration-200', isActive && 'drop-shadow-[0_0_8px_hsl(42_76%_42%/0.5)]')} />
+              <span className="text-[9px] font-semibold tracking-wider uppercase">{tab.label}</span>
               {isActive && (
                 <motion.div
                   layoutId="tab-indicator"
-                  className="absolute -top-1.5 left-1/2 -translate-x-1/2 h-0.5 w-5 rounded-full bg-primary"
+                  className="absolute -top-1 left-1/2 -translate-x-1/2 h-0.5 w-6 rounded-full gradient-drip"
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
