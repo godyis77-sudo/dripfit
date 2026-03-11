@@ -148,7 +148,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                 </p>
                 <button
                   onClick={() => navigate('/capture')}
-                  className="mt-2 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-[11px] font-bold active:scale-95 transition-transform"
+                  className="mt-2 px-3 py-1.5 rounded-lg bg-gradient-to-b from-primary/90 to-primary text-primary-foreground text-[11px] font-bold shadow-3d-gold active:shadow-3d-gold-pressed active:translate-y-[1px] transition-all"
                 >
                   Re-Scan Now
                 </button>
