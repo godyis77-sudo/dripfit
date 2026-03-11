@@ -158,12 +158,10 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
       {hasMore && (
         <div className="flex justify-center mt-3">
           <Button
-            variant="outline"
-            size="sm"
-            className="rounded-full text-[11px] font-bold px-6 border-primary/40 bg-gradient-to-b from-primary/20 to-primary/5 text-primary shadow-[0_2px_8px_hsl(var(--primary)/0.25),inset_0_1px_0_hsl(var(--primary)/0.3)] hover:from-primary/30 hover:to-primary/10 active:translate-y-[1px] active:shadow-[0_1px_4px_hsl(var(--primary)/0.2)] transition-all"
+            className="rounded-lg btn-luxury text-primary-foreground h-10 px-6 text-xs font-bold"
             onClick={() => setVisibleCount(prev => prev + PAGE_SIZE)}
           >
-            Load More ({totalAvailable - displayed.length} remaining)
+            Load More
           </Button>
         </div>
       )}
