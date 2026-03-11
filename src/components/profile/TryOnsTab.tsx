@@ -117,6 +117,37 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
     toast({ title: 'Sent!', description: val });
   };
 
+  const cancelLongPress = () => {
+    if (longPressTimerRef.current) {
+      window.clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  };
+
+  const startLongPress = (postId: string) => {
+    cancelLongPress();
+    longPressTriggeredRef.current = false;
+    longPressTimerRef.current = window.setTimeout(() => {
+      longPressTriggeredRef.current = true;
+      setConfirmDeleteId(postId);
+    }, 500);
+  };
+
+  const handleDeleteTryOn = async (id: string) => {
+    if (!user) return;
+    const { error } = await supabase.from('tryon_posts').delete().eq('id', id).eq('user_id', user.id);
+    if (error) {
+      toast({ title: 'Delete failed', description: error.message, variant: 'destructive' });
+      return;
+    }
+    trackEvent('fitcheck_post_deleted', { postId: id, source: 'profile_tryons' });
+    toast({ title: 'Deleted', description: 'Try-on removed permanently.' });
+    setSelectedPost(null);
+    onPostUpdated?.();
+  };
+
+  useEffect(() => () => cancelLongPress(), []);
+
   return (
     <>
       {/* Filter stats row */}
