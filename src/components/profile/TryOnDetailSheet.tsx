@@ -34,6 +34,7 @@ interface TryOnDetailSheetProps {
 const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }: TryOnDetailSheetProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [liked, setLiked] = useState(false);
   const [posting, setPosting] = useState(false);
   const [addingToWardrobe, setAddingToWardrobe] = useState(false);
