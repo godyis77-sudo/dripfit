@@ -139,8 +139,8 @@ const Welcome = () => {
                 }}
                 className="w-full flex items-center gap-3.5 glass-card rounded-2xl py-3.5 px-4 group min-h-[44px]"
               >
-                <div className="flex items-center justify-center h-9 w-9 rounded-xl gradient-drip shrink-0">
-                  <p.icon className="h-4 w-4 text-primary-foreground" />
+                <div className="h-9 w-9 icon-3d-gold shimmer-sweep shrink-0">
+                  <p.icon className="h-4 w-4 text-primary-foreground shimmer-icon" />
                 </div>
                 <div className="flex-1 text-left">
                   <p className="text-[13px] font-bold text-foreground flex items-center gap-2">
