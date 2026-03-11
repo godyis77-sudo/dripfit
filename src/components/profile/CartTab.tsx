@@ -23,6 +23,7 @@ const CartTab = () => {
   const navigate = useNavigate();
   const { items, removeFromCart, clearCart } = useCart();
   const [previewProduct, setPreviewProduct] = useState<ProductPreviewData | null>(null);
+  const [previewLookItems, setPreviewLookItems] = useState<LookItemData[]>([]);
 
   const handleTryOn = async (productUrl?: string, fallbackClothingImageUrl?: string) => {
     trackEvent('cart_tryon_click', { productUrl });
