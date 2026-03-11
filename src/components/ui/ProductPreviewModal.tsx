@@ -73,8 +73,8 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
       </button>
 
       {/* Image — maximized */}
-      <div className="flex-1 flex items-center justify-center p-4 min-h-0">
-        <div className="relative max-w-full max-h-full" onClick={(e) => e.stopPropagation()}>
+      <div className="flex-1 flex items-center justify-center p-4 min-h-0 overflow-hidden">
+        <div className="relative flex items-center justify-center w-full h-full min-h-0" onClick={(e) => e.stopPropagation()}>
           <img
             src={product.image_url}
             alt={product.name}
@@ -82,7 +82,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
             draggable={false}
           />
           {caption && (
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-b-xl px-4 py-3">
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-full bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-b-xl px-4 py-3" style={{ maxWidth: '100%' }}>
               <p className="text-[13px] text-white font-medium leading-snug">"{caption}"</p>
             </div>
           )}
