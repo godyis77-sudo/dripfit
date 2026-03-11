@@ -73,6 +73,8 @@ const Results = () => {
           recommendedSize: data.recommended_size || 'M',
           fitPreference: 'regular' as FitPreference,
         } as BodyScanResult,
+        retailer: undefined,
+        category: undefined,
       };
     },
     enabled: !!user?.id && !state?.result,
