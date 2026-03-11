@@ -88,21 +88,28 @@ const CartTab = () => {
         <div key={item.id} className="bg-card border border-border rounded-xl overflow-hidden">
           <div className="p-2.5 flex gap-3">
             {/* Fullscreen-enabled thumbnail */}
-            <FullscreenImage
-              src={item.image_url}
-              alt={item.caption || 'Look'}
-              onShop={item.product_urls?.[0] ? () => handleShop(item.product_urls![0]) : undefined}
-              onTryOn={() => handleTryOn(item.product_urls?.[0], item.clothing_photo_url)}
+            <button
+              type="button"
+              onClick={() => {
+                const primaryProductUrl = item.product_urls?.[0] ?? null;
+                const primaryBrand = primaryProductUrl ? detectBrandFromUrl(primaryProductUrl).brand : null;
+                setPreviewProduct({
+                  image_url: item.image_url,
+                  name: item.caption || 'Look',
+                  brand: primaryBrand || 'Shop',
+                  product_url: primaryProductUrl,
+                });
+              }}
+              className="shrink-0 w-32 h-40 rounded-lg overflow-hidden bg-muted/30 cursor-pointer active:scale-95 transition-transform"
+              aria-label={`Preview ${item.caption || 'Look'}`}
             >
-              <div className="shrink-0 w-32 h-40 rounded-lg overflow-hidden bg-muted/30 cursor-pointer active:scale-95 transition-transform">
-                <img
-                  src={item.image_url}
-                  alt={item.caption || 'Look'}
-                  className="w-full h-full object-cover object-top"
-                  loading="lazy"
-                />
-              </div>
-            </FullscreenImage>
+              <img
+                src={item.image_url}
+                alt={item.caption || 'Look'}
+                className="w-full h-full object-cover object-top"
+                loading="lazy"
+              />
+            </button>
 
             <div className="flex-1 min-w-0 flex flex-col justify-between">
               <div>
