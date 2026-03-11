@@ -98,10 +98,11 @@ const CartTab = () => {
                 const primaryBrand = primaryProductUrl ? detectBrandFromUrl(primaryProductUrl).brand : null;
                 setPreviewProduct({
                   image_url: item.image_url,
-                  name: item.caption || 'Look',
+                  name: 'Look',
                   brand: primaryBrand || 'Shop',
                   product_url: primaryProductUrl,
                 });
+                setPreviewCaption(item.caption || null);
                 // Build look items from all product URLs
                 const derived: LookItemData[] = urls.map(url => {
                   const { brand } = detectBrandFromUrl(url);
