@@ -76,7 +76,6 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                 >
                   <div className="relative">
                     <img src={item.image_url} alt={item.notes || item.category} className="w-full object-cover" />
-                    )}
                     {(() => {
                       const displayBrand = item.brand || (item.product_link ? detectBrandFromUrl(item.product_link).brand : null) || item.retailer;
                       return displayBrand ? (

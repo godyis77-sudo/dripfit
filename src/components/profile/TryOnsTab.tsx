@@ -163,7 +163,6 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                   >
                     <div className="relative">
                       <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
-                      )}
                     </div>
                     <div className="p-2 flex items-center justify-between">
                       <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
