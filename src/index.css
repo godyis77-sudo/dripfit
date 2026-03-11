@@ -233,6 +233,35 @@
     transform: translateY(3px);
   }
 
+  /* ── Luxury pill / chip buttons ── */
+  .pill {
+    @apply min-h-[44px] px-4 py-2 rounded-full text-[11px] font-bold whitespace-nowrap transition-all duration-200 active:scale-95;
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--muted-foreground));
+    background: hsl(var(--card));
+    box-shadow: 0 1px 2px hsl(0 0% 0% / 0.04);
+  }
+  .pill:hover {
+    border-color: hsl(var(--primary) / 0.3);
+    color: hsl(var(--foreground));
+  }
+  .pill-active {
+    border-color: hsl(var(--primary) / 0.5) !important;
+    background: linear-gradient(160deg, hsl(var(--primary) / 0.12), hsl(var(--primary) / 0.06)) !important;
+    color: hsl(var(--primary)) !important;
+    box-shadow:
+      0 0 12px -4px hsl(var(--primary) / 0.2),
+      inset 0 1px 0 hsl(var(--gold-shimmer) / 0.08) !important;
+  }
+  .pill-filled {
+    border-color: transparent !important;
+    background: linear-gradient(160deg, hsl(42 76% 46%), hsl(40 72% 40%)) !important;
+    color: hsl(var(--primary-foreground)) !important;
+    box-shadow:
+      0 2px 12px -3px hsl(var(--primary) / 0.3),
+      inset 0 1px 0 hsl(var(--gold-shimmer) / 0.2) !important;
+  }
+
   /* ── Section label — editorial style ── */
   .section-label {
     font-family: 'DM Sans', sans-serif;

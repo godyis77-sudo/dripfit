@@ -231,7 +231,7 @@ const Community = () => {
                 ? [{ key: 'tops', label: 'Tops' }, { key: 'bottoms', label: 'Bottoms' }, { key: 'outerwear', label: 'Outerwear' }, { key: 'shoes', label: 'Shoes' }, { key: 'activewear', label: 'Activewear' }, { key: 'accessories', label: 'Accessories' }]
                 : [{ key: 'tops', label: 'Tops' }, { key: 'bottoms', label: 'Bottoms' }, { key: 'dresses', label: 'Dresses' }, { key: 'outerwear', label: 'Outerwear' }, { key: 'shoes', label: 'Shoes' }, { key: 'activewear', label: 'Activewear' }, { key: 'accessories', label: 'Accessories' }]
               ).map(cat => (
-                <button key={cat.key} onClick={() => setShopCategory(cat.key)} aria-label={`Filter by ${cat.label}`} className={`px-3 py-2 min-h-[44px] rounded-full text-[11px] font-bold whitespace-nowrap transition-colors ${shopCategory === cat.key ? 'bg-primary/15 border border-primary/30 text-primary' : 'bg-card border border-border text-muted-foreground'}`}>{cat.label}</button>
+                <button key={cat.key} onClick={() => setShopCategory(cat.key)} aria-label={`Filter by ${cat.label}`} className={`pill ${shopCategory === cat.key ? 'pill-active' : ''}`}>{cat.label}</button>
               ))}
             </div>
             <CategoryProductGrid category={shopCategory} collapsed={false} maxItems={50} gender={shopGender === 'all' ? undefined : shopGender} brand={shopBrand || undefined} onSelectProduct={(product) => navigateToTryOn(navigate, { productUrl: product.product_url || undefined, fallbackClothingImageUrl: product.image_url, source: 'style_check_shop' })} />
