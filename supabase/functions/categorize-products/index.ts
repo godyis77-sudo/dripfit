@@ -24,6 +24,7 @@ const CATEGORY_LIST = VALID_CATEGORIES.join(", ");
 // Categories that are ALWAYS a specific gender — override AI if it disagrees
 const ALWAYS_WOMENS_CATEGORIES = new Set([
   "dresses", "skirts", "heels", "jumpsuits", "leggings",
+  "lingerie", "bralettes", "bikinis", "tankinis",
 ]);
 const ALWAYS_MENS_CATEGORIES = new Set<string>([
   // currently none that are absolute, but reserved
@@ -42,6 +43,14 @@ const FORCE_WOMENS_NAME_PATTERNS = [
   "sarong", "kaftan", "caftan", "culottes", "playsuit",
   "rash guard", "plus size swim", "swimsuit",
   "tote bag", "clutch bag", "crossbody bag", "satchel bag",
+  // Expanded patterns
+  "a-line", "fit and flare", "sheath dress", "shift dress",
+  "halter", "strapless", "sweetheart neckline", "v-neck dress",
+  "tube top", "bandeau", "push-up", "underwire",
+  "high waist", "high rise", "high waisted",
+  "feminine", "girly", "floral print dress", "lace dress",
+  "maternity wear", "nursing", "postpartum",
+  "women ", " woman ", "ladies ", "female ",
 ];
 const FORCE_MENS_NAME_PATTERNS = [
   "boxer", "men's underwear", "compression short", "athletic supporter",
@@ -49,6 +58,13 @@ const FORCE_MENS_NAME_PATTERNS = [
   "swim trunk", "swim short", "board short",
   "oxford shirt", "henley ", "muscle tee", "muscle fit",
   "flat front", "cargo short", "necktie", "bow tie", "suspender",
+  // Expanded patterns
+  "dress shirt", "sport coat", "tuxedo", "waistcoat",
+  "cufflink", "pocket square", "tie clip", "tie bar",
+  "grooming", "shaving", "aftershave",
+  "men ", " man ", " male ", " guys ",
+  "slim fit shirt", "athletic fit", "classic fit",
+  "five pocket", "straight leg jean", "relaxed fit jean",
 ];
 
 // Hostnames / URL patterns that are tracking pixels, CAPTCHAs, or non-product images
@@ -232,7 +248,7 @@ serve(async (req) => {
     // Fetch products
     let query = supabase
       .from("product_catalog")
-      .select("id, name, brand, retailer, category, image_url, image_confidence, tags, gender, product_url")
+      .select("id, name, brand, retailer, category, image_url, image_confidence, tags, gender, product_url, presentation")
       .eq("is_active", true)
       .not("image_url", "is", null)
       .order("image_confidence", { ascending: true, nullsFirst: true })
@@ -473,10 +489,15 @@ function normalizeRetailer(name: string): string {
 }
 
 async function analyzeProduct(
-  product: { id: string; name: string; brand: string; retailer: string; category: string; image_url: string },
+  product: { id: string; name: string; brand: string; retailer: string; category: string; image_url: string; product_url?: string | null },
   apiKey: string
 ): Promise<AnalysisResult> {
-  const prompt = `You are a fashion product image classifier. Analyze this product image and determine:
+  // Build URL context for the AI
+  const urlContext = product.product_url 
+    ? `\n- Product URL: "${product.product_url}" (IMPORTANT: check the URL path for gender segments like /women/, /mens/, /man/, /womens-clothing/ — retailers encode gender in their URL taxonomy. Also check for category hints like /shoes/, /dresses/, /tops/)` 
+    : '';
+
+  const prompt = `You are a fashion product image classifier. Analyze this product image AND the product context below.
 
 1. Is this a real product photo (a single clothing item, shoe, bag, or accessory clearly visible)? 
    - Answer NO if it's a banner, logo, lifestyle/editorial photo without a clear product, a payment icon, a size chart, a model group shot, a category listing page, or any non-product image.
@@ -489,19 +510,27 @@ async function analyzeProduct(
    - Dress shoes, oxfords → "shoes"  
    - Wallets, belt bags, fanny packs → "bags"
    - Sunglasses, eyewear → "sunglasses"
+   - Look at the product URL path for category clues (e.g. /shoes/, /dresses/, /t-shirts/)
 
 3. What gender is this product designed for? Choose EXACTLY ONE from: mens, womens, unisex
-   - Use contextual clues: silhouette, styling, model, brand positioning
-   - Sports bras, bralettes, bikinis, leggings, yoga pants, crop tops are ALWAYS "womens" — never "unisex"
-   - Boxers, briefs, compression shorts, men's underwear are ALWAYS "mens" — never "unisex"
-   - Dresses, skirts, heels, jumpsuits, rompers are ALWAYS "womens"
-   - Only use "unisex" for truly gender-neutral items (basic tees, sneakers, outerwear without gendered styling)
+   GENDER DETERMINATION PRIORITY:
+   a) URL path gender segments (highest priority — retailers structure their own taxonomy)
+   b) Product image (model gender, garment silhouette, styling cues)
+   c) Product name keywords
+   d) Brand positioning
+   
+   RULES:
+   - Sports bras, bralettes, bikinis, leggings, yoga pants, crop tops, dresses, skirts, heels, jumpsuits, rompers are ALWAYS "womens"
+   - Boxers, briefs, compression shorts, men's underwear, tuxedos, ties are ALWAYS "mens"
+   - Only use "unisex" for truly gender-neutral items with NO gendered cues
+   - If URL contains "/women/" or "/womens/" → strongly prefer "womens"
+   - If URL contains "/men/" or "/mens/" → strongly prefer "mens"
 
 The product is currently listed as:
 - Name: "${product.name}"
 - Brand: "${product.brand}"
 - Retailer: "${product.retailer}"
-- Current category: "${product.category}"
+- Current category: "${product.category}"${urlContext}
 
 Respond ONLY with valid JSON (no markdown):
 {
@@ -575,32 +604,35 @@ function remapCategory(aiCategory: string, productName: string): string {
   const name = productName.toLowerCase();
 
   if (cat === "footwear") {
-    if (name.includes("sneaker") || name.includes("running")) return "sneakers";
+    if (name.includes("sneaker") || name.includes("running") || name.includes("trainer")) return "sneakers";
     if (name.includes("boot")) return "boots";
-    if (name.includes("loafer")) return "loafers";
-    if (name.includes("sandal")) return "sandals";
-    if (name.includes("heel")) return "heels";
+    if (name.includes("loafer") || name.includes("moccasin")) return "loafers";
+    if (name.includes("sandal") || name.includes("slide") || name.includes("flip")) return "sandals";
+    if (name.includes("heel") || name.includes("pump") || name.includes("stiletto")) return "heels";
     return "shoes";
   }
-  if (cat === "wallet" || cat === "wallets" || cat === "belt bag" || cat === "fanny pack" || cat === "clutch" || cat === "tote" || cat === "backpack" || cat === "crossbody" || cat === "satchel") return "bags";
+  if (cat === "wallet" || cat === "wallets" || cat === "belt bag" || cat === "fanny pack" || cat === "clutch" || cat === "tote" || cat === "backpack" || cat === "crossbody" || cat === "satchel" || cat === "purse" || cat === "messenger bag" || cat === "duffel") return "bags";
   if (cat === "eyewear" || cat === "glasses") return "sunglasses";
   if (cat === "sweatshirt" || cat === "sweatshirts" || cat === "hoodie") return "hoodies";
-  if (cat === "trousers" || cat === "chinos" || cat === "joggers" || cat === "sweatpants") return "pants";
+  if (cat === "trousers" || cat === "chinos" || cat === "joggers" || cat === "sweatpants" || cat === "culottes" || cat === "palazzo") return "pants";
   if (cat === "tee" || cat === "tees" || cat === "t-shirt") return "t-shirts";
-  if (cat === "pullover" || cat === "cardigan" || cat === "knitwear" || cat === "knit") return "sweaters";
-  if (cat === "romper" || cat === "rompers" || cat === "playsuit") return "jumpsuits";
-  if (cat === "parka" || cat === "puffer" || cat === "overcoat" || cat === "trench") return "coats";
-  if (cat === "cap" || cat === "caps" || cat === "beanie" || cat === "bucket hat") return "hats";
-  if (cat === "wrap" || cat === "shawl" || cat === "stole") return "scarves";
+  if (cat === "pullover" || cat === "cardigan" || cat === "knitwear" || cat === "knit" || cat === "turtleneck") return "sweaters";
+  if (cat === "romper" || cat === "rompers" || cat === "playsuit" || cat === "catsuit") return "jumpsuits";
+  if (cat === "parka" || cat === "puffer" || cat === "overcoat" || cat === "trench" || cat === "topcoat" || cat === "duffle coat") return "coats";
+  if (cat === "cap" || cat === "caps" || cat === "beanie" || cat === "bucket hat" || cat === "fedora" || cat === "beret" || cat === "visor") return "hats";
+  if (cat === "wrap" || cat === "shawl" || cat === "stole" || cat === "neckerchief") return "scarves";
   if (cat === "gilet" || cat === "waistcoat") return "vests";
-  if (cat === "tank" || cat === "tank top" || cat === "camisole" || cat === "blouse") return "tops";
-  if (cat === "culottes" || cat === "palazzo") return "pants";
-  if (cat === "mule" || cat === "mules" || cat === "flat" || cat === "flats" || cat === "oxford" || cat === "oxfords" || cat === "derby") return "shoes";
-  if (cat === "slide" || cat === "slides" || cat === "flip flop" || cat === "flip flops") return "sandals";
-  if (cat === "trainer" || cat === "trainers" || cat === "running shoe" || cat === "running shoes") return "sneakers";
-  if (cat === "bomber" || cat === "windbreaker" || cat === "anorak") return "jackets";
+  if (cat === "tank" || cat === "tank top" || cat === "camisole" || cat === "blouse" || cat === "bodysuit" || cat === "tunic" || cat === "henley") return "tops";
+  if (cat === "mule" || cat === "mules" || cat === "flat" || cat === "flats" || cat === "oxford" || cat === "oxfords" || cat === "derby" || cat === "clog" || cat === "clogs" || cat === "espadrille") return "shoes";
+  if (cat === "slide" || cat === "slides" || cat === "flip flop" || cat === "flip flops" || cat === "gladiator") return "sandals";
+  if (cat === "trainer" || cat === "trainers" || cat === "running shoe" || cat === "running shoes" || cat === "tennis shoe") return "sneakers";
+  if (cat === "bomber" || cat === "windbreaker" || cat === "anorak" || cat === "shacket" || cat === "overshirt") return "jackets";
   if (cat === "bodysuit") return "tops";
-  if (cat === "swim trunks" || cat === "board shorts") return "swimwear";
+  if (cat === "swim trunks" || cat === "board shorts" || cat === "one piece" || cat === "rashguard" || cat === "tankini") return "swimwear";
+  if (cat === "bra" || cat === "lingerie" || cat === "shapewear" || cat === "thermal" || cat === "hosiery") return "underwear";
+  if (cat === "gloves" || cat === "mittens" || cat === "hair clip" || cat === "headband" || cat === "key chain") return "accessories";
+  if (cat === "anklet" || cat === "brooch" || cat === "choker" || cat === "chain") return "jewelry";
+  if (cat === "suspenders" || cat === "tie clip" || cat === "pocket square") return "accessories";
 
   // Fallback: use name-based heuristics
   if (name.includes("sneaker") || name.includes("trainer")) return "sneakers";
@@ -608,6 +640,13 @@ function remapCategory(aiCategory: string, productName: string): string {
   if (name.includes("pant") || name.includes("trouser")) return "pants";
   if (name.includes("dress")) return "dresses";
   if (name.includes("shirt")) return "shirts";
+  if (name.includes("skirt")) return "skirts";
+  if (name.includes("boot")) return "boots";
+  if (name.includes("sandal") || name.includes("slide")) return "sandals";
+  if (name.includes("bag") || name.includes("tote") || name.includes("backpack")) return "bags";
+  if (name.includes("hat") || name.includes("cap") || name.includes("beanie")) return "hats";
+  if (name.includes("sweater") || name.includes("cardigan")) return "sweaters";
+  if (name.includes("hoodie") || name.includes("sweatshirt")) return "hoodies";
 
   // Final fallback
   return "other";

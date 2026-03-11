@@ -1118,7 +1118,107 @@ async function searchProductsFallback(
   }
 }
 
-// Shared parser for search results
+// ─── Gender detection from URL path ─────────────────────────────────────────
+const SCRAPE_URL_WOMENS = [
+  "/women/", "/womens/", "/woman/", "/women-", "/womens-", "/woman-",
+  "women+clothing", "women+apparel", "women-clothing", "women-apparel",
+  "/ladies/", "/ladies-", "/female/", "shopping/women", "/womenswear/",
+  "cat/women", "/womens-", "/w/womens", "/girls/", "/her/",
+];
+const SCRAPE_URL_MENS = [
+  "/men/", "/mens/", "/man/", "/men-", "/mens-", "/man-",
+  "men+clothing", "men+apparel", "men-clothing", "men-apparel",
+  "/male/", "shopping/men", "/menswear/", "cat/men",
+  "/m/mens", "/guys/", "/him/",
+];
+
+function detectGenderFromProductUrl(url: string | null): "mens" | "womens" | null {
+  if (!url) return null;
+  const lower = url.toLowerCase();
+  const wHits = SCRAPE_URL_WOMENS.filter(p => lower.includes(p)).length;
+  const mHits = SCRAPE_URL_MENS.filter(p => lower.includes(p)).length;
+  if (wHits > 0 && mHits === 0) return "womens";
+  if (mHits > 0 && wHits === 0) return "mens";
+  return null;
+}
+
+// ─── Gender detection from product name keywords ────────────────────────────
+const NAME_WOMENS_KEYWORDS = [
+  "women's", "womens ", "for women", "for her", "ladies",
+  "dress", "skirt", "bralette", "bikini", "lingerie", "maternity",
+  "bodysuit", "heel", "stiletto", "wedge", "camisole", "pumps",
+  "sports bra", "yoga pant", "crop top", "tankini", "romper", "legging",
+  "midi ", "maxi ", "mini ", "wrap dress", "slip dress",
+  "tote bag", "clutch", "crossbody", "satchel",
+  "ballerina", "ballet flat", "mule", "kitten heel", "platform heel",
+  "blouse", "peplum", "babydoll", "corset", "bustier",
+  "jumpsuit", "playsuit", "culottes", "shapewear", "bodycon",
+  "off shoulder", "smocked", "ruched", "sarong", "kaftan",
+];
+const NAME_MENS_KEYWORDS = [
+  "men's", "mens ", "for men", "for him",
+  "boxer", "brief", "chino", "dress shirt", "tuxedo", "waistcoat",
+  "swim trunk", "swim short", "board short",
+  "oxford shirt", "henley ", "muscle tee", "muscle fit",
+  "flat front", "cargo short", "necktie", "bow tie", "suspender",
+  "compression short", "athletic supporter",
+];
+
+function detectGenderFromName(name: string): "mens" | "womens" | null {
+  const lower = ` ${name.toLowerCase()} `;
+  const wHits = NAME_WOMENS_KEYWORDS.filter(kw => lower.includes(kw)).length;
+  const mHits = NAME_MENS_KEYWORDS.filter(kw => lower.includes(kw)).length;
+  if (wHits > mHits && wHits >= 1) return "womens";
+  if (mHits > wHits && mHits >= 1) return "mens";
+  return null;
+}
+
+// ─── Extract description snippet from markdown content ──────────────────────
+function extractDescription(markdown: string, productName: string): string | null {
+  if (!markdown || markdown.length < 20) return null;
+  const lines = markdown.split('\n').filter(l => l.trim().length > 20);
+  // Look for lines that mention sizing, material, fit, or the product name
+  const descKeywords = ['fit', 'material', 'cotton', 'polyester', 'fabric', 'style', 'design', 
+    'comfortable', 'casual', 'formal', 'slim', 'relaxed', 'regular', 'tailored',
+    'elastic', 'stretch', 'breathable', 'lightweight', 'heavyweight'];
+  for (const line of lines) {
+    const lower = line.toLowerCase();
+    if (descKeywords.some(kw => lower.includes(kw))) {
+      return line.trim().slice(0, 300);
+    }
+  }
+  // Fallback: return first substantial line that's not a heading
+  const first = lines.find(l => !l.startsWith('#') && l.length > 30);
+  return first ? first.trim().slice(0, 300) : null;
+}
+
+// ─── Extract breadcrumb / navigation path from markdown ─────────────────────
+function extractBreadcrumb(markdown: string): string | null {
+  if (!markdown) return null;
+  // Common breadcrumb patterns: "Home > Men > Tops > T-Shirts" or "Home / Women / Dresses"
+  const bcMatch = markdown.match(/(?:Home|Shop)\s*[>\/»→]\s*([^\n]{5,100})/i);
+  if (bcMatch) return bcMatch[0].trim();
+  // Also check for navigation-style lines at the top
+  const lines = markdown.split('\n').slice(0, 10);
+  for (const line of lines) {
+    if (/[>\/»→]/.test(line) && line.length < 120 && line.length > 10) {
+      return line.trim();
+    }
+  }
+  return null;
+}
+
+function detectGenderFromBreadcrumb(breadcrumb: string | null): "mens" | "womens" | null {
+  if (!breadcrumb) return null;
+  const lower = breadcrumb.toLowerCase();
+  const hasW = /\bwomen|woman|ladies|her\b/.test(lower);
+  const hasM = /\bmen\b|man\b|guys|his\b/.test(lower);
+  if (hasW && !hasM) return "womens";
+  if (hasM && !hasW) return "mens";
+  return null;
+}
+
+// Shared parser for search results — now extracts gender from URL + name + breadcrumb
 function parseSearchResults(results: any[], brand: string, category: string): RawProduct[] {
   const allProducts: RawProduct[] = [];
 
@@ -1504,39 +1604,39 @@ function normaliseCategory(raw: string | null): string {
   if (/\bhoodie|sweatshirt|fleece|crewneck\b/.test(r)) return 'hoodies';
   if (/\bsweater|knit|cardigan|turtleneck|pullover\b/.test(r)) return 'sweaters';
   if (/\bpolo\b/.test(r)) return 'polos';
-  if (/\bshirt|button.?down|oxford|flannel|blouse\b/.test(r)) return 'shirts';
-  if (/\btop|bodysuit|tank|crop|henley\b/.test(r)) return 'tops';
+  if (/\bshirt|button.?down|oxford|flannel|blouse|chambray\b/.test(r)) return 'shirts';
+  if (/\btop|bodysuit|tank|crop|henley|camisole|tunic|peplum\b/.test(r)) return 'tops';
   if (/\bjean|denim\b/.test(r)) return 'jeans';
   if (/\bshort\b/.test(r)) return 'shorts';
-  if (/\bskirt\b/.test(r)) return 'skirts';
+  if (/\bskirt|mini.?skirt|midi.?skirt|maxi.?skirt|pencil.?skirt|pleated.?skirt\b/.test(r)) return 'skirts';
   if (/\blegging|tight|yoga\b/.test(r)) return 'leggings';
-  if (/\bpant|trouser|chino|cargo|jogger\b/.test(r)) return 'pants';
+  if (/\bpant|trouser|chino|cargo|jogger|sweatpant|culottes|palazzo\b/.test(r)) return 'pants';
   if (/\bbottom\b/.test(r)) return 'bottoms';
-  if (/\bblazer|sport.?coat\b/.test(r)) return 'blazers';
-  if (/\bvest|gilet\b/.test(r)) return 'vests';
-  if (/\bcoat|trench|overcoat|peacoat|parka\b/.test(r)) return 'coats';
-  if (/\bjacket|bomber|puffer|windbreaker\b/.test(r)) return 'jackets';
+  if (/\bblazer|sport.?coat|suit.?jacket\b/.test(r)) return 'blazers';
+  if (/\bvest|gilet|waistcoat\b/.test(r)) return 'vests';
+  if (/\bcoat|trench|overcoat|peacoat|parka|topcoat|duffle\b/.test(r)) return 'coats';
+  if (/\bjacket|bomber|puffer|windbreaker|anorak|shacket|overshirt\b/.test(r)) return 'jackets';
   if (/\bouterwear\b/.test(r)) return 'outerwear';
-  if (/\bjumpsuit|romper|overall|playsuit\b/.test(r)) return 'jumpsuits';
-  if (/\bdress|gown|maxi|midi\b/.test(r)) return 'dresses';
-  if (/\bsneaker|trainer|running.?shoe|athletic\b/.test(r)) return 'sneakers';
-  if (/\bboot|chelsea|combat|hiking\b/.test(r)) return 'boots';
-  if (/\bsandal|slide|flip.?flop|mule\b/.test(r)) return 'sandals';
-  if (/\bloafer|moccasin|slip.?on|driving\b/.test(r)) return 'loafers';
-  if (/\bheel|pump|stiletto|wedge|platform\b/.test(r)) return 'heels';
-  if (/\bshoe|footwear\b/.test(r)) return 'shoes';
-  if (/\bbag|handbag|tote|crossbody|backpack|clutch|purse\b/.test(r)) return 'bags';
-  if (/\bhat|cap|beanie|bucket|snapback\b/.test(r)) return 'hats';
-  if (/\bsunglass|eyewear\b/.test(r)) return 'sunglasses';
-  if (/\bjewel|necklace|bracelet|ring|earring|pendant|chain\b/.test(r)) return 'jewelry';
+  if (/\bjumpsuit|romper|overall|playsuit|catsuit\b/.test(r)) return 'jumpsuits';
+  if (/\bdress|gown|maxi|midi|mini.?dress|wrap.?dress|slip.?dress|shift.?dress\b/.test(r)) return 'dresses';
+  if (/\bsneaker|trainer|running.?shoe|athletic|tennis.?shoe\b/.test(r)) return 'sneakers';
+  if (/\bboot|chelsea|combat|hiking|ankle.?boot|knee.?boot|work.?boot\b/.test(r)) return 'boots';
+  if (/\bsandal|slide|flip.?flop|mule|espadrille|gladiator\b/.test(r)) return 'sandals';
+  if (/\bloafer|moccasin|slip.?on|driving|penny.?loafer\b/.test(r)) return 'loafers';
+  if (/\bheel|pump|stiletto|wedge|platform|kitten.?heel|block.?heel\b/.test(r)) return 'heels';
+  if (/\bshoe|footwear|flat|oxford|derby|clog\b/.test(r)) return 'shoes';
+  if (/\bbag|handbag|tote|crossbody|backpack|clutch|purse|satchel|duffel|messenger\b/.test(r)) return 'bags';
+  if (/\bhat|cap|beanie|bucket|snapback|fedora|beret|visor|trucker\b/.test(r)) return 'hats';
+  if (/\bsunglass|eyewear|aviator|wayfarer\b/.test(r)) return 'sunglasses';
+  if (/\bjewel|necklace|bracelet|ring|earring|pendant|chain|anklet|brooch|choker\b/.test(r)) return 'jewelry';
   if (/\bwatch|timepiece|chronograph\b/.test(r)) return 'watches';
-  if (/\bbelt\b/.test(r)) return 'belts';
-  if (/\bscarf|shawl|wrap|bandana\b/.test(r)) return 'scarves';
-  if (/\bswim|bikini|trunk|boardshort|rashguard\b/.test(r)) return 'swimwear';
-  if (/\bactive|gym|workout|training|sports?.bra|compression\b/.test(r)) return 'activewear';
-  if (/\blounge|pajama|robe|sleepwear\b/.test(r)) return 'loungewear';
-  if (/\bunderwear|boxer|brief|bra|lingerie|sock\b/.test(r)) return 'underwear';
-  if (/\baccessor\b/.test(r)) return 'accessories';
+  if (/\bbelt|suspender\b/.test(r)) return 'belts';
+  if (/\bscarf|shawl|wrap|bandana|neckerchief\b/.test(r)) return 'scarves';
+  if (/\bswim|bikini|trunk|boardshort|rashguard|one.?piece|tankini\b/.test(r)) return 'swimwear';
+  if (/\bactive|gym|workout|training|sports?.bra|compression|performance\b/.test(r)) return 'activewear';
+  if (/\blounge|pajama|robe|sleepwear|nightgown|nightwear\b/.test(r)) return 'loungewear';
+  if (/\bunderwear|boxer|brief|bra|lingerie|sock|hosiery|shapewear|thermal\b/.test(r)) return 'underwear';
+  if (/\baccessor|wallet|key.?chain|hair.?clip|headband|glove|mitten\b/.test(r)) return 'accessories';
   return 'other';
 }
 
@@ -1625,24 +1725,33 @@ Deno.serve(async (req) => {
     const newProducts = await filterExistingProducts(cleanProducts, supabase);
     results.deduped = newProducts.length;
 
-    // ── DB INSERT ────────────────────────────────────────────────────
+    // ── DB INSERT (with URL+name-based gender detection) ────────────
     if (newProducts.length > 0) {
-      const rows = newProducts.map(p => ({
-        name: p.name,
-        brand: p.brand,
-        retailer: p.brand,
-        product_url: normaliseUrl(p.product_url),
-        image_url: normaliseUrl(p.image_url),
-        price_cents: p.price_cents,
-        currency: p.currency ?? 'USD',
-        category: normaliseCategory(p.category_raw),
-        tags: buildTags(p),
-        presentation: p.presentation,
-        image_confidence: p.confidence,
-        scrape_source: runId,
-        scraped_at: new Date().toISOString(),
-        is_active: true,
-      }));
+      const rows = newProducts.map(p => {
+        // Multi-signal gender detection at insert time
+        const urlGender = detectGenderFromProductUrl(p.product_url);
+        const nameGender = detectGenderFromName(p.name);
+        // Priority: URL > name > default unisex
+        const gender = urlGender || nameGender || 'unisex';
+        
+        return {
+          name: p.name,
+          brand: p.brand,
+          retailer: p.brand,
+          product_url: normaliseUrl(p.product_url),
+          image_url: normaliseUrl(p.image_url),
+          price_cents: p.price_cents,
+          currency: p.currency ?? 'USD',
+          category: normaliseCategory(p.category_raw),
+          tags: buildTags(p),
+          presentation: p.presentation,
+          image_confidence: p.confidence,
+          gender,
+          scrape_source: runId,
+          scraped_at: new Date().toISOString(),
+          is_active: true,
+        };
+      });
 
       const { error } = await supabase.from('product_catalog').insert(rows);
 

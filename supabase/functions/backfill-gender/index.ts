@@ -49,17 +49,38 @@ const BRAND_GENDER: Record<string, Exclude<GenderLabel, "unisex">> = {
   "aritzia": "womens",
   "skims": "womens",
   "good american": "womens",
+  // Expanded women's brands
+  "eileen fisher": "womens",
+  "eloquii": "womens",
+  "savage x fenty": "womens",
+  "girlfriend collective": "womens",
+  "outdoor voices": "womens",
+  "alo yoga": "womens",
+  "spanx": "womens",
+  "la perla": "womens",
+  "agent provocateur": "womens",
+  "victoria s secret": "womens",
+  // Men's brands
+  "bonobos": "mens",
+  "todd snyder": "mens",
+  "indochino": "mens",
+  "untuckit": "mens",
+  "brooks brothers": "mens",
+  "suit supply": "mens",
+  "suitsupply": "mens",
 };
 
 const WOMENS_CATEGORIES = new Set([
   "dress", "dresses", "skirt", "skirts", "heels", "lingerie", "maternity",
   "bras", "bra", "bralettes", "bralette", "bikini", "bikinis", "swimsuit",
   "swimsuits", "tankini", "tankinis", "camisole", "camisoles", "romper", "rompers",
-  "leggings", "jumpsuits", "jumpsuit",
+  "leggings", "jumpsuits", "jumpsuit", "bodycon", "babydoll", "bustier",
+  "corset", "shapewear", "nursing", "postpartum",
 ]);
 
 const MENS_CATEGORIES = new Set([
   "boxers", "briefs", "cufflinks", "waistcoats", "tuxedos", "suits",
+  "neckties", "ties", "pocket squares", "tie clips", "suspenders",
 ]);
 
 const WOMENS_KEYWORDS = [
@@ -69,7 +90,6 @@ const WOMENS_KEYWORDS = [
   " sports bra ", " sport bra ", " sports bras ", " yoga pant ", " crop top ",
   " bikini ", " tankini ", " romper ", " legging ", " plus size sports ",
   " for women ", " seamless bra ",
-  // New expanded keywords
   " midi dress ", " maxi dress ", " mini dress ", " wrap dress ", " slip dress ",
   " pencil skirt ", " mini skirt ", " pleated skirt ",
   " tote bag ", " clutch ", " crossbody ", " satchel ",
@@ -81,18 +101,35 @@ const WOMENS_KEYWORDS = [
   " shapewear ", " bodycon ", " off shoulder ", " off the shoulder ",
   " lounge cuddle ", " smocked ", " ruched ",
   " feminine ", " girly ",
+  // Expanded keywords
+  " a line dress ", " fit and flare ", " sheath dress ", " shift dress ",
+  " halter ", " strapless ", " sweetheart ", " tube top ", " bandeau ",
+  " push up bra ", " underwire ", " nursing bra ",
+  " maternity wear ", " postpartum ",
+  " sling back ", " peep toe ", " pointed toe heel ",
+  " skort ", " palazzo pant ", " wide leg pant ",
+  " floral print ", " lace trim ", " embroidered ",
+  " women s clothing ", " she ", " her style ",
 ];
 
 const MENS_KEYWORDS = [
   " men ", " men s ", " mens ", " menswear ", " male ", " for men ", " for him ", " guys ", " boy ",
   " boxer ", " brief ", " chino ", " dress shirt ", " sport coat ", " tuxedo ", " waistcoat ",
   " men s underwear ", " compression short ", " athletic supporter ",
-  // New expanded keywords
   " swim trunk ", " swim short ", " board short ",
   " oxford shirt ", " henley ", " muscle tee ", " muscle fit ",
   " flat front ", " cargo short ",
   " tie ", " necktie ", " bow tie ", " suspender ",
   " grooming ", " shaving ",
+  // Expanded keywords
+  " five pocket ", " slim fit shirt ", " athletic fit ",
+  " classic fit ", " regular fit shirt ",
+  " straight leg jean ", " relaxed fit jean ", " bootcut jean ",
+  " pocket square ", " tie bar ", " tie clip ", " cufflink ",
+  " aftershave ", " cologne ",
+  " men s clothing ", " his style ", " he ", " guy ",
+  " double breasted ", " single breasted ", " morning coat ",
+  " rugby shirt ", " button down collar ",
 ];
 
 // URL path segments that indicate gender
@@ -101,11 +138,15 @@ const URL_WOMENS_PATTERNS = [
   "/woman-", "women+clothing", "women+apparel", "women-clothing",
   "women-apparel", "/ladies/", "/ladies-", "/female/",
   "shopping/women", "/womenswear/", "cat/women",
+  "/w/womens", "/girls/", "/her/", "/she/",
+  "/womens-clothing/", "/women-fashion/",
 ];
 const URL_MENS_PATTERNS = [
   "/men/", "/mens/", "/man/", "/men-", "/mens-", "/man-",
   "men+clothing", "men+apparel", "men-clothing", "men-apparel",
   "/male/", "shopping/men", "/menswear/", "cat/men",
+  "/m/mens", "/guys/", "/him/", "/he/",
+  "/mens-clothing/", "/men-fashion/",
 ];
 
 // Keywords that indicate kids/junior products — should be deactivated entirely
