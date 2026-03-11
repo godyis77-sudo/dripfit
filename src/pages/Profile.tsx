@@ -43,7 +43,8 @@ const Profile = () => {
   const scanConfidence = profileData?.scan_confidence ?? null;
   const savedProfile = scanData?.profile ?? null;
 
-  if (!user) { navigate('/auth', { replace: true }); return null; }
+  // No manual redirect needed — ProtectedRoute handles unauthenticated users
+  if (!user) return null;
 
   const deleteWardrobeItem = async (id: string) => {
     const { error } = await supabase.from('clothing_wardrobe').delete().eq('id', id).eq('user_id', user.id);
