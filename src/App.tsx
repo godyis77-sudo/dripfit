@@ -9,6 +9,7 @@ import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import { MobileShell } from "@/components/layout/MobileShell";
+import { PageTransition } from "@/components/layout/PageTransition";
 import { OfflineBanner } from "@/components/layout/OfflineBanner";
 import Welcome from "./pages/Welcome";
 import Onboarding from "./pages/Onboarding";
@@ -84,37 +85,37 @@ const App = () => {
           <MobileShell>
             <AnimatePresence mode="wait">
               <Routes>
-                <Route path="/" element={<Welcome />} />
-                <Route path="/onboarding" element={<Onboarding />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/capture" element={<Capture />} />
-                <Route path="/analyze" element={<Analyze />} />
-                <Route path="/scan-success" element={<ScanSuccess />} />
-                <Route path="/results" element={<Results />} />
-                <Route path="/results/:scanId" element={<ResultsDetail />} />
+                <Route path="/" element={<PageTransition><Welcome /></PageTransition>} />
+                <Route path="/onboarding" element={<PageTransition><Onboarding /></PageTransition>} />
+                <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
+                <Route path="/capture" element={<PageTransition><Capture /></PageTransition>} />
+                <Route path="/analyze" element={<PageTransition><Analyze /></PageTransition>} />
+                <Route path="/scan-success" element={<PageTransition><ScanSuccess /></PageTransition>} />
+                <Route path="/results" element={<PageTransition><Results /></PageTransition>} />
+                <Route path="/results/:scanId" element={<PageTransition><ResultsDetail /></PageTransition>} />
                 <Route path="/history" element={<Navigate to="/profile/history" replace />} />
-                <Route path="/tryon" element={<TryOn />} />
-                <Route path="/tryon/:lookId" element={<TryOnDetail />} />
-                <Route path="/style-check" element={<Community />} />
-                <Route path="/style-check/:postId" element={<StyleCheckDetail />} />
+                <Route path="/tryon" element={<PageTransition><TryOn /></PageTransition>} />
+                <Route path="/tryon/:lookId" element={<PageTransition><TryOnDetail /></PageTransition>} />
+                <Route path="/style-check" element={<PageTransition><Community /></PageTransition>} />
+                <Route path="/style-check/:postId" element={<PageTransition><StyleCheckDetail /></PageTransition>} />
                 {/* Backwards compat redirects */}
                 <Route path="/community" element={<Navigate to="/style-check" replace />} />
                 <Route path="/community/:postId" element={<Navigate to="/style-check" replace />} />
                 <Route path="/saved" element={<Navigate to="/profile/saved" replace />} />
-                <Route path="/size-guide" element={<SizeGuide />} />
-                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-                <Route path="/profile/settings" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
-                <Route path="/profile/saved" element={<ProtectedRoute><SavedItems /></ProtectedRoute>} />
-                <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
-                <Route path="/profile/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
-                <Route path="/profile/body" element={<ProtectedRoute><ProfileBody /></ProtectedRoute>} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                <Route path="/profile/:username" element={<PublicProfile />} />
-                <Route path="/browse/:category" element={<Browse />} />
-                <Route path="/premium" element={<Premium />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/terms" element={<Terms />} />
-                <Route path="*" element={<NotFound />} />
+                <Route path="/size-guide" element={<PageTransition><SizeGuide /></PageTransition>} />
+                <Route path="/profile" element={<ProtectedRoute><PageTransition><Profile /></PageTransition></ProtectedRoute>} />
+                <Route path="/profile/settings" element={<ProtectedRoute><PageTransition><ProfileSettings /></PageTransition></ProtectedRoute>} />
+                <Route path="/profile/saved" element={<ProtectedRoute><PageTransition><SavedItems /></PageTransition></ProtectedRoute>} />
+                <Route path="/cart" element={<ProtectedRoute><PageTransition><Cart /></PageTransition></ProtectedRoute>} />
+                <Route path="/profile/history" element={<ProtectedRoute><PageTransition><History /></PageTransition></ProtectedRoute>} />
+                <Route path="/profile/body" element={<ProtectedRoute><PageTransition><ProfileBody /></PageTransition></ProtectedRoute>} />
+                <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
+                <Route path="/profile/:username" element={<PageTransition><PublicProfile /></PageTransition>} />
+                <Route path="/browse/:category" element={<PageTransition><Browse /></PageTransition>} />
+                <Route path="/premium" element={<PageTransition><Premium /></PageTransition>} />
+                <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />
+                <Route path="/terms" element={<PageTransition><Terms /></PageTransition>} />
+                <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
               </Routes>
             </AnimatePresence>
           </MobileShell>

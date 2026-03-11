@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import BottomTabBar from '@/components/BottomTabBar';
 import AuthenticatedHome from '@/components/home/AuthenticatedHome';
+import HeroParticles from '@/components/home/HeroParticles';
 
 const PILLARS = [
   { icon: Ruler, label: 'Scan', desc: 'AI body measurements in 60 seconds', action: '/capture' },
@@ -77,6 +78,11 @@ const Welcome = () => {
       {/* Ambient orbs */}
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-primary/[0.03] rounded-full blur-[150px] pointer-events-none" />
       <div className="fixed top-1/3 -right-1/4 w-[400px] h-[400px] rounded-full blur-[120px] pointer-events-none" style={{ background: 'radial-gradient(circle, hsl(280 40% 35% / 0.04), transparent)' }} />
+
+      {/* Sparkle particles behind hero */}
+      <div className="fixed inset-0 z-[1] pointer-events-none">
+        <HeroParticles />
+      </div>
 
       {/* Sticky top nav bar */}
       <nav className="sticky top-0 z-50 h-[56px] flex items-center justify-between px-6 glass-bar border-b">
