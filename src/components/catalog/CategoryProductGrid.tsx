@@ -36,9 +36,12 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
   const [expanded, setExpanded] = useState(!collapsed);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
   const [failedImageIds, setFailedImageIds] = useState<Set<string>>(new Set());
+  const PAGE_SIZE = 8;
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   useEffect(() => {
     setFailedImageIds(new Set());
+    setVisibleCount(PAGE_SIZE);
   }, [category, products.length]);
 
   let visibleProducts = products;
@@ -73,7 +76,9 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
     return null;
   }
 
-  const displayed = expanded ? visibleProducts.slice(0, maxItems) : visibleProducts.slice(0, 4);
+  const displayed = expanded ? visibleProducts.slice(0, Math.min(visibleCount, maxItems)) : visibleProducts.slice(0, 4);
+  const totalAvailable = expanded ? Math.min(visibleProducts.length, maxItems) : visibleProducts.length;
+  const hasMore = expanded && displayed.length < totalAvailable;
 
   return (
     <div ref={ref}>
@@ -148,6 +153,20 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
           </button>
         ))}
       </div>
+
+      {/* Load More */}
+      {hasMore && (
+        <div className="flex justify-center mt-3">
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-full text-[11px] font-semibold px-6"
+            onClick={() => setVisibleCount(prev => prev + PAGE_SIZE)}
+          >
+            Load More ({totalAvailable - displayed.length} remaining)
+          </Button>
+        </div>
+      )}
 
       {/* Fullscreen product preview */}
       <AnimatePresence>
