@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { scrollIntoViewIfNeeded } from '@/lib/autoScroll';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ExternalLink, ShoppingBag, ShoppingCart } from 'lucide-react';
-import { FullscreenImage } from '@/components/ui/fullscreen-image';
+import ProductPreviewModal, { type ProductPreviewData } from '@/components/ui/ProductPreviewModal';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
@@ -66,6 +66,7 @@ const WhatsInThisLook = ({
 }: WhatsInThisLookProps) => {
   const [open, setOpen] = useState(defaultOpen);
   const [catalogImages, setCatalogImages] = useState<Record<string, string>>({});
+  const [previewProduct, setPreviewProduct] = useState<ProductPreviewData | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to reveal expanded content
@@ -116,8 +117,16 @@ const WhatsInThisLook = ({
 
   return (
     <div className={isCompact ? 'mx-1.5 mb-1.5' : 'mb-3'}>
-      <button
+      <div
+        role="button"
+        tabIndex={0}
         onClick={handleToggle}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleToggle();
+          }
+        }}
         className="w-full flex items-center justify-between active:scale-[0.98] transition-transform bg-primary text-primary-foreground"
         style={{
           borderRadius: open ? '12px 12px 0 0' : '12px',
@@ -132,7 +141,7 @@ const WhatsInThisLook = ({
           className={`${isCompact ? 'h-3 w-3' : 'h-4 w-4'} text-primary-foreground transition-transform duration-200`}
           style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
         />
-      </button>
+      </div>
       <AnimatePresence>
         {open && (
           <motion.div
@@ -152,17 +161,23 @@ const WhatsInThisLook = ({
                   {(() => {
                     const imgSrc = item.image_url || catalogImages[item.url] || (idx === 0 ? clothingPhotoUrl : null);
                     return imgSrc ? (
-                      <FullscreenImage
-                        src={imgSrc}
-                        alt={item.name}
-                        onShop={item.url ? () => { window.open(item.url, '_blank', 'noopener'); trackEvent('badge_clickout', { retailer: item.brand, source: 'fullscreen_look' }); } : undefined}
-                        onTryOn={onTryOn ? () => onTryOn(item) : undefined}
-                        onAddToWardrobe={onAddToWardrobe ? () => onAddToWardrobe(item) : undefined}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPreviewProduct({
+                            image_url: imgSrc,
+                            name: item.name,
+                            brand: item.brand,
+                            price_cents: item.price_cents,
+                            product_url: item.url,
+                          });
+                        }}
+                        className={`shrink-0 ${isCompact ? 'h-8 w-8' : 'h-10 w-10'} rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center cursor-pointer active:scale-95 transition-transform`}
+                        aria-label={`Preview ${item.name}`}
                       >
-                      <div className={`shrink-0 ${isCompact ? 'h-8 w-8' : 'h-10 w-10'} rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center cursor-pointer active:scale-95 transition-transform`}>
-                          <img src={imgSrc} alt={item.name} className="h-full w-full object-cover" />
-                        </div>
-                      </FullscreenImage>
+                        <img src={imgSrc} alt={item.name} className="h-full w-full object-cover" />
+                      </button>
                     ) : (
                       <div className={`shrink-0 ${isCompact ? 'h-8 w-8' : 'h-10 w-10'} rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center`}>
                         <ShoppingBag className={`${isCompact ? 'h-3 w-3' : 'h-4 w-4'} text-muted-foreground/40`} />
@@ -188,7 +203,9 @@ const WhatsInThisLook = ({
                       </span>
                     )}
                     <button
-                      onClick={() => {
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
                         window.open(item.url, '_blank', 'noopener');
                         trackEvent('badge_clickout', { retailer: item.brand, source: 'whats_in_look' });
                       }}
@@ -198,7 +215,11 @@ const WhatsInThisLook = ({
                     </button>
                     {onTryOn && (
                       <button
-                        onClick={() => onTryOn(item)}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onTryOn(item);
+                        }}
                         className={`${isCompact ? 'text-[9px]' : 'text-[11px]'} font-bold text-accent-foreground flex items-center gap-0.5 active:opacity-70 ml-1`}
                         style={{ color: 'hsl(var(--primary))' }}
                       >
@@ -212,6 +233,28 @@ const WhatsInThisLook = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ProductPreviewModal
+        product={previewProduct}
+        onClose={() => setPreviewProduct(null)}
+        onShop={(product) => {
+          if (!product.product_url) return;
+          window.open(product.product_url, '_blank', 'noopener');
+          trackEvent('badge_clickout', { retailer: product.brand, source: 'fullscreen_look' });
+          setPreviewProduct(null);
+        }}
+        onTryOn={onTryOn ? (product) => {
+          if (!product.product_url) return;
+          onTryOn({
+            brand: product.brand,
+            name: product.name,
+            url: product.product_url,
+            price_cents: product.price_cents,
+            image_url: product.image_url,
+          });
+          setPreviewProduct(null);
+        } : undefined}
+      />
     </div>
   );
 };

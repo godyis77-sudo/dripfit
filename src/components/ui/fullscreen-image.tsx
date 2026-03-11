@@ -36,7 +36,22 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
 
   return (
     <>
-      <div onClick={() => setOpen(true)} className="cursor-pointer">
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen(true);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            e.stopPropagation();
+            setOpen(true);
+          }
+        }}
+        className="cursor-pointer"
+      >
         {children || <img src={src} alt={alt} className={className} />}
       </div>
 
@@ -48,7 +63,9 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden overscroll-none bg-black/95 flex flex-col items-center justify-center"
-            onClick={() => setOpen(false)}
+            onPointerDown={(e) => {
+              if (e.target === e.currentTarget) setOpen(false);
+            }}
           >
             <button
               onClick={() => setOpen(false)}
