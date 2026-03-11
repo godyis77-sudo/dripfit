@@ -174,75 +174,74 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center"
+            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-8"
             onClick={() => setPreviewProduct(null)}
           >
-            <button
-              onClick={() => setPreviewProduct(null)}
-              className="absolute top-4 right-4 z-[101] h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
-            >
-              <X className="h-5 w-5 text-white" />
-            </button>
-
-            <motion.img
+            <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              src={previewProduct.image_url}
-              alt={previewProduct.name}
-              className="max-w-[65%] max-h-[35vh] object-contain rounded-xl"
-              onClick={(e) => e.stopPropagation()}
-            />
-
-            <motion.div
-              initial={{ y: 12, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="mt-3 text-center px-6"
+              className="relative bg-card rounded-2xl overflow-hidden max-w-[300px] w-full shadow-2xl border border-border/50"
               onClick={(e) => e.stopPropagation()}
             >
-              <p className="text-[10px] text-white/60 uppercase tracking-wider">{previewProduct.brand}</p>
-              <p className="text-sm font-semibold text-white mt-0.5 line-clamp-2">{previewProduct.name}</p>
-              {previewProduct.price_cents && (
-                <p className="text-xs font-bold text-primary mt-0.5">
-                  ${(previewProduct.price_cents / 100).toFixed(0)}
-                </p>
-              )}
-            </motion.div>
+              {/* Close button */}
+              <button
+                onClick={() => setPreviewProduct(null)}
+                className="absolute top-2 right-2 z-10 h-8 w-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
+              >
+                <X className="h-4 w-4 text-white" />
+              </button>
 
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.15 }}
-              className="mt-5 flex gap-3 px-6 w-full max-w-sm"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {onSelectProduct && (
-                <Button
-                  className="flex-1 gap-2"
-                  onClick={() => {
-                    onSelectProduct(previewProduct);
-                    setPreviewProduct(null);
-                  }}
-                >
-                  <Sparkles className="h-4 w-4" />
-                  Try On
-                </Button>
-              )}
-              {previewProduct.product_url && (
-                <Button
-                  variant="outline"
-                  className="flex-1 gap-2 border-white/20 text-white hover:bg-white/10"
-                  onClick={() => {
-                    trackEvent('catalog_product_clicked', { brand: previewProduct.brand, category: previewProduct.category });
-                    window.open(previewProduct.product_url!, '_blank', 'noopener');
-                  }}
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  Shop
-                </Button>
-              )}
+              {/* Product image */}
+              <div className="aspect-[3/4] bg-muted">
+                <img
+                  src={previewProduct.image_url}
+                  alt={previewProduct.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Info + Actions */}
+              <div className="p-4">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{previewProduct.brand}</p>
+                <p className="text-sm font-bold text-foreground mt-0.5 line-clamp-2">{previewProduct.name}</p>
+                {previewProduct.price_cents && (
+                  <p className="text-sm font-bold text-primary mt-1">
+                    ${(previewProduct.price_cents / 100).toFixed(0)}
+                  </p>
+                )}
+
+                <div className="flex gap-2 mt-3">
+                  {onSelectProduct && (
+                    <Button
+                      size="sm"
+                      className="flex-1 gap-1.5 h-9 text-xs"
+                      onClick={() => {
+                        onSelectProduct(previewProduct);
+                        setPreviewProduct(null);
+                      }}
+                    >
+                      <Sparkles className="h-3.5 w-3.5" />
+                      Try On
+                    </Button>
+                  )}
+                  {previewProduct.product_url && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 gap-1.5 h-9 text-xs"
+                      onClick={() => {
+                        trackEvent('catalog_product_clicked', { brand: previewProduct.brand, category: previewProduct.category });
+                        window.open(previewProduct.product_url!, '_blank', 'noopener');
+                      }}
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      Shop
+                    </Button>
+                  )}
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         )}
