@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import BottomTabBar from '@/components/BottomTabBar';
 import AuthenticatedHome from '@/components/home/AuthenticatedHome';
+import HeroParticles from '@/components/home/HeroParticles';
 
 const PILLARS = [
   { icon: Ruler, label: 'Scan', desc: 'AI body measurements in 60 seconds', action: '/capture' },
