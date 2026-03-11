@@ -76,7 +76,9 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
     return null;
   }
 
-  const displayed = expanded ? visibleProducts.slice(0, maxItems) : visibleProducts.slice(0, 4);
+  const displayed = expanded ? visibleProducts.slice(0, Math.min(visibleCount, maxItems)) : visibleProducts.slice(0, 4);
+  const totalAvailable = expanded ? Math.min(visibleProducts.length, maxItems) : visibleProducts.length;
+  const hasMore = expanded && displayed.length < totalAvailable;
 
   return (
     <div ref={ref}>
