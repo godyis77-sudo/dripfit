@@ -161,17 +161,23 @@ const WhatsInThisLook = ({
                   {(() => {
                     const imgSrc = item.image_url || catalogImages[item.url] || (idx === 0 ? clothingPhotoUrl : null);
                     return imgSrc ? (
-                      <FullscreenImage
-                        src={imgSrc}
-                        alt={item.name}
-                        onShop={item.url ? () => { window.open(item.url, '_blank', 'noopener'); trackEvent('badge_clickout', { retailer: item.brand, source: 'fullscreen_look' }); } : undefined}
-                        onTryOn={onTryOn ? () => onTryOn(item) : undefined}
-                        onAddToWardrobe={onAddToWardrobe ? () => onAddToWardrobe(item) : undefined}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPreviewProduct({
+                            image_url: imgSrc,
+                            name: item.name,
+                            brand: item.brand,
+                            price_cents: item.price_cents,
+                            product_url: item.url,
+                          });
+                        }}
+                        className={`shrink-0 ${isCompact ? 'h-8 w-8' : 'h-10 w-10'} rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center cursor-pointer active:scale-95 transition-transform`}
+                        aria-label={`Preview ${item.name}`}
                       >
-                      <div className={`shrink-0 ${isCompact ? 'h-8 w-8' : 'h-10 w-10'} rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center cursor-pointer active:scale-95 transition-transform`}>
-                          <img src={imgSrc} alt={item.name} className="h-full w-full object-cover" />
-                        </div>
-                      </FullscreenImage>
+                        <img src={imgSrc} alt={item.name} className="h-full w-full object-cover" />
+                      </button>
                     ) : (
                       <div className={`shrink-0 ${isCompact ? 'h-8 w-8' : 'h-10 w-10'} rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center`}>
                         <ShoppingBag className={`${isCompact ? 'h-3 w-3' : 'h-4 w-4'} text-muted-foreground/40`} />
