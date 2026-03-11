@@ -76,10 +76,6 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                 >
                   <div className="relative">
                     <img src={item.image_url} alt={item.notes || item.category} className="w-full object-cover" />
-                    {item.product_link && (
-                      <div className="absolute top-1.5 right-1.5 bg-black/50 backdrop-blur-sm rounded-full p-1">
-                        <ExternalLink className="h-3 w-3 text-white" />
-                      </div>
                     )}
                     {(() => {
                       const displayBrand = item.brand || (item.product_link ? detectBrandFromUrl(item.product_link).brand : null) || item.retailer;
