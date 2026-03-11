@@ -1,11 +1,11 @@
 import { forwardRef, useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, ChevronUp, Sparkles, ExternalLink, X } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
+import ProductPreviewModal from '@/components/ui/ProductPreviewModal';
 
 interface CategoryProductGridProps {
   category: string;
