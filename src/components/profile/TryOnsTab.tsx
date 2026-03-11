@@ -1,8 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Sparkles, MessageSquare, ShoppingBag, Send, Trash2 } from 'lucide-react';
+import { Sparkles, MessageSquare, Send, Trash2 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -44,6 +54,9 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
   const [votes, setVotes] = useState<Record<string, string[]>>({});
   const [voteCounts, setVoteCounts] = useState<Record<string, Record<string, number>>>({});
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const longPressTimerRef = useRef<number | null>(null);
+  const longPressTriggeredRef = useRef(false);
 
   // Load vote counts for public posts
   useEffect(() => {
@@ -104,6 +117,37 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
     toast({ title: 'Sent!', description: val });
   };
 
+  const cancelLongPress = () => {
+    if (longPressTimerRef.current) {
+      window.clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  };
+
+  const startLongPress = (postId: string) => {
+    cancelLongPress();
+    longPressTriggeredRef.current = false;
+    longPressTimerRef.current = window.setTimeout(() => {
+      longPressTriggeredRef.current = true;
+      setConfirmDeleteId(postId);
+    }, 500);
+  };
+
+  const handleDeleteTryOn = async (id: string) => {
+    if (!user) return;
+    const { error } = await supabase.from('tryon_posts').delete().eq('id', id).eq('user_id', user.id);
+    if (error) {
+      toast({ title: 'Delete failed', description: error.message, variant: 'destructive' });
+      return;
+    }
+    trackEvent('fitcheck_post_deleted', { postId: id, source: 'profile_tryons' });
+    toast({ title: 'Deleted', description: 'Try-on removed permanently.' });
+    setSelectedPost(null);
+    onPostUpdated?.();
+  };
+
+  useEffect(() => () => cancelLongPress(), []);
+
   return (
     <>
       {/* Filter stats row */}
@@ -157,20 +201,47 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
             {tryOnPosts.filter(p => filterMode === 'all' ? true : filterMode === 'public' ? p.is_public : !p.is_public).map(post => (
               <motion.div key={post.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
                 <div className="w-full rounded-xl overflow-hidden border border-border bg-card text-left">
-                  <button
-                    onClick={() => setSelectedPost(post)}
-                    className="w-full active:scale-[0.97] transition-transform"
-                  >
-                    <div className="relative">
-                      <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
-                    </div>
-                    <div className="p-2 flex items-center justify-between">
-                      <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
-                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${post.is_public ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                        {post.is_public ? 'Public' : 'Private'}
-                      </span>
-                    </div>
-                  </button>
+                  <div className="relative">
+                    <button
+                      onPointerDown={() => startLongPress(post.id)}
+                      onPointerUp={cancelLongPress}
+                      onPointerLeave={cancelLongPress}
+                      onPointerCancel={cancelLongPress}
+                      onContextMenu={(e) => e.preventDefault()}
+                      onClick={() => {
+                        if (longPressTriggeredRef.current) {
+                          longPressTriggeredRef.current = false;
+                          return;
+                        }
+                        setSelectedPost(post);
+                      }}
+                      className="w-full active:scale-[0.97] transition-transform"
+                    >
+                      <div className="relative">
+                        <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
+                      </div>
+                      <div className="p-2 flex items-center justify-between">
+                        <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
+                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${post.is_public ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                          {post.is_public ? 'Public' : 'Private'}
+                        </span>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      aria-label="Delete try-on"
+                      className="absolute top-1.5 right-1.5 h-7 w-7 rounded-full bg-background/80 border border-border flex items-center justify-center text-destructive hover:bg-destructive/10 transition-colors"
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        cancelLongPress();
+                        setConfirmDeleteId(post.id);
+                      }}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
 
                   {/* Community interactions for public posts */}
                   {post.is_public && (
@@ -254,23 +325,36 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
         </>
       )}
 
+      <AlertDialog open={!!confirmDeleteId} onOpenChange={(open) => !open && setConfirmDeleteId(null)}>
+        <AlertDialogContent className="max-w-[320px] rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-[15px]">Delete try-on?</AlertDialogTitle>
+            <AlertDialogDescription className="text-[13px]">
+              This will permanently remove it from your try-ons.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl text-[12px]">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl text-[12px] bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (!confirmDeleteId) return;
+                void handleDeleteTryOn(confirmDeleteId);
+                setConfirmDeleteId(null);
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <TryOnDetailSheet
         post={selectedPost}
         open={!!selectedPost}
         onOpenChange={(open) => { if (!open) setSelectedPost(null); }}
         onPostUpdated={() => { setSelectedPost(null); onPostUpdated?.(); }}
-        onDelete={async (id) => {
-          if (!user) return;
-          const { error } = await supabase.from('tryon_posts').delete().eq('id', id).eq('user_id', user.id);
-          if (error) {
-            toast({ title: 'Delete failed', description: error.message, variant: 'destructive' });
-            return;
-          }
-          trackEvent('fitcheck_post_deleted', { postId: id, source: 'profile_tryons' });
-          toast({ title: 'Deleted', description: 'Try-on removed permanently.' });
-          setSelectedPost(null);
-          onPostUpdated?.();
-        }}
+        onDelete={handleDeleteTryOn}
       />
     </>
   );
