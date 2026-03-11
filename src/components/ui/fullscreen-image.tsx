@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ExternalLink, Sparkles, Plus } from 'lucide-react';
 
@@ -16,6 +17,22 @@ interface FullscreenImageProps {
 export const FullscreenImage = ({ src, alt = '', className = '', children, onShop, onTryOn, onAddToWardrobe }: FullscreenImageProps) => {
   const [open, setOpen] = useState(false);
   const hasActions = !!(onShop || onTryOn || onAddToWardrobe);
+  const portalTarget = typeof document !== 'undefined' ? document.body : null;
+
+  useEffect(() => {
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+
+    if (open) {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+    };
+  }, [open]);
 
   return (
     <>
@@ -24,13 +41,13 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
       </div>
 
       <AnimatePresence>
-        {open && (
+        {open && portalTarget && createPortal(
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center"
+            className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden overscroll-none bg-black/95 flex flex-col items-center justify-center"
             onClick={() => setOpen(false)}
           >
             <button
@@ -46,7 +63,7 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
               transition={{ duration: 0.2 }}
               src={src}
               alt={alt}
-              className="max-w-full max-h-[70vh] object-contain px-4"
+              className="max-w-full max-h-[72dvh] object-contain px-4"
               onClick={(e) => e.stopPropagation()}
             />
 
@@ -55,7 +72,7 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1, duration: 0.2 }}
-                className="flex gap-3 mt-6 px-6"
+                className="flex gap-3 mt-6 px-6 pb-safe-tab"
                 onClick={(e) => e.stopPropagation()}
               >
                 {onShop && (
@@ -84,7 +101,8 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
                 )}
               </motion.div>
             )}
-          </motion.div>
+          </motion.div>,
+          portalTarget
         )}
       </AnimatePresence>
     </>

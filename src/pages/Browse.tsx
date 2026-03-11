@@ -340,13 +340,13 @@ const Browse = () => {
 
       {/* Fullscreen product preview */}
       <AnimatePresence>
-        {previewProduct && (
+        {previewProduct && createPortal(
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center"
+            className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden overscroll-none bg-black/95 flex flex-col items-center justify-center"
             onClick={() => setPreviewProduct(null)}
           >
             <button
@@ -414,7 +414,8 @@ const Browse = () => {
                 </Button>
               )}
             </motion.div>
-          </motion.div>
+          </motion.div>,
+          document.body
         )}
       </AnimatePresence>
       <BottomTabBar />
