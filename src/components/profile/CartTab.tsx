@@ -92,7 +92,8 @@ const CartTab = () => {
             <button
               type="button"
               onClick={() => {
-                const primaryProductUrl = item.product_urls?.[0] ?? null;
+                const urls = item.product_urls ?? [];
+                const primaryProductUrl = urls[0] ?? null;
                 const primaryBrand = primaryProductUrl ? detectBrandFromUrl(primaryProductUrl).brand : null;
                 setPreviewProduct({
                   image_url: item.image_url,
@@ -100,6 +101,20 @@ const CartTab = () => {
                   brand: primaryBrand || 'Shop',
                   product_url: primaryProductUrl,
                 });
+                // Build look items from all product URLs
+                const derived: LookItemData[] = urls.map(url => {
+                  const { brand } = detectBrandFromUrl(url);
+                  let name = '';
+                  try {
+                    const u = new URL(url);
+                    const segments = u.pathname.split('/').filter(Boolean);
+                    const last = segments[segments.length - 1] || '';
+                    name = last.replace(/[-_]/g, ' ').replace(/\.[^.]+$/, '').replace(/\b\w/g, c => c.toUpperCase()).slice(0, 40);
+                    if (!name || name.length < 3) name = u.hostname.replace('www.', '');
+                  } catch { name = 'Product'; }
+                  return { brand: brand || 'Shop', name, url };
+                });
+                setPreviewLookItems(derived);
               }}
               className="shrink-0 w-32 h-40 rounded-lg overflow-hidden bg-muted/30 cursor-pointer active:scale-95 transition-transform"
               aria-label={`Preview ${item.caption || 'Look'}`}
