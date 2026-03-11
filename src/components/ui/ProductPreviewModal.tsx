@@ -74,13 +74,19 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
 
       {/* Image — maximized */}
       <div className="flex-1 flex items-center justify-center p-4 min-h-0">
-        <img
-          src={product.image_url}
-          alt={product.name}
-          className="max-w-full max-h-full object-contain rounded-xl"
-          onClick={(e) => e.stopPropagation()}
-          draggable={false}
-        />
+        <div className="relative max-w-full max-h-full" onClick={(e) => e.stopPropagation()}>
+          <img
+            src={product.image_url}
+            alt={product.name}
+            className="max-w-full max-h-full object-contain rounded-xl"
+            draggable={false}
+          />
+          {caption && (
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-b-xl px-4 py-3">
+              <p className="text-[13px] text-white font-medium leading-snug">"{caption}"</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Info + Actions — pinned to bottom */}
@@ -90,14 +96,12 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
       >
         <div className="text-center">
           <p className="text-[11px] text-white/50 uppercase tracking-wider font-bold">{product.brand}</p>
-          <p className="text-sm font-bold text-white mt-0.5 line-clamp-2">{product.name}</p>
           {product.price_cents != null && (
             <p className="text-sm font-bold text-primary mt-1">
               ${(product.price_cents / 100).toFixed(0)}
             </p>
           )}
-          {caption && (
-            <p className="text-[12px] text-white/70 italic mt-1.5 line-clamp-2">"{caption}"</p>
+        </div>
           )}
         </div>
 
