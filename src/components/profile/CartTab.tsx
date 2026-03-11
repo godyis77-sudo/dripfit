@@ -256,7 +256,7 @@ const CartTab = () => {
         }}
         lookItems={previewLookItems}
         onLookItemShop={(item) => {
-          trackEvent('cart_look_shop_clickout', { url: item.url });
+          trackEvent('cart_shop_clickout', { url: item.url });
           window.open(item.url, '_blank', 'noopener');
         }}
         onLookItemTryOn={(item) => {
