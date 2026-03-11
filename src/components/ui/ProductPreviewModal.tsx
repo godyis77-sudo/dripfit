@@ -102,8 +102,6 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
             </p>
           )}
         </div>
-          )}
-        </div>
 
         <div className="flex gap-3 max-w-sm mx-auto w-full">
           {onTryOn && (
