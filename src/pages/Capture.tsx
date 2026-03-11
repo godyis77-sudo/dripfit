@@ -17,6 +17,7 @@ import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { isNativePlatform, takeNativePhoto } from '@/lib/nativeCamera';
+import { compressPhoto } from '@/lib/imageUtils';
 
 type FlowStep = 'intro' | 'height' | 'front' | 'side' | 'review';
 const FLOW_STEPS: { key: FlowStep; label: string }[] = [
