@@ -65,8 +65,7 @@ const HomeFAB = () => {
         <motion.button
           whileTap={{ scale: 0.93 }}
           onClick={() => setFabOpen(!fabOpen)}
-          className="h-12 w-12 rounded-full bg-primary shadow-lg flex items-center justify-center"
-          style={{ boxShadow: '0 0 24px -4px hsl(45 88% 40% / 0.4)' }}
+          className="h-12 w-12 rounded-full icon-3d-gold shimmer-sweep glow-primary"
           aria-label={fabOpen ? 'Close menu' : 'Quick actions'}
         >
           <Plus className={`h-5 w-5 text-primary-foreground transition-transform duration-200 ease-in-out ${fabOpen ? 'rotate-45' : ''}`} />
