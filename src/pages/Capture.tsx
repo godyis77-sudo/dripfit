@@ -117,11 +117,11 @@ const Capture = () => {
       try {
         const result = await takeNativePhoto('camera');
         const key = flowStep === 'side' ? 'side' : 'front';
-        setPhotos(prev => ({ ...prev, [key]: result.dataUrl }));
+        const compressed = await compressPhoto(result.dataUrl, 1280, 0.8);
+        setPhotos(prev => ({ ...prev, [key]: compressed }));
         setReviewing(true);
         trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
       } catch (err: any) {
-        // User cancelled or camera error — silently ignore cancellation
         if (err?.message?.includes('cancelled') || err?.message?.includes('canceled')) return;
         console.error('Native camera error:', err);
       }
