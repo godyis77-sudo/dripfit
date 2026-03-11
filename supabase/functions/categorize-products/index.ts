@@ -489,10 +489,15 @@ function normalizeRetailer(name: string): string {
 }
 
 async function analyzeProduct(
-  product: { id: string; name: string; brand: string; retailer: string; category: string; image_url: string },
+  product: { id: string; name: string; brand: string; retailer: string; category: string; image_url: string; product_url?: string | null },
   apiKey: string
 ): Promise<AnalysisResult> {
-  const prompt = `You are a fashion product image classifier. Analyze this product image and determine:
+  // Build URL context for the AI
+  const urlContext = product.product_url 
+    ? `\n- Product URL: "${product.product_url}" (IMPORTANT: check the URL path for gender segments like /women/, /mens/, /man/, /womens-clothing/ — retailers encode gender in their URL taxonomy. Also check for category hints like /shoes/, /dresses/, /tops/)` 
+    : '';
+
+  const prompt = `You are a fashion product image classifier. Analyze this product image AND the product context below.
 
 1. Is this a real product photo (a single clothing item, shoe, bag, or accessory clearly visible)? 
    - Answer NO if it's a banner, logo, lifestyle/editorial photo without a clear product, a payment icon, a size chart, a model group shot, a category listing page, or any non-product image.
@@ -505,19 +510,27 @@ async function analyzeProduct(
    - Dress shoes, oxfords → "shoes"  
    - Wallets, belt bags, fanny packs → "bags"
    - Sunglasses, eyewear → "sunglasses"
+   - Look at the product URL path for category clues (e.g. /shoes/, /dresses/, /t-shirts/)
 
 3. What gender is this product designed for? Choose EXACTLY ONE from: mens, womens, unisex
-   - Use contextual clues: silhouette, styling, model, brand positioning
-   - Sports bras, bralettes, bikinis, leggings, yoga pants, crop tops are ALWAYS "womens" — never "unisex"
-   - Boxers, briefs, compression shorts, men's underwear are ALWAYS "mens" — never "unisex"
-   - Dresses, skirts, heels, jumpsuits, rompers are ALWAYS "womens"
-   - Only use "unisex" for truly gender-neutral items (basic tees, sneakers, outerwear without gendered styling)
+   GENDER DETERMINATION PRIORITY:
+   a) URL path gender segments (highest priority — retailers structure their own taxonomy)
+   b) Product image (model gender, garment silhouette, styling cues)
+   c) Product name keywords
+   d) Brand positioning
+   
+   RULES:
+   - Sports bras, bralettes, bikinis, leggings, yoga pants, crop tops, dresses, skirts, heels, jumpsuits, rompers are ALWAYS "womens"
+   - Boxers, briefs, compression shorts, men's underwear, tuxedos, ties are ALWAYS "mens"
+   - Only use "unisex" for truly gender-neutral items with NO gendered cues
+   - If URL contains "/women/" or "/womens/" → strongly prefer "womens"
+   - If URL contains "/men/" or "/mens/" → strongly prefer "mens"
 
 The product is currently listed as:
 - Name: "${product.name}"
 - Brand: "${product.brand}"
 - Retailer: "${product.retailer}"
-- Current category: "${product.category}"
+- Current category: "${product.category}"${urlContext}
 
 Respond ONLY with valid JSON (no markdown):
 {
