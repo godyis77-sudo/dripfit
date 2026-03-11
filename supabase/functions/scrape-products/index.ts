@@ -1674,6 +1674,16 @@ Deno.serve(async (req) => {
         headers: qcHeaders,
         body: JSON.stringify({ batch_size: 300 }),
       }).catch(e => console.warn(`[run:${runId}] Gender backfill trigger failed:`, e));
+
+      // Fire-and-forget: scrape size charts for this brand if missing
+      if (brand) {
+        const brandSlug = brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        fetch(`${supabaseUrl}/functions/v1/scrape-size-charts`, {
+          method: 'POST',
+          headers: qcHeaders,
+          body: JSON.stringify({ brand_slug: brandSlug, batch_size: 8 }),
+        }).catch(e => console.warn(`[run:${runId}] Size chart trigger failed:`, e));
+      }
     }
 
     console.log(`[run:${runId}] Done. Inserted ${results.inserted}`);
