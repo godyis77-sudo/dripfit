@@ -402,6 +402,56 @@
       inset 0 1px 3px hsl(0 0% 0% / 0.1) !important;
   }
 
+  /* ── Brand / retailer label — gold 3D shimmer ── */
+  .brand-label {
+    @apply inline-flex items-center gap-1 font-bold uppercase tracking-wider rounded-md;
+    font-size: 8px;
+    padding: 3px 6px;
+    background: linear-gradient(180deg, hsl(40 78% 54%), hsl(42 76% 42%));
+    color: hsl(0 0% 2%);
+    border: 1px solid hsl(42 76% 42% / 0.5);
+    box-shadow:
+      0 2px 6px hsl(42 76% 28% / 0.35),
+      0 1px 2px hsl(42 76% 28% / 0.25),
+      inset 0 1px 0 hsl(48 80% 65% / 0.4),
+      inset 0 -1px 0 hsl(42 76% 28% / 0.3);
+    text-shadow: 0 1px 0 hsl(42 76% 50% / 0.3);
+    line-height: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  .brand-label::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 40%, hsl(48 80% 75% / 0.35) 45%, transparent 50%);
+    animation: shimmer-sweep 3s ease-in-out infinite;
+  }
+  .brand-label-lg {
+    @apply inline-flex items-center gap-1 font-bold uppercase tracking-wider rounded-md;
+    font-size: 10px;
+    padding: 4px 8px;
+    background: linear-gradient(180deg, hsl(40 78% 54%), hsl(42 76% 42%));
+    color: hsl(0 0% 2%);
+    border: 1px solid hsl(42 76% 42% / 0.5);
+    box-shadow:
+      0 2px 6px hsl(42 76% 28% / 0.35),
+      0 1px 2px hsl(42 76% 28% / 0.25),
+      inset 0 1px 0 hsl(48 80% 65% / 0.4),
+      inset 0 -1px 0 hsl(42 76% 28% / 0.3);
+    text-shadow: 0 1px 0 hsl(42 76% 50% / 0.3);
+    line-height: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  .brand-label-lg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 40%, hsl(48 80% 75% / 0.35) 45%, transparent 50%);
+    animation: shimmer-sweep 3s ease-in-out infinite;
+  }
+
   /* ── Section label — editorial style ── */
   .section-label {
     font-family: 'DM Sans', sans-serif;
