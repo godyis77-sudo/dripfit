@@ -27,10 +27,10 @@ function confidenceToPercent(conf: string, numeric?: number | null): number {
 }
 
 function confidenceTier(pct: number): { label: string; color: string } {
-  if (pct >= 85) return { label: 'High', color: '#22C55E' };
-  if (pct >= 70) return { label: 'Good', color: '#F59E0B' };
-  if (pct >= 60) return { label: 'Fair', color: '#F59E0B' };
-  return { label: 'Low', color: '#EF4444' };
+  if (pct >= 85) return { label: 'High', color: 'hsl(142 71% 45%)' };
+  if (pct >= 70) return { label: 'Good', color: 'hsl(var(--drip-gold))' };
+  if (pct >= 60) return { label: 'Fair', color: 'hsl(var(--drip-gold))' };
+  return { label: 'Low', color: 'hsl(var(--destructive))' };
 }
 
 const BodyTab = ({ savedProfile, fit, scanConfidence }: BodyTabProps) => {

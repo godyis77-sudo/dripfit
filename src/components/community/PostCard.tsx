@@ -106,8 +106,7 @@ const TryOnClothingBadge = ({ post, navigate, toast }: { post: Post; navigate: R
               <button
                 key={idx}
                 onClick={(e) => handleSelectItem(item, e)}
-                className="flex items-center gap-1.5 rounded-lg text-[9px] font-bold text-white active:scale-95 transition-transform"
-                style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.15)', padding: '4px 8px' }}
+                className="flex items-center gap-1.5 rounded-lg text-[9px] font-bold text-white active:scale-95 transition-transform bg-background/75 backdrop-blur-sm border border-border/30 px-2 py-1"
               >
                 {item.image_url ? (
                   <img src={item.image_url} alt="" className="h-5 w-5 rounded object-cover" />
@@ -129,8 +128,7 @@ const TryOnClothingBadge = ({ post, navigate, toast }: { post: Post; navigate: R
             handleSelectItem(items[0], e);
           }
         }}
-        className="flex items-center gap-0.5 rounded-[100px] text-[9px] font-bold active:scale-95 transition-transform"
-        style={{ background: 'hsl(var(--primary))', color: '#000', padding: '3px 8px' }}
+        className="flex items-center gap-0.5 rounded-[100px] text-[9px] font-bold active:scale-95 transition-transform gradient-drip text-primary-foreground px-2 py-0.5 shadow-gold-glow shimmer-sweep"
       >
         <Sparkles className="h-2 w-2" />
         Try On
@@ -234,8 +232,7 @@ const PostCard = ({
         )}
         {filter === 'similar' && (post as any).match_score && (
           <div
-            className="absolute top-2 right-2 text-[8px] font-bold rounded-full px-1.5 py-0.5"
-            style={{ background: 'hsl(var(--primary))', color: '#000' }}
+            className="absolute top-2 right-2 text-[8px] font-bold rounded-full px-1.5 py-0.5 gradient-drip text-primary-foreground shadow-gold-glow"
           >
             {(post as any).match_score}% match
           </div>
