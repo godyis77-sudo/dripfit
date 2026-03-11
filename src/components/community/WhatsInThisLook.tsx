@@ -172,14 +172,7 @@ const WhatsInThisLook = ({
 
                   {/* Brand + Name */}
                   <div className="flex-1 min-w-0">
-                    <span
-                      className={`inline-block ${isCompact ? 'text-[8px]' : 'text-[10px]'} font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full border mb-0.5`}
-                      style={{
-                        background: 'hsl(var(--primary) / 0.12)',
-                        borderColor: 'hsl(var(--primary) / 0.3)',
-                        color: 'hsl(var(--primary))',
-                      }}
-                    >
+                    <span className={`${isCompact ? 'brand-label' : 'brand-label-lg'} mb-0.5`}>
                       {item.brand}
                     </span>
                     <p className={`${isCompact ? 'text-[10px]' : 'text-[12px]'} text-foreground truncate leading-tight`}>

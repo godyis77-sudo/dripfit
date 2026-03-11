@@ -97,8 +97,8 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
               <Tag className="h-3 w-3 text-primary" /> {item.category}
             </span>
             {item.brand && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-foreground bg-card border border-border rounded-md px-2 py-1">
-                <Store className="h-3 w-3 text-primary" /> {item.brand}
+              <span className="brand-label-lg">
+                <Store className="h-3 w-3" /> {item.brand}
               </span>
             )}
             <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground bg-card border border-border rounded-md px-2 py-1">
