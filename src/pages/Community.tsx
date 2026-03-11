@@ -112,7 +112,7 @@ const Community = () => {
         <button
           key={s.key}
           onClick={() => { setSort(s.key); if (s.key !== 'user') setFilterUserId(null); }}
-          className={`whitespace-nowrap px-2.5 py-1 min-h-[44px] rounded-full text-[10px] font-bold border transition-all active:scale-95 ${
+          className={`whitespace-nowrap px-3 py-2 min-h-[44px] rounded-full text-[11px] font-bold border transition-all active:scale-95 ${
             activeSort === s.key ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'
           }`}
         >
@@ -174,7 +174,7 @@ const Community = () => {
               key={f.key}
               onClick={() => setFilter(f.key)}
               aria-label={f.key === 'shop' ? 'Open filters' : `Change sort order`}
-              className={`flex-1 py-2 text-[12px] font-semibold transition-all relative whitespace-nowrap px-2 flex items-center justify-center gap-0.5 ${
+              className={`flex-1 py-2.5 min-h-[44px] text-[12px] font-semibold transition-all relative whitespace-nowrap px-2 flex items-center justify-center gap-0.5 ${
                 filter === f.key ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
@@ -212,9 +212,9 @@ const Community = () => {
         {/* User filter chips */}
         {((filter === 'trending' && trendingSort === 'user') || (filter === 'following' && followingSort === 'user')) && (
           <div className="flex gap-1.5 mb-3 overflow-x-auto no-scrollbar">
-            <button onClick={() => setFilterUserId(null)} aria-label="Show all users" className={`whitespace-nowrap px-2.5 py-1 rounded-full text-[10px] font-bold border transition-all active:scale-95 ${!filterUserId ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'}`}>All</button>
+            <button onClick={() => setFilterUserId(null)} aria-label="Show all users" className={`whitespace-nowrap px-3 py-2 min-h-[44px] rounded-full text-[11px] font-bold border transition-all active:scale-95 ${!filterUserId ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'}`}>All</button>
             {[...new Map(posts.filter(p => p.profile?.display_name).map(p => [p.user_id, p.profile?.display_name])).entries()].map(([uid, name]) => (
-              <button key={uid} onClick={() => setFilterUserId(filterUserId === uid ? null : uid)} aria-label={`Filter by ${name}`} className={`whitespace-nowrap px-2.5 py-1 rounded-full text-[10px] font-bold border transition-all active:scale-95 ${filterUserId === uid ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'}`}>{name}</button>
+              <button key={uid} onClick={() => setFilterUserId(filterUserId === uid ? null : uid)} aria-label={`Filter by ${name}`} className={`whitespace-nowrap px-3 py-2 min-h-[44px] rounded-full text-[11px] font-bold border transition-all active:scale-95 ${filterUserId === uid ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'}`}>{name}</button>
             ))}
           </div>
         )}
@@ -224,7 +224,7 @@ const Community = () => {
           <>
             <div className="flex gap-1.5 mb-3">
               {GENDER_OPTIONS.map(opt => (
-                <button key={opt.key} onClick={() => setShopGender(opt.key)} aria-label={`Filter by ${opt.label}`} className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${shopGender === opt.key ? 'bg-primary text-primary-foreground' : 'bg-card border border-border text-muted-foreground'}`}>{opt.label}</button>
+                <button key={opt.key} onClick={() => setShopGender(opt.key)} aria-label={`Filter by ${opt.label}`} className={`px-3 py-2 min-h-[44px] rounded-full text-[11px] font-semibold transition-colors ${shopGender === opt.key ? 'bg-primary text-primary-foreground' : 'bg-card border border-border text-muted-foreground'}`}>{opt.label}</button>
               ))}
             </div>
             <BrandFilter gender={shopGender === 'all' ? null : shopGender} selectedBrand={shopBrand} onBrandChange={setShopBrand} />
@@ -233,7 +233,7 @@ const Community = () => {
                 ? [{ key: 'tops', label: 'Tops' }, { key: 'bottoms', label: 'Bottoms' }, { key: 'outerwear', label: 'Outerwear' }, { key: 'shoes', label: 'Shoes' }, { key: 'activewear', label: 'Activewear' }, { key: 'accessories', label: 'Accessories' }]
                 : [{ key: 'tops', label: 'Tops' }, { key: 'bottoms', label: 'Bottoms' }, { key: 'dresses', label: 'Dresses' }, { key: 'outerwear', label: 'Outerwear' }, { key: 'shoes', label: 'Shoes' }, { key: 'activewear', label: 'Activewear' }, { key: 'accessories', label: 'Accessories' }]
               ).map(cat => (
-                <button key={cat.key} onClick={() => setShopCategory(cat.key)} aria-label={`Filter by ${cat.label}`} className={`px-3 py-1 rounded-full text-[10px] font-bold whitespace-nowrap transition-colors ${shopCategory === cat.key ? 'bg-primary/15 border border-primary/30 text-primary' : 'bg-card border border-border text-muted-foreground'}`}>{cat.label}</button>
+                <button key={cat.key} onClick={() => setShopCategory(cat.key)} aria-label={`Filter by ${cat.label}`} className={`px-3 py-2 min-h-[44px] rounded-full text-[11px] font-bold whitespace-nowrap transition-colors ${shopCategory === cat.key ? 'bg-primary/15 border border-primary/30 text-primary' : 'bg-card border border-border text-muted-foreground'}`}>{cat.label}</button>
               ))}
             </div>
             <CategoryProductGrid category={shopCategory} collapsed={false} maxItems={50} gender={shopGender === 'all' ? undefined : shopGender} brand={shopBrand || undefined} onSelectProduct={(product) => navigateToTryOn(navigate, { productUrl: product.product_url || undefined, fallbackClothingImageUrl: product.image_url, source: 'style_check_shop' })} />

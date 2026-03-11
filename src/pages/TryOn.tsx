@@ -64,11 +64,11 @@ const TryOn = () => {
             <div className="mb-3 relative overflow-hidden">
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Category</p>
               <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none" style={{ WebkitOverflowScrolling: 'touch' }}>
-                <button onClick={() => s.setCategory('all')} aria-label="Show all categories" className={`shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${s.category === 'all' ? 'border-primary bg-primary text-primary-foreground font-bold' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
+                <button onClick={() => s.setCategory('all')} aria-label="Show all categories" className={`shrink-0 px-3 py-1.5 min-h-[44px] rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${s.category === 'all' ? 'border-primary bg-primary text-primary-foreground font-bold' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
                   🛍️ All
                 </button>
                 {CATEGORIES.map(c => (
-                  <button key={c.key} onClick={() => s.setCategory(c.key)} aria-label={`Filter by ${c.label}`} className={`shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${s.category === c.key ? 'border-primary bg-primary text-primary-foreground font-bold' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
+                  <button key={c.key} onClick={() => s.setCategory(c.key)} aria-label={`Filter by ${c.label}`} className={`shrink-0 px-3 py-1.5 min-h-[44px] rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${s.category === c.key ? 'border-primary bg-primary text-primary-foreground font-bold' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
                     {c.label}
                   </button>
                 ))}
@@ -119,11 +119,6 @@ const TryOn = () => {
               </div>
             )}
 
-            {/* Generate CTA */}
-            <Button className="w-full h-11 rounded-lg text-sm font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30" onClick={s.handleTryOn} disabled={s.loading || !s.canGenerate}>
-              {s.loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating your preview…</> : <><Sparkles className="mr-2 h-4 w-4" /> Generate Try-On</>}
-            </Button>
-
             {s.tryOnError && !s.loading && (
               <div className="flex flex-col items-center gap-2 mt-2">
                 <p className="text-[12px] text-destructive text-center">{s.tryOnError}</p>
@@ -165,6 +160,13 @@ const TryOn = () => {
             <div className="flex items-start gap-1.5 bg-card border border-border rounded-lg px-3 py-2 mt-2 mb-3">
               <Info className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" />
               <p className="text-[10px] text-muted-foreground leading-relaxed">AI preview — actual fit, drape, and texture may vary. Use your Scan profile for the most accurate sizing.</p>
+            </div>
+
+            {/* Sticky Generate CTA */}
+            <div className="sticky bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 -mx-4 px-4 py-3 bg-gradient-to-t from-background via-background to-background/0">
+              <Button className="w-full h-12 min-h-[44px] rounded-lg text-sm font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30 shadow-lg" onClick={s.handleTryOn} disabled={s.loading || !s.canGenerate}>
+                {s.loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating your preview…</> : <><Sparkles className="mr-2 h-4 w-4" /> Generate Try-On</>}
+              </Button>
             </div>
           </>
         ) : (
