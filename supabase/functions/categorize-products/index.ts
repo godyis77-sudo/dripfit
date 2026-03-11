@@ -604,32 +604,35 @@ function remapCategory(aiCategory: string, productName: string): string {
   const name = productName.toLowerCase();
 
   if (cat === "footwear") {
-    if (name.includes("sneaker") || name.includes("running")) return "sneakers";
+    if (name.includes("sneaker") || name.includes("running") || name.includes("trainer")) return "sneakers";
     if (name.includes("boot")) return "boots";
-    if (name.includes("loafer")) return "loafers";
-    if (name.includes("sandal")) return "sandals";
-    if (name.includes("heel")) return "heels";
+    if (name.includes("loafer") || name.includes("moccasin")) return "loafers";
+    if (name.includes("sandal") || name.includes("slide") || name.includes("flip")) return "sandals";
+    if (name.includes("heel") || name.includes("pump") || name.includes("stiletto")) return "heels";
     return "shoes";
   }
-  if (cat === "wallet" || cat === "wallets" || cat === "belt bag" || cat === "fanny pack" || cat === "clutch" || cat === "tote" || cat === "backpack" || cat === "crossbody" || cat === "satchel") return "bags";
+  if (cat === "wallet" || cat === "wallets" || cat === "belt bag" || cat === "fanny pack" || cat === "clutch" || cat === "tote" || cat === "backpack" || cat === "crossbody" || cat === "satchel" || cat === "purse" || cat === "messenger bag" || cat === "duffel") return "bags";
   if (cat === "eyewear" || cat === "glasses") return "sunglasses";
   if (cat === "sweatshirt" || cat === "sweatshirts" || cat === "hoodie") return "hoodies";
-  if (cat === "trousers" || cat === "chinos" || cat === "joggers" || cat === "sweatpants") return "pants";
+  if (cat === "trousers" || cat === "chinos" || cat === "joggers" || cat === "sweatpants" || cat === "culottes" || cat === "palazzo") return "pants";
   if (cat === "tee" || cat === "tees" || cat === "t-shirt") return "t-shirts";
-  if (cat === "pullover" || cat === "cardigan" || cat === "knitwear" || cat === "knit") return "sweaters";
-  if (cat === "romper" || cat === "rompers" || cat === "playsuit") return "jumpsuits";
-  if (cat === "parka" || cat === "puffer" || cat === "overcoat" || cat === "trench") return "coats";
-  if (cat === "cap" || cat === "caps" || cat === "beanie" || cat === "bucket hat") return "hats";
-  if (cat === "wrap" || cat === "shawl" || cat === "stole") return "scarves";
+  if (cat === "pullover" || cat === "cardigan" || cat === "knitwear" || cat === "knit" || cat === "turtleneck") return "sweaters";
+  if (cat === "romper" || cat === "rompers" || cat === "playsuit" || cat === "catsuit") return "jumpsuits";
+  if (cat === "parka" || cat === "puffer" || cat === "overcoat" || cat === "trench" || cat === "topcoat" || cat === "duffle coat") return "coats";
+  if (cat === "cap" || cat === "caps" || cat === "beanie" || cat === "bucket hat" || cat === "fedora" || cat === "beret" || cat === "visor") return "hats";
+  if (cat === "wrap" || cat === "shawl" || cat === "stole" || cat === "neckerchief") return "scarves";
   if (cat === "gilet" || cat === "waistcoat") return "vests";
-  if (cat === "tank" || cat === "tank top" || cat === "camisole" || cat === "blouse") return "tops";
-  if (cat === "culottes" || cat === "palazzo") return "pants";
-  if (cat === "mule" || cat === "mules" || cat === "flat" || cat === "flats" || cat === "oxford" || cat === "oxfords" || cat === "derby") return "shoes";
-  if (cat === "slide" || cat === "slides" || cat === "flip flop" || cat === "flip flops") return "sandals";
-  if (cat === "trainer" || cat === "trainers" || cat === "running shoe" || cat === "running shoes") return "sneakers";
-  if (cat === "bomber" || cat === "windbreaker" || cat === "anorak") return "jackets";
+  if (cat === "tank" || cat === "tank top" || cat === "camisole" || cat === "blouse" || cat === "bodysuit" || cat === "tunic" || cat === "henley") return "tops";
+  if (cat === "mule" || cat === "mules" || cat === "flat" || cat === "flats" || cat === "oxford" || cat === "oxfords" || cat === "derby" || cat === "clog" || cat === "clogs" || cat === "espadrille") return "shoes";
+  if (cat === "slide" || cat === "slides" || cat === "flip flop" || cat === "flip flops" || cat === "gladiator") return "sandals";
+  if (cat === "trainer" || cat === "trainers" || cat === "running shoe" || cat === "running shoes" || cat === "tennis shoe") return "sneakers";
+  if (cat === "bomber" || cat === "windbreaker" || cat === "anorak" || cat === "shacket" || cat === "overshirt") return "jackets";
   if (cat === "bodysuit") return "tops";
-  if (cat === "swim trunks" || cat === "board shorts") return "swimwear";
+  if (cat === "swim trunks" || cat === "board shorts" || cat === "one piece" || cat === "rashguard" || cat === "tankini") return "swimwear";
+  if (cat === "bra" || cat === "lingerie" || cat === "shapewear" || cat === "thermal" || cat === "hosiery") return "underwear";
+  if (cat === "gloves" || cat === "mittens" || cat === "hair clip" || cat === "headband" || cat === "key chain") return "accessories";
+  if (cat === "anklet" || cat === "brooch" || cat === "choker" || cat === "chain") return "jewelry";
+  if (cat === "suspenders" || cat === "tie clip" || cat === "pocket square") return "accessories";
 
   // Fallback: use name-based heuristics
   if (name.includes("sneaker") || name.includes("trainer")) return "sneakers";
@@ -637,6 +640,13 @@ function remapCategory(aiCategory: string, productName: string): string {
   if (name.includes("pant") || name.includes("trouser")) return "pants";
   if (name.includes("dress")) return "dresses";
   if (name.includes("shirt")) return "shirts";
+  if (name.includes("skirt")) return "skirts";
+  if (name.includes("boot")) return "boots";
+  if (name.includes("sandal") || name.includes("slide")) return "sandals";
+  if (name.includes("bag") || name.includes("tote") || name.includes("backpack")) return "bags";
+  if (name.includes("hat") || name.includes("cap") || name.includes("beanie")) return "hats";
+  if (name.includes("sweater") || name.includes("cardigan")) return "sweaters";
+  if (name.includes("hoodie") || name.includes("sweatshirt")) return "hoodies";
 
   // Final fallback
   return "other";

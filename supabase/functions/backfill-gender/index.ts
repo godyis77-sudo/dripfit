@@ -138,11 +138,15 @@ const URL_WOMENS_PATTERNS = [
   "/woman-", "women+clothing", "women+apparel", "women-clothing",
   "women-apparel", "/ladies/", "/ladies-", "/female/",
   "shopping/women", "/womenswear/", "cat/women",
+  "/w/womens", "/girls/", "/her/", "/she/",
+  "/womens-clothing/", "/women-fashion/",
 ];
 const URL_MENS_PATTERNS = [
   "/men/", "/mens/", "/man/", "/men-", "/mens-", "/man-",
   "men+clothing", "men+apparel", "men-clothing", "men-apparel",
   "/male/", "shopping/men", "/menswear/", "cat/men",
+  "/m/mens", "/guys/", "/him/", "/he/",
+  "/mens-clothing/", "/men-fashion/",
 ];
 
 // Keywords that indicate kids/junior products — should be deactivated entirely

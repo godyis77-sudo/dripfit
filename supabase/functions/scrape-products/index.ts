@@ -1725,24 +1725,33 @@ Deno.serve(async (req) => {
     const newProducts = await filterExistingProducts(cleanProducts, supabase);
     results.deduped = newProducts.length;
 
-    // ── DB INSERT ────────────────────────────────────────────────────
+    // ── DB INSERT (with URL+name-based gender detection) ────────────
     if (newProducts.length > 0) {
-      const rows = newProducts.map(p => ({
-        name: p.name,
-        brand: p.brand,
-        retailer: p.brand,
-        product_url: normaliseUrl(p.product_url),
-        image_url: normaliseUrl(p.image_url),
-        price_cents: p.price_cents,
-        currency: p.currency ?? 'USD',
-        category: normaliseCategory(p.category_raw),
-        tags: buildTags(p),
-        presentation: p.presentation,
-        image_confidence: p.confidence,
-        scrape_source: runId,
-        scraped_at: new Date().toISOString(),
-        is_active: true,
-      }));
+      const rows = newProducts.map(p => {
+        // Multi-signal gender detection at insert time
+        const urlGender = detectGenderFromProductUrl(p.product_url);
+        const nameGender = detectGenderFromName(p.name);
+        // Priority: URL > name > default unisex
+        const gender = urlGender || nameGender || 'unisex';
+        
+        return {
+          name: p.name,
+          brand: p.brand,
+          retailer: p.brand,
+          product_url: normaliseUrl(p.product_url),
+          image_url: normaliseUrl(p.image_url),
+          price_cents: p.price_cents,
+          currency: p.currency ?? 'USD',
+          category: normaliseCategory(p.category_raw),
+          tags: buildTags(p),
+          presentation: p.presentation,
+          image_confidence: p.confidence,
+          gender,
+          scrape_source: runId,
+          scraped_at: new Date().toISOString(),
+          is_active: true,
+        };
+      });
 
       const { error } = await supabase.from('product_catalog').insert(rows);
 
