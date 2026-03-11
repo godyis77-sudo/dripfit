@@ -311,7 +311,8 @@ const Capture = () => {
                     try {
                       const result = await takeNativePhoto('gallery');
                       const key = flowStep === 'side' ? 'side' : 'front';
-                      setPhotos(prev => ({ ...prev, [key]: result.dataUrl }));
+                      const compressed = await compressPhoto(result.dataUrl, 1280, 0.8);
+                      setPhotos(prev => ({ ...prev, [key]: compressed }));
                       setReviewing(true);
                       trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
                     } catch { /* cancelled */ }
