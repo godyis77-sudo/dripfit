@@ -248,7 +248,7 @@ serve(async (req) => {
     // Fetch products
     let query = supabase
       .from("product_catalog")
-      .select("id, name, brand, retailer, category, image_url, image_confidence, tags, gender, product_url")
+      .select("id, name, brand, retailer, category, image_url, image_confidence, tags, gender, product_url, presentation")
       .eq("is_active", true)
       .not("image_url", "is", null)
       .order("image_confidence", { ascending: true, nullsFirst: true })
