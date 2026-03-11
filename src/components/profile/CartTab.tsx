@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Sparkles, ExternalLink, XCircle, Trash2, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { FullscreenImage } from '@/components/ui/fullscreen-image';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import ProductPreviewModal, { type ProductPreviewData } from '@/components/ui/ProductPreviewModal';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 import { useCart } from '@/hooks/useCart';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
@@ -21,6 +22,7 @@ const normalizeProductUrl = (url: string) => {
 const CartTab = () => {
   const navigate = useNavigate();
   const { items, removeFromCart, clearCart } = useCart();
+  const [previewProduct, setPreviewProduct] = useState<ProductPreviewData | null>(null);
 
   const handleTryOn = async (productUrl?: string, fallbackClothingImageUrl?: string) => {
     trackEvent('cart_tryon_click', { productUrl });
@@ -86,21 +88,28 @@ const CartTab = () => {
         <div key={item.id} className="bg-card border border-border rounded-xl overflow-hidden">
           <div className="p-2.5 flex gap-3">
             {/* Fullscreen-enabled thumbnail */}
-            <FullscreenImage
-              src={item.image_url}
-              alt={item.caption || 'Look'}
-              onShop={item.product_urls?.[0] ? () => handleShop(item.product_urls![0]) : undefined}
-              onTryOn={() => handleTryOn(item.product_urls?.[0], item.clothing_photo_url)}
+            <button
+              type="button"
+              onClick={() => {
+                const primaryProductUrl = item.product_urls?.[0] ?? null;
+                const primaryBrand = primaryProductUrl ? detectBrandFromUrl(primaryProductUrl).brand : null;
+                setPreviewProduct({
+                  image_url: item.image_url,
+                  name: item.caption || 'Look',
+                  brand: primaryBrand || 'Shop',
+                  product_url: primaryProductUrl,
+                });
+              }}
+              className="shrink-0 w-32 h-40 rounded-lg overflow-hidden bg-muted/30 cursor-pointer active:scale-95 transition-transform"
+              aria-label={`Preview ${item.caption || 'Look'}`}
             >
-              <div className="shrink-0 w-32 h-40 rounded-lg overflow-hidden bg-muted/30 cursor-pointer active:scale-95 transition-transform">
-                <img
-                  src={item.image_url}
-                  alt={item.caption || 'Look'}
-                  className="w-full h-full object-cover object-top"
-                  loading="lazy"
-                />
-              </div>
-            </FullscreenImage>
+              <img
+                src={item.image_url}
+                alt={item.caption || 'Look'}
+                className="w-full h-full object-cover object-top"
+                loading="lazy"
+              />
+            </button>
 
             <div className="flex-1 min-w-0 flex flex-col justify-between">
               <div>
@@ -216,6 +225,20 @@ const CartTab = () => {
       <p className="text-[9px] text-muted-foreground/60 text-center mt-3">
         We may earn a commission. It doesn't change your price.
       </p>
+
+      <ProductPreviewModal
+        product={previewProduct}
+        onClose={() => setPreviewProduct(null)}
+        onShop={previewProduct?.product_url ? (product) => {
+          if (!product.product_url) return;
+          handleShop(product.product_url);
+          setPreviewProduct(null);
+        } : undefined}
+        onTryOn={(product) => {
+          handleTryOn(product.product_url ?? undefined, product.image_url);
+          setPreviewProduct(null);
+        }}
+      />
     </div>
   );
 };
