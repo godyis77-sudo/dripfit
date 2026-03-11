@@ -66,6 +66,7 @@ const WhatsInThisLook = ({
 }: WhatsInThisLookProps) => {
   const [open, setOpen] = useState(defaultOpen);
   const [catalogImages, setCatalogImages] = useState<Record<string, string>>({});
+  const [previewProduct, setPreviewProduct] = useState<ProductPreviewData | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to reveal expanded content
