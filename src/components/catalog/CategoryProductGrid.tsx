@@ -133,8 +133,8 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
                 />
               )}
               {/* Brand pill — bottom right of image */}
-              <div className="absolute bottom-1.5 right-1.5 bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5">
-                <span className="text-[8px] font-bold text-foreground uppercase tracking-wider">{product.brand}</span>
+              <div className="absolute bottom-1.5 right-1.5">
+                <span className="brand-label">{product.brand}</span>
               </div>
               {/* Size badge slot — top right, empty for now */}
               <div className="absolute top-1.5 right-1.5" />
