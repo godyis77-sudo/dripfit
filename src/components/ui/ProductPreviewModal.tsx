@@ -95,32 +95,22 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
         onClick={(e) => e.stopPropagation()}
       >
         <div className="text-center">
-          <p className="text-[11px] text-white/50 uppercase tracking-wider font-bold">{product.brand}</p>
+          <p className="text-[11px] text-white/50 uppercase tracking-wider font-bold shimmer-sweep">{product.brand}</p>
           {product.price_cents != null && (
-            <p className="text-sm font-bold text-primary mt-1">
+            <p className="text-sm font-bold text-primary mt-1 shimmer-sweep">
               ${(product.price_cents / 100).toFixed(0)}
             </p>
           )}
         </div>
 
         <div className="flex gap-3 max-w-sm mx-auto w-full">
-          {onTryOn && (
-            <Button
-              className="flex-1 gap-2 h-11 rounded-xl font-bold"
-              onClick={() => onTryOn(product)}
-            >
-              <Sparkles className="h-4 w-4" />
-              Try On
-            </Button>
-          )}
           {onShop && product.product_url && (
             <Button
-              variant="outline"
-              className="flex-1 gap-2 h-11 rounded-xl font-bold border-white/20 text-white hover:bg-white/10"
+              className="flex-1 gap-2 h-12 rounded-xl font-bold btn-luxury text-primary-foreground shimmer-sweep"
               onClick={() => onShop(product)}
             >
-              <ExternalLink className="h-4 w-4" />
-              Shop
+              <ShoppingCart className="h-4 w-4" />
+              Buy!
             </Button>
           )}
         </div>
