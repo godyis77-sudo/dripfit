@@ -154,6 +154,20 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
         ))}
       </div>
 
+      {/* Load More */}
+      {hasMore && (
+        <div className="flex justify-center mt-3">
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-full text-[11px] font-semibold px-6"
+            onClick={() => setVisibleCount(prev => prev + PAGE_SIZE)}
+          >
+            Load More ({totalAvailable - displayed.length} remaining)
+          </Button>
+        </div>
+      )}
+
       {/* Fullscreen product preview */}
       <AnimatePresence>
         {previewProduct && (
