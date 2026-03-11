@@ -96,11 +96,15 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
             <span className="inline-flex items-center gap-1 text-[10px] font-bold text-foreground bg-card border border-border rounded-md px-2 py-1 capitalize">
               <Tag className="h-3 w-3 text-primary" /> {item.category}
             </span>
-            {(item.retailer || (item.product_link ? detectBrandFromUrl(item.product_link).brand : null)) && (
-              <span className="brand-label-lg">
-                <Store className="h-3 w-3" /> {item.retailer || (item.product_link ? detectBrandFromUrl(item.product_link).brand : '')}
-              </span>
-            )}
+            {(() => {
+              const detected = item.product_link ? detectBrandFromUrl(item.product_link) : null;
+              const displayRetailer = detected?.retailer || item.retailer;
+              return displayRetailer ? (
+                <span className="brand-label-lg">
+                  <Store className="h-3 w-3" /> {displayRetailer}
+                </span>
+              ) : null;
+            })()}
             <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground bg-card border border-border rounded-md px-2 py-1">
               <Calendar className="h-3 w-3" /> {new Date(item.created_at).toLocaleDateString()}
             </span>
