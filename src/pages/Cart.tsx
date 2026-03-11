@@ -90,11 +90,11 @@ const Cart = () => {
                   {/* Details */}
                   <div className="flex-1 min-w-0 flex flex-col justify-between">
                     <div>
-                      {item.product_urls?.[0] && (
-                        <span className="brand-label-lg mb-1">
-                          {detectBrandFromUrl(item.product_urls[0]).brand || 'Shop'}
-                        </span>
-                      )}
+                      {item.product_urls?.[0] && (() => {
+                        const detected = detectBrandFromUrl(item.product_urls[0]);
+                        const displayRetailer = detected.retailer && detected.retailer !== detected.brand ? detected.retailer : (detected.retailer || 'Shop');
+                        return <span className="brand-label-lg mb-1">{displayRetailer}</span>;
+                      })()}
                       {item.caption && (
                         <p className="text-[11px] font-semibold text-foreground line-clamp-2 leading-snug">{item.caption}</p>
                       )}
