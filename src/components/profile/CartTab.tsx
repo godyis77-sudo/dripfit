@@ -225,7 +225,7 @@ const CartTab = () => {
                 ) : item.product_urls && item.product_urls.length === 1 ? (
                   <Button
                     size="sm"
-                    className="h-7 rounded-lg btn-luxury text-primary-foreground text-[9px] font-bold flex-1"
+                    className="h-9 rounded-lg btn-luxury text-primary-foreground text-[13px] font-bold flex-1"
                     onClick={() => handleShop(item.product_urls![0])}
                   >
                     Buy! <ExternalLink className="ml-1 h-2.5 w-2.5" />
