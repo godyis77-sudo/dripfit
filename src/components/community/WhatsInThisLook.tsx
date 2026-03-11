@@ -233,6 +233,28 @@ const WhatsInThisLook = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ProductPreviewModal
+        product={previewProduct}
+        onClose={() => setPreviewProduct(null)}
+        onShop={(product) => {
+          if (!product.product_url) return;
+          window.open(product.product_url, '_blank', 'noopener');
+          trackEvent('badge_clickout', { retailer: product.brand, source: 'fullscreen_look' });
+          setPreviewProduct(null);
+        }}
+        onTryOn={onTryOn ? (product) => {
+          if (!product.product_url) return;
+          onTryOn({
+            brand: product.brand,
+            name: product.name,
+            url: product.product_url,
+            price_cents: product.price_cents,
+            image_url: product.image_url,
+          });
+          setPreviewProduct(null);
+        } : undefined}
+      />
     </div>
   );
 };
