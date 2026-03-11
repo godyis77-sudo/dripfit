@@ -43,6 +43,7 @@ const Results = () => {
   usePageTitle('Your Fit Results');
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const state = location.state as { result: BodyScanResult; retailer?: string; category?: string } | undefined;
   // DB fallback query for authenticated users when no location.state or sessionStorage
   const dbScanQuery = useQuery({
