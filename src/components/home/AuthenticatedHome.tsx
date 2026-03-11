@@ -122,10 +122,8 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               <button
                 key={filter.label}
                 onClick={() => setActivePriceIdx(idx)}
-                className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium transition-colors min-h-[36px] border ${
-                  activePriceIdx === idx
-                    ? 'bg-primary text-primary-foreground border-primary'
-                    : 'bg-card text-muted-foreground border-border hover:border-primary/30'
+                className={`shrink-0 pill ${
+                  activePriceIdx === idx ? 'pill-filled' : ''
                 }`}
               >
                 {filter.label}
