@@ -164,7 +164,7 @@ const WhatsInThisLook = ({
                         </div>
                       </FullscreenImage>
                     ) : (
-                      <div className={`shrink-0 ${isCompact ? 'h-8 w-8' : 'h-10 w-10'} rounded-lg overflow-hidden bg-[#252525] border border-[#333] flex items-center justify-center`}>
+                      <div className={`shrink-0 ${isCompact ? 'h-8 w-8' : 'h-10 w-10'} rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center`}>
                         <ShoppingBag className={`${isCompact ? 'h-3 w-3' : 'h-4 w-4'} text-muted-foreground/40`} />
                       </div>
                     );

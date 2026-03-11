@@ -46,24 +46,24 @@ function relativeTime(dateStr?: string): string {
 export function SizeMatchCardSkeleton() {
   return (
     <div
-      className="w-full rounded-2xl border border-gray-100 bg-white p-4 shadow-sm"
+      className="w-full rounded-2xl border border-border bg-card p-4 shadow-luxury"
       role="status"
       aria-busy="true"
       aria-label="Loading size recommendation"
     >
       <span className="sr-only">Loading size recommendation…</span>
       <div className="flex items-center justify-between">
-        <div className="h-3 w-36 animate-pulse rounded bg-gray-200" />
-        <div className="h-4 w-4 animate-pulse rounded-full bg-gray-200" />
+        <div className="h-3 w-36 skeleton-gold rounded" />
+        <div className="h-4 w-4 skeleton-gold rounded-full" />
       </div>
       <div className="mt-3 flex items-baseline justify-between">
-        <div className="h-4 w-40 animate-pulse rounded bg-gray-200" />
-        <div className="h-8 w-12 animate-pulse rounded bg-gray-200" />
+        <div className="h-4 w-40 skeleton-gold rounded" />
+        <div className="h-8 w-12 skeleton-gold rounded" />
       </div>
-      <div className="mt-3 h-1.5 w-full animate-pulse rounded-full bg-gray-200" />
-      <div className="mt-2 h-4 w-3/4 animate-pulse rounded bg-gray-200" />
-      <div className="mt-3 h-7 w-44 animate-pulse rounded-full bg-gray-200" />
-      <div className="mt-3 h-3 w-48 animate-pulse rounded bg-gray-200" />
+      <div className="mt-3 h-1.5 w-full skeleton-gold rounded-full" />
+      <div className="mt-2 h-4 w-3/4 skeleton-gold rounded" />
+      <div className="mt-3 h-7 w-44 skeleton-gold rounded-full" />
+      <div className="mt-3 h-3 w-48 skeleton-gold rounded" />
     </div>
   );
 }
@@ -104,16 +104,13 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
       <div
         ref={ref}
         role="region"
-        className="w-full rounded-2xl border border-gray-100 bg-white p-4 shadow-sm animate-fade-in"
+        className="w-full rounded-2xl border border-border bg-card p-4 shadow-luxury animate-fade-in"
         style={{ animationDuration: "300ms" }}
         aria-label={`Size ${recommendedSize} recommended for ${brandName} ${category} — ${pct}% confidence`}
       >
         {/* Row 1 — Header */}
         <div className="flex items-center justify-between">
-          <span
-            className="text-xs font-bold tracking-widest uppercase"
-            style={{ color: "#946F00" }}
-          >
+          <span className="text-xs font-bold tracking-widest uppercase text-primary">
             DRIPFITCHECK SIZE MATCH
           </span>
           <TooltipProvider>
@@ -123,7 +120,7 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
                   className="min-w-[44px] min-h-[44px] flex items-center justify-center -m-3"
                   aria-label="How confidence is calculated"
                 >
-                  <Info size={14} className="text-gray-400" />
+                  <Info size={14} className="text-muted-foreground" />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="max-w-[220px] text-xs" role="tooltip">
@@ -136,8 +133,8 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
 
         {isOutOfRange ? (
           <div className="mt-4 flex flex-col items-center gap-3 py-4 text-center">
-            <AlertCircle size={20} className="text-red-600" aria-hidden="true" />
-            <p className="text-sm text-gray-600">
+            <AlertCircle size={20} className="text-destructive" aria-hidden="true" />
+            <p className="text-sm text-muted-foreground">
               Your measurements fall outside {brandName}'s standard range.
             </p>
             {sourceUrl && (
@@ -145,8 +142,7 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
                 href={sourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm font-medium min-h-[44px] flex items-center"
-                style={{ color: "#946F00" }}
+                className="text-sm font-medium min-h-[44px] flex items-center text-primary"
               >
                 View {brandName} Size Guide →
               </a>
@@ -156,31 +152,31 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
           <>
             {/* Row 2 — Recommended size */}
             <div className="mt-3 flex items-baseline justify-between">
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-muted-foreground">
                 Your size in {brandName} {category}:
               </span>
               {isBetween && secondOption ? (
-                <span className="text-2xl font-black" style={{ color: "#946F00" }}>
+                <span className="text-2xl font-black text-primary">
                   {recommendedSize}{" "}
-                  <span className="text-base font-medium text-gray-500">or</span>{" "}
+                  <span className="text-base font-medium text-muted-foreground">or</span>{" "}
                   {secondOption}
                 </span>
               ) : (
-                <span className="text-3xl font-black" style={{ color: "#946F00" }}>
+                <span className="text-3xl font-black text-primary">
                   {recommendedSize}
                 </span>
               )}
             </div>
 
-            {/* Between sizes callout — slide down */}
+            {/* Between sizes callout */}
             {isBetween && secondOption && (
               <div
-                className="mt-2 overflow-hidden rounded-md border-l-[3px] border-amber-400 bg-amber-50 px-3 py-2"
+                className="mt-2 overflow-hidden rounded-md border-l-[3px] border-primary bg-primary/10 px-3 py-2"
                 style={{
                   animation: "accordion-down 200ms ease-out forwards",
                 }}
               >
-                <p className="text-xs text-amber-700">
+                <p className="text-xs text-primary">
                   {recommendedSize} for slim or regular fit · {secondOption} for relaxed
                   fit
                 </p>
@@ -198,26 +194,25 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
               <div className="flex-1">
                 <ConfidenceBar confidence={confidence} />
               </div>
-              <span className="text-xs font-semibold text-gray-500">{pct}%</span>
+              <span className="text-xs font-semibold text-muted-foreground">{pct}%</span>
             </div>
 
             {/* Row 4 — Fit notes */}
-            <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-gray-600">
+            <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
               {fitNotes}
             </p>
 
             {/* Row 5 — Fit preference toggle */}
-            <div className="mt-3 inline-flex overflow-hidden rounded-full border border-gray-200" role="group" aria-label="Fit preference">
+            <div className="mt-3 inline-flex overflow-hidden rounded-full border border-border" role="group" aria-label="Fit preference">
               {FIT_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
                   onClick={() => handleFitChange(opt.value)}
-                   className="cursor-pointer px-4 min-h-[44px] text-xs font-medium transition-colors duration-200"
-                   style={
-                     activeFit === opt.value
-                       ? { backgroundColor: "#946F00", color: "#fff" }
-                       : { backgroundColor: "#fff", color: "#4B5563" }
-                   }
+                  className={`cursor-pointer px-4 min-h-[44px] text-xs font-medium transition-colors duration-200 ${
+                    activeFit === opt.value
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-card text-muted-foreground'
+                  }`}
                   aria-pressed={activeFit === opt.value}
                 >
                   {opt.label}
@@ -228,7 +223,7 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
         )}
 
         {/* Row 6 — Footer */}
-        <p className="mt-3 text-xs text-gray-500">
+        <p className="mt-3 text-xs text-muted-foreground">
           Based on your scan · Updated {relativeTime(updatedAt)}
         </p>
       </div>

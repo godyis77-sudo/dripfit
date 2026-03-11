@@ -73,14 +73,7 @@ export function ShopSizeInfo({ retailerName, userId, hasScan }: ShopSizeInfoProp
 
   if (loading) {
     return (
-      <div
-        className="h-4 w-10 rounded-md"
-        style={{
-          background: 'linear-gradient(110deg, #1A1A1A 30%, #272727 50%, #1A1A1A 70%)',
-          backgroundSize: '200% 100%',
-          animation: 'skeleton-shimmer 1.4s ease-in-out infinite',
-        }}
-      />
+      <div className="h-4 w-10 rounded-md skeleton-gold" />
     );
   }
 
