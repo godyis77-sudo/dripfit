@@ -78,8 +78,12 @@ export default {
       boxShadow: {
         luxury: "0 8px 40px -12px hsl(var(--shadow-luxury) / 0.12)",
         "luxury-lg": "0 16px 60px -16px hsl(var(--shadow-luxury) / 0.2)",
-        "gold-glow": "0 0 40px -10px hsl(var(--primary) / 0.3)",
+        "gold-glow": "0 2px 0 0 hsl(42 76% 28%), 0 4px 16px -2px hsl(var(--primary) / 0.3), inset 0 1px 0 hsl(var(--gold-shimmer) / 0.4)",
         "inner-glow": "inset 0 1px 0 hsl(var(--gold-shimmer) / 0.15)",
+        "3d": "0 2px 0 0 hsl(var(--border)), 0 4px 12px -2px hsl(0 0% 0% / 0.2), inset 0 1px 0 hsl(var(--surface-glass) / 0.08)",
+        "3d-pressed": "0 0px 0 0 hsl(var(--border)), 0 1px 4px hsl(0 0% 0% / 0.1), inset 0 1px 2px hsl(0 0% 0% / 0.1)",
+        "3d-gold": "0 2px 0 0 hsl(42 76% 28%), 0 4px 14px -2px hsl(0 0% 0% / 0.25), inset 0 1px 0 hsl(var(--gold-shimmer) / 0.5)",
+        "3d-gold-pressed": "0 0px 0 0 hsl(42 76% 28%), 0 1px 4px hsl(0 0% 0% / 0.15), inset 0 1px 2px hsl(0 0% 0% / 0.08)",
       },
       keyframes: {
         "accordion-down": {
