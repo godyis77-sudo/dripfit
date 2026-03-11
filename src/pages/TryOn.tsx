@@ -88,7 +88,6 @@ const TryOn = () => {
             {/* Product catalog browse */}
             {!s.clothingPhoto && (
               <div className="mb-3 space-y-2">
-                <p className="section-label mb-1.5">{s.category === 'all' ? 'All Products' : `Shop ${CATEGORIES.find(c => c.key === s.category)?.label || s.category}`}</p>
                 {s.category === 'all' ? (
                   ALL_PRODUCT_CATEGORIES.map(cat => (
                     <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={false} maxItems={1000} seed={1234} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} onSelectProduct={s.handleSelectProduct} />
