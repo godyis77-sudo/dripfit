@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { scrollIntoViewIfNeeded } from '@/lib/autoScroll';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ExternalLink, ShoppingBag, ShoppingCart } from 'lucide-react';
-import { FullscreenImage } from '@/components/ui/fullscreen-image';
+import ProductPreviewModal, { type ProductPreviewData } from '@/components/ui/ProductPreviewModal';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
