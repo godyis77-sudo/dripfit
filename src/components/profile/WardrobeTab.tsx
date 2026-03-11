@@ -61,7 +61,7 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
           </Button>
         </div>
       ) : (
-        <div className="columns-2 gap-2 space-y-2">
+        <div className="grid grid-cols-2 gap-2">
           {wardrobeItems.map(item => (
             <motion.div key={item.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="break-inside-avoid">
               <div
