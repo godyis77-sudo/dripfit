@@ -49,6 +49,25 @@ const BRAND_GENDER: Record<string, Exclude<GenderLabel, "unisex">> = {
   "aritzia": "womens",
   "skims": "womens",
   "good american": "womens",
+  // Expanded women's brands
+  "eileen fisher": "womens",
+  "eloquii": "womens",
+  "savage x fenty": "womens",
+  "girlfriend collective": "womens",
+  "outdoor voices": "womens",
+  "alo yoga": "womens",
+  "spanx": "womens",
+  "la perla": "womens",
+  "agent provocateur": "womens",
+  "victoria s secret": "womens",
+  // Men's brands
+  "bonobos": "mens",
+  "todd snyder": "mens",
+  "indochino": "mens",
+  "untuckit": "mens",
+  "brooks brothers": "mens",
+  "suit supply": "mens",
+  "suitsupply": "mens",
 };
 
 const WOMENS_CATEGORIES = new Set([
