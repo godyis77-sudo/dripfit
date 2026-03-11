@@ -50,18 +50,18 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const priceFilter = activePriceIdx === 0 ? null : { min: PRICE_FILTERS[activePriceIdx].min, max: PRICE_FILTERS[activePriceIdx].max };
 
   return (
-    <div ref={ref} className="relative min-h-screen bg-background pb-safe-tab">
+    <div ref={ref} className="relative min-h-screen bg-background pb-safe-tab aurora-bg">
 
       <div className="relative z-10 px-5 pt-5">
         {/* Greeting */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-5"
+          className="mb-6"
         >
-          <p className="text-2xl font-bold text-primary tracking-tight">DripFit</p>
-          <p className="text-muted-foreground text-[12px]">{greeting}{displayName ? ',' : '!'}</p>
-          {displayName && <h1 className="font-display text-xl font-bold text-foreground">{displayName}</h1>}
+          <p className="text-2xl font-bold gradient-drip-text tracking-tight">DripFit</p>
+          <p className="text-muted-foreground/70 text-[12px] mt-0.5">{greeting}{displayName ? ',' : '!'}</p>
+          {displayName && <h1 className="font-display text-xl font-bold text-foreground mt-0.5">{displayName}</h1>}
         </motion.div>
 
         {/* Context-aware Quick Actions */}
