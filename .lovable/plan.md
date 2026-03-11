@@ -1,37 +1,21 @@
+# UI/UX Fix Plan — DripFitCheck
 
+## Phase 1: High-Priority Fixes
+1. **Sticky Try-On CTA** — Make the "Generate" button on `/tryon` sticky at bottom so it's never pushed below fold
+2. **Community filter simplification** — Collapse advanced sort pills behind a single toggle; reduce cognitive load on Style Check page
+3. **Auth loading state** — Add skeleton/spinner during `authLoading` on protected routes instead of blank screen
 
-# Body Diagram as Generated Image
+## Phase 2: Accessibility & Touch Targets
+4. **44px touch targets** — Enforce min-h-[44px] on all filter pills, sort buttons, and small interactive elements across Community, Shop, and Profile
+5. **Light mode contrast** — Darken `--muted-foreground` to meet WCAG AA 4.5:1 contrast ratio
+6. **Aria labels audit** — Ensure all icon-only buttons have descriptive aria-labels
 
-## Overview
-Replace the current SVG-based body diagram with an AI-generated realistic body silhouette image, with measurement labels overlaid using HTML/CSS positioning instead of SVG text elements.
+## Phase 3: Layout & Consistency
+7. **Reusable PageHeader component** — Standardize back button + title + actions pattern across Welcome, Community, Profile, TryOn pages
+8. **Profile tab truncation** — Switch to icon+label tabs that gracefully handle narrow screens (≤360px)
+9. **Authenticated Home density** — Reduce sections above fold, prioritize primary CTA
 
-## Approach
-
-1. **Create an edge function** (`generate-body-diagram`) that calls the Lovable AI image generation model (`google/gemini-2.5-flash-image`) to produce a clean, minimal body silhouette image -- a neutral, front-facing human figure on a transparent/dark background, suitable for overlaying measurement annotations.
-
-2. **Update `BodyDiagram.tsx`** to:
-   - Call the edge function on mount (with caching in state/localStorage so it doesn't regenerate every time)
-   - Display the generated image as an `<img>` tag
-   - Overlay measurement labels using absolutely-positioned HTML `<div>` elements with CSS lines/connectors
-   - Show a loading skeleton while the image generates
-   - Fall back gracefully if generation fails
-
-3. **Measurement overlay** will use CSS `position: absolute` divs placed at percentage-based coordinates over the image, with thin CSS border lines as connectors -- replicating the same label layout (shoulder, bust, chest, sleeve, waist, hips, inseam, height) but in HTML instead of SVG.
-
-## Technical Details
-
-### New Edge Function: `supabase/functions/generate-body-diagram/index.ts`
-- Accepts a POST with optional gender parameter
-- Calls `google/gemini-2.5-flash-image` with a prompt for a clean anatomical silhouette figure
-- Returns the base64 image data
-- Uses `LOVABLE_API_KEY` (already available)
-
-### Updated Component: `src/components/results/BodyDiagram.tsx`
-- Fetches image once, caches the base64 result in `localStorage` (key: `dripcheck_body_silhouette`)
-- Renders image inside a `relative` container
-- Positions measurement annotations as `absolute` HTML elements at percentage-based top/left coordinates
-- Displays cm and inch values using the same formatting logic
-- Shows skeleton loader during generation
-
-### No database changes required.
-
+## Phase 4: Polish & Feedback
+10. **Pull-to-refresh** — Add pull-to-refresh on Community feed and product grids
+11. **Empty state improvements** — Better illustrations and CTAs for zero-data states
+12. **Skeleton consistency** — Use unified Skeleton components instead of inline `skeleton-gold` classes
