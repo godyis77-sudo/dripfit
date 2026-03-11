@@ -183,86 +183,76 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
       )}
 
       {/* Fullscreen product preview */}
-      <AnimatePresence>
-        {previewProduct && createPortal(
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[100] h-dvh w-screen bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 overflow-hidden overscroll-none"
-            onClick={() => setPreviewProduct(null)}
+      {previewProduct && createPortal(
+        <div
+          className="fixed inset-0 z-[100] h-dvh w-screen bg-black/80 flex items-center justify-center p-6 overflow-hidden overscroll-none"
+          onClick={() => setPreviewProduct(null)}
+        >
+          <div
+            className="relative bg-card rounded-2xl overflow-hidden max-w-[280px] w-full max-h-[85vh] shadow-2xl border border-border/50 flex flex-col"
+            onClick={(e) => e.stopPropagation()}
           >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="relative bg-card rounded-2xl overflow-hidden max-w-[280px] w-full max-h-[85vh] shadow-2xl border border-border/50 flex flex-col"
-              onClick={(e) => e.stopPropagation()}
+            {/* Close button */}
+            <button
+              onClick={() => setPreviewProduct(null)}
+              className="absolute top-2 right-2 z-10 h-8 w-8 rounded-full bg-black/40 flex items-center justify-center active:scale-90 transition-transform"
             >
-              {/* Close button */}
-              <button
-                onClick={() => setPreviewProduct(null)}
-                className="absolute top-2 right-2 z-10 h-8 w-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
-              >
-                <X className="h-4 w-4 text-white" />
-              </button>
+              <X className="h-4 w-4 text-white" />
+            </button>
 
-              {/* Product image — constrained to not overflow viewport */}
-              <div className="aspect-[4/5] bg-muted flex-shrink-0">
-                <img
-                  src={previewProduct.image_url}
-                  alt={previewProduct.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+            {/* Product image — constrained to not overflow viewport */}
+            <div className="aspect-[4/5] bg-muted flex-shrink-0">
+              <img
+                src={previewProduct.image_url}
+                alt={previewProduct.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
 
-              {/* Info + Actions */}
-              <div className="p-4">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{previewProduct.brand}</p>
-                <p className="text-sm font-bold text-foreground mt-0.5 line-clamp-2">{previewProduct.name}</p>
-                {previewProduct.price_cents && (
-                  <p className="text-sm font-bold text-primary mt-1">
-                    ${(previewProduct.price_cents / 100).toFixed(0)}
-                  </p>
+            {/* Info + Actions */}
+            <div className="p-4">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{previewProduct.brand}</p>
+              <p className="text-sm font-bold text-foreground mt-0.5 line-clamp-2">{previewProduct.name}</p>
+              {previewProduct.price_cents && (
+                <p className="text-sm font-bold text-primary mt-1">
+                  ${(previewProduct.price_cents / 100).toFixed(0)}
+                </p>
+              )}
+
+              <div className="flex gap-2 mt-3">
+                {onSelectProduct && (
+                  <Button
+                    size="sm"
+                    className="flex-1 gap-1.5 h-9 text-xs"
+                    onClick={() => {
+                      onSelectProduct(previewProduct);
+                      setPreviewProduct(null);
+                    }}
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Try On
+                  </Button>
                 )}
-
-                <div className="flex gap-2 mt-3">
-                  {onSelectProduct && (
-                    <Button
-                      size="sm"
-                      className="flex-1 gap-1.5 h-9 text-xs"
-                      onClick={() => {
-                        onSelectProduct(previewProduct);
-                        setPreviewProduct(null);
-                      }}
-                    >
-                      <Sparkles className="h-3.5 w-3.5" />
-                      Try On
-                    </Button>
-                  )}
-                  {previewProduct.product_url && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 gap-1.5 h-9 text-xs"
-                      onClick={() => {
-                        trackEvent('catalog_product_clicked', { brand: previewProduct.brand, category: previewProduct.category });
-                        window.open(previewProduct.product_url!, '_blank', 'noopener');
-                      }}
-                    >
-                      <ExternalLink className="h-3.5 w-3.5" />
-                      Shop
-                    </Button>
-                  )}
-                </div>
+                {previewProduct.product_url && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 gap-1.5 h-9 text-xs"
+                    onClick={() => {
+                      trackEvent('catalog_product_clicked', { brand: previewProduct.brand, category: previewProduct.category });
+                      window.open(previewProduct.product_url!, '_blank', 'noopener');
+                    }}
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    Shop
+                  </Button>
+                )}
               </div>
-            </motion.div>
-          </motion.div>,
-          document.body
-        )}
-      </AnimatePresence>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 });
