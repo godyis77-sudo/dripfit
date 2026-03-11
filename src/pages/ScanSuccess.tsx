@@ -243,6 +243,7 @@ const ScanSuccess = () => {
           </button>
         </motion.div>
       </div>
+      <BottomTabBar />
     </div>
   );
 };
