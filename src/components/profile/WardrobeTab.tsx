@@ -89,9 +89,9 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                     <p className="text-[11px] font-bold text-foreground capitalize truncate">
                       {item.notes || (item.category === 'top' && item.product_link ? detectCategoryFromUrl(item.product_link) || item.category : item.category)}
                     </p>
-                    {item.brand && (
+                    {(item.retailer || (item.product_link ? detectBrandFromUrl(item.product_link).brand : null)) && (
                       <p className="text-[9px] text-primary font-bold flex items-center gap-0.5">
-                        <Store className="h-2.5 w-2.5" /> {item.brand}
+                        <Store className="h-2.5 w-2.5" /> {item.retailer || (item.product_link ? detectBrandFromUrl(item.product_link).brand : '')}
                       </p>
                     )}
                     <div className="flex items-center justify-between">
