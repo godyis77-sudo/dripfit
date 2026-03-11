@@ -29,6 +29,16 @@ const SOCIAL_PROOF = [
   { stat: '4.8★', label: 'User rating' },
 ];
 
+const stagger = {
+  container: {
+    animate: { transition: { staggerChildren: 0.08, delayChildren: 0.15 } },
+  },
+  item: {
+    initial: { opacity: 0, y: 16 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
+  },
+};
+
 const Welcome = () => {
   const navigate = useNavigate();
   const { user, loading, signOut } = useAuth();
@@ -42,7 +52,6 @@ const Welcome = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Redirect first-time visitors to onboarding (only after auth finishes loading)
   useEffect(() => {
     if (!loading && !user && !isGuestMode() && !isOnboarded()) {
       navigate('/onboarding', { replace: true });
@@ -65,189 +74,163 @@ const Welcome = () => {
 
   return (
     <div className="relative min-h-screen bg-background overflow-hidden pb-safe-tab">
+      {/* Ambient glow */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-primary/[0.04] rounded-full blur-[120px] pointer-events-none" />
+
       {/* Sticky top nav bar */}
-      <nav className="sticky top-0 z-50 h-[52px] flex items-center justify-between px-5 bg-background/80 backdrop-blur-lg border-b border-border">
-        <div className="flex items-center gap-2">
+      <nav className="sticky top-0 z-50 h-[56px] flex items-center justify-between px-6 bg-background/60 backdrop-blur-2xl border-b border-border/40">
+        <div className="flex items-center gap-2.5">
           <Crown className="h-4 w-4 text-primary" />
-          <span className="font-display font-bold text-[16px] tracking-[2px] text-foreground">DRIPFITCHECK</span>
+          <span className="font-display text-[17px] tracking-[3px] text-foreground">DRIPFITCHECK</span>
         </div>
         <button
           onClick={() => { trackEvent('auth_started'); navigate('/auth'); }}
-          className="text-[13px] text-muted-foreground active:opacity-70 transition-opacity"
+          className="text-[12px] font-medium text-muted-foreground active:opacity-70 transition-opacity tracking-wider uppercase"
         >
           Sign In
         </button>
       </nav>
 
-      <div className="relative z-10 flex flex-col items-center px-5 pt-4">
+      <motion.div
+        variants={stagger.container}
+        initial="initial"
+        animate="animate"
+        className="relative z-10 flex flex-col items-center px-6 pt-8"
+      >
 
         {/* Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center max-w-[360px] mb-6"
-        >
-          <h1 className="font-display text-[28px] font-bold tracking-tight mb-2 leading-[1.12] text-foreground">
+        <motion.div variants={stagger.item} className="text-center max-w-[340px] mb-8">
+          <h1 className="font-display text-[32px] font-bold tracking-tight mb-3 leading-[1.1] text-foreground">
             Know your size{' '}
-            <span className="text-primary">before</span> you buy
+            <span className="gradient-drip-text italic">before</span> you buy
           </h1>
-          <p className="text-muted-foreground text-[13px] leading-relaxed">
+          <p className="text-muted-foreground text-[14px] leading-relaxed">
             Get your measurements, preview the outfit, and get real feedback — all in under 2 minutes.
           </p>
         </motion.div>
 
         {/* Primary CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.4 }}
-          className="w-full max-w-[360px] mb-2"
-        >
+        <motion.div variants={stagger.item} className="w-full max-w-[340px] mb-3">
           <Button
             onClick={handleStartScan}
-            className="w-full h-12 text-sm font-semibold uppercase tracking-widest rounded-xl active:scale-[0.97] transition-transform"
+            variant="luxury"
+            className="w-full h-13 text-[13px] font-bold uppercase tracking-[0.15em] rounded-2xl active:scale-[0.97] transition-transform"
             size="lg"
           >
             <Camera className="mr-2 h-4 w-4" /> Get My Size
           </Button>
-          <p className="text-[10px] text-muted-foreground text-center mt-1.5">
+          <p className="text-[10px] text-muted-foreground text-center mt-2 tracking-wider uppercase">
             Free · 2 photos · 60 seconds
           </p>
         </motion.div>
 
         {/* How It Works */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.4 }}
-          className="w-full max-w-[360px] mb-6 mt-4"
-        >
-          <p className="section-label mb-2">How it works</p>
-          <div className="space-y-1.5">
+        <motion.div variants={stagger.item} className="w-full max-w-[340px] mb-8 mt-6">
+          <p className="section-label mb-3">How it works</p>
+          <div className="space-y-2">
             {PILLARS.map((p, i) => (
-              <button
+              <motion.button
                 key={p.label}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => {
                   if (p.label === 'Scan') handleStartScan();
                   else if (p.label === 'Try-On') { trackEvent('home_tryon_click'); navigate(p.action); }
                   else { trackEvent('home_fitcheck_click'); navigate(p.action); }
                 }}
-                className="w-full flex items-center gap-3 bg-card border border-border rounded-xl py-3 px-3 group active:scale-[0.97] transition-transform min-h-[44px]"
+                className="w-full flex items-center gap-3.5 glass-card rounded-2xl py-3.5 px-4 group min-h-[44px]"
               >
-                <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary shrink-0">
+                <div className="flex items-center justify-center h-9 w-9 rounded-xl gradient-drip shrink-0">
                   <p.icon className="h-4 w-4 text-primary-foreground" />
                 </div>
                 <div className="flex-1 text-left">
-                  <p className="text-[12px] font-bold text-foreground flex items-center gap-1.5">
-                    <span className="text-[10px] text-primary font-bold">{i + 1}.</span> {p.label}
+                  <p className="text-[13px] font-bold text-foreground flex items-center gap-2">
+                    <span className="text-[10px] text-primary/70 font-semibold">{String(i + 1).padStart(2, '0')}</span> {p.label}
                   </p>
-                  <p className="text-[10px] text-muted-foreground leading-tight">{p.desc}</p>
+                  <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">{p.desc}</p>
                 </div>
-                <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-              </button>
+                <ChevronRight className="h-4 w-4 text-muted-foreground/50 group-hover:text-primary transition-colors shrink-0" />
+              </motion.button>
             ))}
           </div>
         </motion.div>
 
-        {/* Separator */}
-        <div className="w-full max-w-[360px] my-6">
-          <div className="h-px bg-border" />
-        </div>
+        {/* Gold divider */}
+        <motion.div variants={stagger.item} className="w-full max-w-[340px] my-2">
+          <div className="divider-gold" />
+        </motion.div>
 
         {/* What You'll Get */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.4 }}
-          className="w-full max-w-[360px] mb-5"
-        >
-          <p className="section-label mb-2">What you'll get</p>
-          <div className="bg-card border border-border rounded-xl p-3">
-            <div className="flex items-center justify-between mb-2">
+        <motion.div variants={stagger.item} className="w-full max-w-[340px] mb-6 mt-6">
+          <p className="section-label mb-3">What you'll get</p>
+          <div className="glass-card rounded-2xl p-4">
+            <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Your best size</p>
-                <p className="font-display text-2xl font-bold text-primary leading-none">M</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-[0.15em]">Your best size</p>
+                <p className="font-display text-3xl font-bold gradient-drip-text leading-none">M</p>
               </div>
-              <div className="flex items-center gap-1 bg-primary/15 rounded-lg px-2 py-1">
+              <div className="flex items-center gap-1.5 bg-primary/10 border border-primary/20 rounded-xl px-3 py-1.5">
                 <Star className="h-3 w-3 text-primary" />
                 <span className="text-[11px] font-bold text-primary">92% match</span>
               </div>
             </div>
-            <div className="grid grid-cols-4 gap-1.5">
+            <div className="grid grid-cols-4 gap-2">
               {[
                 { label: 'Chest', val: '96–100' },
                 { label: 'Waist', val: '80–84' },
                 { label: 'Hips', val: '98–102' },
                 { label: 'Inseam', val: '78–80' },
               ].map((m) => (
-                <div key={m.label} className="bg-muted rounded-lg px-1.5 py-1.5 text-center">
-                  <p className="text-[9px] text-muted-foreground uppercase tracking-wide">{m.label}</p>
-                  <p className="text-[11px] font-semibold text-foreground">{m.val}</p>
+                <div key={m.label} className="bg-muted/50 rounded-xl px-2 py-2 text-center">
+                  <p className="text-[8px] text-muted-foreground uppercase tracking-wider">{m.label}</p>
+                  <p className="text-[11px] font-semibold text-foreground mt-0.5">{m.val}</p>
                 </div>
               ))}
             </div>
-            <div className="flex items-center gap-1.5 mt-2">
+            <div className="flex items-center gap-1.5 mt-3">
               {['S', 'M', 'L'].map((s) => (
                 <span
                   key={s}
-                  className={`text-[10px] font-bold rounded-full px-2.5 py-0.5 ${
+                  className={`text-[10px] font-bold rounded-full px-3 py-1 transition-all ${
                     s === 'M'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-muted-foreground'
+                      ? 'gradient-drip text-primary-foreground shadow-gold-glow'
+                      : 'bg-muted/50 text-muted-foreground'
                   }`}
                 >
                   {s}
                 </span>
               ))}
-              <span className="text-[10px] text-muted-foreground ml-auto">Zara · Regular fit</span>
+              <span className="text-[10px] text-muted-foreground ml-auto tracking-wide">Zara · Regular fit</span>
             </div>
           </div>
         </motion.div>
 
-        {/* Skip to Try-On text link */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.35 }}
-          className="w-full max-w-[360px] mb-5 text-center"
-        >
+        {/* Skip to Try-On */}
+        <motion.div variants={stagger.item} className="w-full max-w-[340px] mb-6 text-center">
           <button
             onClick={() => { trackEvent('home_tryon_click'); navigate('/tryon'); }}
-            className="text-[13px] text-muted-foreground active:opacity-70 transition-opacity underline underline-offset-4"
+            className="text-[12px] text-muted-foreground active:opacity-70 transition-opacity underline underline-offset-4 tracking-wide"
           >
             Or skip to Try-On →
           </button>
-          
         </motion.div>
 
         {/* Trust bar */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="w-full max-w-[360px] flex items-center justify-between mb-5"
-        >
+        <motion.div variants={stagger.item} className="w-full max-w-[340px] flex items-center justify-between mb-6">
           {TRUST.map((t) => (
-            <div key={t.text} className="flex items-center gap-1">
-              <t.icon className="h-3 w-3 text-primary/70" />
-              <span className="text-[10px] text-muted-foreground">{t.text}</span>
+            <div key={t.text} className="flex items-center gap-1.5">
+              <t.icon className="h-3 w-3 text-primary/50" />
+              <span className="text-[10px] text-muted-foreground tracking-wide">{t.text}</span>
             </div>
           ))}
         </motion.div>
 
         {/* Social proof */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.42 }}
-          className="w-full max-w-[360px] mb-5"
-        >
-          <div className="grid grid-cols-3 gap-2">
+        <motion.div variants={stagger.item} className="w-full max-w-[340px] mb-6">
+          <div className="grid grid-cols-3 gap-2.5">
             {SOCIAL_PROOF.map((s) => (
-              <div key={s.label} className="text-center bg-card border border-border rounded-xl py-3 px-2">
-                <p className="font-display text-[20px] font-bold text-primary leading-none">{s.stat}</p>
-                <p className="text-[9px] text-muted-foreground mt-0.5">{s.label}</p>
+              <div key={s.label} className="text-center glass-card rounded-2xl py-4 px-2">
+                <p className="font-display text-[22px] font-bold gradient-drip-text leading-none">{s.stat}</p>
+                <p className="text-[9px] text-muted-foreground mt-1 tracking-wider uppercase">{s.label}</p>
               </div>
             ))}
           </div>
@@ -255,26 +238,20 @@ const Welcome = () => {
 
         {/* Size Guide shortcut */}
         <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.45 }}
+          variants={stagger.item}
+          whileTap={{ scale: 0.98 }}
           onClick={() => navigate('/size-guide')}
-          className="w-full max-w-[360px] flex items-center justify-between bg-card border border-border rounded-xl px-4 py-3 mb-3 group active:scale-[0.98] transition-transform min-h-[44px]"
+          className="w-full max-w-[340px] flex items-center justify-between glass-card rounded-2xl px-5 py-4 mb-4 group min-h-[44px]"
         >
           <div>
-            <p className="text-[13px] font-semibold text-foreground">Size Guide Match</p>
-            <p className="text-[11px] text-muted-foreground">Upload any brand's chart → get your size</p>
+            <p className="text-[14px] font-semibold text-foreground">Size Guide Match</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">Upload any brand's chart → get your size</p>
           </div>
-          <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+          <ChevronRight className="h-4 w-4 text-muted-foreground/50 group-hover:text-primary transition-colors" />
         </motion.button>
 
         {/* Referral CTA */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="w-full max-w-[360px] mb-6"
-        >
+        <motion.div variants={stagger.item} className="w-full max-w-[340px] mb-8">
           <button
             onClick={() => {
               const baseUrl = window.location.origin;
@@ -287,19 +264,19 @@ const Welcome = () => {
               }
               trackEvent('share_action', { source: 'home_referral' });
             }}
-            className="w-full flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 group active:scale-[0.98] transition-transform min-h-[44px]"
+            className="w-full flex items-center gap-3.5 glass-card rounded-2xl px-5 py-4 group active:scale-[0.98] transition-transform min-h-[44px]"
           >
-            <div className="h-8 w-8 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
+            <div className="h-9 w-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
               <Gift className="h-4 w-4 text-primary" />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-[12px] font-bold text-foreground">Invite Friends</p>
-              <p className="text-[10px] text-muted-foreground">Invite friends — you both get 5 extra try-ons this month</p>
+              <p className="text-[13px] font-bold text-foreground">Invite Friends</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">You both get 5 extra try-ons this month</p>
             </div>
-            <Share2 className="h-3.5 w-3.5 text-primary shrink-0" />
+            <Share2 className="h-3.5 w-3.5 text-primary/50 shrink-0" />
           </button>
         </motion.div>
-      </div>
+      </motion.div>
 
       {/* Scroll to top FAB */}
       <AnimatePresence>
@@ -309,7 +286,7 @@ const Welcome = () => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="fixed bottom-24 right-4 z-40 h-10 w-10 rounded-full bg-card border border-border flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+            className="fixed bottom-24 right-4 z-40 h-10 w-10 rounded-full glass-card flex items-center justify-center active:scale-95 transition-transform"
             aria-label="Scroll to top"
           >
             <ChevronUp className="h-4 w-4 text-foreground" />
