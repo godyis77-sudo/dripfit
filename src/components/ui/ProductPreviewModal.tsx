@@ -110,6 +110,15 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
         </div>
 
         <div className="flex gap-3 max-w-sm mx-auto w-full">
+          {onTryOn && (
+            <Button
+              className="flex-1 gap-2 h-12 rounded-xl font-bold bg-white/10 text-white border border-white/20 hover:bg-white/20"
+              onClick={() => onTryOn(product)}
+            >
+              <Sparkles className="h-4 w-4" />
+              Try On
+            </Button>
+          )}
           {onShop && product.product_url && (
             <Button
               className="flex-1 gap-2 h-12 rounded-xl font-bold btn-luxury text-primary-foreground shimmer-sweep"

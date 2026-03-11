@@ -3,10 +3,11 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
-import { ExternalLink, Trash2, X, ShoppingBag, Tag, Calendar, Store, Star, ChevronDown, Search } from 'lucide-react';
+import { ExternalLink, Trash2, X, ShoppingBag, Tag, Calendar, Store, Star, ChevronDown, Search, Sparkles } from 'lucide-react';
 import { buildRetailerSearchUrl, getRetailersForCategory } from '@/lib/retailerLinks';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { trackEvent } from '@/lib/analytics';
+import { useNavigate } from 'react-router-dom';
 
 interface WardrobeItem {
   id: string;
@@ -39,6 +40,7 @@ const ALL_RETAILERS = [
 ];
 
 const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetailers = [] }: WardrobeDetailSheetProps) => {
+  const navigate = useNavigate();
   const [retailerSearch, setRetailerSearch] = useState('');
 
   const searchQuery = item?.category ?? '';
@@ -113,6 +115,18 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
           {item.notes && (
             <p className="text-[12px] text-muted-foreground">{item.notes}</p>
           )}
+
+          {/* Try On button */}
+          <Button
+            className="w-full h-10 rounded-xl text-[12px] font-bold gap-1.5 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20"
+            onClick={() => {
+              trackEvent('tryon_from_wardrobe_detail', { item_id: item.id });
+              onOpenChange(false);
+              navigate('/tryon', { state: { clothingUrl: item.image_url, productUrl: item.product_link || undefined } });
+            }}
+          >
+            <Sparkles className="h-4 w-4" /> Try On
+          </Button>
 
           {/* Direct product link */}
           {item.product_link && (
