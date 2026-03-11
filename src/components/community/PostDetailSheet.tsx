@@ -304,7 +304,7 @@ export const PostDetailSheet = ({
             {retailers.length > 0 && zoom <= 1 && (
               <div className="absolute top-3 right-4 flex flex-col gap-1 items-end">
                 {retailers.map((r) => (
-                  <button key={r} onClick={() => { window.open(retailerUrlMap.get(r), '_blank', 'noopener'); }} className="text-[11px] font-bold text-white bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1.5 active:scale-95 transition-transform">
+                  <button key={r} onClick={() => { window.open(retailerUrlMap.get(r), '_blank', 'noopener'); }} className="brand-label flex items-center gap-1.5 active:scale-95 transition-transform">
                     {r}
                     <ExternalLink className="h-3 w-3" />
                   </button>
