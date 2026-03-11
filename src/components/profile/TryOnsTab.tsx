@@ -54,6 +54,9 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
   const [votes, setVotes] = useState<Record<string, string[]>>({});
   const [voteCounts, setVoteCounts] = useState<Record<string, Record<string, number>>>({});
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const longPressTimerRef = useRef<number | null>(null);
+  const longPressTriggeredRef = useRef(false);
 
   // Load vote counts for public posts
   useEffect(() => {
