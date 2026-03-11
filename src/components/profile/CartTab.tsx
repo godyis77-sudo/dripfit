@@ -244,7 +244,7 @@ const CartTab = () => {
 
       <ProductPreviewModal
         product={previewProduct}
-        onClose={() => setPreviewProduct(null)}
+        onClose={() => { setPreviewProduct(null); setPreviewLookItems([]); }}
         onShop={previewProduct?.product_url ? (product) => {
           if (!product.product_url) return;
           handleShop(product.product_url);
@@ -252,6 +252,15 @@ const CartTab = () => {
         } : undefined}
         onTryOn={(product) => {
           handleTryOn(product.product_url ?? undefined, product.image_url);
+          setPreviewProduct(null);
+        }}
+        lookItems={previewLookItems}
+        onLookItemShop={(item) => {
+          trackEvent('cart_look_shop_clickout', { url: item.url });
+          window.open(item.url, '_blank', 'noopener');
+        }}
+        onLookItemTryOn={(item) => {
+          handleTryOn(item.url, item.image_url ?? undefined);
           setPreviewProduct(null);
         }}
       />
