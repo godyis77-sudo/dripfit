@@ -177,7 +177,7 @@ const CartTab = () => {
             <div className="flex-1 min-w-0 flex flex-col justify-between">
               <div>
                 {item.product_urls?.[0] && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-primary/10 text-primary font-bold inline-block mb-1">
+                  <span className="text-[13px] px-2 py-0.5 rounded-md bg-primary/10 text-primary font-bold inline-block mb-1">
                     {detectBrandFromUrl(item.product_urls[0]).brand || 'Shop'}
                   </span>
                 )}
@@ -185,8 +185,8 @@ const CartTab = () => {
                   const info = item.product_urls?.[0] ? catalogInfo[item.product_urls[0]] : null;
                   return info ? (
                     <>
-                      <p className="text-[10px] font-bold text-foreground leading-tight">{info.brand}</p>
-                      <p className="text-[9px] text-muted-foreground line-clamp-2 leading-snug mt-0.5">{info.name}</p>
+                      <p className="text-[13px] font-bold text-foreground leading-tight">{info.brand}</p>
+                      <p className="text-[11px] text-muted-foreground line-clamp-2 leading-snug mt-0.5">{info.name}</p>
                     </>
                   ) : null;
                 })()}
