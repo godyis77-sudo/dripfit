@@ -235,31 +235,59 @@
 
   /* ── Luxury pill / chip buttons ── */
   .pill {
-    @apply min-h-[44px] px-4 py-2 rounded-full text-[11px] font-bold whitespace-nowrap transition-all duration-200 active:scale-95;
+    @apply min-h-[44px] px-4 py-2 rounded-full text-[11px] font-bold whitespace-nowrap transition-all duration-150 active:translate-y-[1px];
     border: 1px solid hsl(var(--border));
     color: hsl(var(--muted-foreground));
-    background: hsl(var(--card));
-    box-shadow: 0 1px 2px hsl(0 0% 0% / 0.04);
+    background: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--secondary)) 100%);
+    box-shadow:
+      0 2px 0 0 hsl(var(--border)),
+      0 3px 8px -2px hsl(0 0% 0% / 0.15),
+      inset 0 1px 0 hsl(var(--surface-glass) / 0.06);
   }
   .pill:hover {
     border-color: hsl(var(--primary) / 0.3);
     color: hsl(var(--foreground));
+    box-shadow:
+      0 2px 0 0 hsl(var(--border)),
+      0 4px 12px -2px hsl(0 0% 0% / 0.2),
+      inset 0 1px 0 hsl(var(--surface-glass) / 0.08);
+  }
+  .pill:active {
+    box-shadow:
+      0 0px 0 0 hsl(var(--border)),
+      0 1px 3px hsl(0 0% 0% / 0.1),
+      inset 0 1px 2px hsl(0 0% 0% / 0.06);
   }
   .pill-active {
     border-color: hsl(var(--primary) / 0.5) !important;
-    background: linear-gradient(160deg, hsl(var(--primary) / 0.12), hsl(var(--primary) / 0.06)) !important;
+    background: linear-gradient(180deg, hsl(var(--primary) / 0.15), hsl(var(--primary) / 0.08)) !important;
     color: hsl(var(--primary)) !important;
     box-shadow:
-      0 0 12px -4px hsl(var(--primary) / 0.2),
-      inset 0 1px 0 hsl(var(--gold-shimmer) / 0.08) !important;
+      0 2px 0 0 hsl(42 76% 28% / 0.4),
+      0 3px 10px -2px hsl(var(--primary) / 0.2),
+      inset 0 1px 0 hsl(var(--gold-shimmer) / 0.12) !important;
+  }
+  .pill-active:active {
+    box-shadow:
+      0 0px 0 0 hsl(42 76% 28% / 0.3),
+      0 1px 3px hsl(var(--primary) / 0.1),
+      inset 0 1px 2px hsl(0 0% 0% / 0.06) !important;
   }
   .pill-filled {
     border-color: transparent !important;
-    background: linear-gradient(160deg, hsl(42 76% 46%), hsl(40 72% 40%)) !important;
+    background: linear-gradient(180deg, hsl(40 72% 50%), hsl(42 76% 42%)) !important;
     color: hsl(var(--primary-foreground)) !important;
     box-shadow:
-      0 2px 12px -3px hsl(var(--primary) / 0.3),
-      inset 0 1px 0 hsl(var(--gold-shimmer) / 0.2) !important;
+      0 2px 0 0 hsl(42 76% 28%),
+      0 4px 14px -2px hsl(var(--primary) / 0.3),
+      inset 0 1px 0 hsl(var(--gold-shimmer) / 0.35) !important;
+    text-shadow: 0 1px 0 hsl(var(--gold-shimmer) / 0.3);
+  }
+  .pill-filled:active {
+    box-shadow:
+      0 0px 0 0 hsl(42 76% 28%),
+      0 1px 4px hsl(var(--primary) / 0.15),
+      inset 0 1px 2px hsl(0 0% 0% / 0.08) !important;
   }
 
   /* ── Section label — editorial style ── */
