@@ -98,7 +98,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
           )}
         </div>
       )}
-      <div className="grid grid-cols-2 gap-2.5">
+      <div className="grid grid-cols-2 gap-3">
         {displayed.map(product => (
           <button
             key={product.id}
@@ -106,9 +106,9 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
               trackEvent('catalog_product_preview', { brand: product.brand, category: product.category });
               setPreviewProduct(product);
             }}
-            className="relative rounded-xl overflow-hidden border border-border bg-card active:scale-[0.97] transition-transform group text-left"
+            className="relative rounded-2xl overflow-hidden border border-border/50 bg-card product-card text-left group"
           >
-            {/* Image area — 3:4 aspect, ~68% of card */}
+            {/* Image area — 3:4 aspect */}
             <div className="relative aspect-[3/4] bg-muted overflow-hidden">
               {failedImageIds.has(product.id) ? (
                 <div className="w-full h-full flex items-center justify-center p-2 bg-muted text-center">
@@ -120,7 +120,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
                 <img
                   src={product.image_url}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
                   onError={() => {
                     setFailedImageIds(prev => {
@@ -136,12 +136,10 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
               <div className="absolute bottom-1.5 right-1.5">
                 <span className="brand-label">{product.brand}</span>
               </div>
-              {/* Size badge slot — top right, empty for now */}
-              <div className="absolute top-1.5 right-1.5" />
             </div>
             {/* Info area */}
             <div className="p-2.5 flex flex-col">
-              <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-0.5">{product.brand}</p>
+              <p className="text-[9px] text-muted-foreground/70 uppercase tracking-[0.15em] mb-0.5">{product.brand}</p>
               <p className="text-[11px] font-bold text-foreground line-clamp-2 leading-tight h-[28px]">{product.name}</p>
               <p className="text-[12px] font-bold text-primary mt-1 h-[18px]">
                 {product.price_cents ? `$${(product.price_cents / 100).toFixed(0)}` : '\u00A0'}
