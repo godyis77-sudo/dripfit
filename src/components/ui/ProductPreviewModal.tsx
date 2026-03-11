@@ -121,15 +121,15 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
             <button
               type="button"
               onClick={() => setLookOpen(!lookOpen)}
-              className="w-full flex items-center justify-between bg-primary text-primary-foreground active:scale-[0.98] transition-transform"
-              style={{ borderRadius: lookOpen ? '12px 12px 0 0' : '12px', padding: '10px 16px' }}
+              className="w-full flex items-center justify-center gap-2 btn-luxury text-primary-foreground shimmer-sweep active:scale-[0.98] transition-transform"
+              style={{ borderRadius: lookOpen ? '12px 12px 0 0' : '12px', padding: '12px 16px' }}
             >
-              <span className="text-[11px] font-bold uppercase tracking-widest flex items-center gap-2">
-                <ShoppingCart className="h-3.5 w-3.5" />
+              <ShoppingCart className="h-4 w-4" />
+              <span className="text-[13px] font-bold uppercase tracking-widest">
                 Shop This Style - Try On
               </span>
               <ChevronDown
-                className="h-3.5 w-3.5 transition-transform duration-200"
+                className="h-4 w-4 transition-transform duration-200"
                 style={{ transform: lookOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
               />
             </button>
