@@ -222,7 +222,7 @@ const Community = () => {
           <>
             <div className="flex gap-1.5 mb-3">
               {GENDER_OPTIONS.map(opt => (
-                <button key={opt.key} onClick={() => setShopGender(opt.key)} aria-label={`Filter by ${opt.label}`} className={`px-3 py-2 min-h-[44px] rounded-full text-[11px] font-semibold transition-colors ${shopGender === opt.key ? 'bg-primary text-primary-foreground' : 'bg-card border border-border text-muted-foreground'}`}>{opt.label}</button>
+                <button key={opt.key} onClick={() => setShopGender(opt.key)} aria-label={`Filter by ${opt.label}`} className={`pill ${shopGender === opt.key ? 'pill-filled' : ''}`}>{opt.label}</button>
               ))}
             </div>
             <BrandFilter gender={shopGender === 'all' ? null : shopGender} selectedBrand={shopBrand} onBrandChange={setShopBrand} />
