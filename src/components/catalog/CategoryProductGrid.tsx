@@ -174,7 +174,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-8"
+            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 overflow-hidden"
             onClick={() => setPreviewProduct(null)}
           >
             <motion.div
@@ -182,7 +182,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="relative bg-card rounded-2xl overflow-hidden max-w-[300px] w-full shadow-2xl border border-border/50"
+              className="relative bg-card rounded-2xl overflow-hidden max-w-[280px] w-full max-h-[85vh] shadow-2xl border border-border/50 flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close button */}
@@ -193,8 +193,8 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
                 <X className="h-4 w-4 text-white" />
               </button>
 
-              {/* Product image */}
-              <div className="aspect-[3/4] bg-muted">
+              {/* Product image — constrained to not overflow viewport */}
+              <div className="aspect-[4/5] bg-muted flex-shrink-0">
                 <img
                   src={previewProduct.image_url}
                   alt={previewProduct.name}
