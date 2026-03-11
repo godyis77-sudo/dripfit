@@ -36,6 +36,8 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
   const [expanded, setExpanded] = useState(!collapsed);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
   const [failedImageIds, setFailedImageIds] = useState<Set<string>>(new Set());
+  const PAGE_SIZE = 8;
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   useEffect(() => {
     setFailedImageIds(new Set());
