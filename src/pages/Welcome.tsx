@@ -266,8 +266,8 @@ const Welcome = () => {
             }}
             className="w-full flex items-center gap-3.5 glass-card rounded-2xl px-5 py-4 group active:scale-[0.98] transition-transform min-h-[44px]"
           >
-            <div className="h-9 w-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
-              <Gift className="h-4 w-4 text-primary" />
+            <div className="h-9 w-9 icon-3d shrink-0">
+              <Gift className="h-4 w-4 text-primary shimmer-icon" />
             </div>
             <div className="flex-1 text-left">
               <p className="text-[13px] font-bold text-foreground">Invite Friends</p>

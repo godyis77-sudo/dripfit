@@ -53,7 +53,7 @@ const HomeFAB = () => {
                   </span>
                   <button
                     onClick={() => { closeFab(); item.action(); }}
-                    className="h-11 w-11 rounded-full bg-primary shadow-lg flex items-center justify-center active:scale-90 transition-transform"
+                    className="h-11 w-11 rounded-full icon-3d-gold shimmer-sweep active:scale-90 transition-transform"
                   >
                     {item.icon}
                   </button>
