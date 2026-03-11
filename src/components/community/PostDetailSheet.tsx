@@ -302,7 +302,7 @@ export const PostDetailSheet = ({
                 {zoom > 1 ? <ZoomOut className="h-4 w-4 text-white" /> : <ZoomIn className="h-4 w-4 text-white" />}
               </button>
             {retailers.length > 0 && zoom <= 1 && (
-              <div className="absolute top-3 right-4 flex flex-col gap-1 items-end">
+              <div className="absolute top-3 left-4 flex flex-col gap-1 items-start">
                 {retailers.map((r) => (
                   <button key={r} onClick={() => { window.open(retailerUrlMap.get(r), '_blank', 'noopener'); }} className="brand-label flex items-center gap-1.5 active:scale-95 transition-transform">
                     {r}
