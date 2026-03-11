@@ -112,6 +112,17 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
             alt={post.caption || 'Try-on result'}
             className="max-w-full max-h-full object-contain"
           />
+          {/* Delete icon — top left */}
+          {onDelete && (
+            <button
+              type="button"
+              aria-label="Delete try-on"
+              className="absolute top-3 left-3 z-50 h-9 w-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-destructive hover:bg-destructive/20 transition-colors active:scale-90"
+              onClick={() => setConfirmDeleteId(post.id)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
           {/* Date badge */}
           <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-sm rounded-full px-2.5 py-1">
             <p className="text-[10px] text-white font-medium">{new Date(post.created_at).toLocaleDateString()}</p>
