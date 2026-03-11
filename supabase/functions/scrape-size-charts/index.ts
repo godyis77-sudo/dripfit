@@ -379,6 +379,23 @@ const RETAILERS: Record<string, RetailerConfig> = {
     url: "https://www.zara.com/us/en/help/size-guide",
     categories: ["tops", "bottoms", "outerwear", "suits", "knitwear", "swimwear"],
   },
+
+  // ── New: Previously uncovered brands ──
+  loewe: {
+    brand_name: "Loewe",
+    url: "https://www.loewe.com/eur/en/size-guide",
+    categories: ["tops", "bottoms", "outerwear", "knitwear", "dresses", "footwear"],
+  },
+  ugg: {
+    brand_name: "UGG",
+    url: "https://www.ugg.com/size-fit-guide.html",
+    categories: ["footwear", "tops", "outerwear", "loungewear"],
+  },
+  gymshark: {
+    brand_name: "Gymshark",
+    url: "https://www.gymshark.com/pages/size-guide",
+    categories: ["tops", "bottoms", "activewear", "sports-bras", "hoodies", "shorts"],
+  },
 };
 
 const FETCH_HEADERS = {
