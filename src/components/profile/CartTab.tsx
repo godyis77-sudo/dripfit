@@ -269,10 +269,6 @@ const CartTab = () => {
           handleShop(product.product_url);
           setPreviewProduct(null);
         } : undefined}
-        onTryOn={(product) => {
-          handleTryOn(product.product_url ?? undefined, product.image_url);
-          setPreviewProduct(null);
-        }}
         lookItems={previewLookItems}
         onLookItemShop={(item) => {
           trackEvent('cart_shop_clickout', { url: item.url });
