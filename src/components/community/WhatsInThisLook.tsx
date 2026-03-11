@@ -116,8 +116,16 @@ const WhatsInThisLook = ({
 
   return (
     <div className={isCompact ? 'mx-1.5 mb-1.5' : 'mb-3'}>
-      <button
+      <div
+        role="button"
+        tabIndex={0}
         onClick={handleToggle}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleToggle();
+          }
+        }}
         className="w-full flex items-center justify-between active:scale-[0.98] transition-transform bg-primary text-primary-foreground"
         style={{
           borderRadius: open ? '12px 12px 0 0' : '12px',
@@ -132,7 +140,7 @@ const WhatsInThisLook = ({
           className={`${isCompact ? 'h-3 w-3' : 'h-4 w-4'} text-primary-foreground transition-transform duration-200`}
           style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
         />
-      </button>
+      </div>
       <AnimatePresence>
         {open && (
           <motion.div
