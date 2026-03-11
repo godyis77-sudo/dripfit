@@ -325,23 +325,36 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
         </>
       )}
 
+      <AlertDialog open={!!confirmDeleteId} onOpenChange={(open) => !open && setConfirmDeleteId(null)}>
+        <AlertDialogContent className="max-w-[320px] rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-[15px]">Delete try-on?</AlertDialogTitle>
+            <AlertDialogDescription className="text-[13px]">
+              This will permanently remove it from your try-ons.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl text-[12px]">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl text-[12px] bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (!confirmDeleteId) return;
+                void handleDeleteTryOn(confirmDeleteId);
+                setConfirmDeleteId(null);
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <TryOnDetailSheet
         post={selectedPost}
         open={!!selectedPost}
         onOpenChange={(open) => { if (!open) setSelectedPost(null); }}
         onPostUpdated={() => { setSelectedPost(null); onPostUpdated?.(); }}
-        onDelete={async (id) => {
-          if (!user) return;
-          const { error } = await supabase.from('tryon_posts').delete().eq('id', id).eq('user_id', user.id);
-          if (error) {
-            toast({ title: 'Delete failed', description: error.message, variant: 'destructive' });
-            return;
-          }
-          trackEvent('fitcheck_post_deleted', { postId: id, source: 'profile_tryons' });
-          toast({ title: 'Deleted', description: 'Try-on removed permanently.' });
-          setSelectedPost(null);
-          onPostUpdated?.();
-        }}
+        onDelete={handleDeleteTryOn}
       />
     </>
   );
