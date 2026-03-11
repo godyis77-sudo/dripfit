@@ -64,11 +64,11 @@ const TryOn = () => {
             <div className="mb-3 relative overflow-hidden">
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Category</p>
               <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none" style={{ WebkitOverflowScrolling: 'touch' }}>
-                <button onClick={() => s.setCategory('all')} aria-label="Show all categories" className={`shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${s.category === 'all' ? 'border-primary bg-primary text-primary-foreground font-bold' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
+                <button onClick={() => s.setCategory('all')} aria-label="Show all categories" className={`shrink-0 px-3 py-1.5 min-h-[44px] rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${s.category === 'all' ? 'border-primary bg-primary text-primary-foreground font-bold' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
                   🛍️ All
                 </button>
                 {CATEGORIES.map(c => (
-                  <button key={c.key} onClick={() => s.setCategory(c.key)} aria-label={`Filter by ${c.label}`} className={`shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${s.category === c.key ? 'border-primary bg-primary text-primary-foreground font-bold' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
+                  <button key={c.key} onClick={() => s.setCategory(c.key)} aria-label={`Filter by ${c.label}`} className={`shrink-0 px-3 py-1.5 min-h-[44px] rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${s.category === c.key ? 'border-primary bg-primary text-primary-foreground font-bold' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
                     {c.label}
                   </button>
                 ))}
