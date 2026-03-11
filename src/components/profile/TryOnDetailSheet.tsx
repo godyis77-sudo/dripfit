@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Heart, MessageSquare, ShoppingBag, X, Share2, Instagram, Trash2 } from 'lucide-react';
+import { Heart, MessageSquare, ShoppingBag, X, Instagram, Trash2, Sparkles } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -33,6 +34,7 @@ interface TryOnDetailSheetProps {
 const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }: TryOnDetailSheetProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [liked, setLiked] = useState(false);
   const [posting, setPosting] = useState(false);
   const [addingToWardrobe, setAddingToWardrobe] = useState(false);
@@ -158,7 +160,24 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               disabled={addingToWardrobe || addedToWardrobe}
             >
               <ShoppingBag className="h-4 w-4" />
-              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added to Wardrobe ✓' : 'Add to Wardrobe'}
+              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added ✓' : 'Add to Wardrobe'}
+            </Button>
+
+            <Button
+              className="h-11 rounded-xl text-[12px] font-bold gap-1.5 btn-luxury text-primary-foreground col-span-2"
+              onClick={() => {
+                onOpenChange(false);
+                navigate('/tryon', {
+                  state: {
+                    clothingImageUrl: post.clothing_photo_url || undefined,
+                    productUrl: (post.product_urls && post.product_urls.length > 0) ? post.product_urls[0] : undefined,
+                  },
+                });
+                trackEvent('tryon_from_detail_sheet', { post_id: post.id });
+              }}
+            >
+              <Sparkles className="h-4 w-4" />
+              Try On This Look
             </Button>
 
             <Button

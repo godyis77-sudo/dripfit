@@ -105,6 +105,7 @@ type FunnelEvent =
   | 'cart_shop_clickout'
   | 'cart_tryon_click'
   | 'tryon_navigate'
+  | 'tryon_from_detail_sheet'
   | 'account_deleted';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
