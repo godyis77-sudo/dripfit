@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Sparkles, ExternalLink, XCircle, Trash2, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { FullscreenImage } from '@/components/ui/fullscreen-image';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import ProductPreviewModal, { type ProductPreviewData } from '@/components/ui/ProductPreviewModal';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 import { useCart } from '@/hooks/useCart';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
