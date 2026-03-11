@@ -94,7 +94,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             <button
               key={action.title}
               onClick={action.onClick}
-              className="flex items-center gap-2.5 glass-card rounded-xl p-3 active:scale-[0.97] transition-all min-h-[44px] shadow-3d hover:shadow-[0_3px_0_0_hsl(var(--border)/0.5),0_6px_16px_-2px_hsl(0_0%_0%/0.25),inset_0_1px_0_hsl(var(--surface-glass)/0.18)] active:shadow-3d-pressed active:translate-y-[1px]"
+              className="flex items-center gap-2.5 glass-card rounded-xl p-3 active:scale-[0.97] transition-all min-h-[44px] glow-hover"
             >
               <div className="h-9 w-9 icon-3d-gold shimmer-sweep shrink-0">
                 <span className="shimmer-icon">{action.icon}</span>
