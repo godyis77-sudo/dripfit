@@ -196,7 +196,9 @@ const WhatsInThisLook = ({
                       </span>
                     )}
                     <button
-                      onClick={() => {
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
                         window.open(item.url, '_blank', 'noopener');
                         trackEvent('badge_clickout', { retailer: item.brand, source: 'whats_in_look' });
                       }}
@@ -206,7 +208,11 @@ const WhatsInThisLook = ({
                     </button>
                     {onTryOn && (
                       <button
-                        onClick={() => onTryOn(item)}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onTryOn(item);
+                        }}
                         className={`${isCompact ? 'text-[9px]' : 'text-[11px]'} font-bold text-accent-foreground flex items-center gap-0.5 active:opacity-70 ml-1`}
                         style={{ color: 'hsl(var(--primary))' }}
                       >
