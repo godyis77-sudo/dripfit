@@ -74,11 +74,13 @@ const WOMENS_CATEGORIES = new Set([
   "dress", "dresses", "skirt", "skirts", "heels", "lingerie", "maternity",
   "bras", "bra", "bralettes", "bralette", "bikini", "bikinis", "swimsuit",
   "swimsuits", "tankini", "tankinis", "camisole", "camisoles", "romper", "rompers",
-  "leggings", "jumpsuits", "jumpsuit",
+  "leggings", "jumpsuits", "jumpsuit", "bodycon", "babydoll", "bustier",
+  "corset", "shapewear", "nursing", "postpartum",
 ]);
 
 const MENS_CATEGORIES = new Set([
   "boxers", "briefs", "cufflinks", "waistcoats", "tuxedos", "suits",
+  "neckties", "ties", "pocket squares", "tie clips", "suspenders",
 ]);
 
 const WOMENS_KEYWORDS = [
