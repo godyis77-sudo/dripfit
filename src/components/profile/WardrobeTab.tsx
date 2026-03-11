@@ -79,7 +79,7 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                     {(() => {
                       const displayBrand = item.brand || (item.product_link ? detectBrandFromUrl(item.product_link).brand : null) || item.retailer;
                       return displayBrand ? (
-                        <div className="absolute bottom-1.5 right-1.5">
+                        <div className="absolute top-1.5 left-1.5">
                           <span className="brand-label">{displayBrand}</span>
                         </div>
                       ) : null;
