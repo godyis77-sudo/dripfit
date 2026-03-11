@@ -26,6 +26,8 @@ interface ProductPreviewModalProps {
   onClose: () => void;
   onTryOn?: (product: ProductPreviewData) => void;
   onShop?: (product: ProductPreviewData) => void;
+  /** User-authored caption shown below the image */
+  caption?: string | null;
   /** Optional list of all items in the look — renders an expandable "TRY ON - SHOP" section */
   lookItems?: LookItemData[];
   onLookItemTryOn?: (item: LookItemData) => void;
@@ -36,7 +38,7 @@ interface ProductPreviewModalProps {
  * Unified fullscreen product preview modal.
  * Portaled to document.body, scroll-locked, maximized image.
  */
-const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, lookItems, onLookItemTryOn, onLookItemShop }: ProductPreviewModalProps) => {
+const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookItems, onLookItemTryOn, onLookItemShop }: ProductPreviewModalProps) => {
   const [lookOpen, setLookOpen] = useState(false);
 
   useEffect(() => {
@@ -93,6 +95,9 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, lookItems, onL
             <p className="text-sm font-bold text-primary mt-1">
               ${(product.price_cents / 100).toFixed(0)}
             </p>
+          )}
+          {caption && (
+            <p className="text-[12px] text-white/70 italic mt-1.5 line-clamp-2">"{caption}"</p>
           )}
         </div>
 

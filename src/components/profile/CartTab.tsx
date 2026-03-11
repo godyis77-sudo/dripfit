@@ -24,6 +24,7 @@ const CartTab = () => {
   const { items, removeFromCart, clearCart } = useCart();
   const [previewProduct, setPreviewProduct] = useState<ProductPreviewData | null>(null);
   const [previewLookItems, setPreviewLookItems] = useState<LookItemData[]>([]);
+  const [previewCaption, setPreviewCaption] = useState<string | null>(null);
 
   const handleTryOn = async (productUrl?: string, fallbackClothingImageUrl?: string) => {
     trackEvent('cart_tryon_click', { productUrl });
@@ -97,10 +98,11 @@ const CartTab = () => {
                 const primaryBrand = primaryProductUrl ? detectBrandFromUrl(primaryProductUrl).brand : null;
                 setPreviewProduct({
                   image_url: item.image_url,
-                  name: item.caption || 'Look',
+                  name: 'Look',
                   brand: primaryBrand || 'Shop',
                   product_url: primaryProductUrl,
                 });
+                setPreviewCaption(item.caption || null);
                 // Build look items from all product URLs
                 const derived: LookItemData[] = urls.map(url => {
                   const { brand } = detectBrandFromUrl(url);
@@ -154,9 +156,6 @@ const CartTab = () => {
                   <span className="text-[10px] px-2 py-0.5 rounded-md bg-primary/10 text-primary font-bold inline-block mb-1">
                     {detectBrandFromUrl(item.product_urls[0]).brand || 'Shop'}
                   </span>
-                )}
-                {item.caption && (
-                  <p className="text-[11px] font-semibold text-foreground line-clamp-2 leading-snug">{item.caption}</p>
                 )}
                 <p className="text-[9px] text-muted-foreground mt-0.5">
                   Added {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
@@ -265,7 +264,8 @@ const CartTab = () => {
 
       <ProductPreviewModal
         product={previewProduct}
-        onClose={() => { setPreviewProduct(null); setPreviewLookItems([]); }}
+        onClose={() => { setPreviewProduct(null); setPreviewLookItems([]); setPreviewCaption(null); }}
+        caption={previewCaption}
         onShop={previewProduct?.product_url ? (product) => {
           if (!product.product_url) return;
           handleShop(product.product_url);
