@@ -136,14 +136,6 @@ const TryOnUploadSection = ({
                 {onRemoveClothing && (
                   <button onClick={(e) => { e.stopPropagation(); onRemoveClothing(); }} className="text-[9px] text-destructive hover:text-destructive/80 transition-colors underline">Remove</button>
                 )}
-                {user && !clothingSaved && (
-                  <button onClick={onSaveClothingToWardrobe} className="text-[9px] text-muted-foreground hover:text-primary flex items-center gap-0.5 transition-colors">
-                    <Bookmark className="h-2.5 w-2.5" /> Save
-                  </button>
-                )}
-                {clothingSaved && (
-                  <span className="text-[9px] text-primary/70 flex items-center gap-0.5"><Bookmark className="h-2.5 w-2.5" /> Saved</span>
-                )}
               </div>
             </div>
           ) : (

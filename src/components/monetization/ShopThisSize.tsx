@@ -157,19 +157,6 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
         </div>
       )}
 
-      {/* Save for later */}
-      <Button
-        variant="outline"
-        className="w-full h-9 rounded-lg text-[11px] font-bold"
-        onClick={handleSaveForLater}
-        disabled={saved}
-      >
-        {saved ? (
-          <><Check className="mr-1.5 h-3.5 w-3.5" /> Saved</>
-        ) : (
-          <><Bookmark className="mr-1.5 h-3.5 w-3.5" /> Save for Later</>
-        )}
-      </Button>
 
       {/* Save confirmation banner */}
       <SaveBanner
