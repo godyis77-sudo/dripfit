@@ -134,10 +134,11 @@ const Capture = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onloadend = () => {
+    reader.onloadend = async () => {
       const base64 = reader.result as string;
       const key = flowStep === 'side' ? 'side' : 'front';
-      setPhotos(prev => ({ ...prev, [key]: base64 }));
+      const compressed = await compressPhoto(base64, 1280, 0.8);
+      setPhotos(prev => ({ ...prev, [key]: compressed }));
       setReviewing(true);
       trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
     };
