@@ -264,7 +264,8 @@ const CartTab = () => {
 
       <ProductPreviewModal
         product={previewProduct}
-        onClose={() => { setPreviewProduct(null); setPreviewLookItems([]); }}
+        onClose={() => { setPreviewProduct(null); setPreviewLookItems([]); setPreviewCaption(null); }}
+        caption={previewCaption}
         onShop={previewProduct?.product_url ? (product) => {
           if (!product.product_url) return;
           handleShop(product.product_url);
