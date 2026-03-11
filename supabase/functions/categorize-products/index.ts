@@ -24,6 +24,7 @@ const CATEGORY_LIST = VALID_CATEGORIES.join(", ");
 // Categories that are ALWAYS a specific gender — override AI if it disagrees
 const ALWAYS_WOMENS_CATEGORIES = new Set([
   "dresses", "skirts", "heels", "jumpsuits", "leggings",
+  "lingerie", "bralettes", "bikinis", "tankinis",
 ]);
 const ALWAYS_MENS_CATEGORIES = new Set<string>([
   // currently none that are absolute, but reserved
