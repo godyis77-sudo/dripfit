@@ -66,10 +66,10 @@ const Welcome = () => {
 
   if (user) {
     return (
-      <>
+      <div className="min-h-screen bg-background">
         <AuthenticatedHome />
         <BottomTabBar />
-      </>
+      </div>
     );
   }
 
