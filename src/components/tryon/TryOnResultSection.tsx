@@ -184,19 +184,6 @@ const TryOnResultSection = ({
           </div>
         )}
 
-        {/* Save to Wardrobe */}
-        {user && !savedToItems && (
-          <Button variant="secondary" className="w-full h-10 rounded-xl text-[12px] font-bold mb-2" onClick={onSaveToItems}>
-            <Bookmark className="mr-1.5 h-3.5 w-3.5" /> Save to Wardrobe
-          </Button>
-        )}
-        {savedToItems && (
-          <div className="flex items-center gap-2 justify-center mb-2">
-            <Check className="h-3 w-3 text-primary" />
-            <span className="text-[11px] font-bold text-primary">Saved</span>
-            <button onClick={() => navigate('/profile/saved')} className="text-[10px] text-primary underline font-medium">View Saved Items →</button>
-          </div>
-        )}
 
         {/* Try Another | Shop */}
         <div className="flex gap-2 mb-3">
