@@ -145,6 +145,7 @@ const Privacy = () => {
           </AccordionItem>
         </Accordion>
       </div>
+      <BottomTabBar />
     </div>
   );
 };
