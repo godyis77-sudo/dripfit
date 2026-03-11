@@ -140,8 +140,8 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
                   }}
                 />
               )}
-              {/* Brand pill — top left of image */}
-              <div className="absolute top-1.5 left-1.5">
+              {/* Brand pill — bottom right of image */}
+              <div className="absolute bottom-1.5 right-1.5">
                 <span className="brand-label">{product.brand}</span>
               </div>
             </div>
