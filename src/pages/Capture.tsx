@@ -81,8 +81,14 @@ const Capture = () => {
 
   useEffect(() => { trackEvent('scan_started'); }, []);
   useEffect(() => {
-    if (flowStep !== 'intro') saveScanState({ flowStep, photos, heightCm, heightFt, heightIn, useCm, refObject });
-  }, [flowStep, photos, heightCm, heightFt, heightIn, useCm, refObject]);
+    // Never persist photos to sessionStorage — they are multi-MB base64 strings
+    // that freeze the main thread during JSON.stringify and exceed the 5 MB quota.
+    if (flowStep !== 'intro') saveScanState({
+      flowStep,
+      hasPhotos: { front: !!photos.front, side: !!photos.side },
+      heightCm, heightFt, heightIn, useCm, refObject,
+    });
+  }, [flowStep, photos.front, photos.side, heightCm, heightFt, heightIn, useCm, refObject]);
 
   const getHeightCm = (): number => {
     if (useCm) return parseFloat(heightCm) || 0;
