@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Sparkles, ExternalLink, X } from 'lucide-react';
-import { AnimatePresence } from 'framer-motion';
+
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
