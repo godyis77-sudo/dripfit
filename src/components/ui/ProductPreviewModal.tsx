@@ -77,7 +77,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
         <div className="relative h-full w-fit max-w-full">
           {/* Brand badge */}
           {product.brand && (
-            <span className="absolute top-3 left-3 z-10 brand-label-lg">
+            <span className="absolute bottom-3 right-3 z-10 brand-label-lg">
               {product.brand}
             </span>
           )}

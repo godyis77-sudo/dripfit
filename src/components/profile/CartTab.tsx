@@ -163,7 +163,7 @@ const CartTab = () => {
                   }
                 }
               }}
-              className="shrink-0 w-32 h-40 rounded-lg overflow-hidden bg-muted/30 cursor-pointer active:scale-95 transition-transform"
+              className="shrink-0 w-32 h-40 rounded-lg overflow-hidden bg-muted/30 cursor-pointer active:scale-95 transition-transform relative"
               aria-label={`Preview ${item.caption || 'Look'}`}
             >
               <img
@@ -172,6 +172,11 @@ const CartTab = () => {
                 className="w-full h-full object-cover object-top"
                 loading="lazy"
               />
+              {item.product_urls?.[0] && (
+                <div className="absolute bottom-1.5 right-1.5">
+                  <span className="brand-label">{detectBrandFromUrl(item.product_urls[0]).brand || 'Shop'}</span>
+                </div>
+              )}
             </button>
 
             <div className="flex-1 min-w-0 flex flex-col justify-between">
