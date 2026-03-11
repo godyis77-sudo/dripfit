@@ -225,6 +225,20 @@ const CartTab = () => {
       <p className="text-[9px] text-muted-foreground/60 text-center mt-3">
         We may earn a commission. It doesn't change your price.
       </p>
+
+      <ProductPreviewModal
+        product={previewProduct}
+        onClose={() => setPreviewProduct(null)}
+        onShop={previewProduct?.product_url ? (product) => {
+          if (!product.product_url) return;
+          handleShop(product.product_url);
+          setPreviewProduct(null);
+        } : undefined}
+        onTryOn={(product) => {
+          handleTryOn(product.product_url ?? undefined, product.image_url);
+          setPreviewProduct(null);
+        }}
+      />
     </div>
   );
 };
