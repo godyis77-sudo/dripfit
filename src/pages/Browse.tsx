@@ -63,20 +63,7 @@ const Browse = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
 
-  useEffect(() => {
-    const prevBodyOverflow = document.body.style.overflow;
-    const prevHtmlOverflow = document.documentElement.style.overflow;
-
-    if (previewProduct) {
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
-    }
-
-    return () => {
-      document.body.style.overflow = prevBodyOverflow;
-      document.documentElement.style.overflow = prevHtmlOverflow;
-    };
-  }, [previewProduct]);
+  // Scroll lock handled by ProductPreviewModal
 
   const title = CATEGORY_LABELS[category] || category.charAt(0).toUpperCase() + category.slice(1);
   usePageTitle(`Browse ${title}`);
