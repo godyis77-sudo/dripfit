@@ -106,8 +106,7 @@ const TryOnClothingBadge = ({ post, navigate, toast }: { post: Post; navigate: R
               <button
                 key={idx}
                 onClick={(e) => handleSelectItem(item, e)}
-                className="flex items-center gap-1.5 rounded-lg text-[9px] font-bold text-white active:scale-95 transition-transform"
-                style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.15)', padding: '4px 8px' }}
+                className="flex items-center gap-1.5 rounded-lg text-[9px] font-bold text-white active:scale-95 transition-transform bg-background/75 backdrop-blur-sm border border-border/30 px-2 py-1"
               >
                 {item.image_url ? (
                   <img src={item.image_url} alt="" className="h-5 w-5 rounded object-cover" />
