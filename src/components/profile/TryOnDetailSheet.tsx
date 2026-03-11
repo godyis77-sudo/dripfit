@@ -105,12 +105,12 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
           <X className="h-4 w-4 text-white" />
         </button>
 
-        {/* Full-screen image */}
-        <div className="relative w-full h-[65dvh] bg-black flex items-center justify-center overflow-hidden">
+        {/* Full-screen image — maximized */}
+        <div className="relative w-full flex-1 min-h-0 bg-black flex items-center justify-center overflow-hidden">
           <img
             src={post.result_photo_url}
             alt={post.caption || 'Try-on result'}
-            className="w-full h-full object-contain"
+            className="max-w-full max-h-full object-contain"
           />
           {/* Date badge */}
           <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-sm rounded-full px-2.5 py-1">
