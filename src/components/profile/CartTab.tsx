@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Sparkles, ExternalLink, XCircle, Trash2, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -25,6 +25,30 @@ const CartTab = () => {
   const [previewProduct, setPreviewProduct] = useState<ProductPreviewData | null>(null);
   const [previewLookItems, setPreviewLookItems] = useState<LookItemData[]>([]);
   const [previewCaption, setPreviewCaption] = useState<string | null>(null);
+  const [catalogInfo, setCatalogInfo] = useState<Record<string, { brand: string; name: string }>>({});
+
+  // Fetch catalog brand/name for primary product URLs
+  useEffect(() => {
+    const urls = items
+      .map(i => i.product_urls?.[0])
+      .filter((u): u is string => !!u);
+    if (urls.length === 0) return;
+    let cancelled = false;
+    supabase
+      .from('product_catalog')
+      .select('product_url, brand, name')
+      .in('product_url', urls)
+      .eq('is_active', true)
+      .then(({ data }) => {
+        if (cancelled || !data) return;
+        const map: Record<string, { brand: string; name: string }> = {};
+        data.forEach(r => {
+          if (r.product_url) map[r.product_url] = { brand: r.brand, name: r.name };
+        });
+        setCatalogInfo(map);
+      });
+    return () => { cancelled = true; };
+  }, [items]);
 
   const handleTryOn = async (productUrl?: string, fallbackClothingImageUrl?: string) => {
     trackEvent('cart_tryon_click', { productUrl });
@@ -157,6 +181,15 @@ const CartTab = () => {
                     {detectBrandFromUrl(item.product_urls[0]).brand || 'Shop'}
                   </span>
                 )}
+                {(() => {
+                  const info = item.product_urls?.[0] ? catalogInfo[item.product_urls[0]] : null;
+                  return info ? (
+                    <>
+                      <p className="text-[10px] font-bold text-foreground leading-tight">{info.brand}</p>
+                      <p className="text-[9px] text-muted-foreground line-clamp-2 leading-snug mt-0.5">{info.name}</p>
+                    </>
+                  ) : null;
+                })()}
                 <p className="text-[9px] text-muted-foreground mt-0.5">
                   Added {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </p>
