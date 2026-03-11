@@ -155,10 +155,7 @@
   .aurora-bg::before {
     content: '';
     position: fixed;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
+    inset: 0;
     background:
       radial-gradient(ellipse 600px 400px at 20% 20%, hsl(var(--aurora-1) / 0.06) 0%, transparent 70%),
       radial-gradient(ellipse 500px 350px at 80% 30%, hsl(var(--aurora-2) / 0.04) 0%, transparent 70%),
