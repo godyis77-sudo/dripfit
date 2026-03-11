@@ -44,7 +44,14 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
                   : 'text-muted-foreground active:text-foreground'
               )}
             >
-              <tab.icon className={cn('h-5 w-5 transition-all duration-200', isActive ? 'shimmer-icon drop-shadow-[0_0_8px_hsl(42_76%_42%/0.5)]' : '')} />
+              <div className={cn(
+                'h-8 w-8 flex items-center justify-center rounded-lg transition-all duration-200',
+                isActive
+                  ? 'icon-3d-gold shimmer-sweep'
+                  : 'icon-3d'
+              )}>
+                <tab.icon className={cn('h-4 w-4 transition-all duration-200', isActive ? 'text-primary-foreground shimmer-icon' : '')} />
+              </div>
               <span className="text-[9px] font-semibold tracking-wider uppercase">{tab.label}</span>
               {isActive && (
                 <motion.div
