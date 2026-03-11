@@ -7,6 +7,7 @@ import { ExternalLink, Trash2, X, ShoppingBag, Tag, Calendar, Store, Star, Chevr
 import { buildRetailerSearchUrl, getRetailersForCategory } from '@/lib/retailerLinks';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { trackEvent } from '@/lib/analytics';
+import { useNavigate } from 'react-router-dom';
 
 interface WardrobeItem {
   id: string;
