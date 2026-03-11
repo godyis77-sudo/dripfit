@@ -94,9 +94,9 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             <button
               key={action.title}
               onClick={action.onClick}
-              className="flex items-center gap-2.5 bg-card border border-border rounded-xl p-3 active:scale-[0.97] transition-transform min-h-[44px]"
+              className="flex items-center gap-2.5 glass-card rounded-xl p-3 active:scale-[0.97] transition-all min-h-[44px] shadow-3d hover:shadow-[0_3px_0_0_hsl(var(--border)/0.5),0_6px_16px_-2px_hsl(0_0%_0%/0.25),inset_0_1px_0_hsl(var(--surface-glass)/0.18)] active:shadow-3d-pressed active:translate-y-[1px]"
             >
-              <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center shrink-0">
+              <div className="h-9 w-9 rounded-lg bg-gradient-to-b from-primary/90 to-primary flex items-center justify-center shrink-0 shadow-gold-glow">
                 {action.icon}
               </div>
               <div className="text-left">
@@ -122,10 +122,8 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               <button
                 key={filter.label}
                 onClick={() => setActivePriceIdx(idx)}
-                className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium transition-colors min-h-[36px] border ${
-                  activePriceIdx === idx
-                    ? 'bg-primary text-primary-foreground border-primary'
-                    : 'bg-card text-muted-foreground border-border hover:border-primary/30'
+                className={`shrink-0 pill ${
+                  activePriceIdx === idx ? 'pill-filled' : ''
                 }`}
               >
                 {filter.label}
@@ -150,7 +148,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                 </p>
                 <button
                   onClick={() => navigate('/capture')}
-                  className="mt-2 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-[11px] font-bold active:scale-95 transition-transform"
+                  className="mt-2 px-3 py-1.5 rounded-lg bg-gradient-to-b from-primary/90 to-primary text-primary-foreground text-[11px] font-bold shadow-3d-gold active:shadow-3d-gold-pressed active:translate-y-[1px] transition-all"
                 >
                   Re-Scan Now
                 </button>
