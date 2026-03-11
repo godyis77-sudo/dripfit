@@ -37,7 +37,7 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
     >
       <div className="flex items-center justify-between mb-2.5">
         <div className="flex items-center gap-1.5">
-          <TrendingUp className="h-3.5 w-3.5 text-primary" />
+          <TrendingUp className="h-3.5 w-3.5 text-primary shimmer-icon" />
           <p className="section-label mb-0">Trending Fits</p>
         </div>
         <button
@@ -54,7 +54,7 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
             <button
               key={fit.id}
               onClick={() => navigate('/style-check')}
-              className="relative bg-card border border-border rounded-xl overflow-hidden aspect-[3/4] group active:scale-[0.97] transition-transform"
+              className="relative glass-card rounded-xl overflow-hidden aspect-[3/4] group active:scale-[0.97] active:translate-y-[1px] transition-all shadow-3d active:shadow-3d-pressed"
             >
               <img
                 src={fit.image_url}
@@ -72,8 +72,8 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
                   {question}
                 </p>
               </div>
-              <div className="absolute bottom-1.5 left-1.5 flex items-center gap-0.5 bg-background/80 backdrop-blur-sm rounded-lg px-1.5 py-0.5">
-                <Heart className="h-2.5 w-2.5 text-primary" />
+              <div className="absolute bottom-1.5 left-1.5 flex items-center gap-0.5 icon-3d px-1.5 py-0.5 !rounded-lg">
+                <Heart className="h-2.5 w-2.5 text-primary shimmer-icon" />
                 <span className="text-[9px] font-bold text-foreground">{fit.like_count}</span>
               </div>
               <div className="absolute top-1.5 left-1.5">
@@ -87,9 +87,11 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
             <button
               key={`placeholder-${i}`}
               onClick={() => navigate('/tryon')}
-              className="relative bg-card border border-dashed border-border rounded-xl overflow-hidden aspect-[3/4] flex flex-col items-center justify-center gap-2 active:scale-[0.97] transition-transform"
+              className="relative glass-card rounded-xl overflow-hidden aspect-[3/4] flex flex-col items-center justify-center gap-2 active:scale-[0.97] active:translate-y-[1px] transition-all shadow-3d active:shadow-3d-pressed border-dashed"
             >
-              <Sparkles className="h-5 w-5 text-primary" />
+              <div className="icon-3d-gold h-10 w-10 shimmer-sweep">
+                <Sparkles className="h-5 w-5 text-primary-foreground shimmer-icon" />
+              </div>
               <p className="text-[10px] font-medium text-muted-foreground text-center px-2">Be first to post a look</p>
             </button>
           ))}
