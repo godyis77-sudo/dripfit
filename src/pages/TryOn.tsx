@@ -161,12 +161,14 @@ const TryOn = () => {
               <p className="text-[10px] text-muted-foreground leading-relaxed">AI preview — actual fit, drape, and texture may vary. Use your Scan profile for the most accurate sizing.</p>
             </div>
 
-            {/* Sticky Generate CTA */}
-            <div className="sticky bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 -mx-4 px-4 py-3 bg-gradient-to-t from-background via-background to-background/0">
-              <Button className="w-full h-12 min-h-[44px] rounded-lg text-sm font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30 shadow-lg" onClick={s.handleTryOn} disabled={s.loading || !s.canGenerate}>
-                {s.loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating your preview…</> : <><Sparkles className="mr-2 h-4 w-4" /> Generate Try-On</>}
-              </Button>
-            </div>
+            {/* Generate CTA — only show when user has at least one photo */}
+            {(s.userPhoto || s.clothingPhoto) && (
+              <div className="sticky bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 -mx-4 px-4 py-3 bg-gradient-to-t from-background via-background to-background/0">
+                <Button className="w-full h-12 min-h-[44px] rounded-lg text-sm font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30 shadow-lg" onClick={s.handleTryOn} disabled={s.loading || !s.canGenerate}>
+                  {s.loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating your preview…</> : <><Sparkles className="mr-2 h-4 w-4" /> Generate Try-On</>}
+                </Button>
+              </div>
+            )}
           </>
         ) : (
           <TryOnResultSection
