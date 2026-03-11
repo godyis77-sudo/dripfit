@@ -697,3 +697,9 @@
     padding-bottom: calc(5rem + env(safe-area-inset-bottom));
   }
 }
+
+/* ── Button ripple effect ── */
+@keyframes ripple-expand {
+  0% { transform: scale(0); opacity: 0.4; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
