@@ -231,42 +231,6 @@ const CartTab = () => {
                     Buy! <ExternalLink className="ml-1 h-2.5 w-2.5" />
                   </Button>
                 ) : null}
-                {item.product_urls && item.product_urls.length > 1 ? (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        type="button"
-                        className="inline-flex h-7 items-center justify-center rounded-lg border border-input bg-background px-3 text-[9px] font-bold text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                      >
-                        <Sparkles className="mr-1 h-2.5 w-2.5" /> Try On <ChevronDown className="ml-1 h-2.5 w-2.5" />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="min-w-[160px]">
-                      {item.product_urls.map((url, idx) => {
-                        const { brand } = detectBrandFromUrl(url);
-                        return (
-                          <DropdownMenuItem
-                            key={idx}
-                            onClick={() => handleTryOn(url, item.clothing_photo_url)}
-                            className="text-[11px] font-semibold gap-2"
-                          >
-                            <Sparkles className="h-3 w-3 text-primary" />
-                            {brand || `Item ${idx + 1}`}
-                          </DropdownMenuItem>
-                        );
-                      })}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-7 rounded-lg text-[9px] font-bold"
-                    onClick={() => handleTryOn(item.product_urls?.[0], item.clothing_photo_url)}
-                  >
-                    <Sparkles className="mr-1 h-2.5 w-2.5" /> Try On
-                  </Button>
-                )}
               </div>
             </div>
 
