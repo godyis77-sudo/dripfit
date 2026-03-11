@@ -44,6 +44,21 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
     setVisibleCount(PAGE_SIZE);
   }, [category, products.length]);
 
+  useEffect(() => {
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+
+    if (previewProduct) {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+    };
+  }, [previewProduct]);
+
   let visibleProducts = products;
 
   // Apply price filter
@@ -174,7 +189,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 overflow-hidden"
+            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 overflow-hidden overscroll-none"
             onClick={() => setPreviewProduct(null)}
           >
             <motion.div
