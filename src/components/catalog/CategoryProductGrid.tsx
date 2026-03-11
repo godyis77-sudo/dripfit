@@ -62,7 +62,16 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
     );
   }
 
-  if (visibleProducts.length === 0) return null;
+  if (visibleProducts.length === 0) {
+    if (brand) {
+      return (
+        <div className="text-center py-8">
+          <p className="text-[11px] text-muted-foreground">No items found for <span className="font-bold text-foreground">{brand}</span> in this category.</p>
+        </div>
+      );
+    }
+    return null;
+  }
 
   const displayed = expanded ? visibleProducts.slice(0, maxItems) : visibleProducts.slice(0, 4);
 
