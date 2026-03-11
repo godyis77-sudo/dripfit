@@ -201,7 +201,7 @@ const CartTab = () => {
                     <DropdownMenuTrigger asChild>
                       <button
                         type="button"
-                        className="inline-flex h-7 flex-1 items-center justify-center rounded-lg btn-luxury px-3 text-[9px] font-bold text-primary-foreground"
+                        className="inline-flex h-9 flex-1 items-center justify-center rounded-lg btn-luxury px-4 text-[13px] font-bold text-primary-foreground"
                       >
                         Buy! <ChevronDown className="ml-1 h-2.5 w-2.5" />
                       </button>
