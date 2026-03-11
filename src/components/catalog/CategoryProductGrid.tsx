@@ -1,11 +1,11 @@
 import { forwardRef, useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, ChevronUp, Sparkles, ExternalLink, X } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
+import ProductPreviewModal from '@/components/ui/ProductPreviewModal';
 
 interface CategoryProductGridProps {
   category: string;
@@ -45,20 +45,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
     setVisibleCount(PAGE_SIZE);
   }, [category, products.length]);
 
-  useEffect(() => {
-    const prevBodyOverflow = document.body.style.overflow;
-    const prevHtmlOverflow = document.documentElement.style.overflow;
-
-    if (previewProduct) {
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
-    }
-
-    return () => {
-      document.body.style.overflow = prevBodyOverflow;
-      document.documentElement.style.overflow = prevHtmlOverflow;
-    };
-  }, [previewProduct]);
+  // Scroll lock handled by ProductPreviewModal
 
   let visibleProducts = products;
 
@@ -182,77 +169,18 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
         </div>
       )}
 
-      {/* Fullscreen product preview */}
-      {previewProduct && createPortal(
-        <div
-          className="fixed inset-0 z-[100] h-dvh w-screen bg-black/80 flex items-center justify-center p-6 overflow-hidden overscroll-none"
-          onClick={() => setPreviewProduct(null)}
-        >
-          <div
-            className="relative bg-card rounded-2xl overflow-hidden max-w-[280px] w-full max-h-[85vh] shadow-2xl border border-border/50 flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Close button */}
-            <button
-              onClick={() => setPreviewProduct(null)}
-              className="absolute top-2 right-2 z-10 h-8 w-8 rounded-full bg-black/40 flex items-center justify-center active:scale-90 transition-transform"
-            >
-              <X className="h-4 w-4 text-white" />
-            </button>
-
-            {/* Product image — constrained to not overflow viewport */}
-            <div className="aspect-[4/5] bg-muted flex-shrink-0">
-              <img
-                src={previewProduct.image_url}
-                alt={previewProduct.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            {/* Info + Actions */}
-            <div className="p-4">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{previewProduct.brand}</p>
-              <p className="text-sm font-bold text-foreground mt-0.5 line-clamp-2">{previewProduct.name}</p>
-              {previewProduct.price_cents && (
-                <p className="text-sm font-bold text-primary mt-1">
-                  ${(previewProduct.price_cents / 100).toFixed(0)}
-                </p>
-              )}
-
-              <div className="flex gap-2 mt-3">
-                {onSelectProduct && (
-                  <Button
-                    size="sm"
-                    className="flex-1 gap-1.5 h-9 text-xs"
-                    onClick={() => {
-                      onSelectProduct(previewProduct);
-                      setPreviewProduct(null);
-                    }}
-                  >
-                    <Sparkles className="h-3.5 w-3.5" />
-                    Try On
-                  </Button>
-                )}
-                {previewProduct.product_url && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 gap-1.5 h-9 text-xs"
-                    onClick={() => {
-                      trackEvent('catalog_product_clicked', { brand: previewProduct.brand, category: previewProduct.category });
-                      window.open(previewProduct.product_url!, '_blank', 'noopener');
-                    }}
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    Shop
-                  </Button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
+      <ProductPreviewModal
+        product={previewProduct}
+        onClose={() => setPreviewProduct(null)}
+        onTryOn={onSelectProduct ? (p) => {
+          onSelectProduct(p as CatalogProduct);
+          setPreviewProduct(null);
+        } : undefined}
+        onShop={previewProduct?.product_url ? (p) => {
+          trackEvent('catalog_product_clicked', { brand: p.brand, category: p.category });
+          window.open(p.product_url!, '_blank', 'noopener');
+        } : undefined}
+      />
     </div>
   );
 });
