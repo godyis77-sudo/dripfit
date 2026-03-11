@@ -43,6 +43,14 @@ const FORCE_WOMENS_NAME_PATTERNS = [
   "sarong", "kaftan", "caftan", "culottes", "playsuit",
   "rash guard", "plus size swim", "swimsuit",
   "tote bag", "clutch bag", "crossbody bag", "satchel bag",
+  // Expanded patterns
+  "a-line", "fit and flare", "sheath dress", "shift dress",
+  "halter", "strapless", "sweetheart neckline", "v-neck dress",
+  "tube top", "bandeau", "push-up", "underwire",
+  "high waist", "high rise", "high waisted",
+  "feminine", "girly", "floral print dress", "lace dress",
+  "maternity wear", "nursing", "postpartum",
+  "women ", " woman ", "ladies ", "female ",
 ];
 const FORCE_MENS_NAME_PATTERNS = [
   "boxer", "men's underwear", "compression short", "athletic supporter",
@@ -50,6 +58,13 @@ const FORCE_MENS_NAME_PATTERNS = [
   "swim trunk", "swim short", "board short",
   "oxford shirt", "henley ", "muscle tee", "muscle fit",
   "flat front", "cargo short", "necktie", "bow tie", "suspender",
+  // Expanded patterns
+  "dress shirt", "sport coat", "tuxedo", "waistcoat",
+  "cufflink", "pocket square", "tie clip", "tie bar",
+  "grooming", "shaving", "aftershave",
+  "men ", " man ", " male ", " guys ",
+  "slim fit shirt", "athletic fit", "classic fit",
+  "five pocket", "straight leg jean", "relaxed fit jean",
 ];
 
 // Hostnames / URL patterns that are tracking pixels, CAPTCHAs, or non-product images
