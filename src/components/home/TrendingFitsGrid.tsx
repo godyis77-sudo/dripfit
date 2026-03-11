@@ -37,7 +37,7 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
     >
       <div className="flex items-center justify-between mb-2.5">
         <div className="flex items-center gap-1.5">
-          <TrendingUp className="h-3.5 w-3.5 text-primary" />
+          <TrendingUp className="h-3.5 w-3.5 text-primary shimmer-icon" />
           <p className="section-label mb-0">Trending Fits</p>
         </div>
         <button
