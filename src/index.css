@@ -181,7 +181,7 @@
     border-radius: inherit;
   }
 
-  /* ── Shimmer sweep overlay for gold buttons ── */
+  /* ── Shimmer sweep overlay for gold buttons, badges, icons ── */
   .shimmer-sweep {
     position: relative;
     overflow: hidden;
@@ -204,10 +204,24 @@
     z-index: 1;
   }
 
+  /* Subtle shimmer for small elements (icons, emojis) */
+  .shimmer-icon {
+    position: relative;
+    display: inline-flex;
+    filter: drop-shadow(0 0 0px transparent);
+    animation: icon-glint 4s ease-in-out infinite;
+  }
+
   @keyframes sweep-shimmer {
     0%   { transform: translateX(-110%); }
     30%  { transform: translateX(110%); }
     100% { transform: translateX(110%); }
+  }
+
+  @keyframes icon-glint {
+    0%, 100% { filter: drop-shadow(0 0 0px hsl(var(--gold-shimmer) / 0)); }
+    15%      { filter: drop-shadow(0 0 6px hsl(var(--gold-shimmer) / 0.5)); }
+    30%      { filter: drop-shadow(0 0 0px hsl(var(--gold-shimmer) / 0)); }
   }
 
   /* ── Luxury buttons ── */
