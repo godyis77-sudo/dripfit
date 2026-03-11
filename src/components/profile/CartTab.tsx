@@ -155,9 +155,6 @@ const CartTab = () => {
                     {detectBrandFromUrl(item.product_urls[0]).brand || 'Shop'}
                   </span>
                 )}
-                {item.caption && (
-                  <p className="text-[11px] font-semibold text-foreground line-clamp-2 leading-snug">{item.caption}</p>
-                )}
                 <p className="text-[9px] text-muted-foreground mt-0.5">
                   Added {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </p>
