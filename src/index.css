@@ -151,7 +151,6 @@
   /* ── Aurora ambient background ── */
   .aurora-bg {
     position: relative;
-    overflow: hidden;
   }
   .aurora-bg::before {
     content: '';
