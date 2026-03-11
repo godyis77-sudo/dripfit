@@ -302,13 +302,16 @@ export function useTryOnState() {
       setProductLink(product.product_url);
       setLookItems([{ brand: product.brand, name: product.name, url: product.product_url, price_cents: product.price_cents, image_url: product.image_url }]);
     }
+    // Set clothing photo immediately so UI responds instantly
+    setClothingPhoto(product.image_url);
     trackEvent('tryon_clothing_uploaded');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Try to upgrade to base64 in background (better for edge function)
     try {
       const base64 = await imageUrlToBase64(product.image_url);
       setClothingPhoto(base64);
     } catch {
-      setClothingPhoto(product.image_url);
+      // keep the raw URL already set above
     }
   };
 
