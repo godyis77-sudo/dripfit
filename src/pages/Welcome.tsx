@@ -218,7 +218,7 @@ const Welcome = () => {
         <motion.div variants={stagger.item} className="w-full max-w-[340px] flex items-center justify-between mb-6">
           {TRUST.map((t) => (
             <div key={t.text} className="flex items-center gap-1.5">
-              <t.icon className="h-3 w-3 text-primary/50" />
+              <t.icon className="h-3 w-3 text-primary shimmer-icon" />
               <span className="text-[10px] text-muted-foreground tracking-wide">{t.text}</span>
             </div>
           ))}
