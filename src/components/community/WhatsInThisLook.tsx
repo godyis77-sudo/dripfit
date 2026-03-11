@@ -159,7 +159,7 @@ const WhatsInThisLook = ({
                         onTryOn={onTryOn ? () => onTryOn(item) : undefined}
                         onAddToWardrobe={onAddToWardrobe ? () => onAddToWardrobe(item) : undefined}
                       >
-                        <div className={`shrink-0 ${isCompact ? 'h-8 w-8' : 'h-10 w-10'} rounded-lg overflow-hidden bg-[#252525] border border-[#333] flex items-center justify-center cursor-pointer active:scale-95 transition-transform`}>
+                      <div className={`shrink-0 ${isCompact ? 'h-8 w-8' : 'h-10 w-10'} rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center cursor-pointer active:scale-95 transition-transform`}>
                           <img src={imgSrc} alt={item.name} className="h-full w-full object-cover" />
                         </div>
                       </FullscreenImage>
