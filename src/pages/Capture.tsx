@@ -364,7 +364,7 @@ const Capture = () => {
       </div>
 
       {/* Bottom actions */}
-      <div className="sticky bottom-0 bg-background/90 backdrop-blur-md border-t border-border/40 px-4 pb-4 pt-3 space-y-2 max-w-sm mx-auto w-full">
+      <div className="sticky bottom-0 bg-background/90 backdrop-blur-md border-t border-border/40 px-4 pb-4 pt-3 space-y-2 w-full">
         {flowStep === 'intro' && (
           <motion.div whileTap={{ scale: 0.97 }}>
             <Button

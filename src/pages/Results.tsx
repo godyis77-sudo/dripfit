@@ -199,7 +199,7 @@ const Results = () => {
   if (!result) {
     return (
       <div className="min-h-screen bg-background px-4 py-4 flex items-center justify-center">
-        <div className="max-w-sm mx-auto text-center">
+        <div className="text-center">
           <div className="h-16 w-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4">
             <Sparkles className="h-7 w-7 text-primary" />
           </div>
@@ -242,7 +242,7 @@ const Results = () => {
         label="Saved successfully"
         subtext="View in Profile > Body"
       />
-      <div className="max-w-sm mx-auto">
+      <div>
         <div className="flex items-center mb-3">
           <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg" aria-label="Go back">
             <ArrowLeft className="h-4 w-4" />

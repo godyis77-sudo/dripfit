@@ -124,7 +124,7 @@ const PublicProfile = () => {
 
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
-      <div className="max-w-sm mx-auto px-4 pt-4">
+      <div className="px-4 pt-4">
         {/* Header */}
         <div className="flex items-center gap-2 mb-4">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg" aria-label="Go back">
