@@ -73,16 +73,16 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
       </button>
 
       {/* Image — maximized */}
-      <div className="flex-1 flex items-center justify-center p-4 min-h-0 overflow-hidden">
-        <div className="relative flex items-center justify-center w-full h-full min-h-0" onClick={(e) => e.stopPropagation()}>
+      <div className="flex-1 flex items-center justify-center p-4 min-h-0 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <div className="relative inline-flex min-h-0 max-h-full max-w-full">
           <img
             src={product.image_url}
             alt={product.name}
-            className="max-w-full max-h-full object-contain rounded-xl"
+            className="max-w-full max-h-full object-contain rounded-xl block"
             draggable={false}
           />
           {caption && (
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-full bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-b-xl px-4 py-3" style={{ maxWidth: '100%' }}>
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-b-xl px-4 py-3">
               <p className="text-[13px] text-white font-medium leading-snug">"{caption}"</p>
             </div>
           )}
