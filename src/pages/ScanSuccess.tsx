@@ -139,7 +139,7 @@ const ScanSuccess = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center bg-background relative">
+    <div className="flex min-h-screen flex-col items-center bg-background relative pb-safe-tab">
       {/* Skip button */}
       <button
         onClick={() => handleNavigate('/profile/body')}
