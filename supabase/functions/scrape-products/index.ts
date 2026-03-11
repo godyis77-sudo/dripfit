@@ -1676,8 +1676,8 @@ Deno.serve(async (req) => {
       }).catch(e => console.warn(`[run:${runId}] Gender backfill trigger failed:`, e));
 
       // Fire-and-forget: scrape size charts for this brand if missing
-      if (results.brand) {
-        const brandSlug = results.brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      if (brand) {
+        const brandSlug = brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         fetch(`${supabaseUrl}/functions/v1/scrape-size-charts`, {
           method: 'POST',
           headers: qcHeaders,
