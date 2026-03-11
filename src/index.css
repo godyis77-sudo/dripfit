@@ -601,12 +601,14 @@
 
   /* ── Luxury card hover ── */
   .card-luxury {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: 0 2px 12px -4px hsl(var(--shadow-luxury) / 0.08);
   }
   .card-luxury:hover {
-    box-shadow: 0 12px 40px -8px hsl(var(--shadow-luxury) / 0.15);
-    transform: translateY(-2px);
+    box-shadow:
+      0 16px 48px -8px hsl(var(--shadow-luxury) / 0.18),
+      0 0 0 1px hsl(var(--surface-glass) / 0.06);
+    transform: translateY(-3px);
   }
   .card-luxury:active {
     transform: translateY(0px) scale(0.98);
@@ -615,13 +617,40 @@
   /* ── Divider with gold accent ── */
   .divider-gold {
     height: 1px;
-    background: linear-gradient(90deg, transparent 0%, hsl(var(--primary) / 0.2) 50%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, hsl(var(--primary) / 0.25) 30%, hsl(var(--primary) / 0.4) 50%, hsl(var(--primary) / 0.25) 70%, transparent 100%);
+  }
+
+  /* ── Animated border glow ── */
+  .border-glow {
+    position: relative;
+  }
+  .border-glow::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.3), transparent 40%, transparent 60%, hsl(var(--primary) / 0.15));
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .border-glow:hover::before {
+    opacity: 1;
+  }
+
+  /* ── Floating label animation ── */
+  .float-label {
+    animation: gentle-float 6s ease-in-out infinite;
+  }
+  @keyframes gentle-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
   }
 
   /* ── Stagger children animation helper ── */
   .stagger-children > * {
     opacity: 0;
-    animation: stagger-in 0.4s ease-out forwards;
+    animation: stagger-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
   .stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
   .stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
@@ -629,10 +658,35 @@
   .stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
   .stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
   .stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+  .stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
+  .stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
 
   @keyframes stagger-in {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* ── Product card premium hover ── */
+  .product-card {
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .product-card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 12px 40px -8px hsl(var(--shadow-luxury) / 0.2),
+      0 0 0 1px hsl(var(--primary) / 0.08);
+  }
+  .product-card:active {
+    transform: translateY(0) scale(0.97);
+  }
+
+  /* ── Scrollbar hide ── */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }
 
