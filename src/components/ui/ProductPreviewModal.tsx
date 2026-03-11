@@ -96,6 +96,9 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
               ${(product.price_cents / 100).toFixed(0)}
             </p>
           )}
+          {caption && (
+            <p className="text-[12px] text-white/70 italic mt-1.5 line-clamp-2">"{caption}"</p>
+          )}
         </div>
 
         <div className="flex gap-3 max-w-sm mx-auto w-full">
