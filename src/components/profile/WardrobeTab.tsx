@@ -84,8 +84,8 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                     {(() => {
                       const displayBrand = item.brand || (item.product_link ? detectBrandFromUrl(item.product_link).brand : null) || item.retailer;
                       return displayBrand ? (
-                        <div className="absolute bottom-1.5 right-1.5 bg-primary rounded-md px-2.5 py-1 shadow-lg border border-primary-foreground/20 flex items-center justify-center">
-                          <span className="text-[10px] font-extrabold text-primary-foreground uppercase tracking-wide leading-none">{displayBrand}</span>
+                        <div className="absolute bottom-1.5 right-1.5 bg-background/80 backdrop-blur-sm rounded-md px-1.5 py-0.5 flex items-center justify-center">
+                          <span className="text-[8px] font-bold text-foreground uppercase tracking-wider leading-none">{displayBrand}</span>
                         </div>
                       ) : null;
                     })()}
