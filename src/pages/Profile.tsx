@@ -209,7 +209,7 @@ const Profile = () => {
         </div>
 
         {/* Tab switcher */}
-        <div className="flex gap-0.5 bg-card rounded-lg p-0.5 mb-4 border border-border/40">
+        <div className="flex gap-1 bg-card/60 backdrop-blur-sm rounded-xl p-1 mb-4 border border-border/30">
           {[
             { key: 'tryons' as const, icon: Shirt, label: 'Try-Ons' },
             { key: 'body' as const, icon: User, label: 'Body' },
@@ -219,9 +219,22 @@ const Profile = () => {
             <button
               key={t.key}
               onClick={() => setActiveTab(t.key)}
-              className={`flex-1 py-2 rounded-md text-[12px] font-bold transition-all ${activeTab === t.key ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`}
+              className={`relative flex-1 py-2.5 rounded-lg text-[11px] font-bold transition-all duration-300 ${
+                activeTab === t.key
+                  ? 'text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
-              <t.icon className="inline h-3.5 w-3.5 mr-1 -mt-0.5" /> {t.label}
+              {activeTab === t.key && (
+                <motion.div
+                  layoutId="profile-tab"
+                  className="absolute inset-0 rounded-lg gradient-drip"
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10 flex items-center justify-center gap-1">
+                <t.icon className="h-3.5 w-3.5" /> {t.label}
+              </span>
             </button>
           ))}
         </div>

@@ -50,18 +50,18 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const priceFilter = activePriceIdx === 0 ? null : { min: PRICE_FILTERS[activePriceIdx].min, max: PRICE_FILTERS[activePriceIdx].max };
 
   return (
-    <div ref={ref} className="relative min-h-screen bg-background pb-safe-tab">
+    <div ref={ref} className="relative min-h-screen bg-background pb-safe-tab aurora-bg">
 
       <div className="relative z-10 px-5 pt-5">
         {/* Greeting */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-5"
+          className="mb-6"
         >
-          <p className="text-2xl font-bold text-primary tracking-tight">DripFit</p>
-          <p className="text-muted-foreground text-[12px]">{greeting}{displayName ? ',' : '!'}</p>
-          {displayName && <h1 className="font-display text-xl font-bold text-foreground">{displayName}</h1>}
+          <p className="text-2xl font-bold gradient-drip-text tracking-tight">DripFit</p>
+          <p className="text-muted-foreground/70 text-[12px] mt-0.5">{greeting}{displayName ? ',' : '!'}</p>
+          {displayName && <h1 className="font-display text-xl font-bold text-foreground mt-0.5">{displayName}</h1>}
         </motion.div>
 
         {/* Context-aware Quick Actions */}
@@ -94,7 +94,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             <button
               key={action.title}
               onClick={action.onClick}
-              className="flex items-center gap-2.5 glass-card rounded-xl p-3 active:scale-[0.97] transition-all min-h-[44px] shadow-3d hover:shadow-[0_3px_0_0_hsl(var(--border)/0.5),0_6px_16px_-2px_hsl(0_0%_0%/0.25),inset_0_1px_0_hsl(var(--surface-glass)/0.18)] active:shadow-3d-pressed active:translate-y-[1px]"
+              className="flex items-center gap-2.5 glass-card rounded-xl p-3 active:scale-[0.97] transition-all min-h-[44px] glow-hover"
             >
               <div className="h-9 w-9 icon-3d-gold shimmer-sweep shrink-0">
                 <span className="shimmer-icon">{action.icon}</span>
