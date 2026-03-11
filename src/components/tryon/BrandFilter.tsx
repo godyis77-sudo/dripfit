@@ -104,9 +104,9 @@ const BrandFilter = ({ gender, selectedBrand, onBrandChange }: BrandFilterProps)
       {/* Selected brand pill */}
       {selectedBrand ? (
         <div className="flex items-center gap-1.5">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20 text-[11px] font-bold text-primary">
+          <span className="pill pill-active inline-flex items-center gap-1.5">
             {selectedBrand}
-            <button onClick={handleClear} className="hover:text-destructive transition-colors">
+            <button onClick={handleClear} className="hover:text-destructive transition-colors" aria-label="Clear brand filter">
               <X className="h-3 w-3" />
             </button>
           </span>
