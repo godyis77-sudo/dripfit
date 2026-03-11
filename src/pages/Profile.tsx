@@ -129,7 +129,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
-      <div className="max-w-sm mx-auto">
+      <div>
         {/* Premium banner / status bar */}
         {isSubscribed ? (
           <div className="w-full flex items-center gap-2 px-3 py-2 rounded-xl gradient-drip border border-primary/30 mb-3">

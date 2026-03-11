@@ -242,7 +242,7 @@ const Results = () => {
         label="Saved successfully"
         subtext="View in Profile > Body"
       />
-      <div className="max-w-sm mx-auto">
+      <div>
         <div className="flex items-center mb-3">
           <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg" aria-label="Go back">
             <ArrowLeft className="h-4 w-4" />
