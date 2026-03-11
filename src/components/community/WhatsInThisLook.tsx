@@ -144,14 +144,7 @@ const WhatsInThisLook = ({
             ref={contentRef}
           >
             <div
-              className={`${isCompact ? 'px-3 py-2' : 'px-4 py-3'} space-y-2`}
-              style={{
-                background: '#1A1A1A',
-                borderLeft: '1px solid #252525',
-                borderRight: '1px solid #252525',
-                borderBottom: '1px solid #252525',
-                borderRadius: '0 0 12px 12px',
-              }}
+              className={`${isCompact ? 'px-3 py-2' : 'px-4 py-3'} space-y-2 bg-card border-x border-b border-border rounded-b-xl`}
             >
               {items.map((item, idx) => (
                 <div key={idx} className="flex items-center gap-2">
