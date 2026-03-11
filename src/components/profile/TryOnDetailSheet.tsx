@@ -95,7 +95,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="h-[95dvh] p-0 rounded-t-2xl bg-background border-t border-border">
+      <SheetContent side="bottom" className="h-[95dvh] p-0 rounded-t-2xl bg-background border-t border-border flex flex-col overflow-hidden">
         {/* Close button */}
         <button
           onClick={() => onOpenChange(false)}
@@ -110,7 +110,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
           <img
             src={post.result_photo_url}
             alt={post.caption || 'Try-on result'}
-            className="max-w-full max-h-full object-contain"
+            className="w-full h-full object-contain"
           />
           {/* Delete icon — top left */}
           {onDelete && (
