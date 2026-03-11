@@ -127,18 +127,18 @@ const WhatsInThisLook = ({
             handleToggle();
           }
         }}
-        className="w-full flex items-center justify-between active:scale-[0.98] transition-transform bg-primary text-primary-foreground"
+        className="w-full flex items-center justify-center gap-2 active:scale-[0.98] transition-transform btn-luxury text-primary-foreground shimmer-sweep"
         style={{
           borderRadius: open ? '12px 12px 0 0' : '12px',
-          padding: isCompact ? '8px 12px' : '16px 20px',
+          padding: isCompact ? '10px 12px' : '16px 20px',
         }}
       >
-        <span className={`${isCompact ? 'text-[9px]' : 'text-[13px]'} font-bold uppercase tracking-widest flex items-center gap-2 text-primary-foreground`}>
-          <ShoppingCart className={isCompact ? 'h-3 w-3' : 'h-4 w-4'} />
+        <ShoppingCart className={isCompact ? 'h-3.5 w-3.5' : 'h-4.5 w-4.5'} />
+        <span className={`${isCompact ? 'text-[11px]' : 'text-[15px]'} font-bold uppercase tracking-widest text-primary-foreground`}>
           Shop This Style - Try On
         </span>
         <ChevronDown
-          className={`${isCompact ? 'h-3 w-3' : 'h-4 w-4'} text-primary-foreground transition-transform duration-200`}
+          className={`${isCompact ? 'h-3.5 w-3.5' : 'h-4.5 w-4.5'} text-primary-foreground transition-transform duration-200`}
           style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
         />
       </div>
