@@ -181,6 +181,15 @@ const CartTab = () => {
                     {detectBrandFromUrl(item.product_urls[0]).brand || 'Shop'}
                   </span>
                 )}
+                {(() => {
+                  const info = item.product_urls?.[0] ? catalogInfo[item.product_urls[0]] : null;
+                  return info ? (
+                    <>
+                      <p className="text-[10px] font-bold text-foreground leading-tight">{info.brand}</p>
+                      <p className="text-[9px] text-muted-foreground line-clamp-2 leading-snug mt-0.5">{info.name}</p>
+                    </>
+                  ) : null;
+                })()}
                 <p className="text-[9px] text-muted-foreground mt-0.5">
                   Added {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </p>
