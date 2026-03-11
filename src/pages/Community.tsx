@@ -77,7 +77,7 @@ const Community = () => {
 
   const onPostLook = () => {
     trackEvent('fitcheck_post_started');
-    if (!user) { toast({ title: 'Sign in to post', variant: 'destructive' }); navigate('/auth'); return; }
+    if (!user) { toast({ title: 'Sign in to post', variant: 'destructive' }); navigate(`/auth?returnTo=${encodeURIComponent('/style-check')}`); return; }
     setShowPostFlow(true);
   };
 
@@ -132,7 +132,7 @@ const Community = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-8 w-8 rounded-lg" aria-label="Go back">
+            <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg" aria-label="Go back">
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>

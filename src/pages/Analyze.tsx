@@ -207,7 +207,11 @@ const Analyze = () => {
         variant="ghost"
         size="sm"
         className="absolute top-4 right-4 z-50 text-muted-foreground font-mono text-xs"
-        onClick={() => navigate('/capture', { replace: true })}
+        onClick={() => {
+          if (window.confirm('Are you sure you want to cancel this scan? Your photos will not be saved.')) {
+            navigate('/capture', { replace: true });
+          }
+        }}
       >
         ✕ ABORT
       </Button>

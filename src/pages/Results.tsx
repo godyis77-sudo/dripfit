@@ -45,6 +45,41 @@ const Results = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const state = location.state as { result: BodyScanResult; retailer?: string; category?: string } | undefined;
+  // DB fallback query for authenticated users when no location.state or sessionStorage
+  const dbScanQuery = useQuery({
+    queryKey: ['latest-scan-result', user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('body_scans')
+        .select('*')
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+      if (!data) return null;
+      return {
+        result: {
+          id: data.id,
+          date: data.created_at,
+          heightCm: Number(data.height_cm),
+          chest: { min: Number(data.chest_min), max: Number(data.chest_max) },
+          waist: { min: Number(data.waist_min), max: Number(data.waist_max) },
+          hips: { min: Number(data.hip_min), max: Number(data.hip_max) },
+          inseam: { min: Number(data.inseam_min), max: Number(data.inseam_max) },
+          shoulder: { min: Number(data.shoulder_min), max: Number(data.shoulder_max) },
+          ...(data.bust_min && data.bust_max ? { bust: { min: Number(data.bust_min), max: Number(data.bust_max) } } : {}),
+          ...(data.sleeve_min && data.sleeve_max ? { sleeve: { min: Number(data.sleeve_min), max: Number(data.sleeve_max) } } : {}),
+          confidence: data.confidence || 'medium',
+          recommendedSize: data.recommended_size || 'M',
+          fitPreference: 'regular' as FitPreference,
+        } as BodyScanResult,
+        retailer: undefined,
+        category: undefined,
+      };
+    },
+    enabled: !!user?.id && !state?.result,
+    staleTime: 5 * 60 * 1000,
+  });
 
   // Persist scan result in sessionStorage so the page survives refresh
   const result = useMemo(() => {
@@ -60,8 +95,9 @@ const Results = () => {
         return parsed.result as BodyScanResult;
       }
     } catch {}
-    return undefined;
-  }, [state]);
+    // Final fallback: load from DB
+    return dbScanQuery.data?.result ?? undefined;
+  }, [state, dbScanQuery.data]);
 
   // Also restore retailer/category from sessionStorage
   const cachedState = useMemo(() => {
@@ -70,8 +106,8 @@ const Results = () => {
       const cached = sessionStorage.getItem('dripcheck_last_result');
       if (cached) return JSON.parse(cached) as typeof state;
     } catch {}
-    return undefined;
-  }, [state]);
+    return dbScanQuery.data ?? undefined;
+  }, [state, dbScanQuery.data]);
   const [fitPref, setFitPref] = useState<FitPreference>(result?.fitPreference || 'regular');
   const [saved, setSaved] = useState(false);
   const [showSaveBanner, setShowSaveBanner] = useState(false);

@@ -20,7 +20,7 @@ const TryOn = () => {
       <div className="max-w-sm mx-auto">
         {/* Header */}
         <div className="flex items-center gap-2 mb-3">
-          <Button variant="ghost" size="icon" onClick={() => s.navigate('/')} className="h-8 w-8 rounded-lg" aria-label="Go back">
+          <Button variant="ghost" size="icon" onClick={() => s.navigate(-1)} className="h-8 w-8 rounded-lg" aria-label="Go back">
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>
