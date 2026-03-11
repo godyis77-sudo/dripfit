@@ -201,20 +201,47 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
             {tryOnPosts.filter(p => filterMode === 'all' ? true : filterMode === 'public' ? p.is_public : !p.is_public).map(post => (
               <motion.div key={post.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
                 <div className="w-full rounded-xl overflow-hidden border border-border bg-card text-left">
-                  <button
-                    onClick={() => setSelectedPost(post)}
-                    className="w-full active:scale-[0.97] transition-transform"
-                  >
-                    <div className="relative">
-                      <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
-                    </div>
-                    <div className="p-2 flex items-center justify-between">
-                      <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
-                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${post.is_public ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                        {post.is_public ? 'Public' : 'Private'}
-                      </span>
-                    </div>
-                  </button>
+                  <div className="relative">
+                    <button
+                      onPointerDown={() => startLongPress(post.id)}
+                      onPointerUp={cancelLongPress}
+                      onPointerLeave={cancelLongPress}
+                      onPointerCancel={cancelLongPress}
+                      onContextMenu={(e) => e.preventDefault()}
+                      onClick={() => {
+                        if (longPressTriggeredRef.current) {
+                          longPressTriggeredRef.current = false;
+                          return;
+                        }
+                        setSelectedPost(post);
+                      }}
+                      className="w-full active:scale-[0.97] transition-transform"
+                    >
+                      <div className="relative">
+                        <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
+                      </div>
+                      <div className="p-2 flex items-center justify-between">
+                        <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
+                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${post.is_public ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                          {post.is_public ? 'Public' : 'Private'}
+                        </span>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      aria-label="Delete try-on"
+                      className="absolute top-1.5 right-1.5 h-7 w-7 rounded-full bg-background/80 border border-border flex items-center justify-center text-destructive hover:bg-destructive/10 transition-colors"
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        cancelLongPress();
+                        setConfirmDeleteId(post.id);
+                      }}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
 
                   {/* Community interactions for public posts */}
                   {post.is_public && (
