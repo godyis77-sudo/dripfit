@@ -90,7 +90,6 @@ const WOMENS_KEYWORDS = [
   " sports bra ", " sport bra ", " sports bras ", " yoga pant ", " crop top ",
   " bikini ", " tankini ", " romper ", " legging ", " plus size sports ",
   " for women ", " seamless bra ",
-  // New expanded keywords
   " midi dress ", " maxi dress ", " mini dress ", " wrap dress ", " slip dress ",
   " pencil skirt ", " mini skirt ", " pleated skirt ",
   " tote bag ", " clutch ", " crossbody ", " satchel ",
@@ -102,18 +101,35 @@ const WOMENS_KEYWORDS = [
   " shapewear ", " bodycon ", " off shoulder ", " off the shoulder ",
   " lounge cuddle ", " smocked ", " ruched ",
   " feminine ", " girly ",
+  // Expanded keywords
+  " a line dress ", " fit and flare ", " sheath dress ", " shift dress ",
+  " halter ", " strapless ", " sweetheart ", " tube top ", " bandeau ",
+  " push up bra ", " underwire ", " nursing bra ",
+  " maternity wear ", " postpartum ",
+  " sling back ", " peep toe ", " pointed toe heel ",
+  " skort ", " palazzo pant ", " wide leg pant ",
+  " floral print ", " lace trim ", " embroidered ",
+  " women s clothing ", " she ", " her style ",
 ];
 
 const MENS_KEYWORDS = [
   " men ", " men s ", " mens ", " menswear ", " male ", " for men ", " for him ", " guys ", " boy ",
   " boxer ", " brief ", " chino ", " dress shirt ", " sport coat ", " tuxedo ", " waistcoat ",
   " men s underwear ", " compression short ", " athletic supporter ",
-  // New expanded keywords
   " swim trunk ", " swim short ", " board short ",
   " oxford shirt ", " henley ", " muscle tee ", " muscle fit ",
   " flat front ", " cargo short ",
   " tie ", " necktie ", " bow tie ", " suspender ",
   " grooming ", " shaving ",
+  // Expanded keywords
+  " five pocket ", " slim fit shirt ", " athletic fit ",
+  " classic fit ", " regular fit shirt ",
+  " straight leg jean ", " relaxed fit jean ", " bootcut jean ",
+  " pocket square ", " tie bar ", " tie clip ", " cufflink ",
+  " aftershave ", " cologne ",
+  " men s clothing ", " his style ", " he ", " guy ",
+  " double breasted ", " single breasted ", " morning coat ",
+  " rugby shirt ", " button down collar ",
 ];
 
 // URL path segments that indicate gender
