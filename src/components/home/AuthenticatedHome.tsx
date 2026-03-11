@@ -50,7 +50,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const priceFilter = activePriceIdx === 0 ? null : { min: PRICE_FILTERS[activePriceIdx].min, max: PRICE_FILTERS[activePriceIdx].max };
 
   return (
-    <div ref={ref} className="relative min-h-screen bg-background pb-safe-tab aurora-bg">
+    <div ref={ref} className="relative bg-background pb-safe-tab aurora-bg">
 
       <div className="relative z-10 px-5 pt-5">
         {/* Greeting */}
