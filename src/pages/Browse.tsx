@@ -1,8 +1,7 @@
-import { useState, useMemo, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, SlidersHorizontal, X, Sparkles, ExternalLink } from 'lucide-react';
+import { ArrowLeft, SlidersHorizontal } from 'lucide-react';
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
@@ -11,6 +10,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useAuth } from '@/hooks/useAuth';
 import BrandFilter from '@/components/tryon/BrandFilter';
+import ProductPreviewModal from '@/components/ui/ProductPreviewModal';
 
 const CATEGORY_LABELS: Record<string, string> = {
   tops: 'Tops',
