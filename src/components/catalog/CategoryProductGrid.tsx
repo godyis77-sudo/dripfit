@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Sparkles, ExternalLink, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
