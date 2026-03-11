@@ -118,7 +118,7 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
 
           {/* Try On button */}
           <Button
-            className="w-full h-10 rounded-xl text-[12px] font-bold gap-1.5 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20"
+            className="w-full h-10 rounded-xl text-[12px] font-bold gap-1.5 btn-luxury text-primary-foreground"
             onClick={() => {
               trackEvent('tryon_from_wardrobe_detail', { item_id: item.id });
               onOpenChange(false);
