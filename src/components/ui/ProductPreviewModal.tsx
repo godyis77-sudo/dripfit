@@ -75,6 +75,12 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
       {/* Image — maximized */}
       <div className="flex-1 flex items-center justify-center p-4 min-h-0 overflow-hidden" onClick={(e) => e.stopPropagation()}>
         <div className="relative h-full w-fit max-w-full">
+          {/* Brand badge */}
+          {product.brand && (
+            <span className="absolute top-3 left-3 z-10 text-[12px] px-2.5 py-1 rounded-md bg-primary/90 text-primary-foreground font-bold backdrop-blur-sm">
+              {product.brand}
+            </span>
+          )}
           <img
             src={product.image_url}
             alt={product.name}
