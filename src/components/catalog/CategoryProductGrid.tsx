@@ -191,7 +191,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
               transition={{ duration: 0.2 }}
               src={previewProduct.image_url}
               alt={previewProduct.name}
-              className="max-w-[85%] max-h-[55vh] object-contain rounded-xl"
+              className="max-w-[70%] max-h-[40vh] object-contain rounded-xl"
               onClick={(e) => e.stopPropagation()}
             />
 
