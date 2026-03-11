@@ -176,19 +176,20 @@ const CartTab = () => {
 
             <div className="flex-1 min-w-0 flex flex-col justify-between">
               <div>
-                {item.product_urls?.[0] && (
-                  <span className="brand-label-lg mb-1">
-                    {detectBrandFromUrl(item.product_urls[0]).brand || 'Shop'}
-                  </span>
-                )}
-                {(() => {
-                  const info = item.product_urls?.[0] ? catalogInfo[item.product_urls[0]] : null;
-                  return info ? (
+                {item.product_urls?.[0] && (() => {
+                  const detected = detectBrandFromUrl(item.product_urls[0]);
+                  const retailer = detected.retailer;
+                  const brand = detected.brand;
+                  const info = catalogInfo[item.product_urls[0]];
+                  // Show retailer badge (store name), fall back to brand if same-brand store
+                  const displayRetailer = retailer && retailer !== brand ? retailer : (retailer || 'Shop');
+                  return (
                     <>
-                      <p className="text-[13px] font-bold text-foreground leading-tight">{info.brand}</p>
-                      <p className="text-[11px] text-muted-foreground line-clamp-2 leading-snug mt-0.5">{info.name}</p>
+                      <span className="brand-label-lg mb-1">{displayRetailer}</span>
+                      <p className="text-[13px] font-bold text-foreground leading-tight">{info?.brand || brand}</p>
+                      {info?.name && <p className="text-[11px] text-muted-foreground line-clamp-2 leading-snug mt-0.5">{info.name}</p>}
                     </>
-                  ) : null;
+                  );
                 })()}
                 <p className="text-[9px] text-muted-foreground mt-0.5">
                   Added {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
