@@ -87,9 +87,11 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
             <button
               key={`placeholder-${i}`}
               onClick={() => navigate('/tryon')}
-              className="relative bg-card border border-dashed border-border rounded-xl overflow-hidden aspect-[3/4] flex flex-col items-center justify-center gap-2 active:scale-[0.97] transition-transform"
+              className="relative glass-card rounded-xl overflow-hidden aspect-[3/4] flex flex-col items-center justify-center gap-2 active:scale-[0.97] active:translate-y-[1px] transition-all shadow-3d active:shadow-3d-pressed border-dashed"
             >
-              <Sparkles className="h-5 w-5 text-primary" />
+              <div className="icon-3d-gold h-10 w-10 shimmer-sweep">
+                <Sparkles className="h-5 w-5 text-primary-foreground shimmer-icon" />
+              </div>
               <p className="text-[10px] font-medium text-muted-foreground text-center px-2">Be first to post a look</p>
             </button>
           ))}
