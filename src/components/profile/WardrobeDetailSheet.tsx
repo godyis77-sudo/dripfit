@@ -40,6 +40,7 @@ const ALL_RETAILERS = [
 ];
 
 const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetailers = [] }: WardrobeDetailSheetProps) => {
+  const navigate = useNavigate();
   const [retailerSearch, setRetailerSearch] = useState('');
 
   const searchQuery = item?.category ?? '';
