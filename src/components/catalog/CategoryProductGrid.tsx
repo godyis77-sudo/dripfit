@@ -41,6 +41,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
 
   useEffect(() => {
     setFailedImageIds(new Set());
+    setVisibleCount(PAGE_SIZE);
   }, [category, products.length]);
 
   let visibleProducts = products;
