@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Sparkles, ExternalLink, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -183,13 +184,13 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
 
       {/* Fullscreen product preview */}
       <AnimatePresence>
-        {previewProduct && (
+        {previewProduct && createPortal(
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 overflow-hidden overscroll-none"
+            className="fixed inset-0 z-[100] h-dvh w-screen bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 overflow-hidden overscroll-none"
             onClick={() => setPreviewProduct(null)}
           >
             <motion.div
@@ -258,7 +259,8 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
                 </div>
               </div>
             </motion.div>
-          </motion.div>
+          </motion.div>,
+          document.body
         )}
       </AnimatePresence>
     </div>
