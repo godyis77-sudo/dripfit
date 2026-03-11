@@ -59,7 +59,12 @@ const TryOnUploadSection = ({
   const handleNativeCapture = async (setter: (v: string) => void, type: 'photo' | 'clothing', source: 'camera' | 'gallery') => {
     try {
       const result = await takeNativePhoto(source);
-      setter(result.dataUrl);
+      // Compress native camera output to prevent memory bloat
+      const compressed = await compressImage(
+        await fetch(result.dataUrl).then(r => r.blob()).then(b => new File([b], 'capture.jpg', { type: b.type })),
+        1280, 0.8,
+      );
+      setter(compressed);
       trackEvent(type === 'photo' ? 'tryon_photo_uploaded' : 'tryon_clothing_uploaded');
     } catch (err: any) {
       if (err?.message?.includes('cancelled') || err?.message?.includes('canceled')) return;
