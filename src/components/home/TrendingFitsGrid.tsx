@@ -54,7 +54,7 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
             <button
               key={fit.id}
               onClick={() => navigate('/style-check')}
-              className="relative bg-card border border-border rounded-xl overflow-hidden aspect-[3/4] group active:scale-[0.97] transition-transform"
+              className="relative glass-card rounded-xl overflow-hidden aspect-[3/4] group active:scale-[0.97] active:translate-y-[1px] transition-all shadow-3d active:shadow-3d-pressed"
             >
               <img
                 src={fit.image_url}
