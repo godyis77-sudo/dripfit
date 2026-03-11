@@ -91,7 +91,7 @@ const CartTab = () => {
             {/* Fullscreen-enabled thumbnail */}
             <button
               type="button"
-              onClick={() => {
+              onClick={async () => {
                 const urls = item.product_urls ?? [];
                 const primaryProductUrl = urls[0] ?? null;
                 const primaryBrand = primaryProductUrl ? detectBrandFromUrl(primaryProductUrl).brand : null;
@@ -115,6 +115,27 @@ const CartTab = () => {
                   return { brand: brand || 'Shop', name, url };
                 });
                 setPreviewLookItems(derived);
+
+                // Enrich with catalog images
+                if (urls.length > 0) {
+                  const { data } = await supabase
+                    .from('product_catalog')
+                    .select('product_url, image_url, name, price_cents')
+                    .in('product_url', urls);
+                  if (data && data.length > 0) {
+                    const catalogMap = new Map(data.map(r => [r.product_url, r]));
+                    setPreviewLookItems(prev => prev.map(li => {
+                      const match = catalogMap.get(li.url);
+                      if (!match) return li;
+                      return {
+                        ...li,
+                        image_url: match.image_url || li.image_url,
+                        name: match.name || li.name,
+                        price_cents: match.price_cents ?? li.price_cents,
+                      };
+                    }));
+                  }
+                }
               }}
               className="shrink-0 w-32 h-40 rounded-lg overflow-hidden bg-muted/30 cursor-pointer active:scale-95 transition-transform"
               aria-label={`Preview ${item.caption || 'Look'}`}
