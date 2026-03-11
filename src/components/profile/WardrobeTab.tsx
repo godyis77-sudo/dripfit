@@ -61,9 +61,9 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
           </Button>
         </div>
       ) : (
-        <div className="columns-2 gap-2 space-y-2">
+        <div className="grid grid-cols-2 gap-2">
           {wardrobeItems.map(item => (
-            <motion.div key={item.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="break-inside-avoid">
+            <motion.div key={item.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
               <div
                 className="relative w-full rounded-xl overflow-hidden border border-border bg-card text-left"
                 onPointerDown={() => handlePointerDown(item.id)}
@@ -74,8 +74,8 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                   onClick={() => { if (!longPressId) setSelectedItem(item); }}
                   className="w-full text-left active:scale-[0.97] transition-transform"
                 >
-                  <div className="relative">
-                    <img src={item.image_url} alt={item.notes || item.category} className="w-full object-cover" />
+                  <div className="relative aspect-[3/4]">
+                    <img src={item.image_url} alt={item.notes || item.category} className="w-full h-full object-cover object-top" />
                     {(() => {
                       const displayBrand = item.brand || (item.product_link ? detectBrandFromUrl(item.product_link).brand : null) || item.retailer;
                       return displayBrand ? (
