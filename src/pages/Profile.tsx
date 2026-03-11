@@ -86,14 +86,24 @@ const Profile = () => {
       toast({ title: 'Error', description: 'Could not delete account. Please try again.', variant: 'destructive' });
     }
   };
-  const handleExport = () => {
-    const scans = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]');
-    const blob = new Blob([JSON.stringify(scans, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = 'dripfit-data.json'; a.click();
-    URL.revokeObjectURL(url);
-    trackEvent('profile_export');
-    toast({ title: 'Data exported' });
+  const handleExport = async () => {
+    try {
+      // Fetch all scans from DB for this user
+      const { data: dbScans } = await supabase
+        .from('body_scans')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      const exportData = dbScans || [];
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'dripfit-data.json'; a.click();
+      URL.revokeObjectURL(url);
+      trackEvent('profile_export');
+      toast({ title: 'Data exported' });
+    } catch {
+      toast({ title: 'Export failed', variant: 'destructive' });
+    }
   };
   const handleAvatarUploaded = (url: string) => {
     queryClient.invalidateQueries({ queryKey: ['profile-info', user.id] });

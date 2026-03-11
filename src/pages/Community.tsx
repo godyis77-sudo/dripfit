@@ -77,7 +77,7 @@ const Community = () => {
 
   const onPostLook = () => {
     trackEvent('fitcheck_post_started');
-    if (!user) { toast({ title: 'Sign in to post', variant: 'destructive' }); navigate('/auth'); return; }
+    if (!user) { toast({ title: 'Sign in to post', variant: 'destructive' }); navigate(`/auth?returnTo=${encodeURIComponent('/style-check')}`); return; }
     setShowPostFlow(true);
   };
 
