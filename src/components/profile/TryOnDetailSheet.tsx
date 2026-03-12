@@ -108,6 +108,11 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
           <X className="h-4 w-4 text-white" />
         </button>
 
+        {/* Date above image */}
+        <div className="px-4 pt-3 pb-1.5">
+          <p className="text-[11px] text-muted-foreground font-medium">{new Date(post.created_at).toLocaleDateString()}</p>
+        </div>
+
         {/* Full-screen image — maximized */}
         <div className="relative w-full flex-1 min-h-0 bg-black flex items-center justify-center overflow-hidden">
           <img
@@ -126,12 +131,6 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               <Trash2 className="h-4 w-4" />
             </button>
           )}
-          {/* Bottom-left: date + public badge */}
-          <div className="absolute bottom-3 left-3 z-10">
-            <div className="bg-black/50 backdrop-blur-sm rounded-full px-2.5 py-1">
-              <p className="text-[10px] text-white font-medium">{new Date(post.created_at).toLocaleDateString()}</p>
-            </div>
-          </div>
         </div>
 
         {/* Actions */}
