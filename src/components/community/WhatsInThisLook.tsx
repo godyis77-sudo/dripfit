@@ -195,7 +195,7 @@ const WhatsInThisLook = ({
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-1.5 flex-wrap">
                       <button
                         type="button"
                         onClick={(e) => {
@@ -203,9 +203,9 @@ const WhatsInThisLook = ({
                           window.open(item.url, '_blank', 'noopener');
                           trackEvent('badge_clickout', { retailer: item.brand, source: 'whats_in_look' });
                         }}
-                        className="text-xs font-extrabold text-foreground bg-primary/20 px-2.5 py-1 rounded-lg flex items-center gap-1 active:opacity-70 hover:bg-primary/30 transition-colors"
+                        className="text-[10px] font-bold text-foreground bg-primary/20 px-2 py-0.5 rounded-md flex items-center gap-0.5 active:opacity-70"
                       >
-                        Shop <ExternalLink className="h-3 w-3" />
+                        Shop <ExternalLink className="h-2.5 w-2.5" />
                       </button>
                       {onTryOn && !onAddToWardrobe && (
                         <button
@@ -214,7 +214,7 @@ const WhatsInThisLook = ({
                             e.stopPropagation();
                             onTryOn(item);
                           }}
-                          className="text-xs font-extrabold text-foreground bg-primary/20 px-2.5 py-1 rounded-lg active:opacity-70 hover:bg-primary/30 transition-colors"
+                          className="text-[10px] font-bold text-foreground bg-primary/20 px-2 py-0.5 rounded-md active:opacity-70"
                         >
                           Try-On
                         </button>
@@ -226,7 +226,7 @@ const WhatsInThisLook = ({
                             e.stopPropagation();
                             onAddToWardrobe(item);
                           }}
-                          className="text-xs font-extrabold text-foreground bg-primary/20 px-2.5 py-1 rounded-lg active:opacity-70 hover:bg-primary/30 transition-colors"
+                          className="text-[10px] font-bold text-foreground bg-primary/20 px-2 py-0.5 rounded-md active:opacity-70"
                         >
                           +Wardrobe
                         </button>
