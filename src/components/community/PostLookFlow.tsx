@@ -216,8 +216,8 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                   <div className="flex items-center gap-2">
                     <Link2 className="h-3.5 w-3.5 text-muted-foreground" />
                     <span className="text-[11px] text-muted-foreground">
-                      Add product link <span className="text-[9px] text-muted-foreground/60">(optional)</span>
-                      {!linkExpanded && <span className="text-[9px] text-muted-foreground/60"> — earn commission on clicks</span>}
+                      Add product link <span className="text-[11px] text-muted-foreground/60">(optional)</span>
+                      {!linkExpanded && <span className="text-[11px] text-muted-foreground/60"> — earn commission on clicks</span>}
                     </span>
                   </div>
                   {linkExpanded ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
