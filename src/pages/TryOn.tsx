@@ -171,7 +171,7 @@ const TryOn = () => {
               </div>
             )}
             {(s.userPhoto || s.clothingPhoto) && s.loading && createPortal(
-              <div className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-[120] px-4">
+              <div className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-[120] px-4 animate-in slide-in-from-bottom-8 duration-300">
                 <div className="mx-auto w-full max-w-[390px] bg-gradient-to-t from-background via-background to-background/80 pt-2">
                   <Button className="w-full h-12 min-h-[44px] rounded-lg text-sm font-bold btn-luxury text-primary-foreground opacity-100 animate-pulse" disabled>
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Generating Try-On…
