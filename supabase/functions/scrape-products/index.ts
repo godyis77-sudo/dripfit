@@ -28,6 +28,38 @@ interface ClassifiedProduct extends RawProduct {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// PRE-INSERT QUALITY GATE — reject listing pages before they enter the catalog
+// ─────────────────────────────────────────────────────────────────────────────
+
+const LISTING_PAGE_NAME_PATTERNS = [
+  /\bshop\s+(now|all|the|women|men|our)/i,
+  /\bpage\s*\d+\s*\|/i,
+  /\|\s*page\s*\d+/i,
+  /\bsale\s*[&:]\s*clearance/i,
+  /\bdesigner\s+(sale|finds|bags|shoes)/i,
+  /\bshop\s+on\s+(farfetch|ssense|nordstrom)/i,
+  /\bshop\s+now\s+(at|on)\b/i,
+  /\|\s*(farfetch|ssense|nordstrom|net-a-porter|asos|uniqlo|mango|zara|shopbop|mytheresa|end\.|mr\s*porter|revolve|saks|bloomingdale)/i,
+  /\bfor\s+(women|men)\s*[-|—]/i,
+  /\b(women's|men's)\s+designer\b/i,
+  /\b(women's|men's)\s+(sale|clothing|apparel)\b/i,
+  /\bbrowse\s+(all|our|the)\b/i,
+  /\bview\s+all\b/i,
+  /\beverything\s+you\s+need/i,
+  /\bnew\s+arrivals\s+(on|at)\b/i,
+  /\bquick\s+shipping\b/i,
+  /\bcare\s*(guide|&\s*repair|instruction)/i,
+  /\bcustomer\s+service\b/i,
+  /\bpre-owned\b.*\bfor\s+(women|men)\b/i,
+  /^(women's?|men's?)\s+(tops|bags|shoes|boots|sneakers|dresses|pants|jeans|jackets)\s*$/i,
+  /\b(perfume|cologne|fragrance|eau\s+de\s|edp\b|edt\b|candle|diffuser|incense|air\s*freshener|umbrella)\b/i,
+];
+
+function isListingPageName(name: string): boolean {
+  return LISTING_PAGE_NAME_PATTERNS.some(p => p.test(name));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // RETAILER CATEGORY URLs — with Firecrawl actions for JS-rendered pages
 // ─────────────────────────────────────────────────────────────────────────────
 
