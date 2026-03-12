@@ -57,6 +57,8 @@ export const CATEGORIES = [
 ] as const;
 
 export const ACCESSORY_CATEGORIES = [
+  { key: 'top', label: '👕 Tops', icon: '👕' },
+  { key: 'bottom', label: '👖 Bottoms', icon: '👖' },
   { key: 'shoes', label: '👟 Shoes', icon: '👟' },
   { key: 'hats', label: '🧢 Hats', icon: '🧢' },
   { key: 'necklace', label: '📿 Necklace', icon: '📿' },
