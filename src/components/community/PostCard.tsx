@@ -131,7 +131,7 @@ const TryOnClothingBadge = ({ post, navigate, toast }: { post: Post; navigate: R
         className="flex items-center gap-0.5 rounded-[100px] text-[11px] font-bold active:scale-95 transition-transform gradient-drip text-primary-foreground px-2 py-0.5 shadow-gold-glow shimmer-sweep"
       >
         <Sparkles className="h-2 w-2" />
-        Try On
+        Try-On
         {items.length > 1 && (
           <>
             <span className="text-[11px] opacity-70">({items.length})</span>

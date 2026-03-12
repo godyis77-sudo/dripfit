@@ -161,7 +161,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
           <CardTitle className="font-display text-xl">{isLogin ? 'Welcome Back' : 'Join DRIPFITCHECK'}</CardTitle>
           <CardDescription className="text-[13px] text-muted-foreground">
             {isLogin
-              ? 'Sign in to access your saved sizes, Try-Ons, and Fit Checks'
+              ? 'Sign in to access your saved sizes, Try-Ons, and Style Checks'
               : 'Create a free account to save your results and get personalized sizing'}
           </CardDescription>
         </CardHeader>

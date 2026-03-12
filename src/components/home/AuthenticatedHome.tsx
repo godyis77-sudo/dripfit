@@ -180,7 +180,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               onClick={() => navigate('/browse/tops')}
               className="text-[10px] text-primary font-semibold min-h-[44px] flex items-center"
             >
-              Try on →
+              Try-On →
             </button>
           </div>
           {genderLoaded && [

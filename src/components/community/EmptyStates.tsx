@@ -71,7 +71,7 @@ const EmptyStates = ({ filter, hasScan, userId, onPostLook }: EmptyStateProps) =
           <Users className="h-6 w-6 text-primary" />
         </div>
         <h2 className="text-[18px] font-bold text-foreground mb-1.5">Your custom feed is empty</h2>
-        <p className="text-[14px] text-muted-foreground max-w-[280px] mb-5">Follow people in the community to build a personalized feed of their looks and fit checks.</p>
+        <p className="text-[14px] text-muted-foreground max-w-[280px] mb-5">Follow people in the community to build a personalized feed of their looks and style checks.</p>
         <Button className="w-4/5 h-12 rounded-xl text-sm font-bold btn-luxury text-primary-foreground" onClick={() => {}}>Browse New Looks</Button>
       </div>
     );

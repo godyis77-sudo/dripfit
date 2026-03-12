@@ -273,7 +273,7 @@ const PublicProfile = () => {
                         >
                           <img src={post.result_photo_url} alt="" className="h-14 w-14 rounded-lg object-cover shrink-0 img-normalize" />
                           <div className="flex-1 min-w-0">
-                            <p className="text-[12px] font-bold text-foreground line-clamp-1">{post.caption || 'Fit Check'}</p>
+                            <p className="text-[12px] font-bold text-foreground line-clamp-1">{post.caption || 'Style Check'}</p>
                             <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
                           </div>
                         </button>

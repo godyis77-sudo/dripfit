@@ -127,7 +127,7 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                         onClick={() => { setLongPressId(null); navigate('/tryon'); }}
                         className="flex-1 py-1.5 rounded-lg bg-background border border-border text-[11px] font-bold text-foreground active:scale-95 transition-transform"
                       >
-                        Try On
+                        Try-On
                       </button>
                       <button
                         onClick={() => { setLongPressId(null); }}

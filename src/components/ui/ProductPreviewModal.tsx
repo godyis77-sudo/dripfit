@@ -199,7 +199,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
                               onClick={() => onLookItemTryOn(item)}
                               className="text-[11px] font-bold text-primary flex items-center gap-0.5 active:opacity-70 ml-1"
                             >
-                              Try On
+                              Try-On
                             </button>
                           )}
                         </div>

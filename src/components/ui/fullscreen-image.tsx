@@ -105,7 +105,7 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
                     onClick={() => { onTryOn(); setOpen(false); }}
                     className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[12px] font-bold text-black bg-white border border-white/80 active:scale-95 transition-transform"
                   >
-                    <Sparkles className="h-3.5 w-3.5" /> Try On
+                    <Sparkles className="h-3.5 w-3.5" /> Try-On
                   </button>
                 )}
                 {onAddToWardrobe && (

@@ -233,7 +233,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
           {post.is_public && (
             <div className="flex items-center gap-1.5 justify-center py-1">
               <MessageSquare className="h-3.5 w-3.5 text-primary" />
-              <p className="text-[11px] text-muted-foreground">Already shared in Fit Check Feed</p>
+              <p className="text-[11px] text-muted-foreground">Already shared in Style Check Feed</p>
             </div>
           )}
 
