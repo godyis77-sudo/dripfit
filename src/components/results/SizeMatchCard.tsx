@@ -111,7 +111,7 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
         {/* Row 1 — Header */}
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold tracking-widest uppercase text-primary">
-            DRIPFITCHECK SIZE MATCH
+            DRIPFIT ✔ SIZE MATCH
           </span>
           <TooltipProvider>
             <Tooltip>

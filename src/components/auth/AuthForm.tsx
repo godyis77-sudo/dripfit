@@ -153,12 +153,12 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
         <div className="h-11 w-11 rounded-xl gradient-drip glow-primary flex items-center justify-center ring-2 ring-primary/20 mb-2">
           <Crown className="h-5 w-5 text-primary-foreground" />
         </div>
-        <span className="font-display font-bold text-[12px] tracking-wider text-muted-foreground">DRIPFITCHECK</span>
+        <span className="font-display font-bold text-[12px] tracking-wider text-muted-foreground">DRIPFIT ✔</span>
       </div>
 
       <Card className="rounded-xl border-border/40">
         <CardHeader className="text-center pb-1.5 pt-4 px-4">
-          <CardTitle className="font-display text-xl">{isLogin ? 'Welcome Back' : 'Join DRIPFITCHECK'}</CardTitle>
+          <CardTitle className="font-display text-xl">{isLogin ? 'Welcome Back' : 'Join DRIPFIT ✔'}</CardTitle>
           <CardDescription className="text-[13px] text-muted-foreground">
             {isLogin
               ? 'Sign in to access your saved sizes, Try-Ons, and Style Checks'

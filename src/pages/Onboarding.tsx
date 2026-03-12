@@ -191,7 +191,7 @@ const Onboarding = () => {
               transition={{ delay: reduceMotion ? 0 : 0.25, ...screenTransition }}
               className="font-display text-2xl font-bold tracking-[0.2em] text-foreground"
             >
-              DRIPFITCHECK
+              DRIPFIT ✔
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}

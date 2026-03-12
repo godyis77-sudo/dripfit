@@ -193,7 +193,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
 
                   if (navigator.share && navigator.canShare?.({ files: [file] })) {
                     await navigator.share({
-                      title: post.caption || 'Check my fit on DRIPFITCHECK!',
+                      title: post.caption || 'Check my fit on DRIPFIT ✔!',
                       files: [file],
                     });
                     trackEvent('tryon_shared_instagram', { post_id: post.id });

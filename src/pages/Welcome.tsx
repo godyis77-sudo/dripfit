@@ -88,7 +88,7 @@ const Welcome = () => {
       <nav className="sticky top-0 z-50 h-[56px] flex items-center justify-between px-6 glass-bar border-b">
         <div className="flex items-center gap-2.5">
           <Crown className="h-4 w-4 text-primary shimmer-icon" />
-          <span className="font-display text-[17px] tracking-[3px] text-foreground">DRIPFITCHECK</span>
+          <span className="font-display text-[17px] tracking-[3px] text-foreground">DRIPFIT <span className="text-primary">✔</span></span>
         </div>
         <button
           onClick={() => { trackEvent('auth_started'); navigate('/auth'); }}
@@ -264,7 +264,7 @@ const Welcome = () => {
               const baseUrl = window.location.origin;
               const url = user ? `${baseUrl}?ref=${user.id}` : baseUrl;
               if (navigator.share) {
-                navigator.share({ title: 'DripFitCheck — Know your size before you buy', text: 'Get AI body measurements, virtual try-on, and real fit feedback. We both get 5 extra try-ons!', url });
+                navigator.share({ title: 'DRIPFIT ✔ — Know your size before you buy', text: 'Get AI body measurements, virtual try-on, and real fit feedback. We both get 5 extra try-ons!', url });
               } else {
                 navigator.clipboard.writeText(url);
                 toast({ title: 'Link copied!', description: 'Share it with friends — you both get 5 extra try-ons.' });
