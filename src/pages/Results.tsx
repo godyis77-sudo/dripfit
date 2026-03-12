@@ -342,9 +342,9 @@ const Results = () => {
 
         {/* Return Risk warning */}
         {(confidence === 'low' || confidence === 'medium') && (
-          <div className={`rounded-xl border px-3 py-2.5 mb-3 ${confidence === 'low' ? 'bg-orange-500/10 border-orange-500/30' : 'bg-primary/5 border-primary/20'}`}>
+          <div className={`rounded-xl border px-3 py-2.5 mb-3 ${confidence === 'low' ? 'bg-destructive/10 border-destructive/30' : 'bg-primary/5 border-primary/20'}`}>
             <div className="flex items-center gap-2 mb-1">
-              <Sparkles className={`h-4 w-4 ${confidence === 'low' ? 'text-orange-500' : 'text-primary'}`} />
+              <Sparkles className={`h-4 w-4 ${confidence === 'low' ? 'text-destructive' : 'text-primary'}`} />
               <p className="text-[12px] font-bold text-foreground">
                 {confidence === 'low' ? '⚠️ Higher Return Risk' : '📏 Between Sizes'}
               </p>

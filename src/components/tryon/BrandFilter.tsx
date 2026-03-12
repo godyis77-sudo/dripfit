@@ -129,7 +129,7 @@ const BrandFilter = ({ gender, selectedBrand, onBrandChange }: BrandFilterProps)
             </div>
             <button
               onClick={() => setShowDropdown(!showDropdown)}
-              className="h-9 w-9 rounded-lg border border-border flex items-center justify-center text-foreground/50 hover:border-primary/30 transition-colors active:scale-95"
+              className="h-9 w-9 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:border-primary/30 transition-colors active:scale-95"
             >
               {showDropdown ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
             </button>
@@ -139,9 +139,9 @@ const BrandFilter = ({ gender, selectedBrand, onBrandChange }: BrandFilterProps)
           {showDropdown && (
             <div className="absolute z-50 top-full mt-1 w-full max-h-48 overflow-y-auto rounded-lg border border-border bg-popover shadow-lg">
               {loading ? (
-                <p className="text-[12px] text-foreground/50 text-center py-3">Loading brands...</p>
+                <p className="text-[12px] text-muted-foreground text-center py-3">Loading brands...</p>
               ) : matchingBrands.length === 0 ? (
-                <p className="text-[12px] text-foreground/50 text-center py-3">No brands found</p>
+                <p className="text-[12px] text-muted-foreground text-center py-3">No brands found</p>
               ) : (
                 matchingBrands.map(brand => (
                   <button
