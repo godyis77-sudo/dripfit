@@ -137,7 +137,7 @@ const WhatsInThisLook = ({
           {onAddToWardrobe ? 'Shop Style / Add to Wardrobe' : 'Shop Style / Try-On'}
         </span>
         <ChevronDown
-          className={`${isCompact ? 'h-3.5 w-3.5' : 'h-4.5 w-4.5'} text-primary-foreground transition-transform duration-200`}
+          className="h-4 w-4 text-primary-foreground transition-transform duration-200"
           style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
         />
       </div>
