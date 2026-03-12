@@ -165,7 +165,7 @@ const TryOnResultSection = ({
                 <div className="flex items-center justify-between bg-muted/20 rounded-lg p-2.5 border border-border">
                   <div>
                     <span className="text-[12px] font-semibold text-foreground">Post to Style Check</span>
-                    <p className="text-[9px] text-muted-foreground">{isPublic ? 'Visible to the community' : 'Private — only you can see'}</p>
+                    <p className="text-[11px] text-muted-foreground">{isPublic ? 'Visible to the community' : 'Private — only you can see'}</p>
                   </div>
                   <Switch checked={isPublic} onCheckedChange={(v) => { onSetIsPublic(v); saveSharePreference(v); }} />
                 </div>
