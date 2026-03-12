@@ -344,7 +344,7 @@ export const PostDetailSheet = ({
 
           {/* Caption section */}
           {isOwnPost ? (
-          <div className="px-4 pt-2" onClick={(e) => e.stopPropagation()}>
+          <div className="px-4 pt-1.5" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-2">
               {editingQuestion ? (
                 <>
