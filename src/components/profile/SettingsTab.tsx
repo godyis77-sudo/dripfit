@@ -217,7 +217,7 @@ const SettingsTab = ({
               </button>
             ))}
           </div>
-          {!gender && <p className="text-[9px] text-muted-foreground mt-1">Not set</p>}
+          {!gender && <p className="text-[11px] text-muted-foreground mt-1">Not set</p>}
         </div>
         {/* Instagram handle */}
         {editingIg ? (
