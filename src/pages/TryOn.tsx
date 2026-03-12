@@ -39,8 +39,8 @@ const TryOn = () => {
         {(s.hasSavedProfile || s.bodyProfile) && !s.resultImage && (
           <div className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-lg px-3 py-2 mb-3">
             <div>
-              <p className="text-[11px] font-bold text-primary flex items-center gap-1"><Check className="h-3 w-3" /> Body Profile Active</p>
-              <p className="text-[10px] text-muted-foreground">Your measurements improve try-on accuracy</p>
+              <p className="text-[12px] font-bold text-primary flex items-center gap-1"><Check className="h-3 w-3" /> Body Profile Active</p>
+              <p className="text-[11px] text-foreground/60">Your measurements improve try-on accuracy</p>
             </div>
           </div>
         )}
