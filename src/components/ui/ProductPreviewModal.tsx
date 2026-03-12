@@ -188,7 +188,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
                             <button
                               type="button"
                               onClick={() => onLookItemShop(item)}
-                              className="text-[9px] font-bold text-primary flex items-center gap-0.5 active:opacity-70"
+                              className="text-[11px] font-bold text-primary flex items-center gap-0.5 active:opacity-70"
                             >
                               Shop <ExternalLink className="h-2 w-2" />
                             </button>
