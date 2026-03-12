@@ -269,12 +269,12 @@ const TryOnResultSection = ({
           )}
         </AnimatePresence>
         <div className="mb-3">
-          <button onClick={() => setShowAccessorySection(!showAccessorySection)} className="w-full flex items-center justify-between bg-card border border-border rounded-xl px-3 py-2.5 active:scale-[0.98] transition-transform">
-            <span className="text-[12px] font-bold text-foreground flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5 text-primary" /> Add Accessory
-              {layerHistory.length > 0 && <span className="text-[11px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full ml-1">{layerHistory.length} layered</span>}
+          <button onClick={() => setShowAccessorySection(!showAccessorySection)} className="w-full flex items-center justify-between btn-luxury text-primary-foreground rounded-xl px-4 py-3 active:scale-[0.97] transition-transform shimmer-sweep">
+            <span className="text-[13px] font-bold uppercase tracking-wider flex items-center gap-2">
+              <Sparkles className="h-4 w-4" /> Add More to this Style
+              {layerHistory.length > 0 && <span className="text-[11px] bg-background/20 px-2 py-0.5 rounded-full ml-1">{layerHistory.length} layered</span>}
             </span>
-            {showAccessorySection ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
+            {showAccessorySection ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
           </button>
           <AnimatePresence>
             {showAccessorySection && (
