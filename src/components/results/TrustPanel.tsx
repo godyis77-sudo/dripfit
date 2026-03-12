@@ -131,7 +131,7 @@ const TrustPanel = ({ confidence, recommendedSize, measurements, onAdjust, retai
                       return (
                         <div key={key}>
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">{label}</span>
+                            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">{label}</span>
                             <span className="text-[10px] font-bold text-foreground">{range.min.toFixed(0)}–{range.max.toFixed(0)} cm</span>
                           </div>
                           <Slider

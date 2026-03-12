@@ -311,7 +311,7 @@ const Browse = () => {
                   </div>
                 </div>
                 <div className="p-2.5">
-                  <p className="text-[9px] font-bold text-primary uppercase tracking-wider">{product.brand}</p>
+                  <p className="text-[11px] font-bold text-primary uppercase tracking-wider">{product.brand}</p>
                   <p className="text-[12px] font-semibold text-foreground line-clamp-2 leading-tight mt-0.5">{product.name}</p>
                   {product.price_cents && (
                     <p className="text-[12px] font-bold text-primary mt-1">
