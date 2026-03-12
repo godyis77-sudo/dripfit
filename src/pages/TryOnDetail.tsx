@@ -3,17 +3,46 @@ import { useEffect, useState } from 'react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Shirt } from 'lucide-react';
+import { ArrowLeft, Shirt, ShoppingBag } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
+import { trackEvent } from '@/lib/analytics';
 import BottomTabBar from '@/components/BottomTabBar';
 
 const TryOnDetail = () => {
   const { lookId } = useParams<{ lookId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { toast } = useToast();
   usePageTitle('Try-On');
   const [post, setPost] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [addingToWardrobe, setAddingToWardrobe] = useState(false);
+  const [addedToWardrobe, setAddedToWardrobe] = useState(false);
+
+  const handleAddToWardrobe = async () => {
+    if (!user || !post) return;
+    setAddingToWardrobe(true);
+    const { error } = await supabase.from('clothing_wardrobe').insert({
+      user_id: user.id,
+      image_url: post.clothing_photo_url || post.result_photo_url,
+      category: 'top',
+      product_link: (post.product_urls && post.product_urls.length > 0) ? post.product_urls[0] : null,
+    });
+    setAddingToWardrobe(false);
+    if (error) {
+      if (error.code === '23505') {
+        setAddedToWardrobe(true);
+        toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
+      } else {
+        toast({ title: 'Error', description: 'Could not add to wardrobe.', variant: 'destructive' });
+      }
+      return;
+    }
+    setAddedToWardrobe(true);
+    trackEvent('wardrobe_added_from_tryon', { post_id: post.id });
+    toast({ title: '👕 Added to Wardrobe!', description: 'You can find it in your Wardrobe tab.' });
+  };
 
   useEffect(() => {
     if (!lookId) return;
@@ -84,6 +113,15 @@ const TryOnDetail = () => {
                 Shop This Item
               </Button>
             )}
+            <Button
+              variant={addedToWardrobe ? 'default' : 'outline'}
+              className={`w-full h-9 rounded-lg text-[11px] font-bold gap-1.5 ${addedToWardrobe ? 'bg-primary/20 text-primary border-primary/30' : ''}`}
+              onClick={handleAddToWardrobe}
+              disabled={addingToWardrobe || addedToWardrobe}
+            >
+              <ShoppingBag className="h-3.5 w-3.5" />
+              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added ✓' : 'Add to Wardrobe'}
+            </Button>
           </div>
         </div>
       </div>
