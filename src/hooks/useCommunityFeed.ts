@@ -137,8 +137,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     if (!data || data.length === 0) { setHasMore(false); setLoadingMore(false); return; }
     processBatch(data);
     const userIds = [...new Set(data.map(p => p.user_id))];
-    const { data: profiles } = await supabase.from('profiles').select('user_id, display_name, avatar_url').in('user_id', userIds);
-    const profileMap = new Map((profiles || []).map(p => [p.user_id, p]));
+    const profileMap = await fetchPublicProfiles(userIds);
     const enriched = data.map(p => ({ ...p, profile: profileMap.get(p.user_id) || { display_name: 'Anonymous' }, rating_count: 0 }));
     setPosts(prev => [...prev, ...enriched]);
     setLoadingMore(false);
