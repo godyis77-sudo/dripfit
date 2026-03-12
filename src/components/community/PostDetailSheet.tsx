@@ -385,7 +385,7 @@ export const PostDetailSheet = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="px-4 pb-6 pt-3 space-y-3"
+            className="px-4 pb-4 pt-2 space-y-2"
             onClick={(e) => e.stopPropagation()}
           >
 
