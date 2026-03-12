@@ -141,7 +141,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
             >
               <ShoppingCart className="h-4 w-4" />
               <span className="text-[13px] font-bold uppercase tracking-widest">
-                Shop This Style – Try-On
+                Shop Style / Try-On
               </span>
               <ChevronDown
                 className="h-4 w-4 transition-transform duration-200"
