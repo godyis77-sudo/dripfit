@@ -173,7 +173,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
 
                         {/* Info */}
                         <div className="flex-1 min-w-0">
-                          <span className="text-[9px] uppercase tracking-wider font-bold text-muted-foreground block">{item.brand}</span>
+                          <span className="text-[11px] uppercase tracking-wider font-bold text-muted-foreground block">{item.brand}</span>
                           <p className="text-[10px] text-foreground truncate leading-tight">{item.name}</p>
                         </div>
 
