@@ -135,7 +135,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           </div>
         </motion.div>
 
-        {/* Re-scan nudge banner */}
+        {/* Re-scan nudge banner — placed above product grid for visibility */}
         {hasScan && daysSinceLastScan !== null && daysSinceLastScan >= 30 && !rescanDismissed && (
           <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -147,7 +147,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               <Camera className="h-4 w-4 text-primary shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
                 <p className="text-[12px] text-foreground leading-snug">
-                  Your last scan was {daysSinceLastScan} days ago — re-scan to check your fit
+                  Your last scan was {daysSinceLastScan} days ago — re-scan to keep your fit accurate
                 </p>
                 <button
                   onClick={() => navigate('/capture')}
@@ -158,7 +158,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               </div>
               <button
                 onClick={dismissRescanNudge}
-                className="h-6 w-6 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                className="h-8 w-8 min-h-[44px] min-w-[44px] rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0"
                 aria-label="Dismiss re-scan nudge"
               >
                 <X className="h-3.5 w-3.5" />
