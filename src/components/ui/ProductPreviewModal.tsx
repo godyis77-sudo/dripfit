@@ -28,7 +28,7 @@ interface ProductPreviewModalProps {
   onShop?: (product: ProductPreviewData) => void;
   /** User-authored caption shown below the image */
   caption?: string | null;
-  /** Optional list of all items in the look — renders an expandable "TRY ON - SHOP" section */
+  /** Optional list of all items in the look — renders an expandable "TRY-ON - SHOP" section */
   lookItems?: LookItemData[];
   onLookItemTryOn?: (item: LookItemData) => void;
   onLookItemShop?: (item: LookItemData) => void;
