@@ -18,7 +18,7 @@ import type { LookItem } from '@/components/community/WhatsInThisLook';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { navigateToTryOn } from '@/lib/tryonNavigate';
 import type { Post, FilterType } from './community-types';
-import { GENERIC_PROMPTS } from './community-types';
+import { getPostedCaption } from './community-types';
 import { VOTE_OPTIONS, FIT_OPTIONS } from './community-types';
 
 interface PostCardProps {
