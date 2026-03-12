@@ -7,7 +7,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
-import { GENERIC_PROMPTS } from './community-types';
+import { getPostedCaption } from './community-types';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 import type { LookItem } from '@/components/community/WhatsInThisLook';
 import { supabase } from '@/integrations/supabase/client';
@@ -49,7 +49,7 @@ const FIT_OPTIONS = [
   { key: 'too_loose', label: 'Too big' },
 ] as const;
 
-const GENERIC_PROMPTS_SET = new Set(GENERIC_PROMPTS);
+
 
 interface PostDetailSheetProps {
   post: Post | null;
@@ -142,8 +142,8 @@ export const PostDetailSheet = ({
     setZoom(1);
     setPan({ x: 0, y: 0 });
 
-    const normalizedCaption = (post.caption || '').trim();
-    setQuestionText(normalizedCaption && !GENERIC_PROMPTS_SET.has(normalizedCaption) ? normalizedCaption : '');
+    const postedCaption = getPostedCaption(post.caption);
+    setQuestionText(postedCaption ?? '');
     setEditingQuestion(false);
   }, [open, post?.id, post?.caption]);
 
@@ -200,8 +200,7 @@ export const PostDetailSheet = ({
   });
   const retailers = [...retailerUrlMap.keys()];
 
-  const normalizedPostCaption = (post.caption || '').trim();
-  const userCaption = normalizedPostCaption && !GENERIC_PROMPTS_SET.has(normalizedPostCaption) ? normalizedPostCaption : '';
+  const userCaption = getPostedCaption(post.caption) ?? '';
   const displayQuestion = questionText || userCaption;
 
   const handleSendComment = () => {

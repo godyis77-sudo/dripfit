@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import { generateTryOnShareCard } from '@/lib/shareImage';
 import { useCart } from '@/hooks/useCart';
-
+import { getPostedCaption } from '@/components/community/community-types';
 interface TryOnPost {
   id: string;
   result_photo_url: string;
@@ -44,6 +44,8 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   if (!post) return null;
+
+  const postedCaption = getPostedCaption(post.caption);
 
   const handleLike = () => {
     setLiked(prev => !prev);
@@ -134,8 +136,8 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
 
         {/* Actions */}
         <div className="px-4 pt-4 pb-6 space-y-3">
-          {post.caption && (
-            <p className="text-[13px] text-foreground font-medium">{post.caption}</p>
+          {postedCaption && (
+            <p className="text-[13px] text-foreground font-medium">{postedCaption}</p>
           )}
 
           <div className="grid grid-cols-2 gap-2">

@@ -18,7 +18,7 @@ import type { LookItem } from '@/components/community/WhatsInThisLook';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { navigateToTryOn } from '@/lib/tryonNavigate';
 import type { Post, FilterType } from './community-types';
-import { GENERIC_PROMPTS } from './community-types';
+import { getPostedCaption } from './community-types';
 import { VOTE_OPTIONS, FIT_OPTIONS } from './community-types';
 
 interface PostCardProps {
@@ -157,8 +157,8 @@ const PostCard = ({
     setLocalCaption(post.caption ?? '');
   }, [post.id, post.caption]);
 
-  const normalizedCaption = localCaption.trim();
-  const hasPostedCaption = normalizedCaption.length > 0 && !GENERIC_PROMPTS.includes(normalizedCaption);
+  const postedCaption = getPostedCaption(localCaption);
+  const hasPostedCaption = !!postedCaption;
 
   const saveCaption = async (value: string, input?: HTMLInputElement | null) => {
     if (!user) return;
@@ -264,7 +264,7 @@ const PostCard = ({
         )}
       </button>
       {hasPostedCaption && (
-        <p className="text-[10px] font-bold text-foreground text-center px-2 py-1 line-clamp-2">{normalizedCaption}</p>
+        <p className="text-[10px] font-bold text-foreground text-center px-2 py-1 line-clamp-2">{postedCaption}</p>
       )}
 
       {/* Mini comment — only for own posts */}
