@@ -345,26 +345,10 @@ const TryOnResultSection = ({
                     </>
                   )}
 
-                  <Button className="w-full h-10 rounded-lg text-[12px] font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30" onClick={() => { onAddAccessory(accessoryPhoto!, accessoryCategory); setAccessoryPhoto(null); setAccessoryCategory(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }} disabled={!accessoryPhoto || addingAccessory}>
-                    {addingAccessory ? <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> Adding {accessoryCategory || 'accessory'}…</> : <><Sparkles className="mr-1.5 h-3.5 w-3.5" /> {layerHistory.length > 0 ? 'Add Another Accessory to Look' : `Add ${accessoryCategory || 'Accessory'} to Look`}</>}
-                  </Button>
-
-                  {addingAccessory && (
-                    <div className="flex flex-col items-center mt-3 mb-1 gap-2">
-                      <p className="text-[11px] text-muted-foreground font-medium">
-                        {accessoryStepIndex === 0 && 'Analysing the accessory…'}
-                        {accessoryStepIndex === 1 && 'Compositing onto your look…'}
-                        {accessoryStepIndex === 2 && 'Finalising your preview…'}
-                      </p>
-                      <div className="flex gap-1.5">
-                        {[0, 1, 2].map(i => (
-                          <div
-                            key={i}
-                            className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${i <= accessoryStepIndex ? 'bg-primary' : 'border border-muted-foreground/40'}`}
-                          />
-                        ))}
-                      </div>
-                    </div>
+                  {!addingAccessory && (
+                    <Button className="w-full h-10 rounded-lg text-[12px] font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30" onClick={() => { onAddAccessory(accessoryPhoto!, accessoryCategory); setAccessoryPhoto(null); setAccessoryCategory(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }} disabled={!accessoryPhoto}>
+                      <Sparkles className="mr-1.5 h-3.5 w-3.5" /> {layerHistory.length > 0 ? 'Add Another Accessory to Look' : `Add ${accessoryCategory || 'Accessory'} to Look`}
+                    </Button>
                   )}
                 </div>
               </motion.div>
