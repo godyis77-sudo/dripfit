@@ -318,7 +318,7 @@ const SettingsTab = ({
               }`}
             >
               <span className="text-base">{r.flag}</span>
-              <span className="text-[9px] font-bold leading-tight">{r.label}</span>
+              <span className="text-[11px] font-bold leading-tight">{r.label}</span>
             </button>
           ))}
         </div>
