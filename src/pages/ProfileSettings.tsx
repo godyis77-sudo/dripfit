@@ -21,7 +21,7 @@ const ProfileSettings = () => {
   const [displayName, setDisplayName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [favoriteRetailers, setFavoriteRetailers] = useState<string[]>([]);
-  const [useCm, setUseCm] = useState(true);
+  const [useCm, setUseCmState] = useState(getUseCm());
   const [fit, setFit] = useState<FitPreference>(getFitPreference());
   const [savedProfile, setSavedProfile] = useState<BodyScanResult | null>(null);
   const [savedItemCount, setSavedItemCount] = useState(0);
