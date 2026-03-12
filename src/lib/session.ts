@@ -117,10 +117,7 @@ export function setUserRegion(region: UserRegion): void {
 /** Persist region to profiles table (fire-and-forget). */
 export async function persistRegionToDb(userId: string, region: UserRegion): Promise<void> {
   const { supabase } = await import('@/integrations/supabase/client');
-  await supabase
-    .from('profiles')
-    .update({ shopping_region: region } as any)
-    .eq('user_id', userId);
+  await supabase.rpc('update_own_profile', { p_shopping_region: region });
 }
 
 /** Load region from profiles table, falling back to localStorage. */
