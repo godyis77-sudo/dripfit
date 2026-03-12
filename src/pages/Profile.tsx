@@ -133,8 +133,8 @@ const Profile = () => {
         {/* Premium banner / status bar */}
         {isSubscribed ? (
           <div className="w-full flex items-center gap-2 px-3 py-2 rounded-xl gradient-drip border border-primary/30 mb-3">
-            <Crown className="h-4 w-4 text-primary shrink-0" />
-            <span className="text-[11px] font-bold text-foreground flex-1 text-left">DRIPFIT ✔ PREMIUM</span>
+            <Crown className="h-4 w-4 text-primary-foreground shrink-0" />
+            <span className="text-[11px] font-bold text-primary-foreground flex-1 text-left">DRIPFIT ✔ PREMIUM</span>
             <PremiumBadge label="Active" />
           </div>
         ) : !bannerDismissed ? (
