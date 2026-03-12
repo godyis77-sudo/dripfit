@@ -165,7 +165,9 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               variant="outline"
               className={`h-11 rounded-xl text-[12px] font-bold gap-1.5 col-span-2 ${isInCart(post.id) ? 'border-primary/40 bg-primary/10' : ''}`}
               onClick={() => {
-                if (!isInCart(post.id)) {
+                if (isInCart(post.id)) {
+                  removeFromCart(post.id);
+                } else {
                   addToCart({
                     post_id: post.id,
                     image_url: post.clothing_photo_url || post.result_photo_url,
@@ -175,7 +177,6 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
                   });
                 }
               }}
-              disabled={isInCart(post.id)}
             >
               <ShoppingCart className="h-4 w-4" />
               {isInCart(post.id) ? 'In Cart ✓' : 'Add to Cart'}
