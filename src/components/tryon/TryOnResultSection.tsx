@@ -13,7 +13,6 @@ import { ACCESSORY_CATEGORIES, ALL_PRODUCT_CATEGORIES, getCaptionSuggestions, sa
 import type { CatalogProduct } from '@/hooks/useProductCatalog';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import type { CatalogProduct } from '@/hooks/useProductCatalog';
 
 interface LookItem {
   brand: string;
