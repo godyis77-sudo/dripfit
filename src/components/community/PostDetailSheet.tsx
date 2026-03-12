@@ -272,7 +272,7 @@ export const PostDetailSheet = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[100] bg-black flex flex-col overflow-y-auto"
+          className="fixed inset-0 z-[100] bg-black flex flex-col overflow-y-auto overscroll-none"
           ref={scrollContainerRef}
           onClick={onClose}
         >
