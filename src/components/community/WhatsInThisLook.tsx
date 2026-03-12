@@ -134,7 +134,7 @@ const WhatsInThisLook = ({
       >
         <ShoppingCart className="h-4 w-4" />
         <span className="text-[13px] font-bold uppercase tracking-wide text-primary-foreground">
-          {onAddToWardrobe ? 'Shop Style / Add to Wardrobe' : 'Shop Style / Try-On'}
+          {onAddToWardrobe ? 'ShopStyle / +Wardrobe' : 'Shop Style / Try-On'}
         </span>
         <ChevronDown
           className="h-4 w-4 text-primary-foreground transition-transform duration-200"
