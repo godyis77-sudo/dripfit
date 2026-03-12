@@ -167,7 +167,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
             }`}
           >
             <p className={`text-[16px] font-bold ${filterMode === s.key ? 'text-primary' : 'text-foreground'}`}>{s.value}</p>
-            <p className={`text-[9px] uppercase tracking-wider ${filterMode === s.key ? 'text-primary/70' : 'text-muted-foreground'}`}>{s.label}</p>
+            <p className={`text-[11px] uppercase tracking-wider ${filterMode === s.key ? 'text-primary/70' : 'text-muted-foreground'}`}>{s.label}</p>
           </button>
         ))}
       </div>
