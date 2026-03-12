@@ -161,7 +161,31 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added ✓' : 'Add to Wardrobe'}
             </Button>
 
-            <Button
+            {post.product_urls?.[0] && (() => {
+              const inCart = isInCart(post.id);
+              return (
+                <Button
+                  variant={inCart ? 'default' : 'outline'}
+                  className={`h-11 rounded-xl text-[12px] font-bold gap-1.5 col-span-2 ${inCart ? 'bg-primary/20 text-primary border-primary/30' : ''}`}
+                  onClick={() => {
+                    if (!inCart) {
+                      addToCart({
+                        post_id: post.id,
+                        image_url: post.clothing_photo_url || post.result_photo_url,
+                        caption: post.caption,
+                        product_urls: post.product_urls || null,
+                        clothing_photo_url: post.clothing_photo_url || post.result_photo_url,
+                      });
+                    }
+                  }}
+                  disabled={inCart}
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  {inCart ? 'In Cart ✓' : 'Add to Cart'}
+                </Button>
+              );
+            })()}
+
               className="h-11 rounded-xl text-[12px] font-bold gap-1.5 btn-luxury text-primary-foreground col-span-2"
               onClick={() => {
                 onOpenChange(false);
