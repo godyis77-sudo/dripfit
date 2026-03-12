@@ -152,6 +152,7 @@ const PostCard = ({
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { addToCart, removeFromCart, isInCart } = useCart();
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [localCaption, setLocalCaption] = useState(post.caption ?? '');
 
