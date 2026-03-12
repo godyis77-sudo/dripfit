@@ -131,16 +131,13 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               <p className="text-[10px] text-white font-medium">{new Date(post.created_at).toLocaleDateString()}</p>
             </div>
           </div>
-          {/* Caption overlay — bottom center */}
-          {post.caption && (
-            <div className="absolute bottom-12 left-0 right-0 flex justify-center z-10 px-6">
-              <p className="text-[13px] text-white font-medium bg-black/50 backdrop-blur-sm rounded-xl px-3 py-1.5 text-center max-w-[80%]">{post.caption}</p>
-            </div>
-          )}
         </div>
 
         {/* Actions */}
         <div className="px-4 pt-4 pb-6 space-y-3">
+          {post.caption && (
+            <p className="text-[13px] text-foreground font-medium">{post.caption}</p>
+          )}
 
           <div className="grid grid-cols-2 gap-2">
             <Button
