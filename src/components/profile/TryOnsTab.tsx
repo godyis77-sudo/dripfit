@@ -217,12 +217,6 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                         {postedCaption && (
                           <p className="px-2 pt-1 text-[10px] font-bold text-foreground text-center line-clamp-2">{postedCaption}</p>
                         )}
-                        <div className="p-2 flex items-center justify-between">
-                          <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
-                          <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded ${post.is_public ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                            {post.is_public ? 'Public' : 'Private'}
-                          </span>
-                        </div>
                       </button>
 
                       {/* Community interactions for public posts */}
