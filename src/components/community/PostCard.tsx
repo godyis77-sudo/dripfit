@@ -233,7 +233,7 @@ const PostCard = ({
           </div>
         )}
       </button>
-      {post.caption && !GENERIC_PROMPTS.includes(post.caption) && (
+      {post.caption && (
         <p className="text-[10px] font-bold text-foreground text-center px-2 py-1 line-clamp-2">{post.caption}</p>
       )}
 
