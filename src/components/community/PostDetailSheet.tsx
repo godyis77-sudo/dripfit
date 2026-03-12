@@ -12,6 +12,7 @@ import { getPostedCaption } from './community-types';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 import type { LookItem } from '@/components/community/WhatsInThisLook';
 import { supabase } from '@/integrations/supabase/client';
+import { useCart } from '@/hooks/useCart';
 
 
 interface Post {
@@ -96,7 +97,7 @@ export const PostDetailSheet = ({
   isPlaceholder,
   currentUserId,
 }: PostDetailSheetProps) => {
-  
+  const { addToCart, removeFromCart, isInCart } = useCart();
   const [commentText, setCommentText] = useState('');
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -406,11 +407,26 @@ export const PostDetailSheet = ({
               <p className="text-[11px] text-white/50 font-bold uppercase tracking-wider">Would you buy it?</p>
               <div className="flex gap-2">
                 {VOTE_OPTIONS.map(v => {
-                  const active = (votes[post.id] || []).includes(v.key);
+                  const active = v.key === 'keep_shopping' ? isInCart(post.id) : (votes[post.id] || []).includes(v.key);
                   return (
                     <button
                       key={v.key}
-                      onClick={() => onVote(post.id, v.key)}
+                      onClick={() => {
+                        if (v.key === 'keep_shopping') {
+                          if (isInCart(post.id)) {
+                            removeFromCart(post.id);
+                          } else {
+                            addToCart({
+                              post_id: post.id,
+                              image_url: post.result_photo_url,
+                              caption: post.caption,
+                              product_urls: post.product_urls || null,
+                              clothing_photo_url: post.clothing_photo_url || post.result_photo_url,
+                            });
+                          }
+                        }
+                        onVote(post.id, v.key);
+                      }}
                       className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${active ? 'border-primary bg-primary/20 text-primary' : 'border-border text-muted-foreground'}`}
                     >
                       <div>
