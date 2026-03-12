@@ -183,7 +183,7 @@ const TryOnResultSection = ({
 
         {/* PRIMARY CTA: Save & Post */}
         {!shared && !showPostUI && (
-          <Button className="w-full h-11 rounded-xl btn-luxury text-primary-foreground text-sm font-bold mb-2" onClick={() => { onSetShowPostUI(true); if (!caption) onSetCaption(getCaptionSuggestions(category)[0]); onSetIsPublic(true); }}>
+          <Button className="w-full h-11 rounded-xl btn-luxury text-primary-foreground text-[13px] font-bold tracking-wide mb-2" onClick={() => { onSetShowPostUI(true); if (!caption) onSetCaption(getCaptionSuggestions(category)[0]); onSetIsPublic(true); }}>
             <MessageSquare className="mr-1.5 h-4 w-4" /> Save & Post to Style Check
           </Button>
         )}
@@ -211,7 +211,7 @@ const TryOnResultSection = ({
                   </div>
                   <Switch checked={isPublic} onCheckedChange={(v) => { onSetIsPublic(v); saveSharePreference(v); }} />
                 </div>
-                <Button className="w-full h-10 rounded-lg btn-luxury text-primary-foreground text-sm font-bold" onClick={onShare}>
+                <Button className="w-full h-10 rounded-lg btn-luxury text-primary-foreground text-[13px] font-bold tracking-wide" onClick={onShare}>
                   {isPublic ? <><MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Save & Post</> : <><Save className="mr-1.5 h-3.5 w-3.5" /> Save to Profile</>}
                 </Button>
               </div>
@@ -252,8 +252,8 @@ const TryOnResultSection = ({
           )}
         </AnimatePresence>
         <div className="mb-3">
-          <button onClick={() => { const opening = !showAccessorySection; setShowAccessorySection(opening); if (opening) { setTimeout(() => accessorySectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250); } }} className="w-full flex items-center justify-between btn-luxury text-primary-foreground rounded-xl px-4 py-3 active:scale-[0.97] transition-transform shimmer-sweep">
-            <span className="text-[13px] font-bold uppercase tracking-wider flex items-center gap-2">
+          <button onClick={() => { const opening = !showAccessorySection; setShowAccessorySection(opening); if (opening) { setTimeout(() => accessorySectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250); } }} className="w-full flex items-center justify-between btn-luxury text-primary-foreground rounded-xl px-4 h-11 active:scale-[0.97] transition-transform shimmer-sweep">
+            <span className="text-[13px] font-bold uppercase tracking-wide flex items-center gap-2">
               <Sparkles className="h-4 w-4" /> Add More to this Style
               {layerHistory.length > 0 && <span className="text-[11px] bg-background/20 px-2 py-0.5 rounded-full ml-1">{layerHistory.length} layered</span>}
             </span>
@@ -329,7 +329,7 @@ const TryOnResultSection = ({
                   )}
 
                   {!addingAccessory && (
-                    <Button className="w-full h-10 rounded-lg text-[12px] font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30" onClick={() => { onAddAccessory(accessoryPhoto!, accessoryCategory); setAccessoryPhoto(null); setAccessoryCategory(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }} disabled={!accessoryPhoto}>
+                    <Button className="w-full h-10 rounded-lg text-[13px] font-bold tracking-wide btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30" onClick={() => { onAddAccessory(accessoryPhoto!, accessoryCategory); setAccessoryPhoto(null); setAccessoryCategory(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }} disabled={!accessoryPhoto}>
                       <Sparkles className="mr-1.5 h-3.5 w-3.5" /> Add {accessoryCategory ? accessoryCategory.charAt(0).toUpperCase() + accessoryCategory.slice(1) : 'Accessory'}
                     </Button>
                   )}
