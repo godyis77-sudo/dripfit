@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import type { MeasurementRange } from '@/lib/types';
 import scanResultsFull from '@/assets/scan-results-full.jpg';
+import { getUseCm } from '@/lib/session';
 
 const CM_TO_IN = 0.3937;
 const fmtCm = (r: MeasurementRange) => `${r.min.toFixed(0)}–${r.max.toFixed(0)} cm`;
@@ -37,14 +38,19 @@ const OVERLAYS: MeasurementOverlay[] = [
 
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
+  const useCm = getUseCm();
 
   const getValue = (key: string): { line1: string; line2: string } | null => {
     if (key === 'height') {
-      return { line1: fmtHeightFtIn(heightCm), line2: `${heightCm} cm` };
+      return useCm
+        ? { line1: `${heightCm} cm`, line2: fmtHeightFtIn(heightCm) }
+        : { line1: fmtHeightFtIn(heightCm), line2: `${heightCm} cm` };
     }
     const range = measurements[key];
     if (!range) return null;
-    return { line1: fmtIn(range), line2: fmtCm(range) };
+    return useCm
+      ? { line1: fmtCm(range), line2: fmtIn(range) }
+      : { line1: fmtIn(range), line2: fmtCm(range) };
   };
 
   return (
