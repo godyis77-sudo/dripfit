@@ -298,7 +298,7 @@ const SizeGuide = () => {
                         <Card
                           key={b.slug}
                           className={`rounded-lg cursor-pointer transition-colors ${selectedBrand?.brand_slug === b.slug ? 'border-primary bg-primary/5' : 'hover:border-primary/30'}`}
-                          onClick={() => { setSelectedBrand({ brand_name: b.name, brand_slug: b.slug, category: b.categories[0] }); setDbResult(null); setDbError(null); if (b.categories.length === 1) setSelectedCategory(b.categories[0]); }}
+                          onClick={() => { setSelectedBrand({ brand_name: b.name, brand_slug: b.slug, category: b.categories[0] }); setDbResult(null); setDbError(null); setSelectedCategory(b.categories[0]); }}
                         >
                           <CardContent className="p-2 flex items-center justify-between">
                             <div className="flex items-center gap-1.5">
