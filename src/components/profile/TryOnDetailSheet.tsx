@@ -45,6 +45,8 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
 
   if (!post) return null;
 
+  const postedCaption = getPostedCaption(post.caption);
+
   const handleLike = () => {
     setLiked(prev => !prev);
     trackEvent('tryon_liked', { post_id: post.id });
