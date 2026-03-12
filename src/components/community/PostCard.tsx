@@ -302,13 +302,29 @@ const PostCard = ({
       <div className="px-1.5 pt-1">
         <div className="flex gap-1">
           {VOTE_OPTIONS.map(v => {
-            const active = (votes[post.id] || []).includes(v.key);
+            const active = v.key === 'keep_shopping' ? isInCart(post.id) : (votes[post.id] || []).includes(v.key);
             return (
               <motion.button
                 key={v.key}
                 whileTap={{ scale: 1.18 }}
                 transition={{ duration: 0.2 }}
-                onClick={() => onVote(post.id, v.key)}
+                onClick={() => {
+                  if (v.key === 'keep_shopping') {
+                    // Directly add/remove from cart
+                    if (isInCart(post.id)) {
+                      removeFromCart(post.id);
+                    } else {
+                      addToCart({
+                        post_id: post.id,
+                        image_url: post.result_photo_url,
+                        caption: post.caption,
+                        product_urls: (post as any).product_urls || null,
+                        clothing_photo_url: post.clothing_photo_url || post.result_photo_url,
+                      });
+                    }
+                  }
+                  onVote(post.id, v.key);
+                }}
                 className={`flex-1 py-1.5 rounded-md text-[11px] font-bold border transition-all flex flex-col items-center gap-0.5 ${
                   active ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'
                 }`}
