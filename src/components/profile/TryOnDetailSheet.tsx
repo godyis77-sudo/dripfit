@@ -113,24 +113,13 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
           <p className="text-[11px] text-muted-foreground font-medium">{new Date(post.created_at).toLocaleDateString()}</p>
         </div>
 
-        {/* Full-screen image — maximized */}
+        {/* Image */}
         <div className="relative w-full flex-1 min-h-0 bg-black flex items-center justify-center overflow-hidden">
           <img
             src={post.result_photo_url}
             alt={post.caption || 'Try-on result'}
             className="w-full h-full object-contain"
           />
-          {/* Delete icon — top left */}
-          {onDelete && (
-            <button
-              type="button"
-              aria-label="Delete try-on"
-              className="absolute top-3 left-3 z-50 h-9 w-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-destructive hover:bg-destructive/20 transition-colors active:scale-90"
-              onClick={() => setConfirmDeleteId(post.id)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </button>
-          )}
         </div>
 
         {/* Actions */}
