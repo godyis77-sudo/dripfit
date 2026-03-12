@@ -1225,9 +1225,9 @@ function parseSearchResults(results: any[], brand: string, category: string): Ra
   for (const result of results) {
     if (!result.url) continue;
 
-    // Skip non-product pages
+    // Skip non-product pages (expanded URL patterns)
     const url = result.url.toLowerCase();
-    if (/\/search|\/category|\/collection|\/shop\/?$/i.test(url)) continue;
+    if (/\/search|\/category|\/collection[s]?\/?$|\/shop\/?$|\/c\/|\/cat\/?$|page=\d|\/sale\/?$|\/browse|\/all\/?$/i.test(url)) continue;
 
     // Extract product info from the search result
     const title = result.title || '';
