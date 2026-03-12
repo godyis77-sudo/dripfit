@@ -280,7 +280,7 @@ export const PostDetailSheet = ({
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-between px-4 pt-4 pb-2 z-10"
+            className="flex items-center justify-between px-4 pt-3 pb-1 z-10"
             onClick={(e) => e.stopPropagation()}
           >
             <button onClick={() => onNavigateProfile(post)} className="flex items-center gap-2 active:opacity-70 transition-opacity">
