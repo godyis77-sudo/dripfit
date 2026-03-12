@@ -44,6 +44,37 @@ const LISTING_PAGE_NAME_PATTERNS = [
   /\bcustomer\s+service\b/i,
   // "Co-Ord Sets" etc as category headers
   /\bco-?ord\s+sets\s*[-—]/i,
+  // "[Brand] for Women/Men" pattern
+  /^[\w\s.'-]+\bfor\s+(women|men)\s*$/i,
+  // "Women's/Men's [Brand] [Category]" e.g. "Women's Birkenstock Shoes"
+  /^(women's?|men's?)\s+[\w\s.'-]+\s+(clothing|shoes|tops|bags|boots|sneakers|accessories|apparel|trainers|sandals|outfits|dresses)\s*$/i,
+  // "Shop [Brand] Online" or "Shop [Brand]"
+  /\bshop\s+[\w\s.'-]+\s+online\b/i,
+  /^shop\s+[\w\s.'-]+$/i,
+  // Ending with "| [Retailer]" e.g. "Men's Shoes | UNIQLO ES"
+  /\|\s*(uniqlo|asos|zara|nordstrom|ssense|farfetch|net-a-porter|shopbop|mytheresa|end\.|mr\s*porter|revolve|saks|bloomingdale|etsy|nike|lululemon|adidas)\b/i,
+  // "[Brand] [Category] - Etsy/ASOS/etc"
+  /\b(clothing|shoes|tops|bags|accessories|apparel|trainers|outfits)\s*[-–—]\s*(etsy|asos|nordstrom|ssense|farfetch|zappos)/i,
+  // "Women's [Brand] Clothing/Shoes/Accessories"
+  /^(women's?|men's?)\s+[\w\s.'-]+\b(clothing|shoes|accessories|apparel|outfits)\b/i,
+  // Generic listing with FREE SHIPPING, pipe-delimited retailer suffix
+  /\bFREE\s+SHIPPING\b/i,
+  // "Lifestyle. Nike CA" type pages
+  /^(lifestyle|new\s+in|trending|best\s+sellers?|what's\s+new)\b.*\b(nike|adidas|puma|reebok|lululemon)\b/i,
+  // "We Made Too Much" lululemon pages
+  /\bwe\s+made\s+too\s+much\b/i,
+  // Women's/Men's [Adjective] [Category] with no product specificity
+  /^(women's?|men's?)\s+(black|white|red|blue|green|pink|large|small|medium|casual|formal|winter|summer|pocketed)\s+(tops|shoes|boots|bags|coats|jackets|dresses|pants|jeans|sandals|loafers|slip.?ons)\s*$/i,
+  // "Women's [Brand] [Generic]" like "Women's BDG Urban Outfitters Clothing"
+  /^(women's?|men's?)\s+[\w\s.'-]{3,}\s+(clothing|shoes|accessories)\b.*$/i,
+  // Party outfits/wear listings
+  /\b(party|night\s+out)\s+(outfits?|wear)\b/i,
+  // Plus size category pages
+  /\bplus\s+size\s+(jumpers|cardigans|dresses|tops|pants|jeans)\b/i,
+  // "Women's/Men's [Category] | [anything]"
+  /^(women's?|men's?)\s+\w+\s*\|/i,
+  // Alexander McQueen Hi-Tops for Men (brand + generic category + "for")
+  /^[\w\s.'-]+\b(hi-?tops|low-?tops|trainers|shoes|boots|sneakers|sandals)\s+for\s+(men|women)\s*$/i,
 ];
 
 // Product names that are too short or generic to be real products
