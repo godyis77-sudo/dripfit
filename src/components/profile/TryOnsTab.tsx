@@ -112,10 +112,20 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
     trackEvent('vote_cast', { vote: key, source: 'profile_tryons' });
   };
 
-  const handleComment = (postId: string, val: string) => {
-    if (!user) { toast({ title: 'Sign in to comment', variant: 'destructive' }); return; }
-    trackEvent('fitcheck_reaction', { postId, comment: val });
-    toast({ title: 'Sent!', description: val });
+  const handleUpdateCaption = async (postId: string, val: string) => {
+    if (!user) { toast({ title: 'Sign in first', variant: 'destructive' }); return; }
+    const { error } = await supabase
+      .from('tryon_posts')
+      .update({ caption: val })
+      .eq('id', postId)
+      .eq('user_id', user.id);
+    if (error) {
+      toast({ title: 'Failed to save caption', variant: 'destructive' });
+      return;
+    }
+    trackEvent('fitcheck_caption_updated', { postId });
+    toast({ title: 'Caption saved!' });
+    onPostUpdated?.();
   };
 
   const cancelLongPress = () => {
@@ -248,23 +258,22 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                           <div className="flex items-center gap-1 mt-1">
                             <input
                               type="text"
-                              placeholder="Say something…"
+                              placeholder={postedCaption ? 'Edit caption…' : 'Add caption…'}
+                              defaultValue={postedCaption || ''}
                               className="flex-1 h-6 rounded-md bg-muted/50 border border-border px-2 text-[11px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter' && (e.target as HTMLInputElement).value.trim()) {
-                                  handleComment(post.id, (e.target as HTMLInputElement).value.trim());
-                                  (e.target as HTMLInputElement).value = '';
+                                  handleUpdateCaption(post.id, (e.target as HTMLInputElement).value.trim());
                                 }
                               }}
                             />
                             <button
                               className="shrink-0 h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center active:scale-90 transition-transform"
-                              aria-label="Send comment"
+                              aria-label="Save caption"
                               onClick={(e) => {
                                 const input = (e.currentTarget.previousSibling as HTMLInputElement);
                                 if (input?.value?.trim()) {
-                                  handleComment(post.id, input.value.trim());
-                                  input.value = '';
+                                  handleUpdateCaption(post.id, input.value.trim());
                                 }
                               }}
                             >
