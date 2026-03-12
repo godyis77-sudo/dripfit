@@ -27,7 +27,7 @@ const MeasurementAdjuster = ({ measurements, onAdjust }: MeasurementAdjusterProp
       >
         <SlidersHorizontal className="h-3.5 w-3.5 text-primary" />
         <span className="text-[11px] font-bold text-foreground">Adjust Measurements</span>
-        <span className="text-[9px] text-muted-foreground ml-auto">Fine-tune for accuracy</span>
+        <span className="text-[11px] text-muted-foreground ml-auto">Fine-tune for accuracy</span>
       </button>
 
       {expanded && (
