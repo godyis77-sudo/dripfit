@@ -365,7 +365,7 @@ export const PostDetailSheet = ({
             </div>
           </div>
           ) : displayQuestion ? (
-          <div className="px-4 pt-2" onClick={(e) => e.stopPropagation()}>
+          <div className="px-4 pt-1.5" onClick={(e) => e.stopPropagation()}>
             <p className="text-white font-bold text-sm leading-snug">{displayQuestion}</p>
           </div>
           ) : null}
