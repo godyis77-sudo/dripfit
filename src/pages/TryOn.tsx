@@ -93,7 +93,7 @@ const TryOn = () => {
                     <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={false} maxItems={1000} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} onSelectProduct={s.handleSelectProduct} />
                   ))
                 ) : (
-                  <CategoryProductGrid category={s.category} title={`Shop ${CATEGORIES.find(c => c.key === s.category)?.label || s.category}`} collapsed={false} maxItems={1000} seed={1234} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} onSelectProduct={s.handleSelectProduct} />
+                  <CategoryProductGrid category={s.category} title={`Shop ${CATEGORIES.find(c => c.key === s.category)?.label || s.category}`} collapsed={false} maxItems={1000} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} onSelectProduct={s.handleSelectProduct} />
                 )}
               </div>
             )}

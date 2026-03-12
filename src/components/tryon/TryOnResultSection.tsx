@@ -333,7 +333,7 @@ const TryOnResultSection = ({
                       )}
                       {accessoryCategory && !showAllCategories && (
                         <div className="mb-2">
-                          <CategoryProductGrid category={accessoryCategory} title={`Shop ${accessoryCategory}`} collapsed={false} maxItems={1000} seed={9999} gender={userGender || undefined}
+                          <CategoryProductGrid category={accessoryCategory} title={`Shop ${accessoryCategory}`} collapsed={false} maxItems={1000} gender={userGender || undefined}
                             onSelectProduct={async (product) => {
                               if (product.product_url) onSetLookItems(prev => [...prev, { brand: product.brand, name: product.name, url: product.product_url!, price_cents: product.price_cents, image_url: product.image_url }]);
                               trackEvent('catalog_product_clicked', { brand: product.brand, category: accessoryCategory });
