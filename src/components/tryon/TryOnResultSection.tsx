@@ -211,7 +211,7 @@ const TryOnResultSection = ({
                   </div>
                   <Switch checked={isPublic} onCheckedChange={(v) => { onSetIsPublic(v); saveSharePreference(v); }} />
                 </div>
-                <Button className="w-full h-10 rounded-lg btn-luxury text-primary-foreground text-sm font-bold" onClick={onShare}>
+                <Button className="w-full h-10 rounded-lg btn-luxury text-primary-foreground text-[13px] font-bold tracking-wide" onClick={onShare}>
                   {isPublic ? <><MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Save & Post</> : <><Save className="mr-1.5 h-3.5 w-3.5" /> Save to Profile</>}
                 </Button>
               </div>
