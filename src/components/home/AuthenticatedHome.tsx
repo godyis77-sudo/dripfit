@@ -234,12 +234,12 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             </button>
           </div>
           {genderLoaded && [
-            { category: 'tops', title: 'Tops', seed: 42 },
-            { category: 'bottom', title: 'Bottoms', seed: 314 },
-            ...(mappedGender !== 'mens' ? [{ category: 'dress', title: 'Dresses', seed: 628 }] : []),
-            { category: 'outerwear', title: 'Outerwear', seed: 1597 },
-            { category: 'shoes', title: 'Shoes', seed: 2718 },
-            { category: 'accessories', title: 'Trending Accessories', seed: 7777 },
+            { category: 'tops', title: 'Tops' },
+            { category: 'bottom', title: 'Bottoms' },
+            ...(mappedGender !== 'mens' ? [{ category: 'dress', title: 'Dresses' }] : []),
+            { category: 'outerwear', title: 'Outerwear' },
+            { category: 'shoes', title: 'Shoes' },
+            { category: 'accessories', title: 'Trending Accessories' },
           ].map((section, idx) => (
             <div key={section.category} className={idx > 0 ? 'mt-3' : ''}>
               <CategoryProductGrid
@@ -247,7 +247,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                 title={idx > 0 ? section.title : undefined}
                 collapsed={idx > 0}
                 maxItems={8}
-                seed={section.seed}
+                
                 showViewAll={true}
                 priceFilter={priceFilter}
                 gender={mappedGender}
