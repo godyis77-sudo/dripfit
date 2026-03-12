@@ -156,79 +156,82 @@ const WhatsInThisLook = ({
               className={`${isCompact ? 'px-3 py-2' : 'px-4 py-3'} space-y-2 bg-card border-x border-b border-border rounded-b-xl`}
             >
               {items.map((item, idx) => (
-                <div key={idx} className="space-y-1.5">
-                  {/* Top row: thumbnail + brand + price */}
-                  <div className="flex items-center gap-2">
-                    {(() => {
-                      const imgSrc = item.image_url || catalogImages[item.url] || (idx === 0 ? clothingPhotoUrl : null);
-                      return imgSrc ? (
+                <div key={idx} className="flex gap-2.5">
+                  {/* Thumbnail */}
+                  {(() => {
+                    const imgSrc = item.image_url || catalogImages[item.url] || (idx === 0 ? clothingPhotoUrl : null);
+                    return imgSrc ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPreviewProduct({
+                            image_url: imgSrc,
+                            name: item.name,
+                            brand: item.brand,
+                            price_cents: item.price_cents,
+                            product_url: item.url,
+                          });
+                        }}
+                        className="shrink-0 h-14 w-14 rounded-lg overflow-hidden bg-muted border border-border cursor-pointer active:scale-95 transition-transform"
+                        aria-label={`Preview ${item.name}`}
+                      >
+                        <img src={imgSrc} alt={item.name} className="h-full w-full object-cover" />
+                      </button>
+                    ) : (
+                      <div className="shrink-0 h-14 w-14 rounded-lg bg-muted border border-border flex items-center justify-center">
+                        <ShoppingBag className="h-5 w-5 text-muted-foreground/40" />
+                      </div>
+                    );
+                  })()}
+
+                  {/* Right side: brand + price on top, actions on bottom */}
+                  <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/15 text-primary font-bold uppercase tracking-wider">{item.brand}</span>
+                      {item.price_cents && (
+                        <span className="text-[10px] font-bold text-primary ml-auto">
+                          ${(item.price_cents / 100).toFixed(0)}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(item.url, '_blank', 'noopener');
+                          trackEvent('badge_clickout', { retailer: item.brand, source: 'whats_in_look' });
+                        }}
+                        className="text-[10px] font-bold text-primary flex items-center gap-0.5 active:opacity-70"
+                      >
+                        Shop <ExternalLink className="h-2 w-2" />
+                      </button>
+                      {onTryOn && !onAddToWardrobe && (
                         <button
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setPreviewProduct({
-                              image_url: imgSrc,
-                              name: item.name,
-                              brand: item.brand,
-                              price_cents: item.price_cents,
-                              product_url: item.url,
-                            });
+                            onTryOn(item);
                           }}
-                          className="shrink-0 h-9 w-9 rounded-lg overflow-hidden bg-muted border border-border cursor-pointer active:scale-95 transition-transform"
-                          aria-label={`Preview ${item.name}`}
+                          className="text-[10px] font-bold active:opacity-70 text-primary"
                         >
-                          <img src={imgSrc} alt={item.name} className="h-full w-full object-cover" />
+                          Try-On
                         </button>
-                      ) : (
-                        <div className="shrink-0 h-9 w-9 rounded-lg bg-muted border border-border flex items-center justify-center">
-                          <ShoppingBag className="h-3.5 w-3.5 text-muted-foreground/40" />
-                        </div>
-                      );
-                    })()}
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/15 text-primary font-bold uppercase tracking-wider">{item.brand}</span>
-                    {item.price_cents && (
-                      <span className="text-[10px] font-bold text-primary ml-auto">
-                        ${(item.price_cents / 100).toFixed(0)}
-                      </span>
-                    )}
-                  </div>
-                  {/* Bottom row: actions */}
-                  <div className="flex items-center gap-2 pl-11">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        window.open(item.url, '_blank', 'noopener');
-                        trackEvent('badge_clickout', { retailer: item.brand, source: 'whats_in_look' });
-                      }}
-                      className="text-[10px] font-bold text-primary flex items-center gap-0.5 active:opacity-70"
-                    >
-                      Shop <ExternalLink className="h-2 w-2" />
-                    </button>
-                    {onTryOn && !onAddToWardrobe && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onTryOn(item);
-                        }}
-                        className="text-[10px] font-bold active:opacity-70 text-primary"
-                      >
-                        Try-On
-                      </button>
-                    )}
-                    {onAddToWardrobe && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onAddToWardrobe(item);
-                        }}
-                        className="text-[10px] font-bold active:opacity-70 text-primary"
-                      >
-                        +Wardrobe
-                      </button>
-                    )}
+                      )}
+                      {onAddToWardrobe && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onAddToWardrobe(item);
+                          }}
+                          className="text-[10px] font-bold active:opacity-70 text-primary"
+                        >
+                          +Wardrobe
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
