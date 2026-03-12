@@ -40,7 +40,7 @@ const TryOnDetail = () => {
       return;
     }
     setAddedToWardrobe(true);
-    trackEvent('wardrobe_added_from_tryon_detail', { post_id: post.id });
+    trackEvent('wardrobe_added_from_tryon', { post_id: post.id });
     toast({ title: '👕 Added to Wardrobe!', description: 'You can find it in your Wardrobe tab.' });
   };
 
