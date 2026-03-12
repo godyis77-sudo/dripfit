@@ -5,7 +5,7 @@ import { ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { getFitPreference, setFitPreference } from '@/lib/session';
+import { getFitPreference, setFitPreference, getUseCm, setUseCm as persistUseCm } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
 import type { FitPreference, BodyScanResult } from '@/lib/types';

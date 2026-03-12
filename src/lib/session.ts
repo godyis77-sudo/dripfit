@@ -43,6 +43,20 @@ export function setFitPreference(fit: 'fitted' | 'regular' | 'relaxed'): void {
   localStorage.setItem(FIT_KEY, fit);
 }
 
+// Default unit preference
+const UNIT_KEY = 'dripcheck_unit';
+
+export function getUseCm(): boolean {
+  const v = localStorage.getItem(UNIT_KEY);
+  if (v === 'in') return false;
+  if (v === 'cm') return true;
+  return false; // default to inches
+}
+
+export function setUseCm(cm: boolean): void {
+  localStorage.setItem(UNIT_KEY, cm ? 'cm' : 'in');
+}
+
 // Shopping habit
 const SHOP_HABIT_KEY = 'dripcheck_shop_habit';
 export type ShoppingHabit = 'online' | 'mix' | 'instore' | 'browser';
