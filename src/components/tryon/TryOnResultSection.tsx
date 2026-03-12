@@ -7,9 +7,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Loader2, Check, MessageSquare, Save, RotateCcw, ShoppingBag, Camera, ImageIcon, Bookmark, ChevronRight, ChevronDown } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
 import { FullscreenImage } from '@/components/ui/fullscreen-image';
-import WhatsInThisLook from '@/components/community/WhatsInThisLook';
+import WhatsInThisLook, { type LookItem as WhatsLookItem } from '@/components/community/WhatsInThisLook';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import { ACCESSORY_CATEGORIES, ALL_PRODUCT_CATEGORIES, getCaptionSuggestions, saveSharePreference, compressImage, imageUrlToBase64 } from './tryon-constants';
+import type { CatalogProduct } from '@/hooks/useProductCatalog';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import type { CatalogProduct } from '@/hooks/useProductCatalog';
 
 interface LookItem {
