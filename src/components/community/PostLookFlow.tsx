@@ -238,7 +238,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                         </span>
                       </div>
                     )}
-                    <p className="text-[9px] text-muted-foreground/60 leading-relaxed">
+                    <p className="text-[11px] text-muted-foreground/60 leading-relaxed">
                       We may earn a commission when your followers shop this look. It doesn't change their price.
                     </p>
                   </div>
