@@ -219,7 +219,7 @@ const Capture = () => {
                 </div>
                 {/* Label */}
                 <span
-                  className={`text-[9px] mt-1 font-semibold ${
+                  className={`text-[11px] mt-1 font-semibold ${
                     completed ? 'text-primary' : active ? 'text-primary font-bold' : 'text-muted-foreground'
                   }`}
                 >

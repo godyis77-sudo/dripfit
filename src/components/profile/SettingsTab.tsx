@@ -351,7 +351,7 @@ const SettingsTab = ({
                   { l: 'Height', v: `${savedProfile.heightCm} cm` },
                 ].map(d => (
                   <div key={d.l} className="bg-background rounded-lg py-1.5 text-center">
-                    <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{d.l}</p>
+                    <p className="text-[11px] text-muted-foreground uppercase tracking-wider">{d.l}</p>
                     <p className="text-[12px] font-bold text-foreground capitalize">{d.v}</p>
                   </div>
                 ))}

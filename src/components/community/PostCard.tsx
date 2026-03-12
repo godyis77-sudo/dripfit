@@ -317,7 +317,7 @@ const PostCard = ({
             parts.push(`${addToCartCount} added to cart`);
           }
 
-          return <p className="text-[9px] font-bold text-primary mt-1 text-center">{parts.join(' · ')}</p>;
+          return <p className="text-[11px] font-bold text-primary mt-1 text-center">{parts.join(' · ')}</p>;
         })()}
       </div>
 
