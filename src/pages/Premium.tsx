@@ -295,7 +295,7 @@ const Premium = () => {
                       <Star key={s} className="h-2.5 w-2.5 text-primary fill-primary" />
                     ))}
                   </div>
-                  <span className="text-[9px] font-bold text-primary">{t.attribution}</span>
+                  <span className="text-[11px] font-bold text-primary">{t.attribution}</span>
                 </div>
               </motion.div>
             ))}
