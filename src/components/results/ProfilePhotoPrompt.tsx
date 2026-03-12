@@ -31,7 +31,7 @@ const ProfilePhotoPrompt = ({ userId, onDismiss, onUploaded }: ProfilePhotoPromp
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[12px] font-bold text-foreground mb-0.5">Add a profile photo</p>
-            <p className="text-[10px] text-muted-foreground mb-2">Personalize your Fit Check posts with a profile pic.</p>
+            <p className="text-[10px] text-muted-foreground mb-2">Personalize your Style Check posts with a profile pic.</p>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowSheet(true)}

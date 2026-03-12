@@ -37,14 +37,14 @@ const SLIDES = [
     icon: Sparkles,
     title: 'See how it looks before you buy',
     highlight: '',
-    desc: "Upload a photo of any clothing item and see yourself wearing it. No more buying blind — try on thousands of styles instantly.",
+    desc: "Upload a photo of any clothing item and see yourself wearing it. No more buying blind — try-on thousands of styles instantly.",
     image: heroTryon,
   },
   {
     icon: Users,
     title: 'Get honest opinions from real people',
     highlight: '',
-    desc: 'Post your virtual try-on to the Fit Check community. Get votes from people with similar body types. Shop with total confidence.',
+    desc: 'Post your virtual try-on to the Style Check community. Get votes from people with similar body types. Shop with total confidence.',
     image: heroCommunity,
   },
 ];

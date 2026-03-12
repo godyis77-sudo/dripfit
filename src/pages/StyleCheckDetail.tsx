@@ -92,7 +92,7 @@ const StyleCheckDetail = () => {
                 });
               }}
             >
-              <Sparkles className="mr-1 h-3 w-3" /> Try On This Look
+              <Sparkles className="mr-1 h-3 w-3" /> Try-On This Look
             </Button>
           </div>
         </div>

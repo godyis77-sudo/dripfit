@@ -292,7 +292,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
               <Sparkles className="mr-1 h-3 w-3" /> New Try-On
             </Button>
             <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px]" onClick={() => navigate('/community')}>
-              <MessageSquare className="mr-1 h-3 w-3" /> Fit Check Feed
+              <MessageSquare className="mr-1 h-3 w-3" /> Style Check Feed
             </Button>
           </div>
         </>

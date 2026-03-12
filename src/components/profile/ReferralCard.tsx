@@ -46,8 +46,8 @@ export function ReferralCard() {
   const handleShare = async () => {
     if (navigator.share) {
       await navigator.share({
-        title: 'DripFit Check',
-        text: 'Get your perfect fit with AI body scanning — try DripFit Check free',
+        title: 'DRIPFITCHECK',
+        text: 'Get your perfect fit with AI body scanning — try DRIPFITCHECK free',
         url: referralUrl,
       });
     } else {

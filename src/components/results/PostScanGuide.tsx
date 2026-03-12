@@ -17,7 +17,7 @@ const STEPS = [
     key: 'tryon',
     icon: Sparkles,
     title: 'See it on you',
-    desc: 'Try on clothes virtually with your exact measurements',
+    desc: 'Try-on clothes virtually with your exact measurements',
     cta: 'Start Try-On',
     route: '/tryon',
     event: 'postscan_tryon_click' as const,

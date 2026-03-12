@@ -101,7 +101,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
       toast({ title: 'Post failed', description: error.message, variant: 'destructive' });
     } else {
       trackEvent('fitcheck_posted', { isPublic, hasProductUrl: !!productUrl });
-      toast({ title: isPublic ? 'Posted to Fit Check!' : 'Saved privately' });
+      toast({ title: isPublic ? 'Posted to Style Check!' : 'Saved privately' });
       onPosted();
       onOpenChange(false);
     }
@@ -334,7 +334,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                   <div>
                     <p className="text-sm font-semibold text-foreground">{isPublic ? 'Public' : 'Private'}</p>
                     <p className="text-[10px] text-muted-foreground">
-                      {isPublic ? 'Everyone on Fit Check can see & vote' : 'Only you can see this look'}
+                      {isPublic ? 'Everyone on Style Check can see & vote' : 'Only you can see this look'}
                     </p>
                   </div>
                 </div>
@@ -347,7 +347,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                 disabled={submitting}
               >
                 {submitting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Sparkles className="mr-1 h-4 w-4" />}
-                {isPublic ? 'Post to Fit Check' : 'Save Look'}
+                {isPublic ? 'Post to Style Check' : 'Save Look'}
               </Button>
             </motion.div>
           )}

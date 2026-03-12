@@ -59,7 +59,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <p className="text-2xl font-bold gradient-drip-text tracking-tight">DripFit</p>
+          <p className="text-lg font-bold gradient-drip-text tracking-widest">DRIPFITCHECK</p>
           <p className="text-muted-foreground/70 text-[12px] mt-0.5">{greeting}{displayName ? ',' : '!'}</p>
           {displayName && <h1 className="font-display text-xl font-bold text-foreground mt-0.5">{displayName}</h1>}
         </motion.div>
@@ -180,7 +180,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               onClick={() => navigate('/browse/tops')}
               className="text-[10px] text-primary font-semibold min-h-[44px] flex items-center"
             >
-              Try on →
+              Try-On →
             </button>
           </div>
           {genderLoaded && [

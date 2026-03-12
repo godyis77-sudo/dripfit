@@ -116,7 +116,7 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
             <p className="text-[12px] text-muted-foreground">{item.notes}</p>
           )}
 
-          {/* Try On button */}
+          {/* Try-On button */}
           <Button
             className="w-full h-10 rounded-xl text-[12px] font-bold gap-1.5 btn-luxury text-primary-foreground"
             onClick={() => {
@@ -125,7 +125,7 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
               navigate('/tryon', { state: { clothingUrl: item.image_url, productUrl: item.product_link || undefined } });
             }}
           >
-            <Sparkles className="h-4 w-4" /> Try On
+            <Sparkles className="h-4 w-4" /> Try-On
           </Button>
 
           {/* Direct product link */}

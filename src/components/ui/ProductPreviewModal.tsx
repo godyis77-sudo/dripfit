@@ -28,7 +28,7 @@ interface ProductPreviewModalProps {
   onShop?: (product: ProductPreviewData) => void;
   /** User-authored caption shown below the image */
   caption?: string | null;
-  /** Optional list of all items in the look — renders an expandable "TRY ON - SHOP" section */
+  /** Optional list of all items in the look — renders an expandable "TRY-ON - SHOP" section */
   lookItems?: LookItemData[];
   onLookItemTryOn?: (item: LookItemData) => void;
   onLookItemShop?: (item: LookItemData) => void;
@@ -116,7 +116,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
               onClick={() => onTryOn(product)}
             >
               <Sparkles className="h-4 w-4" />
-              Try On
+              Try-On
             </Button>
           )}
           {onShop && product.product_url && (
@@ -141,7 +141,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
             >
               <ShoppingCart className="h-4 w-4" />
               <span className="text-[13px] font-bold uppercase tracking-widest">
-                Shop This Style - Try On
+                Shop This Style – Try-On
               </span>
               <ChevronDown
                 className="h-4 w-4 transition-transform duration-200"
@@ -199,7 +199,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
                               onClick={() => onLookItemTryOn(item)}
                               className="text-[11px] font-bold text-primary flex items-center gap-0.5 active:opacity-70 ml-1"
                             >
-                              Try On
+                              Try-On
                             </button>
                           )}
                         </div>

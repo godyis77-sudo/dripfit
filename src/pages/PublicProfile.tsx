@@ -202,7 +202,7 @@ const PublicProfile = () => {
               {[
                 { label: 'Followers', value: followerCount + (isFollowing ? 1 : 0) },
                 { label: 'Following', value: followingCount },
-                { label: 'Fit Checks', value: fitCheckCount },
+                { label: 'Style Checks', value: fitCheckCount },
                 { label: 'Votes', value: voteCount },
               ].map(s => (
                 <div key={s.label} className="bg-card border border-border rounded-lg py-2 text-center">
@@ -216,7 +216,7 @@ const PublicProfile = () => {
             <div className="flex gap-0.5 bg-card rounded-lg p-0.5 mb-4 border border-border/40">
               {[
                 { key: 'tryons' as const, icon: Shirt, label: 'Try-Ons' },
-                { key: 'fitchecks' as const, icon: MessageSquare, label: 'Fit Checks' },
+                { key: 'fitchecks' as const, icon: MessageSquare, label: 'Style Checks' },
               ].map(t => (
                 <button
                   key={t.key}
@@ -261,7 +261,7 @@ const PublicProfile = () => {
                   {tryOns.length === 0 ? (
                     <div className="text-center py-10">
                       <MessageSquare className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
-                      <p className="text-[13px] text-muted-foreground">No fit checks yet</p>
+                      <p className="text-[13px] text-muted-foreground">No style checks yet</p>
                     </div>
                   ) : (
                     <div className="space-y-2 pb-20">
@@ -273,7 +273,7 @@ const PublicProfile = () => {
                         >
                           <img src={post.result_photo_url} alt="" className="h-14 w-14 rounded-lg object-cover shrink-0 img-normalize" />
                           <div className="flex-1 min-w-0">
-                            <p className="text-[12px] font-bold text-foreground line-clamp-1">{post.caption || 'Fit Check'}</p>
+                            <p className="text-[12px] font-bold text-foreground line-clamp-1">{post.caption || 'Style Check'}</p>
                             <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
                           </div>
                         </button>
