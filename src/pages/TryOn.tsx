@@ -238,7 +238,7 @@ const TryOn = () => {
           </div>
         )}
 
-        <p className="text-[10px] text-muted-foreground text-center flex items-center justify-center gap-1 mt-3 mb-2">
+        <p className="text-[11px] text-foreground/40 text-center flex items-center justify-center gap-1 mt-3 mb-2">
           <Shield className="h-3 w-3" /> Private by default · delete anytime
         </p>
 
