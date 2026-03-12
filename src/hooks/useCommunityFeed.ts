@@ -38,7 +38,7 @@ async function enrichPosts(data: any[], filter?: string) {
 
 export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFeedOptions) {
   const { toast } = useToast();
-  const { addToCart } = useCart();
+  const { addToCart, removeFromCart } = useCart();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -369,22 +369,26 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
       await supabase.from('community_votes').insert({ post_id: postId, user_id: userId, vote_key: key });
     }
 
-    if (key === 'keep_shopping' && !hasKey) {
+    if (key === 'keep_shopping') {
       const post = posts.find(p => p.id === postId);
       if (post) {
-        addToCart({
-          post_id: post.id,
-          image_url: post.result_photo_url,
-          caption: post.caption,
-          product_urls: post.product_urls || null,
-          clothing_photo_url: post.clothing_photo_url,
-        });
+        if (hasKey) {
+          removeFromCart(postId);
+        } else {
+          addToCart({
+            post_id: post.id,
+            image_url: post.clothing_photo_url || post.result_photo_url,
+            caption: post.caption,
+            product_urls: post.product_urls || null,
+            clothing_photo_url: post.clothing_photo_url || post.result_photo_url,
+          });
+        }
       }
     }
 
     trackEvent('vote_submitted', { vote: key, source: 'fitcheck' });
     trackEvent('fitcheck_voted', { vote: key });
-  }, [userId, votes, posts, toast, addToCart]);
+  }, [userId, votes, posts, toast, addToCart, removeFromCart]);
 
   const handleFollowToggle = useCallback(async (targetUserId: string) => {
     if (!userId) { toast({ title: 'Sign in to follow', variant: 'destructive' }); return; }
