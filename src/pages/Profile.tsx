@@ -252,10 +252,6 @@ const Profile = () => {
             <motion.div key="tryons" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
               <TryOnsTab tryOnPosts={tryOnPosts} loading={postsLoading} onPostUpdated={refetchProfile} />
             </motion.div>
-          ) : activeTab === 'body' ? (
-            <motion.div key="body" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
-              <BodyTab savedProfile={savedProfile} fit={fit} scanConfidence={scanConfidence} />
-            </motion.div>
           ) : activeTab === 'wardrobe' ? (
             <motion.div key="wardrobe" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
               <WardrobeTab wardrobeItems={wardrobeItems} onDeleteItem={deleteWardrobeItem} favoriteRetailers={favoriteRetailers} />
