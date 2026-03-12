@@ -202,7 +202,7 @@ const PublicProfile = () => {
               {[
                 { label: 'Followers', value: followerCount + (isFollowing ? 1 : 0) },
                 { label: 'Following', value: followingCount },
-                { label: 'Fit Checks', value: fitCheckCount },
+                { label: 'Style Checks', value: fitCheckCount },
                 { label: 'Votes', value: voteCount },
               ].map(s => (
                 <div key={s.label} className="bg-card border border-border rounded-lg py-2 text-center">
