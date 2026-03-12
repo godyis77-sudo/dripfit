@@ -132,10 +132,11 @@ const WhatsInThisLook = ({
           borderRadius: open ? '12px 12px 0 0' : '12px',
         }}
       >
-        <ShoppingCart className="h-4 w-4" />
+        <ShoppingCart className="h-3.5 w-3.5" />
         <span className="text-[11px] font-bold uppercase tracking-normal text-primary-foreground">
-          {onAddToWardrobe ? 'ShopStyle / +Wardrobe' : 'Shop Style / Try-On'}
+          {onAddToWardrobe ? 'Shop / +Wardrobe' : 'Shop / Try-On'}
         </span>
+        <ShoppingBag className="h-3.5 w-3.5" />
         <ChevronDown
           className="h-4 w-4 text-primary-foreground transition-transform duration-200"
           style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
