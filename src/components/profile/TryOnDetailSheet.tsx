@@ -136,8 +136,8 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
 
         {/* Actions */}
         <div className="px-4 pt-4 pb-6 space-y-3">
-          {post.caption && (
-            <p className="text-[13px] text-foreground font-medium">{post.caption}</p>
+          {postedCaption && (
+            <p className="text-[13px] text-foreground font-medium">{postedCaption}</p>
           )}
 
           <div className="grid grid-cols-2 gap-2">
