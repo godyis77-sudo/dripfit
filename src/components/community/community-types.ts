@@ -107,3 +107,12 @@ export const GENERIC_PROMPTS = [
   'Worth it?',
   'Too bold?',
 ];
+
+const normalizeCaptionValue = (value: string) => value.trim().replace(/\s+/g, ' ').toLocaleLowerCase();
+const GENERIC_PROMPTS_SET = new Set(GENERIC_PROMPTS.map(normalizeCaptionValue));
+
+export const getPostedCaption = (caption: string | null | undefined): string | null => {
+  const normalizedCaption = caption?.trim().replace(/\s+/g, ' ') ?? '';
+  if (!normalizedCaption) return null;
+  return GENERIC_PROMPTS_SET.has(normalizeCaptionValue(normalizedCaption)) ? null : normalizedCaption;
+};
