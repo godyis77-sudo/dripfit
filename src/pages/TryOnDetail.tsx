@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Shirt } from 'lucide-react';
+import { ArrowLeft, Shirt, ShoppingBag } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
+import { trackEvent } from '@/lib/analytics';
 import BottomTabBar from '@/components/BottomTabBar';
 
 const TryOnDetail = () => {
