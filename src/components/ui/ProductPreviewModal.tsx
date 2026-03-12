@@ -144,6 +144,21 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
           )}
         </div>
 
+        {/* Add to Wardrobe */}
+        {user && (
+          <div className="max-w-sm mx-auto w-full">
+            <Button
+              variant={addedToWardrobe ? 'default' : 'outline'}
+              className={`w-full h-11 rounded-xl text-[12px] font-bold gap-1.5 ${addedToWardrobe ? 'bg-primary/20 text-primary border-primary/30' : 'border-white/20 text-white hover:bg-white/10'}`}
+              onClick={handleAddToWardrobe}
+              disabled={addingToWardrobe || addedToWardrobe}
+            >
+              <ShoppingBag className="h-4 w-4" />
+              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added to Wardrobe ✓' : '+ Wardrobe'}
+            </Button>
+          </div>
+        )}
+
         <div className="flex gap-3 max-w-sm mx-auto w-full">
           {onTryOn && (
             <Button
