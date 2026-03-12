@@ -24,10 +24,15 @@ const TryOn = () => {
           <Button variant="ghost" size="icon" onClick={() => s.navigate(-1)} className="h-8 w-8 rounded-lg" aria-label="Go back">
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
+          <div className="flex-1">
             <h1 className="text-base font-bold text-foreground">Try-On</h1>
             <p className="text-[10px] text-muted-foreground">See how it looks before you buy</p>
           </div>
+          {s.resultImage && (
+            <Button variant="outline" size="sm" onClick={s.handleTryAnother} className="h-8 rounded-lg text-[11px] font-bold gap-1.5">
+              <RotateCcw className="h-3.5 w-3.5" /> New
+            </Button>
+          )}
         </div>
 
         {/* Body profile badge */}
