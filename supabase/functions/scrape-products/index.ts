@@ -663,7 +663,8 @@ async function crawlBrandCategory(
         .replace(/\s*[-|]\s*(Zara|H&M|Nike|Adidas|Nordstrom|ASOS|Uniqlo|Gap|Lululemon|Puma|Converse|Vans).*$/i, '')
         .trim();
 
-      if (!productName || productName.length < 3) continue;
+      if (!productName || productName.length < 8) continue;
+      if (isListingPageName(productName)) continue;
 
       // Extract images from rawHtml
       const imageUrls = rawHtml ? extractImageUrlsFromHtml(rawHtml) : [];
