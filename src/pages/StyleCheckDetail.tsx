@@ -15,6 +15,7 @@ const StyleCheckDetail = () => {
   usePageTitle('Style Check');
   const [post, setPost] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { addToCart, removeFromCart, isInCart } = useCart();
 
   useEffect(() => {
     if (!postId) return;
