@@ -16,14 +16,19 @@ interface UseCommunityFeedOptions {
   shopGender: GenderKey;
 }
 
+async function fetchPublicProfiles(userIds: string[]): Promise<Map<string, { user_id: string; display_name: string; avatar_url: string }>> {
+  if (userIds.length === 0) return new Map();
+  const { data } = await supabase.rpc('get_public_profiles', { p_user_ids: userIds });
+  return new Map((data || []).map((p: any) => [p.user_id, p]));
+}
+
 async function enrichPosts(data: any[], filter?: string) {
   const userIds = [...new Set(data.map(p => p.user_id))];
   const postIds = data.map(p => p.id);
-  const [profilesRes, ratingsRes] = await Promise.all([
-    userIds.length > 0 ? supabase.from('profiles').select('user_id, display_name, avatar_url').in('user_id', userIds) : { data: [] },
+  const [profileMap, ratingsRes] = await Promise.all([
+    fetchPublicProfiles(userIds),
     postIds.length > 0 ? supabase.from('tryon_ratings').select('post_id, style_score, color_score, buy_score, suitability_score').in('post_id', postIds) : { data: [] },
   ]);
-  const profileMap = new Map((profilesRes.data || []).map(p => [p.user_id, p]));
   const ratingsByPost = new Map<string, any[]>();
   (ratingsRes.data || []).forEach(r => { if (!ratingsByPost.has(r.post_id)) ratingsByPost.set(r.post_id, []); ratingsByPost.get(r.post_id)!.push(r); });
 
