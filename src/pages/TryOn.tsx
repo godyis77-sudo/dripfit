@@ -243,7 +243,7 @@ const TryOn = () => {
         </p>
 
         {!s.resultImage && !s.hasUnlimitedTryOns && s.remainingTryOns <= FREE_MONTHLY_LIMIT && (
-          <p className="text-[11px] text-muted-foreground/60 text-center mb-2">
+          <p className="text-[12px] text-foreground/40 text-center mb-2">
             {s.remainingTryOns} free try-on{s.remainingTryOns !== 1 ? 's' : ''} left this month
           </p>
         )}
