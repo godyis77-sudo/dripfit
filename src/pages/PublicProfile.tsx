@@ -48,13 +48,10 @@ const PublicProfile = () => {
 
   const fetchPublicProfile = async () => {
     setLoading(true);
-    // Find profile by display_name
-    const { data: profileData, error } = await supabase
-      .from('profiles')
-      .select('display_name, avatar_url, user_id, instagram_handle')
-      .ilike('display_name', username!)
-      .limit(1)
-      .maybeSingle() as any;
+    // Find profile by display_name using security definer function
+    const { data: profileRows, error } = await supabase.rpc('get_public_profile_by_name', { p_display_name: username! });
+
+    const profileData = (profileRows as any)?.[0] ?? null;
 
     if (error || !profileData) {
       setNotFound(true);
