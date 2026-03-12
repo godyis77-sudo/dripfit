@@ -92,7 +92,7 @@ const CartTab = () => {
         </div>
         <p className="text-[14px] font-bold text-foreground mb-1">Your cart is empty</p>
         <p className="text-[12px] text-muted-foreground max-w-[220px] mx-auto mb-4">
-          Tap 🛒 on any Style Check look to add it here.
+          Save looks from Style Check by tapping the cart icon on any post.
         </p>
         <Button className="rounded-lg btn-luxury text-primary-foreground text-sm h-10 px-5 font-bold" onClick={() => navigate('/style-check')}>
           Browse Looks
@@ -232,6 +232,14 @@ const CartTab = () => {
                     Buy! <ExternalLink className="ml-1 h-2.5 w-2.5" />
                   </Button>
                 ) : null}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-9 rounded-lg text-[12px] font-bold shrink-0"
+                  onClick={() => handleTryOn(item.product_urls?.[0], item.clothing_photo_url || item.image_url)}
+                >
+                  <Sparkles className="h-3 w-3 mr-1" /> Try-On
+                </Button>
               </div>
             </div>
 
