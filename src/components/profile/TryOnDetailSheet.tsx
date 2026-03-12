@@ -177,7 +177,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               }}
             >
               <Sparkles className="h-4 w-4" />
-              Try On This Look
+              Try-On This Look
             </Button>
 
             <Button
