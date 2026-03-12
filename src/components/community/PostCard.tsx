@@ -255,6 +255,11 @@ const PostCard = ({
             className="absolute inset-0 h-full w-full object-cover object-top"
             onError={() => onImageError(post.id)}
           />
+          {hasPostedCaption && (
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-2 pt-4 pb-2">
+              <p className="text-[11px] font-semibold text-white line-clamp-2 drop-shadow-sm">{postedCaption}</p>
+            </div>
+          )}
         </div>
         {filter === 'similar' && (post as any).match_score && (
           <div
@@ -264,9 +269,6 @@ const PostCard = ({
           </div>
         )}
       </button>
-      {hasPostedCaption && (
-        <p className="text-[10px] font-bold text-foreground text-center px-2 py-1 line-clamp-2">{postedCaption}</p>
-      )}
 
       {/* Mini comment — only for own posts */}
       {user && post.user_id === user.id && (
