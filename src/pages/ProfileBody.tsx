@@ -9,7 +9,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 import BodyDiagram from '@/components/results/BodyDiagram';
 import MeasurementGrid from '@/components/results/MeasurementGrid';
 import type { BodyScanResult } from '@/lib/types';
-import { getFitPreference } from '@/lib/session';
+import { getFitPreference, getUseCm } from '@/lib/session';
 
 const ProfileBody = () => {
   const navigate = useNavigate();
