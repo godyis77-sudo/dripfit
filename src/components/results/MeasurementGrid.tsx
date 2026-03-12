@@ -40,9 +40,9 @@ const MeasurementGrid = ({ measurements, heightCm, visibleKeys }: MeasurementGri
             </motion.div>
           ))}
           <div className="bg-card border border-border rounded-lg px-2.5 py-2">
-            <p className="text-[9px] font-semibold text-muted-foreground mb-0.5">Height</p>
+            <p className="text-[11px] font-semibold text-muted-foreground mb-0.5">Height</p>
             <p className="text-[13px] font-bold text-foreground">{fmtHeightFtIn(heightCm)}</p>
-            <p className="text-[11px] text-muted-foreground">{heightCm.toFixed(0)}<span className="text-[9px] ml-0.5">cm</span></p>
+            <p className="text-[11px] text-muted-foreground">{heightCm.toFixed(0)}<span className="text-[11px] ml-0.5">cm</span></p>
           </div>
         </motion.div>
       )}

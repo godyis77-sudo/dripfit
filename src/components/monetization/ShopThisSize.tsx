@@ -190,7 +190,7 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
       )}
 
       {/* Commission disclosure */}
-      <p className="text-[9px] text-muted-foreground/60 text-center">
+      <p className="text-[11px] text-muted-foreground/60 text-center">
         We may earn a commission. It doesn't change your price.
       </p>
     </div>

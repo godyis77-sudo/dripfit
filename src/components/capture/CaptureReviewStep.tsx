@@ -47,7 +47,7 @@ const CaptureReviewStep = ({
           {photos[key] && (
             <button
               onClick={() => onRetake(key)}
-              className="absolute top-6 right-1 bg-card/80 backdrop-blur rounded-lg px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground hover:text-foreground transition-colors min-h-[28px]"
+              className="absolute top-6 right-1 bg-card/80 backdrop-blur rounded-lg px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors min-h-[28px]"
             >
               Retake
             </button>

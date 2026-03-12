@@ -127,7 +127,7 @@ const BodyTab = ({ savedProfile, fit, scanConfidence }: BodyTabProps) => {
             </div>
           </button>
         </div>
-        <p className="text-[9px] text-muted-foreground mt-2">Last scan: {new Date(savedProfile.date).toLocaleDateString()}</p>
+        <p className="text-[11px] text-muted-foreground mt-2">Last scan: {new Date(savedProfile.date).toLocaleDateString()}</p>
       </div>
 
       <Button variant="outline" className="w-full rounded-lg text-[11px] h-9 mb-2" onClick={() => navigate('/capture')}>

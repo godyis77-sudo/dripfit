@@ -89,8 +89,8 @@ const TryOnUploadSection = ({
                 <div className="aspect-[3/4]"><img src={userPhoto} alt="You" className="w-full h-full object-cover" /></div>
               </button>
               <div className="flex items-center justify-center gap-2 mt-1">
-                <p className="text-[9px] text-primary font-medium flex items-center gap-0.5"><Check className="h-2.5 w-2.5" /> Ready</p>
-                <button onClick={(e) => { e.stopPropagation(); userPhotoRef.current?.click(); }} className="text-[9px] text-muted-foreground hover:text-foreground transition-colors underline">Change</button>
+                <p className="text-[11px] text-primary font-medium flex items-center gap-0.5"><Check className="h-2.5 w-2.5" /> Ready</p>
+                <button onClick={(e) => { e.stopPropagation(); userPhotoRef.current?.click(); }} className="text-[11px] text-muted-foreground hover:text-foreground transition-colors underline">Change</button>
               </div>
             </div>
           ) : (

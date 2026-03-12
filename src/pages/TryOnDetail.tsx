@@ -72,7 +72,7 @@ const TryOnDetail = () => {
           <img src={post.result_photo_url} alt={post.caption || 'Try-On'} className="w-full aspect-[3/4] object-cover" />
           <div className="p-3 space-y-2">
             {post.caption && <p className="text-[12px] text-foreground">{post.caption}</p>}
-            <p className="text-[9px] text-muted-foreground">
+            <p className="text-[11px] text-muted-foreground">
               {new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </p>
             {post.product_urls?.[0] && (
