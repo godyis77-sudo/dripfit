@@ -93,7 +93,7 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                       const detected = item.product_link ? detectBrandFromUrl(item.product_link) : null;
                       const displayRetailer = detected?.retailer || item.retailer;
                       return displayRetailer ? (
-                        <p className="text-[9px] text-primary font-bold flex items-center gap-0.5">
+                        <p className="text-[11px] text-primary font-bold flex items-center gap-0.5">
                           <Store className="h-2.5 w-2.5" /> {displayRetailer}
                         </p>
                       ) : null;
