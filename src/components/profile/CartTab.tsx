@@ -191,7 +191,7 @@ const CartTab = () => {
                     </>
                   );
                 })()}
-                <p className="text-[9px] text-muted-foreground mt-0.5">
+                <p className="text-[11px] text-muted-foreground mt-0.5">
                   Added {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </p>
               </div>
