@@ -142,8 +142,8 @@ export const PostDetailSheet = ({
     setZoom(1);
     setPan({ x: 0, y: 0 });
 
-    const normalizedCaption = (post.caption || '').trim();
-    setQuestionText(normalizedCaption && !GENERIC_PROMPTS_SET.has(normalizedCaption) ? normalizedCaption : '');
+    const postedCaption = getPostedCaption(post.caption);
+    setQuestionText(postedCaption ?? '');
     setEditingQuestion(false);
   }, [open, post?.id, post?.caption]);
 
