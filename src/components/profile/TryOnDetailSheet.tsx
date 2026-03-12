@@ -65,7 +65,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
       toast({ title: 'Error', description: newPublic ? 'Could not post to community.' : 'Could not remove from community.', variant: 'destructive' });
       return;
     }
-    trackEvent(newPublic ? 'tryon_posted_to_community' : 'tryon_removed_from_community', { post_id: post.id });
+    trackEvent(newPublic ? 'tryon_posted_to_community' : 'tryon_posted_to_community', { post_id: post.id });
     toast({ title: newPublic ? '🔥 Posted!' : 'Removed', description: newPublic ? 'Your look is now live in the community feed.' : 'Removed from Style Check Feed.' });
     onPostUpdated?.();
   };
