@@ -72,8 +72,8 @@ const MeasurementAdjuster = ({ measurements, onAdjust }: MeasurementAdjusterProp
                     className="w-full"
                   />
                   <div className="flex justify-between mt-0.5">
-                    <span className="text-[8px] text-muted-foreground/50">{sliderMin}</span>
-                    <span className="text-[8px] text-muted-foreground/50">{sliderMax}</span>
+                    <span className="text-[10px] text-muted-foreground/50">{sliderMin}</span>
+                    <span className="text-[10px] text-muted-foreground/50">{sliderMax}</span>
                   </div>
                 </div>
               );

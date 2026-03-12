@@ -109,7 +109,7 @@ const TrustPanel = ({ confidence, recommendedSize, measurements, onAdjust, retai
               >
                 <SlidersHorizontal className="h-3.5 w-3.5 text-primary" />
                 <span className="text-[10px] font-bold text-foreground">Quick adjust measurements</span>
-                <span className="text-[8px] text-muted-foreground ml-auto">Updates size in real time</span>
+                <span className="text-[10px] text-muted-foreground ml-auto">Updates size in real time</span>
               </button>
 
               <AnimatePresence>

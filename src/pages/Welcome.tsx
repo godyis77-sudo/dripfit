@@ -188,7 +188,7 @@ const Welcome = () => {
                 { label: 'Inseam', val: '78–80' },
               ].map((m) => (
                 <div key={m.label} className="bg-muted/40 rounded-xl px-2 py-2.5 text-center border border-border/30">
-                  <p className="text-[8px] text-muted-foreground/70 uppercase tracking-[0.15em]">{m.label}</p>
+                  <p className="text-[10px] text-muted-foreground/70 uppercase tracking-[0.15em]">{m.label}</p>
                   <p className="text-[11px] font-bold text-foreground mt-1 tabular-nums">{m.val}</p>
                 </div>
               ))}

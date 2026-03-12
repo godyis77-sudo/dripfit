@@ -22,7 +22,7 @@ const BrandPartnerCards = () => (
         </div>
       </div>
     ))}
-    <p className="text-[8px] text-muted-foreground/40 text-center">Sizing notes are independent of any sponsorship and do not affect recommendations.</p>
+    <p className="text-[10px] text-muted-foreground/40 text-center">Sizing notes are independent of any sponsorship and do not affect recommendations.</p>
   </div>
 );
 

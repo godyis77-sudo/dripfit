@@ -332,7 +332,7 @@ const TryOnResultSection = ({
           </AnimatePresence>
         </div>
 
-        <p className="text-[8px] text-muted-foreground/50 text-center mt-1">We may earn a commission. It doesn't change your price.</p>
+        <p className="text-[10px] text-muted-foreground/50 text-center mt-1">We may earn a commission. It doesn't change your price.</p>
       </motion.div>
     </>
   );

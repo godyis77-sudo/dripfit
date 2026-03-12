@@ -486,7 +486,7 @@ const Onboarding = () => {
                       { label: 'Size', val: 'M' },
                     ].map(m => (
                       <div key={m.label} className="bg-background rounded-lg py-1 text-center">
-                        <p className="text-[8px] text-muted-foreground uppercase">{m.label}</p>
+                        <p className="text-[10px] text-muted-foreground uppercase">{m.label}</p>
                         <p className="text-[11px] font-bold text-foreground">{m.val}</p>
                       </div>
                     ))}

@@ -247,7 +247,7 @@ const PostCard = ({
               type="text"
               placeholder="Add caption…"
               maxLength={500}
-              className="flex-1 h-6 rounded-md bg-muted/50 border border-border px-2 text-[9px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
+              className="flex-1 h-6 rounded-md bg-muted/50 border border-border px-2 text-[11px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
               onKeyDown={async (e) => {
                 if (e.key === 'Enter' && (e.target as HTMLInputElement).value.trim()) {
                   const val = (e.target as HTMLInputElement).value.trim();

@@ -299,7 +299,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.15, duration: 0.4 }}
                 >
-                  {val.min?.toFixed(0)}–{val.max?.toFixed(0)}<span className="text-[8px] font-bold ml-0.5 opacity-60">cm</span>
+                  {val.min?.toFixed(0)}–{val.max?.toFixed(0)}<span className="text-[10px] font-bold ml-0.5 opacity-60">cm</span>
                 </motion.p>
               ) : (
                 <div className="flex items-center gap-1 h-4">

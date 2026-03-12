@@ -148,7 +148,7 @@ const Community = () => {
             >
               <ShoppingCart className="h-4 w-4" />
               {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 h-4 min-w-[16px] px-1 rounded-full bg-primary text-primary-foreground text-[8px] font-bold flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 h-4 min-w-[16px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
                   {cartCount}
                 </span>
               )}

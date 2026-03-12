@@ -227,7 +227,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                             <button
                               key={v.key}
                               onClick={() => handleVote(post.id, v.key)}
-                              className={`flex-1 py-1.5 rounded-md text-[9px] font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${
+                              className={`flex-1 py-1.5 rounded-md text-[11px] font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${
                                 active
                                   ? 'border-primary bg-primary/10 text-primary'
                                   : 'border-border text-muted-foreground'

@@ -213,7 +213,7 @@ const Premium = () => {
                   )}
                   <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">{p.label}</p>
                   <p className="text-[20px] font-bold text-foreground mt-0.5">{p.price}<span className="text-[11px] text-muted-foreground font-normal">{p.period}</span></p>
-                  {p.total && <p className="text-[9px] text-muted-foreground">{p.total}</p>}
+                  {p.total && <p className="text-[11px] text-muted-foreground">{p.total}</p>}
                 </button>
               ))}
             </div>

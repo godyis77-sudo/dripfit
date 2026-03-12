@@ -146,7 +146,7 @@ const SettingsTab = ({
               <img src={avatarUrl} alt="Avatar" className="h-6 w-6 rounded-full object-cover" />
             ) : (
               <div className="h-6 w-6 rounded-full gradient-drip flex items-center justify-center">
-                <span className="text-[8px] font-bold text-primary-foreground">{displayName[0]?.toUpperCase() || 'U'}</span>
+                <span className="text-[10px] font-bold text-primary-foreground">{displayName[0]?.toUpperCase() || 'U'}</span>
               </div>
             )}
             <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
