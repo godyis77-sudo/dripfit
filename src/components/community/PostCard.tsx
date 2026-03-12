@@ -134,7 +134,7 @@ const TryOnClothingBadge = ({ post, navigate, toast }: { post: Post; navigate: R
         Try On
         {items.length > 1 && (
           <>
-            <span className="text-[9px] opacity-70">({items.length})</span>
+            <span className="text-[11px] opacity-70">({items.length})</span>
             <ChevronUp className={`h-2.5 w-2.5 transition-transform ${expanded ? '' : 'rotate-180'}`} />
           </>
         )}
