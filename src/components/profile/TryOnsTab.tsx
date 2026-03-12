@@ -213,10 +213,12 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                       >
                         <div className="relative">
                           <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
+                          {postedCaption && (
+                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-2 pb-1.5 pt-4">
+                              <p className="text-[10px] font-bold text-white text-center line-clamp-2 drop-shadow-sm">{postedCaption}</p>
+                            </div>
+                          )}
                         </div>
-                        {postedCaption && (
-                          <p className="px-2 pt-1 text-[10px] font-bold text-foreground text-center line-clamp-2">{postedCaption}</p>
-                        )}
                       </button>
 
                       {/* Community interactions for public posts */}
