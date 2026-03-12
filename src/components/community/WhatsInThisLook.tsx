@@ -203,9 +203,9 @@ const WhatsInThisLook = ({
                           window.open(item.url, '_blank', 'noopener');
                           trackEvent('badge_clickout', { retailer: item.brand, source: 'whats_in_look' });
                         }}
-                        className="text-[10px] font-bold text-primary flex items-center gap-0.5 active:opacity-70"
+                        className="text-[12px] font-bold text-primary flex items-center gap-1 active:opacity-70 px-2 py-1 rounded-md bg-primary/10 border border-primary/20"
                       >
-                        Shop <ExternalLink className="h-2 w-2" />
+                        Shop <ExternalLink className="h-3 w-3" />
                       </button>
                       {onTryOn && !onAddToWardrobe && (
                         <button
@@ -214,7 +214,7 @@ const WhatsInThisLook = ({
                             e.stopPropagation();
                             onTryOn(item);
                           }}
-                          className="text-[10px] font-bold active:opacity-70 text-primary"
+                          className="text-[12px] font-bold active:opacity-70 text-primary px-2 py-1 rounded-md bg-primary/10 border border-primary/20"
                         >
                           Try-On
                         </button>
@@ -226,7 +226,7 @@ const WhatsInThisLook = ({
                             e.stopPropagation();
                             onAddToWardrobe(item);
                           }}
-                          className="text-[10px] font-bold active:opacity-70 text-primary"
+                          className="text-[12px] font-bold active:opacity-70 text-primary px-2 py-1 rounded-md bg-primary/10 border border-primary/20"
                         >
                           +Wardrobe
                         </button>
