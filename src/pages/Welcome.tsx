@@ -237,7 +237,7 @@ const Welcome = () => {
             {SOCIAL_PROOF.map((s) => (
               <div key={s.label} className="text-center glass-card rounded-2xl py-5 px-2 glow-hover">
                 <p className="font-display text-[24px] font-bold gradient-drip-text leading-none">{s.stat}</p>
-                <p className="text-[9px] text-muted-foreground/60 mt-1.5 tracking-[0.15em] uppercase">{s.label}</p>
+                <p className="text-[11px] text-muted-foreground/60 mt-1.5 tracking-[0.15em] uppercase">{s.label}</p>
               </div>
             ))}
           </div>

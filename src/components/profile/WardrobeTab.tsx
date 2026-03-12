@@ -137,7 +137,7 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                       </button>
                       <button
                         onClick={() => { setLongPressId(null); onDeleteItem(item.id); }}
-                        className="flex-1 py-1.5 rounded-lg bg-background border border-destructive/30 text-[9px] font-bold text-destructive active:scale-95 transition-transform"
+                        className="flex-1 py-1.5 rounded-lg bg-background border border-destructive/30 text-[11px] font-bold text-destructive active:scale-95 transition-transform"
                       >
                         Remove
                       </button>

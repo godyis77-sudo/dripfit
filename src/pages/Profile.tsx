@@ -145,7 +145,7 @@ const Profile = () => {
             >
               <Crown className="h-4 w-4 text-primary shrink-0" />
               <span className="text-[11px] font-bold text-foreground flex-1 text-left">Go Premium</span>
-              <span className="text-[9px] text-primary font-bold">7-day free trial →</span>
+              <span className="text-[11px] text-primary font-bold">7-day free trial →</span>
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); dismissPremiumBanner(); setBannerDismissed(true); }}

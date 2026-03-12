@@ -324,7 +324,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                 <div className="flex items-center gap-2 bg-primary/5 border border-primary/20 rounded-lg px-3 py-2">
                   <Link2 className="h-3.5 w-3.5 text-primary" />
                   <span className="text-[11px] font-medium text-primary">{detectedRetailer}</span>
-                  <span className="text-[9px] text-muted-foreground truncate flex-1">{productUrl}</span>
+                  <span className="text-[11px] text-muted-foreground truncate flex-1">{productUrl}</span>
                 </div>
               )}
 
