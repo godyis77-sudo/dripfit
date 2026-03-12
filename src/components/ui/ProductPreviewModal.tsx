@@ -43,7 +43,11 @@ interface ProductPreviewModalProps {
  * Portaled to document.body, scroll-locked, maximized image.
  */
 const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookItems, onLookItemTryOn, onLookItemShop }: ProductPreviewModalProps) => {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [lookOpen, setLookOpen] = useState(false);
+  const [addingToWardrobe, setAddingToWardrobe] = useState(false);
+  const [addedToWardrobe, setAddedToWardrobe] = useState(false);
 
   useEffect(() => {
     if (!product) return;
