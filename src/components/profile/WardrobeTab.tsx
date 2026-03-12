@@ -103,7 +103,7 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                       {item.product_link && (
                         <button
                           onClick={(e) => { e.stopPropagation(); window.open(item.product_link!, '_blank'); }}
-                          className="text-[9px] text-primary font-bold active:opacity-70"
+                          className="text-[11px] text-primary font-bold active:opacity-70"
                         >
                           View →
                         </button>
