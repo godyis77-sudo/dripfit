@@ -34,6 +34,7 @@ interface PostCardProps {
   onDeletePost: (postId: string) => void;
   onImageError: (postId: string) => void;
   onOpenDetail: (post: Post) => void;
+  onCaptionUpdated?: (postId: string, caption: string | null) => void;
 }
 
 const isPlaceholder = (post: Post) => post.id.startsWith('seed-');
@@ -144,12 +145,42 @@ const TryOnClothingBadge = ({ post, navigate, toast }: { post: Post; navigate: R
 };
 const PostCard = ({
   post, index, filter, votes, voteCounts, followToggles, hasScan,
-  onVote, onFollowToggle, onDeletePost, onImageError, onOpenDetail,
+  onVote, onFollowToggle, onDeletePost, onImageError, onOpenDetail, onCaptionUpdated,
 }: PostCardProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [localCaption, setLocalCaption] = useState(post.caption ?? '');
+
+  useEffect(() => {
+    setLocalCaption(post.caption ?? '');
+  }, [post.id, post.caption]);
+
+  const normalizedCaption = localCaption.trim();
+  const hasPostedCaption = normalizedCaption.length > 0 && !GENERIC_PROMPTS.includes(normalizedCaption);
+
+  const saveCaption = async (value: string, input?: HTMLInputElement | null) => {
+    if (!user) return;
+    const nextCaption = value.trim();
+    const { error } = await supabase
+      .from('tryon_posts')
+      .update({ caption: nextCaption || null })
+      .eq('id', post.id)
+      .eq('user_id', user.id);
+
+    if (error) {
+      toast({ title: 'Could not save caption', variant: 'destructive' });
+      return;
+    }
+
+    setLocalCaption(nextCaption);
+    onCaptionUpdated?.(post.id, nextCaption || null);
+    trackEvent('fitcheck_caption_updated', { postId: post.id, hasCaption: nextCaption.length > 0 });
+    toast({ title: 'Caption saved' });
+    if (input) input.value = '';
+  };
+
   const handleVoteWithCart = (postId: string, key: string) => {
     onVote(postId, key);
   };
