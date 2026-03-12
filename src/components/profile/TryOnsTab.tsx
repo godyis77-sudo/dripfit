@@ -210,7 +210,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                     </div>
                     <div className="p-2 flex items-center justify-between">
                       <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
-                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${post.is_public ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                      <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded ${post.is_public ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
                         {post.is_public ? 'Public' : 'Private'}
                       </span>
                     </div>
