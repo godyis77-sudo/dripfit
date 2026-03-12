@@ -225,11 +225,6 @@ const PostCard = ({
             onError={() => onImageError(post.id)}
           />
         </div>
-        {post.caption && !GENERIC_PROMPTS.includes(post.caption) && (
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent pt-6 pb-1.5 px-2">
-            <p className="text-white font-bold text-[10px] leading-snug line-clamp-2">{post.caption}</p>
-          </div>
-        )}
         {filter === 'similar' && (post as any).match_score && (
           <div
             className="absolute top-2 right-2 text-[10px] font-bold rounded-full px-1.5 py-0.5 gradient-drip text-primary-foreground shadow-gold-glow"
@@ -238,6 +233,9 @@ const PostCard = ({
           </div>
         )}
       </button>
+      {post.caption && !GENERIC_PROMPTS.includes(post.caption) && (
+        <p className="text-[10px] font-bold text-foreground text-center px-2 py-1 line-clamp-2">{post.caption}</p>
+      )}
 
       {/* Mini comment — only for own posts */}
       {user && post.user_id === user.id && (
