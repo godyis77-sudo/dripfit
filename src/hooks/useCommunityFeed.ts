@@ -323,6 +323,9 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
 
   const handleVote = useCallback(async (postId: string, key: string) => {
     if (!userId) { toast({ title: 'Sign in to vote', description: 'Create a free account to share your opinion.', variant: 'destructive' }); return; }
+    // Prevent self-voting
+    const post = posts.find(p => p.id === postId);
+    if (post && post.user_id === userId) { toast({ title: 'Can\'t vote on your own post' }); return; }
     const currentVotes = votes[postId] || [];
     const isFitVote = ['too_tight', 'perfect', 'too_loose'].includes(key);
     const hasKey = currentVotes.includes(key);

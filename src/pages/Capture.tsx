@@ -480,6 +480,7 @@ const Capture = () => {
           </div>
         </SheetContent>
       </Sheet>
+      <BottomTabBar />
     </div>
   );
 };
