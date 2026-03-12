@@ -36,6 +36,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { addToCart, isInCart } = useCart();
   const [liked, setLiked] = useState(false);
   const [posting, setPosting] = useState(false);
   const [addingToWardrobe, setAddingToWardrobe] = useState(false);
