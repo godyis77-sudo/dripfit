@@ -200,8 +200,8 @@ export const PostDetailSheet = ({
   });
   const retailers = [...retailerUrlMap.keys()];
 
-  const GENERIC_PROMPTS_SET = new Set(GENERIC_PROMPTS);
-  const userCaption = post.caption && !GENERIC_PROMPTS_SET.has(post.caption) ? post.caption : '';
+  const normalizedPostCaption = (post.caption || '').trim();
+  const userCaption = normalizedPostCaption && !GENERIC_PROMPTS_SET.has(normalizedPostCaption) ? normalizedPostCaption : '';
   const displayQuestion = questionText || userCaption;
 
   const handleSendComment = () => {
@@ -224,7 +224,30 @@ export const PostDetailSheet = ({
   };
 
   const handleStartEditQuestion = () => { setQuestionText(displayQuestion); setEditingQuestion(true); };
-  const handleSaveQuestion = () => { setEditingQuestion(false); };
+  const handleSaveQuestion = async () => {
+    if (!isOwnPost || !currentUserId) {
+      setEditingQuestion(false);
+      return;
+    }
+
+    const nextCaption = questionText.trim();
+    setSavingCaption(true);
+    const { error } = await supabase
+      .from('tryon_posts')
+      .update({ caption: nextCaption || null })
+      .eq('id', post.id)
+      .eq('user_id', currentUserId);
+    setSavingCaption(false);
+
+    if (error) {
+      console.error('Failed to save caption', error);
+      return;
+    }
+
+    onCaptionUpdated?.(post.id, nextCaption || null);
+    setQuestionText(nextCaption);
+    setEditingQuestion(false);
+  };
 
   const buyYes = voteCounts[post.id]?.buy_yes ?? 0;
   const buyNo = voteCounts[post.id]?.buy_no ?? 0;
