@@ -135,7 +135,7 @@ const WhatsInThisLook = ({
       >
         <ShoppingCart className={isCompact ? 'h-3.5 w-3.5' : 'h-4.5 w-4.5'} />
         <span className={`${isCompact ? 'text-[11px]' : 'text-[15px]'} font-bold uppercase tracking-widest text-primary-foreground`}>
-          Shop Style / Try-On
+          {onAddToWardrobe ? 'Shop Style / Add to Wardrobe' : 'Shop Style / Try-On'}
         </span>
         <ChevronDown
           className={`${isCompact ? 'h-3.5 w-3.5' : 'h-4.5 w-4.5'} text-primary-foreground transition-transform duration-200`}
