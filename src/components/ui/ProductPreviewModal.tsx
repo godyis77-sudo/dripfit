@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Sparkles, ExternalLink, ShoppingCart, ChevronDown, ShoppingBag } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
+import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -39,11 +43,17 @@ interface ProductPreviewModalProps {
  * Portaled to document.body, scroll-locked, maximized image.
  */
 const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookItems, onLookItemTryOn, onLookItemShop }: ProductPreviewModalProps) => {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [lookOpen, setLookOpen] = useState(false);
+  const [addingToWardrobe, setAddingToWardrobe] = useState(false);
+  const [addedToWardrobe, setAddedToWardrobe] = useState(false);
 
   useEffect(() => {
     if (!product) return;
     setLookOpen(false);
+    setAddingToWardrobe(false);
+    setAddedToWardrobe(false);
     const prevBody = document.body.style.overflow;
     const prevHtml = document.documentElement.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -53,6 +63,31 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
       document.documentElement.style.overflow = prevHtml;
     };
   }, [product]);
+
+  const handleAddToWardrobe = async () => {
+    if (!user || !product) return;
+    setAddingToWardrobe(true);
+    const { error } = await supabase.from('clothing_wardrobe').insert({
+      user_id: user.id,
+      image_url: product.image_url,
+      category: product.category || 'top',
+      product_link: product.product_url || null,
+      brand: product.brand || null,
+    });
+    setAddingToWardrobe(false);
+    if (error) {
+      if (error.code === '23505') {
+        setAddedToWardrobe(true);
+        toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
+      } else {
+        toast({ title: 'Error', description: 'Could not add to wardrobe.', variant: 'destructive' });
+      }
+      return;
+    }
+    setAddedToWardrobe(true);
+    trackEvent('wardrobe_added_from_tryon', { brand: product.brand });
+    toast({ title: '👕 Added to Wardrobe!', description: 'You can find it in your Wardrobe tab.' });
+  };
 
   if (!product) return null;
 
@@ -108,6 +143,21 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
             </p>
           )}
         </div>
+
+        {/* Add to Wardrobe */}
+        {user && (
+          <div className="max-w-sm mx-auto w-full">
+            <Button
+              variant={addedToWardrobe ? 'default' : 'outline'}
+              className={`w-full h-11 rounded-xl text-[12px] font-bold gap-1.5 ${addedToWardrobe ? 'bg-primary/20 text-primary border-primary/30' : 'border-white/20 text-white hover:bg-white/10'}`}
+              onClick={handleAddToWardrobe}
+              disabled={addingToWardrobe || addedToWardrobe}
+            >
+              <ShoppingBag className="h-4 w-4" />
+              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added to Wardrobe ✓' : '+ Wardrobe'}
+            </Button>
+          </div>
+        )}
 
         <div className="flex gap-3 max-w-sm mx-auto w-full">
           {onTryOn && (
