@@ -371,7 +371,7 @@ export const PostDetailSheet = ({
           ) : null}
 
           {/* What's In This Look */}
-          <div className="px-4 pt-2" onClick={(e) => e.stopPropagation()}>
+          <div className="px-4 pt-1.5" onClick={(e) => e.stopPropagation()}>
             <WhatsInThisLook
               productUrls={post.product_urls || undefined}
               clothingPhotoUrl={post.clothing_photo_url}
