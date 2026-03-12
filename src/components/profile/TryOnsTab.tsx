@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Sparkles, MessageSquare, Send, Trash2 } from 'lucide-react';
+import { Sparkles, MessageSquare, Trash2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
