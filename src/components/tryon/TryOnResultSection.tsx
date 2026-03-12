@@ -78,6 +78,7 @@ const TryOnResultSection = ({
   const [showShopPicker, setShowShopPicker] = useState(false);
   const accessoryPhotoRef = useRef<HTMLInputElement>(null);
   const accessoryCameraRef = useRef<HTMLInputElement>(null);
+  const accessorySectionRef = useRef<HTMLDivElement>(null);
   const [accessoryStepIndex, setAccessoryStepIndex] = useState(0);
 
   const handleAddToWardrobe = async (item: WhatsLookItem) => {
@@ -270,7 +271,7 @@ const TryOnResultSection = ({
           )}
         </AnimatePresence>
         <div className="mb-3">
-          <button onClick={() => setShowAccessorySection(!showAccessorySection)} className="w-full flex items-center justify-between btn-luxury text-primary-foreground rounded-xl px-4 py-3 active:scale-[0.97] transition-transform shimmer-sweep">
+          <button onClick={() => { const opening = !showAccessorySection; setShowAccessorySection(opening); if (opening) { setTimeout(() => accessorySectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250); } }} className="w-full flex items-center justify-between btn-luxury text-primary-foreground rounded-xl px-4 py-3 active:scale-[0.97] transition-transform shimmer-sweep">
             <span className="text-[13px] font-bold uppercase tracking-wider flex items-center gap-2">
               <Sparkles className="h-4 w-4" /> Add More to this Style
               {layerHistory.length > 0 && <span className="text-[11px] bg-background/20 px-2 py-0.5 rounded-full ml-1">{layerHistory.length} layered</span>}
@@ -280,7 +281,7 @@ const TryOnResultSection = ({
           <AnimatePresence>
             {showAccessorySection && (
               <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-                <div className="bg-card border border-t-0 border-border rounded-b-xl p-3">
+                <div ref={accessorySectionRef} className="bg-card border border-t-0 border-border rounded-b-xl p-3">
                   <input ref={accessoryPhotoRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileSelect(setAccessoryPhoto)} className="hidden" />
                   <input ref={accessoryCameraRef} type="file" accept="image/jpeg,image/png,image/webp" capture="environment" onChange={handleFileSelect(setAccessoryPhoto)} className="hidden" />
                   <p className="text-[12px] text-foreground/70 mb-2">Layer one item at a time — tops, bottoms, shoes, and more</p>
