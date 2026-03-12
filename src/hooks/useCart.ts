@@ -52,8 +52,13 @@ export function useCart() {
 
   const saveCart = useCallback((newItems: CartItem[]) => {
     if (!storageKey) return;
-    localStorage.setItem(storageKey, JSON.stringify(newItems));
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(newItems));
+    } catch (e) {
+      console.error('[cart] localStorage write failed', e);
+    }
     setItems(newItems);
+    // Notify other hook instances on the same page
     window.dispatchEvent(new CustomEvent(CART_UPDATED_EVENT));
   }, [storageKey]);
 
