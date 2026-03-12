@@ -176,7 +176,6 @@ const PostCard = ({
 
     setLocalCaption(nextCaption);
     onCaptionUpdated?.(post.id, nextCaption || null);
-    trackEvent('fitcheck_caption_updated', { postId: post.id, hasCaption: nextCaption.length > 0 });
     toast({ title: 'Caption saved' });
     if (input) input.value = '';
   };
