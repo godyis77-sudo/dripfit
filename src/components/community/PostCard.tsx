@@ -181,8 +181,24 @@ const PostCard = ({
     if (input) input.value = '';
   };
 
+  const { addToCart, removeFromCart, isInCart } = useCart();
+
   const handleVoteWithCart = (postId: string, key: string) => {
     onVote(postId, key);
+    if (key === 'keep_shopping') {
+      const alreadyVoted = (votes[post.id] || []).includes('keep_shopping');
+      if (alreadyVoted) {
+        removeFromCart(postId);
+      } else if (!isInCart(postId)) {
+        addToCart({
+          post_id: postId,
+          image_url: post.clothing_photo_url || post.result_photo_url,
+          caption: post.caption,
+          product_urls: (post as any).product_urls || null,
+          clothing_photo_url: post.clothing_photo_url || post.result_photo_url,
+        });
+      }
+    }
   };
 
   return (
