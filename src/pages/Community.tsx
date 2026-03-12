@@ -106,6 +106,11 @@ const Community = () => {
 
   const visiblePosts = getVisiblePosts();
 
+  const handleCaptionUpdated = useCallback((postId: string, caption: string | null) => {
+    setPosts(prev => prev.map(p => p.id === postId ? { ...p, caption } : p));
+    setDetailPost(prev => prev && prev.id === postId ? { ...prev, caption } : prev);
+  }, [setPosts]);
+
   const renderSortPills = (sorts: { key: TrendingSort; label: string }[], activeSort: TrendingSort, setSort: (s: TrendingSort) => void) => (
     <div className="flex gap-1.5 mb-3 overflow-x-auto no-scrollbar">
       {sorts.map(s => (
