@@ -360,13 +360,13 @@ const TryOnResultSection = ({
         <AnimatePresence>
           {addingAccessory && (
             <motion.div
-              initial={{ y: 100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 100, opacity: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
               transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-              className="fixed bottom-20 left-0 right-0 z-[100] px-4 pb-3"
+              className="mb-3"
             >
-              <div className="bg-gradient-to-t from-background via-background to-transparent pt-6 -mx-4 px-4">
+              <div className="bg-card border border-primary/30 rounded-xl p-4">
                 <Button className="w-full h-12 rounded-xl text-sm font-bold btn-luxury text-primary-foreground opacity-100 animate-pulse" disabled>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Generating Try-On…
                 </Button>
