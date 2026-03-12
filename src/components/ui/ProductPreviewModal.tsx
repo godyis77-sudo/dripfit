@@ -116,7 +116,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
               onClick={() => onTryOn(product)}
             >
               <Sparkles className="h-4 w-4" />
-              Try On
+              Try-On
             </Button>
           )}
           {onShop && product.product_url && (
