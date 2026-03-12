@@ -188,7 +188,7 @@ const WhatsInThisLook = ({
                   {/* Right side: brand + price on top, actions on bottom */}
                   <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/15 text-primary font-bold uppercase tracking-wider">{item.brand}</span>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded btn-luxury text-primary-foreground font-bold uppercase tracking-wider shimmer-sweep">{item.brand}</span>
                       {item.price_cents && (
                         <span className="text-[10px] font-bold text-primary ml-auto">
                           ${(item.price_cents / 100).toFixed(0)}
