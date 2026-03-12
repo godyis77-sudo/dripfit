@@ -235,23 +235,15 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
             </Button>
           </div>
 
-          {!post.is_public && (
-            <Button
-              className="w-full h-11 rounded-xl text-[12px] font-bold btn-luxury text-primary-foreground gap-1.5"
-              onClick={handlePostToCommunity}
-              disabled={posting}
-            >
-              <MessageSquare className="h-4 w-4" />
-              {posting ? 'Posting…' : 'Post to Community'}
-            </Button>
-          )}
-
-          {post.is_public && (
-            <div className="flex items-center gap-1.5 justify-center py-1">
-              <MessageSquare className="h-3.5 w-3.5 text-primary" />
-              <p className="text-[11px] text-muted-foreground">Already shared in Style Check Feed</p>
-            </div>
-          )}
+          <Button
+            variant="outline"
+            className={`w-full h-11 rounded-xl text-[12px] font-bold gap-1.5 ${post.is_public ? 'border-primary/40 bg-primary/10' : ''}`}
+            onClick={handleToggleCommunity}
+            disabled={posting}
+          >
+            <MessageSquare className="h-4 w-4" />
+            {posting ? (post.is_public ? 'Removing…' : 'Posting…') : post.is_public ? 'Shared in Style Check ✓' : 'Post to Community'}
+          </Button>
 
           {/* Delete */}
           {onDelete && (
