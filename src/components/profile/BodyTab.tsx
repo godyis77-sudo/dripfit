@@ -123,7 +123,7 @@ const BodyTab = ({ savedProfile, fit, scanConfidence }: BodyTabProps) => {
                 style={{ backgroundColor: tier.color }}
               />
               <span className="text-[12px] font-bold text-foreground">{pct}%</span>
-              <span className="text-[9px] text-muted-foreground">{tier.label}</span>
+              <span className="text-[11px] text-muted-foreground">{tier.label}</span>
             </div>
           </button>
         </div>
