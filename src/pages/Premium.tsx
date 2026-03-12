@@ -267,7 +267,7 @@ const Premium = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[11px] font-bold text-foreground leading-tight">{f.title}</p>
-                <p className="text-[9px] text-muted-foreground">{f.description}</p>
+                <p className="text-[11px] text-muted-foreground">{f.description}</p>
               </div>
               <span className="w-16 text-center text-[10px] text-muted-foreground shrink-0">{f.free}</span>
               <span className="w-16 text-center text-[10px] font-bold text-primary shrink-0">{f.premium}</span>
