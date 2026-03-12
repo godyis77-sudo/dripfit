@@ -181,7 +181,16 @@ const Profile = () => {
               )}
             </button>
             <div>
-              <h1 className="text-[15px] font-bold text-foreground leading-tight">{displayName}</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-[15px] font-bold text-foreground leading-tight">{displayName}</h1>
+                <button
+                  onClick={() => navigate('/profile/body')}
+                  className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 active:scale-95 transition-transform"
+                >
+                  <User className="h-2.5 w-2.5 text-primary" />
+                  <span className="text-[10px] text-primary font-bold">Body</span>
+                </button>
+              </div>
               <p className="text-[11px] text-muted-foreground">{user.email}</p>
               <button
                 onClick={() => navigate(`/profile/${encodeURIComponent(displayName)}`)}
