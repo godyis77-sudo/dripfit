@@ -20,6 +20,7 @@ import { trackEvent } from '@/lib/analytics';
 import { navigateToTryOn } from '@/lib/tryonNavigate';
 import TryOnDetailSheet from './TryOnDetailSheet';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
+import { getPostedCaption } from '@/components/community/community-types';
 
 interface TryOnPost {
   id: string;
