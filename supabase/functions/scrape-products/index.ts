@@ -619,8 +619,8 @@ async function crawlBrandCategory(
       const markdown = page.markdown || '';
       const rawHtml = page.rawHtml || page.html || '';
 
-      // Skip non-product pages
-      if (/\/search|\/category|\/collection|\/shop\/?$/i.test(pageUrl)) continue;
+      // Skip non-product pages (expanded patterns)
+      if (/\/search|\/category|\/collection[s]?\/?$|\/shop\/?$|\/c\/[^\/]*$|\/cat\/?$|page=\d|\/sale\/?$|\/browse|\/all\/?$/i.test(pageUrl)) continue;
 
       // Extract price
       const priceMatch = markdown.match(/\$\s*([\d,]+(?:\.\d{2})?)/);
