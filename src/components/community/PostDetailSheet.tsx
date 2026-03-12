@@ -49,6 +49,8 @@ const FIT_OPTIONS = [
   { key: 'too_loose', label: 'Too big' },
 ] as const;
 
+const GENERIC_PROMPTS_SET = new Set(GENERIC_PROMPTS);
+
 interface PostDetailSheetProps {
   post: Post | null;
   open: boolean;
@@ -58,6 +60,7 @@ interface PostDetailSheetProps {
   voteCounts: Record<string, Record<string, number>>;
   onVote: (postId: string, key: string) => void;
   onComment: (postId: string, comment: string) => void;
+  onCaptionUpdated?: (postId: string, caption: string | null) => void;
   onFollow: (userId: string) => void;
   onNavigateProfile: (post: Post) => void;
   onShopLook: (post: Post) => void;
