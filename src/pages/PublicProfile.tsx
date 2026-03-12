@@ -216,7 +216,7 @@ const PublicProfile = () => {
             <div className="flex gap-0.5 bg-card rounded-lg p-0.5 mb-4 border border-border/40">
               {[
                 { key: 'tryons' as const, icon: Shirt, label: 'Try-Ons' },
-                { key: 'fitchecks' as const, icon: MessageSquare, label: 'Fit Checks' },
+                { key: 'fitchecks' as const, icon: MessageSquare, label: 'Style Checks' },
               ].map(t => (
                 <button
                   key={t.key}
