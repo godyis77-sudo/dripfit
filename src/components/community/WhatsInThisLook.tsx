@@ -157,7 +157,7 @@ const WhatsInThisLook = ({
             >
               {items.map((item, idx) => (
                 <div key={idx} className="flex items-center gap-2">
-                  {/* Product thumbnail — tap for fullscreen */}
+                  {/* Product thumbnail */}
                   {(() => {
                     const imgSrc = item.image_url || catalogImages[item.url] || (idx === 0 ? clothingPhotoUrl : null);
                     return imgSrc ? (
@@ -173,33 +173,28 @@ const WhatsInThisLook = ({
                             product_url: item.url,
                           });
                         }}
-                        className={`shrink-0 ${isCompact ? 'h-8 w-8' : 'h-10 w-10'} rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center cursor-pointer active:scale-95 transition-transform`}
+                        className="shrink-0 h-10 w-10 rounded-lg overflow-hidden bg-muted border border-border cursor-pointer active:scale-95 transition-transform"
                         aria-label={`Preview ${item.name}`}
                       >
                         <img src={imgSrc} alt={item.name} className="h-full w-full object-cover" />
                       </button>
                     ) : (
-                      <div className={`shrink-0 ${isCompact ? 'h-8 w-8' : 'h-10 w-10'} rounded-lg overflow-hidden bg-muted border border-border flex items-center justify-center`}>
-                        <ShoppingBag className={`${isCompact ? 'h-3 w-3' : 'h-4 w-4'} text-muted-foreground/40`} />
+                      <div className="shrink-0 h-10 w-10 rounded-lg bg-muted border border-border flex items-center justify-center">
+                        <ShoppingBag className="h-4 w-4 text-muted-foreground/40" />
                       </div>
                     );
                   })()}
 
-                  {/* Brand + Name */}
+                  {/* Brand */}
                   <div className="flex-1 min-w-0">
-                    <span className={`${isCompact ? 'brand-label' : 'brand-label-lg'} mb-0.5`}>
-                      {item.brand}
-                    </span>
-                    <p className={`${isCompact ? 'text-[10px]' : 'text-[12px]'} text-foreground truncate leading-tight`}>
-                      {item.name.length > 35 ? item.name.slice(0, 35) + '…' : item.name}
-                    </p>
+                    <span className="brand-label">{item.brand}</span>
                   </div>
 
-                    {/* Price + Shop + Try On */}
-                  <div className="flex items-center gap-1.5 shrink-0">
+                  {/* Actions row */}
+                  <div className="flex items-center gap-2 shrink-0">
                     {item.price_cents && (
-                      <span className={`${isCompact ? 'text-[10px]' : 'text-[13px]'} font-bold text-primary`}>
-                        ${(item.price_cents / 100).toFixed(2)}
+                      <span className="text-[10px] font-bold text-primary">
+                        ${(item.price_cents / 100).toFixed(0)}
                       </span>
                     )}
                     <button
@@ -209,9 +204,9 @@ const WhatsInThisLook = ({
                         window.open(item.url, '_blank', 'noopener');
                         trackEvent('badge_clickout', { retailer: item.brand, source: 'whats_in_look' });
                       }}
-                      className={`${isCompact ? 'text-[11px]' : 'text-[11px]'} font-bold text-primary flex items-center gap-0.5 active:opacity-70`}
+                      className="text-[10px] font-bold text-primary flex items-center gap-0.5 active:opacity-70"
                     >
-                      Shop <ExternalLink className={`${isCompact ? 'h-2 w-2' : 'h-2.5 w-2.5'}`} />
+                      Shop <ExternalLink className="h-2 w-2" />
                     </button>
                     {onTryOn && !onAddToWardrobe && (
                       <button
@@ -220,10 +215,10 @@ const WhatsInThisLook = ({
                           e.stopPropagation();
                           onTryOn(item);
                         }}
-                        className={`${isCompact ? 'text-[11px]' : 'text-[11px]'} font-bold flex items-center gap-0.5 active:opacity-70 ml-1`}
+                        className="text-[10px] font-bold active:opacity-70"
                         style={{ color: 'hsl(var(--primary))' }}
                       >
-                        Try On
+                        Try-On
                       </button>
                     )}
                     {onAddToWardrobe && (
@@ -233,10 +228,10 @@ const WhatsInThisLook = ({
                           e.stopPropagation();
                           onAddToWardrobe(item);
                         }}
-                        className={`${isCompact ? 'text-[11px]' : 'text-[11px]'} font-bold flex items-center gap-0.5 active:opacity-70 ml-1`}
+                        className="text-[10px] font-bold active:opacity-70"
                         style={{ color: 'hsl(var(--primary))' }}
                       >
-                        + Wardrobe
+                        +Wardrobe
                       </button>
                     )}
                   </div>
