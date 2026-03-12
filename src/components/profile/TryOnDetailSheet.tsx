@@ -36,7 +36,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { addToCart, isInCart } = useCart();
+  const { addToCart, removeFromCart, isInCart } = useCart();
   const [liked, setLiked] = useState(false);
   const [posting, setPosting] = useState(false);
   const [addingToWardrobe, setAddingToWardrobe] = useState(false);
@@ -51,25 +51,22 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
     toast({ title: liked ? 'Removed from favorites' : '❤️ Added to favorites' });
   };
 
-  const handlePostToCommunity = async () => {
+  const handleToggleCommunity = async () => {
     if (!user) return;
-    if (post.is_public) {
-      toast({ title: 'Already posted', description: 'This try-on is already public.' });
-      return;
-    }
     setPosting(true);
+    const newPublic = !post.is_public;
     const { error } = await supabase
       .from('tryon_posts')
-      .update({ is_public: true })
+      .update({ is_public: newPublic })
       .eq('id', post.id)
       .eq('user_id', user.id);
     setPosting(false);
     if (error) {
-      toast({ title: 'Error', description: 'Could not post to community.', variant: 'destructive' });
+      toast({ title: 'Error', description: newPublic ? 'Could not post to community.' : 'Could not remove from community.', variant: 'destructive' });
       return;
     }
-    trackEvent('tryon_posted_to_community', { post_id: post.id });
-    toast({ title: '🔥 Posted!', description: 'Your look is now live in the community feed.' });
+    trackEvent(newPublic ? 'tryon_posted_to_community' : 'tryon_posted_to_community', { post_id: post.id });
+    toast({ title: newPublic ? '🔥 Posted!' : 'Removed', description: newPublic ? 'Your look is now live in the community feed.' : 'Removed from Style Check Feed.' });
     onPostUpdated?.();
   };
 
@@ -165,7 +162,9 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               variant="outline"
               className={`h-11 rounded-xl text-[12px] font-bold gap-1.5 col-span-2 ${isInCart(post.id) ? 'border-primary/40 bg-primary/10' : ''}`}
               onClick={() => {
-                if (!isInCart(post.id)) {
+                if (isInCart(post.id)) {
+                  removeFromCart(post.id);
+                } else {
                   addToCart({
                     post_id: post.id,
                     image_url: post.clothing_photo_url || post.result_photo_url,
@@ -175,7 +174,6 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
                   });
                 }
               }}
-              disabled={isInCart(post.id)}
             >
               <ShoppingCart className="h-4 w-4" />
               {isInCart(post.id) ? 'In Cart ✓' : 'Add to Cart'}
@@ -237,23 +235,15 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
             </Button>
           </div>
 
-          {!post.is_public && (
-            <Button
-              className="w-full h-11 rounded-xl text-[12px] font-bold btn-luxury text-primary-foreground gap-1.5"
-              onClick={handlePostToCommunity}
-              disabled={posting}
-            >
-              <MessageSquare className="h-4 w-4" />
-              {posting ? 'Posting…' : 'Post to Community'}
-            </Button>
-          )}
-
-          {post.is_public && (
-            <div className="flex items-center gap-1.5 justify-center py-1">
-              <MessageSquare className="h-3.5 w-3.5 text-primary" />
-              <p className="text-[11px] text-muted-foreground">Already shared in Style Check Feed</p>
-            </div>
-          )}
+          <Button
+            variant="outline"
+            className={`w-full h-11 rounded-xl text-[12px] font-bold gap-1.5 ${post.is_public ? 'border-primary/40 bg-primary/10' : ''}`}
+            onClick={handleToggleCommunity}
+            disabled={posting}
+          >
+            <MessageSquare className="h-4 w-4" />
+            {posting ? (post.is_public ? 'Removing…' : 'Posting…') : post.is_public ? 'Shared in Style Check ✓' : 'Post to Community'}
+          </Button>
 
           {/* Delete */}
           {onDelete && (
