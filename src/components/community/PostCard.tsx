@@ -232,7 +232,7 @@ const PostCard = ({
         )}
         {filter === 'similar' && (post as any).match_score && (
           <div
-            className="absolute top-2 right-2 text-[8px] font-bold rounded-full px-1.5 py-0.5 gradient-drip text-primary-foreground shadow-gold-glow"
+            className="absolute top-2 right-2 text-[10px] font-bold rounded-full px-1.5 py-0.5 gradient-drip text-primary-foreground shadow-gold-glow"
           >
             {(post as any).match_score}% match
           </div>
