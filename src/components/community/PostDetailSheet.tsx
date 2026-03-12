@@ -272,7 +272,7 @@ export const PostDetailSheet = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[100] bg-black flex flex-col overflow-y-auto"
+          className="fixed inset-0 z-[100] bg-black flex flex-col overflow-y-auto overscroll-none"
           ref={scrollContainerRef}
           onClick={onClose}
         >
@@ -280,7 +280,7 @@ export const PostDetailSheet = ({
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-between px-4 pt-4 pb-2 z-10"
+            className="flex items-center justify-between px-4 pt-3 pb-1 z-10"
             onClick={(e) => e.stopPropagation()}
           >
             <button onClick={() => onNavigateProfile(post)} className="flex items-center gap-2 active:opacity-70 transition-opacity">
@@ -327,7 +327,7 @@ export const PostDetailSheet = ({
             onTouchEnd={handleTouchEnd}
             onDoubleClick={handleDoubleClick}
           >
-            <div className="relative mx-auto w-full max-w-sm aspect-[3/4] overflow-hidden rounded-xl bg-background touch-none">
+            <div className="relative mx-auto w-full max-w-sm aspect-[3/3.5] overflow-hidden rounded-xl bg-background touch-none">
               <img src={post.result_photo_url} alt={post.caption || 'Try-on look'} className="absolute inset-0 h-full w-full object-contain object-top transition-transform duration-100" style={{ transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)` }} draggable={false} />
             {retailers.length > 0 && zoom <= 1 && (
               <div className="absolute bottom-3 right-4 flex flex-col gap-1 items-end">
@@ -344,7 +344,7 @@ export const PostDetailSheet = ({
 
           {/* Caption section */}
           {isOwnPost ? (
-          <div className="px-4 pt-2" onClick={(e) => e.stopPropagation()}>
+          <div className="px-4 pt-1.5" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-2">
               {editingQuestion ? (
                 <>
@@ -365,13 +365,13 @@ export const PostDetailSheet = ({
             </div>
           </div>
           ) : displayQuestion ? (
-          <div className="px-4 pt-2" onClick={(e) => e.stopPropagation()}>
+          <div className="px-4 pt-1.5" onClick={(e) => e.stopPropagation()}>
             <p className="text-white font-bold text-sm leading-snug">{displayQuestion}</p>
           </div>
           ) : null}
 
           {/* What's In This Look */}
-          <div className="px-4 pt-2" onClick={(e) => e.stopPropagation()}>
+          <div className="px-4 pt-1.5" onClick={(e) => e.stopPropagation()}>
             <WhatsInThisLook
               productUrls={post.product_urls || undefined}
               clothingPhotoUrl={post.clothing_photo_url}
@@ -385,7 +385,7 @@ export const PostDetailSheet = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="px-4 pb-6 pt-3 space-y-3"
+            className="px-4 pb-4 pt-2 space-y-2"
             onClick={(e) => e.stopPropagation()}
           >
 
