@@ -139,9 +139,9 @@ const BrandFilter = ({ gender, selectedBrand, onBrandChange }: BrandFilterProps)
           {showDropdown && (
             <div className="absolute z-50 top-full mt-1 w-full max-h-48 overflow-y-auto rounded-lg border border-border bg-popover shadow-lg">
               {loading ? (
-                <p className="text-[10px] text-muted-foreground text-center py-3">Loading brands...</p>
+                <p className="text-[12px] text-foreground/50 text-center py-3">Loading brands...</p>
               ) : matchingBrands.length === 0 ? (
-                <p className="text-[10px] text-muted-foreground text-center py-3">No brands found</p>
+                <p className="text-[12px] text-foreground/50 text-center py-3">No brands found</p>
               ) : (
                 matchingBrands.map(brand => (
                   <button
