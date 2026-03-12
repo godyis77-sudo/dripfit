@@ -26,10 +26,15 @@ export function useCart() {
   const storageKey = user ? `${STORAGE_KEY}_${user.id}` : null;
 
   const readCart = useCallback((): CartItem[] => {
-    if (!storageKey) return [];
+    if (!storageKey) {
+      console.log('[cart] readCart: no storageKey (user not loaded)');
+      return [];
+    }
     try {
       const raw = localStorage.getItem(storageKey);
-      return raw ? JSON.parse(raw) : [];
+      const parsed = raw ? JSON.parse(raw) : [];
+      console.log('[cart] readCart:', storageKey, parsed.length, 'items');
+      return parsed;
     } catch {
       return [];
     }
