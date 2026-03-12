@@ -59,9 +59,28 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <p className="text-lg font-bold tracking-widest flex items-center gap-1">
+          <p className="text-lg font-bold tracking-widest flex items-center gap-1.5">
             <span className="gradient-drip-text">DRIPFIT</span>
-            <span className="inline-flex items-center justify-center w-6 h-6 rounded-md icon-3d-gold shimmer-sweep text-[14px] leading-none">✔</span>
+            <span
+              className="inline-flex items-center justify-center w-7 h-7 rounded-lg shimmer-sweep"
+              style={{
+                background: 'linear-gradient(180deg, hsl(40 78% 54%), hsl(42 76% 38%))',
+                border: '1px solid hsl(42 76% 42% / 0.4)',
+                boxShadow:
+                  '0 3px 0 0 hsl(42 76% 24%), 0 4px 12px -2px hsl(42 76% 28% / 0.5), inset 0 1px 0 hsl(48 80% 65% / 0.5), inset 0 -1px 0 hsl(42 76% 24% / 0.3)',
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke="hsl(0 0% 4%)"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ filter: 'drop-shadow(0 1px 0 hsl(48 80% 65% / 0.4))' }}
+                />
+              </svg>
+            </span>
           </p>
           <p className="text-muted-foreground/70 text-[12px] mt-0.5">{greeting}{displayName ? ',' : '!'}</p>
           {displayName && <h1 className="font-display text-xl font-bold text-foreground mt-0.5">{displayName}</h1>}
