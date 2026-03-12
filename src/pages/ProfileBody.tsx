@@ -110,7 +110,7 @@ const ProfileBody = () => {
                   { label: 'Confidence', value: scan.confidence, cls: 'capitalize' },
                 ].map(d => (
                   <div key={d.label} className="bg-background rounded-lg py-1.5 text-center">
-                    <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{d.label}</p>
+                    <p className="text-[11px] text-muted-foreground uppercase tracking-wider">{d.label}</p>
                     <p className={`text-[12px] font-bold text-foreground ${d.cls || ''}`}>{d.value}</p>
                   </div>
                 ))}
