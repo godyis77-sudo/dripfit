@@ -427,7 +427,7 @@ export const PostDetailSheet = ({
               {/* Comments section */}
               {comments.length > 0 && (
                 <div ref={commentsSectionRef}>
-                  <div className="h-px bg-[hsl(0_0%_13%)]" />
+                  <div className="h-px bg-border" />
                   <button
                     onClick={() => {
                       const next = !showComments;

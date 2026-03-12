@@ -163,8 +163,8 @@ const TryOn = () => {
             )}
 
             <div className="flex items-start gap-1.5 bg-card border border-border rounded-lg px-3 py-2 mt-2 mb-3">
-              <Info className="h-3.5 w-3.5 text-foreground/40 shrink-0 mt-0.5" />
-              <p className="text-[12px] text-foreground/50 leading-relaxed">AI preview — actual fit, drape, and texture may vary. Use your Scan profile for the most accurate sizing.</p>
+              <Info className="h-3.5 w-3.5 text-muted-foreground/60 shrink-0 mt-0.5" />
+              <p className="text-[12px] text-muted-foreground leading-relaxed">AI preview — actual fit, drape, and texture may vary. Use your Scan profile for the most accurate sizing.</p>
             </div>
 
             {/* Generate CTA — only show when user has at least one photo */}

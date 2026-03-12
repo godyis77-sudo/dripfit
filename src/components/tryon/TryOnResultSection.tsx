@@ -348,9 +348,9 @@ const TryOnResultSection = ({
                 </Button>
                 <div className="flex flex-col items-center mt-2 gap-1">
                   <p className="text-[11px] text-muted-foreground font-medium">
-                    {accessoryStepIndex === 0 && 'Analysing the accessory…'}
-                    {accessoryStepIndex === 1 && 'Compositing onto your look…'}
-                    {accessoryStepIndex === 2 && 'Finalising your preview…'}
+                  {accessoryStepIndex === 0 && 'Analyzing the accessory…'}
+                  {accessoryStepIndex === 1 && 'Compositing onto your look…'}
+                  {accessoryStepIndex === 2 && 'Finalizing your preview…'}
                   </p>
                   <div className="flex gap-1.5">
                     {[0, 1, 2].map(i => (
