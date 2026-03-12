@@ -144,7 +144,7 @@ const TryOnUploadSection = ({
                 <div className="h-10 w-10 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
                   <Shirt className="h-5 w-5 text-muted-foreground" />
                 </div>
-                <p className="text-[9px] text-muted-foreground text-center">Product photo · clean background</p>
+                <p className="text-[11px] text-muted-foreground text-center">Product photo · clean background</p>
                 <div className="flex gap-1.5 w-full">
                   <button onClick={() => {
                     if (isNativePlatform()) handleNativeCapture(onClothingPhotoChange, 'clothing', 'camera');
