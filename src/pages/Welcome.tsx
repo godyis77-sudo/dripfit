@@ -172,7 +172,7 @@ const Welcome = () => {
           <div className="glass-card rounded-2xl p-5 border-glow">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-[9px] text-muted-foreground/70 uppercase tracking-[0.2em]">Your best size</p>
+                <p className="text-[11px] text-muted-foreground/70 uppercase tracking-[0.2em]">Your best size</p>
                 <p className="font-display text-4xl font-bold gradient-drip-text leading-none mt-1">M</p>
               </div>
               <div className="flex items-center gap-1.5 bg-primary/10 border border-primary/20 rounded-xl px-3 py-2">

@@ -477,7 +477,7 @@ const Onboarding = () => {
 
                 {/* WORTH IT */}
                 <div className="w-full bg-card border border-border rounded-xl p-2.5 mb-3">
-                  <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">What you'll get</p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">What you'll get</p>
                   <div className="grid grid-cols-4 gap-1.5">
                     {[
                       { label: 'Chest', val: '96cm' },

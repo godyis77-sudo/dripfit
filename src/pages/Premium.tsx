@@ -307,7 +307,7 @@ const Premium = () => {
           <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1">
             <Shield className="h-3 w-3" /> Your core results stay free — always
           </p>
-          <p className="text-[9px] text-muted-foreground/50">
+          <p className="text-[11px] text-muted-foreground/50">
             Premium adds confidence, not paywalls. Terms apply.
           </p>
         </div>

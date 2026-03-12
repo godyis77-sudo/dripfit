@@ -70,7 +70,7 @@ const History = () => {
                       <div className="grid grid-cols-4 gap-1.5">
                         {(['chest', 'waist', 'hips', 'inseam'] as const).map(key => (
                           <div key={key} className="text-center">
-                            <p className="text-[9px] text-muted-foreground">{MEASUREMENT_LABELS[key]}</p>
+                            <p className="text-[11px] text-muted-foreground">{MEASUREMENT_LABELS[key]}</p>
                             <p className="text-[13px] font-semibold text-foreground">{m[key]}"</p>
                           </div>
                         ))}

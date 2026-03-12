@@ -262,9 +262,9 @@ const TryOnResultSection = ({
                       <div className="flex-1 space-y-1.5">
                         <p className="text-[10px] text-primary font-medium flex items-center gap-1"><Check className="h-3 w-3" /> {accessoryCategory || 'Accessory'} ready</p>
                         <div className="flex gap-1.5">
-                          <button onClick={() => { setAccessoryPhoto(null); setAccessoryCategory(null); }} className="text-[9px] text-primary underline font-medium">Browse</button>
-                          <button onClick={() => accessoryPhotoRef.current?.click()} className="text-[9px] text-muted-foreground underline">Gallery</button>
-                          <button onClick={() => { setAccessoryPhoto(null); setAccessoryCategory(null); }} className="text-[9px] text-destructive underline">Remove</button>
+                          <button onClick={() => { setAccessoryPhoto(null); setAccessoryCategory(null); }} className="text-[11px] text-primary underline font-medium">Browse</button>
+                          <button onClick={() => accessoryPhotoRef.current?.click()} className="text-[11px] text-muted-foreground underline">Gallery</button>
+                          <button onClick={() => { setAccessoryPhoto(null); setAccessoryCategory(null); }} className="text-[11px] text-destructive underline">Remove</button>
                         </div>
                       </div>
                     </div>
