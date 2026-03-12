@@ -33,7 +33,7 @@ const Profile = () => {
   const { data: wardrobeItems = [] } = useWardrobe(user?.id);
   const { data: favoriteRetailers = [] } = useFavoriteRetailers(user?.id);
 
-  const [activeTab, setActiveTab] = useState<'tryons' | 'body' | 'wardrobe' | 'cart'>('tryons');
+  const [activeTab, setActiveTab] = useState<'tryons' | 'wardrobe' | 'cart'>('tryons');
   const [fit, setFit] = useState<FitPreference>(getFitPreference());
   const [showAvatarSheet, setShowAvatarSheet] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(getPremiumBannerDismissed());
@@ -181,7 +181,16 @@ const Profile = () => {
               )}
             </button>
             <div>
-              <h1 className="text-[15px] font-bold text-foreground leading-tight">{displayName}</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-[15px] font-bold text-foreground leading-tight">{displayName}</h1>
+                <button
+                  onClick={() => navigate('/profile/body')}
+                  className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 active:scale-95 transition-transform"
+                >
+                  <User className="h-2.5 w-2.5 text-primary" />
+                  <span className="text-[10px] text-primary font-bold">Body</span>
+                </button>
+              </div>
               <p className="text-[11px] text-muted-foreground">{user.email}</p>
               <button
                 onClick={() => navigate(`/profile/${encodeURIComponent(displayName)}`)}
@@ -212,7 +221,6 @@ const Profile = () => {
         <div className="flex gap-1 bg-card/60 backdrop-blur-sm rounded-xl p-1 mb-4 border border-border/30">
           {[
             { key: 'tryons' as const, icon: Shirt, label: 'Try-Ons' },
-            { key: 'body' as const, icon: User, label: 'Body' },
             { key: 'wardrobe' as const, icon: ShoppingBag, label: 'Wardrobe' },
             { key: 'cart' as const, icon: ShoppingCart, label: 'Cart' },
           ].map(t => (
@@ -243,10 +251,6 @@ const Profile = () => {
           {activeTab === 'tryons' ? (
             <motion.div key="tryons" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
               <TryOnsTab tryOnPosts={tryOnPosts} loading={postsLoading} onPostUpdated={refetchProfile} />
-            </motion.div>
-          ) : activeTab === 'body' ? (
-            <motion.div key="body" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
-              <BodyTab savedProfile={savedProfile} fit={fit} scanConfidence={scanConfidence} />
             </motion.div>
           ) : activeTab === 'wardrobe' ? (
             <motion.div key="wardrobe" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
