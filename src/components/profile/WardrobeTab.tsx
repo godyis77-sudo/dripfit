@@ -55,7 +55,7 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
             <Shirt className="h-6 w-6 text-primary/60" />
           </div>
           <h2 className="text-[18px] font-bold text-foreground mb-1">Your wardrobe is empty</h2>
-          <p className="text-[14px] text-muted-foreground max-w-[260px] mb-5">Save clothing items to try on and track your fits.</p>
+          <p className="text-[14px] text-muted-foreground max-w-[260px] mb-5">Save clothing items to try-on and track your fits.</p>
           <Button className="rounded-full btn-luxury text-primary-foreground text-sm h-11 px-6 font-bold" onClick={() => navigate('/')}>
             Browse Items
           </Button>
