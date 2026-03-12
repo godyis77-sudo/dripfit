@@ -81,6 +81,11 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
           <X className="h-4 w-4 text-white" />
         </button>
 
+        {/* Date above image */}
+        <div className="px-4 pt-3 pb-1.5">
+          <p className="text-[11px] text-muted-foreground font-medium">{new Date(item.created_at).toLocaleDateString()}</p>
+        </div>
+
         {/* Image — maximized */}
         <div className="relative w-full h-[55dvh] bg-black flex items-center justify-center overflow-hidden">
           <img src={item.image_url} alt={item.category} className="max-w-full max-h-full object-contain" />
