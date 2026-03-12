@@ -78,6 +78,7 @@ const TryOnResultSection = ({
   const [showShopPicker, setShowShopPicker] = useState(false);
   const accessoryPhotoRef = useRef<HTMLInputElement>(null);
   const accessoryCameraRef = useRef<HTMLInputElement>(null);
+  const accessorySectionRef = useRef<HTMLDivElement>(null);
   const [accessoryStepIndex, setAccessoryStepIndex] = useState(0);
 
   const handleAddToWardrobe = async (item: WhatsLookItem) => {
