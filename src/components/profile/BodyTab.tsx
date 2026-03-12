@@ -102,7 +102,7 @@ const BodyTab = ({ savedProfile, fit, scanConfidence }: BodyTabProps) => {
             <p className="text-[12px] font-bold text-foreground capitalize">{fit}</p>
           </div>
           <div className="bg-background rounded-lg py-1.5 text-center cursor-default">
-            <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Size</p>
+            <p className="text-[11px] text-muted-foreground uppercase tracking-wider">Size</p>
             <p className="text-[12px] font-bold text-foreground">{savedProfile.recommendedSize}</p>
           </div>
           <div className="bg-background rounded-lg py-1.5 text-center cursor-default">
