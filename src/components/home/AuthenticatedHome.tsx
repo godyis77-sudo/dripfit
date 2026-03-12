@@ -247,7 +247,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                 title={idx > 0 ? section.title : undefined}
                 collapsed={idx > 0}
                 maxItems={8}
-                seed={section.seed}
+                
                 showViewAll={true}
                 priceFilter={priceFilter}
                 gender={mappedGender}
