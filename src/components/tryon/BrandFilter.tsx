@@ -147,7 +147,7 @@ const BrandFilter = ({ gender, selectedBrand, onBrandChange }: BrandFilterProps)
                   <button
                     key={brand}
                     onClick={() => handleSelect(brand)}
-                    className="w-full text-left px-3 py-2 text-[11px] text-foreground hover:bg-accent transition-colors first:rounded-t-lg last:rounded-b-lg"
+                    className="w-full text-left px-3 py-2 text-[13px] text-foreground hover:bg-accent transition-colors first:rounded-t-lg last:rounded-b-lg"
                   >
                     {brand}
                   </button>
