@@ -115,7 +115,7 @@ const BrandFilter = ({ gender, selectedBrand, onBrandChange }: BrandFilterProps)
         <div className="relative">
           <div className="flex gap-1.5">
             <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-foreground/40" />
               <Input
                 value={search}
                 onChange={e => {
