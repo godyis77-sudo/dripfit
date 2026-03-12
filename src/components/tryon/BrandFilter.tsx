@@ -97,7 +97,7 @@ const BrandFilter = ({ gender, selectedBrand, onBrandChange }: BrandFilterProps)
 
   return (
     <div className="mb-3" ref={wrapperRef}>
-      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+      <p className="text-[12px] font-bold text-foreground/70 uppercase tracking-wider mb-1.5">
         Sort by Brand
       </p>
 
