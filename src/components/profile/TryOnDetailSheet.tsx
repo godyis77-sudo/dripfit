@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import { generateTryOnShareCard } from '@/lib/shareImage';
+import { useCart } from '@/hooks/useCart';
 
 interface TryOnPost {
   id: string;
