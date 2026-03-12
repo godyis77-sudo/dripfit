@@ -98,7 +98,7 @@ const TrustPanel = ({ confidence, recommendedSize, measurements, onAdjust, retai
               {brandNote && (
                 <div className="bg-accent/5 border border-accent/10 rounded-lg px-2.5 py-2">
                   <p className="text-[10px] font-bold text-foreground mb-0.5">{retailer} sizing note</p>
-                  <p className="text-[9px] text-muted-foreground">{brandNote}</p>
+                  <p className="text-[11px] text-muted-foreground">{brandNote}</p>
                 </div>
               )}
 
