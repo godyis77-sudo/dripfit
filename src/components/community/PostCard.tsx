@@ -270,36 +270,6 @@ const PostCard = ({
         )}
       </button>
 
-      {/* Mini comment — only for own posts */}
-      {user && post.user_id === user.id && (
-        <div className="px-1.5 pt-1.5 pb-1">
-          <div className="flex items-center gap-1">
-            <input
-              type="text"
-              placeholder="Add caption…"
-              maxLength={500}
-              className="flex-1 h-6 rounded-md bg-muted/50 border border-border px-2 text-[11px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
-              onKeyDown={async (e) => {
-                if (e.key === 'Enter' && (e.target as HTMLInputElement).value.trim()) {
-                  await saveCaption((e.target as HTMLInputElement).value, e.target as HTMLInputElement);
-                }
-              }}
-            />
-            <button
-              aria-label="Save caption"
-              className="shrink-0 h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center active:scale-90 transition-transform"
-              onClick={async (e) => {
-                const input = (e.currentTarget.previousSibling as HTMLInputElement);
-                if (input?.value?.trim()) {
-                  await saveCaption(input.value, input);
-                }
-              }}
-            >
-              <Send className="h-2.5 w-2.5 text-primary" />
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Buy votes */}
       <div className="px-1.5 pt-1">
