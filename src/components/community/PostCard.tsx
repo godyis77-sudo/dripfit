@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, Send, Sparkles, Trash2, User, UserPlus, UserCheck, ChevronUp, ShoppingBag } from 'lucide-react';
+import { Star, Send, Trash2, User, UserPlus, UserCheck, ShoppingBag } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
