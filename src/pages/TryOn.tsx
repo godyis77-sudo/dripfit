@@ -68,7 +68,7 @@ const TryOn = () => {
 
             {/* Category selector */}
             <div className="mb-3 relative overflow-hidden">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Category</p>
+              <p className="text-[12px] font-bold text-foreground/70 uppercase tracking-wider mb-1.5">Category</p>
               <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none" style={{ WebkitOverflowScrolling: 'touch' }}>
                 <button onClick={() => s.setCategory('all')} aria-label="Show all categories" className={`shrink-0 pill ${s.category === 'all' ? 'pill-filled' : ''}`}>
                   🛍️ All
