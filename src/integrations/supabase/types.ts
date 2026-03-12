@@ -1022,6 +1022,20 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: undefined
       }
+      increment_tryon_usage: {
+        Args: { p_month_key: string }
+        Returns: undefined
+      }
+      update_own_profile: {
+        Args: {
+          p_avatar_url?: string
+          p_display_name?: string
+          p_gender?: string
+          p_instagram_handle?: string
+          p_shopping_region?: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
