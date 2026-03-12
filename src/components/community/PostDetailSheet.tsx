@@ -7,7 +7,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
-import { GENERIC_PROMPTS } from './community-types';
+import { getPostedCaption } from './community-types';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 import type { LookItem } from '@/components/community/WhatsInThisLook';
 import { supabase } from '@/integrations/supabase/client';
