@@ -151,7 +151,7 @@ const Welcome = () => {
                 </div>
                 <div className="flex-1 text-left">
                   <p className="text-[13px] font-bold text-foreground flex items-center gap-2">
-                    <span className="text-[9px] text-primary/60 font-bold tabular-nums">{String(i + 1).padStart(2, '0')}</span> {p.label}
+                    <span className="text-[11px] text-primary/60 font-bold tabular-nums">{String(i + 1).padStart(2, '0')}</span> {p.label}
                   </p>
                   <p className="text-[11px] text-muted-foreground leading-snug mt-0.5">{p.desc}</p>
                 </div>
