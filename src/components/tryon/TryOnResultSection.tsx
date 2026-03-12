@@ -183,7 +183,7 @@ const TryOnResultSection = ({
 
         {/* PRIMARY CTA: Save & Post */}
         {!shared && !showPostUI && (
-          <Button className="w-full h-11 rounded-xl btn-luxury text-primary-foreground text-sm font-bold mb-2" onClick={() => { onSetShowPostUI(true); if (!caption) onSetCaption(getCaptionSuggestions(category)[0]); onSetIsPublic(true); }}>
+          <Button className="w-full h-11 rounded-xl btn-luxury text-primary-foreground text-[13px] font-bold tracking-wide mb-2" onClick={() => { onSetShowPostUI(true); if (!caption) onSetCaption(getCaptionSuggestions(category)[0]); onSetIsPublic(true); }}>
             <MessageSquare className="mr-1.5 h-4 w-4" /> Save & Post to Style Check
           </Button>
         )}
