@@ -108,13 +108,12 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
           <X className="h-4 w-4 text-white" />
         </button>
 
-        {/* Date above image */}
-        <div className="px-4 pt-3 pb-1.5">
-          <p className="text-[11px] text-muted-foreground font-medium">{new Date(post.created_at).toLocaleDateString()}</p>
-        </div>
-
         {/* Image */}
         <div className="relative w-full flex-1 min-h-0 bg-black flex items-center justify-center overflow-hidden">
+          {/* Date — top left overlay */}
+          <div className="absolute top-3 left-3 z-10">
+            <p className="text-[11px] text-white/80 font-medium drop-shadow-sm">{new Date(post.created_at).toLocaleDateString()}</p>
+          </div>
           <img
             src={post.result_photo_url}
             alt={post.caption || 'Try-on result'}
