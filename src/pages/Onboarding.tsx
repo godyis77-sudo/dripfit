@@ -472,7 +472,7 @@ const Onboarding = () => {
                     <Shield className="h-3.5 w-3.5 text-primary shrink-0" />
                     <p className="text-[10px] text-foreground font-medium">Photos processed privately — never stored without your consent.</p>
                   </div>
-                  <p className="text-[9px] text-muted-foreground pl-5.5">Delete anytime from Settings.</p>
+                  <p className="text-[11px] text-muted-foreground pl-5.5">Delete anytime from Settings.</p>
                 </div>
 
                 {/* WORTH IT */}
