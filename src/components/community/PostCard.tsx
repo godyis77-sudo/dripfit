@@ -295,7 +295,7 @@ const PostCard = ({
                 }`}
               >
                 {v.emoji}
-                <span className="text-[8px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
+                <span className="text-[10px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
               </motion.button>
             );
           })}
