@@ -135,7 +135,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
         </div>
 
         {/* Actions */}
-        <div className="px-4 pt-4 pb-6 space-y-3">
+        <div className="px-4 pt-4 pb-[max(1.5rem,env(safe-area-inset-bottom,1.5rem))] space-y-3 overflow-y-auto">
           {postedCaption && (
             <p className="text-[13px] text-foreground font-medium">{postedCaption}</p>
           )}
