@@ -99,7 +99,7 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                       ) : null;
                     })()}
                     <div className="flex items-center justify-between">
-                      <span className="text-[9px] text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</span>
+                      <span className="text-[11px] text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</span>
                       {item.product_link && (
                         <button
                           onClick={(e) => { e.stopPropagation(); window.open(item.product_link!, '_blank'); }}
