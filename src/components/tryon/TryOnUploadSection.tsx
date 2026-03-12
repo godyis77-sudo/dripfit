@@ -128,13 +128,13 @@ const TryOnUploadSection = ({
                 <div className="aspect-[3/4]"><img src={clothingPhoto} alt="Clothing" className="w-full h-full object-cover" /></div>
               </button>
               <div className="flex items-center justify-center gap-2 mt-1 flex-wrap">
-                <p className="text-[9px] text-primary font-medium flex items-center gap-0.5"><Check className="h-2.5 w-2.5" /> Ready</p>
+                <p className="text-[11px] text-primary font-medium flex items-center gap-0.5"><Check className="h-2.5 w-2.5" /> Ready</p>
                 {onBrowseProducts && (
-                  <button onClick={(e) => { e.stopPropagation(); onBrowseProducts(); }} className="text-[9px] text-primary hover:text-primary/80 transition-colors underline font-medium">Browse</button>
+                  <button onClick={(e) => { e.stopPropagation(); onBrowseProducts(); }} className="text-[11px] text-primary hover:text-primary/80 transition-colors underline font-medium">Browse</button>
                 )}
-                <button onClick={(e) => { e.stopPropagation(); clothingPhotoRef.current?.click(); }} className="text-[9px] text-muted-foreground hover:text-foreground transition-colors underline">Gallery</button>
+                <button onClick={(e) => { e.stopPropagation(); clothingPhotoRef.current?.click(); }} className="text-[11px] text-muted-foreground hover:text-foreground transition-colors underline">Gallery</button>
                 {onRemoveClothing && (
-                  <button onClick={(e) => { e.stopPropagation(); onRemoveClothing(); }} className="text-[9px] text-destructive hover:text-destructive/80 transition-colors underline">Remove</button>
+                  <button onClick={(e) => { e.stopPropagation(); onRemoveClothing(); }} className="text-[11px] text-destructive hover:text-destructive/80 transition-colors underline">Remove</button>
                 )}
               </div>
             </div>
