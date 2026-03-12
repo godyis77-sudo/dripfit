@@ -126,13 +126,10 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
             </button>
           )}
           {/* Bottom-left: date + public badge */}
-          <div className="absolute bottom-3 left-3 flex items-center gap-1.5 z-10">
+          <div className="absolute bottom-3 left-3 z-10">
             <div className="bg-black/50 backdrop-blur-sm rounded-full px-2.5 py-1">
               <p className="text-[10px] text-white font-medium">{new Date(post.created_at).toLocaleDateString()}</p>
             </div>
-            <span className={`text-[11px] font-bold px-2 py-1 rounded-full backdrop-blur-sm ${post.is_public ? 'bg-primary/80 text-primary-foreground' : 'bg-black/50 text-white'}`}>
-              {post.is_public ? 'Public' : 'Private'}
-            </span>
           </div>
           {/* Caption overlay — bottom center */}
           {post.caption && (
