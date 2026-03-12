@@ -113,6 +113,15 @@ const TryOnDetail = () => {
                 Shop This Item
               </Button>
             )}
+            <Button
+              variant={addedToWardrobe ? 'default' : 'outline'}
+              className={`w-full h-9 rounded-lg text-[11px] font-bold gap-1.5 ${addedToWardrobe ? 'bg-primary/20 text-primary border-primary/30' : ''}`}
+              onClick={handleAddToWardrobe}
+              disabled={addingToWardrobe || addedToWardrobe}
+            >
+              <ShoppingBag className="h-3.5 w-3.5" />
+              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added ✓' : 'Add to Wardrobe'}
+            </Button>
           </div>
         </div>
       </div>
