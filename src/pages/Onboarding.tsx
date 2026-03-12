@@ -37,7 +37,7 @@ const SLIDES = [
     icon: Sparkles,
     title: 'See how it looks before you buy',
     highlight: '',
-    desc: "Upload a photo of any clothing item and see yourself wearing it. No more buying blind — try on thousands of styles instantly.",
+    desc: "Upload a photo of any clothing item and see yourself wearing it. No more buying blind — try-on thousands of styles instantly.",
     image: heroTryon,
   },
   {
