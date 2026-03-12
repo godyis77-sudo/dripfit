@@ -311,8 +311,8 @@ export const PostDetailSheet = ({
             </div>
           </motion.div>
 
-          {/* Editable caption — only for own posts */}
-          {isOwnPost && (
+          {/* Caption section */}
+          {isOwnPost ? (
           <div className="px-4 pt-2" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-2">
               {editingQuestion ? (
@@ -333,7 +333,11 @@ export const PostDetailSheet = ({
               )}
             </div>
           </div>
-          )}
+          ) : displayQuestion ? (
+          <div className="px-4 pt-2" onClick={(e) => e.stopPropagation()}>
+            <p className="text-white font-bold text-sm leading-snug">{displayQuestion}</p>
+          </div>
+          ) : null}
 
           {/* What's In This Look */}
           <div className="px-4 pt-2" onClick={(e) => e.stopPropagation()}>
