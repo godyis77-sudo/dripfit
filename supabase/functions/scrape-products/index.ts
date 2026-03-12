@@ -870,6 +870,7 @@ async function scrapeUrlConfigs(
       for (let i = 0; i < products.length; i++) {
         const p = products[i];
         if (!p.name || !p.product_url) continue;
+        if (p.name.length < 8 || isListingPageName(p.name)) continue;
 
         let productImages = matchImagesToProduct(p.product_url, p.name, allImageUrls, brand);
         
