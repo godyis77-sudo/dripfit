@@ -359,32 +359,35 @@ const TryOnResultSection = ({
 
         {/* Floating generating bar */}
         <AnimatePresence>
-          {addingAccessory && (
+          {addingAccessory && createPortal(
             <motion.div
               initial={{ y: 80, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 80, opacity: 0 }}
               transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-              className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-[60] px-4 lg:max-w-[390px] lg:left-1/2 lg:-translate-x-1/2"
+              className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-[120] px-4"
             >
-              <div className="bg-card border border-primary/30 rounded-xl p-4">
-                <Button className="w-full h-12 rounded-xl text-sm font-bold btn-luxury text-primary-foreground opacity-100 animate-pulse" disabled>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Generating Try-On…
-                </Button>
-                <div className="flex flex-col items-center mt-2 gap-1.5">
-                  <p className="text-xs text-muted-foreground font-medium">
-                    {accessoryStepIndex === 0 && 'Analysing the accessory…'}
-                    {accessoryStepIndex === 1 && 'Compositing onto your look…'}
-                    {accessoryStepIndex === 2 && 'Finalising your preview…'}
-                  </p>
-                  <div className="flex gap-1.5">
-                    {[0, 1, 2].map(i => (
-                      <div key={i} className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${i <= accessoryStepIndex ? 'bg-primary' : 'border border-muted-foreground/40'}`} />
-                    ))}
+              <div className="mx-auto w-full max-w-[390px] bg-gradient-to-t from-background via-background to-background/80 pt-2">
+                <div className="bg-card border border-primary/30 rounded-xl p-4">
+                  <Button className="w-full h-12 rounded-xl text-sm font-bold btn-luxury text-primary-foreground opacity-100 animate-pulse" disabled>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Generating Try-On…
+                  </Button>
+                  <div className="flex flex-col items-center mt-2 gap-1.5">
+                    <p className="text-xs text-muted-foreground font-medium">
+                      {accessoryStepIndex === 0 && 'Analysing the accessory…'}
+                      {accessoryStepIndex === 1 && 'Compositing onto your look…'}
+                      {accessoryStepIndex === 2 && 'Finalising your preview…'}
+                    </p>
+                    <div className="flex gap-1.5">
+                      {[0, 1, 2].map(i => (
+                        <div key={i} className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${i <= accessoryStepIndex ? 'bg-primary' : 'border border-muted-foreground/40'}`} />
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </motion.div>,
+            document.body
           )}
         </AnimatePresence>
 
