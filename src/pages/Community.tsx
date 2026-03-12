@@ -273,6 +273,7 @@ const Community = () => {
                   onDeletePost={handleDeletePost}
                   onImageError={handleImageError}
                   onOpenDetail={setDetailPost}
+                  onCaptionUpdated={handleCaptionUpdated}
                 />
               ))}
             </div>
