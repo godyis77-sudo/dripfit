@@ -282,13 +282,13 @@ const TryOnResultSection = ({
                 <div className="bg-card border border-t-0 border-border rounded-b-xl p-3">
                   <input ref={accessoryPhotoRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileSelect(setAccessoryPhoto)} className="hidden" />
                   <input ref={accessoryCameraRef} type="file" accept="image/jpeg,image/png,image/webp" capture="environment" onChange={handleFileSelect(setAccessoryPhoto)} className="hidden" />
-                  <p className="text-[10px] text-muted-foreground mb-2">Layer one item at a time — shoes, hat, jewelry, and more</p>
+                  <p className="text-[12px] text-muted-foreground mb-2">Layer one item at a time — tops, bottoms, shoes, and more</p>
                   <div className="flex gap-1.5 flex-wrap mb-2">
-                    <button onClick={() => { setShowAllCategories(prev => !prev); setAccessoryCategory(null); }} className={`px-2.5 py-1.5 rounded-lg text-[10px] font-medium border transition-all active:scale-95 ${showAllCategories ? 'border-primary bg-primary text-primary-foreground font-bold' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
+                    <button onClick={() => { setShowAllCategories(prev => !prev); setAccessoryCategory(null); }} className={`px-3 py-2 rounded-lg text-[12px] font-semibold border transition-all active:scale-95 ${showAllCategories ? 'border-primary bg-primary text-primary-foreground font-bold' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
                       🛍️ All Products
                     </button>
                     {ACCESSORY_CATEGORIES.map(c => (
-                      <button key={c.key} onClick={() => { setAccessoryCategory(prev => prev === c.key ? null : c.key); setShowAllCategories(false); }} className={`px-2.5 py-1.5 rounded-lg text-[10px] font-medium border transition-all active:scale-95 ${accessoryCategory === c.key && !showAllCategories ? 'border-primary bg-primary text-primary-foreground font-bold' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
+                      <button key={c.key} onClick={() => { setAccessoryCategory(prev => prev === c.key ? null : c.key); setShowAllCategories(false); }} className={`px-3 py-2 rounded-lg text-[12px] font-semibold border transition-all active:scale-95 ${accessoryCategory === c.key && !showAllCategories ? 'border-primary bg-primary text-primary-foreground font-bold' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
                         {c.label}
                       </button>
                     ))}
