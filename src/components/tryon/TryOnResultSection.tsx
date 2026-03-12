@@ -357,39 +357,31 @@ const TryOnResultSection = ({
           </AnimatePresence>
         </div>
 
-        {/* Floating generating bar */}
-        <AnimatePresence>
-          {addingAccessory && createPortal(
-            <motion.div
-              initial={{ y: 80, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 80, opacity: 0 }}
-              transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-              className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-[120] px-4"
-            >
-              <div className="mx-auto w-full max-w-[390px] bg-gradient-to-t from-background via-background to-background/80 pt-2">
-                <div className="bg-card border border-primary/30 rounded-xl p-4">
-                  <Button className="w-full h-12 rounded-xl text-sm font-bold btn-luxury text-primary-foreground opacity-100 animate-pulse" disabled>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Generating Try-On…
-                  </Button>
-                  <div className="flex flex-col items-center mt-2 gap-1.5">
-                    <p className="text-xs text-muted-foreground font-medium">
-                      {accessoryStepIndex === 0 && 'Analysing the accessory…'}
-                      {accessoryStepIndex === 1 && 'Compositing onto your look…'}
-                      {accessoryStepIndex === 2 && 'Finalising your preview…'}
-                    </p>
-                    <div className="flex gap-1.5">
-                      {[0, 1, 2].map(i => (
-                        <div key={i} className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${i <= accessoryStepIndex ? 'bg-primary' : 'border border-muted-foreground/40'}`} />
-                      ))}
-                    </div>
+        {/* Floating generating bar — portal to escape transforms */}
+        {addingAccessory && createPortal(
+          <div className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-[120] px-4 animate-in slide-in-from-bottom-8 duration-300">
+            <div className="mx-auto w-full max-w-[390px] bg-gradient-to-t from-background via-background to-background/80 pt-2">
+              <div className="bg-card border border-primary/30 rounded-xl p-4">
+                <Button className="w-full h-12 rounded-xl text-sm font-bold btn-luxury text-primary-foreground opacity-100 animate-pulse" disabled>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Generating Try-On…
+                </Button>
+                <div className="flex flex-col items-center mt-2 gap-1.5">
+                  <p className="text-xs text-muted-foreground font-medium">
+                    {accessoryStepIndex === 0 && 'Analysing the accessory…'}
+                    {accessoryStepIndex === 1 && 'Compositing onto your look…'}
+                    {accessoryStepIndex === 2 && 'Finalising your preview…'}
+                  </p>
+                  <div className="flex gap-1.5">
+                    {[0, 1, 2].map(i => (
+                      <div key={i} className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${i <= accessoryStepIndex ? 'bg-primary' : 'border border-muted-foreground/40'}`} />
+                    ))}
                   </div>
                 </div>
               </div>
-            </motion.div>,
-            document.body
-          )}
-        </AnimatePresence>
+            </div>
+          </div>,
+          document.body
+        )}
 
         <p className="text-[10px] text-muted-foreground/50 text-center mt-1">We may earn a commission. It doesn't change your price.</p>
       </motion.div>
