@@ -19,6 +19,7 @@ import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { navigateToTryOn } from '@/lib/tryonNavigate';
 import { useCart } from '@/hooks/useCart';
 import type { Post, FilterType } from './community-types';
+
 import { getPostedCaption } from './community-types';
 import { VOTE_OPTIONS, FIT_OPTIONS } from './community-types';
 
