@@ -267,7 +267,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                       onChange={e => setIgPostUrl(e.target.value)}
                       className="rounded-lg h-9 text-[12px]"
                     />
-                    <p className="text-[9px] text-muted-foreground/60 leading-relaxed">
+                    <p className="text-[11px] text-muted-foreground/60 leading-relaxed">
                       Cross-post your fit — link your IG post so the community can find you there too.
                     </p>
                   </div>
