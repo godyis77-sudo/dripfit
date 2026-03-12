@@ -26,17 +26,24 @@ export function useCart() {
   const storageKey = user ? `${STORAGE_KEY}_${user.id}` : null;
 
   const readCart = useCallback((): CartItem[] => {
-    if (!storageKey) return [];
+    if (!storageKey) {
+      console.log('[cart] readCart: no storageKey (user not loaded)');
+      return [];
+    }
     try {
       const raw = localStorage.getItem(storageKey);
-      return raw ? JSON.parse(raw) : [];
+      const parsed = raw ? JSON.parse(raw) : [];
+      console.log('[cart] readCart:', storageKey, parsed.length, 'items');
+      return parsed;
     } catch {
       return [];
     }
   }, [storageKey]);
 
   const loadCart = useCallback(() => {
-    setItems(readCart());
+    const cartItems = readCart();
+    console.log('[cart] loadCart setting', cartItems.length, 'items');
+    setItems(cartItems);
     setLoading(false);
   }, [readCart]);
 
@@ -52,8 +59,13 @@ export function useCart() {
 
   const saveCart = useCallback((newItems: CartItem[]) => {
     if (!storageKey) return;
-    localStorage.setItem(storageKey, JSON.stringify(newItems));
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(newItems));
+    } catch (e) {
+      console.error('[cart] localStorage write failed', e);
+    }
     setItems(newItems);
+    // Notify other hook instances on the same page
     window.dispatchEvent(new CustomEvent(CART_UPDATED_EVENT));
   }, [storageKey]);
 
