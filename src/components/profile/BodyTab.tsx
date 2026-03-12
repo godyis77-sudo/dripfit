@@ -113,7 +113,7 @@ const BodyTab = ({ savedProfile, fit, scanConfidence }: BodyTabProps) => {
             onClick={() => setShowConfidence(true)}
             className="bg-background rounded-lg py-1.5 text-center active:scale-95 transition-transform cursor-pointer"
           >
-            <p className="text-[9px] text-muted-foreground uppercase tracking-wider flex items-center justify-center gap-0.5">
+            <p className="text-[11px] text-muted-foreground uppercase tracking-wider flex items-center justify-center gap-0.5">
               Confidence
               <Info className="h-2.5 w-2.5 text-primary opacity-80" />
             </p>
