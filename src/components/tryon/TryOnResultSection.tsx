@@ -177,7 +177,7 @@ const TryOnResultSection = ({
         </FullscreenImage>
 
         {/* What's In This Look */}
-        <WhatsInThisLook items={displayItems} clothingPhotoUrl={clothingPhoto} defaultOpen={showLookItems} variant="detail" />
+        <WhatsInThisLook items={displayItems} clothingPhotoUrl={clothingPhoto} defaultOpen={showLookItems} variant="detail" onAddToWardrobe={handleAddToWardrobe} />
 
         {/* PRIMARY CTA: Save & Post */}
         {!shared && !showPostUI && (
