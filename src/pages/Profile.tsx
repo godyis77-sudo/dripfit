@@ -182,7 +182,12 @@ const Profile = () => {
             </button>
             <div>
               <h1 className="text-[15px] font-bold text-foreground leading-tight">{displayName}</h1>
-              <p className="text-[11px] text-muted-foreground">{user.email}</p>
+              <div className="flex items-center gap-1.5">
+                <p className="text-[11px] text-muted-foreground">{user.email}</p>
+                <button onClick={handleSignOut} className="text-muted-foreground/60 hover:text-destructive transition-colors p-0.5" aria-label="Sign out">
+                  <LogOut className="h-3 w-3" />
+                </button>
+              </div>
               <button
                 onClick={() => navigate(`/profile/${encodeURIComponent(displayName)}`)}
                 className="flex items-center gap-1 mt-0.5 active:opacity-70 transition-opacity"
@@ -208,9 +213,6 @@ const Profile = () => {
               aria-label="Open settings"
             >
               <Settings className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={handleSignOut} className="text-muted-foreground h-8 w-8 min-h-[44px] min-w-[44px] rounded-lg" aria-label="Sign out">
-              <LogOut className="h-4 w-4" />
             </Button>
           </div>
         </div>
