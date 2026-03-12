@@ -216,8 +216,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     processBatch(data);
     const BOTTOM_CATEGORIES = ['bottoms'];
     const uIds = [...new Set(data.map(p => p.user_id))];
-    const { data: profiles } = await supabase.from('profiles').select('user_id, display_name, avatar_url').in('user_id', uIds);
-    const profileMap = new Map((profiles || []).map(p => [p.user_id, p]));
+    const profileMap = await fetchPublicProfiles(uIds);
     const enriched: Post[] = data.map(p => {
       const rawScore = scoreMap.get(p.user_id) || 0;
       return {
