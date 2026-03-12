@@ -64,6 +64,31 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
     };
   }, [product]);
 
+  const handleAddToWardrobe = async () => {
+    if (!user || !product) return;
+    setAddingToWardrobe(true);
+    const { error } = await supabase.from('clothing_wardrobe').insert({
+      user_id: user.id,
+      image_url: product.image_url,
+      category: product.category || 'top',
+      product_link: product.product_url || null,
+      brand: product.brand || null,
+    });
+    setAddingToWardrobe(false);
+    if (error) {
+      if (error.code === '23505') {
+        setAddedToWardrobe(true);
+        toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
+      } else {
+        toast({ title: 'Error', description: 'Could not add to wardrobe.', variant: 'destructive' });
+      }
+      return;
+    }
+    setAddedToWardrobe(true);
+    trackEvent('wardrobe_added_from_tryon', { brand: product.brand });
+    toast({ title: '👕 Added to Wardrobe!', description: 'You can find it in your Wardrobe tab.' });
+  };
+
   if (!product) return null;
 
   const hasLookItems = lookItems && lookItems.length > 0;
