@@ -263,8 +263,8 @@ const PostCard = ({
           </div>
         )}
       </button>
-      {post.caption && !GENERIC_PROMPTS.includes(post.caption) && (
-        <p className="text-[10px] font-bold text-foreground text-center px-2 py-1 line-clamp-2">{post.caption}</p>
+      {hasPostedCaption && (
+        <p className="text-[10px] font-bold text-foreground text-center px-2 py-1 line-clamp-2">{normalizedCaption}</p>
       )}
 
       {/* Mini comment — only for own posts */}
