@@ -91,7 +91,7 @@ const TrustPanel = ({ confidence, recommendedSize, measurements, onAdjust, retai
                 <p className="text-[10px] font-bold text-foreground mb-0.5 flex items-center gap-1">
                   <Ruler className="h-3 w-3 text-primary" /> Between sizes?
                 </p>
-                <p className="text-[9px] text-muted-foreground leading-relaxed">{BETWEEN_SIZES[confidence]}</p>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">{BETWEEN_SIZES[confidence]}</p>
               </div>
 
               {/* Brand sizing note */}
