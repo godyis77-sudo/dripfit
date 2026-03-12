@@ -51,25 +51,22 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
     toast({ title: liked ? 'Removed from favorites' : '❤️ Added to favorites' });
   };
 
-  const handlePostToCommunity = async () => {
+  const handleToggleCommunity = async () => {
     if (!user) return;
-    if (post.is_public) {
-      toast({ title: 'Already posted', description: 'This try-on is already public.' });
-      return;
-    }
     setPosting(true);
+    const newPublic = !post.is_public;
     const { error } = await supabase
       .from('tryon_posts')
-      .update({ is_public: true })
+      .update({ is_public: newPublic })
       .eq('id', post.id)
       .eq('user_id', user.id);
     setPosting(false);
     if (error) {
-      toast({ title: 'Error', description: 'Could not post to community.', variant: 'destructive' });
+      toast({ title: 'Error', description: newPublic ? 'Could not post to community.' : 'Could not remove from community.', variant: 'destructive' });
       return;
     }
-    trackEvent('tryon_posted_to_community', { post_id: post.id });
-    toast({ title: '🔥 Posted!', description: 'Your look is now live in the community feed.' });
+    trackEvent(newPublic ? 'tryon_posted_to_community' : 'tryon_removed_from_community', { post_id: post.id });
+    toast({ title: newPublic ? '🔥 Posted!' : 'Removed', description: newPublic ? 'Your look is now live in the community feed.' : 'Removed from Style Check Feed.' });
     onPostUpdated?.();
   };
 
