@@ -977,6 +977,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_public_profile_by_name: {
+        Args: { p_display_name: string }
+        Returns: {
+          avatar_url: string
+          display_name: string
+          instagram_handle: string
+          user_id: string
+        }[]
+      }
       get_public_profiles: {
         Args: { p_user_ids: string[] }
         Returns: {
