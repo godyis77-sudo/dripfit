@@ -356,6 +356,37 @@ const TryOnResultSection = ({
           </AnimatePresence>
         </div>
 
+        {/* Floating generating bar */}
+        <AnimatePresence>
+          {addingAccessory && (
+            <motion.div
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+              className="fixed bottom-20 left-0 right-0 z-[100] px-4 pb-3"
+            >
+              <div className="bg-gradient-to-t from-background via-background to-transparent pt-6 -mx-4 px-4">
+                <Button className="w-full h-12 rounded-xl text-sm font-bold btn-luxury text-primary-foreground opacity-100 animate-pulse" disabled>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Generating Try-On…
+                </Button>
+                <div className="flex flex-col items-center mt-2 gap-1.5">
+                  <p className="text-xs text-muted-foreground font-medium">
+                    {accessoryStepIndex === 0 && 'Analysing the accessory…'}
+                    {accessoryStepIndex === 1 && 'Compositing onto your look…'}
+                    {accessoryStepIndex === 2 && 'Finalising your preview…'}
+                  </p>
+                  <div className="flex gap-1.5">
+                    {[0, 1, 2].map(i => (
+                      <div key={i} className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${i <= accessoryStepIndex ? 'bg-primary' : 'border border-muted-foreground/40'}`} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <p className="text-[10px] text-muted-foreground/50 text-center mt-1">We may earn a commission. It doesn't change your price.</p>
       </motion.div>
     </>
