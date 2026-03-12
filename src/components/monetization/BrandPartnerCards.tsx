@@ -16,7 +16,7 @@ const BrandPartnerCards = () => (
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
             <p className="text-[12px] font-bold text-foreground">{p.retailer}</p>
-            <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold uppercase tracking-wider">{p.tag}</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold uppercase tracking-wider">{p.tag}</span>
           </div>
           <p className="text-[10px] text-muted-foreground mt-0.5">{p.note}</p>
         </div>
