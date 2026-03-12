@@ -112,9 +112,6 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
                 </span>
               ) : null;
             })()}
-            <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground bg-card border border-border rounded-md px-2 py-1">
-              <Calendar className="h-3 w-3" /> {new Date(item.created_at).toLocaleDateString()}
-            </span>
           </div>
 
           {item.notes && (
