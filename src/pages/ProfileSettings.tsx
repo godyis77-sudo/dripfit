@@ -5,7 +5,7 @@ import { ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { getFitPreference, setFitPreference } from '@/lib/session';
+import { getFitPreference, setFitPreference, getUseCm, setUseCm as persistUseCm } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
 import type { FitPreference, BodyScanResult } from '@/lib/types';
@@ -21,7 +21,7 @@ const ProfileSettings = () => {
   const [displayName, setDisplayName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [favoriteRetailers, setFavoriteRetailers] = useState<string[]>([]);
-  const [useCm, setUseCm] = useState(true);
+  const [useCm, setUseCmState] = useState(getUseCm());
   const [fit, setFit] = useState<FitPreference>(getFitPreference());
   const [savedProfile, setSavedProfile] = useState<BodyScanResult | null>(null);
   const [savedItemCount, setSavedItemCount] = useState(0);
@@ -139,7 +139,7 @@ const ProfileSettings = () => {
           instagramHandle={instagramHandle}
           onFavoriteRetailersChange={setFavoriteRetailers}
           onFitChange={handleFitChange}
-          onUnitToggle={(v) => setUseCm(!v)}
+          onUnitToggle={(v) => { const newUseCm = !v; setUseCmState(newUseCm); persistUseCm(newUseCm); }}
           onExport={handleExport}
           onDeletePhotos={handleDeletePhotos}
           onDeleteAccount={handleDeleteAccount}
