@@ -152,7 +152,7 @@ const TryOn = () => {
             )}
 
             {!s.canGenerate && !s.loading && (
-              <p className="text-[12px] text-foreground/50 text-center mt-1.5 mb-1">
+              <p className="text-[12px] text-muted-foreground text-center mt-1.5 mb-1">
                 {!s.userPhoto && !s.clothingPhoto ? 'Upload your photo and a clothing item to start' : !s.userPhoto ? 'Upload your photo to continue' : 'Upload a clothing item to continue'}
               </p>
             )}
