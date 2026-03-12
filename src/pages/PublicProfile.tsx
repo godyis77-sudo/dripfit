@@ -261,7 +261,7 @@ const PublicProfile = () => {
                   {tryOns.length === 0 ? (
                     <div className="text-center py-10">
                       <MessageSquare className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
-                      <p className="text-[13px] text-muted-foreground">No fit checks yet</p>
+                      <p className="text-[13px] text-muted-foreground">No style checks yet</p>
                     </div>
                   ) : (
                     <div className="space-y-2 pb-20">
