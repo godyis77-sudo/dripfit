@@ -157,7 +157,7 @@ const TryOnResultSection = ({
                   {!caption && (
                     <div className="flex gap-1 mt-1.5 flex-wrap">
                       {getCaptionSuggestions(category).map(p => (
-                        <button key={p} onClick={() => onSetCaption(p)} className="text-[9px] px-2 py-1 rounded-md border border-border text-muted-foreground hover:border-primary/30 hover:text-foreground transition-colors">{p}</button>
+                        <button key={p} onClick={() => onSetCaption(p)} className="text-[11px] px-2 py-1 rounded-md border border-border text-muted-foreground hover:border-primary/30 hover:text-foreground transition-colors">{p}</button>
                       ))}
                     </div>
                   )}
