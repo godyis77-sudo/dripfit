@@ -92,7 +92,7 @@ const CartTab = () => {
         </div>
         <p className="text-[14px] font-bold text-foreground mb-1">Your cart is empty</p>
         <p className="text-[12px] text-muted-foreground max-w-[220px] mx-auto mb-4">
-          Tap 🛒 on any Style Check look to add it here.
+          Save looks from Style Check by tapping the cart icon on any post.
         </p>
         <Button className="rounded-lg btn-luxury text-primary-foreground text-sm h-10 px-5 font-bold" onClick={() => navigate('/style-check')}>
           Browse Looks
