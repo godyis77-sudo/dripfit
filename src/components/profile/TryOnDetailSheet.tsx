@@ -121,11 +121,13 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
           />
         </div>
 
+        {/* Caption below image */}
+        {postedCaption && (
+          <p className="px-4 pt-2 text-[13px] text-foreground font-medium text-left">{postedCaption}</p>
+        )}
+
         {/* Actions */}
-        <div className="px-4 pt-4 pb-[max(1.5rem,env(safe-area-inset-bottom,1.5rem))] space-y-3 overflow-y-auto">
-          {postedCaption && (
-            <p className="text-[13px] text-foreground font-medium">{postedCaption}</p>
-          )}
+        <div className="px-4 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom,1.5rem))] space-y-3 overflow-y-auto">
 
           <div className="grid grid-cols-2 gap-2">
             <Button
