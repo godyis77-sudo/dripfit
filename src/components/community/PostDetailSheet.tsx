@@ -82,6 +82,7 @@ export const PostDetailSheet = ({
   voteCounts,
   onVote,
   onComment,
+  onCaptionUpdated,
   onFollow,
   onNavigateProfile,
   onShopLook,
@@ -99,6 +100,7 @@ export const PostDetailSheet = ({
   const [showComments, setShowComments] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(false);
   const [questionText, setQuestionText] = useState('');
+  const [savingCaption, setSavingCaption] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
@@ -139,7 +141,11 @@ export const PostDetailSheet = ({
     if (!open || !post) return;
     setZoom(1);
     setPan({ x: 0, y: 0 });
-  }, [open, post?.id]);
+
+    const normalizedCaption = (post.caption || '').trim();
+    setQuestionText(normalizedCaption && !GENERIC_PROMPTS_SET.has(normalizedCaption) ? normalizedCaption : '');
+    setEditingQuestion(false);
+  }, [open, post?.id, post?.caption]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if (e.touches.length === 2) {
