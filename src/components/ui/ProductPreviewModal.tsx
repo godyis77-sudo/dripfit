@@ -52,6 +52,8 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
   useEffect(() => {
     if (!product) return;
     setLookOpen(false);
+    setAddingToWardrobe(false);
+    setAddedToWardrobe(false);
     const prevBody = document.body.style.overflow;
     const prevHtml = document.documentElement.style.overflow;
     document.body.style.overflow = 'hidden';
