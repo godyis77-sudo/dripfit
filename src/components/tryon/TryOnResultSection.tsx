@@ -109,7 +109,7 @@ const TryOnResultSection = ({
         brand: item.brand || null,
         retailer: item.brand || null,
       });
-      trackEvent('wardrobe_item_added', { brand: item.brand, source: 'tryon_look' });
+      trackEvent('wardrobe_add_from_look', { brand: item.brand, source: 'tryon_look' });
       onToast({ title: 'Added to Wardrobe!', description: `${item.name} saved.` });
     } catch (err: unknown) {
       onToast({ title: 'Save failed', description: (err as Error).message, variant: 'destructive' });
