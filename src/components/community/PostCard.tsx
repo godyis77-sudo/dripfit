@@ -264,7 +264,7 @@ const PostCard = ({
         )}
       </button>
       {hasPostedCaption && (
-        <p className="text-[10px] font-bold text-foreground text-center px-2 py-1 line-clamp-2">{normalizedCaption}</p>
+        <p className="text-[10px] font-bold text-foreground text-center px-2 py-1 line-clamp-2">{postedCaption}</p>
       )}
 
       {/* Mini comment — only for own posts */}
