@@ -33,7 +33,7 @@ const Profile = () => {
   const { data: wardrobeItems = [] } = useWardrobe(user?.id);
   const { data: favoriteRetailers = [] } = useFavoriteRetailers(user?.id);
 
-  const [activeTab, setActiveTab] = useState<'tryons' | 'body' | 'wardrobe' | 'cart'>('tryons');
+  const [activeTab, setActiveTab] = useState<'tryons' | 'wardrobe' | 'cart'>('tryons');
   const [fit, setFit] = useState<FitPreference>(getFitPreference());
   const [showAvatarSheet, setShowAvatarSheet] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(getPremiumBannerDismissed());
