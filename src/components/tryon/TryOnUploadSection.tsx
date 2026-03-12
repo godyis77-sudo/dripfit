@@ -185,7 +185,7 @@ const TryOnUploadSection = ({
       <div className="mb-3">
         <div className="flex items-center gap-1.5 mb-1">
           <Link2 className="h-3 w-3 text-muted-foreground" />
-          <p className="text-[11px] text-muted-foreground">Paste product link <span className="text-[9px] text-muted-foreground/70">(optional)</span></p>
+          <p className="text-[11px] text-muted-foreground">Paste product link <span className="text-[11px] text-muted-foreground/70">(optional)</span></p>
         </div>
         <Input
           placeholder="https://zara.com/product/..."
