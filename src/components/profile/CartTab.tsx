@@ -232,6 +232,14 @@ const CartTab = () => {
                     Buy! <ExternalLink className="ml-1 h-2.5 w-2.5" />
                   </Button>
                 ) : null}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-9 rounded-lg text-[12px] font-bold shrink-0"
+                  onClick={() => handleTryOn(item.product_urls?.[0], item.clothing_photo_url || item.image_url)}
+                >
+                  <Sparkles className="h-3 w-3 mr-1" /> Try-On
+                </Button>
               </div>
             </div>
 
