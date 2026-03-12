@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { getUseCm } from '@/lib/session';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Ruler, Camera, Info } from 'lucide-react';
