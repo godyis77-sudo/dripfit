@@ -49,7 +49,7 @@ const FIT_OPTIONS = [
   { key: 'too_loose', label: 'Too big' },
 ] as const;
 
-const GENERIC_PROMPTS_SET = new Set(GENERIC_PROMPTS);
+
 
 interface PostDetailSheetProps {
   post: Post | null;
