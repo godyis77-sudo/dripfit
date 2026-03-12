@@ -377,7 +377,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
         } else {
           addToCart({
             post_id: post.id,
-            image_url: post.clothing_photo_url || post.result_photo_url,
+            image_url: post.result_photo_url,
             caption: post.caption,
             product_urls: post.product_urls || null,
             clothing_photo_url: post.clothing_photo_url || post.result_photo_url,
