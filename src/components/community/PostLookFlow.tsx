@@ -334,7 +334,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                   <div>
                     <p className="text-sm font-semibold text-foreground">{isPublic ? 'Public' : 'Private'}</p>
                     <p className="text-[10px] text-muted-foreground">
-                      {isPublic ? 'Everyone on Fit Check can see & vote' : 'Only you can see this look'}
+                      {isPublic ? 'Everyone on Style Check can see & vote' : 'Only you can see this look'}
                     </p>
                   </div>
                 </div>
