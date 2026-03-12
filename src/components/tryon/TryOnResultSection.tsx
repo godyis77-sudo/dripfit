@@ -360,11 +360,11 @@ const TryOnResultSection = ({
         <AnimatePresence>
           {addingAccessory && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
+              initial={{ y: 80, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 80, opacity: 0 }}
               transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-              className="mb-3"
+              className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-[60] px-4 lg:max-w-[390px] lg:left-1/2 lg:-translate-x-1/2"
             >
               <div className="bg-card border border-primary/30 rounded-xl p-4">
                 <Button className="w-full h-12 rounded-xl text-sm font-bold btn-luxury text-primary-foreground opacity-100 animate-pulse" disabled>
