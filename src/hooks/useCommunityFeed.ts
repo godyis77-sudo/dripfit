@@ -369,16 +369,20 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
       await supabase.from('community_votes').insert({ post_id: postId, user_id: userId, vote_key: key });
     }
 
-    if (key === 'keep_shopping' && !hasKey) {
+    if (key === 'keep_shopping') {
       const post = posts.find(p => p.id === postId);
       if (post) {
-        addToCart({
-          post_id: post.id,
-          image_url: post.result_photo_url,
-          caption: post.caption,
-          product_urls: post.product_urls || null,
-          clothing_photo_url: post.clothing_photo_url,
-        });
+        if (hasKey) {
+          removeFromCart(postId);
+        } else {
+          addToCart({
+            post_id: post.id,
+            image_url: post.clothing_photo_url || post.result_photo_url,
+            caption: post.caption,
+            product_urls: post.product_urls || null,
+            clothing_photo_url: post.clothing_photo_url || post.result_photo_url,
+          });
+        }
       }
     }
 

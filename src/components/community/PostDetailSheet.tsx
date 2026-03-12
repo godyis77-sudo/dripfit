@@ -96,7 +96,7 @@ export const PostDetailSheet = ({
   isPlaceholder,
   currentUserId,
 }: PostDetailSheetProps) => {
-  const { addToCart, removeFromCart, isInCart } = useCart();
+  
   const [commentText, setCommentText] = useState('');
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
