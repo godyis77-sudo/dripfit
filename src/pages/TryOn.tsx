@@ -163,7 +163,7 @@ const TryOn = () => {
 
             {/* Generate CTA — only show when user has at least one photo */}
             {(s.userPhoto || s.clothingPhoto) && (
-              <div className="sticky bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 -mx-4 px-4 py-3 bg-gradient-to-t from-background via-background to-background/0">
+              <div className={`-mx-4 px-4 py-3 ${s.loading ? 'mt-2 mb-2' : 'sticky bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 bg-gradient-to-t from-background via-background to-background/0'}`}>
                 <Button className={`w-full h-12 min-h-[44px] rounded-lg text-sm font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform shadow-lg ${s.loading ? 'opacity-100 animate-pulse' : 'disabled:opacity-30'}`} onClick={s.handleTryOn} disabled={s.loading || !s.canGenerate}>
                   {s.loading ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Generating Try-On…</> : <><Sparkles className="mr-2 h-4 w-4" /> Generate Try-On</>}
                 </Button>
