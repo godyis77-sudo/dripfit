@@ -71,11 +71,11 @@ describe('generateShareImage', () => {
     expect(mockCanvas.height).toBe(1920);
   });
 
-  it('should draw DRIPFITCHECK wordmark', async () => {
+   it('should draw DRIPFIT ✔ wordmark', async () => {
     await generateShareImage(sampleData);
     const fillTextCalls = mockCtx.fillText.mock.calls;
     const hasDripFit = fillTextCalls.some(
-      (call: any[]) => call[0] === 'DRIPFITCHECK'
+      (call: any[]) => call[0] === 'DRIPFIT ✔'
     );
     expect(hasDripFit).toBe(true);
   });

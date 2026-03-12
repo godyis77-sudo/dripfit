@@ -46,11 +46,11 @@ export async function generateShareImage(data: ShareImageData): Promise<Blob> {
   ctx.fillStyle = BG;
   ctx.fillRect(0, 0, W, H);
 
-  // ── Top: DRIPFITCHECK wordmark ──
+  // ── Top: DRIPFIT ✔ wordmark ──
   ctx.fillStyle = GOLD;
   ctx.font = 'bold 56px Inter, system-ui, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('DRIPFITCHECK', W / 2, 100);
+  ctx.fillText('DRIPFIT ✔', W / 2, 100);
 
   // Subtle divider
   ctx.strokeStyle = GOLD_DIM;

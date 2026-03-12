@@ -158,7 +158,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
 
       <Card className="rounded-xl border-border/40">
         <CardHeader className="text-center pb-1.5 pt-4 px-4">
-          <CardTitle className="font-display text-xl">{isLogin ? 'Welcome Back' : 'Join DRIPFITCHECK'}</CardTitle>
+          <CardTitle className="font-display text-xl">{isLogin ? 'Welcome Back' : 'Join DRIPFIT ✔'}</CardTitle>
           <CardDescription className="text-[13px] text-muted-foreground">
             {isLogin
               ? 'Sign in to access your saved sizes, Try-Ons, and Style Checks'
