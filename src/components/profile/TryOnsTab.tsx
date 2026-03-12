@@ -112,10 +112,20 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
     trackEvent('vote_cast', { vote: key, source: 'profile_tryons' });
   };
 
-  const handleComment = (postId: string, val: string) => {
-    if (!user) { toast({ title: 'Sign in to comment', variant: 'destructive' }); return; }
-    trackEvent('fitcheck_reaction', { postId, comment: val });
-    toast({ title: 'Sent!', description: val });
+  const handleUpdateCaption = async (postId: string, val: string) => {
+    if (!user) { toast({ title: 'Sign in first', variant: 'destructive' }); return; }
+    const { error } = await supabase
+      .from('tryon_posts')
+      .update({ caption: val })
+      .eq('id', postId)
+      .eq('user_id', user.id);
+    if (error) {
+      toast({ title: 'Failed to save caption', variant: 'destructive' });
+      return;
+    }
+    trackEvent('fitcheck_caption_updated', { postId });
+    toast({ title: 'Caption saved!' });
+    onPostUpdated?.();
   };
 
   const cancelLongPress = () => {
