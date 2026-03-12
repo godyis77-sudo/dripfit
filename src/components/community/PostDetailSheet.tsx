@@ -12,7 +12,7 @@ import { getPostedCaption } from './community-types';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 import type { LookItem } from '@/components/community/WhatsInThisLook';
 import { supabase } from '@/integrations/supabase/client';
-import { useCart } from '@/hooks/useCart';
+
 
 interface Post {
   id: string;

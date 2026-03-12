@@ -20,7 +20,7 @@ import { navigateToTryOn } from '@/lib/tryonNavigate';
 import type { Post, FilterType } from './community-types';
 import { getPostedCaption } from './community-types';
 import { VOTE_OPTIONS, FIT_OPTIONS } from './community-types';
-import { useCart } from '@/hooks/useCart';
+
 
 interface PostCardProps {
   post: Post;
