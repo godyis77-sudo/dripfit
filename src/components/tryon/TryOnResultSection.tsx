@@ -321,7 +321,7 @@ const TryOnResultSection = ({
                       {showAllCategories && (
                         <div className="space-y-2 mb-2">
                           {ALL_PRODUCT_CATEGORIES.map(cat => (
-                            <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={true} maxItems={1000} seed={7777} showViewAll={true} gender={userGender || undefined}
+                            <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={true} maxItems={1000} showViewAll={true} gender={userGender || undefined}
                               onSelectProduct={async (product) => {
                                 if (product.product_url) onSetLookItems(prev => [...prev, { brand: product.brand, name: product.name, url: product.product_url!, price_cents: product.price_cents, image_url: product.image_url }]);
                                 trackEvent('catalog_product_clicked', { brand: product.brand, category: cat.key });
