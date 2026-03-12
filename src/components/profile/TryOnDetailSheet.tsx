@@ -12,8 +12,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import { generateTryOnShareCard } from '@/lib/shareImage';
+import { useCart } from '@/hooks/useCart';
 import { getPostedCaption } from '@/components/community/community-types';
-
 interface TryOnPost {
   id: string;
   result_photo_url: string;
