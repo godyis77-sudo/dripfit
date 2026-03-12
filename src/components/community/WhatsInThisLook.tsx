@@ -133,7 +133,7 @@ const WhatsInThisLook = ({
         }}
       >
         <ShoppingCart className="h-4 w-4" />
-        <span className="text-[13px] font-bold uppercase tracking-wide text-primary-foreground">
+        <span className="text-[11px] font-bold uppercase tracking-normal text-primary-foreground">
           {onAddToWardrobe ? 'ShopStyle / +Wardrobe' : 'Shop Style / Try-On'}
         </span>
         <ChevronDown
