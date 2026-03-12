@@ -350,13 +350,13 @@ export const PostDetailSheet = ({
               {editingQuestion ? (
                 <>
                   <input type="text" value={questionText} onChange={(e) => setQuestionText(e.target.value)} placeholder="Add Caption / Comment…" className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" autoFocus maxLength={300} onKeyDown={(e) => { if (e.key === 'Enter') handleSaveQuestion(); }} />
-                  <button onClick={handleSaveQuestion} className="h-8 px-3 rounded-lg bg-primary text-primary-foreground text-[11px] font-bold active:scale-95 transition-transform">
-                    Post
+                  <button onClick={handleSaveQuestion} disabled={savingCaption} className="h-8 px-3 rounded-lg bg-primary text-primary-foreground text-[11px] font-bold active:scale-95 transition-transform disabled:opacity-60 disabled:cursor-not-allowed">
+                    {savingCaption ? 'Saving…' : 'Post'}
                   </button>
                 </>
-              ) : questionText ? (
+              ) : displayQuestion ? (
                 <button onClick={handleStartEditQuestion} className="flex-1 text-left">
-                  <p className="text-white font-bold text-sm leading-snug">{questionText}</p>
+                  <p className="text-white font-bold text-sm leading-snug">{displayQuestion}</p>
                 </button>
               ) : (
                 <button onClick={() => { setQuestionText(''); setEditingQuestion(true); }} className="flex-1 h-10 rounded-lg bg-white/10 border border-white/20 px-3 flex items-center">
