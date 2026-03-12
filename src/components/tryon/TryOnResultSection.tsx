@@ -232,7 +232,7 @@ const TryOnResultSection = ({
           <button onClick={() => setShowAccessorySection(!showAccessorySection)} className="w-full flex items-center justify-between bg-card border border-border rounded-xl px-3 py-2.5 active:scale-[0.98] transition-transform">
             <span className="text-[12px] font-bold text-foreground flex items-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5 text-primary" /> Add Accessory
-              {layerHistory.length > 0 && <span className="text-[9px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full ml-1">{layerHistory.length} layered</span>}
+              {layerHistory.length > 0 && <span className="text-[11px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full ml-1">{layerHistory.length} layered</span>}
             </span>
             {showAccessorySection ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
           </button>
