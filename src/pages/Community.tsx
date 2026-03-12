@@ -338,6 +338,7 @@ const Community = () => {
         isOwnPost={detailPost ? user?.id === detailPost.user_id : false}
         isPlaceholder={detailPost ? isPlaceholder(detailPost) : false}
         currentUserId={user?.id}
+        onCaptionUpdated={handleCaptionUpdated}
       />
       <BottomTabBar />
     </div>
