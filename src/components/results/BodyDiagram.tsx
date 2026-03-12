@@ -49,7 +49,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
   return (
     <div className="mb-4">
-      <p className="section-label mb-2">Body Measurement Map</p>
+      
       <div className="flex justify-center">
         <div className="relative rounded-[1rem] border-[3px] border-primary" style={{ boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15), inset 0 0 14px 3px hsl(45 88% 50% / 0.2)' }}>
           <span className="sr-only">
