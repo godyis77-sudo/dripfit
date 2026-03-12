@@ -254,7 +254,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                   <div className="flex items-center gap-2">
                     <Instagram className="h-3.5 w-3.5 text-muted-foreground" />
                     <span className="text-[11px] text-muted-foreground">
-                      Link Instagram post <span className="text-[9px] text-muted-foreground/60">(optional)</span>
+                      Link Instagram post <span className="text-[11px] text-muted-foreground/60">(optional)</span>
                     </span>
                   </div>
                   {igExpanded ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
