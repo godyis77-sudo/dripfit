@@ -199,94 +199,103 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-2">
-            {tryOnPosts.filter(p => filterMode === 'all' ? true : filterMode === 'public' ? p.is_public : !p.is_public).map(post => (
-              <motion.div key={post.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
-                <div className="w-full rounded-xl overflow-hidden border border-border bg-card text-left">
-                  <button
-                    onClick={() => setSelectedPost(post)}
-                    className="w-full active:scale-[0.97] transition-transform"
-                  >
-                    <div className="relative">
-                      <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
-                    </div>
-                    <div className="p-2 flex items-center justify-between">
-                      <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
-                      <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded ${post.is_public ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                        {post.is_public ? 'Public' : 'Private'}
-                      </span>
-                    </div>
-                  </button>
+            {tryOnPosts
+              .filter(p => filterMode === 'all' ? true : filterMode === 'public' ? p.is_public : !p.is_public)
+              .map(post => {
+                const postedCaption = getPostedCaption(post.caption);
 
-                  {/* Community interactions for public posts */}
-                  {post.is_public && (
-                    <div className="px-1.5 pb-1.5">
-                      {/* Emoji votes */}
-                      <div className="flex gap-1">
-                        {VOTE_OPTIONS.map(v => {
-                          const active = (votes[post.id] || []).includes(v.key);
-                          return (
+                return (
+                  <motion.div key={post.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
+                    <div className="w-full rounded-xl overflow-hidden border border-border bg-card text-left">
+                      <button
+                        onClick={() => setSelectedPost(post)}
+                        className="w-full active:scale-[0.97] transition-transform"
+                      >
+                        <div className="relative">
+                          <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
+                        </div>
+                        {postedCaption && (
+                          <p className="px-2 pt-1 text-[10px] font-bold text-foreground text-center line-clamp-2">{postedCaption}</p>
+                        )}
+                        <div className="p-2 flex items-center justify-between">
+                          <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
+                          <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded ${post.is_public ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                            {post.is_public ? 'Public' : 'Private'}
+                          </span>
+                        </div>
+                      </button>
+
+                      {/* Community interactions for public posts */}
+                      {post.is_public && (
+                        <div className="px-1.5 pb-1.5">
+                          {/* Emoji votes */}
+                          <div className="flex gap-1">
+                            {VOTE_OPTIONS.map(v => {
+                              const active = (votes[post.id] || []).includes(v.key);
+                              return (
+                                <button
+                                  key={v.key}
+                                  onClick={() => handleVote(post.id, v.key)}
+                                  className={`flex-1 py-1.5 rounded-md text-[11px] font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${
+                                    active
+                                      ? 'border-primary bg-primary/10 text-primary'
+                                      : 'border-border text-muted-foreground'
+                                  }`}
+                                >
+                                  {v.emoji}
+                                  <span className="text-[10px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                          {/* Chat input */}
+                          <div className="flex items-center gap-1 mt-1">
+                            <input
+                              type="text"
+                              placeholder="Say something…"
+                              className="flex-1 h-6 rounded-md bg-muted/50 border border-border px-2 text-[11px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' && (e.target as HTMLInputElement).value.trim()) {
+                                  handleComment(post.id, (e.target as HTMLInputElement).value.trim());
+                                  (e.target as HTMLInputElement).value = '';
+                                }
+                              }}
+                            />
                             <button
-                              key={v.key}
-                              onClick={() => handleVote(post.id, v.key)}
-                              className={`flex-1 py-1.5 rounded-md text-[11px] font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${
-                                active
-                                  ? 'border-primary bg-primary/10 text-primary'
-                                  : 'border-border text-muted-foreground'
-                              }`}
+                              className="shrink-0 h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center active:scale-90 transition-transform"
+                              aria-label="Send comment"
+                              onClick={(e) => {
+                                const input = (e.currentTarget.previousSibling as HTMLInputElement);
+                                if (input?.value?.trim()) {
+                                  handleComment(post.id, input.value.trim());
+                                  input.value = '';
+                                }
+                              }}
                             >
-                              {v.emoji}
-                              <span className="text-[10px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
+                              <Send className="h-2.5 w-2.5 text-primary" />
                             </button>
-                          );
-                        })}
-                      </div>
-                      {/* Chat input */}
-                      <div className="flex items-center gap-1 mt-1">
-                        <input
-                          type="text"
-                          placeholder="Say something…"
-                          className="flex-1 h-6 rounded-md bg-muted/50 border border-border px-2 text-[11px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' && (e.target as HTMLInputElement).value.trim()) {
-                              handleComment(post.id, (e.target as HTMLInputElement).value.trim());
-                              (e.target as HTMLInputElement).value = '';
-                            }
-                          }}
-                        />
-                        <button
-                          className="shrink-0 h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center active:scale-90 transition-transform"
-                          aria-label="Send comment"
-                          onClick={(e) => {
-                            const input = (e.currentTarget.previousSibling as HTMLInputElement);
-                            if (input?.value?.trim()) {
-                              handleComment(post.id, input.value.trim());
-                              input.value = '';
-                            }
-                          }}
-                        >
-                          <Send className="h-2.5 w-2.5 text-primary" />
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                          </div>
+                        </div>
+                      )}
 
-                  {/* What's In This Look */}
-                  <WhatsInThisLook
-                    productUrls={post.product_urls || undefined}
-                    clothingPhotoUrl={post.clothing_photo_url}
-                    variant="card"
-                    onTryOn={(item) => navigateToTryOn(navigate, { productUrl: item.url, fallbackClothingImageUrl: item.image_url || post.clothing_photo_url, source: 'profile_tryons' })}
-                    onAddToWardrobe={async (item) => {
-                      if (!user) return;
-                      const imgUrl = item.image_url || post.clothing_photo_url || '';
-                      await supabase.from('clothing_wardrobe').insert({ user_id: user.id, image_url: imgUrl, category: 'top', brand: item.brand !== 'Shop' ? item.brand : null, product_link: item.url || null });
-                      toast({ title: 'Added', description: 'Saved to your wardrobe.' });
-                      trackEvent('wardrobe_add_from_look', { brand: item.brand });
-                    }}
-                  />
-                </div>
-              </motion.div>
-            ))}
+                      {/* What's In This Look */}
+                      <WhatsInThisLook
+                        productUrls={post.product_urls || undefined}
+                        clothingPhotoUrl={post.clothing_photo_url}
+                        variant="card"
+                        onTryOn={(item) => navigateToTryOn(navigate, { productUrl: item.url, fallbackClothingImageUrl: item.image_url || post.clothing_photo_url, source: 'profile_tryons' })}
+                        onAddToWardrobe={async (item) => {
+                          if (!user) return;
+                          const imgUrl = item.image_url || post.clothing_photo_url || '';
+                          await supabase.from('clothing_wardrobe').insert({ user_id: user.id, image_url: imgUrl, category: 'top', brand: item.brand !== 'Shop' ? item.brand : null, product_link: item.url || null });
+                          toast({ title: 'Added', description: 'Saved to your wardrobe.' });
+                          trackEvent('wardrobe_add_from_look', { brand: item.brand });
+                        }}
+                      />
+                    </div>
+                  </motion.div>
+                );
+              })}
           </div>
           <div className="flex gap-2 mt-4">
             <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px]" onClick={() => navigate('/tryon')}>
