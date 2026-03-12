@@ -203,7 +203,7 @@ const SettingsTab = ({
                 key={g.value}
                 onClick={async () => {
                   setGender(g.value);
-                  await supabase.from('profiles').update({ gender: g.value } as any).eq('user_id', user.id);
+                  await supabase.rpc('update_own_profile', { p_gender: g.value });
                   onGenderChange?.(g.value);
                   toast({ title: `Shopping section set to ${g.label}` });
                 }}

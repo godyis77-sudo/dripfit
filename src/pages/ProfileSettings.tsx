@@ -108,7 +108,7 @@ const ProfileSettings = () => {
   };
   const handleInstagramSave = async (handle: string) => {
     if (!user) return;
-    const { error } = await supabase.from('profiles').update({ instagram_handle: handle } as any).eq('user_id', user.id);
+    const { error } = await supabase.rpc('update_own_profile', { p_instagram_handle: handle });
     if (error) { toast({ title: 'Error', description: 'Could not update Instagram handle.', variant: 'destructive' }); return; }
     setInstagramHandle(handle); toast({ title: handle ? 'Instagram linked!' : 'Instagram removed' });
   };
