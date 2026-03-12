@@ -109,7 +109,7 @@ const Profile = () => {
     queryClient.invalidateQueries({ queryKey: ['profile-info', user.id] });
   };
   const handleDisplayNameSave = async (name: string) => {
-    const { error } = await supabase.from('profiles').update({ display_name: name }).eq('user_id', user.id);
+    const { error } = await supabase.rpc('update_own_profile', { p_display_name: name });
     if (error) { toast({ title: 'Error', description: 'Could not update display name.', variant: 'destructive' }); return; }
     queryClient.invalidateQueries({ queryKey: ['profile-info', user.id] });
     toast({ title: 'Display name updated!' });
