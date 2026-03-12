@@ -60,7 +60,7 @@ const Community = () => {
   const {
     posts, loading, loadingMore, hasMore, loadMore,
     votes, voteCounts, followToggles, failedImages,
-    hasScan, handleVote, handleFollowToggle, handleDeletePost, handleImageError, fetchPosts,
+    hasScan, handleVote, handleFollowToggle, handleDeletePost, handleImageError, fetchPosts, setPosts,
   } = useCommunityFeed({ userId: user?.id, filter, shopGender });
   const { count: cartCount } = useCart();
 
