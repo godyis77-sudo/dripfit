@@ -20,9 +20,9 @@ interface SizeRecommendation { recommendedSize: string; confidence: string; brea
 interface BrandOption { brand_name: string; brand_slug: string; category: string; }
 interface DbSizeResult { recommended_size: string; confidence: number; fit_status: string; fit_notes: string; second_option: string | null; all_sizes: { label: string; score: number; fit_status: string }[]; }
 
-const fitColors: Record<string, string> = { tight: 'text-orange-500', good: 'text-green-500', loose: 'text-blue-500' };
+const fitColors: Record<string, string> = { tight: 'text-destructive', good: 'text-primary', loose: 'text-accent-foreground' };
 const fitLabels: Record<string, string> = { tight: 'Tight', good: 'Good', loose: 'Loose' };
-const fitStatusColors: Record<string, string> = { true_to_size: 'text-green-500', good_fit: 'text-green-400', between_sizes: 'text-amber-500', out_of_range: 'text-red-400' };
+const fitStatusColors: Record<string, string> = { true_to_size: 'text-primary', good_fit: 'text-primary', between_sizes: 'text-muted-foreground', out_of_range: 'text-destructive' };
 const fitStatusLabels: Record<string, string> = { true_to_size: 'True to Size', good_fit: 'Good Fit', between_sizes: 'Between Sizes', out_of_range: 'Out of Range' };
 const CATEGORY_OPTIONS = ['tops', 'bottoms', 'dresses', 'outerwear', 'activewear', 'footwear'] as const;
 
