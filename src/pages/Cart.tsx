@@ -116,7 +116,7 @@ const Cart = () => {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="h-7 rounded-lg text-[9px] font-bold"
+                        className="h-7 rounded-lg text-[11px] font-bold"
                         onClick={() => navigate('/tryon', { state: { productUrl: item.product_urls?.[0] } })}
                       >
                         <Sparkles className="mr-1 h-2.5 w-2.5" /> Try On
