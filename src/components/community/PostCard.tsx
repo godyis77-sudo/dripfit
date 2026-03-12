@@ -157,8 +157,8 @@ const PostCard = ({
     setLocalCaption(post.caption ?? '');
   }, [post.id, post.caption]);
 
-  const normalizedCaption = localCaption.trim();
-  const hasPostedCaption = normalizedCaption.length > 0 && !GENERIC_PROMPTS.includes(normalizedCaption);
+  const postedCaption = getPostedCaption(localCaption);
+  const hasPostedCaption = !!postedCaption;
 
   const saveCaption = async (value: string, input?: HTMLInputElement | null) => {
     if (!user) return;
