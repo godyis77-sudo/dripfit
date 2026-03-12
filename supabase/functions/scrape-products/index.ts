@@ -1259,7 +1259,10 @@ function parseSearchResults(results: any[], brand: string, category: string): Ra
       .replace(/\s*Buy\s.*$/i, '')
       .trim();
 
-    if (!productName || productName.length < 3) continue;
+    if (!productName || productName.length < 8) continue;
+
+    // Skip listing/category page titles
+    if (isListingPageName(productName)) continue;
 
     // For luxury brands, require brand name in the product listing
     const brandLower = brand.toLowerCase();
