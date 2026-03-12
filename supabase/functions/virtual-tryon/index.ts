@@ -13,7 +13,12 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const raw = await req.json();
+    let raw: Record<string, unknown>;
+    try {
+      raw = await req.json();
+    } catch {
+      return errorResponse("Request body is empty or malformed. Photos may be too large — try smaller images.", "VALIDATION_ERROR", 400, corsHeaders);
+    }
 
     // Validate required fields
     const { userPhoto, clothingPhoto } = raw;
