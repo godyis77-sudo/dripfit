@@ -60,7 +60,7 @@ const Community = () => {
   const {
     posts, loading, loadingMore, hasMore, loadMore,
     votes, voteCounts, followToggles, failedImages,
-    hasScan, handleVote, handleFollowToggle, handleDeletePost, handleImageError, fetchPosts,
+    hasScan, handleVote, handleFollowToggle, handleDeletePost, handleImageError, fetchPosts, setPosts,
   } = useCommunityFeed({ userId: user?.id, filter, shopGender });
   const { count: cartCount } = useCart();
 
@@ -105,6 +105,11 @@ const Community = () => {
   };
 
   const visiblePosts = getVisiblePosts();
+
+  const handleCaptionUpdated = useCallback((postId: string, caption: string | null) => {
+    setPosts(prev => prev.map(p => p.id === postId ? { ...p, caption } : p));
+    setDetailPost(prev => prev && prev.id === postId ? { ...prev, caption } : prev);
+  }, [setPosts]);
 
   const renderSortPills = (sorts: { key: TrendingSort; label: string }[], activeSort: TrendingSort, setSort: (s: TrendingSort) => void) => (
     <div className="flex gap-1.5 mb-3 overflow-x-auto no-scrollbar">
@@ -268,6 +273,7 @@ const Community = () => {
                   onDeletePost={handleDeletePost}
                   onImageError={handleImageError}
                   onOpenDetail={setDetailPost}
+                  onCaptionUpdated={handleCaptionUpdated}
                 />
               ))}
             </div>
@@ -332,6 +338,7 @@ const Community = () => {
         isOwnPost={detailPost ? user?.id === detailPost.user_id : false}
         isPlaceholder={detailPost ? isPlaceholder(detailPost) : false}
         currentUserId={user?.id}
+        onCaptionUpdated={handleCaptionUpdated}
       />
       <BottomTabBar />
     </div>

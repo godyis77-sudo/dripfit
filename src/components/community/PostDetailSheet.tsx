@@ -49,6 +49,8 @@ const FIT_OPTIONS = [
   { key: 'too_loose', label: 'Too big' },
 ] as const;
 
+const GENERIC_PROMPTS_SET = new Set(GENERIC_PROMPTS);
+
 interface PostDetailSheetProps {
   post: Post | null;
   open: boolean;
@@ -58,6 +60,7 @@ interface PostDetailSheetProps {
   voteCounts: Record<string, Record<string, number>>;
   onVote: (postId: string, key: string) => void;
   onComment: (postId: string, comment: string) => void;
+  onCaptionUpdated?: (postId: string, caption: string | null) => void;
   onFollow: (userId: string) => void;
   onNavigateProfile: (post: Post) => void;
   onShopLook: (post: Post) => void;
@@ -79,6 +82,7 @@ export const PostDetailSheet = ({
   voteCounts,
   onVote,
   onComment,
+  onCaptionUpdated,
   onFollow,
   onNavigateProfile,
   onShopLook,
@@ -96,6 +100,7 @@ export const PostDetailSheet = ({
   const [showComments, setShowComments] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(false);
   const [questionText, setQuestionText] = useState('');
+  const [savingCaption, setSavingCaption] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
@@ -136,7 +141,11 @@ export const PostDetailSheet = ({
     if (!open || !post) return;
     setZoom(1);
     setPan({ x: 0, y: 0 });
-  }, [open, post?.id]);
+
+    const normalizedCaption = (post.caption || '').trim();
+    setQuestionText(normalizedCaption && !GENERIC_PROMPTS_SET.has(normalizedCaption) ? normalizedCaption : '');
+    setEditingQuestion(false);
+  }, [open, post?.id, post?.caption]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if (e.touches.length === 2) {
@@ -191,8 +200,8 @@ export const PostDetailSheet = ({
   });
   const retailers = [...retailerUrlMap.keys()];
 
-  const GENERIC_PROMPTS_SET = new Set(GENERIC_PROMPTS);
-  const userCaption = post.caption && !GENERIC_PROMPTS_SET.has(post.caption) ? post.caption : '';
+  const normalizedPostCaption = (post.caption || '').trim();
+  const userCaption = normalizedPostCaption && !GENERIC_PROMPTS_SET.has(normalizedPostCaption) ? normalizedPostCaption : '';
   const displayQuestion = questionText || userCaption;
 
   const handleSendComment = () => {
@@ -215,7 +224,30 @@ export const PostDetailSheet = ({
   };
 
   const handleStartEditQuestion = () => { setQuestionText(displayQuestion); setEditingQuestion(true); };
-  const handleSaveQuestion = () => { setEditingQuestion(false); };
+  const handleSaveQuestion = async () => {
+    if (!isOwnPost || !currentUserId) {
+      setEditingQuestion(false);
+      return;
+    }
+
+    const nextCaption = questionText.trim();
+    setSavingCaption(true);
+    const { error } = await supabase
+      .from('tryon_posts')
+      .update({ caption: nextCaption || null })
+      .eq('id', post.id)
+      .eq('user_id', currentUserId);
+    setSavingCaption(false);
+
+    if (error) {
+      console.error('Failed to save caption', error);
+      return;
+    }
+
+    onCaptionUpdated?.(post.id, nextCaption || null);
+    setQuestionText(nextCaption);
+    setEditingQuestion(false);
+  };
 
   const buyYes = voteCounts[post.id]?.buy_yes ?? 0;
   const buyNo = voteCounts[post.id]?.buy_no ?? 0;
@@ -318,13 +350,13 @@ export const PostDetailSheet = ({
               {editingQuestion ? (
                 <>
                   <input type="text" value={questionText} onChange={(e) => setQuestionText(e.target.value)} placeholder="Add Caption / Comment…" className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" autoFocus maxLength={300} onKeyDown={(e) => { if (e.key === 'Enter') handleSaveQuestion(); }} />
-                  <button onClick={handleSaveQuestion} className="h-8 px-3 rounded-lg bg-primary text-primary-foreground text-[11px] font-bold active:scale-95 transition-transform">
-                    Post
+                  <button onClick={handleSaveQuestion} disabled={savingCaption} className="h-8 px-3 rounded-lg bg-primary text-primary-foreground text-[11px] font-bold active:scale-95 transition-transform disabled:opacity-60 disabled:cursor-not-allowed">
+                    {savingCaption ? 'Saving…' : 'Post'}
                   </button>
                 </>
-              ) : questionText ? (
+              ) : displayQuestion ? (
                 <button onClick={handleStartEditQuestion} className="flex-1 text-left">
-                  <p className="text-white font-bold text-sm leading-snug">{questionText}</p>
+                  <p className="text-white font-bold text-sm leading-snug">{displayQuestion}</p>
                 </button>
               ) : (
                 <button onClick={() => { setQuestionText(''); setEditingQuestion(true); }} className="flex-1 h-10 rounded-lg bg-white/10 border border-white/20 px-3 flex items-center">

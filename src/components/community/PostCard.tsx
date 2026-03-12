@@ -34,6 +34,7 @@ interface PostCardProps {
   onDeletePost: (postId: string) => void;
   onImageError: (postId: string) => void;
   onOpenDetail: (post: Post) => void;
+  onCaptionUpdated?: (postId: string, caption: string | null) => void;
 }
 
 const isPlaceholder = (post: Post) => post.id.startsWith('seed-');
@@ -144,12 +145,41 @@ const TryOnClothingBadge = ({ post, navigate, toast }: { post: Post; navigate: R
 };
 const PostCard = ({
   post, index, filter, votes, voteCounts, followToggles, hasScan,
-  onVote, onFollowToggle, onDeletePost, onImageError, onOpenDetail,
+  onVote, onFollowToggle, onDeletePost, onImageError, onOpenDetail, onCaptionUpdated,
 }: PostCardProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [localCaption, setLocalCaption] = useState(post.caption ?? '');
+
+  useEffect(() => {
+    setLocalCaption(post.caption ?? '');
+  }, [post.id, post.caption]);
+
+  const normalizedCaption = localCaption.trim();
+  const hasPostedCaption = normalizedCaption.length > 0 && !GENERIC_PROMPTS.includes(normalizedCaption);
+
+  const saveCaption = async (value: string, input?: HTMLInputElement | null) => {
+    if (!user) return;
+    const nextCaption = value.trim();
+    const { error } = await supabase
+      .from('tryon_posts')
+      .update({ caption: nextCaption || null })
+      .eq('id', post.id)
+      .eq('user_id', user.id);
+
+    if (error) {
+      toast({ title: 'Could not save caption', variant: 'destructive' });
+      return;
+    }
+
+    setLocalCaption(nextCaption);
+    onCaptionUpdated?.(post.id, nextCaption || null);
+    toast({ title: 'Caption saved' });
+    if (input) input.value = '';
+  };
+
   const handleVoteWithCart = (postId: string, key: string) => {
     onVote(postId, key);
   };
@@ -233,8 +263,8 @@ const PostCard = ({
           </div>
         )}
       </button>
-      {post.caption && !GENERIC_PROMPTS.includes(post.caption) && (
-        <p className="text-[10px] font-bold text-foreground text-center px-2 py-1 line-clamp-2">{post.caption}</p>
+      {hasPostedCaption && (
+        <p className="text-[10px] font-bold text-foreground text-center px-2 py-1 line-clamp-2">{normalizedCaption}</p>
       )}
 
       {/* Mini comment — only for own posts */}
@@ -248,26 +278,17 @@ const PostCard = ({
               className="flex-1 h-6 rounded-md bg-muted/50 border border-border px-2 text-[11px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
               onKeyDown={async (e) => {
                 if (e.key === 'Enter' && (e.target as HTMLInputElement).value.trim()) {
-                  const val = (e.target as HTMLInputElement).value.trim();
-                  const { error } = await supabase.from('post_comments').insert({ post_id: post.id, user_id: user.id, comment_text: val });
-                  if (error) { toast({ title: 'Could not post comment', variant: 'destructive' }); return; }
-                  trackEvent('fitcheck_comment', { postId: post.id });
-                  toast({ title: 'Comment posted!' });
-                  (e.target as HTMLInputElement).value = '';
+                  await saveCaption((e.target as HTMLInputElement).value, e.target as HTMLInputElement);
                 }
               }}
             />
             <button
-              aria-label="Send comment"
+              aria-label="Save caption"
               className="shrink-0 h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center active:scale-90 transition-transform"
               onClick={async (e) => {
                 const input = (e.currentTarget.previousSibling as HTMLInputElement);
                 if (input?.value?.trim()) {
-                  const { error } = await supabase.from('post_comments').insert({ post_id: post.id, user_id: user.id, comment_text: input.value.trim() });
-                  if (error) { toast({ title: 'Could not post comment', variant: 'destructive' }); return; }
-                  trackEvent('fitcheck_comment', { postId: post.id });
-                  toast({ title: 'Comment posted!' });
-                  input.value = '';
+                  await saveCaption(input.value, input);
                 }
               }}
             >
