@@ -125,23 +125,25 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               <Trash2 className="h-4 w-4" />
             </button>
           )}
-          {/* Date badge */}
-          <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-sm rounded-full px-2.5 py-1">
-            <p className="text-[10px] text-white font-medium">{new Date(post.created_at).toLocaleDateString()}</p>
-          </div>
-          {/* Public badge */}
-          <div className="absolute bottom-3 right-3">
+          {/* Bottom-left: date + public badge */}
+          <div className="absolute bottom-3 left-3 flex items-center gap-1.5 z-10">
+            <div className="bg-black/50 backdrop-blur-sm rounded-full px-2.5 py-1">
+              <p className="text-[10px] text-white font-medium">{new Date(post.created_at).toLocaleDateString()}</p>
+            </div>
             <span className={`text-[11px] font-bold px-2 py-1 rounded-full backdrop-blur-sm ${post.is_public ? 'bg-primary/80 text-primary-foreground' : 'bg-black/50 text-white'}`}>
               {post.is_public ? 'Public' : 'Private'}
             </span>
           </div>
+          {/* Caption overlay — bottom center */}
+          {post.caption && (
+            <div className="absolute bottom-12 left-0 right-0 flex justify-center z-10 px-6">
+              <p className="text-[13px] text-white font-medium bg-black/50 backdrop-blur-sm rounded-xl px-3 py-1.5 text-center max-w-[80%]">{post.caption}</p>
+            </div>
+          )}
         </div>
 
         {/* Actions */}
         <div className="px-4 pt-4 pb-6 space-y-3">
-          {post.caption && (
-            <p className="text-[13px] text-foreground font-medium">{post.caption}</p>
-          )}
 
           <div className="grid grid-cols-2 gap-2">
             <Button
