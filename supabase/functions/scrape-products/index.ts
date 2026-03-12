@@ -28,6 +28,38 @@ interface ClassifiedProduct extends RawProduct {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// PRE-INSERT QUALITY GATE — reject listing pages before they enter the catalog
+// ─────────────────────────────────────────────────────────────────────────────
+
+const LISTING_PAGE_NAME_PATTERNS = [
+  /\bshop\s+(now|all|the|women|men|our)/i,
+  /\bpage\s*\d+\s*\|/i,
+  /\|\s*page\s*\d+/i,
+  /\bsale\s*[&:]\s*clearance/i,
+  /\bdesigner\s+(sale|finds|bags|shoes)/i,
+  /\bshop\s+on\s+(farfetch|ssense|nordstrom)/i,
+  /\bshop\s+now\s+(at|on)\b/i,
+  /\|\s*(farfetch|ssense|nordstrom|net-a-porter|asos|uniqlo|mango|zara|shopbop|mytheresa|end\.|mr\s*porter|revolve|saks|bloomingdale)/i,
+  /\bfor\s+(women|men)\s*[-|—]/i,
+  /\b(women's|men's)\s+designer\b/i,
+  /\b(women's|men's)\s+(sale|clothing|apparel)\b/i,
+  /\bbrowse\s+(all|our|the)\b/i,
+  /\bview\s+all\b/i,
+  /\beverything\s+you\s+need/i,
+  /\bnew\s+arrivals\s+(on|at)\b/i,
+  /\bquick\s+shipping\b/i,
+  /\bcare\s*(guide|&\s*repair|instruction)/i,
+  /\bcustomer\s+service\b/i,
+  /\bpre-owned\b.*\bfor\s+(women|men)\b/i,
+  /^(women's?|men's?)\s+(tops|bags|shoes|boots|sneakers|dresses|pants|jeans|jackets)\s*$/i,
+  /\b(perfume|cologne|fragrance|eau\s+de\s|edp\b|edt\b|candle|diffuser|incense|air\s*freshener|umbrella)\b/i,
+];
+
+function isListingPageName(name: string): boolean {
+  return LISTING_PAGE_NAME_PATTERNS.some(p => p.test(name));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // RETAILER CATEGORY URLs — with Firecrawl actions for JS-rendered pages
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -619,8 +651,8 @@ async function crawlBrandCategory(
       const markdown = page.markdown || '';
       const rawHtml = page.rawHtml || page.html || '';
 
-      // Skip non-product pages
-      if (/\/search|\/category|\/collection|\/shop\/?$/i.test(pageUrl)) continue;
+      // Skip non-product pages (expanded patterns)
+      if (/\/search|\/category|\/collection[s]?\/?$|\/shop\/?$|\/c\/[^\/]*$|\/cat\/?$|page=\d|\/sale\/?$|\/browse|\/all\/?$/i.test(pageUrl)) continue;
 
       // Extract price
       const priceMatch = markdown.match(/\$\s*([\d,]+(?:\.\d{2})?)/);
@@ -631,7 +663,8 @@ async function crawlBrandCategory(
         .replace(/\s*[-|]\s*(Zara|H&M|Nike|Adidas|Nordstrom|ASOS|Uniqlo|Gap|Lululemon|Puma|Converse|Vans).*$/i, '')
         .trim();
 
-      if (!productName || productName.length < 3) continue;
+      if (!productName || productName.length < 8) continue;
+      if (isListingPageName(productName)) continue;
 
       // Extract images from rawHtml
       const imageUrls = rawHtml ? extractImageUrlsFromHtml(rawHtml) : [];
@@ -837,6 +870,7 @@ async function scrapeUrlConfigs(
       for (let i = 0; i < products.length; i++) {
         const p = products[i];
         if (!p.name || !p.product_url) continue;
+        if (p.name.length < 8 || isListingPageName(p.name)) continue;
 
         let productImages = matchImagesToProduct(p.product_url, p.name, allImageUrls, brand);
         
@@ -1225,9 +1259,9 @@ function parseSearchResults(results: any[], brand: string, category: string): Ra
   for (const result of results) {
     if (!result.url) continue;
 
-    // Skip non-product pages
+    // Skip non-product pages (expanded URL patterns)
     const url = result.url.toLowerCase();
-    if (/\/search|\/category|\/collection|\/shop\/?$/i.test(url)) continue;
+    if (/\/search|\/category|\/collection[s]?\/?$|\/shop\/?$|\/c\/|\/cat\/?$|page=\d|\/sale\/?$|\/browse|\/all\/?$/i.test(url)) continue;
 
     // Extract product info from the search result
     const title = result.title || '';
@@ -1259,7 +1293,10 @@ function parseSearchResults(results: any[], brand: string, category: string): Ra
       .replace(/\s*Buy\s.*$/i, '')
       .trim();
 
-    if (!productName || productName.length < 3) continue;
+    if (!productName || productName.length < 8) continue;
+
+    // Skip listing/category page titles
+    if (isListingPageName(productName)) continue;
 
     // For luxury brands, require brand name in the product listing
     const brandLower = brand.toLowerCase();
