@@ -7,10 +7,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Loader2, Check, MessageSquare, Save, RotateCcw, ShoppingBag, Camera, ImageIcon, Bookmark, ChevronRight, ChevronDown } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
 import { FullscreenImage } from '@/components/ui/fullscreen-image';
-import WhatsInThisLook from '@/components/community/WhatsInThisLook';
+import WhatsInThisLook, { type LookItem as WhatsLookItem } from '@/components/community/WhatsInThisLook';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import { ACCESSORY_CATEGORIES, ALL_PRODUCT_CATEGORIES, getCaptionSuggestions, saveSharePreference, compressImage, imageUrlToBase64 } from './tryon-constants';
 import type { CatalogProduct } from '@/hooks/useProductCatalog';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 interface LookItem {
   brand: string;
@@ -66,6 +68,7 @@ const TryOnResultSection = ({
   onSetCaption, onSetIsPublic, onSetShowPostUI, onShare, onTryAnother,
   onSaveToItems, onAddAccessory, onSetLookItems, onToast,
 }: TryOnResultSectionProps) => {
+  const { user: authUser } = useAuth();
   const navigate = useNavigate();
   const [showAccessorySection, setShowAccessorySection] = useState(false);
   const [accessoryPhoto, setAccessoryPhoto] = useState<string | null>(null);
@@ -75,6 +78,43 @@ const TryOnResultSection = ({
   const accessoryPhotoRef = useRef<HTMLInputElement>(null);
   const accessoryCameraRef = useRef<HTMLInputElement>(null);
   const [accessoryStepIndex, setAccessoryStepIndex] = useState(0);
+
+  const handleAddToWardrobe = async (item: WhatsLookItem) => {
+    if (!authUser) {
+      onToast({ title: 'Sign in to save', description: 'Create a free account to build your wardrobe.', variant: 'destructive' });
+      navigate('/auth');
+      return;
+    }
+    try {
+      const imageUrl = item.image_url || clothingPhoto || '';
+      if (!imageUrl) { onToast({ title: 'No image available', variant: 'destructive' }); return; }
+      
+      // Upload base64 if needed
+      let finalUrl = imageUrl;
+      if (imageUrl.startsWith('data:')) {
+        const blob = await fetch(imageUrl).then(r => r.blob());
+        const ext = blob.type.includes('png') ? 'png' : 'jpg';
+        const path = `${authUser.id}/${Date.now()}.${ext}`;
+        const { error: upErr } = await supabase.storage.from('wardrobe').upload(path, blob, { contentType: blob.type });
+        if (upErr) throw upErr;
+        const { data: urlData } = supabase.storage.from('wardrobe').getPublicUrl(path);
+        finalUrl = urlData.publicUrl;
+      }
+
+      await supabase.from('clothing_wardrobe').insert({
+        user_id: authUser.id,
+        image_url: finalUrl,
+        category: category || 'clothing',
+        product_link: item.url || null,
+        brand: item.brand || null,
+        retailer: item.brand || null,
+      });
+      trackEvent('wardrobe_add_from_look', { brand: item.brand, source: 'tryon_look' });
+      onToast({ title: 'Added to Wardrobe!', description: `${item.name} saved.` });
+    } catch (err: unknown) {
+      onToast({ title: 'Save failed', description: (err as Error).message, variant: 'destructive' });
+    }
+  };
 
   useEffect(() => {
     if (!addingAccessory) { setAccessoryStepIndex(0); return; }
@@ -137,7 +177,7 @@ const TryOnResultSection = ({
         </FullscreenImage>
 
         {/* What's In This Look */}
-        <WhatsInThisLook items={displayItems} clothingPhotoUrl={clothingPhoto} defaultOpen={showLookItems} variant="detail" />
+        <WhatsInThisLook items={displayItems} clothingPhotoUrl={clothingPhoto} defaultOpen={showLookItems} variant="detail" onAddToWardrobe={handleAddToWardrobe} />
 
         {/* PRIMARY CTA: Save & Post */}
         {!shared && !showPostUI && (
