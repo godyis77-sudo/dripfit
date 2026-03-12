@@ -200,8 +200,7 @@ export const PostDetailSheet = ({
   });
   const retailers = [...retailerUrlMap.keys()];
 
-  const normalizedPostCaption = (post.caption || '').trim();
-  const userCaption = normalizedPostCaption && !GENERIC_PROMPTS_SET.has(normalizedPostCaption) ? normalizedPostCaption : '';
+  const userCaption = getPostedCaption(post.caption) ?? '';
   const displayQuestion = questionText || userCaption;
 
   const handleSendComment = () => {
