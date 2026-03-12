@@ -135,7 +135,7 @@ const TryOn = () => {
 
             {s.loading && (
               <div className="flex flex-col items-center mt-3 mb-1 gap-2">
-                <p className="text-[11px] text-muted-foreground font-medium">
+                <p className="text-[12px] text-foreground/60 font-medium">
                   {s.loadingStepIndex === 0 && 'Analysing your body scan…'}
                   {s.loadingStepIndex === 1 && 'Compositing the outfit…'}
                   {s.loadingStepIndex === 2 && 'Finalising your preview…'}
