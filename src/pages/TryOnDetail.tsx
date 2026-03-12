@@ -69,7 +69,7 @@ const TryOnDetail = () => {
         </div>
 
         <div className="rounded-xl overflow-hidden border border-border bg-card mb-3">
-          <img src={post.result_photo_url} alt={post.caption || 'Try-On'} className="w-full aspect-[3/4] object-cover" />
+          <img src={post.result_photo_url} alt={post.caption || 'Try-On'} className="w-full aspect-[3/4] object-contain bg-black" />
           <div className="p-3 space-y-2">
             {post.caption && <p className="text-[12px] text-foreground">{post.caption}</p>}
             <p className="text-[11px] text-muted-foreground">
