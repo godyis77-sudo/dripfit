@@ -207,13 +207,13 @@ const Premium = () => {
                   }`}
                 >
                   {p.badge && (
-                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full gradient-drip text-primary-foreground whitespace-nowrap">
+                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full gradient-drip text-primary-foreground whitespace-nowrap">
                       {p.badge}
                     </span>
                   )}
                   <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">{p.label}</p>
                   <p className="text-[20px] font-bold text-foreground mt-0.5">{p.price}<span className="text-[11px] text-muted-foreground font-normal">{p.period}</span></p>
-                  {p.total && <p className="text-[9px] text-muted-foreground">{p.total}</p>}
+                  {p.total && <p className="text-[11px] text-muted-foreground">{p.total}</p>}
                 </button>
               ))}
             </div>
@@ -243,7 +243,7 @@ const Premium = () => {
               {checkoutLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
               {checkoutLoading ? 'Opening checkout…' : 'Start 7-Day Free Trial'}
             </Button>
-            <p className="text-[9px] text-muted-foreground text-center mb-5">No charge until trial ends · Cancel anytime</p>
+            <p className="text-[11px] text-muted-foreground text-center mb-5">No charge until trial ends · Cancel anytime</p>
           </>
         )}
 
@@ -267,7 +267,7 @@ const Premium = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[11px] font-bold text-foreground leading-tight">{f.title}</p>
-                <p className="text-[9px] text-muted-foreground">{f.description}</p>
+                <p className="text-[11px] text-muted-foreground">{f.description}</p>
               </div>
               <span className="w-16 text-center text-[10px] text-muted-foreground shrink-0">{f.free}</span>
               <span className="w-16 text-center text-[10px] font-bold text-primary shrink-0">{f.premium}</span>
@@ -295,7 +295,7 @@ const Premium = () => {
                       <Star key={s} className="h-2.5 w-2.5 text-primary fill-primary" />
                     ))}
                   </div>
-                  <span className="text-[9px] font-bold text-primary">{t.attribution}</span>
+                  <span className="text-[11px] font-bold text-primary">{t.attribution}</span>
                 </div>
               </motion.div>
             ))}
@@ -307,7 +307,7 @@ const Premium = () => {
           <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1">
             <Shield className="h-3 w-3" /> Your core results stay free — always
           </p>
-          <p className="text-[9px] text-muted-foreground/50">
+          <p className="text-[11px] text-muted-foreground/50">
             Premium adds confidence, not paywalls. Terms apply.
           </p>
         </div>

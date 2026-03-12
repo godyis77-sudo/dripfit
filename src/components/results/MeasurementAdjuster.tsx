@@ -27,7 +27,7 @@ const MeasurementAdjuster = ({ measurements, onAdjust }: MeasurementAdjusterProp
       >
         <SlidersHorizontal className="h-3.5 w-3.5 text-primary" />
         <span className="text-[11px] font-bold text-foreground">Adjust Measurements</span>
-        <span className="text-[9px] text-muted-foreground ml-auto">Fine-tune for accuracy</span>
+        <span className="text-[11px] text-muted-foreground ml-auto">Fine-tune for accuracy</span>
       </button>
 
       {expanded && (
@@ -39,7 +39,7 @@ const MeasurementAdjuster = ({ measurements, onAdjust }: MeasurementAdjusterProp
           <div className="bg-card border border-border border-t-0 rounded-b-lg px-3 py-3 space-y-4">
             <div className="flex items-start gap-1.5 mb-1">
               <Info className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" />
-              <p className="text-[9px] text-muted-foreground leading-relaxed">
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
                 Drag sliders to fine-tune. Size recommendation updates in real time.
               </p>
             </div>
@@ -72,8 +72,8 @@ const MeasurementAdjuster = ({ measurements, onAdjust }: MeasurementAdjusterProp
                     className="w-full"
                   />
                   <div className="flex justify-between mt-0.5">
-                    <span className="text-[8px] text-muted-foreground/50">{sliderMin}</span>
-                    <span className="text-[8px] text-muted-foreground/50">{sliderMax}</span>
+                    <span className="text-[10px] text-muted-foreground/50">{sliderMin}</span>
+                    <span className="text-[10px] text-muted-foreground/50">{sliderMax}</span>
                   </div>
                 </div>
               );

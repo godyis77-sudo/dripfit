@@ -98,7 +98,7 @@ const Cart = () => {
                       {item.caption && (
                         <p className="text-[11px] font-semibold text-foreground line-clamp-2 leading-snug">{item.caption}</p>
                       )}
-                      <p className="text-[9px] text-muted-foreground mt-0.5">
+                      <p className="text-[11px] text-muted-foreground mt-0.5">
                         Added {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </p>
                     </div>
@@ -107,7 +107,7 @@ const Cart = () => {
                       {item.product_urls && item.product_urls.length > 0 && (
                         <Button
                           size="sm"
-                          className="h-7 rounded-lg btn-luxury text-primary-foreground text-[9px] font-bold flex-1"
+                          className="h-7 rounded-lg btn-luxury text-primary-foreground text-[11px] font-bold flex-1"
                           onClick={() => handleShop(item.product_urls![0])}
                         >
                           Shop <ExternalLink className="ml-1 h-2.5 w-2.5" />
@@ -116,7 +116,7 @@ const Cart = () => {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="h-7 rounded-lg text-[9px] font-bold"
+                        className="h-7 rounded-lg text-[11px] font-bold"
                         onClick={() => navigate('/tryon', { state: { productUrl: item.product_urls?.[0] } })}
                       >
                         <Sparkles className="mr-1 h-2.5 w-2.5" /> Try On
@@ -136,7 +136,7 @@ const Cart = () => {
               ))}
 
 
-            <p className="text-[9px] text-muted-foreground/60 text-center mt-3">
+            <p className="text-[11px] text-muted-foreground/60 text-center mt-3">
               We may earn a commission. It doesn't change your price.
             </p>
           </div>

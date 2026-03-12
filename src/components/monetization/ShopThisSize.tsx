@@ -116,7 +116,7 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
             <span className="text-[10px] px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-primary font-bold flex items-center gap-1">
               <Store className="h-3 w-3" /> Matched: {matchedRetailer}
             </span>
-            <span className="text-[9px] text-muted-foreground">We'll recommend the best size for this item.</span>
+            <span className="text-[11px] text-muted-foreground">We'll recommend the best size for this item.</span>
           </div>
         )}
       </div>
@@ -190,7 +190,7 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
       )}
 
       {/* Commission disclosure */}
-      <p className="text-[9px] text-muted-foreground/60 text-center">
+      <p className="text-[11px] text-muted-foreground/60 text-center">
         We may earn a commission. It doesn't change your price.
       </p>
     </div>

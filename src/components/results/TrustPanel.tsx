@@ -61,7 +61,7 @@ const TrustPanel = ({ confidence, recommendedSize, measurements, onAdjust, retai
         </div>
         <div className="flex-1 text-left min-w-0">
           <p className="text-[11px] font-bold text-foreground">Why this size?</p>
-          <p className="text-[9px] text-muted-foreground truncate">{BETWEEN_SIZES[confidence]}</p>
+          <p className="text-[11px] text-muted-foreground truncate">{BETWEEN_SIZES[confidence]}</p>
         </div>
         {expanded ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground shrink-0" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />}
       </button>
@@ -91,14 +91,14 @@ const TrustPanel = ({ confidence, recommendedSize, measurements, onAdjust, retai
                 <p className="text-[10px] font-bold text-foreground mb-0.5 flex items-center gap-1">
                   <Ruler className="h-3 w-3 text-primary" /> Between sizes?
                 </p>
-                <p className="text-[9px] text-muted-foreground leading-relaxed">{BETWEEN_SIZES[confidence]}</p>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">{BETWEEN_SIZES[confidence]}</p>
               </div>
 
               {/* Brand sizing note */}
               {brandNote && (
                 <div className="bg-accent/5 border border-accent/10 rounded-lg px-2.5 py-2">
                   <p className="text-[10px] font-bold text-foreground mb-0.5">{retailer} sizing note</p>
-                  <p className="text-[9px] text-muted-foreground">{brandNote}</p>
+                  <p className="text-[11px] text-muted-foreground">{brandNote}</p>
                 </div>
               )}
 
@@ -109,7 +109,7 @@ const TrustPanel = ({ confidence, recommendedSize, measurements, onAdjust, retai
               >
                 <SlidersHorizontal className="h-3.5 w-3.5 text-primary" />
                 <span className="text-[10px] font-bold text-foreground">Quick adjust measurements</span>
-                <span className="text-[8px] text-muted-foreground ml-auto">Updates size in real time</span>
+                <span className="text-[10px] text-muted-foreground ml-auto">Updates size in real time</span>
               </button>
 
               <AnimatePresence>
@@ -131,7 +131,7 @@ const TrustPanel = ({ confidence, recommendedSize, measurements, onAdjust, retai
                       return (
                         <div key={key}>
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">{label}</span>
+                            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">{label}</span>
                             <span className="text-[10px] font-bold text-foreground">{range.min.toFixed(0)}–{range.max.toFixed(0)} cm</span>
                           </div>
                           <Slider

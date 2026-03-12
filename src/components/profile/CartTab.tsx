@@ -191,7 +191,7 @@ const CartTab = () => {
                     </>
                   );
                 })()}
-                <p className="text-[9px] text-muted-foreground mt-0.5">
+                <p className="text-[11px] text-muted-foreground mt-0.5">
                   Added {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </p>
               </div>
@@ -256,7 +256,7 @@ const CartTab = () => {
         </div>
       ))}
 
-      <p className="text-[9px] text-muted-foreground/60 text-center mt-3">
+      <p className="text-[11px] text-muted-foreground/60 text-center mt-3">
         We may earn a commission. It doesn't change your price.
       </p>
 

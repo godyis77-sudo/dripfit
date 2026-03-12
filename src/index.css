@@ -457,7 +457,7 @@
   /* ── Brand / retailer label — gold 3D shimmer ── */
   .brand-label {
     @apply inline-flex items-center gap-1 font-bold uppercase tracking-wider rounded-md;
-    font-size: 8px;
+    font-size: 10px;
     padding: 3px 6px;
     background: linear-gradient(180deg, hsl(40 78% 54%), hsl(42 76% 42%));
     color: hsl(0 0% 2%);

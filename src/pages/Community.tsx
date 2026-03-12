@@ -148,7 +148,7 @@ const Community = () => {
             >
               <ShoppingCart className="h-4 w-4" />
               {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 h-4 min-w-[16px] px-1 rounded-full bg-primary text-primary-foreground text-[8px] font-bold flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 h-4 min-w-[16px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
@@ -178,7 +178,7 @@ const Community = () => {
             >
               {f.label}
               {f.key === 'similar' && (
-                <button onClick={(e) => { e.stopPropagation(); setSimilarFitTooltip(!similarFitTooltip); }} aria-label="What is Similar Fit?" className="text-[9px] text-muted-foreground/60 ml-0.5">ⓘ</button>
+                <button onClick={(e) => { e.stopPropagation(); setSimilarFitTooltip(!similarFitTooltip); }} aria-label="What is Similar Fit?" className="text-[11px] text-muted-foreground/60 ml-0.5">ⓘ</button>
               )}
               {filter === f.key && <motion.div layoutId="fitcheck-tab" className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full" />}
             </button>

@@ -131,7 +131,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
           </div>
           {/* Public badge */}
           <div className="absolute bottom-3 right-3">
-            <span className={`text-[9px] font-bold px-2 py-1 rounded-full backdrop-blur-sm ${post.is_public ? 'bg-primary/80 text-primary-foreground' : 'bg-black/50 text-white'}`}>
+            <span className={`text-[11px] font-bold px-2 py-1 rounded-full backdrop-blur-sm ${post.is_public ? 'bg-primary/80 text-primary-foreground' : 'bg-black/50 text-white'}`}>
               {post.is_public ? 'Public' : 'Private'}
             </span>
           </div>

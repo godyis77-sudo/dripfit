@@ -90,13 +90,13 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               >
                 <div style={{ textAlign: overlay.side === 'left' ? 'left' : 'right' }}>
                   <p
-                    className="text-[9px] font-black leading-tight"
+                    className="text-[11px] font-black leading-tight"
                     style={{ color: '#000' }}
                   >
                     {val.line1}
                   </p>
                   <p
-                    className="text-[9px] font-black leading-tight"
+                    className="text-[11px] font-black leading-tight"
                     style={{ color: '#000' }}
                   >
                     {val.line2}

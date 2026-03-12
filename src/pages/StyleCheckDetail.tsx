@@ -77,7 +77,7 @@ const StyleCheckDetail = () => {
               {post.profile?.display_name || 'Anonymous'}
             </p>
             {post.caption && <p className="text-[12px] text-muted-foreground mt-1">{post.caption}</p>}
-            <p className="text-[9px] text-muted-foreground mt-1">
+            <p className="text-[11px] text-muted-foreground mt-1">
               {new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </p>
             <Button

@@ -98,22 +98,22 @@ const BodyTab = ({ savedProfile, fit, scanConfidence }: BodyTabProps) => {
         </div>
         <div className="grid grid-cols-4 gap-1.5">
           <div className="bg-background rounded-lg py-1.5 text-center cursor-default">
-            <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Fit</p>
+            <p className="text-[11px] text-muted-foreground uppercase tracking-wider">Fit</p>
             <p className="text-[12px] font-bold text-foreground capitalize">{fit}</p>
           </div>
           <div className="bg-background rounded-lg py-1.5 text-center cursor-default">
-            <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Size</p>
+            <p className="text-[11px] text-muted-foreground uppercase tracking-wider">Size</p>
             <p className="text-[12px] font-bold text-foreground">{savedProfile.recommendedSize}</p>
           </div>
           <div className="bg-background rounded-lg py-1.5 text-center cursor-default">
-            <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Height</p>
+            <p className="text-[11px] text-muted-foreground uppercase tracking-wider">Height</p>
             <p className="text-[12px] font-bold text-foreground">{savedProfile.heightCm}cm</p>
           </div>
           <button
             onClick={() => setShowConfidence(true)}
             className="bg-background rounded-lg py-1.5 text-center active:scale-95 transition-transform cursor-pointer"
           >
-            <p className="text-[9px] text-muted-foreground uppercase tracking-wider flex items-center justify-center gap-0.5">
+            <p className="text-[11px] text-muted-foreground uppercase tracking-wider flex items-center justify-center gap-0.5">
               Confidence
               <Info className="h-2.5 w-2.5 text-primary opacity-80" />
             </p>
@@ -123,11 +123,11 @@ const BodyTab = ({ savedProfile, fit, scanConfidence }: BodyTabProps) => {
                 style={{ backgroundColor: tier.color }}
               />
               <span className="text-[12px] font-bold text-foreground">{pct}%</span>
-              <span className="text-[9px] text-muted-foreground">{tier.label}</span>
+              <span className="text-[11px] text-muted-foreground">{tier.label}</span>
             </div>
           </button>
         </div>
-        <p className="text-[9px] text-muted-foreground mt-2">Last scan: {new Date(savedProfile.date).toLocaleDateString()}</p>
+        <p className="text-[11px] text-muted-foreground mt-2">Last scan: {new Date(savedProfile.date).toLocaleDateString()}</p>
       </div>
 
       <Button variant="outline" className="w-full rounded-lg text-[11px] h-9 mb-2" onClick={() => navigate('/capture')}>

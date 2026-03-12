@@ -458,7 +458,7 @@ const Onboarding = () => {
                   ].map(s => (
                     <div key={s.label} className="text-center">
                       <p className="font-display text-base font-bold gradient-drip-text">{s.val}</p>
-                      <p className="text-[9px] text-muted-foreground">{s.label}</p>
+                      <p className="text-[11px] text-muted-foreground">{s.label}</p>
                     </div>
                   ))}
                 </div>
@@ -472,12 +472,12 @@ const Onboarding = () => {
                     <Shield className="h-3.5 w-3.5 text-primary shrink-0" />
                     <p className="text-[10px] text-foreground font-medium">Photos processed privately — never stored without your consent.</p>
                   </div>
-                  <p className="text-[9px] text-muted-foreground pl-5.5">Delete anytime from Settings.</p>
+                  <p className="text-[11px] text-muted-foreground pl-5.5">Delete anytime from Settings.</p>
                 </div>
 
                 {/* WORTH IT */}
                 <div className="w-full bg-card border border-border rounded-xl p-2.5 mb-3">
-                  <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">What you'll get</p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">What you'll get</p>
                   <div className="grid grid-cols-4 gap-1.5">
                     {[
                       { label: 'Chest', val: '96cm' },
@@ -486,7 +486,7 @@ const Onboarding = () => {
                       { label: 'Size', val: 'M' },
                     ].map(m => (
                       <div key={m.label} className="bg-background rounded-lg py-1 text-center">
-                        <p className="text-[8px] text-muted-foreground uppercase">{m.label}</p>
+                        <p className="text-[10px] text-muted-foreground uppercase">{m.label}</p>
                         <p className="text-[11px] font-bold text-foreground">{m.val}</p>
                       </div>
                     ))}

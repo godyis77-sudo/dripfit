@@ -89,8 +89,8 @@ const TryOnUploadSection = ({
                 <div className="aspect-[3/4]"><img src={userPhoto} alt="You" className="w-full h-full object-cover" /></div>
               </button>
               <div className="flex items-center justify-center gap-2 mt-1">
-                <p className="text-[9px] text-primary font-medium flex items-center gap-0.5"><Check className="h-2.5 w-2.5" /> Ready</p>
-                <button onClick={(e) => { e.stopPropagation(); userPhotoRef.current?.click(); }} className="text-[9px] text-muted-foreground hover:text-foreground transition-colors underline">Change</button>
+                <p className="text-[11px] text-primary font-medium flex items-center gap-0.5"><Check className="h-2.5 w-2.5" /> Ready</p>
+                <button onClick={(e) => { e.stopPropagation(); userPhotoRef.current?.click(); }} className="text-[11px] text-muted-foreground hover:text-foreground transition-colors underline">Change</button>
               </div>
             </div>
           ) : (
@@ -99,7 +99,7 @@ const TryOnUploadSection = ({
                 <div className="h-10 w-10 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
                   <User className="h-5 w-5 text-muted-foreground" />
                 </div>
-                <p className="text-[9px] text-muted-foreground text-center">Full body · front facing · well lit</p>
+                <p className="text-[11px] text-muted-foreground text-center">Full body · front facing · well lit</p>
                 <div className="flex gap-1.5 w-full">
                   <button onClick={() => {
                     if (isNativePlatform()) handleNativeCapture(onUserPhotoChange, 'photo', 'camera');
@@ -128,13 +128,13 @@ const TryOnUploadSection = ({
                 <div className="aspect-[3/4]"><img src={clothingPhoto} alt="Clothing" className="w-full h-full object-cover" /></div>
               </button>
               <div className="flex items-center justify-center gap-2 mt-1 flex-wrap">
-                <p className="text-[9px] text-primary font-medium flex items-center gap-0.5"><Check className="h-2.5 w-2.5" /> Ready</p>
+                <p className="text-[11px] text-primary font-medium flex items-center gap-0.5"><Check className="h-2.5 w-2.5" /> Ready</p>
                 {onBrowseProducts && (
-                  <button onClick={(e) => { e.stopPropagation(); onBrowseProducts(); }} className="text-[9px] text-primary hover:text-primary/80 transition-colors underline font-medium">Browse</button>
+                  <button onClick={(e) => { e.stopPropagation(); onBrowseProducts(); }} className="text-[11px] text-primary hover:text-primary/80 transition-colors underline font-medium">Browse</button>
                 )}
-                <button onClick={(e) => { e.stopPropagation(); clothingPhotoRef.current?.click(); }} className="text-[9px] text-muted-foreground hover:text-foreground transition-colors underline">Gallery</button>
+                <button onClick={(e) => { e.stopPropagation(); clothingPhotoRef.current?.click(); }} className="text-[11px] text-muted-foreground hover:text-foreground transition-colors underline">Gallery</button>
                 {onRemoveClothing && (
-                  <button onClick={(e) => { e.stopPropagation(); onRemoveClothing(); }} className="text-[9px] text-destructive hover:text-destructive/80 transition-colors underline">Remove</button>
+                  <button onClick={(e) => { e.stopPropagation(); onRemoveClothing(); }} className="text-[11px] text-destructive hover:text-destructive/80 transition-colors underline">Remove</button>
                 )}
               </div>
             </div>
@@ -144,7 +144,7 @@ const TryOnUploadSection = ({
                 <div className="h-10 w-10 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
                   <Shirt className="h-5 w-5 text-muted-foreground" />
                 </div>
-                <p className="text-[9px] text-muted-foreground text-center">Product photo · clean background</p>
+                <p className="text-[11px] text-muted-foreground text-center">Product photo · clean background</p>
                 <div className="flex gap-1.5 w-full">
                   <button onClick={() => {
                     if (isNativePlatform()) handleNativeCapture(onClothingPhotoChange, 'clothing', 'camera');
@@ -185,7 +185,7 @@ const TryOnUploadSection = ({
       <div className="mb-3">
         <div className="flex items-center gap-1.5 mb-1">
           <Link2 className="h-3 w-3 text-muted-foreground" />
-          <p className="text-[11px] text-muted-foreground">Paste product link <span className="text-[9px] text-muted-foreground/70">(optional)</span></p>
+          <p className="text-[11px] text-muted-foreground">Paste product link <span className="text-[11px] text-muted-foreground/70">(optional)</span></p>
         </div>
         <Input
           placeholder="https://zara.com/product/..."
@@ -204,7 +204,7 @@ const TryOnUploadSection = ({
               <span className="text-[10px] px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-primary font-bold flex items-center gap-1">
                 <Store className="h-3 w-3" /> Matched: {matched}
               </span>
-              <span className="text-[9px] text-muted-foreground">We'll recommend the best size.</span>
+              <span className="text-[11px] text-muted-foreground">We'll recommend the best size.</span>
             </div>
           ) : null;
         })()}

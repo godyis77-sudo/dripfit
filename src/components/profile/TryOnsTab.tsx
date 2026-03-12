@@ -167,7 +167,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
             }`}
           >
             <p className={`text-[16px] font-bold ${filterMode === s.key ? 'text-primary' : 'text-foreground'}`}>{s.value}</p>
-            <p className={`text-[9px] uppercase tracking-wider ${filterMode === s.key ? 'text-primary/70' : 'text-muted-foreground'}`}>{s.label}</p>
+            <p className={`text-[11px] uppercase tracking-wider ${filterMode === s.key ? 'text-primary/70' : 'text-muted-foreground'}`}>{s.label}</p>
           </button>
         ))}
       </div>
@@ -210,7 +210,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                     </div>
                     <div className="p-2 flex items-center justify-between">
                       <p className="text-[10px] text-muted-foreground">{new Date(post.created_at).toLocaleDateString()}</p>
-                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${post.is_public ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                      <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded ${post.is_public ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
                         {post.is_public ? 'Public' : 'Private'}
                       </span>
                     </div>
@@ -227,14 +227,14 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                             <button
                               key={v.key}
                               onClick={() => handleVote(post.id, v.key)}
-                              className={`flex-1 py-1.5 rounded-md text-[9px] font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${
+                              className={`flex-1 py-1.5 rounded-md text-[11px] font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${
                                 active
                                   ? 'border-primary bg-primary/10 text-primary'
                                   : 'border-border text-muted-foreground'
                               }`}
                             >
                               {v.emoji}
-                              <span className="text-[8px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
+                              <span className="text-[10px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
                             </button>
                           );
                         })}
@@ -244,7 +244,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                         <input
                           type="text"
                           placeholder="Say something…"
-                          className="flex-1 h-6 rounded-md bg-muted/50 border border-border px-2 text-[9px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
+                          className="flex-1 h-6 rounded-md bg-muted/50 border border-border px-2 text-[11px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' && (e.target as HTMLInputElement).value.trim()) {
                               handleComment(post.id, (e.target as HTMLInputElement).value.trim());

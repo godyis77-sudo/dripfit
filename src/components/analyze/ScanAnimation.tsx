@@ -99,7 +99,7 @@ const ScanAnimation = ({ revealedCount = 0 }: ScanAnimationProps) => {
                 transition={{ delay: 0.2, duration: 0.3 }}
               >
                 <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                <span className="text-[8px] font-mono font-bold tracking-[0.15em] text-primary">
+                <span className="text-[10px] font-mono font-bold tracking-[0.15em] text-primary">
                   {point.label}
                 </span>
               </motion.div>

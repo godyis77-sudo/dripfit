@@ -207,7 +207,7 @@ const PublicProfile = () => {
               ].map(s => (
                 <div key={s.label} className="bg-card border border-border rounded-lg py-2 text-center">
                   <p className="text-[14px] font-bold text-foreground">{s.value}</p>
-                  <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{s.label}</p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wider">{s.label}</p>
                 </div>
               ))}
             </div>

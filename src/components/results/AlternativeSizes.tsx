@@ -53,7 +53,7 @@ const AlternativeSizes = ({ sizeDown, sizeUp, best, fitPreference }: Alternative
               {isActive && <Check className="h-3 w-3 text-primary" />}
               <p className={`text-[15px] font-bold ${isActive ? 'text-primary' : 'text-foreground'}`}>{size}</p>
               <p className={`text-[10px] font-semibold ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>{opt.label}</p>
-              <p className="text-[9px] text-muted-foreground">{opt.desc}</p>
+              <p className="text-[11px] text-muted-foreground">{opt.desc}</p>
             </div>
           );
         })}

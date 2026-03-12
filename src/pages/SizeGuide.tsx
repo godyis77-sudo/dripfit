@@ -417,7 +417,7 @@ const SizeGuide = () => {
                               key={s.label}
                               className={`text-[11px] px-2 py-0.5 rounded-md border ${s.label === dbResult.recommended_size ? 'bg-primary/10 border-primary text-primary font-bold' : 'border-border text-muted-foreground'}`}
                             >
-                              {s.label} <span className="text-[9px]">{Math.round(s.score * 100)}%</span>
+                              {s.label} <span className="text-[11px]">{Math.round(s.score * 100)}%</span>
                             </span>
                           ))}
                         </div>

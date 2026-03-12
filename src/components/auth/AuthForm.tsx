@@ -208,7 +208,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
               {VALUE_PROPS.map(v => (
                 <div key={v.text} className="flex items-center gap-1">
                   <v.icon className="h-3 w-3 text-primary/70" />
-                  <span className="text-[9px] text-muted-foreground">{v.text}</span>
+                  <span className="text-[11px] text-muted-foreground">{v.text}</span>
                 </div>
               ))}
             </div>
@@ -273,7 +273,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
           </p>
 
           {/* Legal */}
-          <p className="text-[9px] text-muted-foreground/50 text-center">
+          <p className="text-[11px] text-muted-foreground/50 text-center">
             By continuing, you agree to our{' '}
             <button onClick={() => navigate('/terms')} className="underline hover:text-muted-foreground">Terms</button> &{' '}
             <button onClick={() => navigate('/privacy')} className="underline hover:text-muted-foreground">Privacy Policy</button>.

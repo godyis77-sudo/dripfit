@@ -216,8 +216,8 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                   <div className="flex items-center gap-2">
                     <Link2 className="h-3.5 w-3.5 text-muted-foreground" />
                     <span className="text-[11px] text-muted-foreground">
-                      Add product link <span className="text-[9px] text-muted-foreground/60">(optional)</span>
-                      {!linkExpanded && <span className="text-[9px] text-muted-foreground/60"> — earn commission on clicks</span>}
+                      Add product link <span className="text-[11px] text-muted-foreground/60">(optional)</span>
+                      {!linkExpanded && <span className="text-[11px] text-muted-foreground/60"> — earn commission on clicks</span>}
                     </span>
                   </div>
                   {linkExpanded ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
@@ -238,7 +238,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                         </span>
                       </div>
                     )}
-                    <p className="text-[9px] text-muted-foreground/60 leading-relaxed">
+                    <p className="text-[11px] text-muted-foreground/60 leading-relaxed">
                       We may earn a commission when your followers shop this look. It doesn't change their price.
                     </p>
                   </div>
@@ -254,7 +254,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                   <div className="flex items-center gap-2">
                     <Instagram className="h-3.5 w-3.5 text-muted-foreground" />
                     <span className="text-[11px] text-muted-foreground">
-                      Link Instagram post <span className="text-[9px] text-muted-foreground/60">(optional)</span>
+                      Link Instagram post <span className="text-[11px] text-muted-foreground/60">(optional)</span>
                     </span>
                   </div>
                   {igExpanded ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
@@ -267,7 +267,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                       onChange={e => setIgPostUrl(e.target.value)}
                       className="rounded-lg h-9 text-[12px]"
                     />
-                    <p className="text-[9px] text-muted-foreground/60 leading-relaxed">
+                    <p className="text-[11px] text-muted-foreground/60 leading-relaxed">
                       Cross-post your fit — link your IG post so the community can find you there too.
                     </p>
                   </div>
@@ -324,7 +324,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                 <div className="flex items-center gap-2 bg-primary/5 border border-primary/20 rounded-lg px-3 py-2">
                   <Link2 className="h-3.5 w-3.5 text-primary" />
                   <span className="text-[11px] font-medium text-primary">{detectedRetailer}</span>
-                  <span className="text-[9px] text-muted-foreground truncate flex-1">{productUrl}</span>
+                  <span className="text-[11px] text-muted-foreground truncate flex-1">{productUrl}</span>
                 </div>
               )}
 

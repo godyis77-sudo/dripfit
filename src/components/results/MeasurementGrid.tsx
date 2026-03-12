@@ -34,15 +34,15 @@ const MeasurementGrid = ({ measurements, heightCm, visibleKeys }: MeasurementGri
         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="grid grid-cols-2 gap-1.5">
           {keys.map((key, i) => (
             <motion.div key={key} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }} className="bg-card border border-border rounded-lg px-2.5 py-2">
-              <p className="text-[9px] font-semibold text-muted-foreground mb-0.5">{MEASUREMENT_LABELS[key] || key}</p>
-              <p className="text-[13px] font-bold text-foreground">{fmtCm(measurements[key])}<span className="text-[9px] font-normal text-muted-foreground ml-0.5">cm</span></p>
-              <p className="text-[11px] text-muted-foreground">{fmtIn(measurements[key])}<span className="text-[9px] ml-0.5">in</span></p>
+              <p className="text-[11px] font-semibold text-muted-foreground mb-0.5">{MEASUREMENT_LABELS[key] || key}</p>
+              <p className="text-[13px] font-bold text-foreground">{fmtCm(measurements[key])}<span className="text-[11px] font-normal text-muted-foreground ml-0.5">cm</span></p>
+              <p className="text-[11px] text-muted-foreground">{fmtIn(measurements[key])}<span className="text-[11px] ml-0.5">in</span></p>
             </motion.div>
           ))}
           <div className="bg-card border border-border rounded-lg px-2.5 py-2">
-            <p className="text-[9px] font-semibold text-muted-foreground mb-0.5">Height</p>
+            <p className="text-[11px] font-semibold text-muted-foreground mb-0.5">Height</p>
             <p className="text-[13px] font-bold text-foreground">{fmtHeightFtIn(heightCm)}</p>
-            <p className="text-[11px] text-muted-foreground">{heightCm.toFixed(0)}<span className="text-[9px] ml-0.5">cm</span></p>
+            <p className="text-[11px] text-muted-foreground">{heightCm.toFixed(0)}<span className="text-[11px] ml-0.5">cm</span></p>
           </div>
         </motion.div>
       )}

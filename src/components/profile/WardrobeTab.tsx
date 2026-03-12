@@ -93,17 +93,17 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                       const detected = item.product_link ? detectBrandFromUrl(item.product_link) : null;
                       const displayRetailer = detected?.retailer || item.retailer;
                       return displayRetailer ? (
-                        <p className="text-[9px] text-primary font-bold flex items-center gap-0.5">
+                        <p className="text-[11px] text-primary font-bold flex items-center gap-0.5">
                           <Store className="h-2.5 w-2.5" /> {displayRetailer}
                         </p>
                       ) : null;
                     })()}
                     <div className="flex items-center justify-between">
-                      <span className="text-[9px] text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</span>
+                      <span className="text-[11px] text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</span>
                       {item.product_link && (
                         <button
                           onClick={(e) => { e.stopPropagation(); window.open(item.product_link!, '_blank'); }}
-                          className="text-[9px] text-primary font-bold active:opacity-70"
+                          className="text-[11px] text-primary font-bold active:opacity-70"
                         >
                           View →
                         </button>
@@ -125,19 +125,19 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                     >
                       <button
                         onClick={() => { setLongPressId(null); navigate('/tryon'); }}
-                        className="flex-1 py-1.5 rounded-lg bg-background border border-border text-[9px] font-bold text-foreground active:scale-95 transition-transform"
+                        className="flex-1 py-1.5 rounded-lg bg-background border border-border text-[11px] font-bold text-foreground active:scale-95 transition-transform"
                       >
                         Try On
                       </button>
                       <button
                         onClick={() => { setLongPressId(null); }}
-                        className="flex-1 py-1.5 rounded-lg bg-background border border-border text-[9px] font-bold text-foreground active:scale-95 transition-transform"
+                        className="flex-1 py-1.5 rounded-lg bg-background border border-border text-[11px] font-bold text-foreground active:scale-95 transition-transform"
                       >
                         Wishlist
                       </button>
                       <button
                         onClick={() => { setLongPressId(null); onDeleteItem(item.id); }}
-                        className="flex-1 py-1.5 rounded-lg bg-background border border-destructive/30 text-[9px] font-bold text-destructive active:scale-95 transition-transform"
+                        className="flex-1 py-1.5 rounded-lg bg-background border border-destructive/30 text-[11px] font-bold text-destructive active:scale-95 transition-transform"
                       >
                         Remove
                       </button>

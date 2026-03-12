@@ -53,7 +53,7 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
                 <tab.icon className={cn('h-4 w-4 transition-all duration-300', isActive ? 'text-primary-foreground shimmer-icon' : '')} />
               </div>
               <span className={cn(
-                "text-[9px] font-semibold tracking-wider uppercase transition-all duration-300",
+                "text-[11px] font-semibold tracking-wider uppercase transition-all duration-300",
                 isActive ? 'text-primary' : ''
               )}>{tab.label}</span>
               {isActive && (

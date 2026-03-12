@@ -126,7 +126,7 @@ const CaptureHeightStep = ({
                     }`}
                   >
                     <p className="font-bold text-[10px] text-foreground">{val.label}</p>
-                    <p className="text-[9px] text-muted-foreground">{val.description}</p>
+                    <p className="text-[11px] text-muted-foreground">{val.description}</p>
                   </button>
                 ))}
             </div>

@@ -424,13 +424,13 @@ export const PostDetailSheet = ({
                           <img src={c.profile.avatar_url} alt="" className="h-6 w-6 rounded-full object-cover border border-white/10 shrink-0 mt-0.5" />
                         ) : (
                           <div className="h-6 w-6 rounded-full bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
-                            <span className="text-[9px] font-bold text-white/70">{(c.profile?.display_name || 'A')[0].toUpperCase()}</span>
+                            <span className="text-[11px] font-bold text-white/70">{(c.profile?.display_name || 'A')[0].toUpperCase()}</span>
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-baseline gap-1.5">
                             <span className="text-[11px] font-bold text-white/80">{c.profile?.display_name || 'Anonymous'}</span>
-                            <span className="text-[9px] text-white/30">{timeAgo(c.created_at)}</span>
+                            <span className="text-[11px] text-white/30">{timeAgo(c.created_at)}</span>
                           </div>
                           <p className="text-[12px] text-white/70 leading-snug break-words">{c.comment_text}</p>
                         </div>

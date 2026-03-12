@@ -128,13 +128,13 @@ const TryOnClothingBadge = ({ post, navigate, toast }: { post: Post; navigate: R
             handleSelectItem(items[0], e);
           }
         }}
-        className="flex items-center gap-0.5 rounded-[100px] text-[9px] font-bold active:scale-95 transition-transform gradient-drip text-primary-foreground px-2 py-0.5 shadow-gold-glow shimmer-sweep"
+        className="flex items-center gap-0.5 rounded-[100px] text-[11px] font-bold active:scale-95 transition-transform gradient-drip text-primary-foreground px-2 py-0.5 shadow-gold-glow shimmer-sweep"
       >
         <Sparkles className="h-2 w-2" />
         Try On
         {items.length > 1 && (
           <>
-            <span className="text-[9px] opacity-70">({items.length})</span>
+            <span className="text-[11px] opacity-70">({items.length})</span>
             <ChevronUp className={`h-2.5 w-2.5 transition-transform ${expanded ? '' : 'rotate-180'}`} />
           </>
         )}
@@ -173,7 +173,7 @@ const PostCard = ({
                   <span className="text-[7px] font-bold text-primary-foreground">{(post.profile?.display_name || 'A')[0].toUpperCase()}</span>
                 </div>
               )}
-              <p className="text-[9px] font-semibold text-foreground truncate">{post.profile?.display_name || 'Anon'}</p>
+              <p className="text-[11px] font-semibold text-foreground truncate">{post.profile?.display_name || 'Anon'}</p>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="min-w-[140px]">
@@ -232,7 +232,7 @@ const PostCard = ({
         )}
         {filter === 'similar' && (post as any).match_score && (
           <div
-            className="absolute top-2 right-2 text-[8px] font-bold rounded-full px-1.5 py-0.5 gradient-drip text-primary-foreground shadow-gold-glow"
+            className="absolute top-2 right-2 text-[10px] font-bold rounded-full px-1.5 py-0.5 gradient-drip text-primary-foreground shadow-gold-glow"
           >
             {(post as any).match_score}% match
           </div>
@@ -247,7 +247,7 @@ const PostCard = ({
               type="text"
               placeholder="Add caption…"
               maxLength={500}
-              className="flex-1 h-6 rounded-md bg-muted/50 border border-border px-2 text-[9px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
+              className="flex-1 h-6 rounded-md bg-muted/50 border border-border px-2 text-[11px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
               onKeyDown={async (e) => {
                 if (e.key === 'Enter' && (e.target as HTMLInputElement).value.trim()) {
                   const val = (e.target as HTMLInputElement).value.trim();
@@ -290,12 +290,12 @@ const PostCard = ({
                 whileTap={{ scale: 1.18 }}
                 transition={{ duration: 0.2 }}
                 onClick={() => handleVoteWithCart(post.id, v.key)}
-                className={`flex-1 py-1.5 rounded-md text-[9px] font-bold border transition-all flex flex-col items-center gap-0.5 ${
+                className={`flex-1 py-1.5 rounded-md text-[11px] font-bold border transition-all flex flex-col items-center gap-0.5 ${
                   active ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'
                 }`}
               >
                 {v.emoji}
-                <span className="text-[8px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
+                <span className="text-[10px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
               </motion.button>
             );
           })}
@@ -317,7 +317,7 @@ const PostCard = ({
             parts.push(`${addToCartCount} added to cart`);
           }
 
-          return <p className="text-[9px] font-bold text-primary mt-1 text-center">{parts.join(' · ')}</p>;
+          return <p className="text-[11px] font-bold text-primary mt-1 text-center">{parts.join(' · ')}</p>;
         })()}
       </div>
 

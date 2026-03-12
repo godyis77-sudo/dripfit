@@ -157,7 +157,7 @@ const TryOnResultSection = ({
                   {!caption && (
                     <div className="flex gap-1 mt-1.5 flex-wrap">
                       {getCaptionSuggestions(category).map(p => (
-                        <button key={p} onClick={() => onSetCaption(p)} className="text-[9px] px-2 py-1 rounded-md border border-border text-muted-foreground hover:border-primary/30 hover:text-foreground transition-colors">{p}</button>
+                        <button key={p} onClick={() => onSetCaption(p)} className="text-[11px] px-2 py-1 rounded-md border border-border text-muted-foreground hover:border-primary/30 hover:text-foreground transition-colors">{p}</button>
                       ))}
                     </div>
                   )}
@@ -165,7 +165,7 @@ const TryOnResultSection = ({
                 <div className="flex items-center justify-between bg-muted/20 rounded-lg p-2.5 border border-border">
                   <div>
                     <span className="text-[12px] font-semibold text-foreground">Post to Style Check</span>
-                    <p className="text-[9px] text-muted-foreground">{isPublic ? 'Visible to the community' : 'Private — only you can see'}</p>
+                    <p className="text-[11px] text-muted-foreground">{isPublic ? 'Visible to the community' : 'Private — only you can see'}</p>
                   </div>
                   <Switch checked={isPublic} onCheckedChange={(v) => { onSetIsPublic(v); saveSharePreference(v); }} />
                 </div>
@@ -232,7 +232,7 @@ const TryOnResultSection = ({
           <button onClick={() => setShowAccessorySection(!showAccessorySection)} className="w-full flex items-center justify-between bg-card border border-border rounded-xl px-3 py-2.5 active:scale-[0.98] transition-transform">
             <span className="text-[12px] font-bold text-foreground flex items-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5 text-primary" /> Add Accessory
-              {layerHistory.length > 0 && <span className="text-[9px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full ml-1">{layerHistory.length} layered</span>}
+              {layerHistory.length > 0 && <span className="text-[11px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full ml-1">{layerHistory.length} layered</span>}
             </span>
             {showAccessorySection ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
           </button>
@@ -262,9 +262,9 @@ const TryOnResultSection = ({
                       <div className="flex-1 space-y-1.5">
                         <p className="text-[10px] text-primary font-medium flex items-center gap-1"><Check className="h-3 w-3" /> {accessoryCategory || 'Accessory'} ready</p>
                         <div className="flex gap-1.5">
-                          <button onClick={() => { setAccessoryPhoto(null); setAccessoryCategory(null); }} className="text-[9px] text-primary underline font-medium">Browse</button>
-                          <button onClick={() => accessoryPhotoRef.current?.click()} className="text-[9px] text-muted-foreground underline">Gallery</button>
-                          <button onClick={() => { setAccessoryPhoto(null); setAccessoryCategory(null); }} className="text-[9px] text-destructive underline">Remove</button>
+                          <button onClick={() => { setAccessoryPhoto(null); setAccessoryCategory(null); }} className="text-[11px] text-primary underline font-medium">Browse</button>
+                          <button onClick={() => accessoryPhotoRef.current?.click()} className="text-[11px] text-muted-foreground underline">Gallery</button>
+                          <button onClick={() => { setAccessoryPhoto(null); setAccessoryCategory(null); }} className="text-[11px] text-destructive underline">Remove</button>
                         </div>
                       </div>
                     </div>
@@ -332,7 +332,7 @@ const TryOnResultSection = ({
           </AnimatePresence>
         </div>
 
-        <p className="text-[8px] text-muted-foreground/50 text-center mt-1">We may earn a commission. It doesn't change your price.</p>
+        <p className="text-[10px] text-muted-foreground/50 text-center mt-1">We may earn a commission. It doesn't change your price.</p>
       </motion.div>
     </>
   );

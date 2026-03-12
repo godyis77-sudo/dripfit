@@ -173,7 +173,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
 
                         {/* Info */}
                         <div className="flex-1 min-w-0">
-                          <span className="text-[9px] uppercase tracking-wider font-bold text-muted-foreground block">{item.brand}</span>
+                          <span className="text-[11px] uppercase tracking-wider font-bold text-muted-foreground block">{item.brand}</span>
                           <p className="text-[10px] text-foreground truncate leading-tight">{item.name}</p>
                         </div>
 
@@ -188,7 +188,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
                             <button
                               type="button"
                               onClick={() => onLookItemShop(item)}
-                              className="text-[9px] font-bold text-primary flex items-center gap-0.5 active:opacity-70"
+                              className="text-[11px] font-bold text-primary flex items-center gap-0.5 active:opacity-70"
                             >
                               Shop <ExternalLink className="h-2 w-2" />
                             </button>
@@ -197,7 +197,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
                             <button
                               type="button"
                               onClick={() => onLookItemTryOn(item)}
-                              className="text-[9px] font-bold text-primary flex items-center gap-0.5 active:opacity-70 ml-1"
+                              className="text-[11px] font-bold text-primary flex items-center gap-0.5 active:opacity-70 ml-1"
                             >
                               Try On
                             </button>

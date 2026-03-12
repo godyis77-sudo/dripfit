@@ -151,7 +151,7 @@ const Welcome = () => {
                 </div>
                 <div className="flex-1 text-left">
                   <p className="text-[13px] font-bold text-foreground flex items-center gap-2">
-                    <span className="text-[9px] text-primary/60 font-bold tabular-nums">{String(i + 1).padStart(2, '0')}</span> {p.label}
+                    <span className="text-[11px] text-primary/60 font-bold tabular-nums">{String(i + 1).padStart(2, '0')}</span> {p.label}
                   </p>
                   <p className="text-[11px] text-muted-foreground leading-snug mt-0.5">{p.desc}</p>
                 </div>
@@ -172,7 +172,7 @@ const Welcome = () => {
           <div className="glass-card rounded-2xl p-5 border-glow">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-[9px] text-muted-foreground/70 uppercase tracking-[0.2em]">Your best size</p>
+                <p className="text-[11px] text-muted-foreground/70 uppercase tracking-[0.2em]">Your best size</p>
                 <p className="font-display text-4xl font-bold gradient-drip-text leading-none mt-1">M</p>
               </div>
               <div className="flex items-center gap-1.5 bg-primary/10 border border-primary/20 rounded-xl px-3 py-2">
@@ -188,7 +188,7 @@ const Welcome = () => {
                 { label: 'Inseam', val: '78–80' },
               ].map((m) => (
                 <div key={m.label} className="bg-muted/40 rounded-xl px-2 py-2.5 text-center border border-border/30">
-                  <p className="text-[8px] text-muted-foreground/70 uppercase tracking-[0.15em]">{m.label}</p>
+                  <p className="text-[10px] text-muted-foreground/70 uppercase tracking-[0.15em]">{m.label}</p>
                   <p className="text-[11px] font-bold text-foreground mt-1 tabular-nums">{m.val}</p>
                 </div>
               ))}
@@ -237,7 +237,7 @@ const Welcome = () => {
             {SOCIAL_PROOF.map((s) => (
               <div key={s.label} className="text-center glass-card rounded-2xl py-5 px-2 glow-hover">
                 <p className="font-display text-[24px] font-bold gradient-drip-text leading-none">{s.stat}</p>
-                <p className="text-[9px] text-muted-foreground/60 mt-1.5 tracking-[0.15em] uppercase">{s.label}</p>
+                <p className="text-[11px] text-muted-foreground/60 mt-1.5 tracking-[0.15em] uppercase">{s.label}</p>
               </div>
             ))}
           </div>

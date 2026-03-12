@@ -125,7 +125,7 @@ const Browse = () => {
           >
             <SlidersHorizontal className="h-4 w-4 text-foreground" />
             {activeFilterCount > 0 && (
-              <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-primary-foreground text-[11px] font-bold flex items-center justify-center">
                 {activeFilterCount}
               </span>
             )}
@@ -311,7 +311,7 @@ const Browse = () => {
                   </div>
                 </div>
                 <div className="p-2.5">
-                  <p className="text-[9px] font-bold text-primary uppercase tracking-wider">{product.brand}</p>
+                  <p className="text-[11px] font-bold text-primary uppercase tracking-wider">{product.brand}</p>
                   <p className="text-[12px] font-semibold text-foreground line-clamp-2 leading-tight mt-0.5">{product.name}</p>
                   {product.price_cents && (
                     <p className="text-[12px] font-bold text-primary mt-1">

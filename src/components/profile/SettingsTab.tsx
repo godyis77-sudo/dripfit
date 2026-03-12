@@ -110,12 +110,12 @@ const SettingsTab = ({
               { label: 'Confidence', value: savedProfile.confidence, cls: 'capitalize' },
             ].map(d => (
               <div key={d.label} className="bg-background rounded-lg py-1.5 text-center">
-                <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{d.label}</p>
+                <p className="text-[11px] text-muted-foreground uppercase tracking-wider">{d.label}</p>
                 <p className={`text-[12px] font-bold text-foreground ${d.cls || ''}`}>{d.value}</p>
               </div>
             ))}
           </div>
-          <p className="text-[9px] text-muted-foreground mt-2">
+          <p className="text-[11px] text-muted-foreground mt-2">
             Last scan: {new Date(savedProfile.date).toLocaleDateString()}
           </p>
         </div>
@@ -146,7 +146,7 @@ const SettingsTab = ({
               <img src={avatarUrl} alt="Avatar" className="h-6 w-6 rounded-full object-cover" />
             ) : (
               <div className="h-6 w-6 rounded-full gradient-drip flex items-center justify-center">
-                <span className="text-[8px] font-bold text-primary-foreground">{displayName[0]?.toUpperCase() || 'U'}</span>
+                <span className="text-[10px] font-bold text-primary-foreground">{displayName[0]?.toUpperCase() || 'U'}</span>
               </div>
             )}
             <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
@@ -217,7 +217,7 @@ const SettingsTab = ({
               </button>
             ))}
           </div>
-          {!gender && <p className="text-[9px] text-muted-foreground mt-1">Not set</p>}
+          {!gender && <p className="text-[11px] text-muted-foreground mt-1">Not set</p>}
         </div>
         {/* Instagram handle */}
         {editingIg ? (
@@ -318,7 +318,7 @@ const SettingsTab = ({
               }`}
             >
               <span className="text-base">{r.flag}</span>
-              <span className="text-[9px] font-bold leading-tight">{r.label}</span>
+              <span className="text-[11px] font-bold leading-tight">{r.label}</span>
             </button>
           ))}
         </div>
@@ -351,7 +351,7 @@ const SettingsTab = ({
                   { l: 'Height', v: `${savedProfile.heightCm} cm` },
                 ].map(d => (
                   <div key={d.l} className="bg-background rounded-lg py-1.5 text-center">
-                    <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{d.l}</p>
+                    <p className="text-[11px] text-muted-foreground uppercase tracking-wider">{d.l}</p>
                     <p className="text-[12px] font-bold text-foreground capitalize">{d.v}</p>
                   </div>
                 ))}
