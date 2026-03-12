@@ -171,7 +171,7 @@ const Profile = () => {
                 )}
               </div>
               {isSubscribed ? (
-                <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-[hsl(42,80%,30%)] flex items-center justify-center border-2 border-background">
+                <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-primary/80 flex items-center justify-center border-2 border-background">
                   <Crown className="h-2.5 w-2.5 text-primary" />
                 </div>
               ) : (

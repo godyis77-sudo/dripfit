@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Sparkles, MessageSquare, Send, Trash2 } from 'lucide-react';
+import { Sparkles, MessageSquare, Trash2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -231,10 +231,9 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                         </div>
                       </button>
 
-                      {/* Community interactions for public posts */}
+                      {/* Vote counts for public posts */}
                       {post.is_public && (
                         <div className="px-1.5 pb-1.5">
-                          {/* Emoji votes */}
                           <div className="flex gap-1">
                             {VOTE_OPTIONS.map(v => {
                               const active = (votes[post.id] || []).includes(v.key);
@@ -253,32 +252,6 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                                 </button>
                               );
                             })}
-                          </div>
-                          {/* Chat input */}
-                          <div className="flex items-center gap-1 mt-1">
-                            <input
-                              type="text"
-                              placeholder={postedCaption ? 'Edit caption…' : 'Add caption…'}
-                              defaultValue={postedCaption || ''}
-                              className="flex-1 h-6 rounded-md bg-muted/50 border border-border px-2 text-[11px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' && (e.target as HTMLInputElement).value.trim()) {
-                                  handleUpdateCaption(post.id, (e.target as HTMLInputElement).value.trim());
-                                }
-                              }}
-                            />
-                            <button
-                              className="shrink-0 h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center active:scale-90 transition-transform"
-                              aria-label="Save caption"
-                              onClick={(e) => {
-                                const input = (e.currentTarget.previousSibling as HTMLInputElement);
-                                if (input?.value?.trim()) {
-                                  handleUpdateCaption(post.id, input.value.trim());
-                                }
-                              }}
-                            >
-                              <Send className="h-2.5 w-2.5 text-primary" />
-                            </button>
                           </div>
                         </div>
                       )}
@@ -306,7 +279,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
             <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px]" onClick={() => navigate('/tryon')}>
               <Sparkles className="mr-1 h-3 w-3" /> New Try-On
             </Button>
-            <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px]" onClick={() => navigate('/community')}>
+            <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px]" onClick={() => navigate('/style-check')}>
               <MessageSquare className="mr-1 h-3 w-3" /> Style Check Feed
             </Button>
           </div>

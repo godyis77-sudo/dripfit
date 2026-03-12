@@ -26,7 +26,7 @@ const TryOn = () => {
           </Button>
           <div className="flex-1">
             <h1 className="text-base font-bold text-foreground">Try-On</h1>
-            <p className="text-[12px] text-foreground/60">See how it looks before you buy</p>
+            <p className="text-[12px] text-muted-foreground">See how it looks before you buy</p>
           </div>
           {s.resultImage && (
             <Button variant="outline" size="sm" onClick={s.handleTryAnother} className="h-8 rounded-lg text-[11px] font-bold gap-1.5">
@@ -40,7 +40,7 @@ const TryOn = () => {
           <div className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-lg px-3 py-2 mb-3">
             <div>
               <p className="text-[12px] font-bold text-primary flex items-center gap-1"><Check className="h-3 w-3" /> Body Profile Active</p>
-              <p className="text-[11px] text-foreground/60">Your measurements improve try-on accuracy</p>
+              <p className="text-[11px] text-muted-foreground">Your measurements improve try-on accuracy</p>
             </div>
           </div>
         )}
@@ -135,10 +135,10 @@ const TryOn = () => {
 
             {s.loading && (
               <div className="flex flex-col items-center mt-3 mb-1 gap-2">
-                <p className="text-[12px] text-foreground/60 font-medium">
-                  {s.loadingStepIndex === 0 && 'Analysing your body scan…'}
+                <p className="text-[12px] text-muted-foreground font-medium">
+                  {s.loadingStepIndex === 0 && 'Analyzing your body scan…'}
                   {s.loadingStepIndex === 1 && 'Compositing the outfit…'}
-                  {s.loadingStepIndex === 2 && 'Finalising your preview…'}
+                  {s.loadingStepIndex === 2 && 'Finalizing your preview…'}
                 </p>
                 <div className="flex gap-1.5">
                   {[0, 1, 2].map(i => (
@@ -152,7 +152,7 @@ const TryOn = () => {
             )}
 
             {!s.canGenerate && !s.loading && (
-              <p className="text-[12px] text-foreground/50 text-center mt-1.5 mb-1">
+              <p className="text-[12px] text-muted-foreground text-center mt-1.5 mb-1">
                 {!s.userPhoto && !s.clothingPhoto ? 'Upload your photo and a clothing item to start' : !s.userPhoto ? 'Upload your photo to continue' : 'Upload a clothing item to continue'}
               </p>
             )}
@@ -163,8 +163,8 @@ const TryOn = () => {
             )}
 
             <div className="flex items-start gap-1.5 bg-card border border-border rounded-lg px-3 py-2 mt-2 mb-3">
-              <Info className="h-3.5 w-3.5 text-foreground/40 shrink-0 mt-0.5" />
-              <p className="text-[12px] text-foreground/50 leading-relaxed">AI preview — actual fit, drape, and texture may vary. Use your Scan profile for the most accurate sizing.</p>
+              <Info className="h-3.5 w-3.5 text-muted-foreground/60 shrink-0 mt-0.5" />
+              <p className="text-[12px] text-muted-foreground leading-relaxed">AI preview — actual fit, drape, and texture may vary. Use your Scan profile for the most accurate sizing.</p>
             </div>
 
             {/* Generate CTA — only show when user has at least one photo */}
@@ -184,9 +184,9 @@ const TryOn = () => {
                     </Button>
                     <div className="flex flex-col items-center mt-2 gap-1">
                       <p className="text-[11px] text-muted-foreground font-medium">
-                        {s.loadingStepIndex === 0 && 'Analysing your body scan…'}
+                        {s.loadingStepIndex === 0 && 'Analyzing your body scan…'}
                         {s.loadingStepIndex === 1 && 'Compositing the outfit…'}
-                        {s.loadingStepIndex === 2 && 'Finalising your preview…'}
+                        {s.loadingStepIndex === 2 && 'Finalizing your preview…'}
                       </p>
                       <div className="flex gap-1.5">
                         {[0, 1, 2].map(i => (
