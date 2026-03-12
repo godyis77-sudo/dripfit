@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Sparkles, Loader2, Check, Info, ShoppingBag, Store, Shield, X } from 'lucide-react';
