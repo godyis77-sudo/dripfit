@@ -311,15 +311,6 @@ export const PostDetailSheet = ({
                 ))}
               </div>
             )}
-            {!isOwnPost && zoom <= 1 && onTryOn && (
-              <button
-                onClick={() => onTryOn(post)}
-                className="absolute top-3 left-4 text-[11px] font-bold text-white rounded-[100px] flex items-center gap-1 active:scale-95 transition-transform"
-                style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.12)', padding: '4px 10px' }}
-              >
-                <Sparkles className="h-2.5 w-2.5" /> Try-On
-              </button>
-            )}
             </div>
           </motion.div>
 
