@@ -82,20 +82,43 @@ const StyleCheckDetail = () => {
             <p className="text-[11px] text-muted-foreground mt-1">
               {new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </p>
-            <Button
-              size="sm"
-              className="mt-2 rounded-lg btn-luxury text-primary-foreground text-[11px] h-8 px-4 font-bold"
-              onClick={() => {
-                const urls = post.product_urls as string[] | null;
-                navigateToTryOn(navigate, {
-                  productUrl: urls?.[0],
-                  fallbackClothingImageUrl: post.clothing_photo_url,
-                  source: 'style_check_detail_page',
-                });
-              }}
-            >
-              <Sparkles className="mr-1 h-3 w-3" /> Try-On This Look
-            </Button>
+            <div className="flex gap-2 mt-2">
+              <Button
+                size="sm"
+                className="rounded-lg btn-luxury text-primary-foreground text-[11px] h-8 px-4 font-bold"
+                onClick={() => {
+                  const urls = post.product_urls as string[] | null;
+                  navigateToTryOn(navigate, {
+                    productUrl: urls?.[0],
+                    fallbackClothingImageUrl: post.clothing_photo_url,
+                    source: 'style_check_detail_page',
+                  });
+                }}
+              >
+                <Sparkles className="mr-1 h-3 w-3" /> Try-On This Look
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className={`rounded-lg text-[11px] h-8 px-4 font-bold ${isInCart(post.id) ? 'border-primary/40 bg-primary/10' : ''}`}
+                onClick={() => {
+                  if (isInCart(post.id)) {
+                    removeFromCart(post.id);
+                  } else {
+                    addToCart({
+                      post_id: post.id,
+                      image_url: post.clothing_photo_url || post.result_photo_url,
+                      caption: post.caption,
+                      product_urls: post.product_urls || null,
+                      clothing_photo_url: post.clothing_photo_url || post.result_photo_url,
+                    });
+                  }
+                }}
+              >
+                <ShoppingCart className="mr-1 h-3 w-3" />
+                {isInCart(post.id) ? 'In Cart ✓' : 'Add to Cart'}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
