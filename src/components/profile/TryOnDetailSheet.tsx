@@ -119,12 +119,13 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
             alt={post.caption || 'Try-on result'}
             className="w-full h-full object-contain"
           />
+          {/* Caption — bottom left overlay on image */}
+          {postedCaption && (
+            <div className="absolute bottom-3 left-3 z-10">
+              <p className="text-[13px] text-white font-medium drop-shadow-sm">{postedCaption}</p>
+            </div>
+          )}
         </div>
-
-        {/* Caption below image */}
-        {postedCaption && (
-          <p className="px-4 pt-2 text-[13px] text-foreground font-medium text-left">{postedCaption}</p>
-        )}
 
         {/* Actions */}
         <div className="px-4 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom,1.5rem))] space-y-3 overflow-y-auto">
