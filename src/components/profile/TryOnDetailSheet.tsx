@@ -184,6 +184,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
             )}
 
             <Button
+              className="h-11 rounded-xl text-[12px] font-bold gap-1.5 btn-luxury text-primary-foreground col-span-2"
               onClick={() => {
                 onOpenChange(false);
                 navigate('/tryon', {
