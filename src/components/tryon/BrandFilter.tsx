@@ -124,7 +124,7 @@ const BrandFilter = ({ gender, selectedBrand, onBrandChange }: BrandFilterProps)
                 }}
                 onFocus={() => setShowDropdown(true)}
                 placeholder="Search brand name..."
-                className="h-9 text-[11px] pl-8 pr-3 rounded-lg"
+                className="h-9 text-[13px] pl-8 pr-3 rounded-lg"
               />
             </div>
             <button
