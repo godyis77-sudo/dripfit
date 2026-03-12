@@ -108,7 +108,11 @@ const BodyTab = ({ savedProfile, fit, scanConfidence }: BodyTabProps) => {
           </div>
           <div className="bg-background rounded-lg py-1.5 text-center cursor-default">
             <p className="text-[11px] text-muted-foreground uppercase tracking-wider">Height</p>
-            <p className="text-[12px] font-bold text-foreground">{`${Math.floor(Math.round(savedProfile.heightCm * 0.3937) / 12)}' ${Math.round(savedProfile.heightCm * 0.3937) % 12}"`}</p>
+            <p className="text-[12px] font-bold text-foreground">
+              {getUseCm()
+                ? `${savedProfile.heightCm}cm`
+                : `${Math.floor(Math.round(savedProfile.heightCm * 0.3937) / 12)}' ${Math.round(savedProfile.heightCm * 0.3937) % 12}"`}
+            </p>
           </div>
           <button
             onClick={() => setShowConfidence(true)}

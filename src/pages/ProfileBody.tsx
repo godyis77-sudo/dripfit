@@ -106,7 +106,7 @@ const ProfileBody = () => {
                 {[
                   { label: 'Fit', value: fit, cls: 'capitalize' },
                   { label: 'Size', value: scan.recommendedSize },
-                  { label: 'Height', value: `${Math.floor(Math.round(scan.heightCm * 0.3937) / 12)}' ${Math.round(scan.heightCm * 0.3937) % 12}"` },
+                  { label: 'Height', value: getUseCm() ? `${scan.heightCm}cm` : `${Math.floor(Math.round(scan.heightCm * 0.3937) / 12)}' ${Math.round(scan.heightCm * 0.3937) % 12}"` },
                   { label: 'Confidence', value: scan.confidence, cls: 'capitalize' },
                 ].map(d => (
                   <div key={d.label} className="bg-background rounded-lg py-1.5 text-center">
