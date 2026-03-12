@@ -41,7 +41,9 @@ export function useCart() {
   }, [storageKey]);
 
   const loadCart = useCallback(() => {
-    setItems(readCart());
+    const cartItems = readCart();
+    console.log('[cart] loadCart setting', cartItems.length, 'items');
+    setItems(cartItems);
     setLoading(false);
   }, [readCart]);
 
