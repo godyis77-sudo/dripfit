@@ -127,18 +127,18 @@ const WhatsInThisLook = ({
             handleToggle();
           }
         }}
-        className="w-full flex items-center justify-center gap-2 active:scale-[0.97] transition-transform btn-luxury text-primary-foreground shimmer-sweep h-11 rounded-xl"
+        className="w-full flex items-center justify-center gap-1 active:scale-[0.97] transition-transform btn-luxury text-primary-foreground shimmer-sweep h-10 rounded-xl px-2"
         style={{
           borderRadius: open ? '12px 12px 0 0' : '12px',
         }}
       >
-        <ShoppingCart className="h-3.5 w-3.5" />
-        <span className="text-[11px] font-bold uppercase tracking-normal text-primary-foreground">
+        <ShoppingCart className="h-3 w-3 shrink-0" />
+        <span className="text-[10px] font-bold uppercase whitespace-nowrap text-primary-foreground">
           {onAddToWardrobe ? 'Shop / +Wardrobe' : 'Shop / Try-On'}
         </span>
-        <ShoppingBag className="h-3.5 w-3.5" />
+        <ShoppingBag className="h-3 w-3 shrink-0" />
         <ChevronDown
-          className="h-4 w-4 text-primary-foreground transition-transform duration-200"
+          className="h-3 w-3 shrink-0 text-primary-foreground transition-transform duration-200"
           style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
         />
       </div>
