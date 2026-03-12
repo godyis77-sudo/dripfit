@@ -101,7 +101,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
       toast({ title: 'Post failed', description: error.message, variant: 'destructive' });
     } else {
       trackEvent('fitcheck_posted', { isPublic, hasProductUrl: !!productUrl });
-      toast({ title: isPublic ? 'Posted to Fit Check!' : 'Saved privately' });
+      toast({ title: isPublic ? 'Posted to Style Check!' : 'Saved privately' });
       onPosted();
       onOpenChange(false);
     }
