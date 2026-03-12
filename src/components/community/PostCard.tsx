@@ -278,26 +278,17 @@ const PostCard = ({
               className="flex-1 h-6 rounded-md bg-muted/50 border border-border px-2 text-[11px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
               onKeyDown={async (e) => {
                 if (e.key === 'Enter' && (e.target as HTMLInputElement).value.trim()) {
-                  const val = (e.target as HTMLInputElement).value.trim();
-                  const { error } = await supabase.from('post_comments').insert({ post_id: post.id, user_id: user.id, comment_text: val });
-                  if (error) { toast({ title: 'Could not post comment', variant: 'destructive' }); return; }
-                  trackEvent('fitcheck_comment', { postId: post.id });
-                  toast({ title: 'Comment posted!' });
-                  (e.target as HTMLInputElement).value = '';
+                  await saveCaption((e.target as HTMLInputElement).value, e.target as HTMLInputElement);
                 }
               }}
             />
             <button
-              aria-label="Send comment"
+              aria-label="Save caption"
               className="shrink-0 h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center active:scale-90 transition-transform"
               onClick={async (e) => {
                 const input = (e.currentTarget.previousSibling as HTMLInputElement);
                 if (input?.value?.trim()) {
-                  const { error } = await supabase.from('post_comments').insert({ post_id: post.id, user_id: user.id, comment_text: input.value.trim() });
-                  if (error) { toast({ title: 'Could not post comment', variant: 'destructive' }); return; }
-                  trackEvent('fitcheck_comment', { postId: post.id });
-                  toast({ title: 'Comment posted!' });
-                  input.value = '';
+                  await saveCaption(input.value, input);
                 }
               }}
             >
