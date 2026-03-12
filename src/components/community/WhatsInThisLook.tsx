@@ -127,14 +127,13 @@ const WhatsInThisLook = ({
             handleToggle();
           }
         }}
-        className="w-full flex items-center justify-center gap-2 active:scale-[0.98] transition-transform btn-luxury text-primary-foreground shimmer-sweep"
+        className="w-full flex items-center justify-center gap-2 active:scale-[0.97] transition-transform btn-luxury text-primary-foreground shimmer-sweep h-11 rounded-xl"
         style={{
           borderRadius: open ? '12px 12px 0 0' : '12px',
-          padding: isCompact ? '10px 12px' : '16px 20px',
         }}
       >
-        <ShoppingCart className={isCompact ? 'h-3.5 w-3.5' : 'h-4.5 w-4.5'} />
-        <span className={`${isCompact ? 'text-[11px]' : 'text-[15px]'} font-bold uppercase tracking-widest text-primary-foreground`}>
+        <ShoppingCart className="h-4 w-4" />
+        <span className="text-[13px] font-bold uppercase tracking-wide text-primary-foreground">
           {onAddToWardrobe ? 'Shop Style / Add to Wardrobe' : 'Shop Style / Try-On'}
         </span>
         <ChevronDown
