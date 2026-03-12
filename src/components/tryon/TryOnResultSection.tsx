@@ -227,26 +227,7 @@ const TryOnResultSection = ({
         )}
 
 
-        {/* Try Another | Shop */}
-        <div className="flex gap-2 mb-3">
-          <Button variant="outline" className="flex-1 h-9 rounded-xl text-[11px]" onClick={onTryAnother}>
-            <RotateCcw className="mr-1 h-3 w-3" /> Try Another
-          </Button>
-          <Button variant="outline" className="flex-1 h-9 rounded-xl text-[11px]" onClick={() => {
-            const totalItems = displayItems.length;
-            trackEvent('shop_clickout', { source: 'tryon', hasLink: !!productLink, itemCount: totalItems });
-            if (totalItems > 1) {
-              setShowShopPicker(true);
-            } else if (totalItems === 1 && displayItems[0].url) {
-              window.open(displayItems[0].url, '_blank', 'noopener');
-            } else {
-              window.open('https://www.google.com/search?tbm=shop&q=outfit', '_blank', 'noopener');
-            }
-          }}>
-            <ShoppingBag className="mr-1 h-3 w-3" />
-            {displayItems.length > 0 ? `Shop All Items (${displayItems.length})` : 'Find Similar Items'}
-          </Button>
-        </div>
+
 
         {/* Shop item picker */}
         <AnimatePresence>
