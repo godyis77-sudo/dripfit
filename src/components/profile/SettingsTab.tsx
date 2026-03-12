@@ -115,7 +115,7 @@ const SettingsTab = ({
               </div>
             ))}
           </div>
-          <p className="text-[9px] text-muted-foreground mt-2">
+          <p className="text-[11px] text-muted-foreground mt-2">
             Last scan: {new Date(savedProfile.date).toLocaleDateString()}
           </p>
         </div>

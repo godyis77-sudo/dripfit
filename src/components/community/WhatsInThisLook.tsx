@@ -220,7 +220,7 @@ const WhatsInThisLook = ({
                           e.stopPropagation();
                           onTryOn(item);
                         }}
-                        className={`${isCompact ? 'text-[9px]' : 'text-[11px]'} font-bold text-accent-foreground flex items-center gap-0.5 active:opacity-70 ml-1`}
+                        className={`${isCompact ? 'text-[11px]' : 'text-[11px]'} font-bold text-accent-foreground flex items-center gap-0.5 active:opacity-70 ml-1`}
                         style={{ color: 'hsl(var(--primary))' }}
                       >
                         Try On

@@ -204,7 +204,7 @@ const TryOnUploadSection = ({
               <span className="text-[10px] px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-primary font-bold flex items-center gap-1">
                 <Store className="h-3 w-3" /> Matched: {matched}
               </span>
-              <span className="text-[9px] text-muted-foreground">We'll recommend the best size.</span>
+              <span className="text-[11px] text-muted-foreground">We'll recommend the best size.</span>
             </div>
           ) : null;
         })()}
