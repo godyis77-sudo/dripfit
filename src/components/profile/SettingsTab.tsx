@@ -283,7 +283,7 @@ const SettingsTab = ({
           <span className="text-[12px] text-foreground font-medium">Default unit</span>
           <div className="flex items-center gap-1.5 text-[11px]">
             <span className={useCm ? 'text-primary font-bold' : 'text-muted-foreground'}>cm</span>
-            <Switch checked={!useCm} onCheckedChange={v => onUnitToggle(v)} className="scale-[0.75]" />
+            <Switch checked={!useCm} onCheckedChange={(checked) => onUnitToggle(checked)} className="scale-[0.75]" />
             <span className={!useCm ? 'text-primary font-bold' : 'text-muted-foreground'}>in</span>
           </div>
         </div>

@@ -139,7 +139,7 @@ const ProfileSettings = () => {
           instagramHandle={instagramHandle}
           onFavoriteRetailersChange={setFavoriteRetailers}
           onFitChange={handleFitChange}
-          onUnitToggle={(v) => { const newUseCm = !v; setUseCmState(newUseCm); persistUseCm(newUseCm); }}
+          onUnitToggle={(isInches) => { const newCm = !isInches; setUseCmState(newCm); persistUseCm(newCm); }}
           onExport={handleExport}
           onDeletePhotos={handleDeletePhotos}
           onDeleteAccount={handleDeleteAccount}
