@@ -44,6 +44,14 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'Loewe': 'Luxury',
   'Hugo Boss': 'Luxury',
   'Ralph Lauren': 'Luxury',
+  'Moncler': 'Luxury',
+  'Jacquemus': 'Luxury',
+  'Rick Owens': 'Luxury',
+  'Maison Margiela': 'Luxury',
+  'AMI Paris': 'Luxury',
+  'Cartier': 'Luxury',
+  'Stone Island': 'Luxury',
+  'Acne Studios': 'Luxury',
 
   // ── Streetwear ──────────────────────────────────────
   'Supreme': 'Streetwear',
@@ -51,11 +59,13 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'Stüssy': 'Streetwear',
   'A Bathing Ape': 'Streetwear',
   'Palace': 'Streetwear',
+  'Palace Skateboards': 'Streetwear',
   'Fear of God': 'Streetwear',
   'Kith': 'Streetwear',
   'Essentials': 'Streetwear',
   'Corteiz': 'Streetwear',
   'Trapstar': 'Streetwear',
+  'New Era': 'Streetwear',
 
   // ── Athletic ────────────────────────────────────────
   'Nike': 'Athletic',
@@ -69,6 +79,12 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'On Running': 'Athletic',
   'ASICS': 'Athletic',
   'Gore Wear': 'Athletic',
+  'HOKA': 'Athletic',
+  'Converse': 'Athletic',
+  'Fabletics': 'Athletic',
+  'Rhone': 'Athletic',
+  'Vuori': 'Athletic',
+  'Girlfriend Collective': 'Athletic',
 
   // ── Fast Fashion ────────────────────────────────────
   'SHEIN': 'Fast Fashion',
@@ -83,6 +99,12 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'Uniqlo': 'Fast Fashion',
   'True Classic': 'Fast Fashion',
   'Fresh Clean Tees': 'Fast Fashion',
+  'Fresh Clean Tees Canada': 'Fast Fashion',
+  'Fresh Clean Threads': 'Fast Fashion',
+  'American Eagle': 'Fast Fashion',
+  'COS': 'Fast Fashion',
+  'Calvin Klein': 'Fast Fashion',
+  'Tommy Hilfiger': 'Fast Fashion',
 
   // ── Contemporary ────────────────────────────────────
   'Gap': 'Contemporary',
@@ -90,12 +112,37 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'Banana Republic': 'Contemporary',
   'J.Crew': 'Contemporary',
   'Abercrombie & Fitch': 'Contemporary',
+  'Abercrombie': 'Contemporary',
   'Todd Snyder': 'Contemporary',
   'Grayers': 'Contemporary',
   'Public Rec': 'Contemporary',
+  'Public Rec 2.0': 'Contemporary',
   'Marine Layer': 'Contemporary',
   'Anthropologie': 'Contemporary',
   "Rothy's": 'Contemporary',
+  'AllSaints': 'Contemporary',
+  'Bonobos': 'Contemporary',
+  'Buck Mason': 'Contemporary',
+  'Charles Tyrwhitt': 'Contemporary',
+  'Eileen Fisher': 'Contemporary',
+  'Free People': 'Contemporary',
+  'Mizzen+Main': 'Contemporary',
+  'Reiss': 'Contemporary',
+  'Sandro': 'Contemporary',
+  'Theory': 'Contemporary',
+  'Ted Baker': 'Contemporary',
+  'Tory Burch': 'Contemporary',
+  'UNTUCKit': 'Contemporary',
+  'Coach': 'Contemporary',
+  'Kate Spade': 'Contemporary',
+  'Michael Kors': 'Contemporary',
+  'SuitSupply': 'Contemporary',
+  'Eloquii': 'Contemporary',
+  'Mejuri': 'Contemporary',
+  'Schott': 'Contemporary',
+  'SKIMS': 'Contemporary',
+  'Savage X Fenty': 'Contemporary',
+  "Victoria's Secret": 'Contemporary',
 
   // ── Outdoor & Active ────────────────────────────────
   'Patagonia': 'Outdoor & Active',
@@ -104,6 +151,10 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'Columbia': 'Outdoor & Active',
   'Hoka': 'Outdoor & Active',
   'Salomon': 'Outdoor & Active',
+  'Oakley': 'Outdoor & Active',
+  'Birkenstock': 'Outdoor & Active',
+  'Dr. Martens': 'Outdoor & Active',
+  'UGG': 'Outdoor & Active',
 
   // ── Workwear & Heritage ─────────────────────────────
   'Carhartt': 'Workwear & Heritage',
@@ -114,6 +165,8 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
 
   // ── Surf & Skate ────────────────────────────────────
   'Billabong': 'Surf & Skate',
+  'O5 Billabong': 'Surf & Skate',
+  'O5 BILLABONG': 'Surf & Skate',
   'RVCA': 'Surf & Skate',
   'Outerknown': 'Surf & Skate',
   'Vans': 'Surf & Skate',
@@ -135,6 +188,11 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'Target': 'Department Store',
   'Farfetch': 'Department Store',
   'Steve Madden': 'Department Store',
+  'Macys': 'Department Store',
+  'Saks': 'Department Store',
+  'SSENSE': 'Department Store',
+  'Net-a-Porter': 'Department Store',
+  'Ray-Ban': 'Department Store',
 };
 
 // Normalised lookup (case-insensitive)
