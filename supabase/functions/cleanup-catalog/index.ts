@@ -252,6 +252,7 @@ Deno.serve(async (req) => {
       categories_remapped: 0,
       genres_tagged: 0,
       already_clean: 0,
+      fit_fabric_tagged: 0,
       dry_run: dryRun,
       samples: [] as { id: string; name: string; action: string; detail: string }[],
     };
