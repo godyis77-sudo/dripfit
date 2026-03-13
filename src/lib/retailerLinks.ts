@@ -1,5 +1,6 @@
 import { getUserRegion, type UserRegion } from '@/lib/session';
 import { resolveClickoutByName } from '@/lib/affiliateRouter';
+import { trackEvent } from '@/lib/analytics';
 
 /** Region-specific domain overrides */
 const REGION_DOMAINS: Partial<Record<string, Partial<Record<UserRegion, string>>>> = {
@@ -62,6 +63,17 @@ export function buildRetailerSearchUrl(retailerName: string, baseUrl: string, qu
   };
   const rawUrl = searchPaths[retailerName]?.(q) || `${baseUrl.replace(/\/$/, '')}/?q=${q}`;
   const result = resolveClickoutByName(retailerName, rawUrl);
+
+  try {
+    trackEvent('shop_clickout', {
+      retailer: retailerName,
+      source: 'retailer_search',
+      monetization_mode: result.monetizationMode,
+      affiliate_provider: result.provider,
+      retailer_used: result.retailerUsed,
+    });
+  } catch { /* never break navigation */ }
+
   return result.finalUrl;
 }
 
