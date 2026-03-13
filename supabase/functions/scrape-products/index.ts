@@ -2427,8 +2427,18 @@ Deno.serve(async (req) => {
       await delay(jitterMs);
     }
 
-    // ── STAGES 1+2: Firecrawl scrape + rawHtml image extraction ──────
-    const rawProducts = await scrapeProducts(brand, category, FIRECRAWL_API_KEY);
+    // ── CHECK FIRECRAWL CREDITS ────────────────────────────────────
+    let useFirecrawl = true;
+    const credits = await checkFirecrawlCredits(FIRECRAWL_API_KEY);
+    if (credits !== null && credits <= 0) {
+      console.log(`[run:${runId}] Firecrawl credits exhausted (${credits}), using direct HTTP only`);
+      useFirecrawl = false;
+    } else {
+      console.log(`[run:${runId}] Firecrawl credits: ${credits ?? 'unknown'}`);
+    }
+
+    // ── STAGES 1+2: Direct HTTP + optional Firecrawl scraping ────────
+    const rawProducts = await scrapeProducts(brand, category, FIRECRAWL_API_KEY, useFirecrawl);
     results.extracted = rawProducts.length;
     results.scraped = rawProducts.length > 0 ? 1 : 0;
     results.withImages = rawProducts.filter(p => p.image_urls.length > 0).length;
