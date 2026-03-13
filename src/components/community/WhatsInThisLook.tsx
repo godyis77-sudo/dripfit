@@ -6,6 +6,7 @@ import ProductPreviewModal, { type ProductPreviewData } from '@/components/ui/Pr
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
+import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
 
 export interface LookItem {
   brand: string;
