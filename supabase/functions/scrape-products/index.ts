@@ -3348,6 +3348,20 @@ Deno.serve(async (req) => {
           body: JSON.stringify({ brand_slug: brandSlug, batch_size: 8 }),
         }).catch(e => console.warn(`[run:${runId}] Size chart trigger failed:`, e));
       }
+
+      // Fire-and-forget: audit product URLs for broken images
+      fetch(`${supabaseUrl}/functions/v1/audit-product-urls`, {
+        method: 'POST',
+        headers: qcHeaders,
+        body: JSON.stringify({ batch_size: 50, brand: brand || undefined }),
+      }).catch(e => console.warn(`[run:${runId}] Audit URLs trigger failed:`, e));
+
+      // Fire-and-forget: cleanup catalog (deactivate junk, normalize brands)
+      fetch(`${supabaseUrl}/functions/v1/cleanup-catalog`, {
+        method: 'POST',
+        headers: qcHeaders,
+        body: JSON.stringify({}),
+      }).catch(e => console.warn(`[run:${runId}] Cleanup catalog trigger failed:`, e));
     }
 
     console.log(`[run:${runId}] Done. Inserted ${results.inserted}`);
