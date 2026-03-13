@@ -354,6 +354,7 @@ export type Database = {
           retailer: string
           scrape_source: string | null
           scraped_at: string | null
+          style_genre: string | null
           tags: string[] | null
           updated_at: string
         }
@@ -374,6 +375,7 @@ export type Database = {
           retailer: string
           scrape_source?: string | null
           scraped_at?: string | null
+          style_genre?: string | null
           tags?: string[] | null
           updated_at?: string
         }
@@ -394,6 +396,7 @@ export type Database = {
           retailer?: string
           scrape_source?: string | null
           scraped_at?: string | null
+          style_genre?: string | null
           tags?: string[] | null
           updated_at?: string
         }
