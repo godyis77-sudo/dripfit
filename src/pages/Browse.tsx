@@ -11,6 +11,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { useAuth } from '@/hooks/useAuth';
 import BrandFilter from '@/components/tryon/BrandFilter';
 import ProductPreviewModal from '@/components/ui/ProductPreviewModal';
+import { BRAND_GENRES, type BrandGenre, getBrandGenre } from '@/lib/brandGenres';
 
 const CATEGORY_LABELS: Record<string, string> = {
   tops: 'Tops',
@@ -33,6 +34,7 @@ const SORT_OPTIONS = [
   { key: 'price_asc', label: 'Price: Low → High' },
   { key: 'price_desc', label: 'Price: High → Low' },
   { key: 'brand_az', label: 'Brand: A → Z' },
+  { key: 'genre', label: 'Genre' },
 ] as const;
 
 type SortKey = typeof SORT_OPTIONS[number]['key'];
@@ -60,6 +62,7 @@ const Browse = () => {
   // search state removed — brand filter handled by BrandFilter component
   const [sort, setSort] = useState<SortKey>('default');
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
+  const [genreFilter, setGenreFilter] = useState<BrandGenre | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
 
@@ -78,10 +81,12 @@ const Browse = () => {
   const displayed = useMemo(() => {
     let result = [...products];
 
-    // Brand filtering is handled via brandFilter state below
-
     if (brandFilter) {
       result = result.filter(p => p.brand === brandFilter);
+    }
+
+    if (genreFilter) {
+      result = result.filter(p => getBrandGenre(p.brand) === genreFilter);
     }
 
     switch (sort) {
@@ -94,12 +99,23 @@ const Browse = () => {
       case 'brand_az':
         result.sort((a, b) => a.brand.localeCompare(b.brand));
         break;
+      case 'genre': {
+        const genreOrder = new Map(BRAND_GENRES.map((g, i) => [g, i]));
+        result.sort((a, b) => {
+          const ga = getBrandGenre(a.brand);
+          const gb = getBrandGenre(b.brand);
+          const diff = (genreOrder.get(ga) ?? 99) - (genreOrder.get(gb) ?? 99);
+          if (diff !== 0) return diff;
+          return a.brand.localeCompare(b.brand);
+        });
+        break;
+      }
     }
 
     return result;
-  }, [products, sort, brandFilter]);
+  }, [products, sort, brandFilter, genreFilter]);
 
-  const activeFilterCount = (brandFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0);
+  const activeFilterCount = (brandFilter ? 1 : 0) + (genreFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
@@ -245,10 +261,40 @@ const Browse = () => {
                 </div>
               </div>
 
+              {/* Genre filter */}
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Genre</p>
+                <div className="flex flex-wrap gap-1.5">
+                  <button
+                    onClick={() => setGenreFilter(null)}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                      !genreFilter
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-background border border-border text-muted-foreground'
+                    }`}
+                  >
+                    All
+                  </button>
+                  {BRAND_GENRES.map(genre => (
+                    <button
+                      key={genre}
+                      onClick={() => setGenreFilter(genre === genreFilter ? null : genre)}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                        genreFilter === genre
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-background border border-border text-muted-foreground'
+                      }`}
+                    >
+                      {genre}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Clear filters */}
               {activeFilterCount > 0 && (
                 <button
-                  onClick={() => { setSort('default'); setBrandFilter(null); }}
+                  onClick={() => { setSort('default'); setBrandFilter(null); setGenreFilter(null); }}
                   className="text-[10px] text-primary font-semibold"
                 >
                   Clear all filters
