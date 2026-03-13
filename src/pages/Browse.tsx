@@ -96,6 +96,12 @@ const Browse = () => {
       result = result.filter(p => getBrandGenre(p.brand) === genreFilter);
     }
 
+    if (fitFilter) {
+      result = result.filter(p =>
+        Array.isArray(p.fit_profile) && p.fit_profile.some(f => f === fitFilter)
+      );
+    }
+
     switch (sort) {
       case 'price_asc':
         result.sort((a, b) => (a.price_cents ?? 0) - (b.price_cents ?? 0));
