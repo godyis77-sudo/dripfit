@@ -374,6 +374,169 @@ const CATEGORY_MAP: Record<string, Record<string, CategoryUrl[]>> = {
     shorts:     toUrlConfig(['https://vuori.com/collections/mens-shorts'], { waitFor: 3000 }),
     outerwear:  toUrlConfig(['https://vuori.com/collections/mens-hoodies-jackets'], { waitFor: 3000 }),
   },
+  // ── Brands with missing/low coverage — added for re-scrape ──
+  'buck mason': {
+    tops:       toUrlConfig(['https://www.buckmason.com/collections/tees', 'https://www.buckmason.com/collections/shirts'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://www.buckmason.com/collections/pants', 'https://www.buckmason.com/collections/jeans'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.buckmason.com/collections/jackets'], { waitFor: 3000 }),
+  },
+  'on running': {
+    shoes:      toUrlConfig(['https://www.on.com/en-us/collection/men/shoes', 'https://www.on.com/en-us/collection/women/shoes'], { waitFor: 4000 }),
+    tops:       toUrlConfig(['https://www.on.com/en-us/collection/men/tops'], { waitFor: 4000 }),
+    outerwear:  toUrlConfig(['https://www.on.com/en-us/collection/men/jackets'], { waitFor: 4000 }),
+  },
+  "arc'teryx": {
+    outerwear:  toUrlConfig(['https://arcteryx.com/us/en/c/mens/shell-jackets', 'https://arcteryx.com/us/en/c/mens/insulated-jackets'], { waitFor: 4000 }),
+    tops:       toUrlConfig(['https://arcteryx.com/us/en/c/mens/shirts-and-tops'], { waitFor: 4000 }),
+    bottoms:    toUrlConfig(['https://arcteryx.com/us/en/c/mens/pants'], { waitFor: 4000 }),
+  },
+  'untuckit': {
+    tops:       toUrlConfig(['https://www.untuckit.com/collections/mens-shirts', 'https://www.untuckit.com/collections/mens-polos'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://www.untuckit.com/collections/mens-pants'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.untuckit.com/collections/mens-jackets-blazers'], { waitFor: 3000 }),
+  },
+  'suitsupply': {
+    tops:       toUrlConfig(['https://suitsupply.com/en-us/men/shirts.html'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://suitsupply.com/en-us/men/jackets.html', 'https://suitsupply.com/en-us/men/coats.html'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://suitsupply.com/en-us/men/trousers.html'], { waitFor: 3000 }),
+    shoes:      toUrlConfig(['https://suitsupply.com/en-us/men/shoes.html'], { waitFor: 3000 }),
+  },
+  'bonobos': {
+    tops:       toUrlConfig(['https://bonobos.com/shop/tops/shirts', 'https://bonobos.com/shop/tops/polos'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://bonobos.com/shop/bottoms/pants', 'https://bonobos.com/shop/bottoms/jeans'], { waitFor: 3000 }),
+    shorts:     toUrlConfig(['https://bonobos.com/shop/bottoms/shorts'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://bonobos.com/shop/outerwear'], { waitFor: 3000 }),
+  },
+  'abercrombie': {
+    tops:       toUrlConfig(['https://www.abercrombie.com/shop/us/mens-tees', 'https://www.abercrombie.com/shop/us/womens-tops'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://www.abercrombie.com/shop/us/mens-jeans', 'https://www.abercrombie.com/shop/us/womens-jeans'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.abercrombie.com/shop/us/mens-coats-jackets'], { waitFor: 3000 }),
+    dresses:    toUrlConfig(['https://www.abercrombie.com/shop/us/womens-dresses'], { waitFor: 3000 }),
+  },
+  'american eagle': {
+    tops:       toUrlConfig(['https://www.ae.com/us/en/c/men/tops/cat4840006', 'https://www.ae.com/us/en/c/women/tops/cat4840004'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://www.ae.com/us/en/c/men/bottoms/jeans/cat6470041', 'https://www.ae.com/us/en/c/women/bottoms/jeans/cat6470045'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.ae.com/us/en/c/men/tops/jackets-coats/cat4850018'], { waitFor: 3000 }),
+  },
+  'tommy hilfiger': {
+    tops:       toUrlConfig(['https://usa.tommy.com/en/men/men-shirts', 'https://usa.tommy.com/en/men/men-t-shirts'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://usa.tommy.com/en/men/men-pants', 'https://usa.tommy.com/en/men/men-jeans'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://usa.tommy.com/en/men/men-outerwear'], { waitFor: 3000 }),
+    shoes:      toUrlConfig(['https://usa.tommy.com/en/men/men-shoes'], { waitFor: 3000 }),
+  },
+  'calvin klein': {
+    tops:       toUrlConfig(['https://www.calvinklein.us/en/mens-clothing-shirts', 'https://www.calvinklein.us/en/womens-clothing-tops'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://www.calvinklein.us/en/mens-clothing-pants', 'https://www.calvinklein.us/en/mens-clothing-jeans'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.calvinklein.us/en/mens-clothing-jackets-coats'], { waitFor: 3000 }),
+    underwear:  toUrlConfig(['https://www.calvinklein.us/en/mens-underwear'], { waitFor: 3000 }),
+  },
+  'hugo boss': {
+    tops:       toUrlConfig(['https://www.hugoboss.com/us/men-t-shirts/'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://www.hugoboss.com/us/men-pants/'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.hugoboss.com/us/men-jackets/'], { waitFor: 3000 }),
+    shoes:      toUrlConfig(['https://www.hugoboss.com/us/men-shoes/'], { waitFor: 3000 }),
+  },
+  'mizzen+main': {
+    tops:       toUrlConfig(['https://www.mizzenandmain.com/collections/dress-shirts', 'https://www.mizzenandmain.com/collections/polos'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://www.mizzenandmain.com/collections/pants'], { waitFor: 3000 }),
+    shorts:     toUrlConfig(['https://www.mizzenandmain.com/collections/shorts'], { waitFor: 3000 }),
+  },
+  'eileen fisher': {
+    tops:       toUrlConfig(['https://www.eileenfisher.com/tops/'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://www.eileenfisher.com/pants/'], { waitFor: 3000 }),
+    dresses:    toUrlConfig(['https://www.eileenfisher.com/dresses/'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.eileenfisher.com/jackets-coats/'], { waitFor: 3000 }),
+  },
+  'girlfriend collective': {
+    tops:       toUrlConfig(['https://girlfriend.com/collections/tops'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://girlfriend.com/collections/leggings', 'https://girlfriend.com/collections/shorts'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://girlfriend.com/collections/outerwear'], { waitFor: 3000 }),
+  },
+  'rhone': {
+    tops:       toUrlConfig(['https://www.rhone.com/collections/mens-shirts'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://www.rhone.com/collections/mens-pants'], { waitFor: 3000 }),
+    shorts:     toUrlConfig(['https://www.rhone.com/collections/mens-shorts'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.rhone.com/collections/mens-outerwear'], { waitFor: 3000 }),
+  },
+  'columbia': {
+    tops:       toUrlConfig(['https://www.columbia.com/c/mens-shirts/', 'https://www.columbia.com/c/womens-shirts/'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.columbia.com/c/mens-jackets/', 'https://www.columbia.com/c/womens-jackets/'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://www.columbia.com/c/mens-pants-and-shorts/'], { waitFor: 3000 }),
+    shoes:      toUrlConfig(['https://www.columbia.com/c/mens-footwear/'], { waitFor: 3000 }),
+  },
+  'under armour': {
+    tops:       toUrlConfig(['https://www.underarmour.com/en-us/c/mens/tops/', 'https://www.underarmour.com/en-us/c/womens/tops/'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://www.underarmour.com/en-us/c/mens/bottoms/'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.underarmour.com/en-us/c/mens/outerwear/'], { waitFor: 3000 }),
+    shoes:      toUrlConfig(['https://www.underarmour.com/en-us/c/mens/shoes/'], { waitFor: 3000 }),
+  },
+  'gap': {
+    tops:       toUrlConfig(['https://www.gap.com/browse/category.do?cid=5225', 'https://www.gap.com/browse/category.do?cid=8396'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://www.gap.com/browse/category.do?cid=6998'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.gap.com/browse/category.do?cid=48872'], { waitFor: 3000 }),
+    dresses:    toUrlConfig(['https://www.gap.com/browse/category.do?cid=8792'], { waitFor: 3000 }),
+  },
+  'ugg': {
+    shoes:      toUrlConfig(['https://www.ugg.com/women-boots/', 'https://www.ugg.com/men-boots/', 'https://www.ugg.com/women-slippers/', 'https://www.ugg.com/men-slippers/'], { waitFor: 3000 }),
+  },
+  'tory burch': {
+    shoes:      toUrlConfig(['https://www.toryburch.com/en-us/shoes/flats/', 'https://www.toryburch.com/en-us/shoes/sandals/'], { waitFor: 3000 }),
+    accessories:toUrlConfig(['https://www.toryburch.com/en-us/handbags/', 'https://www.toryburch.com/en-us/jewelry/'], { waitFor: 3000 }),
+    tops:       toUrlConfig(['https://www.toryburch.com/en-us/clothing/tops/'], { waitFor: 3000 }),
+  },
+  'sandro': {
+    tops:       toUrlConfig(['https://us.sandro-paris.com/en/womens/clothing/tops/', 'https://us.sandro-paris.com/en/mens/clothing/t-shirts/'], { waitFor: 3000 }),
+    dresses:    toUrlConfig(['https://us.sandro-paris.com/en/womens/clothing/dresses/'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://us.sandro-paris.com/en/mens/clothing/coats-and-jackets/'], { waitFor: 3000 }),
+  },
+  'theory': {
+    tops:       toUrlConfig(['https://www.theory.com/mens/tees', 'https://www.theory.com/womens/tops'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://www.theory.com/mens/pants', 'https://www.theory.com/womens/pants'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.theory.com/mens/outerwear', 'https://www.theory.com/womens/jackets'], { waitFor: 3000 }),
+  },
+  'reiss': {
+    tops:       toUrlConfig(['https://www.reiss.com/us/mens/clothing/t-shirts/', 'https://www.reiss.com/us/womens/clothing/tops/'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://www.reiss.com/us/mens/clothing/trousers/'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.reiss.com/us/mens/clothing/coats-jackets/'], { waitFor: 3000 }),
+    dresses:    toUrlConfig(['https://www.reiss.com/us/womens/clothing/dresses/'], { waitFor: 3000 }),
+  },
+  'ted baker': {
+    tops:       toUrlConfig(['https://www.tedbaker.com/us/mens/clothing/t-shirts', 'https://www.tedbaker.com/us/womens/clothing/tops'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.tedbaker.com/us/mens/clothing/coats-jackets'], { waitFor: 3000 }),
+    dresses:    toUrlConfig(['https://www.tedbaker.com/us/womens/clothing/dresses'], { waitFor: 3000 }),
+  },
+  'true classic': {
+    tops:       toUrlConfig(['https://trueclassictees.com/collections/mens-crew-neck-t-shirts', 'https://trueclassictees.com/collections/mens-v-neck-t-shirts'], { waitFor: 3000 }),
+    bottoms:    toUrlConfig(['https://trueclassictees.com/collections/mens-pants-joggers'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://trueclassictees.com/collections/mens-hoodies-jackets'], { waitFor: 3000 }),
+  },
+  'coach': {
+    accessories:toUrlConfig(['https://www.coach.com/shop/women/bags', 'https://www.coach.com/shop/men/bags'], { waitFor: 3000 }),
+    shoes:      toUrlConfig(['https://www.coach.com/shop/women/shoes', 'https://www.coach.com/shop/men/shoes'], { waitFor: 3000 }),
+  },
+  'kate spade': {
+    accessories:toUrlConfig(['https://www.katespade.com/shop/handbags', 'https://www.katespade.com/shop/jewelry'], { waitFor: 3000 }),
+    shoes:      toUrlConfig(['https://www.katespade.com/shop/shoes'], { waitFor: 3000 }),
+  },
+  'michael kors': {
+    accessories:toUrlConfig(['https://www.michaelkors.com/women/handbags/_/N-289r', 'https://www.michaelkors.com/women/watches/_/N-28dp'], { waitFor: 3000 }),
+    shoes:      toUrlConfig(['https://www.michaelkors.com/women/shoes/_/N-289v'], { waitFor: 3000 }),
+  },
+  'anthropologie': {
+    tops:       toUrlConfig(['https://www.anthropologie.com/tops'], { waitFor: 3000 }),
+    dresses:    toUrlConfig(['https://www.anthropologie.com/dresses'], { waitFor: 3000 }),
+    outerwear:  toUrlConfig(['https://www.anthropologie.com/jackets-coats'], { waitFor: 3000 }),
+    accessories:toUrlConfig(['https://www.anthropologie.com/jewelry'], { waitFor: 3000 }),
+  },
+  'birkenstock': {
+    shoes:      toUrlConfig(['https://www.birkenstock.com/us/women/sandals/', 'https://www.birkenstock.com/us/men/sandals/'], { waitFor: 3000 }),
+  },
+  'hoka': {
+    shoes:      toUrlConfig(['https://www.hoka.com/en/us/mens-road/', 'https://www.hoka.com/en/us/womens-road/'], { waitFor: 3000 }),
+  },
+  'steve madden': {
+    shoes:      toUrlConfig(['https://www.stevemadden.com/collections/womens-sneakers', 'https://www.stevemadden.com/collections/womens-boots', 'https://www.stevemadden.com/collections/womens-heels'], { waitFor: 3000 }),
+  },
 };
 
 // Brands that block direct scraping — use search fallback
@@ -470,6 +633,19 @@ const BRAND_DOMAINS: Record<string, string> = {
   'alo yoga': 'https://www.aloyoga.com', skims: 'https://skims.com',
   allsaints: 'https://www.allsaints.com', fabletics: 'https://www.fabletics.com',
   "stüssy": 'https://www.stussy.com', kith: 'https://kith.com',
+  'buck mason': 'https://www.buckmason.com', 'on running': 'https://www.on.com',
+  "arc'teryx": 'https://arcteryx.com', untuckit: 'https://www.untuckit.com',
+  suitsupply: 'https://suitsupply.com', bonobos: 'https://bonobos.com',
+  'tommy hilfiger': 'https://usa.tommy.com', 'calvin klein': 'https://www.calvinklein.us',
+  'hugo boss': 'https://www.hugoboss.com', 'mizzen+main': 'https://www.mizzenandmain.com',
+  'eileen fisher': 'https://www.eileenfisher.com', 'girlfriend collective': 'https://girlfriend.com',
+  rhone: 'https://www.rhone.com', 'under armour': 'https://www.underarmour.com',
+  ugg: 'https://www.ugg.com', 'tory burch': 'https://www.toryburch.com',
+  sandro: 'https://us.sandro-paris.com', theory: 'https://www.theory.com',
+  reiss: 'https://www.reiss.com', 'ted baker': 'https://www.tedbaker.com',
+  'true classic': 'https://trueclassictees.com', coach: 'https://www.coach.com',
+  'kate spade': 'https://www.katespade.com', 'michael kors': 'https://www.michaelkors.com',
+  hoka: 'https://www.hoka.com', 'steve madden': 'https://www.stevemadden.com',
 };
 
 // Category keywords for map search filtering

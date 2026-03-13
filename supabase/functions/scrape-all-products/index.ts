@@ -169,6 +169,20 @@ const BRAND_CATEGORIES: Record<string, string[]> = {
   "chico's":      ['t-shirts', 'shirts', 'sweaters', 'pants', 'jeans', 'skirts', 'dresses', 'jackets', 'coats', 'jewelry', 'scarves'],
   'lucy paris':   ['t-shirts', 'sweaters', 'pants', 'skirts', 'dresses', 'jumpsuits', 'jackets'],
   skims:          ['t-shirts', 'leggings', 'dresses', 'loungewear', 'underwear', 'swimwear'],
+
+  // ── Additional brands (re-scrape coverage) ──
+  ugg:            ['boots', 'sandals', 'loafers', 'sneakers'],
+  'tory burch':   ['bags', 'shoes', 'jewelry', 't-shirts', 'dresses'],
+  sandro:         ['t-shirts', 'shirts', 'sweaters', 'dresses', 'jackets', 'coats', 'pants'],
+  coach:          ['bags', 'shoes', 'belts', 'sunglasses'],
+  'kate spade':   ['bags', 'jewelry', 'shoes', 'dresses'],
+  'michael kors': ['bags', 'shoes', 'watches', 'dresses'],
+  theory:         ['t-shirts', 'shirts', 'sweaters', 'pants', 'jackets', 'blazers', 'dresses'],
+  reiss:          ['t-shirts', 'shirts', 'sweaters', 'pants', 'jackets', 'coats', 'dresses'],
+  'ted baker':    ['t-shirts', 'shirts', 'sweaters', 'pants', 'jackets', 'dresses', 'bags'],
+  'on running':   ['sneakers', 't-shirts', 'shorts', 'jackets', 'pants'],
+  "arc'teryx":    ['jackets', 'coats', 'vests', 'hoodies', 'pants', 'shorts', 'hats'],
+  'steve madden': ['sneakers', 'boots', 'sandals', 'heels', 'loafers', 'bags'],
 };
 
 Deno.serve(async (req) => {
