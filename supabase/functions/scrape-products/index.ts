@@ -3340,7 +3340,7 @@ Deno.serve(async (req) => {
           gender,
           fit_profile: fitProfile,
           fabric_composition: fabricComposition,
-          scrape_source: runId,
+          scrape_source: `${p._method || 'unknown'}:${runId}`,
           scraped_at: new Date().toISOString(),
           is_active: true,
         };
