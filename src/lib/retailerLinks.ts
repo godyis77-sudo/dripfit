@@ -61,7 +61,8 @@ export function buildRetailerSearchUrl(retailerName: string, baseUrl: string, qu
     'Anthropologie': (q) => `https://www.anthropologie.com/search?q=${q}`,
   };
   const rawUrl = searchPaths[retailerName]?.(q) || `${baseUrl.replace(/\/$/, '')}/?q=${q}`;
-  return appendAffiliateParams(rawUrl, retailerName);
+  const result = resolveClickoutByName(retailerName, rawUrl);
+  return result.finalUrl;
 }
 
 /** Suggested retailers for a clothing category */

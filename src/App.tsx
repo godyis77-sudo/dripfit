@@ -76,6 +76,7 @@ const App = () => {
   useTheme();
   return (
   <QueryClientProvider client={queryClient}>
+    <AffiliateProvider provider="skimlinks" />
     <OfflineBanner />
     <AuthProvider>
       <TooltipProvider>

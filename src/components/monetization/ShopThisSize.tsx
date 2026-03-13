@@ -65,8 +65,8 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
   };
 
   const handleShopClickout = (selectedRetailer: string, url: string) => {
-    const taggedUrl = appendAffiliateParams(url, selectedRetailer);
-    setShowConfirmation({ retailer: selectedRetailer, url: taggedUrl });
+    const clickout = resolveClickoutByName(selectedRetailer, url);
+    setShowConfirmation({ retailer: selectedRetailer, url: clickout.finalUrl });
   };
 
   const confirmClickout = () => {
