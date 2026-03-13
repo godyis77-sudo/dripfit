@@ -732,11 +732,348 @@ function normalizeBrandKey(brand: string): string {
   return BRAND_ALIASES[lower] || lower;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// DIRECT HTTP SCRAPING — zero Firecrawl credits, uses plain fetch + HTML parsing
+// ─────────────────────────────────────────────────────────────────────────────
+
+const HTTP_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
+
+async function fetchPageHtml(url: string, timeoutMs = 8000): Promise<string | null> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    const resp = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'User-Agent': HTTP_USER_AGENT,
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept-Encoding': 'identity',
+        'Cache-Control': 'no-cache',
+      },
+      signal: controller.signal,
+      redirect: 'follow',
+    });
+    clearTimeout(timeout);
+    if (!resp.ok) {
+      console.warn(`[direct] HTTP ${resp.status} for ${url}`);
+      return null;
+    }
+    // Read up to 500KB
+    const reader = resp.body?.getReader();
+    if (!reader) return null;
+    let html = '';
+    const decoder = new TextDecoder();
+    let totalBytes = 0;
+    const MAX = 500000;
+    while (totalBytes < MAX) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      html += decoder.decode(value, { stream: true });
+      totalBytes += value.length;
+    }
+    reader.cancel().catch(() => {});
+    return html;
+  } catch (err) {
+    console.warn(`[direct] Fetch error for ${url}: ${(err as Error).message}`);
+    return null;
+  }
+}
+
+/**
+ * Parse products from raw HTML using JSON-LD structured data and meta tags.
+ * Works for most modern e-commerce sites without needing JS rendering.
+ */
+function parseProductsFromHtml(html: string, brand: string, category: string, pageUrl: string): RawProduct[] {
+  const products: RawProduct[] = [];
+
+  // 1) Extract JSON-LD blocks — most reliable source
+  const jsonLdRegex = /<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  let ldMatch;
+  while ((ldMatch = jsonLdRegex.exec(html)) !== null) {
+    try {
+      const parsed = JSON.parse(ldMatch[1]);
+      extractProductsFromJsonLd(parsed, products, brand, category, pageUrl);
+    } catch { /* skip invalid JSON-LD */ }
+  }
+
+  // 2) Extract from __NEXT_DATA__ or similar SSR data blobs
+  const nextDataMatch = html.match(/<script[^>]*id=["']__NEXT_DATA__["'][^>]*>([\s\S]*?)<\/script>/i);
+  if (nextDataMatch) {
+    try {
+      const nextData = JSON.parse(nextDataMatch[1]);
+      extractProductsFromNextData(nextData, products, brand, category, pageUrl);
+    } catch { /* skip */ }
+  }
+
+  // 3) Extract from common window.__INITIAL_STATE__ / window.__PRELOADED_STATE__ patterns
+  const statePatterns = [
+    /window\.__INITIAL_STATE__\s*=\s*({[\s\S]*?});\s*<\/script>/,
+    /window\.__PRELOADED_STATE__\s*=\s*({[\s\S]*?});\s*<\/script>/,
+    /window\.__STORE_STATE__\s*=\s*({[\s\S]*?});\s*<\/script>/,
+  ];
+  for (const pat of statePatterns) {
+    const m = html.match(pat);
+    if (m) {
+      try {
+        const state = JSON.parse(m[1]);
+        extractProductsFromStateBlob(state, products, brand, category, pageUrl);
+      } catch { /* skip */ }
+    }
+  }
+
+  // 4) Parse product links + images from HTML product grid patterns
+  if (products.length === 0) {
+    extractProductsFromHtmlGrid(html, products, brand, category, pageUrl);
+  }
+
+  return products;
+}
+
+function extractProductsFromJsonLd(data: any, products: RawProduct[], brand: string, category: string, pageUrl: string): void {
+  if (!data) return;
+  if (Array.isArray(data)) {
+    data.forEach(item => extractProductsFromJsonLd(item, products, brand, category, pageUrl));
+    return;
+  }
+  if (data['@graph']) {
+    extractProductsFromJsonLd(data['@graph'], products, brand, category, pageUrl);
+  }
+  // ItemList with ListItems
+  if (data['@type'] === 'ItemList' && Array.isArray(data.itemListElement)) {
+    for (const el of data.itemListElement) {
+      const item = el.item || el;
+      if (item['@type'] === 'Product' || item.name) {
+        addProductFromStructuredData(item, products, brand, category, pageUrl);
+      }
+    }
+  }
+  // Direct Product
+  if (data['@type'] === 'Product') {
+    addProductFromStructuredData(data, products, brand, category, pageUrl);
+  }
+  // ProductGroup
+  if (data['@type'] === 'ProductGroup' && Array.isArray(data.hasVariant)) {
+    for (const variant of data.hasVariant) {
+      addProductFromStructuredData(variant, products, brand, category, pageUrl);
+    }
+  }
+}
+
+function addProductFromStructuredData(item: any, products: RawProduct[], brand: string, category: string, pageUrl: string): void {
+  const name = item.name;
+  if (!name || name.length < 5) return;
+  if (isListingPageName(name)) return;
+
+  let image = '';
+  if (typeof item.image === 'string') image = item.image;
+  else if (Array.isArray(item.image)) image = typeof item.image[0] === 'string' ? item.image[0] : item.image[0]?.url || '';
+  else if (item.image?.url) image = item.image.url;
+
+  if (image.startsWith('//')) image = 'https:' + image;
+  if (!image.startsWith('http')) image = '';
+
+  let productUrl = item.url || '';
+  if (productUrl && !productUrl.startsWith('http')) {
+    try {
+      productUrl = new URL(productUrl, pageUrl).href;
+    } catch { productUrl = ''; }
+  }
+  if (!productUrl) productUrl = pageUrl;
+
+  let priceCents: number | null = null;
+  const offers = item.offers || item.offer;
+  if (offers) {
+    const offer = Array.isArray(offers) ? offers[0] : offers;
+    const price = parseFloat(offer?.price || offer?.lowPrice || '0');
+    if (price > 0) priceCents = Math.round(price * 100);
+  }
+
+  // Skip duplicates within same parse
+  if (products.some(p => p.name === name && p.product_url === productUrl)) return;
+
+  products.push({
+    name,
+    brand,
+    product_url: productUrl,
+    price_cents: priceCents,
+    currency: 'USD',
+    image_urls: image ? [image] : [],
+    category_raw: category,
+    colour: null,
+  });
+}
+
+function extractProductsFromNextData(data: any, products: RawProduct[], brand: string, category: string, pageUrl: string): void {
+  // Traverse deeply looking for product-like arrays
+  const visited = new WeakSet();
+  function walk(obj: any, depth: number): void {
+    if (!obj || typeof obj !== 'object' || depth > 8 || visited.has(obj)) return;
+    visited.add(obj);
+    if (Array.isArray(obj)) {
+      // Check if this looks like a product array
+      if (obj.length > 2 && obj[0]?.name && (obj[0]?.url || obj[0]?.href || obj[0]?.product_url || obj[0]?.pdpUrl)) {
+        for (const item of obj.slice(0, 50)) {
+          const name = item.name || item.title;
+          if (!name || name.length < 5 || isListingPageName(name)) continue;
+          let img = item.image || item.imageUrl || item.img || item.thumbnail || '';
+          if (typeof img === 'object') img = img.url || img.src || '';
+          if (img.startsWith('//')) img = 'https:' + img;
+          let url = item.url || item.href || item.pdpUrl || item.product_url || '';
+          if (url && !url.startsWith('http')) {
+            try { url = new URL(url, pageUrl).href; } catch { url = ''; }
+          }
+          const price = parseFloat(item.price || item.salePrice || item.currentPrice || '0');
+          products.push({
+            name, brand,
+            product_url: url || pageUrl,
+            price_cents: price > 0 ? Math.round(price * 100) : null,
+            currency: 'USD',
+            image_urls: img && img.startsWith('http') ? [img] : [],
+            category_raw: category,
+            colour: item.color || item.colour || null,
+          });
+        }
+        return;
+      }
+      obj.forEach(el => walk(el, depth + 1));
+    } else {
+      Object.values(obj).forEach(val => walk(val, depth + 1));
+    }
+  }
+  walk(data, 0);
+}
+
+function extractProductsFromStateBlob(data: any, products: RawProduct[], brand: string, category: string, pageUrl: string): void {
+  extractProductsFromNextData(data, products, brand, category, pageUrl);
+}
+
+function extractProductsFromHtmlGrid(html: string, products: RawProduct[], brand: string, category: string, pageUrl: string): void {
+  // Match product card patterns: <a href="/product/..." with nearby <img>
+  // This is a heuristic approach for sites without JSON-LD
+  const productCardRegex = /<a\s[^>]*href=["']([^"']*(?:\/p\/|\/product|\/shop\/[^"']*?-)[^"']*)["'][^>]*>[\s\S]*?<img[^>]*(?:src|data-src)=["']([^"']+)["'][^>]*(?:alt=["']([^"']+)["'])?/gi;
+  let m;
+  const seen = new Set<string>();
+  while ((m = productCardRegex.exec(html)) !== null && products.length < 50) {
+    let [, href, imgSrc, alt] = m;
+    if (!href || !imgSrc) continue;
+    if (href.startsWith('//')) href = 'https:' + href;
+    if (!href.startsWith('http')) {
+      try { href = new URL(href, pageUrl).href; } catch { continue; }
+    }
+    if (imgSrc.startsWith('//')) imgSrc = 'https:' + imgSrc;
+    if (!imgSrc.startsWith('http')) continue;
+    if (seen.has(href)) continue;
+    seen.add(href);
+    
+    const name = alt || '';
+    if (name.length < 5 || isListingPageName(name)) continue;
+    if (/logo|icon|sprite|banner/i.test(imgSrc)) continue;
+
+    products.push({
+      name, brand,
+      product_url: href,
+      price_cents: null,
+      currency: 'USD',
+      image_urls: [imgSrc],
+      category_raw: category,
+      colour: null,
+    });
+  }
+}
+
+/**
+ * Direct HTTP scraping — fetches category pages and parses products from HTML.
+ * Zero Firecrawl credits used. Works for sites that serve HTML/SSR content.
+ */
+async function scrapeDirectHttp(
+  brand: string,
+  category: string,
+): Promise<RawProduct[]> {
+  const brandKey = normalizeBrandKey(brand);
+  const brandUrls = CATEGORY_MAP[brandKey];
+  
+  if (!brandUrls) {
+    console.log(`[direct] No URL config for ${brand}, skipping direct scrape`);
+    return [];
+  }
+
+  const catKey = category.toLowerCase();
+  const parentKey = CATEGORY_TO_URL_KEY[catKey] || catKey;
+  const urlConfigs = brandUrls[catKey] || brandUrls[parentKey];
+  
+  if (!urlConfigs?.length) {
+    console.log(`[direct] No URLs for ${brand}/${category}`);
+    return [];
+  }
+
+  const allProducts: RawProduct[] = [];
+  
+  for (const urlConfig of urlConfigs) {
+    console.log(`[direct] Fetching ${urlConfig.url}`);
+    const html = await fetchPageHtml(urlConfig.url);
+    if (!html) continue;
+    
+    const pageProducts = parseProductsFromHtml(html, brand, category, urlConfig.url);
+    console.log(`[direct] Parsed ${pageProducts.length} products from ${urlConfig.url}`);
+    allProducts.push(...pageProducts);
+    
+    // Small delay between pages
+    await delay(500);
+  }
+
+  // Also try to enrich products missing images
+  const withImages = allProducts.filter(p => p.image_urls.length > 0);
+  const withoutImages = allProducts.filter(p => p.image_urls.length === 0);
+  
+  if (withoutImages.length > 0 && withoutImages.length <= 20) {
+    console.log(`[direct] Enriching ${withoutImages.length} products without images via og:image`);
+    const enriched = await enrichProductImages(withoutImages);
+    withImages.push(...enriched);
+  }
+
+  console.log(`[direct] Total: ${withImages.length} products with images for ${brand}/${category}`);
+  return withImages;
+}
+
+/**
+ * Check Firecrawl credit balance. Returns remaining credits or null on error.
+ */
+async function checkFirecrawlCredits(apiKey: string): Promise<number | null> {
+  try {
+    const resp = await fetch('https://api.firecrawl.dev/v1/team/credit-usage', {
+      headers: { 'Authorization': `Bearer ${apiKey}` },
+    });
+    if (!resp.ok) {
+      await resp.text();
+      return null;
+    }
+    const data = await resp.json();
+    return data?.data?.remaining_credits ?? null;
+  } catch {
+    return null;
+  }
+}
+
 async function scrapeProducts(
   brand: string,
   category: string,
-  firecrawlApiKey: string
+  firecrawlApiKey: string,
+  useFirecrawl = true,
 ): Promise<RawProduct[]> {
+  // ── STEP 1: Always try direct HTTP first (free) ──
+  const directProducts = await scrapeDirectHttp(brand, category);
+  if (directProducts.length >= 3) {
+    console.log(`[scrape] Direct HTTP found ${directProducts.length} products, skipping Firecrawl`);
+    return directProducts;
+  }
+  
+  if (!useFirecrawl) {
+    console.log(`[scrape] Firecrawl disabled, returning ${directProducts.length} direct results`);
+    return directProducts;
+  }
+
+  // ── STEP 2: Fall back to Firecrawl-based scraping ──
   const brandKey = normalizeBrandKey(brand);
 
   // Anti-scrape brands: use cheap search-first, then extract as backup only if needed
@@ -744,6 +1081,11 @@ async function scrapeProducts(
     console.log(`[scrape] ${brand} is anti-scrape, using search-first strategy`);
 
     const searchResults = await searchProducts(brand, category, firecrawlApiKey);
+    // Merge direct results
+    const existingUrls = new Set(searchResults.map(p => p.product_url.toLowerCase()));
+    for (const p of directProducts) {
+      if (!existingUrls.has(p.product_url.toLowerCase())) searchResults.push(p);
+    }
     if (searchResults.length >= 2) {
       return searchResults;
     }
@@ -777,11 +1119,12 @@ async function scrapeProducts(
       const categoryPages = mapUrls.filter(u => /\/c\/|\/cat\/|\/collection|\/shop\/|\/category/i.test(u)).slice(0, 5);
       if (categoryPages.length > 0) {
         const extractResults = await extractFromUrls(brand, category, categoryPages, category, firecrawlApiKey);
-        if (extractResults.length > 0) return extractResults;
+        if (extractResults.length > 0) return [...directProducts, ...extractResults];
       }
     }
     console.log(`[scrape] Map yielded nothing, falling back to search`);
-    return searchProducts(brand, category, firecrawlApiKey);
+    const sr = await searchProducts(brand, category, firecrawlApiKey);
+    return [...directProducts, ...sr];
   }
 
   const catKey = category.toLowerCase();
@@ -789,7 +1132,8 @@ async function scrapeProducts(
   const urlConfigs = brandUrls[catKey] || brandUrls[parentKey];
   if (!urlConfigs?.length) {
     console.log(`[scrape] No URLs for ${brand}/${category} (tried ${catKey}→${parentKey}), using search fallback`);
-    return searchProducts(brand, category, firecrawlApiKey);
+    const sr = await searchProducts(brand, category, firecrawlApiKey);
+    return [...directProducts, ...sr];
   }
 
   const allProducts = await scrapeUrlConfigs(brand, category, urlConfigs, firecrawlApiKey);
@@ -798,16 +1142,6 @@ async function scrapeProducts(
     console.log(`[scrape] Direct extract returned 0 for ${brand}/${category}, trying map→extract`);
     const mapUrls = await mapBrandUrls(brand, category, firecrawlApiKey);
     const categoryPages = mapUrls.filter(u => /\/c\/|\/cat\/|\/collection|\/shop\/|\/category/i.test(u)).slice(0, 5);
-    if (categoryPages.length > 0) {
-      const extractResults = await extractFromUrls(brand, category, categoryPages, category, firecrawlApiKey);
-      if (extractResults.length > 0) return extractResults;
-    }
-    console.log(`[scrape] Map yielded nothing, falling back to search`);
-    return searchProducts(brand, category, firecrawlApiKey);
-  }
-
-  return allProducts;
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // EXTRACT V2 — Firecrawl /v1/extract for structured product data + images
