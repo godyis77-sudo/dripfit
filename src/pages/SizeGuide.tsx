@@ -295,6 +295,38 @@ const SizeGuide = () => {
               </CardContent></Card>
             ) : (
               <>
+                {/* Filters */}
+                <div className="mb-3 space-y-2">
+                  <div>
+                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1"><Users className="h-3 w-3" /> Gender</p>
+                    <div className="flex gap-1.5">
+                      {(['all', 'men', 'women'] as const).map(g => (
+                        <Button
+                          key={g}
+                          variant={genderFilter === g ? 'default' : 'outline'}
+                          size="sm"
+                          className="rounded-lg text-[11px] h-7 capitalize"
+                          onClick={() => { setGenderFilter(g); setSelectedBrand(null); setDbResult(null); }}
+                        >{g === 'all' ? 'All' : g}</Button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1"><ArrowUpDown className="h-3 w-3" /> Size Range</p>
+                    <div className="flex gap-1.5 flex-wrap">
+                      {(['all', 'regular', 'tall', 'petite', 'plus'] as const).map(t => (
+                        <Button
+                          key={t}
+                          variant={sizeTypeFilter === t ? 'default' : 'outline'}
+                          size="sm"
+                          className="rounded-lg text-[11px] h-7 capitalize"
+                          onClick={() => { setSizeTypeFilter(t); setSelectedBrand(null); setDbResult(null); }}
+                        >{t === 'all' ? 'All' : t}</Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
                 {/* Brand search */}
                 <div className="mb-3">
                   <p className="section-label mb-1.5">1. Choose a brand</p>
