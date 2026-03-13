@@ -6,6 +6,79 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// ─── Brand → Genre mapping (server-side mirror of client brandGenres.ts) ────
+const BRAND_GENRE_MAP: Record<string, string> = {
+  // Luxury
+  'gucci': 'Luxury', 'louis vuitton': 'Luxury', 'prada': 'Luxury', 'balenciaga': 'Luxury',
+  'dior': 'Luxury', 'burberry': 'Luxury', 'versace': 'Luxury', 'saint laurent': 'Luxury',
+  'givenchy': 'Luxury', 'fendi': 'Luxury', 'valentino': 'Luxury', 'bottega veneta': 'Luxury',
+  'chanel': 'Luxury', 'hermès': 'Luxury', 'tom ford': 'Luxury', 'alexander mcqueen': 'Luxury',
+  'celine': 'Luxury', 'loewe': 'Luxury', 'hugo boss': 'Luxury', 'ralph lauren': 'Luxury',
+  'moncler': 'Luxury', 'jacquemus': 'Luxury', 'rick owens': 'Luxury', 'maison margiela': 'Luxury',
+  'ami paris': 'Luxury', 'cartier': 'Luxury', 'stone island': 'Luxury', 'acne studios': 'Luxury',
+  'cutler and gross': 'Luxury',
+  // Streetwear
+  'supreme': 'Streetwear', 'off-white': 'Streetwear', 'stüssy': 'Streetwear',
+  'a bathing ape': 'Streetwear', 'palace': 'Streetwear', 'palace skateboards': 'Streetwear',
+  'fear of god': 'Streetwear', 'kith': 'Streetwear', 'essentials': 'Streetwear',
+  'corteiz': 'Streetwear', 'trapstar': 'Streetwear', 'new era': 'Streetwear', 'mark bodē': 'Streetwear',
+  // Athletic
+  'nike': 'Athletic', 'adidas': 'Athletic', 'puma': 'Athletic', 'lululemon': 'Athletic',
+  'gymshark': 'Athletic', 'under armour': 'Athletic', 'new balance': 'Athletic', 'reebok': 'Athletic',
+  'on running': 'Athletic', 'asics': 'Athletic', 'gore wear': 'Athletic', 'hoka': 'Athletic',
+  'converse': 'Athletic', 'fabletics': 'Athletic', 'rhone': 'Athletic', 'vuori': 'Athletic',
+  'girlfriend collective': 'Athletic', 'san francisco giants': 'Athletic',
+  // Fast Fashion
+  'shein': 'Fast Fashion', 'zara': 'Fast Fashion', 'h&m': 'Fast Fashion', 'forever 21': 'Fast Fashion',
+  'boohoo': 'Fast Fashion', 'prettylittlething': 'Fast Fashion', 'fashion nova': 'Fast Fashion',
+  'mango': 'Fast Fashion', 'topshop': 'Fast Fashion', 'uniqlo': 'Fast Fashion',
+  'true classic': 'Fast Fashion', 'fresh clean tees': 'Fast Fashion',
+  'fresh clean tees canada': 'Fast Fashion', 'fresh clean threads': 'Fast Fashion',
+  'american eagle': 'Fast Fashion', 'cos': 'Fast Fashion', 'calvin klein': 'Fast Fashion',
+  'tommy hilfiger': 'Fast Fashion',
+  // Contemporary
+  'gap': 'Contemporary', 'old navy': 'Contemporary', 'banana republic': 'Contemporary',
+  'j.crew': 'Contemporary', 'abercrombie & fitch': 'Contemporary', 'abercrombie': 'Contemporary',
+  'todd snyder': 'Contemporary', 'grayers': 'Contemporary', 'public rec': 'Contemporary',
+  'public rec 2.0': 'Contemporary', 'marine layer': 'Contemporary', 'anthropologie': 'Contemporary',
+  "rothy's": 'Contemporary', 'allsaints': 'Contemporary', 'bonobos': 'Contemporary',
+  'buck mason': 'Contemporary', 'charles tyrwhitt': 'Contemporary', 'eileen fisher': 'Contemporary',
+  'free people': 'Contemporary', 'mizzen+main': 'Contemporary', 'reiss': 'Contemporary',
+  'sandro': 'Contemporary', 'theory': 'Contemporary', 'ted baker': 'Contemporary',
+  'tory burch': 'Contemporary', 'untuckit': 'Contemporary', 'coach': 'Contemporary',
+  'kate spade': 'Contemporary', 'michael kors': 'Contemporary', 'suitsupply': 'Contemporary',
+  'eloquii': 'Contemporary', 'mejuri': 'Contemporary', 'schott': 'Contemporary',
+  'skims': 'Contemporary', 'savage x fenty': 'Contemporary', "victoria's secret": 'Contemporary',
+  'radial': 'Contemporary', 'custom club': 'Contemporary', 'project vermont': 'Contemporary',
+  'authentic': 'Contemporary', 'phaidon': 'Contemporary', 'doraemon': 'Contemporary',
+  // Outdoor & Active
+  'patagonia': 'Outdoor & Active', "arc'teryx": 'Outdoor & Active', 'the north face': 'Outdoor & Active',
+  'columbia': 'Outdoor & Active', 'salomon': 'Outdoor & Active', 'oakley': 'Outdoor & Active',
+  'birkenstock': 'Outdoor & Active', 'dr. martens': 'Outdoor & Active', 'ugg': 'Outdoor & Active',
+  // Workwear & Heritage
+  'carhartt': 'Workwear & Heritage', "levi's": 'Workwear & Heritage', 'taylor stitch': 'Workwear & Heritage',
+  'filson': 'Workwear & Heritage', 'roark': 'Workwear & Heritage',
+  // Surf & Skate
+  'billabong': 'Surf & Skate', 'o5 billabong': 'Surf & Skate', 'rvca': 'Surf & Skate',
+  'outerknown': 'Surf & Skate', 'vans': 'Surf & Skate', 'quiksilver': 'Surf & Skate',
+  'volcom': 'Surf & Skate', 'world industries': 'Surf & Skate',
+  // Sustainable
+  'reformation': 'Sustainable', 'everlane': 'Sustainable', 'allbirds': 'Sustainable',
+  'faherty': 'Sustainable', 'recurate': 'Sustainable', 'trove': 'Sustainable',
+  // Department Store
+  'nordstrom': 'Department Store', 'asos': 'Department Store', 'revolve': 'Department Store',
+  'amazon fashion': 'Department Store', 'urban outfitters': 'Department Store',
+  'target': 'Department Store', 'farfetch': 'Department Store', 'steve madden': 'Department Store',
+  'macys': 'Department Store', 'saks': 'Department Store', 'ssense': 'Department Store',
+  'net-a-porter': 'Department Store', 'ray-ban': 'Department Store',
+  'ok accessories': 'Department Store', 'ok mens': 'Department Store', 'ok unisex': 'Department Store',
+  'ok womens': 'Department Store',
+};
+
+function getBrandGenre(brand: string): string {
+  return BRAND_GENRE_MAP[brand.toLowerCase().trim()] ?? 'Contemporary';
+}
+
 // ─── Listing / category page detection ──────────────────────────────────────
 const LISTING_PAGE_NAME_PATTERNS = [
   // Explicit listing signals
