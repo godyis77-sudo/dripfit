@@ -1251,9 +1251,13 @@ async function searchProductsFallback(
       },
       body: JSON.stringify({
         query: searchQuery,
-        limit: 20,
+        limit: 5,
         lang: 'en',
         country: 'us',
+        scrapeOptions: {
+          formats: ['markdown'],
+          onlyMainContent: true,
+        },
       }),
     });
 
