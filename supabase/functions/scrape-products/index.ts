@@ -874,7 +874,7 @@ const SHOPIFY_STORES: Record<string, { domain: string; collections?: Record<stri
   bonobos:              { domain: 'https://bonobos.com', collections: { tops: ['shirts', 'polos'], bottoms: ['pants', 'jeans'], shorts: ['shorts'], outerwear: ['outerwear'], swimwear: ['swim'] } },
   
   // ── Plus Size & Extended ──
-  'good american':      { domain: 'https://www.goodamerican.com', collections: { bottoms: ['jeans', 'pants'], tops: ['tops'], dresses: ['dresses'], activewear: ['activewear'], swimwear: ['swim'] } },
+  
   // ── Footwear ──
   allbirds:             { domain: 'https://www.allbirds.com', collections: { shoes: ['mens-shoes', 'womens-shoes'] } },
   'steve madden':       { domain: 'https://www.stevemadden.com', collections: { shoes: ['womens-sneakers', 'womens-boots', 'womens-heels', 'mens-shoes', 'womens-sandals'], accessories: ['womens-handbags'] } },
