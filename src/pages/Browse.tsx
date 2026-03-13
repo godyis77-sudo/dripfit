@@ -74,6 +74,8 @@ const Browse = () => {
   const [fitFilter, setFitFilter] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
+  const { pendingClickout, beginClickout, confirmClickout, cancelClickout } =
+    useAffiliateClickout({ extraProps: { source: 'browse', category } });
 
   // Scroll lock handled by ProductPreviewModal
 
