@@ -1885,7 +1885,7 @@ async function validateProductImages(products: RawProduct[]): Promise<RawProduct
 
 /**
  * For products without images, fetch the product page and extract og:image.
- * Uses a lightweight GET with range header to minimize bandwidth (free, no API credits).
+ * Uses a full GET with timeout (Range headers are blocked by most CDNs).
  */
 async function enrichProductImages(products: RawProduct[]): Promise<RawProduct[]> {
   const enriched: RawProduct[] = [];
@@ -1897,16 +1897,39 @@ async function enrichProductImages(products: RawProduct[]): Promise<RawProduct[]
       batch.map(async (p) => {
         try {
           const controller = new AbortController();
-          const timeout = setTimeout(() => controller.abort(), 5000);
+          const timeout = setTimeout(() => controller.abort(), 6000);
           const resp = await fetch(p.product_url, {
             method: 'GET',
-            headers: { 'Range': 'bytes=0-20000', 'User-Agent': 'Mozilla/5.0 (compatible; DripBot/1.0)' },
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+              'Accept': 'text/html,application/xhtml+xml',
+              'Accept-Language': 'en-US,en;q=0.9',
+            },
             signal: controller.signal,
             redirect: 'follow',
           });
           clearTimeout(timeout);
           
-          const html = await resp.text();
+          if (!resp.ok) return null;
+          
+          // Read response as stream and only consume first ~80KB
+          const reader = resp.body?.getReader();
+          if (!reader) return null;
+          
+          let html = '';
+          const decoder = new TextDecoder();
+          const MAX_BYTES = 80000;
+          let totalBytes = 0;
+          
+          while (totalBytes < MAX_BYTES) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            html += decoder.decode(value, { stream: true });
+            totalBytes += value.length;
+          }
+          reader.cancel().catch(() => {});
+          
+          // Try og:image (both attribute orders)
           const ogMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i)
             || html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:image["']/i);
           
@@ -1915,9 +1938,19 @@ async function enrichProductImages(products: RawProduct[]): Promise<RawProduct[]
             return p;
           }
           
-          const twMatch = html.match(/<meta[^>]*(?:name|property)=["']twitter:image["'][^>]*content=["']([^"']+)["']/i);
+          // Try twitter:image
+          const twMatch = html.match(/<meta[^>]*(?:name|property)=["']twitter:image["'][^>]*content=["']([^"']+)["']/i)
+            || html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*(?:name|property)=["']twitter:image["']/i);
           if (twMatch?.[1] && twMatch[1].startsWith('http')) {
             p.image_urls = [twMatch[1]];
+            return p;
+          }
+          
+          // Try first product image from structured data (JSON-LD)
+          const ldMatch = html.match(/"image"\s*:\s*"(https?:\/\/[^"]+\.(jpg|jpeg|png|webp)[^"]*)"/i)
+            || html.match(/"image"\s*:\s*\[\s*"(https?:\/\/[^"]+\.(jpg|jpeg|png|webp)[^"]*)"/i);
+          if (ldMatch?.[1]) {
+            p.image_urls = [ldMatch[1]];
             return p;
           }
           
