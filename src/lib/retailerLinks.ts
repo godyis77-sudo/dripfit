@@ -62,6 +62,19 @@ export function buildRetailerSearchUrl(retailerName: string, baseUrl: string, qu
   };
   const rawUrl = searchPaths[retailerName]?.(q) || `${baseUrl.replace(/\/$/, '')}/?q=${q}`;
   const result = resolveClickoutByName(retailerName, rawUrl);
+
+  // Fire clickout analytics from search-based flows too
+  try {
+    const { trackEvent } = await import('@/lib/analytics');
+    trackEvent('shop_clickout', {
+      retailer: retailerName,
+      source: 'retailer_search',
+      monetization_mode: result.monetizationMode,
+      affiliate_provider: result.provider,
+      retailer_used: result.retailerUsed,
+    });
+  } catch { /* never break navigation */ }
+
   return result.finalUrl;
 }
 

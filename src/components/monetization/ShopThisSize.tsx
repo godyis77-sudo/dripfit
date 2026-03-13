@@ -51,7 +51,13 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
   const [showRetailers, setShowRetailers] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showSavedConfirmation, setShowSavedConfirmation] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState<{ retailer: string; url: string } | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState<{
+    retailer: string;
+    url: string;
+    monetizationMode: string;
+    provider: string | null;
+    retailerUsed: string;
+  } | null>(null);
 
   const handleLinkPaste = (value: string) => {
     setProductLink(value);
