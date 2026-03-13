@@ -1250,10 +1250,6 @@ async function searchProductsFallback(
         limit: 20,
         lang: 'en',
         country: 'us',
-        scrapeOptions: {
-          formats: ['markdown', 'links'],
-          onlyMainContent: true,
-        },
       }),
     });
 
