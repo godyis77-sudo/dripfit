@@ -14,6 +14,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 import PostLookFlow from '@/components/community/PostLookFlow';
 import { PostDetailSheet } from '@/components/community/PostDetailSheet';
 import BrandFilter from '@/components/tryon/BrandFilter';
+import GenreFilter from '@/components/catalog/GenreFilter';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import PostCard from '@/components/community/PostCard';
 import EmptyStates from '@/components/community/EmptyStates';
