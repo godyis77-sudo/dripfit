@@ -1,25 +1,27 @@
 /**
- * Brand Genre Classification System
- * Maps brands to retail genres for filtering & sorting.
+ * Style-Based Genre Classification System
+ * Maps brands to fashion style genres for filtering & sorting.
+ * Genres describe aesthetic/style, NOT business models.
  */
 
 export const BRAND_GENRES = [
   'Luxury',
   'Streetwear',
   'Athletic',
-  'Fast Fashion',
+  'Casual',
+  'Minimalist',
+  'Loungewear',
+  'Bohemian',
   'Contemporary',
   'Outdoor & Active',
   'Workwear & Heritage',
   'Surf & Skate',
-  'Sustainable',
-  'Department Store',
 ] as const;
 
 export type BrandGenre = typeof BRAND_GENRES[number];
 
 /**
- * Canonical mapping of known brands → genre.
+ * Canonical mapping of known brands → style genre.
  * Brands not listed here default to 'Contemporary'.
  */
 const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
@@ -52,6 +54,23 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'Cartier': 'Luxury',
   'Stone Island': 'Luxury',
   'Acne Studios': 'Luxury',
+  'Cutler And Gross': 'Luxury',
+  'Todd Snyder': 'Luxury',
+  'Reiss': 'Luxury',
+  'Sandro': 'Luxury',
+  'Theory': 'Luxury',
+  'Ted Baker': 'Luxury',
+  'Tory Burch': 'Luxury',
+  'Coach': 'Luxury',
+  'Kate Spade': 'Luxury',
+  'Michael Kors': 'Luxury',
+  'SuitSupply': 'Luxury',
+  'Mejuri': 'Luxury',
+  'Farfetch': 'Luxury',
+  'Saks': 'Luxury',
+  'SSENSE': 'Luxury',
+  'Net-a-Porter': 'Luxury',
+  'Revolve': 'Luxury',
 
   // ── Streetwear ──────────────────────────────────────
   'Supreme': 'Streetwear',
@@ -66,6 +85,9 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'Corteiz': 'Streetwear',
   'Trapstar': 'Streetwear',
   'New Era': 'Streetwear',
+  'AllSaints': 'Streetwear',
+  'Urban Outfitters': 'Streetwear',
+  'Mark Bodē': 'Streetwear',
 
   // ── Athletic ────────────────────────────────────────
   'Nike': 'Athletic',
@@ -81,80 +103,89 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'Gore Wear': 'Athletic',
   'HOKA': 'Athletic',
   'Converse': 'Athletic',
-  'Fabletics': 'Athletic',
   'Rhone': 'Athletic',
   'Vuori': 'Athletic',
   'Girlfriend Collective': 'Athletic',
+  'Public Rec': 'Athletic',
+  'Public Rec 2.0': 'Athletic',
+  'Mizzen+Main': 'Athletic',
+  'San Francisco Giants': 'Athletic',
 
-  // ── Fast Fashion ────────────────────────────────────
-  'SHEIN': 'Fast Fashion',
-  'Zara': 'Fast Fashion',
-  'H&M': 'Fast Fashion',
-  'Forever 21': 'Fast Fashion',
-  'Boohoo': 'Fast Fashion',
-  'PrettyLittleThing': 'Fast Fashion',
-  'Fashion Nova': 'Fast Fashion',
-  'Mango': 'Fast Fashion',
-  'Topshop': 'Fast Fashion',
-  'Uniqlo': 'Fast Fashion',
-  'True Classic': 'Fast Fashion',
-  'Fresh Clean Tees': 'Fast Fashion',
-  'Fresh Clean Tees Canada': 'Fast Fashion',
-  'Fresh Clean Threads': 'Fast Fashion',
-  'American Eagle': 'Fast Fashion',
-  'COS': 'Fast Fashion',
-  'Calvin Klein': 'Fast Fashion',
-  'Tommy Hilfiger': 'Fast Fashion',
+  // ── Casual ──────────────────────────────────────────
+  // Everyday wear — relaxed, accessible, trend-aware
+  'Zara': 'Casual',
+  'H&M': 'Casual',
+  'SHEIN': 'Casual',
+  'Forever 21': 'Casual',
+  'Boohoo': 'Casual',
+  'PrettyLittleThing': 'Casual',
+  'Fashion Nova': 'Casual',
+  'Mango': 'Casual',
+  'Topshop': 'Casual',
+  'Gap': 'Casual',
+  'Old Navy': 'Casual',
+  'American Eagle': 'Casual',
+  'Abercrombie & Fitch': 'Casual',
+  'Abercrombie': 'Casual',
+  'Calvin Klein': 'Casual',
+  'Tommy Hilfiger': 'Casual',
+  'Eloquii': 'Casual',
+  'ASOS': 'Casual',
+  'Amazon Fashion': 'Casual',
+
+  // ── Minimalist ──────────────────────────────────────
+  // Clean lines, neutral palettes, quality basics
+  'Uniqlo': 'Minimalist',
+  'COS': 'Minimalist',
+  'Everlane': 'Minimalist',
+  'Allbirds': 'Minimalist',
+  'True Classic': 'Minimalist',
+  'Fresh Clean Tees': 'Minimalist',
+  'Fresh Clean Tees Canada': 'Minimalist',
+  'Fresh Clean Threads': 'Minimalist',
+  'Eileen Fisher': 'Minimalist',
+  "Rothy's": 'Minimalist',
+  'Marine Layer': 'Minimalist',
+
+  // ── Loungewear ──────────────────────────────────────
+  // Comfort-first, home & leisure, intimates
+  'SKIMS': 'Loungewear',
+  'Savage X Fenty': 'Loungewear',
+  "Victoria's Secret": 'Loungewear',
+  'Fabletics': 'Loungewear',
+
+  // ── Bohemian ────────────────────────────────────────
+  // Eclectic, flowy, earthy, artisanal aesthetic
+  'Free People': 'Bohemian',
+  'Anthropologie': 'Bohemian',
+  'Reformation': 'Bohemian',
+  'Faherty': 'Bohemian',
 
   // ── Contemporary ────────────────────────────────────
+  // Modern, polished everyday — default catch-all
   'Banana Republic': 'Contemporary',
   'J.Crew': 'Contemporary',
   'Bonobos': 'Contemporary',
   'Charles Tyrwhitt': 'Contemporary',
-  'Free People': 'Contemporary',
-  'Anthropologie': 'Contemporary',
   'UNTUCKit': 'Contemporary',
-
-  // ── Luxury (promoted from Contemporary) ─────────────
-  'Todd Snyder': 'Luxury',
-  'Reiss': 'Luxury',
-  'Sandro': 'Luxury',
-  'Theory': 'Luxury',
-  'Ted Baker': 'Luxury',
-  'Tory Burch': 'Luxury',
-  'Coach': 'Luxury',
-  'Kate Spade': 'Luxury',
-  'Michael Kors': 'Luxury',
-  'SuitSupply': 'Luxury',
-  'Mejuri': 'Luxury',
-
-  // ── Fast Fashion (moved from Contemporary) ──────────
-  'Gap': 'Fast Fashion',
-  'Old Navy': 'Fast Fashion',
-  'Abercrombie & Fitch': 'Fast Fashion',
-  'Abercrombie': 'Fast Fashion',
-  'Eloquii': 'Fast Fashion',
-  'SKIMS': 'Fast Fashion',
-  'Savage X Fenty': 'Fast Fashion',
-  "Victoria's Secret": 'Fast Fashion',
-
-  // ── Athletic (moved from Contemporary) ──────────────
-  'Public Rec': 'Athletic',
-  'Public Rec 2.0': 'Athletic',
-  'Mizzen+Main': 'Athletic',
-
-  // ── Sustainable (moved from Contemporary) ───────────
-  'Eileen Fisher': 'Sustainable',
-  'Marine Layer': 'Sustainable',
-  "Rothy's": 'Sustainable',
-
-  // ── Workwear & Heritage (moved from Contemporary) ───
-  'Buck Mason': 'Workwear & Heritage',
-  'Grayers': 'Workwear & Heritage',
-  'Schott': 'Workwear & Heritage',
-
-  // ── Streetwear (moved from Contemporary) ────────────
-  'AllSaints': 'Streetwear',
+  'Steve Madden': 'Contemporary',
+  'Ray-Ban': 'Contemporary',
+  'Radial': 'Contemporary',
+  'Custom Club': 'Contemporary',
+  'Project Vermont': 'Contemporary',
+  'Authentic': 'Contemporary',
+  'Phaidon': 'Contemporary',
+  'Doraemon': 'Contemporary',
+  'Nordstrom': 'Contemporary',
+  'Macys': 'Contemporary',
+  'Target': 'Contemporary',
+  'Ok Accessories': 'Contemporary',
+  'Ok Mens': 'Contemporary',
+  'OK Mens': 'Contemporary',
+  'Ok Unisex': 'Contemporary',
+  'OK Unisex': 'Contemporary',
+  'Ok Womens': 'Contemporary',
+  'OK Womens': 'Contemporary',
 
   // ── Outdoor & Active ────────────────────────────────
   'Patagonia': 'Outdoor & Active',
@@ -174,6 +205,10 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'Taylor Stitch': 'Workwear & Heritage',
   'Filson': 'Workwear & Heritage',
   'Roark': 'Workwear & Heritage',
+  'Buck Mason': 'Workwear & Heritage',
+  'Grayers': 'Workwear & Heritage',
+  'Grayers ': 'Workwear & Heritage',
+  'Schott': 'Workwear & Heritage',
 
   // ── Surf & Skate ────────────────────────────────────
   'Billabong': 'Surf & Skate',
@@ -184,68 +219,22 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'Vans': 'Surf & Skate',
   'Quiksilver': 'Surf & Skate',
   'Volcom': 'Surf & Skate',
-
-  // ── Sustainable ─────────────────────────────────────
-  'Reformation': 'Sustainable',
-  'Everlane': 'Sustainable',
-  'Allbirds': 'Sustainable',
-  'Faherty': 'Sustainable',
-
-  // ── Department Store (true multi-brand retailers) ───
-  'Nordstrom': 'Department Store',
-  'Macys': 'Department Store',
-  'Target': 'Department Store',
-  'Ok Accessories': 'Department Store',
-  'Ok Mens': 'Department Store',
-  'OK Mens': 'Department Store',
-  'Ok Unisex': 'Department Store',
-  'OK Unisex': 'Department Store',
-  'Ok Womens': 'Department Store',
-  'OK Womens': 'Department Store',
-
-  // ── Luxury (promoted from Department Store) ─────────
-  'Farfetch': 'Luxury',
-  'Saks': 'Luxury',
-  'SSENSE': 'Luxury',
-  'Net-a-Porter': 'Luxury',
-  'Revolve': 'Luxury',
-
-  // ── Fast Fashion (moved from Department Store) ──────
-  'ASOS': 'Fast Fashion',
-  'Amazon Fashion': 'Fast Fashion',
-
-  // ── Streetwear (moved from Department Store) ────────
-  'Urban Outfitters': 'Streetwear',
-
-  // ── Contemporary (moved from Department Store) ──────
-  'Steve Madden': 'Contemporary',
-  'Ray-Ban': 'Contemporary',
-
-  // ── Remaining catalog brands ────────────────────────
-  'Cutler And Gross': 'Luxury',
-  'Grayers ': 'Workwear & Heritage',  // trailing space variant
   'World Industries': 'Surf & Skate',
-  'Recurate': 'Sustainable',
-  'Trove': 'Sustainable',
-  'Radial': 'Contemporary',
-  'Custom Club': 'Contemporary',
-  'Mark Bodē': 'Streetwear',
-  'Project Vermont': 'Contemporary',
-  'Authentic': 'Contemporary',
-  'Phaidon': 'Contemporary',
-  'Doraemon': 'Contemporary',
-  'San Francisco Giants': 'Athletic',
+
+  // ── Sustainable brands → reclassified ───────────────
+  'Recurate': 'Minimalist',
+  'Trove': 'Minimalist',
 };
 
 // Normalised lookup (case-insensitive)
 const NORMALISED_MAP = new Map<string, BrandGenre>();
 for (const [brand, genre] of Object.entries(BRAND_GENRE_MAP)) {
-  NORMALISED_MAP.set(brand.toLowerCase(), genre);
+  NORMALISED_MAP.set(brand.toLowerCase().trim(), genre);
 }
 
 /** Get the genre for a brand name (case-insensitive). Falls back to 'Contemporary'. */
 export function getBrandGenre(brand: string): BrandGenre {
-  return NORMALISED_MAP.get(brand.toLowerCase()) ?? 'Contemporary';
+  return NORMALISED_MAP.get(brand.toLowerCase().trim()) ?? 'Contemporary';
 }
 
 /** Get all brands belonging to a specific genre. */
