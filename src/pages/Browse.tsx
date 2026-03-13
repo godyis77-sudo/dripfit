@@ -69,6 +69,7 @@ const Browse = () => {
   const [sort, setSort] = useState<SortKey>('default');
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
   const [genreFilter, setGenreFilter] = useState<BrandGenre | null>(null);
+  const [fitFilter, setFitFilter] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
 
