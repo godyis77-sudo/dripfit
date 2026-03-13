@@ -34,6 +34,7 @@ const SORT_OPTIONS = [
   { key: 'price_asc', label: 'Price: Low → High' },
   { key: 'price_desc', label: 'Price: High → Low' },
   { key: 'brand_az', label: 'Brand: A → Z' },
+  { key: 'genre', label: 'Genre' },
 ] as const;
 
 type SortKey = typeof SORT_OPTIONS[number]['key'];
