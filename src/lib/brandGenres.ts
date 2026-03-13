@@ -107,42 +107,54 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'Tommy Hilfiger': 'Fast Fashion',
 
   // ── Contemporary ────────────────────────────────────
-  'Gap': 'Contemporary',
-  'Old Navy': 'Contemporary',
   'Banana Republic': 'Contemporary',
   'J.Crew': 'Contemporary',
-  'Abercrombie & Fitch': 'Contemporary',
-  'Abercrombie': 'Contemporary',
-  'Todd Snyder': 'Contemporary',
-  'Grayers': 'Contemporary',
-  'Public Rec': 'Contemporary',
-  'Public Rec 2.0': 'Contemporary',
-  'Marine Layer': 'Contemporary',
-  'Anthropologie': 'Contemporary',
-  "Rothy's": 'Contemporary',
-  'AllSaints': 'Contemporary',
   'Bonobos': 'Contemporary',
-  'Buck Mason': 'Contemporary',
   'Charles Tyrwhitt': 'Contemporary',
-  'Eileen Fisher': 'Contemporary',
   'Free People': 'Contemporary',
-  'Mizzen+Main': 'Contemporary',
-  'Reiss': 'Contemporary',
-  'Sandro': 'Contemporary',
-  'Theory': 'Contemporary',
-  'Ted Baker': 'Contemporary',
-  'Tory Burch': 'Contemporary',
+  'Anthropologie': 'Contemporary',
   'UNTUCKit': 'Contemporary',
-  'Coach': 'Contemporary',
-  'Kate Spade': 'Contemporary',
-  'Michael Kors': 'Contemporary',
-  'SuitSupply': 'Contemporary',
-  'Eloquii': 'Contemporary',
-  'Mejuri': 'Contemporary',
-  'Schott': 'Contemporary',
-  'SKIMS': 'Contemporary',
-  'Savage X Fenty': 'Contemporary',
-  "Victoria's Secret": 'Contemporary',
+
+  // ── Luxury (promoted from Contemporary) ─────────────
+  'Todd Snyder': 'Luxury',
+  'Reiss': 'Luxury',
+  'Sandro': 'Luxury',
+  'Theory': 'Luxury',
+  'Ted Baker': 'Luxury',
+  'Tory Burch': 'Luxury',
+  'Coach': 'Luxury',
+  'Kate Spade': 'Luxury',
+  'Michael Kors': 'Luxury',
+  'SuitSupply': 'Luxury',
+  'Mejuri': 'Luxury',
+
+  // ── Fast Fashion (moved from Contemporary) ──────────
+  'Gap': 'Fast Fashion',
+  'Old Navy': 'Fast Fashion',
+  'Abercrombie & Fitch': 'Fast Fashion',
+  'Abercrombie': 'Fast Fashion',
+  'Eloquii': 'Fast Fashion',
+  'SKIMS': 'Fast Fashion',
+  'Savage X Fenty': 'Fast Fashion',
+  "Victoria's Secret": 'Fast Fashion',
+
+  // ── Athletic (moved from Contemporary) ──────────────
+  'Public Rec': 'Athletic',
+  'Public Rec 2.0': 'Athletic',
+  'Mizzen+Main': 'Athletic',
+
+  // ── Sustainable (moved from Contemporary) ───────────
+  'Eileen Fisher': 'Sustainable',
+  'Marine Layer': 'Sustainable',
+  "Rothy's": 'Sustainable',
+
+  // ── Workwear & Heritage (moved from Contemporary) ───
+  'Buck Mason': 'Workwear & Heritage',
+  'Grayers': 'Workwear & Heritage',
+  'Schott': 'Workwear & Heritage',
+
+  // ── Streetwear (moved from Contemporary) ────────────
+  'AllSaints': 'Streetwear',
 
   // ── Outdoor & Active ────────────────────────────────
   'Patagonia': 'Outdoor & Active',
@@ -179,24 +191,39 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'Allbirds': 'Sustainable',
   'Faherty': 'Sustainable',
 
-  // ── Department Store / Multi-brand ──────────────────
+  // ── Department Store (true multi-brand retailers) ───
   'Nordstrom': 'Department Store',
-  'ASOS': 'Department Store',
-  'Revolve': 'Department Store',
-  'Amazon Fashion': 'Department Store',
-  'Urban Outfitters': 'Department Store',
-  'Target': 'Department Store',
-  'Farfetch': 'Department Store',
-  'Steve Madden': 'Department Store',
   'Macys': 'Department Store',
-  'Saks': 'Department Store',
-  'SSENSE': 'Department Store',
-  'Net-a-Porter': 'Department Store',
-  'Ray-Ban': 'Department Store',
+  'Target': 'Department Store',
+  'Ok Accessories': 'Department Store',
+  'Ok Mens': 'Department Store',
+  'OK Mens': 'Department Store',
+  'Ok Unisex': 'Department Store',
+  'OK Unisex': 'Department Store',
+  'Ok Womens': 'Department Store',
+  'OK Womens': 'Department Store',
+
+  // ── Luxury (promoted from Department Store) ─────────
+  'Farfetch': 'Luxury',
+  'Saks': 'Luxury',
+  'SSENSE': 'Luxury',
+  'Net-a-Porter': 'Luxury',
+  'Revolve': 'Luxury',
+
+  // ── Fast Fashion (moved from Department Store) ──────
+  'ASOS': 'Fast Fashion',
+  'Amazon Fashion': 'Fast Fashion',
+
+  // ── Streetwear (moved from Department Store) ────────
+  'Urban Outfitters': 'Streetwear',
+
+  // ── Contemporary (moved from Department Store) ──────
+  'Steve Madden': 'Contemporary',
+  'Ray-Ban': 'Contemporary',
 
   // ── Remaining catalog brands ────────────────────────
   'Cutler And Gross': 'Luxury',
-  'Grayers ': 'Contemporary',        // trailing space variant
+  'Grayers ': 'Workwear & Heritage',  // trailing space variant
   'World Industries': 'Surf & Skate',
   'Recurate': 'Sustainable',
   'Trove': 'Sustainable',
@@ -208,13 +235,6 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'Phaidon': 'Contemporary',
   'Doraemon': 'Contemporary',
   'San Francisco Giants': 'Athletic',
-  'Ok Accessories': 'Department Store',
-  'Ok Mens': 'Department Store',
-  'OK Mens': 'Department Store',
-  'Ok Unisex': 'Department Store',
-  'OK Unisex': 'Department Store',
-  'Ok Womens': 'Department Store',
-  'OK Womens': 'Department Store',
 };
 
 // Normalised lookup (case-insensitive)
