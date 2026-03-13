@@ -1177,7 +1177,8 @@ async function searchProducts(
   console.log(`[search-fallback] Query: "${searchQuery}"`);
 
   try {
-    // Metadata-only search: 1 credit per call (NO scrapeOptions = no per-result scraping)
+    // Search with lightweight scrapeOptions to get og:image metadata
+    // Cost: 1 base + 1 per result = 6 credits for limit=5
     const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/search', {
       method: 'POST',
       headers: {
@@ -1186,9 +1187,10 @@ async function searchProducts(
       },
       body: JSON.stringify({
         query: searchQuery,
-        limit: 10,
+        limit: 5,
         lang: 'en',
         country: 'us',
+        scrapeOptions: { formats: ['markdown'] },
       }),
     });
 
