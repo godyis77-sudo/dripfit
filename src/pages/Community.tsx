@@ -41,6 +41,7 @@ const Community = () => {
   const [followingSort, setFollowingSort] = useState<TrendingSort>('newest');
   const [filterUserId, setFilterUserId] = useState<string | null>(null);
   const [similarFitTooltip, setSimilarFitTooltip] = useState(false);
+  const [showSortOptions, setShowSortOptions] = useState(false);
 
   // Close detail sheet on browser/hardware back button
   const closeDetail = useCallback(() => setDetailPost(null), []);
