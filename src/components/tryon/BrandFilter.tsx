@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
+import { getBrandGenre } from '@/lib/brandGenres';
 
 interface BrandFilterProps {
   gender: string | null; // 'mens' | 'womens' | null
