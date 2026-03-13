@@ -145,6 +145,26 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
               ${(product.price_cents / 100).toFixed(0)}
             </p>
           )}
+          {/* Fit / Fabric / Genre pills */}
+          {(hasFit || hasFabric || product.style_genre) && (
+            <div className="flex flex-wrap justify-center gap-1.5 mt-2">
+              {product.style_genre && (
+                <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold uppercase tracking-wider">
+                  {product.style_genre}
+                </span>
+              )}
+              {hasFit && fitItems.map((fit) => (
+                <span key={fit} className="px-2 py-0.5 rounded-full bg-white/10 text-white/80 text-[10px] font-semibold capitalize">
+                  {fit}
+                </span>
+              ))}
+              {hasFabric && fabricItems.map((fab) => (
+                <span key={fab} className="px-2 py-0.5 rounded-full bg-white/10 text-white/80 text-[10px] font-semibold capitalize">
+                  {fab}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Add to Wardrobe */}
