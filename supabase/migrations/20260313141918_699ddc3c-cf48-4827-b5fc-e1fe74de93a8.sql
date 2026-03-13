@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS public.idx_brand_size_charts_active;
