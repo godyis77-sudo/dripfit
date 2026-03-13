@@ -47,6 +47,12 @@ const GENDER_OPTIONS = [
 
 type GenderKey = typeof GENDER_OPTIONS[number]['key'];
 
+const FIT_OPTIONS = [
+  'oversized', 'boxy', 'relaxed fit', 'slim fit', 'regular fit',
+  'cropped', 'tapered', 'drop shoulder', 'heavyweight', 'lightweight',
+  'athletic fit', 'classic fit', 'skinny fit', 'loose fit',
+] as const;
+
 const Browse = () => {
   const { category = 'tops' } = useParams<{ category: string }>();
   const navigate = useNavigate();
@@ -63,6 +69,7 @@ const Browse = () => {
   const [sort, setSort] = useState<SortKey>('default');
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
   const [genreFilter, setGenreFilter] = useState<BrandGenre | null>(null);
+  const [fitFilter, setFitFilter] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
 
@@ -89,6 +96,12 @@ const Browse = () => {
       result = result.filter(p => getBrandGenre(p.brand) === genreFilter);
     }
 
+    if (fitFilter) {
+      result = result.filter(p =>
+        Array.isArray(p.fit_profile) && p.fit_profile.some(f => f === fitFilter)
+      );
+    }
+
     switch (sort) {
       case 'price_asc':
         result.sort((a, b) => (a.price_cents ?? 0) - (b.price_cents ?? 0));
@@ -113,9 +126,18 @@ const Browse = () => {
     }
 
     return result;
-  }, [products, sort, brandFilter, genreFilter]);
+  }, [products, sort, brandFilter, genreFilter, fitFilter]);
 
-  const activeFilterCount = (brandFilter ? 1 : 0) + (genreFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0);
+  // Compute available fits from current products (to only show relevant pills)
+  const availableFits = useMemo(() => {
+    const fits = new Set<string>();
+    products.forEach(p => {
+      if (Array.isArray(p.fit_profile)) p.fit_profile.forEach(f => fits.add(f));
+    });
+    return FIT_OPTIONS.filter(f => fits.has(f));
+  }, [products]);
+
+  const activeFilterCount = (brandFilter ? 1 : 0) + (genreFilter ? 1 : 0) + (fitFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
@@ -291,10 +313,42 @@ const Browse = () => {
                 </div>
               </div>
 
+              {/* Fit filter */}
+              {availableFits.length > 0 && (
+                <div>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Fit / Cut</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    <button
+                      onClick={() => setFitFilter(null)}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                        !fitFilter
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-background border border-border text-muted-foreground'
+                      }`}
+                    >
+                      All
+                    </button>
+                    {availableFits.map(fit => (
+                      <button
+                        key={fit}
+                        onClick={() => setFitFilter(fit === fitFilter ? null : fit)}
+                        className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                          fitFilter === fit
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-background border border-border text-muted-foreground'
+                        }`}
+                      >
+                        {fit}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Clear filters */}
               {activeFilterCount > 0 && (
                 <button
-                  onClick={() => { setSort('default'); setBrandFilter(null); setGenreFilter(null); }}
+                  onClick={() => { setSort('default'); setBrandFilter(null); setGenreFilter(null); setFitFilter(null); }}
                   className="text-[10px] text-primary font-semibold"
                 >
                   Clear all filters
