@@ -2079,6 +2079,13 @@ Deno.serve(async (req) => {
       return successResponse({ ...results, skipped: true, recentCount, message: `Already have ${recentCount} recent products, skipping to save credits` }, 200, corsHeaders);
     }
 
+    // Small jitter reduces burst collisions when many jobs start simultaneously
+    const jitterMs = Math.floor(Math.random() * 1200);
+    if (jitterMs > 0) {
+      console.log(`[run:${runId}] Jitter ${jitterMs}ms before Firecrawl calls`);
+      await delay(jitterMs);
+    }
+
     // ── STAGES 1+2: Firecrawl scrape + rawHtml image extraction ──────
     const rawProducts = await scrapeProducts(brand, category, FIRECRAWL_API_KEY);
     results.extracted = rawProducts.length;
