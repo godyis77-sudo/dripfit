@@ -429,6 +429,31 @@ const Browse = () => {
         )}
       </div>
 
+      {/* Affiliate clickout confirmation */}
+      {pendingClickout && (
+        <div className="fixed inset-0 z-[110] flex items-end justify-center bg-black/60" onClick={cancelClickout}>
+          <div
+            className="w-full max-w-sm bg-card border-t border-border rounded-t-2xl p-4 space-y-3 mb-0"
+            onClick={e => e.stopPropagation()}
+          >
+            <p className="text-[13px] font-bold text-foreground">
+              You're leaving the app to visit {pendingClickout.retailer}.
+            </p>
+            <p className="text-[11px] text-muted-foreground">
+              Some links may earn us a commission.
+            </p>
+            <div className="flex gap-2">
+              <Button className="flex-1 h-10 rounded-xl btn-luxury text-primary-foreground text-[12px] font-bold" onClick={confirmClickout}>
+                <ExternalLink className="mr-1.5 h-3.5 w-3.5" /> Continue to Store
+              </Button>
+              <Button variant="outline" className="h-10 rounded-xl text-[12px]" onClick={cancelClickout}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <ProductPreviewModal
         product={previewProduct}
         onClose={() => setPreviewProduct(null)}
@@ -437,8 +462,8 @@ const Browse = () => {
           setPreviewProduct(null);
         }}
         onShop={previewProduct?.product_url ? (p) => {
-          trackEvent('browse_product_clicked', { brand: p.brand, category: p.category });
-          window.open(p.product_url!, '_blank', 'noopener');
+          setPreviewProduct(null);
+          beginClickout(p.brand, p.product_url!);
         } : undefined}
       />
       <BottomTabBar />
