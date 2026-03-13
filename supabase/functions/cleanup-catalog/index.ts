@@ -263,7 +263,7 @@ Deno.serve(async (req) => {
     while (hasMore) {
       const { data: products, error } = await supabase
         .from("product_catalog")
-        .select("id, name, brand, category, style_genre, is_active")
+        .select("id, name, brand, category, style_genre, is_active, fit_profile, fabric_composition")
         .eq("is_active", true)
         .range(offset, offset + batchSize - 1)
         .order("created_at", { ascending: true });
