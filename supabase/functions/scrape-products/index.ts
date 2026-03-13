@@ -869,7 +869,7 @@ const SHOPIFY_STORES: Record<string, { domain: string; collections?: Record<stri
   // ── Menswear ──
   'true classic':       { domain: 'https://trueclassictees.com', collections: { tops: ['mens-crew-neck-t-shirts', 'mens-v-neck-t-shirts', 'mens-polos'], bottoms: ['mens-pants-joggers'], outerwear: ['mens-hoodies-jackets'], shorts: ['mens-shorts'], activewear: ['mens-activewear'] } },
   'mizzen+main':        { domain: 'https://www.mizzenandmain.com', collections: { tops: ['dress-shirts', 'polos'], bottoms: ['pants', 'jeans'], shorts: ['shorts'], outerwear: ['jackets'] } },
-  'buck mason':         { domain: 'https://www.buckmason.com', collections: { tops: ['t-shirts', 'shirts'], bottoms: ['pants', 'denim'], outerwear: ['jackets'] } },
+  
   untuckit:             { domain: 'https://www.untuckit.com', collections: { tops: ['mens-shirts', 'womens-tops'], outerwear: ['mens-jackets', 'womens-jackets'] } },
   bonobos:              { domain: 'https://bonobos.com', collections: { tops: ['shirts', 'polos'], bottoms: ['pants', 'jeans'], shorts: ['shorts'], outerwear: ['outerwear'], swimwear: ['swim'] } },
   cuts:                 { domain: 'https://www.cutsclothing.com', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outerwear'] } },
