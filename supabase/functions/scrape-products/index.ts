@@ -633,6 +633,19 @@ const BRAND_DOMAINS: Record<string, string> = {
   'alo yoga': 'https://www.aloyoga.com', skims: 'https://skims.com',
   allsaints: 'https://www.allsaints.com', fabletics: 'https://www.fabletics.com',
   "stüssy": 'https://www.stussy.com', kith: 'https://kith.com',
+  'buck mason': 'https://www.buckmason.com', 'on running': 'https://www.on.com',
+  "arc'teryx": 'https://arcteryx.com', untuckit: 'https://www.untuckit.com',
+  suitsupply: 'https://suitsupply.com', bonobos: 'https://bonobos.com',
+  'tommy hilfiger': 'https://usa.tommy.com', 'calvin klein': 'https://www.calvinklein.us',
+  'hugo boss': 'https://www.hugoboss.com', 'mizzen+main': 'https://www.mizzenandmain.com',
+  'eileen fisher': 'https://www.eileenfisher.com', 'girlfriend collective': 'https://girlfriend.com',
+  rhone: 'https://www.rhone.com', 'under armour': 'https://www.underarmour.com',
+  ugg: 'https://www.ugg.com', 'tory burch': 'https://www.toryburch.com',
+  sandro: 'https://us.sandro-paris.com', theory: 'https://www.theory.com',
+  reiss: 'https://www.reiss.com', 'ted baker': 'https://www.tedbaker.com',
+  'true classic': 'https://trueclassictees.com', coach: 'https://www.coach.com',
+  'kate spade': 'https://www.katespade.com', 'michael kors': 'https://www.michaelkors.com',
+  hoka: 'https://www.hoka.com', 'steve madden': 'https://www.stevemadden.com',
 };
 
 // Category keywords for map search filtering
