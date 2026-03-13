@@ -34,6 +34,7 @@ const Community = () => {
   const [shopGender, setShopGender] = useState<GenderKey>('all');
   const [shopBrand, setShopBrand] = useState<string | null>(null);
   const [shopCategory, setShopCategory] = useState('tops');
+  const [shopGenre, setShopGenre] = useState<BrandGenre | null>(null);
   const [showPostFlow, setShowPostFlow] = useState(false);
   const [detailPost, setDetailPost] = useState<Post | null>(null);
   const [trendingSort, setTrendingSort] = useState<TrendingSort>('hot');
