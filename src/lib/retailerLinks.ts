@@ -1,5 +1,5 @@
 import { getUserRegion, type UserRegion } from '@/lib/session';
-import { appendAffiliateParams } from '@/lib/affiliateConfig';
+import { resolveClickoutByName } from '@/lib/affiliateRouter';
 
 /** Region-specific domain overrides */
 const REGION_DOMAINS: Partial<Record<string, Partial<Record<UserRegion, string>>>> = {
