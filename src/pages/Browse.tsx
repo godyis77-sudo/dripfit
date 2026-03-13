@@ -81,10 +81,12 @@ const Browse = () => {
   const displayed = useMemo(() => {
     let result = [...products];
 
-    // Brand filtering is handled via brandFilter state below
-
     if (brandFilter) {
       result = result.filter(p => p.brand === brandFilter);
+    }
+
+    if (genreFilter) {
+      result = result.filter(p => getBrandGenre(p.brand) === genreFilter);
     }
 
     switch (sort) {
@@ -97,10 +99,21 @@ const Browse = () => {
       case 'brand_az':
         result.sort((a, b) => a.brand.localeCompare(b.brand));
         break;
+      case 'genre': {
+        const genreOrder = new Map(BRAND_GENRES.map((g, i) => [g, i]));
+        result.sort((a, b) => {
+          const ga = getBrandGenre(a.brand);
+          const gb = getBrandGenre(b.brand);
+          const diff = (genreOrder.get(ga) ?? 99) - (genreOrder.get(gb) ?? 99);
+          if (diff !== 0) return diff;
+          return a.brand.localeCompare(b.brand);
+        });
+        break;
+      }
     }
 
     return result;
-  }, [products, sort, brandFilter]);
+  }, [products, sort, brandFilter, genreFilter]);
 
   const activeFilterCount = (brandFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0);
 
