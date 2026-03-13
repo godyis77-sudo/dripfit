@@ -385,6 +385,18 @@ Deno.serve(async (req) => {
               .in("id", chunk);
           }
         }
+
+        // Batch fit/fabric tagging — individual updates (different values per product)
+        for (const item of toFitFabric) {
+          await supabase
+            .from("product_catalog")
+            .update({
+              fit_profile: item.fit_profile,
+              fabric_composition: item.fabric_composition,
+              updated_at: new Date().toISOString(),
+            } as any)
+            .eq("id", item.id);
+        }
       }
 
       if (products.length < batchSize) {
@@ -393,7 +405,7 @@ Deno.serve(async (req) => {
       offset += batchSize;
     }
 
-    console.log(`Cleanup complete: ${stats.checked} checked, ${stats.listing_pages_deactivated} listing pages, ${stats.non_products_deactivated} non-products, ${stats.too_short_deactivated} too short, ${stats.categories_remapped} remapped, ${stats.genres_tagged} genres tagged`);
+    console.log(`Cleanup complete: ${stats.checked} checked, ${stats.listing_pages_deactivated} listing pages, ${stats.non_products_deactivated} non-products, ${stats.too_short_deactivated} too short, ${stats.categories_remapped} remapped, ${stats.genres_tagged} genres tagged, ${stats.fit_fabric_tagged} fit/fabric tagged`);
 
     return new Response(JSON.stringify({ success: true, ...stats }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
