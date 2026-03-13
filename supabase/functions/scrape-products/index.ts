@@ -2045,7 +2045,8 @@ async function extractFromUrls(
 }
 
 /**
- * Primary scrape path: uses /v1/extract for URL configs, falls back to legacy scrape.
+ * Primary scrape path: uses /v1/extract for URL configs only.
+ * Legacy /v1/scrape fallback removed to save 10-25 credits per failed extract.
  */
 async function scrapeUrlConfigs(
   brand: string,
@@ -2055,137 +2056,15 @@ async function scrapeUrlConfigs(
 ): Promise<RawProduct[]> {
   const urls = urlConfigs.map(c => c.url);
 
-  // Try extract v2 first (cleaner, returns images directly)
   const extractResults = await extractFromUrls(brand, category, urls, category, firecrawlApiKey);
   if (extractResults.length > 0) {
     for (const p of extractResults) p._method = p._method || 'extract';
     return extractResults;
   }
 
-  // Fall back to legacy scrape + rawHtml parsing
-  console.log(`[scrape] Extract returned 0 for ${brand}/${category}, trying legacy scrape`);
-  const legacyResults = await scrapeUrlConfigsLegacy(brand, category, urlConfigs, firecrawlApiKey);
-  for (const p of legacyResults) p._method = p._method || 'legacy_scrape';
-  return legacyResults;
-}
-
-/**
- * Legacy scrape path: /v1/scrape with extract format + rawHtml image extraction.
- * Used as fallback when /v1/extract returns no results.
- */
-async function scrapeUrlConfigsLegacy(
-  brand: string,
-  category: string,
-  urlConfigs: CategoryUrl[],
-  firecrawlApiKey: string
-): Promise<RawProduct[]> {
-  const allProducts: RawProduct[] = [];
-
-  const jsonSchema = {
-    type: 'object',
-    properties: {
-      products: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            name:         { type: 'string', description: 'Exact product name as shown on page' },
-            product_url:  { type: 'string', description: 'Absolute URL to the product detail page' },
-            price_cents:  { type: ['integer', 'null'], description: 'Price in cents (e.g. $89.99 = 8999)' },
-            currency:     { type: 'string', description: '3-letter currency code' },
-            category_raw: { type: ['string', 'null'], description: 'Category label from the page' },
-            colour:       { type: ['string', 'null'], description: 'Colour from product name/label' },
-          },
-          required: ['name', 'product_url'],
-        },
-      },
-    },
-    required: ['products'],
-  };
-
-  for (const urlConfig of urlConfigs) {
-    try {
-      console.log(`[scrape-legacy] Firecrawl extract+links: ${urlConfig.url}`);
-
-      const scrapeBody: Record<string, unknown> = {
-        url: urlConfig.url,
-        formats: ['extract', 'rawHtml'],
-        waitFor: urlConfig.waitFor ?? 3000,
-        timeout: 45000,
-        extract: {
-          schema: jsonSchema,
-          prompt: `Extract all fashion products visible on this ${brand} category page. For each product, get the exact product name, product detail page URL (absolute), price in cents, category, and colour. Include items loaded via infinite scroll or lazy loading.`,
-        },
-      };
-
-      if (urlConfig.actions?.length) {
-        scrapeBody.actions = urlConfig.actions;
-      }
-
-      const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/scrape', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${firecrawlApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(scrapeBody),
-      });
-
-      const data = await resp.json();
-
-      if (!resp.ok) {
-        console.warn(`[scrape-legacy] Firecrawl error for ${urlConfig.url}: ${JSON.stringify(data).slice(0, 300)}`);
-        continue;
-      }
-
-      const extracted = data.data?.extract || data.extract || {};
-      const products = extracted?.products || [];
-      
-      const rawHtml = data.data?.rawHtml || data.rawHtml || '';
-      const allImageUrls = extractImageUrlsFromHtml(rawHtml);
-      
-      console.log(`[scrape-legacy] extracted ${products.length} products, ${allImageUrls.length} image URLs from rawHtml of ${urlConfig.url}`);
-
-      const usedImages = new Set<string>();
-      
-      for (let i = 0; i < products.length; i++) {
-        const p = products[i];
-        if (!p.name || !p.product_url) continue;
-        if (p.name.length < 8 || isListingPageName(p.name)) continue;
-
-        let productImages = matchImagesToProduct(p.product_url, p.name, allImageUrls, brand);
-        
-        if (!productImages.length && allImageUrls.length > 0) {
-          const imagesPerProduct = Math.max(1, Math.floor(allImageUrls.length / Math.max(products.length, 1)));
-          const start = i * imagesPerProduct;
-          const end = Math.min(start + imagesPerProduct, allImageUrls.length);
-          productImages = allImageUrls.slice(start, end).filter(img => !usedImages.has(img));
-        }
-        
-        productImages = productImages.filter(img => !usedImages.has(img));
-        productImages.forEach(img => usedImages.add(img));
-
-        if (productImages.length > 0) {
-          allProducts.push({
-            name: p.name,
-            brand,
-            product_url: p.product_url,
-            price_cents: p.price_cents ?? null,
-            currency: p.currency ?? 'USD',
-            image_urls: productImages.slice(0, 8),
-            category_raw: p.category_raw ?? category,
-            colour: p.colour ?? null,
-          });
-        }
-      }
-    } catch (err) {
-      console.warn(`[scrape-legacy] failed for ${urlConfig.url}:`, err);
-    }
-
-    await delay(1500);
-  }
-
-  return allProducts;
+  // Skip legacy scrape entirely — let caller fall through to cheap search
+  console.log(`[scrape] Extract returned 0 for ${brand}/${category}, skipping legacy scrape (credit saver)`);
+  return [];
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
