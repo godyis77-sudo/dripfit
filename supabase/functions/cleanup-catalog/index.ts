@@ -362,7 +362,7 @@ Deno.serve(async (req) => {
       offset += batchSize;
     }
 
-    console.log(`Cleanup complete: ${stats.checked} checked, ${stats.listing_pages_deactivated} listing pages, ${stats.non_products_deactivated} non-products, ${stats.too_short_deactivated} too short, ${stats.categories_remapped} remapped`);
+    console.log(`Cleanup complete: ${stats.checked} checked, ${stats.listing_pages_deactivated} listing pages, ${stats.non_products_deactivated} non-products, ${stats.too_short_deactivated} too short, ${stats.categories_remapped} remapped, ${stats.genres_tagged} genres tagged`);
 
     return new Response(JSON.stringify({ success: true, ...stats }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
