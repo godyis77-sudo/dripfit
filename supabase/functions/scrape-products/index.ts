@@ -3151,10 +3151,28 @@ Deno.serve(async (req) => {
     }
 
     // ── STAGES 1+2: Direct HTTP + optional Firecrawl scraping ────────
+    const creditsBefore = credits;
     const rawProducts = await scrapeProducts(brand, category, FIRECRAWL_API_KEY, useFirecrawl);
     results.extracted = rawProducts.length;
     results.scraped = rawProducts.length > 0 ? 1 : 0;
     results.withImages = rawProducts.filter(p => p.image_urls.length > 0).length;
+
+    // ── CREDIT BUDGET ALERT ──────────────────────────────────────────
+    if (useFirecrawl && creditsBefore !== null) {
+      const creditsAfter = await checkFirecrawlCredits(FIRECRAWL_API_KEY);
+      if (creditsAfter !== null) {
+        const spent = creditsBefore - creditsAfter;
+        (results as any).creditsSpent = spent;
+        if (spent > 500) {
+          console.error(`[CREDIT ALERT] ${brand}/${category} spent ${spent} Firecrawl credits in a single run! (before: ${creditsBefore}, after: ${creditsAfter})`);
+        } else if (spent > 100) {
+          console.warn(`[CREDIT WARNING] ${brand}/${category} spent ${spent} Firecrawl credits (before: ${creditsBefore}, after: ${creditsAfter})`);
+        } else {
+          console.log(`[run:${runId}] Credits spent: ${spent} (${creditsBefore} → ${creditsAfter})`);
+        }
+      }
+    }
+
     console.log(`[run:${runId}] Extracted ${rawProducts.length} products (${results.withImages} with images)`);
 
     if (!rawProducts.length) {
