@@ -855,7 +855,7 @@ const SHOPIFY_STORES: Record<string, { domain: string; collections?: Record<stri
   // ── Athletic & Active ──
   gymshark:             { domain: 'https://www.gymshark.com', collections: { tops: ['t-shirts-tops'], bottoms: ['joggers', 'leggings'], shorts: ['shorts'], outerwear: ['hoodies-jackets'], accessories: ['accessories'] } },
   'alo yoga':           { domain: 'https://www.aloyoga.com', collections: { tops: ['women-tops', 'men-tops'], bottoms: ['women-bottoms', 'men-bottoms'], outerwear: ['women-jackets-coats', 'men-outerwear'], accessories: ['accessories'] } },
-  vuori:                { domain: 'https://vuori.com', collections: { tops: ['mens-tops', 'womens-tops'], bottoms: ['mens-bottoms', 'womens-bottoms'], shorts: ['mens-shorts', 'womens-shorts'], outerwear: ['mens-outerwear', 'womens-outerwear'] } },
+  
   'girlfriend collective': { domain: 'https://girlfriend.com', collections: { tops: ['tops'], bottoms: ['leggings', 'shorts'], outerwear: ['outerwear'], activewear: ['sports-bras'], swimwear: ['swim'], dresses: ['dresses'] } },
   rhone:                { domain: 'https://www.rhone.com', collections: { tops: ['mens-shirts'], bottoms: ['mens-pants', 'mens-joggers'], shorts: ['mens-shorts'], outerwear: ['mens-outerwear'], activewear: ['mens-workout-tops'] } },
   'outdoor voices':     { domain: 'https://www.outdoorvoices.com', collections: { tops: ['tops'], bottoms: ['bottoms'], shorts: ['shorts'], outerwear: ['outerwear'], dresses: ['dresses'] } },
