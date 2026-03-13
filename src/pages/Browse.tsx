@@ -126,9 +126,18 @@ const Browse = () => {
     }
 
     return result;
-  }, [products, sort, brandFilter, genreFilter]);
+  }, [products, sort, brandFilter, genreFilter, fitFilter]);
 
-  const activeFilterCount = (brandFilter ? 1 : 0) + (genreFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0);
+  // Compute available fits from current products (to only show relevant pills)
+  const availableFits = useMemo(() => {
+    const fits = new Set<string>();
+    products.forEach(p => {
+      if (Array.isArray(p.fit_profile)) p.fit_profile.forEach(f => fits.add(f));
+    });
+    return FIT_OPTIONS.filter(f => fits.has(f));
+  }, [products]);
+
+  const activeFilterCount = (brandFilter ? 1 : 0) + (genreFilter ? 1 : 0) + (fitFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
