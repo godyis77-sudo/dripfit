@@ -94,6 +94,10 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
 
   if (!product) return null;
 
+  const fitItems = product.fit_profile?.filter(Boolean) ?? [];
+  const fabricItems = product.fabric_composition?.filter(Boolean) ?? [];
+  const hasFit = fitItems.length > 0;
+  const hasFabric = fabricItems.length > 0;
   const hasLookItems = lookItems && lookItems.length > 0;
 
   return createPortal(
