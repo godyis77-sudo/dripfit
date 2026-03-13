@@ -1920,7 +1920,7 @@ async function scrapeProducts(
     }
     console.log(`[scrape] Map yielded nothing, falling back to search`);
     const sr = await searchProducts(brand, category, firecrawlApiKey);
-    return [...directProducts, ...sr];
+    return [...mergedDirect, ...sr];
   }
 
   const catKey = category.toLowerCase();
