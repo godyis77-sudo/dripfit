@@ -1947,7 +1947,7 @@ async function scrapeProducts(
     return [...mergedDirect, ...sr];
   }
 
-  return [...directProducts, ...allProducts];
+  return [...mergedDirect, ...allProducts];
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
