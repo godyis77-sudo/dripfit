@@ -52,6 +52,11 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
 
   let visibleProducts = products;
 
+  // Apply genre filter
+  if (genre) {
+    visibleProducts = visibleProducts.filter(p => getBrandGenre(p.brand) === genre);
+  }
+
   // Apply price filter
   if (priceFilter) {
     visibleProducts = visibleProducts.filter(p => {
