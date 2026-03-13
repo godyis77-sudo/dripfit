@@ -1142,6 +1142,17 @@ async function scrapeProducts(
     console.log(`[scrape] Direct extract returned 0 for ${brand}/${category}, trying map→extract`);
     const mapUrls = await mapBrandUrls(brand, category, firecrawlApiKey);
     const categoryPages = mapUrls.filter(u => /\/c\/|\/cat\/|\/collection|\/shop\/|\/category/i.test(u)).slice(0, 5);
+    if (categoryPages.length > 0) {
+      const extractResults = await extractFromUrls(brand, category, categoryPages, category, firecrawlApiKey);
+      if (extractResults.length > 0) return [...directProducts, ...extractResults];
+    }
+    console.log(`[scrape] Map yielded nothing, falling back to search`);
+    const sr = await searchProducts(brand, category, firecrawlApiKey);
+    return [...directProducts, ...sr];
+  }
+
+  return [...directProducts, ...allProducts];
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // EXTRACT V2 — Firecrawl /v1/extract for structured product data + images
