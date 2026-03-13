@@ -847,16 +847,37 @@ const BRAND_DOMAINS: Record<string, string> = {
  * which return fully structured product data with zero scraping cost.
  */
 const SHOPIFY_STORES: Record<string, { domain: string; collections?: Record<string, string[]> }> = {
-  // ── Verified working Shopify /products.json stores ──
+  // ── Streetwear & Hype ──
   "stüssy":             { domain: 'https://www.stussy.com', collections: { tops: ['tops'], bottoms: ['bottoms'], shorts: ['shorts'], outerwear: ['outerwear'], accessories: ['accessories', 'headwear'] } },
   palace:               { domain: 'https://www.palaceskateboards.com', collections: { tops: ['tops'], outerwear: ['jackets'], bottoms: ['bottoms'], accessories: ['hats', 'accessories'] } },
+  // ── Athletic & Active ──
   gymshark:             { domain: 'https://www.gymshark.com', collections: { tops: ['t-shirts-tops'], bottoms: ['joggers', 'leggings'], shorts: ['shorts'], outerwear: ['hoodies-jackets'], accessories: ['accessories'] } },
-  'true classic':       { domain: 'https://trueclassictees.com', collections: { tops: ['mens-crew-neck-t-shirts', 'mens-v-neck-t-shirts', 'mens-polos'], bottoms: ['mens-pants-joggers'], outerwear: ['mens-hoodies-jackets'], shorts: ['mens-shorts'], activewear: ['mens-activewear'] } },
+  'gore wear':          { domain: 'https://www.gorewear.com', collections: { tops: ['mens-jerseys', 'womens-jerseys'], bottoms: ['mens-tights', 'womens-tights'], outerwear: ['mens-jackets', 'womens-jackets'], shorts: ['mens-shorts', 'womens-shorts'], accessories: ['accessories'] } },
+  // ── Fashion & Contemporary ──
   reformation:          { domain: 'https://www.thereformation.com', collections: { dresses: ['dresses'], tops: ['tops'], bottoms: ['bottoms'], outerwear: ['jackets-coats'], shoes: ['shoes'], swimwear: ['swimwear'], skirts: ['skirts'] } },
-  // NOTE: The following were tested and confirmed to block /products.json (removed):
+  'colourpop':          { domain: 'https://www.colourpop.com', collections: { accessories: ['face', 'lips', 'eyes'] } },
+  "rothy's":            { domain: 'https://www.rothys.com', collections: { shoes: ['womens-flats', 'womens-sneakers', 'mens-shoes'], accessories: ['bags'] } },
+  'oliver peoples':     { domain: 'https://www.oliverpeoples.com', collections: { accessories: ['sunglasses', 'eyeglasses'] } },
+  // ── Menswear ──
+  'true classic':       { domain: 'https://trueclassictees.com', collections: { tops: ['mens-crew-neck-t-shirts', 'mens-v-neck-t-shirts', 'mens-polos'], bottoms: ['mens-pants-joggers'], outerwear: ['mens-hoodies-jackets'], shorts: ['mens-shorts'], activewear: ['mens-activewear'] } },
+  'todd snyder':        { domain: 'https://www.toddsnyder.com', collections: { tops: ['t-shirts', 'shirts', 'polos'], bottoms: ['pants', 'jeans'], outerwear: ['jackets-coats', 'sweaters'], shorts: ['shorts'], suits: ['suits'] } },
+  'taylor stitch':      { domain: 'https://www.taylorstitch.com', collections: { tops: ['shirts', 'tees'], bottoms: ['pants', 'denim'], outerwear: ['outerwear'], shorts: ['shorts'] } },
+  'marine layer':       { domain: 'https://www.marinelayer.com', collections: { tops: ['mens-tops', 'womens-tops'], bottoms: ['mens-bottoms', 'womens-bottoms'], outerwear: ['mens-outerwear', 'womens-outerwear'], shorts: ['mens-shorts', 'womens-shorts'], dresses: ['womens-dresses'] } },
+  'public rec':         { domain: 'https://www.publicrec.com', collections: { tops: ['tops'], bottoms: ['pants', 'joggers'], shorts: ['shorts'], outerwear: ['outerwear'] } },
+  grayers:              { domain: 'https://www.grayers.com', collections: { tops: ['shirts', 'tees', 'polos'], bottoms: ['pants'], outerwear: ['sweaters', 'jackets'], shorts: ['shorts'] } },
+  'fresh clean tees':   { domain: 'https://www.freshcleantees.com', collections: { tops: ['t-shirts', 'henleys', 'polos'], bottoms: ['pants', 'joggers'], outerwear: ['hoodies', 'jackets'], shorts: ['shorts'] } },
+  // ── Surf & Outdoor ──
+  faherty:              { domain: 'https://www.fahertybrand.com', collections: { tops: ['mens-shirts', 'womens-tops'], bottoms: ['mens-pants', 'womens-pants'], outerwear: ['mens-outerwear', 'womens-outerwear'], shorts: ['mens-shorts', 'womens-shorts'], dresses: ['womens-dresses'], swimwear: ['mens-swim', 'womens-swim'] } },
+  outerknown:           { domain: 'https://www.outerknown.com', collections: { tops: ['mens-shirts', 'womens-tops'], bottoms: ['mens-pants', 'womens-pants'], outerwear: ['mens-outerwear', 'womens-outerwear'], shorts: ['mens-shorts'], swimwear: ['mens-boardshorts'] } },
+  roark:                { domain: 'https://www.roark.com', collections: { tops: ['mens-tops'], bottoms: ['mens-pants'], outerwear: ['mens-outerwear'], shorts: ['mens-shorts'], swimwear: ['mens-boardshorts'] } },
+  billabong:            { domain: 'https://www.billabong.com', collections: { tops: ['mens-shirts', 'womens-tops'], bottoms: ['mens-pants', 'womens-pants'], outerwear: ['mens-jackets', 'womens-jackets'], shorts: ['mens-shorts', 'womens-shorts'], swimwear: ['mens-boardshorts', 'womens-swimwear'], dresses: ['womens-dresses'] } },
+  rvca:                 { domain: 'https://www.rvca.com', collections: { tops: ['mens-tops', 'womens-tops'], bottoms: ['mens-pants', 'womens-pants'], outerwear: ['mens-jackets', 'womens-jackets'], shorts: ['mens-shorts', 'womens-shorts'], accessories: ['mens-hats', 'womens-hats'] } },
+  // NOTE: Tested and blocked /products.json (not included):
   // kith, essentials, alo yoga, girlfriend collective, rhone, outdoor voices,
   // fashion nova, skims, princess polly, oh polly, cider, mizzen+main,
-  // untuckit, bonobos, steve madden, everlane, allsaints, fabletics
+  // untuckit, bonobos, steve madden, everlane, allsaints, fabletics,
+  // vuori, allbirds, mejuri, cuts, buck mason, good american,
+  // chubbies, tracksmith, ten thousand, tecovas, madewell, flight club
 };
 
 /**
