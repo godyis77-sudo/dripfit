@@ -357,7 +357,7 @@ export function useTryOnState() {
     caption, setCaption, isPublic, setIsPublic, shared, showPostUI, setShowPostUI,
     // Product
     productLink, setProductLink, lookItems, setLookItems, category, setCategory,
-    selectedQuickPick, selectedBrand, setSelectedBrand,
+    selectedQuickPick, selectedBrand, setSelectedBrand, selectedGenre, setSelectedGenre,
     // Wardrobe
     clothingSaved, wardrobeItems, showWardrobe, setShowWardrobe,
     // State flags
