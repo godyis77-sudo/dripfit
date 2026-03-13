@@ -1865,8 +1865,8 @@ async function scrapeProducts(
   }
   
   if (!useFirecrawl) {
-    console.log(`[scrape] Firecrawl disabled, returning ${directProducts.length} direct results`);
-    return directProducts;
+    console.log(`[scrape] Firecrawl disabled, returning ${mergedDirect.length} direct results`);
+    return mergedDirect;
   }
 
   // ── STEP 2: Fall back to Firecrawl-based scraping ──
