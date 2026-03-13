@@ -10,7 +10,7 @@ const corsHeaders = {
 // TYPES
 // ─────────────────────────────────────────────────────────────────────────────
 
-type ScrapeMethod = 'shopify' | 'direct' | 'extract' | 'legacy_scrape' | 'search' | 'map_extract' | 'crawl' | 'search_fallback';
+type ScrapeMethod = 'shopify' | 'direct' | 'search' | 'search_fallback';
 
 interface RawProduct {
   name: string;
