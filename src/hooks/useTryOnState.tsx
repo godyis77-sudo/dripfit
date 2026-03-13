@@ -47,6 +47,7 @@ export function useTryOnState() {
   const [selectedQuickPick, setSelectedQuickPick] = useState<CatalogProduct | null>(null);
   const [layerHistory, setLayerHistory] = useState<string[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [tryOnError, setTryOnError] = useState<string | null>(null);
   const [addingAccessory, setAddingAccessory] = useState(false);
 
