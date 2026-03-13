@@ -10,7 +10,7 @@ const corsHeaders = {
 // TYPES
 // ─────────────────────────────────────────────────────────────────────────────
 
-type ScrapeMethod = 'shopify' | 'direct' | 'extract' | 'legacy_scrape' | 'search' | 'map_extract' | 'crawl' | 'search_fallback';
+type ScrapeMethod = 'shopify' | 'direct' | 'search' | 'search_fallback';
 
 interface RawProduct {
   name: string;
@@ -1874,198 +1874,20 @@ async function scrapeProducts(
     return mergedDirect;
   }
 
-  // ── STEP 2: Fall back to Firecrawl-based scraping ──
+  // ── STEP 2: Fall back to Firecrawl search (cheap, 1-2 credits) ──
   const brandKey = normalizeBrandKey(brand);
 
-  // Anti-scrape brands: use cheap search-first, then extract as backup only if needed
-  if (ANTI_SCRAPE_BRANDS.has(brandKey)) {
-    console.log(`[scrape] ${brand} is anti-scrape, using search-first strategy`);
-
-    const searchResults = tag(await searchProducts(brand, category, firecrawlApiKey), 'search');
-    // Merge direct results
-    const existingUrls = new Set(searchResults.map(p => p.product_url.toLowerCase()));
-    for (const p of mergedDirect) {
-      if (!existingUrls.has(p.product_url.toLowerCase())) searchResults.push(p);
-    }
-    if (searchResults.length >= 2) {
-      return searchResults;
-    }
-
-    const domain = BRAND_DOMAINS[brandKey];
-    if (domain) {
-      const catKey = category.toLowerCase();
-      const parentKey = CATEGORY_TO_URL_KEY[catKey] || catKey;
-      const keywords = MAP_CATEGORY_KEYWORDS[parentKey] || MAP_CATEGORY_KEYWORDS[catKey] || [category];
-      const extractUrls = [`${domain}/*`];
-      const extractResults = tag(await extractFromUrls(brand, category, extractUrls, keywords.join(' '), firecrawlApiKey), 'extract');
-
-      if (extractResults.length > 0) {
-        const seen = new Set(searchResults.map(p => p.product_url.toLowerCase()));
-        for (const p of extractResults) {
-          if (!seen.has(p.product_url.toLowerCase())) {
-            searchResults.push(p);
-          }
-        }
-      }
-    }
-
-    return searchResults;
+  // All brands now use search-only strategy (no extract/scrape)
+  console.log(`[scrape] Using search-only strategy for ${brand}/${category}`);
+  const searchResults = tag(await searchProducts(brand, category, firecrawlApiKey), 'search');
+  const existingUrls = new Set(searchResults.map(p => p.product_url.toLowerCase()));
+  for (const p of mergedDirect) {
+    if (!existingUrls.has(p.product_url.toLowerCase())) searchResults.push(p);
   }
 
-  const brandUrls = CATEGORY_MAP[brandKey];
-  if (!brandUrls) {
-    console.log(`[scrape] No URL config for ${brand} (key: ${brandKey}), trying map→extract`);
-    const mapUrls = await mapBrandUrls(brand, category, firecrawlApiKey);
-    if (mapUrls.length > 0) {
-      const categoryPages = mapUrls.filter(u => /\/c\/|\/cat\/|\/collection|\/shop\/|\/category/i.test(u)).slice(0, 5);
-      if (categoryPages.length > 0) {
-        const extractResults = tag(await extractFromUrls(brand, category, categoryPages, category, firecrawlApiKey), 'map_extract');
-        if (extractResults.length > 0) return [...mergedDirect, ...extractResults];
-      }
-    }
-    console.log(`[scrape] Map yielded nothing, falling back to search`);
-    const sr = tag(await searchProducts(brand, category, firecrawlApiKey), 'search');
-    return [...mergedDirect, ...sr];
-  }
-
-  const catKey = category.toLowerCase();
-  const parentKey = CATEGORY_TO_URL_KEY[catKey] || catKey;
-  const urlConfigs = brandUrls[catKey] || brandUrls[parentKey];
-  if (!urlConfigs?.length) {
-    console.log(`[scrape] No URLs for ${brand}/${category} (tried ${catKey}→${parentKey}), using search fallback`);
-    const sr = tag(await searchProducts(brand, category, firecrawlApiKey), 'search');
-    return [...mergedDirect, ...sr];
-  }
-
-  const allProducts = tag(await scrapeUrlConfigs(brand, category, urlConfigs, firecrawlApiKey), 'extract');
-
-  if (!allProducts.length) {
-    console.log(`[scrape] Direct extract returned 0 for ${brand}/${category}, trying map→extract`);
-    const mapUrls = await mapBrandUrls(brand, category, firecrawlApiKey);
-    const categoryPages = mapUrls.filter(u => /\/c\/|\/cat\/|\/collection|\/shop\/|\/category/i.test(u)).slice(0, 5);
-    if (categoryPages.length > 0) {
-      const extractResults = tag(await extractFromUrls(brand, category, categoryPages, category, firecrawlApiKey), 'map_extract');
-      if (extractResults.length > 0) return [...mergedDirect, ...extractResults];
-    }
-    console.log(`[scrape] Map yielded nothing, falling back to search`);
-    const sr = tag(await searchProducts(brand, category, firecrawlApiKey), 'search');
-    return [...mergedDirect, ...sr];
-  }
-
-  return [...mergedDirect, ...allProducts];
-}
-// ─────────────────────────────────────────────────────────────────────────────
-
-const EXTRACT_PRODUCT_SCHEMA = {
-  type: 'object',
-  properties: {
-    products: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          name:         { type: 'string', description: 'Exact product name as shown on page (not category or brand name)' },
-          product_url:  { type: 'string', description: 'Absolute URL to the product detail page (must start with https://)' },
-          image_url:    { type: 'string', description: 'Main product image URL — full-size absolute https URL to .jpg/.jpeg/.png/.webp file, NOT a thumbnail or icon' },
-          price_cents:  { type: ['integer', 'null'], description: 'Price in cents USD (e.g. $89.99 = 8999). null if not visible.' },
-          currency:     { type: 'string', description: '3-letter currency code, default USD' },
-          category_raw: { type: ['string', 'null'], description: 'Product category from page breadcrumb or label' },
-          colour:       { type: ['string', 'null'], description: 'Primary colour from product name, swatch, or label' },
-        },
-        required: ['name', 'product_url', 'image_url'],
-      },
-    },
-  },
-  required: ['products'],
-};
-
-/**
- * Use Firecrawl /v1/extract to get structured product data including images
- * in a single AI-powered call. Much cleaner than scrape + rawHtml parsing.
- */
-async function extractFromUrls(
-  brand: string,
-  category: string,
-  urls: string[],
-  categoryHint: string,
-  firecrawlApiKey: string
-): Promise<RawProduct[]> {
-  console.log(`[extract] /v1/extract for ${brand}/${category} with ${urls.length} URLs`);
-
-  try {
-    const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/extract', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${firecrawlApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        urls,
-        prompt: `Extract ALL fashion/clothing products listed on these ${brand} ${categoryHint} pages. For each product return: exact product name, absolute product detail page URL, main product image URL (full-size, absolute https URL to image file), price in cents, category, and color. Only include actual purchasable products — skip banners, promotions, navigation items, and category headers. Include items loaded via infinite scroll.`,
-        schema: EXTRACT_PRODUCT_SCHEMA,
-      }),
-    });
-
-    const data = await resp.json();
-
-    if (!resp.ok) {
-      console.warn(`[extract] Error: ${JSON.stringify(data).slice(0, 300)}`);
-      return [];
-    }
-
-    const products = data.data?.products || data.products || [];
-    console.log(`[extract] Raw: ${products.length} products`);
-
-    const allProducts: RawProduct[] = [];
-    for (const p of products) {
-      if (!p.name || !p.product_url || !p.image_url) continue;
-      if (p.name.length < 8 || isListingPageName(p.name)) continue;
-      if (!p.image_url.startsWith('http')) continue;
-      if (/logo|icon|sprite|favicon|banner|pixel|tracking|1x1/i.test(p.image_url)) continue;
-      if (!p.product_url.startsWith('http')) continue;
-
-      allProducts.push({
-        name: p.name,
-        brand,
-        product_url: p.product_url,
-        price_cents: p.price_cents ?? null,
-        currency: p.currency ?? 'USD',
-        image_urls: [p.image_url],
-        category_raw: p.category_raw ?? category,
-        colour: p.colour ?? null,
-      });
-    }
-
-    console.log(`[extract] Valid: ${allProducts.length} products`);
-    return allProducts;
-  } catch (err) {
-    console.warn(`[extract] Error:`, err);
-    return [];
-  }
+  return searchResults;
 }
 
-/**
- * Primary scrape path: uses /v1/extract for URL configs only.
- * Legacy /v1/scrape fallback removed to save 10-25 credits per failed extract.
- */
-async function scrapeUrlConfigs(
-  brand: string,
-  category: string,
-  urlConfigs: CategoryUrl[],
-  firecrawlApiKey: string
-): Promise<RawProduct[]> {
-  const urls = urlConfigs.map(c => c.url);
-
-  const extractResults = await extractFromUrls(brand, category, urls, category, firecrawlApiKey);
-  if (extractResults.length > 0) {
-    for (const p of extractResults) p._method = p._method || 'extract';
-    return extractResults;
-  }
-
-  // Skip legacy scrape entirely — let caller fall through to cheap search
-  console.log(`[scrape] Extract returned 0 for ${brand}/${category}, skipping legacy scrape (credit saver)`);
-  return [];
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SEARCH FALLBACK — Enhanced with shopping-intent queries + expanded sites
