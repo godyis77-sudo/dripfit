@@ -907,8 +907,11 @@ async function scrapeShopifyProducts(
       const products = await fetchShopifyCollection(store.domain, handle, brand, category);
       allProducts.push(...products);
     }
-  } else {
-    // Fallback: fetch /products.json (all products) and filter by category
+  }
+  
+  // If collection endpoints returned nothing, fall back to root /products.json
+  if (allProducts.length === 0) {
+    console.log(`[shopify] Collection endpoints returned 0, falling back to root /products.json for ${brand}`);
     const products = await fetchShopifyAllProducts(store.domain, brand, category);
     allProducts.push(...products);
   }
