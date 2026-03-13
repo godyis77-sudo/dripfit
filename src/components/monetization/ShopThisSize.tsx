@@ -8,7 +8,7 @@ import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { appendAffiliateParams } from '@/lib/affiliateConfig';
+import { resolveClickoutByName } from '@/lib/affiliateRouter';
 
 import { SUPPORTED_RETAILERS } from '@/lib/types';
 
@@ -65,8 +65,8 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
   };
 
   const handleShopClickout = (selectedRetailer: string, url: string) => {
-    const taggedUrl = appendAffiliateParams(url, selectedRetailer);
-    setShowConfirmation({ retailer: selectedRetailer, url: taggedUrl });
+    const clickout = resolveClickoutByName(selectedRetailer, url);
+    setShowConfirmation({ retailer: selectedRetailer, url: clickout.finalUrl });
   };
 
   const confirmClickout = () => {
