@@ -632,12 +632,14 @@ Deno.serve(async (req) => {
     );
 
     // Build work list
-    const workList: { slug: string; config: RetailerConfig; category: string }[] = [];
-    for (const [slug, config] of Object.entries(RETAILERS)) {
-      if (filterSlug && slug !== filterSlug) continue;
+    const workList: { slug: string; configSlug: string; config: RetailerConfig; category: string }[] = [];
+    for (const [configSlug, config] of Object.entries(RETAILERS)) {
+      if (filterSlug && configSlug !== filterSlug) continue;
+      // Strip extended sizing suffixes to get base brand slug for DB
+      const baseSlug = configSlug.replace(/-(tall|petite|plus)$/, "");
       for (const cat of config.categories) {
         if (filterCategory && cat !== filterCategory) continue;
-        workList.push({ slug, config, category: cat });
+        workList.push({ slug: baseSlug, configSlug, config, category: cat });
       }
     }
 
