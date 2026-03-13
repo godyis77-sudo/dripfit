@@ -1961,6 +1961,139 @@ async function scrapeProducts(
 
 
 // ─────────────────────────────────────────────────────────────────────────────
+// GOOGLE CUSTOM SEARCH — Free tier (100 queries/day), primary search provider
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function searchGoogleProducts(
+  brand: string,
+  category: string,
+  apiKey: string,
+  cx: string,
+): Promise<RawProduct[]> {
+  const catTerms = CATEGORY_TERMS[category.toLowerCase()] || category;
+  const brandLower = brand.toLowerCase();
+
+  const brandKey = normalizeBrandKey(brand);
+  const siteOverride = BRAND_SITE_OVERRIDES[brandKey] || BRAND_SITE_OVERRIDES[brandLower];
+
+  let query = `${brand} ${catTerms}`;
+  if (siteOverride) {
+    query = `${brand} ${catTerms} ${siteOverride}`;
+  } else {
+    const isLuxury = LUXURY_SEARCH_BRANDS.has(brandLower);
+    const isAthletic = ATHLETIC_BRANDS.has(brandLower);
+    const isWomens = WOMENS_BRANDS.has(brandLower);
+    const sites = isLuxury ? LUXURY_SITES : isAthletic ? ATHLETIC_SITES : isWomens ? WOMENS_SITES : GENERAL_SITES;
+    query = `${brand} ${catTerms} ${sites}`;
+  }
+
+  console.log(`[google-search] Query: "${query.slice(0, 120)}..."`);
+
+  const allProducts: RawProduct[] = [];
+
+  for (let startIndex = 1; startIndex <= 11; startIndex += 10) {
+    try {
+      const params = new URLSearchParams({
+        key: apiKey,
+        cx,
+        q: query,
+        num: '10',
+        start: String(startIndex),
+      });
+
+      const resp = await fetch(`https://www.googleapis.com/customsearch/v1?${params}`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+      });
+
+      if (!resp.ok) {
+        const errText = await resp.text();
+        console.warn(`[google-search] HTTP ${resp.status}: ${errText.slice(0, 200)}`);
+        if (resp.status === 429 || resp.status === 403) break;
+        continue;
+      }
+
+      const data = await resp.json();
+      const items = data.items || [];
+      console.log(`[google-search] Page ${Math.ceil(startIndex / 10)}: ${items.length} results`);
+
+      for (const item of items) {
+        const url = item.link;
+        if (!url) continue;
+
+        const urlLower = url.toLowerCase();
+        if (/\/search|\/category|\/collection[s]?\/?$|\/shop\/?$|\/c\/[^\/]*$|page=\d|\/sale\/?$|\/browse|\/all\/?$/i.test(urlLower)) continue;
+
+        let productName = (item.title || '')
+          .replace(/\s*[-|]\s*(SSENSE|Farfetch|Nordstrom|NET-A-PORTER|MR PORTER|Macy's|Macys|Zappos|Amazon|Target|Kohl's|Saks|Revolve|ASOS|Shopbop|Mytheresa|END\.|Foot Locker|Dick's|REI).*$/i, '')
+          .replace(/\s*Buy\s.*$/i, '')
+          .trim();
+
+        if (!productName || productName.length < 8) continue;
+        if (isListingPageName(productName)) continue;
+
+        const brandSearchable = brandLower.replace(/&/g, '').replace(/[^a-z0-9]/g, '');
+        const isRetailerBrand = ['nordstrom', 'macys', "macy's", 'target', 'revolve', 'asos'].includes(brandLower);
+        const titleLower = (item.title || '').toLowerCase();
+        const brandInResult = titleLower.includes(brandLower) || titleLower.replace(/[^a-z0-9]/g, '').includes(brandSearchable);
+        const brandDomainMatch = urlLower.includes(`${brandSearchable}.com`);
+        if (!isRetailerBrand && !brandInResult && !brandDomainMatch) continue;
+
+        const imageUrls: string[] = [];
+        const pagemap = item.pagemap || {};
+        if (pagemap.cse_image?.[0]?.src) imageUrls.push(pagemap.cse_image[0].src);
+        if (pagemap.metatags?.[0]?.['og:image']) {
+          const ogImg = pagemap.metatags[0]['og:image'];
+          if (!imageUrls.includes(ogImg)) imageUrls.push(ogImg);
+        }
+        if (pagemap.cse_thumbnail?.[0]?.src) {
+          const thumb = pagemap.cse_thumbnail[0].src;
+          if (!imageUrls.includes(thumb)) imageUrls.push(thumb);
+        }
+
+        const snippet = item.snippet || '';
+        const priceMatch = snippet.match(/\$\s*([\d,]+(?:\.\d{2})?)/);
+        const priceCents = priceMatch ? Math.round(parseFloat(priceMatch[1].replace(',', '')) * 100) : null;
+
+        allProducts.push({
+          name: productName,
+          brand,
+          product_url: url,
+          price_cents: priceCents,
+          currency: 'USD',
+          image_urls: imageUrls.slice(0, 8),
+          category_raw: category,
+          colour: null,
+        });
+      }
+
+      if (items.length < 10) break;
+      await delay(200);
+    } catch (err) {
+      console.warn(`[google-search] Error:`, (err as Error).message);
+      break;
+    }
+  }
+
+  if (allProducts.length > 0) {
+    const withImages = allProducts.filter(p => p.image_urls.length > 0);
+    const withoutImages = allProducts.filter(p => p.image_urls.length === 0);
+    const validated = await validateProductImages(withImages);
+    
+    if (withoutImages.length > 0 && withoutImages.length <= 15) {
+      const enriched = await enrichProductImages(withoutImages);
+      validated.push(...enriched);
+    }
+    
+    console.log(`[google-search] Final: ${validated.length} products for ${brand}/${category}`);
+    return validated;
+  }
+
+  console.log(`[google-search] No products found for ${brand}/${category}`);
+  return [];
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // SEARCH FALLBACK — Enhanced with shopping-intent queries + expanded sites
 // ─────────────────────────────────────────────────────────────────────────────
 
