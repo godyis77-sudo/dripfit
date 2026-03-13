@@ -1361,48 +1361,96 @@ function normalizeBrandKey(brand: string): string {
 // DIRECT HTTP SCRAPING — zero Firecrawl credits, uses plain fetch + HTML parsing
 // ─────────────────────────────────────────────────────────────────────────────
 
-const HTTP_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
+// Rotate User-Agent strings to reduce bot detection
+const USER_AGENTS = [
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:126.0) Gecko/20100101 Firefox/126.0',
+  'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+];
 
-async function fetchPageHtml(url: string, timeoutMs = 8000): Promise<string | null> {
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), timeoutMs);
-    const resp = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'User-Agent': HTTP_USER_AGENT,
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Accept-Encoding': 'identity',
-        'Cache-Control': 'no-cache',
-      },
-      signal: controller.signal,
-      redirect: 'follow',
-    });
-    clearTimeout(timeout);
-    if (!resp.ok) {
-      console.warn(`[direct] HTTP ${resp.status} for ${url}`);
+function randomUA(): string {
+  return USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
+}
+
+async function fetchPageHtml(url: string, timeoutMs = 12000, retries = 2): Promise<string | null> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      if (attempt > 0) {
+        // Exponential backoff with jitter between retries
+        await delay(1000 * attempt + Math.random() * 1500);
+      }
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), timeoutMs);
+      const ua = randomUA();
+      const resp = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'User-Agent': ua,
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Accept-Encoding': 'gzip, deflate, br',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+          'Sec-Ch-Ua': '"Chromium";v="125", "Not=A?Brand";v="8", "Google Chrome";v="125"',
+          'Sec-Ch-Ua-Mobile': '?0',
+          'Sec-Ch-Ua-Platform': '"macOS"',
+          'Sec-Fetch-Dest': 'document',
+          'Sec-Fetch-Mode': 'navigate',
+          'Sec-Fetch-Site': 'none',
+          'Sec-Fetch-User': '?1',
+          'Upgrade-Insecure-Requests': '1',
+          'DNT': '1',
+        },
+        signal: controller.signal,
+        redirect: 'follow',
+      });
+      clearTimeout(timeout);
+
+      // Retry on 403/429, give up on other errors
+      if (resp.status === 429 || resp.status === 403) {
+        await resp.text(); // consume body
+        if (attempt < retries) {
+          console.log(`[direct] HTTP ${resp.status} for ${url}, retrying (${attempt + 1}/${retries})...`);
+          continue;
+        }
+        console.warn(`[direct] HTTP ${resp.status} for ${url} after ${retries + 1} attempts`);
+        return null;
+      }
+
+      if (!resp.ok) {
+        console.warn(`[direct] HTTP ${resp.status} for ${url}`);
+        await resp.text();
+        return null;
+      }
+
+      // Read up to 500KB
+      const reader = resp.body?.getReader();
+      if (!reader) return null;
+      let html = '';
+      const decoder = new TextDecoder();
+      let totalBytes = 0;
+      const MAX = 500000;
+      while (totalBytes < MAX) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        html += decoder.decode(value, { stream: true });
+        totalBytes += value.length;
+      }
+      reader.cancel().catch(() => {});
+      return html;
+    } catch (err) {
+      if (attempt < retries) {
+        console.log(`[direct] Fetch error for ${url}, retrying (${attempt + 1}/${retries})...`);
+        continue;
+      }
+      console.warn(`[direct] Fetch error for ${url}: ${(err as Error).message}`);
       return null;
     }
-    // Read up to 500KB
-    const reader = resp.body?.getReader();
-    if (!reader) return null;
-    let html = '';
-    const decoder = new TextDecoder();
-    let totalBytes = 0;
-    const MAX = 500000;
-    while (totalBytes < MAX) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      html += decoder.decode(value, { stream: true });
-      totalBytes += value.length;
-    }
-    reader.cancel().catch(() => {});
-    return html;
-  } catch (err) {
-    console.warn(`[direct] Fetch error for ${url}: ${(err as Error).message}`);
-    return null;
   }
+  return null;
 }
 
 /**
