@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +8,7 @@ import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { resolveClickoutByName } from '@/lib/affiliateRouter';
+import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
 
 import { SUPPORTED_RETAILERS } from '@/lib/types';
 
@@ -51,13 +51,16 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
   const [showRetailers, setShowRetailers] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showSavedConfirmation, setShowSavedConfirmation] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState<{
-    retailer: string;
-    url: string;
-    monetizationMode: string;
-    provider: string | null;
-    retailerUsed: string;
-  } | null>(null);
+
+  const extraProps = useMemo(() => ({
+    size: recommendedSize,
+    source: 'results',
+    confidence,
+    category: category || 'general',
+  }), [recommendedSize, confidence, category]);
+
+  const { pendingClickout, beginClickout, confirmClickout, cancelClickout } =
+    useAffiliateClickout({ extraProps });
 
   const handleLinkPaste = (value: string) => {
     setProductLink(value);
@@ -68,34 +71,6 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
     } else {
       setMatchedRetailer(null);
     }
-  };
-
-  const handleShopClickout = (selectedRetailer: string, url: string) => {
-    const clickout = resolveClickoutByName(selectedRetailer, url);
-    setShowConfirmation({
-      retailer: selectedRetailer,
-      url: clickout.finalUrl,
-      monetizationMode: clickout.monetizationMode,
-      provider: clickout.provider,
-      retailerUsed: clickout.retailerUsed,
-    });
-  };
-
-  const confirmClickout = () => {
-    if (!showConfirmation) return;
-    trackEvent('shop_clickout', {
-      retailer: showConfirmation.retailer,
-      size: recommendedSize,
-      source: 'results',
-      confidence,
-      category: category || 'general',
-      hasLink: !!productLink,
-      monetization_mode: showConfirmation.monetizationMode,
-      affiliate_provider: showConfirmation.provider,
-      retailer_used: showConfirmation.retailerUsed,
-    });
-    window.open(showConfirmation.url, '_blank', 'noopener');
-    setShowConfirmation(null);
   };
 
   const handleSaveForLater = async () => {
@@ -115,7 +90,6 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
       setSaved(true);
       setShowSavedConfirmation(true);
       trackEvent('saved_item_added', { retailer: targetRetailer });
-      // No toast — SaveBanner handles confirmation
     } catch {
       toast({ title: 'Could not save', variant: 'destructive' });
     }
@@ -149,7 +123,7 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
       {productLink && matchedRetailer ? (
         <Button
           className="w-full h-11 rounded-lg btn-luxury text-primary-foreground text-sm font-bold"
-          onClick={() => handleShopClickout(matchedRetailer, productLink)}
+          onClick={() => beginClickout(matchedRetailer, productLink)}
         >
           <ShoppingBag className="mr-2 h-4 w-4" /> Shop This Size — {recommendedSize}
         </Button>
@@ -170,7 +144,7 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
             {SUPPORTED_RETAILERS.map(r => (
               <button
                 key={r}
-                onClick={() => handleShopClickout(r, RETAILER_URLS[r] || '#')}
+                onClick={() => beginClickout(r, RETAILER_URLS[r] || '#')}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-background hover:border-primary/30 active:scale-[0.97] transition-all text-left"
               >
                 <ExternalLink className="h-3 w-3 text-muted-foreground shrink-0" />
@@ -180,7 +154,6 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
           </div>
         </div>
       )}
-
 
       {/* Save confirmation banner */}
       <SaveBanner
@@ -192,9 +165,14 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
       />
 
       {/* Confirmation sheet */}
-      {showConfirmation && (
+      {pendingClickout && (
         <div className="bg-card border border-primary/20 rounded-xl p-3 space-y-2">
-          <p className="text-[12px] font-bold text-foreground">Opening {showConfirmation.retailer}</p>
+          <p className="text-[12px] font-bold text-foreground">
+            You're leaving the app to visit {pendingClickout.retailer}.
+          </p>
+          <p className="text-[10px] text-muted-foreground">
+            Some links may earn us a commission.
+          </p>
           <div className="flex items-center gap-2 bg-primary/10 rounded-lg px-3 py-2">
             <ShoppingBag className="h-4 w-4 text-primary shrink-0" />
             <div>
@@ -206,7 +184,7 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
             <Button className="flex-1 h-9 rounded-lg btn-luxury text-primary-foreground text-[11px] font-bold" onClick={confirmClickout}>
               <ExternalLink className="mr-1 h-3 w-3" /> Continue to Store
             </Button>
-            <Button variant="outline" className="h-9 rounded-lg text-[11px]" onClick={() => setShowConfirmation(null)}>
+            <Button variant="outline" className="h-9 rounded-lg text-[11px]" onClick={cancelClickout}>
               Cancel
             </Button>
           </div>
