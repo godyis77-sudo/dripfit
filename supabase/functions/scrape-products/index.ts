@@ -876,7 +876,7 @@ const SHOPIFY_STORES: Record<string, { domain: string; collections?: Record<stri
   // ── Plus Size & Extended ──
   
   // ── Footwear ──
-  allbirds:             { domain: 'https://www.allbirds.com', collections: { shoes: ['mens-shoes', 'womens-shoes'] } },
+  
   'steve madden':       { domain: 'https://www.stevemadden.com', collections: { shoes: ['womens-sneakers', 'womens-boots', 'womens-heels', 'mens-shoes', 'womens-sandals'], accessories: ['womens-handbags'] } },
   // ── Jewelry ──
   mejuri:               { domain: 'https://mejuri.com', collections: { accessories: ['necklaces', 'rings', 'earrings', 'bracelets'] } },
