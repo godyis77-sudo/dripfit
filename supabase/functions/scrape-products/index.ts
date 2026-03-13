@@ -1286,7 +1286,7 @@ function extractProductsFromSsrTiles(html: string, products: RawProduct[], brand
   }
 }
 
-
+function extractProductsFromHtmlGrid(html: string, products: RawProduct[], brand: string, category: string, pageUrl: string): void {
   // Match product card patterns: <a href="/product/..." with nearby <img>
   // This is a heuristic approach for sites without JSON-LD
   const productCardRegex = /<a\s[^>]*href=["']([^"']*(?:\/p\/|\/product|\/shop\/[^"']*?-)[^"']*)["'][^>]*>[\s\S]*?<img[^>]*(?:src|data-src)=["']([^"']+)["'][^>]*(?:alt=["']([^"']+)["'])?/gi;
