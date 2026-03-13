@@ -790,12 +790,16 @@ Deno.serve(async (req) => {
         }));
 
         // Upsert
+        const gender = item.config.gender || "unisex";
+        const sizeType = item.config.size_type || "regular";
         const { error: upsertErr } = await supabase.from("brand_size_charts").upsert(
           {
             brand_slug: item.slug,
             brand_name: item.config.brand_name,
             category: item.category,
             region: "US",
+            gender,
+            size_type: sizeType,
             size_data: normalizedData,
             scraped_at: new Date().toISOString(),
             is_active: true,
@@ -803,7 +807,7 @@ Deno.serve(async (req) => {
             confidence: 0.8,
             source_url: item.config.url,
           },
-          { onConflict: "brand_slug,category,region" }
+          { onConflict: "brand_slug,category,region,gender,size_type" }
         );
 
         if (upsertErr) {
