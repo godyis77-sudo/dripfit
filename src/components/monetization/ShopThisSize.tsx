@@ -66,12 +66,28 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
 
   const handleShopClickout = (selectedRetailer: string, url: string) => {
     const clickout = resolveClickoutByName(selectedRetailer, url);
-    setShowConfirmation({ retailer: selectedRetailer, url: clickout.finalUrl });
+    setShowConfirmation({
+      retailer: selectedRetailer,
+      url: clickout.finalUrl,
+      monetizationMode: clickout.monetizationMode,
+      provider: clickout.provider,
+      retailerUsed: clickout.retailerUsed,
+    });
   };
 
   const confirmClickout = () => {
     if (!showConfirmation) return;
-    trackEvent('shop_clickout', { retailer: showConfirmation.retailer, size: recommendedSize, source: 'results', confidence, category: category || 'general', hasLink: !!productLink });
+    trackEvent('shop_clickout', {
+      retailer: showConfirmation.retailer,
+      size: recommendedSize,
+      source: 'results',
+      confidence,
+      category: category || 'general',
+      hasLink: !!productLink,
+      monetization_mode: showConfirmation.monetizationMode,
+      affiliate_provider: showConfirmation.provider,
+      retailer_used: showConfirmation.retailerUsed,
+    });
     window.open(showConfirmation.url, '_blank', 'noopener');
     setShowConfirmation(null);
   };
