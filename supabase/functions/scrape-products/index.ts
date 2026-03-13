@@ -1874,85 +1874,18 @@ async function scrapeProducts(
     return mergedDirect;
   }
 
-  // ── STEP 2: Fall back to Firecrawl-based scraping ──
+  // ── STEP 2: Fall back to Firecrawl search (cheap, 1-2 credits) ──
   const brandKey = normalizeBrandKey(brand);
 
-  // Anti-scrape brands: use cheap search-first, then extract as backup only if needed
-  if (ANTI_SCRAPE_BRANDS.has(brandKey)) {
-    console.log(`[scrape] ${brand} is anti-scrape, using search-first strategy`);
-
-    const searchResults = tag(await searchProducts(brand, category, firecrawlApiKey), 'search');
-    // Merge direct results
-    const existingUrls = new Set(searchResults.map(p => p.product_url.toLowerCase()));
-    for (const p of mergedDirect) {
-      if (!existingUrls.has(p.product_url.toLowerCase())) searchResults.push(p);
-    }
-    if (searchResults.length >= 2) {
-      return searchResults;
-    }
-
-    const domain = BRAND_DOMAINS[brandKey];
-    if (domain) {
-      const catKey = category.toLowerCase();
-      const parentKey = CATEGORY_TO_URL_KEY[catKey] || catKey;
-      const keywords = MAP_CATEGORY_KEYWORDS[parentKey] || MAP_CATEGORY_KEYWORDS[catKey] || [category];
-      const extractUrls = [`${domain}/*`];
-      const extractResults = tag(await extractFromUrls(brand, category, extractUrls, keywords.join(' '), firecrawlApiKey), 'extract');
-
-      if (extractResults.length > 0) {
-        const seen = new Set(searchResults.map(p => p.product_url.toLowerCase()));
-        for (const p of extractResults) {
-          if (!seen.has(p.product_url.toLowerCase())) {
-            searchResults.push(p);
-          }
-        }
-      }
-    }
-
-    return searchResults;
+  // All brands now use search-only strategy (no extract/scrape)
+  console.log(`[scrape] Using search-only strategy for ${brand}/${category}`);
+  const searchResults = tag(await searchProducts(brand, category, firecrawlApiKey), 'search');
+  const existingUrls = new Set(searchResults.map(p => p.product_url.toLowerCase()));
+  for (const p of mergedDirect) {
+    if (!existingUrls.has(p.product_url.toLowerCase())) searchResults.push(p);
   }
 
-  const brandUrls = CATEGORY_MAP[brandKey];
-  if (!brandUrls) {
-    console.log(`[scrape] No URL config for ${brand} (key: ${brandKey}), trying map→extract`);
-    const mapUrls = await mapBrandUrls(brand, category, firecrawlApiKey);
-    if (mapUrls.length > 0) {
-      const categoryPages = mapUrls.filter(u => /\/c\/|\/cat\/|\/collection|\/shop\/|\/category/i.test(u)).slice(0, 5);
-      if (categoryPages.length > 0) {
-        const extractResults = tag(await extractFromUrls(brand, category, categoryPages, category, firecrawlApiKey), 'map_extract');
-        if (extractResults.length > 0) return [...mergedDirect, ...extractResults];
-      }
-    }
-    console.log(`[scrape] Map yielded nothing, falling back to search`);
-    const sr = tag(await searchProducts(brand, category, firecrawlApiKey), 'search');
-    return [...mergedDirect, ...sr];
-  }
-
-  const catKey = category.toLowerCase();
-  const parentKey = CATEGORY_TO_URL_KEY[catKey] || catKey;
-  const urlConfigs = brandUrls[catKey] || brandUrls[parentKey];
-  if (!urlConfigs?.length) {
-    console.log(`[scrape] No URLs for ${brand}/${category} (tried ${catKey}→${parentKey}), using search fallback`);
-    const sr = tag(await searchProducts(brand, category, firecrawlApiKey), 'search');
-    return [...mergedDirect, ...sr];
-  }
-
-  const allProducts = tag(await scrapeUrlConfigs(brand, category, urlConfigs, firecrawlApiKey), 'extract');
-
-  if (!allProducts.length) {
-    console.log(`[scrape] Direct extract returned 0 for ${brand}/${category}, trying map→extract`);
-    const mapUrls = await mapBrandUrls(brand, category, firecrawlApiKey);
-    const categoryPages = mapUrls.filter(u => /\/c\/|\/cat\/|\/collection|\/shop\/|\/category/i.test(u)).slice(0, 5);
-    if (categoryPages.length > 0) {
-      const extractResults = tag(await extractFromUrls(brand, category, categoryPages, category, firecrawlApiKey), 'map_extract');
-      if (extractResults.length > 0) return [...mergedDirect, ...extractResults];
-    }
-    console.log(`[scrape] Map yielded nothing, falling back to search`);
-    const sr = tag(await searchProducts(brand, category, firecrawlApiKey), 'search');
-    return [...mergedDirect, ...sr];
-  }
-
-  return [...mergedDirect, ...allProducts];
+  return searchResults;
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
