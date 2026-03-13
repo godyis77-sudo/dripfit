@@ -294,7 +294,7 @@ const Browse = () => {
               {/* Clear filters */}
               {activeFilterCount > 0 && (
                 <button
-                  onClick={() => { setSort('default'); setBrandFilter(null); }}
+                  onClick={() => { setSort('default'); setBrandFilter(null); setGenreFilter(null); }}
                   className="text-[10px] text-primary font-semibold"
                 >
                   Clear all filters
