@@ -1202,7 +1202,7 @@ async function searchProducts(
     }
 
     const results = data.data || [];
-    console.log(`[search-fallback] Got ${results.length} search results (metadata-only, 1 credit)`);
+    console.log(`[search-fallback] Got ${results.length} search results (with scrape, ~${results.length + 1} credits)`);
 
     const allProducts = parseSearchResults(results, brand, category);
 
