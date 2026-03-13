@@ -739,24 +739,34 @@ async function scrapeProducts(
 ): Promise<RawProduct[]> {
   const brandKey = normalizeBrandKey(brand);
 
-  // Anti-scrape brands: try extract with brand domain first, then search fallback
+  // Anti-scrape brands: use cheap search-first, then extract as backup only if needed
   if (ANTI_SCRAPE_BRANDS.has(brandKey)) {
-    console.log(`[scrape] ${brand} is anti-scrape, trying extract-first strategy`);
-    
-    // Try extract with known brand domain
+    console.log(`[scrape] ${brand} is anti-scrape, using search-first strategy`);
+
+    const searchResults = await searchProducts(brand, category, firecrawlApiKey);
+    if (searchResults.length >= 2) {
+      return searchResults;
+    }
+
     const domain = BRAND_DOMAINS[brandKey];
     if (domain) {
       const catKey = category.toLowerCase();
       const parentKey = CATEGORY_TO_URL_KEY[catKey] || catKey;
       const keywords = MAP_CATEGORY_KEYWORDS[parentKey] || MAP_CATEGORY_KEYWORDS[catKey] || [category];
-      
       const extractUrls = [`${domain}/*`];
       const extractResults = await extractFromUrls(brand, category, extractUrls, keywords.join(' '), firecrawlApiKey);
-      if (extractResults.length > 0) return extractResults;
+
+      if (extractResults.length > 0) {
+        const seen = new Set(searchResults.map(p => p.product_url.toLowerCase()));
+        for (const p of extractResults) {
+          if (!seen.has(p.product_url.toLowerCase())) {
+            searchResults.push(p);
+          }
+        }
+      }
     }
-    
-    console.log(`[scrape] Extract returned nothing for ${brand}, falling back to search`);
-    return searchProducts(brand, category, firecrawlApiKey);
+
+    return searchResults;
   }
 
   const brandUrls = CATEGORY_MAP[brandKey];
