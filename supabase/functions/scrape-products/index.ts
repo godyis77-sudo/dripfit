@@ -1177,7 +1177,8 @@ async function searchProducts(
   console.log(`[search-fallback] Query: "${searchQuery}"`);
 
   try {
-    // Metadata-only search: 1 credit per call (NO scrapeOptions = no per-result scraping)
+    // Search with lightweight scrapeOptions to get og:image metadata
+    // Cost: 1 base + 1 per result = 6 credits for limit=5
     const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/search', {
       method: 'POST',
       headers: {
@@ -1186,9 +1187,10 @@ async function searchProducts(
       },
       body: JSON.stringify({
         query: searchQuery,
-        limit: 10,
+        limit: 5,
         lang: 'en',
         country: 'us',
+        scrapeOptions: { formats: ['markdown'] },
       }),
     });
 
@@ -1200,7 +1202,7 @@ async function searchProducts(
     }
 
     const results = data.data || [];
-    console.log(`[search-fallback] Got ${results.length} search results (metadata-only, 1 credit)`);
+    console.log(`[search-fallback] Got ${results.length} search results (with scrape, ~${results.length + 1} credits)`);
 
     const allProducts = parseSearchResults(results, brand, category);
 
@@ -1256,7 +1258,7 @@ async function searchProductsFallback(
   console.log(`[search-fallback-broad] Query: "${searchQuery}"`);
 
   try {
-    // Metadata-only search: 1 credit (no scrapeOptions)
+    // Search with scrapeOptions for images: ~4 credits (1 base + 3 results)
     const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/search', {
       method: 'POST',
       headers: {
@@ -1265,9 +1267,10 @@ async function searchProductsFallback(
       },
       body: JSON.stringify({
         query: searchQuery,
-        limit: 5,
+        limit: 3,
         lang: 'en',
         country: 'us',
+        scrapeOptions: { formats: ['markdown'] },
       }),
     });
 
@@ -1278,7 +1281,7 @@ async function searchProductsFallback(
     }
 
     const results = data.data || [];
-    console.log(`[search-fallback-broad] Got ${results.length} results (metadata-only, 1 credit)`);
+    console.log(`[search-fallback-broad] Got ${results.length} results (~${results.length + 1} credits)`);
     return parseSearchResults(results, brand, category);
   } catch (err) {
     console.warn(`[search-fallback-broad] Error:`, err);
@@ -1436,16 +1439,19 @@ function parseSearchResults(results: any[], brand: string, category: string): Ra
     // Skip listing/category page titles
     if (isListingPageName(productName)) continue;
 
-    // For luxury brands, require brand name in the product listing
+    // Brand matching: accept if brand name in title/URL, or if result is from the brand's own domain
     const brandLower = brand.toLowerCase();
     const brandSearchable = brandLower.replace(/&/g, '').replace(/[^a-z0-9]/g, '');
     const isRetailerBrand = ['nordstrom', 'macys', "macy's", 'bloomingdales', "bloomingdale's", 'target', 'kohls', "kohl's", 'jcpenney', 'walmart', 'saks', 'net-a-porter', 'revolve', 'asos'].includes(brandLower);
     const titleLower = title.toLowerCase();
     const nameLower = productName.toLowerCase();
+    const urlLower = (result.url || '').toLowerCase();
     const brandInResult = nameLower.includes(brandLower) || titleLower.includes(brandLower) 
       || nameLower.replace(/[^a-z0-9]/g, '').includes(brandSearchable) 
       || titleLower.replace(/[^a-z0-9]/g, '').includes(brandSearchable);
-    if (!isRetailerBrand && !brandInResult) {
+    // Accept products from the brand's own domain (e.g. zara.com for "zara")
+    const brandDomainMatch = urlLower.includes(`${brandSearchable}.com`) || urlLower.includes(`${brandSearchable}.co`);
+    if (!isRetailerBrand && !brandInResult && !brandDomainMatch) {
       continue;
     }
 
@@ -1885,7 +1891,7 @@ async function validateProductImages(products: RawProduct[]): Promise<RawProduct
 
 /**
  * For products without images, fetch the product page and extract og:image.
- * Uses a lightweight GET with range header to minimize bandwidth (free, no API credits).
+ * Uses a full GET with timeout (Range headers are blocked by most CDNs).
  */
 async function enrichProductImages(products: RawProduct[]): Promise<RawProduct[]> {
   const enriched: RawProduct[] = [];
@@ -1897,16 +1903,39 @@ async function enrichProductImages(products: RawProduct[]): Promise<RawProduct[]
       batch.map(async (p) => {
         try {
           const controller = new AbortController();
-          const timeout = setTimeout(() => controller.abort(), 5000);
+          const timeout = setTimeout(() => controller.abort(), 6000);
           const resp = await fetch(p.product_url, {
             method: 'GET',
-            headers: { 'Range': 'bytes=0-20000', 'User-Agent': 'Mozilla/5.0 (compatible; DripBot/1.0)' },
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+              'Accept': 'text/html,application/xhtml+xml',
+              'Accept-Language': 'en-US,en;q=0.9',
+            },
             signal: controller.signal,
             redirect: 'follow',
           });
           clearTimeout(timeout);
           
-          const html = await resp.text();
+          if (!resp.ok) return null;
+          
+          // Read response as stream and only consume first ~80KB
+          const reader = resp.body?.getReader();
+          if (!reader) return null;
+          
+          let html = '';
+          const decoder = new TextDecoder();
+          const MAX_BYTES = 80000;
+          let totalBytes = 0;
+          
+          while (totalBytes < MAX_BYTES) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            html += decoder.decode(value, { stream: true });
+            totalBytes += value.length;
+          }
+          reader.cancel().catch(() => {});
+          
+          // Try og:image (both attribute orders)
           const ogMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i)
             || html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:image["']/i);
           
@@ -1915,9 +1944,19 @@ async function enrichProductImages(products: RawProduct[]): Promise<RawProduct[]
             return p;
           }
           
-          const twMatch = html.match(/<meta[^>]*(?:name|property)=["']twitter:image["'][^>]*content=["']([^"']+)["']/i);
+          // Try twitter:image
+          const twMatch = html.match(/<meta[^>]*(?:name|property)=["']twitter:image["'][^>]*content=["']([^"']+)["']/i)
+            || html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*(?:name|property)=["']twitter:image["']/i);
           if (twMatch?.[1] && twMatch[1].startsWith('http')) {
             p.image_urls = [twMatch[1]];
+            return p;
+          }
+          
+          // Try first product image from structured data (JSON-LD)
+          const ldMatch = html.match(/"image"\s*:\s*"(https?:\/\/[^"]+\.(jpg|jpeg|png|webp)[^"]*)"/i)
+            || html.match(/"image"\s*:\s*\[\s*"(https?:\/\/[^"]+\.(jpg|jpeg|png|webp)[^"]*)"/i);
+          if (ldMatch?.[1]) {
+            p.image_urls = [ldMatch[1]];
             return p;
           }
           

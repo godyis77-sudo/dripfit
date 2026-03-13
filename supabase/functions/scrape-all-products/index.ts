@@ -197,74 +197,45 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Defer slow brands to cron/background processing to avoid edge timeout
-    const SLOW_BACKGROUND_BRANDS = new Set(['puma', 'vans', 'gucci']);
-
     // Slice for this batch
     const jobsPerBatch = Math.ceil(allJobs.length / batchTotal);
     const start = batchNumber * jobsPerBatch;
     const batchJobs = allJobs.slice(start, start + jobsPerBatch);
-    const deferredJobs = batchJobs.filter((job) => SLOW_BACKGROUND_BRANDS.has(job.brand.toLowerCase()));
-    const jobs = batchJobs.filter((job) => !SLOW_BACKGROUND_BRANDS.has(job.brand.toLowerCase()));
 
     console.log(
-      `[scrape-all] Batch ${batchNumber + 1}/${batchTotal}: ${jobs.length} real-time jobs, ${deferredJobs.length} deferred jobs (of ${allJobs.length} total)`
+      `[scrape-all] Batch ${batchNumber + 1}/${batchTotal}: dispatching ${batchJobs.length} jobs fire-and-forget (of ${allJobs.length} total)`
     );
 
-    const results: { brand: string; category: string; inserted: number; error?: string }[] = [];
-    let totalInserted = 0;
+    // Fire-and-forget: dispatch all jobs without awaiting responses
+    // Each scrape-products call runs independently with its own timeout
+    let dispatched = 0;
+    for (const job of batchJobs) {
+      fetch(`${SUPABASE_URL}/functions/v1/scrape-products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ brand: job.brand, category: job.category }),
+      }).catch(err => {
+        console.warn(`[scrape-all] ${job.brand}/${job.category} dispatch failed: ${err.message}`);
+      });
+      dispatched++;
 
-    // Process in batches of 3 to avoid overwhelming the function
-    const BATCH_SIZE = 3;
-    for (let i = 0; i < jobs.length; i += BATCH_SIZE) {
-      const batch = jobs.slice(i, i + BATCH_SIZE);
-      
-      const batchResults = await Promise.allSettled(
-        batch.map(async (job) => {
-          try {
-            const resp = await fetch(`${SUPABASE_URL}/functions/v1/scrape-products`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-              },
-              body: JSON.stringify({ brand: job.brand, category: job.category }),
-            });
-
-            const data = await resp.json();
-            const inserted = data.inserted || 0;
-            totalInserted += inserted;
-            console.log(`[scrape-all] ${job.brand}/${job.category}: +${inserted}`);
-            return { brand: job.brand, category: job.category, inserted };
-          } catch (err: any) {
-            console.warn(`[scrape-all] ${job.brand}/${job.category} failed: ${err.message}`);
-            return { brand: job.brand, category: job.category, inserted: 0, error: err.message };
-          }
-        })
-      );
-
-      for (const r of batchResults) {
-        if (r.status === 'fulfilled') results.push(r.value);
-        else results.push({ brand: '?', category: '?', inserted: 0, error: String(r.reason) });
-      }
-
-      // Brief pause between batches
-      if (i + BATCH_SIZE < jobs.length) {
-        await new Promise(r => setTimeout(r, 1500));
+      // Stagger dispatches: 500ms between each to avoid rate limits
+      if (dispatched < batchJobs.length) {
+        await new Promise(r => setTimeout(r, 500));
       }
     }
 
-    console.log(`[scrape-all] Batch ${batchNumber + 1} done. Inserted: ${totalInserted}`);
+    console.log(`[scrape-all] Batch ${batchNumber + 1} dispatched ${dispatched} jobs`);
 
     return successResponse({
       batch: batchNumber,
       totalBatches: batchTotal,
       totalJobs: batchJobs.length,
-      processedJobs: jobs.length,
-      deferredJobs: deferredJobs.length,
-      deferredBrands: [...new Set(deferredJobs.map((j) => j.brand))],
-      totalInserted,
-      results,
+      dispatched,
+      message: `Dispatched ${dispatched} scrape jobs fire-and-forget. Check scrape-products logs for results.`,
     }, 200, corsHeaders);
   } catch (err: any) {
     console.error('[scrape-all] Error:', err);
