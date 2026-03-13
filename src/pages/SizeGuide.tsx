@@ -17,7 +17,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 interface SizeBreakdown { measurement: string; userValue: string; chartRange: string; fitsSize: string; fit: 'tight' | 'good' | 'loose'; }
 interface SizeRecommendation { recommendedSize: string; confidence: string; breakdown: SizeBreakdown[]; notes: string; alternativeSize?: string; alternativeReason?: string; }
-interface BrandOption { brand_name: string; brand_slug: string; category: string; }
+interface BrandOption { brand_name: string; brand_slug: string; category: string; gender?: string; size_type?: string; }
 interface DbSizeResult { recommended_size: string; confidence: number; fit_status: string; fit_notes: string; second_option: string | null; all_sizes: { label: string; score: number; fit_status: string }[]; }
 
 const fitColors: Record<string, string> = { tight: 'text-destructive', good: 'text-primary', loose: 'text-accent-foreground' };
