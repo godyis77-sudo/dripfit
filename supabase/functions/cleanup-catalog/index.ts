@@ -80,6 +80,22 @@ function getBrandGenre(brand: string): string {
   return BRAND_GENRE_MAP[brand.toLowerCase().trim()] ?? 'Contemporary';
 }
 
+// ─── Fabric & Fit extraction (regex-based) ──────────────────────────────────
+const FIT_REGEX = /(oversized|boxy|relaxed\s*fit|slim\s*fit|regular\s*fit|heavyweight|lightweight|cropped|tapered|drop\s*shoulder|straight\s*fit|loose\s*fit|skinny\s*fit|athletic\s*fit|classic\s*fit|modern\s*fit|tailored\s*fit|muscle\s*fit|oversize)/gi;
+const FABRIC_REGEX = /(\d{1,3}%\s?[a-zA-Z\s\-]+(?:\s?(?:and|,)\s?\d{1,3}%\s?[a-zA-Z\s\-]+)*)|(french\s*terry|fleece|selvedge\s*denim|nylon\s*blend|organic\s*cotton|recycled\s*polyester|merino\s*wool|modal|tencel|lyocell|viscose|spandex|elastane|linen\s*blend|cotton\s*blend|ponte|jersey|terry\s*cloth|satin|silk|velvet|corduroy|twill|chambray|poplin|ripstop|mesh|piqué|waffle\s*knit|sherpa|faux\s*leather)/gi;
+
+function extractFitProfile(text: string): string[] {
+  const matches = text.match(FIT_REGEX);
+  if (!matches) return [];
+  return [...new Set(matches.map(m => m.toLowerCase().trim()))];
+}
+
+function extractFabricComposition(text: string): string[] {
+  const matches = text.match(FABRIC_REGEX);
+  if (!matches) return [];
+  return [...new Set(matches.map(m => m.toLowerCase().trim()).filter(m => m.length > 2))];
+}
+
 // ─── Listing / category page detection ──────────────────────────────────────
 const LISTING_PAGE_NAME_PATTERNS = [
   // Explicit listing signals

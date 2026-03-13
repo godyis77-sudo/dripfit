@@ -3309,6 +3309,11 @@ Deno.serve(async (req) => {
         // Priority: URL > name > default unisex
         const gender = urlGender || nameGender || 'unisex';
         
+        // Extract fit & fabric from product name + raw category
+        const textForExtraction = `${p.name} ${p.category_raw || ''}`;
+        const fitProfile = extractFitProfile(textForExtraction);
+        const fabricComposition = extractFabricComposition(textForExtraction);
+
         return {
           name: p.name,
           brand: p.brand,
@@ -3322,6 +3327,8 @@ Deno.serve(async (req) => {
           presentation: p.presentation,
           image_confidence: p.confidence,
           gender,
+          fit_profile: fitProfile,
+          fabric_composition: fabricComposition,
           scrape_source: runId,
           scraped_at: new Date().toISOString(),
           is_active: true,
