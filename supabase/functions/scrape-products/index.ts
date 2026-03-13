@@ -831,6 +831,271 @@ const BRAND_DOMAINS: Record<string, string> = {
   'true classic': 'https://trueclassictees.com', coach: 'https://www.coach.com',
   'kate spade': 'https://www.katespade.com', 'michael kors': 'https://www.michaelkors.com',
   hoka: 'https://www.hoka.com', 'steve madden': 'https://www.stevemadden.com',
+  'fashion nova': 'https://www.fashionnova.com', 'princess polly': 'https://www.princesspolly.com',
+  'oh polly': 'https://www.ohpolly.com', 'cider': 'https://www.shopcider.com',
+  'cuts': 'https://www.cutsclothing.com', 'good american': 'https://www.goodamerican.com',
+  'torrid': 'https://www.torrid.com', 'eloquii': 'https://www.eloquii.com',
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SHOPIFY /products.json — FREE structured product data, zero credits
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Registry of brands powered by Shopify. Maps brand key → Shopify store base URL.
+ * These stores expose /products.json and /collections/{handle}/products.json
+ * which return fully structured product data with zero scraping cost.
+ */
+const SHOPIFY_STORES: Record<string, { domain: string; collections?: Record<string, string[]> }> = {
+  // ── Streetwear & Hype ──
+  "stüssy":             { domain: 'https://www.stussy.com', collections: { tops: ['tops'], bottoms: ['bottoms'], shorts: ['shorts'], outerwear: ['outerwear'], accessories: ['accessories', 'headwear'] } },
+  kith:                 { domain: 'https://kith.com', collections: { tops: ['mens-tops', 'womens-tops'], bottoms: ['mens-bottoms', 'womens-bottoms'], outerwear: ['mens-outerwear', 'womens-outerwear'], shoes: ['mens-footwear', 'womens-footwear'], accessories: ['mens-accessories', 'womens-accessories'], shorts: ['mens-shorts'] } },
+  essentials:           { domain: 'https://www.essentialsfog.com', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outerwear'], shorts: ['shorts'] } },
+  palace:               { domain: 'https://www.palaceskateboards.com', collections: { tops: ['tops'], outerwear: ['jackets'], bottoms: ['bottoms'], accessories: ['hats', 'accessories'] } },
+  // ── Athletic & Active ──
+  gymshark:             { domain: 'https://www.gymshark.com', collections: { tops: ['t-shirts-tops'], bottoms: ['joggers', 'leggings'], shorts: ['shorts'], outerwear: ['hoodies-jackets'], accessories: ['accessories'] } },
+  'alo yoga':           { domain: 'https://www.aloyoga.com', collections: { tops: ['women-tops', 'men-tops'], bottoms: ['women-bottoms', 'men-bottoms'], outerwear: ['women-jackets-coats', 'men-outerwear'], accessories: ['accessories'] } },
+  vuori:                { domain: 'https://vuori.com', collections: { tops: ['mens-tops', 'womens-tops'], bottoms: ['mens-bottoms', 'womens-bottoms'], shorts: ['mens-shorts', 'womens-shorts'], outerwear: ['mens-outerwear', 'womens-outerwear'] } },
+  'girlfriend collective': { domain: 'https://girlfriend.com', collections: { tops: ['tops'], bottoms: ['leggings', 'shorts'], outerwear: ['outerwear'], activewear: ['sports-bras'], swimwear: ['swim'], dresses: ['dresses'] } },
+  rhone:                { domain: 'https://www.rhone.com', collections: { tops: ['mens-shirts'], bottoms: ['mens-pants', 'mens-joggers'], shorts: ['mens-shorts'], outerwear: ['mens-outerwear'], activewear: ['mens-workout-tops'] } },
+  'outdoor voices':     { domain: 'https://www.outdoorvoices.com', collections: { tops: ['tops'], bottoms: ['bottoms'], shorts: ['shorts'], outerwear: ['outerwear'], dresses: ['dresses'] } },
+  // ── Fashion & Contemporary ──
+  'fashion nova':       { domain: 'https://www.fashionnova.com' },
+  skims:                { domain: 'https://skims.com', collections: { tops: ['tops'], bottoms: ['bottoms'], dresses: ['dresses'], loungewear: ['loungewear'], underwear: ['underwear'], swimwear: ['swim'] } },
+  reformation:          { domain: 'https://www.thereformation.com', collections: { dresses: ['dresses'], tops: ['tops'], bottoms: ['bottoms'], outerwear: ['jackets-coats'], shoes: ['shoes'], swimwear: ['swimwear'], skirts: ['skirts'] } },
+  'princess polly':     { domain: 'https://www.princesspolly.com', collections: { tops: ['tops'], dresses: ['dresses'], bottoms: ['bottoms'], outerwear: ['jackets'], accessories: ['accessories'] } },
+  'oh polly':           { domain: 'https://www.ohpolly.com' },
+  cider:                { domain: 'https://www.shopcider.com' },
+  // ── Menswear ──
+  'true classic':       { domain: 'https://trueclassictees.com', collections: { tops: ['mens-crew-neck-t-shirts', 'mens-v-neck-t-shirts', 'mens-polos'], bottoms: ['mens-pants-joggers'], outerwear: ['mens-hoodies-jackets'], shorts: ['mens-shorts'], activewear: ['mens-activewear'] } },
+  'mizzen+main':        { domain: 'https://www.mizzenandmain.com', collections: { tops: ['dress-shirts', 'polos'], bottoms: ['pants', 'jeans'], shorts: ['shorts'], outerwear: ['jackets'] } },
+  'buck mason':         { domain: 'https://www.buckmason.com', collections: { tops: ['t-shirts', 'shirts'], bottoms: ['pants', 'denim'], outerwear: ['jackets'] } },
+  untuckit:             { domain: 'https://www.untuckit.com', collections: { tops: ['mens-shirts', 'womens-tops'], outerwear: ['mens-jackets', 'womens-jackets'] } },
+  bonobos:              { domain: 'https://bonobos.com', collections: { tops: ['shirts', 'polos'], bottoms: ['pants', 'jeans'], shorts: ['shorts'], outerwear: ['outerwear'], swimwear: ['swim'] } },
+  cuts:                 { domain: 'https://www.cutsclothing.com', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outerwear'] } },
+  // ── Plus Size & Extended ──
+  'good american':      { domain: 'https://www.goodamerican.com', collections: { bottoms: ['jeans', 'pants'], tops: ['tops'], dresses: ['dresses'], activewear: ['activewear'], swimwear: ['swim'] } },
+  // ── Footwear ──
+  allbirds:             { domain: 'https://www.allbirds.com', collections: { shoes: ['mens-shoes', 'womens-shoes'] } },
+  'steve madden':       { domain: 'https://www.stevemadden.com', collections: { shoes: ['womens-sneakers', 'womens-boots', 'womens-heels', 'mens-shoes', 'womens-sandals'], accessories: ['womens-handbags'] } },
+  // ── Jewelry ──
+  mejuri:               { domain: 'https://mejuri.com', collections: { accessories: ['necklaces', 'rings', 'earrings', 'bracelets'] } },
+  // ── Additional Shopify brands ──
+  everlane:             { domain: 'https://www.everlane.com', collections: { tops: ['womens-tops', 'mens-tees'], bottoms: ['womens-jeans', 'mens-jeans', 'womens-pants', 'mens-pants'], outerwear: ['womens-outerwear', 'mens-outerwear'], dresses: ['dresses'], shoes: ['womens-shoes', 'mens-shoes'] } },
+  allsaints:            { domain: 'https://www.allsaints.com', collections: { tops: ['womens-tops', 'mens-t-shirts'], outerwear: ['womens-leather-jackets', 'mens-leather-jackets'], dresses: ['womens-dresses'], bottoms: ['mens-jeans', 'womens-jeans'] } },
+  fabletics:            { domain: 'https://www.fabletics.com', collections: { tops: ['tops'], bottoms: ['bottoms', 'leggings'], outerwear: ['jackets'], shorts: ['shorts'], activewear: ['sports-bras'] } },
+};
+
+/**
+ * Fetch products from a Shopify store via the public /products.json API.
+ * Pages through results using ?page=N&limit=250.
+ * Returns structured RawProduct[].
+ */
+async function scrapeShopifyProducts(
+  brand: string,
+  category: string,
+): Promise<RawProduct[]> {
+  const brandKey = normalizeBrandKey(brand);
+  const store = SHOPIFY_STORES[brandKey];
+  if (!store) return [];
+
+  const catKey = category.toLowerCase();
+  const parentKey = CATEGORY_TO_URL_KEY[catKey] || catKey;
+
+  // Determine which collection handles to fetch
+  const collectionHandles = store.collections?.[catKey] || store.collections?.[parentKey] || [];
+
+  const allProducts: RawProduct[] = [];
+
+  if (collectionHandles.length > 0) {
+    // Fetch specific collections
+    for (const handle of collectionHandles) {
+      const products = await fetchShopifyCollection(store.domain, handle, brand, category);
+      allProducts.push(...products);
+    }
+  } else {
+    // Fallback: fetch /products.json (all products) and filter by category
+    const products = await fetchShopifyAllProducts(store.domain, brand, category);
+    allProducts.push(...products);
+  }
+
+  console.log(`[shopify] ${brand}/${category}: ${allProducts.length} products via /products.json`);
+  return allProducts;
+}
+
+async function fetchShopifyCollection(
+  domain: string,
+  collectionHandle: string,
+  brand: string,
+  category: string,
+): Promise<RawProduct[]> {
+  const products: RawProduct[] = [];
+  const maxPages = 4; // 250 * 4 = 1000 max products per collection
+
+  for (let page = 1; page <= maxPages; page++) {
+    try {
+      const url = `${domain}/collections/${collectionHandle}/products.json?limit=250&page=${page}`;
+      console.log(`[shopify] Fetching ${url}`);
+      
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      const resp = await fetch(url, {
+        headers: {
+          'User-Agent': HTTP_USER_AGENT,
+          'Accept': 'application/json',
+        },
+        signal: controller.signal,
+        redirect: 'follow',
+      });
+      clearTimeout(timeout);
+
+      if (!resp.ok) {
+        console.warn(`[shopify] HTTP ${resp.status} for ${url}`);
+        break;
+      }
+
+      const data = await resp.json();
+      const items = data.products || [];
+      if (items.length === 0) break;
+
+      for (const item of items) {
+        const parsed = parseShopifyProduct(item, brand, category, domain);
+        if (parsed) products.push(parsed);
+      }
+
+      // If we got fewer than 250, we've hit the last page
+      if (items.length < 250) break;
+      
+      await delay(300); // Be polite
+    } catch (err) {
+      console.warn(`[shopify] Error fetching collection ${collectionHandle}:`, (err as Error).message);
+      break;
+    }
+  }
+
+  return products;
+}
+
+async function fetchShopifyAllProducts(
+  domain: string,
+  brand: string,
+  category: string,
+): Promise<RawProduct[]> {
+  const products: RawProduct[] = [];
+  const maxPages = 3;
+
+  for (let page = 1; page <= maxPages; page++) {
+    try {
+      const url = `${domain}/products.json?limit=250&page=${page}`;
+      console.log(`[shopify] Fetching ${url}`);
+      
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      const resp = await fetch(url, {
+        headers: {
+          'User-Agent': HTTP_USER_AGENT,
+          'Accept': 'application/json',
+        },
+        signal: controller.signal,
+        redirect: 'follow',
+      });
+      clearTimeout(timeout);
+
+      if (!resp.ok) {
+        console.warn(`[shopify] HTTP ${resp.status} for ${url}`);
+        break;
+      }
+
+      const data = await resp.json();
+      const items = data.products || [];
+      if (items.length === 0) break;
+
+      for (const item of items) {
+        const parsed = parseShopifyProduct(item, brand, category, domain);
+        if (parsed) products.push(parsed);
+      }
+
+      if (items.length < 250) break;
+      await delay(300);
+    } catch (err) {
+      console.warn(`[shopify] Error fetching products:`, (err as Error).message);
+      break;
+    }
+  }
+
+  // When fetching all products (no collection filter), do category filtering
+  const catNorm = normaliseCategory(category);
+  const filtered = products.filter(p => {
+    const pCat = normaliseCategory(p.category_raw);
+    return pCat === catNorm || pCat === 'other'; // Keep 'other' as they may match
+  });
+
+  return filtered.length > 0 ? filtered : products.slice(0, 50);
+}
+
+function parseShopifyProduct(
+  item: any,
+  brand: string,
+  category: string,
+  domain: string,
+): RawProduct | null {
+  const title = item.title;
+  if (!title || title.length < 5) return null;
+  if (isListingPageName(title)) return null;
+
+  // Build product URL from handle
+  const handle = item.handle;
+  if (!handle) return null;
+  const productUrl = `${domain}/products/${handle}`;
+
+  // Extract images
+  const imageUrls: string[] = [];
+  if (item.images && Array.isArray(item.images)) {
+    for (const img of item.images.slice(0, 8)) {
+      const src = typeof img === 'string' ? img : img.src;
+      if (src && src.startsWith('http')) {
+        imageUrls.push(src);
+      }
+    }
+  }
+  // Fallback to featured image
+  if (imageUrls.length === 0 && item.image?.src) {
+    imageUrls.push(item.image.src);
+  }
+  if (imageUrls.length === 0) return null;
+
+  // Extract price from first variant
+  let priceCents: number | null = null;
+  if (item.variants && item.variants.length > 0) {
+    const price = parseFloat(item.variants[0].price);
+    if (price > 0) priceCents = Math.round(price * 100);
+  }
+
+  // Detect category from product_type or tags
+  const categoryRaw = item.product_type || category;
+
+  // Extract colour from first variant option
+  let colour: string | null = null;
+  if (item.options && Array.isArray(item.options)) {
+    const colorOption = item.options.find((o: any) =>
+      /color|colour/i.test(o.name)
+    );
+    if (colorOption?.values?.[0]) {
+      colour = colorOption.values[0];
+    }
+  }
+
+  return {
+    name: title,
+    brand: item.vendor || brand,
+    product_url: productUrl,
+    price_cents: priceCents,
+    currency: 'USD',
+    image_urls: imageUrls,
+    category_raw: categoryRaw,
+    colour,
+  };
+}
 };
 
 // Category keywords for map search filtering
