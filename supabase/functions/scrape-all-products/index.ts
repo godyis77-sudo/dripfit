@@ -180,14 +180,22 @@ Deno.serve(async (req) => {
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
     const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
 
-    // Support batch param to process a slice of jobs (0-indexed batch number)
+    // Support batch params to process a slice of jobs (0-indexed batch number)
     let batchNumber = 0;
     let batchTotal = 1;
+    let dispatchDelayMs = 900;
     try {
       const body = await req.json();
-      batchNumber = body.batch ?? 0;
-      batchTotal = body.totalBatches ?? 1;
+      batchNumber = Number(body.batch ?? 0);
+      batchTotal = Number(body.totalBatches ?? 1);
+      dispatchDelayMs = Number(body.dispatchDelayMs ?? 900);
     } catch { /* no body = run all */ }
+
+    batchTotal = Number.isFinite(batchTotal) && batchTotal > 0 ? Math.floor(batchTotal) : 1;
+    batchNumber = Number.isFinite(batchNumber) && batchNumber >= 0 ? Math.floor(batchNumber) : 0;
+    dispatchDelayMs = Number.isFinite(dispatchDelayMs)
+      ? Math.max(250, Math.min(3000, Math.floor(dispatchDelayMs)))
+      : 900;
 
     // Build all jobs
     const allJobs: { brand: string; category: string }[] = [];
@@ -203,7 +211,7 @@ Deno.serve(async (req) => {
     const batchJobs = allJobs.slice(start, start + jobsPerBatch);
 
     console.log(
-      `[scrape-all] Batch ${batchNumber + 1}/${batchTotal}: dispatching ${batchJobs.length} jobs fire-and-forget (of ${allJobs.length} total)`
+      `[scrape-all] Batch ${batchNumber + 1}/${batchTotal}: dispatching ${batchJobs.length} jobs fire-and-forget with ${dispatchDelayMs}ms stagger (of ${allJobs.length} total)`
     );
 
     // Fire-and-forget: dispatch all jobs without awaiting responses
