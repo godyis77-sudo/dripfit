@@ -1217,8 +1217,25 @@ async function searchProducts(
     }
 
     // Validate images with HEAD requests (free, ensures quality)
-    const validated = await validateProductImages(allProducts);
-    console.log(`[search-fallback] Extracted ${validated.length} products for ${brand}/${category} (${allProducts.length - validated.length} failed image validation)`);
+    // Only validate if products actually have images — metadata-only search may not include images
+    const productsWithImages = allProducts.filter(p => p.image_urls.length > 0);
+    const productsWithoutImages = allProducts.filter(p => p.image_urls.length === 0);
+    
+    let validated: RawProduct[];
+    if (productsWithImages.length > 0) {
+      validated = await validateProductImages(productsWithImages);
+    } else {
+      validated = [];
+    }
+    
+    // For products without images, try to fetch og:image from product URL (free HEAD request)
+    if (productsWithoutImages.length > 0) {
+      console.log(`[search-fallback] ${productsWithoutImages.length} products without images, fetching og:image from product URLs`);
+      const enriched = await enrichProductImages(productsWithoutImages);
+      validated.push(...enriched);
+    }
+    
+    console.log(`[search-fallback] Final: ${validated.length} products for ${brand}/${category}`);
     return validated;
   } catch (err) {
     console.warn(`[search-fallback] Error:`, err);
