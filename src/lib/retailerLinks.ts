@@ -1,4 +1,5 @@
 import { getUserRegion, type UserRegion } from '@/lib/session';
+import { appendAffiliateParams } from '@/lib/affiliateConfig';
 
 /** Region-specific domain overrides */
 const REGION_DOMAINS: Partial<Record<string, Partial<Record<UserRegion, string>>>> = {
@@ -59,7 +60,8 @@ export function buildRetailerSearchUrl(retailerName: string, baseUrl: string, qu
     'HOKA': (q) => `https://www.hoka.com/en/us/search?q=${q}`,
     'Anthropologie': (q) => `https://www.anthropologie.com/search?q=${q}`,
   };
-  return searchPaths[retailerName]?.(q) || `${baseUrl.replace(/\/$/, '')}/?q=${q}`;
+  const rawUrl = searchPaths[retailerName]?.(q) || `${baseUrl.replace(/\/$/, '')}/?q=${q}`;
+  return appendAffiliateParams(rawUrl, retailerName);
 }
 
 /** Suggested retailers for a clothing category */
