@@ -22,6 +22,7 @@ import { useCommunityFeed } from '@/hooks/useCommunityFeed';
 import { useCart } from '@/hooks/useCart';
 import type { Post, FilterType, TrendingSort, GenderKey } from '@/components/community/community-types';
 import { GENDER_OPTIONS, isValidImageUrl } from '@/components/community/community-types';
+import type { BrandGenre } from '@/lib/brandGenres';
 
 const Community = () => {
   const navigate = useNavigate();
