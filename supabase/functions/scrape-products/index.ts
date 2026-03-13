@@ -1258,7 +1258,7 @@ async function searchProductsFallback(
   console.log(`[search-fallback-broad] Query: "${searchQuery}"`);
 
   try {
-    // Metadata-only search: 1 credit (no scrapeOptions)
+    // Search with scrapeOptions for images: ~4 credits (1 base + 3 results)
     const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/search', {
       method: 'POST',
       headers: {
@@ -1267,9 +1267,10 @@ async function searchProductsFallback(
       },
       body: JSON.stringify({
         query: searchQuery,
-        limit: 5,
+        limit: 3,
         lang: 'en',
         country: 'us',
+        scrapeOptions: { formats: ['markdown'] },
       }),
     });
 
@@ -1280,7 +1281,7 @@ async function searchProductsFallback(
     }
 
     const results = data.data || [];
-    console.log(`[search-fallback-broad] Got ${results.length} results (metadata-only, 1 credit)`);
+    console.log(`[search-fallback-broad] Got ${results.length} results (~${results.length + 1} credits)`);
     return parseSearchResults(results, brand, category);
   } catch (err) {
     console.warn(`[search-fallback-broad] Error:`, err);
