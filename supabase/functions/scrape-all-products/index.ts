@@ -243,7 +243,8 @@ Deno.serve(async (req) => {
       totalBatches: batchTotal,
       totalJobs: batchJobs.length,
       dispatched,
-      message: `Dispatched ${dispatched} scrape jobs fire-and-forget. Check scrape-products logs for results.`,
+      dispatchDelayMs,
+      message: `Dispatched ${dispatched} scrape jobs fire-and-forget with ${dispatchDelayMs}ms stagger. Check scrape-products logs for results.`,
     }, 200, corsHeaders);
   } catch (err: any) {
     console.error('[scrape-all] Error:', err);
