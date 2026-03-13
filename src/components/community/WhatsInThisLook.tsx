@@ -202,8 +202,7 @@ const WhatsInThisLook = ({
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          window.open(item.url, '_blank', 'noopener');
-                          trackEvent('badge_clickout', { retailer: item.brand, source: 'whats_in_look' });
+                          beginClickout(item.brand, item.url);
                         }}
                         className="text-[10px] font-bold text-foreground bg-primary/20 px-2 py-0.5 rounded-md flex items-center gap-0.5 active:opacity-70"
                       >
