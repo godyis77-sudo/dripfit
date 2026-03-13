@@ -214,8 +214,8 @@ Deno.serve(async (req) => {
     const results: { brand: string; category: string; inserted: number; error?: string }[] = [];
     let totalInserted = 0;
 
-    // Process in batches of 3 to avoid overwhelming the function
-    const BATCH_SIZE = 3;
+    // Process sequentially (1 at a time) — each sub-call takes ~10-20s with scrapeOptions
+    const BATCH_SIZE = 1;
     for (let i = 0; i < jobs.length; i += BATCH_SIZE) {
       const batch = jobs.slice(i, i + BATCH_SIZE);
       
