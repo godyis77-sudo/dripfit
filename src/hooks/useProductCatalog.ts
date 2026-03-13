@@ -16,6 +16,9 @@ export interface CatalogProduct {
   presentation?: string | null;
   image_confidence?: number | null;
   gender?: string | null;
+  fit_profile?: string[] | null;
+  fabric_composition?: string[] | null;
+  style_genre?: string | null;
 }
 
 // Map app-facing category keys to actual DB category values
@@ -97,7 +100,7 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
     try {
       let query = supabase
         .from('product_catalog')
-        .select('id, brand, retailer, category, name, image_url, product_url, price_cents, currency, tags, presentation, image_confidence, gender')
+        .select('id, brand, retailer, category, name, image_url, product_url, price_cents, currency, tags, presentation, image_confidence, gender, fit_profile, fabric_composition, style_genre')
         .eq('is_active', true)
         .not('image_url', 'is', null)
         .order('image_confidence', { ascending: false })

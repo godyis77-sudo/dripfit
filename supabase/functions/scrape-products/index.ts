@@ -3005,6 +3005,26 @@ function buildTags(p: ClassifiedProduct): string[] {
   return [...new Set(tags)];
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// FABRIC & FIT EXTRACTION — Regex-based physical garment data extraction
+// ─────────────────────────────────────────────────────────────────────────────
+
+const FIT_REGEX = /(oversized|boxy|relaxed\s*fit|slim\s*fit|regular\s*fit|heavyweight|lightweight|cropped|tapered|drop\s*shoulder|straight\s*fit|loose\s*fit|skinny\s*fit|athletic\s*fit|classic\s*fit|modern\s*fit|tailored\s*fit|muscle\s*fit|oversize)/gi;
+
+const FABRIC_REGEX = /(\d{1,3}%\s?[a-zA-Z\s\-]+(?:\s?(?:and|,)\s?\d{1,3}%\s?[a-zA-Z\s\-]+)*)|(french\s*terry|fleece|selvedge\s*denim|nylon\s*blend|organic\s*cotton|recycled\s*polyester|merino\s*wool|modal|tencel|lyocell|viscose|spandex|elastane|linen\s*blend|cotton\s*blend|ponte|jersey|terry\s*cloth|satin|silk|velvet|corduroy|twill|chambray|poplin|ripstop|mesh|piqué|waffle\s*knit|sherpa|faux\s*leather)/gi;
+
+function extractFitProfile(text: string): string[] {
+  const matches = text.match(FIT_REGEX);
+  if (!matches) return [];
+  return [...new Set(matches.map(m => m.toLowerCase().trim()))];
+}
+
+function extractFabricComposition(text: string): string[] {
+  const matches = text.match(FABRIC_REGEX);
+  if (!matches) return [];
+  return [...new Set(matches.map(m => m.toLowerCase().trim()).filter(m => m.length > 2))];
+}
+
 function delay(ms: number) { return new Promise(r => setTimeout(r, ms)); }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -3289,6 +3309,11 @@ Deno.serve(async (req) => {
         // Priority: URL > name > default unisex
         const gender = urlGender || nameGender || 'unisex';
         
+        // Extract fit & fabric from product name + raw category
+        const textForExtraction = `${p.name} ${p.category_raw || ''}`;
+        const fitProfile = extractFitProfile(textForExtraction);
+        const fabricComposition = extractFabricComposition(textForExtraction);
+
         return {
           name: p.name,
           brand: p.brand,
@@ -3302,6 +3327,8 @@ Deno.serve(async (req) => {
           presentation: p.presentation,
           image_confidence: p.confidence,
           gender,
+          fit_profile: fitProfile,
+          fabric_composition: fabricComposition,
           scrape_source: runId,
           scraped_at: new Date().toISOString(),
           is_active: true,

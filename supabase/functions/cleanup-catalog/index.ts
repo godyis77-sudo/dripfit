@@ -80,6 +80,22 @@ function getBrandGenre(brand: string): string {
   return BRAND_GENRE_MAP[brand.toLowerCase().trim()] ?? 'Contemporary';
 }
 
+// ─── Fabric & Fit extraction (regex-based) ──────────────────────────────────
+const FIT_REGEX = /(oversized|boxy|relaxed\s*fit|slim\s*fit|regular\s*fit|heavyweight|lightweight|cropped|tapered|drop\s*shoulder|straight\s*fit|loose\s*fit|skinny\s*fit|athletic\s*fit|classic\s*fit|modern\s*fit|tailored\s*fit|muscle\s*fit|oversize)/gi;
+const FABRIC_REGEX = /(\d{1,3}%\s?[a-zA-Z\s\-]+(?:\s?(?:and|,)\s?\d{1,3}%\s?[a-zA-Z\s\-]+)*)|(french\s*terry|fleece|selvedge\s*denim|nylon\s*blend|organic\s*cotton|recycled\s*polyester|merino\s*wool|modal|tencel|lyocell|viscose|spandex|elastane|linen\s*blend|cotton\s*blend|ponte|jersey|terry\s*cloth|satin|silk|velvet|corduroy|twill|chambray|poplin|ripstop|mesh|piqué|waffle\s*knit|sherpa|faux\s*leather)/gi;
+
+function extractFitProfile(text: string): string[] {
+  const matches = text.match(FIT_REGEX);
+  if (!matches) return [];
+  return [...new Set(matches.map(m => m.toLowerCase().trim()))];
+}
+
+function extractFabricComposition(text: string): string[] {
+  const matches = text.match(FABRIC_REGEX);
+  if (!matches) return [];
+  return [...new Set(matches.map(m => m.toLowerCase().trim()).filter(m => m.length > 2))];
+}
+
 // ─── Listing / category page detection ──────────────────────────────────────
 const LISTING_PAGE_NAME_PATTERNS = [
   // Explicit listing signals
@@ -236,6 +252,7 @@ Deno.serve(async (req) => {
       categories_remapped: 0,
       genres_tagged: 0,
       already_clean: 0,
+      fit_fabric_tagged: 0,
       dry_run: dryRun,
       samples: [] as { id: string; name: string; action: string; detail: string }[],
     };
@@ -247,7 +264,7 @@ Deno.serve(async (req) => {
     while (hasMore) {
       const { data: products, error } = await supabase
         .from("product_catalog")
-        .select("id, name, brand, category, style_genre, is_active")
+        .select("id, name, brand, category, style_genre, is_active, fit_profile, fabric_composition")
         .eq("is_active", true)
         .range(offset, offset + batchSize - 1)
         .order("created_at", { ascending: true });
@@ -263,6 +280,7 @@ Deno.serve(async (req) => {
       const toDeactivate: string[] = [];
       const toRemap: { id: string; newCategory: string }[] = [];
       const toGenreTag: { id: string; genre: string }[] = [];
+      const toFitFabric: { id: string; fit_profile: string[]; fabric_composition: string[] }[] = [];
 
       for (const product of products) {
         const name = product.name || "";
@@ -314,6 +332,18 @@ Deno.serve(async (req) => {
           stats.genres_tagged++;
         }
 
+        // 6. Extract fit_profile & fabric_composition if empty
+        const existingFit: string[] = Array.isArray(product.fit_profile) ? product.fit_profile : [];
+        const existingFabric: string[] = Array.isArray(product.fabric_composition) ? product.fabric_composition : [];
+        if (existingFit.length === 0 || existingFabric.length === 0) {
+          const fitProfile = existingFit.length === 0 ? extractFitProfile(name) : existingFit;
+          const fabricComp = existingFabric.length === 0 ? extractFabricComposition(name) : existingFabric;
+          if (fitProfile.length > 0 || fabricComp.length > 0) {
+            toFitFabric.push({ id: product.id, fit_profile: fitProfile, fabric_composition: fabricComp });
+            stats.fit_fabric_tagged++;
+          }
+        }
+
         if (newCategory === product.category && product.style_genre === correctGenre) {
           stats.already_clean++;
         }
@@ -355,6 +385,18 @@ Deno.serve(async (req) => {
               .in("id", chunk);
           }
         }
+
+        // Batch fit/fabric tagging — individual updates (different values per product)
+        for (const item of toFitFabric) {
+          await supabase
+            .from("product_catalog")
+            .update({
+              fit_profile: item.fit_profile,
+              fabric_composition: item.fabric_composition,
+              updated_at: new Date().toISOString(),
+            } as any)
+            .eq("id", item.id);
+        }
       }
 
       if (products.length < batchSize) {
@@ -363,7 +405,7 @@ Deno.serve(async (req) => {
       offset += batchSize;
     }
 
-    console.log(`Cleanup complete: ${stats.checked} checked, ${stats.listing_pages_deactivated} listing pages, ${stats.non_products_deactivated} non-products, ${stats.too_short_deactivated} too short, ${stats.categories_remapped} remapped, ${stats.genres_tagged} genres tagged`);
+    console.log(`Cleanup complete: ${stats.checked} checked, ${stats.listing_pages_deactivated} listing pages, ${stats.non_products_deactivated} non-products, ${stats.too_short_deactivated} too short, ${stats.categories_remapped} remapped, ${stats.genres_tagged} genres tagged, ${stats.fit_fabric_tagged} fit/fabric tagged`);
 
     return new Response(JSON.stringify({ success: true, ...stats }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
