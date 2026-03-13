@@ -1380,26 +1380,30 @@ function parseSearchResults(results: any[], brand: string, category: string): Ra
 
     // Extract product info from the search result
     const title = result.title || '';
-    const markdown = result.markdown || '';
+    const markdown = result.markdown || result.description || '';
 
-    // Try to extract price from markdown
+    // Try to extract price from markdown/description
     const priceMatch = markdown.match(/\$\s*([\d,]+(?:\.\d{2})?)/);
     const priceCents = priceMatch ? Math.round(parseFloat(priceMatch[1].replace(',', '')) * 100) : null;
 
-    // Extract image URLs from markdown
-    const imgRegex = /!\[.*?\]\((https?:\/\/[^\s)]+)\)/g;
+    // Extract image URLs from markdown (if available) or metadata
     const imageUrls: string[] = [];
-    let imgMatch;
-    while ((imgMatch = imgRegex.exec(markdown)) !== null) {
-      const imgUrl = imgMatch[1];
-      if (!/logo|icon|sprite|favicon|banner|pixel|tracking/i.test(imgUrl)) {
-        imageUrls.push(imgUrl);
-      }
+
+    // Check result metadata for og:image first (always available from search)
+    if (result.metadata?.ogImage) {
+      imageUrls.push(result.metadata.ogImage);
     }
 
-    // Also check result metadata for og:image
-    if (result.metadata?.ogImage) {
-      imageUrls.unshift(result.metadata.ogImage);
+    // Also extract from markdown if present
+    if (result.markdown) {
+      const imgRegex = /!\[.*?\]\((https?:\/\/[^\s)]+)\)/g;
+      let imgMatch;
+      while ((imgMatch = imgRegex.exec(result.markdown)) !== null) {
+        const imgUrl = imgMatch[1];
+        if (!/logo|icon|sprite|favicon|banner|pixel|tracking/i.test(imgUrl)) {
+          imageUrls.push(imgUrl);
+        }
+      }
     }
 
     // Clean the product name from the title
