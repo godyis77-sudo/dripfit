@@ -2057,11 +2057,16 @@ async function scrapeUrlConfigs(
 
   // Try extract v2 first (cleaner, returns images directly)
   const extractResults = await extractFromUrls(brand, category, urls, category, firecrawlApiKey);
-  if (extractResults.length > 0) return extractResults;
+  if (extractResults.length > 0) {
+    for (const p of extractResults) p._method = p._method || 'extract';
+    return extractResults;
+  }
 
   // Fall back to legacy scrape + rawHtml parsing
   console.log(`[scrape] Extract returned 0 for ${brand}/${category}, trying legacy scrape`);
-  return scrapeUrlConfigsLegacy(brand, category, urlConfigs, firecrawlApiKey);
+  const legacyResults = await scrapeUrlConfigsLegacy(brand, category, urlConfigs, firecrawlApiKey);
+  for (const p of legacyResults) p._method = p._method || 'legacy_scrape';
+  return legacyResults;
 }
 
 /**
