@@ -987,6 +987,7 @@ function parseProductsFromHtml(html: string, brand: string, category: string, pa
     /window\.__INITIAL_STATE__\s*=\s*({[\s\S]*?});\s*<\/script>/,
     /window\.__PRELOADED_STATE__\s*=\s*({[\s\S]*?});\s*<\/script>/,
     /window\.__STORE_STATE__\s*=\s*({[\s\S]*?});\s*<\/script>/,
+    /window\.__APP_INITIAL_STATE__\s*=\s*({[\s\S]*?});\s*<\/script>/,
   ];
   for (const pat of statePatterns) {
     const m = html.match(pat);
@@ -998,7 +999,17 @@ function parseProductsFromHtml(html: string, brand: string, category: string, pa
     }
   }
 
-  // 4) Parse product links + images from HTML product grid patterns
+  // 4) Extract from window.dataLayer product impressions (GA/GTM)
+  if (products.length === 0) {
+    extractProductsFromDataLayer(html, products, brand, category, pageUrl);
+  }
+
+  // 5) Extract from SSR-rendered product tiles (data-product-name, aria-label patterns)
+  if (products.length === 0) {
+    extractProductsFromSsrTiles(html, products, brand, category, pageUrl);
+  }
+
+  // 6) Parse product links + images from HTML product grid patterns
   if (products.length === 0) {
     extractProductsFromHtmlGrid(html, products, brand, category, pageUrl);
   }
