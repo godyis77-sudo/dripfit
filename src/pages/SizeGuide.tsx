@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Camera, Image, Loader2, CheckCircle2, AlertTriangle, ChevronDown, ChevronUp, Ruler, LogIn, Search, Store } from 'lucide-react';
+import { ArrowLeft, Camera, Image, Loader2, CheckCircle2, AlertTriangle, ChevronDown, ChevronUp, Ruler, LogIn, Search, Store, Users, ArrowUpDown } from 'lucide-react';
 import { getMeasurements } from '@/lib/storage';
 import { MeasurementResult, MEASUREMENT_LABELS } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,7 +17,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 interface SizeBreakdown { measurement: string; userValue: string; chartRange: string; fitsSize: string; fit: 'tight' | 'good' | 'loose'; }
 interface SizeRecommendation { recommendedSize: string; confidence: string; breakdown: SizeBreakdown[]; notes: string; alternativeSize?: string; alternativeReason?: string; }
-interface BrandOption { brand_name: string; brand_slug: string; category: string; }
+interface BrandOption { brand_name: string; brand_slug: string; category: string; gender?: string; size_type?: string; }
 interface DbSizeResult { recommended_size: string; confidence: number; fit_status: string; fit_notes: string; second_option: string | null; all_sizes: { label: string; score: number; fit_status: string }[]; }
 
 const fitColors: Record<string, string> = { tight: 'text-destructive', good: 'text-primary', loose: 'text-accent-foreground' };
@@ -70,6 +70,8 @@ const SizeGuide = () => {
   const [selectedBrand, setSelectedBrand] = useState<BrandOption | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('tops');
   const [fitPreference, setFitPreference] = useState<'slim' | 'regular' | 'relaxed'>('regular');
+  const [genderFilter, setGenderFilter] = useState<'all' | 'men' | 'women'>('all');
+  const [sizeTypeFilter, setSizeTypeFilter] = useState<'all' | 'regular' | 'tall' | 'petite' | 'plus'>('all');
   const [dbResult, setDbResult] = useState<DbSizeResult | null>(null);
   const [dbLoading, setDbLoading] = useState(false);
   const [dbError, setDbError] = useState<string | null>(null);
@@ -116,7 +118,7 @@ const SizeGuide = () => {
       setBrandsLoading(true);
       const chartsPromise = supabase
         .from('brand_size_charts')
-        .select('brand_name, brand_slug, category')
+        .select('brand_name, brand_slug, category, gender, size_type')
         .eq('is_active', true)
         .order('brand_name');
 
@@ -140,8 +142,15 @@ const SizeGuide = () => {
     loadBrands();
   }, [user]);
 
+  // Filter brands by gender and size type before grouping
+  const filteredByMeta = brands.filter(b => {
+    if (genderFilter !== 'all' && b.gender !== genderFilter && b.gender !== 'unisex') return false;
+    if (sizeTypeFilter !== 'all' && b.size_type !== sizeTypeFilter) return false;
+    return true;
+  });
+
   // Unique brand names for the picker
-  const uniqueBrands = brands.reduce<{ name: string; slug: string; categories: string[] }[]>((acc, b) => {
+  const uniqueBrands = filteredByMeta.reduce<{ name: string; slug: string; categories: string[] }[]>((acc, b) => {
     const existing = acc.find(x => x.slug === b.brand_slug);
     if (existing) {
       if (!existing.categories.includes(b.category)) existing.categories.push(b.category);
@@ -286,6 +295,38 @@ const SizeGuide = () => {
               </CardContent></Card>
             ) : (
               <>
+                {/* Filters */}
+                <div className="mb-3 space-y-2">
+                  <div>
+                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1"><Users className="h-3 w-3" /> Gender</p>
+                    <div className="flex gap-1.5">
+                      {(['all', 'men', 'women'] as const).map(g => (
+                        <Button
+                          key={g}
+                          variant={genderFilter === g ? 'default' : 'outline'}
+                          size="sm"
+                          className="rounded-lg text-[11px] h-7 capitalize"
+                          onClick={() => { setGenderFilter(g); setSelectedBrand(null); setDbResult(null); }}
+                        >{g === 'all' ? 'All' : g}</Button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1"><ArrowUpDown className="h-3 w-3" /> Size Range</p>
+                    <div className="flex gap-1.5 flex-wrap">
+                      {(['all', 'regular', 'tall', 'petite', 'plus'] as const).map(t => (
+                        <Button
+                          key={t}
+                          variant={sizeTypeFilter === t ? 'default' : 'outline'}
+                          size="sm"
+                          className="rounded-lg text-[11px] h-7 capitalize"
+                          onClick={() => { setSizeTypeFilter(t); setSelectedBrand(null); setDbResult(null); }}
+                        >{t === 'all' ? 'All' : t}</Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
                 {/* Brand search */}
                 <div className="mb-3">
                   <p className="section-label mb-1.5">1. Choose a brand</p>
