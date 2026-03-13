@@ -1,5 +1,6 @@
 import { getUserRegion, type UserRegion } from '@/lib/session';
 import { resolveClickoutByName } from '@/lib/affiliateRouter';
+import { trackEvent } from '@/lib/analytics';
 
 /** Region-specific domain overrides */
 const REGION_DOMAINS: Partial<Record<string, Partial<Record<UserRegion, string>>>> = {
