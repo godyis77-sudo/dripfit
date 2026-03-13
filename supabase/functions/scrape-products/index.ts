@@ -1177,6 +1177,7 @@ async function searchProducts(
   console.log(`[search-fallback] Query: "${searchQuery}"`);
 
   try {
+    // Metadata-only search: 1 credit per call (NO scrapeOptions = no per-result scraping)
     const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/search', {
       method: 'POST',
       headers: {
@@ -1188,10 +1189,6 @@ async function searchProducts(
         limit: 10,
         lang: 'en',
         country: 'us',
-        scrapeOptions: {
-          formats: ['markdown'],
-          onlyMainContent: true,
-        },
       }),
     });
 
@@ -1199,12 +1196,11 @@ async function searchProducts(
 
     if (!resp.ok) {
       console.warn(`[search-fallback] Firecrawl search error: ${JSON.stringify(data).slice(0, 300)}`);
-      // If primary search fails, try a simplified query without site restrictions
       return searchProductsFallback(brand, category, firecrawlApiKey);
     }
 
     const results = data.data || [];
-    console.log(`[search-fallback] Got ${results.length} search results`);
+    console.log(`[search-fallback] Got ${results.length} search results (metadata-only, 1 credit)`);
 
     const allProducts = parseSearchResults(results, brand, category);
 
@@ -1212,7 +1208,6 @@ async function searchProducts(
     if (allProducts.length < 3) {
       console.log(`[search-fallback] Only ${allProducts.length} results, trying broader query`);
       const fallbackProducts = await searchProductsFallback(brand, category, firecrawlApiKey);
-      // Merge without duplication
       const existingUrls = new Set(allProducts.map(p => p.product_url.toLowerCase()));
       for (const p of fallbackProducts) {
         if (!existingUrls.has(p.product_url.toLowerCase())) {
@@ -1221,11 +1216,12 @@ async function searchProducts(
       }
     }
 
-    console.log(`[search-fallback] Extracted ${allProducts.length} products for ${brand}/${category}`);
-    return allProducts;
+    // Validate images with HEAD requests (free, ensures quality)
+    const validated = await validateProductImages(allProducts);
+    console.log(`[search-fallback] Extracted ${validated.length} products for ${brand}/${category} (${allProducts.length - validated.length} failed image validation)`);
+    return validated;
   } catch (err) {
     console.warn(`[search-fallback] Error:`, err);
-    // Try fallback on error
     return searchProductsFallback(brand, category, firecrawlApiKey);
   }
 }
