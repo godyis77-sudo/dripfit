@@ -15,6 +15,9 @@ export interface ProductPreviewData {
   price_cents?: number | null;
   product_url?: string | null;
   category?: string;
+  fit_profile?: string[] | null;
+  fabric_composition?: string[] | null;
+  style_genre?: string | null;
 }
 
 export interface LookItemData {
