@@ -1166,8 +1166,15 @@ const BRAND_SITE_OVERRIDES: Record<string, string> = {
 };
 
 const FIRECRAWL_SEARCH_WITH_MARKDOWN = Deno.env.get('FIRECRAWL_SEARCH_WITH_MARKDOWN') === 'true';
-const FIRECRAWL_SEARCH_PRIMARY_LIMIT = Math.max(1, Math.min(10, Number(Deno.env.get('FIRECRAWL_SEARCH_PRIMARY_LIMIT') ?? 4)));
-const FIRECRAWL_SEARCH_FALLBACK_LIMIT = Math.max(1, Math.min(10, Number(Deno.env.get('FIRECRAWL_SEARCH_FALLBACK_LIMIT') ?? 2)));
+
+function getSearchLimit(envKey: string, fallback: number): number {
+  const raw = Number(Deno.env.get(envKey));
+  const value = Number.isFinite(raw) ? raw : fallback;
+  return Math.max(1, Math.min(10, Math.floor(value)));
+}
+
+const FIRECRAWL_SEARCH_PRIMARY_LIMIT = getSearchLimit('FIRECRAWL_SEARCH_PRIMARY_LIMIT', 4);
+const FIRECRAWL_SEARCH_FALLBACK_LIMIT = getSearchLimit('FIRECRAWL_SEARCH_FALLBACK_LIMIT', 2);
 
 function shouldSkipFallbackForError(err: unknown): boolean {
   const message = err instanceof Error ? err.message : String(err);
