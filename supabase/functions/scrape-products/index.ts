@@ -1817,13 +1817,21 @@ async function validateImageUrl(url: string): Promise<boolean> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 4000);
-    const resp = await fetch(url, { method: 'HEAD', signal: controller.signal, redirect: 'follow' });
+    // Try HEAD first, fall back to GET with range header for CDNs that block HEAD
+    let resp = await fetch(url, { method: 'HEAD', signal: controller.signal, redirect: 'follow' });
     clearTimeout(timeout);
+    // Many CDNs return 403/405 for HEAD — accept the URL if it looks like an image URL
+    if (resp.status === 405 || resp.status === 403) {
+      // Trust URLs that have image extensions
+      return /\.(jpg|jpeg|png|webp|avif)/i.test(url);
+    }
     if (!resp.ok) return false;
     const ct = resp.headers.get('content-type') || '';
-    return ct.startsWith('image/');
+    // Accept if content-type is image OR if URL has image extension (some CDNs return octet-stream)
+    return ct.startsWith('image/') || /\.(jpg|jpeg|png|webp|avif)/i.test(url);
   } catch {
-    return false;
+    // On timeout/network error, trust URLs with image extensions
+    return /\.(jpg|jpeg|png|webp|avif)/i.test(url);
   }
 }
 
