@@ -1,4 +1,5 @@
 import { getUserRegion, type UserRegion } from '@/lib/session';
+import { appendAffiliateParams } from '@/lib/affiliateConfig';
 
 /** Region-specific domain overrides */
 const REGION_DOMAINS: Partial<Record<string, Partial<Record<UserRegion, string>>>> = {
