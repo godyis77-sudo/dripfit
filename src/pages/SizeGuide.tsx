@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Camera, Image, Loader2, CheckCircle2, AlertTriangle, ChevronDown, ChevronUp, Ruler, LogIn, Search, Store } from 'lucide-react';
+import { ArrowLeft, Camera, Image, Loader2, CheckCircle2, AlertTriangle, ChevronDown, ChevronUp, Ruler, LogIn, Search, Store, Users, ArrowUpDown } from 'lucide-react';
 import { getMeasurements } from '@/lib/storage';
 import { MeasurementResult, MEASUREMENT_LABELS } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
