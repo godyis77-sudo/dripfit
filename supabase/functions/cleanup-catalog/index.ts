@@ -6,7 +6,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// ─── Brand → Genre mapping (server-side mirror of client brandGenres.ts) ────
+// ─── Brand → Style Genre mapping (server-side mirror of client brandGenres.ts) ────
 const BRAND_GENRE_MAP: Record<string, string> = {
   // Luxury
   'gucci': 'Luxury', 'louis vuitton': 'Luxury', 'prada': 'Luxury', 'balenciaga': 'Luxury',
@@ -31,26 +31,37 @@ const BRAND_GENRE_MAP: Record<string, string> = {
   'nike': 'Athletic', 'adidas': 'Athletic', 'puma': 'Athletic', 'lululemon': 'Athletic',
   'gymshark': 'Athletic', 'under armour': 'Athletic', 'new balance': 'Athletic', 'reebok': 'Athletic',
   'on running': 'Athletic', 'asics': 'Athletic', 'gore wear': 'Athletic', 'hoka': 'Athletic',
-  'converse': 'Athletic', 'fabletics': 'Athletic', 'rhone': 'Athletic', 'vuori': 'Athletic',
+  'converse': 'Athletic', 'rhone': 'Athletic', 'vuori': 'Athletic',
   'girlfriend collective': 'Athletic', 'san francisco giants': 'Athletic',
   'public rec': 'Athletic', 'public rec 2.0': 'Athletic', 'mizzen+main': 'Athletic',
-  // Fast Fashion
-  'shein': 'Fast Fashion', 'zara': 'Fast Fashion', 'h&m': 'Fast Fashion', 'forever 21': 'Fast Fashion',
-  'boohoo': 'Fast Fashion', 'prettylittlething': 'Fast Fashion', 'fashion nova': 'Fast Fashion',
-  'mango': 'Fast Fashion', 'topshop': 'Fast Fashion', 'uniqlo': 'Fast Fashion',
-  'true classic': 'Fast Fashion', 'fresh clean tees': 'Fast Fashion',
-  'fresh clean tees canada': 'Fast Fashion', 'fresh clean threads': 'Fast Fashion',
-  'american eagle': 'Fast Fashion', 'cos': 'Fast Fashion', 'calvin klein': 'Fast Fashion',
-  'tommy hilfiger': 'Fast Fashion', 'gap': 'Fast Fashion', 'old navy': 'Fast Fashion',
-  'abercrombie & fitch': 'Fast Fashion', 'abercrombie': 'Fast Fashion',
-  'eloquii': 'Fast Fashion', 'skims': 'Fast Fashion', 'savage x fenty': 'Fast Fashion',
-  "victoria's secret": 'Fast Fashion', 'asos': 'Fast Fashion', 'amazon fashion': 'Fast Fashion',
-  // Contemporary
+  // Casual — everyday wear, relaxed, trend-aware
+  'zara': 'Casual', 'h&m': 'Casual', 'shein': 'Casual', 'forever 21': 'Casual',
+  'boohoo': 'Casual', 'prettylittlething': 'Casual', 'fashion nova': 'Casual',
+  'mango': 'Casual', 'topshop': 'Casual', 'gap': 'Casual', 'old navy': 'Casual',
+  'american eagle': 'Casual', 'abercrombie & fitch': 'Casual', 'abercrombie': 'Casual',
+  'calvin klein': 'Casual', 'tommy hilfiger': 'Casual', 'eloquii': 'Casual',
+  'asos': 'Casual', 'amazon fashion': 'Casual',
+  // Minimalist — clean lines, neutral palettes, quality basics
+  'uniqlo': 'Minimalist', 'cos': 'Minimalist', 'everlane': 'Minimalist', 'allbirds': 'Minimalist',
+  'true classic': 'Minimalist', 'fresh clean tees': 'Minimalist',
+  'fresh clean tees canada': 'Minimalist', 'fresh clean threads': 'Minimalist',
+  'eileen fisher': 'Minimalist', 'marine layer': 'Minimalist', "rothy's": 'Minimalist',
+  'recurate': 'Minimalist', 'trove': 'Minimalist',
+  // Loungewear — comfort-first, home & leisure, intimates
+  'skims': 'Loungewear', 'savage x fenty': 'Loungewear',
+  "victoria's secret": 'Loungewear', 'fabletics': 'Loungewear',
+  // Bohemian — eclectic, flowy, earthy, artisanal
+  'free people': 'Bohemian', 'anthropologie': 'Bohemian',
+  'reformation': 'Bohemian', 'faherty': 'Bohemian',
+  // Contemporary — modern polished everyday (default catch-all)
   'banana republic': 'Contemporary', 'j.crew': 'Contemporary', 'bonobos': 'Contemporary',
-  'charles tyrwhitt': 'Contemporary', 'free people': 'Contemporary', 'anthropologie': 'Contemporary',
-  'untuckit': 'Contemporary', 'steve madden': 'Contemporary', 'ray-ban': 'Contemporary',
+  'charles tyrwhitt': 'Contemporary', 'untuckit': 'Contemporary',
+  'steve madden': 'Contemporary', 'ray-ban': 'Contemporary',
   'radial': 'Contemporary', 'custom club': 'Contemporary', 'project vermont': 'Contemporary',
   'authentic': 'Contemporary', 'phaidon': 'Contemporary', 'doraemon': 'Contemporary',
+  'nordstrom': 'Contemporary', 'macys': 'Contemporary', 'target': 'Contemporary',
+  'ok accessories': 'Contemporary', 'ok mens': 'Contemporary', 'ok unisex': 'Contemporary',
+  'ok womens': 'Contemporary',
   // Outdoor & Active
   'patagonia': 'Outdoor & Active', "arc'teryx": 'Outdoor & Active', 'the north face': 'Outdoor & Active',
   'columbia': 'Outdoor & Active', 'salomon': 'Outdoor & Active', 'oakley': 'Outdoor & Active',
@@ -63,14 +74,6 @@ const BRAND_GENRE_MAP: Record<string, string> = {
   'billabong': 'Surf & Skate', 'o5 billabong': 'Surf & Skate', 'rvca': 'Surf & Skate',
   'outerknown': 'Surf & Skate', 'vans': 'Surf & Skate', 'quiksilver': 'Surf & Skate',
   'volcom': 'Surf & Skate', 'world industries': 'Surf & Skate',
-  // Sustainable
-  'reformation': 'Sustainable', 'everlane': 'Sustainable', 'allbirds': 'Sustainable',
-  'faherty': 'Sustainable', 'recurate': 'Sustainable', 'trove': 'Sustainable',
-  'eileen fisher': 'Sustainable', 'marine layer': 'Sustainable', "rothy's": 'Sustainable',
-  // Department Store (true multi-brand retailers only)
-  'nordstrom': 'Department Store', 'macys': 'Department Store', 'target': 'Department Store',
-  'ok accessories': 'Department Store', 'ok mens': 'Department Store', 'ok unisex': 'Department Store',
-  'ok womens': 'Department Store',
 };
 
 function getBrandGenre(brand: string): string {
