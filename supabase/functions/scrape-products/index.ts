@@ -1155,6 +1155,15 @@ const BRAND_SITE_OVERRIDES: Record<string, string> = {
   'fear of god': 'site:fearofgod.com OR site:ssense.com OR site:nordstrom.com',
 };
 
+const FIRECRAWL_SEARCH_WITH_MARKDOWN = Deno.env.get('FIRECRAWL_SEARCH_WITH_MARKDOWN') === 'true';
+const FIRECRAWL_SEARCH_PRIMARY_LIMIT = Math.max(1, Math.min(10, Number(Deno.env.get('FIRECRAWL_SEARCH_PRIMARY_LIMIT') ?? 4)));
+const FIRECRAWL_SEARCH_FALLBACK_LIMIT = Math.max(1, Math.min(10, Number(Deno.env.get('FIRECRAWL_SEARCH_FALLBACK_LIMIT') ?? 2)));
+
+function shouldSkipFallbackForError(err: unknown): boolean {
+  const message = err instanceof Error ? err.message : String(err);
+  return /all retries exhausted|429|rate limit/i.test(message);
+}
+
 async function searchProducts(
   brand: string,
   category: string,
@@ -1165,49 +1174,54 @@ async function searchProducts(
   const isLuxury = LUXURY_SEARCH_BRANDS.has(brandLower);
   const isAthletic = ATHLETIC_BRANDS.has(brandLower);
   const isWomens = WOMENS_BRANDS.has(brandLower);
-  
-  const brandKey = normalizeBrandKey(brand);
-  const effectiveSites = BRAND_SITE_OVERRIDES[brandKey] 
-    || BRAND_SITE_OVERRIDES[brandLower] 
-    || (isLuxury ? LUXURY_SITES : isAthletic ? ATHLETIC_SITES : isWomens ? WOMENS_SITES : GENERAL_SITES);
-  
-  // Use shopping-intent query format for better product results
-  const searchQuery = `${brand} ${catTerms} ${effectiveSites}`;
 
+  const brandKey = normalizeBrandKey(brand);
+  const effectiveSites = BRAND_SITE_OVERRIDES[brandKey]
+    || BRAND_SITE_OVERRIDES[brandLower]
+    || (isLuxury ? LUXURY_SITES : isAthletic ? ATHLETIC_SITES : isWomens ? WOMENS_SITES : GENERAL_SITES);
+
+  // Shopping-intent query, metadata-only by default (1 credit/search)
+  const searchQuery = `${brand} ${catTerms} ${effectiveSites}`;
   console.log(`[search-fallback] Query: "${searchQuery}"`);
 
   try {
-    // Search with lightweight scrapeOptions to get og:image metadata
-    // Cost: 1 base + 1 per result = 6 credits for limit=5
+    const payload: Record<string, unknown> = {
+      query: searchQuery,
+      limit: FIRECRAWL_SEARCH_PRIMARY_LIMIT,
+      lang: 'en',
+      country: 'us',
+    };
+
+    // Opt-in only: markdown scraping costs significantly more credits.
+    if (FIRECRAWL_SEARCH_WITH_MARKDOWN) {
+      payload.scrapeOptions = { formats: ['markdown'] };
+    }
+
     const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/search', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${firecrawlApiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        query: searchQuery,
-        limit: 5,
-        lang: 'en',
-        country: 'us',
-        scrapeOptions: { formats: ['markdown'] },
-      }),
+      body: JSON.stringify(payload),
     });
 
     const data = await resp.json();
 
     if (!resp.ok) {
-      console.warn(`[search-fallback] Firecrawl search error: ${JSON.stringify(data).slice(0, 300)}`);
+      console.warn(`[search-fallback] Firecrawl search error [${resp.status}]: ${JSON.stringify(data).slice(0, 300)}`);
+      if (resp.status === 402 || resp.status === 429) return [];
       return searchProductsFallback(brand, category, firecrawlApiKey);
     }
 
     const results = data.data || [];
-    console.log(`[search-fallback] Got ${results.length} search results (with scrape, ~${results.length + 1} credits)`);
+    const approxCredits = FIRECRAWL_SEARCH_WITH_MARKDOWN ? results.length + 1 : 1;
+    console.log(`[search-fallback] Got ${results.length} search results (~${approxCredits} credits)`);
 
     const allProducts = parseSearchResults(results, brand, category);
 
-    // If we got very few results, try the fallback query too
-    if (allProducts.length < 3) {
+    // Try broader query only when primary returned very little.
+    if (allProducts.length < 2) {
       console.log(`[search-fallback] Only ${allProducts.length} results, trying broader query`);
       const fallbackProducts = await searchProductsFallback(brand, category, firecrawlApiKey);
       const existingUrls = new Set(allProducts.map(p => p.product_url.toLowerCase()));
@@ -1218,29 +1232,32 @@ async function searchProducts(
       }
     }
 
-    // Validate images with HEAD requests (free, ensures quality)
-    // Only validate if products actually have images — metadata-only search may not include images
+    // Validate images with HEAD requests (free)
     const productsWithImages = allProducts.filter(p => p.image_urls.length > 0);
     const productsWithoutImages = allProducts.filter(p => p.image_urls.length === 0);
-    
+
     let validated: RawProduct[];
     if (productsWithImages.length > 0) {
       validated = await validateProductImages(productsWithImages);
     } else {
       validated = [];
     }
-    
-    // For products without images, try to fetch og:image from product URL (free HEAD request)
+
+    // Enrich image-less products from product-page og:image/twitter:image (free)
     if (productsWithoutImages.length > 0) {
       console.log(`[search-fallback] ${productsWithoutImages.length} products without images, fetching og:image from product URLs`);
       const enriched = await enrichProductImages(productsWithoutImages);
       validated.push(...enriched);
     }
-    
+
     console.log(`[search-fallback] Final: ${validated.length} products for ${brand}/${category}`);
     return validated;
   } catch (err) {
     console.warn(`[search-fallback] Error:`, err);
+    if (shouldSkipFallbackForError(err)) {
+      console.warn(`[search-fallback] Skipping broad fallback due to sustained rate-limit/retry exhaustion`);
+      return [];
+    }
     return searchProductsFallback(brand, category, firecrawlApiKey);
   }
 }
@@ -1252,36 +1269,40 @@ async function searchProductsFallback(
   firecrawlApiKey: string
 ): Promise<RawProduct[]> {
   const catTerms = CATEGORY_TERMS[category.toLowerCase()] || category;
-  // Simple shopping-intent query without site restrictions
   const searchQuery = `"${brand}" ${catTerms} buy online`;
 
   console.log(`[search-fallback-broad] Query: "${searchQuery}"`);
 
   try {
-    // Search with scrapeOptions for images: ~4 credits (1 base + 3 results)
+    const payload: Record<string, unknown> = {
+      query: searchQuery,
+      limit: FIRECRAWL_SEARCH_FALLBACK_LIMIT,
+      lang: 'en',
+      country: 'us',
+    };
+
+    if (FIRECRAWL_SEARCH_WITH_MARKDOWN) {
+      payload.scrapeOptions = { formats: ['markdown'] };
+    }
+
     const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/search', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${firecrawlApiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        query: searchQuery,
-        limit: 3,
-        lang: 'en',
-        country: 'us',
-        scrapeOptions: { formats: ['markdown'] },
-      }),
+      body: JSON.stringify(payload),
     });
 
     const data = await resp.json();
     if (!resp.ok) {
-      console.warn(`[search-fallback-broad] Error: ${JSON.stringify(data).slice(0, 200)}`);
+      console.warn(`[search-fallback-broad] Error [${resp.status}]: ${JSON.stringify(data).slice(0, 200)}`);
       return [];
     }
 
     const results = data.data || [];
-    console.log(`[search-fallback-broad] Got ${results.length} results (~${results.length + 1} credits)`);
+    const approxCredits = FIRECRAWL_SEARCH_WITH_MARKDOWN ? results.length + 1 : 1;
+    console.log(`[search-fallback-broad] Got ${results.length} results (~${approxCredits} credits)`);
     return parseSearchResults(results, brand, category);
   } catch (err) {
     console.warn(`[search-fallback-broad] Error:`, err);
