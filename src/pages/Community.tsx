@@ -234,6 +234,7 @@ const Community = () => {
               ))}
             </div>
             <BrandFilter gender={shopGender === 'all' ? null : shopGender} selectedBrand={shopBrand} onBrandChange={setShopBrand} />
+            <GenreFilter selectedGenre={shopGenre} onGenreChange={setShopGenre} />
             <div className="flex gap-1.5 overflow-x-auto pb-2 mb-3 scrollbar-none">
               {(shopGender === 'mens'
                 ? [{ key: 'tops', label: 'Tops' }, { key: 'bottoms', label: 'Bottoms' }, { key: 'outerwear', label: 'Outerwear' }, { key: 'shoes', label: 'Shoes' }, { key: 'activewear', label: 'Activewear' }, { key: 'accessories', label: 'Accessories' }]
@@ -242,7 +243,7 @@ const Community = () => {
                 <button key={cat.key} onClick={() => setShopCategory(cat.key)} aria-label={`Filter by ${cat.label}`} className={`pill ${shopCategory === cat.key ? 'pill-active' : ''}`}>{cat.label}</button>
               ))}
             </div>
-            <CategoryProductGrid category={shopCategory} collapsed={false} maxItems={50} gender={shopGender === 'all' ? undefined : shopGender} brand={shopBrand || undefined} onSelectProduct={(product) => navigateToTryOn(navigate, { productUrl: product.product_url || undefined, fallbackClothingImageUrl: product.image_url, source: 'style_check_shop' })} />
+            <CategoryProductGrid category={shopCategory} collapsed={false} maxItems={50} gender={shopGender === 'all' ? undefined : shopGender} brand={shopBrand || undefined} genre={shopGenre} onSelectProduct={(product) => navigateToTryOn(navigate, { productUrl: product.product_url || undefined, fallbackClothingImageUrl: product.image_url, source: 'style_check_shop' })} />
           </>
         ) : loading ? (
           <div className="grid grid-cols-2 gap-2">
