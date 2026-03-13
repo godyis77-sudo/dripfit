@@ -1848,11 +1848,20 @@ async function scrapeProducts(
   firecrawlApiKey: string,
   useFirecrawl = true,
 ): Promise<RawProduct[]> {
-  // ── STEP 1: Always try direct HTTP first (free) ──
+  // ── STEP 0: Try Shopify /products.json first (free, structured, reliable) ──
+  const shopifyProducts = await scrapeShopifyProducts(brand, category);
+  if (shopifyProducts.length >= 3) {
+    console.log(`[scrape] Shopify API found ${shopifyProducts.length} products, skipping other methods`);
+    return shopifyProducts;
+  }
+
+  // ── STEP 1: Always try direct HTTP next (free) ──
   const directProducts = await scrapeDirectHttp(brand, category);
-  if (directProducts.length >= 3) {
-    console.log(`[scrape] Direct HTTP found ${directProducts.length} products, skipping Firecrawl`);
-    return directProducts;
+  // Merge any Shopify results with direct results
+  const mergedDirect = [...shopifyProducts, ...directProducts];
+  if (mergedDirect.length >= 3) {
+    console.log(`[scrape] Shopify(${shopifyProducts.length}) + Direct(${directProducts.length}) = ${mergedDirect.length} products, skipping Firecrawl`);
+    return mergedDirect;
   }
   
   if (!useFirecrawl) {
