@@ -735,7 +735,7 @@ Deno.serve(async (req) => {
             temperature: 0.0,
             messages: [
               { role: "system", content: SYSTEM_PROMPT },
-              { role: "user", content: buildUserPrompt(item.category, item.config.brand_name, html) },
+              { role: "user", content: buildUserPrompt(item.category, item.config.brand_name, html, item.config.size_type) },
             ],
           }),
         });
