@@ -313,10 +313,42 @@ const Browse = () => {
                 </div>
               </div>
 
+              {/* Fit filter */}
+              {availableFits.length > 0 && (
+                <div>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Fit / Cut</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    <button
+                      onClick={() => setFitFilter(null)}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                        !fitFilter
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-background border border-border text-muted-foreground'
+                      }`}
+                    >
+                      All
+                    </button>
+                    {availableFits.map(fit => (
+                      <button
+                        key={fit}
+                        onClick={() => setFitFilter(fit === fitFilter ? null : fit)}
+                        className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                          fitFilter === fit
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-background border border-border text-muted-foreground'
+                        }`}
+                      >
+                        {fit}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Clear filters */}
               {activeFilterCount > 0 && (
                 <button
-                  onClick={() => { setSort('default'); setBrandFilter(null); setGenreFilter(null); }}
+                  onClick={() => { setSort('default'); setBrandFilter(null); setGenreFilter(null); setFitFilter(null); }}
                   className="text-[10px] text-primary font-semibold"
                 >
                   Clear all filters
