@@ -193,6 +193,28 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'SSENSE': 'Department Store',
   'Net-a-Porter': 'Department Store',
   'Ray-Ban': 'Department Store',
+
+  // ── Remaining catalog brands ────────────────────────
+  'Cutler And Gross': 'Luxury',
+  'Grayers ': 'Contemporary',        // trailing space variant
+  'World Industries': 'Surf & Skate',
+  'Recurate': 'Sustainable',
+  'Trove': 'Sustainable',
+  'Radial': 'Contemporary',
+  'Custom Club': 'Contemporary',
+  'Mark Bodē': 'Streetwear',
+  'Project Vermont': 'Contemporary',
+  'Authentic': 'Contemporary',
+  'Phaidon': 'Contemporary',
+  'Doraemon': 'Contemporary',
+  'San Francisco Giants': 'Athletic',
+  'Ok Accessories': 'Department Store',
+  'Ok Mens': 'Department Store',
+  'OK Mens': 'Department Store',
+  'Ok Unisex': 'Department Store',
+  'OK Unisex': 'Department Store',
+  'Ok Womens': 'Department Store',
+  'OK Womens': 'Department Store',
 };
 
 // Normalised lookup (case-insensitive)
