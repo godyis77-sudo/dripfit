@@ -10,6 +10,8 @@ const corsHeaders = {
 // TYPES
 // ─────────────────────────────────────────────────────────────────────────────
 
+type ScrapeMethod = 'shopify' | 'direct' | 'extract' | 'legacy_scrape' | 'search' | 'map_extract' | 'crawl' | 'search_fallback';
+
 interface RawProduct {
   name: string;
   brand: string;
@@ -19,6 +21,7 @@ interface RawProduct {
   image_urls: string[];
   category_raw: string | null;
   colour: string | null;
+  _method?: ScrapeMethod;
 }
 
 interface ClassifiedProduct extends RawProduct {
