@@ -1879,7 +1879,7 @@ async function scrapeProducts(
     const searchResults = await searchProducts(brand, category, firecrawlApiKey);
     // Merge direct results
     const existingUrls = new Set(searchResults.map(p => p.product_url.toLowerCase()));
-    for (const p of directProducts) {
+    for (const p of mergedDirect) {
       if (!existingUrls.has(p.product_url.toLowerCase())) searchResults.push(p);
     }
     if (searchResults.length >= 2) {
