@@ -142,8 +142,15 @@ const SizeGuide = () => {
     loadBrands();
   }, [user]);
 
+  // Filter brands by gender and size type before grouping
+  const filteredByMeta = brands.filter(b => {
+    if (genderFilter !== 'all' && b.gender !== genderFilter && b.gender !== 'unisex') return false;
+    if (sizeTypeFilter !== 'all' && b.size_type !== sizeTypeFilter) return false;
+    return true;
+  });
+
   // Unique brand names for the picker
-  const uniqueBrands = brands.reduce<{ name: string; slug: string; categories: string[] }[]>((acc, b) => {
+  const uniqueBrands = filteredByMeta.reduce<{ name: string; slug: string; categories: string[] }[]>((acc, b) => {
     const existing = acc.find(x => x.slug === b.brand_slug);
     if (existing) {
       if (!existing.categories.includes(b.category)) existing.categories.push(b.category);

@@ -125,6 +125,7 @@ export type Database = {
           brand_slug: string
           category: string
           confidence: number | null
+          gender: string
           id: string
           is_active: boolean | null
           notes: string | null
@@ -132,6 +133,7 @@ export type Database = {
           scraped_at: string | null
           size_data: Json
           size_system: string
+          size_type: string
           source_url: string | null
         }
         Insert: {
@@ -139,6 +141,7 @@ export type Database = {
           brand_slug: string
           category: string
           confidence?: number | null
+          gender?: string
           id?: string
           is_active?: boolean | null
           notes?: string | null
@@ -146,6 +149,7 @@ export type Database = {
           scraped_at?: string | null
           size_data?: Json
           size_system?: string
+          size_type?: string
           source_url?: string | null
         }
         Update: {
@@ -153,6 +157,7 @@ export type Database = {
           brand_slug?: string
           category?: string
           confidence?: number | null
+          gender?: string
           id?: string
           is_active?: boolean | null
           notes?: string | null
@@ -160,6 +165,7 @@ export type Database = {
           scraped_at?: string | null
           size_data?: Json
           size_system?: string
+          size_type?: string
           source_url?: string | null
         }
         Relationships: []
