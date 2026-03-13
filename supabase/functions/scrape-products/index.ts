@@ -202,11 +202,12 @@ const CATEGORY_MAP: Record<string, Record<string, CategoryUrl[]>> = {
     accessories:toUrlConfig(['https://www.patagonia.com/shop/mens-hats']),
   },
   lululemon: {
-    tops:       toUrlConfig(['https://shop.lululemon.com/c/men-tops/_/N-8r6'], { waitFor: 4000, actions: SCROLL_TO_LOAD }),
-    bottoms:    toUrlConfig(['https://shop.lululemon.com/c/mens-pants/_/N-8s3'], { waitFor: 4000 }),
-    outerwear:  toUrlConfig(['https://shop.lululemon.com/c/men-outerwear/_/N-8q3'], { waitFor: 4000 }),
-    shoes:      toUrlConfig(['https://shop.lululemon.com/c/men-shoes/_/N-8r8'], { waitFor: 4000 }),
-    accessories:toUrlConfig(['https://shop.lululemon.com/c/men-accessories/_/N-8q5'], { waitFor: 4000 }),
+    tops:       toUrlConfig(['https://shop.lululemon.com/c/mens-shirts/_/N-8lu', 'https://shop.lululemon.com/c/women-tops/_/N-1z0xcmk'], { waitFor: 4000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://shop.lululemon.com/c/men-pants/_/N-8ti', 'https://shop.lululemon.com/c/womens-leggings/_/N-8r6'], { waitFor: 4000 }),
+    outerwear:  toUrlConfig(['https://shop.lululemon.com/c/jackets-and-hoodies-jackets/_/N-8tb'], { waitFor: 4000 }),
+    shoes:      toUrlConfig(['https://shop.lululemon.com/c/men-shoes/_/N-8vi', 'https://shop.lululemon.com/c/women-shoes/_/N-8z4'], { waitFor: 4000 }),
+    accessories:toUrlConfig(['https://shop.lululemon.com/c/men-accessories/_/N-8lv'], { waitFor: 4000 }),
+    shorts:     toUrlConfig(['https://shop.lululemon.com/c/men-shorts/_/N-8tc'], { waitFor: 4000 }),
   },
   salomon: {
     shoes:      toUrlConfig(['https://www.salomon.com/en-us/shop/men/shoes/trail-running-shoes.html']),
