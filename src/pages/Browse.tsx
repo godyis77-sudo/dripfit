@@ -261,6 +261,36 @@ const Browse = () => {
                 </div>
               </div>
 
+              {/* Genre filter */}
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Genre</p>
+                <div className="flex flex-wrap gap-1.5">
+                  <button
+                    onClick={() => setGenreFilter(null)}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                      !genreFilter
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-background border border-border text-muted-foreground'
+                    }`}
+                  >
+                    All
+                  </button>
+                  {BRAND_GENRES.map(genre => (
+                    <button
+                      key={genre}
+                      onClick={() => setGenreFilter(genre === genreFilter ? null : genre)}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                        genreFilter === genre
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-background border border-border text-muted-foreground'
+                      }`}
+                    >
+                      {genre}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Clear filters */}
               {activeFilterCount > 0 && (
                 <button
