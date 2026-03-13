@@ -11,6 +11,8 @@ interface RetailerConfig {
   brand_name: string;
   url: string;
   categories: string[];
+  gender?: string;     // 'men' | 'women' | 'unisex' (default: 'unisex')
+  size_type?: string;  // 'regular' | 'tall' | 'petite' | 'plus' (default: 'regular')
 }
 
 const RETAILERS: Record<string, RetailerConfig> = {
