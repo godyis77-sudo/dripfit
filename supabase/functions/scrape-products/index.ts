@@ -738,30 +738,25 @@ async function scrapeProducts(
   firecrawlApiKey: string
 ): Promise<RawProduct[]> {
   const brandKey = normalizeBrandKey(brand);
+  const catKey = category.toLowerCase();
+  const parentKey = CATEGORY_TO_URL_KEY[catKey] || catKey;
 
-  // Anti-scrape brands: try extract with brand domain first, then search fallback
-  if (ANTI_SCRAPE_BRANDS.has(brandKey)) {
-    console.log(`[scrape] ${brand} is anti-scrape, trying extract-first strategy`);
-    
-    // Try extract with known brand domain
-    const domain = BRAND_DOMAINS[brandKey];
-    if (domain) {
-      const catKey = category.toLowerCase();
-      const parentKey = CATEGORY_TO_URL_KEY[catKey] || catKey;
-      const keywords = MAP_CATEGORY_KEYWORDS[parentKey] || MAP_CATEGORY_KEYWORDS[catKey] || [category];
-      
-      const extractUrls = [`${domain}/*`];
-      const extractResults = await extractFromUrls(brand, category, extractUrls, keywords.join(' '), firecrawlApiKey);
-      if (extractResults.length > 0) return extractResults;
+  // ── Step 1: Check for direct URL configs (most reliable, 1 credit) ──
+  const brandUrls = CATEGORY_MAP[brandKey];
+  if (brandUrls) {
+    const urlConfigs = brandUrls[catKey] || brandUrls[parentKey];
+    if (urlConfigs?.length) {
+      console.log(`[scrape] ${brand}/${category}: has direct URLs, using extract→legacy pipeline`);
+      const allProducts = await scrapeUrlConfigs(brand, category, urlConfigs, firecrawlApiKey);
+      if (allProducts.length > 0) return allProducts;
+      console.log(`[scrape] Direct URLs returned 0 for ${brand}/${category}`);
     }
-    
-    console.log(`[scrape] Extract returned nothing for ${brand}, falling back to search`);
-    return searchProducts(brand, category, firecrawlApiKey);
   }
 
-  const brandUrls = CATEGORY_MAP[brandKey];
-  if (!brandUrls) {
-    console.log(`[scrape] No URL config for ${brand} (key: ${brandKey}), trying map→extract`);
+  // ── Step 2: For brands with domains, try map→extract (2 credits) ──
+  const domain = BRAND_DOMAINS[brandKey];
+  if (domain && !ANTI_SCRAPE_BRANDS.has(brandKey)) {
+    console.log(`[scrape] ${brand}/${category}: trying map→extract on ${domain}`);
     const mapUrls = await mapBrandUrls(brand, category, firecrawlApiKey);
     if (mapUrls.length > 0) {
       const categoryPages = mapUrls.filter(u => /\/c\/|\/cat\/|\/collection|\/shop\/|\/category/i.test(u)).slice(0, 5);
@@ -770,33 +765,11 @@ async function scrapeProducts(
         if (extractResults.length > 0) return extractResults;
       }
     }
-    console.log(`[scrape] Map yielded nothing, falling back to search`);
-    return searchProducts(brand, category, firecrawlApiKey);
   }
 
-  const catKey = category.toLowerCase();
-  const parentKey = CATEGORY_TO_URL_KEY[catKey] || catKey;
-  const urlConfigs = brandUrls[catKey] || brandUrls[parentKey];
-  if (!urlConfigs?.length) {
-    console.log(`[scrape] No URLs for ${brand}/${category} (tried ${catKey}→${parentKey}), using search fallback`);
-    return searchProducts(brand, category, firecrawlApiKey);
-  }
-
-  const allProducts = await scrapeUrlConfigs(brand, category, urlConfigs, firecrawlApiKey);
-
-  if (!allProducts.length) {
-    console.log(`[scrape] Direct extract returned 0 for ${brand}/${category}, trying map→extract`);
-    const mapUrls = await mapBrandUrls(brand, category, firecrawlApiKey);
-    const categoryPages = mapUrls.filter(u => /\/c\/|\/cat\/|\/collection|\/shop\/|\/category/i.test(u)).slice(0, 5);
-    if (categoryPages.length > 0) {
-      const extractResults = await extractFromUrls(brand, category, categoryPages, category, firecrawlApiKey);
-      if (extractResults.length > 0) return extractResults;
-    }
-    console.log(`[scrape] Map yielded nothing, falling back to search`);
-    return searchProducts(brand, category, firecrawlApiKey);
-  }
-
-  return allProducts;
+  // ── Step 3: Search fallback (1 credit, works for all brands) ──
+  console.log(`[scrape] ${brand}/${category}: using search fallback`);
+  return searchProducts(brand, category, firecrawlApiKey);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1208,11 +1181,10 @@ async function searchProducts(
 
     const allProducts = parseSearchResults(results, brand, category);
 
-    // If we got very few results, try the fallback query too
-    if (allProducts.length < 3) {
-      console.log(`[search-fallback] Only ${allProducts.length} results, trying broader query`);
+    // Only try broader query if primary returned very few AND primary had results to parse
+    if (allProducts.length < 3 && results.length >= 3) {
+      console.log(`[search-fallback] Only ${allProducts.length} parsed from ${results.length} results, trying broader query`);
       const fallbackProducts = await searchProductsFallback(brand, category, firecrawlApiKey);
-      // Merge without duplication
       const existingUrls = new Set(allProducts.map(p => p.product_url.toLowerCase()));
       for (const p of fallbackProducts) {
         if (!existingUrls.has(p.product_url.toLowerCase())) {
