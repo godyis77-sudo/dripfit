@@ -118,6 +118,7 @@ const App = () => {
                 <Route path="/premium" element={<PageTransition><Premium /></PageTransition>} />
                 <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />
                 <Route path="/terms" element={<PageTransition><Terms /></PageTransition>} />
+                <Route path="/admin/retailers" element={<ProtectedRoute><PageTransition><AdminRetailers /></PageTransition></ProtectedRoute>} />
                 <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
               </Routes>
             </AnimatePresence>
