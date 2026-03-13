@@ -1096,7 +1096,6 @@ function parseShopifyProduct(
     colour,
   };
 }
-};
 
 // Category keywords for map search filtering
 const MAP_CATEGORY_KEYWORDS: Record<string, string[]> = {
