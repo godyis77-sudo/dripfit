@@ -1810,6 +1810,90 @@ function buildTags(p: ClassifiedProduct): string[] {
 function delay(ms: number) { return new Promise(r => setTimeout(r, ms)); }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// IMAGE HEAD VALIDATION — verify images resolve (free, no Firecrawl credits)
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function validateImageUrl(url: string): Promise<boolean> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+    const resp = await fetch(url, { method: 'HEAD', signal: controller.signal, redirect: 'follow' });
+    clearTimeout(timeout);
+    if (!resp.ok) return false;
+    const ct = resp.headers.get('content-type') || '';
+    return ct.startsWith('image/');
+  } catch {
+    return false;
+  }
+}
+
+async function validateProductImages(products: RawProduct[]): Promise<RawProduct[]> {
+  if (!products.length) return [];
+  
+  // Validate in parallel batches of 5
+  const validated: RawProduct[] = [];
+  const batchSize = 5;
+  
+  for (let i = 0; i < products.length; i += batchSize) {
+    const batch = products.slice(i, i + batchSize);
+    const results = await Promise.all(
+      batch.map(async (p) => {
+        if (!p.image_urls.length) return null;
+        // Check the first (best) image
+        const isValid = await validateImageUrl(p.image_urls[0]);
+        if (isValid) return p;
+        // Try og:image or second image if available
+        for (let j = 1; j < Math.min(p.image_urls.length, 3); j++) {
+          const altValid = await validateImageUrl(p.image_urls[j]);
+          if (altValid) {
+            // Promote working image to front
+            const working = p.image_urls[j];
+            p.image_urls.splice(j, 1);
+            p.image_urls.unshift(working);
+            return p;
+          }
+        }
+        return null; // All images broken
+      })
+    );
+    validated.push(...results.filter((p): p is RawProduct => p !== null));
+  }
+  
+  return validated;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PRE-SCRAPE CHECK — skip brand/category if recently scraped with good results
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function hasRecentProducts(
+  brand: string,
+  category: string,
+  supabase: ReturnType<typeof createClient>,
+  hoursThreshold = 24
+): Promise<{ skip: boolean; count: number }> {
+  const cutoff = new Date(Date.now() - hoursThreshold * 60 * 60 * 1000).toISOString();
+  const normCat = normaliseCategory(category);
+  
+  const { count, error } = await supabase
+    .from('product_catalog')
+    .select('*', { count: 'exact', head: true })
+    .ilike('brand', brand)
+    .eq('category', normCat)
+    .eq('is_active', true)
+    .gte('scraped_at', cutoff);
+  
+  if (error) {
+    console.warn(`[pre-check] Error checking recent products:`, error.message);
+    return { skip: false, count: 0 };
+  }
+  
+  const c = count ?? 0;
+  // Skip if we already have 5+ recent products for this combo
+  return { skip: c >= 5, count: c };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // MAIN HANDLER
 // ─────────────────────────────────────────────────────────────────────────────
 
