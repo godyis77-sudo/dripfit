@@ -118,7 +118,7 @@ const SizeGuide = () => {
       setBrandsLoading(true);
       const chartsPromise = supabase
         .from('brand_size_charts')
-        .select('brand_name, brand_slug, category')
+        .select('brand_name, brand_slug, category, gender, size_type')
         .eq('is_active', true)
         .order('brand_name');
 
