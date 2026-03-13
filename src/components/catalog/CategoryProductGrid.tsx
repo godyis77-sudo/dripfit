@@ -6,6 +6,7 @@ import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalo
 import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
 import ProductPreviewModal from '@/components/ui/ProductPreviewModal';
+import { getBrandGenre, type BrandGenre } from '@/lib/brandGenres';
 
 interface CategoryProductGridProps {
   category: string;
@@ -18,6 +19,7 @@ interface CategoryProductGridProps {
   priceFilter?: { min: number; max: number } | null;
   gender?: string;
   brand?: string;
+  genre?: BrandGenre | null;
 }
 
 const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>(({
@@ -31,6 +33,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
   priceFilter,
   gender,
   brand,
+  genre,
 }, ref) => {
   const navigate = useNavigate();
   const { products, loading } = useProductCatalog(category, brand, seed, gender);
@@ -48,6 +51,11 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
   // Scroll lock handled by ProductPreviewModal
 
   let visibleProducts = products;
+
+  // Apply genre filter
+  if (genre) {
+    visibleProducts = visibleProducts.filter(p => getBrandGenre(p.brand) === genre);
+  }
 
   // Apply price filter
   if (priceFilter) {

@@ -8,6 +8,7 @@ import TryOnUploadSection from '@/components/tryon/TryOnUploadSection';
 import TryOnResultSection from '@/components/tryon/TryOnResultSection';
 import TryOnPremiumGate from '@/components/tryon/TryOnPremiumGate';
 import BrandFilter from '@/components/tryon/BrandFilter';
+import GenreFilter from '@/components/catalog/GenreFilter';
 import { CATEGORIES, ALL_PRODUCT_CATEGORIES, FREE_MONTHLY_LIMIT } from '@/components/tryon/tryon-constants';
 import { trackEvent } from '@/lib/analytics';
 import { useTryOnState } from '@/hooks/useTryOnState';
@@ -84,11 +85,17 @@ const TryOn = () => {
 
             {/* Brand filter */}
             {!s.clothingPhoto && (
-              <BrandFilter
-                gender={s.userGender}
-                selectedBrand={s.selectedBrand}
-                onBrandChange={s.setSelectedBrand}
-              />
+              <>
+                <BrandFilter
+                  gender={s.userGender}
+                  selectedBrand={s.selectedBrand}
+                  onBrandChange={s.setSelectedBrand}
+                />
+                <GenreFilter
+                  selectedGenre={s.selectedGenre as any}
+                  onGenreChange={s.setSelectedGenre as any}
+                />
+              </>
             )}
 
             {/* Product catalog browse */}
@@ -96,10 +103,10 @@ const TryOn = () => {
               <div className="mb-3 space-y-2">
                 {s.category === 'all' ? (
                   ALL_PRODUCT_CATEGORIES.map(cat => (
-                    <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={false} maxItems={1000} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} onSelectProduct={s.handleSelectProduct} />
+                    <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={false} maxItems={1000} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} genre={s.selectedGenre as any} onSelectProduct={s.handleSelectProduct} />
                   ))
                 ) : (
-                  <CategoryProductGrid category={s.category} title={`Shop ${CATEGORIES.find(c => c.key === s.category)?.label || s.category}`} collapsed={false} maxItems={1000} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} onSelectProduct={s.handleSelectProduct} />
+                  <CategoryProductGrid category={s.category} title={`Shop ${CATEGORIES.find(c => c.key === s.category)?.label || s.category}`} collapsed={false} maxItems={1000} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} genre={s.selectedGenre as any} onSelectProduct={s.handleSelectProduct} />
                 )}
               </div>
             )}

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
+import { getBrandGenre } from '@/lib/brandGenres';
 
 interface BrandFilterProps {
   gender: string | null; // 'mens' | 'womens' | null
@@ -143,15 +144,19 @@ const BrandFilter = ({ gender, selectedBrand, onBrandChange }: BrandFilterProps)
               ) : matchingBrands.length === 0 ? (
                 <p className="text-[12px] text-muted-foreground text-center py-3">No brands found</p>
               ) : (
-                matchingBrands.map(brand => (
-                  <button
-                    key={brand}
-                    onClick={() => handleSelect(brand)}
-                    className="w-full text-left px-3 py-2 text-[13px] text-foreground hover:bg-accent transition-colors first:rounded-t-lg last:rounded-b-lg"
-                  >
-                    {brand}
-                  </button>
-                ))
+                matchingBrands.map(brand => {
+                  const genre = getBrandGenre(brand);
+                  return (
+                    <button
+                      key={brand}
+                      onClick={() => handleSelect(brand)}
+                      className="w-full text-left px-3 py-2 text-[13px] text-foreground hover:bg-accent transition-colors first:rounded-t-lg last:rounded-b-lg flex items-center justify-between"
+                    >
+                      <span>{brand}</span>
+                      <span className="text-[10px] text-muted-foreground/60">{genre}</span>
+                    </button>
+                  );
+                })
               )}
             </div>
           )}
