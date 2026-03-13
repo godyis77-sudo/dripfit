@@ -1855,7 +1855,6 @@ async function validateImageUrl(url: string): Promise<boolean> {
 async function validateProductImages(products: RawProduct[]): Promise<RawProduct[]> {
   if (!products.length) return [];
   
-  // Validate in parallel batches of 5
   const validated: RawProduct[] = [];
   const batchSize = 5;
   
@@ -1864,18 +1863,24 @@ async function validateProductImages(products: RawProduct[]): Promise<RawProduct
     const results = await Promise.all(
       batch.map(async (p) => {
         if (!p.image_urls.length) return null;
-        // Check the first (best) image
         const isValid = await validateImageUrl(p.image_urls[0]);
         if (isValid) return p;
-        // Try og:image or second image if available
         for (let j = 1; j < Math.min(p.image_urls.length, 3); j++) {
           const altValid = await validateImageUrl(p.image_urls[j]);
           if (altValid) {
-            // Promote working image to front
             const working = p.image_urls[j];
             p.image_urls.splice(j, 1);
             p.image_urls.unshift(working);
             return p;
+          }
+        }
+        return null;
+      })
+    );
+    validated.push(...results.filter((p): p is RawProduct => p !== null));
+  }
+  
+  return validated;
 }
 
 /**
@@ -1893,7 +1898,6 @@ async function enrichProductImages(products: RawProduct[]): Promise<RawProduct[]
         try {
           const controller = new AbortController();
           const timeout = setTimeout(() => controller.abort(), 5000);
-          // Fetch just the first ~20KB to get <head> with og:image
           const resp = await fetch(p.product_url, {
             method: 'GET',
             headers: { 'Range': 'bytes=0-20000', 'User-Agent': 'Mozilla/5.0 (compatible; DripBot/1.0)' },
@@ -1903,7 +1907,6 @@ async function enrichProductImages(products: RawProduct[]): Promise<RawProduct[]
           clearTimeout(timeout);
           
           const html = await resp.text();
-          // Extract og:image
           const ogMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i)
             || html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:image["']/i);
           
@@ -1912,14 +1915,13 @@ async function enrichProductImages(products: RawProduct[]): Promise<RawProduct[]
             return p;
           }
           
-          // Try twitter:image as fallback
           const twMatch = html.match(/<meta[^>]*(?:name|property)=["']twitter:image["'][^>]*content=["']([^"']+)["']/i);
           if (twMatch?.[1] && twMatch[1].startsWith('http')) {
             p.image_urls = [twMatch[1]];
             return p;
           }
           
-          return null; // No image found
+          return null;
         } catch {
           return null;
         }
@@ -1930,15 +1932,6 @@ async function enrichProductImages(products: RawProduct[]): Promise<RawProduct[]
   
   console.log(`[enrich] Found images for ${enriched.length}/${products.length} products via og:image`);
   return enriched;
-}
-        }
-        return null; // All images broken
-      })
-    );
-    validated.push(...results.filter((p): p is RawProduct => p !== null));
-  }
-  
-  return validated;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
