@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, SlidersHorizontal } from 'lucide-react';
+import { ArrowLeft, SlidersHorizontal, ExternalLink, ShoppingBag } from 'lucide-react';
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,8 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { useAuth } from '@/hooks/useAuth';
 import BrandFilter from '@/components/tryon/BrandFilter';
 import ProductPreviewModal from '@/components/ui/ProductPreviewModal';
+import { BRAND_GENRES, type BrandGenre, getBrandGenre } from '@/lib/brandGenres';
+import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
 import { BRAND_GENRES, type BrandGenre, getBrandGenre } from '@/lib/brandGenres';
 
 const CATEGORY_LABELS: Record<string, string> = {
