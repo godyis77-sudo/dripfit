@@ -37,6 +37,7 @@ import ProfileSettings from "./pages/ProfileSettings";
 import ResetPassword from "./pages/ResetPassword";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import AdminRetailers from "./pages/AdminRetailers";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AffiliateProvider from "./components/AffiliateProvider";
 
