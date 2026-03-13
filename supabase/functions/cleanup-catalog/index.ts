@@ -280,6 +280,7 @@ Deno.serve(async (req) => {
       const toDeactivate: string[] = [];
       const toRemap: { id: string; newCategory: string }[] = [];
       const toGenreTag: { id: string; genre: string }[] = [];
+      const toFitFabric: { id: string; fit_profile: string[]; fabric_composition: string[] }[] = [];
 
       for (const product of products) {
         const name = product.name || "";
