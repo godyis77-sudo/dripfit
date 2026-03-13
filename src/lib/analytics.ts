@@ -108,7 +108,9 @@ type FunnelEvent =
   | 'tryon_from_detail_sheet'
   | 'tryon_from_wardrobe_detail'
   | 'account_deleted'
-  | 'fitcheck_caption_updated';
+  | 'fitcheck_caption_updated'
+  | 'retailer_clickout_opened'
+  | 'retailer_clickout_cancelled';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
