@@ -1927,8 +1927,15 @@ Deno.serve(async (req) => {
     );
 
     const runId = crypto.randomUUID();
-    const results = { runId, brand, category, scraped: 0, extracted: 0, classified: 0, deduped: 0, inserted: 0, withImages: 0 };
+    const results = { runId, brand, category, scraped: 0, extracted: 0, classified: 0, deduped: 0, inserted: 0, withImages: 0, skipped: false };
     console.log(`[run:${runId}] Starting: ${brand}/${category}`);
+
+    // ── PRE-CHECK: skip if we already have recent products ───────────
+    const { skip, count: recentCount } = await hasRecentProducts(brand, category, supabase);
+    if (skip) {
+      console.log(`[run:${runId}] Skipping — already have ${recentCount} recent products for ${brand}/${category}`);
+      return successResponse({ ...results, skipped: true, recentCount, message: `Already have ${recentCount} recent products, skipping to save credits` }, 200, corsHeaders);
+    }
 
     // ── STAGES 1+2: Firecrawl scrape + rawHtml image extraction ──────
     const rawProducts = await scrapeProducts(brand, category, FIRECRAWL_API_KEY);
