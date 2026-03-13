@@ -559,6 +559,132 @@ const RETAILERS: Record<string, RetailerConfig> = {
     categories: ["tops", "bottoms", "dresses", "outerwear"],
     size_type: "plus",
   },
+
+  // ── Niche Extended-Sizing Specialists ──
+
+  // Plus-size specialists
+  torrid: {
+    brand_name: "Torrid",
+    url: "https://www.torrid.com/size-guide.html",
+    categories: ["tops", "bottoms", "dresses", "outerwear", "swimwear", "activewear", "underwear", "sleepwear", "jumpsuits"],
+    size_type: "plus",
+    gender: "women",
+  },
+  eloquii: {
+    brand_name: "Eloquii",
+    url: "https://www.eloquii.com/size-chart",
+    categories: ["tops", "bottoms", "dresses", "outerwear", "swimwear", "jumpsuits"],
+    size_type: "plus",
+    gender: "women",
+  },
+  "universal-standard": {
+    brand_name: "Universal Standard",
+    url: "https://www.universalstandard.com/pages/size-guides",
+    categories: ["tops", "bottoms", "dresses", "outerwear", "activewear", "knitwear", "jumpsuits"],
+    size_type: "plus",
+    gender: "women",
+  },
+  "lane-bryant": {
+    brand_name: "Lane Bryant",
+    url: "https://www.lanebryant.com/size-chart",
+    categories: ["tops", "bottoms", "dresses", "outerwear", "swimwear", "underwear", "activewear", "sleepwear"],
+    size_type: "plus",
+    gender: "women",
+  },
+  "city-chic": {
+    brand_name: "City Chic",
+    url: "https://www.citychiconline.com/size-guide",
+    categories: ["tops", "bottoms", "dresses", "outerwear", "swimwear"],
+    size_type: "plus",
+    gender: "women",
+  },
+  "good-american": {
+    brand_name: "Good American",
+    url: "https://www.goodamerican.com/pages/size-chart",
+    categories: ["tops", "bottoms", "dresses", "swimwear", "activewear", "jeans"],
+    size_type: "plus",
+    gender: "women",
+  },
+  "girlfriend-collective": {
+    brand_name: "Girlfriend Collective",
+    url: "https://girlfriend.com/pages/size-guide",
+    categories: ["tops", "bottoms", "activewear", "sports-bras", "dresses", "swimwear"],
+    size_type: "plus",
+    gender: "women",
+  },
+  "savage-x-fenty": {
+    brand_name: "Savage X Fenty",
+    url: "https://www.savagex.com/size-guide",
+    categories: ["underwear", "sleepwear", "swimwear", "activewear", "tops"],
+    size_type: "plus",
+    gender: "women",
+  },
+  skims: {
+    brand_name: "SKIMS",
+    url: "https://skims.com/pages/size-guide",
+    categories: ["underwear", "loungewear", "tops", "bottoms", "dresses", "swimwear", "activewear"],
+    size_type: "plus",
+    gender: "women",
+  },
+  "yours-clothing": {
+    brand_name: "Yours Clothing",
+    url: "https://www.yoursclothing.com/pages/size-guide",
+    categories: ["tops", "bottoms", "dresses", "outerwear", "swimwear", "activewear"],
+    size_type: "plus",
+    gender: "women",
+  },
+
+  // Tall specialists
+  tallmoi: {
+    brand_name: "TallMoi",
+    url: "https://www.tallmoi.com/en-de/pages/size-guide-1",
+    categories: ["tops", "bottoms", "dresses", "jeans", "outerwear"],
+    size_type: "tall",
+    gender: "women",
+  },
+  "american-tall": {
+    brand_name: "American Tall",
+    url: "https://americantall.com/pages/size-chart",
+    categories: ["tops", "bottoms", "jeans", "outerwear", "hoodies", "activewear"],
+    size_type: "tall",
+  },
+  "alloy-apparel": {
+    brand_name: "Alloy Apparel",
+    url: "https://www.alloyapparel.com/pages/size-chart",
+    categories: ["tops", "bottoms", "jeans", "dresses"],
+    size_type: "tall",
+    gender: "women",
+  },
+  "long-tall-sally": {
+    brand_name: "Long Tall Sally",
+    url: "https://www.longtallsally.com/size-guide",
+    categories: ["tops", "bottoms", "dresses", "jeans", "outerwear", "swimwear", "activewear"],
+    size_type: "tall",
+    gender: "women",
+  },
+
+  // Petite specialists
+  "petite-studio": {
+    brand_name: "Petite Studio",
+    url: "https://www.petitestudionyc.com/pages/size-chart",
+    categories: ["tops", "bottoms", "dresses", "outerwear", "knitwear", "jumpsuits"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "loft-petite": {
+    brand_name: "LOFT",
+    url: "https://www.loft.com/size-chart?fit=petite",
+    categories: ["tops", "bottoms", "dresses", "outerwear", "jumpsuits"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "ann-taylor-petite": {
+    brand_name: "Ann Taylor",
+    url: "https://www.anntaylor.com/size-chart?fit=petite",
+    categories: ["tops", "bottoms", "dresses", "outerwear", "suits"],
+    size_type: "petite",
+    gender: "women",
+  },
 };
 
 const FETCH_HEADERS = {
