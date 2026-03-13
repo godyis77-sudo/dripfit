@@ -8,7 +8,7 @@ import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { appendAffiliateParams } from '@/lib/affiliateConfig';
+import { resolveClickoutByName } from '@/lib/affiliateRouter';
 
 import { SUPPORTED_RETAILERS } from '@/lib/types';
 
