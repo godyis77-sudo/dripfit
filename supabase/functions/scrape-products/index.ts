@@ -1439,16 +1439,19 @@ function parseSearchResults(results: any[], brand: string, category: string): Ra
     // Skip listing/category page titles
     if (isListingPageName(productName)) continue;
 
-    // For luxury brands, require brand name in the product listing
+    // Brand matching: accept if brand name in title/URL, or if result is from the brand's own domain
     const brandLower = brand.toLowerCase();
     const brandSearchable = brandLower.replace(/&/g, '').replace(/[^a-z0-9]/g, '');
     const isRetailerBrand = ['nordstrom', 'macys', "macy's", 'bloomingdales', "bloomingdale's", 'target', 'kohls', "kohl's", 'jcpenney', 'walmart', 'saks', 'net-a-porter', 'revolve', 'asos'].includes(brandLower);
     const titleLower = title.toLowerCase();
     const nameLower = productName.toLowerCase();
+    const urlLower = (result.url || '').toLowerCase();
     const brandInResult = nameLower.includes(brandLower) || titleLower.includes(brandLower) 
       || nameLower.replace(/[^a-z0-9]/g, '').includes(brandSearchable) 
       || titleLower.replace(/[^a-z0-9]/g, '').includes(brandSearchable);
-    if (!isRetailerBrand && !brandInResult) {
+    // Accept products from the brand's own domain (e.g. zara.com for "zara")
+    const brandDomainMatch = urlLower.includes(`${brandSearchable}.com`) || urlLower.includes(`${brandSearchable}.co`);
+    if (!isRetailerBrand && !brandInResult && !brandDomainMatch) {
       continue;
     }
 
