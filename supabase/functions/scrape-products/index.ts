@@ -1829,7 +1829,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const FIRECRAWL_API_KEY = Deno.env.get('FIRECRAWL_API_KEY_1') || Deno.env.get('FIRECRAWL_API_KEY');
+    const FIRECRAWL_API_KEY = Deno.env.get('FIRECRAWL_API_KEY') || Deno.env.get('FIRECRAWL_API_KEY_1');
     if (!FIRECRAWL_API_KEY) {
       return new Response(JSON.stringify({ error: 'FIRECRAWL_API_KEY not set' }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
