@@ -191,24 +191,39 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'Allbirds': 'Sustainable',
   'Faherty': 'Sustainable',
 
-  // ── Department Store / Multi-brand ──────────────────
+  // ── Department Store (true multi-brand retailers) ───
   'Nordstrom': 'Department Store',
-  'ASOS': 'Department Store',
-  'Revolve': 'Department Store',
-  'Amazon Fashion': 'Department Store',
-  'Urban Outfitters': 'Department Store',
-  'Target': 'Department Store',
-  'Farfetch': 'Department Store',
-  'Steve Madden': 'Department Store',
   'Macys': 'Department Store',
-  'Saks': 'Department Store',
-  'SSENSE': 'Department Store',
-  'Net-a-Porter': 'Department Store',
-  'Ray-Ban': 'Department Store',
+  'Target': 'Department Store',
+  'Ok Accessories': 'Department Store',
+  'Ok Mens': 'Department Store',
+  'OK Mens': 'Department Store',
+  'Ok Unisex': 'Department Store',
+  'OK Unisex': 'Department Store',
+  'Ok Womens': 'Department Store',
+  'OK Womens': 'Department Store',
+
+  // ── Luxury (promoted from Department Store) ─────────
+  'Farfetch': 'Luxury',
+  'Saks': 'Luxury',
+  'SSENSE': 'Luxury',
+  'Net-a-Porter': 'Luxury',
+  'Revolve': 'Luxury',
+
+  // ── Fast Fashion (moved from Department Store) ──────
+  'ASOS': 'Fast Fashion',
+  'Amazon Fashion': 'Fast Fashion',
+
+  // ── Streetwear (moved from Department Store) ────────
+  'Urban Outfitters': 'Streetwear',
+
+  // ── Contemporary (moved from Department Store) ──────
+  'Steve Madden': 'Contemporary',
+  'Ray-Ban': 'Contemporary',
 
   // ── Remaining catalog brands ────────────────────────
   'Cutler And Gross': 'Luxury',
-  'Grayers ': 'Contemporary',        // trailing space variant
+  'Grayers ': 'Workwear & Heritage',  // trailing space variant
   'World Industries': 'Surf & Skate',
   'Recurate': 'Sustainable',
   'Trove': 'Sustainable',
@@ -220,13 +235,6 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'Phaidon': 'Contemporary',
   'Doraemon': 'Contemporary',
   'San Francisco Giants': 'Athletic',
-  'Ok Accessories': 'Department Store',
-  'Ok Mens': 'Department Store',
-  'OK Mens': 'Department Store',
-  'Ok Unisex': 'Department Store',
-  'OK Unisex': 'Department Store',
-  'Ok Womens': 'Department Store',
-  'OK Womens': 'Department Store',
 };
 
 // Normalised lookup (case-insensitive)
