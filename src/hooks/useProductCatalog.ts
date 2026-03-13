@@ -100,7 +100,7 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
     try {
       let query = supabase
         .from('product_catalog')
-        .select('id, brand, retailer, category, name, image_url, product_url, price_cents, currency, tags, presentation, image_confidence, gender')
+        .select('id, brand, retailer, category, name, image_url, product_url, price_cents, currency, tags, presentation, image_confidence, gender, fit_profile, fabric_composition, style_genre')
         .eq('is_active', true)
         .not('image_url', 'is', null)
         .order('image_confidence', { ascending: false })
