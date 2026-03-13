@@ -202,11 +202,12 @@ const CATEGORY_MAP: Record<string, Record<string, CategoryUrl[]>> = {
     accessories:toUrlConfig(['https://www.patagonia.com/shop/mens-hats']),
   },
   lululemon: {
-    tops:       toUrlConfig(['https://shop.lululemon.com/c/men-tops/_/N-8r6'], { waitFor: 4000, actions: SCROLL_TO_LOAD }),
-    bottoms:    toUrlConfig(['https://shop.lululemon.com/c/mens-pants/_/N-8s3'], { waitFor: 4000 }),
-    outerwear:  toUrlConfig(['https://shop.lululemon.com/c/men-outerwear/_/N-8q3'], { waitFor: 4000 }),
-    shoes:      toUrlConfig(['https://shop.lululemon.com/c/men-shoes/_/N-8r8'], { waitFor: 4000 }),
-    accessories:toUrlConfig(['https://shop.lululemon.com/c/men-accessories/_/N-8q5'], { waitFor: 4000 }),
+    tops:       toUrlConfig(['https://shop.lululemon.com/c/mens-shirts/_/N-8lu', 'https://shop.lululemon.com/c/women-tops/_/N-1z0xcmk'], { waitFor: 4000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://shop.lululemon.com/c/men-pants/_/N-8ti', 'https://shop.lululemon.com/c/womens-leggings/_/N-8r6'], { waitFor: 4000 }),
+    outerwear:  toUrlConfig(['https://shop.lululemon.com/c/jackets-and-hoodies-jackets/_/N-8tb'], { waitFor: 4000 }),
+    shoes:      toUrlConfig(['https://shop.lululemon.com/c/men-shoes/_/N-8vi', 'https://shop.lululemon.com/c/women-shoes/_/N-8z4'], { waitFor: 4000 }),
+    accessories:toUrlConfig(['https://shop.lululemon.com/c/men-accessories/_/N-8lv'], { waitFor: 4000 }),
+    shorts:     toUrlConfig(['https://shop.lululemon.com/c/men-shorts/_/N-8tc'], { waitFor: 4000 }),
   },
   salomon: {
     shoes:      toUrlConfig(['https://www.salomon.com/en-us/shop/men/shoes/trail-running-shoes.html']),
@@ -987,6 +988,7 @@ function parseProductsFromHtml(html: string, brand: string, category: string, pa
     /window\.__INITIAL_STATE__\s*=\s*({[\s\S]*?});\s*<\/script>/,
     /window\.__PRELOADED_STATE__\s*=\s*({[\s\S]*?});\s*<\/script>/,
     /window\.__STORE_STATE__\s*=\s*({[\s\S]*?});\s*<\/script>/,
+    /window\.__APP_INITIAL_STATE__\s*=\s*({[\s\S]*?});\s*<\/script>/,
   ];
   for (const pat of statePatterns) {
     const m = html.match(pat);
@@ -998,7 +1000,17 @@ function parseProductsFromHtml(html: string, brand: string, category: string, pa
     }
   }
 
-  // 4) Parse product links + images from HTML product grid patterns
+  // 4) Extract from window.dataLayer product impressions (GA/GTM)
+  if (products.length === 0) {
+    extractProductsFromDataLayer(html, products, brand, category, pageUrl);
+  }
+
+  // 5) Extract from SSR-rendered product tiles (data-product-name, aria-label patterns)
+  if (products.length === 0) {
+    extractProductsFromSsrTiles(html, products, brand, category, pageUrl);
+  }
+
+  // 6) Parse product links + images from HTML product grid patterns
   if (products.length === 0) {
     extractProductsFromHtmlGrid(html, products, brand, category, pageUrl);
   }
@@ -1122,6 +1134,156 @@ function extractProductsFromNextData(data: any, products: RawProduct[], brand: s
 
 function extractProductsFromStateBlob(data: any, products: RawProduct[], brand: string, category: string, pageUrl: string): void {
   extractProductsFromNextData(data, products, brand, category, pageUrl);
+}
+/**
+ * Extract products from window.dataLayer push events (Google Analytics / GTM).
+ * Many e-commerce sites push product impression data to dataLayer.
+ */
+function extractProductsFromDataLayer(html: string, products: RawProduct[], brand: string, category: string, pageUrl: string): void {
+  // Match dataLayer.push calls with ecommerce impressions
+  const dlPushRegex = /dataLayer\.push\(({[\s\S]*?})\);/g;
+  let m;
+  while ((m = dlPushRegex.exec(html)) !== null) {
+    try {
+      const obj = JSON.parse(m[1]);
+      const impressions = obj?.ecommerce?.impressions || obj?.ecommerce?.items || [];
+      for (const item of impressions) {
+        const name = item.name || item.item_name;
+        if (!name || name.length < 5 || isListingPageName(name)) continue;
+        const itemBrand = item.brand || item.item_brand || brand;
+        let img = item.image || item.image_url || '';
+        if (img.startsWith('//')) img = 'https:' + img;
+        let url = item.url || item.item_url || '';
+        if (url && !url.startsWith('http')) {
+          try { url = new URL(url, pageUrl).href; } catch { url = ''; }
+        }
+        const price = parseFloat(item.price || item.item_price || '0');
+        if (products.some(p => p.name === name)) continue;
+        products.push({
+          name, brand: itemBrand,
+          product_url: url || pageUrl,
+          price_cents: price > 0 ? Math.round(price * 100) : null,
+          currency: item.currency || 'USD',
+          image_urls: img && img.startsWith('http') ? [img] : [],
+          category_raw: item.category || category,
+          colour: null,
+        });
+      }
+    } catch { /* skip invalid JSON */ }
+  }
+}
+
+/**
+ * Extract products from SSR-rendered product tiles.
+ * Parses data-product-name, aria-label, product-tile class patterns,
+ * and <picture> srcset elements common in Next.js/Nuxt SSR sites.
+ */
+function extractProductsFromSsrTiles(html: string, products: RawProduct[], brand: string, category: string, pageUrl: string): void {
+  const seen = new Set<string>();
+
+  // Pattern 1: data-product-name + nearby href (Lululemon, etc.)
+  const dataProdRegex = /<[^>]*data-product-(?:name|id)=["']([^"']+)["'][^>]*>[\s\S]*?href=["']([^"']+)["']/gi;
+  let m;
+  while ((m = dataProdRegex.exec(html)) !== null && products.length < 80) {
+    const [, nameOrId, href] = m;
+    let url = href;
+    if (!url.startsWith('http')) {
+      try { url = new URL(url, pageUrl).href; } catch { continue; }
+    }
+    if (seen.has(url)) continue;
+    seen.add(url);
+
+    // Try to find name from data-product-name or aria-label nearby
+    const name = nameOrId.length > 5 && !/^\d+$/.test(nameOrId) ? nameOrId : '';
+    if (!name || isListingPageName(name)) continue;
+
+    // Find nearest image in srcset
+    const nearbyHtml = html.substring(Math.max(0, m.index - 500), m.index + 2000);
+    const srcsetMatch = nearbyHtml.match(/srcset=["']([^"']+)["']/);
+    let img = '';
+    if (srcsetMatch) {
+      // Extract first URL from srcset
+      const firstUrl = srcsetMatch[1].split(/[,\s]+/).find(s => s.startsWith('http'));
+      if (firstUrl) img = firstUrl.split('?')[0]; // Strip query params for cleaner URL
+    }
+    if (!img) {
+      const imgMatch = nearbyHtml.match(/(?:src|data-src)=["'](https?:\/\/[^"']+\.(jpg|jpeg|png|webp)[^"']*)["']/i);
+      if (imgMatch) img = imgMatch[1];
+    }
+
+    products.push({
+      name, brand,
+      product_url: url,
+      price_cents: null,
+      currency: 'USD',
+      image_urls: img ? [img] : [],
+      category_raw: category,
+      colour: null,
+    });
+  }
+
+  // Pattern 2: aria-label="View details of X" with href (Lululemon pattern)
+  if (products.length === 0) {
+    const ariaRegex = /<a[^>]*aria-label=["'](?:View details of |Shop |Buy )([^"']+)["'][^>]*href=["']([^"']+)["']/gi;
+    while ((m = ariaRegex.exec(html)) !== null && products.length < 80) {
+      const [, name, href] = m;
+      let url = href;
+      if (!url.startsWith('http')) {
+        try { url = new URL(url, pageUrl).href; } catch { continue; }
+      }
+      if (seen.has(url)) continue;
+      seen.add(url);
+      if (name.length < 5 || isListingPageName(name)) continue;
+
+      // Find nearest image
+      const nearbyHtml = html.substring(m.index, m.index + 3000);
+      const imgMatch = nearbyHtml.match(/(?:src|srcset)=["'](https?:\/\/[^"'\s,]+\.(jpg|jpeg|png|webp)[^"'\s,]*)["'\s,]/i);
+      const img = imgMatch?.[1] || '';
+
+      products.push({
+        name, brand,
+        product_url: url,
+        price_cents: null,
+        currency: 'USD',
+        image_urls: img ? [img] : [],
+        category_raw: category,
+        colour: null,
+      });
+    }
+  }
+
+  // Pattern 3: product-card / product-tile class with nested link + image
+  if (products.length === 0) {
+    const tileRegex = /<(?:div|article|li)[^>]*class=["'][^"']*(?:product[-_]?card|product[-_]?tile|product[-_]?item|plp[-_]?card)[^"']*["'][^>]*>([\s\S]*?)<\/(?:div|article|li)>/gi;
+    while ((m = tileRegex.exec(html)) !== null && products.length < 80) {
+      const tileHtml = m[1];
+      const linkMatch = tileHtml.match(/<a[^>]*href=["']([^"']+)["']/);
+      const imgMatch = tileHtml.match(/(?:src|data-src|srcset)=["'](https?:\/\/[^"'\s,]+\.(jpg|jpeg|png|webp)[^"'\s,]*)["'\s,]/i);
+      const nameMatch = tileHtml.match(/alt=["']([^"']{5,})["']/i) || tileHtml.match(/title=["']([^"']{5,})["']/i);
+      
+      if (!linkMatch || !nameMatch) continue;
+      let url = linkMatch[1];
+      if (!url.startsWith('http')) {
+        try { url = new URL(url, pageUrl).href; } catch { continue; }
+      }
+      if (seen.has(url)) continue;
+      seen.add(url);
+      
+      const name = nameMatch[1];
+      if (isListingPageName(name)) continue;
+      const img = imgMatch?.[1] || '';
+
+      products.push({
+        name, brand,
+        product_url: url,
+        price_cents: null,
+        currency: 'USD',
+        image_urls: img ? [img] : [],
+        category_raw: category,
+        colour: null,
+      });
+    }
+  }
 }
 
 function extractProductsFromHtmlGrid(html: string, products: RawProduct[], brand: string, category: string, pageUrl: string): void {
