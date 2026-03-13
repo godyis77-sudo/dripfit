@@ -879,7 +879,7 @@ const SHOPIFY_STORES: Record<string, { domain: string; collections?: Record<stri
   
   'steve madden':       { domain: 'https://www.stevemadden.com', collections: { shoes: ['womens-sneakers', 'womens-boots', 'womens-heels', 'mens-shoes', 'womens-sandals'], accessories: ['womens-handbags'] } },
   // ── Jewelry ──
-  mejuri:               { domain: 'https://mejuri.com', collections: { accessories: ['necklaces', 'rings', 'earrings', 'bracelets'] } },
+  
   // ── Additional Shopify brands ──
   everlane:             { domain: 'https://www.everlane.com', collections: { tops: ['womens-tops', 'mens-tees'], bottoms: ['womens-jeans', 'mens-jeans', 'womens-pants', 'mens-pants'], outerwear: ['womens-outerwear', 'mens-outerwear'], dresses: ['dresses'], shoes: ['womens-shoes', 'mens-shoes'] } },
   allsaints:            { domain: 'https://www.allsaints.com', collections: { tops: ['womens-tops', 'mens-t-shirts'], outerwear: ['womens-leather-jackets', 'mens-leather-jackets'], dresses: ['womens-dresses'], bottoms: ['mens-jeans', 'womens-jeans'] } },
