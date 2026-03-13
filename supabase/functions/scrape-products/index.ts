@@ -1915,7 +1915,7 @@ async function scrapeProducts(
       const categoryPages = mapUrls.filter(u => /\/c\/|\/cat\/|\/collection|\/shop\/|\/category/i.test(u)).slice(0, 5);
       if (categoryPages.length > 0) {
         const extractResults = await extractFromUrls(brand, category, categoryPages, category, firecrawlApiKey);
-        if (extractResults.length > 0) return [...directProducts, ...extractResults];
+        if (extractResults.length > 0) return [...mergedDirect, ...extractResults];
       }
     }
     console.log(`[scrape] Map yielded nothing, falling back to search`);
