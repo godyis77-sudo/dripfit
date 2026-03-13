@@ -252,13 +252,50 @@ Deno.serve(async (req) => {
 
     console.log(`[scrape-all] Batch ${batchNumber + 1} dispatched ${dispatched} jobs`);
 
+    // After all jobs dispatched, fire final categorization & cleanup pass
+    // These run after a delay to let individual scrapes complete
+    const postHeaders = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+    };
+
+    const finalDelay = Math.max(dispatched * dispatchDelayMs * 0.5, 5000);
+    setTimeout(() => {
+      console.log(`[scrape-all] Firing final categorization & cleanup pass`);
+
+      // Categorize any remaining unchecked products
+      fetch(`${SUPABASE_URL}/functions/v1/categorize-products`, {
+        method: 'POST', headers: postHeaders,
+        body: JSON.stringify({ batch_size: 100, only_unchecked: true }),
+      }).catch(e => console.warn('[scrape-all] Final categorize failed:', e));
+
+      // Backfill gender for any missing
+      fetch(`${SUPABASE_URL}/functions/v1/backfill-gender`, {
+        method: 'POST', headers: postHeaders,
+        body: JSON.stringify({ batch_size: 500 }),
+      }).catch(e => console.warn('[scrape-all] Final gender backfill failed:', e));
+
+      // Audit product URLs for broken images
+      fetch(`${SUPABASE_URL}/functions/v1/audit-product-urls`, {
+        method: 'POST', headers: postHeaders,
+        body: JSON.stringify({ batch_size: 200 }),
+      }).catch(e => console.warn('[scrape-all] Final audit URLs failed:', e));
+
+      // Cleanup catalog (deactivate junk, normalize brands)
+      fetch(`${SUPABASE_URL}/functions/v1/cleanup-catalog`, {
+        method: 'POST', headers: postHeaders,
+        body: JSON.stringify({}),
+      }).catch(e => console.warn('[scrape-all] Final cleanup failed:', e));
+    }, finalDelay);
+
     return successResponse({
       batch: batchNumber,
       totalBatches: batchTotal,
       totalJobs: batchJobs.length,
       dispatched,
       dispatchDelayMs,
-      message: `Dispatched ${dispatched} scrape jobs fire-and-forget with ${dispatchDelayMs}ms stagger. Check scrape-products logs for results.`,
+      postProcessingDelayMs: finalDelay,
+      message: `Dispatched ${dispatched} scrape jobs fire-and-forget with ${dispatchDelayMs}ms stagger. Post-processing (categorize, gender, audit, cleanup) fires after ~${Math.round(finalDelay/1000)}s. Check scrape-products logs for results.`,
     }, 200, corsHeaders);
   } catch (err: any) {
     console.error('[scrape-all] Error:', err);
