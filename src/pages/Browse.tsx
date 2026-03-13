@@ -115,7 +115,7 @@ const Browse = () => {
     return result;
   }, [products, sort, brandFilter, genreFilter]);
 
-  const activeFilterCount = (brandFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0);
+  const activeFilterCount = (brandFilter ? 1 : 0) + (genreFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
