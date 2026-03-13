@@ -47,6 +47,12 @@ const GENDER_OPTIONS = [
 
 type GenderKey = typeof GENDER_OPTIONS[number]['key'];
 
+const FIT_OPTIONS = [
+  'oversized', 'boxy', 'relaxed fit', 'slim fit', 'regular fit',
+  'cropped', 'tapered', 'drop shoulder', 'heavyweight', 'lightweight',
+  'athletic fit', 'classic fit', 'skinny fit', 'loose fit',
+] as const;
+
 const Browse = () => {
   const { category = 'tops' } = useParams<{ category: string }>();
   const navigate = useNavigate();
