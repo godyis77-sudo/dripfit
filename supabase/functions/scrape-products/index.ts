@@ -1917,12 +1917,35 @@ async function scrapeProducts(
     return mergedDirect;
   }
   
+  // ── STEP 2: Try Google Custom Search (free, 100 queries/day) ──
+  const googleApiKey = Deno.env.get('GOOGLE_SEARCH_API_KEY');
+  const googleCx = Deno.env.get('GOOGLE_SEARCH_CX');
+  if (googleApiKey && googleCx) {
+    console.log(`[scrape] Trying Google Custom Search for ${brand}/${category}`);
+    const googleProducts = tag(await searchGoogleProducts(brand, category, googleApiKey, googleCx), 'search');
+    const allWithGoogle = [...mergedDirect, ...googleProducts];
+    // Deduplicate by URL
+    const seenUrls = new Set<string>();
+    const deduped = allWithGoogle.filter(p => {
+      const key = p.product_url.toLowerCase();
+      if (seenUrls.has(key)) return false;
+      seenUrls.add(key);
+      return true;
+    });
+    if (deduped.length >= 3) {
+      console.log(`[scrape] Google Search found ${googleProducts.length}, total ${deduped.length} — skipping Firecrawl`);
+      return deduped;
+    }
+    // If Google didn't find enough, merge and continue to Firecrawl
+    mergedDirect.push(...googleProducts.filter(p => !mergedDirect.some(d => d.product_url.toLowerCase() === p.product_url.toLowerCase())));
+  }
+
   if (!useFirecrawl) {
     console.log(`[scrape] Firecrawl disabled, returning ${mergedDirect.length} direct results`);
     return mergedDirect;
   }
 
-  // ── STEP 2: Fall back to Firecrawl search (cheap, 1-2 credits) ──
+  // ── STEP 3: Fall back to Firecrawl search (cheap, 1-2 credits) ──
   const brandKey = normalizeBrandKey(brand);
 
   // All brands now use search-only strategy (no extract/scrape)
