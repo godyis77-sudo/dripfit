@@ -1876,7 +1876,61 @@ async function validateProductImages(products: RawProduct[]): Promise<RawProduct
             p.image_urls.splice(j, 1);
             p.image_urls.unshift(working);
             return p;
+}
+
+/**
+ * For products without images, fetch the product page and extract og:image.
+ * Uses a lightweight GET with range header to minimize bandwidth (free, no API credits).
+ */
+async function enrichProductImages(products: RawProduct[]): Promise<RawProduct[]> {
+  const enriched: RawProduct[] = [];
+  const batchSize = 5;
+  
+  for (let i = 0; i < products.length; i += batchSize) {
+    const batch = products.slice(i, i + batchSize);
+    const results = await Promise.all(
+      batch.map(async (p) => {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 5000);
+          // Fetch just the first ~20KB to get <head> with og:image
+          const resp = await fetch(p.product_url, {
+            method: 'GET',
+            headers: { 'Range': 'bytes=0-20000', 'User-Agent': 'Mozilla/5.0 (compatible; DripBot/1.0)' },
+            signal: controller.signal,
+            redirect: 'follow',
+          });
+          clearTimeout(timeout);
+          
+          const html = await resp.text();
+          // Extract og:image
+          const ogMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i)
+            || html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:image["']/i);
+          
+          if (ogMatch?.[1] && ogMatch[1].startsWith('http')) {
+            p.image_urls = [ogMatch[1]];
+            return p;
           }
+          
+          // Try twitter:image as fallback
+          const twMatch = html.match(/<meta[^>]*(?:name|property)=["']twitter:image["'][^>]*content=["']([^"']+)["']/i);
+          if (twMatch?.[1] && twMatch[1].startsWith('http')) {
+            p.image_urls = [twMatch[1]];
+            return p;
+          }
+          
+          return null; // No image found
+        } catch {
+          return null;
+        }
+      })
+    );
+    enriched.push(...results.filter((p): p is RawProduct => p !== null));
+  }
+  
+  console.log(`[enrich] Found images for ${enriched.length}/${products.length} products via og:image`);
+  return enriched;
+}
         }
         return null; // All images broken
       })
