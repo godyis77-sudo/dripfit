@@ -872,7 +872,7 @@ const SHOPIFY_STORES: Record<string, { domain: string; collections?: Record<stri
   
   untuckit:             { domain: 'https://www.untuckit.com', collections: { tops: ['mens-shirts', 'womens-tops'], outerwear: ['mens-jackets', 'womens-jackets'] } },
   bonobos:              { domain: 'https://bonobos.com', collections: { tops: ['shirts', 'polos'], bottoms: ['pants', 'jeans'], shorts: ['shorts'], outerwear: ['outerwear'], swimwear: ['swim'] } },
-  cuts:                 { domain: 'https://www.cutsclothing.com', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outerwear'] } },
+  
   // ── Plus Size & Extended ──
   'good american':      { domain: 'https://www.goodamerican.com', collections: { bottoms: ['jeans', 'pants'], tops: ['tops'], dresses: ['dresses'], activewear: ['activewear'], swimwear: ['swim'] } },
   // ── Footwear ──
