@@ -230,9 +230,9 @@ Deno.serve(async (req) => {
       });
       dispatched++;
 
-      // Stagger dispatches: 500ms between each to avoid rate limits
+      // Stagger dispatches to avoid downstream rate limits
       if (dispatched < batchJobs.length) {
-        await new Promise(r => setTimeout(r, 500));
+        await new Promise(r => setTimeout(r, dispatchDelayMs));
       }
     }
 
