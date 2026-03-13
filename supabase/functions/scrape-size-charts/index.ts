@@ -398,6 +398,167 @@ const RETAILERS: Record<string, RetailerConfig> = {
     url: "https://www.gymshark.com/pages/size-guide",
     categories: ["tops", "bottoms", "activewear", "sports-bras", "hoodies", "shorts"],
   },
+
+  // ── Extended Sizing: Tall ──
+  "asos-tall": {
+    brand_name: "ASOS",
+    url: "https://www.asos.com/us/discover/size-charts/tall/",
+    categories: ["tops", "bottoms", "dresses", "jeans", "outerwear"],
+    size_type: "tall",
+  },
+  "gap-tall": {
+    brand_name: "Gap",
+    url: "https://www.gap.com/browse/sizeChart.do?sizeChartId=tall",
+    categories: ["tops", "bottoms", "dresses", "jeans", "outerwear"],
+    size_type: "tall",
+  },
+  "old-navy-tall": {
+    brand_name: "Old Navy",
+    url: "https://oldnavy.gap.com/browse/sizeChart.do?sizeChartId=tall",
+    categories: ["tops", "bottoms", "dresses", "jeans"],
+    size_type: "tall",
+  },
+  "banana-republic-tall": {
+    brand_name: "Banana Republic",
+    url: "https://bananarepublic.gap.com/browse/sizeChart.do?sizeChartId=tall",
+    categories: ["tops", "bottoms", "dresses", "blazers"],
+    size_type: "tall",
+  },
+  "abercrombie-tall": {
+    brand_name: "Abercrombie & Fitch",
+    url: "https://www.abercrombie.com/shop/us/size-charts?sizeType=tall",
+    categories: ["tops", "bottoms", "jeans", "dresses"],
+    size_type: "tall",
+  },
+  "american-eagle-tall": {
+    brand_name: "American Eagle",
+    url: "https://www.ae.com/us/en/content/help/men-size-chart",
+    categories: ["tops", "bottoms", "jeans"],
+    size_type: "tall",
+  },
+  "jcrew-tall": {
+    brand_name: "J.Crew",
+    url: "https://www.jcrew.com/r/size-charts?fit=tall",
+    categories: ["tops", "bottoms", "dresses", "blazers"],
+    size_type: "tall",
+  },
+  "nordstrom-tall": {
+    brand_name: "Nordstrom",
+    url: "https://www.nordstrom.com/browse/content/size-charts?type=tall",
+    categories: ["tops", "bottoms", "dresses", "outerwear"],
+    size_type: "tall",
+  },
+
+  // ── Extended Sizing: Petite ──
+  "asos-petite": {
+    brand_name: "ASOS",
+    url: "https://www.asos.com/us/discover/size-charts/petite/",
+    categories: ["tops", "bottoms", "dresses", "jeans", "outerwear"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "gap-petite": {
+    brand_name: "Gap",
+    url: "https://www.gap.com/browse/sizeChart.do?sizeChartId=petite",
+    categories: ["tops", "bottoms", "dresses", "jeans"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "old-navy-petite": {
+    brand_name: "Old Navy",
+    url: "https://oldnavy.gap.com/browse/sizeChart.do?sizeChartId=petite",
+    categories: ["tops", "bottoms", "dresses", "jeans"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "banana-republic-petite": {
+    brand_name: "Banana Republic",
+    url: "https://bananarepublic.gap.com/browse/sizeChart.do?sizeChartId=petite",
+    categories: ["tops", "bottoms", "dresses", "blazers"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "abercrombie-petite": {
+    brand_name: "Abercrombie & Fitch",
+    url: "https://www.abercrombie.com/shop/us/size-charts?sizeType=petite",
+    categories: ["tops", "bottoms", "jeans", "dresses"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "jcrew-petite": {
+    brand_name: "J.Crew",
+    url: "https://www.jcrew.com/r/size-charts?fit=petite",
+    categories: ["tops", "bottoms", "dresses", "blazers"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "nordstrom-petite": {
+    brand_name: "Nordstrom",
+    url: "https://www.nordstrom.com/browse/content/size-charts?type=petite",
+    categories: ["tops", "bottoms", "dresses", "outerwear"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "anthropologie-petite": {
+    brand_name: "Anthropologie",
+    url: "https://www.anthropologie.com/help/size-charts?fit=petite",
+    categories: ["tops", "dresses", "bottoms"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "free-people-petite": {
+    brand_name: "Free People",
+    url: "https://www.freepeople.com/size-chart/?fit=petite",
+    categories: ["tops", "dresses", "bottoms"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "reformation-petite": {
+    brand_name: "Reformation",
+    url: "https://www.thereformation.com/pages/size-chart?fit=petite",
+    categories: ["tops", "bottoms", "dresses"],
+    size_type: "petite",
+    gender: "women",
+  },
+
+  // ── Extended Sizing: Plus ──
+  "asos-plus": {
+    brand_name: "ASOS",
+    url: "https://www.asos.com/us/discover/size-charts/plus-size/",
+    categories: ["tops", "bottoms", "dresses", "jeans", "outerwear"],
+    size_type: "plus",
+  },
+  "shein-plus": {
+    brand_name: "SHEIN",
+    url: "https://us.shein.com/Size-Guide-a-281.html",
+    categories: ["tops", "bottoms", "dresses", "jeans", "outerwear"],
+    size_type: "plus",
+  },
+  "fashion-nova-plus": {
+    brand_name: "Fashion Nova",
+    url: "https://www.fashionnova.com/pages/size-chart",
+    categories: ["tops", "bottoms", "dresses", "jeans"],
+    size_type: "plus",
+    gender: "women",
+  },
+  "old-navy-plus": {
+    brand_name: "Old Navy",
+    url: "https://oldnavy.gap.com/browse/sizeChart.do?sizeChartId=plus",
+    categories: ["tops", "bottoms", "dresses", "jeans"],
+    size_type: "plus",
+  },
+  "gap-plus": {
+    brand_name: "Gap",
+    url: "https://www.gap.com/browse/sizeChart.do?sizeChartId=plus",
+    categories: ["tops", "bottoms", "dresses"],
+    size_type: "plus",
+  },
+  "nordstrom-plus": {
+    brand_name: "Nordstrom",
+    url: "https://www.nordstrom.com/browse/content/size-charts?type=plus",
+    categories: ["tops", "bottoms", "dresses", "outerwear"],
+    size_type: "plus",
+  },
 };
 
 const FETCH_HEADERS = {
