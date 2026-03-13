@@ -1847,15 +1847,21 @@ async function scrapeProducts(
   firecrawlApiKey: string,
   useFirecrawl = true,
 ): Promise<RawProduct[]> {
+  // Helper to tag all products in an array with their source method
+  const tag = (products: RawProduct[], method: ScrapeMethod): RawProduct[] => {
+    for (const p of products) p._method = p._method || method;
+    return products;
+  };
+
   // ── STEP 0: Try Shopify /products.json first (free, structured, reliable) ──
-  const shopifyProducts = await scrapeShopifyProducts(brand, category);
+  const shopifyProducts = tag(await scrapeShopifyProducts(brand, category), 'shopify');
   if (shopifyProducts.length >= 3) {
     console.log(`[scrape] Shopify API found ${shopifyProducts.length} products, skipping other methods`);
     return shopifyProducts;
   }
 
   // ── STEP 1: Always try direct HTTP next (free) ──
-  const directProducts = await scrapeDirectHttp(brand, category);
+  const directProducts = tag(await scrapeDirectHttp(brand, category), 'direct');
   // Merge any Shopify results with direct results
   const mergedDirect = [...shopifyProducts, ...directProducts];
   if (mergedDirect.length >= 3) {
@@ -1875,7 +1881,7 @@ async function scrapeProducts(
   if (ANTI_SCRAPE_BRANDS.has(brandKey)) {
     console.log(`[scrape] ${brand} is anti-scrape, using search-first strategy`);
 
-    const searchResults = await searchProducts(brand, category, firecrawlApiKey);
+    const searchResults = tag(await searchProducts(brand, category, firecrawlApiKey), 'search');
     // Merge direct results
     const existingUrls = new Set(searchResults.map(p => p.product_url.toLowerCase()));
     for (const p of mergedDirect) {
@@ -1891,7 +1897,7 @@ async function scrapeProducts(
       const parentKey = CATEGORY_TO_URL_KEY[catKey] || catKey;
       const keywords = MAP_CATEGORY_KEYWORDS[parentKey] || MAP_CATEGORY_KEYWORDS[catKey] || [category];
       const extractUrls = [`${domain}/*`];
-      const extractResults = await extractFromUrls(brand, category, extractUrls, keywords.join(' '), firecrawlApiKey);
+      const extractResults = tag(await extractFromUrls(brand, category, extractUrls, keywords.join(' '), firecrawlApiKey), 'extract');
 
       if (extractResults.length > 0) {
         const seen = new Set(searchResults.map(p => p.product_url.toLowerCase()));
@@ -1913,12 +1919,12 @@ async function scrapeProducts(
     if (mapUrls.length > 0) {
       const categoryPages = mapUrls.filter(u => /\/c\/|\/cat\/|\/collection|\/shop\/|\/category/i.test(u)).slice(0, 5);
       if (categoryPages.length > 0) {
-        const extractResults = await extractFromUrls(brand, category, categoryPages, category, firecrawlApiKey);
+        const extractResults = tag(await extractFromUrls(brand, category, categoryPages, category, firecrawlApiKey), 'map_extract');
         if (extractResults.length > 0) return [...mergedDirect, ...extractResults];
       }
     }
     console.log(`[scrape] Map yielded nothing, falling back to search`);
-    const sr = await searchProducts(brand, category, firecrawlApiKey);
+    const sr = tag(await searchProducts(brand, category, firecrawlApiKey), 'search');
     return [...mergedDirect, ...sr];
   }
 
@@ -1927,30 +1933,27 @@ async function scrapeProducts(
   const urlConfigs = brandUrls[catKey] || brandUrls[parentKey];
   if (!urlConfigs?.length) {
     console.log(`[scrape] No URLs for ${brand}/${category} (tried ${catKey}→${parentKey}), using search fallback`);
-    const sr = await searchProducts(brand, category, firecrawlApiKey);
+    const sr = tag(await searchProducts(brand, category, firecrawlApiKey), 'search');
     return [...mergedDirect, ...sr];
   }
 
-  const allProducts = await scrapeUrlConfigs(brand, category, urlConfigs, firecrawlApiKey);
+  const allProducts = tag(await scrapeUrlConfigs(brand, category, urlConfigs, firecrawlApiKey), 'extract');
 
   if (!allProducts.length) {
     console.log(`[scrape] Direct extract returned 0 for ${brand}/${category}, trying map→extract`);
     const mapUrls = await mapBrandUrls(brand, category, firecrawlApiKey);
     const categoryPages = mapUrls.filter(u => /\/c\/|\/cat\/|\/collection|\/shop\/|\/category/i.test(u)).slice(0, 5);
     if (categoryPages.length > 0) {
-      const extractResults = await extractFromUrls(brand, category, categoryPages, category, firecrawlApiKey);
+      const extractResults = tag(await extractFromUrls(brand, category, categoryPages, category, firecrawlApiKey), 'map_extract');
       if (extractResults.length > 0) return [...mergedDirect, ...extractResults];
     }
     console.log(`[scrape] Map yielded nothing, falling back to search`);
-    const sr = await searchProducts(brand, category, firecrawlApiKey);
+    const sr = tag(await searchProducts(brand, category, firecrawlApiKey), 'search');
     return [...mergedDirect, ...sr];
   }
 
   return [...mergedDirect, ...allProducts];
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// EXTRACT V2 — Firecrawl /v1/extract for structured product data + images
 // ─────────────────────────────────────────────────────────────────────────────
 
 const EXTRACT_PRODUCT_SCHEMA = {
