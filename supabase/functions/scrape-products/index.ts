@@ -1181,11 +1181,10 @@ async function searchProducts(
 
     const allProducts = parseSearchResults(results, brand, category);
 
-    // If we got very few results, try the fallback query too
-    if (allProducts.length < 3) {
-      console.log(`[search-fallback] Only ${allProducts.length} results, trying broader query`);
+    // Only try broader query if primary returned very few AND primary had results to parse
+    if (allProducts.length < 3 && results.length >= 3) {
+      console.log(`[search-fallback] Only ${allProducts.length} parsed from ${results.length} results, trying broader query`);
       const fallbackProducts = await searchProductsFallback(brand, category, firecrawlApiKey);
-      // Merge without duplication
       const existingUrls = new Set(allProducts.map(p => p.product_url.toLowerCase()));
       for (const p of fallbackProducts) {
         if (!existingUrls.has(p.product_url.toLowerCase())) {
