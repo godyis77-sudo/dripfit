@@ -1188,10 +1188,6 @@ async function searchProducts(
         limit: 30,
         lang: 'en',
         country: 'us',
-        scrapeOptions: {
-          formats: ['markdown', 'links'],
-          onlyMainContent: true,
-        },
       }),
     });
 
