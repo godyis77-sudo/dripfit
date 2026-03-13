@@ -1177,6 +1177,7 @@ async function searchProducts(
   console.log(`[search-fallback] Query: "${searchQuery}"`);
 
   try {
+    // Metadata-only search: 1 credit per call (NO scrapeOptions = no per-result scraping)
     const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/search', {
       method: 'POST',
       headers: {
@@ -1188,10 +1189,6 @@ async function searchProducts(
         limit: 10,
         lang: 'en',
         country: 'us',
-        scrapeOptions: {
-          formats: ['markdown'],
-          onlyMainContent: true,
-        },
       }),
     });
 
@@ -1199,12 +1196,11 @@ async function searchProducts(
 
     if (!resp.ok) {
       console.warn(`[search-fallback] Firecrawl search error: ${JSON.stringify(data).slice(0, 300)}`);
-      // If primary search fails, try a simplified query without site restrictions
       return searchProductsFallback(brand, category, firecrawlApiKey);
     }
 
     const results = data.data || [];
-    console.log(`[search-fallback] Got ${results.length} search results`);
+    console.log(`[search-fallback] Got ${results.length} search results (metadata-only, 1 credit)`);
 
     const allProducts = parseSearchResults(results, brand, category);
 
@@ -1212,7 +1208,6 @@ async function searchProducts(
     if (allProducts.length < 3) {
       console.log(`[search-fallback] Only ${allProducts.length} results, trying broader query`);
       const fallbackProducts = await searchProductsFallback(brand, category, firecrawlApiKey);
-      // Merge without duplication
       const existingUrls = new Set(allProducts.map(p => p.product_url.toLowerCase()));
       for (const p of fallbackProducts) {
         if (!existingUrls.has(p.product_url.toLowerCase())) {
@@ -1221,11 +1216,29 @@ async function searchProducts(
       }
     }
 
-    console.log(`[search-fallback] Extracted ${allProducts.length} products for ${brand}/${category}`);
-    return allProducts;
+    // Validate images with HEAD requests (free, ensures quality)
+    // Only validate if products actually have images — metadata-only search may not include images
+    const productsWithImages = allProducts.filter(p => p.image_urls.length > 0);
+    const productsWithoutImages = allProducts.filter(p => p.image_urls.length === 0);
+    
+    let validated: RawProduct[];
+    if (productsWithImages.length > 0) {
+      validated = await validateProductImages(productsWithImages);
+    } else {
+      validated = [];
+    }
+    
+    // For products without images, try to fetch og:image from product URL (free HEAD request)
+    if (productsWithoutImages.length > 0) {
+      console.log(`[search-fallback] ${productsWithoutImages.length} products without images, fetching og:image from product URLs`);
+      const enriched = await enrichProductImages(productsWithoutImages);
+      validated.push(...enriched);
+    }
+    
+    console.log(`[search-fallback] Final: ${validated.length} products for ${brand}/${category}`);
+    return validated;
   } catch (err) {
     console.warn(`[search-fallback] Error:`, err);
-    // Try fallback on error
     return searchProductsFallback(brand, category, firecrawlApiKey);
   }
 }
@@ -1243,6 +1256,7 @@ async function searchProductsFallback(
   console.log(`[search-fallback-broad] Query: "${searchQuery}"`);
 
   try {
+    // Metadata-only search: 1 credit (no scrapeOptions)
     const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/search', {
       method: 'POST',
       headers: {
@@ -1254,10 +1268,6 @@ async function searchProductsFallback(
         limit: 5,
         lang: 'en',
         country: 'us',
-        scrapeOptions: {
-          formats: ['markdown'],
-          onlyMainContent: true,
-        },
       }),
     });
 
@@ -1268,6 +1278,7 @@ async function searchProductsFallback(
     }
 
     const results = data.data || [];
+    console.log(`[search-fallback-broad] Got ${results.length} results (metadata-only, 1 credit)`);
     return parseSearchResults(results, brand, category);
   } catch (err) {
     console.warn(`[search-fallback-broad] Error:`, err);
@@ -1816,6 +1827,145 @@ function buildTags(p: ClassifiedProduct): string[] {
 function delay(ms: number) { return new Promise(r => setTimeout(r, ms)); }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// IMAGE HEAD VALIDATION — verify images resolve (free, no Firecrawl credits)
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function validateImageUrl(url: string): Promise<boolean> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+    // Try HEAD first, fall back to GET with range header for CDNs that block HEAD
+    let resp = await fetch(url, { method: 'HEAD', signal: controller.signal, redirect: 'follow' });
+    clearTimeout(timeout);
+    // Many CDNs return 403/405 for HEAD — accept the URL if it looks like an image URL
+    if (resp.status === 405 || resp.status === 403) {
+      // Trust URLs that have image extensions
+      return /\.(jpg|jpeg|png|webp|avif)/i.test(url);
+    }
+    if (!resp.ok) return false;
+    const ct = resp.headers.get('content-type') || '';
+    // Accept if content-type is image OR if URL has image extension (some CDNs return octet-stream)
+    return ct.startsWith('image/') || /\.(jpg|jpeg|png|webp|avif)/i.test(url);
+  } catch {
+    // On timeout/network error, trust URLs with image extensions
+    return /\.(jpg|jpeg|png|webp|avif)/i.test(url);
+  }
+}
+
+async function validateProductImages(products: RawProduct[]): Promise<RawProduct[]> {
+  if (!products.length) return [];
+  
+  const validated: RawProduct[] = [];
+  const batchSize = 5;
+  
+  for (let i = 0; i < products.length; i += batchSize) {
+    const batch = products.slice(i, i + batchSize);
+    const results = await Promise.all(
+      batch.map(async (p) => {
+        if (!p.image_urls.length) return null;
+        const isValid = await validateImageUrl(p.image_urls[0]);
+        if (isValid) return p;
+        for (let j = 1; j < Math.min(p.image_urls.length, 3); j++) {
+          const altValid = await validateImageUrl(p.image_urls[j]);
+          if (altValid) {
+            const working = p.image_urls[j];
+            p.image_urls.splice(j, 1);
+            p.image_urls.unshift(working);
+            return p;
+          }
+        }
+        return null;
+      })
+    );
+    validated.push(...results.filter((p): p is RawProduct => p !== null));
+  }
+  
+  return validated;
+}
+
+/**
+ * For products without images, fetch the product page and extract og:image.
+ * Uses a lightweight GET with range header to minimize bandwidth (free, no API credits).
+ */
+async function enrichProductImages(products: RawProduct[]): Promise<RawProduct[]> {
+  const enriched: RawProduct[] = [];
+  const batchSize = 5;
+  
+  for (let i = 0; i < products.length; i += batchSize) {
+    const batch = products.slice(i, i + batchSize);
+    const results = await Promise.all(
+      batch.map(async (p) => {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 5000);
+          const resp = await fetch(p.product_url, {
+            method: 'GET',
+            headers: { 'Range': 'bytes=0-20000', 'User-Agent': 'Mozilla/5.0 (compatible; DripBot/1.0)' },
+            signal: controller.signal,
+            redirect: 'follow',
+          });
+          clearTimeout(timeout);
+          
+          const html = await resp.text();
+          const ogMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i)
+            || html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:image["']/i);
+          
+          if (ogMatch?.[1] && ogMatch[1].startsWith('http')) {
+            p.image_urls = [ogMatch[1]];
+            return p;
+          }
+          
+          const twMatch = html.match(/<meta[^>]*(?:name|property)=["']twitter:image["'][^>]*content=["']([^"']+)["']/i);
+          if (twMatch?.[1] && twMatch[1].startsWith('http')) {
+            p.image_urls = [twMatch[1]];
+            return p;
+          }
+          
+          return null;
+        } catch {
+          return null;
+        }
+      })
+    );
+    enriched.push(...results.filter((p): p is RawProduct => p !== null));
+  }
+  
+  console.log(`[enrich] Found images for ${enriched.length}/${products.length} products via og:image`);
+  return enriched;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PRE-SCRAPE CHECK — skip brand/category if recently scraped with good results
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function hasRecentProducts(
+  brand: string,
+  category: string,
+  supabase: ReturnType<typeof createClient>,
+  hoursThreshold = 24
+): Promise<{ skip: boolean; count: number }> {
+  const cutoff = new Date(Date.now() - hoursThreshold * 60 * 60 * 1000).toISOString();
+  const normCat = normaliseCategory(category);
+  
+  const { count, error } = await supabase
+    .from('product_catalog')
+    .select('*', { count: 'exact', head: true })
+    .ilike('brand', brand)
+    .eq('category', normCat)
+    .eq('is_active', true)
+    .gte('scraped_at', cutoff);
+  
+  if (error) {
+    console.warn(`[pre-check] Error checking recent products:`, error.message);
+    return { skip: false, count: 0 };
+  }
+  
+  const c = count ?? 0;
+  // Skip if we already have 5+ recent products for this combo
+  return { skip: c >= 5, count: c };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // MAIN HANDLER
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -1849,8 +1999,15 @@ Deno.serve(async (req) => {
     );
 
     const runId = crypto.randomUUID();
-    const results = { runId, brand, category, scraped: 0, extracted: 0, classified: 0, deduped: 0, inserted: 0, withImages: 0 };
+    const results = { runId, brand, category, scraped: 0, extracted: 0, classified: 0, deduped: 0, inserted: 0, withImages: 0, skipped: false };
     console.log(`[run:${runId}] Starting: ${brand}/${category}`);
+
+    // ── PRE-CHECK: skip if we already have recent products ───────────
+    const { skip, count: recentCount } = await hasRecentProducts(brand, category, supabase);
+    if (skip) {
+      console.log(`[run:${runId}] Skipping — already have ${recentCount} recent products for ${brand}/${category}`);
+      return successResponse({ ...results, skipped: true, recentCount, message: `Already have ${recentCount} recent products, skipping to save credits` }, 200, corsHeaders);
+    }
 
     // ── STAGES 1+2: Firecrawl scrape + rawHtml image extraction ──────
     const rawProducts = await scrapeProducts(brand, category, FIRECRAWL_API_KEY);
