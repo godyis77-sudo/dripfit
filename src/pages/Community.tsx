@@ -3,7 +3,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Sparkles, Loader2, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2, ShoppingCart, SlidersHorizontal } from 'lucide-react';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -41,6 +41,7 @@ const Community = () => {
   const [followingSort, setFollowingSort] = useState<TrendingSort>('newest');
   const [filterUserId, setFilterUserId] = useState<string | null>(null);
   const [similarFitTooltip, setSimilarFitTooltip] = useState(false);
+  const [showSortOptions, setShowSortOptions] = useState(false);
 
   // Close detail sheet on browser/hardware back button
   const closeDetail = useCallback(() => setDetailPost(null), []);
@@ -203,16 +204,46 @@ const Community = () => {
           </AnimatePresence>
         </div>
 
-        {/* Trending sub-sort */}
-        {filter === 'trending' && renderSortPills(
-          [{ key: 'hot', label: '🔥 Hot' }, { key: 'love', label: '👍 Top Buy' }, { key: 'newest', label: '🕐 Newest' }, { key: 'user', label: '👤 By User' }],
-          trendingSort, setTrendingSort,
-        )}
-
-        {/* Following sub-sort */}
-        {filter === 'following' && renderSortPills(
-          [{ key: 'newest', label: '🕐 Newest' }, { key: 'hot', label: '🔥 Hot' }, { key: 'love', label: '👍 Top Buy' }, { key: 'user', label: '👤 By User' }],
-          followingSort, setFollowingSort,
+        {/* Sort toggle for trending/following */}
+        {(filter === 'trending' || filter === 'following') && (
+          <div className="mb-3">
+            <button
+              onClick={() => setShowSortOptions(!showSortOptions)}
+              className="flex items-center gap-1.5 pill pill-active text-[11px]"
+              aria-label="Toggle sort options"
+            >
+              <SlidersHorizontal className="h-3 w-3" />
+              {filter === 'trending'
+                ? [{ key: 'hot', label: '🔥 Hot' }, { key: 'love', label: '👍 Top Buy' }, { key: 'newest', label: '🕐 Newest' }, { key: 'user', label: '👤 By User' }].find(s => s.key === trendingSort)?.label
+                : [{ key: 'newest', label: '🕐 Newest' }, { key: 'hot', label: '🔥 Hot' }, { key: 'love', label: '👍 Top Buy' }, { key: 'user', label: '👤 By User' }].find(s => s.key === followingSort)?.label
+              }
+            </button>
+            <AnimatePresence>
+              {showSortOptions && (
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                  <div className="flex gap-1.5 mt-2 overflow-x-auto no-scrollbar">
+                    {(filter === 'trending'
+                      ? [{ key: 'hot' as TrendingSort, label: '🔥 Hot' }, { key: 'love' as TrendingSort, label: '👍 Top Buy' }, { key: 'newest' as TrendingSort, label: '🕐 Newest' }, { key: 'user' as TrendingSort, label: '👤 By User' }]
+                      : [{ key: 'newest' as TrendingSort, label: '🕐 Newest' }, { key: 'hot' as TrendingSort, label: '🔥 Hot' }, { key: 'love' as TrendingSort, label: '👍 Top Buy' }, { key: 'user' as TrendingSort, label: '👤 By User' }]
+                    ).map(s => (
+                      <button
+                        key={s.key}
+                        onClick={() => {
+                          if (filter === 'trending') setTrendingSort(s.key);
+                          else setFollowingSort(s.key);
+                          if (s.key !== 'user') setFilterUserId(null);
+                          setShowSortOptions(false);
+                        }}
+                        className={`pill ${(filter === 'trending' ? trendingSort : followingSort) === s.key ? 'pill-active' : ''}`}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         )}
 
         {/* User filter chips */}
