@@ -11,6 +11,8 @@ interface RetailerConfig {
   brand_name: string;
   url: string;
   categories: string[];
+  gender?: string;     // 'men' | 'women' | 'unisex' (default: 'unisex')
+  size_type?: string;  // 'regular' | 'tall' | 'petite' | 'plus' (default: 'regular')
 }
 
 const RETAILERS: Record<string, RetailerConfig> = {
@@ -396,6 +398,167 @@ const RETAILERS: Record<string, RetailerConfig> = {
     url: "https://www.gymshark.com/pages/size-guide",
     categories: ["tops", "bottoms", "activewear", "sports-bras", "hoodies", "shorts"],
   },
+
+  // ── Extended Sizing: Tall ──
+  "asos-tall": {
+    brand_name: "ASOS",
+    url: "https://www.asos.com/us/discover/size-charts/tall/",
+    categories: ["tops", "bottoms", "dresses", "jeans", "outerwear"],
+    size_type: "tall",
+  },
+  "gap-tall": {
+    brand_name: "Gap",
+    url: "https://www.gap.com/browse/sizeChart.do?sizeChartId=tall",
+    categories: ["tops", "bottoms", "dresses", "jeans", "outerwear"],
+    size_type: "tall",
+  },
+  "old-navy-tall": {
+    brand_name: "Old Navy",
+    url: "https://oldnavy.gap.com/browse/sizeChart.do?sizeChartId=tall",
+    categories: ["tops", "bottoms", "dresses", "jeans"],
+    size_type: "tall",
+  },
+  "banana-republic-tall": {
+    brand_name: "Banana Republic",
+    url: "https://bananarepublic.gap.com/browse/sizeChart.do?sizeChartId=tall",
+    categories: ["tops", "bottoms", "dresses", "blazers"],
+    size_type: "tall",
+  },
+  "abercrombie-tall": {
+    brand_name: "Abercrombie & Fitch",
+    url: "https://www.abercrombie.com/shop/us/size-charts?sizeType=tall",
+    categories: ["tops", "bottoms", "jeans", "dresses"],
+    size_type: "tall",
+  },
+  "american-eagle-tall": {
+    brand_name: "American Eagle",
+    url: "https://www.ae.com/us/en/content/help/men-size-chart",
+    categories: ["tops", "bottoms", "jeans"],
+    size_type: "tall",
+  },
+  "jcrew-tall": {
+    brand_name: "J.Crew",
+    url: "https://www.jcrew.com/r/size-charts?fit=tall",
+    categories: ["tops", "bottoms", "dresses", "blazers"],
+    size_type: "tall",
+  },
+  "nordstrom-tall": {
+    brand_name: "Nordstrom",
+    url: "https://www.nordstrom.com/browse/content/size-charts?type=tall",
+    categories: ["tops", "bottoms", "dresses", "outerwear"],
+    size_type: "tall",
+  },
+
+  // ── Extended Sizing: Petite ──
+  "asos-petite": {
+    brand_name: "ASOS",
+    url: "https://www.asos.com/us/discover/size-charts/petite/",
+    categories: ["tops", "bottoms", "dresses", "jeans", "outerwear"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "gap-petite": {
+    brand_name: "Gap",
+    url: "https://www.gap.com/browse/sizeChart.do?sizeChartId=petite",
+    categories: ["tops", "bottoms", "dresses", "jeans"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "old-navy-petite": {
+    brand_name: "Old Navy",
+    url: "https://oldnavy.gap.com/browse/sizeChart.do?sizeChartId=petite",
+    categories: ["tops", "bottoms", "dresses", "jeans"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "banana-republic-petite": {
+    brand_name: "Banana Republic",
+    url: "https://bananarepublic.gap.com/browse/sizeChart.do?sizeChartId=petite",
+    categories: ["tops", "bottoms", "dresses", "blazers"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "abercrombie-petite": {
+    brand_name: "Abercrombie & Fitch",
+    url: "https://www.abercrombie.com/shop/us/size-charts?sizeType=petite",
+    categories: ["tops", "bottoms", "jeans", "dresses"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "jcrew-petite": {
+    brand_name: "J.Crew",
+    url: "https://www.jcrew.com/r/size-charts?fit=petite",
+    categories: ["tops", "bottoms", "dresses", "blazers"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "nordstrom-petite": {
+    brand_name: "Nordstrom",
+    url: "https://www.nordstrom.com/browse/content/size-charts?type=petite",
+    categories: ["tops", "bottoms", "dresses", "outerwear"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "anthropologie-petite": {
+    brand_name: "Anthropologie",
+    url: "https://www.anthropologie.com/help/size-charts?fit=petite",
+    categories: ["tops", "dresses", "bottoms"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "free-people-petite": {
+    brand_name: "Free People",
+    url: "https://www.freepeople.com/size-chart/?fit=petite",
+    categories: ["tops", "dresses", "bottoms"],
+    size_type: "petite",
+    gender: "women",
+  },
+  "reformation-petite": {
+    brand_name: "Reformation",
+    url: "https://www.thereformation.com/pages/size-chart?fit=petite",
+    categories: ["tops", "bottoms", "dresses"],
+    size_type: "petite",
+    gender: "women",
+  },
+
+  // ── Extended Sizing: Plus ──
+  "asos-plus": {
+    brand_name: "ASOS",
+    url: "https://www.asos.com/us/discover/size-charts/plus-size/",
+    categories: ["tops", "bottoms", "dresses", "jeans", "outerwear"],
+    size_type: "plus",
+  },
+  "shein-plus": {
+    brand_name: "SHEIN",
+    url: "https://us.shein.com/Size-Guide-a-281.html",
+    categories: ["tops", "bottoms", "dresses", "jeans", "outerwear"],
+    size_type: "plus",
+  },
+  "fashion-nova-plus": {
+    brand_name: "Fashion Nova",
+    url: "https://www.fashionnova.com/pages/size-chart",
+    categories: ["tops", "bottoms", "dresses", "jeans"],
+    size_type: "plus",
+    gender: "women",
+  },
+  "old-navy-plus": {
+    brand_name: "Old Navy",
+    url: "https://oldnavy.gap.com/browse/sizeChart.do?sizeChartId=plus",
+    categories: ["tops", "bottoms", "dresses", "jeans"],
+    size_type: "plus",
+  },
+  "gap-plus": {
+    brand_name: "Gap",
+    url: "https://www.gap.com/browse/sizeChart.do?sizeChartId=plus",
+    categories: ["tops", "bottoms", "dresses"],
+    size_type: "plus",
+  },
+  "nordstrom-plus": {
+    brand_name: "Nordstrom",
+    url: "https://www.nordstrom.com/browse/content/size-charts?type=plus",
+    categories: ["tops", "bottoms", "dresses", "outerwear"],
+    size_type: "plus",
+  },
 };
 
 const FETCH_HEADERS = {
@@ -408,8 +571,11 @@ const FETCH_HEADERS = {
 
 const SYSTEM_PROMPT = `You are a fashion size chart data extraction specialist. Extract size chart measurement data from HTML into a structured JSON array. Rules: Extract ONLY data present in the HTML — never invent or estimate measurements. Convert all measurements to centimetres (multiply inches by 2.54). Use null for any measurement not found. Return ONLY a valid JSON array with no markdown, no code fences, no prose.`;
 
-function buildUserPrompt(category: string, brandName: string, html: string): string {
-  return `Extract the ${category} size chart from this HTML for ${brandName} (US sizing).
+function buildUserPrompt(category: string, brandName: string, html: string, sizeType?: string): string {
+  const sizeTypeHint = sizeType && sizeType !== 'regular'
+    ? ` Look specifically for the ${sizeType.toUpperCase()} size chart (not the regular/standard chart). ${sizeType === 'tall' ? 'Tall sizing typically has longer inseams and torso lengths.' : sizeType === 'petite' ? 'Petite sizing typically has shorter inseams and proportions for 5\'4" and under.' : 'Plus sizing typically covers sizes 1X-4X or 14W+.'} If no ${sizeType}-specific chart is found, return [].`
+    : '';
+  return `Extract the ${category} size chart from this HTML for ${brandName} (US sizing).${sizeTypeHint}
 Return a JSON array where each element is one size:
 [{ "label": string, "chest_min": number|null, "chest_max": number|null, "waist_min": number|null, "waist_max": number|null, "hips_min": number|null, "hips_max": number|null, "inseam_min": number|null, "inseam_max": number|null, "shoulder_min": number|null, "shoulder_max": number|null, "shoe_length_min": number|null, "shoe_length_max": number|null, "unit": "cm" }]
 If no size chart found for this category in the HTML, return [].
@@ -469,12 +635,14 @@ Deno.serve(async (req) => {
     );
 
     // Build work list
-    const workList: { slug: string; config: RetailerConfig; category: string }[] = [];
-    for (const [slug, config] of Object.entries(RETAILERS)) {
-      if (filterSlug && slug !== filterSlug) continue;
+    const workList: { slug: string; configSlug: string; config: RetailerConfig; category: string }[] = [];
+    for (const [configSlug, config] of Object.entries(RETAILERS)) {
+      if (filterSlug && configSlug !== filterSlug) continue;
+      // Strip extended sizing suffixes to get base brand slug for DB
+      const baseSlug = configSlug.replace(/-(tall|petite|plus)$/, "");
       for (const cat of config.categories) {
         if (filterCategory && cat !== filterCategory) continue;
-        workList.push({ slug, config, category: cat });
+        workList.push({ slug: baseSlug, configSlug, config, category: cat });
       }
     }
 
@@ -567,7 +735,7 @@ Deno.serve(async (req) => {
             temperature: 0.0,
             messages: [
               { role: "system", content: SYSTEM_PROMPT },
-              { role: "user", content: buildUserPrompt(item.category, item.config.brand_name, html) },
+              { role: "user", content: buildUserPrompt(item.category, item.config.brand_name, html, item.config.size_type) },
             ],
           }),
         });
@@ -625,12 +793,16 @@ Deno.serve(async (req) => {
         }));
 
         // Upsert
+        const gender = item.config.gender || "unisex";
+        const sizeType = item.config.size_type || "regular";
         const { error: upsertErr } = await supabase.from("brand_size_charts").upsert(
           {
             brand_slug: item.slug,
             brand_name: item.config.brand_name,
             category: item.category,
             region: "US",
+            gender,
+            size_type: sizeType,
             size_data: normalizedData,
             scraped_at: new Date().toISOString(),
             is_active: true,
@@ -638,7 +810,7 @@ Deno.serve(async (req) => {
             confidence: 0.8,
             source_url: item.config.url,
           },
-          { onConflict: "brand_slug,category,region" }
+          { onConflict: "brand_slug,category,region,gender,size_type" }
         );
 
         if (upsertErr) {
