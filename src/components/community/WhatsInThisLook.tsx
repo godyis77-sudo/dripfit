@@ -69,6 +69,7 @@ const WhatsInThisLook = ({
   const [catalogImages, setCatalogImages] = useState<Record<string, string>>({});
   const [previewProduct, setPreviewProduct] = useState<ProductPreviewData | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const { pendingClickout, beginClickout, confirmClickout, cancelClickout } = useAffiliateClickout({ extraProps: { source: 'whats_in_look' } });
 
   // Auto-scroll to reveal expanded content
   const handleToggle = useCallback(() => {
