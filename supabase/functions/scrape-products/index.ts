@@ -1929,7 +1929,7 @@ async function scrapeProducts(
   if (!urlConfigs?.length) {
     console.log(`[scrape] No URLs for ${brand}/${category} (tried ${catKey}→${parentKey}), using search fallback`);
     const sr = await searchProducts(brand, category, firecrawlApiKey);
-    return [...directProducts, ...sr];
+    return [...mergedDirect, ...sr];
   }
 
   const allProducts = await scrapeUrlConfigs(brand, category, urlConfigs, firecrawlApiKey);
