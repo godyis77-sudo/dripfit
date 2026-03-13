@@ -13,7 +13,6 @@ import BrandFilter from '@/components/tryon/BrandFilter';
 import ProductPreviewModal from '@/components/ui/ProductPreviewModal';
 import { BRAND_GENRES, type BrandGenre, getBrandGenre } from '@/lib/brandGenres';
 import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
-import { BRAND_GENRES, type BrandGenre, getBrandGenre } from '@/lib/brandGenres';
 
 const CATEGORY_LABELS: Record<string, string> = {
   tops: 'Tops',
