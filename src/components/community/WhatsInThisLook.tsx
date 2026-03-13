@@ -246,8 +246,7 @@ const WhatsInThisLook = ({
         onClose={() => setPreviewProduct(null)}
         onShop={(product) => {
           if (!product.product_url) return;
-          window.open(product.product_url, '_blank', 'noopener');
-          trackEvent('badge_clickout', { retailer: product.brand, source: 'fullscreen_look' });
+          beginClickout(product.brand, product.product_url);
           setPreviewProduct(null);
         }}
         onTryOn={onTryOn ? (product) => {
@@ -262,6 +261,40 @@ const WhatsInThisLook = ({
           setPreviewProduct(null);
         } : undefined}
       />
+
+      {/* Affiliate disclosure confirmation */}
+      <AnimatePresence>
+        {pendingClickout && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/50"
+            onClick={cancelClickout}
+          >
+            <motion.div
+              initial={{ y: 80 }}
+              animate={{ y: 0 }}
+              exit={{ y: 80 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm bg-card border border-border rounded-t-2xl p-5 pb-8 space-y-3"
+            >
+              <p className="text-[13px] font-semibold text-foreground">
+                You're leaving the app to visit {pendingClickout.retailer}.
+              </p>
+              <p className="text-[11px] text-muted-foreground">Some links may earn us a commission.</p>
+              <div className="flex gap-2 pt-1">
+                <button onClick={confirmClickout} className="flex-1 h-10 rounded-xl btn-luxury text-primary-foreground text-[12px] font-bold">
+                  Continue to Store
+                </button>
+                <button onClick={cancelClickout} className="flex-1 h-10 rounded-xl border border-border text-[12px] font-medium text-muted-foreground">
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
