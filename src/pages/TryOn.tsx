@@ -85,11 +85,17 @@ const TryOn = () => {
 
             {/* Brand filter */}
             {!s.clothingPhoto && (
-              <BrandFilter
-                gender={s.userGender}
-                selectedBrand={s.selectedBrand}
-                onBrandChange={s.setSelectedBrand}
-              />
+              <>
+                <BrandFilter
+                  gender={s.userGender}
+                  selectedBrand={s.selectedBrand}
+                  onBrandChange={s.setSelectedBrand}
+                />
+                <GenreFilter
+                  selectedGenre={s.selectedGenre as any}
+                  onGenreChange={s.setSelectedGenre as any}
+                />
+              </>
             )}
 
             {/* Product catalog browse */}
