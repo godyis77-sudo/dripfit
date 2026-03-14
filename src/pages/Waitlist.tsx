@@ -223,12 +223,7 @@ const Waitlist = () => {
 
       {/* ─── NAV ─── */}
       <nav className="sticky top-0 z-50 h-14 flex items-center justify-between px-5 sm:px-8 backdrop-blur-2xl bg-background/80 border-b border-border/50">
-        <div className="flex items-center gap-2.5">
-          <Crown className="h-4 w-4 text-primary shimmer-icon" />
-          <span className="font-display text-[15px] tracking-[3px] text-foreground font-semibold">
-            DRIPFIT <span className="text-primary">✔</span>
-          </span>
-        </div>
+        <BrandLogo size="sm" />
         <Link
           to="/auth"
           className="text-[10px] font-bold text-foreground/70 uppercase tracking-[0.2em] hover:text-primary transition-colors border border-border rounded-full px-4 py-1.5 hover:border-primary/40"
