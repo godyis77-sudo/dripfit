@@ -139,8 +139,8 @@ const SettingsTab = ({
       {/* Account */}
       <SectionHeader>Account</SectionHeader>
       <div className="bg-card border border-border rounded-xl divide-y divide-border mb-1">
-        <button onClick={onAvatarTap} className="w-full flex items-center justify-between px-3 py-2.5 active:bg-muted/50 transition-colors">
-          <span className="text-[12px] text-foreground">Profile Photo</span>
+        <button onClick={onAvatarTap} className="w-full flex items-center justify-between px-3 py-2.5 btn-gold-3d rounded-t-xl rounded-b-none">
+          <span className="text-[12px]">Profile Photo</span>
           <div className="flex items-center gap-2">
             {avatarUrl ? (
               <img src={avatarUrl} alt="Avatar" className="h-6 w-6 rounded-full object-cover" />
@@ -149,7 +149,7 @@ const SettingsTab = ({
                 <span className="text-[10px] font-bold text-primary-foreground">{displayName[0]?.toUpperCase() || 'U'}</span>
               </div>
             )}
-            <span className="h-5 w-5 icon-3d-gold rounded-md"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>
+            <ChevronRight className="h-3.5 w-3.5" />
           </div>
         </button>
         <div className="flex items-center justify-between px-3 py-2.5">
@@ -269,9 +269,9 @@ const SettingsTab = ({
             {themeVal === 'dark' ? <Moon className="h-3.5 w-3.5 text-primary" /> : <Sun className="h-3.5 w-3.5 text-primary" />}
             <span className="text-[12px] text-foreground font-medium">Theme</span>
           </div>
-          <button onClick={toggleTheme} className="flex items-center gap-1.5 text-[11px] text-muted-foreground active:scale-95 transition-transform">
+          <button onClick={toggleTheme} className="flex items-center gap-1.5 text-[11px] btn-gold-3d rounded-lg px-2.5 py-1.5">
             <span className="capitalize">{themeVal}</span>
-            <span className="h-5 w-5 icon-3d-gold rounded-md"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>
+            <ChevronRight className="h-3 w-3" />
           </button>
         </div>
       </div>
@@ -328,13 +328,13 @@ const SettingsTab = ({
       {/* Saved Items */}
       <SectionHeader>Saved Items</SectionHeader>
       <div className="bg-card border border-border rounded-xl mb-1">
-        <button onClick={() => navigate('/profile/saved')} className="w-full flex items-center gap-2 px-3 py-2.5 active:bg-muted/50 transition-colors">
-          <Bookmark className="h-3.5 w-3.5 text-primary" />
-          <span className="text-[12px] text-foreground font-medium">View Saved for Later</span>
+        <button onClick={() => navigate('/profile/saved')} className="w-full flex items-center gap-2 px-3 py-2.5 btn-gold-3d rounded-xl">
+          <Bookmark className="h-3.5 w-3.5" />
+          <span className="text-[12px]">View Saved for Later</span>
           {savedItemCount > 0 && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold">{savedItemCount}</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-background/20 font-bold">{savedItemCount}</span>
           )}
-          <span className="h-5 w-5 icon-3d-gold rounded-md ml-auto"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>
+          <ChevronRight className="h-3.5 w-3.5 ml-auto" />
         </button>
       </div>
 
@@ -356,9 +356,9 @@ const SettingsTab = ({
                   </div>
                 ))}
               </div>
-              <button onClick={() => navigate('/capture')} className="w-full flex items-center justify-between bg-background border border-border rounded-lg px-3 py-2 group active:scale-[0.98] transition-transform">
-                <span className="text-[11px] text-muted-foreground">Update body scan</span>
-                <span className="h-5 w-5 icon-3d-gold rounded-md"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>
+              <button onClick={() => navigate('/capture')} className="w-full flex items-center justify-between btn-gold-3d rounded-lg px-3 py-2">
+                <span className="text-[11px]">Update body scan</span>
+                <ChevronRight className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
@@ -447,10 +447,10 @@ const SettingsTab = ({
       {/* Privacy & Data */}
       <SectionHeader>Privacy & Data</SectionHeader>
       <div className="bg-card border border-border rounded-xl divide-y divide-border mb-2">
-        <button onClick={onExport} className="w-full flex items-center gap-2 px-3 py-2.5 active:bg-muted/50 transition-colors">
-          <Download className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="text-[12px] text-foreground">Export my data</span>
-          <span className="h-5 w-5 icon-3d-gold rounded-md ml-auto"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>
+        <button onClick={onExport} className="w-full flex items-center gap-2 px-3 py-2.5 btn-gold-3d rounded-xl">
+          <Download className="h-3.5 w-3.5" />
+          <span className="text-[12px]">Export my data</span>
+          <ChevronRight className="h-3.5 w-3.5 ml-auto" />
         </button>
       </div>
 

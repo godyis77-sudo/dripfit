@@ -146,11 +146,11 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
           {/* Retailer accordion */}
           <Collapsible>
             <CollapsibleTrigger asChild>
-              <Button variant="outline" className="w-full h-10 rounded-xl text-[12px] font-bold gap-1.5 justify-between">
+              <Button variant="outline" className="w-full h-10 rounded-xl text-[12px] font-bold gap-1.5 justify-between btn-gold-3d border-none">
                 <span className="flex items-center gap-1.5">
-                  <ShoppingBag className="h-3.5 w-3.5 text-primary" /> Shop Similar Style
+                  <ShoppingBag className="h-3.5 w-3.5" /> Shop Similar Style
                 </span>
-                <span className="h-6 w-6 icon-3d-gold rounded-lg transition-transform duration-200 [[data-state=open]>&]:rotate-180"><ChevronDown className="h-3 w-3 text-primary-foreground" /></span>
+                <ChevronDown className="h-4 w-4 transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent className="pt-2 space-y-2">

@@ -211,16 +211,16 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
               <div className="border border-border rounded-lg overflow-hidden">
                 <button
                   onClick={() => setLinkExpanded(!linkExpanded)}
-                  className="w-full flex items-center justify-between px-3 py-2.5 text-left active:bg-muted/30 transition-colors"
+                  className="w-full flex items-center justify-between px-3 py-2.5 text-left btn-gold-3d rounded-lg"
                 >
                   <div className="flex items-center gap-2">
-                    <Link2 className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span className="text-[11px] text-muted-foreground">
-                      Add product link <span className="text-[11px] text-muted-foreground/60">(optional)</span>
-                      {!linkExpanded && <span className="text-[11px] text-muted-foreground/60"> — earn commission on clicks</span>}
+                    <Link2 className="h-3.5 w-3.5" />
+                    <span className="text-[11px]">
+                      Add product link <span className="opacity-60">(optional)</span>
+                      {!linkExpanded && <span className="opacity-60"> — earn commission on clicks</span>}
                     </span>
                   </div>
-                  <span className="h-6 w-6 icon-3d-gold rounded-lg">{linkExpanded ? <ChevronUp className="h-3 w-3 text-primary-foreground" /> : <ChevronDown className="h-3 w-3 text-primary-foreground" />}</span>
+                  {linkExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
                 </button>
                 {linkExpanded && (
                   <div className="px-3 pb-3 space-y-2">
@@ -249,15 +249,15 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
               <div className="border border-border rounded-lg overflow-hidden">
                 <button
                   onClick={() => setIgExpanded(!igExpanded)}
-                  className="w-full flex items-center justify-between px-3 py-2.5 text-left active:bg-muted/30 transition-colors"
+                  className="w-full flex items-center justify-between px-3 py-2.5 text-left btn-gold-3d rounded-lg"
                 >
                   <div className="flex items-center gap-2">
-                    <Instagram className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span className="text-[11px] text-muted-foreground">
-                      Link Instagram post <span className="text-[11px] text-muted-foreground/60">(optional)</span>
+                    <Instagram className="h-3.5 w-3.5" />
+                    <span className="text-[11px]">
+                      Link Instagram post <span className="opacity-60">(optional)</span>
                     </span>
                   </div>
-                  <span className="h-6 w-6 icon-3d-gold rounded-lg">{igExpanded ? <ChevronUp className="h-3 w-3 text-primary-foreground" /> : <ChevronDown className="h-3 w-3 text-primary-foreground" />}</span>
+                  {igExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
                 </button>
                 {igExpanded && (
                   <div className="px-3 pb-3 space-y-2">

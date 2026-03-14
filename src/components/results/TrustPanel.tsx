@@ -54,16 +54,16 @@ const TrustPanel = ({ confidence, recommendedSize, measurements, onAdjust, retai
       {/* Header — always visible */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-2.5 px-3 py-2.5 active:scale-[0.99] transition-transform"
+        className="w-full flex items-center gap-2.5 px-3 py-2.5 btn-gold-3d rounded-xl"
       >
-        <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+        <div className="h-7 w-7 rounded-lg bg-background/20 flex items-center justify-center shrink-0">
           <Icon className={`h-4 w-4 ${confColor[confidence]}`} />
         </div>
         <div className="flex-1 text-left min-w-0">
-          <p className="text-[11px] font-bold text-foreground">Why this size?</p>
-          <p className="text-[11px] text-muted-foreground truncate">{BETWEEN_SIZES[confidence]}</p>
+          <p className="text-[11px] font-bold">Why this size?</p>
+          <p className="text-[11px] opacity-70 truncate">{BETWEEN_SIZES[confidence]}</p>
         </div>
-        <span className="h-6 w-6 icon-3d-gold rounded-lg shrink-0">{expanded ? <ChevronUp className="h-3 w-3 text-primary-foreground" /> : <ChevronDown className="h-3 w-3 text-primary-foreground" />}</span>
+        {expanded ? <ChevronUp className="h-3.5 w-3.5 shrink-0" /> : <ChevronDown className="h-3.5 w-3.5 shrink-0" />}
       </button>
 
       <AnimatePresence>

@@ -243,15 +243,13 @@ const SizeGuide = () => {
         </CardContent></Card>
       ) : (
         <>
-          <Card className="rounded-xl cursor-pointer hover:border-primary/40 transition-colors" onClick={() => setShowPicker(!showPicker)}>
-            <CardContent className="p-2.5 flex items-center justify-between">
+          <div className="rounded-xl cursor-pointer btn-gold-3d px-3 py-2.5 flex items-center justify-between" onClick={() => setShowPicker(!showPicker)}>
               <div>
-                <p className="text-[13px] font-medium text-foreground">{selectedMeasurement ? new Date(selectedMeasurement.date).toLocaleDateString() : 'Select'}</p>
-                {selectedMeasurement && <p className="text-[11px] text-muted-foreground">Size {selectedMeasurement.sizeRecommendation} · Chest {selectedMeasurement.chest}"</p>}
+                <p className="text-[13px] font-medium">{selectedMeasurement ? new Date(selectedMeasurement.date).toLocaleDateString() : 'Select'}</p>
+                {selectedMeasurement && <p className="text-[11px] opacity-70">Size {selectedMeasurement.sizeRecommendation} · Chest {selectedMeasurement.chest}"</p>}
               </div>
-              <span className="h-6 w-6 icon-3d-gold rounded-lg">{showPicker ? <ChevronUp className="h-3 w-3 text-primary-foreground" /> : <ChevronDown className="h-3 w-3 text-primary-foreground" />}</span>
-            </CardContent>
-          </Card>
+              {showPicker ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+          </div>
           <AnimatePresence>{showPicker && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
               <div className="space-y-1.5 mt-1.5 max-h-40 overflow-y-auto">
@@ -537,8 +535,8 @@ const SizeGuide = () => {
 
                 {recommendation.breakdown?.length > 0 && (
                   <>
-                    <Button variant="ghost" className="w-full mb-1.5 text-muted-foreground text-[12px]" onClick={() => setShowBreakdown(!showBreakdown)}>
-                      {showBreakdown ? 'Hide' : 'Show'} Breakdown <span className="ml-1 h-5 w-5 icon-3d-gold rounded-md">{showBreakdown ? <ChevronUp className="h-2.5 w-2.5 text-primary-foreground" /> : <ChevronDown className="h-2.5 w-2.5 text-primary-foreground" />}</span>
+                    <Button variant="ghost" className="w-full mb-1.5 text-[12px] btn-gold-3d" onClick={() => setShowBreakdown(!showBreakdown)}>
+                      {showBreakdown ? 'Hide' : 'Show'} Breakdown {showBreakdown ? <ChevronUp className="ml-1 h-3.5 w-3.5" /> : <ChevronDown className="ml-1 h-3.5 w-3.5" />}
                     </Button>
                     <AnimatePresence>{showBreakdown && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
