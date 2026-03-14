@@ -356,9 +356,9 @@ const SettingsTab = ({
                   </div>
                 ))}
               </div>
-              <button onClick={() => navigate('/capture')} className="w-full flex items-center justify-between bg-background border border-border rounded-lg px-3 py-2 group active:scale-[0.98] transition-transform">
-                <span className="text-[11px] text-muted-foreground">Update body scan</span>
-                <span className="h-5 w-5 icon-3d-gold rounded-md"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>
+              <button onClick={() => navigate('/capture')} className="w-full flex items-center justify-between btn-gold-3d rounded-lg px-3 py-2">
+                <span className="text-[11px]">Update body scan</span>
+                <ChevronRight className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
