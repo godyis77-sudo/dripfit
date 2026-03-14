@@ -249,7 +249,7 @@ const SizeGuide = () => {
                 <p className="text-[13px] font-medium text-foreground">{selectedMeasurement ? new Date(selectedMeasurement.date).toLocaleDateString() : 'Select'}</p>
                 {selectedMeasurement && <p className="text-[11px] text-muted-foreground">Size {selectedMeasurement.sizeRecommendation} · Chest {selectedMeasurement.chest}"</p>}
               </div>
-              {showPicker ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
+              <span className="h-6 w-6 icon-3d-gold rounded-lg">{showPicker ? <ChevronUp className="h-3 w-3 text-primary-foreground" /> : <ChevronDown className="h-3 w-3 text-primary-foreground" />}</span>
             </CardContent>
           </Card>
           <AnimatePresence>{showPicker && (
@@ -538,7 +538,7 @@ const SizeGuide = () => {
                 {recommendation.breakdown?.length > 0 && (
                   <>
                     <Button variant="ghost" className="w-full mb-1.5 text-muted-foreground text-[12px]" onClick={() => setShowBreakdown(!showBreakdown)}>
-                      {showBreakdown ? 'Hide' : 'Show'} Breakdown {showBreakdown ? <ChevronUp className="ml-1 h-3.5 w-3.5" /> : <ChevronDown className="ml-1 h-3.5 w-3.5" />}
+                      {showBreakdown ? 'Hide' : 'Show'} Breakdown <span className="ml-1 h-5 w-5 icon-3d-gold rounded-md">{showBreakdown ? <ChevronUp className="h-2.5 w-2.5 text-primary-foreground" /> : <ChevronDown className="h-2.5 w-2.5 text-primary-foreground" />}</span>
                     </Button>
                     <AnimatePresence>{showBreakdown && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">

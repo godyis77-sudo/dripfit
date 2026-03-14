@@ -63,7 +63,7 @@ const TrustPanel = ({ confidence, recommendedSize, measurements, onAdjust, retai
           <p className="text-[11px] font-bold text-foreground">Why this size?</p>
           <p className="text-[11px] text-muted-foreground truncate">{BETWEEN_SIZES[confidence]}</p>
         </div>
-        {expanded ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground shrink-0" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" />}
+        <span className="h-6 w-6 icon-3d-gold rounded-lg shrink-0">{expanded ? <ChevronUp className="h-3 w-3 text-primary-foreground" /> : <ChevronDown className="h-3 w-3 text-primary-foreground" />}</span>
       </button>
 
       <AnimatePresence>

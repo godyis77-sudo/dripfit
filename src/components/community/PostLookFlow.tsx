@@ -220,7 +220,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                       {!linkExpanded && <span className="text-[11px] text-muted-foreground/60"> — earn commission on clicks</span>}
                     </span>
                   </div>
-                  {linkExpanded ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
+                  <span className="h-6 w-6 icon-3d-gold rounded-lg">{linkExpanded ? <ChevronUp className="h-3 w-3 text-primary-foreground" /> : <ChevronDown className="h-3 w-3 text-primary-foreground" />}</span>
                 </button>
                 {linkExpanded && (
                   <div className="px-3 pb-3 space-y-2">
@@ -257,7 +257,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                       Link Instagram post <span className="text-[11px] text-muted-foreground/60">(optional)</span>
                     </span>
                   </div>
-                  {igExpanded ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
+                  <span className="h-6 w-6 icon-3d-gold rounded-lg">{igExpanded ? <ChevronUp className="h-3 w-3 text-primary-foreground" /> : <ChevronDown className="h-3 w-3 text-primary-foreground" />}</span>
                 </button>
                 {igExpanded && (
                   <div className="px-3 pb-3 space-y-2">
