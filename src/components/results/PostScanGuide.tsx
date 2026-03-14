@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, ShoppingBag, Users, ArrowRight, X } from 'lucide-react';
+import { ArrowRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { trackEvent } from '@/lib/analytics';
+import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
+import type { BodyScanResult } from '@/lib/types';
 import type { BodyScanResult } from '@/lib/types';
 
 interface PostScanGuideProps {

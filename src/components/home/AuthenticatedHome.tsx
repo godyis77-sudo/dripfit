@@ -1,11 +1,8 @@
 import { forwardRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Sparkles, Camera, ShoppingBag, X } from 'lucide-react';
-import iconScan from '@/assets/icon-scan.png';
-import iconTryon from '@/assets/icon-tryon.png';
-import iconSizeguide from '@/assets/icon-sizeguide.png';
-import iconStylecheck from '@/assets/icon-stylecheck.png';
+import { Camera, ShoppingBag, X } from 'lucide-react';
+import FeatureIcon, { featureIcons } from '@/components/ui/FeatureIcon';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
