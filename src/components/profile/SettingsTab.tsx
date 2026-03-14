@@ -447,10 +447,10 @@ const SettingsTab = ({
       {/* Privacy & Data */}
       <SectionHeader>Privacy & Data</SectionHeader>
       <div className="bg-card border border-border rounded-xl divide-y divide-border mb-2">
-        <button onClick={onExport} className="w-full flex items-center gap-2 px-3 py-2.5 active:bg-muted/50 transition-colors">
-          <Download className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="text-[12px] text-foreground">Export my data</span>
-          <span className="h-5 w-5 icon-3d-gold rounded-md ml-auto"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>
+        <button onClick={onExport} className="w-full flex items-center gap-2 px-3 py-2.5 btn-gold-3d rounded-xl">
+          <Download className="h-3.5 w-3.5" />
+          <span className="text-[12px]">Export my data</span>
+          <ChevronRight className="h-3.5 w-3.5 ml-auto" />
         </button>
       </div>
 

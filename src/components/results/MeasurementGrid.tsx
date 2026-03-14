@@ -32,9 +32,9 @@ const MeasurementGrid = ({ measurements, heightCm, visibleKeys }: MeasurementGri
         <p className="section-label">Estimated Measurements</p>
       </div>
 
-      <button onClick={() => setExpanded(!expanded)} className="w-full flex items-center justify-between text-[11px] text-muted-foreground py-1 mb-1.5">
+      <button onClick={() => setExpanded(!expanded)} className="w-full flex items-center justify-between text-[11px] py-1.5 mb-1.5 btn-gold-3d rounded-lg px-3">
         <span>{expanded ? 'Hide ranges' : 'Show ranges'}</span>
-        <span className="h-5 w-5 icon-3d-gold rounded-md">{expanded ? <ChevronUp className="h-2.5 w-2.5 text-primary-foreground" /> : <ChevronDown className="h-2.5 w-2.5 text-primary-foreground" />}</span>
+        {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
       </button>
 
       {expanded && (
