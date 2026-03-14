@@ -238,6 +238,62 @@ export type Database = {
           },
         ]
       }
+      creator_commissions: {
+        Row: {
+          amount_cents: number
+          approved_at: string | null
+          created_at: string
+          creator_id: string
+          currency: string
+          id: string
+          month_key: string
+          notes: string | null
+          paid_at: string | null
+          referee_id: string
+          referral_id: string | null
+          status: string
+          tier_label: string
+        }
+        Insert: {
+          amount_cents?: number
+          approved_at?: string | null
+          created_at?: string
+          creator_id: string
+          currency?: string
+          id?: string
+          month_key: string
+          notes?: string | null
+          paid_at?: string | null
+          referee_id: string
+          referral_id?: string | null
+          status?: string
+          tier_label?: string
+        }
+        Update: {
+          amount_cents?: number
+          approved_at?: string | null
+          created_at?: string
+          creator_id?: string
+          currency?: string
+          id?: string
+          month_key?: string
+          notes?: string | null
+          paid_at?: string | null
+          referee_id?: string
+          referral_id?: string | null
+          status?: string
+          tier_label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_commissions_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fit_feedback: {
         Row: {
           brand: string | null
@@ -992,6 +1048,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_creator_month_count: {
+        Args: { p_creator_id: string; p_month_key: string }
+        Returns: number
+      }
       get_public_profile_by_name: {
         Args: { p_display_name: string }
         Returns: {
@@ -1053,7 +1113,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user"
+      app_role: "admin" | "moderator" | "user" | "creator"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1181,7 +1241,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "moderator", "user"],
+      app_role: ["admin", "moderator", "user", "creator"],
     },
   },
 } as const
