@@ -699,3 +699,73 @@
   0% { transform: scale(0); opacity: 0.4; }
   100% { transform: scale(2.5); opacity: 0; }
 }
+
+/* ── Premium 3D Gold Button (reusable) ── */
+.btn-gold-3d {
+  position: relative;
+  overflow: hidden;
+  font-weight: 800 !important;
+  background: linear-gradient(
+    175deg,
+    hsl(45 100% 88%) 0%,
+    hsl(44 90% 72%) 18%,
+    hsl(42 80% 55%) 40%,
+    hsl(38 70% 40%) 65%,
+    hsl(35 55% 30%) 82%,
+    hsl(40 75% 48%) 100%
+  ) !important;
+  color: hsl(30 20% 8%) !important;
+  border: none !important;
+  box-shadow:
+    0 1px 0 0 hsl(40 55% 30%),
+    0 2px 0 0 hsl(38 45% 24%),
+    0 3px 1px hsl(35 40% 18%),
+    0 4px 2px hsl(30 30% 12%),
+    0 6px 8px hsl(0 0% 0% / 0.4),
+    0 0 20px hsl(42 76% 50% / 0.3),
+    0 0 50px hsl(42 76% 42% / 0.1),
+    inset 0 1px 0 hsl(45 100% 90% / 0.4) !important;
+  text-shadow: 0 1px 0 hsl(44 80% 70% / 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-gold-3d::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    hsl(45 100% 92% / 0.4) 45%,
+    hsl(45 100% 92% / 0.1) 50%,
+    transparent 55%
+  );
+  transform: translateX(-110%);
+  animation: gold-3d-shimmer 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+@keyframes gold-3d-shimmer {
+  0%   { transform: translateX(-110%); }
+  25%  { transform: translateX(110%); }
+  100% { transform: translateX(110%); }
+}
+
+.btn-gold-3d:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 0 hsl(40 55% 30%),
+    0 2px 0 0 hsl(38 45% 24%),
+    0 3px 1px hsl(35 40% 18%),
+    0 5px 3px hsl(30 30% 12%),
+    0 8px 12px hsl(0 0% 0% / 0.45),
+    0 0 28px hsl(42 76% 50% / 0.4),
+    0 0 60px hsl(42 76% 42% / 0.15),
+    inset 0 1px 0 hsl(45 100% 90% / 0.5) !important;
+}
+
+.btn-gold-3d:active {
+  transform: translateY(1px);
+}
