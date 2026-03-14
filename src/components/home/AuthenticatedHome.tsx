@@ -94,7 +94,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             },
             {
               onClick: () => { trackEvent('home_quick_stylecheck'); navigate('/community'); },
-              img: iconStylecheck,
+              img: featureIcons.stylecheck,
               title: 'Style Check',
               subtitle: 'Get rated',
             },

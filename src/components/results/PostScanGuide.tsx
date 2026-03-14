@@ -13,33 +13,33 @@ interface PostScanGuideProps {
   onDismiss: () => void;
 }
 
-const STEPS = [
+const STEPS: { key: string; featureIcon: FeatureIconName; title: string; desc: string; cta: string; route: string; event: string }[] = [
   {
     key: 'tryon',
-    icon: Sparkles,
+    featureIcon: 'tryon',
     title: 'See it on you',
     desc: 'Try-on clothes virtually with your exact measurements',
     cta: 'Start Try-On',
     route: '/tryon',
-    event: 'postscan_tryon_click' as const,
+    event: 'postscan_tryon_click',
   },
   {
     key: 'shop',
-    icon: ShoppingBag,
+    featureIcon: 'sizeguide',
     title: 'Shop your size',
     desc: 'Browse items that fit — matched to your body profile',
     cta: 'Find My Size',
     route: '/size-guide',
-    event: 'postscan_shop_click' as const,
+    event: 'postscan_shop_click',
   },
   {
     key: 'fitcheck',
-    icon: Users,
+    featureIcon: 'stylecheck',
     title: 'Get a Style Check',
     desc: 'Post a look and get honest feedback before buying',
     cta: 'Go to Style Check',
     route: '/style-check',
-    event: 'postscan_fitcheck_click' as const,
+    event: 'postscan_fitcheck_click',
   },
 ];
 
