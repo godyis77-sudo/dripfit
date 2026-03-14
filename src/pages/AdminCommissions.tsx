@@ -53,6 +53,32 @@ export default function AdminCommissions() {
     },
   });
 
+  // Payout requests
+  const { data: payoutRequests = [] } = useQuery({
+    queryKey: ["admin-payout-requests"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("payout_requests" as any)
+        .select("*")
+        .order("requested_at", { ascending: false })
+        .limit(100);
+      return (data as any[]) ?? [];
+    },
+    enabled: !!user && isAdmin === true,
+  });
+
+  const updatePayoutStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const updates: any = { status };
+      if (status === "completed" || status === "rejected") updates.processed_at = new Date().toISOString();
+      await supabase.from("payout_requests" as any).update(updates).eq("id", id);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-payout-requests"] });
+      toast({ title: "Payout request updated" });
+    },
+  });
+
   const handleExport = () => {
     const csv = [
       "id,creator_id,referee_id,amount_cents,currency,tier,status,month,created_at",
