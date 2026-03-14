@@ -73,44 +73,47 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="grid grid-cols-3 gap-2 mb-6"
+          className="grid grid-cols-4 gap-1.5 mb-6"
         >
           {[
             {
               onClick: () => { trackEvent('home_quick_scan'); navigate('/capture'); },
               img: iconScan,
               title: hasScan ? 'Re-Scan' : 'Body Scan',
-              subtitle: hasScan ? 'Update measurements' : '2 photos · 60s',
+              subtitle: hasScan ? 'Update fit' : '60s scan',
             },
             {
               onClick: () => { trackEvent('home_quick_tryon'); navigate('/tryon'); },
               img: iconTryon,
               title: 'Try-On',
-              subtitle: 'Virtual fitting room',
+              subtitle: 'Virtual fit',
             },
             {
               onClick: () => { trackEvent('home_quick_sizeguide'); navigate('/size-guide'); },
               img: iconSizeguide,
               title: 'Size Guide',
-              subtitle: 'Find your perfect fit',
+              subtitle: 'Perfect fit',
+            },
+            {
+              onClick: () => { trackEvent('home_quick_stylecheck'); navigate('/community'); },
+              img: iconStylecheck,
+              title: 'Style Check',
+              subtitle: 'Get rated',
             },
           ].map((action) => (
             <button
               key={action.title}
               onClick={action.onClick}
-              className="flex flex-col items-center rounded-2xl border border-primary/20 bg-card/80 backdrop-blur-sm p-3 pb-2.5 gap-1.5 active:scale-[0.96] active:shadow-3d-gold-pressed transition-all min-h-[44px] shadow-3d shimmer-sweep"
+              className="flex flex-col items-center rounded-xl border border-primary/20 bg-card/80 backdrop-blur-sm p-2 pb-2 gap-1 active:scale-[0.96] active:shadow-3d-gold-pressed transition-all min-h-[44px] shadow-3d shimmer-sweep"
             >
-              <div className="flex items-center justify-center" style={{ height: 100, width: 100 }}>
-                <img
-                  src={action.img}
-                  alt={action.title}
-                  className="object-contain drop-shadow-[0_2px_6px_hsl(var(--drip-gold)/0.4)]"
-                  style={{ height: 100, width: 100 }}
-                />
-              </div>
-              <div className="text-center mt-1">
-                <p className="text-[13px] font-extrabold font-display text-primary leading-tight tracking-wide">{action.title}</p>
-                <p className="text-[10px] font-body text-foreground/60 leading-tight mt-0.5">{action.subtitle}</p>
+              <img
+                src={action.img}
+                alt={action.title}
+                className="h-14 w-14 object-contain drop-shadow-[0_2px_6px_hsl(var(--drip-gold)/0.4)]"
+              />
+              <div className="text-center">
+                <p className="text-[11px] font-extrabold font-display text-primary leading-tight">{action.title}</p>
+                <p className="text-[9px] font-body text-foreground/60 leading-tight mt-px">{action.subtitle}</p>
               </div>
             </button>
           ))}
