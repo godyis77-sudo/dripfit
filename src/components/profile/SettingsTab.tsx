@@ -334,7 +334,7 @@ const SettingsTab = ({
           {savedItemCount > 0 && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold">{savedItemCount}</span>
           )}
-          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground ml-auto" />
+          <span className="h-5 w-5 icon-3d-gold rounded-md ml-auto"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>
         </button>
       </div>
 
