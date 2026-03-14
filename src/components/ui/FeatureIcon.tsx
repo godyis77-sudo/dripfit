@@ -2,6 +2,7 @@ import iconScan from '@/assets/icon-scan.png';
 import iconTryon from '@/assets/icon-tryon.png';
 import iconSizeguide from '@/assets/icon-sizeguide.png';
 import iconStylecheck from '@/assets/icon-stylecheck.png';
+import iconPost from '@/assets/icon-post.png';
 import { cn } from '@/lib/utils';
 
 export const featureIcons = {
@@ -9,6 +10,7 @@ export const featureIcons = {
   tryon: iconTryon,
   sizeguide: iconSizeguide,
   stylecheck: iconStylecheck,
+  post: iconPost,
 } as const;
 
 export type FeatureIconName = keyof typeof featureIcons;
