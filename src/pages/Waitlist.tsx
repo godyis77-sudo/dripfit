@@ -317,8 +317,8 @@ const Waitlist = () => {
                 {/* App screenshot */}
                 <div className="relative w-full flex-1 min-h-0 md:aspect-[4/5] md:flex-none flex items-center justify-center bg-background overflow-hidden">
                   {f.noPhone ? (
-                    /* No phone frame — just the image */
-                    <div className="w-full h-full overflow-hidden rounded-xl">
+                    /* No phone frame — full bleed image */
+                    <div className="absolute inset-0 overflow-hidden">
                       <img
                         src={f.image}
                         alt={`${f.title} app screen`}
