@@ -31,7 +31,7 @@ const FEATURES = [
   {
     icon: Shirt,
     title: 'Virtual Try-On',
-    desc: 'See yourself in any outfit before you buy it.',
+    desc: 'See yourself in it before you buy it.',
     detail: 'Upload a clothing photo and AI renders it on your body.',
     badge: 'AI',
     image: featureTryon,
