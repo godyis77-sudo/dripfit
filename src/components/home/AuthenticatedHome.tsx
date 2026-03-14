@@ -59,10 +59,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <p className="text-lg font-bold tracking-widest flex items-center gap-1">
-            <span className="gradient-drip-text">DRIPFIT</span>
-            <span className="inline-flex items-center justify-center w-6 h-6 rounded-md icon-3d-gold shimmer-sweep text-[14px] leading-none">✔</span>
-          </p>
+          <BrandLogo size="sm" />
           <p className="text-muted-foreground/70 text-[12px] mt-0.5">{greeting}{displayName ? ',' : '!'}</p>
           {displayName && <h1 className="font-display text-xl font-bold text-foreground mt-0.5">{displayName}</h1>}
         </motion.div>
