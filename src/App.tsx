@@ -40,6 +40,7 @@ import Terms from "./pages/Terms";
 import AdminRetailers from "./pages/AdminRetailers";
 import AdminCommissions from "./pages/AdminCommissions";
 import CreatorDashboard from "./pages/CreatorDashboard";
+import Waitlist from "./pages/Waitlist";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AffiliateProvider from "./components/AffiliateProvider";
 
