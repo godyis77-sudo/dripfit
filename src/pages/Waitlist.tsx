@@ -305,18 +305,22 @@ const Waitlist = () => {
           {FEATURES.map((f, i) => (
             <FadeUp key={f.title} delay={i * 0.08} className="min-w-[78vw] max-w-[82vw] sm:min-w-[260px] md:min-w-0 snap-start flex-shrink-0 md:flex-shrink h-[80vh] md:h-auto">
               <div className="relative bg-secondary border border-border rounded-2xl overflow-hidden h-full flex flex-col group hover:border-primary/30 transition-all">
-                {/* App screenshot */}
-                <div className="relative w-full flex-1 min-h-0 md:aspect-[4/5] md:flex-none overflow-hidden bg-background">
-                  <img
-                    src={f.image}
-                    alt={`${f.title} app screen`}
-                    className="w-full h-full object-cover object-top"
-                    loading="lazy"
-                  />
-                  {/* Gradient fade at bottom */}
-                  <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-secondary to-transparent" />
+                {/* Phone mockup with app screenshot */}
+                <div className="relative w-full flex-1 min-h-0 md:aspect-[4/5] md:flex-none flex items-center justify-center bg-background p-4">
+                  {/* Phone frame */}
+                  <div className="relative w-[90%] h-[90%] rounded-[2rem] border-[3px] border-foreground/20 bg-black overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.4)]">
+                    {/* Notch */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-5 bg-black rounded-b-2xl z-10" />
+                    {/* Screen content */}
+                    <img
+                      src={f.image}
+                      alt={`${f.title} app screen`}
+                      className="w-full h-full object-cover object-top"
+                      loading="lazy"
+                    />
+                  </div>
                   {/* Badge overlay */}
-                  <span className="absolute top-3 right-3 text-[9px] font-bold text-primary uppercase tracking-[0.2em] bg-background/80 backdrop-blur-sm border border-primary/20 rounded-full px-2.5 py-0.5">
+                  <span className="absolute top-6 right-6 text-[9px] font-bold text-primary uppercase tracking-[0.2em] bg-background/80 backdrop-blur-sm border border-primary/20 rounded-full px-2.5 py-0.5 z-10">
                     {f.badge}
                   </span>
                 </div>
