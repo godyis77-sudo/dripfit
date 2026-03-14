@@ -139,10 +139,9 @@ const WhatsInThisLook = ({
           {onAddToWardrobe ? 'Shop / +Wardrobe' : 'Shop / Try-On'}
         </span>
         <ShoppingBag className="h-3 w-3 shrink-0" />
-        <ChevronDown
-          className="h-3 w-3 shrink-0 text-primary-foreground transition-transform duration-200"
-          style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
-        />
+        <span className="h-5 w-5 icon-3d-gold rounded-md shrink-0 transition-transform duration-200" style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+          <ChevronDown className="h-2.5 w-2.5 text-primary-foreground" />
+        </span>
       </div>
       <AnimatePresence>
         {open && (
