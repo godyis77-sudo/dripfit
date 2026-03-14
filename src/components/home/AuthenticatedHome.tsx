@@ -108,9 +108,9 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                   style={{ height: 100, width: 100 }}
                 />
               </div>
-              <div className="text-center mt-0.5">
-                <p className="text-[11px] font-extrabold text-foreground leading-tight tracking-wide">{action.title}</p>
-                <p className="text-[9px] text-muted-foreground leading-tight mt-0.5">{action.subtitle}</p>
+              <div className="text-center mt-1">
+                <p className="text-[13px] font-extrabold font-display text-primary leading-tight tracking-wide">{action.title}</p>
+                <p className="text-[10px] font-body text-foreground/60 leading-tight mt-0.5">{action.subtitle}</p>
               </div>
             </button>
           ))}
