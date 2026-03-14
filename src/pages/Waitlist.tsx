@@ -309,35 +309,58 @@ const Waitlist = () => {
       </div>
 
       {/* ─── 3 CORE FEATURES — horizontal scroll on mobile ─── */}
-      <section className="py-20 px-5 sm:px-8">
-        <div className="max-w-4xl mx-auto">
+      <section className="py-20">
+        <div className="max-w-4xl mx-auto px-5 sm:px-8">
           <FadeUp className="text-center mb-10">
             <span className="text-[11px] font-bold text-primary uppercase tracking-[0.3em]">How It Works</span>
             <h2 className="font-display text-[22px] sm:text-3xl font-bold text-foreground leading-tight mt-3">
               The App That <span className="gradient-drip-text">Ends Returns</span>
             </h2>
-            <p className="text-[14px] text-foreground/60 mt-3 max-w-md mx-auto">
-              Three powerful features working together so every order fits.
-            </p>
           </FadeUp>
+        </div>
 
-          {/* Horizontal scroll on mobile, grid on desktop */}
-          <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-4 -mx-5 px-5 sm:mx-0 sm:px-0 md:grid md:grid-cols-3 md:overflow-visible">
-            {FEATURES.map((f, i) => (
-              <FadeUp key={f.title} delay={i * 0.1} className="min-w-[280px] sm:min-w-0 snap-center flex-shrink-0 md:flex-shrink">
-                <div className="relative bg-secondary border border-border rounded-2xl p-6 h-full flex flex-col group hover:border-primary/30 transition-all">
-                  <span className="absolute top-4 right-4 text-[9px] font-bold text-primary uppercase tracking-[0.2em] bg-primary/10 border border-primary/20 rounded-full px-2.5 py-0.5">
+        {/* Carousel — full bleed on mobile */}
+        <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-4 pl-5 pr-5 sm:pl-8 sm:pr-8 md:max-w-4xl md:mx-auto md:grid md:grid-cols-3 md:overflow-visible md:px-8">
+          {FEATURES.map((f, i) => (
+            <FadeUp key={f.title} delay={i * 0.08} className="min-w-[82vw] sm:min-w-[300px] md:min-w-0 snap-start flex-shrink-0 md:flex-shrink">
+              <div className="relative bg-secondary border border-border rounded-2xl overflow-hidden h-full flex flex-col group hover:border-primary/30 transition-all">
+                {/* App screenshot */}
+                <div className="relative w-full aspect-[4/5] overflow-hidden bg-background">
+                  <img
+                    src={f.image}
+                    alt={`${f.title} app screen`}
+                    className="w-full h-full object-cover object-top"
+                    loading="lazy"
+                  />
+                  {/* Gradient fade at bottom */}
+                  <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-secondary to-transparent" />
+                  {/* Badge overlay */}
+                  <span className="absolute top-3 right-3 text-[9px] font-bold text-primary uppercase tracking-[0.2em] bg-background/80 backdrop-blur-sm border border-primary/20 rounded-full px-2.5 py-0.5">
                     {f.badge}
                   </span>
-                  <div className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-5 group-hover:bg-primary/15 transition-colors">
-                    <f.icon className="h-5 w-5 text-primary" />
-                  </div>
-                  <h3 className="font-display text-lg font-bold text-foreground mb-2">{f.title}</h3>
-                  <p className="text-[13px] text-foreground/65 leading-relaxed flex-1">{f.desc}</p>
                 </div>
-              </FadeUp>
-            ))}
-          </div>
+
+                {/* Text content */}
+                <div className="p-5 pt-3 flex flex-col flex-1">
+                  <div className="flex items-center gap-2.5 mb-2">
+                    <div className="h-8 w-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                      <f.icon className="h-4 w-4 text-primary" />
+                    </div>
+                    <h3 className="font-display text-[17px] font-bold text-foreground">{f.title}</h3>
+                  </div>
+                  <p className="text-[13px] text-foreground/70 leading-relaxed">{f.desc}</p>
+                  <p className="text-[12px] text-foreground/45 leading-relaxed mt-1.5">{f.detail}</p>
+                </div>
+              </div>
+            </FadeUp>
+          ))}
+        </div>
+
+        {/* Scroll hint dots — mobile only */}
+        <div className="flex justify-center gap-2 mt-4 md:hidden">
+          {FEATURES.map((_, i) => (
+            <div key={i} className="w-1.5 h-1.5 rounded-full bg-foreground/20" />
+          ))}
         </div>
       </section>
 
