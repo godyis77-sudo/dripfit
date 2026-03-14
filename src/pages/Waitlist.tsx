@@ -17,7 +17,7 @@ const FEATURES = [
   {
     icon: Scan,
     title: 'AI Body Scan',
-    desc: 'Two photos. 60 seconds. Your exact measurements mapped to 200+ brand size charts.',
+    desc: 'Two photos. 60 seconds. Your exact measurements mapped to 300+ size charts across 70+ brands.',
     badge: 'Core',
   },
   {
@@ -35,15 +35,15 @@ const FEATURES = [
 ];
 
 const CHECKLIST = [
-  { text: 'Your exact measurements for Zara, ASOS, SHEIN, H&M and 4 more.', icon: Sparkles },
+  { text: 'Your exact measurements for 70+ brands including Zara, Nike, H&M, ASOS, and more.', icon: Sparkles },
   { text: 'The 3-question checklist before every online order.', icon: Shield },
   { text: 'How to never pay return shipping again.', icon: Zap },
 ];
 
 const STATS = [
-  { stat: '73%', label: 'of returns are sizing issues' },
-  { stat: '$550', label: 'wasted per shopper yearly' },
-  { stat: '300+', label: 'brand size charts' },
+  { stat: '73%', label: 'Sizing returns' },
+  { stat: '$550', label: 'Wasted yearly' },
+  { stat: '300+', label: 'Size charts' },
 ];
 
 /* ─── Animation helpers ─── */
@@ -66,7 +66,7 @@ function FadeUp({ children, className = '', delay = 0 }: { children: React.React
 }
 
 /* ─── Email Capture ─── */
-function EmailCapture({ id, compact = false }: { id: string; compact?: boolean }) {
+function EmailCapture({ id, compact = false, buttonText = 'Join the Waitlist', note = 'No spam. Just sizing tips + DripFit updates.' }: { id: string; compact?: boolean; buttonText?: string; note?: string }) {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -93,7 +93,7 @@ function EmailCapture({ id, compact = false }: { id: string; compact?: boolean }
 
       setSubmitted(true);
       setEmail('');
-      toast({ title: '✔ Guide sent!', description: "You're on the waitlist. Check your inbox." });
+      toast({ title: '✔ You\'re in!', description: "You're on the waitlist. We'll notify you at launch." });
     } catch {
       toast({ title: 'Something went wrong', description: 'Please try again.', variant: 'destructive' });
     } finally {
@@ -114,7 +114,7 @@ function EmailCapture({ id, compact = false }: { id: string; compact?: boolean }
         </div>
         <div className="text-left">
           <p className="text-sm font-bold text-foreground">You're on the list!</p>
-          <p className="text-[12px] text-foreground/70">Check your inbox for the free guide.</p>
+          <p className="text-[12px] text-foreground/70">We'll notify you when DripFit launches.</p>
         </div>
       </motion.div>
     );
@@ -147,12 +147,12 @@ function EmailCapture({ id, compact = false }: { id: string; compact?: boolean }
               transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
             />
           ) : (
-            <>Send Me the Guide <ArrowRight className="h-3.5 w-3.5 ml-1" /></>
+            <>{buttonText} <ArrowRight className="h-3.5 w-3.5 ml-1" /></>
           )}
         </Button>
       </div>
       <p className="text-[11px] text-muted-foreground text-center mt-3 tracking-wide">
-        No spam. Just the guide + occasional DripFit updates.
+        {note}
       </p>
     </form>
   );
@@ -188,7 +188,7 @@ function GoldParticles() {
 
 /* ─── Main Page ─── */
 const Waitlist = () => {
-  usePageTitle('Get Your Free Size Guide');
+  usePageTitle('DripFit — Your Exact Size, Every Brand');
   const [showTop, setShowTop] = useState(false);
 
   useEffect(() => {
@@ -222,7 +222,7 @@ const Waitlist = () => {
       <section className="relative pt-14 sm:pt-20 pb-16 px-5 sm:px-8 flex flex-col items-center text-center overflow-hidden">
         <GoldParticles />
 
-        {/* Multi-layered ambient glow */}
+        {/* Ambient glow */}
         <div className="absolute top-[-100px] left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full blur-[180px] pointer-events-none bg-primary/[0.07]" />
         <div className="absolute top-[100px] right-[-200px] w-[400px] h-[400px] rounded-full blur-[140px] pointer-events-none" style={{ background: 'radial-gradient(circle, hsl(280 40% 35% / 0.04), transparent)' }} />
 
@@ -234,7 +234,7 @@ const Waitlist = () => {
             transition={{ duration: 3, repeat: Infinity }}
           >
             <Sparkles className="h-3 w-3 text-primary" />
-            <span className="text-[11px] font-bold text-primary uppercase tracking-[0.2em]">Free Size Guide</span>
+            <span className="text-[11px] font-bold text-primary uppercase tracking-[0.2em]">Coming Soon</span>
           </motion.div>
         </FadeUp>
 
@@ -252,19 +252,30 @@ const Waitlist = () => {
         {/* Subheadline */}
         <FadeUp delay={0.1} className="relative z-10 max-w-md mx-auto mb-10">
           <p className="text-foreground/70 text-[15px] sm:text-base leading-relaxed">
-            The exact measurements you need to order correctly from <span className="text-foreground font-semibold">70+ brands</span> verified across <span className="text-foreground font-semibold">300 unique size charts</span> — plus the app that does it automatically.
+            AI-powered body scanning that maps your exact measurements to <span className="text-foreground font-semibold">70+ brands</span> across <span className="text-foreground font-semibold">300+ size charts</span> — so every order fits perfectly.
           </p>
         </FadeUp>
 
         {/* Email form */}
-        <FadeUp delay={0.18} className="relative z-10 w-full flex flex-col items-center mb-12">
-          <EmailCapture id="hero" />
+        <FadeUp delay={0.18} className="relative z-10 w-full flex flex-col items-center mb-8">
+          <EmailCapture id="hero" buttonText="Get Early Access" note="Join 2,000+ shoppers already on the waitlist." />
         </FadeUp>
 
-        {/* Phone mockup with scan results */}
-        <FadeUp delay={0.3} className="relative z-10">
+        {/* Checklist — merged from lead magnet */}
+        <FadeUp delay={0.25} className="relative z-10 w-full max-w-md mb-10">
+          <div className="space-y-2.5">
+            {CHECKLIST.map((item, i) => (
+              <div key={i} className="flex gap-3 items-center bg-secondary/60 border border-border/60 rounded-xl px-4 py-3">
+                <item.icon className="h-4 w-4 text-primary shrink-0" />
+                <p className="text-[13px] text-foreground/75 leading-snug">{item.text}</p>
+              </div>
+            ))}
+          </div>
+        </FadeUp>
+
+        {/* Phone mockup */}
+        <FadeUp delay={0.35} className="relative z-10">
           <div className="relative">
-            {/* Glow behind phone */}
             <div className="absolute inset-0 blur-[60px] bg-primary/10 rounded-full scale-125 pointer-events-none" />
             <DecorativeSilhouette height={380} className="relative z-10" />
           </div>
@@ -283,66 +294,32 @@ const Waitlist = () => {
         </FadeUp>
       </section>
 
-      {/* ─── LEAD MAGNET ─── */}
-      <section className="py-20 px-5 sm:px-8 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.03] to-transparent pointer-events-none" />
-        <div className="max-w-lg mx-auto relative z-10">
-          <FadeUp>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent to-primary/30" />
-              <span className="text-[11px] font-bold text-primary uppercase tracking-[0.3em]">Instant Download</span>
-              <div className="h-px flex-1 bg-gradient-to-l from-transparent to-primary/30" />
-            </div>
-            <h2 className="font-display text-[22px] sm:text-3xl font-bold text-foreground mb-2 leading-tight text-center">
-              Get The Complete Online Shopping Size Guide
-            </h2>
-            <p className="text-[14px] text-foreground/60 text-center mb-8">
-              Join the waitlist and get this guide sent to your inbox instantly.
-            </p>
-          </FadeUp>
-
-          <div className="space-y-3">
-            {CHECKLIST.map((item, i) => (
-              <FadeUp key={i} delay={i * 0.1}>
-                <div className="flex gap-4 items-start bg-secondary border border-border rounded-2xl p-4 group hover:border-primary/30 transition-colors">
-                  <div className="h-9 w-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 group-hover:bg-primary/15 transition-colors">
-                    <item.icon className="h-4 w-4 text-primary" />
-                  </div>
-                  <p className="text-[13px] text-foreground/80 leading-relaxed pt-1.5">{item.text}</p>
-                </div>
-              </FadeUp>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ─── SEPARATOR ─── */}
       <div className="max-w-xs mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
       </div>
 
-      {/* ─── 3 CORE FEATURES ─── */}
+      {/* ─── 3 CORE FEATURES — horizontal scroll on mobile ─── */}
       <section className="py-20 px-5 sm:px-8">
         <div className="max-w-4xl mx-auto">
-          <FadeUp className="text-center mb-14">
-            <span className="text-[11px] font-bold text-primary uppercase tracking-[0.3em]">Coming Soon</span>
+          <FadeUp className="text-center mb-10">
+            <span className="text-[11px] font-bold text-primary uppercase tracking-[0.3em]">How It Works</span>
             <h2 className="font-display text-[22px] sm:text-3xl font-bold text-foreground leading-tight mt-3">
               The App That <span className="gradient-drip-text">Ends Returns</span>
             </h2>
             <p className="text-[14px] text-foreground/60 mt-3 max-w-md mx-auto">
-              Three powerful features working together to make sure every order fits perfectly.
+              Three powerful features working together so every order fits.
             </p>
           </FadeUp>
 
-          <div className="grid md:grid-cols-3 gap-4">
+          {/* Horizontal scroll on mobile, grid on desktop */}
+          <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-4 -mx-5 px-5 sm:mx-0 sm:px-0 md:grid md:grid-cols-3 md:overflow-visible">
             {FEATURES.map((f, i) => (
-              <FadeUp key={f.title} delay={i * 0.1}>
+              <FadeUp key={f.title} delay={i * 0.1} className="min-w-[280px] sm:min-w-0 snap-center flex-shrink-0 md:flex-shrink">
                 <div className="relative bg-secondary border border-border rounded-2xl p-6 h-full flex flex-col group hover:border-primary/30 transition-all">
-                  {/* Badge */}
                   <span className="absolute top-4 right-4 text-[9px] font-bold text-primary uppercase tracking-[0.2em] bg-primary/10 border border-primary/20 rounded-full px-2.5 py-0.5">
                     {f.badge}
                   </span>
-
                   <div className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-5 group-hover:bg-primary/15 transition-colors">
                     <f.icon className="h-5 w-5 text-primary" />
                   </div>
@@ -354,6 +331,11 @@ const Waitlist = () => {
           </div>
         </div>
       </section>
+
+      {/* ─── SEPARATOR ─── */}
+      <div className="max-w-xs mx-auto px-6">
+        <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      </div>
 
       {/* ─── SOCIAL PROOF / AGITATION ─── */}
       <section className="py-20 px-5 sm:px-8 relative overflow-hidden">
@@ -379,7 +361,7 @@ const Waitlist = () => {
             {STATS.map((s) => (
               <div key={s.label} className="text-center bg-secondary border border-border rounded-2xl py-5 px-3">
                 <p className="font-display text-[22px] sm:text-2xl font-bold gradient-drip-text leading-none">{s.stat}</p>
-                <p className="text-[10px] text-foreground/50 mt-2 uppercase tracking-[0.1em] leading-tight">{s.label}</p>
+                <p className="text-[11px] text-foreground/55 mt-2 uppercase tracking-[0.08em] leading-tight font-medium">{s.label}</p>
               </div>
             ))}
           </FadeUp>
@@ -399,7 +381,7 @@ const Waitlist = () => {
               <p className="text-[13px] text-foreground/75 leading-relaxed italic mb-3">
                 "I used to return 3 out of every 5 orders. After using DripFit, I haven't had a single return in 4 months."
               </p>
-              <p className="text-[11px] text-foreground/45 uppercase tracking-[0.2em]">— Early Beta Tester</p>
+              <p className="text-[11px] text-foreground/50 uppercase tracking-[0.2em]">— Sarah M., Beta Tester</p>
             </div>
           </FadeUp>
         </div>
@@ -410,14 +392,13 @@ const Waitlist = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-secondary/40 to-transparent pointer-events-none" />
         <div className="max-w-lg mx-auto text-center relative z-10">
           <FadeUp>
-            <h2 className="font-display text-[22px] sm:text-3xl font-bold text-foreground mb-2 leading-tight">
-              Your exact size. Every brand.
+            <h2 className="font-display text-[22px] sm:text-3xl font-bold text-foreground mb-3 leading-tight">
+              Your exact size. Every brand. <span className="gradient-drip-text">Finally.</span>
             </h2>
-            <p className="font-display text-xl font-bold gradient-drip-text mb-8">Finally.</p>
           </FadeUp>
 
           <FadeUp delay={0.1} className="flex flex-col items-center">
-            <EmailCapture id="footer" compact />
+            <EmailCapture id="footer" compact buttonText="Reserve My Spot" note="Be first to know when we launch." />
           </FadeUp>
         </div>
       </section>
