@@ -209,7 +209,7 @@ const SettingsTab = ({
                 }}
                 className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all active:scale-95 ${
                   gender === g.value
-                    ? 'btn-gold-3d text-primary-foreground'
+                    ? 'btn-gold-3d'
                     : 'bg-background border border-border text-muted-foreground'
                 }`}
               >
