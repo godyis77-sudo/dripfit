@@ -24,6 +24,7 @@ const FEATURES = [
     detail: 'No tape measure needed — just your phone camera.',
     badge: 'Core',
     image: featureScan,
+    imageScale: 'scale-[1.08]',
   },
   {
     icon: Shirt,
@@ -32,6 +33,7 @@ const FEATURES = [
     detail: 'Upload a clothing photo and AI renders it on your body.',
     badge: 'AI',
     image: featureTryon,
+    imageScale: '',
   },
   {
     icon: Users,
@@ -40,6 +42,7 @@ const FEATURES = [
     detail: 'Get outfit ratings from users with your exact measurements.',
     badge: 'Social',
     image: featureStylecheck,
+    imageScale: '',
   },
 ];
 
@@ -320,7 +323,7 @@ const Waitlist = () => {
                         <img
                           src={f.image}
                           alt={`${f.title} app screen`}
-                          className="w-full h-full object-cover object-top"
+                          className={`w-full h-full object-cover object-top ${f.imageScale}`}
                           loading="lazy"
                         />
                       </div>
