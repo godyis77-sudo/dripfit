@@ -249,7 +249,7 @@ const SizeGuide = () => {
                 <p className="text-[13px] font-medium text-foreground">{selectedMeasurement ? new Date(selectedMeasurement.date).toLocaleDateString() : 'Select'}</p>
                 {selectedMeasurement && <p className="text-[11px] text-muted-foreground">Size {selectedMeasurement.sizeRecommendation} · Chest {selectedMeasurement.chest}"</p>}
               </div>
-              {showPicker ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
+              <span className="h-6 w-6 icon-3d-gold rounded-lg">{showPicker ? <ChevronUp className="h-3 w-3 text-primary-foreground" /> : <ChevronDown className="h-3 w-3 text-primary-foreground" />}</span>
             </CardContent>
           </Card>
           <AnimatePresence>{showPicker && (
