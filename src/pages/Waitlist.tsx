@@ -22,7 +22,7 @@ const FEATURES = [
     title: 'AI Body Scan',
     desc: 'Two photos. 60 seconds. Your exact measurements mapped to 300+ size charts.',
     detail: 'No tape measure needed — just your phone camera.',
-    badge: 'Core',
+    badge: '',
     image: featureScan,
     imageScale: '',
     phoneScale: 'scale-[1.10]',
