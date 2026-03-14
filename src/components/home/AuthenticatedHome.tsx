@@ -110,7 +110,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               <img
                 src={action.img}
                 alt={action.title}
-                className="h-14 w-14 object-contain drop-shadow-[0_2px_6px_hsl(var(--drip-gold)/0.4)]"
+                className="w-full aspect-square object-contain drop-shadow-[0_2px_6px_hsl(var(--drip-gold)/0.4)]"
               />
               <div className="text-center">
                 <p className="text-[11px] font-extrabold font-display text-primary leading-tight">{action.title}</p>
