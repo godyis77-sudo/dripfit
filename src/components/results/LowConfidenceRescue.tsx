@@ -61,7 +61,7 @@ const LowConfidenceRescue = ({ onCalibrate }: LowConfidenceRescueProps) => {
             </div>
           )}
           <div className="flex items-center gap-1.5">
-            <Button size="sm" className="h-8 rounded-lg px-3 btn-gold-3d text-primary-foreground text-[11px]" disabled={!selectedBrand || !selectedSize} onClick={() => { if (selectedBrand && selectedSize) onCalibrate({ type: 'brand', brand: selectedBrand, size: selectedSize }); }}>Apply</Button>
+            <Button size="sm" className="h-8 rounded-lg px-3 btn-gold-3d text-[11px]" disabled={!selectedBrand || !selectedSize} onClick={() => { if (selectedBrand && selectedSize) onCalibrate({ type: 'brand', brand: selectedBrand, size: selectedSize }); }}>Apply</Button>
             <button onClick={() => setMode('pick')} className="text-[10px] text-muted-foreground underline">Back</button>
           </div>
         </div>
