@@ -76,7 +76,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           {[
             {
               onClick: () => { trackEvent('home_quick_scan'); navigate('/capture'); },
-              img: iconScan,
+              img: featureIcons.scan,
               title: hasScan ? 'Re-Scan' : 'Body Scan',
               subtitle: hasScan ? 'Update fit' : '60s scan',
             },
