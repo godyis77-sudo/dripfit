@@ -198,7 +198,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                       key={p}
                       onClick={() => setCaption(p)}
                       className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${
-                        caption === p ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'
+                        caption === p ? 'btn-gold-3d border-transparent text-primary-foreground' : 'border-border text-muted-foreground'
                       }`}
                     >
                       {p}
