@@ -7,7 +7,6 @@ const corsHeaders = {
 };
 
 // ─── Commission Tier Config ─────────────────────────────────────────────────
-// Tiers are evaluated top-down; first matching tier wins.
 const COMMISSION_TIERS = [
   { minConversions: 100, amountCents: 150, label: "bonus" },
   { minConversions: 1, amountCents: 50, label: "base" },
@@ -57,7 +56,7 @@ Deno.serve(async (req) => {
     }
     const userId = user.id;
 
-    const { code } = await req.json();
+    const { code, promo_code } = await req.json();
     if (!code || typeof code !== "string" || code.length < 4 || code.length > 20) {
       return new Response(JSON.stringify({ error: "Invalid referral code" }), {
         status: 400,
@@ -122,8 +121,46 @@ Deno.serve(async (req) => {
     // Credit referrer (+1 legacy credits)
     await admin.rpc("increment_referral_credits", { target_user_id: referrer.user_id });
 
+    // ─── Promo Code Logic ───────────────────────────────────────────────
+    let promoApplied = false;
+    let bonusTryons = 0;
+
+    if (promo_code && typeof promo_code === "string" && promo_code.length >= 3 && promo_code.length <= 30) {
+      const { data: promo } = await admin
+        .from("promo_codes")
+        .select("id, creator_id, bonus_tryons, max_uses, used_count, is_active")
+        .eq("code", promo_code.toUpperCase())
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (promo) {
+        // Check max uses
+        const withinLimit = promo.max_uses === null || promo.used_count < promo.max_uses;
+        // Promo must belong to the referrer
+        const belongsToReferrer = promo.creator_id === referrer.user_id;
+
+        if (withinLimit && belongsToReferrer) {
+          bonusTryons = promo.bonus_tryons || 10;
+          promoApplied = true;
+
+          // Increment used_count
+          await admin
+            .from("promo_codes")
+            .update({ used_count: promo.used_count + 1 })
+            .eq("id", promo.id);
+
+          // Grant bonus try-ons to the new user by decrementing their usage counter
+          // (negative count = bonus credits)
+          const monthKey = getMonthKey();
+          await admin.from("tryon_usage").upsert(
+            { user_id: userId, month_key: monthKey, count: -bonusTryons },
+            { onConflict: "user_id,month_key" }
+          );
+        }
+      }
+    }
+
     // ─── Creator Commission Logic ───────────────────────────────────────
-    // Check if referrer has 'creator' role
     const { data: isCreator } = await admin.rpc("has_role", {
       _user_id: referrer.user_id,
       _role: "creator",
@@ -132,7 +169,6 @@ Deno.serve(async (req) => {
     if (isCreator) {
       const monthKey = getMonthKey();
 
-      // Get current month count for tier calculation
       const { data: monthCount } = await admin.rpc("get_creator_month_count", {
         p_creator_id: referrer.user_id,
         p_month_key: monthKey,
@@ -140,7 +176,6 @@ Deno.serve(async (req) => {
 
       const { amountCents, tierLabel } = resolveCommission(monthCount ?? 0);
 
-      // Insert commission (unique index on creator_id + referee_id prevents dupes)
       await admin.from("creator_commissions").insert({
         creator_id: referrer.user_id,
         referee_id: userId,
@@ -153,7 +188,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    return new Response(JSON.stringify({ data: { success: true } }), {
+    return new Response(JSON.stringify({ data: { success: true, promo_applied: promoApplied, bonus_tryons: bonusTryons } }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
