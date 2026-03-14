@@ -438,22 +438,37 @@
       inset 0 1px 3px hsl(0 0% 0% / 0.08) !important;
   }
   .pill-filled {
-    border-color: hsl(var(--gold-shimmer) / 0.3) !important;
-    background: linear-gradient(180deg, hsl(40 78% 54%), hsl(42 76% 42%)) !important;
-    color: hsl(var(--primary-foreground)) !important;
-    backdrop-filter: blur(16px) saturate(1.4);
-    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border: none !important;
+    font-weight: 800 !important;
+    background: linear-gradient(
+      175deg,
+      hsl(45 100% 88%) 0%,
+      hsl(44 90% 72%) 18%,
+      hsl(42 80% 55%) 40%,
+      hsl(38 70% 40%) 65%,
+      hsl(35 55% 30%) 82%,
+      hsl(40 75% 48%) 100%
+    ) !important;
+    color: hsl(30 20% 8%) !important;
     box-shadow:
-      0 2px 0 0 hsl(42 76% 28%),
-      0 4px 16px -2px hsl(var(--primary) / 0.35),
-      inset 0 1px 0 hsl(var(--gold-shimmer) / 0.5),
-      inset 0 -1px 0 hsl(42 76% 28% / 0.3) !important;
-    text-shadow: 0 1px 0 hsl(var(--gold-shimmer) / 0.3);
+      0 1px 0 0 hsl(40 55% 30%),
+      0 2px 0 0 hsl(38 45% 24%),
+      0 3px 1px hsl(35 40% 18%),
+      0 4px 2px hsl(30 30% 12%),
+      0 6px 8px hsl(0 0% 0% / 0.4),
+      0 0 20px hsl(42 76% 50% / 0.3),
+      inset 0 1px 0 hsl(45 100% 90% / 0.4) !important;
+    text-shadow: 0 1px 0 hsl(44 80% 70% / 0.3);
+  }
+  .pill-filled:hover {
+    transform: translateY(-1px);
   }
   .pill-filled:active {
+    transform: translateY(1px);
     box-shadow:
-      0 0px 0 0 hsl(42 76% 28%),
-      0 1px 4px hsl(var(--primary) / 0.18),
+      0 0px 0 0 hsl(40 55% 30%),
+      0 1px 0 0 hsl(38 45% 24%),
+      0 2px 4px hsl(0 0% 0% / 0.3),
       inset 0 1px 3px hsl(0 0% 0% / 0.1) !important;
   }
 
