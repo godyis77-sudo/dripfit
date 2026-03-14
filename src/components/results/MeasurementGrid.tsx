@@ -34,7 +34,7 @@ const MeasurementGrid = ({ measurements, heightCm, visibleKeys }: MeasurementGri
 
       <button onClick={() => setExpanded(!expanded)} className="w-full flex items-center justify-between text-[11px] text-muted-foreground py-1 mb-1.5">
         <span>{expanded ? 'Hide ranges' : 'Show ranges'}</span>
-        {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+        <span className="h-5 w-5 icon-3d-gold rounded-md">{expanded ? <ChevronUp className="h-2.5 w-2.5 text-primary-foreground" /> : <ChevronDown className="h-2.5 w-2.5 text-primary-foreground" />}</span>
       </button>
 
       {expanded && (

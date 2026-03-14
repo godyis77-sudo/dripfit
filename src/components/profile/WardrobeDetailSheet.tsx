@@ -150,7 +150,7 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
                 <span className="flex items-center gap-1.5">
                   <ShoppingBag className="h-3.5 w-3.5 text-primary" /> Shop Similar Style
                 </span>
-                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
+                <span className="h-6 w-6 icon-3d-gold rounded-lg transition-transform duration-200 [[data-state=open]>&]:rotate-180"><ChevronDown className="h-3 w-3 text-primary-foreground" /></span>
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent className="pt-2 space-y-2">

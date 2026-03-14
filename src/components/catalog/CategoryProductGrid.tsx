@@ -101,7 +101,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
           >
             <p className="text-[11px] font-bold text-foreground capitalize">{title}</p>
             {visibleProducts.length > 4 && (
-              expanded ? <ChevronUp className="h-3 w-3 text-muted-foreground" /> : <ChevronDown className="h-3 w-3 text-muted-foreground" />
+              expanded ? <span className="h-5 w-5 icon-3d-gold rounded-md"><ChevronUp className="h-2.5 w-2.5 text-primary-foreground" /></span> : <span className="h-5 w-5 icon-3d-gold rounded-md"><ChevronDown className="h-2.5 w-2.5 text-primary-foreground" /></span>
             )}
           </button>
           {showViewAll && visibleProducts.length > 0 && (
