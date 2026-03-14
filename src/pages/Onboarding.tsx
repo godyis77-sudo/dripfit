@@ -281,8 +281,8 @@ const Onboarding = () => {
 
                   {/* Text — below image with consistent gap */}
                   <div className="flex flex-col items-center px-8 text-center shrink-0">
-                    <div className="h-9 w-9 rounded-xl gradient-drip flex items-center justify-center mb-2">
-                      {(() => { const Icon = SLIDES[slideIdx].icon; return <Icon className="h-4 w-4 text-primary-foreground" />; })()}
+                    <div className="h-9 w-9 rounded-xl icon-3d flex items-center justify-center mb-2">
+                      {(() => { const Icon = SLIDES[slideIdx].icon; return <Icon className="h-4 w-4 text-brand-logo-fg shimmer-icon" />; })()}
                     </div>
                     <h2 className="font-display text-[20px] font-bold text-foreground leading-tight">
                       {SLIDES[slideIdx].title}
@@ -360,9 +360,9 @@ const Onboarding = () => {
                     }`}
                   >
                     <div className={`h-10 w-10 rounded-xl flex items-center justify-center mb-2 ${
-                      selected ? 'gradient-drip' : 'bg-card border border-border'
+                      selected ? 'icon-3d' : 'bg-card border border-border'
                     }`}>
-                      <Icon className={`h-5 w-5 ${selected ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
+                      <Icon className={`h-5 w-5 ${selected ? 'text-brand-logo-fg shimmer-icon' : 'text-muted-foreground'}`} />
                     </div>
                     <p className="font-bold text-[13px] text-foreground leading-tight">{h.label}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{h.desc}</p>
@@ -406,9 +406,9 @@ const Onboarding = () => {
                     }`}
                   >
                     <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${
-                      selected ? 'gradient-drip' : 'bg-card border border-border'
+                      selected ? 'icon-3d' : 'bg-card border border-border'
                     }`}>
-                      <ShoppingBag className={`h-5 w-5 ${selected ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
+                      <ShoppingBag className={`h-5 w-5 ${selected ? 'text-brand-logo-fg shimmer-icon' : 'text-muted-foreground'}`} />
                     </div>
                     <div className="text-left">
                       <p className="font-bold text-[14px] text-foreground leading-tight">{g.label}</p>
@@ -469,7 +469,7 @@ const Onboarding = () => {
                 {/* SAFE */}
                 <div className="w-full bg-card border border-border rounded-xl p-2.5 mb-2 space-y-1">
                   <div className="flex items-center gap-2">
-                    <Shield className="h-3.5 w-3.5 text-primary shrink-0" />
+                    <Shield className="h-3.5 w-3.5 text-brand-logo-fg shrink-0" />
                     <p className="text-[10px] text-foreground font-medium">Photos processed privately — never stored without your consent.</p>
                   </div>
                   <p className="text-[11px] text-muted-foreground pl-5.5">Delete anytime from Settings.</p>
