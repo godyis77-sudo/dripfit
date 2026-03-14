@@ -282,25 +282,6 @@ const Waitlist = () => {
           </div>
         </FadeUp>
 
-        {/* Phone mockup */}
-        <FadeUp delay={0.35} className="relative z-10">
-          <div className="relative">
-            <div className="absolute inset-0 blur-[60px] bg-primary/10 rounded-full scale-125 pointer-events-none" />
-            <DecorativeSilhouette height={380} className="relative z-10" />
-          </div>
-        </FadeUp>
-
-        {/* Scroll indicator */}
-        <FadeUp delay={0.5} className="relative z-10 mt-8">
-          <motion.div
-            className="flex flex-col items-center gap-2 text-muted-foreground"
-            animate={{ y: [0, 6, 0] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <span className="text-[9px] uppercase tracking-[0.3em]">Scroll</span>
-            <div className="w-px h-6 bg-gradient-to-b from-muted-foreground/40 to-transparent" />
-          </motion.div>
-        </FadeUp>
       </section>
 
       {/* ─── SEPARATOR ─── */}
