@@ -333,6 +333,45 @@ export type Database = {
         }
         Relationships: []
       }
+      payout_requests: {
+        Row: {
+          amount_cents: number
+          creator_id: string
+          currency: string
+          id: string
+          notes: string | null
+          payout_email: string | null
+          payout_method: string | null
+          processed_at: string | null
+          requested_at: string
+          status: string
+        }
+        Insert: {
+          amount_cents: number
+          creator_id: string
+          currency?: string
+          id?: string
+          notes?: string | null
+          payout_email?: string | null
+          payout_method?: string | null
+          processed_at?: string | null
+          requested_at?: string
+          status?: string
+        }
+        Update: {
+          amount_cents?: number
+          creator_id?: string
+          currency?: string
+          id?: string
+          notes?: string | null
+          payout_email?: string | null
+          payout_method?: string | null
+          processed_at?: string | null
+          requested_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
       post_comments: {
         Row: {
           comment_text: string
@@ -509,6 +548,39 @@ export type Database = {
           shopping_region?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      promo_codes: {
+        Row: {
+          bonus_tryons: number
+          code: string
+          created_at: string
+          creator_id: string
+          id: string
+          is_active: boolean
+          max_uses: number | null
+          used_count: number
+        }
+        Insert: {
+          bonus_tryons?: number
+          code: string
+          created_at?: string
+          creator_id: string
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          used_count?: number
+        }
+        Update: {
+          bonus_tryons?: number
+          code?: string
+          created_at?: string
+          creator_id?: string
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          used_count?: number
         }
         Relationships: []
       }
