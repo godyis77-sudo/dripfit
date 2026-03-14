@@ -1,11 +1,8 @@
 import { forwardRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Sparkles, Camera, ShoppingBag, X } from 'lucide-react';
-import iconScan from '@/assets/icon-scan.png';
-import iconTryon from '@/assets/icon-tryon.png';
-import iconSizeguide from '@/assets/icon-sizeguide.png';
-import iconStylecheck from '@/assets/icon-stylecheck.png';
+import { Camera, ShoppingBag, X } from 'lucide-react';
+import FeatureIcon, { featureIcons } from '@/components/ui/FeatureIcon';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
@@ -79,25 +76,25 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           {[
             {
               onClick: () => { trackEvent('home_quick_scan'); navigate('/capture'); },
-              img: iconScan,
+              img: featureIcons.scan,
               title: hasScan ? 'Re-Scan' : 'Body Scan',
               subtitle: hasScan ? 'Update fit' : '60s scan',
             },
             {
               onClick: () => { trackEvent('home_quick_tryon'); navigate('/tryon'); },
-              img: iconTryon,
+              img: featureIcons.tryon,
               title: 'Try-On',
               subtitle: 'Virtual fit',
             },
             {
               onClick: () => { trackEvent('home_quick_sizeguide'); navigate('/size-guide'); },
-              img: iconSizeguide,
+              img: featureIcons.sizeguide,
               title: 'Size Guide',
               subtitle: 'Perfect fit',
             },
             {
               onClick: () => { trackEvent('home_quick_stylecheck'); navigate('/community'); },
-              img: iconStylecheck,
+              img: featureIcons.stylecheck,
               title: 'Style Check',
               subtitle: 'Get rated',
             },

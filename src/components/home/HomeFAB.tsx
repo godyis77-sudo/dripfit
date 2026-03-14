@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Sparkles, Bookmark } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import FeatureIcon from '@/components/ui/FeatureIcon';
 
 const HomeFAB = () => {
   const navigate = useNavigate();
@@ -9,10 +10,10 @@ const HomeFAB = () => {
   const closeFab = useCallback(() => setFabOpen(false), []);
 
   const items = [
-    { icon: <span className="text-sm">📷</span>, label: 'New Body Scan', action: () => navigate('/capture') },
-    { icon: <Sparkles className="h-4 w-4 text-primary-foreground" />, label: 'New Try-On', action: () => navigate('/tryon') },
-    { icon: <span className="text-sm">📏</span>, label: 'Size Guide', action: () => navigate('/size-guide') },
-    { icon: <Bookmark className="h-4 w-4 text-primary-foreground" />, label: 'Save a Look', action: () => navigate('/style-check') },
+    { icon: <FeatureIcon name="scan" size={22} />, label: 'New Body Scan', action: () => navigate('/capture') },
+    { icon: <FeatureIcon name="tryon" size={22} />, label: 'New Try-On', action: () => navigate('/tryon') },
+    { icon: <FeatureIcon name="sizeguide" size={22} />, label: 'Size Guide', action: () => navigate('/size-guide') },
+    { icon: <FeatureIcon name="stylecheck" size={22} />, label: 'Style Check', action: () => navigate('/style-check') },
   ];
 
   return (
@@ -53,7 +54,7 @@ const HomeFAB = () => {
                   </span>
                   <button
                     onClick={() => { closeFab(); item.action(); }}
-                    className="h-11 w-11 rounded-full icon-3d-gold shimmer-sweep active:scale-90 transition-transform"
+                    className="h-11 w-11 rounded-full icon-3d-gold shimmer-sweep active:scale-90 transition-transform flex items-center justify-center"
                   >
                     {item.icon}
                   </button>

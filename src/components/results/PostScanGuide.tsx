@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, ShoppingBag, Users, ArrowRight, X } from 'lucide-react';
+import { ArrowRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { trackEvent } from '@/lib/analytics';
+import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 import type { BodyScanResult } from '@/lib/types';
 
 interface PostScanGuideProps {
@@ -12,33 +13,33 @@ interface PostScanGuideProps {
   onDismiss: () => void;
 }
 
-const STEPS = [
+const STEPS: { key: string; featureIcon: FeatureIconName; title: string; desc: string; cta: string; route: string; event: string }[] = [
   {
     key: 'tryon',
-    icon: Sparkles,
+    featureIcon: 'tryon',
     title: 'See it on you',
     desc: 'Try-on clothes virtually with your exact measurements',
     cta: 'Start Try-On',
     route: '/tryon',
-    event: 'postscan_tryon_click' as const,
+    event: 'postscan_tryon_click',
   },
   {
     key: 'shop',
-    icon: ShoppingBag,
+    featureIcon: 'sizeguide',
     title: 'Shop your size',
     desc: 'Browse items that fit — matched to your body profile',
     cta: 'Find My Size',
     route: '/size-guide',
-    event: 'postscan_shop_click' as const,
+    event: 'postscan_shop_click',
   },
   {
     key: 'fitcheck',
-    icon: Users,
+    featureIcon: 'stylecheck',
     title: 'Get a Style Check',
     desc: 'Post a look and get honest feedback before buying',
     cta: 'Go to Style Check',
     route: '/style-check',
-    event: 'postscan_fitcheck_click' as const,
+    event: 'postscan_fitcheck_click',
   },
 ];
 
@@ -110,10 +111,8 @@ const PostScanGuide = ({ result, recommendedSize, onDismiss }: PostScanGuideProp
           exit={{ opacity: 0, x: -16 }}
           transition={{ duration: 0.2 }}
         >
-          <div className="flex items-start gap-3 mb-3">
-            <div className="h-10 w-10 icon-3d-gold shimmer-sweep rounded-xl shrink-0">
-              <current.icon className="h-5 w-5 text-primary-foreground shimmer-icon" />
-            </div>
+           <div className="flex items-start gap-3 mb-3">
+              <FeatureIcon name={current.featureIcon} size={40} />
             <div className="flex-1">
               <h3 className="font-display text-[16px] font-bold text-foreground">{current.title}</h3>
               <p className="text-[12px] text-muted-foreground leading-snug mt-0.5">{current.desc}</p>
