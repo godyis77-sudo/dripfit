@@ -1,0 +1,182 @@
+/* ── Marquee Container ── */
+.marquee-wrapper {
+  position: relative;
+  margin-top: 3.5rem;
+  margin-left: -1.25rem;
+  margin-right: -1.25rem;
+  overflow: hidden;
+}
+
+/* ── Ambient Effects ── */
+.marquee-glow {
+  position: absolute;
+  inset: -3rem -2rem;
+  background: radial-gradient(ellipse at center, hsl(42 76% 42% / 0.1), transparent 70%);
+  pointer-events: none;
+}
+
+.marquee-orb {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.marquee-orb-1 {
+  width: 200px;
+  height: 100px;
+  background: hsl(42 76% 42% / 0.12);
+  filter: blur(80px);
+  animation: orb-drift-1 6s ease-in-out infinite alternate;
+}
+
+.marquee-orb-2 {
+  width: 160px;
+  height: 80px;
+  right: 0;
+  background: hsl(42 76% 42% / 0.08);
+  filter: blur(60px);
+  animation: orb-drift-2 8s ease-in-out infinite alternate;
+}
+
+@keyframes orb-drift-1 {
+  from { left: -10%; }
+  to   { left: 80%; }
+}
+
+@keyframes orb-drift-2 {
+  from { right: -10%; }
+  to   { right: 80%; }
+}
+
+/* ── Header / Footer ── */
+.marquee-header,
+.marquee-footer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 2rem;
+}
+
+.marquee-header { margin-bottom: 1rem; }
+.marquee-footer { margin-top: 1rem; }
+
+.marquee-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsl(42 76% 42% / 0.45), transparent);
+}
+
+.marquee-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5em;
+  color: hsl(42 76% 55%);
+  animation: label-pulse 3s ease-in-out infinite;
+}
+
+@keyframes label-pulse {
+  0%, 100% { text-shadow: 0 0 4px hsl(42 76% 42% / 0); }
+  50%      { text-shadow: 0 0 18px hsl(42 76% 42% / 0.7); }
+}
+
+/* ── Scroll Track ── */
+.marquee-track {
+  position: relative;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+}
+
+.marquee-scroll {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marquee-slide 20s linear infinite;
+}
+
+.marquee-scroll.marquee-reverse {
+  animation: marquee-slide-reverse 24s linear infinite;
+}
+
+.marquee-set {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0.75rem 0;
+  flex-shrink: 0;
+}
+
+@keyframes marquee-slide {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+@keyframes marquee-slide-reverse {
+  from { transform: translate3d(-50%, 0, 0); }
+  to   { transform: translate3d(0, 0, 0); }
+}
+
+/* ── Brand Name ── */
+.marquee-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  flex-shrink: 0;
+  padding: 0 1rem;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  font-size: clamp(22px, 5.5vw, 32px);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: linear-gradient(
+    175deg,
+    hsl(42 100% 90%) 0%,
+    hsl(42 85% 72%) 18%,
+    hsl(42 76% 52%) 40%,
+    hsl(42 60% 32%) 65%,
+    hsl(42 50% 22%) 80%,
+    hsl(42 70% 45%) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter:
+    drop-shadow(0 1px 0 hsl(42 50% 25%))
+    drop-shadow(0 2px 0 hsl(42 40% 18%))
+    drop-shadow(0 3px 0 hsl(30 30% 12%))
+    drop-shadow(0 4px 1px hsl(20 20% 8%))
+    drop-shadow(0 6px 10px hsl(0 0% 0% / 0.65))
+    drop-shadow(0 0 24px hsl(42 76% 42% / 0.35))
+    drop-shadow(0 0 50px hsl(42 76% 42% / 0.12));
+}
+
+/* ── Glowing Dot Separator ── */
+.marquee-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  margin-left: 1rem;
+  background: hsl(42 80% 60%);
+  box-shadow:
+    0 0 6px 2px hsl(42 76% 42% / 0.6),
+    0 0 16px 4px hsl(42 76% 42% / 0.2);
+  animation: dot-pulse 2.5s ease-in-out infinite;
+  animation-delay: var(--dot-delay, 0s);
+  flex-shrink: 0;
+}
+
+.marquee-brand:nth-child(odd) .marquee-dot  { --dot-delay: 0s; }
+.marquee-brand:nth-child(even) .marquee-dot { --dot-delay: 1.2s; }
+.marquee-brand:nth-child(3n) .marquee-dot   { --dot-delay: 0.6s; }
+
+@keyframes dot-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.8); }
+  50%      { opacity: 1;    transform: scale(1.3); }
+}
