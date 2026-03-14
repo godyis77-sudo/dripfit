@@ -42,7 +42,7 @@ const CHECKLIST = [
 const STATS = [
   { stat: '73%', label: 'of returns are sizing issues' },
   { stat: '$550', label: 'wasted per shopper yearly' },
-  { stat: '200+', label: 'brand charts supported' },
+  { stat: '300+', label: 'brand size charts' },
 ];
 
 /* ─── Animation helpers ─── */
@@ -192,25 +192,12 @@ function GoldParticles() {
 const Waitlist = () => {
   usePageTitle('Get Your Free Size Guide');
   const [showTop, setShowTop] = useState(false);
-  const [brandCount, setBrandCount] = useState<number | null>(null);
+  const brandCount = 74;
 
   useEffect(() => {
     const handler = () => setShowTop(window.scrollY > 500);
     window.addEventListener('scroll', handler, { passive: true });
     return () => window.removeEventListener('scroll', handler);
-  }, []);
-
-  useEffect(() => {
-    supabase
-      .from('brand_size_charts')
-      .select('brand_slug')
-      .eq('is_active', true)
-      .then(({ data }) => {
-        if (data) {
-          const unique = new Set(data.map((r) => r.brand_slug));
-          setBrandCount(unique.size);
-        }
-      });
   }, []);
 
   const scrollToTop = useCallback(() => window.scrollTo({ top: 0, behavior: 'smooth' }), []);
