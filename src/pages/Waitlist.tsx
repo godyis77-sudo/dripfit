@@ -316,12 +316,12 @@ const Waitlist = () => {
                   {/* Phone frame — gold border with side buttons */}
                   <div className={`relative w-[90%] h-[90%] ${f.phoneScale}`}>
                     {/* Side buttons */}
-                    <div className="absolute -left-[3px] top-[18%] w-[3px] h-7 rounded-l-sm bg-primary/40" />
-                    <div className="absolute -left-[3px] top-[30%] w-[3px] h-10 rounded-l-sm bg-primary/40" />
-                    <div className="absolute -left-[3px] top-[42%] w-[3px] h-10 rounded-l-sm bg-primary/40" />
-                    <div className="absolute -right-[3px] top-[28%] w-[3px] h-12 rounded-r-sm bg-primary/40" />
+                    <div className="absolute -left-[3px] top-[18%] w-[3px] h-7 rounded-l-sm bg-primary/70" />
+                    <div className="absolute -left-[3px] top-[30%] w-[3px] h-10 rounded-l-sm bg-primary/70" />
+                    <div className="absolute -left-[3px] top-[42%] w-[3px] h-10 rounded-l-sm bg-primary/70" />
+                    <div className="absolute -right-[3px] top-[28%] w-[3px] h-12 rounded-r-sm bg-primary/70" />
                     {/* Phone body */}
-                    <div className="w-full h-full rounded-[2.2rem] border-[3px] border-primary/35 bg-black overflow-hidden shadow-[0_0_20px_rgba(212,175,55,0.08)]">
+                    <div className="w-full h-full rounded-[2.2rem] border-[3px] border-primary/60 bg-black overflow-hidden shadow-[0_0_25px_rgba(212,175,55,0.15)]">
                       <div className="w-full h-full rounded-[1.8rem] overflow-hidden">
                         <img
                           src={f.image}
