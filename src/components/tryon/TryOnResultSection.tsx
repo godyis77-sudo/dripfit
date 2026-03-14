@@ -293,10 +293,10 @@ const TryOnResultSection = ({
                   ) : (
                     <>
                       <div className="flex gap-1.5 mb-2">
-                        <button onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryCameraRef.current?.click(); }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 border border-primary/20 text-primary active:scale-95 transition-transform">
+                        <button onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryCameraRef.current?.click(); }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg btn-gold-3d active:scale-95 transition-transform">
                           <Camera className="h-3.5 w-3.5" /><span className="text-[10px] font-bold">Camera</span>
                         </button>
-                        <button onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryPhotoRef.current?.click(); }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-card border border-border text-muted-foreground active:scale-95 transition-transform">
+                        <button onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryPhotoRef.current?.click(); }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg pill active:scale-95 transition-transform">
                           <ImageIcon className="h-3.5 w-3.5" /><span className="text-[10px] font-bold">Gallery</span>
                         </button>
                       </div>
