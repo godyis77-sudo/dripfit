@@ -97,7 +97,7 @@ const PostCard = ({
               {post.profile?.avatar_url ? (
                 <img src={post.profile.avatar_url} alt="" className="h-4 w-4 rounded-full object-cover shrink-0" />
               ) : (
-                <div className="h-4 w-4 rounded-full gradient-drip flex items-center justify-center shrink-0">
+                <div className="h-4 w-4 rounded-full icon-3d-gold flex items-center justify-center shrink-0">
                   <span className="text-[7px] font-bold text-primary-foreground">{(post.profile?.display_name || 'A')[0].toUpperCase()}</span>
                 </div>
               )}
@@ -160,7 +160,7 @@ const PostCard = ({
         </div>
         {filter === 'similar' && (post as any).match_score && (
           <div
-            className="absolute top-2 right-2 text-[10px] font-bold rounded-full px-1.5 py-0.5 gradient-drip text-primary-foreground shadow-gold-glow"
+            className="absolute top-2 right-2 text-[10px] font-bold rounded-full px-1.5 py-0.5 pill-filled text-primary-foreground"
           >
             {(post as any).match_score}% match
           </div>
@@ -180,7 +180,7 @@ const PostCard = ({
                 transition={{ duration: 0.2 }}
                 onClick={() => onVote(post.id, v.key)}
                 className={`flex-1 py-1.5 rounded-md text-[11px] font-bold border transition-all flex flex-col items-center gap-0.5 ${
-                  active ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'
+                  active ? 'btn-gold-3d border-transparent text-primary-foreground' : 'border-border text-muted-foreground'
                 }`}
               >
                 {v.emoji}

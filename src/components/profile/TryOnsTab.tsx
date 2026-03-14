@@ -173,12 +173,12 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
             onClick={() => setFilterMode(s.key)}
             className={`flex-1 rounded-lg py-2 text-center transition-all active:scale-95 border ${
               filterMode === s.key
-                ? 'bg-primary/10 border-primary/30'
+                ? 'btn-gold-3d border-transparent'
                 : 'bg-card border-border'
             }`}
           >
-            <p className={`text-[16px] font-bold ${filterMode === s.key ? 'text-primary' : 'text-foreground'}`}>{s.value}</p>
-            <p className={`text-[11px] uppercase tracking-wider ${filterMode === s.key ? 'text-primary/70' : 'text-muted-foreground'}`}>{s.label}</p>
+            <p className={`text-[16px] font-bold ${filterMode === s.key ? 'text-primary-foreground' : 'text-foreground'}`}>{s.value}</p>
+            <p className={`text-[11px] uppercase tracking-wider ${filterMode === s.key ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>{s.label}</p>
           </button>
         ))}
       </div>
@@ -197,8 +197,8 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
         </div>
       ) : tryOnPosts.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-          <div className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
-            <Sparkles className="h-6 w-6 text-primary/60" />
+          <div className="h-12 w-12 rounded-2xl icon-3d-gold shimmer-sweep flex items-center justify-center mb-4">
+            <Sparkles className="h-6 w-6 text-primary-foreground shimmer-icon" />
           </div>
           <h2 className="text-[18px] font-bold text-foreground mb-1">No try-ons yet</h2>
           <p className="text-[14px] text-muted-foreground max-w-[260px] mb-5">See any outfit on your body before you buy.</p>
@@ -243,7 +243,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                                   onClick={() => handleVote(post.id, v.key)}
                                   className={`flex-1 py-1.5 rounded-md text-[11px] font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${
                                     active
-                                      ? 'border-primary bg-primary/10 text-primary'
+                                      ? 'btn-gold-3d border-transparent text-primary-foreground'
                                       : 'border-border text-muted-foreground'
                                   }`}
                                 >
