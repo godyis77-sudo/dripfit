@@ -712,6 +712,57 @@
   100% { transform: scale(2.5); opacity: 0; }
 }
 
+/* ── Brand Logo Gold 3D Treatment ── */
+.brand-logo-icon {
+  background: linear-gradient(
+    175deg,
+    hsl(45 100% 88%) 0%,
+    hsl(44 90% 72%) 18%,
+    hsl(42 80% 55%) 40%,
+    hsl(38 70% 40%) 65%,
+    hsl(35 55% 30%) 82%,
+    hsl(40 75% 48%) 100%
+  );
+  box-shadow:
+    0 1px 0 0 hsl(40 55% 30%),
+    0 2px 0 0 hsl(38 45% 24%),
+    0 3px 1px hsl(35 40% 18%),
+    0 4px 2px hsl(30 30% 12%),
+    0 6px 8px hsl(0 0% 0% / 0.4),
+    0 0 20px hsl(42 76% 50% / 0.25),
+    inset 0 1px 0 hsl(45 100% 90% / 0.4);
+}
+
+.text-brand-logo-fg {
+  color: hsl(30 20% 8%);
+}
+
+.brand-logo-text {
+  background: linear-gradient(
+    175deg,
+    hsl(45 100% 88%) 0%,
+    hsl(44 90% 72%) 30%,
+    hsl(42 80% 55%) 55%,
+    hsl(40 75% 48%) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 1px 1px hsl(0 0% 0% / 0.4));
+}
+
+.brand-logo-check {
+  background: linear-gradient(
+    175deg,
+    hsl(45 100% 88%) 0%,
+    hsl(42 80% 55%) 50%,
+    hsl(40 75% 48%) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* ── Premium 3D Gold Button (reusable) ── */
 .btn-gold-3d {
   position: relative;
