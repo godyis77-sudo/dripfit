@@ -291,7 +291,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                       onClick={() => setClothingCategory(cat.key)}
                       className={`px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all active:scale-95 ${
                         clothingCategory === cat.key
-                          ? 'btn-gold-3d border-transparent text-primary-foreground'
+                          ? 'btn-gold-3d border-transparent'
                           : 'border-border text-muted-foreground'
                       }`}
                     >

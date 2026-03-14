@@ -229,7 +229,7 @@ const Profile = () => {
               onClick={() => setActiveTab(t.key)}
               className={`relative flex-1 min-h-[44px] rounded-lg text-[11px] font-bold transition-all duration-200 ${
                 activeTab === t.key
-                  ? 'btn-gold-3d text-primary-foreground'
+                  ? 'btn-gold-3d'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
