@@ -18,6 +18,7 @@ export default function AdminCommissions() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [activeTab, setActiveTab] = useState<"commissions" | "payouts">("commissions");
 
   const { data: isAdmin, isLoading: roleLoading } = useQuery({
     queryKey: ["admin-role", user?.id],
