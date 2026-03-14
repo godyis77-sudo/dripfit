@@ -48,7 +48,7 @@ const CaptureHeightStep = ({
               onClick={() => onGenderSelect(g.value)}
               className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-all active:scale-95 ${
                 genderSet === g.value
-                  ? 'btn-gold-3d text-primary-foreground border-transparent'
+                  ? 'btn-gold-3d border-transparent'
                   : 'border-border text-muted-foreground'
               }`}
             >
@@ -122,7 +122,7 @@ const CaptureHeightStep = ({
                     key={key}
                     onClick={() => onRefObjectChange(refObject === key ? 'none' : key)}
                     className={`text-center p-2 rounded-xl border transition-all active:scale-95 min-h-[44px] ${
-                      refObject === key ? 'btn-gold-3d border-transparent text-primary-foreground' : 'border-border'
+                      refObject === key ? 'btn-gold-3d border-transparent' : 'border-border'
                     }`}
                   >
                     <p className="font-bold text-[10px] text-foreground">{val.label}</p>

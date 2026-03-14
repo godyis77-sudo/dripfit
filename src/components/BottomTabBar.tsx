@@ -48,9 +48,9 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
                 'h-8 w-8 flex items-center justify-center rounded-lg transition-all duration-300',
                 isActive
                   ? 'icon-3d-gold shimmer-sweep scale-105'
-                  : 'icon-3d hover:scale-105'
+                  : 'bg-muted/60 border border-border/40 hover:scale-105'
               )}>
-                <tab.icon className={cn('h-4 w-4 transition-all duration-300', isActive ? 'text-primary-foreground shimmer-icon' : '')} />
+                <tab.icon className={cn('h-4 w-4 transition-all duration-300', isActive ? 'shimmer-icon' : 'text-muted-foreground')} />
               </div>
               <span className={cn(
                 "text-[11px] font-semibold tracking-wider uppercase transition-all duration-300",

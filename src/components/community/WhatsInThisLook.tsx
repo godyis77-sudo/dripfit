@@ -203,7 +203,7 @@ const WhatsInThisLook = ({
                           e.stopPropagation();
                           beginClickout(item.brand, item.url);
                         }}
-                        className="text-[10px] font-bold text-primary-foreground btn-gold-3d px-2 py-1 rounded-md flex items-center gap-0.5 active:scale-95 transition-transform"
+                        className="text-[10px] font-bold btn-gold-3d px-2 py-1 rounded-md flex items-center gap-0.5 active:scale-95 transition-transform"
                       >
                         Shop <ExternalLink className="h-2.5 w-2.5" />
                       </button>
@@ -214,7 +214,7 @@ const WhatsInThisLook = ({
                             e.stopPropagation();
                             onTryOn(item);
                           }}
-                          className="text-[10px] font-bold text-primary-foreground btn-gold-3d px-2 py-1 rounded-md active:scale-95 transition-transform"
+                          className="text-[10px] font-bold btn-gold-3d px-2 py-1 rounded-md active:scale-95 transition-transform"
                         >
                           Try-On
                         </button>
@@ -226,7 +226,7 @@ const WhatsInThisLook = ({
                             e.stopPropagation();
                             onAddToWardrobe(item);
                           }}
-                          className="text-[10px] font-bold text-primary-foreground btn-gold-3d px-2 py-1 rounded-md active:scale-95 transition-transform"
+                          className="text-[10px] font-bold btn-gold-3d px-2 py-1 rounded-md active:scale-95 transition-transform"
                         >
                           +Wardrobe
                         </button>

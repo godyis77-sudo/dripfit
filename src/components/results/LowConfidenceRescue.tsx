@@ -40,7 +40,7 @@ const LowConfidenceRescue = ({ onCalibrate }: LowConfidenceRescueProps) => {
         <div className="space-y-1.5">
           <div className="flex gap-1.5">
             <Input type="number" placeholder="Waist cm" value={waistValue} onChange={e => setWaistValue(e.target.value)} className="h-8 text-[13px] rounded-lg" />
-            <Button size="sm" className="h-8 rounded-lg px-3 btn-gold-3d text-primary-foreground text-[11px]" onClick={() => { const v = parseFloat(waistValue); if (v > 0) onCalibrate({ type: 'waist', value: v }); }}>Apply</Button>
+            <Button size="sm" className="h-8 rounded-lg px-3 btn-gold-3d text-[11px]" onClick={() => { const v = parseFloat(waistValue); if (v > 0) onCalibrate({ type: 'waist', value: v }); }}>Apply</Button>
           </div>
           <button onClick={() => setMode('pick')} className="text-[10px] text-muted-foreground underline">Back</button>
         </div>
@@ -61,7 +61,7 @@ const LowConfidenceRescue = ({ onCalibrate }: LowConfidenceRescueProps) => {
             </div>
           )}
           <div className="flex items-center gap-1.5">
-            <Button size="sm" className="h-8 rounded-lg px-3 btn-gold-3d text-primary-foreground text-[11px]" disabled={!selectedBrand || !selectedSize} onClick={() => { if (selectedBrand && selectedSize) onCalibrate({ type: 'brand', brand: selectedBrand, size: selectedSize }); }}>Apply</Button>
+            <Button size="sm" className="h-8 rounded-lg px-3 btn-gold-3d text-[11px]" disabled={!selectedBrand || !selectedSize} onClick={() => { if (selectedBrand && selectedSize) onCalibrate({ type: 'brand', brand: selectedBrand, size: selectedSize }); }}>Apply</Button>
             <button onClick={() => setMode('pick')} className="text-[10px] text-muted-foreground underline">Back</button>
           </div>
         </div>

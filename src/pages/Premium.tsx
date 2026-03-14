@@ -206,7 +206,7 @@ const Premium = () => {
                   }`}
                 >
                   {p.badge && (
-                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full btn-gold-3d text-primary-foreground whitespace-nowrap">
+                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full btn-gold-3d whitespace-nowrap">
                       {p.badge}
                     </span>
                   )}
