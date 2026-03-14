@@ -6,6 +6,27 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// ─── Commission Tier Config ─────────────────────────────────────────────────
+// Tiers are evaluated top-down; first matching tier wins.
+const COMMISSION_TIERS = [
+  { minConversions: 100, amountCents: 150, label: "bonus" },
+  { minConversions: 1, amountCents: 50, label: "base" },
+];
+
+function getMonthKey() {
+  const d = new Date();
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
+}
+
+function resolveCommission(monthlyCount: number) {
+  for (const tier of COMMISSION_TIERS) {
+    if (monthlyCount + 1 >= tier.minConversions) {
+      return { amountCents: tier.amountCents, tierLabel: tier.label };
+    }
+  }
+  return { amountCents: 50, tierLabel: "base" };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -26,15 +47,14 @@ Deno.serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const userId = claimsData.claims.sub;
+    const userId = user.id;
 
     const { code } = await req.json();
     if (!code || typeof code !== "string" || code.length < 4 || code.length > 20) {
@@ -72,7 +92,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Check if already referred
+    // Check if already referred (dedup by referee_id)
     const { data: existing } = await admin
       .from("referrals")
       .select("id")
@@ -87,10 +107,10 @@ Deno.serve(async (req) => {
     }
 
     // Record referral
-    await admin.from("referrals").insert({
+    const { data: referralRow } = await admin.from("referrals").insert({
       referrer_id: referrer.user_id,
       referee_id: userId,
-    });
+    }).select("id").single();
 
     // Mark referred_by on new user's profile
     await admin
@@ -98,8 +118,39 @@ Deno.serve(async (req) => {
       .update({ referred_by: code.toLowerCase() })
       .eq("user_id", userId);
 
-    // Credit referrer (+1)
+    // Credit referrer (+1 legacy credits)
     await admin.rpc("increment_referral_credits", { target_user_id: referrer.user_id });
+
+    // ─── Creator Commission Logic ───────────────────────────────────────
+    // Check if referrer has 'creator' role
+    const { data: isCreator } = await admin.rpc("has_role", {
+      _user_id: referrer.user_id,
+      _role: "creator",
+    });
+
+    if (isCreator) {
+      const monthKey = getMonthKey();
+
+      // Get current month count for tier calculation
+      const { data: monthCount } = await admin.rpc("get_creator_month_count", {
+        p_creator_id: referrer.user_id,
+        p_month_key: monthKey,
+      });
+
+      const { amountCents, tierLabel } = resolveCommission(monthCount ?? 0);
+
+      // Insert commission (unique index on creator_id + referee_id prevents dupes)
+      await admin.from("creator_commissions").insert({
+        creator_id: referrer.user_id,
+        referee_id: userId,
+        referral_id: referralRow?.id ?? null,
+        amount_cents: amountCents,
+        currency: "GBP",
+        tier_label: tierLabel,
+        status: "pending",
+        month_key: monthKey,
+      });
+    }
 
     return new Response(JSON.stringify({ data: { success: true } }), {
       status: 200,
