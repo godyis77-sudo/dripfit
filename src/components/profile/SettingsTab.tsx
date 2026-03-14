@@ -149,7 +149,7 @@ const SettingsTab = ({
                 <span className="text-[10px] font-bold text-primary-foreground">{displayName[0]?.toUpperCase() || 'U'}</span>
               </div>
             )}
-            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="h-5 w-5 icon-3d-gold rounded-md"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>
           </div>
         </button>
         <div className="flex items-center justify-between px-3 py-2.5">
