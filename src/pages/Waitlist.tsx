@@ -10,6 +10,9 @@ import { Link } from 'react-router-dom';
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
 import BrandMarquee from '@/components/waitlist/BrandMarquee';
 import '@/components/waitlist/BrandMarquee.css';
+import featureScan from '@/assets/feature-scan.jpg';
+import featureTryon from '@/assets/feature-tryon.jpg';
+import featureStylecheck from '@/assets/feature-stylecheck.jpg';
 
 /* ─── Data ─── */
 
@@ -17,20 +20,26 @@ const FEATURES = [
   {
     icon: Scan,
     title: 'AI Body Scan',
-    desc: 'Two photos. 60 seconds. Your exact measurements mapped to 300+ size charts across 70+ brands.',
+    desc: 'Two photos. 60 seconds. Your exact measurements mapped to 300+ size charts.',
+    detail: 'No tape measure needed — just your phone camera.',
     badge: 'Core',
+    image: featureScan,
   },
   {
     icon: Shirt,
     title: 'Virtual Try-On',
-    desc: 'See yourself in it before you buy it. Upload any clothing item and let AI put it on your body.',
+    desc: 'See yourself in any outfit before you buy it.',
+    detail: 'Upload a clothing photo and AI renders it on your body.',
     badge: 'AI',
+    image: featureTryon,
   },
   {
     icon: Users,
     title: 'Style Check',
-    desc: 'Real opinions from people built like you. Get outfit feedback from users with your exact measurements.',
+    desc: 'Real opinions from people built like you.',
+    detail: 'Get outfit ratings from users with your exact measurements.',
     badge: 'Social',
+    image: featureStylecheck,
   },
 ];
 
