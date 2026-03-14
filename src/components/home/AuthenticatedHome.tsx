@@ -8,6 +8,7 @@ import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import { useProfileInfo, useLatestScan, useTrendingFits } from '@/hooks/useProfileData';
 import TrendingFitsGrid from '@/components/home/TrendingFitsGrid';
 import HomeFAB from '@/components/home/HomeFAB';
+import BrandLogo from '@/components/ui/BrandLogo';
 
 /* ── Price filter config ── */
 const PRICE_FILTERS = [
