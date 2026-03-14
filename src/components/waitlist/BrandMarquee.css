@@ -136,3 +136,46 @@
   margin-left: 1.2rem;
   background: hsl(42 70% 50% / 0.5);
 }
+
+/* ── Marquee-styled Button ── */
+.marquee-btn {
+  background: linear-gradient(
+    175deg,
+    hsl(45 100% 88%) 0%,
+    hsl(44 90% 72%) 18%,
+    hsl(42 80% 55%) 40%,
+    hsl(38 70% 40%) 65%,
+    hsl(35 55% 30%) 82%,
+    hsl(40 75% 48%) 100%
+  ) !important;
+  color: hsl(30 20% 8%) !important;
+  border: none !important;
+  box-shadow:
+    0 1px 0 0 hsl(40 55% 30%),
+    0 2px 0 0 hsl(38 45% 24%),
+    0 3px 1px hsl(35 40% 18%),
+    0 4px 2px hsl(30 30% 12%),
+    0 6px 8px hsl(0 0% 0% / 0.4),
+    0 0 20px hsl(42 76% 50% / 0.3),
+    0 0 50px hsl(42 76% 42% / 0.1),
+    inset 0 1px 0 hsl(45 100% 90% / 0.4) !important;
+  text-shadow: 0 1px 0 hsl(44 80% 70% / 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.marquee-btn:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 0 hsl(40 55% 30%),
+    0 2px 0 0 hsl(38 45% 24%),
+    0 3px 1px hsl(35 40% 18%),
+    0 5px 3px hsl(30 30% 12%),
+    0 8px 12px hsl(0 0% 0% / 0.45),
+    0 0 28px hsl(42 76% 50% / 0.4),
+    0 0 60px hsl(42 76% 42% / 0.15),
+    inset 0 1px 0 hsl(45 100% 90% / 0.5) !important;
+}
+
+.marquee-btn:active {
+  transform: translateY(1px);
+}
