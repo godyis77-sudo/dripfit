@@ -54,8 +54,8 @@ const EmptyStates = ({ filter, hasScan, userId, onPostLook }: EmptyStateProps) =
     }
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-          <Search className="h-6 w-6 text-primary" />
+        <div className="h-12 w-12 rounded-2xl icon-3d-gold shimmer-sweep mb-4">
+          <Search className="h-6 w-6 text-primary-foreground shimmer-icon" />
         </div>
         <h2 className="text-[18px] font-bold text-foreground mb-1.5">No similar fits yet</h2>
         <p className="text-[14px] text-muted-foreground max-w-[280px] mb-5">We're matching looks to your measurements. As more people with similar measurements post, they'll appear here.</p>
