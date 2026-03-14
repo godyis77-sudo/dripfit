@@ -227,20 +227,13 @@ const Profile = () => {
             <button
               key={t.key}
               onClick={() => setActiveTab(t.key)}
-              className={`relative flex-1 py-2.5 rounded-lg text-[11px] font-bold transition-all duration-300 ${
+              className={`relative flex-1 min-h-[44px] rounded-lg text-[11px] font-bold transition-all duration-200 ${
                 activeTab === t.key
-                  ? 'text-primary-foreground'
+                  ? 'btn-gold-3d text-primary-foreground'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              {activeTab === t.key && (
-                <motion.div
-                  layoutId="profile-tab"
-                  className="absolute inset-0 rounded-lg btn-gold-3d"
-                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                />
-              )}
-              <span className="relative z-10 flex items-center justify-center gap-1">
+              <span className="flex items-center justify-center gap-1">
                 <t.icon className="h-3.5 w-3.5" /> {t.label}
               </span>
             </button>
