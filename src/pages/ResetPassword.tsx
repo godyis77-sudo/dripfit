@@ -101,8 +101,8 @@ const ResetPassword = () => {
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 w-full max-w-[320px]">
         <div className="flex flex-col items-center mb-4">
-          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200, damping: 18 }} className="h-11 w-11 rounded-xl gradient-drip glow-primary flex items-center justify-center ring-2 ring-primary/20 mb-2">
-            <Crown className="h-5 w-5 text-primary-foreground" />
+          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200, damping: 18 }} className="h-11 w-11 rounded-xl icon-3d-gold shimmer-sweep flex items-center justify-center mb-2">
+            <Crown className="h-5 w-5 text-primary-foreground shimmer-icon" />
           </motion.div>
           <span className="font-display font-bold text-[12px] tracking-wider text-muted-foreground">DRIPFIT ✔</span>
         </div>

@@ -198,7 +198,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                       key={p}
                       onClick={() => setCaption(p)}
                       className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${
-                        caption === p ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'
+                        caption === p ? 'btn-gold-3d border-transparent text-primary-foreground' : 'border-border text-muted-foreground'
                       }`}
                     >
                       {p}
@@ -233,7 +233,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                     />
                     {detectedRetailer && (
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-primary font-bold flex items-center gap-1">
+                        <span className="text-[10px] px-2 py-0.5 rounded-md pill pill-filled font-bold flex items-center gap-1">
                           <Store className="h-3 w-3" /> {detectedRetailer}
                         </span>
                       </div>
@@ -291,7 +291,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                       onClick={() => setClothingCategory(cat.key)}
                       className={`px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all active:scale-95 ${
                         clothingCategory === cat.key
-                          ? 'border-primary bg-primary/10 text-primary'
+                          ? 'btn-gold-3d border-transparent text-primary-foreground'
                           : 'border-border text-muted-foreground'
                       }`}
                     >

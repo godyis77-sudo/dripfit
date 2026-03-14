@@ -171,7 +171,7 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
             {/* Between sizes callout */}
             {isBetween && secondOption && (
               <div
-                className="mt-2 overflow-hidden rounded-md border-l-[3px] border-primary bg-primary/10 px-3 py-2"
+                className="mt-2 overflow-hidden rounded-md border-l-[3px] border-primary bg-primary/5 px-3 py-2"
                 style={{
                   animation: "accordion-down 200ms ease-out forwards",
                 }}
@@ -210,7 +210,7 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
                   onClick={() => handleFitChange(opt.value)}
                   className={`cursor-pointer px-4 min-h-[44px] text-xs font-medium transition-colors duration-200 ${
                     activeFit === opt.value
-                      ? 'bg-primary text-primary-foreground'
+                      ? 'btn-gold-3d text-primary-foreground'
                       : 'bg-card text-muted-foreground'
                   }`}
                   aria-pressed={activeFit === opt.value}
