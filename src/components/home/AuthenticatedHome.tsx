@@ -82,7 +82,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             },
             {
               onClick: () => { trackEvent('home_quick_tryon'); navigate('/tryon'); },
-              img: iconTryon,
+              img: featureIcons.tryon,
               title: 'Try-On',
               subtitle: 'Virtual fit',
             },
