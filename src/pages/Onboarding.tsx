@@ -281,8 +281,8 @@ const Onboarding = () => {
 
                   {/* Text — below image with consistent gap */}
                   <div className="flex flex-col items-center px-8 text-center shrink-0">
-                    <div className="h-9 w-9 rounded-xl gradient-drip flex items-center justify-center mb-2">
-                      {(() => { const Icon = SLIDES[slideIdx].icon; return <Icon className="h-4 w-4 text-primary-foreground" />; })()}
+                    <div className="h-9 w-9 rounded-xl icon-3d flex items-center justify-center mb-2">
+                      {(() => { const Icon = SLIDES[slideIdx].icon; return <Icon className="h-4 w-4 text-brand-logo-fg shimmer-icon" />; })()}
                     </div>
                     <h2 className="font-display text-[20px] font-bold text-foreground leading-tight">
                       {SLIDES[slideIdx].title}
