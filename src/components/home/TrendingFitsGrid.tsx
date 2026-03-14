@@ -78,7 +78,7 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
                 <span className="text-[11px] font-bold text-background">{fit.like_count}</span>
               </div>
               <div className="absolute top-1.5 left-1.5">
-                <span className="text-[10px] font-bold text-background bg-primary/90 backdrop-blur-sm rounded-lg px-1.5 py-0.5">{fit.username}</span>
+                <span className="text-[10px] font-bold text-primary-foreground badge-gold-3d px-1.5 py-0.5 !rounded-lg">{fit.username}</span>
               </div>
             </button>
           );
