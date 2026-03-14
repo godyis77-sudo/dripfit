@@ -45,7 +45,7 @@ const FEATURES = [
     badge: 'Social',
     image: featureStylecheck,
     imageScale: '',
-    phoneScale: '',
+    phoneScale: 'scale-[1.10]',
   },
 ];
 
