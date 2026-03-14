@@ -442,7 +442,7 @@ const Waitlist = () => {
           </FadeUp>
 
           <FadeUp delay={0.1} className="flex flex-col items-center">
-            <EmailCapture id="footer" compact buttonText="Reserve My Spot" note="Be first to know when we launch." />
+            <EmailCapture id="footer" compact buttonText="Send Me the Free Guide" note="Be first to know when we launch." />
           </FadeUp>
         </div>
       </section>
