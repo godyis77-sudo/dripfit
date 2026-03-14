@@ -233,7 +233,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                     />
                     {detectedRetailer && (
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-primary font-bold flex items-center gap-1">
+                        <span className="text-[10px] px-2 py-0.5 rounded-md pill pill-filled font-bold flex items-center gap-1">
                           <Store className="h-3 w-3" /> {detectedRetailer}
                         </span>
                       </div>
