@@ -269,9 +269,9 @@ const SettingsTab = ({
             {themeVal === 'dark' ? <Moon className="h-3.5 w-3.5 text-primary" /> : <Sun className="h-3.5 w-3.5 text-primary" />}
             <span className="text-[12px] text-foreground font-medium">Theme</span>
           </div>
-          <button onClick={toggleTheme} className="flex items-center gap-1.5 text-[11px] text-muted-foreground active:scale-95 transition-transform">
+          <button onClick={toggleTheme} className="flex items-center gap-1.5 text-[11px] btn-gold-3d rounded-lg px-2.5 py-1.5">
             <span className="capitalize">{themeVal}</span>
-            <span className="h-5 w-5 icon-3d-gold rounded-md"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>
+            <ChevronRight className="h-3 w-3" />
           </button>
         </div>
       </div>
