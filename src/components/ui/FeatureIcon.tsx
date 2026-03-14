@@ -1,5 +1,5 @@
 import iconScan from '@/assets/icon-scan.png';
-import iconTryon from '@/assets/icon-tryon-v3.png';
+import iconTryon from '@/assets/icon-tryon-v2.png';
 import iconSizeguide from '@/assets/icon-sizeguide.png';
 import iconStylecheck from '@/assets/icon-stylecheck.png';
 import iconPost from '@/assets/icon-post.png';
