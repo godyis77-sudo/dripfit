@@ -111,8 +111,8 @@ const PostScanGuide = ({ result, recommendedSize, onDismiss }: PostScanGuideProp
           transition={{ duration: 0.2 }}
         >
           <div className="flex items-start gap-3 mb-3">
-            <div className="h-10 w-10 rounded-xl gradient-drip flex items-center justify-center shrink-0 glow-primary">
-              <current.icon className="h-5 w-5 text-primary-foreground" />
+            <div className="h-10 w-10 icon-3d-gold shimmer-sweep rounded-xl shrink-0">
+              <current.icon className="h-5 w-5 text-primary-foreground shimmer-icon" />
             </div>
             <div className="flex-1">
               <h3 className="font-display text-[16px] font-bold text-foreground">{current.title}</h3>

@@ -266,11 +266,11 @@ const TryOnResultSection = ({
                   <input ref={accessoryCameraRef} type="file" accept="image/jpeg,image/png,image/webp" capture="environment" onChange={handleFileSelect(setAccessoryPhoto)} className="hidden" />
                   <p className="text-[12px] text-foreground/70 mb-2">Layer one item at a time — tops, bottoms, shoes, and more</p>
                   <div className="flex gap-1.5 flex-wrap mb-2">
-                    <button onClick={() => { setShowAllCategories(prev => !prev); setAccessoryCategory(null); }} className={`px-3 py-2 rounded-lg text-[12px] font-semibold border transition-all active:scale-95 ${showAllCategories ? 'border-primary bg-primary text-primary-foreground font-bold' : 'border-border text-foreground hover:border-primary/30'}`}>
+                    <button onClick={() => { setShowAllCategories(prev => !prev); setAccessoryCategory(null); }} className={`pill ${showAllCategories ? 'pill-filled' : ''}`}>
                       🛍️ All Products
                     </button>
                     {ACCESSORY_CATEGORIES.map(c => (
-                      <button key={c.key} onClick={() => { setAccessoryCategory(prev => prev === c.key ? null : c.key); setShowAllCategories(false); }} className={`px-3 py-2 rounded-lg text-[12px] font-semibold border transition-all active:scale-95 ${accessoryCategory === c.key && !showAllCategories ? 'border-primary bg-primary text-primary-foreground font-bold' : 'border-border text-foreground hover:border-primary/30'}`}>
+                      <button key={c.key} onClick={() => { setAccessoryCategory(prev => prev === c.key ? null : c.key); setShowAllCategories(false); }} className={`pill ${accessoryCategory === c.key && !showAllCategories ? 'pill-filled' : ''}`}>
                         {c.label}
                       </button>
                     ))}

@@ -15,8 +15,8 @@ const UpgradePrompt = ({ headline, description, className = '' }: UpgradePromptP
   return (
     <div className={`bg-card border border-primary/20 rounded-xl p-3 ${className}`}>
       <div className="flex items-start gap-2.5">
-        <div className="h-8 w-8 rounded-lg gradient-drip flex items-center justify-center shrink-0">
-          <Crown className="h-4 w-4 text-primary-foreground" />
+        <div className="h-8 w-8 icon-3d-gold shimmer-sweep rounded-lg shrink-0">
+          <Crown className="h-4 w-4 text-primary-foreground shimmer-icon" />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-[12px] font-bold text-foreground">{headline}</p>
