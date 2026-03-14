@@ -105,7 +105,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             <button
               key={action.title}
               onClick={action.onClick}
-              className="flex flex-col items-center rounded-xl border border-primary/25 bg-gradient-to-b from-primary/10 to-primary/5 backdrop-blur-sm p-2 pb-2 gap-1 active:scale-[0.96] active:shadow-3d-gold-pressed transition-all min-h-[44px] shadow-3d shimmer-sweep"
+              className="flex flex-col items-center rounded-xl border border-primary/25 bg-gradient-to-b from-primary/10 to-primary/5 backdrop-blur-sm px-1.5 pt-1.5 pb-1 gap-0.5 active:scale-[0.96] active:shadow-3d-gold-pressed transition-all min-h-[44px] shadow-3d shimmer-sweep"
             >
               <img
                 src={action.img}
@@ -113,8 +113,8 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                 className="w-full aspect-square object-contain drop-shadow-[0_2px_6px_hsl(var(--drip-gold)/0.4)]"
               />
               <div className="text-center">
-                <p className="text-[11px] font-extrabold font-display text-primary leading-tight">{action.title}</p>
-                <p className="text-[9px] font-body text-foreground/60 leading-tight mt-px">{action.subtitle}</p>
+                <p className="text-[10px] font-extrabold font-display text-primary leading-none">{action.title}</p>
+                <p className="text-[8px] font-body text-foreground/60 leading-none mt-px">{action.subtitle}</p>
               </div>
             </button>
           ))}
