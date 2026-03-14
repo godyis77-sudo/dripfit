@@ -35,7 +35,7 @@ const FEATURES = [
     badge: 'AI',
     image: featureTryon,
     imageScale: '',
-    phoneScale: '',
+    phoneScale: 'scale-[1.10]',
   },
   {
     icon: Users,
