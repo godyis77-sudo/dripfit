@@ -192,7 +192,7 @@ function GoldParticles() {
 const Waitlist = () => {
   usePageTitle('Get Your Free Size Guide');
   const [showTop, setShowTop] = useState(false);
-  const brandCount = 74;
+  const brandCount = 73;
 
   useEffect(() => {
     const handler = () => setShowTop(window.scrollY > 500);
