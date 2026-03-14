@@ -197,8 +197,8 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
         </div>
       ) : tryOnPosts.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-          <div className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
-            <Sparkles className="h-6 w-6 text-primary/60" />
+          <div className="h-12 w-12 rounded-2xl icon-3d-gold shimmer-sweep flex items-center justify-center mb-4">
+            <Sparkles className="h-6 w-6 text-primary-foreground shimmer-icon" />
           </div>
           <h2 className="text-[18px] font-bold text-foreground mb-1">No try-ons yet</h2>
           <p className="text-[14px] text-muted-foreground max-w-[260px] mb-5">See any outfit on your body before you buy.</p>
