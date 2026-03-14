@@ -203,7 +203,7 @@ const WhatsInThisLook = ({
                           e.stopPropagation();
                           beginClickout(item.brand, item.url);
                         }}
-                        className="text-[10px] font-bold text-foreground bg-primary/20 px-2 py-0.5 rounded-md flex items-center gap-0.5 active:opacity-70"
+                        className="text-[10px] font-bold text-primary-foreground btn-gold-3d px-2 py-1 rounded-md flex items-center gap-0.5 active:scale-95 transition-transform"
                       >
                         Shop <ExternalLink className="h-2.5 w-2.5" />
                       </button>
