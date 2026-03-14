@@ -313,7 +313,7 @@ const SettingsTab = ({
               onClick={() => { setRegion(r.value); setUserRegion(r.value); persistRegionToDb(user.id, r.value); trackEvent('region_changed' as any, { region: r.value }); toast({ title: `Region set to ${r.label}` }); }}
               className={`flex flex-col items-center gap-0.5 py-2 rounded-lg text-center transition-all active:scale-95 ${
                 region === r.value
-                  ? 'gradient-drip text-primary-foreground'
+                  ? 'btn-gold-3d text-primary-foreground'
                   : 'bg-background border border-border text-muted-foreground'
               }`}
             >
