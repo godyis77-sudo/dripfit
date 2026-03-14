@@ -535,8 +535,8 @@ const SizeGuide = () => {
 
                 {recommendation.breakdown?.length > 0 && (
                   <>
-                    <Button variant="ghost" className="w-full mb-1.5 text-muted-foreground text-[12px]" onClick={() => setShowBreakdown(!showBreakdown)}>
-                      {showBreakdown ? 'Hide' : 'Show'} Breakdown <span className="ml-1 h-5 w-5 icon-3d-gold rounded-md">{showBreakdown ? <ChevronUp className="h-2.5 w-2.5 text-primary-foreground" /> : <ChevronDown className="h-2.5 w-2.5 text-primary-foreground" />}</span>
+                    <Button variant="ghost" className="w-full mb-1.5 text-[12px] btn-gold-3d" onClick={() => setShowBreakdown(!showBreakdown)}>
+                      {showBreakdown ? 'Hide' : 'Show'} Breakdown {showBreakdown ? <ChevronUp className="ml-1 h-3.5 w-3.5" /> : <ChevronDown className="ml-1 h-3.5 w-3.5" />}
                     </Button>
                     <AnimatePresence>{showBreakdown && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">

@@ -202,9 +202,9 @@ const CartTab = () => {
                     <DropdownMenuTrigger asChild>
                       <button
                         type="button"
-                        className="inline-flex h-9 flex-1 items-center justify-center rounded-lg btn-luxury px-4 text-[13px] font-bold text-primary-foreground"
+                        className="inline-flex h-9 flex-1 items-center justify-center rounded-lg btn-gold-3d px-4 text-[13px]"
                       >
-                        Buy! <span className="ml-1 h-5 w-5 icon-3d-gold rounded-md"><ChevronDown className="h-2.5 w-2.5 text-primary-foreground" /></span>
+                        Buy! <ChevronDown className="ml-1 h-3 w-3" />
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="min-w-[160px]">
