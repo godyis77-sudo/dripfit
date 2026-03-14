@@ -48,7 +48,7 @@ const CaptureHeightStep = ({
               onClick={() => onGenderSelect(g.value)}
               className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-all active:scale-95 ${
                 genderSet === g.value
-                  ? 'border-primary bg-primary/10 text-primary'
+                  ? 'btn-gold-3d text-primary-foreground border-transparent'
                   : 'border-border text-muted-foreground'
               }`}
             >
