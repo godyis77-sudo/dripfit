@@ -146,7 +146,7 @@ Deno.serve(async (req) => {
         referee_id: userId,
         referral_id: referralRow?.id ?? null,
         amount_cents: amountCents,
-        currency: "GBP",
+        currency: COMMISSION_CURRENCY,
         tier_label: tierLabel,
         status: "pending",
         month_key: monthKey,

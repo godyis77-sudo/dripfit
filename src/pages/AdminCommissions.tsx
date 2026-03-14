@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
 
-const CURRENCY = "£";
+const CURRENCY = "$";
 
 export default function AdminCommissions() {
   usePageTitle("Admin — Commissions");
