@@ -255,7 +255,7 @@ const Waitlist = () => {
         {/* Subheadline */}
         <FadeUp delay={0.1} className="relative z-10 max-w-md mx-auto mb-10">
           <p className="text-muted-foreground text-[15px] sm:text-base leading-relaxed">
-            The exact measurements you need to order correctly from <span className="text-foreground font-semibold">{brandCount ?? '…'} major brands</span> — plus the app that does it automatically.
+            The exact measurements you need to order correctly from <span className="text-foreground font-semibold">70+ brands</span> verified across <span className="text-foreground font-semibold">300 unique size charts</span> — plus the app that does it automatically.
           </p>
         </FadeUp>
 
