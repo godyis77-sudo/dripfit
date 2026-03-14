@@ -112,7 +112,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                 alt={action.title}
                 className="w-full aspect-square object-contain drop-shadow-[0_2px_6px_hsl(var(--drip-gold)/0.4)]"
               />
-              <p className="text-[10px] font-extrabold font-display text-primary leading-none">{action.title}</p>
+              <p className="text-[12px] font-extrabold font-display text-primary leading-none">{action.title}</p>
             </button>
           ))}
         </motion.div>
