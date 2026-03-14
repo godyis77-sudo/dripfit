@@ -244,13 +244,16 @@
     inset: 0;
     background: linear-gradient(
       105deg,
-      transparent 35%,
-      hsl(var(--gold-shimmer) / 0.35) 45%,
-      hsl(var(--gold-shimmer) / 0.08) 50%,
-      transparent 55%
+      transparent 15%,
+      hsl(var(--gold-shimmer) / 0.08) 25%,
+      hsl(var(--gold-shimmer) / 0.22) 38%,
+      hsl(var(--gold-shimmer) / 0.30) 50%,
+      hsl(var(--gold-shimmer) / 0.22) 62%,
+      hsl(var(--gold-shimmer) / 0.08) 75%,
+      transparent 85%
     );
-    transform: translateX(-110%);
-    animation: sweep-shimmer 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    transform: translateX(-120%);
+    animation: sweep-shimmer 9s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
     pointer-events: none;
     border-radius: inherit;
     z-index: 1;
