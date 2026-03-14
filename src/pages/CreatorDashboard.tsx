@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { trackEvent } from "@/lib/analytics";
 
-const CURRENCY_SYMBOL = "£";
+const CURRENCY_SYMBOL = "$";
 
 function getMonthKey() {
   const d = new Date();
@@ -165,7 +165,7 @@ export default function CreatorDashboard() {
             {CURRENCY_SYMBOL}{(totalEarnings / 100).toFixed(2)}
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            {monthConversions >= 100 ? "🔥 Bonus tier active — £1.50/install" : `${100 - monthConversions} more to unlock bonus tier`}
+            {monthConversions >= 100 ? "🔥 Bonus tier active — $1.50/install" : `${100 - monthConversions} more to unlock bonus tier`}
           </p>
         </motion.div>
 

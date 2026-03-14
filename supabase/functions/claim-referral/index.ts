@@ -12,6 +12,7 @@ const COMMISSION_TIERS = [
   { minConversions: 100, amountCents: 150, label: "bonus" },
   { minConversions: 1, amountCents: 50, label: "base" },
 ];
+const COMMISSION_CURRENCY = "USD";
 
 function getMonthKey() {
   const d = new Date();
@@ -145,7 +146,7 @@ Deno.serve(async (req) => {
         referee_id: userId,
         referral_id: referralRow?.id ?? null,
         amount_cents: amountCents,
-        currency: "GBP",
+        currency: COMMISSION_CURRENCY,
         tier_label: tierLabel,
         status: "pending",
         month_key: monthKey,
