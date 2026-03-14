@@ -250,7 +250,7 @@
       transparent 55%
     );
     transform: translateX(-110%);
-    animation: sweep-shimmer 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    animation: sweep-shimmer 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     pointer-events: none;
     border-radius: inherit;
     z-index: 1;
