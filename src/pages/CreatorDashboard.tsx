@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { trackEvent } from "@/lib/analytics";
 
-const CURRENCY_SYMBOL = "£";
+const CURRENCY_SYMBOL = "$";
 
 function getMonthKey() {
   const d = new Date();
