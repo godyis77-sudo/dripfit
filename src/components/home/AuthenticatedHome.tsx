@@ -123,7 +123,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               <button
                 key={filter.label}
                 onClick={() => setActivePriceIdx(idx)}
-                className={`shrink-0 pill ${
+                className={`shrink-0 pill shimmer-sweep ${
                   activePriceIdx === idx ? 'pill-filled' : ''
                 }`}
               >
@@ -201,8 +201,8 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               onClick={() => navigate('/capture')}
               className="w-full bg-card border border-border rounded-xl p-3 flex items-center gap-3 active:scale-[0.98] transition-transform"
             >
-              <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                <Camera className="h-4 w-4 text-primary" />
+              <div className="h-9 w-9 rounded-xl icon-3d-gold shimmer-sweep shrink-0">
+                <Camera className="h-4 w-4 text-primary-foreground shimmer-icon" />
               </div>
               <div className="text-left">
                 <p className="text-[12px] font-bold text-foreground">Get personalized size recommendations</p>
