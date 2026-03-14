@@ -1,15 +1,15 @@
 import { forwardRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Camera, Shirt, Users, User, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 
-const tabs = [
-  { icon: Home, label: 'Home', path: '/' },
-  { icon: Camera, label: 'Scan', path: '/capture' },
-  { icon: Shirt, label: 'Try-On', path: '/tryon' },
-  { icon: Users, label: 'Style Check', path: '/style-check' },
-  { icon: User, label: 'Profile', path: '/profile' },
+const tabs: { icon: FeatureIconName; label: string; path: string }[] = [
+  { icon: 'home', label: 'Home', path: '/' },
+  { icon: 'post', label: 'Scan', path: '/capture' },
+  { icon: 'tryon', label: 'Try-On', path: '/tryon' },
+  { icon: 'stylecheck', label: 'Style Check', path: '/style-check' },
+  { icon: 'profile', label: 'Profile', path: '/profile' },
 ];
 
 const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
@@ -45,13 +45,13 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
               )}
             >
               <div className={cn(
-                'h-11 w-11 flex items-center justify-center rounded-xl transition-all duration-300 btn-gold-3d',
+                'h-11 w-11 flex items-center justify-center rounded-xl transition-all duration-300',
                 isActive && 'scale-110 shadow-gold-glow shimmer-sweep ring-1 ring-primary/40'
               )}>
-                <tab.icon className={cn('h-5 w-5 transition-all duration-300 text-primary-foreground', isActive && 'drop-shadow-[0_0_4px_hsl(var(--drip-glow)/0.6)]')} />
+                <FeatureIcon name={tab.icon} size={isActive ? 32 : 28} />
               </div>
               <span className={cn(
-                "text-[12px] font-bold tracking-wider uppercase transition-all duration-300",
+                "text-[10px] font-bold tracking-wider uppercase transition-all duration-300",
                 isActive ? 'text-primary' : ''
               )}>{tab.label}</span>
               {isActive && (
