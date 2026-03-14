@@ -63,6 +63,7 @@ type FunnelEvent =
   | 'home_quick_scan'
   | 'home_quick_tryon'
   | 'home_quick_sizeguide'
+  | 'home_quick_stylecheck'
   | 'postscan_tryon_click'
   | 'postscan_shop_click'
   | 'postscan_fitcheck_click'
