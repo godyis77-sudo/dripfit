@@ -106,14 +106,14 @@ function EmailCapture({ id, compact = false }: { id: string; compact?: boolean }
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, ease }}
-        className="flex items-center gap-3 justify-center py-5 px-4 rounded-2xl bg-primary/[0.06] border border-primary/20"
+        className="flex items-center gap-3 justify-center py-5 px-5 rounded-2xl bg-primary/10 border border-primary/25"
       >
-        <div className="h-8 w-8 rounded-full bg-primary/15 flex items-center justify-center">
+        <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
           <CheckCircle2 className="h-4 w-4 text-primary" />
         </div>
         <div className="text-left">
           <p className="text-sm font-bold text-foreground">You're on the list!</p>
-          <p className="text-[11px] text-muted-foreground">Check your inbox for the free guide.</p>
+          <p className="text-[12px] text-foreground/70">Check your inbox for the free guide.</p>
         </div>
       </motion.div>
     );
@@ -123,7 +123,7 @@ function EmailCapture({ id, compact = false }: { id: string; compact?: boolean }
     <form onSubmit={handleSubmit} className="w-full max-w-md" id={id}>
       <div className={`flex ${compact ? 'flex-row' : 'flex-col sm:flex-row'} gap-2.5`}>
         <div className="relative flex-1">
-          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40 pointer-events-none" />
+          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input
             type="email"
             required
@@ -131,7 +131,7 @@ function EmailCapture({ id, compact = false }: { id: string; compact?: boolean }
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={loading}
-            className="h-12 pl-10 bg-card border-border/50 text-foreground placeholder:text-muted-foreground/40 rounded-xl focus-visible:ring-primary/40 focus-visible:border-primary/30 transition-all"
+            className="h-12 pl-10 bg-secondary border-border text-foreground placeholder:text-muted-foreground rounded-xl focus-visible:ring-primary/50 focus-visible:border-primary/40 transition-all"
           />
         </div>
         <Button
@@ -139,7 +139,7 @@ function EmailCapture({ id, compact = false }: { id: string; compact?: boolean }
           disabled={loading}
           className="h-12 px-6 rounded-xl font-bold text-[12px] tracking-wider uppercase whitespace-nowrap shrink-0 relative overflow-hidden"
           style={{
-            boxShadow: '0 0 28px -4px hsl(42 76% 42% / 0.3), 0 0 80px -12px hsl(42 76% 42% / 0.1)',
+            boxShadow: '0 0 28px -4px hsl(42 76% 42% / 0.35), 0 0 80px -12px hsl(42 76% 42% / 0.12)',
           }}
         >
           {loading ? (
@@ -153,7 +153,7 @@ function EmailCapture({ id, compact = false }: { id: string; compact?: boolean }
           )}
         </Button>
       </div>
-      <p className="text-[10px] text-muted-foreground/40 text-center mt-3 tracking-wide">
+      <p className="text-[11px] text-muted-foreground text-center mt-3 tracking-wide">
         No spam. Just the guide + occasional DripFit updates.
       </p>
     </form>
@@ -167,14 +167,14 @@ function GoldParticles() {
       {Array.from({ length: 6 }).map((_, i) => (
         <motion.div
           key={i}
-          className="absolute w-1 h-1 rounded-full bg-primary/20"
+          className="absolute w-1 h-1 rounded-full bg-primary/30"
           style={{
             left: `${15 + i * 14}%`,
             top: `${20 + (i % 3) * 25}%`,
           }}
           animate={{
             y: [-10, 10, -10],
-            opacity: [0.2, 0.5, 0.2],
+            opacity: [0.3, 0.6, 0.3],
           }}
           transition={{
             duration: 4 + i * 0.5,
@@ -192,7 +192,6 @@ function GoldParticles() {
 const Waitlist = () => {
   usePageTitle('Get Your Free Size Guide');
   const [showTop, setShowTop] = useState(false);
-  const brandCount = 73;
 
   useEffect(() => {
     const handler = () => setShowTop(window.scrollY > 500);
@@ -206,7 +205,7 @@ const Waitlist = () => {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
 
       {/* ─── NAV ─── */}
-      <nav className="sticky top-0 z-50 h-14 flex items-center justify-between px-5 sm:px-8 backdrop-blur-2xl bg-background/60 border-b border-border/30">
+      <nav className="sticky top-0 z-50 h-14 flex items-center justify-between px-5 sm:px-8 backdrop-blur-2xl bg-background/80 border-b border-border/50">
         <div className="flex items-center gap-2.5">
           <Crown className="h-4 w-4 text-primary shimmer-icon" />
           <span className="font-display text-[15px] tracking-[3px] text-foreground font-semibold">
@@ -215,7 +214,7 @@ const Waitlist = () => {
         </div>
         <Link
           to="/auth"
-          className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] hover:text-primary transition-colors border border-border/40 rounded-full px-4 py-1.5 hover:border-primary/30"
+          className="text-[10px] font-bold text-foreground/70 uppercase tracking-[0.2em] hover:text-primary transition-colors border border-border rounded-full px-4 py-1.5 hover:border-primary/40"
         >
           Sign In
         </Link>
@@ -226,18 +225,18 @@ const Waitlist = () => {
         <GoldParticles />
 
         {/* Multi-layered ambient glow */}
-        <div className="absolute top-[-100px] left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full blur-[180px] pointer-events-none bg-primary/[0.05]" />
-        <div className="absolute top-[100px] right-[-200px] w-[400px] h-[400px] rounded-full blur-[140px] pointer-events-none" style={{ background: 'radial-gradient(circle, hsl(280 40% 35% / 0.03), transparent)' }} />
+        <div className="absolute top-[-100px] left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full blur-[180px] pointer-events-none bg-primary/[0.07]" />
+        <div className="absolute top-[100px] right-[-200px] w-[400px] h-[400px] rounded-full blur-[140px] pointer-events-none" style={{ background: 'radial-gradient(circle, hsl(280 40% 35% / 0.04), transparent)' }} />
 
         {/* Eyebrow badge */}
         <FadeUp className="relative z-10 mb-6">
           <motion.div
-            className="inline-flex items-center gap-2 bg-primary/[0.08] border border-primary/20 rounded-full px-4 py-1.5"
-            animate={{ boxShadow: ['0 0 0 0 hsl(42 76% 42% / 0)', '0 0 20px 2px hsl(42 76% 42% / 0.08)', '0 0 0 0 hsl(42 76% 42% / 0)'] }}
+            className="inline-flex items-center gap-2 bg-primary/10 border border-primary/25 rounded-full px-4 py-1.5"
+            animate={{ boxShadow: ['0 0 0 0 hsl(42 76% 42% / 0)', '0 0 20px 2px hsl(42 76% 42% / 0.1)', '0 0 0 0 hsl(42 76% 42% / 0)'] }}
             transition={{ duration: 3, repeat: Infinity }}
           >
             <Sparkles className="h-3 w-3 text-primary" />
-            <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em]">Free Size Guide</span>
+            <span className="text-[11px] font-bold text-primary uppercase tracking-[0.2em]">Free Size Guide</span>
           </motion.div>
         </FadeUp>
 
@@ -254,7 +253,7 @@ const Waitlist = () => {
 
         {/* Subheadline */}
         <FadeUp delay={0.1} className="relative z-10 max-w-md mx-auto mb-10">
-          <p className="text-muted-foreground text-[15px] sm:text-base leading-relaxed">
+          <p className="text-foreground/70 text-[15px] sm:text-base leading-relaxed">
             The exact measurements you need to order correctly from <span className="text-foreground font-semibold">70+ brands</span> verified across <span className="text-foreground font-semibold">300 unique size charts</span> — plus the app that does it automatically.
           </p>
         </FadeUp>
@@ -268,7 +267,7 @@ const Waitlist = () => {
         <FadeUp delay={0.3} className="relative z-10">
           <div className="relative">
             {/* Glow behind phone */}
-            <div className="absolute inset-0 blur-[60px] bg-primary/[0.08] rounded-full scale-125 pointer-events-none" />
+            <div className="absolute inset-0 blur-[60px] bg-primary/10 rounded-full scale-125 pointer-events-none" />
             <DecorativeSilhouette height={380} className="relative z-10" />
           </div>
         </FadeUp>
@@ -276,30 +275,30 @@ const Waitlist = () => {
         {/* Scroll indicator */}
         <FadeUp delay={0.5} className="relative z-10 mt-8">
           <motion.div
-            className="flex flex-col items-center gap-2 text-muted-foreground/30"
+            className="flex flex-col items-center gap-2 text-muted-foreground"
             animate={{ y: [0, 6, 0] }}
             transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
           >
             <span className="text-[9px] uppercase tracking-[0.3em]">Scroll</span>
-            <div className="w-px h-6 bg-gradient-to-b from-muted-foreground/20 to-transparent" />
+            <div className="w-px h-6 bg-gradient-to-b from-muted-foreground/40 to-transparent" />
           </motion.div>
         </FadeUp>
       </section>
 
       {/* ─── LEAD MAGNET ─── */}
       <section className="py-20 px-5 sm:px-8 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.02] to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.03] to-transparent pointer-events-none" />
         <div className="max-w-lg mx-auto relative z-10">
           <FadeUp>
             <div className="flex items-center gap-2 mb-4">
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent to-primary/20" />
-              <span className="text-[10px] font-bold text-primary uppercase tracking-[0.3em]">Instant Download</span>
-              <div className="h-px flex-1 bg-gradient-to-l from-transparent to-primary/20" />
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent to-primary/30" />
+              <span className="text-[11px] font-bold text-primary uppercase tracking-[0.3em]">Instant Download</span>
+              <div className="h-px flex-1 bg-gradient-to-l from-transparent to-primary/30" />
             </div>
             <h2 className="font-display text-[22px] sm:text-3xl font-bold text-foreground mb-2 leading-tight text-center">
               Get The Complete Online Shopping Size Guide
             </h2>
-            <p className="text-sm text-muted-foreground text-center mb-8">
+            <p className="text-[14px] text-foreground/60 text-center mb-8">
               Join the waitlist and get this guide sent to your inbox instantly.
             </p>
           </FadeUp>
@@ -307,11 +306,11 @@ const Waitlist = () => {
           <div className="space-y-3">
             {CHECKLIST.map((item, i) => (
               <FadeUp key={i} delay={i * 0.1}>
-                <div className="flex gap-4 items-start bg-card/60 border border-border/30 rounded-2xl p-4 backdrop-blur-sm group hover:border-primary/20 transition-colors">
-                  <div className="h-9 w-9 rounded-xl bg-primary/[0.08] border border-primary/15 flex items-center justify-center shrink-0 group-hover:bg-primary/[0.12] transition-colors">
+                <div className="flex gap-4 items-start bg-secondary border border-border rounded-2xl p-4 group hover:border-primary/30 transition-colors">
+                  <div className="h-9 w-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 group-hover:bg-primary/15 transition-colors">
                     <item.icon className="h-4 w-4 text-primary" />
                   </div>
-                  <p className="text-[13px] text-foreground/90 leading-relaxed pt-1.5">{item.text}</p>
+                  <p className="text-[13px] text-foreground/80 leading-relaxed pt-1.5">{item.text}</p>
                 </div>
               </FadeUp>
             ))}
@@ -321,18 +320,18 @@ const Waitlist = () => {
 
       {/* ─── SEPARATOR ─── */}
       <div className="max-w-xs mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-border/60 to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
       </div>
 
       {/* ─── 3 CORE FEATURES ─── */}
       <section className="py-20 px-5 sm:px-8">
         <div className="max-w-4xl mx-auto">
           <FadeUp className="text-center mb-14">
-            <span className="text-[10px] font-bold text-primary uppercase tracking-[0.3em]">Coming Soon</span>
+            <span className="text-[11px] font-bold text-primary uppercase tracking-[0.3em]">Coming Soon</span>
             <h2 className="font-display text-[22px] sm:text-3xl font-bold text-foreground leading-tight mt-3">
               The App That <span className="gradient-drip-text">Ends Returns</span>
             </h2>
-            <p className="text-sm text-muted-foreground mt-3 max-w-md mx-auto">
+            <p className="text-[14px] text-foreground/60 mt-3 max-w-md mx-auto">
               Three powerful features working together to make sure every order fits perfectly.
             </p>
           </FadeUp>
@@ -340,17 +339,17 @@ const Waitlist = () => {
           <div className="grid md:grid-cols-3 gap-4">
             {FEATURES.map((f, i) => (
               <FadeUp key={f.title} delay={i * 0.1}>
-                <div className="relative bg-card/50 border border-border/30 rounded-2xl p-6 backdrop-blur-sm h-full flex flex-col group hover:border-primary/20 transition-all hover:bg-card/70">
+                <div className="relative bg-secondary border border-border rounded-2xl p-6 h-full flex flex-col group hover:border-primary/30 transition-all">
                   {/* Badge */}
-                  <span className="absolute top-4 right-4 text-[9px] font-bold text-primary/60 uppercase tracking-[0.2em] bg-primary/[0.06] border border-primary/10 rounded-full px-2.5 py-0.5">
+                  <span className="absolute top-4 right-4 text-[9px] font-bold text-primary uppercase tracking-[0.2em] bg-primary/10 border border-primary/20 rounded-full px-2.5 py-0.5">
                     {f.badge}
                   </span>
 
-                  <div className="h-12 w-12 rounded-2xl bg-primary/[0.08] border border-primary/15 flex items-center justify-center mb-5 group-hover:bg-primary/[0.12] transition-colors">
+                  <div className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-5 group-hover:bg-primary/15 transition-colors">
                     <f.icon className="h-5 w-5 text-primary" />
                   </div>
                   <h3 className="font-display text-lg font-bold text-foreground mb-2">{f.title}</h3>
-                  <p className="text-[13px] text-muted-foreground leading-relaxed flex-1">{f.desc}</p>
+                  <p className="text-[13px] text-foreground/65 leading-relaxed flex-1">{f.desc}</p>
                 </div>
               </FadeUp>
             ))}
@@ -360,7 +359,7 @@ const Waitlist = () => {
 
       {/* ─── SOCIAL PROOF / AGITATION ─── */}
       <section className="py-20 px-5 sm:px-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-card/40 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-secondary/50 to-transparent pointer-events-none" />
 
         <div className="max-w-xl mx-auto text-center relative z-10">
           <FadeUp>
@@ -382,7 +381,7 @@ const Waitlist = () => {
               transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
             >
               {[...BRANDS, ...BRANDS].map((b, i) => (
-                <span key={`${b}-${i}`} className="text-base font-bold text-muted-foreground/20 uppercase tracking-[0.25em] select-none">
+                <span key={`${b}-${i}`} className="text-base font-bold text-foreground/20 uppercase tracking-[0.25em] select-none">
                   {b}
                 </span>
               ))}
@@ -392,9 +391,9 @@ const Waitlist = () => {
           {/* Stats */}
           <FadeUp delay={0.2} className="mt-14 grid grid-cols-3 gap-3">
             {STATS.map((s) => (
-              <div key={s.label} className="text-center bg-card/40 border border-border/20 rounded-2xl py-5 px-3 backdrop-blur-sm">
+              <div key={s.label} className="text-center bg-secondary border border-border rounded-2xl py-5 px-3">
                 <p className="font-display text-[22px] sm:text-2xl font-bold gradient-drip-text leading-none">{s.stat}</p>
-                <p className="text-[10px] text-muted-foreground/50 mt-2 uppercase tracking-[0.1em] leading-tight">{s.label}</p>
+                <p className="text-[10px] text-foreground/50 mt-2 uppercase tracking-[0.1em] leading-tight">{s.label}</p>
               </div>
             ))}
           </FadeUp>
@@ -405,16 +404,16 @@ const Waitlist = () => {
       <section className="py-12 px-5 sm:px-8">
         <div className="max-w-lg mx-auto">
           <FadeUp>
-            <div className="bg-card/50 border border-border/30 rounded-2xl p-5 backdrop-blur-sm text-center">
+            <div className="bg-secondary border border-border rounded-2xl p-5 text-center">
               <div className="flex justify-center gap-0.5 mb-3">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star key={i} className="h-3.5 w-3.5 text-primary fill-primary" />
                 ))}
               </div>
-              <p className="text-[13px] text-foreground/80 leading-relaxed italic mb-3">
+              <p className="text-[13px] text-foreground/75 leading-relaxed italic mb-3">
                 "I used to return 3 out of every 5 orders. After using DripFit, I haven't had a single return in 4 months."
               </p>
-              <p className="text-[10px] text-muted-foreground/50 uppercase tracking-[0.2em]">— Early Beta Tester</p>
+              <p className="text-[11px] text-foreground/45 uppercase tracking-[0.2em]">— Early Beta Tester</p>
             </div>
           </FadeUp>
         </div>
@@ -422,7 +421,7 @@ const Waitlist = () => {
 
       {/* ─── FOOTER CTA ─── */}
       <section className="py-20 px-5 sm:px-8 relative">
-        <div className="absolute inset-0 bg-gradient-to-t from-card/30 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-secondary/40 to-transparent pointer-events-none" />
         <div className="max-w-lg mx-auto text-center relative z-10">
           <FadeUp>
             <h2 className="font-display text-[22px] sm:text-3xl font-bold text-foreground mb-2 leading-tight">
@@ -438,13 +437,13 @@ const Waitlist = () => {
       </section>
 
       {/* ─── FOOTER ─── */}
-      <footer className="py-8 px-5 sm:px-8 border-t border-border/15">
+      <footer className="py-8 px-5 sm:px-8 border-t border-border/50">
         <div className="max-w-xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Crown className="h-3 w-3 text-primary/50" />
-            <span className="text-[10px] text-muted-foreground/40 tracking-[2px] font-semibold">DRIPFIT ✔</span>
+            <Crown className="h-3 w-3 text-primary/60" />
+            <span className="text-[10px] text-foreground/40 tracking-[2px] font-semibold">DRIPFIT ✔</span>
           </div>
-          <div className="flex items-center gap-6 text-[10px] text-muted-foreground/35">
+          <div className="flex items-center gap-6 text-[11px] text-foreground/40">
             <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
             <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
             <a href="mailto:hello@dripfit.app" className="hover:text-foreground transition-colors">Contact</a>
@@ -460,7 +459,7 @@ const Waitlist = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 10 }}
             onClick={scrollToTop}
-            className="fixed bottom-6 right-4 z-40 h-10 w-10 rounded-full bg-card/80 backdrop-blur-xl border border-border/40 flex items-center justify-center shadow-luxury active:scale-95 transition-transform"
+            className="fixed bottom-6 right-4 z-40 h-10 w-10 rounded-full bg-secondary border border-border flex items-center justify-center shadow-luxury active:scale-95 transition-transform"
             aria-label="Scroll to top"
           >
             <ChevronUp className="h-4 w-4 text-foreground" />
