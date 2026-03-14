@@ -303,10 +303,10 @@ const Waitlist = () => {
         {/* Carousel — full bleed on mobile */}
         <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-4 pl-5 pr-5 sm:pl-8 sm:pr-8 md:max-w-4xl md:mx-auto md:grid md:grid-cols-3 md:overflow-visible md:px-8">
           {FEATURES.map((f, i) => (
-            <FadeUp key={f.title} delay={i * 0.08} className="min-w-[82vw] sm:min-w-[300px] md:min-w-0 snap-start flex-shrink-0 md:flex-shrink">
+            <FadeUp key={f.title} delay={i * 0.08} className="min-w-[72vw] sm:min-w-[280px] md:min-w-0 snap-start flex-shrink-0 md:flex-shrink">
               <div className="relative bg-secondary border border-border rounded-2xl overflow-hidden h-full flex flex-col group hover:border-primary/30 transition-all">
                 {/* App screenshot */}
-                <div className="relative w-full aspect-square sm:aspect-[3/4] overflow-hidden bg-background">
+                <div className="relative w-full aspect-[3/4] sm:aspect-[3/4] overflow-hidden bg-background">
                   <img
                     src={f.image}
                     alt={`${f.title} app screen`}
