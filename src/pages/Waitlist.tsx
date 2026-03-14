@@ -8,9 +8,9 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
+import BrandMarquee from '@/components/waitlist/BrandMarquee';
 
 /* ─── Data ─── */
-const BRANDS = ['GUCCI', 'NIKE', 'ZARA', 'BALENCIAGA', 'H&M', 'OFF-WHITE', 'ASOS', 'RALPH LAUREN', 'VERSACE', 'UNIQLO', 'PRADA', 'STÜSSY'];
 
 const FEATURES = [
   {
