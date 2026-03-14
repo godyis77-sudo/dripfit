@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Heart, TrendingUp, MessageSquare, Sparkles } from 'lucide-react';
+import { Heart, TrendingUp, MessageSquare } from 'lucide-react';
+import FeatureIcon from '@/components/ui/FeatureIcon';
 
 const PROMPTS = [
   'Should I buy this for work?',
