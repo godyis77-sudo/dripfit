@@ -3,6 +3,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Crown, Check, Sparkles, Ruler, Shirt, MessageSquare, Store, Shield, Zap, BarChart3, Eye, Star, Ban, Loader2, Quote } from 'lucide-react';
+import BrandLogo from '@/components/ui/BrandLogo';
 import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
 import PremiumBadge from '@/components/monetization/PremiumBadge';
@@ -141,9 +142,7 @@ const Premium = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <div className="h-16 w-16 rounded-2xl gradient-drip flex items-center justify-center mx-auto mb-3 glow-primary">
-            <Crown className="h-8 w-8 text-primary-foreground" />
-          </div>
+          <BrandLogo size="lg" iconOnly className="mx-auto mb-3" />
           {isSubscribed ? (
             <>
               <h1 className="text-xl font-bold text-foreground mb-1">You're Premium 👑</h1>

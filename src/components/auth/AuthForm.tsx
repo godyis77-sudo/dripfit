@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Crown, Mail, Lock, ArrowLeft, Eye, EyeOff, Ruler, Sparkles, Users } from 'lucide-react';
+import { Mail, Lock, ArrowLeft, Eye, EyeOff, Ruler, Sparkles, Users } from 'lucide-react';
+import BrandLogo from '@/components/ui/BrandLogo';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
 import { useToast } from '@/hooks/use-toast';
@@ -150,10 +151,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
       )}
 
       <div className="flex flex-col items-center mb-4">
-        <div className="h-11 w-11 rounded-xl gradient-drip glow-primary flex items-center justify-center ring-2 ring-primary/20 mb-2">
-          <Crown className="h-5 w-5 text-primary-foreground" />
-        </div>
-        <span className="font-display font-bold text-[12px] tracking-wider text-muted-foreground">DRIPFIT ✔</span>
+        <BrandLogo size="md" />
       </div>
 
       <Card className="rounded-xl border-border/40">

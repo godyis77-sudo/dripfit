@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { ArrowRight, Crown, Ruler, Sparkles, Users, ShoppingBag, Store, Shuffle, Eye, Shield, Camera } from 'lucide-react';
+import { ArrowRight, Ruler, Sparkles, Users, ShoppingBag, Store, Shuffle, Eye, Shield, Camera } from 'lucide-react';
+import BrandLogo from '@/components/ui/BrandLogo';
 import { setOnboarded, setShoppingHabit, setGuestMode, type ShoppingHabit } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import { useAuth } from '@/hooks/useAuth';
@@ -181,17 +182,16 @@ const Onboarding = () => {
               initial={{ scale: reduceMotion ? 1 : 0.96, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={screenTransition}
-              className="h-20 w-20 rounded-2xl gradient-drip glow-primary flex items-center justify-center mb-5"
             >
-              <Crown className="h-10 w-10 text-primary-foreground" />
+              <BrandLogo size="lg" iconOnly className="mb-5" />
             </motion.div>
             <motion.h1
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: reduceMotion ? 0 : 0.25, ...screenTransition }}
-              className="font-display text-2xl font-bold tracking-[0.2em] text-foreground"
+              className="font-display text-2xl font-bold tracking-[0.2em]"
             >
-              DRIPFIT ✔
+              <span className="brand-logo-text">DRIPFIT</span> <span className="brand-logo-check">✔</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
