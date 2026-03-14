@@ -197,7 +197,7 @@ const Welcome = () => {
                   key={s}
                   className={`text-[10px] font-bold rounded-full px-3.5 py-1.5 transition-all ${
                     s === 'M'
-                      ? 'gradient-drip text-primary-foreground shadow-gold-glow'
+                      ? 'btn-gold-3d text-primary-foreground shadow-gold-glow'
                       : 'bg-muted/40 text-muted-foreground/60 border border-border/30'
                   }`}
                 >

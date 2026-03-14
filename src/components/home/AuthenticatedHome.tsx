@@ -177,7 +177,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               onClick={() => navigate('/profile/settings')}
               className="w-full bg-card border border-primary/20 rounded-xl p-3 flex items-center gap-3 active:scale-[0.98] transition-transform"
             >
-              <div className="h-9 w-9 rounded-xl gradient-drip flex items-center justify-center shrink-0">
+              <div className="h-9 w-9 rounded-xl btn-gold-3d flex items-center justify-center shrink-0">
                 <ShoppingBag className="h-4 w-4 text-primary-foreground" />
               </div>
               <div className="text-left flex-1">
