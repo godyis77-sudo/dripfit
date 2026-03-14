@@ -266,7 +266,7 @@
 
   @keyframes sweep-shimmer {
     0%   { transform: translateX(-110%); }
-    30%  { transform: translateX(110%); }
+    60%  { transform: translateX(110%); }
     100% { transform: translateX(110%); }
   }
 
