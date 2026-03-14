@@ -8,8 +8,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { trackEvent } from "@/lib/analytics";
+import PromoCodesSection from "@/components/creator/PromoCodesSection";
+import PayoutRequestSection from "@/components/creator/PayoutRequestSection";
 
 const CURRENCY_SYMBOL = "$";
 
@@ -42,7 +43,6 @@ export default function CreatorDashboard() {
   const [copied, setCopied] = useState(false);
   const monthKey = getMonthKey();
 
-  // Check creator role
   const { data: isCreator, isLoading: roleLoading } = useQuery({
     queryKey: ["creator-role", user?.id],
     queryFn: async () => {
@@ -52,7 +52,6 @@ export default function CreatorDashboard() {
     enabled: !!user,
   });
 
-  // Get profile for referral code
   const { data: profile } = useQuery({
     queryKey: ["creator-profile", user?.id],
     queryFn: async () => {
@@ -66,7 +65,6 @@ export default function CreatorDashboard() {
     enabled: !!user,
   });
 
-  // Get all commissions
   const { data: commissions = [] } = useQuery({
     queryKey: ["creator-commissions", user?.id],
     queryFn: async () => {
@@ -81,7 +79,6 @@ export default function CreatorDashboard() {
     enabled: !!user && isCreator === true,
   });
 
-  const totalReferred = commissions.length;
   const thisMonth = commissions.filter((c: any) => c.month_key === monthKey);
   const monthConversions = thisMonth.length;
   const pendingCents = commissions.filter((c: any) => c.status === "pending").reduce((s: number, c: any) => s + c.amount_cents, 0);
@@ -127,12 +124,6 @@ export default function CreatorDashboard() {
     );
   }
 
-  const statusColor: Record<string, string> = {
-    pending: "bg-amber-500/15 text-amber-400 border-amber-500/30",
-    approved: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-    paid: "bg-primary/15 text-primary border-primary/30",
-  };
-
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
@@ -147,7 +138,7 @@ export default function CreatorDashboard() {
       <div className="px-4 pt-4 space-y-4">
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3">
-          <StatCard icon={Users} label="Total Referred" value={String(totalReferred)} />
+          <StatCard icon={Users} label="Total Referred" value={String(commissions.length)} />
           <StatCard icon={TrendingUp} label="This Month" value={String(monthConversions)} sub={monthKey} />
           <StatCard icon={Wallet} label="Pending" value={`${CURRENCY_SYMBOL}${(pendingCents / 100).toFixed(2)}`} />
           <StatCard icon={Clock} label="Paid Out" value={`${CURRENCY_SYMBOL}${(paidCents / 100).toFixed(2)}`} />
@@ -180,7 +171,7 @@ export default function CreatorDashboard() {
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background">
             <span className="flex-1 text-xs font-mono text-muted-foreground truncate">{referralUrl}</span>
             <button onClick={handleCopy} className="text-muted-foreground hover:text-primary transition-colors shrink-0">
-              {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+              {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
             </button>
           </div>
           <Button onClick={handleShare} className="w-full gap-2" size="sm">
@@ -188,51 +179,11 @@ export default function CreatorDashboard() {
           </Button>
         </motion.div>
 
-        {/* Recent Commissions */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="rounded-xl border border-border bg-card overflow-hidden"
-        >
-          <div className="px-4 py-3 border-b border-border">
-            <span className="text-sm font-semibold text-foreground">Recent Commissions</span>
-          </div>
-          {commissions.length === 0 ? (
-            <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-              No commissions yet. Share your link to start earning!
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-xs">Date</TableHead>
-                  <TableHead className="text-xs">Amount</TableHead>
-                  <TableHead className="text-xs">Tier</TableHead>
-                  <TableHead className="text-xs">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {commissions.slice(0, 20).map((c: any) => (
-                  <TableRow key={c.id}>
-                    <TableCell className="text-xs text-muted-foreground">
-                      {new Date(c.created_at).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell className="text-xs font-semibold text-foreground">
-                      {CURRENCY_SYMBOL}{(c.amount_cents / 100).toFixed(2)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="text-[10px]">{c.tier_label}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={`text-[10px] ${statusColor[c.status] || ""}`}>{c.status}</Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </motion.div>
+        {/* Promo Codes */}
+        <PromoCodesSection userId={user!.id} />
+
+        {/* Payout Requests */}
+        <PayoutRequestSection userId={user!.id} pendingCents={pendingCents} />
       </div>
     </div>
   );
