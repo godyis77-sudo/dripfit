@@ -268,9 +268,9 @@
   }
 
   @keyframes sweep-shimmer {
-    0%   { transform: translateX(-110%); }
-    60%  { transform: translateX(110%); }
-    100% { transform: translateX(110%); }
+    0%   { transform: translateX(-120%); }
+    70%  { transform: translateX(120%); }
+    100% { transform: translateX(120%); }
   }
 
   /* 3D icon container — use on any small icon/emoji wrapper */
