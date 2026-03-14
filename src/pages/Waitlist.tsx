@@ -42,7 +42,7 @@ const CHECKLIST = [
 const STATS = [
   { stat: '73%', label: 'of returns are sizing issues' },
   { stat: '$550', label: 'wasted per shopper yearly' },
-  { stat: '200+', label: 'brand charts supported' },
+  { stat: '300+', label: 'brand size charts' },
 ];
 
 /* ─── Animation helpers ─── */
