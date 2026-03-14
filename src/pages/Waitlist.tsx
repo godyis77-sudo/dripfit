@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
 
 /* ─── Data ─── */
-const BRANDS = ['ZARA', 'H&M', 'ASOS', 'SHEIN', 'COS', 'UNIQLO', 'Nike', 'Mango'];
+const BRANDS = ['GUCCI', 'NIKE', 'ZARA', 'BALENCIAGA', 'H&M', 'OFF-WHITE', 'ASOS', 'RALPH LAUREN', 'VERSACE', 'UNIQLO', 'PRADA', 'STÜSSY'];
 
 const FEATURES = [
   {
