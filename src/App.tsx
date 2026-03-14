@@ -38,6 +38,8 @@ import ResetPassword from "./pages/ResetPassword";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import AdminRetailers from "./pages/AdminRetailers";
+import AdminCommissions from "./pages/AdminCommissions";
+import CreatorDashboard from "./pages/CreatorDashboard";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AffiliateProvider from "./components/AffiliateProvider";
 
