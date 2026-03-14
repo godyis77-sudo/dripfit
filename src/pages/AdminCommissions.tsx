@@ -53,7 +53,6 @@ export default function AdminCommissions() {
     },
   });
 
-  // Payout requests
   const { data: payoutRequests = [] } = useQuery({
     queryKey: ["admin-payout-requests"],
     queryFn: async () => {
@@ -112,34 +111,7 @@ export default function AdminCommissions() {
 
   const totalPending = commissions.filter((c: any) => c.status === "pending").reduce((s: number, c: any) => s + c.amount_cents, 0);
   const totalPaid = commissions.filter((c: any) => c.status === "paid").reduce((s: number, c: any) => s + c.amount_cents, 0);
-
-  // Payout requests
-  const { data: payoutRequests = [] } = useQuery({
-    queryKey: ["admin-payout-requests"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("payout_requests" as any)
-        .select("*")
-        .order("requested_at", { ascending: false })
-        .limit(100);
-      return (data as any[]) ?? [];
-    },
-    enabled: !!user && isAdmin === true,
-  });
-
-  const updatePayoutStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const updates: any = { status };
-      if (status === "completed" || status === "rejected") updates.processed_at = new Date().toISOString();
-      await supabase.from("payout_requests" as any).update(updates).eq("id", id);
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["admin-payout-requests"] });
-      toast({ title: "Payout request updated" });
-    },
-  });
-
-  const [activeTab, setActiveTab] = useState<"commissions" | "payouts">("commissions");
+  const pendingPayouts = payoutRequests.filter((r: any) => r.status === "pending").length;
   const filters = ["all", "pending", "approved", "paid"];
 
   return (
@@ -155,7 +127,6 @@ export default function AdminCommissions() {
       </div>
 
       <div className="px-4 pt-4 space-y-4">
-        {/* Summary */}
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-xl border border-amber-500/20 bg-card p-4">
             <span className="text-xs text-muted-foreground">Pending Payout</span>
@@ -167,7 +138,6 @@ export default function AdminCommissions() {
           </div>
         </div>
 
-        {/* Tab switcher */}
         <div className="flex gap-2 border-b border-border">
           <button
             onClick={() => setActiveTab("commissions")}
@@ -184,9 +154,9 @@ export default function AdminCommissions() {
             }`}
           >
             Payout Requests
-            {payoutRequests.filter((r: any) => r.status === "pending").length > 0 && (
+            {pendingPayouts > 0 && (
               <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold">
-                {payoutRequests.filter((r: any) => r.status === "pending").length}
+                {pendingPayouts}
               </span>
             )}
           </button>
@@ -194,16 +164,13 @@ export default function AdminCommissions() {
 
         {activeTab === "commissions" && (
           <>
-            {/* Filters */}
             <div className="flex gap-2 overflow-x-auto pb-1">
               {filters.map((f) => (
                 <button
                   key={f}
                   onClick={() => setStatusFilter(f)}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
-                    statusFilter === f
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-secondary text-muted-foreground"
+                    statusFilter === f ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
                   }`}
                 >
                   {f === "all" ? "All" : f.charAt(0).toUpperCase() + f.slice(1)}
@@ -211,7 +178,6 @@ export default function AdminCommissions() {
               ))}
             </div>
 
-            {/* Commission Table */}
             <div className="rounded-xl border border-border bg-card overflow-hidden">
               {commissions.length === 0 ? (
                 <div className="px-4 py-8 text-center text-sm text-muted-foreground">No commissions found.</div>
@@ -243,22 +209,14 @@ export default function AdminCommissions() {
                         </TableCell>
                         <TableCell className="flex gap-1">
                           {c.status === "pending" && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-7 px-2 text-xs text-emerald-400"
-                              onClick={() => updateStatus.mutate({ id: c.id, status: "approved" })}
-                            >
+                            <Button size="sm" variant="ghost" className="h-7 px-2 text-xs text-emerald-400"
+                              onClick={() => updateStatus.mutate({ id: c.id, status: "approved" })}>
                               <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Approve
                             </Button>
                           )}
                           {c.status === "approved" && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-7 px-2 text-xs text-primary"
-                              onClick={() => updateStatus.mutate({ id: c.id, status: "paid" })}
-                            >
+                            <Button size="sm" variant="ghost" className="h-7 px-2 text-xs text-primary"
+                              onClick={() => updateStatus.mutate({ id: c.id, status: "paid" })}>
                               <DollarSign className="w-3.5 h-3.5 mr-1" /> Mark Paid
                             </Button>
                           )}
@@ -309,20 +267,12 @@ export default function AdminCommissions() {
                       <TableCell className="flex gap-1">
                         {r.status === "pending" && (
                           <>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-7 px-2 text-xs text-emerald-400"
-                              onClick={() => updatePayoutStatus.mutate({ id: r.id, status: "completed" })}
-                            >
+                            <Button size="sm" variant="ghost" className="h-7 px-2 text-xs text-emerald-400"
+                              onClick={() => updatePayoutStatus.mutate({ id: r.id, status: "completed" })}>
                               <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Pay
                             </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-7 px-2 text-xs text-destructive"
-                              onClick={() => updatePayoutStatus.mutate({ id: r.id, status: "rejected" })}
-                            >
+                            <Button size="sm" variant="ghost" className="h-7 px-2 text-xs text-destructive"
+                              onClick={() => updatePayoutStatus.mutate({ id: r.id, status: "rejected" })}>
                               <XCircle className="w-3.5 h-3.5 mr-1" /> Reject
                             </Button>
                           </>
