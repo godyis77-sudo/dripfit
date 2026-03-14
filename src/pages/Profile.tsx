@@ -202,8 +202,8 @@ const Profile = () => {
               onClick={() => navigate('/profile/body')}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg btn-gold-3d active:scale-95 transition-transform shadow-sm"
             >
-              <User className="h-3.5 w-3.5 text-primary-foreground" />
-              <span className="text-[11px] text-primary-foreground font-bold">Body</span>
+              <User className="h-3.5 w-3.5" />
+              <span className="text-[11px] font-bold">Body</span>
             </button>
             <Button
               variant="ghost"
