@@ -31,7 +31,7 @@ const FEATURES = [
   {
     icon: Shirt,
     title: 'Virtual Try-On',
-    desc: 'See yourself in any outfit before you buy it.',
+    desc: 'See yourself in it before you buy it.',
     detail: 'Upload a clothing photo and AI renders it on your body.',
     badge: 'AI',
     image: featureTryon,
@@ -276,7 +276,7 @@ const Waitlist = () => {
 
         {/* Email form */}
         <FadeUp delay={0.18} className="relative z-10 w-full flex flex-col items-center mb-8">
-          <EmailCapture id="hero" buttonText="Get Early Access" note="Join 2,000+ shoppers already on the waitlist." />
+          <EmailCapture id="hero" buttonText="Send Me the Free Guide" note="Join 2,000+ shoppers already on the waitlist." />
         </FadeUp>
 
         {/* Checklist — merged from lead magnet */}
@@ -442,7 +442,7 @@ const Waitlist = () => {
           </FadeUp>
 
           <FadeUp delay={0.1} className="flex flex-col items-center">
-            <EmailCapture id="footer" compact buttonText="Reserve My Spot" note="Be first to know when we launch." />
+            <EmailCapture id="footer" compact buttonText="Send Me the Free Guide" note="Be first to know when we launch." />
           </FadeUp>
         </div>
       </section>
