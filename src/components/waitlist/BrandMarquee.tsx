@@ -27,8 +27,8 @@ export default function BrandMarquee() {
   return (
     <div className="marquee-wrapper">
       <MarqueeRow brands={ROW3} depth="back" />
-      <MarqueeRow brands={ROW2} depth="mid" reverse />
       <MarqueeRow brands={ROW1} depth="front" />
+      <MarqueeRow brands={ROW2} depth="back" reverse />
     </div>
   );
 }
