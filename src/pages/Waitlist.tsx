@@ -323,7 +323,7 @@ const Waitlist = () => {
                         <img
                           src={f.image}
                           alt={`${f.title} app screen`}
-                          className="w-full h-full object-cover object-top"
+                          className={`w-full h-full object-cover object-top ${f.imageScale}`}
                           loading="lazy"
                         />
                       </div>
