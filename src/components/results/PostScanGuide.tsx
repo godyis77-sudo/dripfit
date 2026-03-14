@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { trackEvent } from '@/lib/analytics';
 import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 import type { BodyScanResult } from '@/lib/types';
-import type { BodyScanResult } from '@/lib/types';
 
 interface PostScanGuideProps {
   result: BodyScanResult;
