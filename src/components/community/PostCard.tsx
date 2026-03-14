@@ -97,7 +97,7 @@ const PostCard = ({
               {post.profile?.avatar_url ? (
                 <img src={post.profile.avatar_url} alt="" className="h-4 w-4 rounded-full object-cover shrink-0" />
               ) : (
-                <div className="h-4 w-4 rounded-full gradient-drip flex items-center justify-center shrink-0">
+                <div className="h-4 w-4 rounded-full icon-3d-gold flex items-center justify-center shrink-0">
                   <span className="text-[7px] font-bold text-primary-foreground">{(post.profile?.display_name || 'A')[0].toUpperCase()}</span>
                 </div>
               )}
