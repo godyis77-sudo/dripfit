@@ -34,24 +34,8 @@ function MarqueeRow({ brands, reverse }: { brands: string[]; reverse?: boolean }
 export default function BrandMarquee() {
   return (
     <div className="marquee-wrapper">
-      {/* Ambient glow */}
-      <div className="marquee-glow" />
-      <div className="marquee-orb marquee-orb-1" />
-      <div className="marquee-orb marquee-orb-2" />
-
-      {/* Header */}
-      <div className="marquee-header">
-        <div className="marquee-line" />
-        <span className="marquee-label">Trusted Brands</span>
-        <div className="marquee-line" />
-      </div>
-
       <MarqueeRow brands={ROW1} />
       <MarqueeRow brands={ROW2} reverse />
-
-      <div className="marquee-footer">
-        <div className="marquee-line" />
-      </div>
     </div>
   );
 }
