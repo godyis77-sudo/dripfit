@@ -236,7 +236,7 @@ const Profile = () => {
               {activeTab === t.key && (
                 <motion.div
                   layoutId="profile-tab"
-                  className="absolute inset-0 rounded-lg gradient-drip"
+                  className="absolute inset-0 rounded-lg btn-gold-3d"
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
