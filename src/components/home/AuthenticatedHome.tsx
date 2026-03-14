@@ -123,7 +123,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               <button
                 key={filter.label}
                 onClick={() => setActivePriceIdx(idx)}
-                className={`shrink-0 pill ${
+                className={`shrink-0 pill shimmer-sweep ${
                   activePriceIdx === idx ? 'pill-filled' : ''
                 }`}
               >
