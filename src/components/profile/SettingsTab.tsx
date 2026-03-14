@@ -291,7 +291,7 @@ const SettingsTab = ({
           <p className="text-[12px] text-foreground font-medium mb-1.5">Default fit</p>
           <div className="flex gap-1.5">
             {(['fitted', 'regular', 'relaxed'] as FitPreference[]).map(f => (
-              <button key={f} onClick={() => onFitChange(f)} className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all capitalize active:scale-95 ${fit === f ? 'btn-gold-3d text-primary-foreground' : 'bg-background border border-border text-muted-foreground'}`}>
+              <button key={f} onClick={() => onFitChange(f)} className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all capitalize active:scale-95 ${fit === f ? 'btn-gold-3d' : 'bg-background border border-border text-muted-foreground'}`}>
                 {f}
               </button>
             ))}
