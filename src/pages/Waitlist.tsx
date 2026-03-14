@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { Crown, Scan, Shirt, Users, CheckCircle2, ChevronUp, Sparkles, ArrowRight, Mail, Shield, Zap, Star } from 'lucide-react';
+import { Scan, Shirt, Users, CheckCircle2, ChevronUp, Sparkles, ArrowRight, Mail, Shield, Zap, Star } from 'lucide-react';
+import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';

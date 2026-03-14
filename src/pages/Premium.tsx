@@ -3,6 +3,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Crown, Check, Sparkles, Ruler, Shirt, MessageSquare, Store, Shield, Zap, BarChart3, Eye, Star, Ban, Loader2, Quote } from 'lucide-react';
+import BrandLogo from '@/components/ui/BrandLogo';
 import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
 import PremiumBadge from '@/components/monetization/PremiumBadge';
