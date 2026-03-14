@@ -22,7 +22,7 @@ const FEATURES = [
     title: 'AI Body Scan',
     desc: 'Two photos. 60 seconds. Your exact measurements mapped to 300+ size charts.',
     detail: 'No tape measure needed — just your phone camera.',
-    badge: 'Core',
+    badge: '',
     image: featureScan,
     imageScale: '',
     phoneScale: 'scale-[1.10]',
@@ -333,9 +333,11 @@ const Waitlist = () => {
                     </div>
                   </div>
                   {/* Badge overlay */}
-                  <span className="absolute top-6 right-6 text-[9px] font-bold text-primary uppercase tracking-[0.2em] bg-background/80 backdrop-blur-sm border border-primary/20 rounded-full px-2.5 py-0.5 z-10">
-                    {f.badge}
-                  </span>
+                  {f.badge && (
+                    <span className="absolute top-6 right-6 text-[9px] font-bold text-primary uppercase tracking-[0.2em] bg-background/80 backdrop-blur-sm border border-primary/20 rounded-full px-2.5 py-0.5 z-10">
+                      {f.badge}
+                    </span>
+                  )}
                 </div>
 
                 {/* Text content */}
