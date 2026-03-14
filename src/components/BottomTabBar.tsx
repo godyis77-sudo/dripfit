@@ -51,7 +51,7 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
                 <tab.icon className={cn('h-[18px] w-[18px] transition-all duration-300 text-primary-foreground', isActive && 'drop-shadow-[0_0_4px_hsl(var(--drip-glow)/0.6)]')} />
               </div>
               <span className={cn(
-                "text-[11px] font-semibold tracking-wider uppercase transition-all duration-300",
+                "text-[12px] font-bold tracking-wider uppercase transition-all duration-300",
                 isActive ? 'text-primary' : ''
               )}>{tab.label}</span>
               {isActive && (
