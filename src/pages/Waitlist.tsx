@@ -26,6 +26,7 @@ const FEATURES = [
     image: featureScan,
     imageScale: '',
     phoneScale: 'scale-[1.10]',
+    noPhone: false,
   },
   {
     icon: Shirt,
