@@ -328,13 +328,13 @@ const SettingsTab = ({
       {/* Saved Items */}
       <SectionHeader>Saved Items</SectionHeader>
       <div className="bg-card border border-border rounded-xl mb-1">
-        <button onClick={() => navigate('/profile/saved')} className="w-full flex items-center gap-2 px-3 py-2.5 active:bg-muted/50 transition-colors">
-          <Bookmark className="h-3.5 w-3.5 text-primary" />
-          <span className="text-[12px] text-foreground font-medium">View Saved for Later</span>
+        <button onClick={() => navigate('/profile/saved')} className="w-full flex items-center gap-2 px-3 py-2.5 btn-gold-3d rounded-xl">
+          <Bookmark className="h-3.5 w-3.5" />
+          <span className="text-[12px]">View Saved for Later</span>
           {savedItemCount > 0 && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold">{savedItemCount}</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-background/20 font-bold">{savedItemCount}</span>
           )}
-          <span className="h-5 w-5 icon-3d-gold rounded-md ml-auto"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>
+          <ChevronRight className="h-3.5 w-3.5 ml-auto" />
         </button>
       </div>
 
