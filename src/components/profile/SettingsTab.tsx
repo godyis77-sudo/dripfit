@@ -149,7 +149,7 @@ const SettingsTab = ({
                 <span className="text-[10px] font-bold text-primary-foreground">{displayName[0]?.toUpperCase() || 'U'}</span>
               </div>
             )}
-            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="h-5 w-5 icon-3d-gold rounded-md"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>
           </div>
         </button>
         <div className="flex items-center justify-between px-3 py-2.5">
@@ -271,7 +271,7 @@ const SettingsTab = ({
           </div>
           <button onClick={toggleTheme} className="flex items-center gap-1.5 text-[11px] text-muted-foreground active:scale-95 transition-transform">
             <span className="capitalize">{themeVal}</span>
-            <ChevronRight className="h-3 w-3" />
+            <span className="h-5 w-5 icon-3d-gold rounded-md"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>
           </button>
         </div>
       </div>
@@ -334,7 +334,7 @@ const SettingsTab = ({
           {savedItemCount > 0 && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold">{savedItemCount}</span>
           )}
-          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground ml-auto" />
+          <span className="h-5 w-5 icon-3d-gold rounded-md ml-auto"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>
         </button>
       </div>
 
@@ -358,7 +358,7 @@ const SettingsTab = ({
               </div>
               <button onClick={() => navigate('/capture')} className="w-full flex items-center justify-between bg-background border border-border rounded-lg px-3 py-2 group active:scale-[0.98] transition-transform">
                 <span className="text-[11px] text-muted-foreground">Update body scan</span>
-                <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+                <span className="h-5 w-5 icon-3d-gold rounded-md"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>
               </button>
             </div>
           </div>
@@ -450,7 +450,7 @@ const SettingsTab = ({
         <button onClick={onExport} className="w-full flex items-center gap-2 px-3 py-2.5 active:bg-muted/50 transition-colors">
           <Download className="h-3.5 w-3.5 text-muted-foreground" />
           <span className="text-[12px] text-foreground">Export my data</span>
-          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground ml-auto" />
+          <span className="h-5 w-5 icon-3d-gold rounded-md ml-auto"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>
         </button>
       </div>
 
