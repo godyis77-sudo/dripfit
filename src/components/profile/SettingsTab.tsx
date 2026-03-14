@@ -121,8 +121,8 @@ const SettingsTab = ({
         </div>
       ) : (
         <div className="bg-card border border-border rounded-xl p-4 mb-4 text-center">
-          <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
-            <Ruler className="h-5 w-5 text-primary/50" />
+          <div className="h-10 w-10 rounded-xl icon-3d-gold shimmer-sweep flex items-center justify-center mx-auto mb-2">
+            <Ruler className="h-5 w-5 text-primary-foreground shimmer-icon" />
           </div>
           <p className="text-[13px] font-bold text-foreground mb-0.5">No fit profile yet</p>
           <p className="text-[10px] text-muted-foreground mb-3 max-w-[220px] mx-auto">
