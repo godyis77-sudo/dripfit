@@ -418,7 +418,7 @@ export const PostDetailSheet = ({
                         <span className="mr-1">{v.emoji}</span>
                         <span className="text-[11px]">{v.label}</span>
                       </div>
-                      <span className="text-[10px] font-medium text-muted-foreground">{voteCounts[post.id]?.[v.key] ?? 0}</span>
+                      <span className={`text-[10px] font-medium leading-none ${active ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>{voteCounts[post.id]?.[v.key] ?? 0}</span>
                     </button>
                   );
                 })}
