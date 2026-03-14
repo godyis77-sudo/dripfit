@@ -8,9 +8,9 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
+import BrandMarquee from '@/components/waitlist/BrandMarquee';
 
 /* ─── Data ─── */
-const BRANDS = ['GUCCI', 'NIKE', 'ZARA', 'BALENCIAGA', 'H&M', 'OFF-WHITE', 'ASOS', 'RALPH LAUREN', 'VERSACE', 'UNIQLO', 'PRADA', 'STÜSSY'];
 
 const FEATURES = [
   {
@@ -372,20 +372,8 @@ const Waitlist = () => {
           </FadeUp>
 
           {/* Brand marquee */}
-          <FadeUp delay={0.12} className="mt-12 overflow-hidden relative">
-            <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-background to-transparent z-10" />
-            <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-background to-transparent z-10" />
-            <motion.div
-              className="flex gap-12 whitespace-nowrap"
-              animate={{ x: ['0%', '-50%'] }}
-              transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
-            >
-              {[...BRANDS, ...BRANDS].map((b, i) => (
-                <span key={`${b}-${i}`} className="text-base font-bold text-foreground/50 uppercase tracking-[0.25em] select-none">
-                  {b}
-                </span>
-              ))}
-            </motion.div>
+          <FadeUp delay={0.12}>
+            <BrandMarquee />
           </FadeUp>
 
           {/* Stats */}
