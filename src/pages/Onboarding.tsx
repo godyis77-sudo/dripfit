@@ -360,9 +360,9 @@ const Onboarding = () => {
                     }`}
                   >
                     <div className={`h-10 w-10 rounded-xl flex items-center justify-center mb-2 ${
-                      selected ? 'gradient-drip' : 'bg-card border border-border'
+                      selected ? 'icon-3d' : 'bg-card border border-border'
                     }`}>
-                      <Icon className={`h-5 w-5 ${selected ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
+                      <Icon className={`h-5 w-5 ${selected ? 'text-brand-logo-fg shimmer-icon' : 'text-muted-foreground'}`} />
                     </div>
                     <p className="font-bold text-[13px] text-foreground leading-tight">{h.label}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{h.desc}</p>
