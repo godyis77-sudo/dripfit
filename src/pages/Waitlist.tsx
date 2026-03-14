@@ -137,10 +137,7 @@ function EmailCapture({ id, compact = false }: { id: string; compact?: boolean }
         <Button
           type="submit"
           disabled={loading}
-          className="h-12 px-6 rounded-xl font-bold text-[12px] tracking-wider uppercase whitespace-nowrap shrink-0 relative overflow-hidden"
-          style={{
-            boxShadow: '0 0 28px -4px hsl(42 76% 42% / 0.35), 0 0 80px -12px hsl(42 76% 42% / 0.12)',
-          }}
+          className="h-12 px-6 rounded-xl font-bold text-[12px] tracking-wider uppercase whitespace-nowrap shrink-0 relative overflow-hidden marquee-btn"
         >
           {loading ? (
             <motion.div
