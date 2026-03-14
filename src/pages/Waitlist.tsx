@@ -192,11 +192,25 @@ function GoldParticles() {
 const Waitlist = () => {
   usePageTitle('Get Your Free Size Guide');
   const [showTop, setShowTop] = useState(false);
+  const [brandCount, setBrandCount] = useState<number | null>(null);
 
   useEffect(() => {
     const handler = () => setShowTop(window.scrollY > 500);
     window.addEventListener('scroll', handler, { passive: true });
     return () => window.removeEventListener('scroll', handler);
+  }, []);
+
+  useEffect(() => {
+    supabase
+      .from('brand_size_charts')
+      .select('brand_slug')
+      .eq('is_active', true)
+      .then(({ data }) => {
+        if (data) {
+          const unique = new Set(data.map((r) => r.brand_slug));
+          setBrandCount(unique.size);
+        }
+      });
   }, []);
 
   const scrollToTop = useCallback(() => window.scrollTo({ top: 0, behavior: 'smooth' }), []);
