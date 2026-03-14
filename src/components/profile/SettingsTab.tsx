@@ -139,8 +139,8 @@ const SettingsTab = ({
       {/* Account */}
       <SectionHeader>Account</SectionHeader>
       <div className="bg-card border border-border rounded-xl divide-y divide-border mb-1">
-        <button onClick={onAvatarTap} className="w-full flex items-center justify-between px-3 py-2.5 active:bg-muted/50 transition-colors">
-          <span className="text-[12px] text-foreground">Profile Photo</span>
+        <button onClick={onAvatarTap} className="w-full flex items-center justify-between px-3 py-2.5 btn-gold-3d rounded-t-xl rounded-b-none">
+          <span className="text-[12px]">Profile Photo</span>
           <div className="flex items-center gap-2">
             {avatarUrl ? (
               <img src={avatarUrl} alt="Avatar" className="h-6 w-6 rounded-full object-cover" />
@@ -149,7 +149,7 @@ const SettingsTab = ({
                 <span className="text-[10px] font-bold text-primary-foreground">{displayName[0]?.toUpperCase() || 'U'}</span>
               </div>
             )}
-            <span className="h-5 w-5 icon-3d-gold rounded-md"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>
+            <ChevronRight className="h-3.5 w-3.5" />
           </div>
         </button>
         <div className="flex items-center justify-between px-3 py-2.5">
