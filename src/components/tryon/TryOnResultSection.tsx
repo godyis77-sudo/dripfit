@@ -220,7 +220,7 @@ const TryOnResultSection = ({
         </AnimatePresence>
 
         {shared && (
-          <div className="flex items-center gap-2 justify-center mb-2 bg-primary/10 border border-primary/20 rounded-lg px-3 py-2">
+          <div className="flex items-center gap-2 justify-center mb-2 bg-primary/5 border border-primary/20 rounded-lg px-3 py-2">
             <Check className="h-3.5 w-3.5 text-primary" />
             <span className="text-[12px] font-bold text-primary">{isPublic ? 'Posted to Style Check!' : 'Saved!'}</span>
           </div>

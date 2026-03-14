@@ -81,7 +81,7 @@ const FitFeedbackSheet = ({ retailer, recommendedSize, onComplete }: FitFeedback
             onClick={() => setOutcome(o.key)}
             className={`flex-1 py-2 rounded-lg text-[11px] font-bold border transition-all active:scale-95 flex flex-col items-center gap-1 ${
               outcome === o.key
-                ? 'border-primary bg-primary/10 text-primary'
+                ? 'btn-gold-3d border-transparent text-primary-foreground'
                 : 'border-border text-muted-foreground hover:border-primary/30'
             }`}
           >

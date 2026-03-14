@@ -122,7 +122,7 @@ const CaptureHeightStep = ({
                     key={key}
                     onClick={() => onRefObjectChange(refObject === key ? 'none' : key)}
                     className={`text-center p-2 rounded-xl border transition-all active:scale-95 min-h-[44px] ${
-                      refObject === key ? 'border-primary bg-primary/10' : 'border-border'
+                      refObject === key ? 'btn-gold-3d border-transparent text-primary-foreground' : 'border-border'
                     }`}
                   >
                     <p className="font-bold text-[10px] text-foreground">{val.label}</p>

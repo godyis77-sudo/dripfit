@@ -171,7 +171,7 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
             {/* Between sizes callout */}
             {isBetween && secondOption && (
               <div
-                className="mt-2 overflow-hidden rounded-md border-l-[3px] border-primary bg-primary/10 px-3 py-2"
+                className="mt-2 overflow-hidden rounded-md border-l-[3px] border-primary bg-primary/5 px-3 py-2"
                 style={{
                   animation: "accordion-down 200ms ease-out forwards",
                 }}
