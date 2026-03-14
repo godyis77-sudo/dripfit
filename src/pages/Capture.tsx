@@ -259,7 +259,7 @@ const Capture = () => {
                     transition={{ delay: 0.6 + i * 0.1 }}
                     className="flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 min-h-[44px]"
                   >
-                    <span className="text-base">{item.emoji}</span>
+                    <span className="h-7 w-7 icon-3d-gold rounded-lg flex items-center justify-center text-sm shrink-0">{item.emoji}</span>
                     <span className="text-[13px] font-medium text-foreground">{item.text}</span>
                   </motion.div>
                 ))}
@@ -304,8 +304,9 @@ const Capture = () => {
 
               <CaptureViewfinder captureStep={captureStep} photo={photos[captureStep]} />
 
-              <p className="text-[11px] text-muted-foreground text-center bg-card border border-border px-3 py-1.5 rounded-xl mb-2">
-                💡 {config.tip}
+              <p className="text-[11px] text-muted-foreground text-center bg-card border border-border px-3 py-1.5 rounded-xl mb-2 flex items-center justify-center gap-1.5">
+                <span className="h-5 w-5 icon-3d-gold rounded-md flex items-center justify-center text-[10px] shrink-0">💡</span>
+                {config.tip}
               </p>
 
               {/* Use existing photo link */}
