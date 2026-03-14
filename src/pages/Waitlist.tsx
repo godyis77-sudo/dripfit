@@ -33,6 +33,7 @@ const FEATURES = [
     detail: 'Upload a clothing photo and AI renders it on your body.',
     badge: 'AI',
     image: featureTryon,
+    imageScale: '',
   },
   {
     icon: Users,
@@ -41,6 +42,7 @@ const FEATURES = [
     detail: 'Get outfit ratings from users with your exact measurements.',
     badge: 'Social',
     image: featureStylecheck,
+    imageScale: '',
   },
 ];
 
