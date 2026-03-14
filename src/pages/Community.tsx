@@ -181,15 +181,15 @@ const Community = () => {
               key={f.key}
               onClick={() => setFilter(f.key)}
               aria-label={f.key === 'shop' ? 'Open filters' : `Change sort order`}
-              className={`flex-1 py-2.5 min-h-[44px] text-[12px] font-semibold transition-all relative whitespace-nowrap px-2 flex items-center justify-center gap-0.5 ${
-                filter === f.key ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+              className={`flex-1 py-2.5 min-h-[44px] text-[12px] font-bold transition-all relative whitespace-nowrap px-2 flex items-center justify-center gap-0.5 ${
+                filter === f.key ? 'text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               {f.label}
               {f.key === 'similar' && (
                 <button onClick={(e) => { e.stopPropagation(); setSimilarFitTooltip(!similarFitTooltip); }} aria-label="What is Similar Fit?" className="text-[11px] text-muted-foreground/60 ml-0.5">ⓘ</button>
               )}
-              {filter === f.key && <motion.div layoutId="fitcheck-tab" className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full" />}
+              {filter === f.key && <motion.div layoutId="fitcheck-tab" className="absolute bottom-0 left-0 right-0 h-full btn-gold-3d rounded-none -z-10" />}
             </button>
           ))}
           <AnimatePresence>
