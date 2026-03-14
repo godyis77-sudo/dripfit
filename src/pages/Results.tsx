@@ -404,8 +404,8 @@ const Results = () => {
               onClick={() => navigate('/size-guide')}
               className="w-full flex items-center gap-3 rounded-xl border border-border bg-card p-3 active:scale-[0.98] transition-transform"
             >
-              <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                <span className="text-base">📏</span>
+              <div className="h-9 w-9 rounded-lg icon-3d-gold flex items-center justify-center shrink-0">
+                <span className="text-sm">📏</span>
               </div>
               <div className="text-left">
                 <p className="text-[12px] font-bold text-foreground">Size Guide Tool</p>

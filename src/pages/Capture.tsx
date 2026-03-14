@@ -259,7 +259,7 @@ const Capture = () => {
                     transition={{ delay: 0.6 + i * 0.1 }}
                     className="flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 min-h-[44px]"
                   >
-                    <span className="text-base">{item.emoji}</span>
+                    <span className="h-7 w-7 icon-3d-gold rounded-lg flex items-center justify-center text-sm shrink-0">{item.emoji}</span>
                     <span className="text-[13px] font-medium text-foreground">{item.text}</span>
                   </motion.div>
                 ))}
