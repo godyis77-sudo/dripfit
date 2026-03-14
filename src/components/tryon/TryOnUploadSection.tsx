@@ -104,13 +104,13 @@ const TryOnUploadSection = ({
                     if (isNativePlatform()) handleNativeCapture(onUserPhotoChange, 'photo', 'camera');
                     else userCameraRef.current?.click();
                   }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg btn-gold-3d active:scale-95 transition-transform">
-                    <Camera className="h-3.5 w-3.5" /><span className="text-[12px] font-bold">Camera</span>
+                    <Camera className="h-3.5 w-3.5 text-primary-foreground" /><span className="text-[12px] font-bold text-primary-foreground">Camera</span>
                   </button>
                   <button onClick={() => {
                     if (isNativePlatform()) handleNativeCapture(onUserPhotoChange, 'photo', 'gallery');
                     else userPhotoRef.current?.click();
-                  }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg pill active:scale-95 transition-transform">
-                    <ImageIcon className="h-3.5 w-3.5" /><span className="text-[12px] font-bold">Gallery</span>
+                  }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg btn-gold-3d active:scale-95 transition-transform">
+                    <ImageIcon className="h-3.5 w-3.5 text-primary-foreground" /><span className="text-[12px] font-bold text-primary-foreground">Gallery</span>
                   </button>
                 </div>
               </div>
