@@ -73,12 +73,12 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
                   {question}
                 </p>
               </div>
-              <div className="absolute bottom-1.5 left-1.5 flex items-center gap-0.5 btn-gold-3d px-1.5 py-0.5 !rounded-lg">
+              <div className="absolute bottom-1.5 left-1.5 flex items-center gap-0.5 badge-gold-3d px-1.5 py-0.5 !rounded-lg">
                 <Heart className="h-2.5 w-2.5" />
                 <span className="text-[11px] font-bold">{fit.like_count}</span>
               </div>
               <div className="absolute top-1.5 left-1.5">
-                <span className="text-[10px] font-bold btn-gold-3d px-1.5 py-0.5 !rounded-lg">{fit.username}</span>
+                <span className="text-[10px] font-bold badge-gold-3d px-1.5 py-0.5 !rounded-lg">{fit.username}</span>
               </div>
             </button>
           );
