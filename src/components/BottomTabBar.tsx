@@ -48,7 +48,7 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
                 'h-11 w-11 flex items-center justify-center rounded-xl transition-all duration-300',
                 isActive && 'scale-110 shadow-gold-glow shimmer-sweep ring-1 ring-primary/40'
               )}>
-                <FeatureIcon name={tab.icon} size={isActive ? 218 : 187} />
+                <FeatureIcon name={tab.icon} size={187} />
               </div>
               <span className={cn(
                 "text-[10px] font-bold tracking-wider uppercase transition-all duration-300",
