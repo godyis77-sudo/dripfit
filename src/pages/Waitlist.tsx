@@ -446,10 +446,7 @@ const Waitlist = () => {
       {/* ─── FOOTER ─── */}
       <footer className="py-8 px-5 sm:px-8 border-t border-border/50">
         <div className="max-w-xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Crown className="h-3 w-3 text-primary/60" />
-            <span className="text-[10px] text-foreground/40 tracking-[2px] font-semibold">DRIPFIT ✔</span>
-          </div>
+          <BrandLogo size="sm" className="opacity-60" />
           <div className="flex items-center gap-6 text-[11px] text-foreground/40">
             <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
             <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>

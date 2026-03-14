@@ -87,10 +87,7 @@ const Welcome = () => {
 
       {/* Sticky top nav bar */}
       <nav className="sticky top-0 z-50 h-[56px] flex items-center justify-between px-6 glass-bar border-b">
-        <div className="flex items-center gap-2.5">
-          <Crown className="h-4 w-4 text-primary shimmer-icon" />
-          <span className="font-display text-[17px] tracking-[3px] text-foreground">DRIPFIT <span className="text-primary">✔</span></span>
-        </div>
+        <BrandLogo size="sm" />
         <button
           onClick={() => { trackEvent('auth_started'); navigate('/auth'); }}
           className="text-[11px] font-semibold text-muted-foreground active:opacity-70 transition-all tracking-widest uppercase hover:text-primary"
