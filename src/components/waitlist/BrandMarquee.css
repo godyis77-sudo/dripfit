@@ -1,4 +1,3 @@
-/* ── Marquee Container ── */
 .marquee-wrapper {
   position: relative;
   margin-top: 2.5rem;
@@ -7,32 +6,32 @@
   overflow: hidden;
 }
 
-/* ── Scroll Track ── */
+/* ── Track ── */
 .marquee-track {
   position: relative;
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
-  mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 5%, black 95%, transparent);
+  mask-image: linear-gradient(90deg, transparent, black 5%, black 95%, transparent);
 }
 
 .marquee-scroll {
   display: flex;
   width: max-content;
   will-change: transform;
-  animation: marquee-slide 55s linear infinite;
-}
-
-.marquee-scroll.marquee-reverse {
-  animation: marquee-slide-reverse 60s linear infinite;
 }
 
 .marquee-set {
   display: flex;
   align-items: center;
-  gap: 0;
-  padding: 0.6rem 0;
   flex-shrink: 0;
 }
+
+/* ── Depth-based speeds (back = slow, front = faster) ── */
+.marquee-speed-back    { animation: marquee-slide 70s linear infinite; }
+.marquee-speed-mid     { animation: marquee-slide 55s linear infinite; }
+.marquee-speed-front   { animation: marquee-slide 45s linear infinite; }
+
+.marquee-reverse.marquee-speed-mid { animation: marquee-slide-reverse 55s linear infinite; }
 
 @keyframes marquee-slide {
   from { transform: translate3d(0, 0, 0); }
@@ -44,23 +43,66 @@
   to   { transform: translate3d(0, 0, 0); }
 }
 
-/* ── Brand Name ── */
+/* ── Depth layers ── */
+.marquee-depth-back {
+  opacity: 0.3;
+  padding: 0.25rem 0;
+}
+
+.marquee-depth-mid {
+  opacity: 0.55;
+  padding: 0.35rem 0;
+}
+
+.marquee-depth-front {
+  opacity: 1;
+  padding: 0.4rem 0;
+}
+
+/* ── Brand text base ── */
 .marquee-brand {
   display: inline-flex;
   align-items: center;
-  gap: 0;
   flex-shrink: 0;
-  padding: 0 1.1rem;
   font-family: 'Playfair Display', 'Georgia', serif;
-  font-size: clamp(20px, 5vw, 30px);
   font-weight: 800;
   font-style: italic;
   letter-spacing: 0.06em;
-  line-height: 1.1;
+  line-height: 1;
   text-transform: uppercase;
   white-space: nowrap;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 
-  background: linear-gradient(
+/* ── Back row: small, muted, soft shadow ── */
+.marquee-brand-back {
+  padding: 0 0.8rem;
+  font-size: clamp(13px, 3.2vw, 18px);
+  background-image: linear-gradient(170deg, hsl(42 60% 55%), hsl(38 50% 35%));
+  filter:
+    drop-shadow(0 1px 0 hsl(38 40% 20%))
+    drop-shadow(0 2px 4px hsl(0 0% 0% / 0.3));
+}
+
+/* ── Mid row: medium, moderate depth ── */
+.marquee-brand-mid {
+  padding: 0 1rem;
+  font-size: clamp(17px, 4.2vw, 24px);
+  background-image: linear-gradient(170deg, hsl(44 80% 75%), hsl(42 70% 50%), hsl(38 60% 35%));
+  filter:
+    drop-shadow(0 1px 0 hsl(40 50% 28%))
+    drop-shadow(0 2px 0 hsl(38 40% 20%))
+    drop-shadow(0 3px 6px hsl(0 0% 0% / 0.4))
+    drop-shadow(0 0 12px hsl(42 76% 42% / 0.2));
+}
+
+/* ── Front row: large, bold, full 3D depth ── */
+.marquee-brand-front {
+  padding: 0 1.2rem;
+  font-size: clamp(22px, 5.5vw, 32px);
+  background-image: linear-gradient(
     170deg,
     hsl(45 100% 92%) 0%,
     hsl(44 95% 78%) 15%,
@@ -70,10 +112,6 @@
     hsl(40 80% 50%) 90%,
     hsl(44 90% 70%) 100%
   );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-
   filter:
     drop-shadow(0 1px 0 hsl(40 55% 30%))
     drop-shadow(0 2px 0 hsl(38 45% 24%))
@@ -84,13 +122,20 @@
     drop-shadow(0 0 40px hsl(42 76% 42% / 0.15));
 }
 
-/* ── Dot Separator ── */
+/* ── Dot ── */
 .marquee-dot {
   display: inline-block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  margin-left: 0.8rem;
+  background: hsl(42 70% 50% / 0.4);
+  flex-shrink: 0;
+}
+
+.marquee-brand-front .marquee-dot {
   width: 4px;
   height: 4px;
-  border-radius: 50%;
-  margin-left: 1.1rem;
+  margin-left: 1.2rem;
   background: hsl(42 70% 50% / 0.5);
-  flex-shrink: 0;
 }

@@ -1,25 +1,17 @@
 import './BrandMarquee.css';
 
-const ROW1 = [
-  'GUCCI', 'NIKE', 'ZARA', 'BALENCIAGA', 'OFF-WHITE', 'VERSACE',
-  'PRADA', 'RALPH LAUREN', 'BURBERRY', 'DIOR', 'GIVENCHY', 'FENDI',
-  'STÜSSY', 'STONE ISLAND', 'MONCLER', 'VALENTINO',
-];
+const ROW1 = ['GUCCI', 'BALENCIAGA', 'VERSACE', 'PRADA', 'DIOR', 'GIVENCHY', 'FENDI', 'VALENTINO', 'MONCLER', 'BALMAIN'];
+const ROW2 = ['NIKE', 'ZARA', 'OFF-WHITE', 'RALPH LAUREN', 'BURBERRY', 'STONE ISLAND', 'STÜSSY', 'AMIRI', 'LOEWE', 'CELINE'];
+const ROW3 = ['LOUIS VUITTON', 'ADIDAS', 'H&M', 'ASOS', 'COS', 'UNIQLO', 'MANGO', 'TOMMY HILFIGER', 'SHEIN', 'HUGO BOSS', 'FEAR OF GOD', 'ACNE STUDIOS'];
 
-const ROW2 = [
-  'LOUIS VUITTON', 'ADIDAS', 'H&M', 'ASOS', 'COS', 'UNIQLO',
-  'MANGO', 'TOMMY HILFIGER', 'SHEIN', 'FEAR OF GOD', 'CELINE',
-  'HUGO BOSS', 'LOEWE', 'ACNE STUDIOS', 'AMIRI', 'BALMAIN',
-];
-
-function MarqueeRow({ brands, reverse }: { brands: string[]; reverse?: boolean }) {
+function MarqueeRow({ brands, reverse, depth }: { brands: string[]; reverse?: boolean; depth: 'front' | 'mid' | 'back' }) {
   return (
-    <div className="marquee-track">
-      <div className={`marquee-scroll ${reverse ? 'marquee-reverse' : ''}`}>
+    <div className={`marquee-track marquee-depth-${depth}`}>
+      <div className={`marquee-scroll ${reverse ? 'marquee-reverse' : ''} marquee-speed-${depth}`}>
         {[0, 1].map((copy) => (
           <div key={copy} className="marquee-set" aria-hidden={copy === 1}>
             {brands.map((b) => (
-              <span key={`${b}-${copy}`} className="marquee-brand">
+              <span key={`${b}-${copy}`} className={`marquee-brand marquee-brand-${depth}`}>
                 {b}
                 <span className="marquee-dot" />
               </span>
@@ -34,8 +26,9 @@ function MarqueeRow({ brands, reverse }: { brands: string[]; reverse?: boolean }
 export default function BrandMarquee() {
   return (
     <div className="marquee-wrapper">
-      <MarqueeRow brands={ROW1} />
-      <MarqueeRow brands={ROW2} reverse />
+      <MarqueeRow brands={ROW3} depth="back" />
+      <MarqueeRow brands={ROW2} depth="mid" reverse />
+      <MarqueeRow brands={ROW1} depth="front" />
     </div>
   );
 }
