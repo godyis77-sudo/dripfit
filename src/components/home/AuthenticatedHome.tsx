@@ -5,6 +5,7 @@ import { Sparkles, Camera, ShoppingBag, X } from 'lucide-react';
 import iconScan from '@/assets/icon-scan.png';
 import iconTryon from '@/assets/icon-tryon.png';
 import iconSizeguide from '@/assets/icon-sizeguide.png';
+import iconStylecheck from '@/assets/icon-stylecheck.png';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
