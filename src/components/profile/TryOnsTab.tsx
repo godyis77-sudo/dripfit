@@ -173,12 +173,12 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
             onClick={() => setFilterMode(s.key)}
             className={`flex-1 rounded-lg py-2 text-center transition-all active:scale-95 border ${
               filterMode === s.key
-                ? 'bg-primary/10 border-primary/30'
+                ? 'btn-gold-3d border-transparent'
                 : 'bg-card border-border'
             }`}
           >
-            <p className={`text-[16px] font-bold ${filterMode === s.key ? 'text-primary' : 'text-foreground'}`}>{s.value}</p>
-            <p className={`text-[11px] uppercase tracking-wider ${filterMode === s.key ? 'text-primary/70' : 'text-muted-foreground'}`}>{s.label}</p>
+            <p className={`text-[16px] font-bold ${filterMode === s.key ? 'text-primary-foreground' : 'text-foreground'}`}>{s.value}</p>
+            <p className={`text-[11px] uppercase tracking-wider ${filterMode === s.key ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>{s.label}</p>
           </button>
         ))}
       </div>
