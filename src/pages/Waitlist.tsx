@@ -24,7 +24,7 @@ const FEATURES = [
     detail: 'No tape measure needed — just your phone camera.',
     badge: 'Core',
     image: featureScan,
-    imageScale: 'scale-[1.08]',
+    imageScale: '',
     phoneScale: 'scale-[1.10]',
   },
   {
