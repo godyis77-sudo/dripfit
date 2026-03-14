@@ -105,7 +105,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             <button
               key={action.title}
               onClick={action.onClick}
-              className="flex flex-col items-center justify-center rounded-xl border border-primary/25 bg-gradient-to-b from-primary/10 to-primary/5 backdrop-blur-sm p-1 active:scale-[0.96] active:shadow-3d-gold-pressed transition-all min-h-[44px] shadow-3d shimmer-sweep"
+              className="flex flex-col items-center justify-center rounded-xl border-2 border-primary/40 bg-gradient-to-b from-primary/10 to-primary/5 backdrop-blur-sm p-1 active:scale-[0.96] active:shadow-3d-gold-pressed transition-all min-h-[44px] shadow-3d shimmer-sweep"
             >
               <img
                 src={action.img}
