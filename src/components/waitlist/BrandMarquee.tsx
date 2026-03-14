@@ -22,12 +22,14 @@ function BrandName({ name, index }: { name: string; index: number }) {
 
       {/* The brand text */}
       <span
-        className="relative text-[15px] sm:text-lg font-bold uppercase tracking-[0.3em] shimmer-sweep"
+        className="relative text-[16px] sm:text-xl font-black uppercase tracking-[0.25em]"
         style={{
-          background: `linear-gradient(135deg, hsl(42 76% 65%), hsl(40 80% 75%), hsl(42 76% 55%))`,
+          background: `linear-gradient(180deg, hsl(42 80% 78%), hsl(42 76% 58%) 40%, hsl(42 70% 38%) 70%, hsl(42 76% 55%))`,
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
-          filter: `drop-shadow(0 0 8px hsl(42 76% 42% / 0.25))`,
+          textShadow: '0 2px 4px hsl(42 76% 42% / 0.3), 0 4px 12px hsl(0 0% 0% / 0.4)',
+          paintOrder: 'stroke fill',
+          WebkitTextStroke: '0.3px hsl(42 76% 50% / 0.15)',
         }}
       >
         {name}
