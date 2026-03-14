@@ -271,7 +271,7 @@ const SettingsTab = ({
           </div>
           <button onClick={toggleTheme} className="flex items-center gap-1.5 text-[11px] text-muted-foreground active:scale-95 transition-transform">
             <span className="capitalize">{themeVal}</span>
-            <ChevronRight className="h-3 w-3" />
+            <span className="h-5 w-5 icon-3d-gold rounded-md"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>
           </button>
         </div>
       </div>
