@@ -118,39 +118,37 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
             <p className="text-[12px] text-muted-foreground">{item.notes}</p>
           )}
 
-          {/* Try-On button */}
-          <Button
-            className="w-full h-10 rounded-xl text-[12px] font-bold gap-1.5 btn-luxury text-primary-foreground"
-            onClick={() => {
-              trackEvent('tryon_from_wardrobe_detail', { item_id: item.id });
-              onOpenChange(false);
-              navigate('/tryon', { state: { clothingUrl: item.image_url, productUrl: item.product_link || undefined } });
-            }}
-          >
-            <Sparkles className="h-4 w-4" /> Try-On
-          </Button>
-
-          {/* Direct product link */}
-          {item.product_link && (
+          {/* Try-On + Buy Now row */}
+          <div className="flex gap-2">
             <Button
-              className="w-full h-10 rounded-xl text-[12px] font-bold btn-luxury text-primary-foreground gap-1.5"
+              className="flex-1 h-9 rounded-xl text-[11px] font-bold gap-1 btn-luxury text-primary-foreground"
               onClick={() => {
-                trackEvent('shop_clickout', { source: 'wardrobe_detail_direct' });
-                window.open(item.product_link!, '_blank', 'noopener');
+                trackEvent('tryon_from_wardrobe_detail', { item_id: item.id });
+                onOpenChange(false);
+                navigate('/tryon', { state: { clothingUrl: item.image_url, productUrl: item.product_link || undefined } });
               }}
             >
-              <ExternalLink className="h-4 w-4" /> Buy Now!
+              <Sparkles className="h-3.5 w-3.5" /> Try-On
             </Button>
-          )}
+            {item.product_link && (
+              <Button
+                className="flex-1 h-9 rounded-xl text-[11px] font-bold btn-luxury text-primary-foreground gap-1"
+                onClick={() => {
+                  trackEvent('shop_clickout', { source: 'wardrobe_detail_direct' });
+                  window.open(item.product_link!, '_blank', 'noopener');
+                }}
+              >
+                <ExternalLink className="h-3.5 w-3.5" /> Buy Now!
+              </Button>
+            )}
+          </div>
 
           {/* Retailer accordion */}
           <Collapsible>
             <CollapsibleTrigger asChild>
-              <Button variant="outline" className="w-full h-10 rounded-xl text-[12px] font-bold gap-1.5 justify-between btn-gold-3d border-none">
-                <span className="flex items-center gap-1.5">
-                  <ShoppingBag className="h-3.5 w-3.5" /> Shop Similar Style
-                </span>
-                <ChevronDown className="h-4 w-4 transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
+              <Button variant="outline" className="w-full h-9 rounded-xl text-[11px] font-bold gap-1 justify-center btn-gold-3d border-none">
+                <ShoppingBag className="h-3.5 w-3.5" /> Shop Similar Style
+                <ChevronDown className="h-3.5 w-3.5 transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent className="pt-2 space-y-2">
