@@ -732,29 +732,7 @@
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.btn-gold-3d::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 35%,
-    hsl(45 100% 92% / 0.4) 45%,
-    hsl(45 100% 92% / 0.1) 50%,
-    transparent 55%
-  );
-  transform: translateX(-110%);
-  animation: gold-3d-shimmer 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  pointer-events: none;
-  border-radius: inherit;
-  z-index: 1;
-}
-
-@keyframes gold-3d-shimmer {
-  0%   { transform: translateX(-110%); }
-  25%  { transform: translateX(110%); }
-  100% { transform: translateX(110%); }
-}
+/* btn-gold-3d relies on shimmer-sweep from the Button component — no duplicate ::before */
 
 .btn-gold-3d:hover {
   transform: translateY(-1px);
