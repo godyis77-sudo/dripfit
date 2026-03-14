@@ -314,7 +314,7 @@ const Waitlist = () => {
                 {/* Phone mockup with app screenshot */}
                 <div className="relative w-full flex-1 min-h-0 md:aspect-[4/5] md:flex-none flex items-center justify-center bg-background p-4">
                   {/* Phone frame — gold border with side buttons */}
-                  <div className="relative w-[90%] h-[90%]">
+                  <div className={`relative w-[90%] h-[90%] ${f.phoneScale}`}>
                     {/* Side buttons */}
                     <div className="absolute -left-[3px] top-[18%] w-[3px] h-7 rounded-l-sm bg-primary/40" />
                     <div className="absolute -left-[3px] top-[30%] w-[3px] h-10 rounded-l-sm bg-primary/40" />
