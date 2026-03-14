@@ -38,7 +38,7 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
               onClick={() => navigate(tab.path)}
               aria-label={tab.label}
               className={cn(
-                'relative flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 min-h-[44px] min-w-[44px] transition-all duration-300',
+                'relative flex flex-col items-center gap-0 rounded-xl px-2 py-1 min-h-[44px] min-w-[44px] transition-all duration-300',
                 isActive
                   ? 'text-primary'
                   : 'text-muted-foreground active:text-foreground'
