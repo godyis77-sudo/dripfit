@@ -110,7 +110,10 @@ type FunnelEvent =
   | 'account_deleted'
   | 'fitcheck_caption_updated'
   | 'retailer_clickout_opened'
-  | 'retailer_clickout_cancelled';
+  | 'retailer_clickout_cancelled'
+  | 'referral_link_copied'
+  | 'referral_signup_attributed'
+  | 'creator_commission_earned';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
