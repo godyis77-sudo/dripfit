@@ -12,6 +12,7 @@ const COMMISSION_TIERS = [
   { minConversions: 100, amountCents: 150, label: "bonus" },
   { minConversions: 1, amountCents: 50, label: "base" },
 ];
+const COMMISSION_CURRENCY = "USD";
 
 function getMonthKey() {
   const d = new Date();
