@@ -214,7 +214,7 @@ const WhatsInThisLook = ({
                             e.stopPropagation();
                             onTryOn(item);
                           }}
-                          className="text-[10px] font-bold text-primary-foreground btn-gold-3d px-2 py-1 rounded-md active:scale-95 transition-transform"
+                          className="text-[10px] font-bold btn-gold-3d px-2 py-1 rounded-md active:scale-95 transition-transform"
                         >
                           Try-On
                         </button>
