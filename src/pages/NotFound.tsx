@@ -20,9 +20,7 @@ const NotFound = () => {
         animate={{ opacity: 1, y: 0 }}
         className="text-center max-w-[320px]"
       >
-        <div className="h-16 w-16 rounded-2xl gradient-drip flex items-center justify-center mx-auto mb-5 glow-primary">
-          <Crown className="h-7 w-7 text-primary-foreground" />
-        </div>
+        <BrandLogo size="lg" iconOnly className="mx-auto mb-5" />
         <h1 className="text-5xl font-bold text-primary mb-2">404</h1>
         <p className="text-[15px] font-semibold text-foreground mb-1">Page not found</p>
         <p className="text-[12px] text-muted-foreground mb-6">
