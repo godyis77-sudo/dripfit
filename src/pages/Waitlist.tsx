@@ -381,7 +381,7 @@ const Waitlist = () => {
               transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
             >
               {[...BRANDS, ...BRANDS].map((b, i) => (
-                <span key={`${b}-${i}`} className="text-base font-bold text-foreground/20 uppercase tracking-[0.25em] select-none">
+                <span key={`${b}-${i}`} className="text-base font-bold text-foreground/50 uppercase tracking-[0.25em] select-none">
                   {b}
                 </span>
               ))}
