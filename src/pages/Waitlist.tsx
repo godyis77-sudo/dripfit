@@ -25,6 +25,7 @@ const FEATURES = [
     badge: 'Core',
     image: featureScan,
     imageScale: 'scale-[1.08]',
+    phoneScale: 'scale-[1.10]',
   },
   {
     icon: Shirt,
