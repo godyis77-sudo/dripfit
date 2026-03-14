@@ -187,7 +187,7 @@ const Community = () => {
             >
               {f.label}
               {f.key === 'similar' && (
-                <button onClick={(e) => { e.stopPropagation(); setSimilarFitTooltip(!similarFitTooltip); }} aria-label="What is Similar Fit?" className={`text-[11px] ml-0.5 ${filter === f.key ? 'text-primary-foreground/60' : 'text-muted-foreground/60'}`}>ⓘ</button>
+                <button onClick={(e) => { e.stopPropagation(); setSimilarFitTooltip(!similarFitTooltip); }} aria-label="What is Similar Fit?" className={`text-[11px] ml-0.5 ${filter === f.key ? 'opacity-60' : 'text-muted-foreground/60'}`}>ⓘ</button>
               )}
             </button>
           ))}
