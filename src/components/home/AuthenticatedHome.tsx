@@ -100,11 +100,12 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               onClick={action.onClick}
               className="flex flex-col items-center rounded-2xl border border-primary/20 bg-card/80 backdrop-blur-sm p-3 pb-2.5 gap-1.5 active:scale-[0.96] active:shadow-3d-gold-pressed transition-all min-h-[44px] shadow-3d shimmer-sweep"
             >
-              <div className="h-16 w-16 flex items-center justify-center">
+              <div className="flex items-center justify-center" style={{ height: 100, width: 100 }}>
                 <img
                   src={action.img}
                   alt={action.title}
-                  className="h-16 w-16 object-contain drop-shadow-[0_2px_6px_hsl(var(--drip-gold)/0.4)]"
+                  className="object-contain drop-shadow-[0_2px_6px_hsl(var(--drip-gold)/0.4)]"
+                  style={{ height: 100, width: 100 }}
                 />
               </div>
               <div className="text-center mt-0.5">
