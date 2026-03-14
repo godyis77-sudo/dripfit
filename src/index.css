@@ -574,6 +574,16 @@
     filter: brightness(1.05) contrast(1.02);
   }
 
+  /* ── Soft rounded image edges ── */
+  .img-soft {
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .img-soft img,
+  .img-soft video {
+    border-radius: inherit;
+  }
+
   /* ── Toast system ── */
   [data-sonner-toaster] {
     --offset: 76px !important;
