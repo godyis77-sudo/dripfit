@@ -262,7 +262,7 @@ const Premium = () => {
               className="bg-card border border-border rounded-xl p-2.5 flex items-center gap-2"
             >
               <div className="h-7 w-7 icon-3d shrink-0">
-                <f.icon className="h-3.5 w-3.5 text-primary shimmer-icon" />
+                <f.icon className="h-3.5 w-3.5 text-brand-logo-fg shimmer-icon" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[11px] font-bold text-foreground leading-tight">{f.title}</p>

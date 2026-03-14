@@ -273,28 +273,28 @@
     100% { transform: translateX(120%); }
   }
 
-  /* 3D icon container — use on any small icon/emoji wrapper */
+  /* 3D icon container — gold branded style */
   .icon-3d {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(180deg, hsl(var(--card) / 0.95) 0%, hsl(var(--secondary) / 0.7) 100%);
-    border: 1px solid hsl(var(--border) / 0.5);
+    background: linear-gradient(180deg, hsl(40 78% 54%), hsl(42 76% 42%));
+    border: 1px solid hsl(var(--gold-shimmer) / 0.3);
     border-radius: 0.625rem;
     box-shadow:
-      0 2px 0 0 hsl(var(--border) / 0.5),
-      0 3px 8px -2px hsl(0 0% 0% / 0.18),
-      inset 0 1px 0 hsl(var(--surface-glass) / 0.12),
-      inset 0 -1px 0 hsl(0 0% 0% / 0.04);
+      0 2px 0 0 hsl(42 76% 28%),
+      0 3px 10px -2px hsl(var(--primary) / 0.3),
+      inset 0 1px 0 hsl(var(--gold-shimmer) / 0.5),
+      inset 0 -1px 0 hsl(42 76% 28% / 0.3);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     transition: all 0.15s ease;
   }
   .icon-3d:active {
     box-shadow:
-      0 0px 0 0 hsl(var(--border) / 0.4),
-      0 1px 3px hsl(0 0% 0% / 0.12),
-      inset 0 1px 3px hsl(0 0% 0% / 0.06);
+      0 0px 0 0 hsl(42 76% 28%),
+      0 1px 3px hsl(var(--primary) / 0.15),
+      inset 0 1px 3px hsl(0 0% 0% / 0.08);
     transform: translateY(1px);
   }
 
@@ -507,7 +507,17 @@
     animation: shimmer-sweep 3s ease-in-out infinite;
   }
 
-  /* ── Section label — editorial style ── */
+  /* ── Gold 3D badge ── */
+  .badge-gold-3d {
+    background: linear-gradient(175deg, hsl(45 100% 88%) 0%, hsl(42 80% 56%) 18%, hsl(40 72% 50%) 50%, hsl(38 68% 42%) 82%, hsl(36 60% 34%) 100%);
+    box-shadow:
+      0 1px 0 0 hsl(40 55% 30%),
+      0 2px 0 0 hsl(38 45% 24%),
+      0 3px 8px -2px hsl(40 70% 20% / 0.4),
+      inset 0 1px 0 hsl(45 100% 92% / 0.5),
+      inset 0 -1px 0 hsl(38 50% 28% / 0.35);
+  }
+
   .section-label {
     font-family: 'DM Sans', sans-serif;
     @apply text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground;
