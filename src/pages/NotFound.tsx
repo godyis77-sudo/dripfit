@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Home, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import BrandLogo from "@/components/ui/BrandLogo";
 import BottomTabBar from "@/components/BottomTabBar";
 
