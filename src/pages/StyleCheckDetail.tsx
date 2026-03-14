@@ -100,7 +100,7 @@ const StyleCheckDetail = () => {
               <Button
                 size="sm"
                 variant="outline"
-                className={`rounded-lg text-[11px] h-8 px-4 font-bold ${isInCart(post.id) ? 'btn-gold-3d border-transparent' : ''}`}
+                className={`rounded-lg text-[11px] h-8 px-4 font-bold ${isInCart(post.id) ? 'btn-gold-3d border-transparent text-primary-foreground' : ''}`}
                 onClick={() => {
                   if (isInCart(post.id)) {
                     removeFromCart(post.id);

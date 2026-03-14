@@ -412,7 +412,7 @@ export const PostDetailSheet = ({
                     <button
                       key={v.key}
                       onClick={() => onVote(post.id, v.key)}
-                      className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${active ? 'btn-gold-3d border-transparent' : 'border-border text-muted-foreground'}`}
+                      className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${active ? 'btn-gold-3d border-transparent text-primary-foreground' : 'border-border text-muted-foreground'}`}
                     >
                       <div>
                         <span className="mr-1">{v.emoji}</span>

@@ -177,8 +177,8 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                 : 'bg-card border-border'
             }`}
           >
-            <p className={`text-[11px] font-bold ${filterMode === s.key ? '' : 'text-foreground'}`}>{s.value}</p>
-            <p className={`text-[9px] uppercase tracking-wider ${filterMode === s.key ? 'opacity-70' : 'text-muted-foreground'}`}>{s.label}</p>
+            <p className={`text-[11px] font-bold ${filterMode === s.key ? 'text-primary-foreground' : 'text-foreground'}`}>{s.value}</p>
+            <p className={`text-[9px] uppercase tracking-wider ${filterMode === s.key ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>{s.label}</p>
           </button>
         ))}
       </div>
@@ -243,7 +243,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                                   onClick={() => handleVote(post.id, v.key)}
                                   className={`flex-1 py-1.5 rounded-md text-[11px] font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${
                                     active
-                                      ? 'btn-gold-3d border-transparent'
+                                      ? 'btn-gold-3d border-transparent text-primary-foreground'
                                       : 'border-border text-muted-foreground'
                                   }`}
                                 >

@@ -209,7 +209,7 @@ const SettingsTab = ({
                 }}
                 className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all active:scale-95 ${
                   gender === g.value
-                    ? 'btn-gold-3d'
+                    ? 'btn-gold-3d text-primary-foreground'
                     : 'bg-background border border-border text-muted-foreground'
                 }`}
               >
@@ -291,7 +291,7 @@ const SettingsTab = ({
           <p className="text-[12px] text-foreground font-medium mb-1.5">Default fit</p>
           <div className="flex gap-1.5">
             {(['fitted', 'regular', 'relaxed'] as FitPreference[]).map(f => (
-              <button key={f} onClick={() => onFitChange(f)} className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all capitalize active:scale-95 ${fit === f ? 'btn-gold-3d' : 'bg-background border border-border text-muted-foreground'}`}>
+              <button key={f} onClick={() => onFitChange(f)} className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all capitalize active:scale-95 ${fit === f ? 'btn-gold-3d text-primary-foreground' : 'bg-background border border-border text-muted-foreground'}`}>
                 {f}
               </button>
             ))}
@@ -313,7 +313,7 @@ const SettingsTab = ({
               onClick={() => { setRegion(r.value); setUserRegion(r.value); persistRegionToDb(user.id, r.value); trackEvent('region_changed' as any, { region: r.value }); toast({ title: `Region set to ${r.label}` }); }}
               className={`flex flex-col items-center gap-0.5 py-2 rounded-lg text-center transition-all active:scale-95 ${
                 region === r.value
-                  ? 'btn-gold-3d'
+                  ? 'btn-gold-3d text-primary-foreground'
                   : 'bg-background border border-border text-muted-foreground'
               }`}
             >

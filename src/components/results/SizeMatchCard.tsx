@@ -210,7 +210,7 @@ export const SizeMatchCard = forwardRef<HTMLDivElement, SizeMatchCardProps>(
                   onClick={() => handleFitChange(opt.value)}
                   className={`cursor-pointer px-4 min-h-[44px] text-xs font-medium transition-colors duration-200 ${
                     activeFit === opt.value
-                      ? 'btn-gold-3d'
+                      ? 'btn-gold-3d text-primary-foreground'
                       : 'bg-card text-muted-foreground'
                   }`}
                   aria-pressed={activeFit === opt.value}
