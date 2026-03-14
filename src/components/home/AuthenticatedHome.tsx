@@ -2,6 +2,9 @@ import { forwardRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Sparkles, Camera, ShoppingBag, X } from 'lucide-react';
+import iconScan from '@/assets/icon-scan.png';
+import iconTryon from '@/assets/icon-tryon.png';
+import iconSizeguide from '@/assets/icon-sizeguide.png';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
@@ -65,7 +68,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           {displayName && <h1 className="font-display text-xl font-bold text-foreground mt-0.5">{displayName}</h1>}
         </motion.div>
 
-        {/* Context-aware Quick Actions */}
+        {/* Quick Actions */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -75,34 +78,36 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           {[
             {
               onClick: () => { trackEvent('home_quick_scan'); navigate('/capture'); },
-              icon: hasScan ? <span className="text-base">📐</span> : <span className="text-base">📷</span>,
-              title: hasScan ? 'Update Scan' : 'Get Your Size',
-              subtitle: hasScan ? 'Refresh measurements' : '2 photos · 60s',
+              img: iconScan,
+              title: hasScan ? 'Re-Scan' : 'Body Scan',
+              subtitle: hasScan ? 'Update measurements' : '2 photos · 60s',
             },
             {
               onClick: () => { trackEvent('home_quick_tryon'); navigate('/tryon'); },
-              icon: <Sparkles className="h-4 w-4 text-primary-foreground" />,
+              img: iconTryon,
               title: 'Try-On',
-              subtitle: 'See it on you',
+              subtitle: 'Virtual fitting room',
             },
             {
               onClick: () => { trackEvent('home_quick_sizeguide'); navigate('/size-guide'); },
-              icon: <span className="text-base">📏</span>,
+              img: iconSizeguide,
               title: 'Size Guide',
-              subtitle: 'Check your fit',
+              subtitle: 'Find your perfect fit',
             },
           ].map((action) => (
             <button
               key={action.title}
               onClick={action.onClick}
-              className="flex items-center gap-2.5 glass-card rounded-xl p-3 active:scale-[0.97] transition-all min-h-[44px] glow-hover"
+              className="flex flex-col items-center glass-card rounded-xl p-3 pt-4 gap-2 active:scale-[0.97] transition-all min-h-[44px] glow-hover"
             >
-              <div className="h-9 w-9 icon-3d-gold shimmer-sweep shrink-0">
-                <span className="shimmer-icon">{action.icon}</span>
-              </div>
-              <div className="text-left">
-                <p className="text-[12px] font-bold text-foreground">{action.title}</p>
-                <p className="text-[10px] text-muted-foreground">{action.subtitle}</p>
+              <img
+                src={action.img}
+                alt={action.title}
+                className="h-10 w-10 object-contain img-soft"
+              />
+              <div className="text-center">
+                <p className="text-[11px] font-bold text-foreground leading-tight">{action.title}</p>
+                <p className="text-[9px] text-muted-foreground leading-tight mt-0.5">{action.subtitle}</p>
               </div>
             </button>
           ))}
