@@ -200,7 +200,7 @@ const Profile = () => {
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => navigate('/profile/body')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg gradient-drip border border-primary/30 active:scale-95 transition-transform shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg btn-gold-3d active:scale-95 transition-transform shadow-sm"
             >
               <User className="h-3.5 w-3.5 text-primary-foreground" />
               <span className="text-[11px] text-primary-foreground font-bold">Body</span>
