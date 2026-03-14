@@ -272,8 +272,8 @@ const Capture = () => {
                 transition={{ delay: 0.9 }}
                 className="w-full bg-card border border-border rounded-xl px-4 py-3 mt-5 flex items-start gap-3"
               >
-                <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                  <Shield className="h-3.5 w-3.5 text-primary" />
+                <div className="h-7 w-7 icon-3d-gold shimmer-sweep rounded-lg shrink-0 mt-0.5">
+                  <Shield className="h-3.5 w-3.5 text-primary-foreground shimmer-icon" />
                 </div>
                 <div>
                   <p className="text-[12px] font-bold text-foreground leading-tight mb-0.5">Your privacy is protected</p>
