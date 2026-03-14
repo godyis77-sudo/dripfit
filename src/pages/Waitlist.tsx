@@ -306,7 +306,7 @@ const Waitlist = () => {
             <FadeUp key={f.title} delay={i * 0.08} className="min-w-[82vw] sm:min-w-[300px] md:min-w-0 snap-start flex-shrink-0 md:flex-shrink">
               <div className="relative bg-secondary border border-border rounded-2xl overflow-hidden h-full flex flex-col group hover:border-primary/30 transition-all">
                 {/* App screenshot */}
-                <div className="relative w-full aspect-[4/5] overflow-hidden bg-background">
+                <div className="relative w-full aspect-[3/4] overflow-hidden bg-background">
                   <img
                     src={f.image}
                     alt={`${f.title} app screen`}
