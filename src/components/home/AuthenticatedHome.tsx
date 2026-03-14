@@ -88,7 +88,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             },
             {
               onClick: () => { trackEvent('home_quick_sizeguide'); navigate('/size-guide'); },
-              img: iconSizeguide,
+              img: featureIcons.sizeguide,
               title: 'Size Guide',
               subtitle: 'Perfect fit',
             },
