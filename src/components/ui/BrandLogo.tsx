@@ -12,7 +12,7 @@ interface BrandLogoProps {
 const sizeMap = {
   sm: { icon: 18, iconBox: 'h-7 w-7 rounded-lg', text: 'text-[15px]', gap: 'gap-2' },
   md: { icon: 28, iconBox: 'h-11 w-11 rounded-xl', text: 'text-[14px]', gap: 'gap-2.5' },
-  lg: { icon: 52, iconBox: 'h-20 w-20 rounded-2xl', text: 'text-2xl', gap: 'gap-3' },
+  lg: { icon: 54, iconBox: '', text: 'text-2xl', gap: 'gap-3' },
 };
 
 const BrandLogo = ({ size = 'sm', className, iconOnly = false }: BrandLogoProps) => {
