@@ -25,7 +25,7 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
       transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.3 }}
       className="fixed bottom-0 left-0 right-0 z-50 lg:max-w-[390px] lg:left-1/2 lg:-translate-x-1/2 glass-bar border-t"
     >
-      <div className="flex items-center justify-around px-1 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <div className="flex items-center justify-around px-1 py-0.5 pb-[max(0.25rem,env(safe-area-inset-bottom))]">
         {tabs.map((tab) => {
           const isActive = tab.path === '/'
             ? location.pathname === '/'
@@ -38,14 +38,14 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
               onClick={() => navigate(tab.path)}
               aria-label={tab.label}
               className={cn(
-                'relative flex flex-col items-center gap-0 rounded-xl px-2 py-1 min-h-[44px] min-w-[44px] transition-all duration-300',
+                'relative flex flex-col items-center gap-0 rounded-xl px-2 py-0.5 min-h-[36px] min-w-[44px] transition-all duration-300',
                 isActive
                   ? 'text-primary'
                   : 'text-muted-foreground active:text-foreground'
               )}
             >
               <div className={cn(
-                'h-11 w-11 flex items-center justify-center rounded-xl transition-all duration-300',
+                'h-9 w-9 flex items-center justify-center rounded-xl transition-all duration-300',
                 isActive && 'scale-110 shadow-gold-glow shimmer-sweep ring-1 ring-primary/40'
               )}>
                 <FeatureIcon name={tab.icon} size={80} />
