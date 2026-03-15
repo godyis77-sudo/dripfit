@@ -47,6 +47,7 @@ const CreatorDashboard = lazy(() => import("./pages/CreatorDashboard"));
 const Waitlist = lazy(() => import("./pages/Waitlist"));
 const Partnership = lazy(() => import("./pages/Partnership"));
 const FoundingMembers = lazy(() => import("./pages/FoundingMembers"));
+const MediaKit = lazy(() => import("./pages/MediaKit"));
 
 // ── Suspense fallback (minimal, matches app background) ───────────────
 const RouteFallback = () => (
