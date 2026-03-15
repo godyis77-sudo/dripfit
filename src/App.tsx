@@ -13,11 +13,11 @@ import { PageTransition } from "@/components/layout/PageTransition";
 import { OfflineBanner } from "@/components/layout/OfflineBanner";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AffiliateProvider from "./components/AffiliateProvider";
+import Capture from "./pages/Capture";
 
 // ── Lazy-loaded pages (code-split per route) ──────────────────────────
 const Welcome = lazy(() => import("./pages/Welcome"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
-const Capture = lazy(() => import("./pages/Capture"));
 const Analyze = lazy(() => import("./pages/Analyze"));
 const Results = lazy(() => import("./pages/Results"));
 const ScanSuccess = lazy(() => import("./pages/ScanSuccess"));
