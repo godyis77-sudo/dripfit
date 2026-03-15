@@ -97,8 +97,8 @@ const SettingsTab = ({
       {savedProfile ? (
         <div className="bg-card border border-border rounded-xl p-3 mb-4">
           <div className="flex items-center gap-2 mb-2.5">
-            <div className="h-7 w-7 rounded-lg icon-3d-gold shimmer-sweep flex items-center justify-center">
-              <Ruler className="h-3.5 w-3.5 text-primary-foreground shimmer-icon" />
+            <div className="h-7 w-7 rounded-lg badge-gold-3d shimmer-sweep flex items-center justify-center">
+              <Ruler className="h-3.5 w-3.5 text-primary-foreground" />
             </div>
             <p className="text-[13px] font-bold text-foreground">Fit Identity</p>
           </div>
