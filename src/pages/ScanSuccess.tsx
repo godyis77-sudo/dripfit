@@ -236,7 +236,7 @@ const ScanSuccess = () => {
         >
           <Button
             className="w-full h-12 rounded-xl text-sm font-bold btn-luxury"
-            onClick={() => handleNavigate('/profile/body')}
+            onClick={() => handleNavigate(resultsPath)}
           >
             See My Sizes <ChevronRight className="ml-1 h-4 w-4" />
           </Button>
