@@ -283,7 +283,9 @@ const Capture = () => {
     return () => window.clearTimeout(timeoutId);
   }, [webCameraOpen, videoReady]);
 
-  const handleWebCameraCapture = async () => {
+  const handleWebCameraCapture = useCallback(async () => {
+    setCaptureCountdown(null);
+
     if (!videoRef.current) return;
 
     const video = videoRef.current;
@@ -311,6 +313,11 @@ const Capture = () => {
     setWebCameraOpen(false);
     stopWebCamera();
     await handleCapturedPhoto(dataUrl, key);
+  }, [flowStep, handleCapturedPhoto, stopWebCamera, toast]);
+
+  const startTimedWebCapture = () => {
+    if (!videoReady || captureCountdown !== null) return;
+    setCaptureCountdown(3);
   };
 
   const handleCapture = async () => {
