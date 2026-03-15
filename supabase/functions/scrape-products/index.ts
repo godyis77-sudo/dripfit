@@ -3334,8 +3334,8 @@ Deno.serve(async (req) => {
 
         return {
           name: p.name,
-          brand: p.brand,
-          retailer: p.brand,
+          brand: canonicalName(p.brand),
+          retailer: canonicalName(p.brand),
           product_url: normaliseUrl(p.product_url),
           image_url: normaliseUrl(p.image_url),
           price_cents: p.price_cents,
