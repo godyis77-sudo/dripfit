@@ -113,6 +113,13 @@ const Capture = () => {
   const captureStep: CaptureStep = flowStep === 'side' ? 'side' : 'front';
   const config = STEP_CONFIG[captureStep];
 
+  // Safety: if reviewing but photo is missing (e.g. page reload, compress failure), reset
+  useEffect(() => {
+    if (reviewing && (flowStep === 'front' || flowStep === 'side') && !photos[captureStep]) {
+      setReviewing(false);
+    }
+  }, [reviewing, flowStep, captureStep, photos]);
+
   const handleCapture = async () => {
     if (isNativePlatform()) {
       try {
