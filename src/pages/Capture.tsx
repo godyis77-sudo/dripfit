@@ -93,14 +93,19 @@ const Capture = () => {
   usePageTitle('Scan');
   const saved = loadScanState();
   const [flowStep, setFlowStep] = useState<FlowStep>(saved?.flowStep || 'intro');
-  const [photos, setPhotos] = useState<PhotoSet>({ front: null, side: null });
-  // Photos are NOT restored from sessionStorage — they are too large to persist
+  const [photos, setPhotos] = useState<PhotoSet>({
+    front: saved?.photos?.front ?? null,
+    side: saved?.photos?.side ?? null,
+  });
   const [heightCm, setHeightCm] = useState(saved?.heightCm || '');
   const [heightFt, setHeightFt] = useState(saved?.heightFt || '');
   const [heightIn, setHeightIn] = useState(saved?.heightIn || '');
   const [useCm, setUseCm] = useState(saved?.useCm || false);
   const [refObject, setRefObject] = useState<ReferenceObject>(saved?.refObject || 'none');
-  const [reviewing, setReviewing] = useState(false);
+  const [reviewing, setReviewing] = useState(
+    (saved?.flowStep === 'front' && !!saved?.photos?.front) ||
+    (saved?.flowStep === 'side' && !!saved?.photos?.side)
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [genderSet, setGenderSet] = useState<string | null>(null);
   const [genderLoaded, setGenderLoaded] = useState(false);
