@@ -114,6 +114,8 @@ const Capture = () => {
   const [genderLoaded, setGenderLoaded] = useState(false);
   const [authSheetOpen, setAuthSheetOpen] = useState(false);
   const [webCameraOpen, setWebCameraOpen] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
   const { toast } = useToast();
 
   // Load existing gender from profile
