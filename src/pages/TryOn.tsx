@@ -1,20 +1,30 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Sparkles, Loader2, Check, Info, ShoppingBag, Store, Shield, X, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2, Check, Info, ShoppingBag, Store, Shield, X, RotateCcw, SlidersHorizontal } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import BottomTabBar from '@/components/BottomTabBar';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import TryOnUploadSection from '@/components/tryon/TryOnUploadSection';
 import TryOnResultSection from '@/components/tryon/TryOnResultSection';
 import TryOnPremiumGate from '@/components/tryon/TryOnPremiumGate';
-import BrandFilter from '@/components/tryon/BrandFilter';
-import GenreFilter from '@/components/catalog/GenreFilter';
 import { CATEGORIES, ALL_PRODUCT_CATEGORIES, FREE_MONTHLY_LIMIT } from '@/components/tryon/tryon-constants';
+import { BRAND_GENRES, type BrandGenre } from '@/lib/brandGenres';
 import { trackEvent } from '@/lib/analytics';
 import { useTryOnState } from '@/hooks/useTryOnState';
 import { isGuestMode } from '@/lib/session';
+
+const SORT_OPTIONS = [
+  { key: 'default', label: 'Recommended' },
+  { key: 'price_asc', label: 'Price: Low → High' },
+  { key: 'price_desc', label: 'Price: High → Low' },
+  { key: 'brand_az', label: 'Brand: A → Z' },
+  { key: 'genre', label: 'Genre' },
+] as const;
+
+type SortKey = typeof SORT_OPTIONS[number]['key'];
 
 const TryOn = () => {
   usePageTitle('Virtual Try-On');
@@ -22,6 +32,10 @@ const TryOn = () => {
   const navigate = useNavigate();
   const isGuest = !s.user && isGuestMode();
   const [guestTryOnNudgeDismissed, setGuestTryOnNudgeDismissed] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [sort, setSort] = useState<SortKey>('default');
+
+  const activeFilterCount = (s.selectedBrand ? 1 : 0) + (s.selectedGenre ? 1 : 0) + (sort !== 'default' ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
@@ -89,18 +103,95 @@ const TryOn = () => {
               <div className="absolute right-0 top-5 bottom-0 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none z-10" />
             </div>
 
-            {/* Brand filter */}
+            {/* Filters button + dropdown */}
             {!s.clothingPhoto && (
               <>
-                <BrandFilter
-                  gender={s.userGender}
-                  selectedBrand={s.selectedBrand}
-                  onBrandChange={s.setSelectedBrand}
-                />
-                <GenreFilter
-                  selectedGenre={s.selectedGenre as any}
-                  onGenreChange={s.setSelectedGenre as any}
-                />
+                <div className="mb-3">
+                  <button
+                    onClick={() => setFiltersOpen(!filtersOpen)}
+                    className={`relative w-full h-11 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold ${
+                      activeFilterCount > 0
+                        ? 'btn-luxury text-primary-foreground'
+                        : 'bg-card border border-border text-foreground/70'
+                    }`}
+                  >
+                    <SlidersHorizontal className="h-4 w-4" />
+                    {activeFilterCount > 0 ? `Filters (${activeFilterCount})` : 'Filters'}
+                  </button>
+                </div>
+
+                <AnimatePresence>
+                  {filtersOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden border border-border rounded-xl bg-card mb-3"
+                    >
+                      <div className="px-4 py-3 space-y-3">
+                        {/* Sort */}
+                        <div>
+                          <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Sort by</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {SORT_OPTIONS.map(opt => (
+                              <button
+                                key={opt.key}
+                                onClick={() => setSort(opt.key)}
+                                className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                  sort === opt.key
+                                    ? 'btn-luxury text-primary-foreground'
+                                    : 'bg-background border border-border text-foreground/70'
+                                }`}
+                              >
+                                {opt.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Genre filter */}
+                        <div>
+                          <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Genre</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            <button
+                              onClick={() => s.setSelectedGenre(null)}
+                              className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                !s.selectedGenre
+                                  ? 'btn-luxury text-primary-foreground'
+                                  : 'bg-background border border-border text-foreground/70'
+                              }`}
+                            >
+                              All
+                            </button>
+                            {BRAND_GENRES.map(genre => (
+                              <button
+                                key={genre}
+                                onClick={() => s.setSelectedGenre(genre === s.selectedGenre ? null : genre)}
+                                className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                  s.selectedGenre === genre
+                                    ? 'btn-luxury text-primary-foreground'
+                                    : 'bg-background border border-border text-foreground/70'
+                                }`}
+                              >
+                                {genre}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Clear filters */}
+                        {activeFilterCount > 0 && (
+                          <button
+                            onClick={() => { setSort('default'); s.setSelectedBrand(null); s.setSelectedGenre(null); }}
+                            className="text-[10px] text-primary font-semibold"
+                          >
+                            Clear all filters
+                          </button>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </>
             )}
 
