@@ -134,10 +134,13 @@ const ScanSuccess = () => {
     return () => window.clearTimeout(timer);
   }, [result]);
 
+  const { user } = useAuth();
+
   if (!result) return null;
 
+  const resultsPath = user ? '/profile/body' : '/results';
   const handleNavigate = (path: string) => {
-    navigate(path, { replace: true });
+    navigate(path, { replace: true, state: path === '/results' ? { result } : undefined });
   };
 
   return (
