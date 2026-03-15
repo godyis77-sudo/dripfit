@@ -392,11 +392,21 @@ const Capture = () => {
                     try {
                       const result = await takeNativePhoto('gallery');
                       const key = flowStep === 'side' ? 'side' : 'front';
-                      const compressed = await compressPhoto(result.dataUrl, 1280, 0.8);
-                      setPhotos(prev => ({ ...prev, [key]: compressed }));
+
+                      try {
+                        const compressed = await compressPhoto(result.dataUrl, 1280, 0.8);
+                        setPhotos(prev => ({ ...prev, [key]: compressed }));
+                      } catch (compressErr) {
+                        console.error('Gallery photo compress failed, using original:', compressErr);
+                        setPhotos(prev => ({ ...prev, [key]: result.dataUrl }));
+                      }
+
                       setReviewing(true);
                       trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
-                    } catch { /* cancelled */ }
+                    } catch (err: any) {
+                      if (err?.message?.includes('cancelled') || err?.message?.includes('canceled')) return;
+                      console.error('Gallery pick error:', err);
+                    }
                   } else {
                     fileInputRef.current?.click();
                   }
