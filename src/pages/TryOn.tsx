@@ -1,20 +1,30 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Sparkles, Loader2, Check, Info, ShoppingBag, Store, Shield, X, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2, Check, Info, ShoppingBag, Store, Shield, X, RotateCcw, SlidersHorizontal } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import BottomTabBar from '@/components/BottomTabBar';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import TryOnUploadSection from '@/components/tryon/TryOnUploadSection';
 import TryOnResultSection from '@/components/tryon/TryOnResultSection';
 import TryOnPremiumGate from '@/components/tryon/TryOnPremiumGate';
-import BrandFilter from '@/components/tryon/BrandFilter';
-import GenreFilter from '@/components/catalog/GenreFilter';
 import { CATEGORIES, ALL_PRODUCT_CATEGORIES, FREE_MONTHLY_LIMIT } from '@/components/tryon/tryon-constants';
+import { BRAND_GENRES, type BrandGenre } from '@/lib/brandGenres';
 import { trackEvent } from '@/lib/analytics';
 import { useTryOnState } from '@/hooks/useTryOnState';
 import { isGuestMode } from '@/lib/session';
+
+const SORT_OPTIONS = [
+  { key: 'default', label: 'Recommended' },
+  { key: 'price_asc', label: 'Price: Low → High' },
+  { key: 'price_desc', label: 'Price: High → Low' },
+  { key: 'brand_az', label: 'Brand: A → Z' },
+  { key: 'genre', label: 'Genre' },
+] as const;
+
+type SortKey = typeof SORT_OPTIONS[number]['key'];
 
 const TryOn = () => {
   usePageTitle('Virtual Try-On');
