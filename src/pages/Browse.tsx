@@ -429,8 +429,8 @@ const Browse = () => {
         )}
       </div>
 
-      {/* Affiliate clickout confirmation */}
-      {pendingClickout && (
+      {/* Affiliate clickout confirmation — portaled to body to escape scroll containers */}
+      {pendingClickout && createPortal(
         <div className="fixed inset-0 z-[110] flex items-end justify-center bg-black/60" onClick={cancelClickout}>
           <div
             className="w-full max-w-sm bg-card border-t border-border rounded-t-2xl p-4 space-y-3 mb-0"
@@ -451,7 +451,8 @@ const Browse = () => {
               </Button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <ProductPreviewModal
