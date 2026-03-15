@@ -412,7 +412,7 @@ const SizeGuide = () => {
                 {/* Analyze button */}
                 {selectedBrand && (
                   <Button
-                    className="w-full h-11 rounded-lg btn-3d-drip font-bold text-[14px] mb-4"
+                    className="w-full h-11 rounded-lg btn-luxury font-bold text-[14px] mb-4"
                     disabled={!selectedMeasurement || dbLoading}
                     onClick={handleBrandAnalyze}
                   >
