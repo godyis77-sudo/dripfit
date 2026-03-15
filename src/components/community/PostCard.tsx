@@ -142,8 +142,8 @@ const PostCard = ({
       </div>
 
       {/* Image */}
-      <button onClick={() => onOpenDetail(post)} aria-label="View post detail" className="relative w-full text-left">
-        <div className="relative w-full aspect-[3/4] bg-muted/30">
+      <button onClick={() => onOpenDetail(post)} aria-label="View post detail" className="relative w-full text-left px-1.5 pb-1">
+        <div className="relative w-full aspect-[3/4] bg-muted/30 rounded-lg overflow-hidden">
           <img
             src={post.result_photo_url}
             alt={post.caption || "Try-on look"}
