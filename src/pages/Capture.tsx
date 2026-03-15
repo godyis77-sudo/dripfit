@@ -239,9 +239,47 @@ const Capture = () => {
   }, [toast]);
 
   useEffect(() => () => stopWebCamera(), [stopWebCamera]);
+
   useEffect(() => {
-    if (!webCameraOpen) stopWebCamera();
+    if (!webCameraOpen) {
+      stopWebCamera();
+      return;
+    }
+
+    const video = videoRef.current;
+    const stream = mediaStreamRef.current;
+    if (!video || !stream) return;
+
+    video.srcObject = stream;
+
+    const markReady = () => {
+      setVideoReady(true);
+      setCameraError(null);
+      void video.play().catch(() => undefined);
+    };
+
+    video.onloadedmetadata = markReady;
+    video.oncanplay = markReady;
+    void video.play().then(() => {
+      setVideoReady(true);
+      setCameraError(null);
+    }).catch(() => undefined);
+
+    return () => {
+      video.onloadedmetadata = null;
+      video.oncanplay = null;
+    };
   }, [webCameraOpen, stopWebCamera]);
+
+  useEffect(() => {
+    if (!webCameraOpen || videoReady) return;
+
+    const timeoutId = window.setTimeout(() => {
+      setCameraError('Live camera preview did not start. Try again or choose from gallery.');
+    }, 2500);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [webCameraOpen, videoReady]);
 
   const handleWebCameraCapture = async () => {
     if (!videoRef.current) return;
