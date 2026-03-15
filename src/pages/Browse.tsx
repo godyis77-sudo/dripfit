@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, SlidersHorizontal, ExternalLink, ShoppingBag } from 'lucide-react';
@@ -428,8 +429,8 @@ const Browse = () => {
         )}
       </div>
 
-      {/* Affiliate clickout confirmation */}
-      {pendingClickout && (
+      {/* Affiliate clickout confirmation — portaled to body to escape scroll containers */}
+      {pendingClickout && createPortal(
         <div className="fixed inset-0 z-[110] flex items-end justify-center bg-black/60" onClick={cancelClickout}>
           <div
             className="w-full max-w-sm bg-card border-t border-border rounded-t-2xl p-4 space-y-3 mb-0"
@@ -450,7 +451,8 @@ const Browse = () => {
               </Button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <ProductPreviewModal
@@ -460,9 +462,11 @@ const Browse = () => {
           navigate('/tryon', { state: { clothingUrl: p.image_url, productUrl: p.product_url } });
           setPreviewProduct(null);
         }}
-        onShop={previewProduct?.product_url ? (p) => {
+      onShop={previewProduct?.product_url ? (p) => {
           setPreviewProduct(null);
-          beginClickout(p.brand, p.product_url!);
+          // Defer to next tick so the portal's click event finishes propagating
+          // before the disclosure overlay renders (prevents phantom cancel)
+          setTimeout(() => beginClickout(p.brand, p.product_url!), 0);
         } : undefined}
       />
       <BottomTabBar />
