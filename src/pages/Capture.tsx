@@ -138,15 +138,20 @@ const Capture = () => {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onloadend = async () => {
       const base64 = reader.result as string;
       const key = flowStep === 'side' ? 'side' : 'front';
-      const compressed = await compressPhoto(base64, 1280, 0.8);
-      setPhotos(prev => ({ ...prev, [key]: compressed }));
+      try {
+        const compressed = await compressPhoto(base64, 1280, 0.8);
+        setPhotos(prev => ({ ...prev, [key]: compressed }));
+      } catch (err) {
+        console.error('Photo compress failed, using original:', err);
+        setPhotos(prev => ({ ...prev, [key]: base64 }));
+      }
       setReviewing(true);
       trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
     };
