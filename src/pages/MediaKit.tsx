@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Crown, Download, Palette, Type, Image, BarChart3, Users, ShoppingBag, Ruler, Eye, ExternalLink } from 'lucide-react';
+import { Download, Palette, Type, Image, BarChart3, Users, ShoppingBag, Ruler, Eye, ExternalLink } from 'lucide-react';
+import InlineCrown from '@/components/ui/InlineCrown';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
@@ -133,7 +134,7 @@ const MediaKit = () => {
 
   const heroStats = [
     { label: 'Products', value: stats.active_products.toLocaleString(), icon: ShoppingBag },
-    { label: 'Brands', value: `${stats.unique_brands}+`, icon: Crown },
+    { label: 'Brands', value: `${stats.unique_brands}+`, icon: ShoppingBag },
     { label: 'Size Charts', value: `${stats.size_charts}+`, icon: Ruler },
     { label: 'Categories', value: `${stats.categories}+`, icon: Eye },
   ];
@@ -161,7 +162,7 @@ const MediaKit = () => {
 
         {/* ── Logo & Usage ────────────────────────── */}
         <motion.section {...fade(0.1)}>
-          <SectionHeader icon={Crown} title="Logo & Brand Mark" />
+          <SectionHeader icon={() => <InlineCrown size={16} />} title="Logo & Brand Mark" />
           <div className="grid grid-cols-2 gap-3 mt-4">
             <div className="bg-card border border-border rounded-xl p-6 flex flex-col items-center justify-center gap-4">
               <BrandLogo size="lg" />
@@ -170,7 +171,7 @@ const MediaKit = () => {
             <div className="bg-foreground border border-border rounded-xl p-6 flex flex-col items-center justify-center gap-4">
               <div className="flex items-center gap-3">
                 <div className="h-20 w-20 rounded-2xl bg-primary/90 flex items-center justify-center">
-                  <Crown className="h-10 w-10 text-background" />
+                  <InlineCrown size={40} />
                 </div>
                 <span className="font-display font-bold text-2xl tracking-[3px] text-background">
                   DRIPFIT <span className="text-primary">✔</span>

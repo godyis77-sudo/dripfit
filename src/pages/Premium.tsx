@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import BottomTabBar from '@/components/BottomTabBar';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Crown, Check, Sparkles, Ruler, Shirt, MessageSquare, Store, Shield, Zap, BarChart3, Eye, Star, Ban, Loader2, Quote } from 'lucide-react';
+import { ArrowLeft, Check, Sparkles, Ruler, Shirt, MessageSquare, Store, Shield, Zap, BarChart3, Eye, Star, Ban, Loader2, Quote } from 'lucide-react';
+import InlineCrown from '@/components/ui/InlineCrown';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
@@ -25,7 +26,7 @@ const FEATURES = [
   { icon: BarChart3, title: 'Advanced Fit Analytics', description: 'Trend history, fit score over time, body change tracking', free: '—', premium: '✓' },
   { icon: Ban, title: 'Ad-Free Experience', description: 'No ads or sponsored content — ever', free: 'Ads shown', premium: 'Ad-free' },
   { icon: Star, title: 'Early Access', description: 'Be first to try new features before everyone else', free: '—', premium: '✓' },
-  { icon: Crown, title: 'Premium Crown Badge', description: 'Gold crown on your profile — flex your status', free: '—', premium: '✓' },
+  { icon: Star, title: 'Premium Crown Badge', description: 'Gold crown on your profile — flex your status', free: '—', premium: '✓' },
 ];
 
 const Premium = () => {
@@ -164,7 +165,7 @@ const Premium = () => {
                   transition={{ delay: 0.3 }}
                   className="mt-2 inline-flex items-center gap-1 px-3 py-1 rounded-full bg-card border border-primary/20"
                 >
-                  <Crown className="h-2.5 w-2.5 text-primary" />
+                  <InlineCrown size={10} />
                   <span className="text-[10px] font-bold text-primary">
                     {memberCount >= 1000
                       ? `${Math.floor(memberCount / 1000).toLocaleString()},000+ premium members`

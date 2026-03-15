@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Users, MessageCircle, Shirt, BarChart3, Sparkles, ArrowRight, Crown, Quote } from 'lucide-react';
+import { Users, MessageCircle, Shirt, BarChart3, Sparkles, ArrowRight, Quote } from 'lucide-react';
+import InlineCrown from '@/components/ui/InlineCrown';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
@@ -68,7 +69,7 @@ const FoundingMembers = () => {
             transition={{ duration: 0.5 }}
           >
             <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[3px] text-primary bg-primary/10 px-3 py-1.5 rounded-full mb-5">
-              <Crown className="h-3 w-3" /> Founding 50
+              <InlineCrown size={12} /> Founding 50
             </span>
 
             <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight leading-[1.15] mb-3">

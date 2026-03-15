@@ -3,7 +3,8 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Shirt, Crown, Camera, Settings, ShoppingBag, ShoppingCart, User, Globe, X } from 'lucide-react';
+import { LogOut, Shirt, Camera, Settings, ShoppingBag, ShoppingCart, User, Globe, X } from 'lucide-react';
+import InlineCrown from '@/components/ui/InlineCrown';
 import { useAuth } from '@/hooks/useAuth';
 import PremiumBadge from '@/components/monetization/PremiumBadge';
 import { supabase } from '@/integrations/supabase/client';
@@ -133,7 +134,7 @@ const Profile = () => {
         {/* Premium banner / status bar */}
         {isSubscribed ? (
           <div className="w-full flex items-center gap-2 px-3 py-2 rounded-xl btn-gold-3d mb-3">
-            <Crown className="h-4 w-4 text-primary-foreground shrink-0" />
+            <InlineCrown size={16} />
             <span className="text-[11px] font-bold text-primary-foreground flex-1 text-left">DRIPFIT ✔ PREMIUM</span>
             <PremiumBadge label="Active" />
           </div>
@@ -143,7 +144,7 @@ const Profile = () => {
               onClick={() => { trackEvent('premium_viewed', { source: 'profile_banner' }); navigate('/premium'); }}
               className="flex items-center gap-2 flex-1 active:scale-[0.98] transition-transform"
             >
-              <Crown className="h-4 w-4 text-primary shrink-0" />
+              <InlineCrown size={16} />
               <span className="text-[11px] font-bold text-foreground flex-1 text-left">Go Premium</span>
               <span className="text-[11px] text-primary font-bold">7-day free trial →</span>
             </button>
@@ -172,7 +173,7 @@ const Profile = () => {
               </div>
               {isSubscribed ? (
                 <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-primary/80 flex items-center justify-center border-2 border-background">
-                  <Crown className="h-2.5 w-2.5 text-primary" />
+                  <InlineCrown size={10} />
                 </div>
               ) : (
                 <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-background">

@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Crown, X } from 'lucide-react';
+import { X } from 'lucide-react';
+import InlineCrown from '@/components/ui/InlineCrown';
 
 interface TryOnPremiumGateProps {
   onClose: () => void;
@@ -27,7 +28,7 @@ const TryOnPremiumGate = ({ onClose }: TryOnPremiumGateProps) => {
           <X className="h-4 w-4" />
         </button>
         <div className="h-12 w-12 rounded-full badge-gold-3d shimmer-sweep mx-auto mb-3 flex items-center justify-center">
-          <Crown className="h-6 w-6 text-primary-foreground" />
+          <InlineCrown size={24} />
         </div>
         <h2 className="text-lg font-bold text-foreground mb-1">You've used your free try-ons</h2>
         <p className="text-sm text-muted-foreground mb-4">
@@ -37,7 +38,7 @@ const TryOnPremiumGate = ({ onClose }: TryOnPremiumGateProps) => {
           className="w-full h-11 rounded-lg btn-luxury text-primary-foreground font-bold mb-2"
           onClick={() => { onClose(); navigate('/premium'); }}
         >
-          <Crown className="mr-2 h-4 w-4" /> Upgrade to Premium
+          <InlineCrown size={16} className="mr-2" /> Upgrade to Premium
         </Button>
         <button onClick={onClose} className="text-[12px] text-muted-foreground hover:text-foreground transition-colors">
           Maybe later

@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Switch } from '@/components/ui/switch';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Crown, Trash2, Shield, Download, Ruler, Camera, ChevronRight, Bookmark, Pencil, Check, X, Star, Instagram, Globe, Sun, Moon } from 'lucide-react';
+import { Trash2, Shield, Download, Ruler, Camera, ChevronRight, Bookmark, Pencil, Check, X, Star, Instagram, Globe, Sun, Moon } from 'lucide-react';
+import InlineCrown from '@/components/ui/InlineCrown';
 import { useTheme } from '@/hooks/useTheme';
 import type { FitPreference, BodyScanResult } from '@/lib/types';
 import { SUPPORTED_RETAILERS } from '@/lib/types';
@@ -371,7 +372,7 @@ const SettingsTab = ({
         {isSubscribed ? (
           <div className="px-3 py-2.5">
             <div className="flex items-center gap-2">
-              <Crown className="h-3.5 w-3.5 text-primary" />
+              <InlineCrown size={14} />
               <span className="text-[12px] text-foreground font-medium">Premium: Active ✓</span>
             </div>
             <p className="text-[10px] text-muted-foreground mt-0.5 ml-5.5">
@@ -388,7 +389,7 @@ const SettingsTab = ({
         ) : (
           <button onClick={() => { trackEvent('premium_viewed'); navigate('/premium'); }} className="w-full px-3 py-2.5 active:bg-primary/5 transition-colors text-left">
             <div className="flex items-center gap-2">
-              <Crown className="h-3.5 w-3.5 text-primary" />
+              <InlineCrown size={14} />
               <span className="text-[12px] text-foreground font-medium">Premium: Free plan</span>
             </div>
             <p className="text-[10px] text-muted-foreground mt-0.5 ml-5.5">Tap to see what you're missing</p>
@@ -436,7 +437,7 @@ const SettingsTab = ({
       {/* Preferred Brands */}
       <SectionHeader>
         <span className="flex items-center gap-1">
-          <Crown className="h-3 w-3 text-primary" /> Preferred Brands
+          <InlineCrown size={12} /> Preferred Brands
         </span>
       </SectionHeader>
       <div className="bg-card border border-border rounded-xl p-3 mb-1">
