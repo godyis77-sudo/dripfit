@@ -26,7 +26,7 @@ const FEATURES = [
   { icon: BarChart3, title: 'Advanced Fit Analytics', description: 'Trend history, fit score over time, body change tracking', free: '—', premium: '✓' },
   { icon: Ban, title: 'Ad-Free Experience', description: 'No ads or sponsored content — ever', free: 'Ads shown', premium: 'Ad-free' },
   { icon: Star, title: 'Early Access', description: 'Be first to try new features before everyone else', free: '—', premium: '✓' },
-  { icon: Crown, title: 'Premium Crown Badge', description: 'Gold crown on your profile — flex your status', free: '—', premium: '✓' },
+  { icon: Star, title: 'Premium Crown Badge', description: 'Gold crown on your profile — flex your status', free: '—', premium: '✓' },
 ];
 
 const Premium = () => {
