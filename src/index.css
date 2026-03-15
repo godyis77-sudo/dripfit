@@ -282,14 +282,14 @@
 
   /* ── Luxury buttons ── */
   .btn-luxury {
-    background: linear-gradient(160deg, hsl(var(--drip-gold)), hsl(var(--primary)));
+    background: linear-gradient(160deg, hsl(42 80% 50%), hsl(40 72% 40%));
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     box-shadow:
       0 2px 20px -4px hsl(var(--primary) / 0.4),
       0 1px 3px hsl(0 0% 0% / 0.1),
       inset 0 1px 0 hsl(var(--gold-shimmer) / 0.45),
-      inset 0 -1px 0 hsl(var(--primary) / 0.3);
+      inset 0 -1px 0 hsl(42 76% 28% / 0.3);
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .btn-luxury:hover {
@@ -297,7 +297,7 @@
       0 6px 30px -4px hsl(var(--primary) / 0.5),
       0 2px 6px hsl(0 0% 0% / 0.12),
       inset 0 1px 0 hsl(var(--gold-shimmer) / 0.55),
-      inset 0 -1px 0 hsl(var(--primary) / 0.2);
+      inset 0 -1px 0 hsl(42 76% 28% / 0.2);
     transform: translateY(-2px);
   }
   .btn-luxury:active {
