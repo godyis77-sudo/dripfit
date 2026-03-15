@@ -158,13 +158,13 @@ const TryOnUploadSection = ({
                     <ImageIcon className="h-3.5 w-3.5 text-primary-foreground" /><span className="text-[12px] font-bold text-primary-foreground">Gallery</span>
                   </button>
                 </div>
-                {user && wardrobeItems.length > 0 && (
-                  <button onClick={onToggleWardrobe} className="w-full flex items-center justify-center gap-1 py-1.5 rounded-lg pill active:scale-95 transition-transform mt-0.5">
-                    <FolderOpen className="h-3.5 w-3.5" /><span className="text-[12px] font-bold">My Wardrobe ({wardrobeItems.length})</span>
-                  </button>
-                )}
               </div>
             </div>
+            {user && wardrobeItems.length > 0 && (
+              <button onClick={onToggleWardrobe} className="w-full flex items-center justify-center gap-1 py-1.5 rounded-lg pill active:scale-95 transition-transform mt-1.5">
+                <FolderOpen className="h-3.5 w-3.5" /><span className="text-[12px] font-bold">My Wardrobe ({wardrobeItems.length})</span>
+              </button>
+            )}
           )}
           {showWardrobe && wardrobeItems.length > 0 && (
             <div className="mt-2 bg-card border border-border rounded-xl p-2 max-h-[200px] overflow-y-auto">
