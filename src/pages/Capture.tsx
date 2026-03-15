@@ -386,6 +386,13 @@ const Capture = () => {
         return;
       }
 
+      // Persist raw photo to sessionStorage immediately (survives browser reload from camera handoff)
+      try {
+        const currentState = loadScanState() || {};
+        const updatedPhotos = { ...currentState.photos, [key]: base64.length <= MAX_PERSISTED_PHOTO_LENGTH ? base64 : null };
+        saveScanState({ ...currentState, flowStep, photos: updatedPhotos as PhotoSet });
+      } catch { /* ignore quota errors */ }
+
       await handleCapturedPhoto(base64, key);
       e.target.value = '';
     };
