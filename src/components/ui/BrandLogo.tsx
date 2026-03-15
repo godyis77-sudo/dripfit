@@ -10,9 +10,9 @@ interface BrandLogoProps {
 }
 
 const sizeMap = {
-  sm: { icon: 22, text: 'text-[15px]', gap: 'gap-1.5' },
-  md: { icon: 32, text: 'text-[14px]', gap: 'gap-2' },
-  lg: { icon: 44, text: 'text-sm', gap: 'gap-1.5' },
+  sm: { icon: 28, text: 'text-[15px]', gap: 'gap-1.5' },
+  md: { icon: 36, text: 'text-[17px]', gap: 'gap-2' },
+  lg: { icon: 44, text: 'text-[14px]', gap: 'gap-1.5' },
   xl: { icon: 88, text: 'text-2xl', gap: 'gap-1' },
 };
 
