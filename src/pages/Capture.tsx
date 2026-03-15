@@ -31,7 +31,7 @@ const FLOW_STEPS: { key: FlowStep; label: string }[] = [
 
 
 const SCAN_STATE_KEY = 'dripcheck_scan_state';
-const MAX_PERSISTED_PHOTO_LENGTH = 900_000;
+const MAX_PERSISTED_PHOTO_LENGTH = 2_500_000;
 
 type PersistedScanState = {
   flowStep?: FlowStep;
