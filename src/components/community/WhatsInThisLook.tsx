@@ -246,8 +246,9 @@ const WhatsInThisLook = ({
         onClose={() => setPreviewProduct(null)}
         onShop={(product) => {
           if (!product.product_url) return;
-          beginClickout(product.brand, product.product_url);
           setPreviewProduct(null);
+          // Defer to next tick so portal click event finishes before disclosure renders
+          setTimeout(() => beginClickout(product.brand, product.product_url!), 0);
         }}
         onTryOn={onTryOn ? (product) => {
           if (!product.product_url) return;
