@@ -469,27 +469,18 @@ const Capture = () => {
               {/* Use existing photo link */}
               <button
                 onClick={async () => {
+                  const key: keyof PhotoSet = flowStep === 'side' ? 'side' : 'front';
+
                   if (isNativePlatform()) {
                     try {
                       const result = await takeNativePhoto('gallery');
-                      const key = flowStep === 'side' ? 'side' : 'front';
-
-                      try {
-                        const compressed = await compressPhoto(result.dataUrl, 1280, 0.8);
-                        setPhotos(prev => ({ ...prev, [key]: compressed }));
-                      } catch (compressErr) {
-                        console.error('Gallery photo compress failed, using original:', compressErr);
-                        setPhotos(prev => ({ ...prev, [key]: result.dataUrl }));
-                      }
-
-                      setReviewing(true);
-                      trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
+                      await handleCapturedPhoto(result.dataUrl, key);
                     } catch (err: any) {
                       if (err?.message?.includes('cancelled') || err?.message?.includes('canceled')) return;
                       console.error('Gallery pick error:', err);
                     }
                   } else {
-                    fileInputRef.current?.click();
+                    galleryInputRef.current?.click();
                   }
                 }}
                 className="text-[11px] text-primary font-medium flex items-center gap-1 min-h-[44px]"
