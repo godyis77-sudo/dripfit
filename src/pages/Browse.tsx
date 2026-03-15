@@ -460,9 +460,11 @@ const Browse = () => {
           navigate('/tryon', { state: { clothingUrl: p.image_url, productUrl: p.product_url } });
           setPreviewProduct(null);
         }}
-        onShop={previewProduct?.product_url ? (p) => {
+      onShop={previewProduct?.product_url ? (p) => {
           setPreviewProduct(null);
-          beginClickout(p.brand, p.product_url!);
+          // Defer to next tick so the portal's click event finishes propagating
+          // before the disclosure overlay renders (prevents phantom cancel)
+          setTimeout(() => beginClickout(p.brand, p.product_url!), 0);
         } : undefined}
       />
       <BottomTabBar />
