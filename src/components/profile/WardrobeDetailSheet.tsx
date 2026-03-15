@@ -87,7 +87,8 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
         </div>
 
         {/* Image — maximized */}
-        <div className="relative w-full h-[55dvh] bg-black overflow-hidden">
+        <div className="relative w-full h-[55dvh] overflow-hidden px-2 pt-1">
+          <div className="relative w-full h-full rounded-xl overflow-hidden bg-black">
           <img src={item.image_url} alt={item.category} className="w-full h-full object-contain" />
           {displayRetailer && (
             <div className="absolute bottom-3 right-3 bg-primary rounded-lg px-3 py-1 shadow-lg border border-primary-foreground/20">
