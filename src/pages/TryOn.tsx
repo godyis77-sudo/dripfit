@@ -134,7 +134,37 @@ const TryOn = () => {
                           </div>
                         </div>
 
-                        {/* Genre filter */}
+                        {/* Category */}
+                        <div>
+                          <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Category</p>
+                          <div className="flex flex-wrap gap-1.5 max-h-[120px] overflow-y-auto">
+                            <button
+                              onClick={() => s.setCategory('all')}
+                              className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                s.category === 'all'
+                                  ? 'btn-luxury text-primary-foreground'
+                                  : 'bg-background border border-border text-foreground/70'
+                              }`}
+                            >
+                              🛍️ All
+                            </button>
+                            {CATEGORIES.map(c => (
+                              <button
+                                key={c.key}
+                                onClick={() => s.setCategory(c.key)}
+                                className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                  s.category === c.key
+                                    ? 'btn-luxury text-primary-foreground'
+                                    : 'bg-background border border-border text-foreground/70'
+                                }`}
+                              >
+                                {c.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+
                         <div>
                           <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Genre</p>
                           <div className="flex flex-wrap gap-1.5">
