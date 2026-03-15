@@ -181,7 +181,7 @@ const Browse = () => {
               className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
                 genderFilter === opt.key
                   ? 'btn-luxury text-primary-foreground'
-                  : 'bg-card border border-border text-muted-foreground'
+                  : 'bg-card border border-border text-foreground/70'
               }`}
             >
               {opt.label}
@@ -206,7 +206,7 @@ const Browse = () => {
               className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
                 (category === cat.key || CATEGORY_LABELS[category] === cat.label)
                   ? 'btn-luxury text-primary-foreground'
-                  : 'bg-card border border-border text-muted-foreground'
+                  : 'bg-card border border-border text-foreground/70'
               }`}
             >
               {cat.label}
@@ -221,7 +221,7 @@ const Browse = () => {
             className={`relative w-full h-11 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold ${
               activeFilterCount > 0
                 ? 'btn-luxury text-primary-foreground'
-                : 'bg-card border border-border text-muted-foreground'
+                : 'bg-card border border-border text-foreground/70'
             }`}
           >
             <SlidersHorizontal className="h-4 w-4" />
@@ -242,7 +242,7 @@ const Browse = () => {
             <div className="px-4 py-3 space-y-3">
               {/* Sort */}
               <div>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Sort by</p>
+                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Sort by</p>
                 <div className="flex flex-wrap gap-1.5">
                   {SORT_OPTIONS.map(opt => (
                     <button
@@ -251,7 +251,7 @@ const Browse = () => {
                       className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                         sort === opt.key
                           ? 'btn-luxury text-primary-foreground'
-                          : 'bg-background border border-border text-muted-foreground'
+                          : 'bg-background border border-border text-foreground/70'
                       }`}
                     >
                       {opt.label}
@@ -262,14 +262,14 @@ const Browse = () => {
 
               {/* Brand filter */}
               <div>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Brand</p>
+                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Brand</p>
                 <div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto">
                   <button
                     onClick={() => setBrandFilter(null)}
                     className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                       !brandFilter
                         ? 'btn-luxury text-primary-foreground'
-                        : 'bg-background border border-border text-muted-foreground'
+                        : 'bg-background border border-border text-foreground/70'
                     }`}
                   >
                     All
@@ -281,7 +281,7 @@ const Browse = () => {
                     className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                         brandFilter === brand
                           ? 'btn-luxury text-primary-foreground'
-                          : 'bg-background border border-border text-muted-foreground'
+                          : 'bg-background border border-border text-foreground/70'
                       }`}
                     >
                       {brand}
@@ -292,14 +292,14 @@ const Browse = () => {
 
               {/* Genre filter */}
               <div>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Genre</p>
+                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Genre</p>
                 <div className="flex flex-wrap gap-1.5">
                   <button
                     onClick={() => setGenreFilter(null)}
                     className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                       !genreFilter
                         ? 'btn-luxury text-primary-foreground'
-                        : 'bg-background border border-border text-muted-foreground'
+                        : 'bg-background border border-border text-foreground/70'
                     }`}
                   >
                     All
@@ -311,7 +311,7 @@ const Browse = () => {
                       className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                         genreFilter === genre
                           ? 'btn-luxury text-primary-foreground'
-                          : 'bg-background border border-border text-muted-foreground'
+                          : 'bg-background border border-border text-foreground/70'
                       }`}
                     >
                       {genre}
@@ -323,14 +323,14 @@ const Browse = () => {
               {/* Fit filter */}
               {availableFits.length > 0 && (
                 <div>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Fit / Cut</p>
+                  <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Fit / Cut</p>
                   <div className="flex flex-wrap gap-1.5">
                     <button
                       onClick={() => setFitFilter(null)}
                       className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                         !fitFilter
                           ? 'btn-luxury text-primary-foreground'
-                          : 'bg-background border border-border text-muted-foreground'
+                          : 'bg-background border border-border text-foreground/70'
                       }`}
                     >
                       All
@@ -342,7 +342,7 @@ const Browse = () => {
                         className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                           fitFilter === fit
                             ? 'btn-luxury text-primary-foreground'
-                            : 'bg-background border border-border text-muted-foreground'
+                            : 'bg-background border border-border text-foreground/70'
                         }`}
                       >
                         {fit}
