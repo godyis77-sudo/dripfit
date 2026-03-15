@@ -31,7 +31,7 @@ const FLOW_STEPS: { key: FlowStep; label: string }[] = [
 
 
 const SCAN_STATE_KEY = 'dripcheck_scan_state';
-const MAX_PERSISTED_PHOTO_LENGTH = 900_000;
+const MAX_PERSISTED_PHOTO_LENGTH = 2_500_000;
 
 type PersistedScanState = {
   flowStep?: FlowStep;
@@ -385,6 +385,13 @@ const Capture = () => {
         e.target.value = '';
         return;
       }
+
+      // Persist raw photo to sessionStorage immediately (survives browser reload from camera handoff)
+      try {
+        const currentState = loadScanState() || {};
+        const updatedPhotos = { ...currentState.photos, [key]: base64.length <= MAX_PERSISTED_PHOTO_LENGTH ? base64 : null };
+        saveScanState({ ...currentState, flowStep, photos: updatedPhotos as PhotoSet });
+      } catch { /* ignore quota errors */ }
 
       await handleCapturedPhoto(base64, key);
       e.target.value = '';
