@@ -31,14 +31,55 @@ const FLOW_STEPS: { key: FlowStep; label: string }[] = [
 
 
 const SCAN_STATE_KEY = 'dripcheck_scan_state';
-function loadScanState() {
-  try { const raw = sessionStorage.getItem(SCAN_STATE_KEY); if (raw) return JSON.parse(raw); } catch {} return null;
+const MAX_PERSISTED_PHOTO_LENGTH = 900_000;
+
+type PersistedScanState = {
+  flowStep?: FlowStep;
+  photos?: PhotoSet;
+  hasPhotos?: { front: boolean; side: boolean };
+  heightCm?: string;
+  heightFt?: string;
+  heightIn?: string;
+  useCm?: boolean;
+  refObject?: ReferenceObject;
+};
+
+const sanitizePersistedPhoto = (photo: unknown): string | null => {
+  if (typeof photo !== 'string') return null;
+  if (!photo.startsWith('data:image/')) return null;
+  if (photo.length > MAX_PERSISTED_PHOTO_LENGTH) return null;
+  return photo;
+};
+
+function loadScanState(): PersistedScanState | null {
+  try {
+    const raw = sessionStorage.getItem(SCAN_STATE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as PersistedScanState;
+    return {
+      ...parsed,
+      photos: {
+        front: sanitizePersistedPhoto(parsed?.photos?.front),
+        side: sanitizePersistedPhoto(parsed?.photos?.side),
+      },
+    };
+  } catch {
+    return null;
+  }
 }
-function saveScanState(state: Record<string, unknown>) {
-  try { sessionStorage.setItem(SCAN_STATE_KEY, JSON.stringify(state)); } catch {}
+
+function saveScanState(state: PersistedScanState) {
+  try {
+    sessionStorage.setItem(SCAN_STATE_KEY, JSON.stringify(state));
+  } catch {
+    // ignore quota / serialization errors
+  }
 }
+
 function clearScanState() {
-  try { sessionStorage.removeItem(SCAN_STATE_KEY); } catch {}
+  try {
+    sessionStorage.removeItem(SCAN_STATE_KEY);
+  } catch {}
 }
 
 import ScanPreviewCard from '@/components/ui/ScanPreviewCard';
@@ -52,14 +93,19 @@ const Capture = () => {
   usePageTitle('Scan');
   const saved = loadScanState();
   const [flowStep, setFlowStep] = useState<FlowStep>(saved?.flowStep || 'intro');
-  const [photos, setPhotos] = useState<PhotoSet>({ front: null, side: null });
-  // Photos are NOT restored from sessionStorage — they are too large to persist
+  const [photos, setPhotos] = useState<PhotoSet>({
+    front: saved?.photos?.front ?? null,
+    side: saved?.photos?.side ?? null,
+  });
   const [heightCm, setHeightCm] = useState(saved?.heightCm || '');
   const [heightFt, setHeightFt] = useState(saved?.heightFt || '');
   const [heightIn, setHeightIn] = useState(saved?.heightIn || '');
   const [useCm, setUseCm] = useState(saved?.useCm || false);
   const [refObject, setRefObject] = useState<ReferenceObject>(saved?.refObject || 'none');
-  const [reviewing, setReviewing] = useState(false);
+  const [reviewing, setReviewing] = useState(
+    (saved?.flowStep === 'front' && !!saved?.photos?.front) ||
+    (saved?.flowStep === 'side' && !!saved?.photos?.side)
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [genderSet, setGenderSet] = useState<string | null>(null);
   const [genderLoaded, setGenderLoaded] = useState(false);
@@ -84,12 +130,23 @@ const Capture = () => {
 
   useEffect(() => { trackEvent('scan_started'); }, []);
   useEffect(() => {
-    // Never persist photos to sessionStorage — they are multi-MB base64 strings
-    // that freeze the main thread during JSON.stringify and exceed the 5 MB quota.
-    if (flowStep !== 'intro') saveScanState({
+    if (flowStep === 'intro') {
+      clearScanState();
+      return;
+    }
+
+    saveScanState({
       flowStep,
+      photos: {
+        front: sanitizePersistedPhoto(photos.front),
+        side: sanitizePersistedPhoto(photos.side),
+      },
       hasPhotos: { front: !!photos.front, side: !!photos.side },
-      heightCm, heightFt, heightIn, useCm, refObject,
+      heightCm,
+      heightFt,
+      heightIn,
+      useCm,
+      refObject,
     });
   }, [flowStep, photos.front, photos.side, heightCm, heightFt, heightIn, useCm, refObject]);
 
@@ -125,8 +182,15 @@ const Capture = () => {
       try {
         const result = await takeNativePhoto('camera');
         const key = flowStep === 'side' ? 'side' : 'front';
-        const compressed = await compressPhoto(result.dataUrl, 1280, 0.8);
-        setPhotos(prev => ({ ...prev, [key]: compressed }));
+
+        try {
+          const compressed = await compressPhoto(result.dataUrl, 1280, 0.8);
+          setPhotos(prev => ({ ...prev, [key]: compressed }));
+        } catch (compressErr) {
+          console.error('Native photo compress failed, using original:', compressErr);
+          setPhotos(prev => ({ ...prev, [key]: result.dataUrl }));
+        }
+
         setReviewing(true);
         trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
       } catch (err: any) {
@@ -244,7 +308,7 @@ const Capture = () => {
         </div>
       </div>
 
-      <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handleFileChange} className="hidden" />
+      <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
 
       {/* Content */}
       <div className="flex-1 flex flex-col items-center px-4 pt-2 overflow-y-auto pb-4">
@@ -328,11 +392,21 @@ const Capture = () => {
                     try {
                       const result = await takeNativePhoto('gallery');
                       const key = flowStep === 'side' ? 'side' : 'front';
-                      const compressed = await compressPhoto(result.dataUrl, 1280, 0.8);
-                      setPhotos(prev => ({ ...prev, [key]: compressed }));
+
+                      try {
+                        const compressed = await compressPhoto(result.dataUrl, 1280, 0.8);
+                        setPhotos(prev => ({ ...prev, [key]: compressed }));
+                      } catch (compressErr) {
+                        console.error('Gallery photo compress failed, using original:', compressErr);
+                        setPhotos(prev => ({ ...prev, [key]: result.dataUrl }));
+                      }
+
                       setReviewing(true);
                       trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
-                    } catch { /* cancelled */ }
+                    } catch (err: any) {
+                      if (err?.message?.includes('cancelled') || err?.message?.includes('canceled')) return;
+                      console.error('Gallery pick error:', err);
+                    }
                   } else {
                     fileInputRef.current?.click();
                   }
