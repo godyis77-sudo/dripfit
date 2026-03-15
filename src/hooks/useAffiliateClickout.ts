@@ -50,7 +50,11 @@ export function useAffiliateClickout(options: AffiliateClickoutOptions = {}) {
       destination_domain: safeDomain(pendingClickout.url),
       ...options.extraProps,
     });
-    window.open(pendingClickout.url, "_blank", "noopener");
+    // Use window.open first; if blocked by popup blocker, fall back to location
+    const win = window.open(pendingClickout.url, "_blank", "noopener");
+    if (!win) {
+      window.location.href = pendingClickout.url;
+    }
     setPendingClickout(null);
   }, [pendingClickout, options.extraProps]);
 
