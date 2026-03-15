@@ -80,7 +80,7 @@ const TryOn = () => {
           </Button>
           <div className="flex-1">
             <h1 className="text-base font-bold text-foreground">Try-On</h1>
-            <p className="text-[12px] text-muted-foreground">See how it looks before you buy</p>
+            <p className="text-[12px] text-foreground/70">See how it looks before you buy</p>
           </div>
           {s.resultImage && (
             <Button variant="outline" size="sm" onClick={s.handleTryAnother} className="h-8 rounded-lg text-[11px] font-bold gap-1.5">
