@@ -1,12 +1,14 @@
+import { useEffect, useState } from 'react';
 import { Users, MessageCircle, Shirt, BarChart3, Sparkles, ArrowRight, Crown, Quote } from 'lucide-react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { motion } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
 
 const TOTAL_SPOTS = 50;
-const SPOTS_CLAIMED = 12;
+const FALLBACK_CLAIMED = 12;
 
 const PERKS = [
   { icon: Sparkles, title: 'Early Access', desc: 'Be the first to test new features like virtual try-on and AI style check before anyone else.' },
@@ -34,8 +36,21 @@ const DISCORD_INVITE = 'https://discord.gg/YOUR_INVITE_LINK';
 
 const FoundingMembers = () => {
   usePageTitle('Founding Members');
-  const spotsLeft = TOTAL_SPOTS - SPOTS_CLAIMED;
-  const progress = (SPOTS_CLAIMED / TOTAL_SPOTS) * 100;
+  const [spotsClaimed, setSpotsClaimed] = useState(FALLBACK_CLAIMED);
+
+  useEffect(() => {
+    supabase
+      .from('app_config')
+      .select('value')
+      .eq('key', 'founding_members_claimed')
+      .single()
+      .then(({ data }) => {
+        if (data?.value) setSpotsClaimed(parseInt(data.value, 10));
+      });
+  }, []);
+
+  const spotsLeft = TOTAL_SPOTS - spotsClaimed;
+  const progress = (spotsClaimed / TOTAL_SPOTS) * 100;
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -76,7 +91,7 @@ const FoundingMembers = () => {
           >
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-muted-foreground">Spots claimed</span>
-              <span className="text-xs font-bold text-foreground">{SPOTS_CLAIMED} / {TOTAL_SPOTS}</span>
+              <span className="text-xs font-bold text-foreground">{spotsClaimed} / {TOTAL_SPOTS}</span>
             </div>
             <div className="h-3 bg-muted rounded-full overflow-hidden">
               <motion.div
