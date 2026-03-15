@@ -15,6 +15,7 @@ import { BRAND_GENRES, type BrandGenre } from '@/lib/brandGenres';
 import { trackEvent } from '@/lib/analytics';
 import { useTryOnState } from '@/hooks/useTryOnState';
 import { isGuestMode } from '@/lib/session';
+import BrandFilter from '@/components/tryon/BrandFilter';
 
 const SORT_OPTIONS = [
   { key: 'default', label: 'Recommended' },
@@ -164,6 +165,15 @@ const TryOn = () => {
                           </div>
                         </div>
 
+                        {/* Brand search */}
+                        <div>
+                          <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Brand</p>
+                          <BrandFilter
+                            gender={s.userGender === 'male' ? 'mens' : s.userGender === 'female' ? 'womens' : null}
+                            selectedBrand={s.selectedBrand}
+                            onBrandChange={s.setSelectedBrand}
+                          />
+                        </div>
 
                         <div>
                           <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Genre</p>
