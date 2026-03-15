@@ -32,6 +32,10 @@ const TryOn = () => {
   const navigate = useNavigate();
   const isGuest = !s.user && isGuestMode();
   const [guestTryOnNudgeDismissed, setGuestTryOnNudgeDismissed] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [sort, setSort] = useState<SortKey>('default');
+
+  const activeFilterCount = (s.selectedBrand ? 1 : 0) + (s.selectedGenre ? 1 : 0) + (sort !== 'default' ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
