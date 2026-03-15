@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Sparkles, Loader2, Check, Info, ShoppingBag, Store, Shield, X, RotateCcw } from 'lucide-react';
 import BottomTabBar from '@/components/BottomTabBar';
@@ -12,6 +14,7 @@ import GenreFilter from '@/components/catalog/GenreFilter';
 import { CATEGORIES, ALL_PRODUCT_CATEGORIES, FREE_MONTHLY_LIMIT } from '@/components/tryon/tryon-constants';
 import { trackEvent } from '@/lib/analytics';
 import { useTryOnState } from '@/hooks/useTryOnState';
+import { isGuestMode } from '@/lib/session';
 
 const TryOn = () => {
   usePageTitle('Virtual Try-On');
