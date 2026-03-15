@@ -217,7 +217,7 @@ const Browse = () => {
               onClick={() => navigate(`/browse/${cat.key}`, { replace: true })}
               className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
                 (category === cat.key || CATEGORY_LABELS[category] === cat.label)
-                  ? 'bg-primary text-primary-foreground'
+                  ? 'btn-luxury text-primary-foreground'
                   : 'bg-card border border-border text-muted-foreground'
               }`}
             >
