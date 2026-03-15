@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { scrollIntoViewIfNeeded } from '@/lib/autoScroll';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ExternalLink, ShoppingBag, ShoppingCart } from 'lucide-react';
@@ -245,8 +246,9 @@ const WhatsInThisLook = ({
         onClose={() => setPreviewProduct(null)}
         onShop={(product) => {
           if (!product.product_url) return;
-          beginClickout(product.brand, product.product_url);
           setPreviewProduct(null);
+          // Defer to next tick so portal click event finishes before disclosure renders
+          setTimeout(() => beginClickout(product.brand, product.product_url!), 0);
         }}
         onTryOn={onTryOn ? (product) => {
           if (!product.product_url) return;
@@ -261,9 +263,9 @@ const WhatsInThisLook = ({
         } : undefined}
       />
 
-      {/* Affiliate disclosure confirmation */}
-      <AnimatePresence>
-        {pendingClickout && (
+      {/* Affiliate disclosure confirmation — portaled to body */}
+      {pendingClickout && createPortal(
+        <AnimatePresence>
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -292,8 +294,9 @@ const WhatsInThisLook = ({
               </div>
             </motion.div>
           </motion.div>
-        )}
-      </AnimatePresence>
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 };
