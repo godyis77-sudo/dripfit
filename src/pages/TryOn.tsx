@@ -234,7 +234,7 @@ const TryOn = () => {
                         {/* Clear filters */}
                         {activeFilterCount > 0 && (
                           <button
-                            onClick={() => { setSort('default'); s.setSelectedBrand(null); s.setSelectedGenre(null); s.setCategory('all'); }}
+                            onClick={() => { setSort('default'); s.setSelectedBrand(null); s.setSelectedGenre(null); s.setSelectedRetailer(null); s.setCategory('all'); setRetailerSearch(''); }}
                             className="text-[10px] text-primary font-semibold"
                           >
                             Clear all filters
