@@ -193,6 +193,8 @@ const Capture = () => {
     if (videoRef.current) {
       videoRef.current.srcObject = null;
     }
+
+    setVideoReady(false);
   }, []);
 
   const handleCapturedPhoto = useCallback(async (rawDataUrl: string, key: keyof PhotoSet) => {
