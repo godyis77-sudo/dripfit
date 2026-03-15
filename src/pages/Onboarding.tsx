@@ -120,9 +120,8 @@ const Onboarding = () => {
 
   const continueAsGuest = () => {
     setGuestMode();
-    setOnboarded();
     trackEvent('onboarding_guest_mode');
-    navigate('/');
+    setScreen('personalize');
   };
 
   const confirmHabit = () => {
