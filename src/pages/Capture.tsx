@@ -130,12 +130,23 @@ const Capture = () => {
 
   useEffect(() => { trackEvent('scan_started'); }, []);
   useEffect(() => {
-    // Never persist photos to sessionStorage — they are multi-MB base64 strings
-    // that freeze the main thread during JSON.stringify and exceed the 5 MB quota.
-    if (flowStep !== 'intro') saveScanState({
+    if (flowStep === 'intro') {
+      clearScanState();
+      return;
+    }
+
+    saveScanState({
       flowStep,
+      photos: {
+        front: sanitizePersistedPhoto(photos.front),
+        side: sanitizePersistedPhoto(photos.side),
+      },
       hasPhotos: { front: !!photos.front, side: !!photos.side },
-      heightCm, heightFt, heightIn, useCm, refObject,
+      heightCm,
+      heightFt,
+      heightIn,
+      useCm,
+      refObject,
     });
   }, [flowStep, photos.front, photos.side, heightCm, heightFt, heightIn, useCm, refObject]);
 
