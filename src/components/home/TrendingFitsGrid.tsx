@@ -65,7 +65,7 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
                 className="absolute inset-0 w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/20" />
-              <div className="absolute inset-x-0 bottom-6 px-1.5">
+              <div className="absolute inset-x-0 bottom-8 px-1.5">
                 <p className="text-white font-bold text-[11px] leading-tight line-clamp-2">
                   {question.endsWith('?') && (
                     <MessageSquare className="inline h-2.5 w-2.5 mr-0.5 opacity-50 -mt-0.5" />

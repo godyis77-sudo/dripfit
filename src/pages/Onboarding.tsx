@@ -281,8 +281,8 @@ const Onboarding = () => {
 
                   {/* Text — below image with consistent gap */}
                   <div className="flex flex-col items-center px-8 text-center shrink-0">
-                    <div className="h-9 w-9 rounded-xl icon-3d flex items-center justify-center mb-2">
-                      {(() => { const Icon = SLIDES[slideIdx].icon; return <Icon className="h-4 w-4 text-brand-logo-fg shimmer-icon" />; })()}
+                    <div className="h-9 w-9 rounded-xl badge-gold-3d flex items-center justify-center mb-2">
+                      {(() => { const Icon = SLIDES[slideIdx].icon; return <Icon className="h-4 w-4" />; })()}
                     </div>
                     <h2 className="font-display text-[20px] font-bold text-foreground leading-tight">
                       {SLIDES[slideIdx].title}
@@ -360,9 +360,9 @@ const Onboarding = () => {
                     }`}
                   >
                     <div className={`h-10 w-10 rounded-xl flex items-center justify-center mb-2 ${
-                      selected ? 'icon-3d' : 'bg-card border border-border'
+                      selected ? 'badge-gold-3d' : 'bg-card border border-border'
                     }`}>
-                      <Icon className={`h-5 w-5 ${selected ? 'text-brand-logo-fg shimmer-icon' : 'text-muted-foreground'}`} />
+                      <Icon className={`h-5 w-5 ${selected ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
                     </div>
                     <p className="font-bold text-[13px] text-foreground leading-tight">{h.label}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{h.desc}</p>
@@ -406,9 +406,9 @@ const Onboarding = () => {
                     }`}
                   >
                     <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${
-                      selected ? 'icon-3d' : 'bg-card border border-border'
+                      selected ? 'badge-gold-3d' : 'bg-card border border-border'
                     }`}>
-                      <ShoppingBag className={`h-5 w-5 ${selected ? 'text-brand-logo-fg shimmer-icon' : 'text-muted-foreground'}`} />
+                      <ShoppingBag className={`h-5 w-5 ${selected ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
                     </div>
                     <div className="text-left">
                       <p className="font-bold text-[14px] text-foreground leading-tight">{g.label}</p>
