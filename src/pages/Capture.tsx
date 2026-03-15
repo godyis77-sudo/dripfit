@@ -277,7 +277,7 @@ const Capture = () => {
     if (!webCameraOpen || videoReady) return;
 
     const timeoutId = window.setTimeout(() => {
-      setCameraError('Live camera preview did not start. Try again or choose from gallery.');
+      setCameraError('Live preview unavailable on this browser. Use Capture Photo to open camera app.');
     }, 2500);
 
     return () => window.clearTimeout(timeoutId);
@@ -316,7 +316,13 @@ const Capture = () => {
   }, [flowStep, handleCapturedPhoto, stopWebCamera, toast]);
 
   const startTimedWebCapture = () => {
-    if (!videoReady || captureCountdown !== null) return;
+    if (captureCountdown !== null) return;
+
+    if (!videoReady) {
+      cameraInputRef.current?.click();
+      return;
+    }
+
     setCaptureCountdown(3);
   };
 
