@@ -106,7 +106,10 @@ const Capture = () => {
     (saved?.flowStep === 'front' && !!saved?.photos?.front) ||
     (saved?.flowStep === 'side' && !!saved?.photos?.side)
   );
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
   const [genderSet, setGenderSet] = useState<string | null>(null);
   const [genderLoaded, setGenderLoaded] = useState(false);
   const [authSheetOpen, setAuthSheetOpen] = useState(false);
