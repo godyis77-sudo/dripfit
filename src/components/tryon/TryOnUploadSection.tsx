@@ -81,24 +81,24 @@ const TryOnUploadSection = ({
 
         {/* Your Photo */}
         <div>
-          <p className="text-[12px] font-bold text-foreground/70 uppercase tracking-wider mb-1">Your Photo <span className="text-destructive">*</span></p>
+          <p className="text-[12px] font-bold text-foreground uppercase tracking-wider mb-1">Your Photo <span className="text-destructive">*</span></p>
           {userPhoto ? (
             <div className="relative">
               <button onClick={() => userPhotoRef.current?.click()} className="w-full rounded-xl overflow-hidden border-2 border-primary/40 bg-card active:scale-[0.97] transition-all">
-                <div className="aspect-[3/4]"><img src={userPhoto} alt="You" className="w-full h-full object-cover" /></div>
+                <div className="aspect-[3/5]"><img src={userPhoto} alt="You" className="w-full h-full object-cover" /></div>
               </button>
               <div className="flex items-center justify-center gap-2 mt-1">
                 <p className="text-[12px] text-primary font-semibold flex items-center gap-0.5"><Check className="h-3 w-3" /> Ready</p>
-                <button onClick={(e) => { e.stopPropagation(); userPhotoRef.current?.click(); }} className="text-[12px] text-foreground/60 hover:text-foreground transition-colors underline">Change</button>
+                <button onClick={(e) => { e.stopPropagation(); userPhotoRef.current?.click(); }} className="text-[12px] text-foreground/80 hover:text-foreground transition-colors underline">Change</button>
               </div>
             </div>
           ) : (
             <div className="rounded-xl border-2 border-dashed border-border bg-card overflow-hidden">
-              <div className="aspect-[3/4] flex flex-col items-center justify-center gap-2 p-3">
-                <div className="h-10 w-10 rounded-full border-2 border-dashed border-foreground/20 flex items-center justify-center">
-                  <User className="h-5 w-5 text-foreground/40" />
+              <div className="aspect-[3/5] flex flex-col items-center justify-center gap-2 p-3">
+                <div className="h-12 w-12 rounded-full border-2 border-dashed border-foreground/30 flex items-center justify-center">
+                  <User className="h-6 w-6 text-foreground/50" />
                 </div>
-                <p className="text-[12px] text-foreground/50 text-center">Full body · front facing · well lit</p>
+                <p className="text-[12px] text-foreground/70 text-center">Full body · front facing · well lit</p>
                 <div className="flex gap-1.5 w-full">
                   <button onClick={() => {
                     if (isNativePlatform()) handleNativeCapture(onUserPhotoChange, 'photo', 'camera');
@@ -120,18 +120,18 @@ const TryOnUploadSection = ({
 
         {/* Clothing Item */}
         <div>
-          <p className="text-[12px] font-bold text-foreground/70 uppercase tracking-wider mb-1">Clothing <span className="text-destructive">*</span></p>
+          <p className="text-[12px] font-bold text-foreground uppercase tracking-wider mb-1">Clothing <span className="text-destructive">*</span></p>
           {clothingPhoto ? (
             <div className="relative">
               <button onClick={() => clothingPhotoRef.current?.click()} className="w-full rounded-xl overflow-hidden border-2 border-primary/40 bg-card active:scale-[0.97] transition-all">
-                <div className="aspect-[3/4]"><img src={clothingPhoto} alt="Clothing" className="w-full h-full object-cover" /></div>
+                <div className="aspect-[3/5]"><img src={clothingPhoto} alt="Clothing" className="w-full h-full object-cover" /></div>
               </button>
               <div className="flex items-center justify-center gap-2 mt-1 flex-wrap">
                 <p className="text-[12px] text-primary font-semibold flex items-center gap-0.5"><Check className="h-3 w-3" /> Ready</p>
                 {onBrowseProducts && (
                   <button onClick={(e) => { e.stopPropagation(); onBrowseProducts(); }} className="text-[12px] text-primary hover:text-primary/80 transition-colors underline font-medium">Browse</button>
                 )}
-                <button onClick={(e) => { e.stopPropagation(); clothingPhotoRef.current?.click(); }} className="text-[12px] text-foreground/60 hover:text-foreground transition-colors underline">Gallery</button>
+                <button onClick={(e) => { e.stopPropagation(); clothingPhotoRef.current?.click(); }} className="text-[12px] text-foreground/80 hover:text-foreground transition-colors underline">Gallery</button>
                 {onRemoveClothing && (
                   <button onClick={(e) => { e.stopPropagation(); onRemoveClothing(); }} className="text-[12px] text-destructive hover:text-destructive/80 transition-colors underline">Remove</button>
                 )}
@@ -139,11 +139,11 @@ const TryOnUploadSection = ({
             </div>
           ) : (
             <div className="rounded-xl border-2 border-dashed border-border bg-card overflow-hidden">
-              <div className="aspect-[3/4] flex flex-col items-center justify-center gap-2 p-3">
-                <div className="h-10 w-10 rounded-full border-2 border-dashed border-foreground/20 flex items-center justify-center">
-                  <Shirt className="h-5 w-5 text-foreground/40" />
+              <div className="aspect-[3/5] flex flex-col items-center justify-center gap-2 p-3">
+                <div className="h-12 w-12 rounded-full border-2 border-dashed border-foreground/30 flex items-center justify-center">
+                  <Shirt className="h-6 w-6 text-foreground/50" />
                 </div>
-                <p className="text-[12px] text-foreground/50 text-center">Product photo · clean background</p>
+                <p className="text-[12px] text-foreground/70 text-center">Product photo · clean background</p>
                 <div className="flex gap-1.5 w-full">
                   <button onClick={() => {
                     if (isNativePlatform()) handleNativeCapture(onClothingPhotoChange, 'clothing', 'camera');
@@ -183,8 +183,8 @@ const TryOnUploadSection = ({
       {/* Product link */}
       <div className="mb-3">
         <div className="flex items-center gap-1.5 mb-1">
-          <Link2 className="h-3.5 w-3.5 text-foreground/50" />
-          <p className="text-[12px] text-foreground/60">Paste product link <span className="text-foreground/40">(optional)</span></p>
+          <Link2 className="h-3.5 w-3.5 text-foreground/70" />
+          <p className="text-[12px] text-foreground/70">Paste product link <span className="text-foreground/50">(optional)</span></p>
         </div>
         <Input
           placeholder="https://zara.com/product/..."
@@ -203,7 +203,7 @@ const TryOnUploadSection = ({
               <span className="text-[11px] px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-primary font-bold flex items-center gap-1">
                 <Store className="h-3 w-3" /> Matched: {matched}
               </span>
-              <span className="text-[12px] text-foreground/60">We'll recommend the best size.</span>
+              <span className="text-[12px] text-foreground/70">We'll recommend the best size.</span>
             </div>
           ) : null;
         })()}
