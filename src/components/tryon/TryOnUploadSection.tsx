@@ -85,7 +85,7 @@ const TryOnUploadSection = ({
           {userPhoto ? (
             <div className="relative">
               <button onClick={() => userPhotoRef.current?.click()} className="w-full rounded-xl overflow-hidden border-2 border-primary/40 bg-card active:scale-[0.97] transition-all">
-                <div className="aspect-[3/5]"><img src={userPhoto} alt="You" className="w-full h-full object-cover" /></div>
+                <div className="aspect-[2/5]"><img src={userPhoto} alt="You" className="w-full h-full object-cover" /></div>
               </button>
               <div className="flex items-center justify-center gap-2 mt-1">
                 <p className="text-[12px] text-primary font-semibold flex items-center gap-0.5"><Check className="h-3 w-3" /> Ready</p>
@@ -94,7 +94,7 @@ const TryOnUploadSection = ({
             </div>
           ) : (
             <div className="rounded-xl border-2 border-dashed border-border bg-card overflow-hidden">
-              <div className="aspect-[3/5] flex flex-col items-center justify-center gap-2 p-3">
+              <div className="aspect-[2/5] flex flex-col items-center justify-center gap-2 p-3">
                 <div className="h-12 w-12 rounded-full border-2 border-dashed border-foreground/30 flex items-center justify-center">
                   <User className="h-6 w-6 text-foreground/50" />
                 </div>
@@ -124,7 +124,7 @@ const TryOnUploadSection = ({
           {clothingPhoto ? (
             <div className="relative">
               <button onClick={() => clothingPhotoRef.current?.click()} className="w-full rounded-xl overflow-hidden border-2 border-primary/40 bg-card active:scale-[0.97] transition-all">
-                <div className="aspect-[3/5]"><img src={clothingPhoto} alt="Clothing" className="w-full h-full object-cover" /></div>
+                <div className="aspect-[2/5]"><img src={clothingPhoto} alt="Clothing" className="w-full h-full object-cover" /></div>
               </button>
               <div className="flex items-center justify-center gap-2 mt-1 flex-wrap">
                 <p className="text-[12px] text-primary font-semibold flex items-center gap-0.5"><Check className="h-3 w-3" /> Ready</p>
@@ -139,7 +139,7 @@ const TryOnUploadSection = ({
             </div>
           ) : (
             <div className="rounded-xl border-2 border-dashed border-border bg-card overflow-hidden">
-              <div className="aspect-[3/5] flex flex-col items-center justify-center gap-2 p-3">
+              <div className="aspect-[2/5] flex flex-col items-center justify-center gap-2 p-3">
                 <div className="h-12 w-12 rounded-full border-2 border-dashed border-foreground/30 flex items-center justify-center">
                   <Shirt className="h-6 w-6 text-foreground/50" />
                 </div>
