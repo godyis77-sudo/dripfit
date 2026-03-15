@@ -139,11 +139,11 @@ const TryOnUploadSection = ({
             </div>
           ) : (
             <div className="rounded-xl border-2 border-dashed border-border bg-card overflow-hidden">
-              <div className="aspect-[3/4] flex flex-col items-center justify-center gap-2 p-3">
-                <div className="h-10 w-10 rounded-full border-2 border-dashed border-foreground/20 flex items-center justify-center">
-                  <Shirt className="h-5 w-5 text-foreground/40" />
+              <div className="aspect-[3/5] flex flex-col items-center justify-center gap-2 p-3">
+                <div className="h-12 w-12 rounded-full border-2 border-dashed border-foreground/30 flex items-center justify-center">
+                  <Shirt className="h-6 w-6 text-foreground/50" />
                 </div>
-                <p className="text-[12px] text-foreground/50 text-center">Product photo · clean background</p>
+                <p className="text-[12px] text-foreground/70 text-center">Product photo · clean background</p>
                 <div className="flex gap-1.5 w-full">
                   <button onClick={() => {
                     if (isNativePlatform()) handleNativeCapture(onClothingPhotoChange, 'clothing', 'camera');
