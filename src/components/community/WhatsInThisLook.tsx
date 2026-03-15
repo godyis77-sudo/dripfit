@@ -130,7 +130,7 @@ const WhatsInThisLook = ({
             handleToggle();
           }
         }}
-        className="w-full flex items-center justify-center gap-1 active:scale-[0.97] transition-transform btn-gold-3d shimmer-sweep h-7 rounded-xl px-2"
+        className="w-full flex items-center justify-center gap-1 active:scale-[0.97] transition-transform btn-gold-3d shimmer-sweep h-10 rounded-xl px-2"
         style={{
           borderRadius: open ? '12px 12px 0 0' : '12px',
         }}
