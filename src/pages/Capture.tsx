@@ -332,6 +332,10 @@ const Capture = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setWebCameraOpen(false);
+    stopWebCamera();
+    setCameraError(null);
+
     const key: keyof PhotoSet = flowStep === 'side' ? 'side' : 'front';
     const reader = new FileReader();
 
