@@ -134,7 +134,7 @@ const MediaKit = () => {
 
   const heroStats = [
     { label: 'Products', value: stats.active_products.toLocaleString(), icon: ShoppingBag },
-    { label: 'Brands', value: `${stats.unique_brands}+`, icon: Crown },
+    { label: 'Brands', value: `${stats.unique_brands}+`, icon: ShoppingBag },
     { label: 'Size Charts', value: `${stats.size_charts}+`, icon: Ruler },
     { label: 'Categories', value: `${stats.categories}+`, icon: Eye },
   ];
