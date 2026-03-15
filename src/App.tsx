@@ -99,8 +99,8 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <GuestTimedNudge />
         <BrowserRouter>
+          <GuestTimedNudge />
           <ScrollToTop />
           <MobileShell>
             <Suspense fallback={<RouteFallback />}>
