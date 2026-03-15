@@ -341,6 +341,9 @@ const Capture = () => {
     return () => window.clearTimeout(timeoutId);
   }, [captureCountdown, handleWebCameraCapture]);
 
+  /** Detect mobile via UA + touch — simple and synchronous */
+  const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || ('ontouchstart' in window && window.innerWidth < 768);
+
   const handleCapture = async () => {
     const key: keyof PhotoSet = flowStep === 'side' ? 'side' : 'front';
 
@@ -355,6 +358,13 @@ const Capture = () => {
       return;
     }
 
+    // Mobile web → go straight to native camera app (no getUserMedia)
+    if (isMobileDevice) {
+      cameraInputRef.current?.click();
+      return;
+    }
+
+    // Desktop → use in-app live preview
     await openWebCamera();
   };
 
