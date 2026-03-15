@@ -176,6 +176,32 @@ const TryOn = () => {
                           />
                         </div>
 
+                        {/* Retailer search */}
+                        <div>
+                          <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Retailer</p>
+                          {s.selectedRetailer ? (
+                            <div className="flex items-center gap-1.5">
+                              <span className="px-2.5 py-1 rounded-lg text-[10px] font-semibold btn-luxury text-primary-foreground flex items-center gap-1">
+                                {s.selectedRetailer}
+                                <button onClick={() => s.setSelectedRetailer(null)} className="ml-0.5"><X className="h-3 w-3" /></button>
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="relative">
+                              <input
+                                type="text"
+                                value={retailerSearch}
+                                onChange={e => setRetailerSearch(e.target.value)}
+                                placeholder="Search retailers…"
+                                className="w-full h-8 rounded-lg border border-border bg-background px-2.5 text-[11px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
+                              />
+                              {retailerSearch.length >= 2 && (
+                                <RetailerDropdown query={retailerSearch} onSelect={(r) => { s.setSelectedRetailer(r); setRetailerSearch(''); }} />
+                              )}
+                            </div>
+                          )}
+                        </div>
+
                         <div>
                           <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Genre</p>
                           <div className="flex flex-wrap gap-1.5">
