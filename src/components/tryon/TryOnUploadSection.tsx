@@ -138,33 +138,35 @@ const TryOnUploadSection = ({
               </div>
             </div>
           ) : (
-            <div className="rounded-xl border-2 border-dashed border-border bg-card overflow-hidden">
-              <div className="aspect-[3/4] flex flex-col items-center justify-end gap-2 p-3">
-                <div className="h-12 w-12 rounded-full border-2 border-dashed border-foreground/30 flex items-center justify-center">
-                  <Shirt className="h-6 w-6 text-foreground/50" />
-                </div>
-                <p className="text-[12px] text-foreground/70 text-center">Product photo · clean background</p>
-                <div className="flex gap-1.5 w-full">
-                  <button onClick={() => {
-                    if (isNativePlatform()) handleNativeCapture(onClothingPhotoChange, 'clothing', 'camera');
-                    else clothingCameraRef.current?.click();
-                  }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg btn-gold-3d active:scale-95 transition-transform">
-                    <Camera className="h-3.5 w-3.5 text-primary-foreground" /><span className="text-[12px] font-bold text-primary-foreground">Camera</span>
-                  </button>
-                  <button onClick={() => {
-                    if (isNativePlatform()) handleNativeCapture(onClothingPhotoChange, 'clothing', 'gallery');
-                    else clothingPhotoRef.current?.click();
-                  }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg btn-gold-3d active:scale-95 transition-transform">
-                    <ImageIcon className="h-3.5 w-3.5 text-primary-foreground" /><span className="text-[12px] font-bold text-primary-foreground">Gallery</span>
-                  </button>
+            <>
+              <div className="rounded-xl border-2 border-dashed border-border bg-card overflow-hidden">
+                <div className="aspect-[3/4] flex flex-col items-center justify-end gap-2 p-3">
+                  <div className="h-12 w-12 rounded-full border-2 border-dashed border-foreground/30 flex items-center justify-center">
+                    <Shirt className="h-6 w-6 text-foreground/50" />
+                  </div>
+                  <p className="text-[12px] text-foreground/70 text-center">Product photo · clean background</p>
+                  <div className="flex gap-1.5 w-full">
+                    <button onClick={() => {
+                      if (isNativePlatform()) handleNativeCapture(onClothingPhotoChange, 'clothing', 'camera');
+                      else clothingCameraRef.current?.click();
+                    }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg btn-gold-3d active:scale-95 transition-transform">
+                      <Camera className="h-3.5 w-3.5 text-primary-foreground" /><span className="text-[12px] font-bold text-primary-foreground">Camera</span>
+                    </button>
+                    <button onClick={() => {
+                      if (isNativePlatform()) handleNativeCapture(onClothingPhotoChange, 'clothing', 'gallery');
+                      else clothingPhotoRef.current?.click();
+                    }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg btn-gold-3d active:scale-95 transition-transform">
+                      <ImageIcon className="h-3.5 w-3.5 text-primary-foreground" /><span className="text-[12px] font-bold text-primary-foreground">Gallery</span>
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-            {user && wardrobeItems.length > 0 && (
-              <button onClick={onToggleWardrobe} className="w-full flex items-center justify-center gap-1 py-1.5 rounded-lg pill active:scale-95 transition-transform mt-1.5">
-                <FolderOpen className="h-3.5 w-3.5" /><span className="text-[12px] font-bold">My Wardrobe ({wardrobeItems.length})</span>
-              </button>
-            )}
+              {user && wardrobeItems.length > 0 && (
+                <button onClick={onToggleWardrobe} className="w-full flex items-center justify-center gap-1 py-1.5 rounded-lg pill active:scale-95 transition-transform mt-1.5">
+                  <FolderOpen className="h-3.5 w-3.5" /><span className="text-[12px] font-bold">My Wardrobe ({wardrobeItems.length})</span>
+                </button>
+              )}
+            </>
           )}
           {showWardrobe && wardrobeItems.length > 0 && (
             <div className="mt-2 bg-card border border-border rounded-xl p-2 max-h-[200px] overflow-y-auto">
