@@ -670,8 +670,48 @@ const Capture = () => {
               </Button>
             </div>
 
-            <div className="flex-1 bg-muted">
-              <video ref={videoRef} autoPlay muted playsInline className="h-full w-full object-cover" />
+            <div className="relative flex-1 overflow-hidden bg-muted">
+              <video
+                ref={videoRef}
+                autoPlay
+                muted
+                playsInline
+                className={`h-full w-full object-cover transition-opacity duration-200 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
+              />
+
+              {/* Guide overlay */}
+              <div className="pointer-events-none absolute inset-0">
+                <div className="absolute inset-0">
+                  <div className="absolute left-1/2 top-[8%] bottom-[8%] w-px -translate-x-1/2 bg-primary/20" />
+                  <div className="absolute left-[15%] right-[15%] top-[25%] h-px bg-primary/20" />
+                  <div className="absolute left-[15%] right-[15%] top-[75%] h-px bg-primary/20" />
+                </div>
+
+                <div className="absolute inset-y-[8%] inset-x-[18%]">
+                  <div
+                    className={`h-full w-full rounded-full transition-opacity duration-200 ${videoReady ? 'opacity-65' : 'opacity-95'}`}
+                    style={{
+                      backgroundImage: 'linear-gradient(180deg, hsl(var(--primary) / 0.55) 0%, hsl(var(--primary) / 0.25) 55%, hsl(var(--primary) / 0.45) 100%)',
+                      WebkitMaskImage: `url(${cameraMaskUrl})`,
+                      maskImage: `url(${cameraMaskUrl})`,
+                      WebkitMaskRepeat: 'no-repeat',
+                      maskRepeat: 'no-repeat',
+                      WebkitMaskPosition: 'center',
+                      maskPosition: 'center',
+                      WebkitMaskSize: 'contain',
+                      maskSize: 'contain',
+                    } as React.CSSProperties}
+                  />
+                </div>
+              </div>
+
+              {!videoReady && (
+                <div className="absolute inset-x-4 top-4 rounded-xl border border-border bg-background/90 px-3 py-2 text-center backdrop-blur-sm">
+                  <p className="text-[11px] font-medium text-foreground">
+                    {cameraError ?? 'Starting camera preview...'}
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="space-y-2 border-t border-border px-4 py-4">
