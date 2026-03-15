@@ -458,11 +458,9 @@ const Capture = () => {
                 {/* Circle */}
                 <div
                   className={`h-7 w-7 rounded-full flex items-center justify-center text-[11px] font-bold transition-all shrink-0 ${
-                    completed
-                      ? 'bg-primary text-primary-foreground'
-                      : active
-                        ? 'border-2 border-primary text-primary'
-                        : 'border border-border text-muted-foreground'
+                    completed || active
+                      ? 'btn-luxury !p-0'
+                      : 'border border-border text-muted-foreground'
                   }`}
                 >
                   {completed ? <Check className="h-3.5 w-3.5" /> : i + 1}
@@ -470,7 +468,7 @@ const Capture = () => {
                 {/* Label */}
                 <span
                   className={`text-[11px] mt-1 font-semibold ${
-                    completed ? 'text-primary' : active ? 'text-primary font-bold' : 'text-muted-foreground'
+                    completed || active ? 'text-primary font-bold' : 'text-muted-foreground'
                   }`}
                 >
                   {s.label}
