@@ -149,13 +149,13 @@ const TryOnUploadSection = ({
                     <button onClick={() => {
                       if (isNativePlatform()) handleNativeCapture(onClothingPhotoChange, 'clothing', 'camera');
                       else clothingCameraRef.current?.click();
-                    }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg btn-gold-3d active:scale-95 transition-transform">
+                    }} className="flex-1 flex items-center justify-center gap-1 py-1 rounded-lg btn-gold-3d active:scale-95 transition-transform">
                       <Camera className="h-3.5 w-3.5 text-primary-foreground" /><span className="text-[12px] font-bold text-primary-foreground">Camera</span>
                     </button>
                     <button onClick={() => {
                       if (isNativePlatform()) handleNativeCapture(onClothingPhotoChange, 'clothing', 'gallery');
                       else clothingPhotoRef.current?.click();
-                    }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg btn-gold-3d active:scale-95 transition-transform">
+                    }} className="flex-1 flex items-center justify-center gap-1 py-1 rounded-lg btn-gold-3d active:scale-95 transition-transform">
                       <ImageIcon className="h-3.5 w-3.5 text-primary-foreground" /><span className="text-[12px] font-bold text-primary-foreground">Gallery</span>
                     </button>
                   </div>
