@@ -88,38 +88,7 @@ const TryOn = () => {
               onToast={s.toast}
               onRemoveClothing={s.removeClothing}
               onBrowseProducts={s.removeClothing}
-            />
-import { supabase } from '@/integrations/supabase/client';
 
-/* Retailer autocomplete dropdown */
-function RetailerDropdown({ query, onSelect }: { query: string; onSelect: (name: string) => void }) {
-  const [results, setResults] = useState<string[]>([]);
-  useEffect(() => {
-    let cancelled = false;
-    supabase
-      .from('retailers')
-      .select('name')
-      .eq('is_active', true)
-      .ilike('name', `%${query}%`)
-      .order('name')
-      .limit(10)
-      .then(({ data }) => {
-        if (!cancelled && data) setResults(data.map(r => r.name));
-      });
-    return () => { cancelled = true; };
-  }, [query]);
-
-  if (results.length === 0) return null;
-  return (
-    <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-card border border-border rounded-lg shadow-lg max-h-40 overflow-y-auto">
-      {results.map(name => (
-        <button key={name} onClick={() => onSelect(name)} className="w-full text-left px-3 py-2 text-[11px] font-medium text-foreground hover:bg-accent/50 transition-colors">
-          {name}
-        </button>
-      ))}
-    </div>
-  );
-}
 
             {/* Filters button + dropdown */}
             {!s.clothingPhoto && (
