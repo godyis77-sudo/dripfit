@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Crown, X } from 'lucide-react';
+import { X } from 'lucide-react';
+import InlineCrown from '@/components/ui/InlineCrown';
 
 interface TryOnPremiumGateProps {
   onClose: () => void;
