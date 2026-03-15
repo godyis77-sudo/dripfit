@@ -99,6 +99,7 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <GuestTimedNudge />
         <BrowserRouter>
           <ScrollToTop />
           <MobileShell>
