@@ -109,10 +109,10 @@ const TryOn = () => {
               <div className="mb-3 space-y-2">
                 {s.category === 'all' ? (
                   ALL_PRODUCT_CATEGORIES.map(cat => (
-                    <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={false} maxItems={1000} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} genre={s.selectedGenre as any} onSelectProduct={s.handleSelectProduct} />
+                    <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={true} maxItems={100} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} genre={s.selectedGenre as any} onSelectProduct={s.handleSelectProduct} />
                   ))
                 ) : (
-                  <CategoryProductGrid category={s.category} title={`Shop ${CATEGORIES.find(c => c.key === s.category)?.label || s.category}`} collapsed={false} maxItems={1000} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} genre={s.selectedGenre as any} onSelectProduct={s.handleSelectProduct} />
+                  <CategoryProductGrid category={s.category} title={`Shop ${CATEGORIES.find(c => c.key === s.category)?.label || s.category}`} collapsed={false} maxItems={100} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} genre={s.selectedGenre as any} onSelectProduct={s.handleSelectProduct} />
                 )}
               </div>
             )}
