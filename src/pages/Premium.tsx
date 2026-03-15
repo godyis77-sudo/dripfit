@@ -261,8 +261,8 @@ const Premium = () => {
               transition={{ delay: 0.05 * i, duration: 0.3 }}
               className="bg-card border border-border rounded-xl p-2.5 flex items-center gap-2"
             >
-              <div className="h-7 w-7 icon-3d shrink-0">
-                <f.icon className="h-3.5 w-3.5 text-brand-logo-fg shimmer-icon" />
+              <div className="h-7 w-7 badge-gold-3d shrink-0 flex items-center justify-center">
+                <f.icon className="h-3.5 w-3.5 text-primary-foreground" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[11px] font-bold text-foreground leading-tight">{f.title}</p>

@@ -66,7 +66,7 @@ const HomeFAB = () => {
         <motion.button
           whileTap={{ scale: 0.93 }}
           onClick={() => setFabOpen(!fabOpen)}
-          className="h-12 w-12 rounded-full icon-3d-gold shimmer-sweep glow-primary"
+          className="h-12 w-12 rounded-full badge-gold-3d shimmer-sweep glow-primary"
           aria-label={fabOpen ? 'Close menu' : 'Quick actions'}
         >
           <Plus className={`h-5 w-5 text-primary-foreground transition-transform duration-200 ease-in-out ${fabOpen ? 'rotate-45' : ''}`} />

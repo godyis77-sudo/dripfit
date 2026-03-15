@@ -305,7 +305,7 @@ const Capture = () => {
               <CaptureViewfinder captureStep={captureStep} photo={photos[captureStep]} />
 
               <p className="text-[11px] text-muted-foreground text-center bg-card border border-border px-3 py-1.5 rounded-xl mb-2 flex items-center justify-center gap-1.5">
-                <span className="h-5 w-5 icon-3d-gold rounded-md flex items-center justify-center text-[10px] shrink-0">💡</span>
+                <span className="h-5 w-5 badge-gold-3d rounded-md flex items-center justify-center text-[10px] shrink-0">💡</span>
                 {config.tip}
               </p>
 

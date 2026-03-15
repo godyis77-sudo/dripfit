@@ -256,7 +256,7 @@ const TryOnResultSection = ({
             <Sparkles className="h-4 w-4" />
             <span className="text-[13px] font-bold uppercase tracking-wide">Add More Style</span>
             {layerHistory.length > 0 && <span className="text-[11px] bg-background/20 px-2 py-0.5 rounded-full">{layerHistory.length} layered</span>}
-            {showAccessorySection ? <span className="h-5 w-5 icon-3d-gold rounded-md"><ChevronDown className="h-2.5 w-2.5 text-primary-foreground" /></span> : <span className="h-5 w-5 icon-3d-gold rounded-md"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>}
+            {showAccessorySection ? <span className="h-5 w-5 badge-gold-3d rounded-md flex items-center justify-center"><ChevronDown className="h-2.5 w-2.5 text-primary-foreground" /></span> : <span className="h-5 w-5 badge-gold-3d rounded-md flex items-center justify-center"><ChevronRight className="h-2.5 w-2.5 text-primary-foreground" /></span>}
           </button>
           <AnimatePresence>
             {showAccessorySection && (

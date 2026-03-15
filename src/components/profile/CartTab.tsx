@@ -87,8 +87,8 @@ const CartTab = () => {
   if (items.length === 0) {
     return (
       <div className="text-center py-10">
-        <div className="h-12 w-12 rounded-xl icon-3d-gold shimmer-sweep mx-auto mb-3">
-          <ShoppingCart className="h-6 w-6 text-primary-foreground shimmer-icon" />
+        <div className="h-12 w-12 rounded-xl badge-gold-3d shimmer-sweep mx-auto mb-3 flex items-center justify-center">
+          <ShoppingCart className="h-6 w-6 text-primary-foreground" />
         </div>
         <p className="text-[14px] font-bold text-foreground mb-1">Your cart is empty</p>
         <p className="text-[12px] text-muted-foreground max-w-[220px] mx-auto mb-4">
