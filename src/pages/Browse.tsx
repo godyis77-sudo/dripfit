@@ -228,6 +228,7 @@ const Browse = () => {
             {activeFilterCount > 0 ? `Filters (${activeFilterCount})` : 'Filters'}
           </button>
         </div>
+      </div>
 
       {/* Filters panel */}
       <AnimatePresence>
