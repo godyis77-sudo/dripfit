@@ -140,6 +140,7 @@ const App = () => {
                   <Route path="/waitlist" element={<PageTransition><Waitlist /></PageTransition>} />
                   <Route path="/partnership" element={<PageTransition><Partnership /></PageTransition>} />
                   <Route path="/founding-members" element={<PageTransition><FoundingMembers /></PageTransition>} />
+                  <Route path="/media-kit" element={<PageTransition><MediaKit /></PageTransition>} />
                   <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
                 </Routes>
               </AnimatePresence>
