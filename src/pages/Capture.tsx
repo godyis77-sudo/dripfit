@@ -692,6 +692,11 @@ const Capture = () => {
         }}
       >
         <SheetContent side="bottom" className="h-[100svh] rounded-none p-0 border-none">
+          <SheetHeader className="sr-only">
+            <SheetTitle>Take {config.title} Photo</SheetTitle>
+            <SheetDescription>Use your live camera preview to capture this scan photo. If preview is unavailable, use camera app fallback.</SheetDescription>
+          </SheetHeader>
+
           <div className="flex h-full flex-col bg-background">
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
               <p className="text-sm font-semibold text-foreground">Take {config.title} Photo</p>
@@ -748,11 +753,27 @@ const Capture = () => {
               <Button
                 className="h-12 w-full rounded-xl text-sm font-semibold"
                 onClick={startTimedWebCapture}
-                disabled={!videoReady || captureCountdown !== null}
+                disabled={captureCountdown !== null}
               >
                 <Camera className="mr-2 h-4 w-4" />
-                {captureCountdown !== null ? `Capturing in ${captureCountdown}s` : 'Capture Photo (3s Timer)'}
+                {captureCountdown !== null
+                  ? `Capturing in ${captureCountdown}s`
+                  : videoReady
+                    ? 'Capture Photo (3s Timer)'
+                    : 'Open Camera App'}
               </Button>
+
+              {!videoReady && (
+                <Button
+                  variant="outline"
+                  className="h-11 w-full rounded-xl text-sm font-semibold"
+                  onClick={openWebCamera}
+                  disabled={captureCountdown !== null}
+                >
+                  Retry Live Preview
+                </Button>
+              )}
+
               <Button
                 variant="secondary"
                 className="h-11 w-full rounded-xl text-sm font-semibold"
