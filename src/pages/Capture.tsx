@@ -116,6 +116,7 @@ const Capture = () => {
   const [webCameraOpen, setWebCameraOpen] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [captureCountdown, setCaptureCountdown] = useState<number | null>(null);
   const { toast } = useToast();
 
   // Load existing gender from profile
@@ -195,6 +196,7 @@ const Capture = () => {
     }
 
     setVideoReady(false);
+    setCaptureCountdown(null);
   }, []);
 
   const handleCapturedPhoto = useCallback(async (rawDataUrl: string, key: keyof PhotoSet) => {
@@ -281,7 +283,9 @@ const Capture = () => {
     return () => window.clearTimeout(timeoutId);
   }, [webCameraOpen, videoReady]);
 
-  const handleWebCameraCapture = async () => {
+  const handleWebCameraCapture = useCallback(async () => {
+    setCaptureCountdown(null);
+
     if (!videoRef.current) return;
 
     const video = videoRef.current;
@@ -309,7 +313,27 @@ const Capture = () => {
     setWebCameraOpen(false);
     stopWebCamera();
     await handleCapturedPhoto(dataUrl, key);
+  }, [flowStep, handleCapturedPhoto, stopWebCamera, toast]);
+
+  const startTimedWebCapture = () => {
+    if (!videoReady || captureCountdown !== null) return;
+    setCaptureCountdown(3);
   };
+
+  useEffect(() => {
+    if (captureCountdown === null) return;
+
+    if (captureCountdown <= 0) {
+      void handleWebCameraCapture();
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setCaptureCountdown((prev) => (prev === null ? null : prev - 1));
+    }, 1000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [captureCountdown, handleWebCameraCapture]);
 
   const handleCapture = async () => {
     const key: keyof PhotoSet = flowStep === 'side' ? 'side' : 'front';
@@ -715,10 +739,20 @@ const Capture = () => {
             </div>
 
             <div className="space-y-2 border-t border-border px-4 py-4">
-              <Button className="h-12 w-full rounded-xl text-sm font-semibold" onClick={handleWebCameraCapture}>
-                <Camera className="mr-2 h-4 w-4" /> Capture Photo
+              <Button
+                className="h-12 w-full rounded-xl text-sm font-semibold"
+                onClick={startTimedWebCapture}
+                disabled={!videoReady || captureCountdown !== null}
+              >
+                <Camera className="mr-2 h-4 w-4" />
+                {captureCountdown !== null ? `Capturing in ${captureCountdown}s` : 'Capture Photo (3s Timer)'}
               </Button>
-              <Button variant="secondary" className="h-11 w-full rounded-xl text-sm font-semibold" onClick={() => galleryInputRef.current?.click()}>
+              <Button
+                variant="secondary"
+                className="h-11 w-full rounded-xl text-sm font-semibold"
+                onClick={() => galleryInputRef.current?.click()}
+                disabled={captureCountdown !== null}
+              >
                 <Upload className="mr-2 h-4 w-4" /> Choose from Gallery
               </Button>
             </div>
