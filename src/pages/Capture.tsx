@@ -175,6 +175,7 @@ const Capture = () => {
 
   const captureStep: CaptureStep = flowStep === 'side' ? 'side' : 'front';
   const config = STEP_CONFIG[captureStep];
+  const cameraMaskUrl = captureStep === 'side' ? bodySilhouetteSideMask : bodySilhouetteFrontMask;
 
   // Safety: if reviewing but photo is missing (e.g. page reload, compress failure), reset
   useEffect(() => {
