@@ -87,21 +87,6 @@ const TryOn = () => {
               onBrowseProducts={s.removeClothing}
             />
 
-            {/* Category selector */}
-            <div className="mb-3 relative overflow-hidden">
-              <p className="text-[12px] font-bold text-foreground/70 uppercase tracking-wider mb-1.5">Category</p>
-              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none" style={{ WebkitOverflowScrolling: 'touch' }}>
-                <button onClick={() => s.setCategory('all')} aria-label="Show all categories" className={`shrink-0 pill ${s.category === 'all' ? 'pill-filled' : ''}`}>
-                  🛍️ All
-                </button>
-                {CATEGORIES.map(c => (
-                  <button key={c.key} onClick={() => s.setCategory(c.key)} aria-label={`Filter by ${c.label}`} className={`shrink-0 pill ${s.category === c.key ? 'pill-filled' : ''}`}>
-                    {c.label}
-                  </button>
-                ))}
-              </div>
-              <div className="absolute right-0 top-5 bottom-0 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none z-10" />
-            </div>
 
             {/* Filters button + dropdown */}
             {!s.clothingPhoto && (
