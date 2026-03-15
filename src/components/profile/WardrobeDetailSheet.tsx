@@ -95,6 +95,7 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
               <p className="text-[11px] font-extrabold text-primary-foreground uppercase tracking-wide">{displayRetailer}</p>
             </div>
           )}
+          </div>
         </div>
 
         {/* Details */}

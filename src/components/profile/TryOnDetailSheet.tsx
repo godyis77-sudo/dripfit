@@ -126,6 +126,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               <p className="text-[13px] text-white font-medium drop-shadow-sm">{postedCaption}</p>
             </div>
           )}
+          </div>
         </div>
 
         {/* Actions */}
