@@ -54,7 +54,7 @@ const HomeFAB = () => {
                   </span>
                   <button
                     onClick={() => { closeFab(); item.action(); }}
-                    className="h-11 w-11 rounded-full icon-3d-gold shimmer-sweep active:scale-90 transition-transform flex items-center justify-center"
+                    className="h-11 w-11 rounded-full badge-gold-3d shimmer-sweep active:scale-90 transition-transform flex items-center justify-center"
                   >
                     {item.icon}
                   </button>
