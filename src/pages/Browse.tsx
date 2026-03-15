@@ -181,7 +181,7 @@ const Browse = () => {
               className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
                 genderFilter === opt.key
                   ? 'btn-luxury text-primary-foreground'
-                  : 'bg-card border border-border text-muted-foreground'
+                  : 'bg-card border border-border text-foreground/70'
               }`}
             >
               {opt.label}
