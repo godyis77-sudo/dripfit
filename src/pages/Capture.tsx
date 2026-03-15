@@ -181,50 +181,126 @@ const Capture = () => {
     }
   }, [reviewing, flowStep, captureStep, photos]);
 
+  const stopWebCamera = useCallback(() => {
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
+    }
+
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  }, []);
+
+  const handleCapturedPhoto = useCallback(async (rawDataUrl: string, key: keyof PhotoSet) => {
+    try {
+      const compressed = await compressPhoto(rawDataUrl, 1280, 0.8);
+      setPhotos((prev) => ({ ...prev, [key]: compressed }));
+    } catch (err) {
+      console.error('Photo compress failed, using original:', err);
+      setPhotos((prev) => ({ ...prev, [key]: rawDataUrl }));
+    }
+
+    setReviewing(true);
+    trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
+  }, []);
+
+  const openWebCamera = useCallback(async () => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      cameraInputRef.current?.click();
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' } },
+        audio: false,
+      });
+
+      mediaStreamRef.current = stream;
+      setWebCameraOpen(true);
+
+      requestAnimationFrame(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          void videoRef.current.play().catch(() => undefined);
+        }
+      });
+    } catch (err) {
+      console.error('Web camera access failed, falling back to file input:', err);
+      toast({
+        title: 'Camera unavailable',
+        description: 'Opening your device camera picker instead.',
+        variant: 'destructive',
+      });
+      cameraInputRef.current?.click();
+    }
+  }, [toast]);
+
+  useEffect(() => () => stopWebCamera(), [stopWebCamera]);
+  useEffect(() => {
+    if (!webCameraOpen) stopWebCamera();
+  }, [webCameraOpen, stopWebCamera]);
+
+  const handleWebCameraCapture = async () => {
+    if (!videoRef.current) return;
+
+    const video = videoRef.current;
+    if (!video.videoWidth || !video.videoHeight) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    const key: keyof PhotoSet = flowStep === 'side' ? 'side' : 'front';
+
+    setWebCameraOpen(false);
+    stopWebCamera();
+    await handleCapturedPhoto(dataUrl, key);
+  };
+
   const handleCapture = async () => {
+    const key: keyof PhotoSet = flowStep === 'side' ? 'side' : 'front';
+
     if (isNativePlatform()) {
       try {
         const result = await takeNativePhoto('camera');
-        const key = flowStep === 'side' ? 'side' : 'front';
-
-        try {
-          const compressed = await compressPhoto(result.dataUrl, 1280, 0.8);
-          setPhotos(prev => ({ ...prev, [key]: compressed }));
-        } catch (compressErr) {
-          console.error('Native photo compress failed, using original:', compressErr);
-          setPhotos(prev => ({ ...prev, [key]: result.dataUrl }));
-        }
-
-        setReviewing(true);
-        trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
+        await handleCapturedPhoto(result.dataUrl, key);
       } catch (err: any) {
         if (err?.message?.includes('cancelled') || err?.message?.includes('canceled')) return;
         console.error('Native camera error:', err);
       }
-    } else {
-      fileInputRef.current?.click();
+      return;
     }
+
+    await openWebCamera();
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const key: keyof PhotoSet = flowStep === 'side' ? 'side' : 'front';
     const reader = new FileReader();
+
     reader.onloadend = async () => {
-      const base64 = reader.result as string;
-      const key = flowStep === 'side' ? 'side' : 'front';
-      try {
-        const compressed = await compressPhoto(base64, 1280, 0.8);
-        setPhotos(prev => ({ ...prev, [key]: compressed }));
-      } catch (err) {
-        console.error('Photo compress failed, using original:', err);
-        setPhotos(prev => ({ ...prev, [key]: base64 }));
+      const base64 = reader.result;
+      if (typeof base64 !== 'string') {
+        e.target.value = '';
+        return;
       }
-      setReviewing(true);
-      trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
+
+      await handleCapturedPhoto(base64, key);
+      e.target.value = '';
     };
+
     reader.readAsDataURL(file);
-    e.target.value = '';
   };
 
   const handlePhotoAccept = () => {
