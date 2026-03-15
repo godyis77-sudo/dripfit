@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const TAB_PATHS = ['/', '/capture', '/tryon', '/style-check', '/profile'];
 
-const SWIPE_THRESHOLD = 120;
+const SWIPE_THRESHOLD = 200;
 const SWIPE_MAX_Y = 50;
 
 export function useSwipeNavigation() {
