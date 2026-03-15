@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Mail, Lock, ArrowLeft, Eye, EyeOff, Ruler, Sparkles, Users } from 'lucide-react';
+import { Mail, Lock, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
@@ -18,12 +18,6 @@ interface AuthFormProps {
   showGuestContinue?: boolean;
   showBackButton?: boolean;
 }
-
-const VALUE_PROPS = [
-  { icon: Ruler, text: 'AI body measurements' },
-  { icon: Sparkles, text: 'Virtual try-on preview' },
-  { icon: Users, text: 'Real fit feedback' },
-];
 
 const GoogleIcon = () => (
   <svg className="h-3.5 w-3.5 mr-1.5" viewBox="0 0 24 24">
@@ -55,7 +49,6 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
   const [forgotSent, setForgotSent] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
 
-  // If user becomes authenticated, fire onComplete
   useEffect(() => {
     if (user && onComplete) onComplete();
   }, [user, onComplete]);
@@ -81,14 +74,13 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
         if (error) throw error;
         trackEvent('auth_completed', { method: 'email_signup' });
 
-        // Handle referral tracking
         const refId = new URLSearchParams(window.location.search).get('ref');
         if (refId && data.user) {
           supabase.from('referrals').insert({
             referrer_id: refId,
             referee_id: data.user.id,
           }).then(() => {
-            toast({ title: 'Welcome! 🎉', description: 'You and your friend both get 5 extra try-ons this month' });
+            toast({ title: 'Welcome! 🎉', description: 'You and your friend both get 5 extra try-ons this month.' });
           });
         } else {
           toast({ title: 'Check your email', description: 'We sent a confirmation link to verify your account.' });
@@ -96,7 +88,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
       }
     } catch (err: any) {
       const msg = err.message?.includes('Invalid login credentials')
-        ? 'Invalid credentials. If you signed up with Google, use the Google button instead.'
+        ? 'Invalid email or password. If you signed up with Google, use the Google button below.'
         : err.message;
       toast({ title: 'Error', description: msg, variant: 'destructive' });
     } finally {
@@ -119,7 +111,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
 
   const handleForgotPassword = async () => {
     if (!forgotEmail) {
-      toast({ title: 'Enter your email', description: 'Please type your email address above.', variant: 'destructive' });
+      toast({ title: 'Enter your email', description: 'Type your email address above first.', variant: 'destructive' });
       return;
     }
     setLoading(true);
@@ -145,26 +137,28 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
   return (
     <div className="w-full max-w-[320px]">
       {showBackButton && (
-        <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="mb-3 h-8 w-8 rounded-lg text-muted-foreground" aria-label="Go back">
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="mb-3 h-8 w-8 rounded-lg text-muted-foreground" aria-label="Go back">
           <ArrowLeft className="h-4 w-4" />
         </Button>
       )}
 
-      <div className="flex flex-col items-center mb-4">
+      <div className="flex flex-col items-center mb-5">
         <BrandLogo size="md" />
       </div>
 
       <Card className="rounded-xl border-border/40">
         <CardHeader className="text-center pb-1.5 pt-4 px-4">
-          <CardTitle className="font-display text-xl">{isLogin ? 'Welcome Back' : 'Join DRIPFIT ✔'}</CardTitle>
+          <CardTitle className="font-display text-xl">
+            {isLogin ? 'Welcome Back' : 'Create Your Account'}
+          </CardTitle>
           <CardDescription className="text-[13px] text-muted-foreground">
             {isLogin
-              ? 'Sign in to access your saved sizes, Try-Ons, and Style Checks'
-              : 'Create a free account to save your results and get personalized sizing'}
+              ? 'Sign in to access your sizes, try-ons, and wardrobe'
+              : 'Free forever — save your measurements and try-ons across devices'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 px-4 pb-4">
-          {/* Forgot password inline flow */}
+          {/* Forgot password flow */}
           {isLogin && showForgot ? (
             <div className="space-y-3 py-2">
               {forgotSent ? (
@@ -172,7 +166,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
                     <Mail className="h-5 w-5 text-primary" />
                   </div>
-                  <p className="text-[13px] font-semibold text-foreground">Check your email</p>
+                  <p className="text-[13px] font-semibold text-foreground">Check your inbox</p>
                   <p className="text-[12px] text-muted-foreground">We sent a reset link to <span className="font-medium text-foreground">{forgotEmail}</span></p>
                   <button type="button" onClick={() => { setShowForgot(false); setForgotSent(false); }} className="text-[11px] text-primary font-semibold hover:underline">
                     ← Back to sign in
@@ -200,19 +194,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
             </div>
           ) : (
           <>
-          {/* Value props for sign up */}
-          {!isLogin && (
-            <div className="flex items-center justify-center gap-3 py-1">
-              {VALUE_PROPS.map(v => (
-                <div key={v.text} className="flex items-center gap-1">
-                  <v.icon className="h-3 w-3 text-primary/70" />
-                  <span className="text-[11px] text-muted-foreground">{v.text}</span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Social login buttons */}
+          {/* Social login */}
           <div className="flex gap-2">
             <Button variant="outline" className="flex-1 h-10 rounded-lg text-[12px] font-semibold border-border/60 text-foreground active:scale-[0.97] transition-transform" onClick={() => handleSocialLogin('google')} disabled={!!socialLoading}>
               {socialLoading === 'google' ? '…' : (<><GoogleIcon />Google</>)}
@@ -230,10 +212,9 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
 
           {/* Email form */}
           <form onSubmit={handleSubmit} className="space-y-2.5">
-            {/* Display name — sign up only */}
             {!isLogin && (
               <div className="space-y-1">
-                <Label htmlFor="auth-name" className="text-[11px] text-foreground/70">Display Name (optional)</Label>
+                <Label htmlFor="auth-name" className="text-[11px] text-foreground/70">Display Name <span className="text-muted-foreground">(optional)</span></Label>
                 <Input id="auth-name" type="text" placeholder="Your name" value={displayName} onChange={e => setDisplayName(e.target.value)} className="rounded-lg h-9 text-[13px] border-border/60 focus:border-primary" />
               </div>
             )}
@@ -264,7 +245,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
             </Button>
           </form>
 
-          {/* Toggle sign in / sign up */}
+          {/* Toggle */}
           <p className="text-center text-[12px] text-muted-foreground">
             {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
             <button onClick={() => setIsLogin(!isLogin)} className="text-primary font-bold hover:underline">{isLogin ? 'Sign Up' : 'Sign In'}</button>
@@ -277,7 +258,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
             <button onClick={() => navigate('/privacy')} className="underline hover:text-muted-foreground">Privacy Policy</button>.
           </p>
 
-          {/* Guest continue */}
+          {/* Guest */}
           {showGuestContinue && (
             <button
               onClick={handleGuestContinue}
