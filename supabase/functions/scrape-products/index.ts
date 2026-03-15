@@ -1358,6 +1358,90 @@ function normalizeBrandKey(brand: string): string {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// CANONICAL BRAND/RETAILER NAMES — normalizes casing at insert time
+// Maps lowercase → proper display casing. Any brand not in this map keeps
+// its original casing (first-letter capitalized as fallback).
+// ─────────────────────────────────────────────────────────────────────────────
+const CANONICAL_NAMES: Record<string, string> = {
+  // Luxury
+  'gucci': 'Gucci', 'louis vuitton': 'Louis Vuitton', 'prada': 'Prada',
+  'balenciaga': 'Balenciaga', 'dior': 'Dior', 'burberry': 'Burberry',
+  'versace': 'Versace', 'saint laurent': 'Saint Laurent', 'givenchy': 'Givenchy',
+  'fendi': 'Fendi', 'bottega veneta': 'Bottega Veneta', 'valentino': 'Valentino',
+  'alexander mcqueen': 'Alexander McQueen', 'loewe': 'Loewe', 'celine': 'Celine',
+  'moncler': 'Moncler', 'acne studios': 'Acne Studios', 'ami paris': 'AMI Paris',
+  'jacquemus': 'Jacquemus', 'maison margiela': 'Maison Margiela',
+  'rick owens': 'Rick Owens', 'stone island': 'Stone Island',
+  // Streetwear
+  'supreme': 'Supreme', 'off-white': 'Off-White', 'stüssy': 'Stüssy',
+  'a bathing ape': 'A Bathing Ape', 'palace': 'Palace',
+  'palace skateboards': 'Palace Skateboards', 'fear of god': 'Fear of God',
+  'kith': 'Kith', 'essentials': 'Essentials', 'corteiz': 'Corteiz',
+  'trapstar': 'Trapstar',
+  // Athletic
+  'nike': 'Nike', 'adidas': 'Adidas', 'puma': 'Puma', 'lululemon': 'Lululemon',
+  'gymshark': 'Gymshark', 'under armour': 'Under Armour', 'new balance': 'New Balance',
+  'on running': 'On Running', 'hoka': 'HOKA', 'salomon': 'Salomon',
+  'fabletics': 'Fabletics', 'alo yoga': 'Alo Yoga', 'vuori': 'Vuori',
+  'girlfriend collective': 'Girlfriend Collective', 'rhone': 'Rhone',
+  // Mass-market & fast fashion
+  'shein': 'SHEIN', 'zara': 'Zara', 'h&m': 'H&M', 'hm': 'H&M',
+  'gap': 'Gap', 'old navy': 'Old Navy', 'banana republic': 'Banana Republic',
+  'uniqlo': 'Uniqlo', 'mango': 'Mango', 'forever 21': 'Forever 21',
+  'boohoo': 'Boohoo', 'prettylittlething': 'PrettyLittleThing',
+  'fashion nova': 'Fashion Nova', 'target': 'Target', 'topshop': 'Topshop',
+  // Department & multi-brand
+  'nordstrom': 'Nordstrom', 'asos': 'ASOS', 'revolve': 'Revolve',
+  'amazon fashion': 'Amazon Fashion', 'urban outfitters': 'Urban Outfitters',
+  'abercrombie & fitch': 'Abercrombie & Fitch', 'j.crew': 'J.Crew',
+  'net-a-porter': 'Net-a-Porter', 'ssense': 'SSENSE', 'farfetch': 'Farfetch',
+  'saks': 'Saks', 'macys': 'Macys',
+  // DTC & specialty
+  'reformation': 'Reformation', 'everlane': 'Everlane', 'cos': 'COS',
+  'allsaints': 'AllSaints', 'free people': 'Free People', 'skims': 'SKIMS',
+  'aritzia': 'Aritzia', 'carhartt': 'Carhartt', 'vans': 'Vans',
+  'converse': 'Converse', 'dr. martens': 'Dr. Martens', 'birkenstock': 'Birkenstock',
+  'anthropologie': 'Anthropologie', 'tory burch': 'Tory Burch',
+  'michael kors': 'Michael Kors', 'coach': 'Coach', 'kate spade': 'Kate Spade',
+  'ted baker': 'Ted Baker', 'reiss': 'Reiss', 'theory': 'Theory',
+  "levi's": "Levi's", 'ralph lauren': 'Ralph Lauren',
+  'calvin klein': 'Calvin Klein', 'tommy hilfiger': 'Tommy Hilfiger',
+  'hugo boss': 'Hugo Boss', 'steve madden': 'Steve Madden',
+  'eileen fisher': 'Eileen Fisher', 'bonobos': 'Bonobos',
+  'charles tyrwhitt': 'Charles Tyrwhitt', 'columbia': 'Columbia',
+  'patagonia': 'Patagonia', 'the north face': 'The North Face',
+  'american eagle': 'American Eagle', 'new era': 'New Era',
+  'eloquii': 'Eloquii', 'savage x fenty': 'Savage X Fenty',
+  'mizzen+main': 'Mizzen+Main',
+  // Surf & Skate
+  'o5 billabong': 'O5 Billabong', 'rvca': 'RVCA',
+  'world industries': 'World Industries',
+  // DTC brands in catalog
+  'faherty': 'Faherty', 'taylor stitch': 'Taylor Stitch',
+  'marine layer': 'Marine Layer', "rothy's": "Rothy's",
+  'true classic': 'True Classic', 'fresh clean threads': 'Fresh Clean Threads',
+  'fresh clean tees': 'Fresh Clean Tees', 'grayers': 'Grayers',
+  'roark': 'Roark', 'radial': 'Radial', 'public rec 2.0': 'Public Rec 2.0',
+  'recurate': 'Recurate', 'todd snyder': 'Todd Snyder',
+  'ok mens': 'OK Mens', 'ok womens': 'OK Womens', 'ok unisex': 'OK Unisex',
+  'ok accessories': 'OK Accessories', 'custom club': 'Custom Club',
+  'trove': 'Trove', 'schott': 'Schott', 'mark bodē': 'Mark Bodē',
+  'cutler and gross': 'Cutler And Gross',
+};
+
+/**
+ * Normalize a brand or retailer name to its canonical display casing.
+ * Falls back to title-casing if not in the map.
+ */
+function canonicalName(raw: string): string {
+  const trimmed = raw.trim();
+  const lower = trimmed.toLowerCase();
+  if (CANONICAL_NAMES[lower]) return CANONICAL_NAMES[lower];
+  // Fallback: keep original casing (don't auto-title-case to avoid breaking unknowns)
+  return trimmed;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // DIRECT HTTP SCRAPING — zero Firecrawl credits, uses plain fetch + HTML parsing
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -3250,8 +3334,8 @@ Deno.serve(async (req) => {
 
         return {
           name: p.name,
-          brand: p.brand,
-          retailer: p.brand,
+          brand: canonicalName(p.brand),
+          retailer: canonicalName(p.brand),
           product_url: normaliseUrl(p.product_url),
           image_url: normaliseUrl(p.image_url),
           price_cents: p.price_cents,
