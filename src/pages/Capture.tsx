@@ -320,6 +320,21 @@ const Capture = () => {
     setCaptureCountdown(3);
   };
 
+  useEffect(() => {
+    if (captureCountdown === null) return;
+
+    if (captureCountdown <= 0) {
+      void handleWebCameraCapture();
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setCaptureCountdown((prev) => (prev === null ? null : prev - 1));
+    }, 1000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [captureCountdown, handleWebCameraCapture]);
+
   const handleCapture = async () => {
     const key: keyof PhotoSet = flowStep === 'side' ? 'side' : 'front';
 
