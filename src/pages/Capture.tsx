@@ -603,6 +603,39 @@ const Capture = () => {
           <Shield className="h-3 w-3" /> Private by default · delete anytime
         </p>
       </div>
+
+      <Sheet
+        open={webCameraOpen}
+        onOpenChange={(open) => {
+          setWebCameraOpen(open);
+          if (!open) stopWebCamera();
+        }}
+      >
+        <SheetContent side="bottom" className="h-[100svh] rounded-none p-0 border-none">
+          <div className="flex h-full flex-col bg-background">
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+              <p className="text-sm font-semibold text-foreground">Take {config.title} Photo</p>
+              <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setWebCameraOpen(false)}>
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="flex-1 bg-muted">
+              <video ref={videoRef} autoPlay muted playsInline className="h-full w-full object-cover" />
+            </div>
+
+            <div className="space-y-2 border-t border-border px-4 py-4">
+              <Button className="h-12 w-full rounded-xl text-sm font-semibold" onClick={handleWebCameraCapture}>
+                <Camera className="mr-2 h-4 w-4" /> Capture Photo
+              </Button>
+              <Button variant="secondary" className="h-11 w-full rounded-xl text-sm font-semibold" onClick={() => galleryInputRef.current?.click()}>
+                <Upload className="mr-2 h-4 w-4" /> Choose from Gallery
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
       {/* Auth guard sheet */}
       <Sheet open={authSheetOpen} onOpenChange={setAuthSheetOpen}>
         <SheetContent side="bottom" className="rounded-t-2xl px-5 pb-8">
