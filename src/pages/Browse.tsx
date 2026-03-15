@@ -218,7 +218,7 @@ const Browse = () => {
         <div className="px-4 pb-3">
           <button
             onClick={() => setFiltersOpen(!filtersOpen)}
-            className={`relative w-full h-11 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold ${
+            className={`relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold ${
               activeFilterCount > 0
                 ? 'btn-luxury text-primary-foreground'
                 : 'bg-card border border-border text-foreground/70'

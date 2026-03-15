@@ -130,7 +130,7 @@ const BrandFilter = ({ gender, selectedBrand, onBrandChange }: BrandFilterProps)
             </div>
             <button
               onClick={() => setShowDropdown(!showDropdown)}
-              className="h-9 w-9 rounded-xl badge-gold-3d active:scale-95 flex items-center justify-center"
+              className="h-7 w-7 rounded-xl badge-gold-3d active:scale-95 flex items-center justify-center"
             >
               {showDropdown ? <ChevronUp className="h-3.5 w-3.5 text-primary-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-primary-foreground" />}
             </button>
