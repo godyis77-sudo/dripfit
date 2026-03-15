@@ -54,15 +54,15 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   return (
     <div ref={ref} className="relative bg-background pb-safe-tab aurora-bg">
 
-      <div className="relative z-10 px-5 pt-5">
+      <div className="relative z-10 px-5 pt-2">
         {/* Greeting */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
+          className="mb-3"
         >
           <BrandLogo size="lg" />
-          <p className="text-muted-foreground/70 text-[12px] mt-0.5">{greeting}{displayName ? ',' : '!'}</p>
+          <p className="text-muted-foreground/70 text-[12px] mt-1">{greeting}{displayName ? ',' : '!'}</p>
           {displayName && <h1 className="font-display text-xl font-bold text-foreground mt-0.5">{displayName}</h1>}
         </motion.div>
 
