@@ -188,7 +188,6 @@ const Browse = () => {
             </button>
           ))}
         </div>
-      </div>
 
         <div className="px-4 pb-3 flex gap-1.5 overflow-x-auto scrollbar-hide">
           {[
