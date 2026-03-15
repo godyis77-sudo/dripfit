@@ -91,7 +91,7 @@ const FoundingMembers = () => {
           >
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-muted-foreground">Spots claimed</span>
-              <span className="text-xs font-bold text-foreground">{SPOTS_CLAIMED} / {TOTAL_SPOTS}</span>
+              <span className="text-xs font-bold text-foreground">{spotsClaimed} / {TOTAL_SPOTS}</span>
             </div>
             <div className="h-3 bg-muted rounded-full overflow-hidden">
               <motion.div
