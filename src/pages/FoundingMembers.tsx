@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { Users, MessageCircle, Shirt, BarChart3, Sparkles, ArrowRight, Crown } from 'lucide-react';
+import { Users, MessageCircle, Shirt, BarChart3, Sparkles, ArrowRight, Crown, Quote } from 'lucide-react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { motion } from 'framer-motion';
 
 const TOTAL_SPOTS = 50;
-const SPOTS_CLAIMED = 12; // ← Update this manually as people join
+const SPOTS_CLAIMED = 12;
 
 const PERKS = [
   { icon: Sparkles, title: 'Early Access', desc: 'Be the first to test new features like virtual try-on and AI style check before anyone else.' },
@@ -15,7 +15,22 @@ const PERKS = [
   { icon: BarChart3, title: 'Sizing Intel', desc: 'Get insider sizing notes on 130+ brands from our community of fit-obsessed shoppers.' },
 ];
 
-const DISCORD_INVITE = 'https://discord.gg/YOUR_INVITE_LINK'; // ← Replace with your actual Discord invite
+const EARLY_MEMBERS = [
+  { initials: 'JT', name: 'Jordan T.', label: 'Sneakerhead', color: 'bg-primary/20 text-primary' },
+  { initials: 'AK', name: 'Ava K.', label: 'Capsule wardrobe', color: 'bg-accent/20 text-accent-foreground' },
+  { initials: 'ML', name: 'Marcus L.', label: 'Streetwear', color: 'bg-chart-1/20 text-foreground' },
+  { initials: 'SR', name: 'Sofia R.', label: 'Petite fashion', color: 'bg-chart-2/20 text-foreground' },
+  { initials: 'DW', name: 'Derek W.', label: 'Big & tall', color: 'bg-chart-3/20 text-foreground' },
+  { initials: 'NK', name: 'Nina K.', label: 'Thrift queen', color: 'bg-primary/20 text-primary' },
+];
+
+const TESTIMONIALS = [
+  { quote: "Finally stopped buying 3 sizes of everything and returning 2. This saved me so much money already.", name: 'Jordan T.', detail: 'MFA regular' },
+  { quote: "The sizing is eerily accurate. Got my Zara size right on the first try — that never happens.", name: 'Sofia R.', detail: 'FFA member' },
+  { quote: "Love that I can actually influence what brands get added next. Feels like I'm building this with the team.", name: 'Marcus L.', detail: 'Beta tester since day 1' },
+];
+
+const DISCORD_INVITE = 'https://discord.gg/YOUR_INVITE_LINK';
 
 const FoundingMembers = () => {
   usePageTitle('Founding Members');
@@ -25,7 +40,7 @@ const FoundingMembers = () => {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* ── Hero ───────────────────────────────────── */}
-      <section className="relative overflow-hidden flex-1">
+      <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/6 via-transparent to-transparent" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full bg-primary/5 blur-[100px]" />
 
@@ -94,6 +109,82 @@ const FoundingMembers = () => {
             <p className="text-[11px] text-muted-foreground mt-2">Free forever · No spam · Leave anytime</p>
           </motion.div>
         </div>
+      </section>
+
+      {/* ── Who's Already In ───────────────────────── */}
+      <section className="max-w-md mx-auto px-6 pb-8 w-full">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.55, duration: 0.4 }}
+        >
+          <h2 className="font-display text-lg font-bold text-center mb-4">Who's Already In</h2>
+          <div className="flex flex-wrap justify-center gap-2">
+            {EARLY_MEMBERS.map((m, i) => (
+              <motion.div
+                key={m.initials}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.6 + i * 0.07, duration: 0.3 }}
+                className="flex items-center gap-2 bg-card border border-border rounded-full pl-1 pr-3 py-1"
+              >
+                <Avatar className="h-7 w-7">
+                  <AvatarFallback className={`text-[10px] font-bold ${m.color}`}>
+                    {m.initials}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="text-left">
+                  <p className="text-[11px] font-semibold leading-tight">{m.name}</p>
+                  <p className="text-[9px] text-muted-foreground leading-tight">{m.label}</p>
+                </div>
+              </motion.div>
+            ))}
+            {/* Remaining placeholder */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1.0, duration: 0.3 }}
+              className="flex items-center gap-2 bg-muted/50 border border-dashed border-border rounded-full pl-1 pr-3 py-1"
+            >
+              <Avatar className="h-7 w-7">
+                <AvatarFallback className="text-[10px] text-muted-foreground bg-muted">?</AvatarFallback>
+              </Avatar>
+              <p className="text-[11px] text-muted-foreground font-medium">You?</p>
+            </motion.div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ── Testimonials ───────────────────────────── */}
+      <section className="max-w-md mx-auto px-6 pb-8 w-full">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.4 }}
+        >
+          <h2 className="font-display text-lg font-bold text-center mb-4">What Members Are Saying</h2>
+          <div className="space-y-3">
+            {TESTIMONIALS.map((t, i) => (
+              <motion.div
+                key={t.name}
+                initial={{ opacity: 0, x: i % 2 === 0 ? -12 : 12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.8 + i * 0.12, duration: 0.35 }}
+                className="bg-card border border-border rounded-xl p-4 relative"
+              >
+                <Quote className="h-4 w-4 text-primary/30 absolute top-3 right-3" />
+                <p className="text-[12px] text-foreground leading-relaxed mb-2.5 pr-5">
+                  "{t.quote}"
+                </p>
+                <div className="flex items-center gap-2">
+                  <div className="h-1 w-1 rounded-full bg-primary" />
+                  <span className="text-[11px] font-semibold">{t.name}</span>
+                  <span className="text-[10px] text-muted-foreground">· {t.detail}</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </section>
 
       {/* ── Perks ──────────────────────────────────── */}
