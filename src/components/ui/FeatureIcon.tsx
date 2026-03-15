@@ -5,6 +5,7 @@ import iconStylecheck from '@/assets/icon-stylecheck.png';
 import iconPost from '@/assets/icon-post.png';
 import iconHome from '@/assets/icon-home.png';
 import iconProfile from '@/assets/icon-profile.png';
+import iconCrown from '@/assets/icon-crown.png';
 import { cn } from '@/lib/utils';
 
 export const featureIcons = {
@@ -15,6 +16,7 @@ export const featureIcons = {
   post: iconPost,
   home: iconHome,
   profile: iconProfile,
+  crown: iconCrown,
 } as const;
 
 export type FeatureIconName = keyof typeof featureIcons;
