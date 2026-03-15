@@ -753,13 +753,20 @@
 .brand-logo-check {
   background: linear-gradient(
     175deg,
-    hsl(45 100% 88%) 0%,
-    hsl(42 80% 55%) 50%,
-    hsl(40 75% 48%) 100%
+    hsl(45 100% 92%) 0%,
+    hsl(44 90% 72%) 18%,
+    hsl(42 80% 55%) 35%,
+    hsl(45 100% 90%) 50%,
+    hsl(42 80% 55%) 65%,
+    hsl(40 75% 48%) 82%,
+    hsl(45 100% 88%) 100%
   );
+  background-size: 200% 100%;
+  animation: gold-shine 3s ease-in-out infinite;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  filter: drop-shadow(0 1px 2px hsl(0 0% 0% / 0.5)) drop-shadow(0 0 6px hsl(42 80% 55% / 0.25));
 }
 
 /* ── Premium 3D Gold Button (reusable) ── */
