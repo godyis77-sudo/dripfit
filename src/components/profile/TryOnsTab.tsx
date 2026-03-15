@@ -231,30 +231,6 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                         </div>
                       </button>
 
-                      {/* Vote counts for public posts */}
-                      {post.is_public && (
-                        <div className="px-1.5 pb-1.5">
-                          <div className="flex gap-1">
-                            {VOTE_OPTIONS.map(v => {
-                              const active = (votes[post.id] || []).includes(v.key);
-                              return (
-                                <button
-                                  key={v.key}
-                                  onClick={() => handleVote(post.id, v.key)}
-                                  className={`flex-1 py-1.5 rounded-md text-[11px] font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${
-                                    active
-                                      ? 'btn-gold-3d border-transparent text-primary-foreground'
-                                      : 'border-border text-muted-foreground'
-                                  }`}
-                                >
-                                  {v.emoji}
-                                  <span className="text-[10px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
 
                       {/* What's In This Look */}
                       <WhatsInThisLook
