@@ -479,7 +479,6 @@ const Capture = () => {
             );
           })}
         </div>
-      </div>
 
         {/* Back arrow below stepper */}
         <Button variant="ghost" size="icon" onClick={goBack} className="h-8 w-8 rounded-xl min-h-[44px] min-w-[44px] mt-1" aria-label="Go back">
