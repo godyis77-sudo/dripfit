@@ -247,7 +247,7 @@ const Browse = () => {
                       onClick={() => setSort(opt.key)}
                       className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                         sort === opt.key
-                          ? 'bg-primary text-primary-foreground'
+                          ? 'btn-luxury text-primary-foreground'
                           : 'bg-background border border-border text-muted-foreground'
                       }`}
                     >
