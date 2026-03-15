@@ -29,21 +29,21 @@ const GENDER_CHOICES = [
 
 const SLIDES = [
   {
-    icon: Ruler,
+    featureIcon: 'sizeguide' as FeatureIconName,
     title: 'Know your exact size in every brand',
     highlight: '',
     desc: 'Stop guessing. Two photos and 60 seconds gives you precise measurements across SHEIN, Zara, H&M, Lululemon, and 10+ more.',
     image: heroScan,
   },
   {
-    icon: Sparkles,
+    featureIcon: 'tryon' as FeatureIconName,
     title: 'See how it looks before you buy',
     highlight: '',
     desc: "Upload a photo of any clothing item and see yourself wearing it. No more buying blind — try-on thousands of styles instantly.",
     image: heroTryon,
   },
   {
-    icon: Users,
+    featureIcon: 'stylecheck' as FeatureIconName,
     title: 'Get honest opinions from real people',
     highlight: '',
     desc: 'Post your virtual try-on to the Style Check community. Get votes from people with similar body types. Shop with total confidence.',
