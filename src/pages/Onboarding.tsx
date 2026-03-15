@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { ArrowRight, Ruler, Sparkles, Users, ShoppingBag, Store, Shuffle, Eye, Shield, Camera } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Store, Shuffle, Eye, Shield, Camera } from 'lucide-react';
 import BrandLogo from '@/components/ui/BrandLogo';
+import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 import { setOnboarded, setShoppingHabit, setGuestMode, type ShoppingHabit } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
 import { useAuth } from '@/hooks/useAuth';
@@ -28,21 +29,21 @@ const GENDER_CHOICES = [
 
 const SLIDES = [
   {
-    icon: Ruler,
+    featureIcon: 'sizeguide' as FeatureIconName,
     title: 'Know your exact size in every brand',
     highlight: '',
     desc: 'Stop guessing. Two photos and 60 seconds gives you precise measurements across SHEIN, Zara, H&M, Lululemon, and 10+ more.',
     image: heroScan,
   },
   {
-    icon: Sparkles,
+    featureIcon: 'tryon' as FeatureIconName,
     title: 'See how it looks before you buy',
     highlight: '',
     desc: "Upload a photo of any clothing item and see yourself wearing it. No more buying blind — try-on thousands of styles instantly.",
     image: heroTryon,
   },
   {
-    icon: Users,
+    featureIcon: 'stylecheck' as FeatureIconName,
     title: 'Get honest opinions from real people',
     highlight: '',
     desc: 'Post your virtual try-on to the Style Check community. Get votes from people with similar body types. Shop with total confidence.',
@@ -281,8 +282,8 @@ const Onboarding = () => {
 
                   {/* Text — below image with consistent gap */}
                   <div className="flex flex-col items-center px-8 text-center shrink-0">
-                    <div className="h-9 w-9 rounded-xl badge-gold-3d flex items-center justify-center mb-2">
-                      {(() => { const Icon = SLIDES[slideIdx].icon; return <Icon className="h-4 w-4" />; })()}
+                    <div className="mb-2">
+                      <FeatureIcon name={SLIDES[slideIdx].featureIcon} size={36} />
                     </div>
                     <h2 className="font-display text-[20px] font-bold text-foreground leading-tight">
                       {SLIDES[slideIdx].title}
