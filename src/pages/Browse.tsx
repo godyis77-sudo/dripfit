@@ -214,7 +214,21 @@ const Browse = () => {
             </button>
           ))}
         </div>
-      </div>
+
+        {/* Filter button — below tabs for easy access */}
+        <div className="px-4 pb-3">
+          <button
+            onClick={() => setFiltersOpen(!filtersOpen)}
+            className={`relative w-full h-11 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold ${
+              activeFilterCount > 0
+                ? 'btn-luxury text-primary-foreground'
+                : 'bg-card border border-border text-muted-foreground'
+            }`}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            {activeFilterCount > 0 ? `Filters (${activeFilterCount})` : 'Filters'}
+          </button>
+        </div>
 
       {/* Filters panel */}
       <AnimatePresence>
