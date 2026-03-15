@@ -1,7 +1,9 @@
 import { useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus } from 'lucide-react';
+import FeatureIcon from '@/components/ui/FeatureIcon';
 import FeatureIcon from '@/components/ui/FeatureIcon';
 
 const HomeFAB = () => {
