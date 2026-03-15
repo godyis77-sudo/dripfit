@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus } from 'lucide-react';
@@ -16,9 +17,8 @@ const HomeFAB = () => {
     { icon: <FeatureIcon name="stylecheck" size={22} />, label: 'Style Check', action: () => navigate('/style-check') },
   ];
 
-  return (
+  return createPortal(
     <div className="fixed bottom-20 right-5 z-50 lg:right-[calc(50%-195px+20px)]">
-      {/* Scrim */}
       <AnimatePresence>
         {fabOpen && (
           <motion.div
@@ -72,7 +72,8 @@ const HomeFAB = () => {
       >
         <Plus className={`h-5 w-5 text-primary-foreground transition-transform duration-200 ease-in-out ${fabOpen ? 'rotate-45' : ''}`} />
       </motion.button>
-    </div>
+    </div>,
+    document.body
   );
 };
 
