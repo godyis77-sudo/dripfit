@@ -136,6 +136,7 @@ const App = () => {
                   <Route path="/admin/commissions" element={<ProtectedRoute><PageTransition><AdminCommissions /></PageTransition></ProtectedRoute>} />
                   <Route path="/creator" element={<ProtectedRoute><PageTransition><CreatorDashboard /></PageTransition></ProtectedRoute>} />
                   <Route path="/waitlist" element={<PageTransition><Waitlist /></PageTransition>} />
+                  <Route path="/partnership" element={<PageTransition><Partnership /></PageTransition>} />
                   <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
                 </Routes>
               </AnimatePresence>
