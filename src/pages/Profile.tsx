@@ -45,8 +45,8 @@ const Profile = () => {
   const scanConfidence = profileData?.scan_confidence ?? null;
   const savedProfile = scanData?.profile ?? null;
 
-  // No manual redirect needed — ProtectedRoute handles unauthenticated users
-  if (!user) return null;
+  // Show guest profile view for unauthenticated users
+  if (!user) return <Suspense fallback={null}><GuestProfileView /></Suspense>;
 
   const deleteWardrobeItem = async (id: string) => {
     const { error } = await supabase.from('clothing_wardrobe').delete().eq('id', id).eq('user_id', user.id);
