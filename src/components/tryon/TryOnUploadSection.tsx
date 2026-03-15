@@ -73,7 +73,7 @@ const TryOnUploadSection = ({
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-2 mb-3">
+      <div className="grid grid-cols-1 gap-3 mb-3">
         <input ref={userPhotoRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileSelect(onUserPhotoChange, 'photo')} className="hidden" />
         <input ref={userCameraRef} type="file" accept="image/jpeg,image/png,image/webp" capture="user" onChange={handleFileSelect(onUserPhotoChange, 'photo')} className="hidden" />
         <input ref={clothingPhotoRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileSelect(onClothingPhotoChange, 'clothing')} className="hidden" />
