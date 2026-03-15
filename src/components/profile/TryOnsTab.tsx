@@ -162,7 +162,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
   return (
     <>
       {/* Filter stats row */}
-      <div className="flex gap-1 mb-4">
+      <div className="flex gap-1.5 mb-4">
         {([
           { key: 'all' as FilterMode, label: 'Total', value: tryOnPosts.length },
           { key: 'public' as FilterMode, label: 'Public', value: publicCount },
@@ -171,7 +171,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
           <button
             key={s.key}
             onClick={() => setFilterMode(s.key)}
-            className={`flex-1 rounded-lg py-0.5 text-center transition-all active:scale-95 border ${
+            className={`rounded-lg px-3 py-0.5 text-center transition-all active:scale-95 border ${
               filterMode === s.key
                 ? 'btn-gold-3d border-transparent'
                 : 'bg-card border-border'
