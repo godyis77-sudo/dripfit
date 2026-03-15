@@ -31,7 +31,7 @@ const FitPreferenceToggle = ({ value, onChange }: FitPreferenceToggleProps) => {
           >
             {opt.label}
             {value === opt.value && (
-              <motion.div layoutId="fit-pill" className="absolute inset-0 rounded-md -z-10 bg-gradient-to-b from-[hsl(40_78%_54%)] to-[hsl(42_76%_42%)] shadow-3d-gold" transition={{ type: 'spring', stiffness: 400, damping: 30 }} />
+              <motion.div layoutId="fit-pill" className="absolute inset-0 rounded-md -z-10 btn-luxury" transition={{ type: 'spring', stiffness: 400, damping: 30 }} />
             )}
           </button>
         ))}
