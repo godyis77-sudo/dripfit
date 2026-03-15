@@ -119,8 +119,7 @@ const Welcome = () => {
         <motion.div variants={stagger.item} className="w-full max-w-[340px] mb-3">
           <Button
             onClick={handleStartScan}
-            variant="luxury"
-            className="w-full h-14 text-[13px] font-bold uppercase tracking-[0.18em] rounded-2xl active:scale-[0.97] transition-transform shimmer-sweep"
+            className="w-full h-14 text-[13px] font-bold uppercase tracking-[0.18em] rounded-2xl active:scale-[0.97] transition-transform btn-3d-drip text-primary-foreground shimmer-sweep"
             size="lg"
           >
             <Camera className="mr-2.5 h-4.5 w-4.5" /> Get My Size
