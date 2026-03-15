@@ -1,4 +1,4 @@
-import { Crown } from 'lucide-react';
+import InlineCrown from '@/components/ui/InlineCrown';
 
 interface PremiumBadgeProps {
   label?: string;
