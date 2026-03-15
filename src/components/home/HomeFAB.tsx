@@ -74,7 +74,9 @@ const HomeFAB = () => {
       >
         <Plus className={`h-5 w-5 text-primary-foreground transition-transform duration-200 ease-in-out ${fabOpen ? 'rotate-45' : ''}`} />
       </motion.button>
-    </div>
+    </div>,
+    document.body
+  );
   );
 };
 
