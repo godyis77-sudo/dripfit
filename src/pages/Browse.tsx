@@ -342,7 +342,7 @@ const Browse = () => {
                         className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                           fitFilter === fit
                             ? 'btn-luxury text-primary-foreground'
-                            : 'bg-background border border-border text-muted-foreground'
+                            : 'bg-background border border-border text-foreground/70'
                         }`}
                       >
                         {fit}
