@@ -94,7 +94,7 @@ const TryOnUploadSection = ({
             </div>
           ) : (
             <div className="rounded-xl border-2 border-dashed border-border bg-card overflow-hidden">
-              <div className="aspect-[3/4] flex flex-col items-center justify-end gap-2 p-3">
+              <div className="aspect-[3/4] flex flex-col items-center justify-center gap-2 p-3">
                 <div className="h-12 w-12 rounded-full border-2 border-dashed border-foreground/30 flex items-center justify-center">
                   <User className="h-6 w-6 text-foreground/50" />
                 </div>
