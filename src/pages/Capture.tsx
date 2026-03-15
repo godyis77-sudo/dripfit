@@ -388,7 +388,8 @@ const Capture = () => {
         </div>
       </div>
 
-      <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handleFileChange} className="hidden" />
+      <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" onChange={handleFileChange} className="hidden" />
+      <input ref={galleryInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
 
       {/* Content */}
       <div className="flex-1 flex flex-col items-center px-4 pt-2 overflow-y-auto pb-4">
