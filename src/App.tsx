@@ -46,6 +46,7 @@ const AdminCommissions = lazy(() => import("./pages/AdminCommissions"));
 const CreatorDashboard = lazy(() => import("./pages/CreatorDashboard"));
 const Waitlist = lazy(() => import("./pages/Waitlist"));
 const Partnership = lazy(() => import("./pages/Partnership"));
+const FoundingMembers = lazy(() => import("./pages/FoundingMembers"));
 
 // ── Suspense fallback (minimal, matches app background) ───────────────
 const RouteFallback = () => (
