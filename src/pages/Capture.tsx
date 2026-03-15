@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useEffect } from 'react';
+import { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -106,10 +106,14 @@ const Capture = () => {
     (saved?.flowStep === 'front' && !!saved?.photos?.front) ||
     (saved?.flowStep === 'side' && !!saved?.photos?.side)
   );
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
   const [genderSet, setGenderSet] = useState<string | null>(null);
   const [genderLoaded, setGenderLoaded] = useState(false);
   const [authSheetOpen, setAuthSheetOpen] = useState(false);
+  const [webCameraOpen, setWebCameraOpen] = useState(false);
   const { toast } = useToast();
 
   // Load existing gender from profile
@@ -177,50 +181,126 @@ const Capture = () => {
     }
   }, [reviewing, flowStep, captureStep, photos]);
 
+  const stopWebCamera = useCallback(() => {
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
+    }
+
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  }, []);
+
+  const handleCapturedPhoto = useCallback(async (rawDataUrl: string, key: keyof PhotoSet) => {
+    try {
+      const compressed = await compressPhoto(rawDataUrl, 1280, 0.8);
+      setPhotos((prev) => ({ ...prev, [key]: compressed }));
+    } catch (err) {
+      console.error('Photo compress failed, using original:', err);
+      setPhotos((prev) => ({ ...prev, [key]: rawDataUrl }));
+    }
+
+    setReviewing(true);
+    trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
+  }, []);
+
+  const openWebCamera = useCallback(async () => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      cameraInputRef.current?.click();
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' } },
+        audio: false,
+      });
+
+      mediaStreamRef.current = stream;
+      setWebCameraOpen(true);
+
+      requestAnimationFrame(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          void videoRef.current.play().catch(() => undefined);
+        }
+      });
+    } catch (err) {
+      console.error('Web camera access failed, falling back to file input:', err);
+      toast({
+        title: 'Camera unavailable',
+        description: 'Opening your device camera picker instead.',
+        variant: 'destructive',
+      });
+      cameraInputRef.current?.click();
+    }
+  }, [toast]);
+
+  useEffect(() => () => stopWebCamera(), [stopWebCamera]);
+  useEffect(() => {
+    if (!webCameraOpen) stopWebCamera();
+  }, [webCameraOpen, stopWebCamera]);
+
+  const handleWebCameraCapture = async () => {
+    if (!videoRef.current) return;
+
+    const video = videoRef.current;
+    if (!video.videoWidth || !video.videoHeight) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    const key: keyof PhotoSet = flowStep === 'side' ? 'side' : 'front';
+
+    setWebCameraOpen(false);
+    stopWebCamera();
+    await handleCapturedPhoto(dataUrl, key);
+  };
+
   const handleCapture = async () => {
+    const key: keyof PhotoSet = flowStep === 'side' ? 'side' : 'front';
+
     if (isNativePlatform()) {
       try {
         const result = await takeNativePhoto('camera');
-        const key = flowStep === 'side' ? 'side' : 'front';
-
-        try {
-          const compressed = await compressPhoto(result.dataUrl, 1280, 0.8);
-          setPhotos(prev => ({ ...prev, [key]: compressed }));
-        } catch (compressErr) {
-          console.error('Native photo compress failed, using original:', compressErr);
-          setPhotos(prev => ({ ...prev, [key]: result.dataUrl }));
-        }
-
-        setReviewing(true);
-        trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
+        await handleCapturedPhoto(result.dataUrl, key);
       } catch (err: any) {
         if (err?.message?.includes('cancelled') || err?.message?.includes('canceled')) return;
         console.error('Native camera error:', err);
       }
-    } else {
-      fileInputRef.current?.click();
+      return;
     }
+
+    await openWebCamera();
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const key: keyof PhotoSet = flowStep === 'side' ? 'side' : 'front';
     const reader = new FileReader();
+
     reader.onloadend = async () => {
-      const base64 = reader.result as string;
-      const key = flowStep === 'side' ? 'side' : 'front';
-      try {
-        const compressed = await compressPhoto(base64, 1280, 0.8);
-        setPhotos(prev => ({ ...prev, [key]: compressed }));
-      } catch (err) {
-        console.error('Photo compress failed, using original:', err);
-        setPhotos(prev => ({ ...prev, [key]: base64 }));
+      const base64 = reader.result;
+      if (typeof base64 !== 'string') {
+        e.target.value = '';
+        return;
       }
-      setReviewing(true);
-      trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
+
+      await handleCapturedPhoto(base64, key);
+      e.target.value = '';
     };
+
     reader.readAsDataURL(file);
-    e.target.value = '';
   };
 
   const handlePhotoAccept = () => {
@@ -308,7 +388,8 @@ const Capture = () => {
         </div>
       </div>
 
-      <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handleFileChange} className="hidden" />
+      <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" onChange={handleFileChange} className="hidden" />
+      <input ref={galleryInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
 
       {/* Content */}
       <div className="flex-1 flex flex-col items-center px-4 pt-2 overflow-y-auto pb-4">
@@ -388,27 +469,18 @@ const Capture = () => {
               {/* Use existing photo link */}
               <button
                 onClick={async () => {
+                  const key: keyof PhotoSet = flowStep === 'side' ? 'side' : 'front';
+
                   if (isNativePlatform()) {
                     try {
                       const result = await takeNativePhoto('gallery');
-                      const key = flowStep === 'side' ? 'side' : 'front';
-
-                      try {
-                        const compressed = await compressPhoto(result.dataUrl, 1280, 0.8);
-                        setPhotos(prev => ({ ...prev, [key]: compressed }));
-                      } catch (compressErr) {
-                        console.error('Gallery photo compress failed, using original:', compressErr);
-                        setPhotos(prev => ({ ...prev, [key]: result.dataUrl }));
-                      }
-
-                      setReviewing(true);
-                      trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
+                      await handleCapturedPhoto(result.dataUrl, key);
                     } catch (err: any) {
                       if (err?.message?.includes('cancelled') || err?.message?.includes('canceled')) return;
                       console.error('Gallery pick error:', err);
                     }
                   } else {
-                    fileInputRef.current?.click();
+                    galleryInputRef.current?.click();
                   }
                 }}
                 className="text-[11px] text-primary font-medium flex items-center gap-1 min-h-[44px]"
@@ -531,6 +603,39 @@ const Capture = () => {
           <Shield className="h-3 w-3" /> Private by default · delete anytime
         </p>
       </div>
+
+      <Sheet
+        open={webCameraOpen}
+        onOpenChange={(open) => {
+          setWebCameraOpen(open);
+          if (!open) stopWebCamera();
+        }}
+      >
+        <SheetContent side="bottom" className="h-[100svh] rounded-none p-0 border-none">
+          <div className="flex h-full flex-col bg-background">
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+              <p className="text-sm font-semibold text-foreground">Take {config.title} Photo</p>
+              <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setWebCameraOpen(false)}>
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="flex-1 bg-muted">
+              <video ref={videoRef} autoPlay muted playsInline className="h-full w-full object-cover" />
+            </div>
+
+            <div className="space-y-2 border-t border-border px-4 py-4">
+              <Button className="h-12 w-full rounded-xl text-sm font-semibold" onClick={handleWebCameraCapture}>
+                <Camera className="mr-2 h-4 w-4" /> Capture Photo
+              </Button>
+              <Button variant="secondary" className="h-11 w-full rounded-xl text-sm font-semibold" onClick={() => galleryInputRef.current?.click()}>
+                <Upload className="mr-2 h-4 w-4" /> Choose from Gallery
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
       {/* Auth guard sheet */}
       <Sheet open={authSheetOpen} onOpenChange={setAuthSheetOpen}>
         <SheetContent side="bottom" className="rounded-t-2xl px-5 pb-8">
