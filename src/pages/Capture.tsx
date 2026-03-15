@@ -440,48 +440,47 @@ const Capture = () => {
     <div className="flex min-h-screen flex-col bg-background pb-safe-tab">
       {/* Header */}
       <div className="px-4 pt-3 pb-1">
-        {/* Numbered circle stepper */}
-        <div className="flex items-center justify-between h-14">
-          {FLOW_STEPS.map((s, i) => {
-            const completed = i < flowIdx;
-            const active = i === flowIdx;
-            return (
-              <div key={s.key} className="flex flex-col items-center flex-1 relative">
-                {/* Connecting line (not on first step) */}
-                {i > 0 && (
-                  <div
-                    className={`absolute top-[14px] right-1/2 w-full h-[2px] -z-10 transition-colors ${
-                      i <= flowIdx ? 'bg-primary' : 'bg-border'
-                    }`}
-                  />
-                )}
-                {/* Circle */}
-                <div
-                  className={`h-7 w-7 rounded-full flex items-center justify-center text-[11px] font-bold transition-all shrink-0 ${
-                    completed || active
-                      ? 'btn-luxury !p-0'
-                      : 'border border-border text-muted-foreground'
-                  }`}
-                >
-                  {completed ? <Check className="h-3.5 w-3.5" /> : i + 1}
-                </div>
-                {/* Label */}
-                <span
-                  className={`text-[11px] mt-1 font-semibold ${
-                    completed || active ? 'text-primary font-bold' : 'text-muted-foreground'
-                  }`}
-                >
-                  {s.label}
-                </span>
-              </div>
-            );
-          })}
-        </div>
+        <div className="flex items-center gap-2 h-14">
+          {/* Back arrow */}
+          <Button variant="ghost" size="icon" onClick={goBack} className="h-8 w-8 rounded-xl min-h-[44px] min-w-[44px] shrink-0" aria-label="Go back">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
 
-        {/* Back arrow below stepper */}
-        <Button variant="ghost" size="icon" onClick={goBack} className="h-8 w-8 rounded-xl min-h-[44px] min-w-[44px] mt-1" aria-label="Go back">
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
+          {/* Numbered circle stepper */}
+          <div className="flex items-center justify-between flex-1">
+            {FLOW_STEPS.map((s, i) => {
+              const completed = i < flowIdx;
+              const active = i === flowIdx;
+              return (
+                <div key={s.key} className="flex flex-col items-center flex-1 relative">
+                  {i > 0 && (
+                    <div
+                      className={`absolute top-[14px] right-1/2 w-full h-[2px] -z-10 transition-colors ${
+                        i <= flowIdx ? 'bg-primary' : 'bg-border'
+                      }`}
+                    />
+                  )}
+                  <div
+                    className={`h-7 w-7 rounded-full flex items-center justify-center text-[11px] font-bold transition-all shrink-0 ${
+                      completed || active
+                        ? 'btn-luxury !p-0'
+                        : 'border border-border text-muted-foreground'
+                    }`}
+                  >
+                    {completed ? <Check className="h-3.5 w-3.5" /> : i + 1}
+                  </div>
+                  <span
+                    className={`text-[11px] mt-1 font-semibold ${
+                      completed || active ? 'text-primary font-bold' : 'text-muted-foreground'
+                    }`}
+                  >
+                    {s.label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" onChange={handleFileChange} className="hidden" />
