@@ -31,14 +31,55 @@ const FLOW_STEPS: { key: FlowStep; label: string }[] = [
 
 
 const SCAN_STATE_KEY = 'dripcheck_scan_state';
-function loadScanState() {
-  try { const raw = sessionStorage.getItem(SCAN_STATE_KEY); if (raw) return JSON.parse(raw); } catch {} return null;
+const MAX_PERSISTED_PHOTO_LENGTH = 900_000;
+
+type PersistedScanState = {
+  flowStep?: FlowStep;
+  photos?: PhotoSet;
+  hasPhotos?: { front: boolean; side: boolean };
+  heightCm?: string;
+  heightFt?: string;
+  heightIn?: string;
+  useCm?: boolean;
+  refObject?: ReferenceObject;
+};
+
+const sanitizePersistedPhoto = (photo: unknown): string | null => {
+  if (typeof photo !== 'string') return null;
+  if (!photo.startsWith('data:image/')) return null;
+  if (photo.length > MAX_PERSISTED_PHOTO_LENGTH) return null;
+  return photo;
+};
+
+function loadScanState(): PersistedScanState | null {
+  try {
+    const raw = sessionStorage.getItem(SCAN_STATE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as PersistedScanState;
+    return {
+      ...parsed,
+      photos: {
+        front: sanitizePersistedPhoto(parsed?.photos?.front),
+        side: sanitizePersistedPhoto(parsed?.photos?.side),
+      },
+    };
+  } catch {
+    return null;
+  }
 }
-function saveScanState(state: Record<string, unknown>) {
-  try { sessionStorage.setItem(SCAN_STATE_KEY, JSON.stringify(state)); } catch {}
+
+function saveScanState(state: PersistedScanState) {
+  try {
+    sessionStorage.setItem(SCAN_STATE_KEY, JSON.stringify(state));
+  } catch {
+    // ignore quota / serialization errors
+  }
 }
+
 function clearScanState() {
-  try { sessionStorage.removeItem(SCAN_STATE_KEY); } catch {}
+  try {
+    sessionStorage.removeItem(SCAN_STATE_KEY);
+  } catch {}
 }
 
 import ScanPreviewCard from '@/components/ui/ScanPreviewCard';
