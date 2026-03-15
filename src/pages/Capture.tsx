@@ -739,10 +739,20 @@ const Capture = () => {
             </div>
 
             <div className="space-y-2 border-t border-border px-4 py-4">
-              <Button className="h-12 w-full rounded-xl text-sm font-semibold" onClick={handleWebCameraCapture}>
-                <Camera className="mr-2 h-4 w-4" /> Capture Photo
+              <Button
+                className="h-12 w-full rounded-xl text-sm font-semibold"
+                onClick={startTimedWebCapture}
+                disabled={!videoReady || captureCountdown !== null}
+              >
+                <Camera className="mr-2 h-4 w-4" />
+                {captureCountdown !== null ? `Capturing in ${captureCountdown}s` : 'Capture Photo (3s Timer)'}
               </Button>
-              <Button variant="secondary" className="h-11 w-full rounded-xl text-sm font-semibold" onClick={() => galleryInputRef.current?.click()}>
+              <Button
+                variant="secondary"
+                className="h-11 w-full rounded-xl text-sm font-semibold"
+                onClick={() => galleryInputRef.current?.click()}
+                disabled={captureCountdown !== null}
+              >
                 <Upload className="mr-2 h-4 w-4" /> Choose from Gallery
               </Button>
             </div>
