@@ -206,7 +206,7 @@ const Browse = () => {
               className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
                 (category === cat.key || CATEGORY_LABELS[category] === cat.label)
                   ? 'btn-luxury text-primary-foreground'
-                  : 'bg-card border border-border text-muted-foreground'
+                  : 'bg-card border border-border text-foreground/70'
               }`}
             >
               {cat.label}
