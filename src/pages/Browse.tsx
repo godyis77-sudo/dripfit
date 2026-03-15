@@ -292,7 +292,7 @@ const Browse = () => {
 
               {/* Genre filter */}
               <div>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Genre</p>
+                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Genre</p>
                 <div className="flex flex-wrap gap-1.5">
                   <button
                     onClick={() => setGenreFilter(null)}
