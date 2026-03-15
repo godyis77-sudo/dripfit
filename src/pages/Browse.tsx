@@ -191,7 +191,7 @@ const Browse = () => {
               onClick={() => setGenderOverride(opt.key)}
               className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
                 genderFilter === opt.key
-                  ? 'bg-primary text-primary-foreground'
+                  ? 'btn-luxury text-primary-foreground'
                   : 'bg-card border border-border text-muted-foreground'
               }`}
             >
@@ -217,7 +217,7 @@ const Browse = () => {
               onClick={() => navigate(`/browse/${cat.key}`, { replace: true })}
               className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
                 (category === cat.key || CATEGORY_LABELS[category] === cat.label)
-                  ? 'bg-primary text-primary-foreground'
+                  ? 'btn-luxury text-primary-foreground'
                   : 'bg-card border border-border text-muted-foreground'
               }`}
             >
@@ -247,7 +247,7 @@ const Browse = () => {
                       onClick={() => setSort(opt.key)}
                       className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                         sort === opt.key
-                          ? 'bg-primary text-primary-foreground'
+                          ? 'btn-luxury text-primary-foreground'
                           : 'bg-background border border-border text-muted-foreground'
                       }`}
                     >
@@ -265,7 +265,7 @@ const Browse = () => {
                     onClick={() => setBrandFilter(null)}
                     className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                       !brandFilter
-                        ? 'bg-primary text-primary-foreground'
+                        ? 'btn-luxury text-primary-foreground'
                         : 'bg-background border border-border text-muted-foreground'
                     }`}
                   >
@@ -275,9 +275,9 @@ const Browse = () => {
                     <button
                       key={brand}
                       onClick={() => setBrandFilter(brand === brandFilter ? null : brand)}
-                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                         brandFilter === brand
-                          ? 'bg-primary text-primary-foreground'
+                          ? 'btn-luxury text-primary-foreground'
                           : 'bg-background border border-border text-muted-foreground'
                       }`}
                     >
@@ -295,7 +295,7 @@ const Browse = () => {
                     onClick={() => setGenreFilter(null)}
                     className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                       !genreFilter
-                        ? 'bg-primary text-primary-foreground'
+                        ? 'btn-luxury text-primary-foreground'
                         : 'bg-background border border-border text-muted-foreground'
                     }`}
                   >
@@ -307,7 +307,7 @@ const Browse = () => {
                       onClick={() => setGenreFilter(genre === genreFilter ? null : genre)}
                       className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                         genreFilter === genre
-                          ? 'bg-primary text-primary-foreground'
+                          ? 'btn-luxury text-primary-foreground'
                           : 'bg-background border border-border text-muted-foreground'
                       }`}
                     >
@@ -326,7 +326,7 @@ const Browse = () => {
                       onClick={() => setFitFilter(null)}
                       className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                         !fitFilter
-                          ? 'bg-primary text-primary-foreground'
+                          ? 'btn-luxury text-primary-foreground'
                           : 'bg-background border border-border text-muted-foreground'
                       }`}
                     >
@@ -338,7 +338,7 @@ const Browse = () => {
                         onClick={() => setFitFilter(fit === fitFilter ? null : fit)}
                         className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                           fitFilter === fit
-                            ? 'bg-primary text-primary-foreground'
+                            ? 'btn-luxury text-primary-foreground'
                             : 'bg-background border border-border text-muted-foreground'
                         }`}
                       >
