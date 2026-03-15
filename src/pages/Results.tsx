@@ -327,13 +327,26 @@ const Results = () => {
             </button>
             <p className="text-sm font-medium text-foreground mb-1">Your scan isn't saved yet</p>
             <p className="text-[12px] text-muted-foreground mb-3">Create a free account to keep your measurements, get size recommendations, and access them on any device.</p>
-            <Button
-              size="sm"
-              className="btn-luxury"
-              onClick={() => navigate('/auth?returnTo=/results')}
-            >
-              Sign up to save
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                className="btn-luxury"
+                onClick={() => navigate('/auth?returnTo=/results')}
+              >
+                Sign up to save
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setGuestNudgeDismissed(true);
+                  try { sessionStorage.setItem('guest_nudge_dismissed', 'true'); } catch {}
+                  navigate('/');
+                }}
+              >
+                Explore App
+              </Button>
+            </div>
           </div>
         )}
 

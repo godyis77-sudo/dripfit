@@ -14,6 +14,7 @@ import { OfflineBanner } from "@/components/layout/OfflineBanner";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AffiliateProvider from "./components/AffiliateProvider";
 import Capture from "./pages/Capture";
+import GuestTimedNudge from "./components/guest/GuestTimedNudge";
 
 // ── Lazy-loaded pages (code-split per route) ──────────────────────────
 const Welcome = lazy(() => import("./pages/Welcome"));
@@ -98,6 +99,7 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <GuestTimedNudge />
         <BrowserRouter>
           <ScrollToTop />
           <MobileShell>
@@ -122,7 +124,7 @@ const App = () => {
                   <Route path="/community/:postId" element={<Navigate to="/style-check" replace />} />
                   <Route path="/saved" element={<Navigate to="/profile/saved" replace />} />
                   <Route path="/size-guide" element={<PageTransition><SizeGuide /></PageTransition>} />
-                  <Route path="/profile" element={<ProtectedRoute><PageTransition><Profile /></PageTransition></ProtectedRoute>} />
+                  <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
                   <Route path="/profile/settings" element={<ProtectedRoute><PageTransition><ProfileSettings /></PageTransition></ProtectedRoute>} />
                   <Route path="/profile/saved" element={<ProtectedRoute><PageTransition><SavedItems /></PageTransition></ProtectedRoute>} />
                   <Route path="/cart" element={<ProtectedRoute><PageTransition><Cart /></PageTransition></ProtectedRoute>} />

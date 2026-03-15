@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Sparkles, Loader2, Check, Info, ShoppingBag, Store, Shield, X, RotateCcw } from 'lucide-react';
 import BottomTabBar from '@/components/BottomTabBar';
@@ -12,10 +14,14 @@ import GenreFilter from '@/components/catalog/GenreFilter';
 import { CATEGORIES, ALL_PRODUCT_CATEGORIES, FREE_MONTHLY_LIMIT } from '@/components/tryon/tryon-constants';
 import { trackEvent } from '@/lib/analytics';
 import { useTryOnState } from '@/hooks/useTryOnState';
+import { isGuestMode } from '@/lib/session';
 
 const TryOn = () => {
   usePageTitle('Virtual Try-On');
   const s = useTryOnState();
+  const navigate = useNavigate();
+  const isGuest = !s.user && isGuestMode();
+  const [guestTryOnNudgeDismissed, setGuestTryOnNudgeDismissed] = useState(false);
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
@@ -208,35 +214,59 @@ const TryOn = () => {
             )}
           </>
         ) : (
-          <TryOnResultSection
-            resultImage={s.resultImage}
-            clothingPhoto={s.clothingPhoto}
-            category={s.category}
-            productLink={s.productLink}
-            selectedQuickPick={s.selectedQuickPick}
-            lookItems={s.lookItems}
-            showLookItems={s.showLookItems}
-            user={s.user}
-            isPublic={s.isPublic}
-            caption={s.caption}
-            shared={s.shared}
-            showPostUI={s.showPostUI}
-            showSuccessOverlay={s.showSuccessOverlay}
-            savedToItems={s.savedToItems}
-            layerHistory={s.layerHistory}
-            userGender={s.userGender}
-            hasUnlimitedTryOns={s.hasUnlimitedTryOns}
-            addingAccessory={s.addingAccessory}
-            onSetCaption={s.setCaption}
-            onSetIsPublic={s.setIsPublic}
-            onSetShowPostUI={s.setShowPostUI}
-            onShare={s.handleShare}
-            onTryAnother={s.handleTryAnother}
-            onSaveToItems={s.handleSaveToItems}
-            onAddAccessory={s.handleAddAccessory}
-            onSetLookItems={s.setLookItems}
-            onToast={s.toast}
-          />
+          <>
+            {/* Guest sign-up nudge after try-on result */}
+            {isGuest && s.resultImage && !guestTryOnNudgeDismissed && (
+              <div className="mb-3 rounded-xl border border-primary/20 bg-primary/5 p-4 relative">
+                <button
+                  onClick={() => setGuestTryOnNudgeDismissed(true)}
+                  className="absolute top-2 right-2 text-muted-foreground text-xs"
+                  aria-label="Dismiss"
+                >
+                  ✕
+                </button>
+                <p className="text-sm font-bold text-foreground mb-1">Like what you see?</p>
+                <p className="text-[12px] text-muted-foreground mb-3">Sign up to save this try-on, build your wardrobe, and get unlimited access.</p>
+                <div className="flex gap-2">
+                  <Button size="sm" className="btn-luxury text-[12px]" onClick={() => navigate('/auth')}>
+                    Sign Up Free
+                  </Button>
+                  <Button size="sm" variant="outline" className="text-[12px]" onClick={() => setGuestTryOnNudgeDismissed(true)}>
+                    Keep Exploring
+                  </Button>
+                </div>
+              </div>
+            )}
+            <TryOnResultSection
+              resultImage={s.resultImage}
+              clothingPhoto={s.clothingPhoto}
+              category={s.category}
+              productLink={s.productLink}
+              selectedQuickPick={s.selectedQuickPick}
+              lookItems={s.lookItems}
+              showLookItems={s.showLookItems}
+              user={s.user}
+              isPublic={s.isPublic}
+              caption={s.caption}
+              shared={s.shared}
+              showPostUI={s.showPostUI}
+              showSuccessOverlay={s.showSuccessOverlay}
+              savedToItems={s.savedToItems}
+              layerHistory={s.layerHistory}
+              userGender={s.userGender}
+              hasUnlimitedTryOns={s.hasUnlimitedTryOns}
+              addingAccessory={s.addingAccessory}
+              onSetCaption={s.setCaption}
+              onSetIsPublic={s.setIsPublic}
+              onSetShowPostUI={s.setShowPostUI}
+              onShare={isGuest ? () => navigate('/auth') : s.handleShare}
+              onTryAnother={s.handleTryAnother}
+              onSaveToItems={isGuest ? () => navigate('/auth') : s.handleSaveToItems}
+              onAddAccessory={s.handleAddAccessory}
+              onSetLookItems={s.setLookItems}
+              onToast={s.toast}
+            />
+          </>
         )}
 
         {s.description && !s.resultImage && (

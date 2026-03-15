@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { LogOut, Shirt, Camera, Settings, ShoppingBag, ShoppingCart, User, Globe
 import InlineCrown from '@/components/ui/InlineCrown';
 import { useAuth } from '@/hooks/useAuth';
 import PremiumBadge from '@/components/monetization/PremiumBadge';
+const GuestProfileView = lazy(() => import('@/components/guest/GuestProfileView'));
 import { supabase } from '@/integrations/supabase/client';
 import { getFitPreference, setFitPreference, getPremiumBannerDismissed, dismissPremiumBanner } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
@@ -44,8 +45,8 @@ const Profile = () => {
   const scanConfidence = profileData?.scan_confidence ?? null;
   const savedProfile = scanData?.profile ?? null;
 
-  // No manual redirect needed — ProtectedRoute handles unauthenticated users
-  if (!user) return null;
+  // Show guest profile view for unauthenticated users
+  if (!user) return <Suspense fallback={null}><GuestProfileView /></Suspense>;
 
   const deleteWardrobeItem = async (id: string) => {
     const { error } = await supabase.from('clothing_wardrobe').delete().eq('id', id).eq('user_id', user.id);
