@@ -171,7 +171,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
           <button
             key={s.key}
             onClick={() => setFilterMode(s.key)}
-            className={`flex-1 rounded-lg py-1 text-center transition-all active:scale-95 border ${
+            className={`flex-1 rounded-lg py-0.5 text-center transition-all active:scale-95 border ${
               filterMode === s.key
                 ? 'btn-gold-3d border-transparent'
                 : 'bg-card border-border'
