@@ -389,7 +389,7 @@ const SettingsTab = ({
         ) : (
           <button onClick={() => { trackEvent('premium_viewed'); navigate('/premium'); }} className="w-full px-3 py-2.5 active:bg-primary/5 transition-colors text-left">
             <div className="flex items-center gap-2">
-              <Crown className="h-3.5 w-3.5 text-primary" />
+              <InlineCrown size={14} />
               <span className="text-[12px] text-foreground font-medium">Premium: Free plan</span>
             </div>
             <p className="text-[10px] text-muted-foreground mt-0.5 ml-5.5">Tap to see what you're missing</p>
