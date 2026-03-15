@@ -263,9 +263,9 @@ const WhatsInThisLook = ({
         } : undefined}
       />
 
-      {/* Affiliate disclosure confirmation */}
-      <AnimatePresence>
-        {pendingClickout && (
+      {/* Affiliate disclosure confirmation — portaled to body */}
+      {pendingClickout && createPortal(
+        <AnimatePresence>
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -294,8 +294,9 @@ const WhatsInThisLook = ({
               </div>
             </motion.div>
           </motion.div>
-        )}
-      </AnimatePresence>
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 };
