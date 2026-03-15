@@ -155,6 +155,24 @@ const Results = () => {
   const sizeRecLoading = sizeRecQuery.isLoading;
   const sizeRecError = sizeRecQuery.error ? (sizeRecQuery.error as Error).message : null;
 
+  // Save pending guest scan when user signs up
+  useEffect(() => {
+    if (!user) return;
+    const pending = sessionStorage.getItem('dripcheck_pending_scan');
+    if (!pending) return;
+    try {
+      const scanPayload = JSON.parse(pending);
+      supabase.from('body_scans').insert({
+        user_id: user.id,
+        session_id: null,
+        ...scanPayload,
+      }).then(({ error: dbError }) => {
+        if (dbError) console.error('Failed to save pending scan:', dbError);
+        else sessionStorage.removeItem('dripcheck_pending_scan');
+      });
+    } catch {}
+  }, [user]);
+
   useEffect(() => {
     if (result) {
       trackEvent('results_viewed');
