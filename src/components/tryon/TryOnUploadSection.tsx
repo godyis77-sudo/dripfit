@@ -124,7 +124,7 @@ const TryOnUploadSection = ({
           {clothingPhoto ? (
             <div className="relative">
               <button onClick={() => clothingPhotoRef.current?.click()} className="w-full rounded-xl overflow-hidden border-2 border-primary/40 bg-card active:scale-[0.97] transition-all">
-                <div className="aspect-[4/5]"><img src={clothingPhoto} alt="Clothing" className="w-full h-full object-cover" /></div>
+                <div className="aspect-[3/4]"><img src={clothingPhoto} alt="Clothing" className="w-full h-full object-cover" /></div>
               </button>
               <div className="flex items-center justify-center gap-2 mt-1 flex-wrap">
                 <p className="text-[12px] text-primary font-semibold flex items-center gap-0.5"><Check className="h-3 w-3" /> Ready</p>
