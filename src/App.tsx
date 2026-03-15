@@ -45,6 +45,7 @@ const AdminRetailers = lazy(() => import("./pages/AdminRetailers"));
 const AdminCommissions = lazy(() => import("./pages/AdminCommissions"));
 const CreatorDashboard = lazy(() => import("./pages/CreatorDashboard"));
 const Waitlist = lazy(() => import("./pages/Waitlist"));
+const Partnership = lazy(() => import("./pages/Partnership"));
 
 // ── Suspense fallback (minimal, matches app background) ───────────────
 const RouteFallback = () => (
