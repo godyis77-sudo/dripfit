@@ -14,6 +14,7 @@ import { OfflineBanner } from "@/components/layout/OfflineBanner";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AffiliateProvider from "./components/AffiliateProvider";
 import Capture from "./pages/Capture";
+import GuestTimedNudge from "./components/guest/GuestTimedNudge";
 
 // ── Lazy-loaded pages (code-split per route) ──────────────────────────
 const Welcome = lazy(() => import("./pages/Welcome"));
