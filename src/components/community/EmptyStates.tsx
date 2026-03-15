@@ -16,8 +16,8 @@ const EmptyStates = ({ filter, hasScan, userId, onPostLook }: EmptyStateProps) =
   if (filter === 'trending') {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="h-12 w-12 rounded-2xl icon-3d-gold shimmer-sweep mb-4">
-          <Flame className="h-6 w-6 text-primary-foreground shimmer-icon" />
+        <div className="h-12 w-12 rounded-2xl badge-gold-3d shimmer-sweep mb-4 flex items-center justify-center">
+          <Flame className="h-6 w-6 text-primary-foreground" />
         </div>
         <h2 className="text-[18px] font-bold text-foreground mb-1.5">Trending looks will appear here</h2>
         <p className="text-[14px] text-muted-foreground max-w-[280px] mb-5">Post your first try-on and ask the community. The more votes a look gets, the higher it trends.</p>
