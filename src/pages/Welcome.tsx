@@ -271,8 +271,8 @@ const Welcome = () => {
             }}
             className="w-full flex items-center gap-4 glass-card rounded-2xl px-5 py-4.5 group active:scale-[0.98] transition-transform min-h-[44px] glow-hover"
           >
-            <div className="h-10 w-10 icon-3d-gold shimmer-sweep shrink-0">
-              <Gift className="h-4.5 w-4.5 text-primary-foreground shimmer-icon" />
+            <div className="h-10 w-10 badge-gold-3d shimmer-sweep shrink-0 flex items-center justify-center">
+              <Gift className="h-4.5 w-4.5 text-primary-foreground" />
             </div>
             <div className="flex-1 text-left">
               <p className="text-[13px] font-bold text-foreground">Invite Friends</p>
