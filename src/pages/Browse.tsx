@@ -262,7 +262,7 @@ const Browse = () => {
 
               {/* Brand filter */}
               <div>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Brand</p>
+                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Brand</p>
                 <div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto">
                   <button
                     onClick={() => setBrandFilter(null)}
