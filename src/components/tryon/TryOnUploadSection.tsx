@@ -131,7 +131,7 @@ const TryOnUploadSection = ({
                 {onBrowseProducts && (
                   <button onClick={(e) => { e.stopPropagation(); onBrowseProducts(); }} className="text-[12px] text-primary hover:text-primary/80 transition-colors underline font-medium">Browse</button>
                 )}
-                <button onClick={(e) => { e.stopPropagation(); clothingPhotoRef.current?.click(); }} className="text-[12px] text-foreground/60 hover:text-foreground transition-colors underline">Gallery</button>
+                <button onClick={(e) => { e.stopPropagation(); clothingPhotoRef.current?.click(); }} className="text-[12px] text-foreground/80 hover:text-foreground transition-colors underline">Gallery</button>
                 {onRemoveClothing && (
                   <button onClick={(e) => { e.stopPropagation(); onRemoveClothing(); }} className="text-[12px] text-destructive hover:text-destructive/80 transition-colors underline">Remove</button>
                 )}
