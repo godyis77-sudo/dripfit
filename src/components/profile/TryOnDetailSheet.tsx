@@ -109,7 +109,8 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
         </button>
 
         {/* Image */}
-        <div className="relative w-full flex-1 min-h-0 bg-black flex items-center justify-center overflow-hidden">
+        <div className="relative w-full flex-1 min-h-0 flex items-center justify-center overflow-hidden px-2 pt-1">
+          <div className="relative w-full h-full rounded-xl overflow-hidden bg-black">
           {/* Date — top left overlay */}
           <div className="absolute top-3 left-3 z-10">
             <p className="text-[11px] text-white/80 font-medium drop-shadow-sm">{new Date(post.created_at).toLocaleDateString()}</p>
@@ -125,6 +126,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               <p className="text-[13px] text-white font-medium drop-shadow-sm">{postedCaption}</p>
             </div>
           )}
+          </div>
         </div>
 
         {/* Actions */}
