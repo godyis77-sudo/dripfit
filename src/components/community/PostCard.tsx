@@ -153,10 +153,32 @@ const PostCard = ({
             onError={() => onImageError(post.id)}
           />
           {hasPostedCaption && (
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-2 pt-4 pb-2">
+            <div className="absolute bottom-8 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-2 pt-4 pb-2">
               <p className="text-[11px] font-semibold text-white line-clamp-2 drop-shadow-sm">{postedCaption}</p>
             </div>
           )}
+          {/* Vote bar overlay */}
+          <div className="absolute bottom-0 left-0 right-0 px-1 pb-1 pt-0.5 bg-gradient-to-t from-black/60 to-transparent" onClick={(e) => e.stopPropagation()}>
+            <div className="flex gap-1">
+              {VOTE_OPTIONS.map(v => {
+                const active = v.key === 'keep_shopping' ? isInCart(post.id) : (votes[post.id] || []).includes(v.key);
+                return (
+                  <motion.button
+                    key={v.key}
+                    whileTap={{ scale: 1.18 }}
+                    transition={{ duration: 0.2 }}
+                    onClick={(e) => { e.stopPropagation(); onVote(post.id, v.key); }}
+                    className={`flex-1 py-1.5 rounded-md text-[11px] font-bold border transition-all flex flex-col items-center gap-0.5 ${
+                      active ? 'btn-gold-3d border-transparent text-primary-foreground' : 'border-white/20 text-white/80 backdrop-blur-sm'
+                    }`}
+                  >
+                    {v.emoji}
+                    <span className="text-[10px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
         </div>
         {filter === 'similar' && (post as any).match_score && (
           <div
@@ -166,30 +188,6 @@ const PostCard = ({
           </div>
         )}
       </button>
-
-
-      {/* Buy votes */}
-      <div className="px-1.5 pt-1">
-        <div className="flex gap-1">
-          {VOTE_OPTIONS.map(v => {
-            const active = v.key === 'keep_shopping' ? isInCart(post.id) : (votes[post.id] || []).includes(v.key);
-            return (
-              <motion.button
-                key={v.key}
-                whileTap={{ scale: 1.18 }}
-                transition={{ duration: 0.2 }}
-                onClick={() => onVote(post.id, v.key)}
-                className={`flex-1 py-1.5 rounded-md text-[11px] font-bold border transition-all flex flex-col items-center gap-0.5 ${
-                  active ? 'btn-gold-3d border-transparent text-primary-foreground' : 'border-border text-muted-foreground'
-                }`}
-              >
-                {v.emoji}
-                <span className="text-[10px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
-              </motion.button>
-            );
-          })}
-        </div>
-        </div>
 
       {/* What's In This Look */}
       <WhatsInThisLook
