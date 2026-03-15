@@ -1,12 +1,14 @@
+import { useEffect, useState } from 'react';
 import { Users, MessageCircle, Shirt, BarChart3, Sparkles, ArrowRight, Crown, Quote } from 'lucide-react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { motion } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
 
 const TOTAL_SPOTS = 50;
-const SPOTS_CLAIMED = 12;
+const FALLBACK_CLAIMED = 12;
 
 const PERKS = [
   { icon: Sparkles, title: 'Early Access', desc: 'Be the first to test new features like virtual try-on and AI style check before anyone else.' },
