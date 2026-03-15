@@ -7,6 +7,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 import scanResultsFull from '@/assets/scan-results-full.jpg';
 import type { BodyScanResult, MeasurementRange } from '@/lib/types';
 import { Capacitor } from '@capacitor/core';
+import { useAuth } from '@/hooks/useAuth';
 
 const CM_TO_IN = 0.3937;
 
@@ -133,17 +134,20 @@ const ScanSuccess = () => {
     return () => window.clearTimeout(timer);
   }, [result]);
 
+  const { user } = useAuth();
+
   if (!result) return null;
 
+  const resultsPath = user ? '/profile/body' : '/results';
   const handleNavigate = (path: string) => {
-    navigate(path, { replace: true });
+    navigate(path, { replace: true, state: path === '/results' ? { result } : undefined });
   };
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-background relative pb-safe-tab">
       {/* Skip button */}
       <button
-        onClick={() => handleNavigate('/profile/body')}
+        onClick={() => handleNavigate(resultsPath)}
         className="absolute top-5 right-5 text-[11px] text-muted-foreground font-medium z-20 min-h-[44px] min-w-[44px] flex items-center justify-center"
       >
         Skip →
@@ -232,7 +236,7 @@ const ScanSuccess = () => {
         >
           <Button
             className="w-full h-12 rounded-xl text-sm font-bold btn-luxury"
-            onClick={() => handleNavigate('/profile/body')}
+            onClick={() => handleNavigate(resultsPath)}
           >
             See My Sizes <ChevronRight className="ml-1 h-4 w-4" />
           </Button>
