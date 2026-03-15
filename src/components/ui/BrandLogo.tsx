@@ -2,8 +2,8 @@ import iconCrown from '@/assets/icon-crown.png';
 import { cn } from '@/lib/utils';
 
 interface BrandLogoProps {
-  /** sm = nav/footer, md = auth, lg = onboarding/premium hero */
-  size?: 'sm' | 'md' | 'lg';
+  /** sm = nav/footer, md = auth, lg = compact nav mark, xl = hero/splash */
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
   /** Show just the icon (no text) */
   iconOnly?: boolean;
@@ -13,6 +13,7 @@ const sizeMap = {
   sm: { icon: 18, iconBox: 'h-7 w-7 rounded-lg', text: 'text-[15px]', gap: 'gap-2' },
   md: { icon: 28, iconBox: 'h-11 w-11 rounded-xl', text: 'text-[14px]', gap: 'gap-2.5' },
   lg: { icon: 44, iconBox: 'no-box', text: 'text-sm', gap: 'gap-1.5' },
+  xl: { icon: 88, iconBox: 'no-box', text: 'text-2xl', gap: 'gap-1' },
 };
 
 const BrandLogo = ({ size = 'sm', className, iconOnly = false }: BrandLogoProps) => {

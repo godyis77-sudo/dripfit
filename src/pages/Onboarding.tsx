@@ -184,7 +184,7 @@ const Onboarding = () => {
               animate={{ scale: 1, opacity: 1 }}
               transition={screenTransition}
             >
-              <BrandLogo size="lg" iconOnly className="mb-5" />
+              <BrandLogo size="xl" iconOnly className="mb-5" />
             </motion.div>
             <motion.h1
               initial={{ opacity: 0 }}

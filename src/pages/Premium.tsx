@@ -143,7 +143,7 @@ const Premium = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <BrandLogo size="lg" iconOnly className="mx-auto mb-3" />
+          <BrandLogo size="xl" iconOnly className="mx-auto mb-3" />
           {isSubscribed ? (
             <>
               <h1 className="text-xl font-bold text-foreground mb-1">You're Premium 👑</h1>
