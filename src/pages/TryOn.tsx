@@ -118,7 +118,7 @@ const TryOn = () => {
               onToast={s.toast}
               onRemoveClothing={s.removeClothing}
               onBrowseProducts={s.removeClothing}
-
+            />
 
             {/* Filters button + dropdown */}
             {!s.clothingPhoto && (
