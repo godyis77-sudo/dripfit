@@ -7,6 +7,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 import scanResultsFull from '@/assets/scan-results-full.jpg';
 import type { BodyScanResult, MeasurementRange } from '@/lib/types';
 import { Capacitor } from '@capacitor/core';
+import { useAuth } from '@/hooks/useAuth';
 
 const CM_TO_IN = 0.3937;
 
