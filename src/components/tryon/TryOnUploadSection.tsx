@@ -162,7 +162,7 @@ const TryOnUploadSection = ({
                 </div>
               </div>
               {user && wardrobeItems.length > 0 && (
-                <button onClick={onToggleWardrobe} className="w-full flex items-center justify-center gap-1 py-1.5 rounded-lg pill active:scale-95 transition-transform mt-1.5">
+                <button onClick={onToggleWardrobe} className="w-full flex items-center justify-center gap-1 py-1 rounded-lg pill active:scale-95 transition-transform mt-1.5">
                   <FolderOpen className="h-3.5 w-3.5" /><span className="text-[12px] font-bold">My Wardrobe ({wardrobeItems.length})</span>
                 </button>
               )}
