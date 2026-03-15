@@ -19,6 +19,9 @@ import { isGuestMode } from '@/lib/session';
 const TryOn = () => {
   usePageTitle('Virtual Try-On');
   const s = useTryOnState();
+  const navigate = useNavigate();
+  const isGuest = !s.user && isGuestMode();
+  const [guestTryOnNudgeDismissed, setGuestTryOnNudgeDismissed] = useState(false);
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
