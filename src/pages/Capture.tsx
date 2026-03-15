@@ -259,7 +259,7 @@ const Capture = () => {
                     transition={{ delay: 0.6 + i * 0.1 }}
                     className="flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 min-h-[44px]"
                   >
-                    <span className="h-7 w-7 icon-3d-gold rounded-lg flex items-center justify-center text-sm shrink-0">{item.emoji}</span>
+                    <span className="h-7 w-7 badge-gold-3d rounded-lg flex items-center justify-center text-sm shrink-0">{item.emoji}</span>
                     <span className="text-[13px] font-medium text-foreground">{item.text}</span>
                   </motion.div>
                 ))}
@@ -272,8 +272,8 @@ const Capture = () => {
                 transition={{ delay: 0.9 }}
                 className="w-full bg-card border border-border rounded-xl px-4 py-3 mt-5 flex items-start gap-3"
               >
-                <div className="h-7 w-7 icon-3d-gold shimmer-sweep rounded-lg shrink-0 mt-0.5">
-                  <Shield className="h-3.5 w-3.5 text-primary-foreground shimmer-icon" />
+                <div className="h-7 w-7 badge-gold-3d shimmer-sweep rounded-lg shrink-0 mt-0.5 flex items-center justify-center">
+                  <Shield className="h-3.5 w-3.5 text-primary-foreground" />
                 </div>
                 <div>
                   <p className="text-[12px] font-bold text-foreground leading-tight mb-0.5">Your privacy is protected</p>
@@ -305,7 +305,7 @@ const Capture = () => {
               <CaptureViewfinder captureStep={captureStep} photo={photos[captureStep]} />
 
               <p className="text-[11px] text-muted-foreground text-center bg-card border border-border px-3 py-1.5 rounded-xl mb-2 flex items-center justify-center gap-1.5">
-                <span className="h-5 w-5 icon-3d-gold rounded-md flex items-center justify-center text-[10px] shrink-0">💡</span>
+                <span className="h-5 w-5 badge-gold-3d rounded-md flex items-center justify-center text-[10px] shrink-0">💡</span>
                 {config.tip}
               </p>
 

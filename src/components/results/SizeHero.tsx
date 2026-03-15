@@ -35,7 +35,7 @@ const SizeHero = ({ retailer, category, recommendedSize, confidence, whyLine, fi
         {!retailer && !category && !fitPreference && <div className="mb-3" />}
 
         <motion.div initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.15, type: 'spring', stiffness: 200 }} className="inline-flex flex-col items-center">
-          <div className="w-24 h-24 rounded-full icon-3d-gold shimmer-sweep flex items-center justify-center mb-2.5">
+          <div className="w-24 h-24 rounded-full badge-gold-3d shimmer-sweep flex items-center justify-center mb-2.5">
             <span className="text-4xl font-bold text-primary-foreground">{recommendedSize}</span>
           </div>
           <button

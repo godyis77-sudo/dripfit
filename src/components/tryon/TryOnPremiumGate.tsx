@@ -26,8 +26,8 @@ const TryOnPremiumGate = ({ onClose }: TryOnPremiumGateProps) => {
         <button onClick={onClose} className="absolute top-3 right-3 text-muted-foreground hover:text-foreground">
           <X className="h-4 w-4" />
         </button>
-        <div className="h-12 w-12 rounded-full icon-3d-gold shimmer-sweep mx-auto mb-3">
-          <Crown className="h-6 w-6 text-primary-foreground shimmer-icon" />
+        <div className="h-12 w-12 rounded-full badge-gold-3d shimmer-sweep mx-auto mb-3 flex items-center justify-center">
+          <Crown className="h-6 w-6 text-primary-foreground" />
         </div>
         <h2 className="text-lg font-bold text-foreground mb-1">You've used your free try-ons</h2>
         <p className="text-sm text-muted-foreground mb-4">
