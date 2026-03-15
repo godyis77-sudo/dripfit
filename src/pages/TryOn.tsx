@@ -16,6 +16,7 @@ import { trackEvent } from '@/lib/analytics';
 import { useTryOnState } from '@/hooks/useTryOnState';
 import { isGuestMode } from '@/lib/session';
 import BrandFilter from '@/components/tryon/BrandFilter';
+import { supabase } from '@/integrations/supabase/client';
 
 const SORT_OPTIONS = [
   { key: 'default', label: 'Recommended' },
