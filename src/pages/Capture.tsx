@@ -211,6 +211,8 @@ const Capture = () => {
   }, []);
 
   const openWebCamera = useCallback(async () => {
+    setCameraError(null);
+
     if (!navigator.mediaDevices?.getUserMedia) {
       cameraInputRef.current?.click();
       return;
@@ -223,14 +225,8 @@ const Capture = () => {
       });
 
       mediaStreamRef.current = stream;
+      setVideoReady(false);
       setWebCameraOpen(true);
-
-      requestAnimationFrame(() => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          void videoRef.current.play().catch(() => undefined);
-        }
-      });
     } catch (err) {
       console.error('Web camera access failed, falling back to file input:', err);
       toast({
