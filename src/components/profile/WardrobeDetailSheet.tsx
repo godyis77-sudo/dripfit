@@ -88,15 +88,13 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
 
         {/* Image — maximized */}
         <div className="relative w-full h-[55dvh] overflow-hidden px-2 pt-1">
-          <div className="relative w-full h-full rounded-xl bg-black p-2">
-            <div className="relative w-full h-full rounded-lg overflow-hidden bg-card">
-              <img src={item.image_url} alt={item.category} className="w-full h-full object-contain" />
-              {displayRetailer && (
-                <div className="absolute bottom-3 right-3 bg-primary rounded-lg px-3 py-1 shadow-lg border border-primary-foreground/20">
-                  <p className="text-[11px] font-extrabold text-primary-foreground uppercase tracking-wide">{displayRetailer}</p>
-                </div>
-              )}
+          <div className="relative w-full h-full rounded-xl overflow-hidden bg-black">
+          <img src={item.image_url} alt={item.category} className="w-full h-full object-contain rounded-xl" />
+          {displayRetailer && (
+            <div className="absolute bottom-3 right-3 bg-primary rounded-lg px-3 py-1 shadow-lg border border-primary-foreground/20">
+              <p className="text-[11px] font-extrabold text-primary-foreground uppercase tracking-wide">{displayRetailer}</p>
             </div>
+          )}
           </div>
         </div>
 
