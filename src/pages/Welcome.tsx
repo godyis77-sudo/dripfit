@@ -140,7 +140,8 @@ const Welcome = () => {
                 whileTap={{ scale: 0.97 }}
                 onClick={() => {
                   if (p.label === 'Scan') handleStartScan();
-                  else { trackEvent(`home_${p.label.toLowerCase().replace('-', '')}_click`); navigate(p.action); }
+                  else if (p.label === 'Try-On') { trackEvent('home_tryon_click'); navigate(p.action); }
+                  else { trackEvent('home_fitcheck_click'); navigate(p.action); }
                 }}
                 className="w-full flex items-center gap-4 glass-card rounded-2xl py-4 px-4.5 group min-h-[44px] glow-hover"
               >
