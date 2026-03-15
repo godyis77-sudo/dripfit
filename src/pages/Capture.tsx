@@ -196,6 +196,7 @@ const Capture = () => {
     }
 
     setVideoReady(false);
+    setCaptureCountdown(null);
   }, []);
 
   const handleCapturedPhoto = useCallback(async (rawDataUrl: string, key: keyof PhotoSet) => {
