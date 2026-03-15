@@ -114,6 +114,8 @@ const Capture = () => {
   const [genderLoaded, setGenderLoaded] = useState(false);
   const [authSheetOpen, setAuthSheetOpen] = useState(false);
   const [webCameraOpen, setWebCameraOpen] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
   const { toast } = useToast();
 
   // Load existing gender from profile
@@ -173,6 +175,7 @@ const Capture = () => {
 
   const captureStep: CaptureStep = flowStep === 'side' ? 'side' : 'front';
   const config = STEP_CONFIG[captureStep];
+  const cameraMaskUrl = captureStep === 'side' ? bodySilhouetteSideMask : bodySilhouetteFrontMask;
 
   // Safety: if reviewing but photo is missing (e.g. page reload, compress failure), reset
   useEffect(() => {
@@ -190,6 +193,8 @@ const Capture = () => {
     if (videoRef.current) {
       videoRef.current.srcObject = null;
     }
+
+    setVideoReady(false);
   }, []);
 
   const handleCapturedPhoto = useCallback(async (rawDataUrl: string, key: keyof PhotoSet) => {
@@ -206,6 +211,8 @@ const Capture = () => {
   }, []);
 
   const openWebCamera = useCallback(async () => {
+    setCameraError(null);
+
     if (!navigator.mediaDevices?.getUserMedia) {
       cameraInputRef.current?.click();
       return;
@@ -218,14 +225,8 @@ const Capture = () => {
       });
 
       mediaStreamRef.current = stream;
+      setVideoReady(false);
       setWebCameraOpen(true);
-
-      requestAnimationFrame(() => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          void videoRef.current.play().catch(() => undefined);
-        }
-      });
     } catch (err) {
       console.error('Web camera access failed, falling back to file input:', err);
       toast({
@@ -238,15 +239,60 @@ const Capture = () => {
   }, [toast]);
 
   useEffect(() => () => stopWebCamera(), [stopWebCamera]);
+
   useEffect(() => {
-    if (!webCameraOpen) stopWebCamera();
+    if (!webCameraOpen) {
+      stopWebCamera();
+      return;
+    }
+
+    const video = videoRef.current;
+    const stream = mediaStreamRef.current;
+    if (!video || !stream) return;
+
+    video.srcObject = stream;
+
+    const markReady = () => {
+      setVideoReady(true);
+      setCameraError(null);
+      void video.play().catch(() => undefined);
+    };
+
+    video.onloadedmetadata = markReady;
+    video.oncanplay = markReady;
+    void video.play().then(() => {
+      setVideoReady(true);
+      setCameraError(null);
+    }).catch(() => undefined);
+
+    return () => {
+      video.onloadedmetadata = null;
+      video.oncanplay = null;
+    };
   }, [webCameraOpen, stopWebCamera]);
+
+  useEffect(() => {
+    if (!webCameraOpen || videoReady) return;
+
+    const timeoutId = window.setTimeout(() => {
+      setCameraError('Live camera preview did not start. Try again or choose from gallery.');
+    }, 2500);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [webCameraOpen, videoReady]);
 
   const handleWebCameraCapture = async () => {
     if (!videoRef.current) return;
 
     const video = videoRef.current;
-    if (!video.videoWidth || !video.videoHeight) return;
+    if (!video.videoWidth || !video.videoHeight) {
+      toast({
+        title: 'Camera still loading',
+        description: 'Wait a moment for preview to appear, or use gallery.',
+        variant: 'destructive',
+      });
+      return;
+    }
 
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth;
@@ -285,6 +331,10 @@ const Capture = () => {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    setWebCameraOpen(false);
+    stopWebCamera();
+    setCameraError(null);
 
     const key: keyof PhotoSet = flowStep === 'side' ? 'side' : 'front';
     const reader = new FileReader();
@@ -620,8 +670,48 @@ const Capture = () => {
               </Button>
             </div>
 
-            <div className="flex-1 bg-muted">
-              <video ref={videoRef} autoPlay muted playsInline className="h-full w-full object-cover" />
+            <div className="relative flex-1 overflow-hidden bg-muted">
+              <video
+                ref={videoRef}
+                autoPlay
+                muted
+                playsInline
+                className={`h-full w-full object-cover transition-opacity duration-200 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
+              />
+
+              {/* Guide overlay */}
+              <div className="pointer-events-none absolute inset-0">
+                <div className="absolute inset-0">
+                  <div className="absolute left-1/2 top-[8%] bottom-[8%] w-px -translate-x-1/2 bg-primary/20" />
+                  <div className="absolute left-[15%] right-[15%] top-[25%] h-px bg-primary/20" />
+                  <div className="absolute left-[15%] right-[15%] top-[75%] h-px bg-primary/20" />
+                </div>
+
+                <div className="absolute inset-y-[8%] inset-x-[18%]">
+                  <div
+                    className={`h-full w-full rounded-full transition-opacity duration-200 ${videoReady ? 'opacity-60' : 'opacity-90'}`}
+                    style={{
+                      backgroundImage: 'linear-gradient(180deg, hsl(var(--primary) / 0.55) 0%, hsl(var(--primary) / 0.25) 55%, hsl(var(--primary) / 0.45) 100%)',
+                      WebkitMaskImage: `url(${cameraMaskUrl})`,
+                      maskImage: `url(${cameraMaskUrl})`,
+                      WebkitMaskRepeat: 'no-repeat',
+                      maskRepeat: 'no-repeat',
+                      WebkitMaskPosition: 'center',
+                      maskPosition: 'center',
+                      WebkitMaskSize: 'contain',
+                      maskSize: 'contain',
+                    } as React.CSSProperties}
+                  />
+                </div>
+              </div>
+
+              {!videoReady && (
+                <div className="absolute inset-x-4 top-4 rounded-xl border border-border bg-background/90 px-3 py-2 text-center backdrop-blur-sm">
+                  <p className="text-[11px] font-medium text-foreground">
+                    {cameraError ?? 'Starting camera preview...'}
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="space-y-2 border-t border-border px-4 py-4">
