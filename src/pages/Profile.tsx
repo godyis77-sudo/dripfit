@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { LogOut, Shirt, Camera, Settings, ShoppingBag, ShoppingCart, User, Globe
 import InlineCrown from '@/components/ui/InlineCrown';
 import { useAuth } from '@/hooks/useAuth';
 import PremiumBadge from '@/components/monetization/PremiumBadge';
+const GuestProfileView = lazy(() => import('@/components/guest/GuestProfileView'));
 import { supabase } from '@/integrations/supabase/client';
 import { getFitPreference, setFitPreference, getPremiumBannerDismissed, dismissPremiumBanner } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
