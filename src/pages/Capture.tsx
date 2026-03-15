@@ -285,7 +285,14 @@ const Capture = () => {
     if (!videoRef.current) return;
 
     const video = videoRef.current;
-    if (!video.videoWidth || !video.videoHeight) return;
+    if (!video.videoWidth || !video.videoHeight) {
+      toast({
+        title: 'Camera still loading',
+        description: 'Wait a moment for preview to appear, or use gallery.',
+        variant: 'destructive',
+      });
+      return;
+    }
 
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth;
