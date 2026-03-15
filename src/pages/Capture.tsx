@@ -439,11 +439,7 @@ const Capture = () => {
   return (
     <div className="flex min-h-screen flex-col bg-background pb-safe-tab">
       {/* Header */}
-      <div className="px-4 pt-4 pb-1">
-        <Button variant="ghost" size="icon" onClick={goBack} className="h-8 w-8 rounded-xl min-h-[44px] min-w-[44px] mb-2" aria-label="Go back">
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-
+      <div className="px-4 pt-3 pb-1">
         {/* Numbered circle stepper */}
         <div className="flex items-center justify-between h-14">
           {FLOW_STEPS.map((s, i) => {
