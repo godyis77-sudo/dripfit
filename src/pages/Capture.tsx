@@ -689,7 +689,7 @@ const Capture = () => {
 
                 <div className="absolute inset-y-[8%] inset-x-[18%]">
                   <div
-                    className={`h-full w-full rounded-full transition-opacity duration-200 ${videoReady ? 'opacity-65' : 'opacity-95'}`}
+                    className={`h-full w-full rounded-full transition-opacity duration-200 ${videoReady ? 'opacity-60' : 'opacity-90'}`}
                     style={{
                       backgroundImage: 'linear-gradient(180deg, hsl(var(--primary) / 0.55) 0%, hsl(var(--primary) / 0.25) 55%, hsl(var(--primary) / 0.45) 100%)',
                       WebkitMaskImage: `url(${cameraMaskUrl})`,
