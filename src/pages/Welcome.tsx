@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Shield, Sparkles, Users, Ruler, Star, ChevronRight, TrendingUp, Share2, Gift, ChevronUp } from 'lucide-react';
+import { Camera, Shield, Sparkles, Users, Ruler, Star, ChevronRight, TrendingUp, Share2, Gift, ChevronUp, Zap } from 'lucide-react';
 import BrandLogo from '@/components/ui/BrandLogo';
+import FeatureIcon from '@/components/ui/FeatureIcon';
 import { useAuth } from '@/hooks/useAuth';
 import { isOnboarded, isGuestMode } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
@@ -14,14 +15,14 @@ import AuthenticatedHome from '@/components/home/AuthenticatedHome';
 import HeroParticles from '@/components/home/HeroParticles';
 
 const PILLARS = [
-  { icon: Ruler, label: 'Scan', desc: 'AI body measurements in 60 seconds', action: '/capture' },
-  { icon: Sparkles, label: 'Try-On', desc: 'See it on you before you buy', action: '/tryon' },
-  { icon: Users, label: 'Style Check', desc: 'Real feedback from real people', action: '/style-check' },
+  { featureIcon: 'scan' as const, label: 'Scan', desc: 'AI body measurements in 60 seconds', action: '/capture' },
+  { featureIcon: 'tryon' as const, label: 'Try-On', desc: 'See how it looks before you buy', action: '/tryon' },
+  { featureIcon: 'stylecheck' as const, label: 'Style Check', desc: 'Get honest opinions from real people', action: '/style-check' },
 ];
 
 const TRUST = [
   { icon: Shield, text: 'Private by default' },
-  { icon: Star, text: '10+ retailer charts' },
+  { icon: Star, text: '10+ brand charts' },
   { icon: TrendingUp, text: 'Confidence scores' },
 ];
 
@@ -43,7 +44,7 @@ const stagger = {
 
 const Welcome = () => {
   const navigate = useNavigate();
-  const { user, loading, signOut } = useAuth();
+  const { user, loading } = useAuth();
   const { toast } = useToast();
   const [showScrollTop, setShowScrollTop] = useState(false);
   usePageTitle();
@@ -80,12 +81,12 @@ const Welcome = () => {
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-primary/[0.03] rounded-full blur-[150px] pointer-events-none" />
       <div className="fixed top-1/3 -right-1/4 w-[400px] h-[400px] rounded-full blur-[120px] pointer-events-none" style={{ background: 'radial-gradient(circle, hsl(280 40% 35% / 0.04), transparent)' }} />
 
-      {/* Sparkle particles behind hero */}
+      {/* Sparkle particles */}
       <div className="fixed inset-0 z-[1] pointer-events-none">
         <HeroParticles />
       </div>
 
-      {/* Sticky top nav bar */}
+      {/* Sticky nav */}
       <nav className="sticky top-0 z-50 h-[56px] flex items-center justify-between px-6 glass-bar border-b">
         <BrandLogo size="sm" />
         <button
@@ -106,11 +107,11 @@ const Welcome = () => {
         {/* Hero */}
         <motion.div variants={stagger.item} className="text-center max-w-[340px] mb-10">
           <h1 className="font-display text-[34px] font-bold tracking-tight mb-4 leading-[1.08] text-foreground">
-            Know your size{' '}
-            <span className="gradient-drip-text italic">before</span> you buy
+            Never return the{' '}
+            <span className="gradient-drip-text italic">wrong</span> size again
           </h1>
           <p className="text-muted-foreground text-[14px] leading-relaxed max-w-[300px] mx-auto">
-            Get your measurements, preview the outfit, and get real feedback — all in under 2 minutes.
+            Two photos. Sixty seconds. Your exact measurements across every brand — plus virtual try-on and real feedback.
           </p>
         </motion.div>
 
@@ -139,13 +140,12 @@ const Welcome = () => {
                 whileTap={{ scale: 0.97 }}
                 onClick={() => {
                   if (p.label === 'Scan') handleStartScan();
-                  else if (p.label === 'Try-On') { trackEvent('home_tryon_click'); navigate(p.action); }
-                  else { trackEvent('home_fitcheck_click'); navigate(p.action); }
+                  else { trackEvent(`home_${p.label.toLowerCase().replace('-', '')}_click`); navigate(p.action); }
                 }}
                 className="w-full flex items-center gap-4 glass-card rounded-2xl py-4 px-4.5 group min-h-[44px] glow-hover"
               >
-                <div className="h-10 w-10 badge-gold-3d shimmer-sweep shrink-0 flex items-center justify-center">
-                  <p.icon className="h-4.5 w-4.5 text-primary-foreground" />
+                <div className="h-11 w-11 shrink-0 flex items-center justify-center">
+                  <FeatureIcon name={p.featureIcon} size={40} />
                 </div>
                 <div className="flex-1 text-left">
                   <p className="text-[13px] font-bold text-foreground flex items-center gap-2">
@@ -164,7 +164,7 @@ const Welcome = () => {
           <div className="divider-gold" />
         </motion.div>
 
-        {/* What You'll Get — Preview card */}
+        {/* What You'll Get */}
         <motion.div variants={stagger.item} className="w-full max-w-[340px] mb-8 mt-8">
           <p className="section-label mb-4">What you'll get</p>
           <div className="glass-card rounded-2xl p-5 border-glow">
@@ -215,7 +215,7 @@ const Welcome = () => {
             onClick={() => { trackEvent('home_tryon_click'); navigate('/tryon'); }}
             className="text-[12px] text-muted-foreground/60 active:opacity-70 transition-all underline underline-offset-4 decoration-muted-foreground/20 hover:text-primary hover:decoration-primary/40 tracking-wide"
           >
-            Or skip to Try-On →
+            Skip to Try-On →
           </button>
         </motion.div>
 
@@ -248,9 +248,14 @@ const Welcome = () => {
           onClick={() => navigate('/size-guide')}
           className="w-full max-w-[340px] flex items-center justify-between glass-card rounded-2xl px-5 py-4.5 mb-4 group min-h-[44px] glow-hover"
         >
-          <div>
-            <p className="text-[14px] font-semibold text-foreground">Size Guide Match</p>
-            <p className="text-[11px] text-muted-foreground/70 mt-0.5">Upload any brand's chart → get your size</p>
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 shrink-0 flex items-center justify-center">
+              <FeatureIcon name="sizeguide" size={32} />
+            </div>
+            <div>
+              <p className="text-[13px] font-bold text-foreground">Size Guide Match</p>
+              <p className="text-[11px] text-muted-foreground/70 mt-0.5">Upload any brand's chart → get your size</p>
+            </div>
           </div>
           <ChevronRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
         </motion.button>
@@ -262,7 +267,7 @@ const Welcome = () => {
               const baseUrl = window.location.origin;
               const url = user ? `${baseUrl}?ref=${user.id}` : baseUrl;
               if (navigator.share) {
-                navigator.share({ title: 'DRIPFIT ✔ — Know your size before you buy', text: 'Get AI body measurements, virtual try-on, and real fit feedback. We both get 5 extra try-ons!', url });
+                navigator.share({ title: 'DRIPFIT ✔ — Never return the wrong size', text: 'AI body measurements, virtual try-on, and real fit feedback. We both get 5 extra try-ons!', url });
               } else {
                 navigator.clipboard.writeText(url);
                 toast({ title: 'Link copied!', description: 'Share it with friends — you both get 5 extra try-ons.' });
@@ -275,8 +280,8 @@ const Welcome = () => {
               <Gift className="h-4.5 w-4.5 text-primary-foreground" />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-[13px] font-bold text-foreground">Invite Friends</p>
-              <p className="text-[10px] text-muted-foreground/70 mt-0.5">You both get 5 extra try-ons this month</p>
+              <p className="text-[13px] font-bold text-foreground">Invite a Friend</p>
+              <p className="text-[10px] text-muted-foreground/70 mt-0.5">You both earn 5 extra try-ons this month</p>
             </div>
             <Share2 className="h-3.5 w-3.5 text-primary/40 group-hover:text-primary transition-colors shrink-0" />
           </button>
