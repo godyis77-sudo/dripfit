@@ -29,7 +29,7 @@ const BrandLogo = ({ size = 'sm', className, iconOnly = false }: BrandLogoProps)
       )}
       {!iconOnly && (
         <span className={cn('font-display font-bold tracking-[3px] brand-logo-text', s.text)}>
-          DRIPFIT <span className="brand-logo-check">✔</span>
+          DRIPFIT <span className="brand-logo-check text-[1.3em]">✔</span>
         </span>
       )}
     </div>
