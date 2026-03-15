@@ -103,31 +103,41 @@ const Analyze = () => {
   }, [state, navigate, user]);
 
   const saveToDatabase = async (data: any) => {
-    if (!user) return;
+    // Build the scan payload once
+    const scanPayload = {
+      height_cm: data.heightCm || state?.heightCm || 0,
+      chest_min: data.chest?.min ?? 0,
+      chest_max: data.chest?.max ?? 0,
+      waist_min: data.waist?.min ?? 0,
+      waist_max: data.waist?.max ?? 0,
+      hip_min: data.hips?.min ?? 0,
+      hip_max: data.hips?.max ?? 0,
+      inseam_min: data.inseam?.min ?? 0,
+      inseam_max: data.inseam?.max ?? 0,
+      shoulder_min: data.shoulder?.min ?? 0,
+      shoulder_max: data.shoulder?.max ?? 0,
+      bust_min: data.bust?.min ?? 0,
+      bust_max: data.bust?.max ?? 0,
+      sleeve_min: data.sleeve?.min ?? 0,
+      sleeve_max: data.sleeve?.max ?? 0,
+      confidence: data.confidence || 'medium',
+      recommended_size: data.recommendedSize || null,
+      reference_object: state?.referenceObject || null,
+      front_photo_used: !!state?.photos?.front,
+      side_photo_used: !!state?.photos?.side,
+    };
+
+    if (!user) {
+      // Guest: cache scan payload so it can be saved after sign-up
+      try { sessionStorage.setItem('dripcheck_pending_scan', JSON.stringify(scanPayload)); } catch {}
+      return;
+    }
+
     try {
       const { error: dbError } = await supabase.from('body_scans').insert({
         user_id: user.id,
         session_id: null,
-        height_cm: data.heightCm || state?.heightCm || 0,
-        chest_min: data.chest?.min ?? 0,
-        chest_max: data.chest?.max ?? 0,
-        waist_min: data.waist?.min ?? 0,
-        waist_max: data.waist?.max ?? 0,
-        hip_min: data.hips?.min ?? 0,
-        hip_max: data.hips?.max ?? 0,
-        inseam_min: data.inseam?.min ?? 0,
-        inseam_max: data.inseam?.max ?? 0,
-        shoulder_min: data.shoulder?.min ?? 0,
-        shoulder_max: data.shoulder?.max ?? 0,
-        bust_min: data.bust?.min ?? 0,
-        bust_max: data.bust?.max ?? 0,
-        sleeve_min: data.sleeve?.min ?? 0,
-        sleeve_max: data.sleeve?.max ?? 0,
-        confidence: data.confidence || 'medium',
-        recommended_size: data.recommendedSize || null,
-        reference_object: state?.referenceObject || null,
-        front_photo_used: !!state?.photos?.front,
-        side_photo_used: !!state?.photos?.side,
+        ...scanPayload,
       });
       if (dbError) console.error('Failed to save scan:', dbError);
     } catch (e) {
