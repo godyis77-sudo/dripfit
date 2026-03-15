@@ -191,7 +191,7 @@ const Browse = () => {
               onClick={() => setGenderOverride(opt.key)}
               className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
                 genderFilter === opt.key
-                  ? 'bg-primary text-primary-foreground'
+                  ? 'btn-luxury text-primary-foreground'
                   : 'bg-card border border-border text-muted-foreground'
               }`}
             >
