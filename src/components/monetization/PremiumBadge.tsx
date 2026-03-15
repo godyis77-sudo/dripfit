@@ -12,7 +12,7 @@ const PremiumBadge = ({ label = 'Premium', className = '' }: PremiumBadgeProps) 
       boxShadow: '0 1px 0 0 hsl(40 55% 30%), 0 2px 0 0 hsl(38 45% 24%), 0 4px 12px -2px hsl(40 70% 20% / 0.5), inset 0 1px 0 hsl(45 100% 92% / 0.6), inset 0 -1px 0 hsl(38 50% 28% / 0.4)',
     }}
   >
-    <Crown className="h-2.5 w-2.5 shimmer-icon" style={{ color: 'hsl(36 50% 22%)' }} />
+    <InlineCrown size={10} className="shimmer-icon" />
     {label}
   </span>
 );

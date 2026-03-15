@@ -1,4 +1,4 @@
-import { Crown, TrendingDown, Users, ShoppingBag, Scan, Shirt, BarChart3, ArrowRight, Mail, CheckCircle2, ExternalLink } from 'lucide-react';
+import { TrendingDown, Users, ShoppingBag, Scan, Shirt, BarChart3, ArrowRight, Mail, CheckCircle2, ExternalLink } from 'lucide-react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import BrandLogo from '@/components/ui/BrandLogo';
 

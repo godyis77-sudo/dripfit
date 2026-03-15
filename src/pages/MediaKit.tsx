@@ -171,7 +171,7 @@ const MediaKit = () => {
             <div className="bg-foreground border border-border rounded-xl p-6 flex flex-col items-center justify-center gap-4">
               <div className="flex items-center gap-3">
                 <div className="h-20 w-20 rounded-2xl bg-primary/90 flex items-center justify-center">
-                  <Crown className="h-10 w-10 text-background" />
+                  <InlineCrown size={40} />
                 </div>
                 <span className="font-display font-bold text-2xl tracking-[3px] text-background">
                   DRIPFIT <span className="text-primary">✔</span>

@@ -437,7 +437,7 @@ const SettingsTab = ({
       {/* Preferred Brands */}
       <SectionHeader>
         <span className="flex items-center gap-1">
-          <Crown className="h-3 w-3 text-primary" /> Preferred Brands
+          <InlineCrown size={12} /> Preferred Brands
         </span>
       </SectionHeader>
       <div className="bg-card border border-border rounded-xl p-3 mb-1">

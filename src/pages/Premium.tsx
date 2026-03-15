@@ -165,7 +165,7 @@ const Premium = () => {
                   transition={{ delay: 0.3 }}
                   className="mt-2 inline-flex items-center gap-1 px-3 py-1 rounded-full bg-card border border-primary/20"
                 >
-                  <Crown className="h-2.5 w-2.5 text-primary" />
+                  <InlineCrown size={10} />
                   <span className="text-[10px] font-bold text-primary">
                     {memberCount >= 1000
                       ? `${Math.floor(memberCount / 1000).toLocaleString()},000+ premium members`

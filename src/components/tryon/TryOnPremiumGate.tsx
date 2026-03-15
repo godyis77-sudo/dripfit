@@ -38,7 +38,7 @@ const TryOnPremiumGate = ({ onClose }: TryOnPremiumGateProps) => {
           className="w-full h-11 rounded-lg btn-luxury text-primary-foreground font-bold mb-2"
           onClick={() => { onClose(); navigate('/premium'); }}
         >
-          <Crown className="mr-2 h-4 w-4" /> Upgrade to Premium
+          <InlineCrown size={16} className="mr-2" /> Upgrade to Premium
         </Button>
         <button onClick={onClose} className="text-[12px] text-muted-foreground hover:text-foreground transition-colors">
           Maybe later
