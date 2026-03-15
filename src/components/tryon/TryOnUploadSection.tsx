@@ -89,7 +89,7 @@ const TryOnUploadSection = ({
               </button>
               <div className="flex items-center justify-center gap-2 mt-1">
                 <p className="text-[12px] text-primary font-semibold flex items-center gap-0.5"><Check className="h-3 w-3" /> Ready</p>
-                <button onClick={(e) => { e.stopPropagation(); userPhotoRef.current?.click(); }} className="text-[12px] text-foreground/60 hover:text-foreground transition-colors underline">Change</button>
+                <button onClick={(e) => { e.stopPropagation(); userPhotoRef.current?.click(); }} className="text-[12px] text-foreground/80 hover:text-foreground transition-colors underline">Change</button>
               </div>
             </div>
           ) : (
