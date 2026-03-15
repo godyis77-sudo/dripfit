@@ -134,7 +134,7 @@ const Profile = () => {
         {/* Premium banner / status bar */}
         {isSubscribed ? (
           <div className="w-full flex items-center gap-2 px-3 py-2 rounded-xl btn-gold-3d mb-3">
-            <Crown className="h-4 w-4 text-primary-foreground shrink-0" />
+            <InlineCrown size={16} />
             <span className="text-[11px] font-bold text-primary-foreground flex-1 text-left">DRIPFIT ✔ PREMIUM</span>
             <PremiumBadge label="Active" />
           </div>
