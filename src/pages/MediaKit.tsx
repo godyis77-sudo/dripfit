@@ -165,7 +165,7 @@ const MediaKit = () => {
           <SectionHeader icon={() => <InlineCrown size={16} />} title="Logo & Brand Mark" />
           <div className="grid grid-cols-2 gap-3 mt-4">
             <div className="bg-card border border-border rounded-xl p-6 flex flex-col items-center justify-center gap-4">
-              <BrandLogo size="lg" />
+              <BrandLogo size="xl" />
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Full Logo — Dark BG</span>
             </div>
             <div className="bg-foreground border border-border rounded-xl p-6 flex flex-col items-center justify-center gap-4">

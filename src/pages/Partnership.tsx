@@ -40,7 +40,7 @@ const Partnership = () => {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-primary/5 blur-[120px]" />
         
         <div className="relative max-w-3xl mx-auto px-6 pt-16 pb-12 text-center">
-          <BrandLogo size="lg" className="justify-center mb-8" />
+          <BrandLogo size="xl" className="justify-center mb-8" />
           <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-4">
             Retail <span className="text-primary">Partnership</span> Deck
           </h1>
