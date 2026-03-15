@@ -325,13 +325,14 @@ const Results = () => {
             >
               ✕
             </button>
-            <p className="text-sm font-medium text-foreground mb-2">Save your size. Sign up to access your results on any device.</p>
+            <p className="text-sm font-medium text-foreground mb-1">Your scan isn't saved yet</p>
+            <p className="text-[12px] text-muted-foreground mb-3">Create a free account to keep your measurements, get size recommendations, and access them on any device.</p>
             <Button
               size="sm"
               className="btn-luxury"
-              onClick={() => navigate('/auth')}
+              onClick={() => navigate('/auth?returnTo=/results')}
             >
-              Create free account
+              Sign up to save
             </Button>
           </div>
         )}
