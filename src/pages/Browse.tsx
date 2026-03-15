@@ -161,17 +161,6 @@ const Browse = () => {
               <p className="text-[10px] text-muted-foreground">{displayed.length} items</p>
             </div>
           </div>
-          <button
-            onClick={() => setFiltersOpen(!filtersOpen)}
-            className="relative h-9 w-9 rounded-full bg-card border border-border flex items-center justify-center active:scale-90 transition-transform"
-          >
-            <SlidersHorizontal className="h-4 w-4 text-foreground" />
-            {activeFilterCount > 0 && (
-              <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-primary-foreground text-[11px] font-bold flex items-center justify-center">
-                {activeFilterCount}
-              </span>
-            )}
-          </button>
         </div>
 
         {/* Brand search filter */}
@@ -200,7 +189,6 @@ const Browse = () => {
           ))}
         </div>
 
-
         <div className="px-4 pb-3 flex gap-1.5 overflow-x-auto scrollbar-hide">
           {[
             { key: 'tops', label: 'Tops' },
@@ -224,6 +212,21 @@ const Browse = () => {
               {cat.label}
             </button>
           ))}
+        </div>
+
+        {/* Filter button — below tabs for easy access */}
+        <div className="px-4 pb-3">
+          <button
+            onClick={() => setFiltersOpen(!filtersOpen)}
+            className={`relative w-full h-11 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold ${
+              activeFilterCount > 0
+                ? 'btn-luxury text-primary-foreground'
+                : 'bg-card border border-border text-muted-foreground'
+            }`}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            {activeFilterCount > 0 ? `Filters (${activeFilterCount})` : 'Filters'}
+          </button>
         </div>
       </div>
 
