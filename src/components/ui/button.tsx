@@ -9,7 +9,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "btn-gold-3d shimmer-sweep",
+        default: "btn-luxury shimmer-sweep",
         destructive: "bg-gradient-to-b from-destructive/90 to-destructive text-destructive-foreground shadow-[0_2px_0_0_hsl(0_50%_35%),0_4px_12px_-2px_hsl(0_0%_0%/0.2),inset_0_1px_0_hsl(0_60%_65%/0.35),inset_0_-1px_0_hsl(0_50%_35%/0.3)] hover:brightness-110 active:shadow-[0_0px_0_0_hsl(0_50%_35%),0_1px_4px_hsl(0_0%_0%/0.1),inset_0_1px_3px_hsl(0_0%_0%/0.08)] active:translate-y-[2px]",
         outline: "border border-border/60 bg-card/40 text-foreground backdrop-blur-md shadow-[0_2px_0_0_hsl(var(--border)/0.5),0_4px_12px_-2px_hsl(0_0%_0%/0.2),inset_0_1px_0_hsl(var(--surface-glass)/0.12),inset_0_-1px_0_hsl(0_0%_0%/0.04)] hover:border-primary/30 hover:shadow-[0_2px_0_0_hsl(var(--border)/0.5),0_6px_16px_-2px_hsl(0_0%_0%/0.25),inset_0_1px_0_hsl(var(--surface-glass)/0.18)] active:shadow-3d-pressed active:translate-y-[1px]",
         secondary: "bg-gradient-to-b from-secondary/90 to-secondary text-secondary-foreground border border-border/60 shadow-[0_2px_0_0_hsl(var(--border)/0.5),0_4px_12px_-2px_hsl(0_0%_0%/0.2),inset_0_1px_0_hsl(var(--surface-glass)/0.1),inset_0_-1px_0_hsl(0_0%_0%/0.04)] hover:bg-muted active:shadow-3d-pressed active:translate-y-[1px]",
