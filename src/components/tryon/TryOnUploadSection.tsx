@@ -81,7 +81,7 @@ const TryOnUploadSection = ({
 
         {/* Your Photo */}
         <div>
-          <p className="text-[12px] font-bold text-foreground/70 uppercase tracking-wider mb-1">Your Photo <span className="text-destructive">*</span></p>
+          <p className="text-[12px] font-bold text-foreground uppercase tracking-wider mb-1">Your Photo <span className="text-destructive">*</span></p>
           {userPhoto ? (
             <div className="relative">
               <button onClick={() => userPhotoRef.current?.click()} className="w-full rounded-xl overflow-hidden border-2 border-primary/40 bg-card active:scale-[0.97] transition-all">
