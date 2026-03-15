@@ -19,8 +19,8 @@ const HomeFAB = () => {
   ];
 
   return (
+  return createPortal(
     <div className="fixed bottom-20 right-5 z-50 lg:right-[calc(50%-195px+20px)]">
-      {/* Scrim */}
       <AnimatePresence>
         {fabOpen && (
           <motion.div
