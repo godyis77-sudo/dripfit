@@ -162,7 +162,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
   return (
     <>
       {/* Filter stats row */}
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-1 mb-4">
         {([
           { key: 'all' as FilterMode, label: 'Total', value: tryOnPosts.length },
           { key: 'public' as FilterMode, label: 'Public', value: publicCount },
