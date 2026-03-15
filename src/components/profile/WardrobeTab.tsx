@@ -74,8 +74,8 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                   onClick={() => { if (!longPressId) setSelectedItem(item); }}
                   className="w-full text-left active:scale-[0.97] transition-transform"
                 >
-                  <div className="relative aspect-[3/4] px-1.5 pt-1.5">
-                    <img src={item.image_url} alt={item.notes || item.category} className="w-full h-full object-cover object-top rounded-lg" />
+                  <div className="relative aspect-[3/4]">
+                    <img src={item.image_url} alt={item.notes || item.category} className="w-full h-full object-cover object-top" />
                     {(() => {
                       const displayBrand = item.brand || (item.product_link ? detectBrandFromUrl(item.product_link).brand : null) || item.retailer;
                       return displayBrand ? (
