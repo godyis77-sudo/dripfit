@@ -36,8 +36,21 @@ const DISCORD_INVITE = 'https://discord.gg/YOUR_INVITE_LINK';
 
 const FoundingMembers = () => {
   usePageTitle('Founding Members');
-  const spotsLeft = TOTAL_SPOTS - SPOTS_CLAIMED;
-  const progress = (SPOTS_CLAIMED / TOTAL_SPOTS) * 100;
+  const [spotsClaimed, setSpotsClaimed] = useState(FALLBACK_CLAIMED);
+
+  useEffect(() => {
+    supabase
+      .from('app_config')
+      .select('value')
+      .eq('key', 'founding_members_claimed')
+      .single()
+      .then(({ data }) => {
+        if (data?.value) setSpotsClaimed(parseInt(data.value, 10));
+      });
+  }, []);
+
+  const spotsLeft = TOTAL_SPOTS - spotsClaimed;
+  const progress = (spotsClaimed / TOTAL_SPOTS) * 100;
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
