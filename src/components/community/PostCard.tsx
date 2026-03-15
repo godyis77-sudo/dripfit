@@ -169,7 +169,7 @@ const PostCard = ({
                     transition={{ duration: 0.2 }}
                     onClick={(e) => { e.stopPropagation(); onVote(post.id, v.key); }}
                     className={`flex-1 py-1.5 rounded-md text-[11px] font-bold border transition-all flex flex-col items-center gap-0.5 ${
-                      active ? 'btn-gold-3d border-transparent text-primary-foreground' : 'border-white/20 text-white/80 backdrop-blur-sm'
+                      active ? 'bg-primary/30 border-primary/50 text-white backdrop-blur-sm' : 'border-white/20 text-white/80 backdrop-blur-sm'
                     }`}
                   >
                     {v.emoji}
