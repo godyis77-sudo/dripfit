@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import FeatureIcon from '@/components/ui/FeatureIcon';
-import FeatureIcon from '@/components/ui/FeatureIcon';
 
 const HomeFAB = () => {
   const navigate = useNavigate();
@@ -18,7 +17,6 @@ const HomeFAB = () => {
     { icon: <FeatureIcon name="stylecheck" size={22} />, label: 'Style Check', action: () => navigate('/style-check') },
   ];
 
-  return (
   return createPortal(
     <div className="fixed bottom-20 right-5 z-50 lg:right-[calc(50%-195px+20px)]">
       <AnimatePresence>
@@ -76,7 +74,6 @@ const HomeFAB = () => {
       </motion.button>
     </div>,
     document.body
-  );
   );
 };
 
