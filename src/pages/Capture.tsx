@@ -440,7 +440,7 @@ const Capture = () => {
     <div className="flex min-h-screen flex-col bg-background pb-safe-tab">
       {/* Header */}
       <div className="px-4 pt-3 pb-1">
-        <div className="flex items-center gap-2 h-14">
+        <div className="flex items-center gap-0 h-14">
           {/* Back arrow */}
           <Button variant="ghost" size="icon" onClick={goBack} className="h-8 w-8 rounded-xl min-h-[44px] min-w-[44px] shrink-0" aria-label="Go back">
             <ArrowLeft className="h-4 w-4" />
