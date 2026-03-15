@@ -79,22 +79,20 @@ serve(async (req) => {
       return errorResponse('Invalid height. Must be 120–230 cm', 'VALIDATION_ERROR', 400, corsHeaders);
     }
 
-    // JWT verification
+    // JWT verification (optional — guests can scan without auth)
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return errorResponse('Unauthorized', 'AUTH_ERROR', 401, corsHeaders);
-    }
-
-    const supabaseAnon = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } }
-    );
-
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabaseAnon.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
-      return errorResponse('Unauthorized', 'AUTH_ERROR', 401, corsHeaders);
+    if (authHeader?.startsWith('Bearer ')) {
+      const supabaseAnon = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_ANON_KEY")!,
+        { global: { headers: { Authorization: authHeader } } }
+      );
+      const token = authHeader.replace("Bearer ", "");
+      try {
+        await supabaseAnon.auth.getUser(token);
+      } catch (_) {
+        // Allow request to proceed even if token is invalid (guest mode)
+      }
     }
 
     const raw = body;
