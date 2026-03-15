@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
-import { Crown, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
+import InlineCrown from '@/components/ui/InlineCrown';
 import { useNavigate } from 'react-router-dom';
 import { trackEvent } from '@/lib/analytics';
 
