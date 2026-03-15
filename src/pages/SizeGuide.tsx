@@ -513,7 +513,7 @@ const SizeGuide = () => {
               <MeasurementSelector />
             </div>
 
-            <Button className="w-full h-11 rounded-lg btn-3d-drip font-bold text-[14px] mb-4" disabled={!sizeGuideImage || !selectedMeasurement || loading} onClick={handleAnalyze}>
+            <Button className="w-full h-11 rounded-lg btn-luxury font-bold text-[14px] mb-4" disabled={!sizeGuideImage || !selectedMeasurement || loading} onClick={handleAnalyze}>
               {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing…</> : 'Get My Size'}
             </Button>
 
