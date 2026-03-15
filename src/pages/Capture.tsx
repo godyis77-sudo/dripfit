@@ -182,8 +182,15 @@ const Capture = () => {
       try {
         const result = await takeNativePhoto('camera');
         const key = flowStep === 'side' ? 'side' : 'front';
-        const compressed = await compressPhoto(result.dataUrl, 1280, 0.8);
-        setPhotos(prev => ({ ...prev, [key]: compressed }));
+
+        try {
+          const compressed = await compressPhoto(result.dataUrl, 1280, 0.8);
+          setPhotos(prev => ({ ...prev, [key]: compressed }));
+        } catch (compressErr) {
+          console.error('Native photo compress failed, using original:', compressErr);
+          setPhotos(prev => ({ ...prev, [key]: result.dataUrl }));
+        }
+
         setReviewing(true);
         trackEvent(key === 'front' ? 'scan_front_captured' : 'scan_side_captured');
       } catch (err: any) {
