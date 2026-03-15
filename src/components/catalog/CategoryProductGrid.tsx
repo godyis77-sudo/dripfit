@@ -20,6 +20,7 @@ interface CategoryProductGridProps {
   gender?: string;
   brand?: string;
   genre?: BrandGenre | null;
+  retailer?: string;
 }
 
 const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>(({
@@ -34,6 +35,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
   gender,
   brand,
   genre,
+  retailer,
 }, ref) => {
   const navigate = useNavigate();
   const { products, loading } = useProductCatalog(category, brand, seed, gender);
@@ -55,6 +57,11 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
   // Apply genre filter
   if (genre) {
     visibleProducts = visibleProducts.filter(p => getBrandGenre(p.brand) === genre);
+  }
+
+  // Apply retailer filter
+  if (retailer) {
+    visibleProducts = visibleProducts.filter(p => p.retailer === retailer);
   }
 
   // Apply price filter

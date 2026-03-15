@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +16,7 @@ import { trackEvent } from '@/lib/analytics';
 import { useTryOnState } from '@/hooks/useTryOnState';
 import { isGuestMode } from '@/lib/session';
 import BrandFilter from '@/components/tryon/BrandFilter';
+import { supabase } from '@/integrations/supabase/client';
 
 const SORT_OPTIONS = [
   { key: 'default', label: 'Recommended' },
@@ -27,6 +28,36 @@ const SORT_OPTIONS = [
 
 type SortKey = typeof SORT_OPTIONS[number]['key'];
 
+/* Retailer autocomplete dropdown */
+function RetailerDropdown({ query, onSelect }: { query: string; onSelect: (name: string) => void }) {
+  const [results, setResults] = useState<string[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .from('retailers')
+      .select('name')
+      .eq('is_active', true)
+      .ilike('name', `%${query}%`)
+      .order('name')
+      .limit(10)
+      .then(({ data }) => {
+        if (!cancelled && data) setResults(data.map(r => r.name));
+      });
+    return () => { cancelled = true; };
+  }, [query]);
+
+  if (results.length === 0) return null;
+  return (
+    <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-card border border-border rounded-lg shadow-lg max-h-40 overflow-y-auto">
+      {results.map(name => (
+        <button key={name} onClick={() => onSelect(name)} className="w-full text-left px-3 py-2 text-[11px] font-medium text-foreground hover:bg-accent/50 transition-colors">
+          {name}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 const TryOn = () => {
   usePageTitle('Virtual Try-On');
   const s = useTryOnState();
@@ -35,8 +66,9 @@ const TryOn = () => {
   const [guestTryOnNudgeDismissed, setGuestTryOnNudgeDismissed] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [sort, setSort] = useState<SortKey>('default');
+  const [retailerSearch, setRetailerSearch] = useState('');
 
-  const activeFilterCount = (s.selectedBrand ? 1 : 0) + (s.selectedGenre ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (s.category !== 'all' ? 1 : 0);
+  const activeFilterCount = (s.selectedBrand ? 1 : 0) + (s.selectedGenre ? 1 : 0) + (s.selectedRetailer ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (s.category !== 'all' ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
@@ -87,7 +119,6 @@ const TryOn = () => {
               onRemoveClothing={s.removeClothing}
               onBrowseProducts={s.removeClothing}
             />
-
 
             {/* Filters button + dropdown */}
             {!s.clothingPhoto && (
@@ -175,6 +206,32 @@ const TryOn = () => {
                           />
                         </div>
 
+                        {/* Retailer search */}
+                        <div>
+                          <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Retailer</p>
+                          {s.selectedRetailer ? (
+                            <div className="flex items-center gap-1.5">
+                              <span className="px-2.5 py-1 rounded-lg text-[10px] font-semibold btn-luxury text-primary-foreground flex items-center gap-1">
+                                {s.selectedRetailer}
+                                <button onClick={() => s.setSelectedRetailer(null)} className="ml-0.5"><X className="h-3 w-3" /></button>
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="relative">
+                              <input
+                                type="text"
+                                value={retailerSearch}
+                                onChange={e => setRetailerSearch(e.target.value)}
+                                placeholder="Search retailers…"
+                                className="w-full h-8 rounded-lg border border-border bg-background px-2.5 text-[11px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
+                              />
+                              {retailerSearch.length >= 2 && (
+                                <RetailerDropdown query={retailerSearch} onSelect={(r) => { s.setSelectedRetailer(r); setRetailerSearch(''); }} />
+                              )}
+                            </div>
+                          )}
+                        </div>
+
                         <div>
                           <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Genre</p>
                           <div className="flex flex-wrap gap-1.5">
@@ -207,7 +264,7 @@ const TryOn = () => {
                         {/* Clear filters */}
                         {activeFilterCount > 0 && (
                           <button
-                            onClick={() => { setSort('default'); s.setSelectedBrand(null); s.setSelectedGenre(null); s.setCategory('all'); }}
+                            onClick={() => { setSort('default'); s.setSelectedBrand(null); s.setSelectedGenre(null); s.setSelectedRetailer(null); s.setCategory('all'); setRetailerSearch(''); }}
                             className="text-[10px] text-primary font-semibold"
                           >
                             Clear all filters
@@ -225,10 +282,10 @@ const TryOn = () => {
               <div className="mb-3 space-y-2">
                 {s.category === 'all' ? (
                   ALL_PRODUCT_CATEGORIES.map(cat => (
-                    <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={true} maxItems={100} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} genre={s.selectedGenre as any} onSelectProduct={s.handleSelectProduct} />
+                    <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={true} maxItems={100} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} genre={s.selectedGenre as any} retailer={s.selectedRetailer || undefined} onSelectProduct={s.handleSelectProduct} />
                   ))
                 ) : (
-                  <CategoryProductGrid category={s.category} title={`Shop ${CATEGORIES.find(c => c.key === s.category)?.label || s.category}`} collapsed={false} maxItems={100} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} genre={s.selectedGenre as any} onSelectProduct={s.handleSelectProduct} />
+                  <CategoryProductGrid category={s.category} title={`Shop ${CATEGORIES.find(c => c.key === s.category)?.label || s.category}`} collapsed={false} maxItems={100} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} genre={s.selectedGenre as any} retailer={s.selectedRetailer || undefined} onSelectProduct={s.handleSelectProduct} />
                 )}
               </div>
             )}
