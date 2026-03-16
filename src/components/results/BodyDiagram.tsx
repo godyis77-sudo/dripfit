@@ -146,21 +146,21 @@ const CornerBrackets = () => {
 /* ── HUD status bar ── */
 const HudStatusBar = ({ useCm }: { useCm: boolean }) => (
   <motion.div
-    className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[7] flex items-center gap-1.5"
+    className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[7]"
     initial={{ opacity: 0, y: 6 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 1, duration: 0.5 }}
   >
     <div
-      className="flex items-center gap-2 rounded-full px-3 py-1 backdrop-blur-xl border border-primary/20"
+      className="flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 backdrop-blur-xl border border-primary/20"
       style={{ background: 'hsl(220 15% 3% / 0.7)' }}
     >
-      <span className="text-[8px] font-mono uppercase tracking-[0.15em] text-primary/70 font-bold">
+      <span className="text-[7px] font-mono uppercase tracking-[0.12em] text-primary/70 font-bold">
         NEURAL MAP
       </span>
       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_2px_hsl(142_71%_45%/0.6)]" />
-      <span className="text-[8px] font-mono uppercase tracking-[0.15em] text-primary/50">
-        TAP → {useCm ? 'IMPERIAL' : 'METRIC'}
+      <span className="text-[7px] font-mono uppercase tracking-[0.12em] text-primary/50">
+        TAP→{useCm ? 'IN' : 'CM'}
       </span>
     </div>
   </motion.div>
@@ -278,13 +278,13 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           <img
             src={hudScanBg}
             alt=""
-            className="absolute inset-0 w-full h-full object-cover opacity-50"
+            className="absolute inset-0 w-full h-full object-cover opacity-70"
             aria-hidden="true"
           />
-          {/* Dark base layer so silhouette is visible */}
-          <div className="absolute inset-0 bg-background/60" />
+          {/* Subtle dark wash — just enough to keep labels readable */}
+          <div className="absolute inset-0 bg-background/30" />
 
-          {/* Layer 1: Body silhouette with parallax + gold edge glow */}
+          {/* Layer 1: Body silhouette — bright gold tint, strong glow */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center"
             style={{ transform: `translateY(${parallaxY}px)` }}
@@ -292,10 +292,10 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             <img
               src={bodySilhouette}
               alt="Body measurement scan"
-              className="h-[90%] w-auto object-contain drop-shadow-[0_0_30px_hsl(42_76%_50%/0.25)]"
+              className="h-[88%] w-auto object-contain drop-shadow-[0_0_40px_hsl(42_76%_50%/0.4)]"
               onLoad={() => setImageLoaded(true)}
               style={{
-                filter: 'sepia(0.2) saturate(1.2) brightness(1.3) contrast(1.1)',
+                filter: 'sepia(0.35) saturate(1.6) brightness(1.6) contrast(1.05)',
               }}
             />
           </motion.div>
