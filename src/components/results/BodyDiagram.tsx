@@ -649,9 +649,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   className="rounded-lg px-2 py-1 backdrop-blur-2xl"
                   style={{
                     textAlign: o.side === 'left' ? 'left' : 'right',
-                    background: 'linear-gradient(145deg, hsl(var(--primary) / 0.12) 0%, hsl(220 15% 5% / 0.75) 100%)',
-                    border: '1px solid hsl(var(--primary) / 0.18)',
-                    boxShadow: '0 2px 12px hsl(var(--primary) / 0.08), inset 0 1px 0 hsl(var(--primary) / 0.08)',
+                    background: 'linear-gradient(145deg, hsl(var(--primary) / 0.18) 0%, hsl(220 15% 5% / 0.88) 100%)',
+                    border: '1px solid hsl(var(--primary) / 0.25)',
+                    boxShadow: '0 2px 12px hsl(var(--primary) / 0.12), inset 0 1px 0 hsl(var(--primary) / 0.12)',
                   }}
                 >
                   <p className="text-[8px] font-mono font-bold uppercase tracking-[0.18em] text-primary leading-none mb-[3px]" style={{ textShadow: '0 0 6px hsl(var(--primary) / 0.5)' }}>
