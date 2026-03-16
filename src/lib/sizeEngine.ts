@@ -15,6 +15,12 @@ interface SizeChartRow {
   inseam_max: number | null;
   shoulder_min: number | null;
   shoulder_max: number | null;
+  sleeve_min?: number | null;
+  sleeve_max?: number | null;
+  height_min?: number | null;
+  height_max?: number | null;
+  shoe_min?: number | null;
+  shoe_max?: number | null;
 }
 
 export interface UserMeasurements {
@@ -101,13 +107,16 @@ function getUserMid(user: UserMeasurements, key: string): number | null {
  * Resolves chart min/max for a given measurement key from a SizeChartRow.
  */
 function getChartRange(row: SizeChartRow, key: string): [number, number] | null {
-  const pairs: Record<string, [number | null, number | null]> = {
+  const pairs: Record<string, [number | null | undefined, number | null | undefined]> = {
     chest: [row.chest_min ?? row.bust_min, row.chest_max ?? row.bust_max],
     waist: [row.waist_min, row.waist_max],
     hip: [row.hip_min, row.hip_max],
     hips: [row.hip_min, row.hip_max],
     shoulder: [row.shoulder_min, row.shoulder_max],
     inseam: [row.inseam_min, row.inseam_max],
+    sleeve: [row.sleeve_min, row.sleeve_max],
+    height: [row.height_min, row.height_max],
+    shoe_length: [row.shoe_min, row.shoe_max],
   };
   const pair = pairs[key];
   if (!pair || pair[0] == null || pair[1] == null) return null;
@@ -182,10 +191,26 @@ export async function recommendSize(
     score: scoreSizeRow(r as SizeChartRow, user, fit, category),
   })).sort((a, b) => b.score - a.score);
 
-  const bestIdx = 0;
-  const best = scored[bestIdx].label;
-  const sizeDown = scored[Math.min(bestIdx + 1, scored.length - 1)]?.label || best;
-  const sizeUp = bestIdx > 0 ? scored[bestIdx - 1].label : best;
+  if (scored.length === 0) return null;
+
+  const best = scored[0].label;
+
+  // Physical size hierarchy for accurate neighbor mapping
+  const sizeHierarchy = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL', '4XL'];
+
+  let sizeDown = best;
+  let sizeUp = best;
+
+  const hierarchyIndex = sizeHierarchy.indexOf(best.toUpperCase());
+
+  if (hierarchyIndex !== -1) {
+    if (hierarchyIndex > 0) sizeDown = sizeHierarchy[hierarchyIndex - 1];
+    if (hierarchyIndex < sizeHierarchy.length - 1) sizeUp = sizeHierarchy[hierarchyIndex + 1];
+  } else {
+    // Fallback for non-standard sizes (European numbering, "One Size", etc.)
+    sizeDown = scored.length > 1 ? scored[1].label : best;
+    sizeUp = scored.length > 2 ? scored[2].label : best;
+  }
 
   return { best, sizeDown, sizeUp, scores: scored };
 }
