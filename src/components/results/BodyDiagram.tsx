@@ -488,47 +488,47 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
             <div className="relative h-[92%] w-[58%] max-w-[245px]">
-              {/* Layer 1: Wide atmospheric glow */}
+              {/* Layer 1: Wide atmospheric glow — 4× intensified */}
               <img
                 src={silhouetteSrc}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain opacity-30 pointer-events-none"
+                className="absolute inset-0 h-full w-full object-contain opacity-80 pointer-events-none"
                 style={{
-                  filter: 'blur(16px) brightness(2) saturate(1.8) drop-shadow(0 0 60px hsl(var(--primary) / 0.7)) drop-shadow(0 0 100px hsl(var(--primary) / 0.3))',
+                  filter: 'blur(20px) brightness(8) saturate(3) drop-shadow(0 0 80px hsl(var(--primary) / 1)) drop-shadow(0 0 140px hsl(var(--primary) / 0.6))',
                 }}
               />
 
-              {/* Layer 2: Mid bloom */}
+              {/* Layer 2: Mid bloom — 4× intensified */}
               <img
                 src={silhouetteSrc}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain opacity-45 pointer-events-none"
+                className="absolute inset-0 h-full w-full object-contain opacity-85 pointer-events-none"
                 style={{
-                  filter: 'blur(6px) brightness(1.6) saturate(1.5) drop-shadow(0 0 24px hsl(var(--primary) / 0.6))',
+                  filter: 'blur(8px) brightness(6) saturate(2.5) drop-shadow(0 0 40px hsl(var(--primary) / 0.9)) drop-shadow(0 0 70px hsl(var(--primary) / 0.5))',
                 }}
               />
 
-              {/* Layer 3: Tight edge glow */}
+              {/* Layer 3: Tight edge glow — 4× intensified */}
               <img
                 src={silhouetteSrc}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain opacity-55 pointer-events-none"
+                className="absolute inset-0 h-full w-full object-contain opacity-90 pointer-events-none"
                 style={{
-                  filter: 'blur(2.5px) brightness(1.35) saturate(1.4) drop-shadow(0 0 8px hsl(var(--primary) / 0.7))',
+                  filter: 'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
                 }}
               />
 
-              {/* Layer 4: Main silhouette — crisp */}
+              {/* Layer 4: Main silhouette — crisp, boosted */}
               <img
                 src={silhouetteSrc}
                 alt="Body measurement scan"
                 className="relative z-[2] h-full w-full object-contain"
                 onLoad={() => setImageLoaded(true)}
                 style={{
-                  filter: 'saturate(1.2) brightness(1.1) contrast(1.15) drop-shadow(0 0 6px hsl(var(--primary) / 0.6)) drop-shadow(0 0 2px hsl(var(--primary) / 0.9))',
+                  filter: 'saturate(2) brightness(2.5) contrast(1.4) drop-shadow(0 0 12px hsl(var(--primary) / 0.9)) drop-shadow(0 0 4px hsl(var(--primary) / 1))',
                 }}
               />
             </div>
