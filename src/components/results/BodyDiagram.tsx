@@ -275,15 +275,17 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             ].join(', ')}.`}
           </span>
 
-          {/* Layer 0: HUD Background */}
+          {/* Layer 0: HUD Background — fills the 3:4 card */}
           <img
             src={hudScanBg}
             alt=""
-            className="absolute inset-0 w-full h-full object-cover opacity-40"
+            className="absolute inset-0 w-full h-full object-cover opacity-50"
             aria-hidden="true"
           />
+          {/* Dark base layer so silhouette is visible */}
+          <div className="absolute inset-0 bg-background/60" />
 
-          {/* Layer 1: Body silhouette with parallax + gold tint */}
+          {/* Layer 1: Body silhouette with parallax + gold edge glow */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center"
             style={{ transform: `translateY(${parallaxY}px)` }}
@@ -291,11 +293,10 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             <img
               src={bodySilhouette}
               alt="Body measurement scan"
-              className="h-[92%] w-auto object-contain"
+              className="h-[90%] w-auto object-contain drop-shadow-[0_0_30px_hsl(42_76%_50%/0.25)]"
               onLoad={() => setImageLoaded(true)}
               style={{
-                filter: 'sepia(0.25) saturate(1.3) brightness(1.15) contrast(1.05)',
-                mixBlendMode: 'screen',
+                filter: 'sepia(0.2) saturate(1.2) brightness(1.3) contrast(1.1)',
               }}
             />
           </motion.div>
