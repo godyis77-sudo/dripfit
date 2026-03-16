@@ -66,12 +66,14 @@ const OVERLAYS: OverlayConfig[] = [
   { key: 'inseam',   label: 'INSEAM',   side: 'left',  svgY: 330, tagTop: '72%',  delay: 0.42, lineStartX: 78 },
 ];
 
+const LUXURY_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
 const LEADER_LINE_VARIANTS = {
   hidden: { pathLength: 0, opacity: 0 },
   visible: (delay: number) => ({
     pathLength: 1,
     opacity: 1,
-    transition: { pathLength: { delay: delay + 0.5, duration: 0.6, ease: [0.16, 1, 0.3, 1] }, opacity: { delay: delay + 0.4, duration: 0.2 } },
+    transition: { pathLength: { delay: delay + 0.5, duration: 0.6, ease: LUXURY_EASE }, opacity: { delay: delay + 0.4, duration: 0.2 } },
   }),
 };
 

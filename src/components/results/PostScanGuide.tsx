@@ -43,12 +43,14 @@ const STEPS: { key: string; featureIcon: FeatureIconName; title: string; desc: s
   },
 ];
 
+const LUXURY_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
 const staggerItem = {
   hidden: { opacity: 0, y: 12 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.1, duration: 0.4, ease: [0.16, 1, 0.3, 1] },
+    transition: { delay: i * 0.1, duration: 0.4, ease: LUXURY_EASE },
   }),
 };
 
