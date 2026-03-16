@@ -488,70 +488,47 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
             <div className="relative h-[92%] w-[58%] max-w-[245px]">
-              {/* Ultra-far glow — widest blur to smooth all edge artifacts */}
+              {/* Layer 1: Wide atmospheric glow */}
               <img
                 src={silhouetteSrc}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain opacity-25 pointer-events-none"
+                className="absolute inset-0 h-full w-full object-contain opacity-30 pointer-events-none"
                 style={{
-                  filter: 'blur(14px) brightness(1.8) saturate(1.5) drop-shadow(0 0 50px hsl(var(--primary) / 0.6)) drop-shadow(0 0 90px hsl(var(--primary) / 0.25))',
+                  filter: 'blur(16px) brightness(2) saturate(1.8) drop-shadow(0 0 60px hsl(var(--primary) / 0.7)) drop-shadow(0 0 100px hsl(var(--primary) / 0.3))',
                 }}
               />
 
-              {/* Mid glow — smooth halo */}
+              {/* Layer 2: Mid bloom */}
               <img
                 src={silhouetteSrc}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain opacity-40 pointer-events-none"
+                className="absolute inset-0 h-full w-full object-contain opacity-45 pointer-events-none"
                 style={{
-                  filter: 'blur(5px) brightness(1.4) saturate(1.3) drop-shadow(0 0 20px hsl(var(--primary) / 0.55)) drop-shadow(0 0 40px hsl(var(--primary) / 0.2))',
+                  filter: 'blur(6px) brightness(1.6) saturate(1.5) drop-shadow(0 0 24px hsl(var(--primary) / 0.6))',
                 }}
               />
 
-              {/* Near glow — tighter edge bloom */}
+              {/* Layer 3: Tight edge glow */}
               <img
                 src={silhouetteSrc}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain opacity-50 pointer-events-none"
+                className="absolute inset-0 h-full w-full object-contain opacity-55 pointer-events-none"
                 style={{
-                  filter: 'blur(2px) brightness(1.25) saturate(1.2) drop-shadow(0 0 10px hsl(var(--primary) / 0.5))',
+                  filter: 'blur(2.5px) brightness(1.35) saturate(1.4) drop-shadow(0 0 8px hsl(var(--primary) / 0.7))',
                 }}
               />
 
-              {/* Main silhouette — crisp */}
+              {/* Layer 4: Main silhouette — crisp */}
               <img
                 src={silhouetteSrc}
                 alt="Body measurement scan"
                 className="relative z-[2] h-full w-full object-contain"
                 onLoad={() => setImageLoaded(true)}
                 style={{
-                  filter: 'saturate(1.15) brightness(1.08) contrast(1.12) drop-shadow(0 0 8px hsl(var(--primary) / 0.55)) drop-shadow(0 0 3px hsl(var(--primary) / 0.8))',
-                }}
-              />
-
-              {/* Edge tint overlay — darkens ultra-bright fringe pixels */}
-              <img
-                src={silhouetteSrc}
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 z-[3] h-full w-full object-contain pointer-events-none opacity-90"
-                style={{
-                  mixBlendMode: 'multiply',
-                  filter: 'blur(0.3px) brightness(0.15) contrast(5) saturate(3)',
-                }}
-              />
-              {/* Second multiply pass for maximum suppression */}
-              <img
-                src={silhouetteSrc}
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 z-[3] h-full w-full object-contain pointer-events-none opacity-75"
-                style={{
-                  mixBlendMode: 'multiply',
-                  filter: 'brightness(0.2) contrast(4) saturate(2.5)',
+                  filter: 'saturate(1.2) brightness(1.1) contrast(1.15) drop-shadow(0 0 6px hsl(var(--primary) / 0.6)) drop-shadow(0 0 2px hsl(var(--primary) / 0.9))',
                 }}
               />
             </div>
