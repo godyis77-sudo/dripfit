@@ -474,6 +474,8 @@ const Browse = () => {
           setTimeout(() => beginClickout(p.brand, p.product_url!), 0);
         } : undefined}
       />
+      {/* Scroll-to-top FAB */}
+      <ScrollToTopFab />
       <BottomTabBar />
     </div>
   );
