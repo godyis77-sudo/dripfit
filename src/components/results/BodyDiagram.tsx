@@ -160,7 +160,7 @@ const CornerBrackets = () => {
 /* ── HUD status bar ── */
 const HudStatusBar = ({ useCm }: { useCm: boolean }) => (
   <motion.div
-    className="absolute top-1.5 left-1/2 -translate-x-1/2 z-[6] flex items-center gap-2"
+    className="absolute bottom-2 left-1/2 -translate-x-1/2 z-[6] flex items-center gap-2"
     initial={{ opacity: 0, y: -8 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.8, duration: 0.5 }}
