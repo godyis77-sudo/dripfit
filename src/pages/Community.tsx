@@ -267,21 +267,79 @@ const Community = () => {
         {/* Content */}
         {filter === 'shop' ? (
           <>
-            <div className="flex gap-1.5 mb-3">
-              {GENDER_OPTIONS.map(opt => (
-                <button key={opt.key} onClick={() => setShopGender(opt.key)} aria-label={`Filter by ${opt.label}`} className={`pill ${shopGender === opt.key ? 'pill-filled' : ''}`}>{opt.label}</button>
-              ))}
-            </div>
-            <BrandFilter gender={shopGender === 'all' ? null : shopGender} selectedBrand={shopBrand} onBrandChange={setShopBrand} />
-            <GenreFilter selectedGenre={shopGenre} onGenreChange={setShopGenre} />
-            <div className="flex gap-1.5 overflow-x-auto pb-2 mb-3 scrollbar-none">
-              {(shopGender === 'mens'
-                ? [{ key: 'tops', label: 'Tops' }, { key: 'bottoms', label: 'Bottoms' }, { key: 'outerwear', label: 'Outerwear' }, { key: 'shoes', label: 'Shoes' }, { key: 'activewear', label: 'Activewear' }, { key: 'accessories', label: 'Accessories' }]
-                : [{ key: 'tops', label: 'Tops' }, { key: 'bottoms', label: 'Bottoms' }, { key: 'dresses', label: 'Dresses' }, { key: 'outerwear', label: 'Outerwear' }, { key: 'shoes', label: 'Shoes' }, { key: 'activewear', label: 'Activewear' }, { key: 'accessories', label: 'Accessories' }]
-              ).map(cat => (
-                <button key={cat.key} onClick={() => setShopCategory(cat.key)} aria-label={`Filter by ${cat.label}`} className={`pill ${shopCategory === cat.key ? 'pill-active' : ''}`}>{cat.label}</button>
-              ))}
-            </div>
+            {/* Filters button */}
+            {(() => {
+              const activeCount = (shopBrand ? 1 : 0) + (shopGenre ? 1 : 0) + (shopGender !== 'all' ? 1 : 0) + (shopCategory !== 'tops' ? 1 : 0);
+              return (
+                <div className="mb-3">
+                  <button
+                    onClick={() => setShopFiltersOpen(!shopFiltersOpen)}
+                    className={`relative w-full h-11 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold ${
+                      activeCount > 0
+                        ? 'btn-luxury text-primary-foreground'
+                        : 'bg-card border border-border text-foreground/70'
+                    }`}
+                  >
+                    <SlidersHorizontal className="h-4 w-4" />
+                    {activeCount > 0 ? `Filters (${activeCount})` : 'Filters'}
+                  </button>
+                </div>
+              );
+            })()}
+
+            <AnimatePresence>
+              {shopFiltersOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden border border-border rounded-xl bg-card mb-3"
+                >
+                  <div className="px-4 py-3 space-y-3">
+                    {/* Gender */}
+                    <div>
+                      <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Gender</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {GENDER_OPTIONS.map(opt => (
+                          <button key={opt.key} onClick={() => setShopGender(opt.key)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${shopGender === opt.key ? 'btn-luxury text-primary-foreground' : 'bg-background border border-border text-foreground/70'}`}>{opt.label}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Category */}
+                    <div>
+                      <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Category</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {(shopGender === 'mens'
+                          ? [{ key: 'tops', label: 'Tops' }, { key: 'bottoms', label: 'Bottoms' }, { key: 'outerwear', label: 'Outerwear' }, { key: 'shoes', label: 'Shoes' }, { key: 'activewear', label: 'Activewear' }, { key: 'accessories', label: 'Accessories' }]
+                          : [{ key: 'tops', label: 'Tops' }, { key: 'bottoms', label: 'Bottoms' }, { key: 'dresses', label: 'Dresses' }, { key: 'outerwear', label: 'Outerwear' }, { key: 'shoes', label: 'Shoes' }, { key: 'activewear', label: 'Activewear' }, { key: 'accessories', label: 'Accessories' }]
+                        ).map(cat => (
+                          <button key={cat.key} onClick={() => setShopCategory(cat.key)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${shopCategory === cat.key ? 'btn-luxury text-primary-foreground' : 'bg-background border border-border text-foreground/70'}`}>{cat.label}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Brand */}
+                    <div>
+                      <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Brand</p>
+                      <BrandFilter gender={shopGender === 'all' ? null : shopGender} selectedBrand={shopBrand} onBrandChange={setShopBrand} />
+                    </div>
+
+                    {/* Genre */}
+                    <div>
+                      <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Genre</p>
+                      <GenreFilter selectedGenre={shopGenre} onGenreChange={setShopGenre} />
+                    </div>
+
+                    {/* Clear */}
+                    {((shopBrand ? 1 : 0) + (shopGenre ? 1 : 0) + (shopGender !== 'all' ? 1 : 0) + (shopCategory !== 'tops' ? 1 : 0)) > 0 && (
+                      <button onClick={() => { setShopBrand(null); setShopGenre(null); setShopGender('all'); setShopCategory('tops'); }} className="text-[10px] text-primary font-semibold">Clear all filters</button>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <CategoryProductGrid category={shopCategory} collapsed={false} maxItems={50} gender={shopGender === 'all' ? undefined : shopGender} brand={shopBrand || undefined} genre={shopGenre} onSelectProduct={(product) => navigateToTryOn(navigate, { productUrl: product.product_url || undefined, fallbackClothingImageUrl: product.image_url, source: 'style_check_shop' })} />
           </>
         ) : loading ? (
