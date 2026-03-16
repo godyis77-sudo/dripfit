@@ -557,12 +557,12 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             <svg className="absolute inset-0 w-full h-full pointer-events-none z-[4]" viewBox="0 0 100 100" preserveAspectRatio="none" fill="none">
               <defs>
                 <linearGradient id="lg-l" x1="1" y1="0" x2="0" y2="0">
-                  <stop offset="0%" stopColor="hsl(var(--primary) / 0.55)" />
-                  <stop offset="100%" stopColor="hsl(var(--primary) / 0.03)" />
+                  <stop offset="0%" stopColor="hsl(var(--primary) / 0.8)" />
+                  <stop offset="100%" stopColor="hsl(var(--primary) / 0.06)" />
                 </linearGradient>
                 <linearGradient id="lg-r" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="hsl(var(--primary) / 0.55)" />
-                  <stop offset="100%" stopColor="hsl(var(--primary) / 0.03)" />
+                  <stop offset="0%" stopColor="hsl(var(--primary) / 0.8)" />
+                  <stop offset="100%" stopColor="hsl(var(--primary) / 0.06)" />
                 </linearGradient>
               </defs>
               {activeOverlays.map(o => {
@@ -573,8 +573,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   <motion.path
                     key={`l-${o.key}`}
                     d={`M${dx} ${dy} L${lx} ${ly}`}
-                    stroke="hsl(var(--primary) / 0.45)"
-                    strokeWidth="0.3"
+                    stroke="hsl(var(--primary) / 0.7)"
+                    strokeWidth="0.45"
                     strokeDasharray="1.5 0.6"
                     initial={{ pathLength: 0, opacity: 0 }}
                     animate={{ pathLength: 1, opacity: 1 }}
@@ -654,13 +654,13 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                     boxShadow: '0 2px 12px hsl(var(--primary) / 0.08), inset 0 1px 0 hsl(var(--primary) / 0.08)',
                   }}
                 >
-                  <p className="text-[6.5px] font-mono font-bold uppercase tracking-[0.16em] text-primary leading-none mb-[2px]">
+                  <p className="text-[8px] font-mono font-bold uppercase tracking-[0.18em] text-primary leading-none mb-[3px]" style={{ textShadow: '0 0 6px hsl(var(--primary) / 0.5)' }}>
                     {o.label}
                   </p>
-                  <p className="text-[11px] font-black leading-tight text-foreground hud-data-glow">
+                  <p className="text-[12px] font-black leading-tight text-foreground hud-data-glow">
                     <ScrambleValue value={val.line1} scrambling={scrambling} />
                   </p>
-                  <p className="text-[8px] font-medium leading-tight text-muted-foreground">
+                  <p className="text-[9px] font-semibold leading-tight text-muted-foreground">
                     <ScrambleValue value={val.line2} scrambling={scrambling} />
                   </p>
                 </div>
