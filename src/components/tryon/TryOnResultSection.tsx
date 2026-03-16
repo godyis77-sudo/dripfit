@@ -358,40 +358,36 @@ const TryOnResultSection = ({
           </AnimatePresence>
         </div>
 
-        <AnimatePresence>
-          {showResultFullscreen && createPortal(
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[220] h-dvh w-screen overflow-hidden overscroll-none bg-black/95 flex flex-col items-center justify-center"
-              onPointerDown={(e) => {
-                if (e.target === e.currentTarget) setShowResultFullscreen(false);
-              }}
+        {showResultFullscreen && createPortal(
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[220] h-dvh w-screen overflow-hidden overscroll-none bg-black/95 flex flex-col items-center justify-center"
+            onPointerDown={(e) => {
+              if (e.target === e.currentTarget) setShowResultFullscreen(false);
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => setShowResultFullscreen(false)}
+              className="absolute top-4 right-4 z-[221] h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
+              aria-label="Close full screen image"
             >
-              <button
-                type="button"
-                onClick={() => setShowResultFullscreen(false)}
-                className="absolute top-4 right-4 z-[221] h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
-                aria-label="Close full screen image"
-              >
-                <X className="h-5 w-5 text-white" />
-              </button>
-              <motion.img
-                initial={{ scale: 0.96, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.96, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                src={resultImage}
-                alt="Try-on result full screen"
-                className="max-w-[calc(100%-2rem)] max-h-[82dvh] w-auto h-auto rounded-xl"
-                onPointerDown={(e) => e.stopPropagation()}
-              />
-            </motion.div>,
-            document.body
-          )}
-        </AnimatePresence>
+              <X className="h-5 w-5 text-white" />
+            </button>
+            <motion.img
+              initial={{ scale: 0.96, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.2 }}
+              src={resultImage}
+              alt="Try-on result full screen"
+              className="max-w-[calc(100%-2rem)] max-h-[82dvh] w-auto h-auto rounded-xl"
+              onPointerDown={(e) => e.stopPropagation()}
+            />
+          </motion.div>,
+          document.body
+        )}
 
         {/* Floating generating bar — portal to escape transforms */}
         {addingAccessory && createPortal(
