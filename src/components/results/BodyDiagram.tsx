@@ -13,6 +13,8 @@ const fmtHeightFtIn = (cm: number) => {
 };
 const LUXURY_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
+const SILHOUETTE_EDGE_MASK = 'radial-gradient(ellipse 88% 90% at 50% 48%, black 55%, rgba(0,0,0,0.5) 75%, rgba(0,0,0,0.1) 90%, transparent 100%)';
+
 const createProcessedSilhouette = (imageSrc: string): Promise<string> =>
   new Promise((resolve) => {
     const img = new Image();
@@ -487,10 +489,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             className="absolute inset-0 flex items-center justify-center"
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
-            <div className="relative h-[92%] w-[58%] max-w-[245px]" style={{
-                WebkitMaskImage: 'radial-gradient(ellipse 90% 92% at 50% 48%, black 50%, rgba(0,0,0,0.6) 70%, rgba(0,0,0,0.15) 88%, transparent 100%)',
-                maskImage: 'radial-gradient(ellipse 90% 92% at 50% 48%, black 50%, rgba(0,0,0,0.6) 70%, rgba(0,0,0,0.15) 88%, transparent 100%)',
-              }}>
+            <div className="relative h-[92%] w-[58%] max-w-[245px]">
               {/* Layer 1: Wide atmospheric glow — 4× intensified */}
               <img
                 src={silhouetteSrc}
@@ -499,6 +498,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 className="absolute inset-0 h-full w-full object-contain opacity-80 pointer-events-none"
                 style={{
                   filter: 'blur(20px) brightness(8) saturate(3) drop-shadow(0 0 80px hsl(var(--primary) / 1)) drop-shadow(0 0 140px hsl(var(--primary) / 0.6))',
+                  WebkitMaskImage: SILHOUETTE_EDGE_MASK, maskImage: SILHOUETTE_EDGE_MASK,
                 }}
               />
 
@@ -510,6 +510,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 className="absolute inset-0 h-full w-full object-contain opacity-85 pointer-events-none"
                 style={{
                   filter: 'blur(8px) brightness(6) saturate(2.5) drop-shadow(0 0 40px hsl(var(--primary) / 0.9)) drop-shadow(0 0 70px hsl(var(--primary) / 0.5))',
+                  WebkitMaskImage: SILHOUETTE_EDGE_MASK, maskImage: SILHOUETTE_EDGE_MASK,
                 }}
               />
 
@@ -521,6 +522,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 className="absolute inset-0 h-full w-full object-contain opacity-90 pointer-events-none"
                 style={{
                   filter: 'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
+                  WebkitMaskImage: SILHOUETTE_EDGE_MASK, maskImage: SILHOUETTE_EDGE_MASK,
                 }}
               />
 
@@ -532,6 +534,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 onLoad={() => setImageLoaded(true)}
                 style={{
                   filter: 'saturate(2) brightness(2.5) contrast(1.4) drop-shadow(0 0 12px hsl(var(--primary) / 0.9)) drop-shadow(0 0 4px hsl(var(--primary) / 1))',
+                  WebkitMaskImage: SILHOUETTE_EDGE_MASK, maskImage: SILHOUETTE_EDGE_MASK,
                 }}
               />
             </div>
