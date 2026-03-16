@@ -467,6 +467,24 @@ const TryOn = () => {
       </div>
 
       {s.showPremiumGate && <TryOnPremiumGate onClose={() => s.setShowPremiumGate(false)} />}
+
+      {showScrollTop && createPortal(
+        <AnimatePresence>
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="fixed z-[9999] h-11 w-11 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-xl active:scale-90 transition-transform"
+            style={{ right: 16, bottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))' }}
+            aria-label="Scroll to top"
+          >
+            <ArrowUp className="h-5 w-5" />
+          </motion.button>
+        </AnimatePresence>,
+        document.body
+      )}
+
       <BottomTabBar />
     </div>
   );
