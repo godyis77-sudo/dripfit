@@ -81,6 +81,13 @@ const Browse = () => {
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
   const { pendingClickout, beginClickout, confirmClickout, cancelClickout } =
     useAffiliateClickout({ extraProps: { source: 'browse', category } });
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > 300);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   // Scroll lock handled by ProductPreviewModal
 
