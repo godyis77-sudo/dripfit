@@ -209,7 +209,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 }}
                 initial={{ opacity: 0, x: overlay.side === 'left' ? -8 : 8 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: overlay.delay + 0.7, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ delay: overlay.delay + 0.7, duration: 0.4, ease: LUXURY_EASE }}
               >
                 <div
                   className="rounded-md px-1.5 py-0.5"
