@@ -74,14 +74,31 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             ].join(', ')}.`}
           </span>
 
-          {/* Base silhouette */}
+          {/* Invisible base image — only for layout sizing */}
           <img
             src={silhouetteUrl}
             alt="Body silhouette"
-            className="w-full h-auto relative z-[1]"
+            className="w-full h-auto relative z-[0] invisible"
             onLoad={() => setImageLoaded(true)}
-            style={{ opacity: imageLoaded ? 0.85 : 0 , transition: 'opacity 0.5s ease-out' }}
           />
+
+          {/* Body fill — dark tinted silhouette, masked to shape */}
+          {imageLoaded && (
+            <div
+              className="absolute inset-0 z-[1] pointer-events-none"
+              style={{
+                background: 'linear-gradient(180deg, hsl(45 30% 18% / 0.9) 0%, hsl(220 15% 8% / 0.95) 100%)',
+                WebkitMaskImage: `url(${silhouetteUrl})`,
+                WebkitMaskSize: 'contain',
+                WebkitMaskRepeat: 'no-repeat',
+                WebkitMaskPosition: 'center',
+                maskImage: `url(${silhouetteUrl})`,
+                maskSize: 'contain',
+                maskRepeat: 'no-repeat',
+                maskPosition: 'center',
+              }}
+            />
+          )}
 
           {/* Holographic grid overlay — masked to body shape */}
           {imageLoaded && (
@@ -92,8 +109,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               transition={{ duration: 1.2, ease: 'easeOut' }}
               style={{
                 backgroundImage:
-                  'linear-gradient(hsl(45 88% 50% / 0.15) 1px, transparent 1px), linear-gradient(90deg, hsl(45 88% 50% / 0.15) 1px, transparent 1px)',
-                backgroundSize: '18px 18px',
+                  'linear-gradient(hsl(45 88% 50% / 0.18) 1px, transparent 1px), linear-gradient(90deg, hsl(45 88% 50% / 0.18) 1px, transparent 1px)',
+                backgroundSize: '16px 16px',
                 WebkitMaskImage: `url(${silhouetteUrl})`,
                 WebkitMaskSize: 'contain',
                 WebkitMaskRepeat: 'no-repeat',
@@ -111,7 +128,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             <div
               className="absolute inset-0 z-[3] pointer-events-none"
               style={{
-                background: 'radial-gradient(ellipse 60% 80% at 50% 45%, hsl(45 88% 50% / 0.12), transparent 70%)',
+                background: 'radial-gradient(ellipse 50% 70% at 50% 40%, hsl(45 88% 50% / 0.18), transparent 70%)',
+                boxShadow: 'inset 0 0 20px hsl(45 88% 50% / 0.3)',
                 WebkitMaskImage: `url(${silhouetteUrl})`,
                 WebkitMaskSize: 'contain',
                 WebkitMaskRepeat: 'no-repeat',
