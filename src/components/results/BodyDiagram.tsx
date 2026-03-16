@@ -264,6 +264,7 @@ const TickMarks = () => (
    ═══════════════════════════════════════════ */
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [silhouetteReady, setSilhouetteReady] = useState(false);
   const [useCmState, setUseCmLocal] = useState(getUseCm());
   const [scrambling, setScrambling] = useState(false);
   const [silhouetteSrc, setSilhouetteSrc] = useState(bodySilhouette);
