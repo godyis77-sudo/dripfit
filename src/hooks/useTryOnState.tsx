@@ -17,7 +17,18 @@ export type WardrobeItem = { id: string; image_url: string; category: string; pr
 
 const TRYON_STATE_KEY = 'dripcheck_tryon_state';
 
-function loadPersistedTryOnState(): { userPhoto: string | null; clothingPhoto: string | null; productLink: string; category: string } {
+type PersistedTryOnState = {
+  userPhoto: string | null;
+  clothingPhoto: string | null;
+  productLink: string;
+  category: string;
+  resultImage: string | null;
+  lookItems: LookItem[];
+  caption: string;
+  autoSaved: boolean;
+};
+
+function loadPersistedTryOnState(): PersistedTryOnState {
   try {
     const raw = sessionStorage.getItem(TRYON_STATE_KEY);
     if (raw) {
@@ -27,10 +38,14 @@ function loadPersistedTryOnState(): { userPhoto: string | null; clothingPhoto: s
         clothingPhoto: parsed.clothingPhoto || null,
         productLink: parsed.productLink || '',
         category: parsed.category || 'top',
+        resultImage: parsed.resultImage || null,
+        lookItems: parsed.lookItems || [],
+        caption: parsed.caption || '',
+        autoSaved: parsed.autoSaved || false,
       };
     }
   } catch { /* ignore */ }
-  return { userPhoto: null, clothingPhoto: null, productLink: '', category: 'top' };
+  return { userPhoto: null, clothingPhoto: null, productLink: '', category: 'top', resultImage: null, lookItems: [], caption: '', autoSaved: false };
 }
 
 export function useTryOnState() {
@@ -45,28 +60,29 @@ export function useTryOnState() {
 
   const [userPhoto, setUserPhotoRaw] = useState<string | null>(persisted.userPhoto);
   const [clothingPhoto, setClothingPhotoRaw] = useState<string | null>(persisted.clothingPhoto);
-  const [resultImage, setResultImage] = useState<string | null>(null);
+  const [resultImage, setResultImageRaw] = useState<string | null>(persisted.resultImage);
   const [description, setDescription] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingStepIndex, setLoadingStepIndex] = useState(0);
-  const [caption, setCaption] = useState('');
+  const [caption, setCaptionRaw] = useState(persisted.caption);
   const [isPublic, setIsPublic] = useState(() => getDefaultSharePreference());
   const [shared, setShared] = useState(false);
-  const [autoSaved, setAutoSaved] = useState(false);
+  const [autoSaved, setAutoSaved] = useState(persisted.autoSaved);
   const [productLink, setProductLinkRaw] = useState(persisted.productLink);
-  const [lookItems, setLookItems] = useState<LookItem[]>([]);
+  const [lookItems, setLookItemsRaw] = useState<LookItem[]>(persisted.lookItems);
   const [category, setCategoryRaw] = useState<string>(persisted.category);
   const [clothingSaved, setClothingSaved] = useState(false);
 
   // Persist critical state to sessionStorage so it survives mobile camera handoff reloads
   // NOTE: Don't persist large base64 photos — they can exceed sessionStorage quota (~5MB)
-  const persistState = useCallback((updates: Partial<{ userPhoto: string | null; clothingPhoto: string | null; productLink: string; category: string }>) => {
+  const persistState = useCallback((updates: Partial<{ userPhoto: string | null; clothingPhoto: string | null; productLink: string; category: string; resultImage: string | null; lookItems: LookItem[]; caption: string; autoSaved: boolean }>) => {
     try {
       const current = (() => { try { return JSON.parse(sessionStorage.getItem(TRYON_STATE_KEY) || '{}'); } catch { return {}; } })();
-      const safeUpdates = { ...updates };
+      const safeUpdates = { ...updates } as Record<string, unknown>;
       // Only persist photos if they're URLs (short). Skip large base64 to avoid quota overflow.
-      if (safeUpdates.userPhoto && safeUpdates.userPhoto.length > 50_000) delete safeUpdates.userPhoto;
-      if (safeUpdates.clothingPhoto && safeUpdates.clothingPhoto.length > 50_000) delete safeUpdates.clothingPhoto;
+      if (typeof safeUpdates.userPhoto === 'string' && safeUpdates.userPhoto.length > 50_000) delete safeUpdates.userPhoto;
+      if (typeof safeUpdates.clothingPhoto === 'string' && safeUpdates.clothingPhoto.length > 50_000) delete safeUpdates.clothingPhoto;
+      if (typeof safeUpdates.resultImage === 'string' && safeUpdates.resultImage.length > 50_000) delete safeUpdates.resultImage;
       sessionStorage.setItem(TRYON_STATE_KEY, JSON.stringify({ ...current, ...safeUpdates }));
     } catch { /* quota exceeded, ignore */ }
   }, []);
@@ -75,6 +91,11 @@ export function useTryOnState() {
   const setClothingPhoto = useCallback((v: string | null) => { setClothingPhotoRaw(v); persistState({ clothingPhoto: v }); }, [persistState]);
   const setProductLink = useCallback((v: string) => { setProductLinkRaw(v); persistState({ productLink: v }); }, [persistState]);
   const setCategory = useCallback((v: string) => { setCategoryRaw(v); persistState({ category: v }); }, [persistState]);
+  const setResultImage = useCallback((v: string | null) => { setResultImageRaw(v); persistState({ resultImage: v }); }, [persistState]);
+  const setLookItems = useCallback((v: LookItem[] | ((prev: LookItem[]) => LookItem[])) => {
+    setLookItemsRaw(prev => { const next = typeof v === 'function' ? v(prev) : v; persistState({ lookItems: next }); return next; });
+  }, [persistState]);
+  const setCaption = useCallback((v: string) => { setCaptionRaw(v); persistState({ caption: v }); }, [persistState]);
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
   const [showWardrobe, setShowWardrobe] = useState(false);
   const [showPremiumGate, setShowPremiumGate] = useState(false);
@@ -210,6 +231,7 @@ export function useTryOnState() {
       const { error } = await supabase.from('tryon_posts').insert({ user_id: user!.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false, product_urls: getAllUrls() });
       if (error) throw error;
       setAutoSaved(true);
+      persistState({ autoSaved: true });
       trackEvent('tryon_saved');
       toast({ title: 'Saved to Profile', description: 'Your Try-On is saved privately.' });
     } catch (err: unknown) { console.error('Auto-save failed:', err); }
