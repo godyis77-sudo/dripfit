@@ -253,6 +253,7 @@ Deno.serve(async (req) => {
       user_id,
       brand_slug,
       category,
+      fit_preference: fit,
       recommended_size: best.label,
       confidence,
       fit_status: fitStatus,
@@ -261,7 +262,7 @@ Deno.serve(async (req) => {
       chart_id: chart.id,
       measurements_snapshot: snapshot,
       expires_at: expiresAt,
-    }, { onConflict: "user_id,brand_slug,category" });
+    }, { onConflict: "user_id,brand_slug,category,fit_preference" });
 
     return successResponse({
       recommended_size: best.label,

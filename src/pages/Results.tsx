@@ -179,23 +179,28 @@ const Results = () => {
     }
   }, [result]);
 
+  // When server recommendation exists, use it directly; otherwise use scoring engine
   const adjustedSize = useMemo(() => {
+    if (sizeRec?.recommended_size) return sizeRec.recommended_size;
     if (!result) return '';
     const base = result.recommendedSize;
-    if (fitPref === 'fitted') return shiftSize(base, -1);
+    // Fallback: use fit-aware ladder shift when no server data
+    if (fitPref === 'fitted' || fitPref === 'slim') return shiftSize(base, -1);
     if (fitPref === 'relaxed') return shiftSize(base, 1);
     return base;
-  }, [fitPref, result]);
+  }, [fitPref, result, sizeRec]);
 
   const fitWhyLine = useMemo(() => {
+    if (sizeRec?.fit_notes) return sizeRec.fit_notes;
     const base = result?.whyLine || 'Based on your scan + retailer chart';
     const fitNotes: Record<string, string> = {
       fitted: 'Size down for a closer, tailored silhouette.',
+      slim: 'Size down for a closer, tailored silhouette.',
       regular: 'True-to-size for balanced comfort and shape.',
       relaxed: 'Size up for extra ease and a looser drape.',
     };
-    return `${base} · ${fitNotes[fitPref]}`;
-  }, [fitPref, result]);
+    return `${base} · ${fitNotes[fitPref] || fitNotes.regular}`;
+  }, [fitPref, result, sizeRec]);
 
   const alternatives = useMemo(() => ({ sizeDown: shiftSize(adjustedSize, -1), sizeUp: shiftSize(adjustedSize, 1) }), [adjustedSize]);
 
