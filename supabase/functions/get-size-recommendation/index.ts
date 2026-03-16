@@ -182,6 +182,17 @@ Deno.serve(async (req) => {
       return errorResponse("No body scan data found. Complete a body scan first.", "NOT_FOUND", 400, corsHeaders);
     }
 
+    // Fetch preferred shoe size from profile (for footwear guard)
+    let preferredShoeSize: string | null = null;
+    if (category === "footwear") {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("preferred_shoe_size")
+        .eq("user_id", user_id)
+        .maybeSingle();
+      preferredShoeSize = profile?.preferred_shoe_size ?? null;
+    }
+
     const userMeasurements: Record<string, number> = {};
     const avg = (a: number | null, b: number | null) => (a != null && b != null) ? (a + b) / 2 : null;
     const chest = avg(scan.chest_min, scan.chest_max);
