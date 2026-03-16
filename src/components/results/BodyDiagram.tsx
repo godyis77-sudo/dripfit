@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { MeasurementRange } from '@/lib/types';
 import bodySilhouette from '@/assets/body-silhouette-glow-cutout.webp';
 import bodySilhouetteMask from '@/assets/body-silhouette-mask.png';
-import hudScanBg from '@/assets/hud-scan-bg.jpg';
 import { getUseCm, setUseCm } from '@/lib/session';
 
 const CM_TO_IN = 0.3937;
