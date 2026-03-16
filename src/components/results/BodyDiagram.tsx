@@ -157,20 +157,20 @@ const CornerBrackets = () => {
   );
 };
 
-/* ── HUD status bar ── */
+/* ── HUD status bar — positioned at bottom ── */
 const HudStatusBar = ({ useCm }: { useCm: boolean }) => (
   <motion.div
-    className="absolute bottom-2 left-1/2 -translate-x-1/2 z-[6] flex items-center gap-2"
-    initial={{ opacity: 0, y: -8 }}
+    className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-[6] flex items-center gap-2"
+    initial={{ opacity: 0, y: 6 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.8, duration: 0.5 }}
   >
-    <span className="text-[7px] font-mono uppercase tracking-[0.2em] text-primary/50">
+    <span className="text-[7px] font-mono uppercase tracking-[0.2em] text-primary/60">
       NEURAL MAP
     </span>
     <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_4px_1px_hsl(142_71%_45%/0.6)]" />
-    <span className="text-[7px] font-mono uppercase tracking-[0.2em] text-primary/50">
-      {useCm ? 'METRIC' : 'IMPERIAL'}
+    <span className="text-[7px] font-mono uppercase tracking-[0.2em] text-primary/40">
+      tap → {useCm ? 'imperial' : 'metric'}
     </span>
   </motion.div>
 );
