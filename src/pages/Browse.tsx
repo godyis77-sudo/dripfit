@@ -145,8 +145,8 @@ const Browse = () => {
 
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
-      {/* Scrollable title block */}
-      <div className="flex items-center justify-between px-4 py-3">
+      {/* Scrollable header block */}
+      <div className="px-4 py-3">
         <div className="flex items-center gap-3">
           <button
             onClick={() => {
@@ -168,73 +168,68 @@ const Browse = () => {
         </div>
       </div>
 
-      {/* Sticky filters bar */}
-      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border">
-        {/* Brand search filter */}
-        <div className="px-4 pb-2">
-          <BrandFilter
-            gender={genderFilter === 'all' ? null : genderFilter}
-            selectedBrand={brandFilter}
-            onBrandChange={setBrandFilter}
-          />
-        </div>
+      <div className="px-4 pb-2">
+        <BrandFilter
+          gender={genderFilter === 'all' ? null : genderFilter}
+          selectedBrand={brandFilter}
+          onBrandChange={setBrandFilter}
+        />
+      </div>
 
-        {/* Gender toggle */}
-        <div className="px-4 pb-2 flex gap-1.5">
-          {GENDER_OPTIONS.map(opt => (
-            <button
-              key={opt.key}
-              onClick={() => setGenderOverride(opt.key)}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
-                genderFilter === opt.key
-                  ? 'btn-luxury text-primary-foreground'
-                  : 'bg-card border border-border text-foreground/70'
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="px-4 pb-3 flex gap-1.5 overflow-x-auto scrollbar-hide">
-          {[
-            { key: 'tops', label: 'Tops' },
-            { key: 'bottom', label: 'Bottoms' },
-            ...(genderFilter === 'mens'
-              ? [{ key: 'blazers', label: 'Suits & Blazers' }]
-              : [{ key: 'dress', label: 'Dresses' }]),
-            { key: 'outerwear', label: 'Outerwear' },
-            { key: 'shoes', label: 'Shoes' },
-            { key: 'accessories', label: 'Accessories' },
-          ].map(cat => (
-            <button
-              key={cat.key}
-              onClick={() => navigate(`/browse/${cat.key}`, { replace: true })}
-              className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
-                (category === cat.key || CATEGORY_LABELS[category] === cat.label)
-                  ? 'btn-luxury text-primary-foreground'
-                  : 'bg-card border border-border text-foreground/70'
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Filter button — below tabs for easy access */}
-        <div className="px-4 pb-3">
+      <div className="px-4 pb-2 flex gap-1.5">
+        {GENDER_OPTIONS.map(opt => (
           <button
-            onClick={() => setFiltersOpen(!filtersOpen)}
-            className={`relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold ${
-              activeFilterCount > 0
+            key={opt.key}
+            onClick={() => setGenderOverride(opt.key)}
+            className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
+              genderFilter === opt.key
                 ? 'btn-luxury text-primary-foreground'
                 : 'bg-card border border-border text-foreground/70'
             }`}
           >
-            <SlidersHorizontal className="h-4 w-4" />
-            {activeFilterCount > 0 ? `Filters (${activeFilterCount})` : 'Filters'}
+            {opt.label}
           </button>
-        </div>
+        ))}
+      </div>
+
+      <div className="px-4 pb-3 flex gap-1.5 overflow-x-auto scrollbar-hide">
+        {[
+          { key: 'tops', label: 'Tops' },
+          { key: 'bottom', label: 'Bottoms' },
+          ...(genderFilter === 'mens'
+            ? [{ key: 'blazers', label: 'Suits & Blazers' }]
+            : [{ key: 'dress', label: 'Dresses' }]),
+          { key: 'outerwear', label: 'Outerwear' },
+          { key: 'shoes', label: 'Shoes' },
+          { key: 'accessories', label: 'Accessories' },
+        ].map(cat => (
+          <button
+            key={cat.key}
+            onClick={() => navigate(`/browse/${cat.key}`, { replace: true })}
+            className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
+              (category === cat.key || CATEGORY_LABELS[category] === cat.label)
+                ? 'btn-luxury text-primary-foreground'
+                : 'bg-card border border-border text-foreground/70'
+            }`}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Sticky filter button only */}
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border px-4 py-2">
+        <button
+          onClick={() => setFiltersOpen(!filtersOpen)}
+          className={`relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold ${
+            activeFilterCount > 0
+              ? 'btn-luxury text-primary-foreground'
+              : 'bg-card border border-border text-foreground/70'
+          }`}
+        >
+          <SlidersHorizontal className="h-4 w-4" />
+          {activeFilterCount > 0 ? `Filters (${activeFilterCount})` : 'Filters'}
+        </button>
       </div>
 
       {/* Filters panel */}
