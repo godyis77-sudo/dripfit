@@ -267,6 +267,20 @@ const Results = () => {
           </Button>
         </div>
 
+        {/* Size Guide Tool — top of page */}
+        <button
+          onClick={() => navigate('/size-guide')}
+          className="w-full flex items-center gap-3 rounded-xl border border-border bg-card p-3 mb-3 active:scale-[0.98] transition-transform"
+        >
+          <div className="h-9 w-9 rounded-lg badge-gold-3d flex items-center justify-center shrink-0">
+            <span className="text-sm">📏</span>
+          </div>
+          <div className="text-left">
+            <p className="text-[12px] font-bold text-foreground">Size Guide Tool</p>
+            <p className="text-[10px] text-muted-foreground">Check your size for any brand</p>
+          </div>
+        </button>
+
         {/* Post-scan guided flow */}
         <AnimatePresence>
           {showGuide && (
