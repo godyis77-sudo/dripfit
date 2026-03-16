@@ -317,7 +317,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
-            <div className="h-[78%] w-[36%]" style={{
+            <div className="h-[90%] w-[42%]" style={{
               background: 'radial-gradient(ellipse at 50% 45%, hsl(var(--primary) / 0.22) 0%, hsl(var(--primary) / 0.08) 40%, transparent 70%)',
               filter: 'blur(25px)',
             }} />
@@ -328,32 +328,30 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             className="absolute inset-0 flex items-center justify-center"
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
-            <div className="relative h-[88%] w-[55%] max-w-[220px]">
+            <div className="relative h-[94%] w-[65%] max-w-[280px]">
               {/* Back glow */}
               <img
-                src={silhouetteSrc}
+                src={bodySilhouette}
                 alt=""
                 aria-hidden="true"
                 className="absolute inset-0 h-full w-full object-contain opacity-50"
                 style={{
-                  mixBlendMode: 'normal',
-                  filter: 'saturate(1.15) brightness(1.06) contrast(1.08) blur(1.2px) drop-shadow(0 0 22px hsl(var(--primary) / 0.55)) drop-shadow(0 0 46px hsl(var(--primary) / 0.22))',
+                  mixBlendMode: 'lighten',
+                  filter: 'blur(1.2px) drop-shadow(0 0 22px hsl(var(--primary) / 0.55)) drop-shadow(0 0 46px hsl(var(--primary) / 0.22))',
                 }}
               />
 
               {/* Main silhouette */}
               <img
-                src={silhouetteSrc}
+                src={bodySilhouette}
                 alt="Body measurement scan"
-                className="relative z-[2] h-full w-full object-contain bg-transparent"
+                className="relative z-[2] h-full w-full object-contain"
                 onLoad={() => setImageLoaded(true)}
                 style={{
-                  mixBlendMode: 'normal',
-                  filter: 'saturate(1.15) brightness(1.08) contrast(1.12) drop-shadow(0 0 10px hsl(var(--primary) / 0.5))',
+                  mixBlendMode: 'lighten',
+                  filter: 'drop-shadow(0 0 10px hsl(var(--primary) / 0.5))',
                 }}
               />
-
-              {/* Removed rectangular shimmer overlay to prevent background block artifacts */}
             </div>
           </motion.div>
 
