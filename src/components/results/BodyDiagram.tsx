@@ -396,10 +396,12 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           aria-label="Toggle measurement units"
           tabIndex={0}
           onKeyDown={e => e.key === 'Enter' && toggleUnit()}
-          style={{
-            border: '2px solid hsl(var(--primary) / 0.4)',
-          }}
           animate={{
+            borderColor: [
+              'hsl(var(--primary) / 0.3)',
+              'hsl(var(--primary) / 0.55)',
+              'hsl(var(--primary) / 0.3)',
+            ],
             boxShadow: [
               '0 0 20px 4px hsl(var(--primary) / 0.15), 0 0 60px 12px hsl(var(--primary) / 0.06), inset 0 0 30px 5px hsl(var(--primary) / 0.05)',
               '0 0 30px 8px hsl(var(--primary) / 0.3), 0 0 80px 20px hsl(var(--primary) / 0.12), inset 0 0 40px 8px hsl(var(--primary) / 0.1)',
@@ -407,6 +409,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             ],
           }}
           transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          style={{
+            border: '2px solid hsl(var(--primary) / 0.4)',
+          }}
         >
           <span className="sr-only">
             {`Body measurements diagram: ${[
