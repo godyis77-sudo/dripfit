@@ -85,7 +85,7 @@ export function scoreMeasurement(userVal: number, chartMin: number, chartMax: nu
 /**
  * Resolves user measurement midpoint for a given key from UserMeasurements.
  */
-function getUserMid(user: UserMeasurements, key: string): number | null {
+export function getUserMid(user: UserMeasurements, key: string): number | null {
   if (key === 'height') {
     return user.heightCm ?? null;
   }
