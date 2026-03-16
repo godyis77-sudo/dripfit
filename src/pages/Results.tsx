@@ -28,6 +28,7 @@ import PostScanGuide from '@/components/results/PostScanGuide';
 import ProfilePhotoPrompt from '@/components/results/ProfilePhotoPrompt';
 import ShareResultsButton from '@/components/results/ShareResultsButton';
 import { SizeMatchCard, SizeMatchCardSkeleton } from '@/components/results/SizeMatchCard';
+import SizeDiagnostic from '@/components/results/SizeDiagnostic';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 const SIZE_LADDER = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL'];
@@ -144,6 +145,7 @@ const Results = () => {
         second_option: string | null;
         brand_slug: string;
         category: string;
+        measurement_breakdown?: { key: string; user_value: number; chart_min: number; chart_max: number; score: number; status: string }[];
       };
     },
     enabled: !!user?.id && !!brandSlug,
@@ -383,7 +385,16 @@ const Results = () => {
         <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
         <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} fitPreference={fitPref} />
 
-        {/* Primary CTA above fold */}
+        {/* Measurement diagnostic breakdown */}
+        {sizeRec?.measurement_breakdown && sizeRec.measurement_breakdown.length > 0 && (
+          <SizeDiagnostic
+            breakdown={sizeRec.measurement_breakdown}
+            recommendedSize={sizeRec.recommended_size}
+            brandName={cachedState?.retailer}
+            confidence={sizeRec.confidence}
+          />
+        )}
+
         <ShopThisSize
           recommendedSize={adjustedSize}
           confidence={confidence}
