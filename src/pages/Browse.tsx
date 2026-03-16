@@ -85,29 +85,30 @@ const Browse = () => {
   const lastScrollContainerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    const onScroll = (event?: Event) => {
-      const baseScroll = Math.max(
-        window.scrollY,
-        document.documentElement.scrollTop,
-        document.body.scrollTop
-      );
+    const getCurrentScrollY = () => {
+      const docScroll = document.scrollingElement?.scrollTop ?? 0;
+      const htmlScroll = document.documentElement.scrollTop;
+      const bodyScroll = document.body.scrollTop;
+      const knownContainerScroll = lastScrollContainerRef.current?.scrollTop ?? 0;
+      return Math.max(window.scrollY, docScroll, htmlScroll, bodyScroll, knownContainerScroll);
+    };
 
-      let containerScroll = 0;
+    const onScroll = (event?: Event) => {
       if (event?.target instanceof HTMLElement && event.target.scrollHeight > event.target.clientHeight) {
-        containerScroll = event.target.scrollTop;
         if (event.target !== document.body && event.target !== document.documentElement) {
           lastScrollContainerRef.current = event.target;
         }
       }
-
-      setShowScrollTop(Math.max(baseScroll, containerScroll) > 300);
+      setShowScrollTop(getCurrentScrollY() > 300);
     };
 
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true, capture: true });
+    const pollId = window.setInterval(() => onScroll(), 150);
 
     return () => {
       window.removeEventListener('scroll', onScroll, true);
+      window.clearInterval(pollId);
     };
   }, []);
 
