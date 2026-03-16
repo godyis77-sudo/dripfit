@@ -56,7 +56,7 @@ const FIT_OPTIONS = [
 ] as const;
 
 const Browse = () => {
-  const { category = 'tops' } = useParams<{ category: string }>();
+  const { category = 'all' } = useParams<{ category: string }>();
   const navigate = useNavigate();
   const { userGender } = useAuth();
   const defaultGender: GenderKey = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : 'all';
