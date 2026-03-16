@@ -80,7 +80,7 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
               transition={{ duration: 0.2 }}
               src={src}
               alt={alt}
-              className="max-w-full max-h-[72dvh] object-contain px-4"
+              className="max-w-full max-h-[72dvh] object-contain px-4 rounded-xl"
               onClick={(e) => e.stopPropagation()}
             />
 
