@@ -13,6 +13,55 @@ const fmtHeightFtIn = (cm: number) => {
 };
 const LUXURY_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
+const createAlphaSilhouette = (imageSrc: string): Promise<string> =>
+  new Promise((resolve) => {
+    const img = new Image();
+    img.decoding = 'async';
+    img.src = imageSrc;
+
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        resolve(imageSrc);
+        return;
+      }
+
+      ctx.drawImage(img, 0, 0);
+      const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const px = frame.data;
+
+      for (let i = 0; i < px.length; i += 4) {
+        const r = px[i];
+        const g = px[i + 1];
+        const b = px[i + 2];
+
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        const saturation = max === 0 ? 0 : (max - min) / max;
+        const brightness = (r + g + b) / 3;
+
+        if (brightness > 238 && saturation < 0.12) {
+          px[i + 3] = 0;
+          continue;
+        }
+
+        if (brightness > 220 && saturation < 0.16) {
+          const fade = Math.max(0, Math.min(1, (238 - brightness) / 18));
+          px[i + 3] = Math.round(px[i + 3] * fade);
+        }
+      }
+
+      ctx.putImageData(frame, 0, 0);
+      resolve(canvas.toDataURL('image/png'));
+    };
+
+    img.onerror = () => resolve(imageSrc);
+  });
+
 interface BodyDiagramProps {
   measurements: Record<string, MeasurementRange>;
   heightCm: number;
