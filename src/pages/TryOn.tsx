@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Sparkles, Loader2, Check, Info, ShoppingBag, Store, Shield, X, RotateCcw, SlidersHorizontal } from 'lucide-react';
+import { ArrowLeft, ArrowUp, Sparkles, Loader2, Check, Info, ShoppingBag, Store, Shield, X, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import BottomTabBar from '@/components/BottomTabBar';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
@@ -67,6 +67,13 @@ const TryOn = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [sort, setSort] = useState<SortKey>('default');
   const [retailerSearch, setRetailerSearch] = useState('');
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > 300);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const activeFilterCount = (s.selectedBrand ? 1 : 0) + (s.selectedGenre ? 1 : 0) + (s.selectedRetailer ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (s.category !== 'all' ? 1 : 0);
 
@@ -460,6 +467,24 @@ const TryOn = () => {
       </div>
 
       {s.showPremiumGate && <TryOnPremiumGate onClose={() => s.setShowPremiumGate(false)} />}
+
+      {showScrollTop && createPortal(
+        <AnimatePresence>
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="fixed z-[9999] h-11 w-11 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-xl active:scale-90 transition-transform"
+            style={{ right: 16, bottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))' }}
+            aria-label="Scroll to top"
+          >
+            <ArrowUp className="h-5 w-5" />
+          </motion.button>
+        </AnimatePresence>,
+        document.body
+      )}
+
       <BottomTabBar />
     </div>
   );
