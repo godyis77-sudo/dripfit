@@ -276,7 +276,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
     setImageLoaded(false);
 
     createProcessedSilhouette(bodySilhouette).then((processed) => {
-      if (!cancelled) setSilhouetteSrc(processed);
+      if (!cancelled) { setSilhouetteSrc(processed); setSilhouetteReady(true); }
     });
 
     return () => {
