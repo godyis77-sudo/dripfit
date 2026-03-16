@@ -67,11 +67,19 @@ const SettingsTab = ({
   const [region, setRegion] = useState<UserRegion>(getUserRegion());
   const [gender, setGender] = useState<string | null>(null);
   const [showWinBack, setShowWinBack] = useState(false);
+  const [shoeSize, setShoeSize] = useState('');
+  const [editingShoe, setEditingShoe] = useState(false);
+  const [shoeValue, setShoeValue] = useState('');
 
-  // Load gender from DB
+  // Load gender + shoe size from DB
   useEffect(() => {
-    supabase.from('profiles').select('gender').eq('user_id', user.id).single().then(({ data }) => {
-      if (data) setGender((data as any).gender || null);
+    supabase.from('profiles').select('gender, preferred_shoe_size').eq('user_id', user.id).single().then(({ data }) => {
+      if (data) {
+        setGender((data as any).gender || null);
+        const sz = (data as any).preferred_shoe_size || '';
+        setShoeSize(sz);
+        setShoeValue(sz);
+      }
     });
   }, [user.id]);
 
