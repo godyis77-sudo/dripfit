@@ -431,28 +431,28 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             className="absolute inset-0 flex items-center justify-center"
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
-            <div className="relative h-[94%] w-[65%] max-w-[280px]">
+            <div className="relative h-[92%] w-[58%] max-w-[245px]">
               {/* Back glow */}
               <img
-                src={bodySilhouette}
+                src={silhouetteSrc}
                 alt=""
                 aria-hidden="true"
                 className="absolute inset-0 h-full w-full object-contain opacity-50"
                 style={{
-                  mixBlendMode: 'lighten',
-                  filter: 'blur(1.2px) drop-shadow(0 0 22px hsl(var(--primary) / 0.55)) drop-shadow(0 0 46px hsl(var(--primary) / 0.22))',
+                  mixBlendMode: 'normal',
+                  filter: 'saturate(1.15) brightness(1.06) contrast(1.08) blur(1.2px) drop-shadow(0 0 22px hsl(var(--primary) / 0.55)) drop-shadow(0 0 46px hsl(var(--primary) / 0.22))',
                 }}
               />
 
               {/* Main silhouette */}
               <img
-                src={bodySilhouette}
+                src={silhouetteSrc}
                 alt="Body measurement scan"
                 className="relative z-[2] h-full w-full object-contain"
                 onLoad={() => setImageLoaded(true)}
                 style={{
-                  mixBlendMode: 'lighten',
-                  filter: 'drop-shadow(0 0 10px hsl(var(--primary) / 0.5))',
+                  mixBlendMode: 'normal',
+                  filter: 'saturate(1.15) brightness(1.08) contrast(1.12) drop-shadow(0 0 10px hsl(var(--primary) / 0.5))',
                 }}
               />
             </div>
