@@ -274,25 +274,26 @@ Deno.serve(async (req) => {
     const bestFit = fitScored[0]; // the recommended size (fit-adjusted)
     const secondFit = fitScored.length > 1 ? fitScored[1] : null;
 
-    // Confidence comes from the RAW score of the recommended size
+    // Confidence comes from FIT-ADJUSTED score (reflects how well this size
+    // serves the user's chosen fit preference, not just raw measurement match)
+    const confidence = Number(bestFit.score.toFixed(2));
+    // Breakdown from raw (shows true measurement position vs chart)
     const rawMatchForBest = rawScored.find(s => s.label === bestFit.label) || rawScored[0];
-    const confidence = Number(rawMatchForBest.score.toFixed(2));
-    // Breakdown also from raw (shows true measurement match, not adjusted)
     const breakdown = rawMatchForBest.breakdown;
 
-    // fitStatus based on RAW confidence (how well user actually matches the recommended size)
+    // fitStatus based on fit-adjusted confidence
     let fitStatus: string;
     if (confidence >= 0.90) fitStatus = "true_to_size";
     else if (confidence >= 0.75) fitStatus = "good_fit";
     else if (confidence >= 0.50) fitStatus = "between_sizes";
     else fitStatus = "out_of_range";
 
-    // Determine second option from RAW scores (honest "between sizes" check)
+    // Determine second option from fit-adjusted scores
     let secondOption: string | null = null;
-    const rawSecond = rawScored.length > 1 ? rawScored[1] : null;
-    if (rawSecond && Math.abs(rawMatchForBest.score - rawSecond.score) < 0.15 && rawSecond.score >= 0.45) {
+    const fitSecond = fitScored.length > 1 ? fitScored[1] : null;
+    if (fitSecond && Math.abs(bestFit.score - fitSecond.score) < 0.15 && fitSecond.score >= 0.45) {
       fitStatus = "between_sizes";
-      secondOption = rawSecond.label;
+      secondOption = fitSecond.label;
     }
 
     // Sort the two size labels in ascending size order for display
