@@ -269,17 +269,6 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
   const activeOverlays = OVERLAYS.filter(o => getValue(o.key) !== null);
 
-  // Shared mask style for silhouette layers
-  const maskStyle: React.CSSProperties = {
-    WebkitMaskImage: `url(${bodySilhouetteMask})`,
-    maskImage: `url(${bodySilhouetteMask})`,
-    WebkitMaskRepeat: 'no-repeat',
-    maskRepeat: 'no-repeat',
-    WebkitMaskPosition: 'center',
-    maskPosition: 'center',
-    WebkitMaskSize: 'contain',
-    maskSize: 'contain',
-  };
 
   return (
     <div className="mb-4" ref={containerRef}>
