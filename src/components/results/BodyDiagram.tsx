@@ -258,13 +258,12 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
     <div className="mb-4" ref={containerRef}>
       <div className="flex justify-center">
         <div
-          className="relative rounded-[1rem] border-[2px] border-primary/50 cursor-pointer animate-breathing-glow overflow-hidden"
+          className="relative w-full max-w-[380px] aspect-[3/4] rounded-[1rem] border-[2px] border-primary/50 cursor-pointer animate-breathing-glow overflow-hidden"
           onClick={toggleUnit}
           role="button"
           aria-label="Toggle measurement units"
           tabIndex={0}
           onKeyDown={e => e.key === 'Enter' && toggleUnit()}
-          style={{ aspectRatio: '3/4', maxWidth: 380 }}
         >
           <span className="sr-only">
             {`Body measurements diagram: ${[
