@@ -17,7 +17,18 @@ export type WardrobeItem = { id: string; image_url: string; category: string; pr
 
 const TRYON_STATE_KEY = 'dripcheck_tryon_state';
 
-function loadPersistedTryOnState(): { userPhoto: string | null; clothingPhoto: string | null; productLink: string; category: string } {
+type PersistedTryOnState = {
+  userPhoto: string | null;
+  clothingPhoto: string | null;
+  productLink: string;
+  category: string;
+  resultImage: string | null;
+  lookItems: LookItem[];
+  caption: string;
+  autoSaved: boolean;
+};
+
+function loadPersistedTryOnState(): PersistedTryOnState {
   try {
     const raw = sessionStorage.getItem(TRYON_STATE_KEY);
     if (raw) {
@@ -27,10 +38,14 @@ function loadPersistedTryOnState(): { userPhoto: string | null; clothingPhoto: s
         clothingPhoto: parsed.clothingPhoto || null,
         productLink: parsed.productLink || '',
         category: parsed.category || 'top',
+        resultImage: parsed.resultImage || null,
+        lookItems: parsed.lookItems || [],
+        caption: parsed.caption || '',
+        autoSaved: parsed.autoSaved || false,
       };
     }
   } catch { /* ignore */ }
-  return { userPhoto: null, clothingPhoto: null, productLink: '', category: 'top' };
+  return { userPhoto: null, clothingPhoto: null, productLink: '', category: 'top', resultImage: null, lookItems: [], caption: '', autoSaved: false };
 }
 
 export function useTryOnState() {
