@@ -625,8 +625,14 @@ const Browse = () => {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed right-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-[100] h-10 w-10 rounded-full btn-luxury text-primary-foreground flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+          onClick={() => {
+            lastScrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+            document.body.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className="fixed z-[120] h-10 w-10 rounded-full btn-luxury text-primary-foreground flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+          style={{ right: '1rem', bottom: 'calc(5.5rem + env(safe-area-inset-bottom))' }}
           aria-label="Scroll to top"
         >
           <ArrowUp className="h-4 w-4" />
