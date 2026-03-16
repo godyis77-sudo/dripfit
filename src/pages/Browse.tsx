@@ -226,60 +226,6 @@ const Browse = () => {
         ))}
       </div>
 
-      <div className="px-4 pb-3 flex gap-1.5 overflow-x-auto scrollbar-hide">
-        {[
-          { key: 'all', label: 'All' },
-          { key: 'tops', label: 'Tops' },
-          { key: 't-shirts', label: 'T-Shirts' },
-          { key: 'shirts', label: 'Shirts' },
-          { key: 'polos', label: 'Polos' },
-          { key: 'sweaters', label: 'Sweaters' },
-          { key: 'hoodies', label: 'Hoodies' },
-          { key: 'bottom', label: 'Bottoms' },
-          { key: 'pants', label: 'Pants' },
-          { key: 'jeans', label: 'Jeans' },
-          { key: 'shorts', label: 'Shorts' },
-          { key: 'skirts', label: 'Skirts' },
-          { key: 'leggings', label: 'Leggings' },
-          { key: 'dresses', label: 'Dresses' },
-          { key: 'jumpsuits', label: 'Jumpsuits' },
-          { key: 'outerwear', label: 'Outerwear' },
-          { key: 'jackets', label: 'Jackets' },
-          { key: 'coats', label: 'Coats' },
-          { key: 'blazers', label: 'Blazers' },
-          { key: 'vests', label: 'Vests' },
-          { key: 'shoes', label: 'Shoes' },
-          { key: 'sneakers', label: 'Sneakers' },
-          { key: 'boots', label: 'Boots' },
-          { key: 'sandals', label: 'Sandals' },
-          { key: 'loafers', label: 'Loafers' },
-          { key: 'heels', label: 'Heels' },
-          { key: 'activewear', label: 'Activewear' },
-          { key: 'swimwear', label: 'Swimwear' },
-          { key: 'loungewear', label: 'Loungewear' },
-          { key: 'underwear', label: 'Underwear' },
-          { key: 'accessories', label: 'Accessories' },
-          { key: 'bags', label: 'Bags' },
-          { key: 'hats', label: 'Hats' },
-          { key: 'jewelry', label: 'Jewelry' },
-          { key: 'watches', label: 'Watches' },
-          { key: 'sunglasses', label: 'Sunglasses' },
-          { key: 'belts', label: 'Belts' },
-          { key: 'scarves', label: 'Scarves' },
-        ].map(cat => (
-          <button
-            key={cat.key}
-            onClick={() => navigate(`/browse/${cat.key}`, { replace: true })}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
-              (category === cat.key || CATEGORY_LABELS[category] === cat.label)
-                ? 'btn-luxury text-primary-foreground'
-                : 'bg-card border border-border text-foreground/70'
-            }`}
-          >
-            {cat.label}
-          </button>
-        ))}
-      </div>
 
       {/* Sticky filter button only */}
       <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border px-4 py-2">
