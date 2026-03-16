@@ -601,8 +601,20 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
           />
 
+          {/* BG: Perspective grid floor */}
+          <PerspectiveGrid />
+
           {/* BG: Hex grid */}
           <HexGrid />
+
+          {/* BG: Polar coordinate grid */}
+          <PolarGrid />
+
+          {/* BG: Proportion reference lines */}
+          <ProportionLines />
+
+          {/* BG: Ruler scales */}
+          <RulerScale />
 
           {/* BG: Radial vignette */}
           <div className="absolute inset-0" style={{
