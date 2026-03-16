@@ -652,127 +652,147 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           >
             <div className="relative h-[116%] w-[92%] max-w-[360px]">
 
-              {/* Temporal echo: deep past — large offset, heavy blur */}
+              {/* ═══ BACKGROUND DEPTH LAYERS ═══ */}
+
+              {/* BG Layer 0: Ultra-deep volumetric shadow — anchors the figure in space */}
+              <img
+                src={silhouetteSrc}
+                alt="" aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
+                style={{
+                  filter: 'blur(40px) brightness(3) saturate(2)',
+                  opacity: 0.12,
+                  transform: 'scale(1.15) translateY(3%)',
+                }}
+              />
+
+              {/* BG Layer 1: Wide atmospheric glow — creates a halo behind the body */}
+              <img
+                src={silhouetteSrc}
+                alt="" aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
+                style={{
+                  filter: 'blur(25px) brightness(6) saturate(3) drop-shadow(0 0 80px hsl(var(--primary) / 0.8))',
+                  opacity: 0.35,
+                  transform: 'scale(1.08)',
+                }}
+              />
+
+              {/* BG Layer 2: Mid bloom — fills the gap between halo and edge glow */}
+              <img
+                src={silhouetteSrc}
+                alt="" aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
+                style={{
+                  filter: 'blur(12px) brightness(5) saturate(2.5) drop-shadow(0 0 40px hsl(var(--primary) / 0.7))',
+                  opacity: 0.5,
+                  transform: 'scale(1.03)',
+                }}
+              />
+
+              {/* ═══ TEMPORAL ECHO LAYERS (smooth, long-cycle to avoid strobe) ═══ */}
+
+              {/* Echo: deep past — slow drift left with gentle opacity cycle */}
               <motion.img
                 src={silhouetteSrc}
                 alt="" aria-hidden="true"
                 className="absolute inset-0 h-full w-full object-contain pointer-events-none"
                 style={{
-                  filter: 'blur(8px) brightness(5) saturate(1.5) hue-rotate(-30deg)',
+                  filter: 'blur(6px) brightness(4) saturate(1.5) hue-rotate(-25deg)',
+                  mixBlendMode: 'screen',
+                  transform: 'scale(1.04)',
+                }}
+                animate={{
+                  x: ['-3%', '-5%', '-3%'],
+                  y: ['0.5%', '-0.5%', '0.5%'],
+                  opacity: [0.06, 0.12, 0.06],
+                }}
+                transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+              />
+
+              {/* Echo: past — subtle left drift */}
+              <motion.img
+                src={silhouetteSrc}
+                alt="" aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
+                style={{
+                  filter: 'blur(3px) brightness(4) saturate(1.8) hue-rotate(-12deg)',
                   mixBlendMode: 'screen',
                 }}
                 animate={{
-                  x: ['-4%', '-6%', '-4%'],
-                  y: ['1%', '-1%', '1%'],
-                  scale: [1.04, 1.06, 1.04],
-                  opacity: [0.08, 0.18, 0.08],
+                  x: ['-1.5%', '-2.5%', '-1.5%'],
+                  opacity: [0.08, 0.15, 0.08],
+                }}
+                transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+              />
+
+              {/* Echo: future — subtle right drift */}
+              <motion.img
+                src={silhouetteSrc}
+                alt="" aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
+                style={{
+                  filter: 'blur(3px) brightness(4) saturate(1.8) hue-rotate(12deg)',
+                  mixBlendMode: 'screen',
+                }}
+                animate={{
+                  x: ['1.5%', '2.5%', '1.5%'],
+                  opacity: [0.08, 0.15, 0.08],
+                }}
+                transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+              />
+
+              {/* Echo: deep future — slow drift right */}
+              <motion.img
+                src={silhouetteSrc}
+                alt="" aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
+                style={{
+                  filter: 'blur(6px) brightness(4) saturate(1.5) hue-rotate(25deg)',
+                  mixBlendMode: 'screen',
+                  transform: 'scale(1.04)',
+                }}
+                animate={{
+                  x: ['3%', '5%', '3%'],
+                  y: ['-0.5%', '0.5%', '-0.5%'],
+                  opacity: [0.06, 0.12, 0.06],
+                }}
+                transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
+              />
+
+              {/* ═══ DEPTH-OF-FIELD GLOW LAYERS ═══ */}
+
+              {/* DOF: Rear defocused copy — simulates background depth plane */}
+              <motion.img
+                src={silhouetteSrc}
+                alt="" aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
+                style={{
+                  filter: 'blur(16px) brightness(4) saturate(2.5)',
+                  opacity: 0.2,
+                }}
+                animate={{
+                  scale: [1.06, 1.08, 1.06],
+                }}
+                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+              />
+
+              {/* DOF: Tight edge glow — breathing pulse */}
+              <motion.img
+                src={silhouetteSrc}
+                alt="" aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
+                style={{
+                  filter: 'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
+                  opacity: 0.85,
+                }}
+                animate={{
+                  opacity: [0.75, 0.9, 0.75],
                 }}
                 transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
               />
 
-              {/* Temporal echo: past — medium offset */}
-              <motion.img
-                src={silhouetteSrc}
-                alt="" aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
-                style={{
-                  filter: 'blur(4px) brightness(5) saturate(1.8) hue-rotate(-15deg)',
-                  mixBlendMode: 'screen',
-                }}
-                animate={{
-                  x: ['-2%', '-3.5%', '-2%'],
-                  scale: [1.01, 1.03, 1.01],
-                  opacity: [0.1, 0.25, 0.1],
-                }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
-              />
-
-              {/* Temporal echo: future — medium offset */}
-              <motion.img
-                src={silhouetteSrc}
-                alt="" aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
-                style={{
-                  filter: 'blur(4px) brightness(5) saturate(1.8) hue-rotate(15deg)',
-                  mixBlendMode: 'screen',
-                }}
-                animate={{
-                  x: ['2%', '3.5%', '2%'],
-                  scale: [1.01, 1.03, 1.01],
-                  opacity: [0.1, 0.25, 0.1],
-                }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }}
-              />
-
-              {/* Temporal echo: deep future — large offset */}
-              <motion.img
-                src={silhouetteSrc}
-                alt="" aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
-                style={{
-                  filter: 'blur(8px) brightness(5) saturate(1.5) hue-rotate(30deg)',
-                  mixBlendMode: 'screen',
-                }}
-                animate={{
-                  x: ['4%', '6%', '4%'],
-                  y: ['-1%', '1%', '-1%'],
-                  scale: [1.04, 1.06, 1.04],
-                  opacity: [0.08, 0.18, 0.08],
-                }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 0.9 }}
-              />
-
-              {/* Depth shadow: scaled-up soft background anchor */}
-              <motion.img
-                src={silhouetteSrc}
-                alt="" aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
-                style={{
-                  filter: 'blur(18px) brightness(4) saturate(2.5)',
-                }}
-                animate={{
-                  scale: [1.06, 1.1, 1.06],
-                  opacity: [0.15, 0.25, 0.15],
-                }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-              />
-
-              {/* Layer 1: Wide atmospheric glow */}
-              <img
-                src={silhouetteSrc}
-                alt="" aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain opacity-80 pointer-events-none"
-                style={{
-                  filter: 'blur(20px) brightness(8) saturate(3) drop-shadow(0 0 80px hsl(var(--primary) / 1)) drop-shadow(0 0 140px hsl(var(--primary) / 0.6))',
-                }}
-              />
-
-              {/* Layer 2: Mid bloom */}
-              <img
-                src={silhouetteSrc}
-                alt="" aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain opacity-85 pointer-events-none"
-                style={{
-                  filter: 'blur(8px) brightness(6) saturate(2.5) drop-shadow(0 0 40px hsl(var(--primary) / 0.9)) drop-shadow(0 0 70px hsl(var(--primary) / 0.5))',
-                }}
-              />
-
-              {/* Layer 3: Tight edge glow — pulsing */}
-              <motion.img
-                src={silhouetteSrc}
-                alt="" aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain opacity-90 pointer-events-none"
-                animate={{
-                  filter: [
-                    'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
-                    'blur(3px) brightness(6) saturate(2.5) drop-shadow(0 0 20px hsl(var(--primary) / 1)) drop-shadow(0 0 40px hsl(var(--primary) / 0.9))',
-                    'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
-                  ],
-                }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-              />
-
-              {/* Layer 4: Main silhouette — crisp foreground with gentle sway */}
+              {/* ═══ MAIN SILHOUETTE (FOREGROUND FOCUS PLANE) ═══ */}
               <motion.img
                 src={silhouetteSrc}
                 alt="Body measurement scan"
@@ -788,7 +808,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
               />
 
-              {/* Layer 5: Front holographic sheen */}
+              {/* ═══ FOREGROUND OVERLAY LAYERS ═══ */}
+
+              {/* FG: Holographic sheen — slow, subtle overlay */}
               <motion.img
                 src={silhouetteSrc}
                 alt="" aria-hidden="true"
@@ -797,11 +819,24 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   mixBlendMode: 'overlay',
                   filter: 'blur(1px) brightness(3) saturate(0.5)',
                 }}
-                animate={{ opacity: [0.04, 0.14, 0.04] }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                animate={{ opacity: [0.05, 0.12, 0.05] }}
+                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
               />
 
-              {/* Layer 6: Chromatic aberration split */}
+              {/* FG: Specular highlight sweep — simulates light passing over */}
+              <motion.div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(105deg, transparent 30%, hsl(var(--primary) / 0.08) 45%, hsl(var(--primary) / 0.15) 50%, hsl(var(--primary) / 0.08) 55%, transparent 70%)',
+                  mixBlendMode: 'screen',
+                }}
+                animate={{
+                  x: ['-100%', '100%'],
+                }}
+                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', repeatDelay: 4 }}
+              />
+
+              {/* FG: Chromatic aberration — red shift right */}
               <motion.img
                 src={silhouetteSrc}
                 alt="" aria-hidden="true"
@@ -811,11 +846,13 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   filter: 'blur(2px) brightness(3) saturate(4) hue-rotate(40deg)',
                 }}
                 animate={{
-                  x: ['0.8%', '1.5%', '0.8%'],
-                  opacity: [0.04, 0.08, 0.04],
+                  x: ['0.5%', '1.2%', '0.5%'],
+                  opacity: [0.03, 0.06, 0.03],
                 }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
               />
+
+              {/* FG: Chromatic aberration — blue shift left */}
               <motion.img
                 src={silhouetteSrc}
                 alt="" aria-hidden="true"
@@ -825,10 +862,10 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   filter: 'blur(2px) brightness(3) saturate(4) hue-rotate(-40deg)',
                 }}
                 animate={{
-                  x: ['-0.8%', '-1.5%', '-0.8%'],
-                  opacity: [0.04, 0.08, 0.04],
+                  x: ['-0.5%', '-1.2%', '-0.5%'],
+                  opacity: [0.03, 0.06, 0.03],
                 }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
               />
             </div>
           </motion.div>
