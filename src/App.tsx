@@ -49,6 +49,7 @@ const Waitlist = lazy(() => import("./pages/Waitlist"));
 const Partnership = lazy(() => import("./pages/Partnership"));
 const FoundingMembers = lazy(() => import("./pages/FoundingMembers"));
 const MediaKit = lazy(() => import("./pages/MediaKit"));
+const LinkHub = lazy(() => import("./pages/LinkHub"));
 
 // ── Suspense fallback (minimal, matches app background) ───────────────
 const RouteFallback = () => (
