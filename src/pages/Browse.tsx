@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -82,33 +82,17 @@ const Browse = () => {
   const { pendingClickout, beginClickout, confirmClickout, cancelClickout } =
     useAffiliateClickout({ extraProps: { source: 'browse', category } });
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const lastScrollContainerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    const getCurrentScrollY = () => {
-      const docScroll = document.scrollingElement?.scrollTop ?? 0;
-      const htmlScroll = document.documentElement.scrollTop;
-      const bodyScroll = document.body.scrollTop;
-      const knownContainerScroll = lastScrollContainerRef.current?.scrollTop ?? 0;
-      return Math.max(window.scrollY, docScroll, htmlScroll, bodyScroll, knownContainerScroll);
+    const onScroll = () => {
+      const scrollY = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop;
+      setShowScrollTop(scrollY > 300);
     };
-
-    const onScroll = (event?: Event) => {
-      if (event?.target instanceof HTMLElement && event.target.scrollHeight > event.target.clientHeight) {
-        if (event.target !== document.body && event.target !== document.documentElement) {
-          lastScrollContainerRef.current = event.target;
-        }
-      }
-      setShowScrollTop(getCurrentScrollY() > 300);
-    };
-
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true, capture: true });
-    const pollId = window.setInterval(() => onScroll(), 150);
-
+    window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('scroll', onScroll, { passive: true });
     return () => {
-      window.removeEventListener('scroll', onScroll, true);
-      window.clearInterval(pollId);
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('scroll', onScroll);
     };
   }, []);
 
@@ -626,14 +610,8 @@ const Browse = () => {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
-          onClick={() => {
-            lastScrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
-            document.body.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          className="fixed z-[120] h-10 w-10 rounded-full btn-luxury text-primary-foreground flex items-center justify-center shadow-lg active:scale-90 transition-transform"
-          style={{ right: '1rem', bottom: 'calc(5.5rem + env(safe-area-inset-bottom))' }}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed right-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-[100] h-10 w-10 rounded-full btn-luxury text-primary-foreground flex items-center justify-center shadow-lg active:scale-90 transition-transform"
           aria-label="Scroll to top"
         >
           <ArrowUp className="h-4 w-4" />
