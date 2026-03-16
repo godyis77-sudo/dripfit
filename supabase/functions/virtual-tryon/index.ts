@@ -22,10 +22,10 @@ Deno.serve(async (req) => {
 
     // Validate required fields
     const { userPhoto, clothingPhoto } = raw;
-    if (!userPhoto || typeof userPhoto !== 'string' || userPhoto.length > 5_000_000) {
+    if (!userPhoto || typeof userPhoto !== 'string' || userPhoto.length > 15_000_000) {
       return errorResponse('Invalid user photo', 'VALIDATION_ERROR', 400, corsHeaders);
     }
-    if (!clothingPhoto || typeof clothingPhoto !== 'string' || clothingPhoto.length > 5_000_000) {
+    if (!clothingPhoto || typeof clothingPhoto !== 'string' || clothingPhoto.length > 15_000_000) {
       return errorResponse('Invalid clothing photo', 'VALIDATION_ERROR', 400, corsHeaders);
     }
 

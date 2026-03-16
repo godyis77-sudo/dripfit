@@ -59,10 +59,15 @@ export function useTryOnState() {
   const [clothingSaved, setClothingSaved] = useState(false);
 
   // Persist critical state to sessionStorage so it survives mobile camera handoff reloads
+  // NOTE: Don't persist large base64 photos — they can exceed sessionStorage quota (~5MB)
   const persistState = useCallback((updates: Partial<{ userPhoto: string | null; clothingPhoto: string | null; productLink: string; category: string }>) => {
     try {
       const current = (() => { try { return JSON.parse(sessionStorage.getItem(TRYON_STATE_KEY) || '{}'); } catch { return {}; } })();
-      sessionStorage.setItem(TRYON_STATE_KEY, JSON.stringify({ ...current, ...updates }));
+      const safeUpdates = { ...updates };
+      // Only persist photos if they're URLs (short). Skip large base64 to avoid quota overflow.
+      if (safeUpdates.userPhoto && safeUpdates.userPhoto.length > 50_000) delete safeUpdates.userPhoto;
+      if (safeUpdates.clothingPhoto && safeUpdates.clothingPhoto.length > 50_000) delete safeUpdates.clothingPhoto;
+      sessionStorage.setItem(TRYON_STATE_KEY, JSON.stringify({ ...current, ...safeUpdates }));
     } catch { /* quota exceeded, ignore */ }
   }, []);
 
