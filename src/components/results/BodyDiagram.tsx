@@ -166,7 +166,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   strokeWidth={0.8}
                   initial={{ pathLength: 0, opacity: 0 }}
                   animate={mounted ? { pathLength: 1, opacity: 1 } : {}}
-                  transition={{ delay: 0.6, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ delay: 0.6, duration: 0.8, ease: LUXURY_EASE }}
                 />
                 {/* Arrow caps */}
                 <motion.path d="M 12 25 L 15 15 L 18 25" fill="none" stroke="hsl(45 88% 50% / 0.5)" strokeWidth={0.8}
