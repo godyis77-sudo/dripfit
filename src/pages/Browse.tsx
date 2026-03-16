@@ -92,8 +92,8 @@ const Browse = () => {
   const displayed = useMemo(() => {
     let result = [...products];
 
-    if (brandFilter) {
-      result = result.filter(p => p.brand === brandFilter);
+    if (retailerFilter) {
+      result = result.filter(p => p.retailer === retailerFilter);
     }
 
     if (genreFilter) {
