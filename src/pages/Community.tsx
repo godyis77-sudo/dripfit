@@ -24,6 +24,37 @@ import { useCart } from '@/hooks/useCart';
 import type { Post, FilterType, TrendingSort, GenderKey } from '@/components/community/community-types';
 import { GENDER_OPTIONS, isValidImageUrl } from '@/components/community/community-types';
 import type { BrandGenre } from '@/lib/brandGenres';
+import { useProductCatalog } from '@/hooks/useProductCatalog';
+
+const SHOP_CATEGORIES = [
+  { key: 'all', label: 'All' }, { key: 'tops', label: 'Tops' }, { key: 't-shirts', label: 'T-Shirts' },
+  { key: 'shirts', label: 'Shirts' }, { key: 'polos', label: 'Polos' }, { key: 'sweaters', label: 'Sweaters' },
+  { key: 'hoodies', label: 'Hoodies' }, { key: 'bottom', label: 'Bottoms' }, { key: 'pants', label: 'Pants' },
+  { key: 'jeans', label: 'Jeans' }, { key: 'shorts', label: 'Shorts' }, { key: 'skirts', label: 'Skirts' },
+  { key: 'leggings', label: 'Leggings' }, { key: 'dresses', label: 'Dresses' }, { key: 'jumpsuits', label: 'Jumpsuits' },
+  { key: 'outerwear', label: 'Outerwear' }, { key: 'jackets', label: 'Jackets' }, { key: 'coats', label: 'Coats' },
+  { key: 'blazers', label: 'Blazers' }, { key: 'vests', label: 'Vests' }, { key: 'shoes', label: 'Shoes' },
+  { key: 'sneakers', label: 'Sneakers' }, { key: 'boots', label: 'Boots' }, { key: 'sandals', label: 'Sandals' },
+  { key: 'loafers', label: 'Loafers' }, { key: 'heels', label: 'Heels' }, { key: 'activewear', label: 'Activewear' },
+  { key: 'swimwear', label: 'Swimwear' }, { key: 'accessories', label: 'Accessories' }, { key: 'bags', label: 'Bags' },
+  { key: 'hats', label: 'Hats' }, { key: 'jewelry', label: 'Jewelry' }, { key: 'belts', label: 'Belts' },
+];
+
+const SORT_OPTIONS = [
+  { key: 'default', label: 'Recommended' },
+  { key: 'price_asc', label: 'Price: Low → High' },
+  { key: 'price_desc', label: 'Price: High → Low' },
+  { key: 'brand_az', label: 'Brand: A → Z' },
+  { key: 'genre', label: 'Genre' },
+] as const;
+
+type SortKey = typeof SORT_OPTIONS[number]['key'];
+
+const FIT_OPTIONS = [
+  'oversized', 'boxy', 'relaxed fit', 'slim fit', 'regular fit',
+  'cropped', 'tapered', 'drop shoulder', 'heavyweight', 'lightweight',
+  'athletic fit', 'classic fit', 'skinny fit', 'loose fit',
+] as const;
 
 const Community = () => {
   const navigate = useNavigate();
