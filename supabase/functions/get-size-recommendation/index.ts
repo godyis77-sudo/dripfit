@@ -41,9 +41,9 @@ const FIT_ADJUSTABLE = new Set(["chest", "waist", "hip"]);
 // Fraction of the brand's own inter-size grade step to apply as offset.
 // 0.40 = 40% of one full size step.
 const FIT_FRACTION: Record<string, number> = {
-  slim: -0.40,    // subtract 40% of grade step → tighter
+  slim: -0.60,    // subtract 60% of grade step → tighter
   regular: 0,
-  relaxed: 0.40,  // add 40% of grade step → looser
+  relaxed: 0.60,  // add 60% of grade step → looser
 };
 
 /**
