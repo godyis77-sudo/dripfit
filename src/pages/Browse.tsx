@@ -145,30 +145,31 @@ const Browse = () => {
 
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
-      {/* Header */}
-      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => {
-                if (window.history.length > 1) {
-                  navigate(-1);
-                } else {
-                  navigate('/');
-                }
-              }}
-              className="h-9 w-9 rounded-full bg-card border border-border flex items-center justify-center active:scale-90 transition-transform"
-              aria-label="Go back"
-            >
-              <ArrowLeft className="h-4 w-4 text-foreground" />
-            </button>
-            <div>
-              <h1 className="text-base font-bold text-foreground">{title}</h1>
-              <p className="text-[10px] text-muted-foreground">{displayed.length} items</p>
-            </div>
+      {/* Scrollable title block */}
+      <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              if (window.history.length > 1) {
+                navigate(-1);
+              } else {
+                navigate('/');
+              }
+            }}
+            className="h-9 w-9 rounded-full bg-card border border-border flex items-center justify-center active:scale-90 transition-transform"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="h-4 w-4 text-foreground" />
+          </button>
+          <div>
+            <h1 className="text-base font-bold text-foreground">{title}</h1>
+            <p className="text-[10px] text-muted-foreground">{displayed.length} items</p>
           </div>
         </div>
+      </div>
 
+      {/* Sticky filters bar */}
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border">
         {/* Brand search filter */}
         <div className="px-4 pb-2">
           <BrandFilter
