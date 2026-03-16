@@ -144,6 +144,7 @@ const Results = () => {
         second_option: string | null;
         brand_slug: string;
         category: string;
+        measurement_breakdown?: { key: string; user_value: number; chart_min: number; chart_max: number; score: number; status: string }[];
       };
     },
     enabled: !!user?.id && !!brandSlug,
