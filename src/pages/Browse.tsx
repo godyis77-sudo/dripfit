@@ -85,14 +85,17 @@ const Browse = () => {
 
   useEffect(() => {
     const onScroll = () => {
-      const scrollY = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop;
+      const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
       setShowScrollTop(scrollY > 300);
     };
+    // fire on multiple targets to cover iframe quirks
     window.addEventListener('scroll', onScroll, { passive: true });
-    document.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('scroll', onScroll, { passive: true, capture: true });
+    // also poll once on mount in case already scrolled
+    onScroll();
     return () => {
       window.removeEventListener('scroll', onScroll);
-      document.removeEventListener('scroll', onScroll);
+      document.removeEventListener('scroll', onScroll, { capture: true } as any);
     };
   }, []);
 
