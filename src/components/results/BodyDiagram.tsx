@@ -292,11 +292,10 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             <img
               src={bodySilhouette}
               alt="Body measurement scan"
-              className="h-[88%] w-auto object-contain"
+              className="h-[88%] w-auto object-contain drop-shadow-[0_0_40px_hsl(42_76%_50%/0.4)]"
               onLoad={() => setImageLoaded(true)}
               style={{
                 filter: 'sepia(0.35) saturate(1.6) brightness(1.6) contrast(1.05)',
-                dropShadow: '0 0 40px hsl(42 76% 50% / 0.4)',
               }}
             />
           </motion.div>
