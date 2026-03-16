@@ -135,7 +135,7 @@ const Browse = () => {
     }
 
     return result;
-  }, [products, sort, retailerFilter, genreFilter, fitFilter]);
+  }, [products, sort, brandFilter, retailerFilter, genreFilter, fitFilter]);
 
   // Compute available fits from current products (to only show relevant pills)
   const availableFits = useMemo(() => {
