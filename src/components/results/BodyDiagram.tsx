@@ -726,6 +726,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {/* Effects: Micro readouts */}
           {imageLoaded && <MicroReadouts />}
 
+          {/* Effects: Signal waveform */}
+          {imageLoaded && <SignalWaveform />}
+
           {/* Data: SVG leader lines */}
           {imageLoaded && (
             <svg className="absolute inset-0 w-full h-full pointer-events-none z-[4]" viewBox="0 0 100 100" preserveAspectRatio="none" fill="none">
