@@ -67,11 +67,19 @@ const SettingsTab = ({
   const [region, setRegion] = useState<UserRegion>(getUserRegion());
   const [gender, setGender] = useState<string | null>(null);
   const [showWinBack, setShowWinBack] = useState(false);
+  const [shoeSize, setShoeSize] = useState('');
+  const [editingShoe, setEditingShoe] = useState(false);
+  const [shoeValue, setShoeValue] = useState('');
 
-  // Load gender from DB
+  // Load gender + shoe size from DB
   useEffect(() => {
-    supabase.from('profiles').select('gender').eq('user_id', user.id).single().then(({ data }) => {
-      if (data) setGender((data as any).gender || null);
+    supabase.from('profiles').select('gender, preferred_shoe_size').eq('user_id', user.id).single().then(({ data }) => {
+      if (data) {
+        setGender((data as any).gender || null);
+        const sz = (data as any).preferred_shoe_size || '';
+        setShoeSize(sz);
+        setShoeValue(sz);
+      }
     });
   }, [user.id]);
 
@@ -297,6 +305,50 @@ const SettingsTab = ({
               </button>
             ))}
           </div>
+        {/* Shoe Size */}
+        <div className="px-3 py-2.5">
+          {editingShoe ? (
+            <div className="flex items-center gap-2">
+              <span className="text-[12px] text-foreground font-medium shrink-0">Shoe size</span>
+              <Input
+                value={shoeValue}
+                onChange={e => setShoeValue(e.target.value)}
+                className="h-7 text-[11px] flex-1 rounded-lg max-w-[80px]"
+                autoFocus
+                maxLength={10}
+                placeholder="e.g. 10"
+              />
+              <button
+                onClick={async () => {
+                  const val = shoeValue.trim();
+                  await supabase.rpc('update_own_profile', { p_preferred_shoe_size: val || null } as any);
+                  setShoeSize(val);
+                  setEditingShoe(false);
+                  toast({ title: val ? `Shoe size set to ${val}` : 'Shoe size removed' });
+                }}
+                aria-label="Save shoe size"
+                className="h-6 w-6 rounded-md bg-primary flex items-center justify-center active:scale-90 transition-transform"
+              >
+                <Check className="h-3 w-3 text-primary-foreground" />
+              </button>
+              <button
+                onClick={() => { setShoeValue(shoeSize); setEditingShoe(false); }}
+                aria-label="Cancel editing shoe size"
+                className="h-6 w-6 rounded-md bg-muted flex items-center justify-center active:scale-90 transition-transform"
+              >
+                <X className="h-3 w-3 text-muted-foreground" />
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => { setShoeValue(shoeSize); setEditingShoe(true); }} className="w-full flex items-center justify-between active:bg-muted/50 transition-colors">
+              <span className="text-[12px] text-foreground font-medium">Shoe size</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] text-muted-foreground">{shoeSize || 'Not set'}</span>
+                <Pencil className="h-3 w-3 text-muted-foreground" />
+              </div>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Shopping Region */}
