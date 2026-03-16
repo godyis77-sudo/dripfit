@@ -14,6 +14,13 @@ interface SizeEntry {
   shoe_length_min?: number; shoe_length_max?: number;
 }
 
+// Canonical size order for sorting labels in text
+const SIZE_ORDER = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL'];
+function sizeIndex(label: string): number {
+  const idx = SIZE_ORDER.indexOf(label.toUpperCase());
+  return idx === -1 ? 999 : idx;
+}
+
 // ── Category-aware weighting ──
 const CATEGORY_WEIGHTS: Record<string, Record<string, number>> = {
   tops:       { chest: 0.40, waist: 0.30, shoulder: 0.30 },
