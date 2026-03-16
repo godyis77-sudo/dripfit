@@ -306,6 +306,36 @@ const Browse = () => {
                 </div>
               </div>
 
+              {/* Category filter */}
+              <div>
+                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Category</p>
+                <div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto">
+                  <button
+                    onClick={() => setCategoryFilter(null)}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                      !categoryFilter
+                        ? 'btn-luxury text-primary-foreground'
+                        : 'bg-background border border-border text-foreground/70'
+                    }`}
+                  >
+                    All
+                  </button>
+                  {availableCategories.map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => setCategoryFilter(cat === categoryFilter ? null : cat)}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                        categoryFilter === cat
+                          ? 'btn-luxury text-primary-foreground'
+                          : 'bg-background border border-border text-foreground/70'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Genre filter */}
               <div>
                 <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Genre</p>
