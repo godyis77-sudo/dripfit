@@ -353,17 +353,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 }}
               />
 
-              {/* Moving highlight pass clipped to silhouette bounds */}
-              <motion.div
-                className="absolute inset-0 z-[3] pointer-events-none"
-                style={{
-                  backgroundImage: 'linear-gradient(180deg, transparent 8%, hsl(var(--gold-shimmer) / 0.2) 48%, transparent 86%)',
-                  backgroundSize: '100% 220%',
-                  mixBlendMode: 'screen',
-                }}
-                animate={{ backgroundPosition: ['50% -20%', '50% 120%'] }}
-                transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut', repeatDelay: 1.4 }}
-              />
+              {/* Removed rectangular shimmer overlay to prevent background block artifacts */}
             </div>
           </motion.div>
 
