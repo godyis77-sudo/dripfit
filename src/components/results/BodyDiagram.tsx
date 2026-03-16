@@ -532,12 +532,12 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 }}
               />
 
-              {/* Layer 5: Edge trace — on top of main silhouette */}
+              {/* Layer 5: Edge trace — blackened silhouette with bright gold outline via stacked drop-shadows */}
               <img
                 src={silhouetteSrc}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 z-[5] h-full w-full object-contain pointer-events-none"
+                className="absolute inset-0 z-[3] h-full w-full object-contain pointer-events-none"
                 style={{
                   filter: `
                     brightness(0)
@@ -550,12 +550,12 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 }}
               />
 
-              {/* Layer 6: Second trace pass — crisp gold outline on top */}
+              {/* Layer 6: Second trace pass for extra crisp outline */}
               <img
                 src={silhouetteSrc}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 z-[6] h-full w-full object-contain pointer-events-none opacity-70"
+                className="absolute inset-0 z-[4] h-full w-full object-contain pointer-events-none opacity-70"
                 style={{
                   filter: `
                     brightness(0)
