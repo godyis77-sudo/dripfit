@@ -262,31 +262,31 @@ const Browse = () => {
                 </div>
               </div>
 
-              {/* Brand filter */}
+              {/* Retailer filter */}
               <div>
-                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Brand</p>
+                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Retailer</p>
                 <div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto">
                   <button
-                    onClick={() => setBrandFilter(null)}
+                    onClick={() => setRetailerFilter(null)}
                     className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
-                      !brandFilter
+                      !retailerFilter
                         ? 'btn-luxury text-primary-foreground'
                         : 'bg-background border border-border text-foreground/70'
                     }`}
                   >
                     All
                   </button>
-                  {availableBrands.map(brand => (
+                  {availableRetailers.map(retailer => (
                     <button
-                      key={brand}
-                      onClick={() => setBrandFilter(brand === brandFilter ? null : brand)}
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
-                        brandFilter === brand
+                      key={retailer}
+                      onClick={() => setRetailerFilter(retailer === retailerFilter ? null : retailer)}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                        retailerFilter === retailer
                           ? 'btn-luxury text-primary-foreground'
                           : 'bg-background border border-border text-foreground/70'
                       }`}
                     >
-                      {brand}
+                      {retailer}
                     </button>
                   ))}
                 </div>
