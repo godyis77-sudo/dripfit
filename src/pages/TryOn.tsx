@@ -335,6 +335,14 @@ const TryOn = () => {
                             Clear all filters
                           </button>
                         )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </>
+            )}
+
+            {/* Product catalog browse */}
             {!s.clothingPhoto && (
               <div className="mb-3 space-y-2">
                 {s.category === 'all' ? (
