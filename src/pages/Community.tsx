@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Sparkles, Loader2, ShoppingCart, SlidersHorizontal } from 'lucide-react';
+import { ArrowLeft, ArrowUp, Sparkles, Loader2, ShoppingCart, SlidersHorizontal } from 'lucide-react';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -42,6 +43,13 @@ const Community = () => {
   const [filterUserId, setFilterUserId] = useState<string | null>(null);
   const [similarFitTooltip, setSimilarFitTooltip] = useState(false);
   const [showSortOptions, setShowSortOptions] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > 300);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   // Close detail sheet on browser/hardware back button
   const closeDetail = useCallback(() => setDetailPost(null), []);
@@ -374,6 +382,20 @@ const Community = () => {
         currentUserId={user?.id}
         onCaptionUpdated={handleCaptionUpdated}
       />
+      {filter === 'shop' && showScrollTop && createPortal(
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed z-[9999] h-11 w-11 rounded-full bg-primary/50 text-primary-foreground flex items-center justify-center shadow-xl active:scale-90 transition-transform"
+          style={{ right: 16, bottom: 'calc(7rem + env(safe-area-inset-bottom, 0px))' }}
+          aria-label="Scroll to top"
+        >
+          <ArrowUp className="h-5 w-5" />
+        </motion.button>,
+        document.body
+      )}
       <BottomTabBar />
     </div>
   );
