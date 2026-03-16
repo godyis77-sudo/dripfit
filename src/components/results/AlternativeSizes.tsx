@@ -18,6 +18,7 @@ const fitOptions: { value: FitPreference; label: string; desc: string }[] = [
 const AlternativeSizes = ({ sizeDown, sizeUp, best, fitPreference }: AlternativeSizesProps) => {
   const sizeMap: Record<FitPreference, string> = {
     fitted: sizeDown !== best ? sizeDown : best,
+    slim: sizeDown !== best ? sizeDown : best,
     regular: best,
     relaxed: sizeUp !== best ? sizeUp : best,
   };
@@ -25,12 +26,14 @@ const AlternativeSizes = ({ sizeDown, sizeUp, best, fitPreference }: Alternative
   // If fitted=regular=relaxed all same, adjust for display
   if (fitPreference === 'regular') {
     sizeMap.fitted = sizeDown;
+    sizeMap.slim = sizeDown;
     sizeMap.relaxed = sizeUp;
-  } else if (fitPreference === 'fitted') {
+  } else if (fitPreference === 'fitted' || fitPreference === 'slim') {
     sizeMap.regular = sizeUp !== best ? best : best;
     sizeMap.relaxed = sizeUp;
   } else {
     sizeMap.fitted = sizeDown;
+    sizeMap.slim = sizeDown;
     sizeMap.regular = sizeDown !== best ? best : best;
   }
 

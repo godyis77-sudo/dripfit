@@ -1,3 +1,4 @@
+import type { FitPreference } from './types';
 // Guest session management
 const SESSION_KEY = 'dripcheck_session_id';
 
@@ -35,11 +36,11 @@ export function setGuestMode(): void {
 // Fit preference cache
 const FIT_KEY = 'dripcheck_fit';
 
-export function getFitPreference(): 'fitted' | 'regular' | 'relaxed' {
-  return (localStorage.getItem(FIT_KEY) as any) || 'regular';
+export function getFitPreference(): FitPreference {
+  return (localStorage.getItem(FIT_KEY) as FitPreference) || 'regular';
 }
 
-export function setFitPreference(fit: 'fitted' | 'regular' | 'relaxed'): void {
+export function setFitPreference(fit: FitPreference): void {
   localStorage.setItem(FIT_KEY, fit);
 }
 

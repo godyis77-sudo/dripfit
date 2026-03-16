@@ -835,6 +835,7 @@ export type Database = {
           created_at: string | null
           expires_at: string | null
           fit_notes: string | null
+          fit_preference: string
           fit_status: string
           id: string
           measurements_snapshot: Json
@@ -850,6 +851,7 @@ export type Database = {
           created_at?: string | null
           expires_at?: string | null
           fit_notes?: string | null
+          fit_preference?: string
           fit_status: string
           id?: string
           measurements_snapshot: Json
@@ -865,6 +867,7 @@ export type Database = {
           created_at?: string | null
           expires_at?: string | null
           fit_notes?: string | null
+          fit_preference?: string
           fit_status?: string
           id?: string
           measurements_snapshot?: Json

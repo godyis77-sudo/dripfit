@@ -99,13 +99,14 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // STEP 1 — Check cache
+    // STEP 1 — Check cache (includes fit_preference)
     const { data: cached } = await supabase
       .from("size_recommendations_cache")
       .select("*")
       .eq("user_id", user_id)
       .eq("brand_slug", brand_slug)
       .eq("category", category)
+      .eq("fit_preference", fit)
       .gt("expires_at", new Date().toISOString())
       .limit(1)
       .maybeSingle();
@@ -252,6 +253,7 @@ Deno.serve(async (req) => {
       user_id,
       brand_slug,
       category,
+      fit_preference: fit,
       recommended_size: best.label,
       confidence,
       fit_status: fitStatus,
@@ -260,7 +262,7 @@ Deno.serve(async (req) => {
       chart_id: chart.id,
       measurements_snapshot: snapshot,
       expires_at: expiresAt,
-    }, { onConflict: "user_id,brand_slug,category" });
+    }, { onConflict: "user_id,brand_slug,category,fit_preference" });
 
     return successResponse({
       recommended_size: best.label,
