@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, SlidersHorizontal, ExternalLink, ShoppingBag } from 'lucide-react';
+import { ArrowLeft, SlidersHorizontal, ExternalLink, ShoppingBag, ChevronDown } from 'lucide-react';
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
@@ -76,6 +76,8 @@ const Browse = () => {
   const [fitFilter, setFitFilter] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [genreOpen, setGenreOpen] = useState(false);
+  const [fitOpen, setFitOpen] = useState(false);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
   const { pendingClickout, beginClickout, confirmClickout, cancelClickout } =
     useAffiliateClickout({ extraProps: { source: 'browse', category } });
@@ -307,36 +309,6 @@ const Browse = () => {
                 </div>
               </div>
 
-              {/* Retailer filter */}
-              <div>
-                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Retailer</p>
-                <div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto">
-                  <button
-                    onClick={() => setRetailerFilter(null)}
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
-                      !retailerFilter
-                        ? 'btn-luxury text-primary-foreground'
-                        : 'bg-background border border-border text-foreground/70'
-                    }`}
-                  >
-                    All
-                  </button>
-                  {availableRetailers.map(retailer => (
-                    <button
-                      key={retailer}
-                      onClick={() => setRetailerFilter(retailer === retailerFilter ? null : retailer)}
-                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
-                        retailerFilter === retailer
-                          ? 'btn-luxury text-primary-foreground'
-                          : 'bg-background border border-border text-foreground/70'
-                      }`}
-                    >
-                      {retailer}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* Category filter */}
               <div>
                 <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Category</p>
@@ -367,65 +339,133 @@ const Browse = () => {
                 </div>
               </div>
 
-              {/* Genre filter */}
+              {/* Retailer filter */}
               <div>
-                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Genre</p>
-                <div className="flex flex-wrap gap-1.5">
+                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Retailer</p>
+                <div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto">
                   <button
-                    onClick={() => setGenreFilter(null)}
+                    onClick={() => setRetailerFilter(null)}
                     className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
-                      !genreFilter
+                      !retailerFilter
                         ? 'btn-luxury text-primary-foreground'
                         : 'bg-background border border-border text-foreground/70'
                     }`}
                   >
                     All
                   </button>
-                  {BRAND_GENRES.map(genre => (
+                  {availableRetailers.map(retailer => (
                     <button
-                      key={genre}
-                      onClick={() => setGenreFilter(genre === genreFilter ? null : genre)}
-                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
-                        genreFilter === genre
+                      key={retailer}
+                      onClick={() => setRetailerFilter(retailer === retailerFilter ? null : retailer)}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                        retailerFilter === retailer
                           ? 'btn-luxury text-primary-foreground'
                           : 'bg-background border border-border text-foreground/70'
                       }`}
                     >
-                      {genre}
+                      {retailer}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Fit filter */}
+              {/* Genre filter — collapsible */}
+              <div>
+                <button
+                  onClick={() => setGenreOpen(!genreOpen)}
+                  className="flex items-center justify-between w-full"
+                >
+                  <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
+                    Genre {genreFilter ? `· ${genreFilter}` : ''}
+                  </p>
+                  <ChevronDown className={`h-3.5 w-3.5 text-foreground/50 transition-transform ${genreOpen ? 'rotate-180' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {genreOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="flex flex-wrap gap-1.5 mt-1.5">
+                        <button
+                          onClick={() => setGenreFilter(null)}
+                          className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                            !genreFilter
+                              ? 'btn-luxury text-primary-foreground'
+                              : 'bg-background border border-border text-foreground/70'
+                          }`}
+                        >
+                          All
+                        </button>
+                        {BRAND_GENRES.map(genre => (
+                          <button
+                            key={genre}
+                            onClick={() => setGenreFilter(genre === genreFilter ? null : genre)}
+                            className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                              genreFilter === genre
+                                ? 'btn-luxury text-primary-foreground'
+                                : 'bg-background border border-border text-foreground/70'
+                            }`}
+                          >
+                            {genre}
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Fit / Cut filter — collapsible */}
               {availableFits.length > 0 && (
                 <div>
-                  <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Fit / Cut</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    <button
-                      onClick={() => setFitFilter(null)}
-                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
-                        !fitFilter
-                          ? 'btn-luxury text-primary-foreground'
-                          : 'bg-background border border-border text-foreground/70'
-                      }`}
-                    >
-                      All
-                    </button>
-                    {availableFits.map(fit => (
-                      <button
-                        key={fit}
-                        onClick={() => setFitFilter(fit === fitFilter ? null : fit)}
-                        className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
-                          fitFilter === fit
-                            ? 'btn-luxury text-primary-foreground'
-                            : 'bg-background border border-border text-foreground/70'
-                        }`}
+                  <button
+                    onClick={() => setFitOpen(!fitOpen)}
+                    className="flex items-center justify-between w-full"
+                  >
+                    <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
+                      Fit / Cut {fitFilter ? `· ${fitFilter}` : ''}
+                    </p>
+                    <ChevronDown className={`h-3.5 w-3.5 text-foreground/50 transition-transform ${fitOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  <AnimatePresence>
+                    {fitOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
                       >
-                        {fit}
-                      </button>
-                    ))}
-                  </div>
+                        <div className="flex flex-wrap gap-1.5 mt-1.5">
+                          <button
+                            onClick={() => setFitFilter(null)}
+                            className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                              !fitFilter
+                                ? 'btn-luxury text-primary-foreground'
+                                : 'bg-background border border-border text-foreground/70'
+                            }`}
+                          >
+                            All
+                          </button>
+                          {availableFits.map(fit => (
+                            <button
+                              key={fit}
+                              onClick={() => setFitFilter(fit === fitFilter ? null : fit)}
+                              className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                                fitFilter === fit
+                                  ? 'btn-luxury text-primary-foreground'
+                                  : 'bg-background border border-border text-foreground/70'
+                              }`}
+                            >
+                              {fit}
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               )}
 
