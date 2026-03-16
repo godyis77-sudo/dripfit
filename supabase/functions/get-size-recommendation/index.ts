@@ -99,13 +99,14 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // STEP 1 — Check cache
+    // STEP 1 — Check cache (includes fit_preference)
     const { data: cached } = await supabase
       .from("size_recommendations_cache")
       .select("*")
       .eq("user_id", user_id)
       .eq("brand_slug", brand_slug)
       .eq("category", category)
+      .eq("fit_preference", fit)
       .gt("expires_at", new Date().toISOString())
       .limit(1)
       .maybeSingle();
