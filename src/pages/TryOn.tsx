@@ -43,8 +43,28 @@ const TryOn = () => {
   const [guestTryOnNudgeDismissed, setGuestTryOnNudgeDismissed] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [sort, setSort] = useState<SortKey>('default');
-  const [retailerSearch, setRetailerSearch] = useState('');
+  const [genreOpen, setGenreOpen] = useState(false);
+  const [fitOpen, setFitOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Load product catalog for retailer/fit pills
+  const { products: catalogProducts } = useProductCatalog(
+    s.category === 'all' ? undefined : s.category,
+    undefined, undefined,
+    s.userGender === 'male' ? 'mens' : s.userGender === 'female' ? 'womens' : undefined
+  );
+
+  const availableRetailers = useMemo(() => {
+    return [...new Set(catalogProducts.map(p => p.retailer))].sort();
+  }, [catalogProducts]);
+
+  const availableFits = useMemo(() => {
+    const fits = new Set<string>();
+    catalogProducts.forEach(p => {
+      if (Array.isArray(p.fit_profile)) p.fit_profile.forEach(f => fits.add(f));
+    });
+    return FIT_OPTIONS.filter(f => fits.has(f));
+  }, [catalogProducts]);
 
   useEffect(() => {
     const onScroll = () => setShowScrollTop(window.scrollY > 300);
