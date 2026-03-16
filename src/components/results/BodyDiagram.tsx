@@ -389,24 +389,6 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             );
           })}
 
-          {/* Unit toggle hint */}
-          <AnimatePresence>
-            {imageLoaded && (
-              <motion.div
-                className="absolute bottom-3 left-1/2 -translate-x-1/2 z-[6]"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 2, duration: 0.5 }}
-              >
-                <span
-                  className="text-[8px] font-mono uppercase tracking-[0.15em] text-primary/40 backdrop-blur-md rounded-full px-2.5 py-1 border border-primary/10"
-                  style={{ background: 'hsl(220 15% 3% / 0.5)' }}
-                >
-                  ◈ tap to toggle {useCm ? 'imperial' : 'metric'} ◈
-                </span>
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           {/* Outer frame with enhanced glow */}
           <div
