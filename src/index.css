@@ -734,3 +734,36 @@
 }
 
 /* btn-gold-3d and btn-luxury are now identical — defined together above */
+
+/* Breathing glow for scan card border */
+@keyframes breathing-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 12px 4px hsl(45 88% 50% / 0.5),
+      0 0 30px 10px hsl(45 88% 45% / 0.2),
+      inset 0 0 10px 2px hsl(45 88% 50% / 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 20px 8px hsl(45 88% 50% / 0.7),
+      0 0 55px 20px hsl(45 88% 45% / 0.35),
+      0 0 90px 30px hsl(45 88% 40% / 0.12),
+      inset 0 0 16px 4px hsl(45 88% 50% / 0.25);
+  }
+}
+
+.animate-breathing-glow {
+  animation: breathing-glow 3.5s ease-in-out infinite;
+}
+
+/* Sonar ping for measurement hotspot dots */
+@keyframes sonar-ping {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(3.5);
+    opacity: 0;
+  }
+}
