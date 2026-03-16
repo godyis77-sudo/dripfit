@@ -18,6 +18,7 @@ const fitOptions: { value: FitPreference; label: string; desc: string }[] = [
 const AlternativeSizes = ({ sizeDown, sizeUp, best, fitPreference }: AlternativeSizesProps) => {
   const sizeMap: Record<FitPreference, string> = {
     fitted: sizeDown !== best ? sizeDown : best,
+    slim: sizeDown !== best ? sizeDown : best,
     regular: best,
     relaxed: sizeUp !== best ? sizeUp : best,
   };
