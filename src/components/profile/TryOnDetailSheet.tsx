@@ -118,7 +118,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
           <img
             src={post.result_photo_url}
             alt={post.caption || 'Try-on result'}
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain rounded-xl"
           />
           {/* Caption — bottom left overlay on image */}
           {postedCaption && (
