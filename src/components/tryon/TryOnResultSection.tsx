@@ -5,9 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Loader2, Check, MessageSquare, Save, RotateCcw, ShoppingBag, Camera, ImageIcon, Bookmark, ChevronRight, ChevronDown } from 'lucide-react';
+import { Sparkles, Loader2, Check, MessageSquare, Save, RotateCcw, ShoppingBag, Camera, ImageIcon, Bookmark, ChevronRight, ChevronDown, X } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
-import { FullscreenImage } from '@/components/ui/fullscreen-image';
 import WhatsInThisLook, { type LookItem as WhatsLookItem } from '@/components/community/WhatsInThisLook';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import { ACCESSORY_CATEGORIES, ALL_PRODUCT_CATEGORIES, getCaptionSuggestions, saveSharePreference, compressImage, imageUrlToBase64 } from './tryon-constants';
@@ -80,6 +79,7 @@ const TryOnResultSection = ({
   const accessoryCameraRef = useRef<HTMLInputElement>(null);
   const accessorySectionRef = useRef<HTMLDivElement>(null);
   const [accessoryStepIndex, setAccessoryStepIndex] = useState(0);
+  const [showResultFullscreen, setShowResultFullscreen] = useState(false);
 
   const handleAddToWardrobe = async (item: WhatsLookItem) => {
     if (!authUser) {
@@ -173,9 +173,14 @@ const TryOnResultSection = ({
           animate={{ boxShadow: ['0 0 0 0 hsla(var(--primary), 0)', '0 0 20px 4px hsla(var(--primary), 0.3)', '0 0 0 0 hsla(var(--primary), 0)'] }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <FullscreenImage src={resultImage} alt="Try-on result">
+          <button
+            type="button"
+            onClick={() => setShowResultFullscreen(true)}
+            className="block w-full cursor-zoom-in"
+            aria-label="Open try-on result full screen"
+          >
             <img src={resultImage} alt="Try-on result" className="w-full rounded-xl" />
-          </FullscreenImage>
+          </button>
         </motion.div>
 
         {/* What's In This Look */}
@@ -337,6 +342,41 @@ const TryOnResultSection = ({
             )}
           </AnimatePresence>
         </div>
+
+        <AnimatePresence>
+          {showResultFullscreen && createPortal(
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[220] h-dvh w-screen overflow-hidden overscroll-none bg-black/95 flex flex-col items-center justify-center"
+              onPointerDown={(e) => {
+                if (e.target === e.currentTarget) setShowResultFullscreen(false);
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setShowResultFullscreen(false)}
+                className="absolute top-4 right-4 z-[221] h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
+                aria-label="Close full screen image"
+              >
+                <X className="h-5 w-5 text-white" />
+              </button>
+              <motion.img
+                initial={{ scale: 0.96, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.96, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                src={resultImage}
+                alt="Try-on result full screen"
+                className="max-w-[calc(100%-2rem)] max-h-[82dvh] w-auto h-auto rounded-xl"
+                onPointerDown={(e) => e.stopPropagation()}
+              />
+            </motion.div>,
+            document.body
+          )}
+        </AnimatePresence>
 
         {/* Floating generating bar — portal to escape transforms */}
         {addingAccessory && createPortal(
