@@ -76,9 +76,9 @@ Deno.serve(async (req) => {
       return errorResponse('Unauthorized', 'AUTH_ERROR', 401, corsHeaders);
     }
 
-    const { user_id, brand_slug, category, fit_preference = "regular" } = await req.json();
+    const { user_id, brand_slug, category: rawCategory, fit_preference = "regular" } = await req.json();
 
-    if (!user_id || !brand_slug || !category) {
+    if (!user_id || !brand_slug || !rawCategory) {
       return errorResponse("user_id, brand_slug, and category are required.", "VALIDATION_ERROR", 400, corsHeaders);
     }
 
@@ -89,10 +89,24 @@ Deno.serve(async (req) => {
 
     const validFits = ["slim", "regular", "relaxed"];
     const fit = validFits.includes(fit_preference) ? fit_preference : "regular";
+
+    // Map incoming category to a valid weight key, with fuzzy fallback
+    const CATEGORY_ALIASES: Record<string, string> = {
+      "t-shirts": "tops", "tees": "tops", "shirts": "tops", "blouses": "tops",
+      "sweaters": "tops", "hoodies": "tops", "tank-tops": "tops", "polos": "tops",
+      "jeans": "bottoms", "shorts": "bottoms", "skirts": "bottoms", "trousers": "pants",
+      "leggings": "activewear", "joggers": "activewear", "sweatpants": "activewear",
+      "jackets": "outerwear", "coats": "outerwear", "parkas": "outerwear", "vests": "outerwear",
+      "blazer": "blazers", "suit": "suits", "sport-coats": "blazers",
+      "sneakers": "footwear", "shoes": "footwear", "boots": "footwear", "sandals": "footwear",
+      "dress": "dresses", "gowns": "dresses_full", "maxi-dresses": "dresses_full",
+      "rompers": "dresses", "jumpsuits": "dresses",
+    };
     const validCategories = Object.keys(CATEGORY_WEIGHTS);
-    if (!validCategories.includes(category)) {
-      return errorResponse(`Invalid category. Must be one of: ${validCategories.join(", ")}`, "VALIDATION_ERROR", 400, corsHeaders);
-    }
+    const normalised = rawCategory.toLowerCase().trim();
+    const category = validCategories.includes(normalised)
+      ? normalised
+      : (CATEGORY_ALIASES[normalised] || "tops");
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
