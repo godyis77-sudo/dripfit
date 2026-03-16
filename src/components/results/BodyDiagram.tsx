@@ -261,7 +261,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
-                background: 'radial-gradient(ellipse 70% 60% at 50% 45%, transparent 30%, hsl(220 15% 3% / 0.6) 100%)',
+                background: 'radial-gradient(ellipse 70% 60% at 50% 45%, transparent 40%, hsl(220 15% 3% / 0.45) 100%)',
               }}
             />
           </motion.div>
