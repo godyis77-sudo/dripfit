@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { MeasurementRange } from '@/lib/types';
-import bodySilhouette from '@/assets/body-silhouette-glow-cutout.webp';
+import bodySilhouetteMask from '@/assets/body-silhouette-mask.png';
 import hudScanBg from '@/assets/hud-scan-bg.jpg';
 import { getUseCm, setUseCm } from '@/lib/session';
 
