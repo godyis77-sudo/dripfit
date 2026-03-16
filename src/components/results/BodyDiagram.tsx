@@ -1,7 +1,6 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import type { MeasurementRange } from '@/lib/types';
-import bodySilhouette from '@/assets/body-silhouette-glow-cutout.webp';
 import bodySilhouetteMask from '@/assets/body-silhouette-mask.png';
 import { getUseCm, setUseCm } from '@/lib/session';
 
@@ -12,6 +11,7 @@ const fmtHeightFtIn = (cm: number) => {
   const totalIn = Math.round(cm * CM_TO_IN);
   return `${Math.floor(totalIn / 12)}' ${totalIn % 12}"`;
 };
+const LUXURY_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 interface BodyDiagramProps {
   measurements: Record<string, MeasurementRange>;
@@ -29,67 +29,109 @@ interface MeasurementOverlay {
 }
 
 const OVERLAYS: MeasurementOverlay[] = [
-  { key: 'height',   label: 'HEIGHT',   side: 'left',  valTop: '5%',    delay: 0,    dotTop: '5%',   dotLeft: '15%' },
-  { key: 'shoulder', label: 'SHOULDER', side: 'right', valTop: '17%',   delay: 0.12, dotTop: '20%',  dotLeft: '64%' },
-  { key: 'chest',    label: 'CHEST',    side: 'left',  valTop: '25%',   delay: 0.22, dotTop: '28%',  dotLeft: '40%' },
-  { key: 'bust',     label: 'BUST',     side: 'right', valTop: '28%',   delay: 0.30, dotTop: '30%',  dotLeft: '58%' },
-  { key: 'sleeve',   label: 'SLEEVE',   side: 'left',  valTop: '35%',   delay: 0.38, dotTop: '36%',  dotLeft: '32%' },
-  { key: 'waist',    label: 'WAIST',    side: 'right', valTop: '39%',   delay: 0.46, dotTop: '42%',  dotLeft: '58%' },
-  { key: 'hips',     label: 'HIPS',     side: 'right', valTop: '50%',   delay: 0.54, dotTop: '50%',  dotLeft: '60%' },
-  { key: 'inseam',   label: 'INSEAM',   side: 'left',  valTop: '66%',   delay: 0.62, dotTop: '67%',  dotLeft: '46%' },
+  { key: 'height',   label: 'HEIGHT',   side: 'left',  valTop: '5%',  delay: 0,    dotTop: '5%',  dotLeft: '15%' },
+  { key: 'shoulder', label: 'SHOULDER', side: 'right', valTop: '17%', delay: 0.12, dotTop: '20%', dotLeft: '64%' },
+  { key: 'chest',    label: 'CHEST',    side: 'left',  valTop: '25%', delay: 0.22, dotTop: '28%', dotLeft: '40%' },
+  { key: 'bust',     label: 'BUST',     side: 'right', valTop: '28%', delay: 0.30, dotTop: '30%', dotLeft: '58%' },
+  { key: 'sleeve',   label: 'SLEEVE',   side: 'left',  valTop: '35%', delay: 0.38, dotTop: '36%', dotLeft: '32%' },
+  { key: 'waist',    label: 'WAIST',    side: 'right', valTop: '39%', delay: 0.46, dotTop: '42%', dotLeft: '58%' },
+  { key: 'hips',     label: 'HIPS',     side: 'right', valTop: '50%', delay: 0.54, dotTop: '50%', dotLeft: '60%' },
+  { key: 'inseam',   label: 'INSEAM',   side: 'left',  valTop: '66%', delay: 0.62, dotTop: '67%', dotLeft: '46%' },
 ];
 
-/* ── Number scramble on unit toggle ── */
+/* ── Number scramble ── */
 const ScrambleValue = ({ value, scrambling }: { value: string; scrambling: boolean }) => {
   const [display, setDisplay] = useState(value);
   const frameRef = useRef(0);
-
   useEffect(() => {
     if (!scrambling) { setDisplay(value); return; }
     let count = 0;
-    const maxFrames = 10;
     const tick = () => {
       count++;
-      if (count >= maxFrames) { setDisplay(value); return; }
-      setDisplay(
-        value.split('').map(c => /[0-9.]/.test(c) ? '0123456789'[Math.floor(Math.random() * 10)] : c).join('')
-      );
+      if (count >= 10) { setDisplay(value); return; }
+      setDisplay(value.split('').map(c => /[0-9.]/.test(c) ? '0123456789'[Math.floor(Math.random() * 10)] : c).join(''));
       frameRef.current = requestAnimationFrame(tick);
     };
     frameRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frameRef.current);
   }, [value, scrambling]);
-
   return <>{display}</>;
 };
 
-/* ── Scan line sweep ── */
-const ScanLine = () => (
-  <motion.div
-    className="absolute left-0 right-0 h-[2px] z-[2] pointer-events-none"
-    style={{
-      background: 'linear-gradient(90deg, transparent 0%, hsl(42 76% 50% / 0) 5%, hsl(42 76% 55% / 0.9) 50%, hsl(42 76% 50% / 0) 95%, transparent 100%)',
-      boxShadow: '0 0 24px 8px hsl(42 76% 50% / 0.5), 0 0 80px 20px hsl(42 76% 50% / 0.15)',
-    }}
-    initial={{ top: '0%' }}
-    animate={{ top: ['0%', '100%', '0%'] }}
-    transition={{ duration: 5, ease: 'linear', repeat: Infinity, repeatDelay: 1.5 }}
-  />
+/* ── Dual scan lines ── */
+const ScanLines = () => (
+  <>
+    <motion.div
+      className="absolute left-0 right-0 h-[2px] z-[3] pointer-events-none"
+      style={{
+        background: 'linear-gradient(90deg, transparent, hsl(var(--primary) / 0) 8%, hsl(var(--primary) / 0.85) 50%, hsl(var(--primary) / 0) 92%, transparent)',
+        boxShadow: '0 0 30px 10px hsl(var(--primary) / 0.45), 0 0 80px 20px hsl(var(--primary) / 0.12)',
+      }}
+      initial={{ top: '0%' }}
+      animate={{ top: ['0%', '100%', '0%'] }}
+      transition={{ duration: 4.5, ease: 'linear', repeat: Infinity, repeatDelay: 2 }}
+    />
+    <motion.div
+      className="absolute left-0 right-0 h-[1px] z-[3] pointer-events-none opacity-40"
+      style={{
+        background: 'linear-gradient(90deg, transparent, hsl(var(--primary) / 0.5) 50%, transparent)',
+      }}
+      initial={{ top: '100%' }}
+      animate={{ top: ['100%', '0%', '100%'] }}
+      transition={{ duration: 6, ease: 'linear', repeat: Infinity, repeatDelay: 1 }}
+    />
+  </>
 );
 
-/* ── Floating data particles ── */
+/* ── Hex grid background ── */
+const HexGrid = () => {
+  const hexSize = 18;
+  const rows = 22;
+  const cols = 12;
+  const hexes = useMemo(() => {
+    const result: { x: number; y: number; opacity: number }[] = [];
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const x = c * hexSize * 1.73 + (r % 2 ? hexSize * 0.866 : 0);
+        const y = r * hexSize * 1.5;
+        const dist = Math.sqrt((x - 110) ** 2 + (y - 200) ** 2);
+        const opacity = Math.max(0.02, 0.12 - dist * 0.0003);
+        result.push({ x, y, opacity });
+      }
+    }
+    return result;
+  }, []);
+
+  return (
+    <svg className="absolute inset-0 w-full h-full pointer-events-none z-[1]" preserveAspectRatio="xMidYMid slice">
+      {hexes.map((h, i) => (
+        <polygon
+          key={i}
+          points={Array.from({ length: 6 }, (_, j) => {
+            const angle = (Math.PI / 3) * j - Math.PI / 6;
+            return `${h.x + hexSize * 0.45 * Math.cos(angle)},${h.y + hexSize * 0.45 * Math.sin(angle)}`;
+          }).join(' ')}
+          fill="none"
+          stroke={`hsl(var(--primary) / ${h.opacity})`}
+          strokeWidth="0.4"
+        />
+      ))}
+    </svg>
+  );
+};
+
+/* ── Floating data particles — concentrated around body ── */
 const DataParticles = () => {
   const particles = useRef(
-    Array.from({ length: 24 }, (_, i) => ({
+    Array.from({ length: 30 }, (_, i) => ({
       id: i,
-      x: 10 + Math.random() * 80,
-      y: Math.random() * 100,
-      size: 1 + Math.random() * 1.5,
-      duration: 2.5 + Math.random() * 3.5,
-      delay: Math.random() * 4,
+      x: 25 + Math.random() * 50,
+      y: 10 + Math.random() * 80,
+      size: 0.8 + Math.random() * 1.8,
+      duration: 2 + Math.random() * 4,
+      delay: Math.random() * 5,
     }))
   ).current;
-
   return (
     <div className="absolute inset-0 pointer-events-none z-[2] overflow-hidden">
       {particles.map(p => (
@@ -97,115 +139,89 @@ const DataParticles = () => {
           key={p.id}
           className="absolute rounded-full"
           style={{
-            width: p.size,
-            height: p.size,
-            left: `${p.x}%`,
-            top: `${p.y}%`,
-            background: 'hsl(42 80% 60%)',
-            boxShadow: `0 0 ${p.size * 4}px ${p.size * 1.5}px hsl(42 76% 50% / 0.5)`,
+            width: p.size, height: p.size,
+            left: `${p.x}%`, top: `${p.y}%`,
+            background: 'hsl(var(--primary))',
+            boxShadow: `0 0 ${p.size * 5}px ${p.size * 2}px hsl(var(--primary) / 0.4)`,
           }}
           animate={{
-            y: [0, -20, 0],
-            x: [0, (Math.random() - 0.5) * 8, 0],
-            opacity: [0, 0.8, 0],
+            y: [0, -30 - Math.random() * 15, 0],
+            x: [0, (Math.random() - 0.5) * 12, 0],
+            opacity: [0, 0.9, 0],
           }}
-          transition={{
-            duration: p.duration,
-            delay: p.delay,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
+          transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: 'easeInOut' }}
         />
       ))}
     </div>
   );
 };
 
-/* ── Corner bracket decorations — larger + brighter ── */
+/* ── Corner brackets — thicker, animated ── */
 const CornerBrackets = () => {
-  const bracketStyle = 'absolute w-5 h-5 pointer-events-none z-[5]';
-  const stroke = 'hsl(42 76% 55% / 0.7)';
+  const corners = [
+    { cls: 'top-2 left-2', d: 'M0 10 L0 0 L10 0' },
+    { cls: 'top-2 right-2', d: 'M6 0 L16 0 L16 10' },
+    { cls: 'bottom-2 left-2', d: 'M0 6 L0 16 L10 16' },
+    { cls: 'bottom-2 right-2', d: 'M6 16 L16 16 L16 6' },
+  ];
   return (
     <>
-      <svg className={`${bracketStyle} top-2.5 left-2.5`} viewBox="0 0 16 16" fill="none">
-        <path d="M0 8 L0 0 L8 0" stroke={stroke} strokeWidth="1.5" />
-      </svg>
-      <svg className={`${bracketStyle} top-2.5 right-2.5`} viewBox="0 0 16 16" fill="none">
-        <path d="M8 0 L16 0 L16 8" stroke={stroke} strokeWidth="1.5" />
-      </svg>
-      <svg className={`${bracketStyle} bottom-2.5 left-2.5`} viewBox="0 0 16 16" fill="none">
-        <path d="M0 8 L0 16 L8 16" stroke={stroke} strokeWidth="1.5" />
-      </svg>
-      <svg className={`${bracketStyle} bottom-2.5 right-2.5`} viewBox="0 0 16 16" fill="none">
-        <path d="M8 16 L16 16 L16 8" stroke={stroke} strokeWidth="1.5" />
-      </svg>
+      {corners.map((c, i) => (
+        <motion.svg
+          key={i}
+          className={`absolute w-5 h-5 pointer-events-none z-[6] ${c.cls}`}
+          viewBox="0 0 16 16"
+          fill="none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0.5, 0.9, 0.5] }}
+          transition={{ duration: 3, delay: i * 0.15, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <path d={c.d} stroke="hsl(var(--primary) / 0.7)" strokeWidth="1.5" strokeLinecap="round" />
+        </motion.svg>
+      ))}
     </>
   );
 };
 
-/* ── HUD status bar ── */
+/* ── Status bar ── */
 const HudStatusBar = ({ useCm }: { useCm: boolean }) => (
   <motion.div
-    className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[7]"
-    initial={{ opacity: 0, y: 6 }}
+    className="absolute bottom-3.5 left-1/2 -translate-x-1/2 z-[7]"
+    initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 1, duration: 0.5 }}
+    transition={{ delay: 1.2, duration: 0.6, ease: LUXURY_EASE }}
   >
     <div
-      className="flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 backdrop-blur-xl border border-primary/20"
-      style={{ background: 'hsl(220 15% 3% / 0.7)' }}
+      className="flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-1.5 backdrop-blur-2xl"
+      style={{
+        background: 'linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(220 15% 5% / 0.85))',
+        border: '1px solid hsl(var(--primary) / 0.2)',
+        boxShadow: '0 0 20px 4px hsl(var(--primary) / 0.08), inset 0 1px 0 hsl(var(--primary) / 0.1)',
+      }}
     >
-      <span className="text-[7px] font-mono uppercase tracking-[0.12em] text-primary/70 font-bold">
-        NEURAL MAP
+      <span className="text-[7px] font-mono uppercase tracking-[0.14em] text-primary font-bold">NEURAL MAP</span>
+      <span className="relative flex h-1.5 w-1.5">
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60" style={{ backgroundColor: 'hsl(142 71% 45%)' }} />
+        <span className="relative inline-flex rounded-full h-1.5 w-1.5" style={{ backgroundColor: 'hsl(142 71% 45%)', boxShadow: '0 0 6px 2px hsl(142 71% 45% / 0.5)' }} />
       </span>
-      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_2px_hsl(142_71%_45%/0.6)]" />
-      <span className="text-[7px] font-mono uppercase tracking-[0.12em] text-primary/50">
-        TAP→{useCm ? 'IN' : 'CM'}
-      </span>
+      <span className="text-[7px] font-mono uppercase tracking-[0.12em] text-primary/60">TAP→{useCm ? 'IN' : 'CM'}</span>
     </div>
   </motion.div>
 );
 
-/* ── Horizontal measurement tick marks ── */
+/* ── Tick marks — refined ── */
 const TickMarks = () => (
   <div className="absolute inset-0 pointer-events-none z-[1]">
-    {/* Left edge ticks */}
-    {Array.from({ length: 20 }, (_, i) => (
-      <div
-        key={`lt-${i}`}
-        className="absolute left-0"
-        style={{
-          top: `${5 + i * 4.5}%`,
-          width: i % 5 === 0 ? 10 : 5,
-          height: 1,
-          background: `hsl(42 76% 50% / ${i % 5 === 0 ? 0.25 : 0.1})`,
-        }}
-      />
-    ))}
-    {/* Right edge ticks */}
-    {Array.from({ length: 20 }, (_, i) => (
-      <div
-        key={`rt-${i}`}
-        className="absolute right-0"
-        style={{
-          top: `${5 + i * 4.5}%`,
-          width: i % 5 === 0 ? 10 : 5,
-          height: 1,
-          background: `hsl(42 76% 50% / ${i % 5 === 0 ? 0.25 : 0.1})`,
-        }}
-      />
-    ))}
+    {Array.from({ length: 22 }, (_, i) => {
+      const isMajor = i % 5 === 0;
+      return (
+        <div key={`t-${i}`}>
+          <div className="absolute left-0" style={{ top: `${4 + i * 4.3}%`, width: isMajor ? 12 : 6, height: 1, background: `hsl(var(--primary) / ${isMajor ? 0.3 : 0.08})` }} />
+          <div className="absolute right-0" style={{ top: `${4 + i * 4.3}%`, width: isMajor ? 12 : 6, height: 1, background: `hsl(var(--primary) / ${isMajor ? 0.3 : 0.08})` }} />
+        </div>
+      );
+    })}
   </div>
-);
-
-/* ── Body rim-light / edge glow ── */
-const BodyRimLight = () => (
-  <div
-    className="absolute inset-0 pointer-events-none z-[1]"
-    style={{
-      background: 'radial-gradient(ellipse 45% 50% at 50% 45%, hsl(42 76% 50% / 0.08) 0%, transparent 70%)',
-    }}
-  />
 );
 
 /* ═══════════════════════════════════════════
@@ -213,7 +229,7 @@ const BodyRimLight = () => (
    ═══════════════════════════════════════════ */
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [useCm, setUseCmLocal] = useState(getUseCm());
+  const [useCmState, setUseCmLocal] = useState(getUseCm());
   const [scrambling, setScrambling] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [parallaxY, setParallaxY] = useState(0);
@@ -223,8 +239,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
     if (!el) return;
     const handleScroll = () => {
       const rect = el.getBoundingClientRect();
-      const offset = (rect.top + rect.height / 2 - window.innerHeight / 2) * 0.02;
-      setParallaxY(offset);
+      setParallaxY((rect.top + rect.height / 2 - window.innerHeight / 2) * 0.02);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
@@ -233,37 +248,53 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
   const toggleUnit = useCallback(() => {
     setScrambling(true);
-    const next = !useCm;
+    const next = !useCmState;
     setUseCmLocal(next);
     setUseCm(next);
     setTimeout(() => setScrambling(false), 500);
-  }, [useCm]);
+  }, [useCmState]);
 
   const getValue = (key: string): { line1: string; line2: string } | null => {
     if (key === 'height') {
-      return useCm
+      return useCmState
         ? { line1: `${heightCm} cm`, line2: fmtHeightFtIn(heightCm) }
         : { line1: fmtHeightFtIn(heightCm), line2: `${heightCm} cm` };
     }
     const range = measurements[key];
     if (!range) return null;
-    return useCm
+    return useCmState
       ? { line1: fmtCm(range), line2: fmtIn(range) }
       : { line1: fmtIn(range), line2: fmtCm(range) };
   };
 
   const activeOverlays = OVERLAYS.filter(o => getValue(o.key) !== null);
 
+  // Shared mask style for silhouette layers
+  const maskStyle: React.CSSProperties = {
+    WebkitMaskImage: `url(${bodySilhouetteMask})`,
+    maskImage: `url(${bodySilhouetteMask})`,
+    WebkitMaskRepeat: 'no-repeat',
+    maskRepeat: 'no-repeat',
+    WebkitMaskPosition: 'center',
+    maskPosition: 'center',
+    WebkitMaskSize: 'contain',
+    maskSize: 'contain',
+  };
+
   return (
     <div className="mb-4" ref={containerRef}>
       <div className="flex justify-center">
         <div
-          className="relative w-full max-w-[380px] aspect-[3/4] rounded-[1rem] border-[2px] border-primary/50 cursor-pointer animate-breathing-glow overflow-hidden"
+          className="relative w-full max-w-[380px] aspect-[3/4] rounded-[1rem] cursor-pointer overflow-hidden"
           onClick={toggleUnit}
           role="button"
           aria-label="Toggle measurement units"
           tabIndex={0}
           onKeyDown={e => e.key === 'Enter' && toggleUnit()}
+          style={{
+            border: '2px solid hsl(var(--primary) / 0.4)',
+            boxShadow: '0 0 20px 4px hsl(var(--primary) / 0.15), 0 0 60px 12px hsl(var(--primary) / 0.06), inset 0 0 30px 5px hsl(var(--primary) / 0.05)',
+          }}
         >
           <span className="sr-only">
             {`Body measurements diagram: ${[
@@ -274,123 +305,112 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             ].join(', ')}.`}
           </span>
 
-          {/* Layer 0: Dark sci-fi background */}
+          {/* BG: Deep space gradient */}
           <div className="absolute inset-0" style={{
-            background: 'linear-gradient(180deg, hsl(220 20% 4%) 0%, hsl(220 15% 8%) 40%, hsl(220 20% 5%) 100%)',
+            background: 'radial-gradient(ellipse 80% 70% at 50% 42%, hsl(220 18% 7%) 0%, hsl(220 20% 3%) 100%)',
           }} />
 
-          {/* Layer 0b: Subtle grid overlay */}
-          <div className="absolute inset-0 opacity-[0.06]" style={{
-            backgroundImage: `linear-gradient(hsl(var(--primary) / 0.5) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.5) 1px, transparent 1px)`,
-            backgroundSize: '20px 20px',
-          }} />
+          {/* BG: Hex grid */}
+          <HexGrid />
 
-          {/* Layer 0c: Radial vignette */}
+          {/* BG: Radial vignette */}
           <div className="absolute inset-0" style={{
-            background: 'radial-gradient(ellipse 70% 60% at 50% 45%, transparent 30%, hsl(220 20% 3% / 0.7) 100%)',
+            background: 'radial-gradient(ellipse 55% 50% at 50% 45%, hsl(var(--primary) / 0.04) 0%, transparent 50%), radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, hsl(220 20% 2% / 0.85) 100%)',
           }} />
 
-          {/* Layer 1: Body silhouette — masked & glowing */}
+          {/* BG: Subtle noise texture */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          }} />
+
+          {/* Silhouette: Ambient glow behind figure */}
+          <motion.div
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            style={{ transform: `translateY(${parallaxY}px)` }}
+          >
+            <div className="h-[78%] w-[36%]" style={{
+              background: 'radial-gradient(ellipse at 50% 45%, hsl(var(--primary) / 0.22) 0%, hsl(var(--primary) / 0.08) 40%, transparent 70%)',
+              filter: 'blur(25px)',
+            }} />
+          </motion.div>
+
+          {/* Silhouette: Gold masked figure */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center"
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
-            {/* Ambient body glow */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="h-[75%] w-[40%] rounded-full" style={{
-                background: 'radial-gradient(ellipse at center, hsl(var(--primary) / 0.2) 0%, hsl(var(--primary) / 0.06) 50%, transparent 75%)',
-                filter: 'blur(20px)',
+            {/* Hidden img for onLoad trigger */}
+            <img src={bodySilhouetteMask} alt="" className="hidden" onLoad={() => setImageLoaded(true)} />
+
+            <div className="relative h-[88%] w-[55%] max-w-[220px]">
+              {/* Primary gold fill */}
+              <div className="absolute inset-0" style={{
+                ...maskStyle,
+                backgroundImage: 'linear-gradient(175deg, hsl(var(--primary) / 0.95) 0%, hsl(var(--primary) / 0.7) 35%, hsl(var(--primary) / 0.55) 60%, hsl(var(--primary) / 0.85) 100%)',
+                filter: 'drop-shadow(0 0 16px hsl(var(--primary) / 0.5)) drop-shadow(0 0 40px hsl(var(--primary) / 0.2))',
               }} />
-            </div>
-            <div className="relative h-[88%] w-auto">
-              <img
-                src={bodySilhouette}
-                alt="Body measurement scan"
-                className="h-full w-auto object-contain"
-                onLoad={() => setImageLoaded(true)}
+
+              {/* Shimmer sweep */}
+              <motion.div
+                className="absolute inset-0"
                 style={{
-                  filter: 'sepia(0.3) saturate(2) brightness(1.4) contrast(1.1) drop-shadow(0 0 20px hsl(var(--primary) / 0.6)) drop-shadow(0 0 50px hsl(var(--primary) / 0.3))',
-                  WebkitMaskImage: `url(${bodySilhouetteMask})`,
-                  maskImage: `url(${bodySilhouetteMask})`,
-                  WebkitMaskRepeat: 'no-repeat',
-                  maskRepeat: 'no-repeat',
-                  WebkitMaskPosition: 'center',
-                  maskPosition: 'center',
-                  WebkitMaskSize: 'contain',
-                  maskSize: 'contain',
+                  ...maskStyle,
+                  backgroundImage: 'linear-gradient(180deg, transparent 20%, hsl(var(--gold-shimmer) / 0.5) 50%, transparent 80%)',
+                  backgroundSize: '100% 250%',
                 }}
+                animate={{ backgroundPosition: ['50% -30%', '50% 130%'] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', repeatDelay: 2 }}
               />
-              {/* Gold tint overlay */}
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  backgroundImage: 'linear-gradient(180deg, hsl(var(--primary) / 0.25) 0%, hsl(var(--primary) / 0.12) 50%, hsl(var(--primary) / 0.2) 100%)',
-                  WebkitMaskImage: `url(${bodySilhouetteMask})`,
-                  maskImage: `url(${bodySilhouetteMask})`,
-                  WebkitMaskRepeat: 'no-repeat',
-                  maskRepeat: 'no-repeat',
-                  WebkitMaskPosition: 'center',
-                  maskPosition: 'center',
-                  WebkitMaskSize: 'contain',
-                  maskSize: 'contain',
-                }}
-              />
+
+              {/* Edge highlight */}
+              <div className="absolute inset-0" style={{
+                ...maskStyle,
+                backgroundImage: 'linear-gradient(90deg, hsl(var(--primary) / 0.3) 0%, transparent 15%, transparent 85%, hsl(var(--primary) / 0.3) 100%)',
+              }} />
             </div>
           </motion.div>
 
-          {/* Layer 2: Body rim-light glow */}
-          {imageLoaded && <BodyRimLight />}
-
-          {/* Layer 3: Edge tick marks */}
+          {/* Effects: Tick marks */}
           {imageLoaded && <TickMarks />}
 
-          {/* Layer 4: Scan line sweep */}
-          {imageLoaded && <ScanLine />}
+          {/* Effects: Scan lines */}
+          {imageLoaded && <ScanLines />}
 
-          {/* Layer 5: Data particles */}
+          {/* Effects: Data particles */}
           {imageLoaded && <DataParticles />}
 
-          {/* Layer 6: Corner brackets */}
+          {/* Effects: Corner brackets */}
           {imageLoaded && <CornerBrackets />}
 
-          {/* Layer 7: SVG leader lines */}
+          {/* Data: SVG leader lines */}
           {imageLoaded && (
-            <svg
-              className="absolute inset-0 w-full h-full pointer-events-none z-[3]"
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
-              fill="none"
-            >
+            <svg className="absolute inset-0 w-full h-full pointer-events-none z-[4]" viewBox="0 0 100 100" preserveAspectRatio="none" fill="none">
               <defs>
-                <linearGradient id="line-grad-l" x1="1" y1="0" x2="0" y2="0">
-                  <stop offset="0%" stopColor="hsl(42 76% 55% / 0.6)" />
-                  <stop offset="100%" stopColor="hsl(42 76% 55% / 0.05)" />
+                <linearGradient id="lg-l" x1="1" y1="0" x2="0" y2="0">
+                  <stop offset="0%" stopColor="hsl(var(--primary) / 0.55)" />
+                  <stop offset="100%" stopColor="hsl(var(--primary) / 0.03)" />
                 </linearGradient>
-                <linearGradient id="line-grad-r" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="hsl(42 76% 55% / 0.6)" />
-                  <stop offset="100%" stopColor="hsl(42 76% 55% / 0.05)" />
+                <linearGradient id="lg-r" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="hsl(var(--primary) / 0.55)" />
+                  <stop offset="100%" stopColor="hsl(var(--primary) / 0.03)" />
                 </linearGradient>
               </defs>
-              {activeOverlays.map(overlay => {
-                const dotX = parseFloat(overlay.dotLeft);
-                const dotY = parseFloat(overlay.dotTop);
-                const labelX = overlay.side === 'left' ? 3 : 97;
-                const labelY = parseFloat(overlay.valTop) + 2;
-                const gradId = overlay.side === 'left' ? 'line-grad-l' : 'line-grad-r';
-
+              {activeOverlays.map(o => {
+                const dx = parseFloat(o.dotLeft), dy = parseFloat(o.dotTop);
+                const lx = o.side === 'left' ? 2 : 98;
+                const ly = parseFloat(o.valTop) + 2;
                 return (
                   <motion.path
-                    key={`line-${overlay.key}`}
-                    d={`M ${dotX} ${dotY} L ${labelX} ${labelY}`}
-                    stroke={`url(#${gradId})`}
-                    strokeWidth="0.3"
-                    strokeDasharray="1.2 0.5"
-                    fill="none"
+                    key={`l-${o.key}`}
+                    d={`M${dx} ${dy} L${lx} ${ly}`}
+                    stroke={`url(#lg-${o.side === 'left' ? 'l' : 'r'})`}
+                    strokeWidth="0.25"
+                    strokeDasharray="1.5 0.6"
                     initial={{ pathLength: 0, opacity: 0 }}
                     animate={{ pathLength: 1, opacity: 1 }}
                     transition={{
-                      pathLength: { delay: overlay.delay + 0.6, duration: 0.5, ease: [0.16, 1, 0.3, 1] },
-                      opacity: { delay: overlay.delay + 0.6, duration: 0.15 },
+                      pathLength: { delay: o.delay + 0.6, duration: 0.6, ease: LUXURY_EASE },
+                      opacity: { delay: o.delay + 0.6, duration: 0.2 },
                     }}
                   />
                 );
@@ -398,62 +418,55 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             </svg>
           )}
 
-          {/* Layer 8: Pulsing hotspot dots — smaller, precise */}
-          {imageLoaded && activeOverlays.map(overlay => (
+          {/* Data: Hotspot dots */}
+          {imageLoaded && activeOverlays.map(o => (
             <motion.div
-              key={`dot-${overlay.key}`}
-              className="absolute z-[4]"
-              style={{
-                top: overlay.dotTop,
-                left: overlay.dotLeft,
-                transform: 'translate(-50%, -50%)',
-              }}
+              key={`d-${o.key}`}
+              className="absolute z-[5]"
+              style={{ top: o.dotTop, left: o.dotLeft, transform: 'translate(-50%, -50%)' }}
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: overlay.delay + 0.4, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ delay: o.delay + 0.4, duration: 0.4, ease: LUXURY_EASE }}
             >
-              {/* Sonar rings — smaller */}
-              <span className="absolute w-2.5 h-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/25 animate-[sonar-ping_3s_ease-out_infinite]" />
-              <span
-                className="absolute w-2.5 h-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/15 animate-[sonar-ping_3s_ease-out_infinite]"
-                style={{ animationDelay: '1s' }}
-              />
-              {/* Core dot */}
-              <span
-                className="block w-[4px] h-[4px] rounded-full bg-primary"
-                style={{
-                  boxShadow: '0 0 3px 1px hsl(42 76% 55% / 0.8), 0 0 8px 2px hsl(42 76% 50% / 0.3)',
-                }}
-              />
+              <span className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/20 animate-[sonar-ping_3s_ease-out_infinite]" />
+              <span className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/10 animate-[sonar-ping_3s_ease-out_infinite]" style={{ animationDelay: '1.2s' }} />
+              <span className="block w-[5px] h-[5px] rounded-full bg-primary" style={{
+                boxShadow: '0 0 4px 2px hsl(var(--primary) / 0.7), 0 0 12px 4px hsl(var(--primary) / 0.25)',
+              }} />
             </motion.div>
           ))}
 
-          {/* Layer 9: Glassmorphic measurement labels — premium */}
-          {imageLoaded && activeOverlays.map(overlay => {
-            const val = getValue(overlay.key)!;
+          {/* Data: Glassmorphic labels */}
+          {imageLoaded && activeOverlays.map(o => {
+            const val = getValue(o.key)!;
             return (
               <motion.div
-                key={overlay.key}
-                className="absolute z-[5]"
+                key={o.key}
+                className="absolute z-[6]"
                 style={{
-                  top: overlay.valTop,
-                  ...(overlay.side === 'left' ? { left: '2%' } : { right: '2%' }),
+                  top: o.valTop,
+                  ...(o.side === 'left' ? { left: '1.5%' } : { right: '1.5%' }),
                 }}
-                initial={{ opacity: 0, x: overlay.side === 'left' ? -12 : 12, scale: 0.85 }}
+                initial={{ opacity: 0, x: o.side === 'left' ? -14 : 14, scale: 0.8 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
-                transition={{ delay: overlay.delay + 0.7, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ delay: o.delay + 0.7, duration: 0.55, ease: LUXURY_EASE }}
               >
                 <div
-                  className="rounded-lg px-2 py-1 backdrop-blur-xl border hud-label-premium"
-                  style={{ textAlign: overlay.side === 'left' ? 'left' : 'right' }}
+                  className="rounded-lg px-2 py-1 backdrop-blur-2xl"
+                  style={{
+                    textAlign: o.side === 'left' ? 'left' : 'right',
+                    background: 'linear-gradient(145deg, hsl(var(--primary) / 0.12) 0%, hsl(220 15% 5% / 0.75) 100%)',
+                    border: '1px solid hsl(var(--primary) / 0.18)',
+                    boxShadow: '0 2px 12px hsl(var(--primary) / 0.08), inset 0 1px 0 hsl(var(--primary) / 0.08)',
+                  }}
                 >
-                  <p className="text-[7px] font-mono font-bold uppercase tracking-[0.15em] text-primary leading-none mb-[2px]">
-                    {overlay.label}
+                  <p className="text-[6.5px] font-mono font-bold uppercase tracking-[0.16em] text-primary leading-none mb-[2px]">
+                    {o.label}
                   </p>
                   <p className="text-[11px] font-black leading-tight text-foreground hud-data-glow">
                     <ScrambleValue value={val.line1} scrambling={scrambling} />
                   </p>
-                  <p className="text-[8.5px] font-medium leading-tight text-muted-foreground">
+                  <p className="text-[8px] font-medium leading-tight text-muted-foreground">
                     <ScrambleValue value={val.line2} scrambling={scrambling} />
                   </p>
                 </div>
@@ -461,15 +474,15 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             );
           })}
 
-          {/* Layer 10: HUD status bar */}
-          {imageLoaded && <HudStatusBar useCm={useCm} />}
+          {/* HUD status bar */}
+          {imageLoaded && <HudStatusBar useCm={useCmState} />}
 
-          {/* Outer frame */}
+          {/* Outer glow frame */}
           <div
-            className="absolute -inset-[5px] rounded-[calc(1rem+2px)] border-[3px] border-black/80 pointer-events-none z-[8]"
+            className="absolute -inset-[4px] rounded-[calc(1rem+3px)] pointer-events-none z-[8]"
             style={{
-              boxShadow:
-                'inset 0 0 10px 3px hsl(42 76% 50% / 0.5), 0 0 14px 4px hsl(42 76% 50% / 0.4), 0 0 35px 8px hsl(42 76% 50% / 0.15)',
+              border: '2px solid hsl(220 15% 8%)',
+              boxShadow: 'inset 0 0 12px 3px hsl(var(--primary) / 0.35), 0 0 16px 4px hsl(var(--primary) / 0.3), 0 0 40px 10px hsl(var(--primary) / 0.1)',
             }}
           />
         </div>
