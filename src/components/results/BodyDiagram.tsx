@@ -28,14 +28,14 @@ interface MeasurementOverlay {
 }
 
 const OVERLAYS: MeasurementOverlay[] = [
-  { key: 'height',   label: 'HEIGHT',   side: 'left',  valTop: '10%',   delay: 0,    dotTop: '2%',   dotLeft: '12%' },
-  { key: 'shoulder', label: 'SHOULDER', side: 'right', valTop: '21%',   delay: 0.12, dotTop: '19%',  dotLeft: '68%' },
-  { key: 'chest',    label: 'CHEST',    side: 'left',  valTop: '26.5%', delay: 0.22, dotTop: '27%',  dotLeft: '32%' },
-  { key: 'bust',     label: 'BUST',     side: 'right', valTop: '28.5%', delay: 0.30, dotTop: '29%',  dotLeft: '68%' },
-  { key: 'sleeve',   label: 'SLEEVE',   side: 'left',  valTop: '36%',   delay: 0.38, dotTop: '35%',  dotLeft: '28%' },
-  { key: 'waist',    label: 'WAIST',    side: 'right', valTop: '40.5%', delay: 0.46, dotTop: '41%',  dotLeft: '68%' },
-  { key: 'hips',     label: 'HIPS',     side: 'right', valTop: '48.5%', delay: 0.54, dotTop: '49%',  dotLeft: '65%' },
-  { key: 'inseam',   label: 'INSEAM',   side: 'left',  valTop: '65%',   delay: 0.62, dotTop: '68%',  dotLeft: '48%' },
+  { key: 'height',   label: 'HEIGHT',   side: 'left',  valTop: '6%',    delay: 0,    dotTop: '2%',   dotLeft: '50%' },
+  { key: 'shoulder', label: 'SHOULDER', side: 'right', valTop: '18%',   delay: 0.12, dotTop: '20%',  dotLeft: '66%' },
+  { key: 'chest',    label: 'CHEST',    side: 'left',  valTop: '25%',   delay: 0.22, dotTop: '28%',  dotLeft: '38%' },
+  { key: 'bust',     label: 'BUST',     side: 'right', valTop: '27%',   delay: 0.30, dotTop: '30%',  dotLeft: '62%' },
+  { key: 'sleeve',   label: 'SLEEVE',   side: 'left',  valTop: '35%',   delay: 0.38, dotTop: '36%',  dotLeft: '30%' },
+  { key: 'waist',    label: 'WAIST',    side: 'right', valTop: '38%',   delay: 0.46, dotTop: '42%',  dotLeft: '60%' },
+  { key: 'hips',     label: 'HIPS',     side: 'right', valTop: '49%',   delay: 0.54, dotTop: '50%',  dotLeft: '62%' },
+  { key: 'inseam',   label: 'INSEAM',   side: 'left',  valTop: '65%',   delay: 0.62, dotTop: '67%',  dotLeft: '48%' },
 ];
 
 /* ── Number scramble on unit toggle ── */
