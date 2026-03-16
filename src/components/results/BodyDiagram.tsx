@@ -13,6 +13,8 @@ const fmtHeightFtIn = (cm: number) => {
 };
 const LUXURY_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
+const SILHOUETTE_EDGE_MASK = 'radial-gradient(ellipse 88% 90% at 50% 48%, black 55%, rgba(0,0,0,0.5) 75%, rgba(0,0,0,0.1) 90%, transparent 100%)';
+
 const createProcessedSilhouette = (imageSrc: string): Promise<string> =>
   new Promise((resolve) => {
     const img = new Image();
