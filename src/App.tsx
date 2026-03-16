@@ -144,6 +144,7 @@ const App = () => {
                   <Route path="/partnership" element={<PageTransition><Partnership /></PageTransition>} />
                   <Route path="/founding-members" element={<PageTransition><FoundingMembers /></PageTransition>} />
                   <Route path="/media-kit" element={<PageTransition><MediaKit /></PageTransition>} />
+                  <Route path="/links" element={<PageTransition><LinkHub /></PageTransition>} />
                   <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
                 </Routes>
               </AnimatePresence>
