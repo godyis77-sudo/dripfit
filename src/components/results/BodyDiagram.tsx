@@ -153,7 +153,6 @@ interface MeasurementOverlay {
   label: string;
   side: 'left' | 'right';
   valTop: string;
-  lineTop?: string;
   delay: number;
   dotTop: string;
   dotLeft: string;
@@ -163,9 +162,9 @@ const OVERLAYS: MeasurementOverlay[] = [
   { key: 'height',   label: 'HEIGHT',   side: 'left',  valTop: '5%',  delay: 0,    dotTop: '5%',  dotLeft: '15%' },
   { key: 'shoulder', label: 'SHOULDER', side: 'right', valTop: '17%', delay: 0.12, dotTop: '20%', dotLeft: '64%' },
   { key: 'chest',    label: 'CHEST',    side: 'left',  valTop: '25%', delay: 0.22, dotTop: '28%', dotLeft: '40%' },
-  { key: 'bust',     label: 'BUST',     side: 'right', valTop: '28%', lineTop: '34%', delay: 0.30, dotTop: '34%', dotLeft: '56%' },
+  { key: 'bust',     label: 'BUST',     side: 'right', valTop: '30%', delay: 0.30, dotTop: '34%', dotLeft: '56%' },
   { key: 'sleeve',   label: 'SLEEVE',   side: 'left',  valTop: '35%', delay: 0.38, dotTop: '36%', dotLeft: '32%' },
-  { key: 'waist',    label: 'WAIST',    side: 'right', valTop: '39%', delay: 0.46, dotTop: '42%', dotLeft: '58%' },
+  { key: 'waist',    label: 'WAIST',    side: 'right', valTop: '40%', delay: 0.46, dotTop: '42%', dotLeft: '58%' },
   { key: 'hips',     label: 'HIPS',     side: 'right', valTop: '50%', delay: 0.54, dotTop: '50%', dotLeft: '60%' },
   { key: 'inseam',   label: 'INSEAM',   side: 'left',  valTop: '66%', delay: 0.62, dotTop: '67%', dotLeft: '46%' },
 ];
@@ -474,27 +473,36 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
             <div className="relative h-[92%] w-[58%] max-w-[245px]">
-              {/* Back glow */}
+              {/* Far glow layer — wide luminescent halo */}
               <img
                 src={silhouetteSrc}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain opacity-50"
+                className="absolute inset-0 h-full w-full object-contain opacity-35 pointer-events-none"
                 style={{
-                  mixBlendMode: 'normal',
-                  filter: 'saturate(1.15) brightness(1.06) contrast(1.08) blur(1.2px) drop-shadow(0 0 22px hsl(var(--primary) / 0.55)) drop-shadow(0 0 46px hsl(var(--primary) / 0.22))',
+                  filter: 'blur(8px) brightness(1.6) saturate(1.4) drop-shadow(0 0 40px hsl(var(--primary) / 0.7)) drop-shadow(0 0 80px hsl(var(--primary) / 0.3))',
                 }}
               />
 
-              {/* Main silhouette */}
+              {/* Near glow layer — tighter edge bloom */}
+              <img
+                src={silhouetteSrc}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-contain opacity-55 pointer-events-none"
+                style={{
+                  filter: 'blur(2px) brightness(1.3) saturate(1.3) drop-shadow(0 0 16px hsl(var(--primary) / 0.6)) drop-shadow(0 0 32px hsl(var(--primary) / 0.25))',
+                }}
+              />
+
+              {/* Main silhouette — crisp */}
               <img
                 src={silhouetteSrc}
                 alt="Body measurement scan"
                 className="relative z-[2] h-full w-full object-contain"
                 onLoad={() => setImageLoaded(true)}
                 style={{
-                  mixBlendMode: 'normal',
-                  filter: 'saturate(1.15) brightness(1.08) contrast(1.12) drop-shadow(0 0 10px hsl(var(--primary) / 0.5))',
+                  filter: 'saturate(1.15) brightness(1.08) contrast(1.12) drop-shadow(0 0 8px hsl(var(--primary) / 0.55)) drop-shadow(0 0 3px hsl(var(--primary) / 0.8))',
                 }}
               />
             </div>
@@ -528,13 +536,13 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               {activeOverlays.map(o => {
                 const dx = parseFloat(o.dotLeft), dy = parseFloat(o.dotTop);
                 const lx = o.side === 'left' ? 2 : 98;
-                const ly = parseFloat(o.lineTop ?? `${parseFloat(o.valTop) + 2}%`);
+                const ly = parseFloat(o.valTop) + 2;
                 return (
                   <motion.path
                     key={`l-${o.key}`}
                     d={`M${dx} ${dy} L${lx} ${ly}`}
-                    stroke={`url(#lg-${o.side === 'left' ? 'l' : 'r'})`}
-                    strokeWidth="0.25"
+                    stroke="hsl(var(--primary) / 0.45)"
+                    strokeWidth="0.3"
                     strokeDasharray="1.5 0.6"
                     initial={{ pathLength: 0, opacity: 0 }}
                     animate={{ pathLength: 1, opacity: 1 }}
