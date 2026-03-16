@@ -238,6 +238,54 @@ Deno.serve(async (req) => {
     // Log grade steps for debugging
     console.log(`[size-rec] ${brand_slug}/${category} grade steps:`, JSON.stringify(gradeSteps), `fit: ${fit}, fraction: ${fitFraction}`);
 
+    // ── FOOTWEAR GUARD: skip Gaussian scoring, do direct string match ──
+    if (category === "footwear") {
+      if (!preferredShoeSize) {
+        return successResponse({
+          recommended_size: null,
+          confidence: 0,
+          fit_status: "no_shoe_size",
+          fit_notes: "Set your preferred shoe size in your profile to get footwear recommendations.",
+          second_option: null,
+          fit_preference: fit,
+          brand_slug,
+          category,
+          all_sizes: sizeData.map(s => ({ label: s.label, score: 0, fit_status: "out_of_range" })),
+          measurement_breakdown: [],
+        }, 200, corsHeaders);
+      }
+
+      const matched = sizeData.find(s => s.label.toLowerCase() === preferredShoeSize.toLowerCase());
+      const allSizes = sizeData.map(s => ({
+        label: s.label,
+        score: s.label.toLowerCase() === preferredShoeSize.toLowerCase() ? 1.0 : 0,
+        fit_status: s.label.toLowerCase() === preferredShoeSize.toLowerCase() ? "true_to_size" : "out_of_range",
+      }));
+
+      const recSize = matched ? matched.label : preferredShoeSize;
+      const conf = matched ? 1.0 : 0;
+      const fStatus = matched ? "true_to_size" : "out_of_range";
+      const fNotes = matched
+        ? `${recSize} is your size in ${chart.brand_name} footwear.`
+        : `Your shoe size (${preferredShoeSize}) is not available in ${chart.brand_name}'s size chart.`;
+
+      // Cache footwear result
+      const snapshot = { ...userMeasurements, height: scan.height_cm, preferred_shoe_size: preferredShoeSize };
+      const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+      await supabase.from("size_recommendations_cache").upsert({
+        user_id, brand_slug, category, fit_preference: fit,
+        recommended_size: recSize, confidence: conf, fit_status: fStatus,
+        fit_notes: fNotes, second_option: null, chart_id: chart.id,
+        measurements_snapshot: snapshot, expires_at: expiresAt,
+      }, { onConflict: "user_id,brand_slug,category,fit_preference" });
+
+      return successResponse({
+        recommended_size: recSize, confidence: conf, fit_status: fStatus,
+        fit_notes: fNotes, second_option: null, fit_preference: fit,
+        brand_slug, category, all_sizes: allSizes, measurement_breakdown: [],
+      }, 200, corsHeaders);
+    }
+
     // STEP 5 — Two-pass scoring:
     //  Pass A: RAW measurements → determines confidence & breakdown (what user actually matches)
     //  Pass B: FIT-ADJUSTED measurements → determines which size to recommend
