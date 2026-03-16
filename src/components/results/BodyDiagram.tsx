@@ -528,7 +528,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               {activeOverlays.map(o => {
                 const dx = parseFloat(o.dotLeft), dy = parseFloat(o.dotTop);
                 const lx = o.side === 'left' ? 2 : 98;
-                const ly = parseFloat(o.valTop) + 2;
+                const ly = parseFloat(o.lineTop ?? `${parseFloat(o.valTop) + 2}%`);
                 return (
                   <motion.path
                     key={`l-${o.key}`}
