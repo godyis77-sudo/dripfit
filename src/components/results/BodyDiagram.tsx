@@ -343,10 +343,22 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             ].join(', ')}.`}
           </span>
 
-          {/* BG: Deep space gradient */}
-          <div className="absolute inset-0" style={{
-            background: 'radial-gradient(ellipse 80% 70% at 50% 42%, hsl(220 18% 7%) 0%, hsl(220 20% 3%) 100%)',
-          }} />
+          {/* Effect: Power-on flash */}
+          <motion.div
+            className="absolute inset-0 z-[9] pointer-events-none"
+            style={{ background: 'radial-gradient(ellipse at 50% 45%, hsl(var(--primary) / 0.4), transparent 70%)' }}
+            initial={{ opacity: 0.6 }}
+            animate={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          />
+
+          {/* BG: Deep space gradient with ambient hue shift */}
+          <motion.div
+            className="absolute inset-0"
+            style={{ background: 'radial-gradient(ellipse 80% 70% at 50% 42%, hsl(220 18% 7%) 0%, hsl(220 20% 3%) 100%)' }}
+            animate={{ filter: ['hue-rotate(0deg)', 'hue-rotate(5deg)', 'hue-rotate(-5deg)', 'hue-rotate(0deg)'] }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+          />
 
           {/* BG: Hex grid */}
           <HexGrid />
