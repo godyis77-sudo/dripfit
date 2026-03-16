@@ -599,7 +599,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               boxShadow: 'inset 0 0 12px 3px hsl(var(--primary) / 0.35), 0 0 16px 4px hsl(var(--primary) / 0.3), 0 0 40px 10px hsl(var(--primary) / 0.1)',
             }}
           />
-        </div>
+        </motion.div>
       </div>
     </div>
   );
