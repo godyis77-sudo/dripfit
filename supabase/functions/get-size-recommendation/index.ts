@@ -196,6 +196,7 @@ Deno.serve(async (req) => {
     const scored = sizeData.map((size) => {
       let totalScore = 0;
       let totalWeight = 0;
+      const breakdown: { key: string; user_value: number; chart_min: number; chart_max: number; score: number; status: string }[] = [];
 
       for (const [measurement, weight] of Object.entries(weights)) {
         if (weight === 0) continue;
@@ -213,10 +214,20 @@ Deno.serve(async (req) => {
         const mScore = scoreMeasurement(adjusted, sMin, sMax);
         totalScore += mScore * weight;
         totalWeight += weight;
+
+        const mStatus = mScore >= 0.8 ? "match" : mScore >= 0.5 ? "close" : adjusted < sMin ? "too_small" : adjusted > sMax ? "too_large" : "out_of_range";
+        breakdown.push({
+          key: measurement,
+          user_value: Number(adjusted.toFixed(1)),
+          chart_min: sMin,
+          chart_max: sMax,
+          score: Number(mScore.toFixed(2)),
+          status: mStatus,
+        });
       }
 
       const finalScore = totalWeight > 0 ? totalScore / totalWeight : 0;
-      return { label: size.label, score: Number(finalScore.toFixed(4)) };
+      return { label: size.label, score: Number(finalScore.toFixed(4)), breakdown };
     }).sort((a, b) => b.score - a.score);
 
     // STEP 5 — Determine recommendation
