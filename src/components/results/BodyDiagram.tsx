@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import type { MeasurementRange } from '@/lib/types';
-import bodySilhouetteMask from '@/assets/body-silhouette-mask.png';
+import bodySilhouette from '@/assets/body-silhouette-clean.webp';
 import { getUseCm, setUseCm } from '@/lib/session';
 
 const CM_TO_IN = 0.3937;
@@ -323,39 +323,41 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             }} />
           </motion.div>
 
-          {/* Silhouette: Gold masked figure */}
+          {/* Silhouette: Stable image-based render */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center"
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
             <div className="relative h-[88%] w-[55%] max-w-[220px]">
-              {/* Glow silhouette layer */}
+              {/* Back glow */}
               <img
-                src={bodySilhouetteMask}
+                src={bodySilhouette}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain opacity-65"
+                className="absolute inset-0 h-full w-full object-contain opacity-55"
                 style={{
-                  filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(749%) hue-rotate(355deg) brightness(95%) contrast(93%) blur(1.4px) drop-shadow(0 0 20px hsl(var(--primary) / 0.55)) drop-shadow(0 0 46px hsl(var(--primary) / 0.22))',
+                  mixBlendMode: 'multiply',
+                  filter: 'sepia(0.3) saturate(1.8) brightness(1.25) contrast(1.05) blur(1.4px) drop-shadow(0 0 22px hsl(var(--primary) / 0.55)) drop-shadow(0 0 46px hsl(var(--primary) / 0.22))',
                 }}
               />
 
-              {/* Main silhouette layer */}
+              {/* Main silhouette */}
               <img
-                src={bodySilhouetteMask}
+                src={bodySilhouette}
                 alt="Body measurement scan"
                 className="relative z-[2] h-full w-full object-contain"
                 onLoad={() => setImageLoaded(true)}
                 style={{
-                  filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(749%) hue-rotate(355deg) brightness(95%) contrast(93%) drop-shadow(0 0 10px hsl(var(--primary) / 0.55))',
+                  mixBlendMode: 'multiply',
+                  filter: 'sepia(0.28) saturate(1.7) brightness(1.28) contrast(1.08) drop-shadow(0 0 10px hsl(var(--primary) / 0.5))',
                 }}
               />
 
-              {/* Moving highlight pass */}
+              {/* Moving highlight pass clipped to silhouette bounds */}
               <motion.div
                 className="absolute inset-0 z-[3] pointer-events-none"
                 style={{
-                  backgroundImage: 'linear-gradient(180deg, transparent 10%, hsl(var(--gold-shimmer) / 0.24) 48%, transparent 85%)',
+                  backgroundImage: 'linear-gradient(180deg, transparent 8%, hsl(var(--gold-shimmer) / 0.2) 48%, transparent 86%)',
                   backgroundSize: '100% 220%',
                   mixBlendMode: 'screen',
                 }}
