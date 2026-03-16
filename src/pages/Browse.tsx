@@ -267,7 +267,6 @@ const Browse = () => {
             <div className="px-4 py-3 space-y-3">
               {/* Sort */}
               <div>
-                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Sort by</p>
                 <div className="flex flex-wrap gap-1.5">
                   {SORT_OPTIONS.map(opt => (
                     <button
@@ -287,7 +286,6 @@ const Browse = () => {
 
               {/* Brand filter */}
               <div>
-                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Brand</p>
                 <div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto">
                   <button
                     onClick={() => setBrandFilter(null)}
@@ -317,7 +315,6 @@ const Browse = () => {
 
               {/* Genre filter */}
               <div>
-                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Genre</p>
                 <div className="flex flex-wrap gap-1.5">
                   <button
                     onClick={() => setGenreFilter(null)}
@@ -348,7 +345,6 @@ const Browse = () => {
               {/* Fit filter */}
               {availableFits.length > 0 && (
                 <div>
-                  <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Fit / Cut</p>
                   <div className="flex flex-wrap gap-1.5">
                     <button
                       onClick={() => setFitFilter(null)}
