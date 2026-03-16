@@ -17,62 +17,128 @@ interface SizeChartRow {
   shoulder_max: number | null;
 }
 
-interface UserMeasurements {
+export interface UserMeasurements {
   shoulder: MeasurementRange;
   chest: MeasurementRange;
   waist: MeasurementRange;
   hips: MeasurementRange;
   inseam: MeasurementRange;
+  sleeve?: MeasurementRange;
 }
 
-function overlapScore(userMin: number, userMax: number, chartMin: number | null, chartMax: number | null): number {
-  if (chartMin == null || chartMax == null) return 0;
-  const overlapStart = Math.max(userMin, chartMin);
-  const overlapEnd = Math.min(userMax, chartMax);
-  if (overlapStart >= overlapEnd) {
-    // No overlap — penalty based on distance
-    const gap = overlapStart - overlapEnd;
-    return -gap;
+// ── Fit offset only applies to circumference measurements ──
+// Shoulder, inseam, sleeve, shoe_length are structural/anatomical — never adjusted.
+const FIT_OFFSETS: Record<string, number> = {
+  fitted: -1.5,
+  slim: -1.5,
+  regular: 0,
+  relaxed: 2,
+};
+
+// Measurements that should receive fit-preference offset (circumference only)
+const FIT_ADJUSTABLE = new Set(['chest', 'waist', 'hips', 'hip']);
+
+// ── Category-aware weighting ──
+export const CATEGORY_WEIGHTS: Record<string, Record<string, number>> = {
+  tops:       { chest: 0.40, waist: 0.30, shoulder: 0.30 },
+  bottoms:    { waist: 0.35, hip: 0.40, inseam: 0.25 },
+  pants:      { waist: 0.35, hip: 0.35, inseam: 0.30 },
+  dresses:    { chest: 0.30, waist: 0.35, hip: 0.35 },
+  outerwear:  { chest: 0.35, waist: 0.15, hip: 0.10, shoulder: 0.25, sleeve: 0.15 },
+  blazers:    { chest: 0.30, waist: 0.15, shoulder: 0.25, sleeve: 0.20, hip: 0.10 },
+  suits:      { chest: 0.25, waist: 0.20, shoulder: 0.20, sleeve: 0.15, hip: 0.10, inseam: 0.10 },
+  activewear: { chest: 0.25, waist: 0.35, hip: 0.30, inseam: 0.10 },
+  footwear:   { shoe_length: 1.00 },
+};
+
+const DEFAULT_WEIGHTS: Record<string, number> = {
+  chest: 0.30, waist: 0.30, hip: 0.20, shoulder: 0.10, inseam: 0.10,
+};
+
+/**
+ * Scores how well a single user measurement fits a size chart range.
+ * Returns 0–1 (1 = perfect midpoint match), with graceful decay outside range.
+ * Mirrors the server-side `scoreMeasurement` for consistency.
+ */
+function scoreMeasurement(userVal: number, chartMin: number, chartMax: number): number {
+  const mid = (chartMin + chartMax) / 2;
+  const rangeHalf = (chartMax - chartMin) / 2 || 1;
+
+  if (userVal >= chartMin && userVal <= chartMax) {
+    // Inside range: 0.8–1.0 depending on proximity to midpoint
+    return 1.0 - (Math.abs(userVal - mid) / rangeHalf) * 0.2;
   }
-  const overlap = overlapEnd - overlapStart;
-  const userRange = userMax - userMin;
-  return userRange > 0 ? overlap / userRange : 1;
+  if (userVal < chartMin) {
+    return Math.max(0, 1.0 - ((chartMin - userVal) / rangeHalf) * 0.8);
+  }
+  return Math.max(0, 1.0 - ((userVal - chartMax) / rangeHalf) * 0.8);
 }
 
-export function scoreSizeRow(row: SizeChartRow, user: UserMeasurements, fit: FitPreference): number {
-  const fitOffset = fit === 'fitted' ? -2 : fit === 'relaxed' ? 2 : 0;
+/**
+ * Resolves user measurement midpoint for a given key from UserMeasurements.
+ */
+function getUserMid(user: UserMeasurements, key: string): number | null {
+  const map: Record<string, MeasurementRange | undefined> = {
+    chest: user.chest,
+    waist: user.waist,
+    hip: user.hips,
+    hips: user.hips,
+    shoulder: user.shoulder,
+    inseam: user.inseam,
+    sleeve: user.sleeve,
+  };
+  const range = map[key];
+  if (!range) return null;
+  return (range.min + range.max) / 2;
+}
 
-  const scores: number[] = [];
+/**
+ * Resolves chart min/max for a given measurement key from a SizeChartRow.
+ */
+function getChartRange(row: SizeChartRow, key: string): [number, number] | null {
+  const pairs: Record<string, [number | null, number | null]> = {
+    chest: [row.chest_min ?? row.bust_min, row.chest_max ?? row.bust_max],
+    waist: [row.waist_min, row.waist_max],
+    hip: [row.hip_min, row.hip_max],
+    hips: [row.hip_min, row.hip_max],
+    shoulder: [row.shoulder_min, row.shoulder_max],
+    inseam: [row.inseam_min, row.inseam_max],
+  };
+  const pair = pairs[key];
+  if (!pair || pair[0] == null || pair[1] == null) return null;
+  return [pair[0], pair[1]];
+}
 
-  // Chest/bust
-  const chestMin = row.chest_min ?? row.bust_min;
-  const chestMax = row.chest_max ?? row.bust_max;
-  if (chestMin != null && chestMax != null) {
-    scores.push(overlapScore(user.chest.min + fitOffset, user.chest.max + fitOffset, chestMin, chestMax));
+export function scoreSizeRow(
+  row: SizeChartRow,
+  user: UserMeasurements,
+  fit: FitPreference,
+  category?: string,
+): number {
+  const fitOffset = FIT_OFFSETS[fit] ?? 0;
+  const weights = (category && CATEGORY_WEIGHTS[category]) || DEFAULT_WEIGHTS;
+
+  let totalScore = 0;
+  let totalWeight = 0;
+
+  for (const [measurementKey, weight] of Object.entries(weights)) {
+    if (weight === 0) continue;
+
+    const userMid = getUserMid(user, measurementKey);
+    if (userMid == null) continue;
+
+    const chartRange = getChartRange(row, measurementKey);
+    if (!chartRange) continue;
+
+    // Only apply fit offset to circumference measurements
+    const adjusted = FIT_ADJUSTABLE.has(measurementKey) ? userMid + fitOffset : userMid;
+    const mScore = scoreMeasurement(adjusted, chartRange[0], chartRange[1]);
+
+    totalScore += mScore * weight;
+    totalWeight += weight;
   }
 
-  // Waist
-  if (row.waist_min != null && row.waist_max != null) {
-    scores.push(overlapScore(user.waist.min + fitOffset, user.waist.max + fitOffset, row.waist_min, row.waist_max));
-  }
-
-  // Hips
-  if (row.hip_min != null && row.hip_max != null) {
-    scores.push(overlapScore(user.hips.min + fitOffset, user.hips.max + fitOffset, row.hip_min, row.hip_max));
-  }
-
-  // Inseam
-  if (row.inseam_min != null && row.inseam_max != null) {
-    scores.push(overlapScore(user.inseam.min, user.inseam.max, row.inseam_min, row.inseam_max));
-  }
-
-  // Shoulder
-  if (row.shoulder_min != null && row.shoulder_max != null) {
-    scores.push(overlapScore(user.shoulder.min + fitOffset, user.shoulder.max + fitOffset, row.shoulder_min, row.shoulder_max));
-  }
-
-  if (scores.length === 0) return 0;
-  return scores.reduce((a, b) => a + b, 0) / scores.length;
+  return totalWeight > 0 ? totalScore / totalWeight : 0;
 }
 
 export interface SizeRecommendation {
@@ -108,7 +174,7 @@ export async function recommendSize(
 
   const scored = rows.map(r => ({
     label: r.size_label,
-    score: scoreSizeRow(r as SizeChartRow, user, fit),
+    score: scoreSizeRow(r as SizeChartRow, user, fit, category),
   })).sort((a, b) => b.score - a.score);
 
   const bestIdx = 0;

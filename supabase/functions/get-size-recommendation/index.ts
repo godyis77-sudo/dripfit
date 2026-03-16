@@ -9,16 +9,31 @@ interface SizeEntry {
   hip_min?: number; hip_max?: number;
   inseam_min?: number; inseam_max?: number;
   shoulder_min?: number; shoulder_max?: number;
+  sleeve_min?: number; sleeve_max?: number;
   shoe_length_min?: number; shoe_length_max?: number;
 }
 
+// ── Category-aware weighting (mirrored in client sizeEngine.ts) ──
 const CATEGORY_WEIGHTS: Record<string, Record<string, number>> = {
   tops:       { chest: 0.40, waist: 0.30, shoulder: 0.30 },
-  bottoms:    { waist: 0.40, hip: 0.40, inseam: 0.20 },
+  bottoms:    { waist: 0.35, hip: 0.40, inseam: 0.25 },
+  pants:      { waist: 0.35, hip: 0.35, inseam: 0.30 },
   dresses:    { chest: 0.30, waist: 0.35, hip: 0.35 },
-  outerwear:  { chest: 0.40, waist: 0.20, hip: 0.10, shoulder: 0.30 },
+  outerwear:  { chest: 0.35, waist: 0.15, hip: 0.10, shoulder: 0.25, sleeve: 0.15 },
+  blazers:    { chest: 0.30, waist: 0.15, shoulder: 0.25, sleeve: 0.20, hip: 0.10 },
+  suits:      { chest: 0.25, waist: 0.20, shoulder: 0.20, sleeve: 0.15, hip: 0.10, inseam: 0.10 },
   activewear: { chest: 0.25, waist: 0.35, hip: 0.30, inseam: 0.10 },
   footwear:   { shoe_length: 1.00 },
+};
+
+// Measurements that receive fit-preference offset (circumference only).
+// Structural measurements (shoulder, inseam, sleeve, shoe_length) are never adjusted.
+const FIT_ADJUSTABLE = new Set(["chest", "waist", "hip"]);
+
+const FIT_OFFSETS: Record<string, number> = {
+  slim: -1.5,
+  regular: 0,
+  relaxed: 2,
 };
 
 function scoreMeasurement(userVal: number, min: number, max: number): number {
@@ -31,12 +46,6 @@ function scoreMeasurement(userVal: number, min: number, max: number): number {
     return Math.max(0, 1.0 - ((min - userVal) / rangeHalf) * 0.8);
   }
   return Math.max(0, 1.0 - ((userVal - max) / rangeHalf) * 0.8);
-}
-
-function applyFitOffset(val: number, fit: string): number {
-  if (fit === "slim") return val - 2;
-  if (fit === "relaxed") return val + 3;
-  return val;
 }
 
 Deno.serve(async (req) => {
@@ -134,12 +143,14 @@ Deno.serve(async (req) => {
     const hip = avg(scan.hip_min, scan.hip_max);
     const inseam = avg(scan.inseam_min, scan.inseam_max);
     const shoulder = avg(scan.shoulder_min, scan.shoulder_max);
+    const sleeve = avg(scan.sleeve_min, scan.sleeve_max);
 
     if (chest != null) userMeasurements.chest = chest;
     if (waist != null) userMeasurements.waist = waist;
     if (hip != null) userMeasurements.hip = hip;
     if (inseam != null) userMeasurements.inseam = inseam;
     if (shoulder != null) userMeasurements.shoulder = shoulder;
+    if (sleeve != null) userMeasurements.sleeve = sleeve;
 
     // STEP 3 — Fetch size chart
     const { data: chart } = await supabase
@@ -160,8 +171,10 @@ Deno.serve(async (req) => {
       return errorResponse("Size chart has no size entries.", "NOT_FOUND", 404, corsHeaders);
     }
 
-    // STEP 4 — Score every size
+    // STEP 4 — Score every size with category-aware weights
     const weights = CATEGORY_WEIGHTS[category];
+    const fitOffset = FIT_OFFSETS[fit] ?? 0;
+
     const scored = sizeData.map((size) => {
       let totalScore = 0;
       let totalWeight = 0;
@@ -177,7 +190,8 @@ Deno.serve(async (req) => {
         const sMax = size[maxKey] as number | undefined;
         if (sMin == null || sMax == null) continue;
 
-        const adjusted = applyFitOffset(userVal, fit);
+        // Only apply fit offset to circumference measurements
+        const adjusted = FIT_ADJUSTABLE.has(measurement) ? userVal + fitOffset : userVal;
         const mScore = scoreMeasurement(adjusted, sMin, sMax);
         totalScore += mScore * weight;
         totalWeight += weight;
