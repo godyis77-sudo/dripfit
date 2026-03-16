@@ -50,10 +50,17 @@ export function useAffiliateClickout(options: AffiliateClickoutOptions = {}) {
       destination_domain: safeDomain(pendingClickout.url),
       ...options.extraProps,
     });
-    // Use window.open first; if blocked by popup blocker, fall back to location
+    // Open in new tab; if popup blocked, use a temporary <a> click instead of
+    // replacing location.href (which would destroy the SPA and cause a crash).
     const win = window.open(pendingClickout.url, "_blank", "noopener");
     if (!win) {
-      window.location.href = pendingClickout.url;
+      const a = document.createElement("a");
+      a.href = pendingClickout.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
     setPendingClickout(null);
   }, [pendingClickout, options.extraProps]);
