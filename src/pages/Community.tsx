@@ -43,6 +43,7 @@ const Community = () => {
   const [filterUserId, setFilterUserId] = useState<string | null>(null);
   const [similarFitTooltip, setSimilarFitTooltip] = useState(false);
   const [showSortOptions, setShowSortOptions] = useState(false);
+  const [shopFiltersOpen, setShopFiltersOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
