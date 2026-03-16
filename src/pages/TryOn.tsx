@@ -210,78 +210,131 @@ const TryOn = () => {
                           />
                         </div>
 
-                        {/* Retailer search */}
+                        {/* Retailer pills */}
                         <div>
                           <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Retailer</p>
-                          {s.selectedRetailer ? (
-                            <div className="flex items-center gap-1.5">
-                              <span className="px-2.5 py-1 rounded-lg text-[10px] font-semibold btn-luxury text-primary-foreground flex items-center gap-1">
-                                {s.selectedRetailer}
-                                <button onClick={() => s.setSelectedRetailer(null)} className="ml-0.5"><X className="h-3 w-3" /></button>
-                              </span>
-                            </div>
-                          ) : (
-                            <div className="relative">
-                              <input
-                                type="text"
-                                value={retailerSearch}
-                                onChange={e => setRetailerSearch(e.target.value)}
-                                placeholder="Search retailers…"
-                                className="w-full h-8 rounded-lg border border-border bg-background px-2.5 text-[11px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
-                              />
-                              {retailerSearch.length >= 2 && (
-                                <RetailerDropdown query={retailerSearch} onSelect={(r) => { s.setSelectedRetailer(r); setRetailerSearch(''); }} />
-                              )}
-                            </div>
-                          )}
-                        </div>
-
-                        <div>
-                          <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Genre</p>
-                          <div className="flex flex-wrap gap-1.5">
+                          <div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto">
                             <button
-                              onClick={() => s.setSelectedGenre(null)}
+                              onClick={() => s.setSelectedRetailer(null)}
                               className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
-                                !s.selectedGenre
+                                !s.selectedRetailer
                                   ? 'btn-luxury text-primary-foreground'
                                   : 'bg-background border border-border text-foreground/70'
                               }`}
                             >
                               All
                             </button>
-                            {BRAND_GENRES.map(genre => (
+                            {availableRetailers.map(retailer => (
                               <button
-                                key={genre}
-                                onClick={() => s.setSelectedGenre(genre === s.selectedGenre ? null : genre)}
-                                className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
-                                  s.selectedGenre === genre
+                                key={retailer}
+                                onClick={() => s.setSelectedRetailer(retailer === s.selectedRetailer ? null : retailer)}
+                                className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                                  s.selectedRetailer === retailer
                                     ? 'btn-luxury text-primary-foreground'
                                     : 'bg-background border border-border text-foreground/70'
                                 }`}
                               >
-                                {genre}
+                                {retailer}
                               </button>
                             ))}
                           </div>
                         </div>
 
+                        {/* Genre — collapsible */}
+                        <div>
+                          <button
+                            onClick={() => setGenreOpen(!genreOpen)}
+                            className="flex items-center justify-between w-full"
+                          >
+                            <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
+                              Genre {s.selectedGenre ? `· ${s.selectedGenre}` : ''}
+                            </p>
+                            <ChevronDown className={`h-3.5 w-3.5 text-foreground/50 transition-transform ${genreOpen ? 'rotate-180' : ''}`} />
+                          </button>
+                          <AnimatePresence>
+                            {genreOpen && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                  <button
+                                    onClick={() => s.setSelectedGenre(null)}
+                                    className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                      !s.selectedGenre
+                                        ? 'btn-luxury text-primary-foreground'
+                                        : 'bg-background border border-border text-foreground/70'
+                                    }`}
+                                  >
+                                    All
+                                  </button>
+                                  {BRAND_GENRES.map(genre => (
+                                    <button
+                                      key={genre}
+                                      onClick={() => s.setSelectedGenre(genre === s.selectedGenre ? null : genre)}
+                                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                        s.selectedGenre === genre
+                                          ? 'btn-luxury text-primary-foreground'
+                                          : 'bg-background border border-border text-foreground/70'
+                                      }`}
+                                    >
+                                      {genre}
+                                    </button>
+                                  ))}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+
+                        {/* Fit / Cut — collapsible */}
+                        {availableFits.length > 0 && (
+                          <div>
+                            <button
+                              onClick={() => setFitOpen(!fitOpen)}
+                              className="flex items-center justify-between w-full"
+                            >
+                              <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
+                                Fit / Cut
+                              </p>
+                              <ChevronDown className={`h-3.5 w-3.5 text-foreground/50 transition-transform ${fitOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                            <AnimatePresence>
+                              {fitOpen && (
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{ height: 'auto', opacity: 1 }}
+                                  exit={{ height: 0, opacity: 0 }}
+                                  className="overflow-hidden"
+                                >
+                                  <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                    {availableFits.map(fit => (
+                                      <button
+                                        key={fit}
+                                        onClick={() => {/* fit filter not wired to catalog grid yet */}}
+                                        className="px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize bg-background border border-border text-foreground/70"
+                                      >
+                                        {fit}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        )}
+
                         {/* Clear filters */}
                         {activeFilterCount > 0 && (
                           <button
-                            onClick={() => { setSort('default'); s.setSelectedBrand(null); s.setSelectedGenre(null); s.setSelectedRetailer(null); s.setCategory('all'); setRetailerSearch(''); }}
+                            onClick={() => { setSort('default'); s.setSelectedBrand(null); s.setSelectedGenre(null); s.setSelectedRetailer(null); s.setCategory('all'); }}
                             className="text-[10px] text-primary font-semibold"
                           >
                             Clear all filters
                           </button>
                         )}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </>
-            )}
-
-            {/* Product catalog browse */}
             {!s.clothingPhoto && (
               <div className="mb-3 space-y-2">
                 {s.category === 'all' ? (
