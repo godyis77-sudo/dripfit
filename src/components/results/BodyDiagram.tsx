@@ -162,7 +162,7 @@ const OVERLAYS: MeasurementOverlay[] = [
   { key: 'height',   label: 'HEIGHT',   side: 'left',  valTop: '5%',  delay: 0,    dotTop: '5%',  dotLeft: '15%' },
   { key: 'shoulder', label: 'SHOULDER', side: 'right', valTop: '17%', delay: 0.12, dotTop: '20%', dotLeft: '64%' },
   { key: 'chest',    label: 'CHEST',    side: 'left',  valTop: '25%', delay: 0.22, dotTop: '28%', dotLeft: '40%' },
-  { key: 'bust',     label: 'BUST',     side: 'right', valTop: '30%', delay: 0.30, dotTop: '34%', dotLeft: '56%' },
+  { key: 'bust',     label: 'BUST',     side: 'right', valTop: '28%', delay: 0.30, dotTop: '30%', dotLeft: '58%' },
   { key: 'sleeve',   label: 'SLEEVE',   side: 'left',  valTop: '35%', delay: 0.38, dotTop: '36%', dotLeft: '32%' },
   { key: 'waist',    label: 'WAIST',    side: 'right', valTop: '40%', delay: 0.46, dotTop: '42%', dotLeft: '58%' },
   { key: 'hips',     label: 'HIPS',     side: 'right', valTop: '50%', delay: 0.54, dotTop: '50%', dotLeft: '60%' },
@@ -473,25 +473,36 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
             <div className="relative h-[92%] w-[58%] max-w-[245px]">
-              {/* Far glow layer — wide luminescent halo */}
+              {/* Ultra-far glow — widest blur to smooth all edge artifacts */}
               <img
                 src={silhouetteSrc}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain opacity-35 pointer-events-none"
+                className="absolute inset-0 h-full w-full object-contain opacity-25 pointer-events-none"
                 style={{
-                  filter: 'blur(8px) brightness(1.6) saturate(1.4) drop-shadow(0 0 40px hsl(var(--primary) / 0.7)) drop-shadow(0 0 80px hsl(var(--primary) / 0.3))',
+                  filter: 'blur(14px) brightness(1.8) saturate(1.5) drop-shadow(0 0 50px hsl(var(--primary) / 0.6)) drop-shadow(0 0 90px hsl(var(--primary) / 0.25))',
                 }}
               />
 
-              {/* Near glow layer — tighter edge bloom */}
+              {/* Mid glow — smooth halo */}
               <img
                 src={silhouetteSrc}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain opacity-55 pointer-events-none"
+                className="absolute inset-0 h-full w-full object-contain opacity-40 pointer-events-none"
                 style={{
-                  filter: 'blur(2px) brightness(1.3) saturate(1.3) drop-shadow(0 0 16px hsl(var(--primary) / 0.6)) drop-shadow(0 0 32px hsl(var(--primary) / 0.25))',
+                  filter: 'blur(5px) brightness(1.4) saturate(1.3) drop-shadow(0 0 20px hsl(var(--primary) / 0.55)) drop-shadow(0 0 40px hsl(var(--primary) / 0.2))',
+                }}
+              />
+
+              {/* Near glow — tighter edge bloom */}
+              <img
+                src={silhouetteSrc}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-contain opacity-50 pointer-events-none"
+                style={{
+                  filter: 'blur(2px) brightness(1.25) saturate(1.2) drop-shadow(0 0 10px hsl(var(--primary) / 0.5))',
                 }}
               />
 
