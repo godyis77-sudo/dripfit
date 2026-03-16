@@ -14,7 +14,7 @@ interface SizeEntry {
   shoe_length_min?: number; shoe_length_max?: number;
 }
 
-// ── Category-aware weighting (mirrored in client sizeEngine.ts) ──
+// ── Category-aware weighting ──
 const CATEGORY_WEIGHTS: Record<string, Record<string, number>> = {
   tops:       { chest: 0.40, waist: 0.30, shoulder: 0.30 },
   bottoms:    { waist: 0.35, hip: 0.40, inseam: 0.25 },
@@ -28,14 +28,40 @@ const CATEGORY_WEIGHTS: Record<string, Record<string, number>> = {
   footwear:   { shoe_length: 1.00 },
 };
 
-// Fit preference: score with RAW measurements, then shift the pick on the
-// chart's own size ladder. This avoids the boundary-distortion problem that
-// measurement-offset approaches cause.
-const FIT_SHIFT: Record<string, number> = {
-  slim: -1,    // one position smaller → tighter fit
+// Measurements eligible for fit-preference offset (circumference only).
+const FIT_ADJUSTABLE = new Set(["chest", "waist", "hip"]);
+
+// Fraction of the brand's own inter-size grade step to apply as offset.
+// 0.40 = 40% of one full size step.
+const FIT_FRACTION: Record<string, number> = {
+  slim: -0.40,    // subtract 40% of grade step → tighter
   regular: 0,
-  relaxed: 1,  // one position larger  → looser fit
+  relaxed: 0.40,  // add 40% of grade step → looser
 };
+
+/**
+ * Calculate the average midpoint gap between adjacent sizes for each
+ * measurement key. Returns per-measurement average cm jump.
+ */
+function calcGradeSteps(sizeData: SizeEntry[], measurementKeys: string[]): Record<string, number> {
+  const steps: Record<string, number> = {};
+  for (const key of measurementKeys) {
+    const minK = `${key}_min` as keyof SizeEntry;
+    const maxK = `${key}_max` as keyof SizeEntry;
+    const midpoints: number[] = [];
+    for (const s of sizeData) {
+      const lo = s[minK] as number | undefined;
+      const hi = s[maxK] as number | undefined;
+      if (lo != null && hi != null) midpoints.push((lo + hi) / 2);
+    }
+    if (midpoints.length >= 2) {
+      let totalGap = 0;
+      for (let i = 1; i < midpoints.length; i++) totalGap += Math.abs(midpoints[i] - midpoints[i - 1]);
+      steps[key] = totalGap / (midpoints.length - 1);
+    }
+  }
+  return steps;
+}
 
 function scoreMeasurement(userVal: number, min: number, max: number): number {
   const mid = (min + max) / 2;
@@ -57,7 +83,6 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // JWT verification
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return errorResponse('Unauthorized', 'AUTH_ERROR', 401, corsHeaders);
@@ -81,7 +106,6 @@ Deno.serve(async (req) => {
       return errorResponse("user_id, brand_slug, and category are required.", "VALIDATION_ERROR", 400, corsHeaders);
     }
 
-    // Verify the requested user_id matches the authenticated user
     if (user_id !== claimsData.claims.sub) {
       return errorResponse("Cannot access another user's data", "AUTH_ERROR", 403, corsHeaders);
     }
@@ -89,7 +113,6 @@ Deno.serve(async (req) => {
     const validFits = ["slim", "regular", "relaxed"];
     const fit = validFits.includes(fit_preference) ? fit_preference : "regular";
 
-    // Map incoming category to a valid weight key, with fuzzy fallback
     const CATEGORY_ALIASES: Record<string, string> = {
       "t-shirts": "tops", "tees": "tops", "shirts": "tops", "blouses": "tops",
       "sweaters": "tops", "hoodies": "tops", "tank-tops": "tops", "polos": "tops",
@@ -112,7 +135,7 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // STEP 1 — Check cache (includes fit_preference)
+    // STEP 1 — Check cache
     const { data: cached } = await supabase
       .from("size_recommendations_cache")
       .select("*")
@@ -139,7 +162,7 @@ Deno.serve(async (req) => {
       }, 200, corsHeaders);
     }
 
-    // STEP 2 — Fetch user measurements from latest body_scan
+    // STEP 2 — User measurements
     const { data: scan } = await supabase
       .from("body_scans")
       .select("*")
@@ -169,7 +192,7 @@ Deno.serve(async (req) => {
     if (sleeve != null) userMeasurements.sleeve = sleeve;
     if (scan.height_cm != null) userMeasurements.height = scan.height_cm;
 
-    // STEP 3 — Fetch size chart
+    // STEP 3 — Size chart
     const { data: chart } = await supabase
       .from("brand_size_charts")
       .select("*")
@@ -188,9 +211,16 @@ Deno.serve(async (req) => {
       return errorResponse("Size chart has no size entries.", "NOT_FOUND", 404, corsHeaders);
     }
 
-    // STEP 4 — Score every size with RAW measurements (no fit offset)
+    // STEP 4 — Calculate brand-specific grade steps & fit offset
     const weights = CATEGORY_WEIGHTS[category];
+    const adjustableKeys = Object.keys(weights).filter(k => FIT_ADJUSTABLE.has(k));
+    const gradeSteps = calcGradeSteps(sizeData, adjustableKeys);
+    const fitFraction = FIT_FRACTION[fit] ?? 0;
 
+    // Log grade steps for debugging
+    console.log(`[size-rec] ${brand_slug}/${category} grade steps:`, JSON.stringify(gradeSteps), `fit: ${fit}, fraction: ${fitFraction}`);
+
+    // STEP 5 — Score every size with fit-adjusted measurements
     const scored = sizeData.map((size) => {
       let totalScore = 0;
       let totalWeight = 0;
@@ -207,14 +237,21 @@ Deno.serve(async (req) => {
         const sMax = size[maxKey] as number | undefined;
         if (sMin == null || sMax == null) continue;
 
-        const mScore = scoreMeasurement(userVal, sMin, sMax);
+        // Apply brand-specific fit offset: fraction × brand's own grade step for this measurement
+        let adjusted = userVal;
+        if (FIT_ADJUSTABLE.has(measurement) && fitFraction !== 0) {
+          const step = gradeSteps[measurement] ?? 0;
+          adjusted = userVal + fitFraction * step;
+        }
+
+        const mScore = scoreMeasurement(adjusted, sMin, sMax);
         totalScore += mScore * weight;
         totalWeight += weight;
 
-        const mStatus = mScore >= 0.8 ? "match" : mScore >= 0.5 ? "close" : userVal < sMin ? "too_small" : userVal > sMax ? "too_large" : "out_of_range";
+        const mStatus = mScore >= 0.8 ? "match" : mScore >= 0.5 ? "close" : adjusted < sMin ? "too_small" : adjusted > sMax ? "too_large" : "out_of_range";
         breakdown.push({
           key: measurement,
-          user_value: Number(userVal.toFixed(1)),
+          user_value: Number(adjusted.toFixed(1)),
           chart_min: sMin,
           chart_max: sMax,
           score: Number(mScore.toFixed(2)),
@@ -226,63 +263,44 @@ Deno.serve(async (req) => {
       return { label: size.label, score: Number(finalScore.toFixed(4)), breakdown };
     }).sort((a, b) => b.score - a.score);
 
-    // STEP 5 — Apply fit preference by shifting on the chart's own size order
-    // The chart's sizeData array is ordered small→large, so we use its index.
-    const sizeLabelsInOrder = sizeData.map(s => s.label);
-    const bestRawLabel = scored[0].label;
-    const bestRawIdx = sizeLabelsInOrder.indexOf(bestRawLabel);
-    const shift = FIT_SHIFT[fit] ?? 0;
-    const shiftedIdx = Math.max(0, Math.min(sizeLabelsInOrder.length - 1, bestRawIdx + shift));
-    const shiftedLabel = sizeLabelsInOrder[shiftedIdx];
-
-    // Find the shifted size's score info for breakdown, but use raw best's score for confidence
-    const shiftedScored = scored.find(s => s.label === shiftedLabel) || scored[0];
-    const rawBest = scored[0];
-    // Use shifted label but raw best's confidence score (the measurement match quality doesn't change)
-    const best = { ...shiftedScored, score: rawBest.score };
-
-    // Second option: the raw best if we shifted, otherwise next-best
-    let secondOption: string | null = null;
-    if (shiftedLabel !== bestRawLabel) {
-      secondOption = bestRawLabel; // "also consider your true-to-chart size"
-    } else {
-      const second = scored.length > 1 ? scored[1] : null;
-      if (second && rawBest.score - second.score < 0.15 && rawBest.score >= 0.60 && second.score >= 0.60) {
-        secondOption = second.label;
-      }
-    }
+    // STEP 6 — Determine recommendation
+    const best = scored[0];
+    const second = scored.length > 1 ? scored[1] : null;
 
     let fitStatus: string;
-    if (rawBest.score >= 0.90) fitStatus = "true_to_size";
-    else if (rawBest.score >= 0.75) fitStatus = "good_fit";
-    else if (rawBest.score >= 0.60) fitStatus = "between_sizes";
+    if (best.score >= 0.90) fitStatus = "true_to_size";
+    else if (best.score >= 0.75) fitStatus = "good_fit";
+    else if (best.score >= 0.60) fitStatus = "between_sizes";
     else fitStatus = "out_of_range";
 
-    // If we shifted AND raw was a decent fit, mark as between_sizes
-    if (shiftedLabel !== bestRawLabel && rawBest.score >= 0.60) {
+    let secondOption: string | null = null;
+    if (second && best.score - second.score < 0.15 && best.score >= 0.60 && second.score >= 0.60) {
       fitStatus = "between_sizes";
+      secondOption = second.label;
     }
 
     let fitNotes: string;
     const brandName = chart.brand_name;
     const fitLabel = fit === "slim" ? "a slimmer" : fit === "relaxed" ? "a relaxed" : "a regular";
+    // Show the actual offset applied
+    const avgStep = adjustableKeys.length > 0
+      ? adjustableKeys.reduce((sum, k) => sum + (gradeSteps[k] ?? 0), 0) / adjustableKeys.length
+      : 0;
+    const offsetCm = Math.abs(fitFraction * avgStep);
+    const offsetNote = fitFraction !== 0 ? ` (${offsetCm.toFixed(1)}cm ${fit === "slim" ? "tighter" : "looser"} than true-to-size)` : "";
 
-    if (shiftedLabel !== bestRawLabel) {
-      fitNotes = `${shiftedLabel} for ${fitLabel} fit in ${brandName} ${category}. True-to-chart size is ${bestRawLabel}.`;
-    } else {
-      switch (fitStatus) {
-        case "true_to_size":
-          fitNotes = `${best.label} is your size in ${brandName} ${category}.`;
-          break;
-        case "good_fit":
-          fitNotes = `${best.label} fits well in ${brandName} ${category}.`;
-          break;
-        case "between_sizes":
-          fitNotes = `You are between ${best.label} and ${secondOption || (scored[1]?.label ?? best.label)}. Size ${best.label} for ${fitLabel} fit.`;
-          break;
-        default:
-          fitNotes = `Your measurements fall outside ${brandName}'s standard ${category} range. Check their extended sizing.`;
-      }
+    switch (fitStatus) {
+      case "true_to_size":
+        fitNotes = `${best.label} is your size in ${brandName} ${category}${offsetNote}.`;
+        break;
+      case "good_fit":
+        fitNotes = `${best.label} fits well in ${brandName} ${category}${offsetNote}.`;
+        break;
+      case "between_sizes":
+        fitNotes = `You are between ${best.label} and ${secondOption || (second?.label ?? best.label)}. Size ${best.label} for ${fitLabel} fit${offsetNote}.`;
+        break;
+      default:
+        fitNotes = `Your measurements fall outside ${brandName}'s standard ${category} range${offsetNote}. Check their extended sizing.`;
     }
 
     const allSizes = scored.map((s) => ({
@@ -293,7 +311,7 @@ Deno.serve(async (req) => {
 
     const confidence = Number(best.score.toFixed(2));
 
-    // STEP 6 — Cache
+    // STEP 7 — Cache
     const snapshot = { ...userMeasurements, height: scan.height_cm };
     const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -323,6 +341,8 @@ Deno.serve(async (req) => {
       category,
       all_sizes: allSizes,
       measurement_breakdown: best.breakdown,
+      _debug_grade_steps: gradeSteps,
+      _debug_offset_cm: offsetCm,
     }, 200, corsHeaders);
 
   } catch (e) {
