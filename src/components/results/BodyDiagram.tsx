@@ -654,7 +654,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                     boxShadow: '0 2px 12px hsl(var(--primary) / 0.12), inset 0 1px 0 hsl(var(--primary) / 0.12)',
                   }}
                 >
-                  <p className="text-[8px] font-mono font-bold uppercase tracking-[0.18em] text-primary leading-none mb-[3px]" style={{ textShadow: '0 0 6px hsl(var(--primary) / 0.5)' }}>
+                  <p className="text-[10px] font-mono font-bold uppercase tracking-[0.18em] text-primary leading-none mb-[3px]" style={{ textShadow: '0 0 6px hsl(var(--primary) / 0.5)' }}>
                     {o.label}
                   </p>
                   <p className="text-[12px] font-black leading-tight text-foreground hud-data-glow">
