@@ -34,12 +34,12 @@ const createProcessedSilhouette = (imageSrc: string): Promise<string> =>
       for (let i = 0; i < px.length; i += 4) {
         const r = px[i], g = px[i + 1], b = px[i + 2];
         const lum = (r + g + b) / 3;
-        // White/near-white → transparent
-        if (lum > 200) {
+        const chroma = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(r - b));
+        // Anything light or neutral-ish → gone
+        if (lum > 120 || (chroma < 40 && lum > 80)) {
           px[i + 3] = 0;
-        } else if (lum > 140) {
-          // Feather light grays
-          px[i + 3] = Math.round(px[i + 3] * Math.max(0, (200 - lum) / 60));
+        } else if (lum > 60) {
+          px[i + 3] = Math.round(px[i + 3] * Math.max(0, (120 - lum) / 60));
         }
       }
       ctx.putImageData(frame, 0, 0);
