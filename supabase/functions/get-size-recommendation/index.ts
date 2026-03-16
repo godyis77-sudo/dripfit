@@ -220,52 +220,58 @@ Deno.serve(async (req) => {
     // Log grade steps for debugging
     console.log(`[size-rec] ${brand_slug}/${category} grade steps:`, JSON.stringify(gradeSteps), `fit: ${fit}, fraction: ${fitFraction}`);
 
-    // STEP 5 — Score every size with fit-adjusted measurements
-    const scored = sizeData.map((size) => {
-      let totalScore = 0;
-      let totalWeight = 0;
-      const breakdown: { key: string; user_value: number; chart_min: number; chart_max: number; score: number; status: string }[] = [];
+    // STEP 5 — Two-pass scoring:
+    //  Pass A: RAW measurements → determines confidence & breakdown (what user actually matches)
+    //  Pass B: FIT-ADJUSTED measurements → determines which size to recommend
+    function scoreAllSizes(offset: number) {
+      return sizeData.map((size) => {
+        let totalScore = 0;
+        let totalWeight = 0;
+        const breakdown: { key: string; user_value: number; chart_min: number; chart_max: number; score: number; status: string }[] = [];
 
-      for (const [measurement, weight] of Object.entries(weights)) {
-        if (weight === 0) continue;
-        const userVal = userMeasurements[measurement];
-        if (userVal == null) continue;
+        for (const [measurement, weight] of Object.entries(weights)) {
+          if (weight === 0) continue;
+          const userVal = userMeasurements[measurement];
+          if (userVal == null) continue;
 
-        const minKey = `${measurement}_min` as keyof SizeEntry;
-        const maxKey = `${measurement}_max` as keyof SizeEntry;
-        const sMin = size[minKey] as number | undefined;
-        const sMax = size[maxKey] as number | undefined;
-        if (sMin == null || sMax == null) continue;
+          const minKey = `${measurement}_min` as keyof SizeEntry;
+          const maxKey = `${measurement}_max` as keyof SizeEntry;
+          const sMin = size[minKey] as number | undefined;
+          const sMax = size[maxKey] as number | undefined;
+          if (sMin == null || sMax == null) continue;
 
-        // Apply brand-specific fit offset: fraction × brand's own grade step for this measurement
-        let adjusted = userVal;
-        if (FIT_ADJUSTABLE.has(measurement) && fitFraction !== 0) {
-          const step = gradeSteps[measurement] ?? 0;
-          adjusted = userVal + fitFraction * step;
+          let adjusted = userVal;
+          if (FIT_ADJUSTABLE.has(measurement) && offset !== 0) {
+            const step = gradeSteps[measurement] ?? 0;
+            adjusted = userVal + offset * step;
+          }
+
+          const mScore = scoreMeasurement(adjusted, sMin, sMax);
+          totalScore += mScore * weight;
+          totalWeight += weight;
+
+          const mStatus = mScore >= 0.8 ? "match" : mScore >= 0.5 ? "close" : adjusted < sMin ? "too_small" : adjusted > sMax ? "too_large" : "out_of_range";
+          breakdown.push({ key: measurement, user_value: Number(adjusted.toFixed(1)), chart_min: sMin, chart_max: sMax, score: Number(mScore.toFixed(2)), status: mStatus });
         }
 
-        const mScore = scoreMeasurement(adjusted, sMin, sMax);
-        totalScore += mScore * weight;
-        totalWeight += weight;
+        const finalScore = totalWeight > 0 ? totalScore / totalWeight : 0;
+        return { label: size.label, score: Number(finalScore.toFixed(4)), breakdown };
+      }).sort((a, b) => b.score - a.score);
+    }
 
-        const mStatus = mScore >= 0.8 ? "match" : mScore >= 0.5 ? "close" : adjusted < sMin ? "too_small" : adjusted > sMax ? "too_large" : "out_of_range";
-        breakdown.push({
-          key: measurement,
-          user_value: Number(adjusted.toFixed(1)),
-          chart_min: sMin,
-          chart_max: sMax,
-          score: Number(mScore.toFixed(2)),
-          status: mStatus,
-        });
-      }
+    // Pass A: raw scores (for confidence display)
+    const rawScored = scoreAllSizes(0);
+    // Pass B: fit-adjusted scores (for size selection)
+    const fitScored = scoreAllSizes(fitFraction);
 
-      const finalScore = totalWeight > 0 ? totalScore / totalWeight : 0;
-      return { label: size.label, score: Number(finalScore.toFixed(4)), breakdown };
-    }).sort((a, b) => b.score - a.score);
+    const bestFit = fitScored[0]; // the recommended size (fit-adjusted)
+    const secondFit = fitScored.length > 1 ? fitScored[1] : null;
 
-    // STEP 6 — Determine recommendation
-    const best = scored[0];
-    const second = scored.length > 1 ? scored[1] : null;
+    // Confidence comes from the RAW score of the recommended size
+    const rawMatchForBest = rawScored.find(s => s.label === bestFit.label) || rawScored[0];
+    const confidence = Number(rawMatchForBest.score.toFixed(2));
+    // Breakdown also from raw (shows true measurement match, not adjusted)
+    const breakdown = rawMatchForBest.breakdown;
 
     let fitStatus: string;
     if (best.score >= 0.90) fitStatus = "true_to_size";
