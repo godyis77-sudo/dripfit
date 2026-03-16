@@ -155,6 +155,168 @@ const HexGrid = () => {
   );
 };
 
+/* ── Polar coordinate grid — concentric rings + radial lines ── */
+const PolarGrid = () => (
+  <svg className="absolute inset-0 w-full h-full pointer-events-none z-[1]" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    {/* Concentric measurement rings */}
+    {[8, 16, 24, 32, 40].map((r, i) => (
+      <circle key={`ring-${i}`} cx="50" cy="44" r={r} fill="none"
+        stroke={`hsl(var(--primary) / ${0.06 - i * 0.008})`} strokeWidth="0.15"
+        strokeDasharray={i % 2 === 0 ? 'none' : '0.8 0.4'} />
+    ))}
+    {/* Radial lines */}
+    {Array.from({ length: 12 }, (_, i) => {
+      const angle = (i * 30 * Math.PI) / 180;
+      const x2 = 50 + 42 * Math.cos(angle);
+      const y2 = 44 + 42 * Math.sin(angle);
+      return (
+        <line key={`rad-${i}`} x1="50" y1="44" x2={x2} y2={y2}
+          stroke={`hsl(var(--primary) / ${i % 3 === 0 ? 0.06 : 0.025})`}
+          strokeWidth={i % 3 === 0 ? '0.2' : '0.1'} />
+      );
+    })}
+  </svg>
+);
+
+/* ── Ruler scale along edges ── */
+const RulerScale = () => (
+  <div className="absolute inset-0 pointer-events-none z-[1] overflow-hidden">
+    {/* Left ruler */}
+    {Array.from({ length: 40 }, (_, i) => {
+      const isMajor = i % 5 === 0;
+      const y = 2 + i * 2.4;
+      return (
+        <div key={`rl-${i}`}>
+          <div className="absolute left-0" style={{
+            top: `${y}%`, width: isMajor ? 16 : 8, height: isMajor ? 1 : 0.5,
+            background: `hsl(var(--primary) / ${isMajor ? 0.2 : 0.06})`,
+          }} />
+          {isMajor && (
+            <span className="absolute text-[4px] font-mono text-primary/15" style={{ top: `${y - 0.8}%`, left: 18 }}>
+              {Math.round(i * 2.5)}
+            </span>
+          )}
+        </div>
+      );
+    })}
+    {/* Right ruler */}
+    {Array.from({ length: 40 }, (_, i) => {
+      const isMajor = i % 5 === 0;
+      const y = 2 + i * 2.4;
+      return (
+        <div key={`rr-${i}`}>
+          <div className="absolute right-0" style={{
+            top: `${y}%`, width: isMajor ? 16 : 8, height: isMajor ? 1 : 0.5,
+            background: `hsl(var(--primary) / ${isMajor ? 0.2 : 0.06})`,
+          }} />
+          {isMajor && (
+            <span className="absolute text-[4px] font-mono text-primary/15 text-right" style={{ top: `${y - 0.8}%`, right: 18 }}>
+              {Math.round(i * 2.5)}
+            </span>
+          )}
+        </div>
+      );
+    })}
+  </div>
+);
+
+/* ── Proportion ratio lines (golden ratio markers) ── */
+const ProportionLines = () => {
+  const ratios = [
+    { y: '16%', label: 'SHOULDER LINE' },
+    { y: '38%', label: 'NATURAL WAIST' },
+    { y: '50%', label: 'HIP LINE' },
+    { y: '76%', label: 'KNEE LINE' },
+  ];
+  return (
+    <div className="absolute inset-0 pointer-events-none z-[1]">
+      {ratios.map((r, i) => (
+        <motion.div key={i} className="absolute left-0 right-0" style={{ top: r.y }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5 + i * 0.2, duration: 0.6 }}
+        >
+          <div className="w-full h-[1px]" style={{
+            background: 'linear-gradient(90deg, transparent 5%, hsl(var(--primary) / 0.06) 20%, hsl(var(--primary) / 0.08) 50%, hsl(var(--primary) / 0.06) 80%, transparent 95%)',
+          }} />
+          <span className="absolute right-2 -top-[6px] text-[3.5px] font-mono uppercase tracking-[0.2em] text-primary/10">
+            {r.label}
+          </span>
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+
+/* ── Signal waveform at bottom ── */
+const SignalWaveform = () => {
+  const points = useMemo(() => {
+    const pts: string[] = [];
+    for (let x = 0; x <= 100; x += 0.5) {
+      const y = 50 + Math.sin(x * 0.3) * 15 + Math.sin(x * 0.7) * 8 + Math.sin(x * 1.5) * 4;
+      pts.push(`${x},${y}`);
+    }
+    return pts.join(' ');
+  }, []);
+
+  return (
+    <motion.svg
+      className="absolute bottom-6 left-[5%] right-[5%] h-[6%] pointer-events-none z-[1]"
+      viewBox="0 0 100 100" preserveAspectRatio="none"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 2, duration: 1 }}
+    >
+      <motion.polyline
+        points={points}
+        fill="none"
+        stroke="hsl(var(--primary) / 0.12)"
+        strokeWidth="0.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ delay: 2, duration: 2, ease: 'easeOut' }}
+      />
+      {/* Glow duplicate */}
+      <polyline
+        points={points}
+        fill="none"
+        stroke="hsl(var(--primary) / 0.04)"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </motion.svg>
+  );
+};
+
+/* ── Depth-of-field grid perspective layer ── */
+const PerspectiveGrid = () => (
+  <div className="absolute inset-0 pointer-events-none z-[0] overflow-hidden" style={{
+    perspective: '400px',
+    perspectiveOrigin: '50% 35%',
+  }}>
+    <div className="absolute inset-0" style={{
+      transform: 'rotateX(55deg) translateZ(-20px)',
+      transformOrigin: '50% 0%',
+    }}>
+      <svg className="w-full h-full" viewBox="0 0 200 200" preserveAspectRatio="none">
+        {/* Horizontal lines */}
+        {Array.from({ length: 20 }, (_, i) => (
+          <line key={`ph-${i}`} x1="0" y1={i * 10} x2="200" y2={i * 10}
+            stroke={`hsl(var(--primary) / ${0.04 + (i / 20) * 0.06})`} strokeWidth="0.3" />
+        ))}
+        {/* Vertical lines */}
+        {Array.from({ length: 20 }, (_, i) => (
+          <line key={`pv-${i}`} x1={i * 10} y1="0" x2={i * 10} y2="200"
+            stroke={`hsl(var(--primary) / ${0.03})`} strokeWidth="0.3" />
+        ))}
+      </svg>
+    </div>
+  </div>
+);
+
 /* ── Floating data particles — concentrated around body ── */
 const DataParticles = () => {
   const particles = useRef(
