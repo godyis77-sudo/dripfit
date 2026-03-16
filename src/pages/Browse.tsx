@@ -90,6 +90,10 @@ const Browse = () => {
     return retailers;
   }, [products]);
 
+  const availableCategories = useMemo(() => {
+    return [...new Set(products.map(p => p.category))].sort();
+  }, [products]);
+
   // Filter and sort
   const displayed = useMemo(() => {
     let result = [...products];
