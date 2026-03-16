@@ -280,8 +280,20 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [useCmState, setUseCmLocal] = useState(getUseCm());
   const [scrambling, setScrambling] = useState(false);
+  const [silhouetteSrc, setSilhouetteSrc] = useState(bodySilhouette);
   const containerRef = useRef<HTMLDivElement>(null);
   const [parallaxY, setParallaxY] = useState(0);
+
+  useEffect(() => {
+    let mounted = true;
+    createAlphaSilhouette(bodySilhouette).then((processedSrc) => {
+      if (mounted) setSilhouetteSrc(processedSrc);
+    });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const el = containerRef.current;
