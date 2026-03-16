@@ -392,25 +392,25 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             <div className="relative h-[88%] w-[55%] max-w-[220px]">
               {/* Back glow */}
               <img
-                src={bodySilhouette}
+                src={silhouetteSrc}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain opacity-55"
+                className="absolute inset-0 h-full w-full object-contain opacity-50"
                 style={{
-                  mixBlendMode: 'multiply',
-                  filter: 'sepia(0.3) saturate(1.8) brightness(1.25) contrast(1.05) blur(1.4px) drop-shadow(0 0 22px hsl(var(--primary) / 0.55)) drop-shadow(0 0 46px hsl(var(--primary) / 0.22))',
+                  mixBlendMode: 'normal',
+                  filter: 'saturate(1.15) brightness(1.06) contrast(1.08) blur(1.2px) drop-shadow(0 0 22px hsl(var(--primary) / 0.55)) drop-shadow(0 0 46px hsl(var(--primary) / 0.22))',
                 }}
               />
 
               {/* Main silhouette */}
               <img
-                src={bodySilhouette}
+                src={silhouetteSrc}
                 alt="Body measurement scan"
-                className="relative z-[2] h-full w-full object-contain"
+                className="relative z-[2] h-full w-full object-contain bg-transparent"
                 onLoad={() => setImageLoaded(true)}
                 style={{
-                  mixBlendMode: 'multiply',
-                  filter: 'sepia(0.28) saturate(1.7) brightness(1.28) contrast(1.08) drop-shadow(0 0 10px hsl(var(--primary) / 0.5))',
+                  mixBlendMode: 'normal',
+                  filter: 'saturate(1.15) brightness(1.08) contrast(1.12) drop-shadow(0 0 10px hsl(var(--primary) / 0.5))',
                 }}
               />
 
