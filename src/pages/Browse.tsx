@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, SlidersHorizontal, ExternalLink, ShoppingBag, ChevronDown } from 'lucide-react';
+import { ArrowLeft, ArrowUp, SlidersHorizontal, ExternalLink, ShoppingBag, ChevronDown } from 'lucide-react';
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
@@ -81,6 +81,13 @@ const Browse = () => {
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
   const { pendingClickout, beginClickout, confirmClickout, cancelClickout } =
     useAffiliateClickout({ extraProps: { source: 'browse', category } });
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > 300);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   // Scroll lock handled by ProductPreviewModal
 
@@ -589,6 +596,22 @@ const Browse = () => {
           setTimeout(() => beginClickout(p.brand, p.product_url!), 0);
         } : undefined}
       />
+
+      {/* Scroll-to-top button — portaled to body */}
+      {showScrollTop && createPortal(
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed right-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-[100] h-10 w-10 rounded-full btn-luxury text-primary-foreground flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+          aria-label="Scroll to top"
+        >
+          <ArrowUp className="h-4 w-4" />
+        </motion.button>,
+        document.body
+      )}
+
       <BottomTabBar />
     </div>
   );
