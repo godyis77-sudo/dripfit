@@ -13,70 +13,6 @@ const fmtHeightFtIn = (cm: number) => {
 };
 const LUXURY_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
-const createAlphaSilhouette = (imageSrc: string): Promise<string> =>
-  new Promise((resolve) => {
-    const img = new Image();
-    img.decoding = 'async';
-    img.src = imageSrc;
-
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        resolve(imageSrc);
-        return;
-      }
-
-      ctx.drawImage(img, 0, 0);
-      const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const px = frame.data;
-
-      for (let i = 0; i < px.length; i += 4) {
-        const r = px[i];
-        const g = px[i + 1];
-        const b = px[i + 2];
-
-        const max = Math.max(r, g, b);
-        const min = Math.min(r, g, b);
-        const saturation = max === 0 ? 0 : (max - min) / max;
-        const brightness = (r + g + b) / 3;
-        const chroma = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(r - b));
-        const neutralTone = chroma < 20;
-
-        // Hard remove white/gray checkerboard background tones.
-        if (neutralTone && brightness > 110) {
-          px[i + 3] = 0;
-          continue;
-        }
-
-        // Feather darker checker squares while keeping the dark silhouette core.
-        if (neutralTone && brightness > 42) {
-          const fade = Math.max(0, Math.min(1, (110 - brightness) / 68));
-          px[i + 3] = Math.round(px[i + 3] * fade);
-          continue;
-        }
-
-        if (brightness > 238 && saturation < 0.12) {
-          px[i + 3] = 0;
-          continue;
-        }
-
-        if (brightness > 220 && saturation < 0.16) {
-          const fade = Math.max(0, Math.min(1, (238 - brightness) / 18));
-          px[i + 3] = Math.round(px[i + 3] * fade);
-        }
-      }
-
-      ctx.putImageData(frame, 0, 0);
-      resolve(canvas.toDataURL('image/png'));
-    };
-
-    img.onerror = () => resolve(imageSrc);
-  });
-
 interface BodyDiagramProps {
   measurements: Record<string, MeasurementRange>;
   heightCm: number;
@@ -295,20 +231,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [useCmState, setUseCmLocal] = useState(getUseCm());
   const [scrambling, setScrambling] = useState(false);
-  const [silhouetteSrc, setSilhouetteSrc] = useState(bodySilhouette);
   const containerRef = useRef<HTMLDivElement>(null);
   const [parallaxY, setParallaxY] = useState(0);
-
-  useEffect(() => {
-    let mounted = true;
-    createAlphaSilhouette(bodySilhouette).then((processedSrc) => {
-      if (mounted) setSilhouetteSrc(processedSrc);
-    });
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -393,7 +317,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
-            <div className="h-[78%] w-[36%]" style={{
+            <div className="h-[90%] w-[42%]" style={{
               background: 'radial-gradient(ellipse at 50% 45%, hsl(var(--primary) / 0.22) 0%, hsl(var(--primary) / 0.08) 40%, transparent 70%)',
               filter: 'blur(25px)',
             }} />
@@ -404,32 +328,30 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             className="absolute inset-0 flex items-center justify-center"
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
-            <div className="relative h-[88%] w-[55%] max-w-[220px]">
+            <div className="relative h-[94%] w-[65%] max-w-[280px]">
               {/* Back glow */}
               <img
-                src={silhouetteSrc}
+                src={bodySilhouette}
                 alt=""
                 aria-hidden="true"
                 className="absolute inset-0 h-full w-full object-contain opacity-50"
                 style={{
-                  mixBlendMode: 'normal',
-                  filter: 'saturate(1.15) brightness(1.06) contrast(1.08) blur(1.2px) drop-shadow(0 0 22px hsl(var(--primary) / 0.55)) drop-shadow(0 0 46px hsl(var(--primary) / 0.22))',
+                  mixBlendMode: 'lighten',
+                  filter: 'blur(1.2px) drop-shadow(0 0 22px hsl(var(--primary) / 0.55)) drop-shadow(0 0 46px hsl(var(--primary) / 0.22))',
                 }}
               />
 
               {/* Main silhouette */}
               <img
-                src={silhouetteSrc}
+                src={bodySilhouette}
                 alt="Body measurement scan"
-                className="relative z-[2] h-full w-full object-contain bg-transparent"
+                className="relative z-[2] h-full w-full object-contain"
                 onLoad={() => setImageLoaded(true)}
                 style={{
-                  mixBlendMode: 'normal',
-                  filter: 'saturate(1.15) brightness(1.08) contrast(1.12) drop-shadow(0 0 10px hsl(var(--primary) / 0.5))',
+                  mixBlendMode: 'lighten',
+                  filter: 'drop-shadow(0 0 10px hsl(var(--primary) / 0.5))',
                 }}
               />
-
-              {/* Removed rectangular shimmer overlay to prevent background block artifacts */}
             </div>
           </motion.div>
 
