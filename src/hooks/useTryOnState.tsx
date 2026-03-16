@@ -75,13 +75,14 @@ export function useTryOnState() {
 
   // Persist critical state to sessionStorage so it survives mobile camera handoff reloads
   // NOTE: Don't persist large base64 photos — they can exceed sessionStorage quota (~5MB)
-  const persistState = useCallback((updates: Partial<{ userPhoto: string | null; clothingPhoto: string | null; productLink: string; category: string }>) => {
+  const persistState = useCallback((updates: Partial<{ userPhoto: string | null; clothingPhoto: string | null; productLink: string; category: string; resultImage: string | null; lookItems: LookItem[]; caption: string; autoSaved: boolean }>) => {
     try {
       const current = (() => { try { return JSON.parse(sessionStorage.getItem(TRYON_STATE_KEY) || '{}'); } catch { return {}; } })();
-      const safeUpdates = { ...updates };
+      const safeUpdates = { ...updates } as Record<string, unknown>;
       // Only persist photos if they're URLs (short). Skip large base64 to avoid quota overflow.
-      if (safeUpdates.userPhoto && safeUpdates.userPhoto.length > 50_000) delete safeUpdates.userPhoto;
-      if (safeUpdates.clothingPhoto && safeUpdates.clothingPhoto.length > 50_000) delete safeUpdates.clothingPhoto;
+      if (typeof safeUpdates.userPhoto === 'string' && safeUpdates.userPhoto.length > 50_000) delete safeUpdates.userPhoto;
+      if (typeof safeUpdates.clothingPhoto === 'string' && safeUpdates.clothingPhoto.length > 50_000) delete safeUpdates.clothingPhoto;
+      if (typeof safeUpdates.resultImage === 'string' && safeUpdates.resultImage.length > 50_000) delete safeUpdates.resultImage;
       sessionStorage.setItem(TRYON_STATE_KEY, JSON.stringify({ ...current, ...safeUpdates }));
     } catch { /* quota exceeded, ignore */ }
   }, []);
@@ -90,6 +91,11 @@ export function useTryOnState() {
   const setClothingPhoto = useCallback((v: string | null) => { setClothingPhotoRaw(v); persistState({ clothingPhoto: v }); }, [persistState]);
   const setProductLink = useCallback((v: string) => { setProductLinkRaw(v); persistState({ productLink: v }); }, [persistState]);
   const setCategory = useCallback((v: string) => { setCategoryRaw(v); persistState({ category: v }); }, [persistState]);
+  const setResultImage = useCallback((v: string | null) => { setResultImageRaw(v); persistState({ resultImage: v }); }, [persistState]);
+  const setLookItems = useCallback((v: LookItem[] | ((prev: LookItem[]) => LookItem[])) => {
+    setLookItemsRaw(prev => { const next = typeof v === 'function' ? v(prev) : v; persistState({ lookItems: next }); return next; });
+  }, [persistState]);
+  const setCaption = useCallback((v: string) => { setCaptionRaw(v); persistState({ caption: v }); }, [persistState]);
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
   const [showWardrobe, setShowWardrobe] = useState(false);
   const [showPremiumGate, setShowPremiumGate] = useState(false);
