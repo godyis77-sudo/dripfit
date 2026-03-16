@@ -168,15 +168,15 @@ const TryOnResultSection = ({
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: showSuccessOverlay ? 1.5 : 0 }}>
         {/* Result image */}
-        <FullscreenImage src={resultImage} alt="Try-on result">
-          <motion.div className="rounded-xl overflow-hidden border border-primary/30 mb-3"
-            initial={{ boxShadow: '0 0 0 0 hsla(var(--primary), 0)' }}
-            animate={{ boxShadow: ['0 0 0 0 hsla(var(--primary), 0)', '0 0 20px 4px hsla(var(--primary), 0.3)', '0 0 0 0 hsla(var(--primary), 0)'] }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <img src={resultImage} alt="Try-on result" className="w-full" />
-          </motion.div>
-        </FullscreenImage>
+        <motion.div className="rounded-xl overflow-hidden border border-primary/30 mb-3"
+          initial={{ boxShadow: '0 0 0 0 hsla(var(--primary), 0)' }}
+          animate={{ boxShadow: ['0 0 0 0 hsla(var(--primary), 0)', '0 0 20px 4px hsla(var(--primary), 0.3)', '0 0 0 0 hsla(var(--primary), 0)'] }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <FullscreenImage src={resultImage} alt="Try-on result">
+            <img src={resultImage} alt="Try-on result" className="w-full rounded-xl" />
+          </FullscreenImage>
+        </motion.div>
 
         {/* What's In This Look */}
         <WhatsInThisLook items={displayItems} clothingPhotoUrl={clothingPhoto} defaultOpen={showLookItems} variant="detail" onAddToWardrobe={handleAddToWardrobe} />
