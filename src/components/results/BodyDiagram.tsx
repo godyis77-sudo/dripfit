@@ -16,151 +16,143 @@ const LUXURY_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const createProcessedSilhouette = (imageSrc: string): Promise<string> =>
   new Promise((resolve) => {
     const img = new Image();
+    img.crossOrigin = 'anonymous';
     img.decoding = 'async';
     img.src = imageSrc;
 
     img.onload = () => {
       const W = img.naturalWidth;
       const H = img.naturalHeight;
-
-      const working = document.createElement('canvas');
-      working.width = W;
-      working.height = H;
-
-      const ctx = working.getContext('2d');
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
       if (!ctx) { resolve(imageSrc); return; }
 
       ctx.drawImage(img, 0, 0);
       const frame = ctx.getImageData(0, 0, W, H);
       const px = frame.data;
 
-      // ── Pass 1: Alpha-key neutral/checker tones ──
+      // ── Pass 1: Aggressive neutral/bright pixel removal ──
+      // Kill anything that looks like checkerboard (light or dark gray, low chroma).
       for (let i = 0; i < px.length; i += 4) {
-        const a = px[i + 3];
-        if (a === 0) continue;
-
+        if (px[i + 3] === 0) continue;
         const r = px[i], g = px[i + 1], b = px[i + 2];
         const chroma = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(r - b));
-        const brightness = (r + g + b) / 3;
-        const neutral = chroma < 40;
+        const lum = (r + g + b) / 3;
 
-        if (neutral && brightness > 62) { px[i + 3] = 0; continue; }
-        if (neutral && brightness > 30) {
-          const fade = Math.max(0, Math.min(1, (62 - brightness) / 32));
-          px[i + 3] = Math.round(a * fade * 0.25);
+        // Very bright pixels regardless of chroma → gone
+        if (lum > 210) { px[i + 3] = 0; continue; }
+        // Neutral tones above threshold → gone
+        if (chroma < 50 && lum > 55) { px[i + 3] = 0; continue; }
+        // Feather neutral mid-tones
+        if (chroma < 50 && lum > 28) {
+          const t = Math.max(0, (55 - lum) / 27);
+          px[i + 3] = Math.round(px[i + 3] * t * 0.3);
         }
       }
 
-      // ── Pass 2: Build alpha map for neighborhood queries ──
-      const alpha = new Uint8Array(W * H);
-      for (let i = 0; i < px.length; i += 4) alpha[i / 4] = px[i + 3];
+      // ── Pass 2: Despeckle — remove isolated pixels (5×5 window) ──
+      const a1 = new Uint8Array(W * H);
+      for (let i = 0; i < px.length; i += 4) a1[i >> 2] = px[i + 3];
 
-      // ── Pass 3: Remove isolated speckles (3×3 neighborhood) ──
-      for (let y = 1; y < H - 1; y++) {
-        for (let x = 1; x < W - 1; x++) {
+      for (let y = 2; y < H - 2; y++) {
+        for (let x = 2; x < W - 2; x++) {
           const p = y * W + x;
-          const i = p * 4;
-          if (px[i + 3] === 0) continue;
-
-          const r = px[i], g = px[i + 1], b = px[i + 2];
-          const chroma = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(r - b));
-          const brightness = (r + g + b) / 3;
-          const neutral = chroma < 44;
-
-          let solidNeighbors = 0;
-          for (let oy = -1; oy <= 1; oy++)
-            for (let ox = -1; ox <= 1; ox++) {
-              if (!ox && !oy) continue;
-              if (alpha[(y + oy) * W + (x + ox)] > 25) solidNeighbors++;
+          if (a1[p] === 0) continue;
+          let solid = 0;
+          for (let dy = -2; dy <= 2; dy++)
+            for (let dx = -2; dx <= 2; dx++) {
+              if (!dx && !dy) continue;
+              if (a1[(y + dy) * W + (x + dx)] > 20) solid++;
             }
-
-          if (neutral && brightness > 44 && solidNeighbors <= 2) { px[i + 3] = 0; continue; }
-          if (neutral && solidNeighbors <= 3 && px[i + 3] < 150) px[i + 3] = Math.round(px[i + 3] * 0.35);
+          // Isolated pixel cluster → remove
+          if (solid < 6) px[p * 4 + 3] = 0;
+          // Thin fringe → soften
+          else if (solid < 10 && px[p * 4 + 3] < 180) px[p * 4 + 3] = Math.round(px[p * 4 + 3] * 0.4);
         }
       }
 
-      // ── Pass 4: Gaussian-style alpha feather (5×5 box blur on alpha channel) ──
-      // This smooths jagged staircase edges into soft gradients.
-      const blurredAlpha = new Uint8Array(W * H);
-      const radius = 2;
-      for (let y = 0; y < H; y++) {
-        for (let x = 0; x < W; x++) {
-          let sum = 0, count = 0;
-          for (let ky = -radius; ky <= radius; ky++) {
-            const ny = y + ky;
-            if (ny < 0 || ny >= H) continue;
-            for (let kx = -radius; kx <= radius; kx++) {
-              const nx = x + kx;
-              if (nx < 0 || nx >= W) continue;
-              sum += px[(ny * W + nx) * 4 + 3];
-              count++;
+      // ── Pass 3: Multi-pass alpha blur for buttery-smooth edges ──
+      // Two passes of 7×7 box blur on the alpha channel
+      for (let pass = 0; pass < 2; pass++) {
+        const src = new Uint8Array(W * H);
+        for (let i = 0; i < px.length; i += 4) src[i >> 2] = px[i + 3];
+
+        const R = 3; // 7×7 kernel
+        for (let y = 0; y < H; y++) {
+          for (let x = 0; x < W; x++) {
+            let sum = 0, cnt = 0;
+            for (let ky = -R; ky <= R; ky++) {
+              const ny = y + ky;
+              if (ny < 0 || ny >= H) continue;
+              for (let kx = -R; kx <= R; kx++) {
+                const nx = x + kx;
+                if (nx < 0 || nx >= W) continue;
+                sum += src[ny * W + nx];
+                cnt++;
+              }
+            }
+            const blurred = Math.round(sum / cnt);
+            const orig = src[y * W + x];
+
+            // Only touch edge region (where alpha varies)
+            if (orig > 0 && orig < 250) {
+              px[(y * W + x) * 4 + 3] = Math.round(orig * 0.25 + blurred * 0.75);
+            } else if (orig === 0 && blurred > 3) {
+              // Extend glow slightly into transparent zone for anti-aliasing
+              px[(y * W + x) * 4 + 3] = Math.round(blurred * 0.3);
             }
           }
-          blurredAlpha[y * W + x] = Math.round(sum / count);
         }
       }
 
-      // Apply blurred alpha only to edge pixels (where original alpha differs from interior).
-      // Interior pixels (fully opaque) keep their sharp alpha; edge pixels get the smoothed value.
-      for (let y = 0; y < H; y++) {
-        for (let x = 0; x < W; x++) {
-          const p = y * W + x;
-          const i = p * 4;
-          const origA = px[i + 3];
-          const blurA = blurredAlpha[p];
-
-          if (origA === 0 && blurA === 0) continue;
-
-          // Detect edge: pixel is near a transparency boundary
-          let isEdge = false;
-          for (let oy = -1; oy <= 1 && !isEdge; oy++) {
-            for (let ox = -1; ox <= 1 && !isEdge; ox++) {
-              if (!ox && !oy) continue;
-              const ny = y + oy, nx = x + ox;
-              if (ny < 0 || ny >= H || nx < 0 || nx >= W) { isEdge = true; continue; }
-              const neighborA = px[(ny * W + nx) * 4 + 3];
-              if (Math.abs(origA - neighborA) > 60) isEdge = true;
-            }
-          }
-
-          if (isEdge) {
-            // Blend: use the smoother value, weighted toward the blur
-            px[i + 3] = Math.round(origA * 0.3 + blurA * 0.7);
-          }
+      // ── Pass 4: Tint remaining bright edge pixels toward the gold hue ──
+      for (let i = 0; i < px.length; i += 4) {
+        if (px[i + 3] === 0) continue;
+        const r = px[i], g = px[i + 1], b = px[i + 2];
+        const lum = (r + g + b) / 3;
+        // If pixel is bright-ish and close to neutral, shift it gold
+        if (lum > 100) {
+          const intensity = Math.min(1, (lum - 100) / 155);
+          // Gold tint: warm the pixel toward amber
+          px[i] = Math.round(r * (1 - intensity * 0.3) + 180 * intensity * 0.3);    // R
+          px[i + 1] = Math.round(g * (1 - intensity * 0.4) + 140 * intensity * 0.4); // G
+          px[i + 2] = Math.round(b * (1 - intensity * 0.7) + 40 * intensity * 0.7);  // B
+          // Also suppress alpha on very bright pixels
+          if (lum > 180) px[i + 3] = Math.round(px[i + 3] * Math.max(0.15, (230 - lum) / 50));
         }
       }
 
       ctx.putImageData(frame, 0, 0);
 
-      // ── Pass 5: Auto-crop to content bounds ──
+      // ── Pass 5: Auto-crop ──
       let minX = W, minY = H, maxX = -1, maxY = -1;
       for (let i = 0; i < px.length; i += 4) {
-        if (px[i + 3] > 6) {
-          const idx = i / 4;
-          const cx = idx % W, cy = Math.floor(idx / W);
+        if (px[i + 3] > 4) {
+          const idx = i >> 2;
+          const cx = idx % W, cy = (idx / W) | 0;
           if (cx < minX) minX = cx;
           if (cy < minY) minY = cy;
           if (cx > maxX) maxX = cx;
           if (cy > maxY) maxY = cy;
         }
       }
+      if (maxX < 0) { resolve(imageSrc); return; }
 
-      if (maxX < 0 || maxY < 0) { resolve(imageSrc); return; }
-
-      const pad = 8;
+      const pad = 10;
       const sx = Math.max(0, minX - pad);
       const sy = Math.max(0, minY - pad);
       const sw = Math.min(W - sx, maxX - minX + 1 + pad * 2);
       const sh = Math.min(H - sy, maxY - minY + 1 + pad * 2);
 
-      const cropped = document.createElement('canvas');
-      cropped.width = sw;
-      cropped.height = sh;
-      const croppedCtx = cropped.getContext('2d');
-      if (!croppedCtx) { resolve(imageSrc); return; }
-
-      croppedCtx.drawImage(working, sx, sy, sw, sh, 0, 0, sw, sh);
-      resolve(cropped.toDataURL('image/png'));
+      const out = document.createElement('canvas');
+      out.width = sw;
+      out.height = sh;
+      const outCtx = out.getContext('2d');
+      if (!outCtx) { resolve(imageSrc); return; }
+      outCtx.drawImage(canvas, sx, sy, sw, sh, 0, 0, sw, sh);
+      resolve(out.toDataURL('image/png'));
     };
 
     img.onerror = () => resolve(imageSrc);
