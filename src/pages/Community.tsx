@@ -67,6 +67,8 @@ const Community = () => {
   const [shopBrand, setShopBrand] = useState<string | null>(null);
   const [shopCategory, setShopCategory] = useState('tops');
   const [shopGenre, setShopGenre] = useState<BrandGenre | null>(null);
+  const [shopRetailer, setShopRetailer] = useState<string | null>(null);
+  const [shopSort, setShopSort] = useState<SortKey>('default');
   const [showPostFlow, setShowPostFlow] = useState(false);
   const [detailPost, setDetailPost] = useState<Post | null>(null);
   const [trendingSort, setTrendingSort] = useState<TrendingSort>('hot');
@@ -75,7 +77,28 @@ const Community = () => {
   const [similarFitTooltip, setSimilarFitTooltip] = useState(false);
   const [showSortOptions, setShowSortOptions] = useState(false);
   const [shopFiltersOpen, setShopFiltersOpen] = useState(false);
+  const [shopGenreOpen, setShopGenreOpen] = useState(false);
+  const [shopFitOpen, setShopFitOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Product catalog for retailer/fit pills
+  const { products: shopProducts } = useProductCatalog(
+    shopCategory === 'all' || shopCategory === 'tops' ? undefined : shopCategory,
+    undefined, undefined,
+    shopGender === 'all' ? undefined : shopGender
+  );
+
+  const availableRetailers = React.useMemo(() => {
+    return [...new Set(shopProducts.map(p => p.retailer))].sort();
+  }, [shopProducts]);
+
+  const availableFits = React.useMemo(() => {
+    const fits = new Set<string>();
+    shopProducts.forEach(p => {
+      if (Array.isArray(p.fit_profile)) p.fit_profile.forEach(f => fits.add(f));
+    });
+    return FIT_OPTIONS.filter(f => fits.has(f));
+  }, [shopProducts]);
 
   useEffect(() => {
     const onScroll = () => setShowScrollTop(window.scrollY > 300);
