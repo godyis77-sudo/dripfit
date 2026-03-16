@@ -67,8 +67,12 @@ function scoreMeasurement(userVal: number, min: number, max: number): number {
   const mid = (min + max) / 2;
   const sigma = (max - min) / 2 || 1;
   const distance = Math.abs(userVal - mid);
-  // Gaussian: midpoint=100%, edge of range≈61%, 1 range out≈13%
-  return Math.exp(-0.5 * (distance / sigma) ** 2);
+  const base = Math.exp(-0.5 * (distance / sigma) ** 2);
+  // Ease bias: slight bonus when user sits in the lower half of the range
+  // (more room = more comfortable). Penalty when squeezed at the top.
+  const position = (userVal - min) / (max - min || 1); // 0=at min, 1=at max
+  const easeBias = position <= 0.5 ? 0.02 : -0.02 * ((position - 0.5) / 0.5);
+  return Math.max(0, Math.min(1, base + easeBias));
 }
 
 Deno.serve(async (req) => {
