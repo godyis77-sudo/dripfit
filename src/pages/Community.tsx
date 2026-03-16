@@ -328,7 +328,7 @@ const Community = () => {
                 <div className="mb-3">
                   <button
                     onClick={() => setShopFiltersOpen(!shopFiltersOpen)}
-                    className="relative w-full h-14 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-base font-bold btn-luxury text-primary-foreground"
+                    className="relative w-full h-10 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-base font-bold btn-luxury text-primary-foreground"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
                     {activeCount > 0 ? `Filters (${activeCount})` : 'Filters'}
