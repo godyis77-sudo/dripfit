@@ -13,14 +13,38 @@ const fmtHeightFtIn = (cm: number) => {
 };
 const LUXURY_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
-// Clean silhouette — no processing needed, image has proper transparency
+// Remove white background from silhouette
 const createProcessedSilhouette = (imageSrc: string): Promise<string> =>
   new Promise((resolve) => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.decoding = 'async';
     img.src = imageSrc;
-    img.onload = () => resolve(imageSrc);
+    img.onload = () => {
+      const W = img.naturalWidth;
+      const H = img.naturalHeight;
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) { resolve(imageSrc); return; }
+      ctx.drawImage(img, 0, 0);
+      const frame = ctx.getImageData(0, 0, W, H);
+      const px = frame.data;
+      for (let i = 0; i < px.length; i += 4) {
+        const r = px[i], g = px[i + 1], b = px[i + 2];
+        const lum = (r + g + b) / 3;
+        // White/near-white → transparent
+        if (lum > 200) {
+          px[i + 3] = 0;
+        } else if (lum > 140) {
+          // Feather light grays
+          px[i + 3] = Math.round(px[i + 3] * Math.max(0, (200 - lum) / 60));
+        }
+      }
+      ctx.putImageData(frame, 0, 0);
+      resolve(canvas.toDataURL('image/png'));
+    };
     img.onerror = () => resolve(imageSrc);
   });
 
