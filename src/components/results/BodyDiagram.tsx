@@ -537,13 +537,13 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               {activeOverlays.map(o => {
                 const dx = parseFloat(o.dotLeft), dy = parseFloat(o.dotTop);
                 const lx = o.side === 'left' ? 2 : 98;
-                const ly = parseFloat(o.lineTop ?? `${parseFloat(o.valTop) + 2}%`);
+                const ly = parseFloat(o.valTop) + 2;
                 return (
                   <motion.path
                     key={`l-${o.key}`}
                     d={`M${dx} ${dy} L${lx} ${ly}`}
-                    stroke={`url(#lg-${o.side === 'left' ? 'l' : 'r'})`}
-                    strokeWidth="0.25"
+                    stroke="hsl(var(--primary) / 0.45)"
+                    strokeWidth="0.3"
                     strokeDasharray="1.5 0.6"
                     initial={{ pathLength: 0, opacity: 0 }}
                     animate={{ pathLength: 1, opacity: 1 }}
