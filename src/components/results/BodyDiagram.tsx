@@ -366,10 +366,15 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
-            <div className="h-[90%] w-[42%]" style={{
-              background: 'radial-gradient(ellipse at 50% 45%, hsl(var(--primary) / 0.22) 0%, hsl(var(--primary) / 0.08) 40%, transparent 70%)',
-              filter: 'blur(25px)',
-            }} />
+            <motion.div
+              className="h-[90%] w-[42%]"
+              style={{
+                background: 'radial-gradient(ellipse at 50% 45%, hsl(var(--primary) / 0.22) 0%, hsl(var(--primary) / 0.08) 40%, transparent 70%)',
+                filter: 'blur(25px)',
+              }}
+              animate={{ scale: [1, 1.02, 1] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+            />
           </motion.div>
 
           {/* Silhouette: Stable image-based render */}
