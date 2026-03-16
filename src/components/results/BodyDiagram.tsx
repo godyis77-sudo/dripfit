@@ -191,32 +191,98 @@ const DataParticles = () => {
   );
 };
 
-/* ── Corner brackets — thicker, animated ── */
+/* ── Corner brackets — double-layered, animated ── */
 const CornerBrackets = () => {
   const corners = [
-    { cls: 'top-2 left-2', d: 'M0 10 L0 0 L10 0' },
-    { cls: 'top-2 right-2', d: 'M6 0 L16 0 L16 10' },
-    { cls: 'bottom-2 left-2', d: 'M0 6 L0 16 L10 16' },
-    { cls: 'bottom-2 right-2', d: 'M6 16 L16 16 L16 6' },
+    { cls: 'top-2 left-2', d: 'M0 14 L0 0 L14 0', d2: 'M0 8 L0 0 L8 0' },
+    { cls: 'top-2 right-2', d: 'M6 0 L20 0 L20 14', d2: 'M12 0 L20 0 L20 8' },
+    { cls: 'bottom-2 left-2', d: 'M0 6 L0 20 L14 20', d2: 'M0 12 L0 20 L8 20' },
+    { cls: 'bottom-2 right-2', d: 'M6 20 L20 20 L20 6', d2: 'M12 20 L20 20 L20 12' },
   ];
   return (
     <>
       {corners.map((c, i) => (
         <motion.svg
           key={i}
-          className={`absolute w-5 h-5 pointer-events-none z-[6] ${c.cls}`}
-          viewBox="0 0 16 16"
+          className={`absolute w-6 h-6 pointer-events-none z-[6] ${c.cls}`}
+          viewBox="0 0 20 20"
           fill="none"
           initial={{ opacity: 0 }}
           animate={{ opacity: [0.5, 0.9, 0.5] }}
           transition={{ duration: 3, delay: i * 0.15, repeat: Infinity, ease: 'easeInOut' }}
         >
-          <path d={c.d} stroke="hsl(var(--primary) / 0.7)" strokeWidth="1.5" strokeLinecap="round" />
+          <path d={c.d} stroke="hsl(var(--primary) / 0.5)" strokeWidth="1" strokeLinecap="round" />
+          <path d={c.d2} stroke="hsl(var(--primary) / 0.9)" strokeWidth="1.5" strokeLinecap="round" />
         </motion.svg>
       ))}
     </>
   );
 };
+
+/* ── Center crosshair reticle ── */
+const Crosshair = () => (
+  <div className="absolute inset-0 pointer-events-none z-[2] overflow-hidden">
+    {/* Horizontal */}
+    <motion.div
+      className="absolute left-[42%] right-[42%] h-[1px] top-1/2 -translate-y-1/2"
+      style={{ background: 'linear-gradient(90deg, transparent, hsl(var(--primary) / 0.15) 30%, hsl(var(--primary) / 0.25) 50%, hsl(var(--primary) / 0.15) 70%, transparent)' }}
+      initial={{ scaleX: 0 }}
+      animate={{ scaleX: 1, opacity: [0.3, 0.6, 0.3] }}
+      transition={{ scaleX: { delay: 0.8, duration: 0.5, ease: LUXURY_EASE }, opacity: { duration: 3, repeat: Infinity, ease: 'easeInOut' } }}
+    />
+    {/* Vertical */}
+    <motion.div
+      className="absolute top-[38%] bottom-[38%] w-[1px] left-1/2 -translate-x-1/2"
+      style={{ background: 'linear-gradient(180deg, transparent, hsl(var(--primary) / 0.15) 30%, hsl(var(--primary) / 0.25) 50%, hsl(var(--primary) / 0.15) 70%, transparent)' }}
+      initial={{ scaleY: 0 }}
+      animate={{ scaleY: 1, opacity: [0.3, 0.6, 0.3] }}
+      transition={{ scaleY: { delay: 0.9, duration: 0.5, ease: LUXURY_EASE }, opacity: { duration: 3, repeat: Infinity, ease: 'easeInOut' } }}
+    />
+    {/* Center diamond */}
+    <motion.div
+      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 border border-primary/20 rotate-45"
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{ opacity: [0.2, 0.5, 0.2], scale: 1 }}
+      transition={{ opacity: { duration: 3, repeat: Infinity, ease: 'easeInOut' }, scale: { delay: 1, duration: 0.4, ease: LUXURY_EASE } }}
+    />
+  </div>
+);
+
+/* ── Micro data readouts (corner telemetry) ── */
+const MicroReadouts = () => {
+  const readouts = [
+    { pos: 'top-3 left-8', text: 'SYS:ACTIVE' },
+    { pos: 'top-3 right-8', text: 'RES:2160p' },
+    { pos: 'bottom-10 left-3', text: 'δ±0.3cm' },
+    { pos: 'bottom-10 right-3', text: 'MAP:LIVE' },
+  ];
+  return (
+    <>
+      {readouts.map((r, i) => (
+        <motion.span
+          key={i}
+          className={`absolute z-[6] pointer-events-none text-[5px] font-mono uppercase tracking-[0.18em] text-primary/30 ${r.pos}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0.15, 0.35, 0.15] }}
+          transition={{ duration: 4, delay: i * 0.4, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          {r.text}
+        </motion.span>
+      ))}
+    </>
+  );
+};
+
+/* ── CRT scanline overlay ── */
+const CrtOverlay = () => (
+  <div
+    className="absolute inset-0 pointer-events-none z-[3] opacity-[0.035]"
+    style={{
+      backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, hsl(var(--primary) / 0.3) 2px, hsl(var(--primary) / 0.3) 3px)',
+      backgroundSize: '100% 3px',
+    }}
+  />
+);
 
 /* ── Status bar ── */
 const HudStatusBar = ({ useCm }: { useCm: boolean }) => (
@@ -330,10 +396,12 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           aria-label="Toggle measurement units"
           tabIndex={0}
           onKeyDown={e => e.key === 'Enter' && toggleUnit()}
-          style={{
-            border: '2px solid hsl(var(--primary) / 0.4)',
-          }}
           animate={{
+            borderColor: [
+              'hsl(var(--primary) / 0.3)',
+              'hsl(var(--primary) / 0.55)',
+              'hsl(var(--primary) / 0.3)',
+            ],
             boxShadow: [
               '0 0 20px 4px hsl(var(--primary) / 0.15), 0 0 60px 12px hsl(var(--primary) / 0.06), inset 0 0 30px 5px hsl(var(--primary) / 0.05)',
               '0 0 30px 8px hsl(var(--primary) / 0.3), 0 0 80px 20px hsl(var(--primary) / 0.12), inset 0 0 40px 8px hsl(var(--primary) / 0.1)',
@@ -341,6 +409,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             ],
           }}
           transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          style={{
+            border: '2px solid hsl(var(--primary) / 0.4)',
+          }}
         >
           <span className="sr-only">
             {`Body measurements diagram: ${[
@@ -463,6 +534,12 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {/* Effects: Tick marks */}
           {imageLoaded && <TickMarks />}
 
+          {/* Effects: CRT scanlines */}
+          {imageLoaded && <CrtOverlay />}
+
+          {/* Effects: Crosshair reticle */}
+          {imageLoaded && <Crosshair />}
+
           {/* Effects: Scan lines */}
           {imageLoaded && <ScanLines />}
 
@@ -471,6 +548,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
           {/* Effects: Corner brackets */}
           {imageLoaded && <CornerBrackets />}
+
+          {/* Effects: Micro readouts */}
+          {imageLoaded && <MicroReadouts />}
 
           {/* Data: SVG leader lines */}
           {imageLoaded && (
@@ -592,12 +672,29 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {imageLoaded && <HudStatusBar useCm={useCmState} />}
 
           {/* Outer glow frame */}
-          <div
+          <motion.div
             className="absolute -inset-[4px] rounded-[calc(1rem+3px)] pointer-events-none z-[8]"
-            style={{
-              border: '2px solid hsl(220 15% 8%)',
-              boxShadow: 'inset 0 0 12px 3px hsl(var(--primary) / 0.35), 0 0 16px 4px hsl(var(--primary) / 0.3), 0 0 40px 10px hsl(var(--primary) / 0.1)',
+            style={{ border: '2px solid hsl(220 15% 8%)' }}
+            animate={{
+              boxShadow: [
+                'inset 0 0 12px 3px hsl(var(--primary) / 0.3), 0 0 16px 4px hsl(var(--primary) / 0.25), 0 0 40px 10px hsl(var(--primary) / 0.08)',
+                'inset 0 0 18px 5px hsl(var(--primary) / 0.5), 0 0 24px 6px hsl(var(--primary) / 0.4), 0 0 60px 16px hsl(var(--primary) / 0.15)',
+                'inset 0 0 12px 3px hsl(var(--primary) / 0.3), 0 0 16px 4px hsl(var(--primary) / 0.25), 0 0 40px 10px hsl(var(--primary) / 0.08)',
+              ],
             }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          {/* Inner glow ring */}
+          <motion.div
+            className="absolute inset-0 rounded-[1rem] pointer-events-none z-[7]"
+            animate={{
+              boxShadow: [
+                'inset 0 0 20px 4px hsl(var(--primary) / 0.06)',
+                'inset 0 0 35px 8px hsl(var(--primary) / 0.12)',
+                'inset 0 0 20px 4px hsl(var(--primary) / 0.06)',
+              ],
+            }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
           />
         </motion.div>
       </div>
