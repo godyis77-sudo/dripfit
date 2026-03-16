@@ -299,6 +299,7 @@ Deno.serve(async (req) => {
       brand_slug,
       category,
       all_sizes: allSizes,
+      measurement_breakdown: best.breakdown,
     }, 200, corsHeaders);
 
   } catch (e) {
