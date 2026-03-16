@@ -183,13 +183,7 @@ const Browse = () => {
       <div className="px-4 py-3">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => {
-              if (window.history.length > 1) {
-                navigate(-1);
-              } else {
-                navigate('/');
-              }
-            }}
+            onClick={() => navigate('/')}
             className="h-9 w-9 rounded-full bg-card border border-border flex items-center justify-center active:scale-90 transition-transform"
             aria-label="Go back"
           >
@@ -585,21 +579,19 @@ const Browse = () => {
       />
 
       {/* Scroll-to-top button — portaled to body */}
-      {createPortal(
-        showScrollTop ? (
-          <motion.button
-            key="scroll-top"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="fixed z-[9999] h-11 w-11 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-xl active:scale-90 transition-transform"
-            style={{ right: 16, bottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))' }}
-            aria-label="Scroll to top"
-          >
-            <ArrowUp className="h-5 w-5" />
-          </motion.button>
-        ) : null,
+      {showScrollTop && createPortal(
+        <motion.button
+          key="scroll-top"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed z-[9999] h-11 w-11 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-xl active:scale-90 transition-transform"
+          style={{ right: 16, bottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))' }}
+          aria-label="Scroll to top"
+        >
+          <ArrowUp className="h-5 w-5" />
+        </motion.button>,
         document.body
       )}
 
