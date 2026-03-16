@@ -68,7 +68,7 @@ const DEFAULT_WEIGHTS: Record<string, number> = {
  * Returns 0–1 (1 = perfect midpoint match), with graceful decay outside range.
  * Mirrors the server-side `scoreMeasurement` for consistency.
  */
-function scoreMeasurement(userVal: number, chartMin: number, chartMax: number): number {
+export function scoreMeasurement(userVal: number, chartMin: number, chartMax: number): number {
   const mid = (chartMin + chartMax) / 2;
   const rangeHalf = (chartMax - chartMin) / 2 || 1;
 
@@ -85,7 +85,7 @@ function scoreMeasurement(userVal: number, chartMin: number, chartMax: number): 
 /**
  * Resolves user measurement midpoint for a given key from UserMeasurements.
  */
-function getUserMid(user: UserMeasurements, key: string): number | null {
+export function getUserMid(user: UserMeasurements, key: string): number | null {
   if (key === 'height') {
     return user.heightCm ?? null;
   }
@@ -106,7 +106,7 @@ function getUserMid(user: UserMeasurements, key: string): number | null {
 /**
  * Resolves chart min/max for a given measurement key from a SizeChartRow.
  */
-function getChartRange(row: SizeChartRow, key: string): [number, number] | null {
+export function getChartRange(row: SizeChartRow, key: string): [number, number] | null {
   const pairs: Record<string, [number | null | undefined, number | null | undefined]> = {
     chest: [row.chest_min ?? row.bust_min, row.chest_max ?? row.bust_max],
     waist: [row.waist_min, row.waist_max],
@@ -128,7 +128,14 @@ export function scoreSizeRow(
   user: UserMeasurements,
   fit: FitPreference,
   category?: string,
+  preferredShoeSize?: string,
 ): number {
+  // Footwear guard: skip Gaussian scoring, do direct string match
+  if (category === 'footwear') {
+    if (!preferredShoeSize) return 0;
+    return row.size_label.toLowerCase() === preferredShoeSize.toLowerCase() ? 1.0 : 0;
+  }
+
   const fitOffset = FIT_OFFSETS[fit] ?? 0;
   const weights = (category && CATEGORY_WEIGHTS[category]) || DEFAULT_WEIGHTS;
 
