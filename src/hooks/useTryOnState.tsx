@@ -60,16 +60,16 @@ export function useTryOnState() {
 
   const [userPhoto, setUserPhotoRaw] = useState<string | null>(persisted.userPhoto);
   const [clothingPhoto, setClothingPhotoRaw] = useState<string | null>(persisted.clothingPhoto);
-  const [resultImage, setResultImage] = useState<string | null>(null);
+  const [resultImage, setResultImageRaw] = useState<string | null>(persisted.resultImage);
   const [description, setDescription] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingStepIndex, setLoadingStepIndex] = useState(0);
-  const [caption, setCaption] = useState('');
+  const [caption, setCaptionRaw] = useState(persisted.caption);
   const [isPublic, setIsPublic] = useState(() => getDefaultSharePreference());
   const [shared, setShared] = useState(false);
-  const [autoSaved, setAutoSaved] = useState(false);
+  const [autoSaved, setAutoSaved] = useState(persisted.autoSaved);
   const [productLink, setProductLinkRaw] = useState(persisted.productLink);
-  const [lookItems, setLookItems] = useState<LookItem[]>([]);
+  const [lookItems, setLookItemsRaw] = useState<LookItem[]>(persisted.lookItems);
   const [category, setCategoryRaw] = useState<string>(persisted.category);
   const [clothingSaved, setClothingSaved] = useState(false);
 
