@@ -696,7 +696,6 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             }}
             transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
           />
-          />
         </motion.div>
       </div>
     </div>
