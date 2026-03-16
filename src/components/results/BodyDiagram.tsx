@@ -545,10 +545,21 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 src={silhouetteSrc}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 z-[3] h-full w-full object-contain pointer-events-none opacity-60"
+                className="absolute inset-0 z-[3] h-full w-full object-contain pointer-events-none opacity-90"
                 style={{
                   mixBlendMode: 'multiply',
-                  filter: 'blur(0.5px) brightness(0.35) contrast(2.5) saturate(2)',
+                  filter: 'blur(0.3px) brightness(0.15) contrast(5) saturate(3)',
+                }}
+              />
+              {/* Second multiply pass for maximum suppression */}
+              <img
+                src={silhouetteSrc}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 z-[3] h-full w-full object-contain pointer-events-none opacity-75"
+                style={{
+                  mixBlendMode: 'multiply',
+                  filter: 'brightness(0.2) contrast(4) saturate(2.5)',
                 }}
               />
             </div>
