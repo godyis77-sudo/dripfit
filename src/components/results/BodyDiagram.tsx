@@ -377,7 +377,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             className="absolute inset-0 flex items-center justify-center"
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
-            <div className="relative h-[121%] w-[97%] max-w-[380px]">
+            <div className="relative h-[116%] w-[92%] max-w-[360px]">
               {/* Layer 1: Wide atmospheric glow — 4× intensified */}
               <img
                 src={silhouetteSrc}
