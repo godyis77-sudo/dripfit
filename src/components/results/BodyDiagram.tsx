@@ -311,8 +311,6 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   maskPosition: 'center',
                   WebkitMaskSize: 'contain',
                   maskSize: 'contain',
-                  WebkitMaskMode: 'luminance',
-                  maskMode: 'luminance',
                 }}
               />
             </div>
