@@ -15,6 +15,24 @@ import type { CatalogProduct } from '@/hooks/useProductCatalog';
 export type LookItem = { brand: string; name: string; url: string; price_cents?: number | null; image_url?: string | null };
 export type WardrobeItem = { id: string; image_url: string; category: string; product_link: string | null };
 
+const TRYON_STATE_KEY = 'dripcheck_tryon_state';
+
+function loadPersistedTryOnState(): { userPhoto: string | null; clothingPhoto: string | null; productLink: string; category: string } {
+  try {
+    const raw = sessionStorage.getItem(TRYON_STATE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        userPhoto: parsed.userPhoto || null,
+        clothingPhoto: parsed.clothingPhoto || null,
+        productLink: parsed.productLink || '',
+        category: parsed.category || 'top',
+      };
+    }
+  } catch { /* ignore */ }
+  return { userPhoto: null, clothingPhoto: null, productLink: '', category: 'top' };
+}
+
 export function useTryOnState() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,8 +41,10 @@ export function useTryOnState() {
   const { toast } = useToast();
   const bodyProfile = (location.state as { bodyProfile?: unknown })?.bodyProfile;
 
-  const [userPhoto, setUserPhoto] = useState<string | null>(null);
-  const [clothingPhoto, setClothingPhoto] = useState<string | null>(null);
+  const persisted = loadPersistedTryOnState();
+
+  const [userPhoto, setUserPhotoRaw] = useState<string | null>(persisted.userPhoto);
+  const [clothingPhoto, setClothingPhotoRaw] = useState<string | null>(persisted.clothingPhoto);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [description, setDescription] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
