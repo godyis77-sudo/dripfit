@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -15,6 +15,24 @@ import type { CatalogProduct } from '@/hooks/useProductCatalog';
 export type LookItem = { brand: string; name: string; url: string; price_cents?: number | null; image_url?: string | null };
 export type WardrobeItem = { id: string; image_url: string; category: string; product_link: string | null };
 
+const TRYON_STATE_KEY = 'dripcheck_tryon_state';
+
+function loadPersistedTryOnState(): { userPhoto: string | null; clothingPhoto: string | null; productLink: string; category: string } {
+  try {
+    const raw = sessionStorage.getItem(TRYON_STATE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        userPhoto: parsed.userPhoto || null,
+        clothingPhoto: parsed.clothingPhoto || null,
+        productLink: parsed.productLink || '',
+        category: parsed.category || 'top',
+      };
+    }
+  } catch { /* ignore */ }
+  return { userPhoto: null, clothingPhoto: null, productLink: '', category: 'top' };
+}
+
 export function useTryOnState() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,8 +41,10 @@ export function useTryOnState() {
   const { toast } = useToast();
   const bodyProfile = (location.state as { bodyProfile?: unknown })?.bodyProfile;
 
-  const [userPhoto, setUserPhoto] = useState<string | null>(null);
-  const [clothingPhoto, setClothingPhoto] = useState<string | null>(null);
+  const persisted = loadPersistedTryOnState();
+
+  const [userPhoto, setUserPhotoRaw] = useState<string | null>(persisted.userPhoto);
+  const [clothingPhoto, setClothingPhotoRaw] = useState<string | null>(persisted.clothingPhoto);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [description, setDescription] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -33,10 +53,23 @@ export function useTryOnState() {
   const [isPublic, setIsPublic] = useState(() => getDefaultSharePreference());
   const [shared, setShared] = useState(false);
   const [autoSaved, setAutoSaved] = useState(false);
-  const [productLink, setProductLink] = useState('');
+  const [productLink, setProductLinkRaw] = useState(persisted.productLink);
   const [lookItems, setLookItems] = useState<LookItem[]>([]);
-  const [category, setCategory] = useState<string>('top');
+  const [category, setCategoryRaw] = useState<string>(persisted.category);
   const [clothingSaved, setClothingSaved] = useState(false);
+
+  // Persist critical state to sessionStorage so it survives mobile camera handoff reloads
+  const persistState = useCallback((updates: Partial<{ userPhoto: string | null; clothingPhoto: string | null; productLink: string; category: string }>) => {
+    try {
+      const current = (() => { try { return JSON.parse(sessionStorage.getItem(TRYON_STATE_KEY) || '{}'); } catch { return {}; } })();
+      sessionStorage.setItem(TRYON_STATE_KEY, JSON.stringify({ ...current, ...updates }));
+    } catch { /* quota exceeded, ignore */ }
+  }, []);
+
+  const setUserPhoto = useCallback((v: string | null) => { setUserPhotoRaw(v); persistState({ userPhoto: v }); }, [persistState]);
+  const setClothingPhoto = useCallback((v: string | null) => { setClothingPhotoRaw(v); persistState({ clothingPhoto: v }); }, [persistState]);
+  const setProductLink = useCallback((v: string) => { setProductLinkRaw(v); persistState({ productLink: v }); }, [persistState]);
+  const setCategory = useCallback((v: string) => { setCategoryRaw(v); persistState({ category: v }); }, [persistState]);
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
   const [showWardrobe, setShowWardrobe] = useState(false);
   const [showPremiumGate, setShowPremiumGate] = useState(false);
@@ -257,6 +290,7 @@ export function useTryOnState() {
     setProductLink(''); setLookItems([]); setClothingSaved(false); setSavedToItems(false);
     setShowPostUI(false); setShowLookItems(false); setLayerHistory([]);
     setSelectedQuickPick(null);
+    try { sessionStorage.removeItem(TRYON_STATE_KEY); } catch { /* ignore */ }
   };
 
   const handleAddAccessory = async (accessoryPhoto: string, accessoryCategory: string | null) => {
