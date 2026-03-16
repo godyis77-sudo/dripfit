@@ -15,6 +15,12 @@ interface SizeChartRow {
   inseam_max: number | null;
   shoulder_min: number | null;
   shoulder_max: number | null;
+  sleeve_min?: number | null;
+  sleeve_max?: number | null;
+  height_min?: number | null;
+  height_max?: number | null;
+  shoe_min?: number | null;
+  shoe_max?: number | null;
 }
 
 export interface UserMeasurements {
