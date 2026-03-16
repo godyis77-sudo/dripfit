@@ -449,44 +449,11 @@ const Results = () => {
           />
         </div>
 
-        {/* Tabbed sections — secondary content below */}
-        <Tabs defaultValue="body" className="mt-3">
-          <TabsList className="w-full grid grid-cols-2 h-9 rounded-lg bg-muted">
-            <TabsTrigger value="body" className="text-[11px] font-bold rounded-md">Body Map</TabsTrigger>
-            <TabsTrigger value="more" className="text-[11px] font-bold rounded-md">More</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="body" className="mt-3 space-y-3">
-            <BodyDiagram measurements={measurements} heightCm={result.heightCm} />
-            <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
-          </TabsContent>
-
-          <TabsContent value="more" className="mt-3 space-y-3">
-            {(saved || confidence === 'low') && (
-              <UpgradePrompt
-                headline={confidence === 'low' ? 'Low confidence? Get smarter sizing.' : 'Want higher confidence?'}
-                description="Unlock advanced calibration, brand fit memory, and return risk alerts."
-              />
-            )}
-
-            {saved && (
-              <div>
-                <button
-                  onClick={() => setShowFeedback(!showFeedback)}
-                  className="text-[11px] text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2 mb-2"
-                >
-                  Already bought something? Report how it fit
-                </button>
-                {showFeedback && (
-                  <FitFeedbackSheet
-                    retailer={cachedState?.retailer || 'Unknown'}
-                    recommendedSize={adjustedSize}
-                  />
-                )}
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
+        {/* Body Map section */}
+        <div className="mt-3 space-y-3">
+          <BodyDiagram measurements={measurements} heightCm={result.heightCm} />
+          <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
+        </div>
       </div>
       <BottomTabBar />
     </div>
