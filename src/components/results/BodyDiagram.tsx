@@ -291,9 +291,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             >
               <defs>
                 <linearGradient id="line-grad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="hsl(42 76% 50% / 0)" />
-                  <stop offset="50%" stopColor="hsl(42 76% 50% / 0.5)" />
-                  <stop offset="100%" stopColor="hsl(42 76% 50% / 0)" />
+                  <stop offset="0%" stopColor="hsl(42 76% 55% / 0.1)" />
+                  <stop offset="50%" stopColor="hsl(42 76% 55% / 0.7)" />
+                  <stop offset="100%" stopColor="hsl(42 76% 55% / 0.1)" />
                 </linearGradient>
               </defs>
               {activeOverlays.map(overlay => {
