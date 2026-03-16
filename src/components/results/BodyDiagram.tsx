@@ -112,6 +112,7 @@ interface MeasurementOverlay {
   label: string;
   side: 'left' | 'right';
   valTop: string;
+  lineTop?: string;
   delay: number;
   dotTop: string;
   dotLeft: string;
