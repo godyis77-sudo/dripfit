@@ -589,6 +589,22 @@ const Browse = () => {
           setTimeout(() => beginClickout(p.brand, p.product_url!), 0);
         } : undefined}
       />
+
+      {/* Scroll-to-top button — portaled to body */}
+      {showScrollTop && createPortal(
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed right-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-[100] h-10 w-10 rounded-full btn-luxury text-primary-foreground flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+          aria-label="Scroll to top"
+        >
+          <ArrowUp className="h-4 w-4" />
+        </motion.button>,
+        document.body
+      )}
+
       <BottomTabBar />
     </div>
   );
