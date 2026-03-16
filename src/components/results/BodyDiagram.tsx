@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { MeasurementRange } from '@/lib/types';
+import bodySilhouette from '@/assets/body-silhouette-glow-cutout.webp';
 import bodySilhouetteMask from '@/assets/body-silhouette-mask.png';
 import hudScanBg from '@/assets/hud-scan-bg.jpg';
 import { getUseCm, setUseCm } from '@/lib/session';
@@ -289,20 +290,29 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             className="absolute inset-0 flex items-center justify-center"
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
-            <img
-              src={bodySilhouetteMask}
-              alt=""
-              aria-hidden="true"
-              className="hidden"
-              onLoad={() => setImageLoaded(true)}
-            />
-            <div className="relative h-[88%] w-[58%] max-w-[230px]">
-              <div className="absolute inset-0 rounded-full bg-primary/15 blur-2xl" />
-              <div
-                className="absolute inset-0"
+            <div className="relative h-[88%] w-auto">
+              <img
+                src={bodySilhouette}
+                alt="Body measurement scan"
+                className="h-full w-auto object-contain"
+                onLoad={() => setImageLoaded(true)}
                 style={{
-                  backgroundImage: 'linear-gradient(180deg, hsl(var(--primary) / 0.96) 0%, hsl(var(--primary) / 0.72) 55%, hsl(var(--primary) / 0.9) 100%)',
-                  filter: 'drop-shadow(0 0 12px hsl(var(--primary) / 0.7)) drop-shadow(0 0 26px hsl(var(--primary) / 0.42))',
+                  filter: 'sepia(0.35) saturate(1.6) brightness(1.5) contrast(1.05) drop-shadow(0 0 18px hsl(var(--primary) / 0.55)) drop-shadow(0 0 36px hsl(var(--primary) / 0.28))',
+                  WebkitMaskImage: `url(${bodySilhouetteMask})`,
+                  maskImage: `url(${bodySilhouetteMask})`,
+                  WebkitMaskRepeat: 'no-repeat',
+                  maskRepeat: 'no-repeat',
+                  WebkitMaskPosition: 'center',
+                  maskPosition: 'center',
+                  WebkitMaskSize: 'contain',
+                  maskSize: 'contain',
+                }}
+              />
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  backgroundColor: 'hsl(var(--primary) / 0.18)',
+                  filter: 'blur(0.7px)',
                   WebkitMaskImage: `url(${bodySilhouetteMask})`,
                   maskImage: `url(${bodySilhouetteMask})`,
                   WebkitMaskRepeat: 'no-repeat',
