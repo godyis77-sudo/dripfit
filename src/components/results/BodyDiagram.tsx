@@ -323,7 +323,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
   return (
     <div className="mb-4" ref={containerRef}>
       <div className="flex justify-center">
-        <div
+        <motion.div
           className="relative w-full max-w-[380px] aspect-[3/4] rounded-[1rem] cursor-pointer overflow-hidden"
           onClick={toggleUnit}
           role="button"
@@ -332,8 +332,15 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           onKeyDown={e => e.key === 'Enter' && toggleUnit()}
           style={{
             border: '2px solid hsl(var(--primary) / 0.4)',
-            boxShadow: '0 0 20px 4px hsl(var(--primary) / 0.15), 0 0 60px 12px hsl(var(--primary) / 0.06), inset 0 0 30px 5px hsl(var(--primary) / 0.05)',
           }}
+          animate={{
+            boxShadow: [
+              '0 0 20px 4px hsl(var(--primary) / 0.15), 0 0 60px 12px hsl(var(--primary) / 0.06), inset 0 0 30px 5px hsl(var(--primary) / 0.05)',
+              '0 0 30px 8px hsl(var(--primary) / 0.3), 0 0 80px 20px hsl(var(--primary) / 0.12), inset 0 0 40px 8px hsl(var(--primary) / 0.1)',
+              '0 0 20px 4px hsl(var(--primary) / 0.15), 0 0 60px 12px hsl(var(--primary) / 0.06), inset 0 0 30px 5px hsl(var(--primary) / 0.05)',
+            ],
+          }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
         >
           <span className="sr-only">
             {`Body measurements diagram: ${[
@@ -592,7 +599,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               boxShadow: 'inset 0 0 12px 3px hsl(var(--primary) / 0.35), 0 0 16px 4px hsl(var(--primary) / 0.3), 0 0 40px 10px hsl(var(--primary) / 0.1)',
             }}
           />
-        </div>
+        </motion.div>
       </div>
     </div>
   );
