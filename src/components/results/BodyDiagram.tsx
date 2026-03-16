@@ -249,12 +249,12 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
             <img
-              src={scanResultsFull}
-              alt="Body measurement scan results"
-              className="w-full max-w-[380px] object-cover"
+              src={bodySilhouette}
+              alt="Body measurement scan"
+              className="w-full max-w-[380px] object-contain"
               onLoad={() => setImageLoaded(true)}
               style={{
-                filter: 'brightness(0.85) contrast(1.1)',
+                filter: 'sepia(0.4) saturate(1.5) brightness(0.75) contrast(1.15)',
               }}
             />
             {/* Dark vignette overlay */}
