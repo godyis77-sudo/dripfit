@@ -229,7 +229,9 @@ export function useTryOnState() {
       const { error } = await supabase.from('tryon_posts').insert({ user_id: user!.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false, product_urls: getAllUrls() });
       if (error) throw error;
       setAutoSaved(true);
-      persistState({ autoSaved: true });
+      // Persist the uploaded URL (small string) so result survives navigation
+      setResultImage(resultUrl);
+      persistState({ autoSaved: true, resultImage: resultUrl });
       trackEvent('tryon_saved');
       toast({ title: 'Saved to Profile', description: 'Your Try-On is saved privately.' });
     } catch (err: unknown) { console.error('Auto-save failed:', err); }
