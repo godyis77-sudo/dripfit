@@ -346,10 +346,10 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {/* Effect: Power-on flash */}
           <motion.div
             className="absolute inset-0 z-[9] pointer-events-none"
-            style={{ background: 'radial-gradient(ellipse at 50% 45%, hsl(var(--primary) / 0.4), transparent 70%)' }}
-            initial={{ opacity: 0.6 }}
+            style={{ background: 'radial-gradient(ellipse at 50% 45%, hsl(var(--primary) / 0.7), hsl(var(--primary) / 0.2) 50%, transparent 80%)' }}
+            initial={{ opacity: 1 }}
             animate={{ opacity: 0 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
           />
 
           {/* BG: Deep space gradient with ambient hue shift */}
