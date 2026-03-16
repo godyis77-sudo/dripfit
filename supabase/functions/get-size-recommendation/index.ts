@@ -10,6 +10,7 @@ interface SizeEntry {
   inseam_min?: number; inseam_max?: number;
   shoulder_min?: number; shoulder_max?: number;
   sleeve_min?: number; sleeve_max?: number;
+  height_min?: number; height_max?: number;
   shoe_length_min?: number; shoe_length_max?: number;
 }
 
