@@ -28,6 +28,7 @@ import PostScanGuide from '@/components/results/PostScanGuide';
 import ProfilePhotoPrompt from '@/components/results/ProfilePhotoPrompt';
 import ShareResultsButton from '@/components/results/ShareResultsButton';
 import { SizeMatchCard, SizeMatchCardSkeleton } from '@/components/results/SizeMatchCard';
+import SizeDiagnostic from '@/components/results/SizeDiagnostic';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 const SIZE_LADDER = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL'];
