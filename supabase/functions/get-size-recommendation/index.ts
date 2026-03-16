@@ -235,10 +235,11 @@ Deno.serve(async (req) => {
     const shiftedIdx = Math.max(0, Math.min(sizeLabelsInOrder.length - 1, bestRawIdx + shift));
     const shiftedLabel = sizeLabelsInOrder[shiftedIdx];
 
-    // Find the shifted size's score info
+    // Find the shifted size's score info for breakdown, but use raw best's score for confidence
     const shiftedScored = scored.find(s => s.label === shiftedLabel) || scored[0];
-    const best = shiftedScored;
     const rawBest = scored[0];
+    // Use shifted label but raw best's confidence score (the measurement match quality doesn't change)
+    const best = { ...shiftedScored, score: rawBest.score };
 
     // Second option: the raw best if we shifted, otherwise next-best
     let secondOption: string | null = null;
