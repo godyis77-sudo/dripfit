@@ -328,34 +328,40 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             className="absolute inset-0 flex items-center justify-center"
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
-            {/* Hidden img for onLoad trigger */}
-            <img src={bodySilhouetteMask} alt="" className="hidden" onLoad={() => setImageLoaded(true)} />
-
             <div className="relative h-[88%] w-[55%] max-w-[220px]">
-              {/* Primary gold fill */}
-              <div className="absolute inset-0" style={{
-                ...maskStyle,
-                backgroundImage: 'linear-gradient(175deg, hsl(var(--primary) / 0.95) 0%, hsl(var(--primary) / 0.7) 35%, hsl(var(--primary) / 0.55) 60%, hsl(var(--primary) / 0.85) 100%)',
-                filter: 'drop-shadow(0 0 16px hsl(var(--primary) / 0.5)) drop-shadow(0 0 40px hsl(var(--primary) / 0.2))',
-              }} />
-
-              {/* Shimmer sweep */}
-              <motion.div
-                className="absolute inset-0"
+              {/* Glow silhouette layer */}
+              <img
+                src={bodySilhouetteMask}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-contain opacity-65"
                 style={{
-                  ...maskStyle,
-                  backgroundImage: 'linear-gradient(180deg, transparent 20%, hsl(var(--gold-shimmer) / 0.5) 50%, transparent 80%)',
-                  backgroundSize: '100% 250%',
+                  filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(749%) hue-rotate(355deg) brightness(95%) contrast(93%) blur(1.4px) drop-shadow(0 0 20px hsl(var(--primary) / 0.55)) drop-shadow(0 0 46px hsl(var(--primary) / 0.22))',
                 }}
-                animate={{ backgroundPosition: ['50% -30%', '50% 130%'] }}
-                transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', repeatDelay: 2 }}
               />
 
-              {/* Edge highlight */}
-              <div className="absolute inset-0" style={{
-                ...maskStyle,
-                backgroundImage: 'linear-gradient(90deg, hsl(var(--primary) / 0.3) 0%, transparent 15%, transparent 85%, hsl(var(--primary) / 0.3) 100%)',
-              }} />
+              {/* Main silhouette layer */}
+              <img
+                src={bodySilhouetteMask}
+                alt="Body measurement scan"
+                className="relative z-[2] h-full w-full object-contain"
+                onLoad={() => setImageLoaded(true)}
+                style={{
+                  filter: 'brightness(0) saturate(100%) invert(77%) sepia(45%) saturate(749%) hue-rotate(355deg) brightness(95%) contrast(93%) drop-shadow(0 0 10px hsl(var(--primary) / 0.55))',
+                }}
+              />
+
+              {/* Moving highlight pass */}
+              <motion.div
+                className="absolute inset-0 z-[3] pointer-events-none"
+                style={{
+                  backgroundImage: 'linear-gradient(180deg, transparent 10%, hsl(var(--gold-shimmer) / 0.24) 48%, transparent 85%)',
+                  backgroundSize: '100% 220%',
+                  mixBlendMode: 'screen',
+                }}
+                animate={{ backgroundPosition: ['50% -20%', '50% 120%'] }}
+                transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut', repeatDelay: 1.4 }}
+              />
             </div>
           </motion.div>
 
