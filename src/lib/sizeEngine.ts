@@ -106,7 +106,7 @@ export function getUserMid(user: UserMeasurements, key: string): number | null {
 /**
  * Resolves chart min/max for a given measurement key from a SizeChartRow.
  */
-function getChartRange(row: SizeChartRow, key: string): [number, number] | null {
+export function getChartRange(row: SizeChartRow, key: string): [number, number] | null {
   const pairs: Record<string, [number | null | undefined, number | null | undefined]> = {
     chest: [row.chest_min ?? row.bust_min, row.chest_max ?? row.bust_max],
     waist: [row.waist_min, row.waist_max],
