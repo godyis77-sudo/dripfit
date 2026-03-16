@@ -39,6 +39,8 @@ const createProcessedSilhouette = (imageSrc: string): Promise<string> =>
       let maxX = -1;
       let maxY = -1;
 
+      const alphaMap = new Uint8ClampedArray(working.width * working.height);
+
       for (let i = 0; i < px.length; i += 4) {
         const r = px[i];
         const g = px[i + 1];
@@ -49,18 +51,57 @@ const createProcessedSilhouette = (imageSrc: string): Promise<string> =>
 
         const chroma = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(r - b));
         const brightness = (r + g + b) / 3;
-        const neutralTone = chroma < 26;
+        const neutralTone = chroma < 38;
 
-        if (neutralTone && brightness > 74) {
+        if (neutralTone && brightness > 68) {
           px[i + 3] = 0;
           continue;
         }
 
-        if (neutralTone && brightness > 36) {
-          const fade = Math.max(0, Math.min(1, (74 - brightness) / 38));
-          px[i + 3] = Math.round(currentAlpha * fade * 0.35);
+        if (neutralTone && brightness > 34) {
+          const fade = Math.max(0, Math.min(1, (68 - brightness) / 34));
+          px[i + 3] = Math.round(currentAlpha * fade * 0.28);
         }
 
+        alphaMap[i / 4] = px[i + 3];
+      }
+
+      // Edge cleanup: remove isolated neutral speckles and soften jagged fringe.
+      for (let y = 1; y < working.height - 1; y++) {
+        for (let x = 1; x < working.width - 1; x++) {
+          const p = y * working.width + x;
+          const i = p * 4;
+          const a = px[i + 3];
+          if (a === 0) continue;
+
+          const r = px[i];
+          const g = px[i + 1];
+          const b = px[i + 2];
+          const chroma = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(r - b));
+          const brightness = (r + g + b) / 3;
+          const neutralTone = chroma < 42;
+
+          let neighbors = 0;
+          for (let oy = -1; oy <= 1; oy++) {
+            for (let ox = -1; ox <= 1; ox++) {
+              if (ox === 0 && oy === 0) continue;
+              const n = (y + oy) * working.width + (x + ox);
+              if (alphaMap[n] > 20) neighbors++;
+            }
+          }
+
+          if (neutralTone && brightness > 48 && neighbors <= 2) {
+            px[i + 3] = 0;
+            continue;
+          }
+
+          if (neutralTone && neighbors <= 3 && a < 140) {
+            px[i + 3] = Math.round(a * 0.45);
+          }
+        }
+      }
+
+      for (let i = 0; i < px.length; i += 4) {
         if (px[i + 3] > 8) {
           const pixelIndex = i / 4;
           const x = pixelIndex % working.width;
@@ -112,6 +153,7 @@ interface MeasurementOverlay {
   label: string;
   side: 'left' | 'right';
   valTop: string;
+  lineTop?: string;
   delay: number;
   dotTop: string;
   dotLeft: string;
@@ -121,7 +163,7 @@ const OVERLAYS: MeasurementOverlay[] = [
   { key: 'height',   label: 'HEIGHT',   side: 'left',  valTop: '5%',  delay: 0,    dotTop: '5%',  dotLeft: '15%' },
   { key: 'shoulder', label: 'SHOULDER', side: 'right', valTop: '17%', delay: 0.12, dotTop: '20%', dotLeft: '64%' },
   { key: 'chest',    label: 'CHEST',    side: 'left',  valTop: '25%', delay: 0.22, dotTop: '28%', dotLeft: '40%' },
-  { key: 'bust',     label: 'BUST',     side: 'right', valTop: '28%', delay: 0.30, dotTop: '30%', dotLeft: '58%' },
+  { key: 'bust',     label: 'BUST',     side: 'right', valTop: '28%', lineTop: '34%', delay: 0.30, dotTop: '34%', dotLeft: '56%' },
   { key: 'sleeve',   label: 'SLEEVE',   side: 'left',  valTop: '35%', delay: 0.38, dotTop: '36%', dotLeft: '32%' },
   { key: 'waist',    label: 'WAIST',    side: 'right', valTop: '39%', delay: 0.46, dotTop: '42%', dotLeft: '58%' },
   { key: 'hips',     label: 'HIPS',     side: 'right', valTop: '50%', delay: 0.54, dotTop: '50%', dotLeft: '60%' },
@@ -486,7 +528,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               {activeOverlays.map(o => {
                 const dx = parseFloat(o.dotLeft), dy = parseFloat(o.dotTop);
                 const lx = o.side === 'left' ? 2 : 98;
-                const ly = parseFloat(o.valTop) + 2;
+                const ly = parseFloat(o.lineTop ?? `${parseFloat(o.valTop) + 2}%`);
                 return (
                   <motion.path
                     key={`l-${o.key}`}
