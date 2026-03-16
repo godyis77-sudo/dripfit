@@ -274,21 +274,34 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             ].join(', ')}.`}
           </span>
 
-          {/* Layer 0: HUD Background — fills the 3:4 card */}
-          <img
-            src={hudScanBg}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover opacity-70"
-            aria-hidden="true"
-          />
-          {/* Subtle dark wash — just enough to keep labels readable */}
-          <div className="absolute inset-0 bg-background/30" />
+          {/* Layer 0: Dark sci-fi background */}
+          <div className="absolute inset-0" style={{
+            background: 'linear-gradient(180deg, hsl(220 20% 4%) 0%, hsl(220 15% 8%) 40%, hsl(220 20% 5%) 100%)',
+          }} />
 
-          {/* Layer 1: Body silhouette — bright gold tint, strong glow */}
+          {/* Layer 0b: Subtle grid overlay */}
+          <div className="absolute inset-0 opacity-[0.06]" style={{
+            backgroundImage: `linear-gradient(hsl(var(--primary) / 0.5) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.5) 1px, transparent 1px)`,
+            backgroundSize: '20px 20px',
+          }} />
+
+          {/* Layer 0c: Radial vignette */}
+          <div className="absolute inset-0" style={{
+            background: 'radial-gradient(ellipse 70% 60% at 50% 45%, transparent 30%, hsl(220 20% 3% / 0.7) 100%)',
+          }} />
+
+          {/* Layer 1: Body silhouette — masked & glowing */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center"
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
+            {/* Ambient body glow */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="h-[75%] w-[40%] rounded-full" style={{
+                background: 'radial-gradient(ellipse at center, hsl(var(--primary) / 0.2) 0%, hsl(var(--primary) / 0.06) 50%, transparent 75%)',
+                filter: 'blur(20px)',
+              }} />
+            </div>
             <div className="relative h-[88%] w-auto">
               <img
                 src={bodySilhouette}
@@ -296,7 +309,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 className="h-full w-auto object-contain"
                 onLoad={() => setImageLoaded(true)}
                 style={{
-                  filter: 'sepia(0.35) saturate(1.6) brightness(1.5) contrast(1.05) drop-shadow(0 0 18px hsl(var(--primary) / 0.55)) drop-shadow(0 0 36px hsl(var(--primary) / 0.28))',
+                  filter: 'sepia(0.3) saturate(2) brightness(1.4) contrast(1.1) drop-shadow(0 0 20px hsl(var(--primary) / 0.6)) drop-shadow(0 0 50px hsl(var(--primary) / 0.3))',
                   WebkitMaskImage: `url(${bodySilhouetteMask})`,
                   maskImage: `url(${bodySilhouetteMask})`,
                   WebkitMaskRepeat: 'no-repeat',
@@ -307,11 +320,11 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   maskSize: 'contain',
                 }}
               />
+              {/* Gold tint overlay */}
               <div
                 className="absolute inset-0 pointer-events-none"
                 style={{
-                  backgroundColor: 'hsl(var(--primary) / 0.18)',
-                  filter: 'blur(0.7px)',
+                  backgroundImage: 'linear-gradient(180deg, hsl(var(--primary) / 0.25) 0%, hsl(var(--primary) / 0.12) 50%, hsl(var(--primary) / 0.2) 100%)',
                   WebkitMaskImage: `url(${bodySilhouetteMask})`,
                   maskImage: `url(${bodySilhouetteMask})`,
                   WebkitMaskRepeat: 'no-repeat',
