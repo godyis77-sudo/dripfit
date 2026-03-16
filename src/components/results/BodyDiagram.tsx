@@ -487,10 +487,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             className="absolute inset-0 flex items-center justify-center"
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
-            <div className="relative h-[92%] w-[58%] max-w-[245px]" style={{
-                WebkitMaskImage: 'radial-gradient(ellipse 90% 92% at 50% 48%, black 50%, rgba(0,0,0,0.6) 70%, rgba(0,0,0,0.15) 88%, transparent 100%)',
-                maskImage: 'radial-gradient(ellipse 90% 92% at 50% 48%, black 50%, rgba(0,0,0,0.6) 70%, rgba(0,0,0,0.15) 88%, transparent 100%)',
-              }}>
+            <div className="relative h-[92%] w-[58%] max-w-[245px]">
               {/* Layer 1: Wide atmospheric glow — 4× intensified */}
               <img
                 src={silhouetteSrc}
