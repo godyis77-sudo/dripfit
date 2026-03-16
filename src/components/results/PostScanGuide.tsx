@@ -43,20 +43,10 @@ const STEPS: { key: string; featureIcon: FeatureIconName; title: string; desc: s
   },
 ];
 
-const LUXURY_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
-
-const staggerItem = {
-  hidden: { opacity: 0, y: 12 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.1, duration: 0.4, ease: LUXURY_EASE },
-  }),
-};
-
 const PostScanGuide = ({ result, recommendedSize, onDismiss }: PostScanGuideProps) => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
+
   const current = STEPS[step];
 
   const handleAction = () => {
@@ -69,8 +59,11 @@ const PostScanGuide = ({ result, recommendedSize, onDismiss }: PostScanGuideProp
   };
 
   const handleSkip = () => {
-    if (step < STEPS.length - 1) setStep(step + 1);
-    else onDismiss();
+    if (step < STEPS.length - 1) {
+      setStep(step + 1);
+    } else {
+      onDismiss();
+    }
   };
 
   return (
@@ -78,36 +71,37 @@ const PostScanGuide = ({ result, recommendedSize, onDismiss }: PostScanGuideProp
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
-      className="rounded-xl p-4 mt-4 relative overflow-hidden"
-      style={{
-        background: 'hsl(0 0% 0% / 0.6)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)',
-        border: '0.5px solid hsl(45 88% 50% / 0.3)',
-        boxShadow: '0 0 20px 2px hsl(45 88% 50% / 0.06), inset 0 1px 0 0 hsl(0 0% 100% / 0.04)',
-      }}
+      className="bg-card border border-primary/20 rounded-xl p-4 mt-4 relative overflow-hidden"
     >
       {/* Background shimmer */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 right-0 h-[100px] w-[100px] rounded-full bg-primary/5 blur-[60px]" />
       </div>
 
-      {/* Close */}
-      <button onClick={onDismiss} className="absolute top-2.5 right-2.5 text-muted-foreground hover:text-foreground transition-colors p-1 z-10">
+      {/* Close button */}
+      <button
+        onClick={onDismiss}
+        className="absolute top-2.5 right-2.5 text-muted-foreground hover:text-foreground transition-colors p-1"
+      >
         <X className="h-3.5 w-3.5" />
       </button>
 
       {/* Progress dots */}
-      <motion.div className="flex gap-1 mb-3" variants={staggerItem} custom={0} initial="hidden" animate="visible">
+      <div className="flex gap-1 mb-3">
         {STEPS.map((_, i) => (
-          <div key={i} className={`h-1 rounded-full flex-1 transition-colors duration-300 ${i <= step ? 'gradient-drip' : 'bg-border'}`} />
+          <div
+            key={i}
+            className={`h-1 rounded-full flex-1 transition-colors duration-300 ${
+              i <= step ? 'gradient-drip' : 'bg-border'
+            }`}
+          />
         ))}
-      </motion.div>
+      </div>
 
       {/* Header */}
-      <motion.p variants={staggerItem} custom={0} initial="hidden" animate="visible" className="text-[10px] text-primary font-bold uppercase tracking-wider mb-1">
+      <p className="text-[10px] text-primary font-bold uppercase tracking-wider mb-1">
         What's next? · {step + 1} of {STEPS.length}
-      </motion.p>
+      </p>
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -117,40 +111,37 @@ const PostScanGuide = ({ result, recommendedSize, onDismiss }: PostScanGuideProp
           exit={{ opacity: 0, x: -16 }}
           transition={{ duration: 0.2 }}
         >
-          {/* Icon + text staggered */}
-          <motion.div className="flex items-start gap-3 mb-3" variants={staggerItem} custom={1} initial="hidden" animate="visible">
-            <FeatureIcon name={current.featureIcon} size={40} />
+           <div className="flex items-start gap-3 mb-3">
+              <FeatureIcon name={current.featureIcon} size={40} />
             <div className="flex-1">
               <h3 className="font-display text-[16px] font-bold text-foreground">{current.title}</h3>
               <p className="text-[12px] text-muted-foreground leading-snug mt-0.5">{current.desc}</p>
             </div>
-          </motion.div>
+          </div>
 
           {/* Size badge */}
-          <motion.div variants={staggerItem} custom={2} initial="hidden" animate="visible"
-            className="flex items-center gap-2 rounded-lg px-3 py-2 mb-3"
-            style={{ background: 'hsl(45 88% 50% / 0.06)', border: '0.5px solid hsl(45 88% 50% / 0.15)' }}
-          >
+          <div className="flex items-center gap-2 bg-primary/5 border border-primary/10 rounded-lg px-3 py-2 mb-3">
             <span className="text-[10px] text-muted-foreground">Your size:</span>
             <span className="text-[13px] font-bold gradient-drip-text">{recommendedSize}</span>
             <span className="text-[10px] text-muted-foreground ml-auto">Ready to use</span>
-          </motion.div>
+          </div>
 
-          {/* Buttons staggered */}
-          <motion.div className="flex gap-2" variants={staggerItem} custom={3} initial="hidden" animate="visible">
-            <motion.div className="flex-1" whileTap={{ scale: 0.98 }}>
-              <Button
-                onClick={handleAction}
-                className="w-full h-10 rounded-xl btn-luxury text-primary-foreground font-display font-bold text-[12px] uppercase tracking-wider"
-              >
-                {current.cta}
-                <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
-              </Button>
-            </motion.div>
-            <Button variant="ghost" onClick={handleSkip} className="h-10 px-3 text-[11px] text-muted-foreground font-semibold">
+          <div className="flex gap-2">
+            <Button
+              onClick={handleAction}
+              className="flex-1 h-10 rounded-xl btn-luxury text-primary-foreground font-display font-bold text-[12px] uppercase tracking-wider active:scale-[0.97] transition-transform"
+            >
+              {current.cta}
+              <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={handleSkip}
+              className="h-10 px-3 text-[11px] text-muted-foreground font-semibold"
+            >
               {step < STEPS.length - 1 ? 'Next' : 'Done'}
             </Button>
-          </motion.div>
+          </div>
         </motion.div>
       </AnimatePresence>
     </motion.div>
