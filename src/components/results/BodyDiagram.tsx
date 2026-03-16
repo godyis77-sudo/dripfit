@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { MeasurementRange } from '@/lib/types';
-import bodySilhouette from '@/assets/body-silhouette-clean.webp';
+import bodySilhouette from '@/assets/body-silhouette-glow-cutout.webp';
 import hudScanBg from '@/assets/hud-scan-bg.jpg';
 import { getUseCm, setUseCm } from '@/lib/session';
 
@@ -296,7 +296,6 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               onLoad={() => setImageLoaded(true)}
               style={{
                 filter: 'sepia(0.35) saturate(1.6) brightness(1.6) contrast(1.05)',
-                mixBlendMode: 'multiply',
               }}
             />
           </motion.div>
