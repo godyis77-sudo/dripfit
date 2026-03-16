@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Sparkles, Loader2, ShoppingCart, SlidersHorizontal } from 'lucide-react';
+import { ArrowLeft, ArrowUp, Sparkles, Loader2, ShoppingCart, SlidersHorizontal } from 'lucide-react';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
