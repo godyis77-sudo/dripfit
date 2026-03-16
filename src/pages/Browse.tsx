@@ -85,14 +85,17 @@ const Browse = () => {
 
   useEffect(() => {
     const onScroll = () => {
-      const scrollY = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop;
+      const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
       setShowScrollTop(scrollY > 300);
     };
+    // fire on multiple targets to cover iframe quirks
     window.addEventListener('scroll', onScroll, { passive: true });
-    document.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('scroll', onScroll, { passive: true, capture: true });
+    // also poll once on mount in case already scrolled
+    onScroll();
     return () => {
       window.removeEventListener('scroll', onScroll);
-      document.removeEventListener('scroll', onScroll);
+      document.removeEventListener('scroll', onScroll, { capture: true } as any);
     };
   }, []);
 
@@ -605,17 +608,21 @@ const Browse = () => {
       />
 
       {/* Scroll-to-top button — portaled to body */}
-      {showScrollTop && createPortal(
-        <motion.button
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed right-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-[100] h-10 w-10 rounded-full btn-luxury text-primary-foreground flex items-center justify-center shadow-lg active:scale-90 transition-transform"
-          aria-label="Scroll to top"
-        >
-          <ArrowUp className="h-4 w-4" />
-        </motion.button>,
+      {createPortal(
+        showScrollTop ? (
+          <motion.button
+            key="scroll-top"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="fixed z-[9999] h-11 w-11 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-xl active:scale-90 transition-transform"
+            style={{ right: 16, bottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))' }}
+            aria-label="Scroll to top"
+          >
+            <ArrowUp className="h-5 w-5" />
+          </motion.button>
+        ) : null,
         document.body
       )}
 
