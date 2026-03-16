@@ -296,6 +296,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               onLoad={() => setImageLoaded(true)}
               style={{
                 filter: 'sepia(0.35) saturate(1.6) brightness(1.6) contrast(1.05)',
+                mixBlendMode: 'multiply',
               }}
             />
           </motion.div>
