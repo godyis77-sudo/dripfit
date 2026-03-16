@@ -1,3 +1,4 @@
+import type { FitPreference } from './types';
 // Guest session management
 const SESSION_KEY = 'dripcheck_session_id';
 
