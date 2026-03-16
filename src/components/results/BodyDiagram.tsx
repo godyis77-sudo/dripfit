@@ -343,10 +343,22 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             ].join(', ')}.`}
           </span>
 
-          {/* BG: Deep space gradient */}
-          <div className="absolute inset-0" style={{
-            background: 'radial-gradient(ellipse 80% 70% at 50% 42%, hsl(220 18% 7%) 0%, hsl(220 20% 3%) 100%)',
-          }} />
+          {/* Effect: Power-on flash */}
+          <motion.div
+            className="absolute inset-0 z-[9] pointer-events-none"
+            style={{ background: 'radial-gradient(ellipse at 50% 45%, hsl(var(--primary) / 0.4), transparent 70%)' }}
+            initial={{ opacity: 0.6 }}
+            animate={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          />
+
+          {/* BG: Deep space gradient with ambient hue shift */}
+          <motion.div
+            className="absolute inset-0"
+            style={{ background: 'radial-gradient(ellipse 80% 70% at 50% 42%, hsl(220 18% 7%) 0%, hsl(220 20% 3%) 100%)' }}
+            animate={{ filter: ['hue-rotate(0deg)', 'hue-rotate(5deg)', 'hue-rotate(-5deg)', 'hue-rotate(0deg)'] }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+          />
 
           {/* BG: Hex grid */}
           <HexGrid />
@@ -405,8 +417,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 }}
               />
 
-              {/* Layer 3: Tight edge glow — 4× intensified */}
-              <img
+              {/* Layer 3: Tight edge glow — pulsing outline */}
+              <motion.img
                 src={silhouetteSrc}
                 alt=""
                 aria-hidden="true"
@@ -414,6 +426,14 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 style={{
                   filter: 'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
                 }}
+                animate={{
+                  filter: [
+                    'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
+                    'blur(3px) brightness(6) saturate(2.5) drop-shadow(0 0 20px hsl(var(--primary) / 1)) drop-shadow(0 0 40px hsl(var(--primary) / 0.9))',
+                    'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
+                  ],
+                }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
               />
 
               {/* Layer 4: Main silhouette — crisp, boosted */}
@@ -477,23 +497,47 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             </svg>
           )}
 
-          {/* Data: Hotspot dots */}
-          {imageLoaded && activeOverlays.map(o => (
-            <motion.div
-              key={`d-${o.key}`}
-              className="absolute z-[5]"
-              style={{ top: o.dotTop, left: o.dotLeft, transform: 'translate(-50%, -50%)' }}
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: o.delay + 0.4, duration: 0.4, ease: LUXURY_EASE }}
-            >
-              <span className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/20 animate-[sonar-ping_3s_ease-out_infinite]" />
-              <span className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/10 animate-[sonar-ping_3s_ease-out_infinite]" style={{ animationDelay: '1.2s' }} />
-              <span className="block w-[5px] h-[5px] rounded-full bg-primary" style={{
-                boxShadow: '0 0 4px 2px hsl(var(--primary) / 0.7), 0 0 12px 4px hsl(var(--primary) / 0.25)',
-              }} />
-            </motion.div>
-          ))}
+          {/* Data: Hotspot dots with scanline-triggered pulse */}
+          {imageLoaded && activeOverlays.map(o => {
+            // Scanline passes top→bottom in 4.5s cycle; calculate when it hits this dot
+            const dotY = parseFloat(o.dotTop) / 100;
+            const pulseDelay = dotY * 4.5; // sync with scanline duration
+            return (
+              <motion.div
+                key={`d-${o.key}`}
+                className="absolute z-[5]"
+                style={{ top: o.dotTop, left: o.dotLeft, transform: 'translate(-50%, -50%)' }}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: o.delay + 0.4, duration: 0.4, ease: LUXURY_EASE }}
+              >
+                <span className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/20 animate-[sonar-ping_3s_ease-out_infinite]" />
+                <span className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/10 animate-[sonar-ping_3s_ease-out_infinite]" style={{ animationDelay: '1.2s' }} />
+                {/* Core dot with scanline-synced flash */}
+                <motion.span
+                  className="block w-[5px] h-[5px] rounded-full bg-primary"
+                  style={{
+                    boxShadow: '0 0 4px 2px hsl(var(--primary) / 0.7), 0 0 12px 4px hsl(var(--primary) / 0.25)',
+                  }}
+                  animate={{
+                    boxShadow: [
+                      '0 0 4px 2px hsl(var(--primary) / 0.7), 0 0 12px 4px hsl(var(--primary) / 0.25)',
+                      '0 0 10px 4px hsl(var(--primary) / 1), 0 0 24px 8px hsl(var(--primary) / 0.6)',
+                      '0 0 4px 2px hsl(var(--primary) / 0.7), 0 0 12px 4px hsl(var(--primary) / 0.25)',
+                    ],
+                    scale: [1, 1.6, 1],
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    delay: pulseDelay,
+                    repeat: Infinity,
+                    repeatDelay: 4.5 - 0.6 + (2 * 4.5), // re-sync with scanline full cycle
+                    ease: 'easeOut',
+                  }}
+                />
+              </motion.div>
+            );
+          })}
 
           {/* Data: Glassmorphic labels */}
           {imageLoaded && activeOverlays.map(o => {
