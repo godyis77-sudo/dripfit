@@ -307,8 +307,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                     key={`line-${overlay.key}`}
                     d={`M ${dotX} ${dotY} L ${labelX} ${labelY}`}
                     stroke="url(#line-grad)"
-                    strokeWidth="0.2"
-                    strokeDasharray="1 0.8"
+                    strokeWidth="0.35"
+                    strokeDasharray="1.5 0.6"
                     fill="none"
                     initial={{ pathLength: 0, opacity: 0 }}
                     animate={{ pathLength: 1, opacity: 1 }}
