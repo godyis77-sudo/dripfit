@@ -82,17 +82,32 @@ const Browse = () => {
   const { pendingClickout, beginClickout, confirmClickout, cancelClickout } =
     useAffiliateClickout({ extraProps: { source: 'browse', category } });
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const lastScrollContainerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    const onScroll = () => {
-      const scrollY = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop;
-      setShowScrollTop(scrollY > 300);
+    const onScroll = (event?: Event) => {
+      const baseScroll = Math.max(
+        window.scrollY,
+        document.documentElement.scrollTop,
+        document.body.scrollTop
+      );
+
+      let containerScroll = 0;
+      if (event?.target instanceof HTMLElement && event.target.scrollHeight > event.target.clientHeight) {
+        containerScroll = event.target.scrollTop;
+        if (event.target !== document.body && event.target !== document.documentElement) {
+          lastScrollContainerRef.current = event.target;
+        }
+      }
+
+      setShowScrollTop(Math.max(baseScroll, containerScroll) > 300);
     };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    document.addEventListener('scroll', onScroll, { passive: true });
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true, capture: true });
+
     return () => {
-      window.removeEventListener('scroll', onScroll);
-      document.removeEventListener('scroll', onScroll);
+      window.removeEventListener('scroll', onScroll, true);
     };
   }, []);
 
