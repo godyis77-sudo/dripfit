@@ -573,8 +573,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   <motion.path
                     key={`l-${o.key}`}
                     d={`M${dx} ${dy} L${lx} ${ly}`}
-                    stroke="hsl(var(--primary) / 0.45)"
-                    strokeWidth="0.3"
+                    stroke="hsl(var(--primary) / 0.7)"
+                    strokeWidth="0.45"
                     strokeDasharray="1.5 0.6"
                     initial={{ pathLength: 0, opacity: 0 }}
                     animate={{ pathLength: 1, opacity: 1 }}
