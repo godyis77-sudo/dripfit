@@ -654,13 +654,13 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                     boxShadow: '0 2px 12px hsl(var(--primary) / 0.08), inset 0 1px 0 hsl(var(--primary) / 0.08)',
                   }}
                 >
-                  <p className="text-[6.5px] font-mono font-bold uppercase tracking-[0.16em] text-primary leading-none mb-[2px]">
+                  <p className="text-[8px] font-mono font-bold uppercase tracking-[0.18em] text-primary leading-none mb-[3px]" style={{ textShadow: '0 0 6px hsl(var(--primary) / 0.5)' }}>
                     {o.label}
                   </p>
-                  <p className="text-[11px] font-black leading-tight text-foreground hud-data-glow">
+                  <p className="text-[12px] font-black leading-tight text-foreground hud-data-glow">
                     <ScrambleValue value={val.line1} scrambling={scrambling} />
                   </p>
-                  <p className="text-[8px] font-medium leading-tight text-muted-foreground">
+                  <p className="text-[9px] font-semibold leading-tight text-muted-foreground">
                     <ScrambleValue value={val.line2} scrambling={scrambling} />
                   </p>
                 </div>
