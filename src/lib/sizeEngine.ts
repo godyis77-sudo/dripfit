@@ -107,13 +107,16 @@ function getUserMid(user: UserMeasurements, key: string): number | null {
  * Resolves chart min/max for a given measurement key from a SizeChartRow.
  */
 function getChartRange(row: SizeChartRow, key: string): [number, number] | null {
-  const pairs: Record<string, [number | null, number | null]> = {
+  const pairs: Record<string, [number | null | undefined, number | null | undefined]> = {
     chest: [row.chest_min ?? row.bust_min, row.chest_max ?? row.bust_max],
     waist: [row.waist_min, row.waist_max],
     hip: [row.hip_min, row.hip_max],
     hips: [row.hip_min, row.hip_max],
     shoulder: [row.shoulder_min, row.shoulder_max],
     inseam: [row.inseam_min, row.inseam_max],
+    sleeve: [row.sleeve_min, row.sleeve_max],
+    height: [row.height_min, row.height_max],
+    shoe_length: [row.shoe_min, row.shoe_max],
   };
   const pair = pairs[key];
   if (!pair || pair[0] == null || pair[1] == null) return null;
