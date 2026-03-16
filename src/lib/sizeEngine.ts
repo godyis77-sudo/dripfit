@@ -80,6 +80,9 @@ function scoreMeasurement(userVal: number, chartMin: number, chartMax: number): 
  * Resolves user measurement midpoint for a given key from UserMeasurements.
  */
 function getUserMid(user: UserMeasurements, key: string): number | null {
+  if (key === 'height') {
+    return user.heightCm ?? null;
+  }
   const map: Record<string, MeasurementRange | undefined> = {
     chest: user.chest,
     waist: user.waist,
