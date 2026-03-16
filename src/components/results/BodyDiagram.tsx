@@ -325,6 +325,19 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
   const [parallaxY, setParallaxY] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
+    setImageLoaded(false);
+
+    createProcessedSilhouette(bodySilhouette).then((processed) => {
+      if (!cancelled) setSilhouetteSrc(processed);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const handleScroll = () => {
