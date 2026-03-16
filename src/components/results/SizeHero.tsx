@@ -82,7 +82,7 @@ const SizeHero = ({ retailer, category, recommendedSize, confidence, whyLine, fi
             <motion.div
               className="w-24 h-24 rounded-full badge-gold-3d shimmer-sweep flex items-center justify-center mb-2.5"
               animate={locked ? { scale: [1, 1.08, 1], filter: ['brightness(1)', 'brightness(1.4)', 'brightness(1)'] } : {}}
-              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
             >
               <span
                 className={`text-4xl font-bold text-primary-foreground transition-all duration-200 ${!locked ? 'opacity-70 blur-[0.5px]' : 'opacity-100'}`}
