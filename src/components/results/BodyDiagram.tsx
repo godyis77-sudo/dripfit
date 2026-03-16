@@ -444,7 +444,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                     'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
                   ],
                 }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
 
               {/* Layer 4: Main silhouette — crisp, boosted */}
