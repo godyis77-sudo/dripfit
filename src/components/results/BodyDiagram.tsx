@@ -89,7 +89,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               style={{
                 opacity: imageLoaded ? 1 : 0,
                 transition: 'opacity 0.5s ease-out',
-                filter: 'brightness(0.4) sepia(1) saturate(1.5) hue-rotate(5deg)',
+                filter: 'brightness(0.35) sepia(1) saturate(1.8) hue-rotate(5deg)',
               }}
             />
 
