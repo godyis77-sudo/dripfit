@@ -153,6 +153,7 @@ Deno.serve(async (req) => {
     if (inseam != null) userMeasurements.inseam = inseam;
     if (shoulder != null) userMeasurements.shoulder = shoulder;
     if (sleeve != null) userMeasurements.sleeve = sleeve;
+    if (scan.height_cm != null) userMeasurements.height = scan.height_cm;
 
     // STEP 3 — Fetch size chart
     const { data: chart } = await supabase
