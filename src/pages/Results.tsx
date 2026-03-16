@@ -385,7 +385,16 @@ const Results = () => {
         <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
         <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} fitPreference={fitPref} />
 
-        {/* Primary CTA above fold */}
+        {/* Measurement diagnostic breakdown */}
+        {sizeRec?.measurement_breakdown && sizeRec.measurement_breakdown.length > 0 && (
+          <SizeDiagnostic
+            breakdown={sizeRec.measurement_breakdown}
+            recommendedSize={sizeRec.recommended_size}
+            brandName={cachedState?.retailer}
+            confidence={sizeRec.confidence}
+          />
+        )}
+
         <ShopThisSize
           recommendedSize={adjustedSize}
           confidence={confidence}
