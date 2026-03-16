@@ -151,8 +151,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                     className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1 whitespace-nowrap"
                     style={
                       isLeft
-                        ? { right: '100%', marginRight: 5, flexDirection: 'row-reverse' }
-                        : { left: '100%', marginLeft: 5 }
+                        ? { right: '100%', marginRight: 8, flexDirection: 'row-reverse' as const }
+                        : { left: '100%', marginLeft: 8 }
                     }
                   >
                     {/* Gradient connector */}
