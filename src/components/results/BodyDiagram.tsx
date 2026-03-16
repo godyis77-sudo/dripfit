@@ -43,6 +43,21 @@ const createAlphaSilhouette = (imageSrc: string): Promise<string> =>
         const min = Math.min(r, g, b);
         const saturation = max === 0 ? 0 : (max - min) / max;
         const brightness = (r + g + b) / 3;
+        const chroma = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(r - b));
+        const neutralTone = chroma < 20;
+
+        // Hard remove white/gray checkerboard background tones.
+        if (neutralTone && brightness > 110) {
+          px[i + 3] = 0;
+          continue;
+        }
+
+        // Feather darker checker squares while keeping the dark silhouette core.
+        if (neutralTone && brightness > 42) {
+          const fade = Math.max(0, Math.min(1, (110 - brightness) / 68));
+          px[i + 3] = Math.round(px[i + 3] * fade);
+          continue;
+        }
 
         if (brightness > 238 && saturation < 0.12) {
           px[i + 3] = 0;
