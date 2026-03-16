@@ -529,6 +529,7 @@ export type Database = {
           gender: string | null
           id: string
           instagram_handle: string | null
+          preferred_shoe_size: string | null
           referral_code: string | null
           referral_credits: number
           referred_by: string | null
@@ -544,6 +545,7 @@ export type Database = {
           gender?: string | null
           id?: string
           instagram_handle?: string | null
+          preferred_shoe_size?: string | null
           referral_code?: string | null
           referral_credits?: number
           referred_by?: string | null
@@ -559,6 +561,7 @@ export type Database = {
           gender?: string | null
           id?: string
           instagram_handle?: string | null
+          preferred_shoe_size?: string | null
           referral_code?: string | null
           referral_credits?: number
           referred_by?: string | null
@@ -738,6 +741,8 @@ export type Database = {
           chart_id: string
           chest_max: number | null
           chest_min: number | null
+          height_max: number | null
+          height_min: number | null
           hip_max: number | null
           hip_min: number | null
           id: string
@@ -746,6 +751,8 @@ export type Database = {
           shoulder_max: number | null
           shoulder_min: number | null
           size_label: string
+          sleeve_max: number | null
+          sleeve_min: number | null
           waist_max: number | null
           waist_min: number | null
         }
@@ -755,6 +762,8 @@ export type Database = {
           chart_id: string
           chest_max?: number | null
           chest_min?: number | null
+          height_max?: number | null
+          height_min?: number | null
           hip_max?: number | null
           hip_min?: number | null
           id?: string
@@ -763,6 +772,8 @@ export type Database = {
           shoulder_max?: number | null
           shoulder_min?: number | null
           size_label: string
+          sleeve_max?: number | null
+          sleeve_min?: number | null
           waist_max?: number | null
           waist_min?: number | null
         }
@@ -772,6 +783,8 @@ export type Database = {
           chart_id?: string
           chest_max?: number | null
           chest_min?: number | null
+          height_max?: number | null
+          height_min?: number | null
           hip_max?: number | null
           hip_min?: number | null
           id?: string
@@ -780,6 +793,8 @@ export type Database = {
           shoulder_max?: number | null
           shoulder_min?: number | null
           size_label?: string
+          sleeve_max?: number | null
+          sleeve_min?: number | null
           waist_max?: number | null
           waist_min?: number | null
         }
@@ -1215,16 +1230,28 @@ export type Database = {
         Args: { p_month_key: string }
         Returns: undefined
       }
-      update_own_profile: {
-        Args: {
-          p_avatar_url?: string
-          p_display_name?: string
-          p_gender?: string
-          p_instagram_handle?: string
-          p_shopping_region?: string
-        }
-        Returns: undefined
-      }
+      update_own_profile:
+        | {
+            Args: {
+              p_avatar_url?: string
+              p_display_name?: string
+              p_gender?: string
+              p_instagram_handle?: string
+              p_shopping_region?: string
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              p_avatar_url?: string
+              p_display_name?: string
+              p_gender?: string
+              p_instagram_handle?: string
+              p_preferred_shoe_size?: string
+              p_shopping_region?: string
+            }
+            Returns: undefined
+          }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user" | "creator"
