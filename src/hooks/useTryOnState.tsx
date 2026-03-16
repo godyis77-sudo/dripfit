@@ -78,13 +78,11 @@ export function useTryOnState() {
   const persistState = useCallback((updates: Partial<{ userPhoto: string | null; clothingPhoto: string | null; productLink: string; category: string; resultImage: string | null; lookItems: LookItem[]; caption: string; autoSaved: boolean }>) => {
     try {
       const current = (() => { try { return JSON.parse(sessionStorage.getItem(TRYON_STATE_KEY) || '{}'); } catch { return {}; } })();
-      const safeUpdates = { ...updates } as Record<string, unknown>;
-      // Only persist photos if they're URLs (short). Skip large base64 to avoid quota overflow.
-      if (typeof safeUpdates.userPhoto === 'string' && safeUpdates.userPhoto.length > 50_000) delete safeUpdates.userPhoto;
-      if (typeof safeUpdates.clothingPhoto === 'string' && safeUpdates.clothingPhoto.length > 50_000) delete safeUpdates.clothingPhoto;
-      if (typeof safeUpdates.resultImage === 'string' && safeUpdates.resultImage.length > 50_000) delete safeUpdates.resultImage;
-      sessionStorage.setItem(TRYON_STATE_KEY, JSON.stringify({ ...current, ...safeUpdates }));
-    } catch { /* quota exceeded, ignore */ }
+      const merged = { ...current, ...updates };
+      // Skip persisting result images that are large base64 — they're already auto-saved to DB
+      if (typeof merged.resultImage === 'string' && merged.resultImage.length > 500_000) delete merged.resultImage;
+      sessionStorage.setItem(TRYON_STATE_KEY, JSON.stringify(merged));
+    } catch { /* quota exceeded — silently skip, photos stay in memory */ }
   }, []);
 
   const setUserPhoto = useCallback((v: string | null) => { setUserPhotoRaw(v); persistState({ userPhoto: v }); }, [persistState]);
