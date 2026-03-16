@@ -254,7 +254,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               className="w-full max-w-[380px] object-contain"
               onLoad={() => setImageLoaded(true)}
               style={{
-                filter: 'sepia(0.4) saturate(1.5) brightness(0.75) contrast(1.15)',
+                filter: 'sepia(0.3) saturate(1.4) brightness(1.05) contrast(1.1)',
               }}
             />
             {/* Dark vignette overlay */}
