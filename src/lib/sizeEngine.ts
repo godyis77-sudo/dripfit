@@ -128,7 +128,14 @@ export function scoreSizeRow(
   user: UserMeasurements,
   fit: FitPreference,
   category?: string,
+  preferredShoeSize?: string,
 ): number {
+  // Footwear guard: skip Gaussian scoring, do direct string match
+  if (category === 'footwear') {
+    if (!preferredShoeSize) return 0;
+    return row.size_label.toLowerCase() === preferredShoeSize.toLowerCase() ? 1.0 : 0;
+  }
+
   const fitOffset = FIT_OFFSETS[fit] ?? 0;
   const weights = (category && CATEGORY_WEIGHTS[category]) || DEFAULT_WEIGHTS;
 
