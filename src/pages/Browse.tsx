@@ -16,6 +16,7 @@ import { BRAND_GENRES, type BrandGenre, getBrandGenre } from '@/lib/brandGenres'
 import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
 
 const CATEGORY_LABELS: Record<string, string> = {
+  all: 'All Categories',
   tops: 'Tops',
   bottom: 'Bottoms',
   bottoms: 'Bottoms',
