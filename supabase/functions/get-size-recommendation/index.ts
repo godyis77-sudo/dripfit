@@ -65,14 +65,10 @@ function calcGradeSteps(sizeData: SizeEntry[], measurementKeys: string[]): Recor
 
 function scoreMeasurement(userVal: number, min: number, max: number): number {
   const mid = (min + max) / 2;
-  const rangeHalf = (max - min) / 2 || 1;
-  if (userVal >= min && userVal <= max) {
-    return 1.0 - (Math.abs(userVal - mid) / rangeHalf) * 0.2;
-  }
-  if (userVal < min) {
-    return Math.max(0, 1.0 - ((min - userVal) / rangeHalf) * 0.8);
-  }
-  return Math.max(0, 1.0 - ((userVal - max) / rangeHalf) * 0.8);
+  const sigma = (max - min) / 2 || 1;
+  const distance = Math.abs(userVal - mid);
+  // Gaussian: midpoint=100%, edge of range≈61%, 1 range out≈13%
+  return Math.exp(-0.5 * (distance / sigma) ** 2);
 }
 
 Deno.serve(async (req) => {
