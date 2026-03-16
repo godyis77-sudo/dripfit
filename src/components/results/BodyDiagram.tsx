@@ -672,12 +672,30 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {imageLoaded && <HudStatusBar useCm={useCmState} />}
 
           {/* Outer glow frame */}
-          <div
+          <motion.div
             className="absolute -inset-[4px] rounded-[calc(1rem+3px)] pointer-events-none z-[8]"
-            style={{
-              border: '2px solid hsl(220 15% 8%)',
-              boxShadow: 'inset 0 0 12px 3px hsl(var(--primary) / 0.35), 0 0 16px 4px hsl(var(--primary) / 0.3), 0 0 40px 10px hsl(var(--primary) / 0.1)',
+            style={{ border: '2px solid hsl(220 15% 8%)' }}
+            animate={{
+              boxShadow: [
+                'inset 0 0 12px 3px hsl(var(--primary) / 0.3), 0 0 16px 4px hsl(var(--primary) / 0.25), 0 0 40px 10px hsl(var(--primary) / 0.08)',
+                'inset 0 0 18px 5px hsl(var(--primary) / 0.5), 0 0 24px 6px hsl(var(--primary) / 0.4), 0 0 60px 16px hsl(var(--primary) / 0.15)',
+                'inset 0 0 12px 3px hsl(var(--primary) / 0.3), 0 0 16px 4px hsl(var(--primary) / 0.25), 0 0 40px 10px hsl(var(--primary) / 0.08)',
+              ],
             }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          {/* Inner glow ring */}
+          <motion.div
+            className="absolute inset-0 rounded-[1rem] pointer-events-none z-[7]"
+            animate={{
+              boxShadow: [
+                'inset 0 0 20px 4px hsl(var(--primary) / 0.06)',
+                'inset 0 0 35px 8px hsl(var(--primary) / 0.12)',
+                'inset 0 0 20px 4px hsl(var(--primary) / 0.06)',
+              ],
+            }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          />
           />
         </motion.div>
       </div>
