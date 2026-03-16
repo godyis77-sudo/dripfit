@@ -1,4 +1,4 @@
-export type FitPreference = 'fitted' | 'regular' | 'relaxed';
+export type FitPreference = 'fitted' | 'slim' | 'regular' | 'relaxed';
 export type Confidence = 'high' | 'medium' | 'low';
 
 export interface MeasurementRange {
