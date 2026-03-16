@@ -10,6 +10,7 @@ interface SizeEntry {
   inseam_min?: number; inseam_max?: number;
   shoulder_min?: number; shoulder_max?: number;
   sleeve_min?: number; sleeve_max?: number;
+  height_min?: number; height_max?: number;
   shoe_length_min?: number; shoe_length_max?: number;
 }
 
@@ -18,7 +19,8 @@ const CATEGORY_WEIGHTS: Record<string, Record<string, number>> = {
   tops:       { chest: 0.40, waist: 0.30, shoulder: 0.30 },
   bottoms:    { waist: 0.35, hip: 0.40, inseam: 0.25 },
   pants:      { waist: 0.35, hip: 0.35, inseam: 0.30 },
-  dresses:    { chest: 0.30, waist: 0.35, hip: 0.35 },
+  dresses:      { chest: 0.30, waist: 0.35, hip: 0.35 },
+  dresses_full: { chest: 0.25, waist: 0.30, hip: 0.30, height: 0.15 },
   outerwear:  { chest: 0.35, waist: 0.15, hip: 0.10, shoulder: 0.25, sleeve: 0.15 },
   blazers:    { chest: 0.30, waist: 0.15, shoulder: 0.25, sleeve: 0.20, hip: 0.10 },
   suits:      { chest: 0.25, waist: 0.20, shoulder: 0.20, sleeve: 0.15, hip: 0.10, inseam: 0.10 },
@@ -151,6 +153,7 @@ Deno.serve(async (req) => {
     if (inseam != null) userMeasurements.inseam = inseam;
     if (shoulder != null) userMeasurements.shoulder = shoulder;
     if (sleeve != null) userMeasurements.sleeve = sleeve;
+    if (scan.height_cm != null) userMeasurements.height = scan.height_cm;
 
     // STEP 3 — Fetch size chart
     const { data: chart } = await supabase
