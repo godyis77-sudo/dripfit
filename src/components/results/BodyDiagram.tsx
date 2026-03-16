@@ -20,121 +20,144 @@ const createProcessedSilhouette = (imageSrc: string): Promise<string> =>
     img.src = imageSrc;
 
     img.onload = () => {
+      const W = img.naturalWidth;
+      const H = img.naturalHeight;
+
       const working = document.createElement('canvas');
-      working.width = img.naturalWidth;
-      working.height = img.naturalHeight;
+      working.width = W;
+      working.height = H;
 
       const ctx = working.getContext('2d');
-      if (!ctx) {
-        resolve(imageSrc);
-        return;
-      }
+      if (!ctx) { resolve(imageSrc); return; }
 
       ctx.drawImage(img, 0, 0);
-      const frame = ctx.getImageData(0, 0, working.width, working.height);
+      const frame = ctx.getImageData(0, 0, W, H);
       const px = frame.data;
 
-      let minX = working.width;
-      let minY = working.height;
-      let maxX = -1;
-      let maxY = -1;
-
-      const alphaMap = new Uint8ClampedArray(working.width * working.height);
-
+      // ── Pass 1: Alpha-key neutral/checker tones ──
       for (let i = 0; i < px.length; i += 4) {
-        const r = px[i];
-        const g = px[i + 1];
-        const b = px[i + 2];
-        const currentAlpha = px[i + 3];
+        const a = px[i + 3];
+        if (a === 0) continue;
 
-        if (currentAlpha === 0) continue;
-
+        const r = px[i], g = px[i + 1], b = px[i + 2];
         const chroma = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(r - b));
         const brightness = (r + g + b) / 3;
-        const neutralTone = chroma < 38;
+        const neutral = chroma < 40;
 
-        if (neutralTone && brightness > 68) {
-          px[i + 3] = 0;
-          continue;
+        if (neutral && brightness > 62) { px[i + 3] = 0; continue; }
+        if (neutral && brightness > 30) {
+          const fade = Math.max(0, Math.min(1, (62 - brightness) / 32));
+          px[i + 3] = Math.round(a * fade * 0.25);
         }
-
-        if (neutralTone && brightness > 34) {
-          const fade = Math.max(0, Math.min(1, (68 - brightness) / 34));
-          px[i + 3] = Math.round(currentAlpha * fade * 0.28);
-        }
-
-        alphaMap[i / 4] = px[i + 3];
       }
 
-      // Edge cleanup: remove isolated neutral speckles and soften jagged fringe.
-      for (let y = 1; y < working.height - 1; y++) {
-        for (let x = 1; x < working.width - 1; x++) {
-          const p = y * working.width + x;
-          const i = p * 4;
-          const a = px[i + 3];
-          if (a === 0) continue;
+      // ── Pass 2: Build alpha map for neighborhood queries ──
+      const alpha = new Uint8Array(W * H);
+      for (let i = 0; i < px.length; i += 4) alpha[i / 4] = px[i + 3];
 
-          const r = px[i];
-          const g = px[i + 1];
-          const b = px[i + 2];
+      // ── Pass 3: Remove isolated speckles (3×3 neighborhood) ──
+      for (let y = 1; y < H - 1; y++) {
+        for (let x = 1; x < W - 1; x++) {
+          const p = y * W + x;
+          const i = p * 4;
+          if (px[i + 3] === 0) continue;
+
+          const r = px[i], g = px[i + 1], b = px[i + 2];
           const chroma = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(r - b));
           const brightness = (r + g + b) / 3;
-          const neutralTone = chroma < 42;
+          const neutral = chroma < 44;
 
-          let neighbors = 0;
-          for (let oy = -1; oy <= 1; oy++) {
+          let solidNeighbors = 0;
+          for (let oy = -1; oy <= 1; oy++)
             for (let ox = -1; ox <= 1; ox++) {
-              if (ox === 0 && oy === 0) continue;
-              const n = (y + oy) * working.width + (x + ox);
-              if (alphaMap[n] > 20) neighbors++;
+              if (!ox && !oy) continue;
+              if (alpha[(y + oy) * W + (x + ox)] > 25) solidNeighbors++;
+            }
+
+          if (neutral && brightness > 44 && solidNeighbors <= 2) { px[i + 3] = 0; continue; }
+          if (neutral && solidNeighbors <= 3 && px[i + 3] < 150) px[i + 3] = Math.round(px[i + 3] * 0.35);
+        }
+      }
+
+      // ── Pass 4: Gaussian-style alpha feather (5×5 box blur on alpha channel) ──
+      // This smooths jagged staircase edges into soft gradients.
+      const blurredAlpha = new Uint8Array(W * H);
+      const radius = 2;
+      for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          let sum = 0, count = 0;
+          for (let ky = -radius; ky <= radius; ky++) {
+            const ny = y + ky;
+            if (ny < 0 || ny >= H) continue;
+            for (let kx = -radius; kx <= radius; kx++) {
+              const nx = x + kx;
+              if (nx < 0 || nx >= W) continue;
+              sum += px[(ny * W + nx) * 4 + 3];
+              count++;
+            }
+          }
+          blurredAlpha[y * W + x] = Math.round(sum / count);
+        }
+      }
+
+      // Apply blurred alpha only to edge pixels (where original alpha differs from interior).
+      // Interior pixels (fully opaque) keep their sharp alpha; edge pixels get the smoothed value.
+      for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          const p = y * W + x;
+          const i = p * 4;
+          const origA = px[i + 3];
+          const blurA = blurredAlpha[p];
+
+          if (origA === 0 && blurA === 0) continue;
+
+          // Detect edge: pixel is near a transparency boundary
+          let isEdge = false;
+          for (let oy = -1; oy <= 1 && !isEdge; oy++) {
+            for (let ox = -1; ox <= 1 && !isEdge; ox++) {
+              if (!ox && !oy) continue;
+              const ny = y + oy, nx = x + ox;
+              if (ny < 0 || ny >= H || nx < 0 || nx >= W) { isEdge = true; continue; }
+              const neighborA = px[(ny * W + nx) * 4 + 3];
+              if (Math.abs(origA - neighborA) > 60) isEdge = true;
             }
           }
 
-          if (neutralTone && brightness > 48 && neighbors <= 2) {
-            px[i + 3] = 0;
-            continue;
+          if (isEdge) {
+            // Blend: use the smoother value, weighted toward the blur
+            px[i + 3] = Math.round(origA * 0.3 + blurA * 0.7);
           }
-
-          if (neutralTone && neighbors <= 3 && a < 140) {
-            px[i + 3] = Math.round(a * 0.45);
-          }
-        }
-      }
-
-      for (let i = 0; i < px.length; i += 4) {
-        if (px[i + 3] > 8) {
-          const pixelIndex = i / 4;
-          const x = pixelIndex % working.width;
-          const y = Math.floor(pixelIndex / working.width);
-          minX = Math.min(minX, x);
-          minY = Math.min(minY, y);
-          maxX = Math.max(maxX, x);
-          maxY = Math.max(maxY, y);
         }
       }
 
       ctx.putImageData(frame, 0, 0);
 
-      if (maxX < 0 || maxY < 0) {
-        resolve(imageSrc);
-        return;
+      // ── Pass 5: Auto-crop to content bounds ──
+      let minX = W, minY = H, maxX = -1, maxY = -1;
+      for (let i = 0; i < px.length; i += 4) {
+        if (px[i + 3] > 6) {
+          const idx = i / 4;
+          const cx = idx % W, cy = Math.floor(idx / W);
+          if (cx < minX) minX = cx;
+          if (cy < minY) minY = cy;
+          if (cx > maxX) maxX = cx;
+          if (cy > maxY) maxY = cy;
+        }
       }
 
-      const padding = 6;
-      const sx = Math.max(0, minX - padding);
-      const sy = Math.max(0, minY - padding);
-      const sw = Math.min(working.width - sx, maxX - minX + 1 + padding * 2);
-      const sh = Math.min(working.height - sy, maxY - minY + 1 + padding * 2);
+      if (maxX < 0 || maxY < 0) { resolve(imageSrc); return; }
+
+      const pad = 8;
+      const sx = Math.max(0, minX - pad);
+      const sy = Math.max(0, minY - pad);
+      const sw = Math.min(W - sx, maxX - minX + 1 + pad * 2);
+      const sh = Math.min(H - sy, maxY - minY + 1 + pad * 2);
 
       const cropped = document.createElement('canvas');
       cropped.width = sw;
       cropped.height = sh;
-
       const croppedCtx = cropped.getContext('2d');
-      if (!croppedCtx) {
-        resolve(imageSrc);
-        return;
-      }
+      if (!croppedCtx) { resolve(imageSrc); return; }
 
       croppedCtx.drawImage(working, sx, sy, sw, sh, 0, 0, sw, sh);
       resolve(cropped.toDataURL('image/png'));
