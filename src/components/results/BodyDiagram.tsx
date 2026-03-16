@@ -264,6 +264,7 @@ const TickMarks = () => (
    ═══════════════════════════════════════════ */
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [silhouetteReady, setSilhouetteReady] = useState(false);
   const [useCmState, setUseCmLocal] = useState(getUseCm());
   const [scrambling, setScrambling] = useState(false);
   const [silhouetteSrc, setSilhouetteSrc] = useState(bodySilhouette);
@@ -275,7 +276,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
     setImageLoaded(false);
 
     createProcessedSilhouette(bodySilhouette).then((processed) => {
-      if (!cancelled) setSilhouetteSrc(processed);
+      if (!cancelled) { setSilhouetteSrc(processed); setSilhouetteReady(true); }
     });
 
     return () => {
@@ -389,10 +390,13 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             />
           </motion.div>
 
-          {/* Silhouette: Stable image-based render */}
+          {/* Silhouette: Stable image-based render — hidden until alpha-keyed */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center"
             style={{ transform: `translateY(${parallaxY}px)` }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: silhouetteReady ? 1 : 0 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
           >
             <div className="relative h-[116%] w-[92%] max-w-[360px]">
               {/* Layer 1: Wide atmospheric glow — 4× intensified */}
