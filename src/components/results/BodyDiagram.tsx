@@ -539,6 +539,18 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   filter: 'saturate(1.15) brightness(1.08) contrast(1.12) drop-shadow(0 0 8px hsl(var(--primary) / 0.55)) drop-shadow(0 0 3px hsl(var(--primary) / 0.8))',
                 }}
               />
+
+              {/* Edge tint overlay — darkens ultra-bright fringe pixels */}
+              <img
+                src={silhouetteSrc}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 z-[3] h-full w-full object-contain pointer-events-none opacity-60"
+                style={{
+                  mixBlendMode: 'multiply',
+                  filter: 'blur(0.5px) brightness(0.35) contrast(2.5) saturate(2)',
+                }}
+              />
             </div>
           </motion.div>
 
