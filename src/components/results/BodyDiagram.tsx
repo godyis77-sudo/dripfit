@@ -474,27 +474,36 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
             <div className="relative h-[92%] w-[58%] max-w-[245px]">
-              {/* Back glow */}
+              {/* Far glow layer — wide luminescent halo */}
               <img
                 src={silhouetteSrc}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain opacity-50"
+                className="absolute inset-0 h-full w-full object-contain opacity-35 pointer-events-none"
                 style={{
-                  mixBlendMode: 'normal',
-                  filter: 'saturate(1.15) brightness(1.06) contrast(1.08) blur(1.2px) drop-shadow(0 0 22px hsl(var(--primary) / 0.55)) drop-shadow(0 0 46px hsl(var(--primary) / 0.22))',
+                  filter: 'blur(8px) brightness(1.6) saturate(1.4) drop-shadow(0 0 40px hsl(var(--primary) / 0.7)) drop-shadow(0 0 80px hsl(var(--primary) / 0.3))',
                 }}
               />
 
-              {/* Main silhouette */}
+              {/* Near glow layer — tighter edge bloom */}
+              <img
+                src={silhouetteSrc}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-contain opacity-55 pointer-events-none"
+                style={{
+                  filter: 'blur(2px) brightness(1.3) saturate(1.3) drop-shadow(0 0 16px hsl(var(--primary) / 0.6)) drop-shadow(0 0 32px hsl(var(--primary) / 0.25))',
+                }}
+              />
+
+              {/* Main silhouette — crisp */}
               <img
                 src={silhouetteSrc}
                 alt="Body measurement scan"
                 className="relative z-[2] h-full w-full object-contain"
                 onLoad={() => setImageLoaded(true)}
                 style={{
-                  mixBlendMode: 'normal',
-                  filter: 'saturate(1.15) brightness(1.08) contrast(1.12) drop-shadow(0 0 10px hsl(var(--primary) / 0.5))',
+                  filter: 'saturate(1.15) brightness(1.08) contrast(1.12) drop-shadow(0 0 8px hsl(var(--primary) / 0.55)) drop-shadow(0 0 3px hsl(var(--primary) / 0.8))',
                 }}
               />
             </div>
