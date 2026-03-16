@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import type { MeasurementRange } from '@/lib/types';
-import bodySilhouette from '@/assets/body-silhouette-glow-2.webp';
+import bodySilhouette from '@/assets/body-silhouette-v2.png';
 import { getUseCm, setUseCm } from '@/lib/session';
 
 const CM_TO_IN = 0.3937;
@@ -13,148 +13,14 @@ const fmtHeightFtIn = (cm: number) => {
 };
 const LUXURY_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
+// Clean silhouette — no processing needed, image has proper transparency
 const createProcessedSilhouette = (imageSrc: string): Promise<string> =>
   new Promise((resolve) => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.decoding = 'async';
     img.src = imageSrc;
-
-    img.onload = () => {
-      const W = img.naturalWidth;
-      const H = img.naturalHeight;
-      const canvas = document.createElement('canvas');
-      canvas.width = W;
-      canvas.height = H;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) { resolve(imageSrc); return; }
-
-      ctx.drawImage(img, 0, 0);
-      const frame = ctx.getImageData(0, 0, W, H);
-      const px = frame.data;
-
-      // ── Pass 1: Aggressive neutral/bright pixel removal ──
-      // Kill anything that looks like checkerboard (light or dark gray, low chroma).
-      for (let i = 0; i < px.length; i += 4) {
-        if (px[i + 3] === 0) continue;
-        const r = px[i], g = px[i + 1], b = px[i + 2];
-        const chroma = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(r - b));
-        const lum = (r + g + b) / 3;
-
-        // Very bright pixels regardless of chroma → gone
-        if (lum > 210) { px[i + 3] = 0; continue; }
-        // Neutral tones above threshold → gone
-        if (chroma < 50 && lum > 55) { px[i + 3] = 0; continue; }
-        // Feather neutral mid-tones
-        if (chroma < 50 && lum > 28) {
-          const t = Math.max(0, (55 - lum) / 27);
-          px[i + 3] = Math.round(px[i + 3] * t * 0.3);
-        }
-      }
-
-      // ── Pass 2: Despeckle — remove isolated pixels (5×5 window) ──
-      const a1 = new Uint8Array(W * H);
-      for (let i = 0; i < px.length; i += 4) a1[i >> 2] = px[i + 3];
-
-      for (let y = 2; y < H - 2; y++) {
-        for (let x = 2; x < W - 2; x++) {
-          const p = y * W + x;
-          if (a1[p] === 0) continue;
-          let solid = 0;
-          for (let dy = -2; dy <= 2; dy++)
-            for (let dx = -2; dx <= 2; dx++) {
-              if (!dx && !dy) continue;
-              if (a1[(y + dy) * W + (x + dx)] > 20) solid++;
-            }
-          // Isolated pixel cluster → remove
-          if (solid < 6) px[p * 4 + 3] = 0;
-          // Thin fringe → soften
-          else if (solid < 10 && px[p * 4 + 3] < 180) px[p * 4 + 3] = Math.round(px[p * 4 + 3] * 0.4);
-        }
-      }
-
-      // ── Pass 3: Multi-pass alpha blur for buttery-smooth edges ──
-      // Two passes of 7×7 box blur on the alpha channel
-      for (let pass = 0; pass < 2; pass++) {
-        const src = new Uint8Array(W * H);
-        for (let i = 0; i < px.length; i += 4) src[i >> 2] = px[i + 3];
-
-        const R = 3; // 7×7 kernel
-        for (let y = 0; y < H; y++) {
-          for (let x = 0; x < W; x++) {
-            let sum = 0, cnt = 0;
-            for (let ky = -R; ky <= R; ky++) {
-              const ny = y + ky;
-              if (ny < 0 || ny >= H) continue;
-              for (let kx = -R; kx <= R; kx++) {
-                const nx = x + kx;
-                if (nx < 0 || nx >= W) continue;
-                sum += src[ny * W + nx];
-                cnt++;
-              }
-            }
-            const blurred = Math.round(sum / cnt);
-            const orig = src[y * W + x];
-
-            // Only touch edge region (where alpha varies)
-            if (orig > 0 && orig < 250) {
-              px[(y * W + x) * 4 + 3] = Math.round(orig * 0.25 + blurred * 0.75);
-            } else if (orig === 0 && blurred > 3) {
-              // Extend glow slightly into transparent zone for anti-aliasing
-              px[(y * W + x) * 4 + 3] = Math.round(blurred * 0.3);
-            }
-          }
-        }
-      }
-
-      // ── Pass 4: Tint remaining bright edge pixels toward the gold hue ──
-      for (let i = 0; i < px.length; i += 4) {
-        if (px[i + 3] === 0) continue;
-        const r = px[i], g = px[i + 1], b = px[i + 2];
-        const lum = (r + g + b) / 3;
-        // If pixel is bright-ish and close to neutral, shift it gold
-        if (lum > 100) {
-          const intensity = Math.min(1, (lum - 100) / 155);
-          // Gold tint: warm the pixel toward amber
-          px[i] = Math.round(r * (1 - intensity * 0.3) + 180 * intensity * 0.3);    // R
-          px[i + 1] = Math.round(g * (1 - intensity * 0.4) + 140 * intensity * 0.4); // G
-          px[i + 2] = Math.round(b * (1 - intensity * 0.7) + 40 * intensity * 0.7);  // B
-          // Also suppress alpha on very bright pixels
-          if (lum > 180) px[i + 3] = Math.round(px[i + 3] * Math.max(0.15, (230 - lum) / 50));
-        }
-      }
-
-      ctx.putImageData(frame, 0, 0);
-
-      // ── Pass 5: Auto-crop ──
-      let minX = W, minY = H, maxX = -1, maxY = -1;
-      for (let i = 0; i < px.length; i += 4) {
-        if (px[i + 3] > 4) {
-          const idx = i >> 2;
-          const cx = idx % W, cy = (idx / W) | 0;
-          if (cx < minX) minX = cx;
-          if (cy < minY) minY = cy;
-          if (cx > maxX) maxX = cx;
-          if (cy > maxY) maxY = cy;
-        }
-      }
-      if (maxX < 0) { resolve(imageSrc); return; }
-
-      const pad = 10;
-      const sx = Math.max(0, minX - pad);
-      const sy = Math.max(0, minY - pad);
-      const sw = Math.min(W - sx, maxX - minX + 1 + pad * 2);
-      const sh = Math.min(H - sy, maxY - minY + 1 + pad * 2);
-
-      const out = document.createElement('canvas');
-      out.width = sw;
-      out.height = sh;
-      const outCtx = out.getContext('2d');
-      if (!outCtx) { resolve(imageSrc); return; }
-      outCtx.drawImage(canvas, sx, sy, sw, sh, 0, 0, sw, sh);
-      resolve(out.toDataURL('image/png'));
-    };
-
+    img.onload = () => resolve(imageSrc);
     img.onerror = () => resolve(imageSrc);
   });
 
