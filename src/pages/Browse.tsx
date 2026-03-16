@@ -208,6 +208,7 @@ const Browse = () => {
 
       <div className="px-4 pb-3 flex gap-1.5 overflow-x-auto scrollbar-hide">
         {[
+          { key: 'all', label: 'All' },
           { key: 'tops', label: 'Tops' },
           { key: 'bottom', label: 'Bottoms' },
           ...(genderFilter === 'mens'
