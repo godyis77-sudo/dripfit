@@ -83,9 +83,9 @@ const Browse = () => {
   usePageTitle(`Browse ${title}`);
 
   // Extract available brands from loaded products
-  const availableBrands = useMemo(() => {
-    const brands = [...new Set(products.map(p => p.brand))].sort();
-    return brands;
+  const availableRetailers = useMemo(() => {
+    const retailers = [...new Set(products.map(p => p.retailer))].sort();
+    return retailers;
   }, [products]);
 
   // Filter and sort
