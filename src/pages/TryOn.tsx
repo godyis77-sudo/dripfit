@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowUp, Sparkles, Loader2, Check, Info, ShoppingBag, Store, Shield, X, RotateCcw, SlidersHorizontal } from 'lucide-react';
+import { ArrowLeft, ArrowUp, Sparkles, Loader2, Check, Info, ShoppingBag, Store, Shield, X, RotateCcw, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import BottomTabBar from '@/components/BottomTabBar';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
@@ -17,6 +17,7 @@ import { useTryOnState } from '@/hooks/useTryOnState';
 import { isGuestMode } from '@/lib/session';
 import BrandFilter from '@/components/tryon/BrandFilter';
 import { supabase } from '@/integrations/supabase/client';
+import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 
 const SORT_OPTIONS = [
   { key: 'default', label: 'Recommended' },
@@ -28,35 +29,11 @@ const SORT_OPTIONS = [
 
 type SortKey = typeof SORT_OPTIONS[number]['key'];
 
-/* Retailer autocomplete dropdown */
-function RetailerDropdown({ query, onSelect }: { query: string; onSelect: (name: string) => void }) {
-  const [results, setResults] = useState<string[]>([]);
-  useEffect(() => {
-    let cancelled = false;
-    supabase
-      .from('retailers')
-      .select('name')
-      .eq('is_active', true)
-      .ilike('name', `%${query}%`)
-      .order('name')
-      .limit(10)
-      .then(({ data }) => {
-        if (!cancelled && data) setResults(data.map(r => r.name));
-      });
-    return () => { cancelled = true; };
-  }, [query]);
-
-  if (results.length === 0) return null;
-  return (
-    <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-card border border-border rounded-lg shadow-lg max-h-40 overflow-y-auto">
-      {results.map(name => (
-        <button key={name} onClick={() => onSelect(name)} className="w-full text-left px-3 py-2 text-[11px] font-medium text-foreground hover:bg-accent/50 transition-colors">
-          {name}
-        </button>
-      ))}
-    </div>
-  );
-}
+const FIT_OPTIONS = [
+  'oversized', 'boxy', 'relaxed fit', 'slim fit', 'regular fit',
+  'cropped', 'tapered', 'drop shoulder', 'heavyweight', 'lightweight',
+  'athletic fit', 'classic fit', 'skinny fit', 'loose fit',
+] as const;
 
 const TryOn = () => {
   usePageTitle('Virtual Try-On');
@@ -66,8 +43,28 @@ const TryOn = () => {
   const [guestTryOnNudgeDismissed, setGuestTryOnNudgeDismissed] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [sort, setSort] = useState<SortKey>('default');
-  const [retailerSearch, setRetailerSearch] = useState('');
+  const [genreOpen, setGenreOpen] = useState(false);
+  const [fitOpen, setFitOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Load product catalog for retailer/fit pills
+  const { products: catalogProducts } = useProductCatalog(
+    s.category === 'all' ? undefined : s.category,
+    undefined, undefined,
+    s.userGender === 'male' ? 'mens' : s.userGender === 'female' ? 'womens' : undefined
+  );
+
+  const availableRetailers = useMemo(() => {
+    return [...new Set(catalogProducts.map(p => p.retailer))].sort();
+  }, [catalogProducts]);
+
+  const availableFits = useMemo(() => {
+    const fits = new Set<string>();
+    catalogProducts.forEach(p => {
+      if (Array.isArray(p.fit_profile)) p.fit_profile.forEach(f => fits.add(f));
+    });
+    return FIT_OPTIONS.filter(f => fits.has(f));
+  }, [catalogProducts]);
 
   useEffect(() => {
     const onScroll = () => setShowScrollTop(window.scrollY > 300);
@@ -213,65 +210,126 @@ const TryOn = () => {
                           />
                         </div>
 
-                        {/* Retailer search */}
+                        {/* Retailer pills */}
                         <div>
                           <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Retailer</p>
-                          {s.selectedRetailer ? (
-                            <div className="flex items-center gap-1.5">
-                              <span className="px-2.5 py-1 rounded-lg text-[10px] font-semibold btn-luxury text-primary-foreground flex items-center gap-1">
-                                {s.selectedRetailer}
-                                <button onClick={() => s.setSelectedRetailer(null)} className="ml-0.5"><X className="h-3 w-3" /></button>
-                              </span>
-                            </div>
-                          ) : (
-                            <div className="relative">
-                              <input
-                                type="text"
-                                value={retailerSearch}
-                                onChange={e => setRetailerSearch(e.target.value)}
-                                placeholder="Search retailers…"
-                                className="w-full h-8 rounded-lg border border-border bg-background px-2.5 text-[11px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
-                              />
-                              {retailerSearch.length >= 2 && (
-                                <RetailerDropdown query={retailerSearch} onSelect={(r) => { s.setSelectedRetailer(r); setRetailerSearch(''); }} />
-                              )}
-                            </div>
-                          )}
-                        </div>
-
-                        <div>
-                          <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Genre</p>
-                          <div className="flex flex-wrap gap-1.5">
+                          <div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto">
                             <button
-                              onClick={() => s.setSelectedGenre(null)}
+                              onClick={() => s.setSelectedRetailer(null)}
                               className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
-                                !s.selectedGenre
+                                !s.selectedRetailer
                                   ? 'btn-luxury text-primary-foreground'
                                   : 'bg-background border border-border text-foreground/70'
                               }`}
                             >
                               All
                             </button>
-                            {BRAND_GENRES.map(genre => (
+                            {availableRetailers.map(retailer => (
                               <button
-                                key={genre}
-                                onClick={() => s.setSelectedGenre(genre === s.selectedGenre ? null : genre)}
-                                className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
-                                  s.selectedGenre === genre
+                                key={retailer}
+                                onClick={() => s.setSelectedRetailer(retailer === s.selectedRetailer ? null : retailer)}
+                                className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                                  s.selectedRetailer === retailer
                                     ? 'btn-luxury text-primary-foreground'
                                     : 'bg-background border border-border text-foreground/70'
                                 }`}
                               >
-                                {genre}
+                                {retailer}
                               </button>
                             ))}
                           </div>
                         </div>
 
+                        {/* Genre — collapsible */}
+                        <div>
+                          <button
+                            onClick={() => setGenreOpen(!genreOpen)}
+                            className="flex items-center justify-between w-full"
+                          >
+                            <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
+                              Genre {s.selectedGenre ? `· ${s.selectedGenre}` : ''}
+                            </p>
+                            <ChevronDown className={`h-3.5 w-3.5 text-foreground/50 transition-transform ${genreOpen ? 'rotate-180' : ''}`} />
+                          </button>
+                          <AnimatePresence>
+                            {genreOpen && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                  <button
+                                    onClick={() => s.setSelectedGenre(null)}
+                                    className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                      !s.selectedGenre
+                                        ? 'btn-luxury text-primary-foreground'
+                                        : 'bg-background border border-border text-foreground/70'
+                                    }`}
+                                  >
+                                    All
+                                  </button>
+                                  {BRAND_GENRES.map(genre => (
+                                    <button
+                                      key={genre}
+                                      onClick={() => s.setSelectedGenre(genre === s.selectedGenre ? null : genre)}
+                                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                        s.selectedGenre === genre
+                                          ? 'btn-luxury text-primary-foreground'
+                                          : 'bg-background border border-border text-foreground/70'
+                                      }`}
+                                    >
+                                      {genre}
+                                    </button>
+                                  ))}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+
+                        {/* Fit / Cut — collapsible */}
+                        {availableFits.length > 0 && (
+                          <div>
+                            <button
+                              onClick={() => setFitOpen(!fitOpen)}
+                              className="flex items-center justify-between w-full"
+                            >
+                              <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
+                                Fit / Cut
+                              </p>
+                              <ChevronDown className={`h-3.5 w-3.5 text-foreground/50 transition-transform ${fitOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                            <AnimatePresence>
+                              {fitOpen && (
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{ height: 'auto', opacity: 1 }}
+                                  exit={{ height: 0, opacity: 0 }}
+                                  className="overflow-hidden"
+                                >
+                                  <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                    {availableFits.map(fit => (
+                                      <button
+                                        key={fit}
+                                        onClick={() => {/* fit filter not wired to catalog grid yet */}}
+                                        className="px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize bg-background border border-border text-foreground/70"
+                                      >
+                                        {fit}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        )}
+
                         {/* Clear filters */}
                         {activeFilterCount > 0 && (
                           <button
-                            onClick={() => { setSort('default'); s.setSelectedBrand(null); s.setSelectedGenre(null); s.setSelectedRetailer(null); s.setCategory('all'); setRetailerSearch(''); }}
+                            onClick={() => { setSort('default'); s.setSelectedBrand(null); s.setSelectedGenre(null); s.setSelectedRetailer(null); s.setCategory('all'); }}
                             className="text-[10px] text-primary font-semibold"
                           >
                             Clear all filters
