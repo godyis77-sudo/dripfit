@@ -16,6 +16,7 @@ import { BRAND_GENRES, type BrandGenre, getBrandGenre } from '@/lib/brandGenres'
 import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
 
 const CATEGORY_LABELS: Record<string, string> = {
+  all: 'All Categories',
   tops: 'Tops',
   bottom: 'Bottoms',
   bottoms: 'Bottoms',
@@ -56,7 +57,7 @@ const FIT_OPTIONS = [
 ] as const;
 
 const Browse = () => {
-  const { category = 'tops' } = useParams<{ category: string }>();
+  const { category = 'all' } = useParams<{ category: string }>();
   const navigate = useNavigate();
   const { userGender } = useAuth();
   const defaultGender: GenderKey = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : 'all';
@@ -66,7 +67,7 @@ const Browse = () => {
   const genderFilter: GenderKey = genderOverride ?? defaultGender;
   const effectiveGender = genderFilter === 'all' ? undefined : genderFilter;
 
-  const { products, loading } = useProductCatalog(category, undefined, undefined, effectiveGender);
+  const { products, loading } = useProductCatalog(category === 'all' ? undefined : category, undefined, undefined, effectiveGender);
   // search state removed — brand filter handled by BrandFilter component
   const [sort, setSort] = useState<SortKey>('default');
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
@@ -208,6 +209,7 @@ const Browse = () => {
 
       <div className="px-4 pb-3 flex gap-1.5 overflow-x-auto scrollbar-hide">
         {[
+          { key: 'all', label: 'All' },
           { key: 'tops', label: 'Tops' },
           { key: 'bottom', label: 'Bottoms' },
           ...(genderFilter === 'mens'
