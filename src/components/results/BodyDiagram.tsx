@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import type { MeasurementRange } from '@/lib/types';
-import bodySilhouette from '@/assets/body-silhouette-clean.webp';
+import bodySilhouette from '@/assets/body-silhouette-glow-cutout.webp';
 import { getUseCm, setUseCm } from '@/lib/session';
 
 const CM_TO_IN = 0.3937;
@@ -353,17 +353,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 }}
               />
 
-              {/* Moving highlight pass clipped to silhouette bounds */}
-              <motion.div
-                className="absolute inset-0 z-[3] pointer-events-none"
-                style={{
-                  backgroundImage: 'linear-gradient(180deg, transparent 8%, hsl(var(--gold-shimmer) / 0.2) 48%, transparent 86%)',
-                  backgroundSize: '100% 220%',
-                  mixBlendMode: 'screen',
-                }}
-                animate={{ backgroundPosition: ['50% -20%', '50% 120%'] }}
-                transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut', repeatDelay: 1.4 }}
-              />
+              {/* Removed rectangular shimmer overlay to prevent background block artifacts */}
             </div>
           </motion.div>
 
