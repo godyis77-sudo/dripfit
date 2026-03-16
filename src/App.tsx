@@ -49,6 +49,7 @@ const Waitlist = lazy(() => import("./pages/Waitlist"));
 const Partnership = lazy(() => import("./pages/Partnership"));
 const FoundingMembers = lazy(() => import("./pages/FoundingMembers"));
 const MediaKit = lazy(() => import("./pages/MediaKit"));
+const LinkHub = lazy(() => import("./pages/LinkHub"));
 
 // ── Suspense fallback (minimal, matches app background) ───────────────
 const RouteFallback = () => (
@@ -143,6 +144,7 @@ const App = () => {
                   <Route path="/partnership" element={<PageTransition><Partnership /></PageTransition>} />
                   <Route path="/founding-members" element={<PageTransition><FoundingMembers /></PageTransition>} />
                   <Route path="/media-kit" element={<PageTransition><MediaKit /></PageTransition>} />
+                  <Route path="/links" element={<PageTransition><LinkHub /></PageTransition>} />
                   <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
                 </Routes>
               </AnimatePresence>
