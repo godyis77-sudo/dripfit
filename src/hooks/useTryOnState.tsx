@@ -290,6 +290,7 @@ export function useTryOnState() {
     setProductLink(''); setLookItems([]); setClothingSaved(false); setSavedToItems(false);
     setShowPostUI(false); setShowLookItems(false); setLayerHistory([]);
     setSelectedQuickPick(null);
+    try { sessionStorage.removeItem(TRYON_STATE_KEY); } catch { /* ignore */ }
   };
 
   const handleAddAccessory = async (accessoryPhoto: string, accessoryCategory: string | null) => {
