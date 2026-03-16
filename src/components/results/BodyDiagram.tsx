@@ -189,7 +189,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   fill="hsl(45 88% 50%)"
                   initial={{ scale: 0, opacity: 0 }}
                   animate={mounted ? { scale: 1, opacity: 1 } : {}}
-                  transition={{ delay: overlay.delay + 0.5, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ delay: overlay.delay + 0.5, duration: 0.3, ease: LUXURY_EASE }}
                 />
               );
             })}
