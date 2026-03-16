@@ -73,6 +73,7 @@ const Browse = () => {
   const [retailerFilter, setRetailerFilter] = useState<string | null>(null);
   const [genreFilter, setGenreFilter] = useState<BrandGenre | null>(null);
   const [fitFilter, setFitFilter] = useState<string | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
   const { pendingClickout, beginClickout, confirmClickout, cancelClickout } =
@@ -87,6 +88,10 @@ const Browse = () => {
   const availableRetailers = useMemo(() => {
     const retailers = [...new Set(products.map(p => p.retailer))].sort();
     return retailers;
+  }, [products]);
+
+  const availableCategories = useMemo(() => {
+    return [...new Set(products.map(p => p.category))].sort();
   }, [products]);
 
   // Filter and sort
@@ -134,8 +139,12 @@ const Browse = () => {
       }
     }
 
+    if (categoryFilter) {
+      result = result.filter(p => p.category === categoryFilter);
+    }
+
     return result;
-  }, [products, sort, brandFilter, retailerFilter, genreFilter, fitFilter]);
+  }, [products, sort, brandFilter, retailerFilter, genreFilter, fitFilter, categoryFilter]);
 
   // Compute available fits from current products (to only show relevant pills)
   const availableFits = useMemo(() => {
@@ -146,7 +155,7 @@ const Browse = () => {
     return FIT_OPTIONS.filter(f => fits.has(f));
   }, [products]);
 
-  const activeFilterCount = (retailerFilter ? 1 : 0) + (genreFilter ? 1 : 0) + (fitFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0) + (brandFilter ? 1 : 0);
+  const activeFilterCount = (retailerFilter ? 1 : 0) + (genreFilter ? 1 : 0) + (fitFilter ? 1 : 0) + (categoryFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0) + (brandFilter ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
@@ -297,6 +306,36 @@ const Browse = () => {
                 </div>
               </div>
 
+              {/* Category filter */}
+              <div>
+                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Category</p>
+                <div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto">
+                  <button
+                    onClick={() => setCategoryFilter(null)}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                      !categoryFilter
+                        ? 'btn-luxury text-primary-foreground'
+                        : 'bg-background border border-border text-foreground/70'
+                    }`}
+                  >
+                    All
+                  </button>
+                  {availableCategories.map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => setCategoryFilter(cat === categoryFilter ? null : cat)}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                        categoryFilter === cat
+                          ? 'btn-luxury text-primary-foreground'
+                          : 'bg-background border border-border text-foreground/70'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Genre filter */}
               <div>
                 <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Genre</p>
@@ -362,7 +401,7 @@ const Browse = () => {
               {/* Clear filters */}
               {activeFilterCount > 0 && (
                 <button
-                  onClick={() => { setSort('default'); setBrandFilter(null); setRetailerFilter(null); setGenreFilter(null); setFitFilter(null); }}
+                  onClick={() => { setSort('default'); setBrandFilter(null); setRetailerFilter(null); setGenreFilter(null); setFitFilter(null); setCategoryFilter(null); }}
                   className="text-[10px] text-primary font-semibold"
                 >
                   Clear all filters
