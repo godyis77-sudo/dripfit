@@ -32,10 +32,12 @@ const CATEGORY_WEIGHTS: Record<string, Record<string, number>> = {
 // Structural measurements (shoulder, inseam, sleeve, shoe_length) are never adjusted.
 const FIT_ADJUSTABLE = new Set(["chest", "waist", "hip"]);
 
+// Positive offset = pretend user is larger → algorithm picks a size that's tighter on actual body (slim).
+// Negative offset = pretend user is smaller → algorithm picks a size that's looser on actual body (relaxed).
 const FIT_OFFSETS: Record<string, number> = {
-  slim: -1.5,
+  slim: 1.5,
   regular: 0,
-  relaxed: 2,
+  relaxed: -2,
 };
 
 function scoreMeasurement(userVal: number, min: number, max: number): number {
