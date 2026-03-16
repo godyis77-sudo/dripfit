@@ -68,7 +68,7 @@ const DEFAULT_WEIGHTS: Record<string, number> = {
  * Returns 0–1 (1 = perfect midpoint match), with graceful decay outside range.
  * Mirrors the server-side `scoreMeasurement` for consistency.
  */
-function scoreMeasurement(userVal: number, chartMin: number, chartMax: number): number {
+export function scoreMeasurement(userVal: number, chartMin: number, chartMax: number): number {
   const mid = (chartMin + chartMax) / 2;
   const rangeHalf = (chartMax - chartMin) / 2 || 1;
 
