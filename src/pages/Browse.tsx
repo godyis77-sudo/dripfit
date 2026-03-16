@@ -70,6 +70,7 @@ const Browse = () => {
   // search state removed — brand filter handled by BrandFilter component
   const [sort, setSort] = useState<SortKey>('default');
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
+  const [retailerFilter, setRetailerFilter] = useState<string | null>(null);
   const [genreFilter, setGenreFilter] = useState<BrandGenre | null>(null);
   const [fitFilter, setFitFilter] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -83,9 +84,9 @@ const Browse = () => {
   usePageTitle(`Browse ${title}`);
 
   // Extract available brands from loaded products
-  const availableBrands = useMemo(() => {
-    const brands = [...new Set(products.map(p => p.brand))].sort();
-    return brands;
+  const availableRetailers = useMemo(() => {
+    const retailers = [...new Set(products.map(p => p.retailer))].sort();
+    return retailers;
   }, [products]);
 
   // Filter and sort
@@ -94,6 +95,10 @@ const Browse = () => {
 
     if (brandFilter) {
       result = result.filter(p => p.brand === brandFilter);
+    }
+
+    if (retailerFilter) {
+      result = result.filter(p => p.retailer === retailerFilter);
     }
 
     if (genreFilter) {
@@ -130,7 +135,7 @@ const Browse = () => {
     }
 
     return result;
-  }, [products, sort, brandFilter, genreFilter, fitFilter]);
+  }, [products, sort, brandFilter, retailerFilter, genreFilter, fitFilter]);
 
   // Compute available fits from current products (to only show relevant pills)
   const availableFits = useMemo(() => {
@@ -141,7 +146,7 @@ const Browse = () => {
     return FIT_OPTIONS.filter(f => fits.has(f));
   }, [products]);
 
-  const activeFilterCount = (brandFilter ? 1 : 0) + (genreFilter ? 1 : 0) + (fitFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0);
+  const activeFilterCount = (retailerFilter ? 1 : 0) + (genreFilter ? 1 : 0) + (fitFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0) + (brandFilter ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
@@ -262,31 +267,31 @@ const Browse = () => {
                 </div>
               </div>
 
-              {/* Brand filter */}
+              {/* Retailer filter */}
               <div>
-                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Brand</p>
+                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Retailer</p>
                 <div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto">
                   <button
-                    onClick={() => setBrandFilter(null)}
+                    onClick={() => setRetailerFilter(null)}
                     className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
-                      !brandFilter
+                      !retailerFilter
                         ? 'btn-luxury text-primary-foreground'
                         : 'bg-background border border-border text-foreground/70'
                     }`}
                   >
                     All
                   </button>
-                  {availableBrands.map(brand => (
+                  {availableRetailers.map(retailer => (
                     <button
-                      key={brand}
-                      onClick={() => setBrandFilter(brand === brandFilter ? null : brand)}
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
-                        brandFilter === brand
+                      key={retailer}
+                      onClick={() => setRetailerFilter(retailer === retailerFilter ? null : retailer)}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                        retailerFilter === retailer
                           ? 'btn-luxury text-primary-foreground'
                           : 'bg-background border border-border text-foreground/70'
                       }`}
                     >
-                      {brand}
+                      {retailer}
                     </button>
                   ))}
                 </div>
@@ -357,7 +362,7 @@ const Browse = () => {
               {/* Clear filters */}
               {activeFilterCount > 0 && (
                 <button
-                  onClick={() => { setSort('default'); setBrandFilter(null); setGenreFilter(null); setFitFilter(null); }}
+                  onClick={() => { setSort('default'); setBrandFilter(null); setRetailerFilter(null); setGenreFilter(null); setFitFilter(null); }}
                   className="text-[10px] text-primary font-semibold"
                 >
                   Clear all filters
