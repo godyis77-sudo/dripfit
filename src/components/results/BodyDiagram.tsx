@@ -30,14 +30,14 @@ interface Overlay {
 
 // Calibrated to body-silhouette-clean.webp inside a 3/4 aspect box with object-contain
 const OVERLAYS: Overlay[] = [
-  { key: 'height',   label: 'HEIGHT',   side: 'left',  dotTop: 8,   dotLeft: 32, delay: 0 },
-  { key: 'shoulder', label: 'SHOULDER', side: 'right', dotTop: 19,  dotLeft: 64, delay: 0.08 },
+  { key: 'height',   label: 'HEIGHT',   side: 'left',  dotTop: 2,   dotLeft: 50, delay: 0 },
+  { key: 'shoulder', label: 'SHOULDER', side: 'right', dotTop: 18,  dotLeft: 68, delay: 0.08 },
   { key: 'chest',    label: 'CHEST',    side: 'left',  dotTop: 28,  dotLeft: 36, delay: 0.16 },
   { key: 'bust',     label: 'BUST',     side: 'right', dotTop: 31,  dotLeft: 59, delay: 0.24 },
-  { key: 'sleeve',   label: 'SLEEVE',   side: 'left',  dotTop: 38,  dotLeft: 23, delay: 0.32 },
+  { key: 'sleeve',   label: 'SLEEVE',   side: 'left',  dotTop: 35,  dotLeft: 28, delay: 0.32 },
   { key: 'waist',    label: 'WAIST',    side: 'right', dotTop: 43,  dotLeft: 57, delay: 0.40 },
   { key: 'hips',     label: 'HIPS',     side: 'right', dotTop: 51,  dotLeft: 60, delay: 0.48 },
-  { key: 'inseam',   label: 'INSEAM',   side: 'left',  dotTop: 70,  dotLeft: 44, delay: 0.56 },
+  { key: 'inseam',   label: 'INSEAM',   side: 'left',  dotTop: 68,  dotLeft: 48, delay: 0.56 },
 ];
 
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
@@ -89,7 +89,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               style={{
                 opacity: imageLoaded ? 1 : 0,
                 transition: 'opacity 0.5s ease-out',
-                filter: 'brightness(0.4) sepia(1) saturate(1.5) hue-rotate(5deg)',
+                filter: 'brightness(0.35) sepia(1) saturate(1.8) hue-rotate(5deg)',
               }}
             />
 
@@ -151,8 +151,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                     className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1 whitespace-nowrap"
                     style={
                       isLeft
-                        ? { right: '100%', marginRight: 5, flexDirection: 'row-reverse' }
-                        : { left: '100%', marginLeft: 5 }
+                        ? { right: '100%', marginRight: 8, flexDirection: 'row-reverse' as const }
+                        : { left: '100%', marginLeft: 8 }
                     }
                   >
                     {/* Gradient connector */}
