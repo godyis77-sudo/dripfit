@@ -139,8 +139,12 @@ const Browse = () => {
       }
     }
 
+    if (categoryFilter) {
+      result = result.filter(p => p.category === categoryFilter);
+    }
+
     return result;
-  }, [products, sort, brandFilter, retailerFilter, genreFilter, fitFilter]);
+  }, [products, sort, brandFilter, retailerFilter, genreFilter, fitFilter, categoryFilter]);
 
   // Compute available fits from current products (to only show relevant pills)
   const availableFits = useMemo(() => {
