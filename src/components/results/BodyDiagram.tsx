@@ -129,7 +129,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={mounted ? { pathLength: 1, opacity: 1 } : {}}
                 transition={{
-                  pathLength: { delay: i * 0.08, duration: 1.2, ease: [0.16, 1, 0.3, 1] },
+                  pathLength: { delay: i * 0.08, duration: 1.2, ease: LUXURY_EASE },
                   opacity: { delay: i * 0.08, duration: 0.3 },
                 }}
               />
