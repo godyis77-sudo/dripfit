@@ -24,6 +24,7 @@ export interface UserMeasurements {
   hips: MeasurementRange;
   inseam: MeasurementRange;
   sleeve?: MeasurementRange;
+  heightCm?: number;
 }
 
 // ── Fit offset only applies to circumference measurements ──
