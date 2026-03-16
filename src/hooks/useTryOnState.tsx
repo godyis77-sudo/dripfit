@@ -53,10 +53,23 @@ export function useTryOnState() {
   const [isPublic, setIsPublic] = useState(() => getDefaultSharePreference());
   const [shared, setShared] = useState(false);
   const [autoSaved, setAutoSaved] = useState(false);
-  const [productLink, setProductLink] = useState('');
+  const [productLink, setProductLinkRaw] = useState(persisted.productLink);
   const [lookItems, setLookItems] = useState<LookItem[]>([]);
-  const [category, setCategory] = useState<string>('top');
+  const [category, setCategoryRaw] = useState<string>(persisted.category);
   const [clothingSaved, setClothingSaved] = useState(false);
+
+  // Persist critical state to sessionStorage so it survives mobile camera handoff reloads
+  const persistState = useCallback((updates: Partial<{ userPhoto: string | null; clothingPhoto: string | null; productLink: string; category: string }>) => {
+    try {
+      const current = (() => { try { return JSON.parse(sessionStorage.getItem(TRYON_STATE_KEY) || '{}'); } catch { return {}; } })();
+      sessionStorage.setItem(TRYON_STATE_KEY, JSON.stringify({ ...current, ...updates }));
+    } catch { /* quota exceeded, ignore */ }
+  }, []);
+
+  const setUserPhoto = useCallback((v: string | null) => { setUserPhotoRaw(v); persistState({ userPhoto: v }); }, [persistState]);
+  const setClothingPhoto = useCallback((v: string | null) => { setClothingPhotoRaw(v); persistState({ clothingPhoto: v }); }, [persistState]);
+  const setProductLink = useCallback((v: string) => { setProductLinkRaw(v); persistState({ productLink: v }); }, [persistState]);
+  const setCategory = useCallback((v: string) => { setCategoryRaw(v); persistState({ category: v }); }, [persistState]);
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
   const [showWardrobe, setShowWardrobe] = useState(false);
   const [showPremiumGate, setShowPremiumGate] = useState(false);
