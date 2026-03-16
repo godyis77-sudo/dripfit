@@ -278,13 +278,13 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           <img
             src={hudScanBg}
             alt=""
-            className="absolute inset-0 w-full h-full object-cover opacity-50"
+            className="absolute inset-0 w-full h-full object-cover opacity-70"
             aria-hidden="true"
           />
-          {/* Dark base layer so silhouette is visible */}
-          <div className="absolute inset-0 bg-background/60" />
+          {/* Subtle dark wash — just enough to keep labels readable */}
+          <div className="absolute inset-0 bg-background/30" />
 
-          {/* Layer 1: Body silhouette with parallax + gold edge glow */}
+          {/* Layer 1: Body silhouette — bright gold tint, strong glow */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center"
             style={{ transform: `translateY(${parallaxY}px)` }}
@@ -292,10 +292,11 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             <img
               src={bodySilhouette}
               alt="Body measurement scan"
-              className="h-[90%] w-auto object-contain drop-shadow-[0_0_30px_hsl(42_76%_50%/0.25)]"
+              className="h-[88%] w-auto object-contain"
               onLoad={() => setImageLoaded(true)}
               style={{
-                filter: 'sepia(0.2) saturate(1.2) brightness(1.3) contrast(1.1)',
+                filter: 'sepia(0.35) saturate(1.6) brightness(1.6) contrast(1.05)',
+                dropShadow: '0 0 40px hsl(42 76% 50% / 0.4)',
               }}
             />
           </motion.div>
