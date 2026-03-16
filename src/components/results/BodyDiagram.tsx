@@ -557,12 +557,12 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             <svg className="absolute inset-0 w-full h-full pointer-events-none z-[4]" viewBox="0 0 100 100" preserveAspectRatio="none" fill="none">
               <defs>
                 <linearGradient id="lg-l" x1="1" y1="0" x2="0" y2="0">
-                  <stop offset="0%" stopColor="hsl(var(--primary) / 0.55)" />
-                  <stop offset="100%" stopColor="hsl(var(--primary) / 0.03)" />
+                  <stop offset="0%" stopColor="hsl(var(--primary) / 0.8)" />
+                  <stop offset="100%" stopColor="hsl(var(--primary) / 0.06)" />
                 </linearGradient>
                 <linearGradient id="lg-r" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="hsl(var(--primary) / 0.55)" />
-                  <stop offset="100%" stopColor="hsl(var(--primary) / 0.03)" />
+                  <stop offset="0%" stopColor="hsl(var(--primary) / 0.8)" />
+                  <stop offset="100%" stopColor="hsl(var(--primary) / 0.06)" />
                 </linearGradient>
               </defs>
               {activeOverlays.map(o => {
