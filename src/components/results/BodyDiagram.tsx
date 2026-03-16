@@ -28,14 +28,14 @@ interface MeasurementOverlay {
 }
 
 const OVERLAYS: MeasurementOverlay[] = [
-  { key: 'height',   label: 'HEIGHT',   side: 'left',  valTop: '10%',   delay: 0,    dotTop: '2%',   dotLeft: '12%' },
-  { key: 'shoulder', label: 'SHOULDER', side: 'right', valTop: '21%',   delay: 0.12, dotTop: '19%',  dotLeft: '68%' },
-  { key: 'chest',    label: 'CHEST',    side: 'left',  valTop: '26.5%', delay: 0.22, dotTop: '27%',  dotLeft: '32%' },
-  { key: 'bust',     label: 'BUST',     side: 'right', valTop: '28.5%', delay: 0.30, dotTop: '29%',  dotLeft: '68%' },
-  { key: 'sleeve',   label: 'SLEEVE',   side: 'left',  valTop: '36%',   delay: 0.38, dotTop: '35%',  dotLeft: '28%' },
-  { key: 'waist',    label: 'WAIST',    side: 'right', valTop: '40.5%', delay: 0.46, dotTop: '41%',  dotLeft: '68%' },
-  { key: 'hips',     label: 'HIPS',     side: 'right', valTop: '48.5%', delay: 0.54, dotTop: '49%',  dotLeft: '65%' },
-  { key: 'inseam',   label: 'INSEAM',   side: 'left',  valTop: '65%',   delay: 0.62, dotTop: '68%',  dotLeft: '48%' },
+  { key: 'height',   label: 'HEIGHT',   side: 'left',  valTop: '6%',    delay: 0,    dotTop: '2%',   dotLeft: '50%' },
+  { key: 'shoulder', label: 'SHOULDER', side: 'right', valTop: '18%',   delay: 0.12, dotTop: '20%',  dotLeft: '66%' },
+  { key: 'chest',    label: 'CHEST',    side: 'left',  valTop: '25%',   delay: 0.22, dotTop: '28%',  dotLeft: '38%' },
+  { key: 'bust',     label: 'BUST',     side: 'right', valTop: '27%',   delay: 0.30, dotTop: '30%',  dotLeft: '62%' },
+  { key: 'sleeve',   label: 'SLEEVE',   side: 'left',  valTop: '35%',   delay: 0.38, dotTop: '36%',  dotLeft: '30%' },
+  { key: 'waist',    label: 'WAIST',    side: 'right', valTop: '38%',   delay: 0.46, dotTop: '42%',  dotLeft: '60%' },
+  { key: 'hips',     label: 'HIPS',     side: 'right', valTop: '49%',   delay: 0.54, dotTop: '50%',  dotLeft: '62%' },
+  { key: 'inseam',   label: 'INSEAM',   side: 'left',  valTop: '65%',   delay: 0.62, dotTop: '67%',  dotLeft: '48%' },
 ];
 
 /* ── Number scramble on unit toggle ── */
@@ -157,20 +157,20 @@ const CornerBrackets = () => {
   );
 };
 
-/* ── HUD status bar ── */
+/* ── HUD status bar — positioned at bottom ── */
 const HudStatusBar = ({ useCm }: { useCm: boolean }) => (
   <motion.div
-    className="absolute top-1.5 left-1/2 -translate-x-1/2 z-[6] flex items-center gap-2"
-    initial={{ opacity: 0, y: -8 }}
+    className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-[6] flex items-center gap-2"
+    initial={{ opacity: 0, y: 6 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.8, duration: 0.5 }}
   >
-    <span className="text-[7px] font-mono uppercase tracking-[0.2em] text-primary/50">
+    <span className="text-[7px] font-mono uppercase tracking-[0.2em] text-primary/60">
       NEURAL MAP
     </span>
     <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_4px_1px_hsl(142_71%_45%/0.6)]" />
-    <span className="text-[7px] font-mono uppercase tracking-[0.2em] text-primary/50">
-      {useCm ? 'METRIC' : 'IMPERIAL'}
+    <span className="text-[7px] font-mono uppercase tracking-[0.2em] text-primary/40">
+      tap → {useCm ? 'imperial' : 'metric'}
     </span>
   </motion.div>
 );
@@ -254,14 +254,14 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               className="w-full max-w-[380px] object-contain"
               onLoad={() => setImageLoaded(true)}
               style={{
-                filter: 'sepia(0.4) saturate(1.5) brightness(0.75) contrast(1.15)',
+                filter: 'sepia(0.3) saturate(1.4) brightness(1.05) contrast(1.1)',
               }}
             />
             {/* Dark vignette overlay */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
-                background: 'radial-gradient(ellipse 70% 60% at 50% 45%, transparent 30%, hsl(220 15% 3% / 0.6) 100%)',
+                background: 'radial-gradient(ellipse 70% 60% at 50% 45%, transparent 40%, hsl(220 15% 3% / 0.45) 100%)',
               }}
             />
           </motion.div>
@@ -291,9 +291,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             >
               <defs>
                 <linearGradient id="line-grad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="hsl(42 76% 50% / 0)" />
-                  <stop offset="50%" stopColor="hsl(42 76% 50% / 0.5)" />
-                  <stop offset="100%" stopColor="hsl(42 76% 50% / 0)" />
+                  <stop offset="0%" stopColor="hsl(42 76% 55% / 0.1)" />
+                  <stop offset="50%" stopColor="hsl(42 76% 55% / 0.7)" />
+                  <stop offset="100%" stopColor="hsl(42 76% 55% / 0.1)" />
                 </linearGradient>
               </defs>
               {activeOverlays.map(overlay => {
@@ -307,8 +307,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                     key={`line-${overlay.key}`}
                     d={`M ${dotX} ${dotY} L ${labelX} ${labelY}`}
                     stroke="url(#line-grad)"
-                    strokeWidth="0.2"
-                    strokeDasharray="1 0.8"
+                    strokeWidth="0.35"
+                    strokeDasharray="1.5 0.6"
                     fill="none"
                     initial={{ pathLength: 0, opacity: 0 }}
                     animate={{ pathLength: 1, opacity: 1 }}
@@ -389,24 +389,6 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             );
           })}
 
-          {/* Unit toggle hint */}
-          <AnimatePresence>
-            {imageLoaded && (
-              <motion.div
-                className="absolute bottom-3 left-1/2 -translate-x-1/2 z-[6]"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 2, duration: 0.5 }}
-              >
-                <span
-                  className="text-[8px] font-mono uppercase tracking-[0.15em] text-primary/40 backdrop-blur-md rounded-full px-2.5 py-1 border border-primary/10"
-                  style={{ background: 'hsl(220 15% 3% / 0.5)' }}
-                >
-                  ◈ tap to toggle {useCm ? 'imperial' : 'metric'} ◈
-                </span>
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           {/* Outer frame with enhanced glow */}
           <div
