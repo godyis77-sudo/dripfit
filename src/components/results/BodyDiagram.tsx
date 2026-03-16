@@ -488,7 +488,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
             <div className="relative h-[92%] w-[58%] max-w-[245px]">
-              {/* Layer 1: Wide atmospheric glow */}
+              {/* Layer 1: Wide atmospheric glow — 4× intensified */}
               <img
                 src={silhouetteSrc}
                 alt=""
@@ -499,7 +499,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 }}
               />
 
-              {/* Layer 2: Mid bloom */}
+              {/* Layer 2: Mid bloom — 4× intensified */}
               <img
                 src={silhouetteSrc}
                 alt=""
@@ -510,7 +510,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 }}
               />
 
-              {/* Layer 3: Tight edge glow */}
+              {/* Layer 3: Tight edge glow — 4× intensified */}
               <img
                 src={silhouetteSrc}
                 alt=""
@@ -521,7 +521,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 }}
               />
 
-              {/* Layer 4: Main silhouette — crisp */}
+              {/* Layer 4: Main silhouette — crisp, boosted */}
               <img
                 src={silhouetteSrc}
                 alt="Body measurement scan"
@@ -529,40 +529,6 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 onLoad={() => setImageLoaded(true)}
                 style={{
                   filter: 'saturate(2) brightness(2.5) contrast(1.4) drop-shadow(0 0 12px hsl(var(--primary) / 0.9)) drop-shadow(0 0 4px hsl(var(--primary) / 1))',
-                }}
-              />
-
-              {/* Layer 5: Edge trace — blackened silhouette with bright gold outline via stacked drop-shadows */}
-              <img
-                src={silhouetteSrc}
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 z-[3] h-full w-full object-contain pointer-events-none"
-                style={{
-                  filter: `
-                    brightness(0)
-                    drop-shadow(0 0 1px hsl(var(--primary) / 1))
-                    drop-shadow(0 0 2px hsl(var(--primary) / 1))
-                    drop-shadow(0 0 4px hsl(var(--primary) / 0.9))
-                    drop-shadow(0 0 8px hsl(var(--primary) / 0.7))
-                    drop-shadow(0 0 16px hsl(var(--primary) / 0.4))
-                  `.trim(),
-                }}
-              />
-
-              {/* Layer 6: Second trace pass for extra crisp outline */}
-              <img
-                src={silhouetteSrc}
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 z-[4] h-full w-full object-contain pointer-events-none opacity-70"
-                style={{
-                  filter: `
-                    brightness(0)
-                    drop-shadow(0 0 1px hsl(45 100% 65% / 1))
-                    drop-shadow(0 0 2px hsl(45 100% 55% / 0.9))
-                    drop-shadow(0 0 3px hsl(40 100% 50% / 0.7))
-                  `.trim(),
                 }}
               />
             </div>
