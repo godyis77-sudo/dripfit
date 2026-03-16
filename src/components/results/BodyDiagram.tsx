@@ -417,8 +417,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 }}
               />
 
-              {/* Layer 3: Tight edge glow — 4× intensified */}
-              <img
+              {/* Layer 3: Tight edge glow — pulsing outline */}
+              <motion.img
                 src={silhouetteSrc}
                 alt=""
                 aria-hidden="true"
@@ -426,6 +426,14 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 style={{
                   filter: 'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
                 }}
+                animate={{
+                  filter: [
+                    'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
+                    'blur(3px) brightness(6) saturate(2.5) drop-shadow(0 0 20px hsl(var(--primary) / 1)) drop-shadow(0 0 40px hsl(var(--primary) / 0.9))',
+                    'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
+                  ],
+                }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
               />
 
               {/* Layer 4: Main silhouette — crisp, boosted */}
