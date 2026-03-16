@@ -79,6 +79,7 @@ const TryOnResultSection = ({
   const accessoryCameraRef = useRef<HTMLInputElement>(null);
   const accessorySectionRef = useRef<HTMLDivElement>(null);
   const [accessoryStepIndex, setAccessoryStepIndex] = useState(0);
+  const [showResultFullscreen, setShowResultFullscreen] = useState(false);
 
   const handleAddToWardrobe = async (item: WhatsLookItem) => {
     if (!authUser) {
