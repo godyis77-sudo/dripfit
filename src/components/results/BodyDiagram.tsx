@@ -529,6 +529,12 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {/* Effects: Tick marks */}
           {imageLoaded && <TickMarks />}
 
+          {/* Effects: CRT scanlines */}
+          {imageLoaded && <CrtOverlay />}
+
+          {/* Effects: Crosshair reticle */}
+          {imageLoaded && <Crosshair />}
+
           {/* Effects: Scan lines */}
           {imageLoaded && <ScanLines />}
 
@@ -537,6 +543,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
           {/* Effects: Corner brackets */}
           {imageLoaded && <CornerBrackets />}
+
+          {/* Effects: Micro readouts */}
+          {imageLoaded && <MicroReadouts />}
 
           {/* Data: SVG leader lines */}
           {imageLoaded && (
