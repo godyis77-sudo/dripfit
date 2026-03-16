@@ -13,6 +13,95 @@ const fmtHeightFtIn = (cm: number) => {
 };
 const LUXURY_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
+const createProcessedSilhouette = (imageSrc: string): Promise<string> =>
+  new Promise((resolve) => {
+    const img = new Image();
+    img.decoding = 'async';
+    img.src = imageSrc;
+
+    img.onload = () => {
+      const working = document.createElement('canvas');
+      working.width = img.naturalWidth;
+      working.height = img.naturalHeight;
+
+      const ctx = working.getContext('2d');
+      if (!ctx) {
+        resolve(imageSrc);
+        return;
+      }
+
+      ctx.drawImage(img, 0, 0);
+      const frame = ctx.getImageData(0, 0, working.width, working.height);
+      const px = frame.data;
+
+      let minX = working.width;
+      let minY = working.height;
+      let maxX = -1;
+      let maxY = -1;
+
+      for (let i = 0; i < px.length; i += 4) {
+        const r = px[i];
+        const g = px[i + 1];
+        const b = px[i + 2];
+        const currentAlpha = px[i + 3];
+
+        if (currentAlpha === 0) continue;
+
+        const chroma = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(r - b));
+        const brightness = (r + g + b) / 3;
+        const neutralTone = chroma < 26;
+
+        if (neutralTone && brightness > 74) {
+          px[i + 3] = 0;
+          continue;
+        }
+
+        if (neutralTone && brightness > 36) {
+          const fade = Math.max(0, Math.min(1, (74 - brightness) / 38));
+          px[i + 3] = Math.round(currentAlpha * fade * 0.35);
+        }
+
+        if (px[i + 3] > 8) {
+          const pixelIndex = i / 4;
+          const x = pixelIndex % working.width;
+          const y = Math.floor(pixelIndex / working.width);
+          minX = Math.min(minX, x);
+          minY = Math.min(minY, y);
+          maxX = Math.max(maxX, x);
+          maxY = Math.max(maxY, y);
+        }
+      }
+
+      ctx.putImageData(frame, 0, 0);
+
+      if (maxX < 0 || maxY < 0) {
+        resolve(imageSrc);
+        return;
+      }
+
+      const padding = 6;
+      const sx = Math.max(0, minX - padding);
+      const sy = Math.max(0, minY - padding);
+      const sw = Math.min(working.width - sx, maxX - minX + 1 + padding * 2);
+      const sh = Math.min(working.height - sy, maxY - minY + 1 + padding * 2);
+
+      const cropped = document.createElement('canvas');
+      cropped.width = sw;
+      cropped.height = sh;
+
+      const croppedCtx = cropped.getContext('2d');
+      if (!croppedCtx) {
+        resolve(imageSrc);
+        return;
+      }
+
+      croppedCtx.drawImage(working, sx, sy, sw, sh, 0, 0, sw, sh);
+      resolve(cropped.toDataURL('image/png'));
+    };
+
+    img.onerror = () => resolve(imageSrc);
+  });
+
 interface BodyDiagramProps {
   measurements: Record<string, MeasurementRange>;
   heightCm: number;
