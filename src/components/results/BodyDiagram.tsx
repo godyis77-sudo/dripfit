@@ -1,7 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import type { MeasurementRange } from '@/lib/types';
-import bodySilhouette from '@/assets/body-silhouette-clean.webp';
+import scanResultsFull from '@/assets/scan-results-full.jpg';
 import { getUseCm } from '@/lib/session';
 
 const CM_TO_IN = 0.3937;
@@ -21,20 +21,19 @@ interface MeasurementOverlay {
   key: string;
   label: string;
   side: 'left' | 'right';
-  dotTop: string;
-  dotLeft: string;
+  valTop: string;
   delay: number;
 }
 
 const OVERLAYS: MeasurementOverlay[] = [
-  { key: 'height',   label: 'HEIGHT',   side: 'left',  dotTop: '10%',   dotLeft: '30%', delay: 0 },
-  { key: 'shoulder', label: 'SHOULDER', side: 'right', dotTop: '18%',   dotLeft: '65%', delay: 0.08 },
-  { key: 'chest',    label: 'CHEST',    side: 'left',  dotTop: '27%',   dotLeft: '35%', delay: 0.16 },
-  { key: 'bust',     label: 'BUST',     side: 'right', dotTop: '30%',   dotLeft: '60%', delay: 0.24 },
-  { key: 'sleeve',   label: 'SLEEVE',   side: 'left',  dotTop: '36%',   dotLeft: '22%', delay: 0.32 },
-  { key: 'waist',    label: 'WAIST',    side: 'right', dotTop: '42%',   dotLeft: '58%', delay: 0.40 },
-  { key: 'hips',     label: 'HIPS',     side: 'right', dotTop: '50%',   dotLeft: '60%', delay: 0.48 },
-  { key: 'inseam',   label: 'INSEAM',   side: 'left',  dotTop: '68%',   dotLeft: '42%', delay: 0.56 },
+  { key: 'height', label: 'HEIGHT', side: 'left', valTop: '10%', delay: 0 },
+  { key: 'shoulder', label: 'SHOULDER', side: 'right', valTop: '21%', delay: 0.05 },
+  { key: 'chest', label: 'CHEST', side: 'left', valTop: '26.5%', delay: 0.1 },
+  { key: 'bust', label: 'BUST', side: 'right', valTop: '28.5%', delay: 0.15 },
+  { key: 'sleeve', label: 'SLEEVE', side: 'left', valTop: '36%', delay: 0.2 },
+  { key: 'waist', label: 'WAIST', side: 'right', valTop: '40.5%', delay: 0.25 },
+  { key: 'hips', label: 'HIPS', side: 'right', valTop: '48.5%', delay: 0.3 },
+  { key: 'inseam', label: 'INSEAM', side: 'left', valTop: '65%', delay: 0.35 },
 ];
 
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
@@ -54,17 +53,11 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
       : { line1: fmtIn(range), line2: fmtCm(range) };
   };
 
-  const silhouetteUrl = useMemo(() => bodySilhouette, []);
-
   return (
     <div className="mb-4">
+      
       <div className="flex justify-center">
-        <div
-          className="relative w-full max-w-[320px]"
-          style={{
-            filter: 'drop-shadow(0 0 20px hsl(45 90% 60% / 0.4)) drop-shadow(0 0 50px hsl(45 88% 50% / 0.15))',
-          }}
-        >
+        <div className="relative rounded-[1rem] border-[3px] border-primary" style={{ boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15), inset 0 0 14px 3px hsl(45 88% 50% / 0.2)' }}>
           <span className="sr-only">
             {`Body measurements diagram: ${[
               `Height ${heightCm} cm`,
@@ -73,123 +66,53 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 .map(l => `${l.label} ${measurements[l.key].min.toFixed(0)}–${measurements[l.key].max.toFixed(0)} cm`),
             ].join(', ')}.`}
           </span>
-
-          {/* Base silhouette */}
-          <img
-            src={silhouetteUrl}
-            alt="Body silhouette"
-            className="w-full h-auto relative z-[1]"
-            onLoad={() => setImageLoaded(true)}
-            style={{ opacity: imageLoaded ? 0.85 : 0 , transition: 'opacity 0.5s ease-out' }}
-          />
-
-          {/* Holographic grid overlay — masked to body shape */}
-          {imageLoaded && (
-            <motion.div
-              className="absolute inset-0 z-[2] pointer-events-none"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1.2, ease: 'easeOut' }}
-              style={{
-                backgroundImage:
-                  'linear-gradient(hsl(45 88% 50% / 0.15) 1px, transparent 1px), linear-gradient(90deg, hsl(45 88% 50% / 0.15) 1px, transparent 1px)',
-                backgroundSize: '18px 18px',
-                WebkitMaskImage: `url(${silhouetteUrl})`,
-                WebkitMaskSize: 'contain',
-                WebkitMaskRepeat: 'no-repeat',
-                WebkitMaskPosition: 'center',
-                maskImage: `url(${silhouetteUrl})`,
-                maskSize: 'contain',
-                maskRepeat: 'no-repeat',
-                maskPosition: 'center',
-              }}
+          <div className="overflow-hidden rounded-[calc(1rem-3px)]">
+            <img
+              src={scanResultsFull}
+              alt="Body measurement scan results"
+              className="w-full max-w-[380px] object-cover"
+              onLoad={() => setImageLoaded(true)}
             />
-          )}
+          </div>
 
-          {/* Inner volumetric glow — also masked */}
-          {imageLoaded && (
-            <div
-              className="absolute inset-0 z-[3] pointer-events-none"
-              style={{
-                background: 'radial-gradient(ellipse 60% 80% at 50% 45%, hsl(45 88% 50% / 0.12), transparent 70%)',
-                WebkitMaskImage: `url(${silhouetteUrl})`,
-                WebkitMaskSize: 'contain',
-                WebkitMaskRepeat: 'no-repeat',
-                WebkitMaskPosition: 'center',
-                maskImage: `url(${silhouetteUrl})`,
-                maskSize: 'contain',
-                maskRepeat: 'no-repeat',
-                maskPosition: 'center',
-              }}
-            />
-          )}
-
-          {/* Measurement callouts: dots + lines + labels */}
+          {/* Dynamic measurement value overlays */}
           {imageLoaded && OVERLAYS.map((overlay) => {
             const val = getValue(overlay.key);
             if (!val) return null;
-            const isLeft = overlay.side === 'left';
 
             return (
               <motion.div
                 key={overlay.key}
-                className="absolute z-[5]"
-                style={{ top: overlay.dotTop, left: overlay.dotLeft }}
+                className="absolute"
+                style={{
+                  top: overlay.valTop,
+                  ...(overlay.side === 'left'
+                    ? { left: '3.5%' }
+                    : { right: '3.5%' }),
+                }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: overlay.delay + 0.5, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ delay: overlay.delay + 0.3, duration: 0.3, ease: 'easeOut' }}
               >
-                {/* Sonar pulse rings */}
-                <span className="absolute -inset-[6px] rounded-full border border-primary/40 animate-[sonar-ping_2s_ease-out_infinite]" />
-                <span className="absolute -inset-[3px] rounded-full border border-primary/60 animate-[sonar-ping_2s_ease-out_0.3s_infinite]" />
-                {/* Gold dot */}
-                <span
-                  className="block w-[6px] h-[6px] rounded-full"
-                  style={{
-                    background: 'radial-gradient(circle, hsl(45 95% 70%), hsl(45 88% 50%))',
-                    boxShadow: '0 0 6px 2px hsl(45 88% 50% / 0.7)',
-                  }}
-                />
-
-                {/* Connecting line + label */}
-                <div
-                  className="absolute top-1/2 -translate-y-1/2 flex items-center gap-1.5 whitespace-nowrap"
-                  style={isLeft ? { right: '100%', marginRight: 6, flexDirection: 'row-reverse' } : { left: '100%', marginLeft: 6 }}
-                >
-                  {/* Thin gradient connector */}
-                  <span
-                    className="block h-[0.5px] w-6"
-                    style={{
-                      background: isLeft
-                        ? 'linear-gradient(to left, hsl(45 88% 50% / 0.8), transparent)'
-                        : 'linear-gradient(to right, hsl(45 88% 50% / 0.8), transparent)',
-                    }}
-                  />
-                  {/* Label card */}
-                  <div
-                    className="rounded-md px-2 py-1"
-                    style={{
-                      background: 'hsl(0 0% 0% / 0.6)',
-                      backdropFilter: 'blur(12px)',
-                      WebkitBackdropFilter: 'blur(12px)',
-                      border: '0.5px solid hsl(45 88% 50% / 0.2)',
-                      textAlign: isLeft ? 'right' : 'left',
-                    }}
+                <div style={{ textAlign: overlay.side === 'left' ? 'left' : 'right' }}>
+                  <p
+                    className="text-[11px] font-black leading-tight"
+                    style={{ color: '#000' }}
                   >
-                    <p className="text-[9px] font-bold tracking-widest text-primary/70 leading-none mb-0.5">
-                      {overlay.label}
-                    </p>
-                    <p className="text-[11px] font-black text-foreground leading-tight">
-                      {val.line1}
-                    </p>
-                    <p className="text-[9px] font-medium text-muted-foreground leading-tight">
-                      {val.line2}
-                    </p>
-                  </div>
+                    {val.line1}
+                  </p>
+                  <p
+                    className="text-[11px] font-black leading-tight"
+                    style={{ color: '#000' }}
+                  >
+                    {val.line2}
+                  </p>
                 </div>
               </motion.div>
             );
           })}
+
+          <div className="absolute -inset-[7px] rounded-[calc(1rem+4px)] border-[4px] border-black pointer-events-none" style={{ boxShadow: 'inset 0 0 8px 2px hsl(45 88% 50% / 0.7), 0 0 10px 2px hsl(45 88% 50% / 0.6), 0 0 20px 4px hsl(45 88% 50% / 0.25)' }} />
         </div>
       </div>
     </div>
