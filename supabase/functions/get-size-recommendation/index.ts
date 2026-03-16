@@ -284,23 +284,32 @@ Deno.serve(async (req) => {
     let fitStatus: string;
     if (confidence >= 0.90) fitStatus = "true_to_size";
     else if (confidence >= 0.75) fitStatus = "good_fit";
-    else if (confidence >= 0.60) fitStatus = "between_sizes";
+    else if (confidence >= 0.50) fitStatus = "between_sizes";
     else fitStatus = "out_of_range";
 
+    // Determine second option from RAW scores (honest "between sizes" check)
     let secondOption: string | null = null;
-    if (secondFit && bestFit.score - secondFit.score < 0.15 && bestFit.score >= 0.60 && secondFit.score >= 0.60) {
+    const rawSecond = rawScored.length > 1 ? rawScored[1] : null;
+    if (rawSecond && Math.abs(rawMatchForBest.score - rawSecond.score) < 0.15 && rawSecond.score >= 0.45) {
       fitStatus = "between_sizes";
-      secondOption = secondFit.label;
+      secondOption = rawSecond.label;
     }
+
+    // Sort the two size labels in ascending size order for display
+    const sortedPair = secondOption
+      ? [bestFit.label, secondOption].sort((a, b) => sizeIndex(a) - sizeIndex(b))
+      : [bestFit.label, secondFit?.label ?? bestFit.label].sort((a, b) => sizeIndex(a) - sizeIndex(b));
 
     let fitNotes: string;
     const brandName = chart.brand_name;
-    const fitLabel = fit === "slim" ? "a slimmer" : fit === "relaxed" ? "a relaxed" : "a regular";
-    const avgStep = adjustableKeys.length > 0
-      ? adjustableKeys.reduce((sum, k) => sum + (gradeSteps[k] ?? 0), 0) / adjustableKeys.length
+    const fitLabel = fit === "slim" ? "a slimmer" : fit === "relaxed" ? "a relaxed" : "your best";
+    // Only average keys that actually have grade step data
+    const keysWithData = adjustableKeys.filter(k => gradeSteps[k] != null && gradeSteps[k] > 0);
+    const avgStep = keysWithData.length > 0
+      ? keysWithData.reduce((sum, k) => sum + gradeSteps[k], 0) / keysWithData.length
       : 0;
     const offsetCm = Math.abs(fitFraction * avgStep);
-    const offsetNote = fitFraction !== 0 ? ` (${offsetCm.toFixed(1)}cm ${fit === "slim" ? "tighter" : "looser"} than true-to-size)` : "";
+    const offsetNote = fitFraction !== 0 && offsetCm > 0.1 ? ` (${offsetCm.toFixed(1)}cm ${fit === "slim" ? "tighter" : "looser"} than true-to-size)` : "";
 
     switch (fitStatus) {
       case "true_to_size":
@@ -310,7 +319,7 @@ Deno.serve(async (req) => {
         fitNotes = `${bestFit.label} fits well in ${brandName} ${category}${offsetNote}.`;
         break;
       case "between_sizes":
-        fitNotes = `You are between ${bestFit.label} and ${secondOption || (secondFit?.label ?? bestFit.label)}. Size ${bestFit.label} for ${fitLabel} fit${offsetNote}.`;
+        fitNotes = `You are between ${sortedPair[0]} and ${sortedPair[1]}. Size ${bestFit.label} for ${fitLabel} fit${offsetNote}.`;
         break;
       default:
         fitNotes = `Your measurements fall outside ${brandName}'s standard ${category} range${offsetNote}. Check their extended sizing.`;
