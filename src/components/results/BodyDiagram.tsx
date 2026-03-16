@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { MeasurementRange } from '@/lib/types';
-import scanResultsFull from '@/assets/scan-results-full.jpg';
+import bodySilhouette from '@/assets/body-silhouette-clean.webp';
 import { getUseCm, setUseCm } from '@/lib/session';
 
 const CM_TO_IN = 0.3937;
