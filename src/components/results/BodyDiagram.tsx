@@ -498,6 +498,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 className="absolute inset-0 h-full w-full object-contain opacity-80 pointer-events-none"
                 style={{
                   filter: 'blur(20px) brightness(8) saturate(3) drop-shadow(0 0 80px hsl(var(--primary) / 1)) drop-shadow(0 0 140px hsl(var(--primary) / 0.6))',
+                  WebkitMaskImage: SILHOUETTE_EDGE_MASK, maskImage: SILHOUETTE_EDGE_MASK,
                 }}
               />
 
