@@ -173,9 +173,14 @@ const TryOnResultSection = ({
           animate={{ boxShadow: ['0 0 0 0 hsla(var(--primary), 0)', '0 0 20px 4px hsla(var(--primary), 0.3)', '0 0 0 0 hsla(var(--primary), 0)'] }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <FullscreenImage src={resultImage} alt="Try-on result">
+          <button
+            type="button"
+            onClick={() => setShowResultFullscreen(true)}
+            className="block w-full cursor-zoom-in"
+            aria-label="Open try-on result full screen"
+          >
             <img src={resultImage} alt="Try-on result" className="w-full rounded-xl" />
-          </FullscreenImage>
+          </button>
         </motion.div>
 
         {/* What's In This Look */}
