@@ -809,7 +809,26 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
               />
 
-              {/* ═══ MAIN SILHOUETTE (FOREGROUND FOCUS PLANE) ═══ */}
+              {/* ═══ GHOST SHADOW — soft gradient behind silhouette, pulses in sync ═══ */}
+              <motion.img
+                src={silhouetteSrc}
+                alt="" aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
+                style={{
+                  filter: 'blur(22px) brightness(3) saturate(1.8)',
+                  opacity: 0.25,
+                  maskImage: 'radial-gradient(ellipse 80% 85% at 50% 45%, black 30%, transparent 75%)',
+                  WebkitMaskImage: 'radial-gradient(ellipse 80% 85% at 50% 45%, black 30%, transparent 75%)',
+                  willChange: 'transform, opacity',
+                }}
+                animate={{
+                  scale: [1.06, 1.1, 1.06],
+                  opacity: [0.2, 0.35, 0.2],
+                }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              />
+
+              {/* ═══ MAIN SILHOUETTE (FOREGROUND FOCUS PLANE) — pulses in sync with ghost ═══ */}
               <motion.img
                 src={silhouetteSrc}
                 alt="Body measurement scan"
@@ -820,10 +839,15 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   willChange: 'transform',
                 }}
                 animate={{
+                  scale: [1, 1.015, 1],
                   rotateY: [0, 3, 0, -3, 0],
                   rotateX: [0, -1.5, 0, 1.5, 0],
                 }}
-                transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+                transition={{
+                  scale: { duration: 3, repeat: Infinity, ease: 'easeInOut' },
+                  rotateY: { duration: 7, repeat: Infinity, ease: 'easeInOut' },
+                  rotateX: { duration: 7, repeat: Infinity, ease: 'easeInOut' },
+                }}
               />
 
               {/* ═══ FOREGROUND OVERLAY LAYERS ═══ */}
