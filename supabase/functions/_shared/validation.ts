@@ -52,6 +52,9 @@ const ALLOWED_ORIGINS = [
   "https://id-preview--b5532855-3564-4058-bfa7-f16633b8e311.lovable.app",
   "https://b5532855-3564-4058-bfa7-f16633b8e311.lovableproject.com",
   "http://localhost:5173",
+  "capacitor://localhost",
+  "http://localhost",
+  "http://localhost:8080",
 ];
 
 export function getCorsHeaders(req: Request): Record<string, string> {
