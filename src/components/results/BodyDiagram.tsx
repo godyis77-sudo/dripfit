@@ -871,24 +871,15 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
               {/* Layer 1: Wide dark shadow — offset right+down for cast-shadow depth */}
               <motion.div
-                className="absolute inset-0 pointer-events-none"
+                className="absolute -inset-4 pointer-events-none"
                 style={{
-                  background: 'hsl(220 20% 2% / 0.9)',
-                  WebkitMaskImage: `url(${bodySilhouetteMask})`,
-                  maskImage: `url(${bodySilhouetteMask})`,
-                  WebkitMaskRepeat: 'no-repeat',
-                  maskRepeat: 'no-repeat',
-                  WebkitMaskPosition: 'center',
-                  maskPosition: 'center',
-                  WebkitMaskSize: 'contain',
-                  maskSize: 'contain',
-                  filter: 'blur(18px)',
-                  transform: 'translateX(3%) translateY(2.5%)',
+                  background: 'radial-gradient(ellipse 70% 75% at 53% 47%, hsl(220 20% 2% / 0.7) 20%, transparent 70%)',
+                  filter: 'blur(28px)',
                   willChange: 'transform, opacity',
                 } as React.CSSProperties}
                 animate={{
-                  scale: [1.06, 1.14, 1.06],
-                  opacity: [0.45, 0.7, 0.45],
+                  scale: [1.08, 1.16, 1.08],
+                  opacity: [0.35, 0.55, 0.35],
                 }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
