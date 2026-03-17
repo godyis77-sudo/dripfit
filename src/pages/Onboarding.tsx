@@ -443,7 +443,7 @@ const Onboarding = () => {
               {/* Top section: image + text */}
               <div className="flex flex-col items-center min-h-0 flex-1">
                 <div className="min-h-0 flex-1 flex items-center">
-                  <ScanPreviewCard height={280} />
+                  <DecorativeSilhouette height={280} />
                 </div>
 
                 <h2 className="font-display text-lg font-bold text-foreground mb-0.5 text-center mt-1 shrink-0">Let's get your measurements</h2>
