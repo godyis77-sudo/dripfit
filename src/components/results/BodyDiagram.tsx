@@ -670,14 +670,12 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
             ref={parallaxRef}
           >
-            <motion.div
-              className="h-[90%] w-[42%]"
+            <div
+              className={`h-[90%] w-[42%] ${liteMode ? 'hud-ambient-pulse-lite' : 'hud-ambient-pulse'}`}
               style={{
                 background: 'radial-gradient(ellipse at 50% 45%, hsl(var(--primary) / 0.22) 0%, hsl(var(--primary) / 0.08) 40%, transparent 70%)',
                 filter: liteMode ? 'blur(14px)' : 'blur(25px)',
               }}
-              animate={liteMode ? { scale: [1, 1.01, 1] } : { scale: [1, 1.02, 1], opacity: [1, 0.15, 1] }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
             />
           </div>
 
