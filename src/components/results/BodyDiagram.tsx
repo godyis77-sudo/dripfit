@@ -107,7 +107,7 @@ const ScanLines = () => (
       }}
       initial={{ top: '0%' }}
       animate={{ top: ['0%', '100%', '0%'] }}
-      transition={{ duration: 3, ease: 'linear', repeat: Infinity }}
+      transition={{ duration: 6, ease: 'linear', repeat: Infinity }}
     />
     <motion.div
       className="absolute left-0 right-0 h-[1px] z-[3] pointer-events-none opacity-40"
