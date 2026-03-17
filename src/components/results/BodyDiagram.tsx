@@ -944,7 +944,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               <motion.img
                 src={silhouetteSrc}
                 alt="" aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
+                className="absolute inset-0 h-full w-full object-contain pointer-events-none z-[1]"
                 style={{
                   filter: 'blur(14px) brightness(6) saturate(2.5) drop-shadow(0 0 40px hsl(var(--primary) / 0.85))',
                   willChange: 'transform, opacity',
