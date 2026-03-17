@@ -644,6 +644,20 @@ Respond ONLY with valid JSON (no markdown):
   "reason": "brief explanation"
 }`;
 
+  // Sanitize image URL: encode any non-ASCII or special chars the AI gateway rejects
+  let safeImageUrl = product.image_url;
+  try {
+    const parsed = new URL(product.image_url);
+    // Re-encode the pathname to ensure valid URL characters
+    parsed.pathname = parsed.pathname
+      .split("/")
+      .map(segment => encodeURIComponent(decodeURIComponent(segment)))
+      .join("/");
+    safeImageUrl = parsed.toString();
+  } catch {
+    // If URL parsing fails, use as-is
+  }
+
   const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -657,7 +671,7 @@ Respond ONLY with valid JSON (no markdown):
           role: "user",
           content: [
             { type: "text", text: prompt },
-            { type: "image_url", image_url: { url: product.image_url } },
+            { type: "image_url", image_url: { url: safeImageUrl } },
           ],
         },
       ],
