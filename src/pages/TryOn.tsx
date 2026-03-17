@@ -313,8 +313,12 @@ const TryOn = () => {
                                     {availableFits.map(fit => (
                                       <button
                                         key={fit}
-                                        onClick={() => {/* fit filter not wired to catalog grid yet */}}
-                                        className="px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize bg-background border border-border text-foreground/70"
+                                        onClick={() => s.setSelectedFit(fit === s.selectedFit ? null : fit)}
+                                        className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                                          s.selectedFit === fit
+                                            ? 'btn-luxury text-primary-foreground'
+                                            : 'bg-background border border-border text-foreground/70'
+                                        }`}
                                       >
                                         {fit}
                                       </button>
