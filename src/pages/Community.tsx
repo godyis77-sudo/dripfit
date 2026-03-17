@@ -2,9 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowUp, Sparkles, Loader2, ShoppingCart, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowUp } from 'lucide-react';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -14,41 +13,21 @@ import { navigateToTryOn } from '@/lib/tryonNavigate';
 import BottomTabBar from '@/components/BottomTabBar';
 import PostLookFlow from '@/components/community/PostLookFlow';
 import { PostDetailSheet } from '@/components/community/PostDetailSheet';
-import BrandFilter from '@/components/tryon/BrandFilter';
-import { BRAND_GENRES } from '@/lib/brandGenres';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
-import PostCard from '@/components/community/PostCard';
-import EmptyStates from '@/components/community/EmptyStates';
 import { useCommunityFeed } from '@/hooks/useCommunityFeed';
 import { useCart } from '@/hooks/useCart';
-import type { Post, FilterType, TrendingSort, GenderKey } from '@/components/community/community-types';
-import { GENDER_OPTIONS, isValidImageUrl } from '@/components/community/community-types';
-import type { BrandGenre } from '@/lib/brandGenres';
 import { useProductCatalog } from '@/hooks/useProductCatalog';
+import { isValidImageUrl } from '@/components/community/community-types';
+import type { Post, FilterType, TrendingSort, GenderKey } from '@/components/community/community-types';
+import type { BrandGenre } from '@/lib/brandGenres';
 
-const SHOP_CATEGORIES = [
-  { key: 'all', label: 'All' }, { key: 'tops', label: 'Tops' }, { key: 't-shirts', label: 'T-Shirts' },
-  { key: 'shirts', label: 'Shirts' }, { key: 'polos', label: 'Polos' }, { key: 'sweaters', label: 'Sweaters' },
-  { key: 'hoodies', label: 'Hoodies' }, { key: 'bottom', label: 'Bottoms' }, { key: 'pants', label: 'Pants' },
-  { key: 'jeans', label: 'Jeans' }, { key: 'shorts', label: 'Shorts' }, { key: 'skirts', label: 'Skirts' },
-  { key: 'leggings', label: 'Leggings' }, { key: 'dresses', label: 'Dresses' }, { key: 'jumpsuits', label: 'Jumpsuits' },
-  { key: 'outerwear', label: 'Outerwear' }, { key: 'jackets', label: 'Jackets' }, { key: 'coats', label: 'Coats' },
-  { key: 'blazers', label: 'Blazers' }, { key: 'vests', label: 'Vests' }, { key: 'shoes', label: 'Shoes' },
-  { key: 'sneakers', label: 'Sneakers' }, { key: 'boots', label: 'Boots' }, { key: 'sandals', label: 'Sandals' },
-  { key: 'loafers', label: 'Loafers' }, { key: 'heels', label: 'Heels' }, { key: 'activewear', label: 'Activewear' },
-  { key: 'swimwear', label: 'Swimwear' }, { key: 'accessories', label: 'Accessories' }, { key: 'bags', label: 'Bags' },
-  { key: 'hats', label: 'Hats' }, { key: 'jewelry', label: 'Jewelry' }, { key: 'belts', label: 'Belts' },
-];
-
-const SORT_OPTIONS = [
-  { key: 'default', label: 'Recommended' },
-  { key: 'price_asc', label: 'Price: Low → High' },
-  { key: 'price_desc', label: 'Price: High → Low' },
-  { key: 'brand_az', label: 'Brand: A → Z' },
-  { key: 'genre', label: 'Genre' },
-] as const;
-
-type SortKey = typeof SORT_OPTIONS[number]['key'];
+// Sub-components
+import CommunityHeader from '@/components/community/CommunityHeader';
+import CommunityFilterTabs from '@/components/community/CommunityFilterTabs';
+import FeedSortControls from '@/components/community/FeedSortControls';
+import ShopFiltersPanel from '@/components/community/ShopFiltersPanel';
+import type { SortKey } from '@/components/community/ShopFiltersPanel';
+import CommunityFeedGrid from '@/components/community/CommunityFeedGrid';
 
 const FIT_OPTIONS = [
   'oversized', 'boxy', 'relaxed fit', 'slim fit', 'regular fit',
@@ -74,11 +53,6 @@ const Community = () => {
   const [trendingSort, setTrendingSort] = useState<TrendingSort>('hot');
   const [followingSort, setFollowingSort] = useState<TrendingSort>('newest');
   const [filterUserId, setFilterUserId] = useState<string | null>(null);
-  const [similarFitTooltip, setSimilarFitTooltip] = useState(false);
-  const [showSortOptions, setShowSortOptions] = useState(false);
-  const [shopFiltersOpen, setShopFiltersOpen] = useState(false);
-  const [shopGenreOpen, setShopGenreOpen] = useState(false);
-  const [shopFitOpen, setShopFitOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   // Product catalog for retailer/fit pills
@@ -119,9 +93,7 @@ const Community = () => {
   }, [detailPost, closeDetail]);
 
   const handleCloseDetail = useCallback(() => {
-    if (detailPost) {
-      window.history.back();
-    }
+    if (detailPost) window.history.back();
   }, [detailPost]);
 
   const {
@@ -178,338 +150,80 @@ const Community = () => {
     setDetailPost(prev => prev && prev.id === postId ? { ...prev, caption } : prev);
   }, [setPosts]);
 
-  const renderSortPills = (sorts: { key: TrendingSort; label: string }[], activeSort: TrendingSort, setSort: (s: TrendingSort) => void) => (
-    <div className="flex gap-1.5 mb-3 overflow-x-auto no-scrollbar">
-      {sorts.map(s => (
-        <button
-          key={s.key}
-          onClick={() => { setSort(s.key); if (s.key !== 'user') setFilterUserId(null); }}
-          className={`pill ${activeSort === s.key ? 'pill-active' : ''}`}
-        >
-          {s.label}
-        </button>
-      ))}
-    </div>
-  );
-
-  const shouldShowEmpty = (f: FilterType) => {
-    if (f === 'trending' && visiblePosts.length < 3) return true;
-    if ((f === 'new' || f === 'similar' || f === 'following') && visiblePosts.length === 0) return true;
+  const shouldShowEmpty = () => {
+    if (filter === 'trending' && visiblePosts.length < 3) return true;
+    if ((filter === 'new' || filter === 'similar' || filter === 'following') && visiblePosts.length === 0) return true;
     return false;
   };
 
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
       <div className="px-4 pt-4">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg" aria-label="Go back">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <div>
-              <h1 className="text-base font-bold text-foreground">Style Check</h1>
-              <p className="text-[10px] text-muted-foreground">Get real opinions before you buy</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => navigate('/cart')}
-              className="relative h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-              aria-label="Cart"
-            >
-              <ShoppingCart className="h-4 w-4" />
-              {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 h-4 min-w-[16px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </button>
-            <Button className="rounded-lg btn-luxury text-primary-foreground h-8 px-3 text-[11px] font-bold active:scale-95 transition-transform" onClick={onPostLook} aria-label="Create new post">
-              <Sparkles className="mr-1 h-3 w-3" /> Post a Look
-            </Button>
-          </div>
-        </div>
+        <CommunityHeader cartCount={cartCount} onPostLook={onPostLook} />
+        <CommunityFilterTabs filter={filter} onFilterChange={setFilter} />
 
-        {/* Filter tabs */}
-        <div className="flex border-b border-border mb-4 overflow-x-auto no-scrollbar relative">
-          {([
-            { key: 'new' as FilterType, label: 'New' },
-            { key: 'following' as FilterType, label: 'Following' },
-            { key: 'trending' as FilterType, label: 'Trending' },
-            { key: 'similar' as FilterType, label: 'Similar Fit' },
-            { key: 'shop' as FilterType, label: 'Shop' },
-          ]).map(f => (
-            <button
-              key={f.key}
-              onClick={() => setFilter(f.key)}
-              aria-label={f.key === 'shop' ? 'Open filters' : `Change sort order`}
-              className={`flex-1 py-1.5 min-h-[32px] text-[12px] font-bold transition-all relative whitespace-nowrap px-2 flex items-center justify-center gap-0.5 ${
-                filter === f.key ? 'btn-gold-3d text-primary-foreground rounded-lg' : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {f.label}
-              {f.key === 'similar' && (
-                <button onClick={(e) => { e.stopPropagation(); setSimilarFitTooltip(!similarFitTooltip); }} aria-label="What is Similar Fit?" className={`text-[11px] ml-0.5 ${filter === f.key ? 'text-primary-foreground/60' : 'text-muted-foreground/60'}`}>ⓘ</button>
-              )}
-            </button>
-          ))}
-          <AnimatePresence>
-            {similarFitTooltip && (
-              <>
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50" onClick={() => setSimilarFitTooltip(false)} />
-                <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }} className="absolute top-full mt-1 right-[20%] z-50 w-[240px] bg-card border border-border rounded-xl p-3 shadow-xl">
-                  <p className="text-[11px] text-muted-foreground leading-relaxed">Similar Fit shows outfits posted by people with measurements closest to yours. Their ratings are more relevant to how clothes will fit you specifically.</p>
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>
-        </div>
+        <FeedSortControls
+          filter={filter}
+          trendingSort={trendingSort}
+          followingSort={followingSort}
+          filterUserId={filterUserId}
+          posts={posts}
+          onTrendingSortChange={setTrendingSort}
+          onFollowingSortChange={setFollowingSort}
+          onFilterUserIdChange={setFilterUserId}
+        />
 
-        {/* Sort toggle for trending/following */}
-        {(filter === 'trending' || filter === 'following') && (
-          <div className="mb-3">
-            <button
-              onClick={() => setShowSortOptions(!showSortOptions)}
-              className="flex items-center gap-1.5 pill pill-active text-[11px]"
-              aria-label="Toggle sort options"
-            >
-              <SlidersHorizontal className="h-3 w-3" />
-              {filter === 'trending'
-                ? [{ key: 'hot', label: '🔥 Hot' }, { key: 'love', label: '👍 Top Buy' }, { key: 'newest', label: '🕐 Newest' }, { key: 'user', label: '👤 By User' }].find(s => s.key === trendingSort)?.label
-                : [{ key: 'newest', label: '🕐 Newest' }, { key: 'hot', label: '🔥 Hot' }, { key: 'love', label: '👍 Top Buy' }, { key: 'user', label: '👤 By User' }].find(s => s.key === followingSort)?.label
-              }
-            </button>
-            <AnimatePresence>
-              {showSortOptions && (
-                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                  <div className="flex gap-1.5 mt-2 overflow-x-auto no-scrollbar">
-                    {(filter === 'trending'
-                      ? [{ key: 'hot' as TrendingSort, label: '🔥 Hot' }, { key: 'love' as TrendingSort, label: '👍 Top Buy' }, { key: 'newest' as TrendingSort, label: '🕐 Newest' }, { key: 'user' as TrendingSort, label: '👤 By User' }]
-                      : [{ key: 'newest' as TrendingSort, label: '🕐 Newest' }, { key: 'hot' as TrendingSort, label: '🔥 Hot' }, { key: 'love' as TrendingSort, label: '👍 Top Buy' }, { key: 'user' as TrendingSort, label: '👤 By User' }]
-                    ).map(s => (
-                      <button
-                        key={s.key}
-                        onClick={() => {
-                          if (filter === 'trending') setTrendingSort(s.key);
-                          else setFollowingSort(s.key);
-                          if (s.key !== 'user') setFilterUserId(null);
-                          setShowSortOptions(false);
-                        }}
-                        className={`pill ${(filter === 'trending' ? trendingSort : followingSort) === s.key ? 'pill-active' : ''}`}
-                      >
-                        {s.label}
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )}
-
-        {/* User filter chips */}
-        {((filter === 'trending' && trendingSort === 'user') || (filter === 'following' && followingSort === 'user')) && (
-          <div className="flex gap-1.5 mb-3 overflow-x-auto no-scrollbar">
-            <button onClick={() => setFilterUserId(null)} aria-label="Show all users" className={`pill ${!filterUserId ? 'pill-active' : ''}`}>All</button>
-            {[...new Map(posts.filter(p => p.profile?.display_name).map(p => [p.user_id, p.profile?.display_name])).entries()].map(([uid, name]) => (
-              <button key={uid} onClick={() => setFilterUserId(filterUserId === uid ? null : uid)} aria-label={`Filter by ${name}`} className={`pill ${filterUserId === uid ? 'pill-active' : ''}`}>{name}</button>
-            ))}
-          </div>
-        )}
-
-        {/* Content */}
         {filter === 'shop' ? (
           <>
-            {/* Filters button */}
-            {(() => {
-              const activeCount = (shopBrand ? 1 : 0) + (shopGenre ? 1 : 0) + (shopRetailer ? 1 : 0) + (shopGender !== 'all' ? 1 : 0) + (shopCategory !== 'tops' ? 1 : 0) + (shopSort !== 'default' ? 1 : 0);
-              return (
-                <div className="mb-3">
-                  <button
-                    onClick={() => setShopFiltersOpen(!shopFiltersOpen)}
-                    className="relative w-full h-10 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-base font-bold btn-luxury text-primary-foreground"
-                  >
-                    <SlidersHorizontal className="h-4 w-4" />
-                    {activeCount > 0 ? `Filters (${activeCount})` : 'Filters'}
-                  </button>
-                </div>
-              );
-            })()}
-
-            <AnimatePresence>
-              {shopFiltersOpen && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="overflow-hidden border border-border rounded-xl bg-card mb-3"
-                >
-                  <div className="px-4 py-3 space-y-3">
-                    {/* Sort */}
-                    <div>
-                      <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Sort by</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {SORT_OPTIONS.map(opt => (
-                          <button
-                            key={opt.key}
-                            onClick={() => setShopSort(opt.key)}
-                            className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
-                              shopSort === opt.key
-                                ? 'btn-luxury text-primary-foreground'
-                                : 'bg-background border border-border text-foreground/70'
-                            }`}
-                          >
-                            {opt.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Category */}
-                    <div>
-                      <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Category</p>
-                      <div className="flex flex-wrap gap-1.5 max-h-[140px] overflow-y-auto">
-                        {SHOP_CATEGORIES.map(cat => (
-                          <button key={cat.key} onClick={() => setShopCategory(cat.key)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${shopCategory === cat.key ? 'btn-luxury text-primary-foreground' : 'bg-background border border-border text-foreground/70'}`}>{cat.label}</button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Brand */}
-                    <div>
-                      <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Brand</p>
-                      <BrandFilter gender={shopGender === 'all' ? null : shopGender} selectedBrand={shopBrand} onBrandChange={setShopBrand} />
-                    </div>
-
-                    {/* Retailer pills */}
-                    <div>
-                      <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Retailer</p>
-                      <div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto">
-                        <button
-                          onClick={() => setShopRetailer(null)}
-                          className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
-                            !shopRetailer ? 'btn-luxury text-primary-foreground' : 'bg-background border border-border text-foreground/70'
-                          }`}
-                        >All</button>
-                        {availableRetailers.map(retailer => (
-                          <button
-                            key={retailer}
-                            onClick={() => setShopRetailer(retailer === shopRetailer ? null : retailer)}
-                            className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
-                              shopRetailer === retailer ? 'btn-luxury text-primary-foreground' : 'bg-background border border-border text-foreground/70'
-                            }`}
-                          >{retailer}</button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Genre — collapsible */}
-                    <div>
-                      <button onClick={() => setShopGenreOpen(!shopGenreOpen)} className="flex items-center justify-between w-full">
-                        <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
-                          Genre {shopGenre ? `· ${shopGenre}` : ''}
-                        </p>
-                        <ChevronDown className={`h-3.5 w-3.5 text-foreground/50 transition-transform ${shopGenreOpen ? 'rotate-180' : ''}`} />
-                      </button>
-                      <AnimatePresence>
-                        {shopGenreOpen && (
-                          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                            <div className="flex flex-wrap gap-1.5 mt-1.5">
-                              <button onClick={() => setShopGenre(null)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${!shopGenre ? 'btn-luxury text-primary-foreground' : 'bg-background border border-border text-foreground/70'}`}>All</button>
-                              {BRAND_GENRES.map(genre => (
-                                <button key={genre} onClick={() => setShopGenre(genre === shopGenre ? null : genre)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${shopGenre === genre ? 'btn-luxury text-primary-foreground' : 'bg-background border border-border text-foreground/70'}`}>{genre}</button>
-                              ))}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-
-                    {/* Fit / Cut — collapsible */}
-                    {availableFits.length > 0 && (
-                      <div>
-                        <button onClick={() => setShopFitOpen(!shopFitOpen)} className="flex items-center justify-between w-full">
-                          <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">Fit / Cut</p>
-                          <ChevronDown className={`h-3.5 w-3.5 text-foreground/50 transition-transform ${shopFitOpen ? 'rotate-180' : ''}`} />
-                        </button>
-                        <AnimatePresence>
-                          {shopFitOpen && (
-                            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                              <div className="flex flex-wrap gap-1.5 mt-1.5">
-                                {availableFits.map(fit => (
-                                  <button key={fit} className="px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize bg-background border border-border text-foreground/70">{fit}</button>
-                                ))}
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    )}
-
-                    {/* Clear */}
-                    {((shopBrand ? 1 : 0) + (shopGenre ? 1 : 0) + (shopRetailer ? 1 : 0) + (shopGender !== 'all' ? 1 : 0) + (shopCategory !== 'tops' ? 1 : 0) + (shopSort !== 'default' ? 1 : 0)) > 0 && (
-                      <button onClick={() => { setShopBrand(null); setShopGenre(null); setShopRetailer(null); setShopGender('all'); setShopCategory('tops'); setShopSort('default'); }} className="text-[10px] text-primary font-semibold">Clear all filters</button>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <CategoryProductGrid category={shopCategory} collapsed={false} maxItems={50} gender={shopGender === 'all' ? undefined : shopGender} brand={shopBrand || undefined} genre={shopGenre} onSelectProduct={(product) => navigateToTryOn(navigate, { productUrl: product.product_url || undefined, fallbackClothingImageUrl: product.image_url, source: 'style_check_shop' })} />
+            <ShopFiltersPanel
+              shopCategory={shopCategory}
+              shopBrand={shopBrand}
+              shopGender={shopGender}
+              shopGenre={shopGenre}
+              shopRetailer={shopRetailer}
+              shopSort={shopSort}
+              availableRetailers={availableRetailers}
+              availableFits={availableFits}
+              onCategoryChange={setShopCategory}
+              onBrandChange={setShopBrand}
+              onGenderChange={setShopGender}
+              onGenreChange={setShopGenre}
+              onRetailerChange={setShopRetailer}
+              onSortChange={setShopSort}
+              onClearAll={() => { setShopBrand(null); setShopGenre(null); setShopRetailer(null); setShopGender('all'); setShopCategory('tops'); setShopSort('default'); }}
+            />
+            <CategoryProductGrid
+              category={shopCategory}
+              collapsed={false}
+              maxItems={50}
+              gender={shopGender === 'all' ? undefined : shopGender}
+              brand={shopBrand || undefined}
+              genre={shopGenre}
+              onSelectProduct={(product) => navigateToTryOn(navigate, { productUrl: product.product_url || undefined, fallbackClothingImageUrl: product.image_url, source: 'style_check_shop' })}
+            />
           </>
-        ) : loading ? (
-          <div className="grid grid-cols-2 gap-2">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="rounded-xl border border-border overflow-hidden">
-                <div className="w-full aspect-[4/5] skeleton-gold" />
-                <div className="p-2.5 space-y-1.5">
-                  <div className="h-3 w-3/4 rounded skeleton-gold" />
-                  <div className="flex gap-1.5">{[1,2,3].map(j => <div key={j} className="h-7 flex-1 rounded-lg skeleton-gold" />)}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : shouldShowEmpty(filter) ? (
-          <EmptyStates filter={filter} hasScan={hasScan} userId={user?.id} onPostLook={onPostLook} />
         ) : (
-          <>
-            <div className="grid grid-cols-2 gap-2 pb-4">
-              {visiblePosts.map((post, idx) => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  index={idx}
-                  filter={filter}
-                  votes={votes}
-                  voteCounts={voteCounts}
-                  followToggles={followToggles}
-                  hasScan={hasScan}
-                  onVote={handleVote}
-                  onFollowToggle={handleFollowToggle}
-                  onDeletePost={handleDeletePost}
-                  onImageError={handleImageError}
-                  onOpenDetail={setDetailPost}
-                  onCaptionUpdated={handleCaptionUpdated}
-                />
-              ))}
-            </div>
-            {hasMore && !loading && (
-              <div className="flex justify-center pb-20 pt-2">
-                <Button
-                  className="rounded-lg btn-luxury text-primary-foreground h-10 px-6 text-xs font-bold"
-                  onClick={loadMore}
-                  disabled={loadingMore}
-                >
-                  {loadingMore ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                  {loadingMore ? 'Loading…' : 'Load More'}
-                </Button>
-              </div>
-            )}
-            {!hasMore && visiblePosts.length > 0 && (
-              <p className="text-center text-[10px] text-muted-foreground pb-20 pt-2">You've seen it all ✨</p>
-            )}
-          </>
+          <CommunityFeedGrid
+            posts={visiblePosts}
+            loading={loading}
+            loadingMore={loadingMore}
+            hasMore={hasMore}
+            filter={filter}
+            votes={votes}
+            voteCounts={voteCounts}
+            followToggles={followToggles}
+            hasScan={hasScan}
+            userId={user?.id}
+            onVote={handleVote}
+            onFollowToggle={handleFollowToggle}
+            onDeletePost={handleDeletePost}
+            onImageError={handleImageError}
+            onOpenDetail={setDetailPost}
+            onCaptionUpdated={handleCaptionUpdated}
+            onPostLook={onPostLook}
+            onLoadMore={loadMore}
+            shouldShowEmpty={shouldShowEmpty()}
+          />
         )}
       </div>
 
