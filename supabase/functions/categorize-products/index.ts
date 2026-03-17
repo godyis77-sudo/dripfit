@@ -207,7 +207,7 @@ function enforceGender(
   if (ALWAYS_WOMENS_CATEGORIES.has(category)) return "womens";
   if (ALWAYS_MENS_CATEGORIES.has(category)) return "mens";
 
-  const lower = name.toLowerCase();
+  const lower = (name.toLowerCase() + " ").replace(/[\u2018\u2019\u201A\u201B]/g, "'");
 
   // URL-based gender detection — retailer breadcrumbs are very reliable
   const urlGender = detectGenderFromUrl(productUrl ?? null);
