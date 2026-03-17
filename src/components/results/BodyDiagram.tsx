@@ -325,7 +325,7 @@ const PerspectiveGrid = () => (
 /* ── Floating data particles — reduced count for perf ── */
 const DataParticles = () => {
   const particles = useRef(
-    Array.from({ length: 14 }, (_, i) => ({
+    Array.from({ length: 8 }, (_, i) => ({
       id: i,
       x: 25 + Math.random() * 50,
       y: 10 + Math.random() * 80,
