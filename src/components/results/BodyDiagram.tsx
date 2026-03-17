@@ -654,7 +654,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {/* Silhouette: Origin orb — collapses into figure */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center pointer-events-none z-[3]"
-            style={{ transform: `translateY(${parallaxY}px)` }}
+            initial={{ opacity: 1 }}
             initial={{ opacity: 1 }}
             animate={{ opacity: silhouetteReady ? 0 : 1 }}
             transition={{ duration: 2.2, ease: [0.16, 1, 0.3, 1], delay: 0.6 }}
