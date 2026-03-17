@@ -89,7 +89,7 @@ import CaptureViewfinder from '@/components/capture/CaptureViewfinder';
 
 const Capture = () => {
   const navigate = useNavigate();
-  const { user, isSubscribed } = useAuth();
+  const { user, isSubscribed, userGender, genderLoaded: authGenderLoaded, updateGender } = useAuth();
   usePageTitle('Scan');
   const saved = loadScanState();
   const [flowStep, setFlowStep] = useState<FlowStep>(saved?.flowStep || 'intro');
