@@ -671,6 +671,33 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             background: 'radial-gradient(ellipse 55% 50% at 50% 45%, hsl(var(--primary) / 0.04) 0%, transparent 50%), radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, hsl(220 20% 2% / 0.85) 100%)',
           }} />
 
+          {/* Gold edge glow — full-bleed to card border */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none z-[1]"
+            style={{
+              background: 'linear-gradient(180deg, hsl(var(--primary) / 0.25) 0%, hsl(var(--primary) / 0.08) 20%, hsl(var(--primary) / 0.04) 50%, hsl(var(--primary) / 0.08) 80%, hsl(var(--primary) / 0.25) 100%)',
+              mask: 'linear-gradient(to right, black 0%, transparent 18%, transparent 82%, black 100%), linear-gradient(to bottom, black 0%, transparent 15%, transparent 85%, black 100%)',
+              WebkitMask: 'linear-gradient(to right, black 0%, transparent 18%, transparent 82%, black 100%), linear-gradient(to bottom, black 0%, transparent 15%, transparent 85%, black 100%)',
+              WebkitMaskComposite: 'source-in',
+              maskComposite: 'intersect',
+            } as React.CSSProperties}
+            animate={{
+              opacity: [0.5, 0.85, 0.5],
+            }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          {/* Gold inner border glow */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none z-[1] rounded-[1rem]"
+            style={{
+              boxShadow: 'inset 0 0 30px 8px hsl(var(--primary) / 0.15), inset 0 0 60px 15px hsl(var(--primary) / 0.06)',
+            }}
+            animate={{
+              opacity: [0.6, 1, 0.6],
+            }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          />
+
           {/* BG: Subtle noise texture */}
           <div className="absolute inset-0 opacity-[0.03]" style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
