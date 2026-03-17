@@ -500,27 +500,71 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
   const [useCmState, setUseCmLocal] = useState(getUseCm());
   const [scrambling, setScrambling] = useState(false);
   const [silhouetteSrc, setSilhouetteSrc] = useState(bodySilhouette);
+  const [isLowPerfDevice, setIsLowPerfDevice] = useState(false);
+  const reduceMotion = useReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
   const parallaxRef = useRef<HTMLDivElement>(null);
   const parallaxRef2 = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const media = window.matchMedia('(max-width: 640px)');
+    const evaluate = () => {
+      const lowConcurrency = typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 4;
+      const saveData = Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData);
+      setIsLowPerfDevice(media.matches || lowConcurrency || saveData);
+    };
+
+    evaluate();
+    media.addEventListener('change', evaluate);
+    return () => media.removeEventListener('change', evaluate);
+  }, []);
+
+  const liteMode = reduceMotion || isLowPerfDevice;
+
+  useEffect(() => {
     let cancelled = false;
     setImageLoaded(false);
 
-    createProcessedSilhouette(bodySilhouette).then((processed) => {
-      if (!cancelled) { setSilhouetteSrc(processed); setSilhouetteReady(true); }
+    if (processedSilhouetteCache) {
+      setSilhouetteSrc(processedSilhouetteCache);
+      setSilhouetteReady(true);
+      return;
+    }
+
+    if (liteMode) {
+      setSilhouetteSrc(bodySilhouette);
+      setSilhouetteReady(true);
+      return;
+    }
+
+    processedSilhouettePromise ??= createProcessedSilhouette(bodySilhouette).then((processed) => {
+      processedSilhouetteCache = processed;
+      return processed;
+    });
+
+    processedSilhouettePromise.then((processed) => {
+      if (!cancelled) {
+        setSilhouetteSrc(processed);
+        setSilhouetteReady(true);
+      }
     });
 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [liteMode]);
 
   // Use direct DOM manipulation for parallax to avoid re-renders
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+
+    if (liteMode) {
+      if (parallaxRef.current) parallaxRef.current.style.transform = 'none';
+      if (parallaxRef2.current) parallaxRef2.current.style.transform = 'none';
+      return;
+    }
+
     let rafId: number;
     const handleScroll = () => {
       rafId = requestAnimationFrame(() => {
@@ -534,7 +578,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     return () => { window.removeEventListener('scroll', handleScroll); cancelAnimationFrame(rafId); };
-  }, []);
+  }, [liteMode]);
 
   const toggleUnit = useCallback(() => {
     setScrambling(true);
