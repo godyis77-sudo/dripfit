@@ -412,23 +412,21 @@ const Crosshair = () => (
 /* ── Micro data readouts (corner telemetry) ── */
 const MicroReadouts = () => {
   const readouts = [
-    { pos: 'top-3 left-8', text: 'SYS:ACTIVE' },
-    { pos: 'top-3 right-8', text: 'RES:2160p' },
-    { pos: 'bottom-10 left-3', text: 'δ±0.3cm' },
-    { pos: 'bottom-10 right-3', text: 'MAP:LIVE' },
+    { pos: 'top-3 left-8', text: 'SYS:ACTIVE', delay: 0 },
+    { pos: 'top-3 right-8', text: 'RES:2160p', delay: 0.4 },
+    { pos: 'bottom-10 left-3', text: 'δ±0.3cm', delay: 0.8 },
+    { pos: 'bottom-10 right-3', text: 'MAP:LIVE', delay: 1.2 },
   ];
   return (
     <>
       {readouts.map((r, i) => (
-        <motion.span
+        <span
           key={i}
-          className={`absolute z-[6] pointer-events-none text-[5px] font-mono uppercase tracking-[0.18em] text-primary/30 ${r.pos}`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [0.15, 0.35, 0.15] }}
-          transition={{ duration: 4, delay: i * 0.4, repeat: Infinity, ease: 'easeInOut' }}
+          className={`absolute z-[6] pointer-events-none text-[5px] font-mono uppercase tracking-[0.18em] text-primary/30 hud-micro-pulse ${r.pos}`}
+          style={{ animationDelay: `${r.delay}s` }}
         >
           {r.text}
-        </motion.span>
+        </span>
       ))}
     </>
   );
