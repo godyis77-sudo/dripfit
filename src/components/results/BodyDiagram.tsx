@@ -873,14 +873,14 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               <motion.div
                 className="absolute inset-0 pointer-events-none flex items-center justify-center"
                 style={{ willChange: 'transform, opacity' }}
-                animate={{ scale: [1.14, 1.22, 1.14], opacity: [0.4, 0.65, 0.4] }}
+                animate={{ scale: liteMode ? [1.1, 1.18, 1.1] : [1.14, 1.22, 1.14], opacity: liteMode ? [0.34, 0.55, 0.34] : [0.4, 0.65, 0.4] }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               >
                 <div
                   className="h-[94%] w-[60%] rounded-[45%]"
                   style={{
                     background: 'radial-gradient(ellipse at 50% 48%, hsl(var(--primary) / 0.45) 0%, hsl(var(--primary) / 0.18) 38%, transparent 72%)',
-                    filter: 'blur(26px)',
+                    filter: liteMode ? 'blur(16px)' : 'blur(26px)',
                     transform: 'translateX(2%) translateY(1.5%)',
                   }}
                 />
@@ -891,13 +891,15 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 alt="" aria-hidden="true"
                 className="absolute inset-0 h-full w-full object-contain pointer-events-none"
                 style={{
-                  filter: 'blur(18px) brightness(7) saturate(2.8) drop-shadow(0 0 60px hsl(var(--primary) / 0.95))',
+                  filter: liteMode
+                    ? 'blur(10px) brightness(5.2) saturate(2.2) drop-shadow(0 0 35px hsl(var(--primary) / 0.75))'
+                    : 'blur(18px) brightness(7) saturate(2.8) drop-shadow(0 0 60px hsl(var(--primary) / 0.95))',
                   willChange: 'transform, opacity',
                   transform: 'translateX(1.2%) translateY(1.2%)',
                 }}
                 animate={{
-                  scale: [1.16, 1.24, 1.16],
-                  opacity: [0.35, 0.62, 0.35],
+                  scale: liteMode ? [1.12, 1.2, 1.12] : [1.16, 1.24, 1.16],
+                  opacity: liteMode ? [0.26, 0.48, 0.26] : [0.35, 0.62, 0.35],
                 }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
