@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 
+import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
 import heroPreview from '@/assets/hero-preview.png';
 import heroPreview2 from '@/assets/hero-preview-2.png';
 import heroPreview3 from '@/assets/hero-preview-3.png';
@@ -278,8 +279,19 @@ const MediaKit = () => {
           </div>
         </motion.section>
 
+        {/* ── AI Body Scan Preview ─────────────── */}
+        <motion.section {...fade(0.32)}>
+          <SectionHeader icon={Ruler} title="AI Body Scan Technology" subtitle="Live interactive preview" />
+          <div className="bg-card border border-border rounded-xl p-6 mt-4 flex flex-col items-center gap-4">
+            <DecorativeSilhouette height={320} />
+            <p className="text-[11px] text-muted-foreground text-center max-w-xs">
+              Our proprietary AI body scan generates precise measurements in under 60 seconds — no tape measure required.
+            </p>
+          </div>
+        </motion.section>
+
         {/* ── App Screenshots & Assets ────────────── */}
-        <motion.section {...fade(0.35)}>
+        <motion.section {...fade(0.38)}>
           <SectionHeader icon={Image} title="App Screenshots & Assets" subtitle="Right-click → Save to download" />
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
             {KEY_ASSETS.map((a) => (
