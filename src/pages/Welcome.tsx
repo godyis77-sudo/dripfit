@@ -107,9 +107,9 @@ const Welcome = () => {
         {/* Hero */}
         <motion.div variants={stagger.item} className="text-center max-w-[340px] mb-10">
           <h1 className="font-display text-[34px] font-bold tracking-tight mb-4 leading-[1.08] text-foreground">
-            Scan Tailored.{' '}
-            <span className="gradient-drip-text italic">Infinite Style.</span>{' '}
-            Culture Certified Drip.
+            Your Tailored Size & Style.{' '}
+            <span className="gradient-drip-text italic">Verified Culture,</span>{' '}
+            Certified Drip.
           </h1>
           <p className="text-muted-foreground text-[14px] leading-relaxed max-w-[300px] mx-auto">
             Two photos. Sixty seconds. Your exact measurements across every brand — plus virtual try-on and real feedback.
@@ -268,7 +268,7 @@ const Welcome = () => {
               const baseUrl = window.location.origin;
               const url = user ? `${baseUrl}?ref=${user.id}` : baseUrl;
               if (navigator.share) {
-                navigator.share({ title: 'DRIPFIT ✔ — Scan Tailored. Infinite Style. Culture Certified Drip.', text: 'AI body measurements, virtual try-on, and real fit feedback. We both get 5 extra try-ons!', url });
+                navigator.share({ title: 'DRIPFIT ✔ — Your Tailored Size & Style. Verified Culture, Certified Drip.', text: 'AI body measurements, virtual try-on, and real fit feedback. We both get 5 extra try-ons!', url });
               } else {
                 navigator.clipboard.writeText(url);
                 toast({ title: 'Link copied!', description: 'Share it with friends — you both get 5 extra try-ons.' });
