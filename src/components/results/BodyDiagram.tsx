@@ -985,7 +985,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 }}
                 initial={{ opacity: 0, x: o.side === 'left' ? -14 : 14, scale: 0.8 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
-                transition={{ delay: o.delay + 0.7, duration: 0.55, ease: LUXURY_EASE }}
+                transition={{ delay: o.delay + 1.6, duration: 0.7, ease: LUXURY_EASE }}
               >
                 <div
                   className="rounded-lg px-2 py-1 backdrop-blur-2xl"
