@@ -446,7 +446,7 @@ const Onboarding = () => {
                 </div>
 
                 <h2 className="font-display text-lg font-bold text-foreground mb-0.5 text-center mt-1 shrink-0">Let's get your measurements</h2>
-                <p className="text-[11px] text-muted-foreground text-center mb-1.5 shrink-0">See exactly how Zara M fits your 96cm chest.</p>
+                <p className="text-[11px] text-muted-foreground text-center mb-1.5 shrink-0">See exactly how your favorite brands fit your body.</p>
 
                 {/* FAST */}
                 <div className="flex items-center gap-5 mb-2 shrink-0">
