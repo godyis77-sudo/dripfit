@@ -27,6 +27,7 @@ import FitFeedbackSheet from '@/components/monetization/FitFeedbackSheet';
 import PostScanGuide from '@/components/results/PostScanGuide';
 import ProfilePhotoPrompt from '@/components/results/ProfilePhotoPrompt';
 import ShareResultsButton from '@/components/results/ShareResultsButton';
+import SocialExportCard from '@/components/results/SocialExportCard';
 import { SizeMatchCard, SizeMatchCardSkeleton } from '@/components/results/SizeMatchCard';
 import SizeDiagnostic from '@/components/results/SizeDiagnostic';
 import { useAuth } from '@/hooks/useAuth';
