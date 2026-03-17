@@ -379,18 +379,16 @@ const CornerBrackets = () => {
   return (
     <>
       {corners.map((c, i) => (
-        <motion.svg
+        <svg
           key={i}
           className={`absolute w-6 h-6 pointer-events-none z-[6] ${c.cls}`}
           viewBox="0 0 20 20"
           fill="none"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [1, 0.15, 1] }}
-          transition={{ duration: 3, delay: i * 0.15, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ animation: `hud-bracket-pulse 3s ease-in-out ${i * 0.15}s infinite` }}
         >
           <path d={c.d} stroke="hsl(var(--primary) / 0.5)" strokeWidth="1" strokeLinecap="round" />
           <path d={c.d2} stroke="hsl(var(--primary) / 0.9)" strokeWidth="1.5" strokeLinecap="round" />
-        </motion.svg>
+        </svg>
       ))}
     </>
   );
