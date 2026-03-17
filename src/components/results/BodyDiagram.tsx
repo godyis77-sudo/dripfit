@@ -93,7 +93,7 @@ const ScrambleValue = ({ value, scrambling }: { value: string; scrambling: boole
     frameRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frameRef.current);
   }, [value, scrambling]);
-  return <>{display}</>;
+  return <span>{display}</span>;
 };
 
 /* ── Dual scan lines ── */
