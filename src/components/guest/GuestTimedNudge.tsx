@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, X } from 'lucide-react';
@@ -9,7 +9,7 @@ import { isGuestMode } from '@/lib/session';
 const NUDGE_DELAY_MS = 10 * 60 * 1000; // 10 minutes
 const NUDGE_KEY = 'dripcheck_timed_nudge_dismissed';
 
-const GuestTimedNudge = () => {
+const GuestTimedNudge = React.forwardRef<HTMLDivElement>(function GuestTimedNudge(_, ref) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
@@ -65,6 +65,6 @@ const GuestTimedNudge = () => {
       )}
     </AnimatePresence>
   );
-};
+});
 
 export default GuestTimedNudge;
