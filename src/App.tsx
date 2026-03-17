@@ -140,8 +140,8 @@ const AnimatedRoutes = () => {
         </Routes>
       </AnimatePresence>
     </Suspense>
+    </ErrorBoundary>
   );
-};
 
 const App = () => {
   useTheme();
