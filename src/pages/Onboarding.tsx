@@ -13,7 +13,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import AuthForm from '@/components/auth/AuthForm';
 
-import heroScan from '@/assets/onboarding-scan-results.jpg';
+
 import ScanPreviewCard from '@/components/ui/ScanPreviewCard';
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
 import heroTryon from '@/assets/hero-tryon-mirror.jpg';
@@ -33,7 +33,7 @@ const SLIDES = [
     title: 'Know your exact size in every brand',
     highlight: '',
     desc: 'Stop guessing. Two photos and 60 seconds gives you precise measurements across SHEIN, Zara, H&M, Lululemon, and 10+ more.',
-    image: heroScan,
+    image: '',
   },
   {
     featureIcon: 'tryon' as FeatureIconName,
@@ -93,7 +93,7 @@ const Onboarding = () => {
     let minElapsed = false;
     let imagesReady = false;
     const timeout = window.setTimeout(advance, 3500);
-    const imageUrls = SLIDES.map(s => s.image);
+    const imageUrls = SLIDES.map(s => s.image).filter(Boolean);
     let loaded = 0;
     imageUrls.forEach(src => {
       const img = new Image();
@@ -250,7 +250,7 @@ const Onboarding = () => {
                   {/* Image — centered with safe top padding */}
                   <div className="flex items-center justify-center mx-4 min-h-0 max-w-[480px] w-full self-center" style={{ maxHeight: '50dvh' }}>
                     {slideIdx === 0 ? (
-                      <ScanPreviewCard height={356} />
+                      <DecorativeSilhouette height={340} />
                     ) : (
                       <div
                         className="relative rounded-2xl overflow-hidden"
