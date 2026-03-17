@@ -477,19 +477,13 @@ const Onboarding = () => {
                 {/* WORTH IT */}
                 <div className="w-full bg-card border border-border rounded-xl p-2.5 mb-3">
                   <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">What you'll get</p>
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {[
-                      { label: 'Chest', val: '—' },
-                      { label: 'Waist', val: '—' },
-                      { label: 'Hips', val: '—' },
-                      { label: 'Size', val: '—' },
-                    ].map(m => (
-                      <div key={m.label} className="bg-background rounded-lg py-1 text-center">
-                        <p className="text-[10px] text-muted-foreground uppercase">{m.label}</p>
-                        <p className="text-[11px] font-bold text-foreground">{m.val}</p>
-                      </div>
+                  <ul className="space-y-1">
+                    {['Chest, waist, hip & inseam measurements', 'Personalised size for every brand', 'Better try-on accuracy'].map(t => (
+                      <li key={t} className="flex items-center gap-2 text-[11px] text-foreground">
+                        <Check className="h-3 w-3 text-primary shrink-0" /> {t}
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
 
                 {/* CTA */}
