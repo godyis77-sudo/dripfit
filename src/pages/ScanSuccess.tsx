@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Check, ChevronRight } from 'lucide-react';
 import BottomTabBar from '@/components/BottomTabBar';
-import scanResultsFull from '@/assets/scan-results-full.jpg';
+import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
 import type { BodyScanResult, MeasurementRange } from '@/lib/types';
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from '@/hooks/useAuth';
@@ -110,7 +110,7 @@ const ScanSuccess = () => {
   const navigate = useNavigate();
   const state = location.state as { result: BodyScanResult } | undefined;
   const result = state?.result;
-  const [imageLoaded, setImageLoaded] = useState(false);
+  
 
   useEffect(() => {
     if (!result) {
@@ -155,62 +155,54 @@ const ScanSuccess = () => {
 
       {/* Scan results image with measurement overlays */}
       <motion.div
-        className="relative w-full max-w-[400px] mx-auto mt-2 px-2"
+        className="relative w-full max-w-[400px] mx-auto mt-2 px-2 flex justify-center"
         initial={{ opacity: 0, scale: 0.92 }}
-        animate={{ opacity: imageLoaded ? 1 : 0, scale: imageLoaded ? 1 : 0.92 }}
+        animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="relative rounded-[1rem] border-[3px] border-primary" style={{ boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15), inset 0 0 14px 3px hsl(45 88% 50% / 0.2)' }}>
-          <div className="overflow-hidden rounded-[calc(1rem-3px)]">
-            <img
-              src={scanResultsFull}
-              alt="Scan Results"
-              className="w-full h-auto"
-              onLoad={() => setImageLoaded(true)}
-            />
-          </div>
-          <div className="absolute -inset-[7px] rounded-[calc(1rem+4px)] border-[4px] border-black pointer-events-none" style={{ boxShadow: 'inset 0 0 8px 2px hsl(45 88% 50% / 0.7), 0 0 10px 2px hsl(45 88% 50% / 0.6), 0 0 20px 4px hsl(45 88% 50% / 0.25)' }} />
+        <div className="relative">
+          <DecorativeSilhouette height={420} />
 
-        {/* Cover old baked-in values and show dynamic ones */}
-        {imageLoaded && OVERLAYS.map((overlay) => {
-          const val = overlay.getValue(result);
-          if (!val) return null;
+          {/* Cover old baked-in values and show dynamic ones */}
+          {OVERLAYS.map((overlay) => {
+            const val = overlay.getValue(result);
+            if (!val) return null;
 
-          return (
-            <motion.div
-              key={overlay.key}
-              className="absolute"
-              style={{
-                top: overlay.valTop,
-                 ...(overlay.side === 'left'
-                    ? { left: '3.5%' }
-                    : { right: '3.5%' }),
-              }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: overlay.delay + 0.4, duration: 0.35, ease: 'easeOut' }}
-            >
-               <div
-                 style={{
-                   textAlign: overlay.side === 'left' ? 'left' : 'right',
-                 }}
-                >
-                 <p
-                    className="text-[11px] font-black leading-tight"
-                    style={{ color: '#000' }}
+            return (
+              <motion.div
+                key={overlay.key}
+                className="absolute"
+                style={{
+                  top: overlay.valTop,
+                   ...(overlay.side === 'left'
+                      ? { left: '3.5%' }
+                      : { right: '3.5%' }),
+                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: overlay.delay + 0.4, duration: 0.35, ease: 'easeOut' }}
+              >
+                 <div
+                   style={{
+                     textAlign: overlay.side === 'left' ? 'left' : 'right',
+                   }}
                   >
-                    {val.line1}
-                  </p>
-                  <p
-                    className="text-[11px] font-black leading-tight"
-                    style={{ color: '#000' }}
-                  >
-                    {val.line2}
-                  </p>
-               </div>
-            </motion.div>
-          );
-        })}
+                   <p
+                      className="text-[11px] font-black leading-tight"
+                      style={{ color: '#000' }}
+                    >
+                      {val.line1}
+                    </p>
+                    <p
+                      className="text-[11px] font-black leading-tight"
+                      style={{ color: '#000' }}
+                    >
+                      {val.line2}
+                    </p>
+                 </div>
+              </motion.div>
+            );
+          })}
         </div>
       </motion.div>
 
