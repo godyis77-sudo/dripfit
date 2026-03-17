@@ -498,7 +498,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
   const [scrambling, setScrambling] = useState(false);
   const [silhouetteSrc, setSilhouetteSrc] = useState(bodySilhouette);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [parallaxY, setParallaxY] = useState(0);
+  const parallaxRef = useRef<HTMLDivElement>(null);
+  const parallaxRef2 = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -513,16 +514,23 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
     };
   }, []);
 
+  // Use direct DOM manipulation for parallax to avoid re-renders
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+    let rafId: number;
     const handleScroll = () => {
-      const rect = el.getBoundingClientRect();
-      setParallaxY((rect.top + rect.height / 2 - window.innerHeight / 2) * 0.02);
+      rafId = requestAnimationFrame(() => {
+        const rect = el.getBoundingClientRect();
+        const py = (rect.top + rect.height / 2 - window.innerHeight / 2) * 0.02;
+        const t = `translateY(${py}px)`;
+        if (parallaxRef.current) parallaxRef.current.style.transform = t;
+        if (parallaxRef2.current) parallaxRef2.current.style.transform = t;
+      });
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => { window.removeEventListener('scroll', handleScroll); cancelAnimationFrame(rafId); };
   }, []);
 
   const toggleUnit = useCallback(() => {
