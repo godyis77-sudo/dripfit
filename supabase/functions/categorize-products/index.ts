@@ -502,31 +502,87 @@ serve(async (req) => {
 });
 
 /**
- * Extract fit_profile from product name using regex patterns.
+ * Extract fit_profile from product name, tags, and URL using regex patterns.
+ * Multi-signal approach: name > tags > URL path for maximum coverage.
  * Returns a deduplicated array of matched fit terms.
  */
-function extractFitProfile(name: string): string[] {
-  const lower = name.toLowerCase();
+function extractFitProfile(name: string, tags: string[] = [], productUrl?: string | null): string[] {
+  // Combine all text signals into one searchable string
+  const nameLower = name.toLowerCase();
+  const tagsLower = tags.map(t => t.toLowerCase()).join(" ");
+  const urlLower = (productUrl || "").toLowerCase();
+  const combined = `${nameLower} ${tagsLower} ${urlLower}`;
+
   const FIT_PATTERNS: [RegExp, string][] = [
+    // Fit types
     [/\bslim[- ]?fit\b/, "slim fit"],
     [/\bclassic[- ]?fit\b/, "classic fit"],
     [/\bregular[- ]?fit\b/, "regular fit"],
     [/\brelaxed[- ]?fit\b|\brelaxed\b/, "relaxed fit"],
+    [/\bathletic[- ]?fit\b/, "athletic fit"],
+    [/\bskinny[- ]?fit\b|\bskinny\b/, "skinny fit"],
+    [/\bloose[- ]?fit\b|\bloose\b/, "loose fit"],
+    [/\bstraight[- ]?fit\b|\bstraight[- ]?leg\b/, "straight fit"],
+    [/\bmuscle[- ]?fit\b|\bmuscle\b/, "muscle fit"],
+    [/\btailored[- ]?fit\b|\btailored\b/, "tailored fit"],
+    [/\bmodern[- ]?fit\b/, "modern fit"],
+    [/\bstandard[- ]?fit\b/, "standard fit"],
+
+    // Silhouette / cut
     [/\boversized?\b|\bover[- ]sized\b/, "oversized"],
     [/\bboxy\b/, "boxy"],
     [/\bcropped?\b|\bcrop\b/, "cropped"],
     [/\btapered?\b|\btaper\b/, "tapered"],
     [/\bdrop[- ]shoulder\b/, "drop shoulder"],
+    [/\bwide[- ]?leg\b/, "wide leg"],
+    [/\bbootcut\b|\bboot[- ]?cut\b/, "bootcut"],
+    [/\bflare[d]?\b|\bflare[- ]?leg\b/, "flare"],
+    [/\bfitted\b/, "fitted"],
+    [/\ba[- ]?line\b/, "a-line"],
+    [/\bbaggy\b/, "baggy"],
+    [/\bslouchyy?\b/, "slouchy"],
+    [/\blongline\b|\blong[- ]?line\b/, "longline"],
+
+    // Weight / construction
     [/\bheavy[- ]?weight\b/, "heavyweight"],
     [/\blight[- ]?weight\b/, "lightweight"],
-    [/\bathletic[- ]?fit\b/, "athletic fit"],
-    [/\bskinny[- ]?fit\b|\bskinny\b/, "skinny fit"],
-    [/\bloose[- ]?fit\b|\bloose\b/, "loose fit"],
+    [/\bmid[- ]?weight\b/, "midweight"],
+
+    // Rise (for bottoms)
+    [/\bhigh[- ]?rise\b|\bhigh[- ]?waist(ed)?\b/, "high rise"],
+    [/\bmid[- ]?rise\b/, "mid rise"],
+    [/\blow[- ]?rise\b/, "low rise"],
   ];
+
   const hits = new Set<string>();
   for (const [regex, label] of FIT_PATTERNS) {
-    if (regex.test(lower)) hits.add(label);
+    if (regex.test(combined)) hits.add(label);
   }
+
+  // Brand-level defaults: if NO fit detected, apply known brand defaults
+  if (hits.size === 0) {
+    const BRAND_FIT_DEFAULTS: Record<string, string[]> = {
+      "essentials": ["oversized"],
+      "fear of god": ["oversized"],
+      "fear of god essentials": ["oversized"],
+      "true classic": ["athletic fit"],
+      "cuts": ["fitted"],
+      "lululemon": ["athletic fit"],
+      "gymshark": ["athletic fit"],
+      "carhartt": ["relaxed fit"],
+      "carhartt wip": ["relaxed fit"],
+      "dickies": ["relaxed fit"],
+    };
+    const brandLower = combined.split(" ")[0]; // won't work well, use name
+    // Check brand from the original name context (caller provides product.brand via tags or name)
+    for (const [brand, defaults] of Object.entries(BRAND_FIT_DEFAULTS)) {
+      if (nameLower.includes(brand) || tagsLower.includes(brand)) {
+        defaults.forEach(d => hits.add(d));
+        break;
+      }
+    }
+  }
+
   return [...hits];
 }
 
