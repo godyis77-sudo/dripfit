@@ -191,11 +191,11 @@ const RulerScale = () => (
       return (
         <div key={`rl-${i}`}>
           <div className="absolute left-0" style={{
-            top: `${y}%`, width: isMajor ? 16 : 8, height: isMajor ? 1 : 0.5,
-            background: `hsl(var(--primary) / ${isMajor ? 0.2 : 0.06})`,
+            top: `${y}%`, width: isMajor ? 20 : 10, height: isMajor ? 1.5 : 0.75,
+            background: `hsl(var(--primary) / ${isMajor ? 0.45 : 0.15})`,
           }} />
           {isMajor && (
-            <span className="absolute text-[4px] font-mono text-primary/15" style={{ top: `${y - 0.8}%`, left: 18 }}>
+            <span className="absolute text-[5px] font-mono text-primary/30 font-bold" style={{ top: `${y - 0.8}%`, left: 22 }}>
               {Math.round(i * 2.5)}
             </span>
           )}
@@ -209,11 +209,11 @@ const RulerScale = () => (
       return (
         <div key={`rr-${i}`}>
           <div className="absolute right-0" style={{
-            top: `${y}%`, width: isMajor ? 16 : 8, height: isMajor ? 1 : 0.5,
-            background: `hsl(var(--primary) / ${isMajor ? 0.2 : 0.06})`,
+            top: `${y}%`, width: isMajor ? 20 : 10, height: isMajor ? 1.5 : 0.75,
+            background: `hsl(var(--primary) / ${isMajor ? 0.45 : 0.15})`,
           }} />
           {isMajor && (
-            <span className="absolute text-[4px] font-mono text-primary/15 text-right" style={{ top: `${y - 0.8}%`, right: 18 }}>
+            <span className="absolute text-[5px] font-mono text-primary/30 text-right font-bold" style={{ top: `${y - 0.8}%`, right: 22 }}>
               {Math.round(i * 2.5)}
             </span>
           )}
@@ -240,9 +240,9 @@ const ProportionLines = () => {
           transition={{ delay: 1.5 + i * 0.2, duration: 0.6 }}
         >
           <div className="w-full h-[1px]" style={{
-            background: 'linear-gradient(90deg, transparent 5%, hsl(var(--primary) / 0.06) 20%, hsl(var(--primary) / 0.08) 50%, hsl(var(--primary) / 0.06) 80%, transparent 95%)',
+            background: 'linear-gradient(90deg, transparent 3%, hsl(var(--primary) / 0.15) 15%, hsl(var(--primary) / 0.25) 50%, hsl(var(--primary) / 0.15) 85%, transparent 97%)',
           }} />
-          <span className="absolute right-2 -top-[6px] text-[3.5px] font-mono uppercase tracking-[0.2em] text-primary/10">
+          <span className="absolute right-2 -top-[6px] text-[4px] font-mono uppercase tracking-[0.2em] text-primary/25 font-medium">
             {r.label}
           </span>
         </motion.div>
@@ -485,8 +485,8 @@ const TickMarks = () => (
       const isMajor = i % 5 === 0;
       return (
         <div key={`t-${i}`}>
-          <div className="absolute left-0" style={{ top: `${4 + i * 4.3}%`, width: isMajor ? 12 : 6, height: 1, background: `hsl(var(--primary) / ${isMajor ? 0.3 : 0.08})` }} />
-          <div className="absolute right-0" style={{ top: `${4 + i * 4.3}%`, width: isMajor ? 12 : 6, height: 1, background: `hsl(var(--primary) / ${isMajor ? 0.3 : 0.08})` }} />
+          <div className="absolute left-0" style={{ top: `${4 + i * 4.3}%`, width: isMajor ? 16 : 8, height: isMajor ? 1.5 : 1, background: `hsl(var(--primary) / ${isMajor ? 0.5 : 0.15})` }} />
+          <div className="absolute right-0" style={{ top: `${4 + i * 4.3}%`, width: isMajor ? 16 : 8, height: isMajor ? 1.5 : 1, background: `hsl(var(--primary) / ${isMajor ? 0.5 : 0.15})` }} />
         </div>
       );
     })}
@@ -609,14 +609,14 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           tabIndex={0}
           onKeyDown={e => e.key === 'Enter' && toggleUnit()}
           style={{
-            border: '2px solid hsl(var(--primary) / 0.4)',
-            boxShadow: '0 0 24px 6px hsl(var(--primary) / 0.2), inset 0 0 30px 5px hsl(var(--primary) / 0.06)',
+            border: '2px solid hsl(var(--primary) / 0.55)',
+            boxShadow: '0 0 40px 10px hsl(var(--primary) / 0.35), 0 0 80px 20px hsl(var(--primary) / 0.12), inset 0 0 40px 8px hsl(var(--primary) / 0.1)',
           }}
           animate={liteMode ? undefined : {
             borderColor: [
-              'hsl(var(--primary) / 0.3)',
-              'hsl(var(--primary) / 0.55)',
-              'hsl(var(--primary) / 0.3)',
+              'hsl(var(--primary) / 0.45)',
+              'hsl(var(--primary) / 0.75)',
+              'hsl(var(--primary) / 0.45)',
             ],
           }}
           transition={liteMode ? undefined : { duration: 3, repeat: Infinity, ease: 'easeInOut' }}
