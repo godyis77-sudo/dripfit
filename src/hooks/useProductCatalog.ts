@@ -103,9 +103,10 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
         .select('id, brand, retailer, category, name, image_url, product_url, price_cents, currency, tags, presentation, image_confidence, gender, fit_profile, fabric_composition, style_genre')
         .eq('is_active', true)
         .not('image_url', 'is', null)
+        .gte('image_confidence', 0.05)
         .order('image_confidence', { ascending: false })
         .order('id', { ascending: true })
-        .limit(10000);
+        .limit(500);
 
       if (category) {
         const mapped = CATEGORY_MAP[category];
