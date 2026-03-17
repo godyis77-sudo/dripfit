@@ -636,9 +636,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           }} />
 
           {/* Silhouette: Ambient glow behind figure */}
-          <motion.div
+          <div
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
-            style={{ transform: `translateY(${parallaxY}px)` }}
+            ref={parallaxRef}
           >
             <motion.div
               className="h-[90%] w-[42%]"
