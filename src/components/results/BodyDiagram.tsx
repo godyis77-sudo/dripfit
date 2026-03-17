@@ -407,14 +407,6 @@ const Crosshair = () => (
       animate={{ scaleX: 1, opacity: [0.3, 0.6, 0.3] }}
       transition={{ scaleX: { delay: 0.8, duration: 0.5, ease: LUXURY_EASE }, opacity: { duration: 3, repeat: Infinity, ease: 'easeInOut' } }}
     />
-    {/* Vertical */}
-    <motion.div
-      className="absolute top-[38%] bottom-[38%] w-[1px] left-1/2 -translate-x-1/2"
-      style={{ background: 'linear-gradient(180deg, transparent, hsl(var(--primary) / 0.15) 30%, hsl(var(--primary) / 0.25) 50%, hsl(var(--primary) / 0.15) 70%, transparent)' }}
-      initial={{ scaleY: 0 }}
-      animate={{ scaleY: 1, opacity: [0.3, 0.6, 0.3] }}
-      transition={{ scaleY: { delay: 0.9, duration: 0.5, ease: LUXURY_EASE }, opacity: { duration: 3, repeat: Infinity, ease: 'easeInOut' } }}
-    />
     {/* Center diamond */}
     <motion.div
       className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 border border-primary/20 rotate-45"
