@@ -2,7 +2,7 @@ export const WOMENS_LEANING = [
   'dress', 'skirt', 'heel', 'bustier', 'bralette',
   'bikini', 'swimsuit', 'romper', 'bodysuit',
   'blouse', 'maternity', 'lingerie', 'camisole',
-  'sarong', 'corset', 'midi', 'maxi',
+  'sarong', 'corset', 'midi', 'maxi', 'jumpsuit',
 ];
 
 export const MENS_LEANING = [
