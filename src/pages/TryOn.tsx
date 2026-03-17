@@ -185,7 +185,7 @@ const TryOn = () => {
                                   : 'bg-background border border-border text-foreground/70'
                               }`}
                             >
-                              🛍️ All
+                              <ShoppingBag className="h-3 w-3 inline mr-0.5" /> All
                             </button>
                             {CATEGORIES.filter(c => isCategoryVisibleForGender(c.key, s.userGender === 'male' ? 'mens' : s.userGender === 'female' ? 'womens' : 'all')).map(c => (
                               <button
