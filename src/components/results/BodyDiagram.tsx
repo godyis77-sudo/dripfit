@@ -317,16 +317,17 @@ const PerspectiveGrid = () => (
   </div>
 );
 
-/* ── Floating data particles — concentrated around body ── */
+/* ── Floating data particles — reduced count for perf ── */
 const DataParticles = () => {
   const particles = useRef(
-    Array.from({ length: 30 }, (_, i) => ({
+    Array.from({ length: 14 }, (_, i) => ({
       id: i,
       x: 25 + Math.random() * 50,
       y: 10 + Math.random() * 80,
       size: 0.8 + Math.random() * 1.8,
-      duration: 2 + Math.random() * 4,
+      duration: 3 + Math.random() * 4,
       delay: Math.random() * 5,
+      yOffset: -20 - Math.random() * 10,
     }))
   ).current;
   return (
@@ -339,12 +340,12 @@ const DataParticles = () => {
             width: p.size, height: p.size,
             left: `${p.x}%`, top: `${p.y}%`,
             background: 'hsl(var(--primary))',
-            boxShadow: `0 0 ${p.size * 5}px ${p.size * 2}px hsl(var(--primary) / 0.4)`,
+            boxShadow: `0 0 ${p.size * 4}px ${p.size}px hsl(var(--primary) / 0.3)`,
+            willChange: 'transform, opacity',
           }}
           animate={{
-            y: [0, -30 - Math.random() * 15, 0],
-            x: [0, (Math.random() - 0.5) * 12, 0],
-            opacity: [0, 0.9, 0],
+            y: [0, p.yOffset, 0],
+            opacity: [0, 0.8, 0],
           }}
           transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: 'easeInOut' }}
         />
