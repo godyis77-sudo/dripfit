@@ -1,4 +1,5 @@
 import BodyDiagram from '@/components/results/BodyDiagram';
+import { motion } from 'framer-motion';
 
 interface Props {
   className?: string;
@@ -16,7 +17,6 @@ const DEMO_MEASUREMENTS: Record<string, { min: number; max: number }> = {
 
 const DEMO_HEIGHT_CM = 178;
 
-// BodyDiagram's native rendered size (approx)
 const NATIVE_HEIGHT = 520;
 
 const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => {
@@ -25,28 +25,48 @@ const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => {
 
   return (
     <div
-      className={`relative overflow-hidden rounded-[1rem] ${className}`}
+      className={`relative rounded-[1rem] ${className}`}
       style={{
         width: nativeWidth * scale,
         height,
-        boxShadow:
-          'inset 0 0 40px 8px hsl(var(--primary) / 0.3), 0 0 60px 14px hsl(var(--primary) / 0.35), 0 0 120px 30px hsl(var(--primary) / 0.15)',
-        border: '1px solid hsl(var(--primary) / 0.4)',
-        filter: 'contrast(1.25) saturate(1.15)',
       }}
     >
-      <div
-        className="origin-top-left [&>div]:!rounded-none [&>div]:!border-0 [&>div]:!bg-transparent"
+      {/* Pulsing glow layer — sits behind content */}
+      <motion.div
+        className="absolute -inset-[2px] rounded-[1rem] pointer-events-none z-0"
         style={{
-          width: nativeWidth,
-          height: NATIVE_HEIGHT,
-          transform: `scale(${scale})`,
+          border: '2px solid hsl(var(--primary))',
+          boxShadow:
+            'inset 0 0 24px 6px hsl(var(--primary) / 0.5), 0 0 20px 4px hsl(var(--primary) / 0.6), 0 0 60px 14px hsl(var(--primary) / 0.3), 0 0 120px 30px hsl(var(--primary) / 0.12)',
         }}
+        animate={{
+          opacity: [1, 0.2, 1],
+        }}
+        transition={{
+          duration: 3,
+          ease: [0.4, 0, 0.6, 1],
+          repeat: Infinity,
+        }}
+      />
+
+      {/* Content */}
+      <div
+        className="relative z-10 overflow-hidden rounded-[1rem] w-full h-full"
+        style={{ filter: 'contrast(1.25) saturate(1.15)' }}
       >
-        <BodyDiagram
-          measurements={DEMO_MEASUREMENTS}
-          heightCm={DEMO_HEIGHT_CM}
-        />
+        <div
+          className="origin-top-left [&>div]:!rounded-none [&>div]:!border-0 [&>div]:!bg-transparent"
+          style={{
+            width: nativeWidth,
+            height: NATIVE_HEIGHT,
+            transform: `scale(${scale})`,
+          }}
+        >
+          <BodyDiagram
+            measurements={DEMO_MEASUREMENTS}
+            heightCm={DEMO_HEIGHT_CM}
+          />
+        </div>
       </div>
     </div>
   );
