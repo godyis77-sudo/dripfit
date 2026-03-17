@@ -96,6 +96,41 @@ const ScrambleValue = ({ value, scrambling }: { value: string; scrambling: boole
   return <span>{display}</span>;
 };
 
+/* ── Dual scan lines — pure CSS transform for GPU compositing ── */
+const ScanLines = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () => el.style.setProperty('--scan-travel', `${el.offsetHeight}px`);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return (
+    <div ref={ref} className="absolute inset-0 z-[3] pointer-events-none overflow-hidden" style={{ contain: 'strict' }}>
+      <div
+        className="absolute left-0 right-0 h-[2px]"
+        style={{
+          background: 'linear-gradient(90deg, transparent, hsl(var(--primary) / 0) 8%, hsl(var(--primary) / 0.85) 50%, hsl(var(--primary) / 0) 92%, transparent)',
+          boxShadow: '0 0 30px 10px hsl(var(--primary) / 0.45), 0 0 80px 20px hsl(var(--primary) / 0.12)',
+          animation: 'scan-down 6s linear infinite',
+          willChange: 'transform',
+        }}
+      />
+      <div
+        className="absolute left-0 right-0 h-[1px] opacity-40"
+        style={{
+          background: 'linear-gradient(90deg, transparent, hsl(var(--primary) / 0.5) 50%, transparent)',
+          animation: 'scan-up 6s linear infinite',
+          willChange: 'transform',
+          bottom: 0,
+        }}
+      />
+    </div>
+  );
+};
 
 /* ── Hex grid background ── */
 const HexGrid = () => {
@@ -371,14 +406,6 @@ const Crosshair = () => (
       initial={{ scaleX: 0 }}
       animate={{ scaleX: 1, opacity: [0.3, 0.6, 0.3] }}
       transition={{ scaleX: { delay: 0.8, duration: 0.5, ease: LUXURY_EASE }, opacity: { duration: 3, repeat: Infinity, ease: 'easeInOut' } }}
-    />
-    {/* Vertical */}
-    <motion.div
-      className="absolute top-[38%] bottom-[38%] w-[1px] left-1/2 -translate-x-1/2"
-      style={{ background: 'linear-gradient(180deg, transparent, hsl(var(--primary) / 0.15) 30%, hsl(var(--primary) / 0.25) 50%, hsl(var(--primary) / 0.15) 70%, transparent)' }}
-      initial={{ scaleY: 0 }}
-      animate={{ scaleY: 1, opacity: [0.3, 0.6, 0.3] }}
-      transition={{ scaleY: { delay: 0.9, duration: 0.5, ease: LUXURY_EASE }, opacity: { duration: 3, repeat: Infinity, ease: 'easeInOut' } }}
     />
     {/* Center diamond */}
     <motion.div
@@ -1012,6 +1039,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {/* Effects: Crosshair reticle */}
           {imageLoaded && !liteMode && <Crosshair />}
 
+          {/* Effects: Scan lines */}
+          {imageLoaded && <ScanLines />}
 
           {/* Effects: Data particles */}
           {imageLoaded && !liteMode && <DataParticles />}
