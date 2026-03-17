@@ -4,7 +4,7 @@ const BASE_TITLE = 'DRIPFIT ✔';
 
 export function usePageTitle(page?: string) {
   useEffect(() => {
-    document.title = page ? `${page} — ${BASE_TITLE}` : `${BASE_TITLE} — Know Your Size Before You Buy`;
+    document.title = page ? `${page} — ${BASE_TITLE}` : `${BASE_TITLE} — Scan Tailored. Infinite Style. Culture Certified Drip.`;
     return () => {
       document.title = `${BASE_TITLE} — Know Your Size Before You Buy`;
     };
