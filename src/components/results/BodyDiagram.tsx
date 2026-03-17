@@ -609,14 +609,18 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           tabIndex={0}
           onKeyDown={e => e.key === 'Enter' && toggleUnit()}
           style={{
-            border: '2px solid hsl(var(--primary) / 0.55)',
-            boxShadow: '0 0 40px 10px hsl(var(--primary) / 0.35), 0 0 80px 20px hsl(var(--primary) / 0.12), inset 0 0 40px 8px hsl(var(--primary) / 0.1)',
+            border: '2px solid hsl(var(--primary) / 1)',
           }}
           animate={liteMode ? undefined : {
             borderColor: [
-              'hsl(var(--primary) / 0.45)',
-              'hsl(var(--primary) / 0.75)',
-              'hsl(var(--primary) / 0.45)',
+              'hsl(var(--primary) / 1)',
+              'hsl(var(--primary) / 0)',
+              'hsl(var(--primary) / 1)',
+            ],
+            boxShadow: [
+              '0 0 50px 14px hsl(var(--primary) / 0.5), 0 0 100px 30px hsl(var(--primary) / 0.2), inset 0 0 50px 10px hsl(var(--primary) / 0.15)',
+              '0 0 10px 2px hsl(var(--primary) / 0), 0 0 20px 5px hsl(var(--primary) / 0), inset 0 0 10px 2px hsl(var(--primary) / 0)',
+              '0 0 50px 14px hsl(var(--primary) / 0.5), 0 0 100px 30px hsl(var(--primary) / 0.2), inset 0 0 50px 10px hsl(var(--primary) / 0.15)',
             ],
           }}
           transition={liteMode ? undefined : { duration: 3, repeat: Infinity, ease: 'easeInOut' }}
