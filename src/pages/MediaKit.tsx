@@ -61,8 +61,7 @@ const KEY_ASSETS = [
   { label: 'Body Scan Flow', src: featureScan, aspect: 'aspect-[4/3]' },
   { label: 'Virtual Try-On', src: featureTryon, aspect: 'aspect-[4/3]' },
   { label: 'Style Check', src: featureStylecheck, aspect: 'aspect-[4/3]' },
-  { label: 'Scan Results', src: scanResults, aspect: 'aspect-[9/16]' },
-  { label: 'Onboarding Scan', src: onboardingScan, aspect: 'aspect-[9/16]' },
+  { label: 'Scan Results', src: featureScan, aspect: 'aspect-[9/16]' },
 ];
 
 /* ── Value Props ─────────────────────────────────────── */
