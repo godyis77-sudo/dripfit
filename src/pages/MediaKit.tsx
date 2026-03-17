@@ -8,9 +8,9 @@ import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
-import heroPreview from '@/assets/hero-preview.webp';
-import heroPreview2 from '@/assets/hero-preview-2.webp';
-import heroPreview3 from '@/assets/hero-preview-3.webp';
+import heroPreview from '@/assets/hero-preview.png';
+import heroPreview2 from '@/assets/hero-preview-2.png';
+import heroPreview3 from '@/assets/hero-preview-3.png';
 import featureScan from '@/assets/feature-scan.jpg';
 import featureTryon from '@/assets/feature-tryon.jpg';
 import featureStylecheck from '@/assets/feature-stylecheck.jpg';
