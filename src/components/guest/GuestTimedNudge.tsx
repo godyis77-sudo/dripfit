@@ -65,6 +65,6 @@ const GuestTimedNudge = React.forwardRef<HTMLDivElement>(function GuestTimedNudg
       )}
     </AnimatePresence>
   );
-};
+});
 
 export default GuestTimedNudge;
