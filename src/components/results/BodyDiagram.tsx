@@ -54,6 +54,7 @@ const createProcessedSilhouette = (imageSrc: string): Promise<string> =>
 interface BodyDiagramProps {
   measurements: Record<string, MeasurementRange>;
   heightCm: number;
+  decorativeMode?: boolean;
 }
 
 interface MeasurementOverlay {
@@ -489,7 +490,7 @@ const TickMarks = () => (
 /* ═══════════════════════════════════════════
    MAIN COMPONENT
    ═══════════════════════════════════════════ */
-const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
+const BodyDiagram = ({ measurements, heightCm, decorativeMode }: BodyDiagramProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [silhouetteReady, setSilhouetteReady] = useState(!!processedSilhouetteCache);
   const [useCmState, setUseCmLocal] = useState(getUseCm());
@@ -576,6 +577,12 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
   }, [useCmState]);
 
   const getValue = (key: string): { line1: string; line2: string } | null => {
+    if (decorativeMode) {
+      if (key === 'height') return { line1: '— cm', line2: "—' —\"" };
+      const range = measurements[key];
+      if (!range) return null;
+      return { line1: '—', line2: '—' };
+    }
     if (key === 'height') {
       return useCmState
         ? { line1: `${heightCm} cm`, line2: fmtHeightFtIn(heightCm) }
