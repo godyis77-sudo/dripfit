@@ -12,6 +12,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 interface SavedItem {
   id: string;
   product_link: string | null;
+  product_image_url: string | null;
   retailer: string | null;
   brand: string | null;
   category: string | null;
