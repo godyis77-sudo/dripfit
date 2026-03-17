@@ -579,9 +579,6 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             ],
           }}
           transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          style={{
-            border: '2px solid hsl(var(--primary) / 0.4)',
-          }}
         >
           <span className="sr-only">
             {`Body measurements diagram: ${[
