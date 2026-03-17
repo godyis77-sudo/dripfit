@@ -18,10 +18,10 @@ const GuestProfileView = () => {
         <p className="text-sm text-muted-foreground mb-6 max-w-[280px]">
           Sign up to save your scans, try-ons, and wardrobe — all in one place.
         </p>
-        <Button className="w-full max-w-xs h-11 btn-luxury text-primary-foreground text-sm font-bold mb-3" onClick={() => navigate('/auth')}>
+        <Button className="w-full max-w-xs h-11 btn-luxury text-primary-foreground text-sm font-bold mb-3" onClick={() => navigate('/auth?returnTo=/profile')}>
           <Sparkles className="mr-2 h-4 w-4" /> Create Free Account
         </Button>
-        <Button variant="outline" className="w-full max-w-xs h-10 text-sm font-bold mb-8" onClick={() => navigate('/auth')}>
+        <Button variant="outline" className="w-full max-w-xs h-10 text-sm font-bold mb-8" onClick={() => navigate('/auth?returnTo=/profile')}>
           Sign In
         </Button>
       </div>
