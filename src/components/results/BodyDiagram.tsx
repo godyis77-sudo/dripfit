@@ -736,8 +736,10 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 alt="" aria-hidden="true"
                 className="absolute inset-0 h-full w-full object-contain pointer-events-none"
                 style={{
-                  filter: 'blur(25px) brightness(6) saturate(3) drop-shadow(0 0 80px hsl(var(--primary) / 0.8))',
-                  opacity: 0.35,
+                  filter: liteMode
+                    ? 'blur(14px) brightness(4) saturate(2.2) drop-shadow(0 0 38px hsl(var(--primary) / 0.6))'
+                    : 'blur(25px) brightness(6) saturate(3) drop-shadow(0 0 80px hsl(var(--primary) / 0.8))',
+                  opacity: liteMode ? 0.28 : 0.35,
                   transform: 'scale(1.08)',
                 }}
               />
@@ -748,8 +750,10 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 alt="" aria-hidden="true"
                 className="absolute inset-0 h-full w-full object-contain pointer-events-none"
                 style={{
-                  filter: 'blur(12px) brightness(5) saturate(2.5) drop-shadow(0 0 40px hsl(var(--primary) / 0.7))',
-                  opacity: 0.5,
+                  filter: liteMode
+                    ? 'blur(8px) brightness(4) saturate(2) drop-shadow(0 0 22px hsl(var(--primary) / 0.5))'
+                    : 'blur(12px) brightness(5) saturate(2.5) drop-shadow(0 0 40px hsl(var(--primary) / 0.7))',
+                  opacity: liteMode ? 0.38 : 0.5,
                   transform: 'scale(1.03)',
                 }}
               />
