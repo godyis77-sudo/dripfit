@@ -65,13 +65,13 @@ interface MeasurementOverlay {
 
 const OVERLAYS: MeasurementOverlay[] = [
   { key: 'height',   label: 'HEIGHT',   side: 'left',  valTop: '5%',  delay: 0,    dotTop: '5%',  dotLeft: '15%' },
-  { key: 'shoulder', label: 'SHOULDER', side: 'right', valTop: '17%', delay: 0.12, dotTop: '20%', dotLeft: '64%' },
-  { key: 'chest',    label: 'CHEST',    side: 'left',  valTop: '25%', delay: 0.22, dotTop: '28%', dotLeft: '40%' },
-  { key: 'bust',     label: 'BUST',     side: 'right', valTop: '28%', delay: 0.30, dotTop: '30%', dotLeft: '58%' },
-  { key: 'sleeve',   label: 'SLEEVE',   side: 'left',  valTop: '35%', delay: 0.38, dotTop: '36%', dotLeft: '32%' },
-  { key: 'waist',    label: 'WAIST',    side: 'right', valTop: '40%', delay: 0.46, dotTop: '42%', dotLeft: '58%' },
-  { key: 'hips',     label: 'HIPS',     side: 'right', valTop: '50%', delay: 0.54, dotTop: '50%', dotLeft: '60%' },
-  { key: 'inseam',   label: 'INSEAM',   side: 'left',  valTop: '66%', delay: 0.62, dotTop: '67%', dotLeft: '46%' },
+  { key: 'shoulder', label: 'SHOULDER', side: 'right', valTop: '17%', delay: 0.35, dotTop: '20%', dotLeft: '64%' },
+  { key: 'chest',    label: 'CHEST',    side: 'left',  valTop: '25%', delay: 0.7,  dotTop: '28%', dotLeft: '40%' },
+  { key: 'bust',     label: 'BUST',     side: 'right', valTop: '28%', delay: 1.05, dotTop: '30%', dotLeft: '58%' },
+  { key: 'sleeve',   label: 'SLEEVE',   side: 'left',  valTop: '35%', delay: 1.4,  dotTop: '36%', dotLeft: '32%' },
+  { key: 'waist',    label: 'WAIST',    side: 'right', valTop: '40%', delay: 1.75, dotTop: '42%', dotLeft: '58%' },
+  { key: 'hips',     label: 'HIPS',     side: 'right', valTop: '50%', delay: 2.1,  dotTop: '50%', dotLeft: '60%' },
+  { key: 'inseam',   label: 'INSEAM',   side: 'left',  valTop: '66%', delay: 2.45, dotTop: '67%', dotLeft: '46%' },
 ];
 
 /* ── Number scramble ── */
@@ -452,7 +452,7 @@ const HudStatusBar = ({ useCm }: { useCm: boolean }) => (
     className="absolute bottom-3.5 left-1/2 -translate-x-1/2 z-[7]"
     initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 1.2, duration: 0.6, ease: LUXURY_EASE }}
+    transition={{ delay: 4.5, duration: 0.8, ease: LUXURY_EASE }}
   >
     <div
       className="flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-1.5 backdrop-blur-2xl"
@@ -590,7 +590,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             style={{ background: 'radial-gradient(ellipse at 50% 45%, hsl(var(--primary) / 0.7), hsl(var(--primary) / 0.2) 50%, transparent 80%)' }}
             initial={{ opacity: 1 }}
             animate={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
+            transition={{ duration: 1.6, ease: 'easeOut' }}
           />
 
           {/* BG: Deep space gradient with ambient hue shift */}
@@ -921,8 +921,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                     initial={{ pathLength: 0, opacity: 0 }}
                     animate={{ pathLength: 1, opacity: 1 }}
                     transition={{
-                      pathLength: { delay: o.delay + 0.6, duration: 0.6, ease: LUXURY_EASE },
-                      opacity: { delay: o.delay + 0.6, duration: 0.2 },
+                      pathLength: { delay: o.delay + 1.4, duration: 0.8, ease: LUXURY_EASE },
+                      opacity: { delay: o.delay + 1.4, duration: 0.3 },
                     }}
                   />
                 );
@@ -942,7 +942,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 style={{ top: o.dotTop, left: o.dotLeft, transform: 'translate(-50%, -50%)' }}
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: o.delay + 0.4, duration: 0.4, ease: LUXURY_EASE }}
+                transition={{ delay: o.delay + 1.0, duration: 0.6, ease: LUXURY_EASE }}
               >
                 <span className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/20 animate-[sonar-ping_3s_ease-out_infinite]" />
                 <span className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/10 animate-[sonar-ping_3s_ease-out_infinite]" style={{ animationDelay: '1.2s' }} />
@@ -985,7 +985,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 }}
                 initial={{ opacity: 0, x: o.side === 'left' ? -14 : 14, scale: 0.8 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
-                transition={{ delay: o.delay + 0.7, duration: 0.55, ease: LUXURY_EASE }}
+                transition={{ delay: o.delay + 1.6, duration: 0.7, ease: LUXURY_EASE }}
               >
                 <div
                   className="rounded-lg px-2 py-1 backdrop-blur-2xl"
