@@ -1007,22 +1007,22 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {imageLoaded && <CrtOverlay />}
 
           {/* Effects: Crosshair reticle */}
-          {imageLoaded && <Crosshair />}
+          {imageLoaded && !liteMode && <Crosshair />}
 
           {/* Effects: Scan lines */}
           {imageLoaded && <ScanLines />}
 
           {/* Effects: Data particles */}
-          {imageLoaded && <DataParticles />}
+          {imageLoaded && !liteMode && <DataParticles />}
 
           {/* Effects: Corner brackets */}
           {imageLoaded && <CornerBrackets />}
 
           {/* Effects: Micro readouts */}
-          {imageLoaded && <MicroReadouts />}
+          {imageLoaded && !liteMode && <MicroReadouts />}
 
           {/* Effects: Signal waveform */}
-          {imageLoaded && <SignalWaveform />}
+          {imageLoaded && !liteMode && <SignalWaveform />}
 
           {/* Data: SVG leader lines */}
           {imageLoaded && (
