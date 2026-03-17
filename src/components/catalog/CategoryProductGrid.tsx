@@ -66,6 +66,13 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
     visibleProducts = visibleProducts.filter(p => p.retailer === retailer);
   }
 
+  // Apply fit profile filter
+  if (fitProfile) {
+    visibleProducts = visibleProducts.filter(p =>
+      Array.isArray(p.fit_profile) && p.fit_profile.includes(fitProfile)
+    );
+  }
+
   // Apply price filter
   if (priceFilter) {
     visibleProducts = visibleProducts.filter(p => {
