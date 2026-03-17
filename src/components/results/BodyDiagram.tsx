@@ -374,7 +374,7 @@ const CornerBrackets = () => {
           viewBox="0 0 20 20"
           fill="none"
           initial={{ opacity: 0 }}
-          animate={{ opacity: [0.5, 0.9, 0.5] }}
+          animate={{ opacity: [1, 0, 1] }}
           transition={{ duration: 3, delay: i * 0.15, repeat: Infinity, ease: 'easeInOut' }}
         >
           <path d={c.d} stroke="hsl(var(--primary) / 0.5)" strokeWidth="1" strokeLinecap="round" />
