@@ -928,7 +928,6 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 className="absolute inset-0 h-full w-full object-contain pointer-events-none"
                 style={{
                   filter: 'blur(14px) brightness(6) saturate(2.5) drop-shadow(0 0 40px hsl(var(--primary) / 0.85))',
-                  willChange: 'transform, opacity',
                   transform: 'translateX(1%) translateY(1%)',
                 }}
                 animate={{
