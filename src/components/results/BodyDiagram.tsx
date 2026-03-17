@@ -899,7 +899,6 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 style={{
                   background: 'radial-gradient(ellipse 55% 65% at 52% 46%, hsl(220 20% 3% / 0.65) 15%, transparent 60%)',
                   filter: 'blur(16px)',
-                  willChange: 'transform, opacity',
                 } as React.CSSProperties}
                 animate={{
                   scale: [1.03, 1.08, 1.03],
