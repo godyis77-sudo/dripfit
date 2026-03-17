@@ -701,7 +701,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           >
             <div className="relative h-[116%] w-[92%] max-w-[360px]">
 
-              {/* ═══ GLOW LAYERS (3 total — GPU-friendly) ═══ */}
+              {/* ═══ GLOW LAYERS (6 total — balanced quality/perf) ═══ */}
 
               {/* Layer 1: Wide atmospheric halo */}
               <img
@@ -710,29 +710,48 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 className="absolute inset-0 h-full w-full object-contain pointer-events-none"
                 style={{
                   filter: liteMode
-                    ? 'blur(14px) brightness(4) saturate(2.2)'
-                    : 'blur(20px) brightness(5) saturate(2.8)',
-                  opacity: liteMode ? 0.3 : 0.4,
-                  transform: 'scale(1.06)',
+                    ? 'blur(14px) brightness(4) saturate(2.2) drop-shadow(0 0 38px hsl(var(--primary) / 0.6))'
+                    : 'blur(25px) brightness(6) saturate(3) drop-shadow(0 0 80px hsl(var(--primary) / 0.8))',
+                  opacity: liteMode ? 0.28 : 0.35,
+                  transform: 'scale(1.08)',
                 }}
               />
 
-              {/* Layer 2: Tight edge glow — pulsing */}
+              {/* Layer 2: Mid bloom — fills gap between halo and edge */}
+              <img
+                src={silhouetteSrc}
+                alt="" aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
+                style={{
+                  filter: liteMode
+                    ? 'blur(8px) brightness(4) saturate(2) drop-shadow(0 0 22px hsl(var(--primary) / 0.5))'
+                    : 'blur(12px) brightness(5) saturate(2.5) drop-shadow(0 0 40px hsl(var(--primary) / 0.7))',
+                  opacity: liteMode ? 0.38 : 0.5,
+                  transform: 'scale(1.03)',
+                }}
+              />
+
+              {/* Layer 3: Tight edge glow — pulsing */}
               <img src={silhouetteSrc} alt="" aria-hidden="true"
                 className={`absolute inset-0 h-full w-full object-contain pointer-events-none ${liteMode ? 'hud-edge-pulse-lite' : 'hud-edge-pulse'}`}
                 style={{
                   filter: liteMode
-                    ? 'blur(2px) brightness(4.4) saturate(2)'
-                    : 'blur(3px) brightness(5) saturate(2.2)',
+                    ? 'blur(2px) brightness(4.4) saturate(2) drop-shadow(0 0 10px hsl(var(--primary) / 0.9)) drop-shadow(0 0 20px hsl(var(--primary) / 0.55))'
+                    : 'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
                 }} />
 
-              {/* Layer 3: Gold accent rim (div, no img filter) */}
-              <div className="absolute -inset-1 pointer-events-none hud-gold-rim"
-                style={{ background: 'radial-gradient(ellipse 50% 60% at 50% 45%, hsl(var(--primary) / 0.45) 10%, hsl(var(--primary) / 0.12) 40%, transparent 65%)', filter: 'blur(8px)' }} />
-
-              {/* Ghost shadow — single combined layer */}
+              {/* Layer 4: Ghost shadow */}
               <div className="absolute -inset-4 pointer-events-none hud-shadow-wide"
-                style={{ background: 'radial-gradient(ellipse 65% 70% at 52% 46%, hsl(220 20% 2% / 0.7) 15%, transparent 65%)', filter: 'blur(22px)' }} />
+                style={{ background: 'radial-gradient(ellipse 70% 75% at 53% 47%, hsl(220 20% 2% / 0.7) 20%, transparent 70%)', filter: 'blur(28px)' }} />
+
+              {/* Layer 5: Gold inner accent rim */}
+              <div className="absolute -inset-1 pointer-events-none hud-gold-rim"
+                style={{ background: 'radial-gradient(ellipse 50% 60% at 50% 45%, hsl(var(--primary) / 0.5) 10%, hsl(var(--primary) / 0.15) 40%, transparent 65%)', filter: 'blur(8px)' }} />
+
+              {/* Layer 6: Gold bloom (img — gives the warm body glow) */}
+              <img src={silhouetteSrc} alt="" aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-contain pointer-events-none hud-gold-bloom"
+                style={{ filter: 'blur(14px) brightness(6) saturate(2.5) drop-shadow(0 0 40px hsl(var(--primary) / 0.85))' }} />
             </div>
           </motion.div>
 
