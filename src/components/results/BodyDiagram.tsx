@@ -490,7 +490,7 @@ const TickMarks = () => (
 /* ═══════════════════════════════════════════
    MAIN COMPONENT
    ═══════════════════════════════════════════ */
-const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
+const BodyDiagram = ({ measurements, heightCm, decorativeMode }: BodyDiagramProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [silhouetteReady, setSilhouetteReady] = useState(!!processedSilhouetteCache);
   const [useCmState, setUseCmLocal] = useState(getUseCm());
