@@ -807,12 +807,10 @@
 
 /* ── HUD scan line animations (transform-only for GPU compositing) ── */
 @keyframes scan-down {
-  0%   { transform: translateY(0); }
-  50%  { transform: translateY(calc(100cqh - 2px)); }
-  100% { transform: translateY(0); }
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(var(--scan-travel, 500px)); }
 }
 @keyframes scan-up {
-  0%   { transform: translateY(0); }
-  50%  { transform: translateY(calc(-100cqh + 1px)); }
-  100% { transform: translateY(0); }
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(calc(-1 * var(--scan-travel, 500px))); }
 }
