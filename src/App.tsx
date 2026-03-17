@@ -143,10 +143,6 @@ const App = () => {
                   <Route path="/founding-members" element={<PageTransition><FoundingMembers /></PageTransition>} />
                   <Route path="/media-kit" element={<PageTransition><MediaKit /></PageTransition>} />
                   <Route path="/links" element={<PageTransition><LinkHub /></PageTransition>} />
-                  <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
-                </Routes>
-              </AnimatePresence>
-            </Suspense>
           </MobileShell>
         </BrowserRouter>
       </TooltipProvider>

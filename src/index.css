@@ -673,14 +673,7 @@
   }
 }
 
-/* ── Hide scrollbar utility ── */
-.scrollbar-none {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.scrollbar-none::-webkit-scrollbar {
-  display: none;
-}
+/* scrollbar-none consolidated into scrollbar-hide above */
 
 /* ── Button ripple effect ── */
 @keyframes ripple-expand {
