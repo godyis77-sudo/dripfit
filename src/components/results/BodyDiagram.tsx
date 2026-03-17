@@ -374,7 +374,7 @@ const CornerBrackets = () => {
           viewBox="0 0 20 20"
           fill="none"
           initial={{ opacity: 0 }}
-          animate={{ opacity: [1, 0, 1] }}
+          animate={{ opacity: [1, 0.15, 1] }}
           transition={{ duration: 3, delay: i * 0.15, repeat: Infinity, ease: 'easeInOut' }}
         >
           <path d={c.d} stroke="hsl(var(--primary) / 0.5)" strokeWidth="1" strokeLinecap="round" />
@@ -614,12 +614,12 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           animate={liteMode ? undefined : {
             borderColor: [
               'hsl(var(--primary) / 1)',
-              'hsl(var(--primary) / 0)',
+              'hsl(var(--primary) / 0.15)',
               'hsl(var(--primary) / 1)',
             ],
             boxShadow: [
               '0 0 50px 14px hsl(var(--primary) / 0.5), 0 0 100px 30px hsl(var(--primary) / 0.2), inset 0 0 50px 10px hsl(var(--primary) / 0.15)',
-              '0 0 10px 2px hsl(var(--primary) / 0), 0 0 20px 5px hsl(var(--primary) / 0), inset 0 0 10px 2px hsl(var(--primary) / 0)',
+              '0 0 12px 3px hsl(var(--primary) / 0.05), 0 0 24px 6px hsl(var(--primary) / 0.02), inset 0 0 12px 3px hsl(var(--primary) / 0.02)',
               '0 0 50px 14px hsl(var(--primary) / 0.5), 0 0 100px 30px hsl(var(--primary) / 0.2), inset 0 0 50px 10px hsl(var(--primary) / 0.15)',
             ],
           }}
@@ -687,7 +687,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 background: 'radial-gradient(ellipse at 50% 45%, hsl(var(--primary) / 0.22) 0%, hsl(var(--primary) / 0.08) 40%, transparent 70%)',
                 filter: liteMode ? 'blur(14px)' : 'blur(25px)',
               }}
-              animate={liteMode ? { scale: [1, 1.01, 1] } : { scale: [1, 1.02, 1], opacity: [1, 0, 1] }}
+              animate={liteMode ? { scale: [1, 1.01, 1] } : { scale: [1, 1.02, 1], opacity: [1, 0.15, 1] }}
               transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
             />
           </div>
