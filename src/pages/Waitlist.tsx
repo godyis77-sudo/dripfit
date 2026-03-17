@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom';
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
 import BrandMarquee from '@/components/waitlist/BrandMarquee';
 import '@/components/waitlist/BrandMarquee.css';
-import featureScan from '@/assets/onboarding-scan-results.jpg';
+
 import featureTryon from '@/assets/feature-tryon.jpg';
 import featureStylecheck from '@/assets/feature-stylecheck.jpg';
 
@@ -24,10 +24,11 @@ const FEATURES = [
     desc: 'Two photos. 60 seconds. Your exact measurements mapped to 300+ size charts.',
     detail: 'No tape measure needed — just your phone camera.',
     badge: '',
-    image: featureScan,
+    image: '',
     imageScale: '',
-    phoneScale: 'scale-[1.10]',
+    phoneScale: '',
     noPhone: false,
+    useDecorativeSilhouette: true,
   },
   {
     icon: Shirt,
@@ -317,7 +318,11 @@ const Waitlist = () => {
               <div className="relative bg-secondary border border-border rounded-2xl overflow-hidden h-full flex flex-col group hover:border-primary/30 transition-all">
                 {/* App screenshot */}
                 <div className="relative w-full flex-1 min-h-0 md:aspect-[4/5] md:flex-none flex items-center justify-center bg-background overflow-hidden">
-                  {f.noPhone ? (
+                  {f.useDecorativeSilhouette ? (
+                    <div className="flex items-center justify-center w-full h-full py-6">
+                      <DecorativeSilhouette height={320} />
+                    </div>
+                  ) : f.noPhone ? (
                     /* No phone frame — full bleed image */
                     <div className="absolute inset-0 overflow-hidden">
                       <img
