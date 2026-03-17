@@ -642,12 +642,35 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             />
           </motion.div>
 
-          {/* Silhouette: 4D holographic render — hidden until alpha-keyed */}
+          {/* Silhouette: Origin orb — collapses into figure */}
+          <motion.div
+            className="absolute inset-0 flex items-center justify-center pointer-events-none z-[3]"
+            style={{ transform: `translateY(${parallaxY}px)` }}
+            initial={{ opacity: 1 }}
+            animate={{ opacity: silhouetteReady ? 0 : 1 }}
+            transition={{ duration: 2.2, ease: [0.16, 1, 0.3, 1], delay: 0.6 }}
+          >
+            <motion.div
+              initial={{ width: 60, height: 60, borderRadius: '50%' }}
+              animate={silhouetteReady ? { width: 300, height: 500, borderRadius: '40%', opacity: 0 } : {}}
+              transition={{ duration: 2.2, ease: [0.16, 1, 0.3, 1], delay: 0.6 }}
+              style={{
+                background: 'radial-gradient(ellipse at 50% 45%, hsl(var(--primary) / 0.35) 0%, hsl(220 20% 4%) 60%, hsl(220 20% 2%) 100%)',
+                boxShadow: '0 0 60px 20px hsl(var(--primary) / 0.3), 0 0 120px 40px hsl(var(--primary) / 0.1)',
+              }}
+            />
+          </motion.div>
+
+          {/* Silhouette: 4D holographic render — scales up from orb */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center"
             style={{ transform: `translateY(${parallaxY}px)` }}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: silhouetteReady ? 1 : 0, scale: silhouetteReady ? 1 : 0.95 }}
+            initial={{ opacity: 0, scale: 0.15, borderRadius: '50%' }}
+            animate={{
+              opacity: silhouetteReady ? 1 : 0,
+              scale: silhouetteReady ? 1 : 0.15,
+              borderRadius: silhouetteReady ? '0%' : '50%',
+            }}
             transition={{ duration: 2.2, ease: [0.16, 1, 0.3, 1], delay: 0.6 }}
           >
             <div className="relative h-[116%] w-[92%] max-w-[360px]">
