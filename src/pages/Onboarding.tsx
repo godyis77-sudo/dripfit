@@ -14,7 +14,6 @@ import { supabase } from '@/integrations/supabase/client';
 import AuthForm from '@/components/auth/AuthForm';
 
 
-import ScanPreviewCard from '@/components/ui/ScanPreviewCard';
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
 import heroTryon from '@/assets/hero-tryon-mirror.jpg';
 import heroCommunity from '@/assets/hero-community-feedback.jpg';
@@ -443,7 +442,7 @@ const Onboarding = () => {
               {/* Top section: image + text */}
               <div className="flex flex-col items-center min-h-0 flex-1">
                 <div className="min-h-0 flex-1 flex items-center">
-                  <ScanPreviewCard height={280} />
+                  <DecorativeSilhouette height={280} />
                 </div>
 
                 <h2 className="font-display text-lg font-bold text-foreground mb-0.5 text-center mt-1 shrink-0">Let's get your measurements</h2>
