@@ -671,6 +671,10 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             background: 'radial-gradient(ellipse 55% 50% at 50% 45%, hsl(var(--primary) / 0.04) 0%, transparent 50%), radial-gradient(ellipse 90% 90% at 50% 50%, transparent 50%, hsl(220 18% 4% / 0.5) 100%)',
           }} />
 
+          {/* Edge warm fill — prevents black dead zones at card sides */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            background: 'linear-gradient(90deg, hsl(30 30% 8%) 0%, hsl(30 15% 5%) 8%, transparent 22%, transparent 78%, hsl(30 15% 5%) 92%, hsl(30 30% 8%) 100%), linear-gradient(180deg, hsl(30 25% 7%) 0%, transparent 12%, transparent 88%, hsl(30 25% 7%) 100%)',
+          }} />
 
           {/* Gold edge glow — full-bleed to card border */}
           <motion.div
