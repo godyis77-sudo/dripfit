@@ -666,14 +666,14 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {/* BG: Ruler scales */}
           {!liteMode && <RulerScale />}
 
-          {/* BG: Radial vignette — softened edges to prevent black bars */}
+          {/* BG: Radial vignette — blended edges */}
           <div className="absolute inset-0" style={{
-            background: 'radial-gradient(ellipse 55% 50% at 50% 45%, hsl(var(--primary) / 0.04) 0%, transparent 50%), radial-gradient(ellipse 90% 90% at 50% 50%, transparent 50%, hsl(220 18% 4% / 0.5) 100%)',
+            background: 'radial-gradient(ellipse 60% 55% at 50% 45%, hsl(var(--primary) / 0.04) 0%, transparent 55%), radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, hsl(220 18% 5%) 100%)',
           }} />
 
-          {/* Edge warm fill — prevents black dead zones at card sides */}
+          {/* Edge fill — matches base bg to eliminate black bars */}
           <div className="absolute inset-0 pointer-events-none" style={{
-            background: 'linear-gradient(90deg, hsl(30 30% 8%) 0%, hsl(30 15% 5%) 8%, transparent 22%, transparent 78%, hsl(30 15% 5%) 92%, hsl(30 30% 8%) 100%), linear-gradient(180deg, hsl(30 25% 7%) 0%, transparent 12%, transparent 88%, hsl(30 25% 7%) 100%)',
+            background: 'linear-gradient(90deg, hsl(220 20% 5%) 0%, hsl(220 18% 4%) 6%, transparent 18%, transparent 82%, hsl(220 18% 4%) 94%, hsl(220 20% 5%) 100%), linear-gradient(180deg, hsl(220 18% 5%) 0%, transparent 10%, transparent 90%, hsl(220 18% 5%) 100%)',
           }} />
 
           {/* Gold edge glow — full-bleed to card border */}
@@ -681,8 +681,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             className="absolute inset-0 pointer-events-none z-[1]"
             style={{
               background: 'linear-gradient(180deg, hsl(var(--primary) / 0.25) 0%, hsl(var(--primary) / 0.08) 20%, hsl(var(--primary) / 0.04) 50%, hsl(var(--primary) / 0.08) 80%, hsl(var(--primary) / 0.25) 100%)',
-              mask: 'linear-gradient(to right, black 0%, transparent 18%, transparent 82%, black 100%), linear-gradient(to bottom, black 0%, transparent 15%, transparent 85%, black 100%)',
-              WebkitMask: 'linear-gradient(to right, black 0%, transparent 18%, transparent 82%, black 100%), linear-gradient(to bottom, black 0%, transparent 15%, transparent 85%, black 100%)',
+              mask: 'linear-gradient(to right, black 0%, transparent 12%, transparent 88%, black 100%), linear-gradient(to bottom, black 0%, transparent 10%, transparent 90%, black 100%)',
+              WebkitMask: 'linear-gradient(to right, black 0%, transparent 12%, transparent 88%, black 100%), linear-gradient(to bottom, black 0%, transparent 10%, transparent 90%, black 100%)',
               WebkitMaskComposite: 'source-in',
               maskComposite: 'intersect',
             } as React.CSSProperties}
