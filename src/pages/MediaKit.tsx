@@ -13,8 +13,6 @@ import heroPreview3 from '@/assets/hero-preview-3.png';
 import featureScan from '@/assets/feature-scan.jpg';
 import featureTryon from '@/assets/feature-tryon.jpg';
 import featureStylecheck from '@/assets/feature-stylecheck.jpg';
-import scanResults from '@/assets/scan-results-full.jpg';
-import onboardingScan from '@/assets/onboarding-scan-results.jpg';
 
 /* ── Types ──────────────────────────────────────────── */
 interface DbStats {
