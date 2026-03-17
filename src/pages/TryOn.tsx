@@ -187,7 +187,7 @@ const TryOn = () => {
                             >
                               🛍️ All
                             </button>
-                            {CATEGORIES.map(c => (
+                            {CATEGORIES.filter(c => isCategoryVisibleForGender(c.key, s.userGender === 'male' ? 'mens' : s.userGender === 'female' ? 'womens' : 'all')).map(c => (
                               <button
                                 key={c.key}
                                 onClick={() => s.setCategory(c.key)}
