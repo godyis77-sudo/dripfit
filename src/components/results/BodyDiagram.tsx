@@ -895,7 +895,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
               {/* Layer 2: Tighter dark shadow — closer to figure for contact shadow */}
               <motion.div
-                className="absolute inset-0 pointer-events-none"
+                className="absolute inset-0 pointer-events-none z-[0]"
                 style={{
                   background: 'hsl(220 20% 3% / 0.85)',
                   WebkitMaskImage: `url(${bodySilhouetteMask})`,
