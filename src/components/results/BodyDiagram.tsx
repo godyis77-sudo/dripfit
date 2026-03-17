@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo, forwardRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import type { MeasurementRange } from '@/lib/types';
 import bodySilhouette from '@/assets/body-silhouette-clean-3.png';
