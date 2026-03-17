@@ -507,16 +507,13 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
   const parallaxRef2 = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const media = window.matchMedia('(max-width: 640px)');
     const evaluate = () => {
-      const lowConcurrency = typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 4;
+      const lowConcurrency = typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 2;
       const saveData = Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData);
-      setIsLowPerfDevice(media.matches || lowConcurrency || saveData);
+      setIsLowPerfDevice(lowConcurrency || saveData);
     };
 
     evaluate();
-    media.addEventListener('change', evaluate);
-    return () => media.removeEventListener('change', evaluate);
   }, []);
 
   const liteMode = reduceMotion || isLowPerfDevice;
