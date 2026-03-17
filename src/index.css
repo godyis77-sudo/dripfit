@@ -842,15 +842,15 @@
 .hud-ambient-pulse-lite { animation: hud-ambient-pulse-lite 3s ease-in-out infinite; will-change: transform; }
 
 @keyframes hud-edge-pulse {
-  0%, 100% { transform: scale(1.01); opacity: 0.72; }
-  50%      { transform: scale(1.045); opacity: 0.95; }
+  0%, 100% { opacity: 0.72; }
+  50%      { opacity: 0.95; }
 }
 @keyframes hud-edge-pulse-lite {
-  0%, 100% { transform: scale(1.005); opacity: 0.68; }
-  50%      { transform: scale(1.03); opacity: 0.88; }
+  0%, 100% { opacity: 0.68; }
+  50%      { opacity: 0.88; }
 }
-.hud-edge-pulse { animation: hud-edge-pulse 3s ease-in-out infinite; will-change: transform, opacity; }
-.hud-edge-pulse-lite { animation: hud-edge-pulse-lite 3s ease-in-out infinite; will-change: transform, opacity; }
+.hud-edge-pulse { animation: hud-edge-pulse 3s ease-in-out infinite; will-change: opacity; }
+.hud-edge-pulse-lite { animation: hud-edge-pulse-lite 3s ease-in-out infinite; will-change: opacity; }
 
 @keyframes hud-shadow-wide {
   0%, 100% { transform: scale(1.08); opacity: 0.35; }
