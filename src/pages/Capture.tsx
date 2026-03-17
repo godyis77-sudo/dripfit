@@ -112,6 +112,13 @@ const Capture = () => {
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const [genderSet, setGenderSet] = useState<string | null>(null);
   const genderLoaded = authGenderLoaded;
+  const [authSheetOpen, setAuthSheetOpen] = useState(false);
+  const [webCameraOpen, setWebCameraOpen] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [captureCountdown, setCaptureCountdown] = useState<number | null>(null);
+  const [scanGated, setScanGated] = useState(false);
+  const { toast } = useToast();
 
   // Sync gender from auth context
   useEffect(() => {
