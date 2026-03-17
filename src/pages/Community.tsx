@@ -209,7 +209,7 @@ const Community = () => {
             loadingMore={loadingMore}
             hasMore={hasMore}
             filter={filter}
-            votes={votes}
+            votes={votes as unknown as Record<string, string[]>}
             voteCounts={voteCounts}
             followToggles={followToggles}
             hasScan={hasScan}

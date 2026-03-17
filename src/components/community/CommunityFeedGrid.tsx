@@ -11,7 +11,7 @@ interface CommunityFeedGridProps {
   loadingMore: boolean;
   hasMore: boolean;
   filter: FilterType;
-  votes: Record<string, string>;
+  votes: Record<string, string[]>;
   voteCounts: Record<string, Record<string, number>>;
   followToggles: Record<string, boolean>;
   hasScan: boolean;
