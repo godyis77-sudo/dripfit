@@ -646,9 +646,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           <motion.div
             className="absolute inset-0 flex items-center justify-center"
             style={{ transform: `translateY(${parallaxY}px)` }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: silhouetteReady ? 1 : 0 }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: silhouetteReady ? 1 : 0, scale: silhouetteReady ? 1 : 0.95 }}
+            transition={{ duration: 2.2, ease: [0.16, 1, 0.3, 1], delay: 0.6 }}
           >
             <div className="relative h-[116%] w-[92%] max-w-[360px]">
 
