@@ -914,16 +914,24 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   filter: 'saturate(2) brightness(2.5) contrast(1.4) drop-shadow(0 0 12px hsl(var(--primary) / 0.9)) drop-shadow(0 0 4px hsl(var(--primary) / 1))',
                   willChange: 'transform',
                 }}
-                animate={{
-                  scale: [1, 1.02, 1],
-                  rotateY: [0, 3, 0, -3, 0],
-                  rotateX: [0, -1.5, 0, 1.5, 0],
-                }}
-                transition={{
-                  scale: { duration: 3, repeat: Infinity, ease: 'easeInOut' },
-                  rotateY: { duration: 7, repeat: Infinity, ease: 'easeInOut' },
-                  rotateX: { duration: 7, repeat: Infinity, ease: 'easeInOut' },
-                }}
+                animate={liteMode
+                  ? {
+                      scale: [1, 1.015, 1],
+                    }
+                  : {
+                      scale: [1, 1.02, 1],
+                      rotateY: [0, 3, 0, -3, 0],
+                      rotateX: [0, -1.5, 0, 1.5, 0],
+                    }}
+                transition={liteMode
+                  ? {
+                      scale: { duration: 3, repeat: Infinity, ease: 'easeInOut' },
+                    }
+                  : {
+                      scale: { duration: 3, repeat: Infinity, ease: 'easeInOut' },
+                      rotateY: { duration: 7, repeat: Infinity, ease: 'easeInOut' },
+                      rotateX: { duration: 7, repeat: Infinity, ease: 'easeInOut' },
+                    }}
               />
 
               {/* ═══ FOREGROUND OVERLAY LAYERS ═══ */}
