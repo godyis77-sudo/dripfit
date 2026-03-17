@@ -884,6 +884,30 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 />
               </motion.div>
 
+              {/* Silhouette-shaped dark shadow so it stays visible even on bright scans */}
+              <motion.div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background: 'hsl(220 20% 4% / 0.8)',
+                  WebkitMaskImage: `url(${bodySilhouetteMask})`,
+                  maskImage: `url(${bodySilhouetteMask})`,
+                  WebkitMaskRepeat: 'no-repeat',
+                  maskRepeat: 'no-repeat',
+                  WebkitMaskPosition: 'center',
+                  maskPosition: 'center',
+                  WebkitMaskSize: 'contain',
+                  maskSize: 'contain',
+                  filter: liteMode ? 'blur(8px)' : 'blur(12px)',
+                  transform: 'translateX(1.8%) translateY(1.6%)',
+                  willChange: 'transform, opacity',
+                } as React.CSSProperties}
+                animate={{
+                  scale: liteMode ? [1.02, 1.08, 1.02] : [1.04, 1.12, 1.04],
+                  opacity: liteMode ? [0.26, 0.42, 0.26] : [0.32, 0.52, 0.32],
+                }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              />
+
               <motion.img
                 src={silhouetteSrc}
                 alt="" aria-hidden="true"
