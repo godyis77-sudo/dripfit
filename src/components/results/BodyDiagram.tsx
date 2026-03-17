@@ -871,7 +871,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
               {/* Layer 1: Wide dark shadow — offset right+down for cast-shadow depth */}
               <motion.div
-                className="absolute inset-0 pointer-events-none"
+                className="absolute inset-0 pointer-events-none z-[0]"
                 style={{
                   background: 'hsl(220 20% 2% / 0.9)',
                   WebkitMaskImage: `url(${bodySilhouetteMask})`,
