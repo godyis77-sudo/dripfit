@@ -398,19 +398,13 @@ const CornerBrackets = () => {
 const Crosshair = () => (
   <div className="absolute inset-0 pointer-events-none z-[2] overflow-hidden">
     {/* Horizontal */}
-    <motion.div
-      className="absolute left-[42%] right-[42%] h-[1px] top-1/2 -translate-y-1/2"
+    <div
+      className="absolute left-[42%] right-[42%] h-[1px] top-1/2 -translate-y-1/2 hud-crosshair-pulse"
       style={{ background: 'linear-gradient(90deg, transparent, hsl(var(--primary) / 0.15) 30%, hsl(var(--primary) / 0.25) 50%, hsl(var(--primary) / 0.15) 70%, transparent)' }}
-      initial={{ scaleX: 0 }}
-      animate={{ scaleX: 1, opacity: [0.3, 0.6, 0.3] }}
-      transition={{ scaleX: { delay: 0.8, duration: 0.5, ease: LUXURY_EASE }, opacity: { duration: 3, repeat: Infinity, ease: 'easeInOut' } }}
     />
     {/* Center diamond */}
-    <motion.div
-      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 border border-primary/20 rotate-45"
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{ opacity: [0.2, 0.5, 0.2], scale: 1 }}
-      transition={{ opacity: { duration: 3, repeat: Infinity, ease: 'easeInOut' }, scale: { delay: 1, duration: 0.4, ease: LUXURY_EASE } }}
+    <div
+      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 border border-primary/20 rotate-45 hud-crosshair-pulse"
     />
   </div>
 );
