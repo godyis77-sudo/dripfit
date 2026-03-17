@@ -267,7 +267,7 @@ const Waitlist = () => {
         {/* Subheadline */}
         <FadeUp delay={0.1} className="relative z-10 max-w-md mx-auto mb-10">
           <p className="text-foreground/70 text-[15px] sm:text-base leading-relaxed">
-            AI-powered body scanning that maps your exact measurements to <span className="text-foreground font-semibold">70+ brands</span> across <span className="text-foreground font-semibold">300+ size charts</span> — so every order fits perfectly.
+            The intelligent way to shop. <span className="text-foreground font-semibold">Join the Founding 50.</span>
           </p>
         </FadeUp>
 
