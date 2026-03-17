@@ -21,6 +21,7 @@ interface CategoryProductGridProps {
   brand?: string;
   genre?: BrandGenre | null;
   retailer?: string;
+  fitProfile?: string;
 }
 
 const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>(({
