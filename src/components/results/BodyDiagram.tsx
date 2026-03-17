@@ -815,15 +815,12 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 alt="" aria-hidden="true"
                 className="absolute inset-0 h-full w-full object-contain pointer-events-none"
                 style={{
-                  filter: 'blur(22px) brightness(3) saturate(1.8)',
-                  opacity: 0.25,
-                  maskImage: 'radial-gradient(ellipse 80% 85% at 50% 45%, black 30%, transparent 75%)',
-                  WebkitMaskImage: 'radial-gradient(ellipse 80% 85% at 50% 45%, black 30%, transparent 75%)',
+                  filter: 'blur(28px) brightness(6) saturate(2.5) drop-shadow(0 0 40px hsl(var(--primary) / 0.8))',
                   willChange: 'transform, opacity',
                 }}
                 animate={{
-                  scale: [1.16, 1.2, 1.16],
-                  opacity: [0.2, 0.35, 0.2],
+                  scale: [1.16, 1.22, 1.16],
+                  opacity: [0.3, 0.5, 0.3],
                 }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
