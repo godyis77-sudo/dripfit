@@ -701,136 +701,38 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           >
             <div className="relative h-[116%] w-[92%] max-w-[360px]">
 
-              {/* ═══ BACKGROUND DEPTH LAYERS ═══ */}
+              {/* ═══ GLOW LAYERS (3 total — GPU-friendly) ═══ */}
 
-              {/* BG Layer 0+1 merged: Deep volumetric glow */}
-
-              {/* BG Layer 1: Wide atmospheric glow — creates a halo behind the body */}
+              {/* Layer 1: Wide atmospheric halo */}
               <img
                 src={silhouetteSrc}
                 alt="" aria-hidden="true"
                 className="absolute inset-0 h-full w-full object-contain pointer-events-none"
                 style={{
                   filter: liteMode
-                    ? 'blur(14px) brightness(4) saturate(2.2) drop-shadow(0 0 38px hsl(var(--primary) / 0.6))'
-                    : 'blur(25px) brightness(6) saturate(3) drop-shadow(0 0 80px hsl(var(--primary) / 0.8))',
-                  opacity: liteMode ? 0.28 : 0.35,
-                  transform: 'scale(1.08)',
+                    ? 'blur(14px) brightness(4) saturate(2.2)'
+                    : 'blur(20px) brightness(5) saturate(2.8)',
+                  opacity: liteMode ? 0.3 : 0.4,
+                  transform: 'scale(1.06)',
                 }}
               />
 
-              {/* BG Layer 2: Mid bloom — fills the gap between halo and edge glow */}
-              <img
-                src={silhouetteSrc}
-                alt="" aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
-                style={{
-                  filter: liteMode
-                    ? 'blur(8px) brightness(4) saturate(2) drop-shadow(0 0 22px hsl(var(--primary) / 0.5))'
-                    : 'blur(12px) brightness(5) saturate(2.5) drop-shadow(0 0 40px hsl(var(--primary) / 0.7))',
-                  opacity: liteMode ? 0.38 : 0.5,
-                  transform: 'scale(1.03)',
-                }}
-              />
-
-              {/* ═══ TEMPORAL ECHO LAYERS (smooth, long-cycle to avoid strobe) ═══ */}
-              {!liteMode && (
-                <>
-                  {/* Echo: deep past */}
-                  <img src={silhouetteSrc} alt="" aria-hidden="true"
-                    className="absolute inset-0 h-full w-full object-contain pointer-events-none hud-echo-deep-left"
-                    style={{ filter: 'blur(6px) brightness(4) saturate(1.5) hue-rotate(-25deg)', mixBlendMode: 'screen' }} />
-                  {/* Echo: past */}
-                  <img src={silhouetteSrc} alt="" aria-hidden="true"
-                    className="absolute inset-0 h-full w-full object-contain pointer-events-none hud-echo-left"
-                    style={{ filter: 'blur(3px) brightness(4) saturate(1.8) hue-rotate(-12deg)', mixBlendMode: 'screen' }} />
-                  {/* Echo: future */}
-                  <img src={silhouetteSrc} alt="" aria-hidden="true"
-                    className="absolute inset-0 h-full w-full object-contain pointer-events-none hud-echo-right"
-                    style={{ filter: 'blur(3px) brightness(4) saturate(1.8) hue-rotate(12deg)', mixBlendMode: 'screen' }} />
-                  {/* Echo: deep future */}
-                  <img src={silhouetteSrc} alt="" aria-hidden="true"
-                    className="absolute inset-0 h-full w-full object-contain pointer-events-none hud-echo-deep-right"
-                    style={{ filter: 'blur(6px) brightness(4) saturate(1.5) hue-rotate(25deg)', mixBlendMode: 'screen' }} />
-                </>
-              )}
-
-              {/* ═══ DEPTH-OF-FIELD GLOW LAYERS ═══ */}
-
-              {/* DOF: Rear defocused copy */}
-              {!liteMode && (
-                <img src={silhouetteSrc} alt="" aria-hidden="true"
-                  className="absolute inset-0 h-full w-full object-contain pointer-events-none hud-dof-rear"
-                  style={{ filter: 'blur(16px) brightness(4) saturate(2.5)', opacity: 0.2 }} />
-              )}
-
-              {/* DOF: Tight edge glow */}
+              {/* Layer 2: Tight edge glow — pulsing */}
               <img src={silhouetteSrc} alt="" aria-hidden="true"
                 className={`absolute inset-0 h-full w-full object-contain pointer-events-none ${liteMode ? 'hud-edge-pulse-lite' : 'hud-edge-pulse'}`}
                 style={{
                   filter: liteMode
-                    ? 'blur(2px) brightness(4.4) saturate(2) drop-shadow(0 0 10px hsl(var(--primary) / 0.9)) drop-shadow(0 0 20px hsl(var(--primary) / 0.55))'
-                    : 'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
+                    ? 'blur(2px) brightness(4.4) saturate(2)'
+                    : 'blur(3px) brightness(5) saturate(2.2)',
                 }} />
 
-              {/* ═══ GHOST SHADOW ═══ */}
-
-              {/* Layer 1: Wide dark shadow */}
-              <div className="absolute -inset-4 pointer-events-none hud-shadow-wide"
-                style={{ background: 'radial-gradient(ellipse 70% 75% at 53% 47%, hsl(220 20% 2% / 0.7) 20%, transparent 70%)', filter: 'blur(28px)' }} />
-
-              {/* Layer 2: Tighter dark shadow */}
-              <div className="absolute -inset-2 pointer-events-none hud-shadow-tight"
-                style={{ background: 'radial-gradient(ellipse 55% 65% at 52% 46%, hsl(220 20% 3% / 0.65) 15%, transparent 60%)', filter: 'blur(16px)' }} />
-
-              {/* Layer 3: Gold inner accent rim */}
+              {/* Layer 3: Gold accent rim (div, no img filter) */}
               <div className="absolute -inset-1 pointer-events-none hud-gold-rim"
-                style={{ background: 'radial-gradient(ellipse 50% 60% at 50% 45%, hsl(var(--primary) / 0.5) 10%, hsl(var(--primary) / 0.15) 40%, transparent 65%)', filter: 'blur(8px)' }} />
+                style={{ background: 'radial-gradient(ellipse 50% 60% at 50% 45%, hsl(var(--primary) / 0.45) 10%, hsl(var(--primary) / 0.12) 40%, transparent 65%)', filter: 'blur(8px)' }} />
 
-              {/* Layer 4: Bright gold bloom */}
-              <img src={silhouetteSrc} alt="" aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain pointer-events-none hud-gold-bloom"
-                style={{ filter: 'blur(14px) brightness(6) saturate(2.5) drop-shadow(0 0 40px hsl(var(--primary) / 0.85))' }} />
-
-              {/* ═══ MAIN SILHOUETTE ═══ */}
-              <img
-                src={silhouetteSrc}
-                alt="Body measurement scan"
-                className={`relative z-[2] h-full w-full object-contain ${liteMode ? 'hud-sil-breathe-lite' : 'hud-sil-breathe'}`}
-                onLoad={() => setImageLoaded(true)}
-                style={{
-                  filter: 'saturate(2) brightness(2.5) contrast(1.4) drop-shadow(0 0 12px hsl(var(--primary) / 0.9)) drop-shadow(0 0 4px hsl(var(--primary) / 1))',
-                }}
-              />
-
-              {/* ═══ FOREGROUND OVERLAY LAYERS ═══ */}
-
-              {!liteMode && (
-                <>
-                  {/* FG: Holographic sheen */}
-                  <img src={silhouetteSrc} alt="" aria-hidden="true"
-                    className="absolute inset-0 h-full w-full object-contain pointer-events-none hud-holo-sheen"
-                    style={{ mixBlendMode: 'overlay', filter: 'blur(1px) brightness(3) saturate(0.5)' }} />
-
-                  {/* FG: Specular highlight sweep */}
-                  <div
-                    className="absolute inset-0 pointer-events-none hud-spec-sweep"
-                    style={{
-                      background: 'linear-gradient(105deg, transparent 30%, hsl(var(--primary) / 0.08) 45%, hsl(var(--primary) / 0.15) 50%, hsl(var(--primary) / 0.08) 55%, transparent 70%)',
-                      mixBlendMode: 'screen',
-                    }} />
-
-                  {/* FG: Chromatic aberration — red shift right */}
-                  <img src={silhouetteSrc} alt="" aria-hidden="true"
-                    className="absolute inset-0 h-full w-full object-contain pointer-events-none hud-chroma-red"
-                    style={{ mixBlendMode: 'screen', filter: 'blur(2px) brightness(3) saturate(4) hue-rotate(40deg)' }} />
-
-                  {/* FG: Chromatic aberration — blue shift left */}
-                  <img src={silhouetteSrc} alt="" aria-hidden="true"
-                    className="absolute inset-0 h-full w-full object-contain pointer-events-none hud-chroma-blue"
-                    style={{ mixBlendMode: 'screen', filter: 'blur(2px) brightness(3) saturate(4) hue-rotate(-40deg)' }} />
-                </>
-              )}
+              {/* Ghost shadow — single combined layer */}
+              <div className="absolute -inset-4 pointer-events-none hud-shadow-wide"
+                style={{ background: 'radial-gradient(ellipse 65% 70% at 52% 46%, hsl(220 20% 2% / 0.7) 15%, transparent 65%)', filter: 'blur(22px)' }} />
             </div>
           </motion.div>
 
