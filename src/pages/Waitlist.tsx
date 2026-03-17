@@ -318,7 +318,11 @@ const Waitlist = () => {
               <div className="relative bg-secondary border border-border rounded-2xl overflow-hidden h-full flex flex-col group hover:border-primary/30 transition-all">
                 {/* App screenshot */}
                 <div className="relative w-full flex-1 min-h-0 md:aspect-[4/5] md:flex-none flex items-center justify-center bg-background overflow-hidden">
-                  {f.noPhone ? (
+                  {f.useDecorativeSilhouette ? (
+                    <div className="flex items-center justify-center w-full h-full py-6">
+                      <DecorativeSilhouette height={320} />
+                    </div>
+                  ) : f.noPhone ? (
                     /* No phone frame — full bleed image */
                     <div className="absolute inset-0 overflow-hidden">
                       <img
