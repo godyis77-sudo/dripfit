@@ -79,8 +79,8 @@ const TryOn = () => {
       <div>
         {/* Header */}
         <div className="flex items-center gap-2 mb-3">
-          <Button variant="ghost" size="icon" onClick={() => s.navigate(-1)} className="h-8 w-8 rounded-lg" aria-label="Go back">
-            <ArrowLeft className="h-4 w-4" />
+          <Button variant="ghost" size="icon" onClick={() => s.navigate(-1)} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back">
+            <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex-1">
             <h1 className="text-base font-bold text-foreground">Try-On</h1>
