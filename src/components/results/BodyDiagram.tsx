@@ -614,9 +614,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           }}
           animate={liteMode ? undefined : {
             borderColor: [
-              'hsl(var(--primary) / 0.3)',
-              'hsl(var(--primary) / 0.55)',
-              'hsl(var(--primary) / 0.3)',
+              'hsl(var(--primary) / 0.45)',
+              'hsl(var(--primary) / 0.75)',
+              'hsl(var(--primary) / 0.45)',
             ],
           }}
           transition={liteMode ? undefined : { duration: 3, repeat: Infinity, ease: 'easeInOut' }}
