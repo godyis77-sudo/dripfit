@@ -618,14 +618,14 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             border: '2px solid hsl(var(--primary) / 0.4)',
             boxShadow: '0 0 24px 6px hsl(var(--primary) / 0.2), inset 0 0 30px 5px hsl(var(--primary) / 0.06)',
           }}
-          animate={{
+          animate={liteMode ? undefined : {
             borderColor: [
               'hsl(var(--primary) / 0.3)',
               'hsl(var(--primary) / 0.55)',
               'hsl(var(--primary) / 0.3)',
             ],
           }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          transition={liteMode ? undefined : { duration: 3, repeat: Infinity, ease: 'easeInOut' }}
         >
           <span className="sr-only">
             {`Body measurements diagram: ${[
