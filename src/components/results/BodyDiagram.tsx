@@ -681,8 +681,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             className="absolute inset-0 pointer-events-none z-[1]"
             style={{
               background: 'linear-gradient(180deg, hsl(var(--primary) / 0.25) 0%, hsl(var(--primary) / 0.08) 20%, hsl(var(--primary) / 0.04) 50%, hsl(var(--primary) / 0.08) 80%, hsl(var(--primary) / 0.25) 100%)',
-              mask: 'linear-gradient(to right, black 0%, transparent 18%, transparent 82%, black 100%), linear-gradient(to bottom, black 0%, transparent 15%, transparent 85%, black 100%)',
-              WebkitMask: 'linear-gradient(to right, black 0%, transparent 18%, transparent 82%, black 100%), linear-gradient(to bottom, black 0%, transparent 15%, transparent 85%, black 100%)',
+              mask: 'linear-gradient(to right, black 0%, transparent 12%, transparent 88%, black 100%), linear-gradient(to bottom, black 0%, transparent 10%, transparent 90%, black 100%)',
+              WebkitMask: 'linear-gradient(to right, black 0%, transparent 12%, transparent 88%, black 100%), linear-gradient(to bottom, black 0%, transparent 10%, transparent 90%, black 100%)',
               WebkitMaskComposite: 'source-in',
               maskComposite: 'intersect',
             } as React.CSSProperties}
