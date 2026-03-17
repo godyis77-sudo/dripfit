@@ -869,6 +869,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                     ? 'blur(2px) brightness(4.4) saturate(2) drop-shadow(0 0 10px hsl(var(--primary) / 0.9)) drop-shadow(0 0 20px hsl(var(--primary) / 0.55))'
                     : 'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
                   opacity: liteMode ? 0.78 : 0.85,
+                  willChange: 'transform, opacity',
                 }}
                 animate={{
                   scale: liteMode ? [1.005, 1.03, 1.005] : [1.01, 1.045, 1.01],
@@ -885,6 +886,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 style={{
                   background: 'radial-gradient(ellipse 70% 75% at 53% 47%, hsl(220 20% 2% / 0.7) 20%, transparent 70%)',
                   filter: 'blur(28px)',
+                  willChange: 'transform, opacity',
                 } as React.CSSProperties}
                 animate={{
                   scale: [1.08, 1.16, 1.08],
@@ -899,6 +901,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 style={{
                   background: 'radial-gradient(ellipse 55% 65% at 52% 46%, hsl(220 20% 3% / 0.65) 15%, transparent 60%)',
                   filter: 'blur(16px)',
+                  willChange: 'transform, opacity',
                 } as React.CSSProperties}
                 animate={{
                   scale: [1.03, 1.08, 1.03],
@@ -913,6 +916,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 style={{
                   background: 'radial-gradient(ellipse 50% 60% at 50% 45%, hsl(var(--primary) / 0.5) 10%, hsl(var(--primary) / 0.15) 40%, transparent 65%)',
                   filter: 'blur(8px)',
+                  willChange: 'transform, opacity',
                 } as React.CSSProperties}
                 animate={{
                   scale: [1.01, 1.04, 1.01],
@@ -928,6 +932,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 className="absolute inset-0 h-full w-full object-contain pointer-events-none"
                 style={{
                   filter: 'blur(14px) brightness(6) saturate(2.5) drop-shadow(0 0 40px hsl(var(--primary) / 0.85))',
+                  willChange: 'transform, opacity',
                   transform: 'translateX(1%) translateY(1%)',
                 }}
                 animate={{
@@ -1057,7 +1062,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {/* Effects: Signal waveform */}
           {imageLoaded && !liteMode && <SignalWaveform />}
 
-          {/* Data: SVG leader lines — CSS animation instead of framer-motion */}
+          {/* Data: SVG leader lines */}
           {imageLoaded && (
             <svg className="absolute inset-0 w-full h-full pointer-events-none z-[4]" viewBox="0 0 100 100" preserveAspectRatio="none" fill="none">
               <defs>
@@ -1075,16 +1080,17 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 const lx = o.side === 'left' ? 2 : 98;
                 const ly = parseFloat(o.valTop) + 2;
                 return (
-                  <path
+                  <motion.path
                     key={`l-${o.key}`}
                     d={`M${dx} ${dy} L${lx} ${ly}`}
                     stroke="hsl(var(--primary) / 0.7)"
                     strokeWidth="0.45"
                     strokeDasharray="1.5 0.6"
-                    pathLength="1"
-                    style={{
-                      strokeDashoffset: 0,
-                      animation: `hud-line-draw 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${o.delay + 1.4}s both`,
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: 1, opacity: 1 }}
+                    transition={{
+                      pathLength: { delay: o.delay + 1.4, duration: 0.8, ease: LUXURY_EASE },
+                      opacity: { delay: o.delay + 1.4, duration: 0.3 },
                     }}
                   />
                 );
@@ -1092,42 +1098,62 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             </svg>
           )}
 
-          {/* Data: Hotspot dots — CSS animations */}
-          {imageLoaded && activeOverlays.map(o => (
-            <div
-              key={`d-${o.key}`}
-              className="absolute z-[5]"
-              style={{
-                top: o.dotTop,
-                left: o.dotLeft,
-                transform: 'translate(-50%, -50%)',
-                animation: `hud-dot-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${o.delay + 1.0}s both`,
-              }}
-            >
-              <span className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/20 animate-[sonar-ping_3s_ease-out_infinite]" />
-              <span className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/10 animate-[sonar-ping_3s_ease-out_infinite]" style={{ animationDelay: '1.2s' }} />
-              <span
-                className="block w-[5px] h-[5px] rounded-full bg-primary"
-                style={{
-                  animation: 'hud-dot-pulse 3s ease-in-out infinite',
-                  animationDelay: `${o.delay + 1.6}s`,
-                }}
-              />
-            </div>
-          ))}
+          {/* Data: Hotspot dots with scanline-triggered pulse */}
+          {imageLoaded && activeOverlays.map(o => {
+            // Scanline passes top→bottom in 4.5s cycle; calculate when it hits this dot
+            const dotY = parseFloat(o.dotTop) / 100;
+            const pulseDelay = dotY * 4.5; // sync with scanline duration
+            return (
+              <motion.div
+                key={`d-${o.key}`}
+                className="absolute z-[5]"
+                style={{ top: o.dotTop, left: o.dotLeft, transform: 'translate(-50%, -50%)' }}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: o.delay + 1.0, duration: 0.6, ease: LUXURY_EASE }}
+              >
+                <span className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/20 animate-[sonar-ping_3s_ease-out_infinite]" />
+                <span className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/10 animate-[sonar-ping_3s_ease-out_infinite]" style={{ animationDelay: '1.2s' }} />
+                {/* Core dot with scanline-synced flash */}
+                <motion.span
+                  className="block w-[5px] h-[5px] rounded-full bg-primary"
+                  style={{
+                    boxShadow: '0 0 4px 2px hsl(var(--primary) / 0.7), 0 0 12px 4px hsl(var(--primary) / 0.25)',
+                  }}
+                  animate={{
+                    boxShadow: [
+                      '0 0 4px 2px hsl(var(--primary) / 0.7), 0 0 12px 4px hsl(var(--primary) / 0.25)',
+                      '0 0 10px 4px hsl(var(--primary) / 1), 0 0 24px 8px hsl(var(--primary) / 0.6)',
+                      '0 0 4px 2px hsl(var(--primary) / 0.7), 0 0 12px 4px hsl(var(--primary) / 0.25)',
+                    ],
+                    scale: [1, 1.6, 1],
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    delay: pulseDelay,
+                    repeat: Infinity,
+                    repeatDelay: 4.5 - 0.6 + (2 * 4.5), // re-sync with scanline full cycle
+                    ease: 'easeOut',
+                  }}
+                />
+              </motion.div>
+            );
+          })}
 
-          {/* Data: Glassmorphic labels — CSS animations */}
+          {/* Data: Glassmorphic labels */}
           {imageLoaded && activeOverlays.map(o => {
             const val = getValue(o.key)!;
             return (
-              <div
+              <motion.div
                 key={o.key}
                 className="absolute z-[6]"
                 style={{
                   top: o.valTop,
                   ...(o.side === 'left' ? { left: '1.5%' } : { right: '1.5%' }),
-                  animation: `${o.side === 'left' ? 'hud-label-in-left' : 'hud-label-in-right'} 0.7s cubic-bezier(0.16, 1, 0.3, 1) ${o.delay + 1.6}s both`,
                 }}
+                initial={{ opacity: 0, x: o.side === 'left' ? -14 : 14, scale: 0.8 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                transition={{ delay: o.delay + 1.6, duration: 0.7, ease: LUXURY_EASE }}
               >
                 <div
                   className="rounded-lg px-2 py-1 backdrop-blur-2xl"
@@ -1148,7 +1174,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                     <ScrambleValue value={val.line2} scrambling={scrambling} />
                   </p>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
 
