@@ -37,6 +37,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
   brand,
   genre,
   retailer,
+  fitProfile,
 }, ref) => {
   const navigate = useNavigate();
   const { products, loading } = useProductCatalog(category, brand, seed, gender);
