@@ -649,7 +649,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               animate={{ scale: [1, 1.02, 1] }}
               transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
             />
-          </motion.div>
+          </div>
 
           {/* Silhouette: Origin orb — collapses into figure */}
           <motion.div
