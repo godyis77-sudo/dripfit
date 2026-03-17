@@ -450,10 +450,14 @@ serve(async (req) => {
           .eq("id", result.id);
         deactivated++;
       } else {
+        // Extract fit_profile from product name
+        const fitProfile = extractFitProfile(product.name);
+
         const updatePayload: Record<string, unknown> = {
           tags: newTags,
           image_confidence: Math.max(result.confidence, product.image_confidence ?? 0),
           gender: enforcedGender,
+          ...(fitProfile.length > 0 ? { fit_profile: fitProfile } : {}),
           ...retailerUpdate,
         };
 
@@ -496,6 +500,35 @@ serve(async (req) => {
     return errorResponse(e instanceof Error ? e.message : "Unknown error", "INTERNAL_ERROR", 500, corsHeaders);
   }
 });
+
+/**
+ * Extract fit_profile from product name using regex patterns.
+ * Returns a deduplicated array of matched fit terms.
+ */
+function extractFitProfile(name: string): string[] {
+  const lower = name.toLowerCase();
+  const FIT_PATTERNS: [RegExp, string][] = [
+    [/\bslim[- ]?fit\b/, "slim fit"],
+    [/\bclassic[- ]?fit\b/, "classic fit"],
+    [/\bregular[- ]?fit\b/, "regular fit"],
+    [/\brelaxed[- ]?fit\b|\brelaxed\b/, "relaxed fit"],
+    [/\boversized?\b|\bover[- ]sized\b/, "oversized"],
+    [/\bboxy\b/, "boxy"],
+    [/\bcropped?\b|\bcrop\b/, "cropped"],
+    [/\btapered?\b|\btaper\b/, "tapered"],
+    [/\bdrop[- ]shoulder\b/, "drop shoulder"],
+    [/\bheavy[- ]?weight\b/, "heavyweight"],
+    [/\blight[- ]?weight\b/, "lightweight"],
+    [/\bathletic[- ]?fit\b/, "athletic fit"],
+    [/\bskinny[- ]?fit\b|\bskinny\b/, "skinny fit"],
+    [/\bloose[- ]?fit\b|\bloose\b/, "loose fit"],
+  ];
+  const hits = new Set<string>();
+  for (const [regex, label] of FIT_PATTERNS) {
+    if (regex.test(lower)) hits.add(label);
+  }
+  return [...hits];
+}
 
 function normalizeRetailer(name: string): string {
   const lower = name.toLowerCase().trim();
