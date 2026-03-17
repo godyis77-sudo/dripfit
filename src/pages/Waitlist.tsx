@@ -113,7 +113,7 @@ function EmailCapture({ id, compact = false, buttonText = 'Join the Waitlist', n
 
       setSubmitted(true);
       setEmail('');
-      toast({ title: '✔ You\'re in!', description: "You're on the waitlist. We'll notify you at launch." });
+      toast({ title: '✨ You\'re in!', description: "You're on the waitlist. We'll notify you at launch.", className: 'border-primary bg-primary/10' });
     } catch {
       toast({ title: 'Something went wrong', description: 'Please try again.', variant: 'destructive' });
     } finally {
