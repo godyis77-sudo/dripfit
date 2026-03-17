@@ -57,17 +57,17 @@ export const CATEGORIES = [
 ] as const;
 
 export const ACCESSORY_CATEGORIES = [
-  { key: 'top', label: '👕 Tops', icon: '👕' },
-  { key: 'bottom', label: '👖 Bottoms', icon: '👖' },
-  { key: 'shoes', label: '👟 Shoes', icon: '👟' },
-  { key: 'hats', label: '🧢 Hats', icon: '🧢' },
-  { key: 'necklace', label: '📿 Necklace', icon: '📿' },
-  { key: 'earrings', label: '✨ Earrings', icon: '✨' },
-  { key: 'bracelet', label: '⌚ Bracelet', icon: '⌚' },
-  { key: 'watch', label: '⌚ Watch', icon: '⌚' },
-  { key: 'jewelry', label: '💎 Jewelry', icon: '💎' },
-  { key: 'bags', label: '👜 Bags', icon: '👜' },
-  { key: 'sunglasses', label: '🕶️ Sunglasses', icon: '🕶️' },
+  { key: 'top', label: 'Tops' },
+  { key: 'bottom', label: 'Bottoms' },
+  { key: 'shoes', label: 'Shoes' },
+  { key: 'hats', label: 'Hats' },
+  { key: 'necklace', label: 'Necklace' },
+  { key: 'earrings', label: 'Earrings' },
+  { key: 'bracelet', label: 'Bracelet' },
+  { key: 'watch', label: 'Watch' },
+  { key: 'jewelry', label: 'Jewelry' },
+  { key: 'bags', label: 'Bags' },
+  { key: 'sunglasses', label: 'Sunglasses' },
 ] as const;
 
 export const ALL_PRODUCT_CATEGORIES = [
