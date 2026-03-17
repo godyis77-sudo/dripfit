@@ -24,10 +24,11 @@ const FEATURES = [
     desc: 'Two photos. 60 seconds. Your exact measurements mapped to 300+ size charts.',
     detail: 'No tape measure needed — just your phone camera.',
     badge: '',
-    image: featureScan,
+    image: '',
     imageScale: '',
-    phoneScale: 'scale-[1.10]',
+    phoneScale: '',
     noPhone: false,
+    useDecorativeSilhouette: true,
   },
   {
     icon: Shirt,
