@@ -54,6 +54,8 @@ const FIT_OPTIONS = [
   'oversized', 'boxy', 'relaxed fit', 'slim fit', 'regular fit',
   'cropped', 'tapered', 'drop shoulder', 'heavyweight', 'lightweight',
   'athletic fit', 'classic fit', 'skinny fit', 'loose fit',
+  'straight fit', 'muscle fit', 'wide leg', 'fitted', 'tailored fit',
+  'bootcut', 'flare', 'baggy', 'longline', 'high rise', 'mid rise', 'low rise',
 ] as const;
 
 const Browse = () => {
