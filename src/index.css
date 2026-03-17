@@ -804,3 +804,13 @@
     animation: none !important;
   }
 }
+
+/* ── HUD scan line animations (transform-only for GPU compositing) ── */
+@keyframes scan-down {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(var(--scan-travel, 500px)); }
+}
+@keyframes scan-up {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(calc(-1 * var(--scan-travel, 500px))); }
+}
