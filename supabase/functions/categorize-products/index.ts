@@ -497,6 +497,35 @@ serve(async (req) => {
   }
 });
 
+/**
+ * Extract fit_profile from product name using regex patterns.
+ * Returns a deduplicated array of matched fit terms.
+ */
+function extractFitProfile(name: string): string[] {
+  const lower = name.toLowerCase();
+  const FIT_PATTERNS: [RegExp, string][] = [
+    [/\bslim[- ]?fit\b/, "slim fit"],
+    [/\bclassic[- ]?fit\b/, "classic fit"],
+    [/\bregular[- ]?fit\b/, "regular fit"],
+    [/\brelaxed[- ]?fit\b|\brelaxed\b/, "relaxed fit"],
+    [/\boversized?\b|\bover[- ]sized\b/, "oversized"],
+    [/\bboxy\b/, "boxy"],
+    [/\bcropped?\b|\bcrop\b/, "cropped"],
+    [/\btapered?\b|\btaper\b/, "tapered"],
+    [/\bdrop[- ]shoulder\b/, "drop shoulder"],
+    [/\bheavy[- ]?weight\b/, "heavyweight"],
+    [/\blight[- ]?weight\b/, "lightweight"],
+    [/\bathletic[- ]?fit\b/, "athletic fit"],
+    [/\bskinny[- ]?fit\b|\bskinny\b/, "skinny fit"],
+    [/\bloose[- ]?fit\b|\bloose\b/, "loose fit"],
+  ];
+  const hits = new Set<string>();
+  for (const [regex, label] of FIT_PATTERNS) {
+    if (regex.test(lower)) hits.add(label);
+  }
+  return [...hits];
+}
+
 function normalizeRetailer(name: string): string {
   const lower = name.toLowerCase().trim();
   return RETAILER_NORMALIZE[lower] ?? name;
