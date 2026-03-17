@@ -1,4 +1,4 @@
-import iconCrown from '@/assets/icon-crown.webp';
+import iconCrown from '@/assets/icon-crown.png';
 import { cn } from '@/lib/utils';
 
 interface InlineCrownProps {
