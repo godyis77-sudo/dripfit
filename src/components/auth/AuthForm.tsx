@@ -43,6 +43,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [founderCode, setFounderCode] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
   const [showForgot, setShowForgot] = useState(false);
