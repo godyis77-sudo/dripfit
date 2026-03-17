@@ -452,7 +452,7 @@ const HudStatusBar = ({ useCm }: { useCm: boolean }) => (
     className="absolute bottom-3.5 left-1/2 -translate-x-1/2 z-[7]"
     initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 1.2, duration: 0.6, ease: LUXURY_EASE }}
+    transition={{ delay: 4.5, duration: 0.8, ease: LUXURY_EASE }}
   >
     <div
       className="flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-1.5 backdrop-blur-2xl"
