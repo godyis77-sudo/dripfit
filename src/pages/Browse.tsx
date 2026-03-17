@@ -14,6 +14,7 @@ import BrandFilter from '@/components/tryon/BrandFilter';
 import ProductPreviewModal from '@/components/ui/ProductPreviewModal';
 import { BRAND_GENRES, type BrandGenre, getBrandGenre } from '@/lib/brandGenres';
 import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
+import { isCategoryVisibleForGender } from '@/lib/genderCategories';
 
 const CATEGORY_LABELS: Record<string, string> = {
   all: 'All Categories',
@@ -311,7 +312,7 @@ const Browse = () => {
                     { key: 'sunglasses', label: 'Sunglasses' },
                     { key: 'belts', label: 'Belts' },
                     { key: 'scarves', label: 'Scarves' },
-                  ].map(cat => (
+                  ].filter(cat => cat.key === 'all' || isCategoryVisibleForGender(cat.key, genderFilter)).map(cat => (
                     <button
                       key={cat.key}
                       onClick={() => {
