@@ -13,8 +13,8 @@ const Privacy = () => {
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
       <div>
         <div className="flex items-center gap-2 mb-6">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg text-muted-foreground" aria-label="Go back">
-            <ChevronLeft className="h-4 w-4" />
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px] text-muted-foreground" aria-label="Go back">
+            <ChevronLeft className="h-5 w-5" />
           </Button>
           <h1 className="text-[15px] font-bold text-foreground">Privacy Policy</h1>
         </div>

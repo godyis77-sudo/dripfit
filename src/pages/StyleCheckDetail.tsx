@@ -65,8 +65,8 @@ const StyleCheckDetail = () => {
     <div className="min-h-screen bg-background pb-safe-tab">
       <div className="max-w-sm mx-auto px-4 pt-4">
         <div className="flex items-center gap-2 mb-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/style-check')} className="h-8 w-8 rounded-lg" aria-label="Go back">
-            <ArrowLeft className="h-4 w-4" />
+          <Button variant="ghost" size="icon" onClick={() => navigate('/style-check')} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back">
+            <ArrowLeft className="h-5 w-5" />
           </Button>
           <h1 className="text-base font-bold text-foreground">Style Check</h1>
         </div>

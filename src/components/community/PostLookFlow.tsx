@@ -116,8 +116,8 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
         <SheetHeader className="pb-2">
           <div className="flex items-center justify-between">
             {step > 0 ? (
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setStep(s => s - 1)} aria-label="Go back">
-                <ArrowLeft className="h-4 w-4" />
+              <Button variant="ghost" size="icon" className="h-10 w-10 min-h-[44px] min-w-[44px]" onClick={() => setStep(s => s - 1)} aria-label="Go back">
+                <ArrowLeft className="h-5 w-5" />
               </Button>
             ) : (
               <div className="w-8" />
