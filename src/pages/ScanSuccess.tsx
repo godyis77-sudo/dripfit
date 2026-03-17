@@ -110,7 +110,7 @@ const ScanSuccess = () => {
   const navigate = useNavigate();
   const state = location.state as { result: BodyScanResult } | undefined;
   const result = state?.result;
-  const [imageLoaded, setImageLoaded] = useState(false);
+  
 
   useEffect(() => {
     if (!result) {
