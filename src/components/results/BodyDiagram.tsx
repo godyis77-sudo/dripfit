@@ -1180,7 +1180,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
           />
-        </motion.div>
+        </div>
       </div>
     </div>
   );
