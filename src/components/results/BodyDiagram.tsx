@@ -54,6 +54,7 @@ const createProcessedSilhouette = (imageSrc: string): Promise<string> =>
 interface BodyDiagramProps {
   measurements: Record<string, MeasurementRange>;
   heightCm: number;
+  decorativeMode?: boolean;
 }
 
 interface MeasurementOverlay {
