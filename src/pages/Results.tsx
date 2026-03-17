@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import SaveBanner from '@/components/ui/save-banner';
 import { usePageTitle } from '@/hooks/usePageTitle';
