@@ -142,6 +142,7 @@ const Capture = () => {
 
   const handleGenderSelect = async (value: string) => {
     setGenderSet(value);
+    updateGender(value);
     if (user) {
       await supabase.rpc('update_own_profile', { p_gender: value });
     }
