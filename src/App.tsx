@@ -104,9 +104,7 @@ const App = () => {
           <GuestTimedNudge />
           <ScrollToTop />
           <MobileShell>
-            <Suspense fallback={<RouteFallback />}>
-              <AnimatePresence mode="wait">
-                <Routes>
+            <AnimatedRoutes />
                   <Route path="/" element={<PageTransition><Welcome /></PageTransition>} />
                   <Route path="/onboarding" element={<PageTransition><Onboarding /></PageTransition>} />
                   <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
