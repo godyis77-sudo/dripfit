@@ -1039,6 +1039,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {/* Effects: Crosshair reticle */}
           {imageLoaded && !liteMode && <Crosshair />}
 
+          {/* Effects: Scan lines */}
+          {imageLoaded && <ScanLines />}
 
           {/* Effects: Data particles */}
           {imageLoaded && !liteMode && <DataParticles />}
