@@ -668,7 +668,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
           {/* BG: Radial vignette */}
           <div className="absolute inset-0" style={{
-            background: 'radial-gradient(ellipse 55% 50% at 50% 45%, hsl(var(--primary) / 0.04) 0%, transparent 50%), radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, hsl(220 20% 2% / 0.85) 100%)',
+            background: 'radial-gradient(ellipse 55% 50% at 50% 45%, hsl(var(--primary) / 0.04) 0%, transparent 50%), radial-gradient(ellipse 100% 100% at 50% 50%, transparent 50%, hsl(220 16% 4% / 0.6) 100%)',
           }} />
 
           {/* Gold edge glow — full-bleed to card border */}
