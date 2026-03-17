@@ -1,8 +1,7 @@
-import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo, forwardRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import type { MeasurementRange } from '@/lib/types';
 import bodySilhouette from '@/assets/body-silhouette-clean-3.png';
-import bodySilhouetteMask from '@/assets/body-silhouette-mask.png';
 import { getUseCm, setUseCm } from '@/lib/session';
 
 const CM_TO_IN = 0.3937;
@@ -452,8 +451,9 @@ const CrtOverlay = () => (
 );
 
 /* ── Status bar ── */
-const HudStatusBar = ({ useCm }: { useCm: boolean }) => (
+const HudStatusBar = forwardRef<HTMLDivElement, { useCm: boolean }>(({ useCm }, ref) => (
   <motion.div
+    ref={ref}
     className="absolute bottom-3.5 left-1/2 -translate-x-1/2 z-[7]"
     initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
@@ -475,7 +475,8 @@ const HudStatusBar = ({ useCm }: { useCm: boolean }) => (
       <span className="text-[7px] font-mono uppercase tracking-[0.12em] text-primary/60">TAP→{useCm ? 'IN' : 'CM'}</span>
     </div>
   </motion.div>
-);
+));
+HudStatusBar.displayName = 'HudStatusBar';
 
 /* ── Tick marks — refined ── */
 const TickMarks = () => (
