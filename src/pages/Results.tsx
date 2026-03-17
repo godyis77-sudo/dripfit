@@ -438,17 +438,17 @@ const Results = () => {
           onNewScan={() => navigate('/capture')}
           onDelete={handleDelete}
           recommendedSize={adjustedSize}
+          measurements={measurements}
+          heightCm={result.heightCm}
         />
 
-        {/* Share */}
-        <div className="mt-3 mb-2">
-          <ShareResultsButton
-            measurements={measurements}
-            heightCm={result.heightCm}
-            recommendedSize={adjustedSize}
-            fitPreference={fitPref}
-          />
-        </div>
+        {/* Legacy share (hidden, kept for compat) */}
+        <SocialExportCard
+          ref={socialExportRef}
+          measurements={measurements}
+          heightCm={result.heightCm}
+          recommendedSize={adjustedSize}
+        />
 
         {/* Body Map section */}
         <div className="mt-3 space-y-3">
