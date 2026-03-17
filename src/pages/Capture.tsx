@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Camera, ArrowLeft, RotateCcw, Check, Shield, ChevronRight, Upload, LogIn,
+  Camera, ArrowLeft, RotateCcw, Check, Shield, ChevronRight, Upload, LogIn, Shirt, LayoutGrid,
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { useToast } from '@/hooks/use-toast';
@@ -516,9 +516,9 @@ const Capture = () => {
 
               <div className="w-full space-y-2 mt-4 text-left">
                 {[
-                  { emoji: '📸', text: 'Take 2 photos (front + side)' },
-                  { emoji: '👕', text: 'Wear form-fitting clothes' },
-                  { emoji: '🧱', text: 'Stand against a plain wall' },
+                  { icon: Camera, text: 'Take 2 photos (front + side)' },
+                  { icon: Shirt, text: 'Wear form-fitting clothes' },
+                  { icon: LayoutGrid, text: 'Stand against a plain wall' },
                 ].map((item, i) => (
                   <motion.div
                     key={i}
@@ -527,7 +527,9 @@ const Capture = () => {
                     transition={{ delay: 0.6 + i * 0.1 }}
                     className="flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 min-h-[44px]"
                   >
-                    <span className="h-7 w-7 badge-gold-3d rounded-lg flex items-center justify-center text-sm shrink-0">{item.emoji}</span>
+                    <span className="h-7 w-7 badge-gold-3d rounded-lg flex items-center justify-center shrink-0">
+                      <item.icon className="h-3.5 w-3.5 text-primary-foreground" />
+                    </span>
                     <span className="text-[13px] font-medium text-foreground">{item.text}</span>
                   </motion.div>
                 ))}
