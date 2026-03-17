@@ -673,7 +673,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
           {/* Edge warm fill — prevents black dead zones at card sides */}
           <div className="absolute inset-0 pointer-events-none" style={{
-            background: 'linear-gradient(90deg, hsl(var(--primary) / 0.06) 0%, transparent 12%, transparent 88%, hsl(var(--primary) / 0.06) 100%), linear-gradient(180deg, hsl(var(--primary) / 0.05) 0%, transparent 10%, transparent 90%, hsl(var(--primary) / 0.05) 100%)',
+            background: 'linear-gradient(90deg, hsl(30 30% 8%) 0%, hsl(30 15% 5%) 8%, transparent 22%, transparent 78%, hsl(30 15% 5%) 92%, hsl(30 30% 8%) 100%), linear-gradient(180deg, hsl(30 25% 7%) 0%, transparent 12%, transparent 88%, hsl(30 25% 7%) 100%)',
           }} />
 
           {/* Gold edge glow — full-bleed to card border */}
