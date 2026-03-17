@@ -443,13 +443,6 @@ const Results = () => {
           heightCm={result.heightCm}
         />
 
-        {/* Legacy share (hidden, kept for compat) */}
-        <SocialExportCard
-          ref={socialExportRef}
-          measurements={measurements}
-          heightCm={result.heightCm}
-          recommendedSize={adjustedSize}
-        />
 
         {/* Body Map section */}
         <div className="mt-3 space-y-3">
