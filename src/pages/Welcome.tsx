@@ -268,7 +268,7 @@ const Welcome = () => {
               const baseUrl = window.location.origin;
               const url = user ? `${baseUrl}?ref=${user.id}` : baseUrl;
               if (navigator.share) {
-                navigator.share({ title: 'DRIPFIT ✔ — Scan Tailored. Infinite Style. Culture Certified Drip.', text: 'AI body measurements, virtual try-on, and real fit feedback. We both get 5 extra try-ons!', url });
+                navigator.share({ title: 'DRIPFIT ✔ — Your Tailored Size & Style. Verified Culture, Certified Drip.', text: 'AI body measurements, virtual try-on, and real fit feedback. We both get 5 extra try-ons!', url });
               } else {
                 navigator.clipboard.writeText(url);
                 toast({ title: 'Link copied!', description: 'Share it with friends — you both get 5 extra try-ons.' });
