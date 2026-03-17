@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Camera, ArrowLeft, RotateCcw, Check, Shield, ChevronRight, Upload, LogIn,
+  Camera, ArrowLeft, RotateCcw, Check, Shield, ChevronRight, Upload, LogIn, Shirt, LayoutGrid,
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { useToast } from '@/hooks/use-toast';
