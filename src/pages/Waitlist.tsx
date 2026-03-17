@@ -256,11 +256,8 @@ const Waitlist = () => {
         {/* Headline */}
         <FadeUp delay={0.05} className="relative z-10 max-w-2xl mx-auto">
           <h1 className="font-display text-[36px] sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.06] text-foreground mb-5">
-            Stop Ordering{' '}
-            <span className="relative">
-              <span className="gradient-drip-text">the Wrong</span>
-            </span>
-            <br />Size.
+            Your Tailored Size &amp; Style.<br />
+            <span className="gradient-drip-text">Verified Culture, Certified Drip.</span>
           </h1>
         </FadeUp>
 
