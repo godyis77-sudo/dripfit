@@ -871,7 +871,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
               {/* Layer 1: Wide dark shadow — offset right+down for cast-shadow depth */}
               <motion.div
-                className="absolute inset-0 pointer-events-none"
+                className="absolute inset-0 pointer-events-none z-[0]"
                 style={{
                   background: 'hsl(220 20% 2% / 0.9)',
                   WebkitMaskImage: `url(${bodySilhouetteMask})`,
@@ -895,7 +895,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
               {/* Layer 2: Tighter dark shadow — closer to figure for contact shadow */}
               <motion.div
-                className="absolute inset-0 pointer-events-none"
+                className="absolute inset-0 pointer-events-none z-[0]"
                 style={{
                   background: 'hsl(220 20% 3% / 0.85)',
                   WebkitMaskImage: `url(${bodySilhouetteMask})`,
@@ -919,7 +919,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
               {/* Layer 3: Gold inner accent rim — silhouette-shaped gold glow for depth highlight */}
               <motion.div
-                className="absolute inset-0 pointer-events-none"
+                className="absolute inset-0 pointer-events-none z-[1]"
                 style={{
                   backgroundImage: 'linear-gradient(180deg, hsl(var(--primary) / 0.7) 0%, hsl(var(--primary) / 0.35) 50%, hsl(var(--primary) / 0.6) 100%)',
                   WebkitMaskImage: `url(${bodySilhouetteMask})`,
@@ -944,7 +944,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               <motion.img
                 src={silhouetteSrc}
                 alt="" aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
+                className="absolute inset-0 h-full w-full object-contain pointer-events-none z-[1]"
                 style={{
                   filter: 'blur(14px) brightness(6) saturate(2.5) drop-shadow(0 0 40px hsl(var(--primary) / 0.85))',
                   willChange: 'transform, opacity',
