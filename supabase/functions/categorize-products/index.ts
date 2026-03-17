@@ -450,8 +450,8 @@ serve(async (req) => {
           .eq("id", result.id);
         deactivated++;
       } else {
-        // Extract fit_profile from product name
-        const fitProfile = extractFitProfile(product.name);
+        // Extract fit_profile from product name, tags, and URL
+        const fitProfile = extractFitProfile(product.name, Array.isArray(product.tags) ? product.tags : [], product.product_url);
 
         const updatePayload: Record<string, unknown> = {
           tags: newTags,
