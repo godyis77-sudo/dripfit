@@ -65,6 +65,7 @@ const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => {
           <BodyDiagram
             measurements={DEMO_MEASUREMENTS}
             heightCm={DEMO_HEIGHT_CM}
+            decorativeMode
           />
         </div>
       </div>
