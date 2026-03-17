@@ -604,8 +604,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
   return (
     <div className="mb-4" ref={containerRef}>
       <div className="flex justify-center">
-        <motion.div
-          className="relative w-full max-w-[380px] aspect-[3/4] rounded-[1rem] cursor-pointer overflow-hidden"
+        <div
+          className={`relative w-full max-w-[380px] aspect-[3/4] rounded-[1rem] cursor-pointer overflow-hidden ${liteMode ? '' : 'hud-border-breathe'}`}
           onClick={toggleUnit}
           role="button"
           aria-label="Toggle measurement units"
@@ -613,20 +613,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           onKeyDown={e => e.key === 'Enter' && toggleUnit()}
           style={{
             border: '2px solid hsl(var(--primary) / 1)',
+            ...(liteMode ? {} : {}),
           }}
-          animate={liteMode ? undefined : {
-            borderColor: [
-              'hsl(var(--primary) / 1)',
-              'hsl(var(--primary) / 0.15)',
-              'hsl(var(--primary) / 1)',
-            ],
-            boxShadow: [
-              '0 0 50px 14px hsl(var(--primary) / 0.5), 0 0 100px 30px hsl(var(--primary) / 0.2), inset 0 0 50px 10px hsl(var(--primary) / 0.15)',
-              '0 0 12px 3px hsl(var(--primary) / 0.05), 0 0 24px 6px hsl(var(--primary) / 0.02), inset 0 0 12px 3px hsl(var(--primary) / 0.02)',
-              '0 0 50px 14px hsl(var(--primary) / 0.5), 0 0 100px 30px hsl(var(--primary) / 0.2), inset 0 0 50px 10px hsl(var(--primary) / 0.15)',
-            ],
-          }}
-          transition={liteMode ? undefined : { duration: 3, repeat: Infinity, ease: 'easeInOut' }}
         >
           <span className="sr-only">
             {`Body measurements diagram: ${[
