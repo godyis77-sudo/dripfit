@@ -95,6 +95,7 @@ const ScrollToTop = () => {
 const AnimatedRoutes = () => {
   const location = useLocation();
   return (
+    <ErrorBoundary>
     <Suspense fallback={<RouteFallback />}>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
