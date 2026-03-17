@@ -649,24 +649,24 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           <motion.div
             className="absolute inset-0"
             style={{ background: 'radial-gradient(ellipse 80% 70% at 50% 42%, hsl(220 18% 7%) 0%, hsl(220 20% 3%) 100%)' }}
-            animate={{ filter: ['hue-rotate(0deg)', 'hue-rotate(5deg)', 'hue-rotate(-5deg)', 'hue-rotate(0deg)'] }}
-            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+            animate={liteMode ? undefined : { filter: ['hue-rotate(0deg)', 'hue-rotate(5deg)', 'hue-rotate(-5deg)', 'hue-rotate(0deg)'] }}
+            transition={liteMode ? undefined : { duration: 8, repeat: Infinity, ease: 'easeInOut' }}
           />
 
           {/* BG: Perspective grid floor */}
-          <PerspectiveGrid />
+          {!liteMode && <PerspectiveGrid />}
 
           {/* BG: Hex grid */}
-          <HexGrid />
+          {!liteMode && <HexGrid />}
 
           {/* BG: Polar coordinate grid */}
-          <PolarGrid />
+          {!liteMode && <PolarGrid />}
 
           {/* BG: Proportion reference lines */}
-          <ProportionLines />
+          {!liteMode && <ProportionLines />}
 
           {/* BG: Ruler scales */}
-          <RulerScale />
+          {!liteMode && <RulerScale />}
 
           {/* BG: Radial vignette */}
           <div className="absolute inset-0" style={{
