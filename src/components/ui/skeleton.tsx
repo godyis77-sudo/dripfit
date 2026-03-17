@@ -3,12 +3,7 @@ import { cn } from "@/lib/utils";
 function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("rounded-md", className)}
-      style={{
-        background: 'linear-gradient(110deg, #1A1A1A 30%, #272727 50%, #1A1A1A 70%)',
-        backgroundSize: '200% 100%',
-        animation: 'skeleton-shimmer 1.4s ease-in-out infinite',
-      }}
+      className={cn("rounded-md skeleton-gold", className)}
       {...props}
     />
   );

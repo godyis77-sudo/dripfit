@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigationType } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
@@ -90,6 +90,57 @@ const ScrollToTop = () => {
   return null;
 };
 
+/** Extracts location for AnimatePresence keying */
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  return (
+    <Suspense fallback={<RouteFallback />}>
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<PageTransition><Welcome /></PageTransition>} />
+          <Route path="/onboarding" element={<PageTransition><Onboarding /></PageTransition>} />
+          <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
+          <Route path="/capture" element={<PageTransition><Capture /></PageTransition>} />
+          <Route path="/analyze" element={<PageTransition><Analyze /></PageTransition>} />
+          <Route path="/scan-success" element={<PageTransition><ScanSuccess /></PageTransition>} />
+          <Route path="/results" element={<PageTransition><Results /></PageTransition>} />
+          <Route path="/results/:scanId" element={<PageTransition><ResultsDetail /></PageTransition>} />
+          <Route path="/history" element={<Navigate to="/profile/history" replace />} />
+          <Route path="/tryon" element={<PageTransition><TryOn /></PageTransition>} />
+          <Route path="/tryon/:lookId" element={<PageTransition><TryOnDetail /></PageTransition>} />
+          <Route path="/style-check" element={<PageTransition><Community /></PageTransition>} />
+          <Route path="/style-check/:postId" element={<PageTransition><StyleCheckDetail /></PageTransition>} />
+          <Route path="/community" element={<Navigate to="/style-check" replace />} />
+          <Route path="/community/:postId" element={<Navigate to="/style-check" replace />} />
+          <Route path="/saved" element={<Navigate to="/profile/saved" replace />} />
+          <Route path="/size-guide" element={<PageTransition><SizeGuide /></PageTransition>} />
+          <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
+          <Route path="/profile/settings" element={<ProtectedRoute><PageTransition><ProfileSettings /></PageTransition></ProtectedRoute>} />
+          <Route path="/profile/saved" element={<ProtectedRoute><PageTransition><SavedItems /></PageTransition></ProtectedRoute>} />
+          <Route path="/cart" element={<ProtectedRoute><PageTransition><Cart /></PageTransition></ProtectedRoute>} />
+          <Route path="/profile/history" element={<ProtectedRoute><PageTransition><History /></PageTransition></ProtectedRoute>} />
+          <Route path="/profile/body" element={<ProtectedRoute><PageTransition><ProfileBody /></PageTransition></ProtectedRoute>} />
+          <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
+          <Route path="/profile/:username" element={<PageTransition><PublicProfile /></PageTransition>} />
+          <Route path="/browse/:category" element={<PageTransition><Browse /></PageTransition>} />
+          <Route path="/premium" element={<PageTransition><Premium /></PageTransition>} />
+          <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />
+          <Route path="/terms" element={<PageTransition><Terms /></PageTransition>} />
+          <Route path="/admin/retailers" element={<ProtectedRoute><PageTransition><AdminRetailers /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin/commissions" element={<ProtectedRoute><PageTransition><AdminCommissions /></PageTransition></ProtectedRoute>} />
+          <Route path="/creator" element={<ProtectedRoute><PageTransition><CreatorDashboard /></PageTransition></ProtectedRoute>} />
+          <Route path="/waitlist" element={<PageTransition><Waitlist /></PageTransition>} />
+          <Route path="/partnership" element={<PageTransition><Partnership /></PageTransition>} />
+          <Route path="/founding-members" element={<PageTransition><FoundingMembers /></PageTransition>} />
+          <Route path="/media-kit" element={<PageTransition><MediaKit /></PageTransition>} />
+          <Route path="/links" element={<PageTransition><LinkHub /></PageTransition>} />
+          <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+        </Routes>
+      </AnimatePresence>
+    </Suspense>
+  );
+};
+
 const App = () => {
   useTheme();
   return (
@@ -104,57 +155,12 @@ const App = () => {
           <GuestTimedNudge />
           <ScrollToTop />
           <MobileShell>
-            <Suspense fallback={<RouteFallback />}>
-              <AnimatePresence mode="wait">
-                <Routes>
-                  <Route path="/" element={<PageTransition><Welcome /></PageTransition>} />
-                  <Route path="/onboarding" element={<PageTransition><Onboarding /></PageTransition>} />
-                  <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
-                  <Route path="/capture" element={<PageTransition><Capture /></PageTransition>} />
-                  <Route path="/analyze" element={<PageTransition><Analyze /></PageTransition>} />
-                  <Route path="/scan-success" element={<PageTransition><ScanSuccess /></PageTransition>} />
-                  <Route path="/results" element={<PageTransition><Results /></PageTransition>} />
-                  <Route path="/results/:scanId" element={<PageTransition><ResultsDetail /></PageTransition>} />
-                  <Route path="/history" element={<Navigate to="/profile/history" replace />} />
-                  <Route path="/tryon" element={<PageTransition><TryOn /></PageTransition>} />
-                  <Route path="/tryon/:lookId" element={<PageTransition><TryOnDetail /></PageTransition>} />
-                  <Route path="/style-check" element={<PageTransition><Community /></PageTransition>} />
-                  <Route path="/style-check/:postId" element={<PageTransition><StyleCheckDetail /></PageTransition>} />
-                  {/* Backwards compat redirects */}
-                  <Route path="/community" element={<Navigate to="/style-check" replace />} />
-                  <Route path="/community/:postId" element={<Navigate to="/style-check" replace />} />
-                  <Route path="/saved" element={<Navigate to="/profile/saved" replace />} />
-                  <Route path="/size-guide" element={<PageTransition><SizeGuide /></PageTransition>} />
-                  <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
-                  <Route path="/profile/settings" element={<ProtectedRoute><PageTransition><ProfileSettings /></PageTransition></ProtectedRoute>} />
-                  <Route path="/profile/saved" element={<ProtectedRoute><PageTransition><SavedItems /></PageTransition></ProtectedRoute>} />
-                  <Route path="/cart" element={<ProtectedRoute><PageTransition><Cart /></PageTransition></ProtectedRoute>} />
-                  <Route path="/profile/history" element={<ProtectedRoute><PageTransition><History /></PageTransition></ProtectedRoute>} />
-                  <Route path="/profile/body" element={<ProtectedRoute><PageTransition><ProfileBody /></PageTransition></ProtectedRoute>} />
-                  <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
-                  <Route path="/profile/:username" element={<PageTransition><PublicProfile /></PageTransition>} />
-                  <Route path="/browse/:category" element={<PageTransition><Browse /></PageTransition>} />
-                  <Route path="/premium" element={<PageTransition><Premium /></PageTransition>} />
-                  <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />
-                  <Route path="/terms" element={<PageTransition><Terms /></PageTransition>} />
-                  <Route path="/admin/retailers" element={<ProtectedRoute><PageTransition><AdminRetailers /></PageTransition></ProtectedRoute>} />
-                  <Route path="/admin/commissions" element={<ProtectedRoute><PageTransition><AdminCommissions /></PageTransition></ProtectedRoute>} />
-                  <Route path="/creator" element={<ProtectedRoute><PageTransition><CreatorDashboard /></PageTransition></ProtectedRoute>} />
-                  <Route path="/waitlist" element={<PageTransition><Waitlist /></PageTransition>} />
-                  <Route path="/partnership" element={<PageTransition><Partnership /></PageTransition>} />
-                  <Route path="/founding-members" element={<PageTransition><FoundingMembers /></PageTransition>} />
-                  <Route path="/media-kit" element={<PageTransition><MediaKit /></PageTransition>} />
-                  <Route path="/links" element={<PageTransition><LinkHub /></PageTransition>} />
-                  <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
-                </Routes>
-              </AnimatePresence>
-            </Suspense>
+            <AnimatedRoutes />
           </MobileShell>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
-
   );
 };
 
