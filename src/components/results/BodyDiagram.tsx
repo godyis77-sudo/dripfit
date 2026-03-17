@@ -485,8 +485,8 @@ const TickMarks = () => (
       const isMajor = i % 5 === 0;
       return (
         <div key={`t-${i}`}>
-          <div className="absolute left-0" style={{ top: `${4 + i * 4.3}%`, width: isMajor ? 12 : 6, height: 1, background: `hsl(var(--primary) / ${isMajor ? 0.3 : 0.08})` }} />
-          <div className="absolute right-0" style={{ top: `${4 + i * 4.3}%`, width: isMajor ? 12 : 6, height: 1, background: `hsl(var(--primary) / ${isMajor ? 0.3 : 0.08})` }} />
+          <div className="absolute left-0" style={{ top: `${4 + i * 4.3}%`, width: isMajor ? 16 : 8, height: isMajor ? 1.5 : 1, background: `hsl(var(--primary) / ${isMajor ? 0.5 : 0.15})` }} />
+          <div className="absolute right-0" style={{ top: `${4 + i * 4.3}%`, width: isMajor ? 16 : 8, height: isMajor ? 1.5 : 1, background: `hsl(var(--primary) / ${isMajor ? 0.5 : 0.15})` }} />
         </div>
       );
     })}
