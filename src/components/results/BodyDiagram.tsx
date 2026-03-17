@@ -635,11 +635,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           />
 
           {/* BG: Deep space gradient with ambient hue shift */}
-          <motion.div
-            className="absolute inset-0"
+          <div
+            className={`absolute inset-0 ${liteMode ? '' : 'hud-hue-shift'}`}
             style={{ background: 'radial-gradient(ellipse 80% 70% at 50% 42%, hsl(220 18% 7%) 0%, hsl(220 20% 3%) 100%)' }}
-            animate={liteMode ? undefined : { filter: ['hue-rotate(0deg)', 'hue-rotate(5deg)', 'hue-rotate(-5deg)', 'hue-rotate(0deg)'] }}
-            transition={liteMode ? undefined : { duration: 8, repeat: Infinity, ease: 'easeInOut' }}
           />
 
           {/* BG: Perspective grid floor */}
