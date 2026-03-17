@@ -936,63 +936,67 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
               {/* ═══ FOREGROUND OVERLAY LAYERS ═══ */}
 
-              {/* FG: Holographic sheen — slow, subtle overlay */}
-              <motion.img
-                src={silhouetteSrc}
-                alt="" aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
-                style={{
-                  mixBlendMode: 'overlay',
-                  filter: 'blur(1px) brightness(3) saturate(0.5)',
-                }}
-                animate={{ opacity: [0.05, 0.12, 0.05] }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-              />
+              {!liteMode && (
+                <>
+                  {/* FG: Holographic sheen — slow, subtle overlay */}
+                  <motion.img
+                    src={silhouetteSrc}
+                    alt="" aria-hidden="true"
+                    className="absolute inset-0 h-full w-full object-contain pointer-events-none"
+                    style={{
+                      mixBlendMode: 'overlay',
+                      filter: 'blur(1px) brightness(3) saturate(0.5)',
+                    }}
+                    animate={{ opacity: [0.05, 0.12, 0.05] }}
+                    transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+                  />
 
-              {/* FG: Specular highlight sweep — simulates light passing over */}
-              <motion.div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background: 'linear-gradient(105deg, transparent 30%, hsl(var(--primary) / 0.08) 45%, hsl(var(--primary) / 0.15) 50%, hsl(var(--primary) / 0.08) 55%, transparent 70%)',
-                  mixBlendMode: 'screen',
-                }}
-                animate={{
-                  x: ['-100%', '100%'],
-                }}
-                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', repeatDelay: 4 }}
-              />
+                  {/* FG: Specular highlight sweep — simulates light passing over */}
+                  <motion.div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background: 'linear-gradient(105deg, transparent 30%, hsl(var(--primary) / 0.08) 45%, hsl(var(--primary) / 0.15) 50%, hsl(var(--primary) / 0.08) 55%, transparent 70%)',
+                      mixBlendMode: 'screen',
+                    }}
+                    animate={{
+                      x: ['-100%', '100%'],
+                    }}
+                    transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', repeatDelay: 4 }}
+                  />
 
-              {/* FG: Chromatic aberration — red shift right */}
-              <motion.img
-                src={silhouetteSrc}
-                alt="" aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
-                style={{
-                  mixBlendMode: 'screen',
-                  filter: 'blur(2px) brightness(3) saturate(4) hue-rotate(40deg)',
-                }}
-                animate={{
-                  x: ['0.5%', '1.2%', '0.5%'],
-                  opacity: [0.03, 0.06, 0.03],
-                }}
-                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-              />
+                  {/* FG: Chromatic aberration — red shift right */}
+                  <motion.img
+                    src={silhouetteSrc}
+                    alt="" aria-hidden="true"
+                    className="absolute inset-0 h-full w-full object-contain pointer-events-none"
+                    style={{
+                      mixBlendMode: 'screen',
+                      filter: 'blur(2px) brightness(3) saturate(4) hue-rotate(40deg)',
+                    }}
+                    animate={{
+                      x: ['0.5%', '1.2%', '0.5%'],
+                      opacity: [0.03, 0.06, 0.03],
+                    }}
+                    transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+                  />
 
-              {/* FG: Chromatic aberration — blue shift left */}
-              <motion.img
-                src={silhouetteSrc}
-                alt="" aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
-                style={{
-                  mixBlendMode: 'screen',
-                  filter: 'blur(2px) brightness(3) saturate(4) hue-rotate(-40deg)',
-                }}
-                animate={{
-                  x: ['-0.5%', '-1.2%', '-0.5%'],
-                  opacity: [0.03, 0.06, 0.03],
-                }}
-                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-              />
+                  {/* FG: Chromatic aberration — blue shift left */}
+                  <motion.img
+                    src={silhouetteSrc}
+                    alt="" aria-hidden="true"
+                    className="absolute inset-0 h-full w-full object-contain pointer-events-none"
+                    style={{
+                      mixBlendMode: 'screen',
+                      filter: 'blur(2px) brightness(3) saturate(4) hue-rotate(-40deg)',
+                    }}
+                    animate={{
+                      x: ['-0.5%', '-1.2%', '-0.5%'],
+                      opacity: [0.03, 0.06, 0.03],
+                    }}
+                    transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+                  />
+                </>
+              )}
             </div>
           </motion.div>
 
