@@ -839,11 +839,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   <img src={silhouetteSrc} alt="" aria-hidden="true"
                     className="absolute inset-0 h-full w-full object-contain pointer-events-none hud-chroma-blue"
                     style={{ mixBlendMode: 'screen', filter: 'blur(2px) brightness(3) saturate(4) hue-rotate(-40deg)' }} />
-                      x: ['-0.5%', '-1.2%', '-0.5%'],
-                      opacity: [0.03, 0.06, 0.03],
-                    }}
-                    transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-                  />
+                </>
+              )}
                 </>
               )}
             </div>
