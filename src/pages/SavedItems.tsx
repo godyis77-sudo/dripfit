@@ -12,6 +12,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 interface SavedItem {
   id: string;
   product_link: string | null;
+  product_image_url: string | null;
   retailer: string | null;
   brand: string | null;
   category: string | null;
@@ -94,7 +95,14 @@ const SavedItems = () => {
           <div className="space-y-2">
             {items.map(item => (
               <div key={item.id} className="bg-card border border-border rounded-xl p-3">
-                <div className="flex items-start justify-between gap-2">
+                <div className="flex gap-3">
+                  {/* Product thumbnail */}
+                  <img
+                    src={item.product_image_url || '/placeholder.svg'}
+                    alt={item.brand || item.category || 'Product'}
+                    className="w-16 h-16 object-cover rounded-lg bg-muted shrink-0"
+                    onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.svg'; }}
+                  />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-1">
                       {item.retailer && (
@@ -108,15 +116,14 @@ const SavedItems = () => {
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[13px] font-bold text-foreground">Size {item.size_recommendation}</span>
-                      <span className="text-[10px] text-muted-foreground capitalize">{item.confidence} confidence</span>
-                    </div>
+                    <p className="text-[13px] font-bold text-foreground">
+                      Size {item.size_recommendation || '—'} · <span className="font-normal text-muted-foreground capitalize">{item.confidence || 'Unknown'} confidence</span>
+                    </p>
                     <p className="text-[11px] text-muted-foreground mt-0.5">
                       Saved {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </p>
                   </div>
-                  <button onClick={() => handleDelete(item.id)} className="text-muted-foreground/40 hover:text-destructive transition-colors p-1">
+                  <button onClick={() => handleDelete(item.id)} className="text-muted-foreground/40 hover:text-destructive transition-colors p-1 self-start shrink-0">
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
