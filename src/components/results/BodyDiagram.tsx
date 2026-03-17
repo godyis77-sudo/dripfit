@@ -666,14 +666,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {/* BG: Ruler scales */}
           {!liteMode && <RulerScale />}
 
-          {/* BG: Radial vignette — softened edges to prevent black bars */}
+          {/* BG: Radial vignette */}
           <div className="absolute inset-0" style={{
-            background: 'radial-gradient(ellipse 55% 50% at 50% 45%, hsl(var(--primary) / 0.04) 0%, transparent 50%), radial-gradient(ellipse 90% 90% at 50% 50%, transparent 50%, hsl(220 18% 4% / 0.5) 100%)',
-          }} />
-
-          {/* Edge warm fill — prevents black dead zones at card sides */}
-          <div className="absolute inset-0 pointer-events-none" style={{
-            background: 'linear-gradient(90deg, hsl(30 30% 8%) 0%, hsl(30 15% 5%) 8%, transparent 22%, transparent 78%, hsl(30 15% 5%) 92%, hsl(30 30% 8%) 100%), linear-gradient(180deg, hsl(30 25% 7%) 0%, transparent 12%, transparent 88%, hsl(30 25% 7%) 100%)',
+            background: 'radial-gradient(ellipse 55% 50% at 50% 45%, hsl(var(--primary) / 0.04) 0%, transparent 50%), radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, hsl(220 20% 2% / 0.85) 100%)',
           }} />
 
           {/* Gold edge glow — full-bleed to card border */}
@@ -754,7 +749,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             }}
             transition={{ duration: 2.2, ease: [0.16, 1, 0.3, 1], delay: 0.6 }}
           >
-            <div className="relative h-[116%] w-full max-w-[360px]">
+            <div className="relative h-[116%] w-[92%] max-w-[360px]">
 
               {/* ═══ BACKGROUND DEPTH LAYERS ═══ */}
 
