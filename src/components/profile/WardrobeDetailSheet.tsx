@@ -205,13 +205,26 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
           </Collapsible>
 
           {/* Delete */}
-          <Button
-            variant="outline"
-            className="w-full h-9 rounded-xl text-[11px] text-destructive border-destructive/20 hover:bg-destructive/10 gap-1.5"
-            onClick={() => { onDelete(item.id); onOpenChange(false); }}
-          >
-            <Trash2 className="h-3.5 w-3.5" /> Remove from Wardrobe
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full h-9 rounded-xl text-[11px] text-destructive border-destructive/20 hover:bg-destructive/10 gap-1.5"
+              >
+                <Trash2 className="h-3.5 w-3.5" /> Remove from Wardrobe
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="max-w-[320px] rounded-2xl">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-[15px]">Remove from wardrobe?</AlertDialogTitle>
+                <AlertDialogDescription className="text-[13px]">This item will be removed from your wardrobe. You can always add it back later.</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="rounded-xl text-[12px]">Cancel</AlertDialogCancel>
+                <AlertDialogAction className="rounded-xl text-[12px] bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => { onDelete(item.id); onOpenChange(false); }}>Remove</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </SheetContent>
     </Sheet>
