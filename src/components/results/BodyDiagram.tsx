@@ -919,7 +919,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
               {/* Layer 3: Gold inner accent rim — silhouette-shaped gold glow for depth highlight */}
               <motion.div
-                className="absolute inset-0 pointer-events-none"
+                className="absolute inset-0 pointer-events-none z-[1]"
                 style={{
                   backgroundImage: 'linear-gradient(180deg, hsl(var(--primary) / 0.7) 0%, hsl(var(--primary) / 0.35) 50%, hsl(var(--primary) / 0.6) 100%)',
                   WebkitMaskImage: `url(${bodySilhouetteMask})`,
