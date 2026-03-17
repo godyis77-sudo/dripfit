@@ -754,7 +754,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             }}
             transition={{ duration: 2.2, ease: [0.16, 1, 0.3, 1], delay: 0.6 }}
           >
-            <div className="relative h-[110%] w-full max-w-[360px]">
+            <div className="relative h-[116%] w-full max-w-[360px]">
 
               {/* ═══ BACKGROUND DEPTH LAYERS ═══ */}
 
