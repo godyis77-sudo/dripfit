@@ -867,96 +867,92 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
 
-              {/* ═══ 3D DEPTH LAYERS — rendered above glow, below main silhouette ═══ */}
+              {/* ═══ GHOST SHADOW — dark silhouette-shaped drop shadow for 3D depth ═══ */}
 
-              {/* Layer 1: Wide cast shadow — dark offset for ground-plane depth */}
+              {/* Layer 1: Wide dark shadow — offset right+down for cast-shadow depth */}
               <motion.div
-                className="absolute pointer-events-none"
+                className="absolute inset-0 pointer-events-none z-[0]"
                 style={{
-                  inset: '-5%',
-                  background: 'hsl(0 0% 0% / 0.95)',
+                  background: 'hsl(220 20% 2% / 0.9)',
                   WebkitMaskImage: `url(${bodySilhouetteMask})`,
                   maskImage: `url(${bodySilhouetteMask})`,
                   WebkitMaskRepeat: 'no-repeat',
                   maskRepeat: 'no-repeat',
                   WebkitMaskPosition: 'center',
                   maskPosition: 'center',
-                  WebkitMaskSize: '90%',
-                  maskSize: '90%',
-                  filter: 'blur(20px)',
-                  transform: 'translateX(4%) translateY(3%)',
+                  WebkitMaskSize: 'contain',
+                  maskSize: 'contain',
+                  filter: 'blur(18px)',
+                  transform: 'translateX(3%) translateY(2.5%)',
                   willChange: 'transform, opacity',
                 } as React.CSSProperties}
                 animate={{
-                  scale: [1.08, 1.16, 1.08],
-                  opacity: [0.5, 0.8, 0.5],
+                  scale: [1.06, 1.14, 1.06],
+                  opacity: [0.45, 0.7, 0.45],
                 }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
 
-              {/* Layer 2: Tighter contact shadow */}
+              {/* Layer 2: Tighter dark shadow — closer to figure for contact shadow */}
               <motion.div
-                className="absolute pointer-events-none"
+                className="absolute inset-0 pointer-events-none z-[0]"
                 style={{
-                  inset: '-2%',
-                  background: 'hsl(0 0% 0% / 0.9)',
+                  background: 'hsl(220 20% 3% / 0.85)',
                   WebkitMaskImage: `url(${bodySilhouetteMask})`,
                   maskImage: `url(${bodySilhouetteMask})`,
                   WebkitMaskRepeat: 'no-repeat',
                   maskRepeat: 'no-repeat',
                   WebkitMaskPosition: 'center',
                   maskPosition: 'center',
-                  WebkitMaskSize: '95%',
-                  maskSize: '95%',
-                  filter: 'blur(10px)',
-                  transform: 'translateX(2%) translateY(1.5%)',
+                  WebkitMaskSize: 'contain',
+                  maskSize: 'contain',
+                  filter: 'blur(8px)',
+                  transform: 'translateX(1.5%) translateY(1.2%)',
                   willChange: 'transform, opacity',
                 } as React.CSSProperties}
                 animate={{
-                  scale: [1.03, 1.08, 1.03],
-                  opacity: [0.55, 0.85, 0.55],
+                  scale: [1.02, 1.06, 1.02],
+                  opacity: [0.5, 0.75, 0.5],
                 }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
 
-              {/* Layer 3: Gold inner accent rim — silhouette-shaped edge highlight */}
+              {/* Layer 3: Gold inner accent rim — silhouette-shaped gold glow for depth highlight */}
               <motion.div
-                className="absolute pointer-events-none"
+                className="absolute inset-0 pointer-events-none z-[1]"
                 style={{
-                  inset: '-1%',
-                  backgroundImage: 'linear-gradient(180deg, hsl(var(--primary) / 0.85) 0%, hsl(var(--primary) / 0.4) 50%, hsl(var(--primary) / 0.7) 100%)',
+                  backgroundImage: 'linear-gradient(180deg, hsl(var(--primary) / 0.7) 0%, hsl(var(--primary) / 0.35) 50%, hsl(var(--primary) / 0.6) 100%)',
                   WebkitMaskImage: `url(${bodySilhouetteMask})`,
                   maskImage: `url(${bodySilhouetteMask})`,
                   WebkitMaskRepeat: 'no-repeat',
                   maskRepeat: 'no-repeat',
                   WebkitMaskPosition: 'center',
                   maskPosition: 'center',
-                  WebkitMaskSize: '98%',
-                  maskSize: '98%',
-                  filter: 'blur(5px)',
+                  WebkitMaskSize: 'contain',
+                  maskSize: 'contain',
+                  filter: 'blur(4px)',
                   willChange: 'transform, opacity',
                 } as React.CSSProperties}
                 animate={{
-                  scale: [1.01, 1.04, 1.01],
-                  opacity: [0.25, 0.5, 0.25],
+                  scale: [1.005, 1.025, 1.005],
+                  opacity: [0.18, 0.35, 0.18],
                 }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
 
-              {/* Layer 4: Bright gold bloom offset behind */}
+              {/* Layer 4: Bright gold bloom behind silhouette */}
               <motion.img
                 src={silhouetteSrc}
                 alt="" aria-hidden="true"
-                className="absolute h-full w-full object-contain pointer-events-none"
+                className="absolute inset-0 h-full w-full object-contain pointer-events-none z-[1]"
                 style={{
-                  inset: '-2%',
                   filter: 'blur(14px) brightness(6) saturate(2.5) drop-shadow(0 0 40px hsl(var(--primary) / 0.85))',
                   willChange: 'transform, opacity',
-                  transform: 'translateX(1.5%) translateY(1.5%)',
+                  transform: 'translateX(1%) translateY(1%)',
                 }}
                 animate={{
                   scale: [1.1, 1.18, 1.1],
-                  opacity: [0.35, 0.6, 0.35],
+                  opacity: [0.3, 0.55, 0.3],
                 }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
