@@ -1062,7 +1062,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {/* Effects: Signal waveform */}
           {imageLoaded && !liteMode && <SignalWaveform />}
 
-          {/* Data: SVG leader lines */}
+          {/* Data: SVG leader lines — CSS animation instead of framer-motion */}
           {imageLoaded && (
             <svg className="absolute inset-0 w-full h-full pointer-events-none z-[4]" viewBox="0 0 100 100" preserveAspectRatio="none" fill="none">
               <defs>
@@ -1080,17 +1080,16 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 const lx = o.side === 'left' ? 2 : 98;
                 const ly = parseFloat(o.valTop) + 2;
                 return (
-                  <motion.path
+                  <path
                     key={`l-${o.key}`}
                     d={`M${dx} ${dy} L${lx} ${ly}`}
                     stroke="hsl(var(--primary) / 0.7)"
                     strokeWidth="0.45"
                     strokeDasharray="1.5 0.6"
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    animate={{ pathLength: 1, opacity: 1 }}
-                    transition={{
-                      pathLength: { delay: o.delay + 1.4, duration: 0.8, ease: LUXURY_EASE },
-                      opacity: { delay: o.delay + 1.4, duration: 0.3 },
+                    pathLength="1"
+                    style={{
+                      strokeDashoffset: 0,
+                      animation: `hud-line-draw 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${o.delay + 1.4}s both`,
                     }}
                   />
                 );
@@ -1098,62 +1097,42 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             </svg>
           )}
 
-          {/* Data: Hotspot dots with scanline-triggered pulse */}
-          {imageLoaded && activeOverlays.map(o => {
-            // Scanline passes top→bottom in 4.5s cycle; calculate when it hits this dot
-            const dotY = parseFloat(o.dotTop) / 100;
-            const pulseDelay = dotY * 4.5; // sync with scanline duration
-            return (
-              <motion.div
-                key={`d-${o.key}`}
-                className="absolute z-[5]"
-                style={{ top: o.dotTop, left: o.dotLeft, transform: 'translate(-50%, -50%)' }}
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: o.delay + 1.0, duration: 0.6, ease: LUXURY_EASE }}
-              >
-                <span className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/20 animate-[sonar-ping_3s_ease-out_infinite]" />
-                <span className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/10 animate-[sonar-ping_3s_ease-out_infinite]" style={{ animationDelay: '1.2s' }} />
-                {/* Core dot with scanline-synced flash */}
-                <motion.span
-                  className="block w-[5px] h-[5px] rounded-full bg-primary"
-                  style={{
-                    boxShadow: '0 0 4px 2px hsl(var(--primary) / 0.7), 0 0 12px 4px hsl(var(--primary) / 0.25)',
-                  }}
-                  animate={{
-                    boxShadow: [
-                      '0 0 4px 2px hsl(var(--primary) / 0.7), 0 0 12px 4px hsl(var(--primary) / 0.25)',
-                      '0 0 10px 4px hsl(var(--primary) / 1), 0 0 24px 8px hsl(var(--primary) / 0.6)',
-                      '0 0 4px 2px hsl(var(--primary) / 0.7), 0 0 12px 4px hsl(var(--primary) / 0.25)',
-                    ],
-                    scale: [1, 1.6, 1],
-                  }}
-                  transition={{
-                    duration: 0.6,
-                    delay: pulseDelay,
-                    repeat: Infinity,
-                    repeatDelay: 4.5 - 0.6 + (2 * 4.5), // re-sync with scanline full cycle
-                    ease: 'easeOut',
-                  }}
-                />
-              </motion.div>
-            );
-          })}
+          {/* Data: Hotspot dots — CSS animations */}
+          {imageLoaded && activeOverlays.map(o => (
+            <div
+              key={`d-${o.key}`}
+              className="absolute z-[5]"
+              style={{
+                top: o.dotTop,
+                left: o.dotLeft,
+                transform: 'translate(-50%, -50%)',
+                animation: `hud-dot-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${o.delay + 1.0}s both`,
+              }}
+            >
+              <span className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/20 animate-[sonar-ping_3s_ease-out_infinite]" />
+              <span className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/10 animate-[sonar-ping_3s_ease-out_infinite]" style={{ animationDelay: '1.2s' }} />
+              <span
+                className="block w-[5px] h-[5px] rounded-full bg-primary"
+                style={{
+                  animation: 'hud-dot-pulse 3s ease-in-out infinite',
+                  animationDelay: `${o.delay + 1.6}s`,
+                }}
+              />
+            </div>
+          ))}
 
-          {/* Data: Glassmorphic labels */}
+          {/* Data: Glassmorphic labels — CSS animations */}
           {imageLoaded && activeOverlays.map(o => {
             const val = getValue(o.key)!;
             return (
-              <motion.div
+              <div
                 key={o.key}
                 className="absolute z-[6]"
                 style={{
                   top: o.valTop,
                   ...(o.side === 'left' ? { left: '1.5%' } : { right: '1.5%' }),
+                  animation: `${o.side === 'left' ? 'hud-label-in-left' : 'hud-label-in-right'} 0.7s cubic-bezier(0.16, 1, 0.3, 1) ${o.delay + 1.6}s both`,
                 }}
-                initial={{ opacity: 0, x: o.side === 'left' ? -14 : 14, scale: 0.8 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                transition={{ delay: o.delay + 1.6, duration: 0.7, ease: LUXURY_EASE }}
               >
                 <div
                   className="rounded-lg px-2 py-1 backdrop-blur-2xl"
@@ -1174,7 +1153,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                     <ScrambleValue value={val.line2} scrambling={scrambling} />
                   </p>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
 
