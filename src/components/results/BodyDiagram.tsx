@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import type { MeasurementRange } from '@/lib/types';
 import bodySilhouette from '@/assets/body-silhouette-clean-3.png';
 import { getUseCm, setUseCm } from '@/lib/session';
@@ -12,6 +12,9 @@ const fmtHeightFtIn = (cm: number) => {
   return `${Math.floor(totalIn / 12)}' ${totalIn % 12}"`;
 };
 const LUXURY_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+let processedSilhouetteCache: string | null = null;
+let processedSilhouettePromise: Promise<string> | null = null;
 
 // Remove white background from silhouette
 const createProcessedSilhouette = (imageSrc: string): Promise<string> =>
