@@ -107,8 +107,9 @@ const Welcome = () => {
         {/* Hero */}
         <motion.div variants={stagger.item} className="text-center max-w-[340px] mb-10">
           <h1 className="font-display text-[34px] font-bold tracking-tight mb-4 leading-[1.08] text-foreground">
-            Never return the{' '}
-            <span className="gradient-drip-text italic">wrong</span> size again
+            Scan Tailored.{' '}
+            <span className="gradient-drip-text italic">Infinite Style.</span>{' '}
+            Culture Certified Drip.
           </h1>
           <p className="text-muted-foreground text-[14px] leading-relaxed max-w-[300px] mx-auto">
             Two photos. Sixty seconds. Your exact measurements across every brand — plus virtual try-on and real feedback.
