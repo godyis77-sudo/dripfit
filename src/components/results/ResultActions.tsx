@@ -1,6 +1,12 @@
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Shirt, Save, Check, Trash2, RotateCcw, Shield, ShoppingBag, MessageSquare, Bookmark } from 'lucide-react';
+import { Shirt, Save, Check, Trash2, RotateCcw, Shield, Share, MessageSquare } from 'lucide-react';
+import { toPng } from 'html-to-image';
+import { useToast } from '@/hooks/use-toast';
+import { trackEvent } from '@/lib/analytics';
+import type { MeasurementRange } from '@/lib/types';
+import SocialExportCard from './SocialExportCard';
 
 interface ResultActionsProps {
   saved: boolean;
@@ -10,14 +16,92 @@ interface ResultActionsProps {
   onNewScan: () => void;
   onDelete: () => void;
   recommendedSize?: string;
+  measurements?: Record<string, MeasurementRange>;
+  heightCm?: number;
 }
 
-const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, recommendedSize }: ResultActionsProps) => {
+const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, recommendedSize, measurements, heightCm }: ResultActionsProps) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [sharing, setSharing] = useState(false);
+  const exportRef = useRef<HTMLDivElement>(null);
+
+  const handleShare = async () => {
+    if (!measurements || !heightCm || !recommendedSize) return;
+    setSharing(true);
+
+    toast({
+      title: '✨ Generating your Fit Identity...',
+      description: 'Scaling for HQ share.',
+    });
+
+    try {
+      // Small delay so the export card renders
+      await new Promise(r => setTimeout(r, 300));
+
+      if (!exportRef.current) {
+        throw new Error('Export card not ready');
+      }
+
+      const dataUrl = await toPng(exportRef.current, {
+        width: 1080,
+        height: 1920,
+        pixelRatio: 1,
+        cacheBust: true,
+      });
+
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const file = new File([blob], 'dripfit-founding50.png', { type: 'image/png' });
+
+      trackEvent('founding50_share_generated' as any, { method: navigator.share ? 'native' : 'download' });
+
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({
+          text: "I just got my exact measurements with DRIPFIT ✔ — Founding 50 Member. Try it free: dripfitcheck.lovable.app",
+          files: [file],
+        });
+      } else {
+        // Desktop fallback: direct download
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = 'dripfit-founding50.png';
+        a.click();
+        toast({ title: 'Image saved!', description: 'Share it on your Stories.' });
+      }
+    } catch (err: any) {
+      if (err?.name !== 'AbortError') {
+        console.error('Share failed:', err);
+        toast({ title: 'Share failed', description: 'Please try again.' });
+      }
+    } finally {
+      setSharing(false);
+    }
+  };
 
   return (
     <div className="space-y-2 mt-3">
-      {/* Primary: Shop This Size (handled by ShopThisSize component above) */}
+      {/* Primary: Share Founding 50 Card */}
+      {measurements && heightCm && recommendedSize && (
+        <>
+          <Button
+            onClick={handleShare}
+            disabled={sharing}
+            className="w-full h-11 rounded-xl btn-luxury text-primary-foreground font-bold text-sm"
+          >
+            <Share className="mr-2 h-4 w-4" />
+            {sharing ? 'Generating…' : 'Share My Fit Identity'}
+          </Button>
+
+          {/* Hidden export card */}
+          <SocialExportCard
+            ref={exportRef}
+            measurements={measurements}
+            heightCm={heightCm}
+            recommendedSize={recommendedSize}
+          />
+        </>
+      )}
 
       {/* Secondary: Try-On */}
       <Button
