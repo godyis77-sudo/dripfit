@@ -794,7 +794,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
               />
 
-              {/* DOF: Tight edge glow — breathing pulse */}
+              {/* DOF: Tight edge glow — size pulse synced to silhouette */}
               <motion.img
                 src={silhouetteSrc}
                 alt="" aria-hidden="true"
@@ -802,30 +802,49 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 style={{
                   filter: 'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
                   opacity: 0.85,
+                  willChange: 'transform, opacity',
                 }}
                 animate={{
-                  opacity: [0.75, 0.9, 0.75],
+                  scale: [1.01, 1.045, 1.01],
+                  opacity: [0.72, 0.95, 0.72],
                 }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
 
-              {/* ═══ GHOST SHADOW — soft gradient behind silhouette, pulses in sync ═══ */}
+              {/* ═══ GHOST SHADOW — boosted visibility with soft gradient aura ═══ */}
+              <motion.div
+                className="absolute inset-0 pointer-events-none flex items-center justify-center"
+                style={{ willChange: 'transform, opacity' }}
+                animate={{ scale: [1.14, 1.22, 1.14], opacity: [0.4, 0.65, 0.4] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <div
+                  className="h-[94%] w-[60%] rounded-[45%]"
+                  style={{
+                    background: 'radial-gradient(ellipse at 50% 48%, hsl(var(--primary) / 0.45) 0%, hsl(var(--primary) / 0.18) 38%, transparent 72%)',
+                    filter: 'blur(26px)',
+                    transform: 'translateX(2%) translateY(1.5%)',
+                  }}
+                />
+              </motion.div>
+
               <motion.img
                 src={silhouetteSrc}
                 alt="" aria-hidden="true"
                 className="absolute inset-0 h-full w-full object-contain pointer-events-none"
                 style={{
-                  filter: 'blur(28px) brightness(6) saturate(2.5) drop-shadow(0 0 40px hsl(var(--primary) / 0.8))',
+                  filter: 'blur(18px) brightness(7) saturate(2.8) drop-shadow(0 0 60px hsl(var(--primary) / 0.95))',
                   willChange: 'transform, opacity',
+                  transform: 'translateX(1.2%) translateY(1.2%)',
                 }}
                 animate={{
-                  scale: [1.16, 1.22, 1.16],
-                  opacity: [0.3, 0.5, 0.3],
+                  scale: [1.16, 1.24, 1.16],
+                  opacity: [0.35, 0.62, 0.35],
                 }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
 
-              {/* ═══ MAIN SILHOUETTE (FOREGROUND FOCUS PLANE) — pulses in sync with ghost ═══ */}
+              {/* ═══ MAIN SILHOUETTE (FOREGROUND FOCUS PLANE) — pulses in sync with glow ═══ */}
               <motion.img
                 src={silhouetteSrc}
                 alt="Body measurement scan"
@@ -836,7 +855,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   willChange: 'transform',
                 }}
                 animate={{
-                  scale: [1, 1.015, 1],
+                  scale: [1, 1.02, 1],
                   rotateY: [0, 3, 0, -3, 0],
                   rotateX: [0, -1.5, 0, 1.5, 0],
                 }}
