@@ -245,8 +245,11 @@ const MediaKit = () => {
           <SectionHeader icon={Users} title="Key Messaging" />
           <div className="bg-card border border-border rounded-xl p-5 mt-4 space-y-4">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-primary mb-2">Tagline</p>
-              <p className="font-display text-lg font-bold">"Your size. Every brand. Every time."</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-primary mb-2">Taglines</p>
+              <div className="space-y-2">
+                <p className="font-display text-lg font-bold">"Your Tailored Size & Style. Verified Culture, Certified Drip."</p>
+                <p className="font-display text-base font-bold text-muted-foreground">"Scan Tailored. Infinite Style. Culture Certified Drip."</p>
+              </div>
             </div>
             <div>
               <p className="text-[11px] font-bold uppercase tracking-wider text-primary mb-2">Elevator Pitch</p>
