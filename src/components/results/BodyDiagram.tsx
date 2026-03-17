@@ -687,9 +687,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               className="h-[90%] w-[42%]"
               style={{
                 background: 'radial-gradient(ellipse at 50% 45%, hsl(var(--primary) / 0.22) 0%, hsl(var(--primary) / 0.08) 40%, transparent 70%)',
-                filter: 'blur(25px)',
+                filter: liteMode ? 'blur(14px)' : 'blur(25px)',
               }}
-              animate={{ scale: [1, 1.02, 1] }}
+              animate={liteMode ? { scale: [1, 1.01, 1] } : { scale: [1, 1.02, 1] }}
               transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
             />
           </div>
