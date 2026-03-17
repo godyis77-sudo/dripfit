@@ -116,7 +116,7 @@ const ScanLines = () => (
       }}
       initial={{ top: '100%' }}
       animate={{ top: ['100%', '0%', '100%'] }}
-      transition={{ duration: 3, ease: 'linear', repeat: Infinity }}
+      transition={{ duration: 6, ease: 'linear', repeat: Infinity }}
     />
   </>
 );
