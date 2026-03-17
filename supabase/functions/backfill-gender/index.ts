@@ -221,6 +221,7 @@ function classifyGender(name: string, brand: string, retailer: string, category:
 }
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
