@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import SaveBanner from '@/components/ui/save-banner';
 import { usePageTitle } from '@/hooks/usePageTitle';
@@ -27,6 +27,7 @@ import FitFeedbackSheet from '@/components/monetization/FitFeedbackSheet';
 import PostScanGuide from '@/components/results/PostScanGuide';
 import ProfilePhotoPrompt from '@/components/results/ProfilePhotoPrompt';
 import ShareResultsButton from '@/components/results/ShareResultsButton';
+import SocialExportCard from '@/components/results/SocialExportCard';
 import { SizeMatchCard, SizeMatchCardSkeleton } from '@/components/results/SizeMatchCard';
 import SizeDiagnostic from '@/components/results/SizeDiagnostic';
 import { useAuth } from '@/hooks/useAuth';
@@ -45,6 +46,7 @@ const Results = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
+  const socialExportRef = useRef<HTMLDivElement>(null);
   const state = location.state as { result: BodyScanResult; retailer?: string; category?: string } | undefined;
   // DB fallback query for authenticated users when no location.state or sessionStorage
   const dbScanQuery = useQuery({
@@ -437,17 +439,10 @@ const Results = () => {
           onNewScan={() => navigate('/capture')}
           onDelete={handleDelete}
           recommendedSize={adjustedSize}
+          measurements={measurements}
+          heightCm={result.heightCm}
         />
 
-        {/* Share */}
-        <div className="mt-3 mb-2">
-          <ShareResultsButton
-            measurements={measurements}
-            heightCm={result.heightCm}
-            recommendedSize={adjustedSize}
-            fitPreference={fitPref}
-          />
-        </div>
 
         {/* Body Map section */}
         <div className="mt-3 space-y-3">
