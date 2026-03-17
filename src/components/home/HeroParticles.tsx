@@ -44,10 +44,16 @@ const HeroParticles = ({ className = '' }: { className?: string }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // Cache dimensions to avoid forced reflow every frame
+    let cachedW = canvas.offsetWidth;
+    let cachedH = canvas.offsetHeight;
+
     const resize = () => {
+      cachedW = canvas.offsetWidth;
+      cachedH = canvas.offsetHeight;
       const dpr = Math.min(window.devicePixelRatio, 2);
-      canvas.width = canvas.offsetWidth * dpr;
-      canvas.height = canvas.offsetHeight * dpr;
+      canvas.width = cachedW * dpr;
+      canvas.height = cachedH * dpr;
       ctx.scale(dpr, dpr);
     };
     resize();
@@ -56,8 +62,8 @@ const HeroParticles = ({ className = '' }: { className?: string }) => {
     const maxParticles = 25;
 
     const animate = (time: number) => {
-      const w = canvas.offsetWidth;
-      const h = canvas.offsetHeight;
+      const w = cachedW;
+      const h = cachedH;
       ctx.clearRect(0, 0, w, h);
 
       // Spawn new particles

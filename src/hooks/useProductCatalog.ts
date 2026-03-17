@@ -103,9 +103,10 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
         .select('id, brand, retailer, category, name, image_url, product_url, price_cents, currency, tags, presentation, image_confidence, gender, fit_profile, fabric_composition, style_genre')
         .eq('is_active', true)
         .not('image_url', 'is', null)
+        .gte('image_confidence', 0.05)
         .order('image_confidence', { ascending: false })
         .order('id', { ascending: true })
-        .limit(10000);
+        .limit(500);
 
       if (category) {
         const mapped = CATEGORY_MAP[category];
@@ -125,7 +126,7 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
       if (requestId !== fetchRequestIdRef.current) return;
 
       if (data) {
-        // Filter out junk URLs and low-quality entries
+        // Filter out junk URLs and deduplicate
         const JUNK_PATTERNS = [
           'down_for_maintenance', 'navigation', 'imagesother', 'chip/goods',
           'topper', 'courtesypage', 'navi/image', 'lineup/', 'width=36',
@@ -142,17 +143,11 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
           'static.zara.net',
           '/risk/challenge', 'captcha_type',
         ];
-        const HARD_MIN_CONFIDENCE = 0.05;
         const seen = new Set<string>();
         const cleaned = (data as unknown as CatalogProduct[]).filter(p => {
           if (!p.image_url || p.image_url.trim() === '') return false;
           const normalizedUrl = p.image_url.trim().toLowerCase();
           if (JUNK_PATTERNS.some(pat => normalizedUrl.includes(pat))) return false;
-
-          const conf = p.image_confidence;
-          if (typeof conf === 'number' && conf < HARD_MIN_CONFIDENCE) return false;
-
-          // Deduplicate by image URL (case-insensitive)
           if (seen.has(normalizedUrl)) return false;
           seen.add(normalizedUrl);
           return true;
