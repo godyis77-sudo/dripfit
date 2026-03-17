@@ -590,7 +590,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
             style={{ background: 'radial-gradient(ellipse at 50% 45%, hsl(var(--primary) / 0.7), hsl(var(--primary) / 0.2) 50%, transparent 80%)' }}
             initial={{ opacity: 1 }}
             animate={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
+            transition={{ duration: 1.6, ease: 'easeOut' }}
           />
 
           {/* BG: Deep space gradient with ambient hue shift */}
