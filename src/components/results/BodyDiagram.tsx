@@ -822,7 +822,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   willChange: 'transform, opacity',
                 }}
                 animate={{
-                  scale: [1.06, 1.1, 1.06],
+                  scale: [1.16, 1.2, 1.16],
                   opacity: [0.2, 0.35, 0.2],
                 }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
