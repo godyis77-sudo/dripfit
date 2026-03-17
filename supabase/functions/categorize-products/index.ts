@@ -56,7 +56,7 @@ const FORCE_WOMENS_NAME_PATTERNS = [
 ];
 const FORCE_MENS_NAME_PATTERNS = [
   "boxer", "men's underwear", "compression short", "athletic supporter",
-  "men's ", "mens ", "for men", "for him",
+  "men's ", "men\u2019s ", "mens ", "for men", "for him",
   "swim trunk", "swim short", "board short",
   "oxford shirt", "henley ", "muscle tee", "muscle fit",
   "flat front", "cargo short", "necktie", "bow tie", "suspender",
@@ -67,6 +67,7 @@ const FORCE_MENS_NAME_PATTERNS = [
   "men ", " man ", " male ", " guys ",
   "slim fit shirt", "athletic fit", "classic fit",
   "five pocket", "straight leg jean", "relaxed fit jean",
+  "man's ", "man\u2019s ",
 ];
 
 // Hostnames / URL patterns that are tracking pixels, CAPTCHAs, or non-product images
