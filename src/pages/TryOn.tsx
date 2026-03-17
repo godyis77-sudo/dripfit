@@ -18,6 +18,7 @@ import { isGuestMode } from '@/lib/session';
 import BrandFilter from '@/components/tryon/BrandFilter';
 import { supabase } from '@/integrations/supabase/client';
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
+import { isCategoryVisibleForGender } from '@/lib/genderCategories';
 
 const SORT_OPTIONS = [
   { key: 'default', label: 'Recommended' },
