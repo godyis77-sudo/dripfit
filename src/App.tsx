@@ -142,6 +142,7 @@ const AnimatedRoutes = () => {
     </Suspense>
     </ErrorBoundary>
   );
+};
 
 const App = () => {
   useTheme();
