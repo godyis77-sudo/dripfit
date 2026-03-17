@@ -15,7 +15,6 @@ import AuthForm from '@/components/auth/AuthForm';
 
 
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
-import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
 import heroTryon from '@/assets/hero-tryon-mirror.jpg';
 import heroCommunity from '@/assets/hero-community-feedback.jpg';
 
