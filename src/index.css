@@ -853,88 +853,15 @@
 .hud-edge-pulse-lite { animation: hud-edge-pulse-lite 3s ease-in-out infinite; will-change: opacity; }
 
 @keyframes hud-shadow-wide {
-  0%, 100% { transform: scale(1.08); opacity: 0.35; }
-  50%      { transform: scale(1.16); opacity: 0.55; }
-}
-@keyframes hud-shadow-tight {
-  0%, 100% { transform: scale(1.03); opacity: 0.4; }
-  50%      { transform: scale(1.08); opacity: 0.6; }
+  0%, 100% { transform: scale(1.08); opacity: 0.4; }
+  50%      { transform: scale(1.14); opacity: 0.6; }
 }
 @keyframes hud-gold-rim {
   0%, 100% { transform: scale(1.01); opacity: 0.2; }
   50%      { transform: scale(1.04); opacity: 0.4; }
 }
-@keyframes hud-gold-bloom {
-  0%, 100% { transform: translateX(1%) translateY(1%) scale(1.1); opacity: 0.3; }
-  50%      { transform: translateX(1%) translateY(1%) scale(1.18); opacity: 0.55; }
-}
 .hud-shadow-wide { animation: hud-shadow-wide 3s ease-in-out infinite; will-change: transform, opacity; }
-.hud-shadow-tight { animation: hud-shadow-tight 3s ease-in-out infinite; will-change: transform, opacity; }
 .hud-gold-rim { animation: hud-gold-rim 3s ease-in-out infinite; will-change: transform, opacity; }
-.hud-gold-bloom { animation: hud-gold-bloom 3s ease-in-out infinite; will-change: transform, opacity; }
-
-@keyframes hud-dof-rear {
-  0%, 100% { transform: scale(1.06); }
-  50%      { transform: scale(1.08); }
-}
-.hud-dof-rear { animation: hud-dof-rear 6s ease-in-out infinite; will-change: transform; }
-
-@keyframes hud-sil-breathe {
-  0%, 100% { transform: scale(1) rotateY(0deg) rotateX(0deg); }
-  25%      { transform: scale(1.01) rotateY(3deg) rotateX(-1.5deg); }
-  50%      { transform: scale(1.02) rotateY(0deg) rotateX(0deg); }
-  75%      { transform: scale(1.01) rotateY(-3deg) rotateX(1.5deg); }
-}
-@keyframes hud-sil-breathe-lite {
-  0%, 100% { transform: scale(1); }
-  50%      { transform: scale(1.015); }
-}
-.hud-sil-breathe { animation: hud-sil-breathe 7s ease-in-out infinite; will-change: transform; }
-.hud-sil-breathe-lite { animation: hud-sil-breathe-lite 3s ease-in-out infinite; will-change: transform; }
-
-@keyframes hud-echo-deep-left {
-  0%, 100% { transform: scale(1.04) translateX(-3%) translateY(0.5%); opacity: 0.06; }
-  50%      { transform: scale(1.04) translateX(-5%) translateY(-0.5%); opacity: 0.12; }
-}
-@keyframes hud-echo-left {
-  0%, 100% { transform: translateX(-1.5%); opacity: 0.08; }
-  50%      { transform: translateX(-2.5%); opacity: 0.15; }
-}
-@keyframes hud-echo-right {
-  0%, 100% { transform: translateX(1.5%); opacity: 0.08; }
-  50%      { transform: translateX(2.5%); opacity: 0.15; }
-}
-@keyframes hud-echo-deep-right {
-  0%, 100% { transform: scale(1.04) translateX(3%) translateY(-0.5%); opacity: 0.06; }
-  50%      { transform: scale(1.04) translateX(5%) translateY(0.5%); opacity: 0.12; }
-}
-.hud-echo-deep-left { animation: hud-echo-deep-left 8s ease-in-out infinite; will-change: transform, opacity; }
-.hud-echo-left { animation: hud-echo-left 7s ease-in-out infinite; will-change: transform, opacity; }
-.hud-echo-right { animation: hud-echo-right 7s ease-in-out 1s infinite; will-change: transform, opacity; }
-.hud-echo-deep-right { animation: hud-echo-deep-right 8s ease-in-out 1.5s infinite; will-change: transform, opacity; }
-
-@keyframes hud-holo-sheen {
-  0%, 100% { opacity: 0.05; }
-  50%      { opacity: 0.12; }
-}
-.hud-holo-sheen { animation: hud-holo-sheen 5s ease-in-out infinite; }
-
-@keyframes hud-spec-sweep {
-  0%, 40% { transform: translateX(-100%); }
-  60%, 100% { transform: translateX(100%); }
-}
-.hud-spec-sweep { animation: hud-spec-sweep 10s ease-in-out infinite; will-change: transform; }
-
-@keyframes hud-chroma-red {
-  0%, 100% { transform: translateX(0.5%); opacity: 0.03; }
-  50%      { transform: translateX(1.2%); opacity: 0.06; }
-}
-@keyframes hud-chroma-blue {
-  0%, 100% { transform: translateX(-0.5%); opacity: 0.03; }
-  50%      { transform: translateX(-1.2%); opacity: 0.06; }
-}
-.hud-chroma-red { animation: hud-chroma-red 6s ease-in-out infinite; will-change: transform, opacity; }
-.hud-chroma-blue { animation: hud-chroma-blue 6s ease-in-out 0.5s infinite; will-change: transform, opacity; }
 
 @keyframes hud-bracket-pulse {
   0%, 100% { opacity: 1; }
