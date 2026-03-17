@@ -614,12 +614,12 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           animate={liteMode ? undefined : {
             borderColor: [
               'hsl(var(--primary) / 1)',
-              'hsl(var(--primary) / 0)',
+              'hsl(var(--primary) / 0.15)',
               'hsl(var(--primary) / 1)',
             ],
             boxShadow: [
               '0 0 50px 14px hsl(var(--primary) / 0.5), 0 0 100px 30px hsl(var(--primary) / 0.2), inset 0 0 50px 10px hsl(var(--primary) / 0.15)',
-              '0 0 10px 2px hsl(var(--primary) / 0), 0 0 20px 5px hsl(var(--primary) / 0), inset 0 0 10px 2px hsl(var(--primary) / 0)',
+              '0 0 12px 3px hsl(var(--primary) / 0.05), 0 0 24px 6px hsl(var(--primary) / 0.02), inset 0 0 12px 3px hsl(var(--primary) / 0.02)',
               '0 0 50px 14px hsl(var(--primary) / 0.5), 0 0 100px 30px hsl(var(--primary) / 0.2), inset 0 0 50px 10px hsl(var(--primary) / 0.15)',
             ],
           }}
