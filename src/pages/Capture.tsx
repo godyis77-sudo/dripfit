@@ -111,23 +111,12 @@ const Capture = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const [genderSet, setGenderSet] = useState<string | null>(null);
-  const [genderLoaded, setGenderLoaded] = useState(false);
-  const [authSheetOpen, setAuthSheetOpen] = useState(false);
-  const [webCameraOpen, setWebCameraOpen] = useState(false);
-  const [videoReady, setVideoReady] = useState(false);
-  const [cameraError, setCameraError] = useState<string | null>(null);
-  const [captureCountdown, setCaptureCountdown] = useState<number | null>(null);
-  const [scanGated, setScanGated] = useState(false);
-  const { toast } = useToast();
+  const genderLoaded = authGenderLoaded;
 
-  // Load existing gender from profile
+  // Sync gender from auth context
   useEffect(() => {
-    if (!user) { setGenderLoaded(true); return; }
-    supabase.from('profiles').select('gender').eq('user_id', user.id).single().then(({ data }) => {
-      if (data) setGenderSet(data.gender || null);
-      setGenderLoaded(true);
-    });
-  }, [user]);
+    if (authGenderLoaded) setGenderSet(userGender);
+  }, [userGender, authGenderLoaded]);
 
   // Check scan gate: non-founder/non-premium users limited to 1 scan
   useEffect(() => {
