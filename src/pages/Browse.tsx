@@ -406,8 +406,8 @@ const Browse = () => {
                 </AnimatePresence>
               </div>
 
-              {/* Fit / Cut filter — collapsible */}
-              {availableFits.length > 0 && (
+              {/* Fit / Cut filter — collapsible (auto-hidden when <5 products have fit data) */}
+              {availableFits.length > 0 && products.filter(p => Array.isArray(p.fit_profile) && p.fit_profile.length > 0).length >= 5 && (
                 <div>
                   <button
                     onClick={() => setFitOpen(!fitOpen)}

@@ -289,8 +289,8 @@ const TryOn = () => {
                           </AnimatePresence>
                         </div>
 
-                        {/* Fit / Cut — collapsible */}
-                        {availableFits.length > 0 && (
+                        {/* Fit / Cut — collapsible (auto-hidden when <5 products have fit data) */}
+                        {availableFits.length > 0 && catalogProducts.filter(p => Array.isArray(p.fit_profile) && p.fit_profile.length > 0).length >= 5 && (
                           <div>
                             <button
                               onClick={() => setFitOpen(!fitOpen)}
