@@ -498,31 +498,26 @@ const TickMarks = () => (
    ═══════════════════════════════════════════ */
 const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [silhouetteReady, setSilhouetteReady] = useState(false);
+  const [silhouetteReady, setSilhouetteReady] = useState(!!processedSilhouetteCache);
   const [useCmState, setUseCmLocal] = useState(getUseCm());
   const [scrambling, setScrambling] = useState(false);
-  const [silhouetteSrc, setSilhouetteSrc] = useState(bodySilhouette);
-  const [isLowPerfDevice, setIsLowPerfDevice] = useState(false);
+  const [silhouetteSrc, setSilhouetteSrc] = useState(processedSilhouetteCache || bodySilhouette);
   const reduceMotion = useReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
   const parallaxRef = useRef<HTMLDivElement>(null);
   const parallaxRef2 = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const evaluate = () => {
-      const lowConcurrency = typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 2;
-      const saveData = Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData);
-      setIsLowPerfDevice(lowConcurrency || saveData);
-    };
-
-    evaluate();
+  // Evaluate device perf synchronously on first render to avoid liteMode flip
+  const isLowPerfDevice = useMemo(() => {
+    const lowConcurrency = typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 2;
+    const saveData = Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData);
+    return lowConcurrency || saveData;
   }, []);
 
   const liteMode = reduceMotion || isLowPerfDevice;
 
   useEffect(() => {
     let cancelled = false;
-    setImageLoaded(false);
 
     if (processedSilhouetteCache) {
       setSilhouetteSrc(processedSilhouetteCache);
