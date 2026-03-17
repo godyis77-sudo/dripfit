@@ -227,10 +227,16 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
           {/* Email form */}
           <form onSubmit={handleSubmit} className="space-y-2.5">
             {!isLogin && (
-              <div className="space-y-1">
-                <Label htmlFor="auth-name" className="text-[11px] text-foreground/70">Display Name <span className="text-muted-foreground">(optional)</span></Label>
-                <Input id="auth-name" type="text" placeholder="Your name" value={displayName} onChange={e => setDisplayName(e.target.value)} className="rounded-lg h-9 text-[13px] border-border/60 focus:border-primary" />
-              </div>
+              <>
+                <div className="space-y-1">
+                  <Label htmlFor="auth-name" className="text-[11px] text-foreground/70">Display Name <span className="text-muted-foreground">(optional)</span></Label>
+                  <Input id="auth-name" type="text" placeholder="Your name" value={displayName} onChange={e => setDisplayName(e.target.value)} className="rounded-lg h-9 text-[13px] border-border/60 focus:border-primary" />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="auth-founder" className="text-[11px] text-foreground/70">Founder Access Code <span className="text-muted-foreground">(optional)</span></Label>
+                  <Input id="auth-founder" type="text" placeholder="DF-XXXX-XXXX-XX" value={founderCode} onChange={e => setFounderCode(e.target.value.toUpperCase())} className="rounded-lg h-9 text-[13px] border-border/60 focus:border-primary font-mono tracking-wider uppercase" />
+                </div>
+              </>
             )}
             <div className="space-y-1">
               <Label htmlFor="auth-email" className="text-[11px] text-foreground/70">Email</Label>
