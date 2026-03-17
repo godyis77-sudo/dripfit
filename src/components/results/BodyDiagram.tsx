@@ -609,8 +609,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           tabIndex={0}
           onKeyDown={e => e.key === 'Enter' && toggleUnit()}
           style={{
-            border: '2px solid hsl(var(--primary) / 0.4)',
-            boxShadow: '0 0 24px 6px hsl(var(--primary) / 0.2), inset 0 0 30px 5px hsl(var(--primary) / 0.06)',
+            border: '2px solid hsl(var(--primary) / 0.55)',
+            boxShadow: '0 0 40px 10px hsl(var(--primary) / 0.35), 0 0 80px 20px hsl(var(--primary) / 0.12), inset 0 0 40px 8px hsl(var(--primary) / 0.1)',
           }}
           animate={liteMode ? undefined : {
             borderColor: [
