@@ -681,17 +681,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
               {/* ═══ BACKGROUND DEPTH LAYERS ═══ */}
 
-              {/* BG Layer 0: Ultra-deep volumetric shadow — anchors the figure in space */}
-              <img
-                src={silhouetteSrc}
-                alt="" aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
-                style={{
-                  filter: 'blur(40px) brightness(3) saturate(2)',
-                  opacity: 0.12,
-                  transform: 'scale(1.15) translateY(3%)',
-                }}
-              />
+              {/* BG Layer 0+1 merged: Deep volumetric glow */}
 
               {/* BG Layer 1: Wide atmospheric glow — creates a halo behind the body */}
               <img
