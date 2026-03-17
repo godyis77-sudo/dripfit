@@ -75,6 +75,19 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
         if (error) throw error;
         trackEvent('auth_completed', { method: 'email_signup' });
 
+        // Attempt to claim founder code if provided
+        if (founderCode.trim() && data.user) {
+          const { data: claimed } = await supabase.rpc('claim_founder_code', {
+            p_code: founderCode.trim().toUpperCase(),
+            p_email: email.toLowerCase().trim(),
+          });
+          if (claimed) {
+            toast({ title: '🏆 Founder Access Granted!', description: 'Welcome to the Founding 50. You have unlimited scans.', className: 'border-primary bg-primary/10' });
+          } else {
+            toast({ title: 'Invalid code', description: 'This code is invalid or has already been claimed.', variant: 'destructive' });
+          }
+        }
+
         const refId = new URLSearchParams(window.location.search).get('ref');
         if (refId && data.user) {
           supabase.from('referrals').insert({
@@ -83,7 +96,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
           }).then(() => {
             toast({ title: 'Welcome! 🎉', description: 'You and your friend both get 5 extra try-ons this month.' });
           });
-        } else {
+        } else if (!founderCode.trim()) {
           toast({ title: 'Check your email', description: 'We sent a confirmation link to verify your account.' });
         }
       }
