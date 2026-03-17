@@ -450,10 +450,14 @@ serve(async (req) => {
           .eq("id", result.id);
         deactivated++;
       } else {
+        // Extract fit_profile from product name
+        const fitProfile = extractFitProfile(product.name);
+
         const updatePayload: Record<string, unknown> = {
           tags: newTags,
           image_confidence: Math.max(result.confidence, product.image_confidence ?? 0),
           gender: enforcedGender,
+          ...(fitProfile.length > 0 ? { fit_profile: fitProfile } : {}),
           ...retailerUpdate,
         };
 
