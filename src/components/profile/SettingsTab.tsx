@@ -531,11 +531,16 @@ const SettingsTab = ({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+      </div>
+
+      {/* Danger Zone */}
+      <div className="mt-4 pt-3 border-t border-destructive/20">
+        <p className="text-[11px] font-bold text-destructive uppercase tracking-wider mb-2 px-1">Danger Zone</p>
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <button className="w-full flex items-center gap-2 px-3 py-2.5 active:bg-destructive/5 transition-colors">
-              <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className="text-[12px] text-muted-foreground">Delete account</span>
+            <button className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl border border-destructive/30 bg-destructive/5 active:bg-destructive/10 transition-colors">
+              <Trash2 className="h-3.5 w-3.5 text-destructive" />
+              <span className="text-[12px] font-medium text-destructive">Delete account</span>
             </button>
           </AlertDialogTrigger>
           <AlertDialogContent className="max-w-[320px] bg-card border-border">
