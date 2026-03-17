@@ -270,8 +270,13 @@ const Waitlist = () => {
           </p>
         </FadeUp>
 
+        {/* Scan preview */}
+        <FadeUp delay={0.15} className="relative z-10 mb-10">
+          <DecorativeSilhouette height={280} />
+        </FadeUp>
+
         {/* Email form */}
-        <FadeUp delay={0.18} className="relative z-10 w-full flex flex-col items-center mb-8">
+        <FadeUp delay={0.22} className="relative z-10 w-full flex flex-col items-center mb-8">
           <EmailCapture id="hero" buttonText="Send Me the Free Guide" note="Join 2,000+ shoppers already on the waitlist." />
         </FadeUp>
 
