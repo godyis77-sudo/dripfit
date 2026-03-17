@@ -30,8 +30,9 @@ const DecorativeSilhouette = ({ className = '', height = 200 }: Props) => {
         width: nativeWidth * scale,
         height,
         boxShadow:
-          'inset 0 0 30px 4px hsl(var(--primary) / 0.15), 0 0 40px 8px hsl(var(--primary) / 0.18), 0 0 80px 16px hsl(var(--primary) / 0.08)',
-        border: '1px solid hsl(var(--primary) / 0.25)',
+          'inset 0 0 40px 8px hsl(var(--primary) / 0.3), 0 0 60px 14px hsl(var(--primary) / 0.35), 0 0 120px 30px hsl(var(--primary) / 0.15)',
+        border: '1px solid hsl(var(--primary) / 0.4)',
+        filter: 'contrast(1.25) saturate(1.15)',
       }}
     >
       <div
