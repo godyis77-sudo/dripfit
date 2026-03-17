@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      access_codes: {
+        Row: {
+          allocated_to: string | null
+          claimed_at: string | null
+          code: string
+          created_at: string
+          is_used: boolean
+          used_by_email: string | null
+        }
+        Insert: {
+          allocated_to?: string | null
+          claimed_at?: string | null
+          code: string
+          created_at?: string
+          is_used?: boolean
+          used_by_email?: string | null
+        }
+        Update: {
+          allocated_to?: string | null
+          claimed_at?: string | null
+          code?: string
+          created_at?: string
+          is_used?: boolean
+          used_by_email?: string | null
+        }
+        Relationships: []
+      }
       app_config: {
         Row: {
           key: string
@@ -1177,6 +1204,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_founder_code: {
+        Args: { p_code: string; p_email: string }
+        Returns: boolean
+      }
       get_creator_month_count: {
         Args: { p_creator_id: string; p_month_key: string }
         Returns: number
@@ -1254,7 +1285,7 @@ export type Database = {
           }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user" | "creator"
+      app_role: "admin" | "moderator" | "user" | "creator" | "founder"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1382,7 +1413,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "moderator", "user", "creator"],
+      app_role: ["admin", "moderator", "user", "creator", "founder"],
     },
   },
 } as const

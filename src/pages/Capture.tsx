@@ -89,7 +89,7 @@ import CaptureViewfinder from '@/components/capture/CaptureViewfinder';
 
 const Capture = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isSubscribed } = useAuth();
   usePageTitle('Scan');
   const saved = loadScanState();
   const [flowStep, setFlowStep] = useState<FlowStep>(saved?.flowStep || 'intro');
@@ -117,6 +117,7 @@ const Capture = () => {
   const [videoReady, setVideoReady] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [captureCountdown, setCaptureCountdown] = useState<number | null>(null);
+  const [scanGated, setScanGated] = useState(false);
   const { toast } = useToast();
 
   // Load existing gender from profile
@@ -127,6 +128,21 @@ const Capture = () => {
       setGenderLoaded(true);
     });
   }, [user]);
+
+  // Check scan gate: non-founder/non-premium users limited to 1 scan
+  useEffect(() => {
+    if (!user || isSubscribed) { setScanGated(false); return; }
+    Promise.all([
+      supabase.rpc('has_role', { _user_id: user.id, _role: 'founder' as any }),
+      supabase.rpc('has_role', { _user_id: user.id, _role: 'admin' as any }),
+      supabase.from('body_scans').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
+    ]).then(([founderRes, adminRes, scanRes]) => {
+      const isFounder = !!founderRes.data;
+      const isAdmin = !!adminRes.data;
+      const scanCount = scanRes.count ?? 0;
+      setScanGated(!isFounder && !isAdmin && scanCount >= 1);
+    });
+  }, [user, isSubscribed]);
 
   const handleGenderSelect = async (value: string) => {
     setGenderSet(value);
@@ -621,6 +637,17 @@ const Capture = () => {
       {/* Bottom actions */}
       <div className="sticky bottom-0 bg-background/90 backdrop-blur-md border-t border-border/40 px-4 pb-4 pt-3 space-y-2 w-full">
         {flowStep === 'intro' && (
+          scanGated ? (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2 w-full">
+              <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 text-center">
+                <p className="text-sm font-bold text-primary mb-1">Scan limit reached</p>
+                <p className="text-[12px] text-muted-foreground">Free accounts get 1 body scan. Upgrade to Premium or enter a Founder Access Code for unlimited scans.</p>
+              </div>
+              <Button className="w-full h-12 rounded-xl text-sm font-semibold" onClick={() => navigate('/premium')}>
+                Upgrade to Premium
+              </Button>
+            </motion.div>
+          ) : (
           <motion.div whileTap={{ scale: 0.97 }}>
             <Button
               className="w-full h-12 rounded-xl text-sm font-semibold uppercase tracking-wider"
@@ -635,6 +662,7 @@ const Capture = () => {
               <Camera className="mr-2 h-4 w-4" /> Start Scan
             </Button>
           </motion.div>
+          )
         )}
 
         {flowStep === 'height' && (
