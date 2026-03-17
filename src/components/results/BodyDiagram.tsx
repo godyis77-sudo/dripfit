@@ -817,6 +817,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 onLoad={() => setImageLoaded(true)}
                 style={{
                   filter: 'saturate(2) brightness(2.5) contrast(1.4) drop-shadow(0 0 12px hsl(var(--primary) / 0.9)) drop-shadow(0 0 4px hsl(var(--primary) / 1))',
+                  willChange: 'transform',
                 }}
                 animate={{
                   rotateY: [0, 3, 0, -3, 0],
