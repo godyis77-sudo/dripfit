@@ -12,6 +12,7 @@ import { MobileShell } from "@/components/layout/MobileShell";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { OfflineBanner } from "@/components/layout/OfflineBanner";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import ErrorBoundary from "./components/ErrorBoundary";
 import AffiliateProvider from "./components/AffiliateProvider";
 import Capture from "./pages/Capture";
 import GuestTimedNudge from "./components/guest/GuestTimedNudge";
@@ -94,6 +95,7 @@ const ScrollToTop = () => {
 const AnimatedRoutes = () => {
   const location = useLocation();
   return (
+    <ErrorBoundary>
     <Suspense fallback={<RouteFallback />}>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
@@ -138,6 +140,7 @@ const AnimatedRoutes = () => {
         </Routes>
       </AnimatePresence>
     </Suspense>
+    </ErrorBoundary>
   );
 };
 

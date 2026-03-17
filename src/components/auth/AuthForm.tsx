@@ -137,8 +137,8 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
   return (
     <div className="w-full max-w-[320px]">
       {showBackButton && (
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="mb-3 h-8 w-8 rounded-lg text-muted-foreground" aria-label="Go back">
-          <ArrowLeft className="h-4 w-4" />
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="mb-3 h-10 w-10 rounded-lg min-h-[44px] min-w-[44px] text-muted-foreground" aria-label="Go back">
+          <ArrowLeft className="h-5 w-5" />
         </Button>
       )}
 

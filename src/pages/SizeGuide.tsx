@@ -270,7 +270,7 @@ const SizeGuide = () => {
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
       <div>
         <div className="flex items-center justify-between mb-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg" aria-label="Go back"><ArrowLeft className="h-4 w-4" /></Button>
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back"><ArrowLeft className="h-5 w-5" /></Button>
           <h1 className="text-base font-bold text-foreground">Size Guide Match</h1>
           <div className="w-8" />
         </div>

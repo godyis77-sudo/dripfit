@@ -13,8 +13,8 @@ const CommunityHeader = ({ cartCount, onPostLook }: CommunityHeaderProps) => {
   return (
     <div className="flex items-center justify-between mb-3">
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg" aria-label="Go back">
-          <ArrowLeft className="h-4 w-4" />
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back">
+          <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
           <h1 className="text-base font-bold text-foreground">Style Check</h1>

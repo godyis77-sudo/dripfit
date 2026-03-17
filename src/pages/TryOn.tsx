@@ -72,15 +72,15 @@ const TryOn = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const activeFilterCount = (s.selectedBrand ? 1 : 0) + (s.selectedGenre ? 1 : 0) + (s.selectedRetailer ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (s.category !== 'all' ? 1 : 0);
+  const activeFilterCount = (s.selectedBrand ? 1 : 0) + (s.selectedGenre ? 1 : 0) + (s.selectedRetailer ? 1 : 0) + (s.selectedFit ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (s.category !== 'all' ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
       <div>
         {/* Header */}
         <div className="flex items-center gap-2 mb-3">
-          <Button variant="ghost" size="icon" onClick={() => s.navigate(-1)} className="h-8 w-8 rounded-lg" aria-label="Go back">
-            <ArrowLeft className="h-4 w-4" />
+          <Button variant="ghost" size="icon" onClick={() => s.navigate(-1)} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back">
+            <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex-1">
             <h1 className="text-base font-bold text-foreground">Try-On</h1>
@@ -313,8 +313,12 @@ const TryOn = () => {
                                     {availableFits.map(fit => (
                                       <button
                                         key={fit}
-                                        onClick={() => {/* fit filter not wired to catalog grid yet */}}
-                                        className="px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize bg-background border border-border text-foreground/70"
+                                        onClick={() => s.setSelectedFit(fit === s.selectedFit ? null : fit)}
+                                        className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                                          s.selectedFit === fit
+                                            ? 'btn-luxury text-primary-foreground'
+                                            : 'bg-background border border-border text-foreground/70'
+                                        }`}
                                       >
                                         {fit}
                                       </button>
@@ -329,7 +333,7 @@ const TryOn = () => {
                         {/* Clear filters */}
                         {activeFilterCount > 0 && (
                           <button
-                            onClick={() => { setSort('default'); s.setSelectedBrand(null); s.setSelectedGenre(null); s.setSelectedRetailer(null); s.setCategory('all'); }}
+                            onClick={() => { setSort('default'); s.setSelectedBrand(null); s.setSelectedGenre(null); s.setSelectedRetailer(null); s.setSelectedFit(null); s.setCategory('all'); }}
                             className="text-[10px] text-primary font-semibold"
                           >
                             Clear all filters
@@ -347,10 +351,10 @@ const TryOn = () => {
               <div className="mb-3 space-y-2">
                 {s.category === 'all' ? (
                   ALL_PRODUCT_CATEGORIES.map(cat => (
-                    <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={true} maxItems={100} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} genre={s.selectedGenre as any} retailer={s.selectedRetailer || undefined} onSelectProduct={s.handleSelectProduct} />
+                    <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={true} maxItems={100} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} genre={s.selectedGenre as any} retailer={s.selectedRetailer || undefined} fitProfile={s.selectedFit || undefined} onSelectProduct={s.handleSelectProduct} />
                   ))
                 ) : (
-                  <CategoryProductGrid category={s.category} title={`Shop ${CATEGORIES.find(c => c.key === s.category)?.label || s.category}`} collapsed={false} maxItems={100} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} genre={s.selectedGenre as any} retailer={s.selectedRetailer || undefined} onSelectProduct={s.handleSelectProduct} />
+                  <CategoryProductGrid category={s.category} title={`Shop ${CATEGORIES.find(c => c.key === s.category)?.label || s.category}`} collapsed={false} maxItems={100} gender={s.userGender || undefined} brand={s.selectedBrand || undefined} genre={s.selectedGenre as any} retailer={s.selectedRetailer || undefined} fitProfile={s.selectedFit || undefined} onSelectProduct={s.handleSelectProduct} />
                 )}
               </div>
             )}

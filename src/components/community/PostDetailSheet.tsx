@@ -314,8 +314,8 @@ export const PostDetailSheet = ({
                     {isFollowing ? 'Following' : 'Follow'}
                   </button>
                 )}
-                <button onClick={onClose} aria-label="Close" className="h-8 w-8 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform">
-                  <X className="h-4 w-4 text-white" />
+                <button onClick={onClose} aria-label="Close" className="h-11 w-11 min-h-[44px] min-w-[44px] rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform">
+                  <X className="h-5 w-5 text-white" />
                 </button>
               </div>
             </motion.div>
