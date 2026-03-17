@@ -317,16 +317,17 @@ const PerspectiveGrid = () => (
   </div>
 );
 
-/* ── Floating data particles — concentrated around body ── */
+/* ── Floating data particles — reduced count for perf ── */
 const DataParticles = () => {
   const particles = useRef(
-    Array.from({ length: 30 }, (_, i) => ({
+    Array.from({ length: 14 }, (_, i) => ({
       id: i,
       x: 25 + Math.random() * 50,
       y: 10 + Math.random() * 80,
       size: 0.8 + Math.random() * 1.8,
-      duration: 2 + Math.random() * 4,
+      duration: 3 + Math.random() * 4,
       delay: Math.random() * 5,
+      yOffset: -20 - Math.random() * 10,
     }))
   ).current;
   return (
@@ -339,12 +340,12 @@ const DataParticles = () => {
             width: p.size, height: p.size,
             left: `${p.x}%`, top: `${p.y}%`,
             background: 'hsl(var(--primary))',
-            boxShadow: `0 0 ${p.size * 5}px ${p.size * 2}px hsl(var(--primary) / 0.4)`,
+            boxShadow: `0 0 ${p.size * 4}px ${p.size}px hsl(var(--primary) / 0.3)`,
+            willChange: 'transform, opacity',
           }}
           animate={{
-            y: [0, -30 - Math.random() * 15, 0],
-            x: [0, (Math.random() - 0.5) * 12, 0],
-            opacity: [0, 0.9, 0],
+            y: [0, p.yOffset, 0],
+            opacity: [0, 0.8, 0],
           }}
           transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: 'easeInOut' }}
         />
@@ -497,7 +498,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
   const [scrambling, setScrambling] = useState(false);
   const [silhouetteSrc, setSilhouetteSrc] = useState(bodySilhouette);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [parallaxY, setParallaxY] = useState(0);
+  const parallaxRef = useRef<HTMLDivElement>(null);
+  const parallaxRef2 = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -512,16 +514,23 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
     };
   }, []);
 
+  // Use direct DOM manipulation for parallax to avoid re-renders
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+    let rafId: number;
     const handleScroll = () => {
-      const rect = el.getBoundingClientRect();
-      setParallaxY((rect.top + rect.height / 2 - window.innerHeight / 2) * 0.02);
+      rafId = requestAnimationFrame(() => {
+        const rect = el.getBoundingClientRect();
+        const py = (rect.top + rect.height / 2 - window.innerHeight / 2) * 0.02;
+        const t = `translateY(${py}px)`;
+        if (parallaxRef.current) parallaxRef.current.style.transform = t;
+        if (parallaxRef2.current) parallaxRef2.current.style.transform = t;
+      });
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => { window.removeEventListener('scroll', handleScroll); cancelAnimationFrame(rafId); };
   }, []);
 
   const toggleUnit = useCallback(() => {
@@ -558,22 +567,18 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           aria-label="Toggle measurement units"
           tabIndex={0}
           onKeyDown={e => e.key === 'Enter' && toggleUnit()}
+          style={{
+            border: '2px solid hsl(var(--primary) / 0.4)',
+            boxShadow: '0 0 24px 6px hsl(var(--primary) / 0.2), inset 0 0 30px 5px hsl(var(--primary) / 0.06)',
+          }}
           animate={{
             borderColor: [
               'hsl(var(--primary) / 0.3)',
               'hsl(var(--primary) / 0.55)',
               'hsl(var(--primary) / 0.3)',
             ],
-            boxShadow: [
-              '0 0 20px 4px hsl(var(--primary) / 0.15), 0 0 60px 12px hsl(var(--primary) / 0.06), inset 0 0 30px 5px hsl(var(--primary) / 0.05)',
-              '0 0 30px 8px hsl(var(--primary) / 0.3), 0 0 80px 20px hsl(var(--primary) / 0.12), inset 0 0 40px 8px hsl(var(--primary) / 0.1)',
-              '0 0 20px 4px hsl(var(--primary) / 0.15), 0 0 60px 12px hsl(var(--primary) / 0.06), inset 0 0 30px 5px hsl(var(--primary) / 0.05)',
-            ],
           }}
           transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          style={{
-            border: '2px solid hsl(var(--primary) / 0.4)',
-          }}
         >
           <span className="sr-only">
             {`Body measurements diagram: ${[
@@ -627,9 +632,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           }} />
 
           {/* Silhouette: Ambient glow behind figure */}
-          <motion.div
+          <div
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
-            style={{ transform: `translateY(${parallaxY}px)` }}
+            ref={parallaxRef}
           >
             <motion.div
               className="h-[90%] w-[42%]"
@@ -640,12 +645,11 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               animate={{ scale: [1, 1.02, 1] }}
               transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
             />
-          </motion.div>
+          </div>
 
           {/* Silhouette: Origin orb — collapses into figure */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center pointer-events-none z-[3]"
-            style={{ transform: `translateY(${parallaxY}px)` }}
             initial={{ opacity: 1 }}
             animate={{ opacity: silhouetteReady ? 0 : 1 }}
             transition={{ duration: 2.2, ease: [0.16, 1, 0.3, 1], delay: 0.6 }}
@@ -664,7 +668,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {/* Silhouette: 4D holographic render — scales up from orb */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center"
-            style={{ transform: `translateY(${parallaxY}px)` }}
+            ref={parallaxRef2}
             initial={{ opacity: 0, scale: 0.15, borderRadius: '50%' }}
             animate={{
               opacity: silhouetteReady ? 1 : 0,
@@ -677,17 +681,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
               {/* ═══ BACKGROUND DEPTH LAYERS ═══ */}
 
-              {/* BG Layer 0: Ultra-deep volumetric shadow — anchors the figure in space */}
-              <img
-                src={silhouetteSrc}
-                alt="" aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
-                style={{
-                  filter: 'blur(40px) brightness(3) saturate(2)',
-                  opacity: 0.12,
-                  transform: 'scale(1.15) translateY(3%)',
-                }}
-              />
+              {/* BG Layer 0+1 merged: Deep volumetric glow */}
 
               {/* BG Layer 1: Wide atmospheric glow — creates a halo behind the body */}
               <img
@@ -823,6 +817,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 onLoad={() => setImageLoaded(true)}
                 style={{
                   filter: 'saturate(2) brightness(2.5) contrast(1.4) drop-shadow(0 0 12px hsl(var(--primary) / 0.9)) drop-shadow(0 0 4px hsl(var(--primary) / 1))',
+                  willChange: 'transform',
                 }}
                 animate={{
                   rotateY: [0, 3, 0, -3, 0],
@@ -1036,29 +1031,23 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {/* HUD status bar */}
           {imageLoaded && <HudStatusBar useCm={useCmState} />}
 
-          {/* Outer glow frame */}
+          {/* Outer glow frame — static shadow, animated opacity only */}
           <motion.div
             className="absolute -inset-[4px] rounded-[calc(1rem+3px)] pointer-events-none z-[8]"
-            style={{ border: '2px solid hsl(220 15% 8%)' }}
-            animate={{
-              boxShadow: [
-                'inset 0 0 12px 3px hsl(var(--primary) / 0.3), 0 0 16px 4px hsl(var(--primary) / 0.25), 0 0 40px 10px hsl(var(--primary) / 0.08)',
-                'inset 0 0 18px 5px hsl(var(--primary) / 0.5), 0 0 24px 6px hsl(var(--primary) / 0.4), 0 0 60px 16px hsl(var(--primary) / 0.15)',
-                'inset 0 0 12px 3px hsl(var(--primary) / 0.3), 0 0 16px 4px hsl(var(--primary) / 0.25), 0 0 40px 10px hsl(var(--primary) / 0.08)',
-              ],
+            style={{
+              border: '2px solid hsl(220 15% 8%)',
+              boxShadow: 'inset 0 0 15px 4px hsl(var(--primary) / 0.4), 0 0 20px 5px hsl(var(--primary) / 0.3), 0 0 50px 12px hsl(var(--primary) / 0.1)',
             }}
+            animate={{ opacity: [0.6, 1, 0.6] }}
             transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
           />
-          {/* Inner glow ring */}
+          {/* Inner glow ring — static shadow, animated opacity only */}
           <motion.div
             className="absolute inset-0 rounded-[1rem] pointer-events-none z-[7]"
-            animate={{
-              boxShadow: [
-                'inset 0 0 20px 4px hsl(var(--primary) / 0.06)',
-                'inset 0 0 35px 8px hsl(var(--primary) / 0.12)',
-                'inset 0 0 20px 4px hsl(var(--primary) / 0.06)',
-              ],
+            style={{
+              boxShadow: 'inset 0 0 28px 6px hsl(var(--primary) / 0.1)',
             }}
+            animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
           />
         </motion.div>
