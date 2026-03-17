@@ -89,7 +89,7 @@ import CaptureViewfinder from '@/components/capture/CaptureViewfinder';
 
 const Capture = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isSubscribed } = useAuth();
   usePageTitle('Scan');
   const saved = loadScanState();
   const [flowStep, setFlowStep] = useState<FlowStep>(saved?.flowStep || 'intro');
@@ -117,6 +117,7 @@ const Capture = () => {
   const [videoReady, setVideoReady] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [captureCountdown, setCaptureCountdown] = useState<number | null>(null);
+  const [scanGated, setScanGated] = useState(false);
   const { toast } = useToast();
 
   // Load existing gender from profile
