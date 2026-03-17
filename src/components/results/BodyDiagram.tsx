@@ -673,7 +673,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
           {/* Silhouette: 4D holographic render — scales up from orb */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center"
-            style={{ transform: `translateY(${parallaxY}px)` }}
+            ref={parallaxRef2}
             initial={{ opacity: 0, scale: 0.15, borderRadius: '50%' }}
             animate={{
               opacity: silhouetteReady ? 1 : 0,
