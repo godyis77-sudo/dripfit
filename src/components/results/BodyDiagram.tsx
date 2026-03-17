@@ -191,11 +191,11 @@ const RulerScale = () => (
       return (
         <div key={`rl-${i}`}>
           <div className="absolute left-0" style={{
-            top: `${y}%`, width: isMajor ? 16 : 8, height: isMajor ? 1 : 0.5,
-            background: `hsl(var(--primary) / ${isMajor ? 0.2 : 0.06})`,
+            top: `${y}%`, width: isMajor ? 20 : 10, height: isMajor ? 1.5 : 0.75,
+            background: `hsl(var(--primary) / ${isMajor ? 0.45 : 0.15})`,
           }} />
           {isMajor && (
-            <span className="absolute text-[4px] font-mono text-primary/15" style={{ top: `${y - 0.8}%`, left: 18 }}>
+            <span className="absolute text-[5px] font-mono text-primary/30 font-bold" style={{ top: `${y - 0.8}%`, left: 22 }}>
               {Math.round(i * 2.5)}
             </span>
           )}
@@ -209,11 +209,11 @@ const RulerScale = () => (
       return (
         <div key={`rr-${i}`}>
           <div className="absolute right-0" style={{
-            top: `${y}%`, width: isMajor ? 16 : 8, height: isMajor ? 1 : 0.5,
-            background: `hsl(var(--primary) / ${isMajor ? 0.2 : 0.06})`,
+            top: `${y}%`, width: isMajor ? 20 : 10, height: isMajor ? 1.5 : 0.75,
+            background: `hsl(var(--primary) / ${isMajor ? 0.45 : 0.15})`,
           }} />
           {isMajor && (
-            <span className="absolute text-[4px] font-mono text-primary/15 text-right" style={{ top: `${y - 0.8}%`, right: 18 }}>
+            <span className="absolute text-[5px] font-mono text-primary/30 text-right font-bold" style={{ top: `${y - 0.8}%`, right: 22 }}>
               {Math.round(i * 2.5)}
             </span>
           )}
