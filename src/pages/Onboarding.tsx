@@ -479,10 +479,10 @@ const Onboarding = () => {
                   <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">What you'll get</p>
                   <div className="grid grid-cols-4 gap-1.5">
                     {[
-                      { label: 'Chest', val: '96cm' },
-                      { label: 'Waist', val: '82cm' },
-                      { label: 'Hips', val: '100cm' },
-                      { label: 'Size', val: 'M' },
+                      { label: 'Chest', val: '—' },
+                      { label: 'Waist', val: '—' },
+                      { label: 'Hips', val: '—' },
+                      { label: 'Size', val: '—' },
                     ].map(m => (
                       <div key={m.label} className="bg-background rounded-lg py-1 text-center">
                         <p className="text-[10px] text-muted-foreground uppercase">{m.label}</p>
