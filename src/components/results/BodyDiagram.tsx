@@ -240,9 +240,9 @@ const ProportionLines = () => {
           transition={{ delay: 1.5 + i * 0.2, duration: 0.6 }}
         >
           <div className="w-full h-[1px]" style={{
-            background: 'linear-gradient(90deg, transparent 5%, hsl(var(--primary) / 0.06) 20%, hsl(var(--primary) / 0.08) 50%, hsl(var(--primary) / 0.06) 80%, transparent 95%)',
+            background: 'linear-gradient(90deg, transparent 3%, hsl(var(--primary) / 0.15) 15%, hsl(var(--primary) / 0.25) 50%, hsl(var(--primary) / 0.15) 85%, transparent 97%)',
           }} />
-          <span className="absolute right-2 -top-[6px] text-[3.5px] font-mono uppercase tracking-[0.2em] text-primary/10">
+          <span className="absolute right-2 -top-[6px] text-[4px] font-mono uppercase tracking-[0.2em] text-primary/25 font-medium">
             {r.label}
           </span>
         </motion.div>
