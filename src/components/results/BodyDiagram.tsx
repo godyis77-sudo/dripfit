@@ -942,7 +942,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 style={{ top: o.dotTop, left: o.dotLeft, transform: 'translate(-50%, -50%)' }}
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: o.delay + 0.4, duration: 0.4, ease: LUXURY_EASE }}
+                transition={{ delay: o.delay + 1.0, duration: 0.6, ease: LUXURY_EASE }}
               >
                 <span className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/20 animate-[sonar-ping_3s_ease-out_infinite]" />
                 <span className="absolute w-3 h-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/10 animate-[sonar-ping_3s_ease-out_infinite]" style={{ animationDelay: '1.2s' }} />
