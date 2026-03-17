@@ -106,6 +106,7 @@ export function useTryOnState() {
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [selectedRetailer, setSelectedRetailer] = useState<string | null>(null);
+  const [selectedFit, setSelectedFit] = useState<string | null>(null);
   const [tryOnError, setTryOnError] = useState<string | null>(null);
   const [addingAccessory, setAddingAccessory] = useState(false);
 
