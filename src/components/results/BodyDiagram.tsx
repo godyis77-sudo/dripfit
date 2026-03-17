@@ -899,25 +899,17 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
 
-              {/* Layer 3: Gold inner accent rim — silhouette-shaped gold glow for depth highlight */}
+              {/* Layer 3: Gold inner accent rim — soft radial gold glow for depth highlight */}
               <motion.div
-                className="absolute inset-0 pointer-events-none"
+                className="absolute -inset-1 pointer-events-none"
                 style={{
-                  backgroundImage: 'linear-gradient(180deg, hsl(var(--primary) / 0.7) 0%, hsl(var(--primary) / 0.35) 50%, hsl(var(--primary) / 0.6) 100%)',
-                  WebkitMaskImage: `url(${bodySilhouetteMask})`,
-                  maskImage: `url(${bodySilhouetteMask})`,
-                  WebkitMaskRepeat: 'no-repeat',
-                  maskRepeat: 'no-repeat',
-                  WebkitMaskPosition: 'center',
-                  maskPosition: 'center',
-                  WebkitMaskSize: 'contain',
-                  maskSize: 'contain',
-                  filter: 'blur(4px)',
+                  background: 'radial-gradient(ellipse 50% 60% at 50% 45%, hsl(var(--primary) / 0.5) 10%, hsl(var(--primary) / 0.15) 40%, transparent 65%)',
+                  filter: 'blur(8px)',
                   willChange: 'transform, opacity',
                 } as React.CSSProperties}
                 animate={{
-                  scale: [1.005, 1.025, 1.005],
-                  opacity: [0.18, 0.35, 0.18],
+                  scale: [1.01, 1.04, 1.01],
+                  opacity: [0.2, 0.4, 0.2],
                 }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
