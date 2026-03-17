@@ -869,7 +869,6 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                     ? 'blur(2px) brightness(4.4) saturate(2) drop-shadow(0 0 10px hsl(var(--primary) / 0.9)) drop-shadow(0 0 20px hsl(var(--primary) / 0.55))'
                     : 'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
                   opacity: liteMode ? 0.78 : 0.85,
-                  willChange: 'transform, opacity',
                 }}
                 animate={{
                   scale: liteMode ? [1.005, 1.03, 1.005] : [1.01, 1.045, 1.01],
