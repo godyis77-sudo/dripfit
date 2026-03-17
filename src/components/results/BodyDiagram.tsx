@@ -606,7 +606,7 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
     <div className="mb-4" ref={containerRef}>
       <div className="flex justify-center">
         <motion.div
-          className="relative w-full aspect-[3/4] rounded-[1rem] cursor-pointer overflow-hidden"
+          className="relative w-full max-w-[380px] aspect-[3/4] rounded-[1rem] cursor-pointer overflow-hidden"
           onClick={toggleUnit}
           role="button"
           aria-label="Toggle measurement units"
