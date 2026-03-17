@@ -96,29 +96,41 @@ const ScrambleValue = ({ value, scrambling }: { value: string; scrambling: boole
   return <span>{display}</span>;
 };
 
-/* ── Dual scan lines — CSS keyframes for GPU-only compositing ── */
-const ScanLines = () => (
-  <div className="absolute inset-0 z-[3] pointer-events-none overflow-hidden" style={{ contain: 'strict' }}>
-    <div
-      className="absolute left-0 right-0 h-[2px]"
-      style={{
-        background: 'linear-gradient(90deg, transparent, hsl(var(--primary) / 0) 8%, hsl(var(--primary) / 0.85) 50%, hsl(var(--primary) / 0) 92%, transparent)',
-        boxShadow: '0 0 30px 10px hsl(var(--primary) / 0.45), 0 0 80px 20px hsl(var(--primary) / 0.12)',
-        animation: 'scan-down 6s linear infinite',
-        willChange: 'transform',
-      }}
-    />
-    <div
-      className="absolute left-0 right-0 h-[1px] opacity-40"
-      style={{
-        background: 'linear-gradient(90deg, transparent, hsl(var(--primary) / 0.5) 50%, transparent)',
-        animation: 'scan-up 6s linear infinite',
-        willChange: 'transform',
-        bottom: 0,
-      }}
-    />
-  </div>
-);
+/* ── Dual scan lines — pure CSS transform for GPU compositing ── */
+const ScanLines = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () => el.style.setProperty('--scan-travel', `${el.offsetHeight}px`);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return (
+    <div ref={ref} className="absolute inset-0 z-[3] pointer-events-none overflow-hidden" style={{ contain: 'strict' }}>
+      <div
+        className="absolute left-0 right-0 h-[2px]"
+        style={{
+          background: 'linear-gradient(90deg, transparent, hsl(var(--primary) / 0) 8%, hsl(var(--primary) / 0.85) 50%, hsl(var(--primary) / 0) 92%, transparent)',
+          boxShadow: '0 0 30px 10px hsl(var(--primary) / 0.45), 0 0 80px 20px hsl(var(--primary) / 0.12)',
+          animation: 'scan-down 6s linear infinite',
+          willChange: 'transform',
+        }}
+      />
+      <div
+        className="absolute left-0 right-0 h-[1px] opacity-40"
+        style={{
+          background: 'linear-gradient(90deg, transparent, hsl(var(--primary) / 0.5) 50%, transparent)',
+          animation: 'scan-up 6s linear infinite',
+          willChange: 'transform',
+          bottom: 0,
+        }}
+      />
+    </div>
+  );
+};
 
 /* ── Hex grid background ── */
 const HexGrid = () => {
