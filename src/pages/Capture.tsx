@@ -129,6 +129,21 @@ const Capture = () => {
     });
   }, [user]);
 
+  // Check scan gate: non-founder/non-premium users limited to 1 scan
+  useEffect(() => {
+    if (!user || isSubscribed) { setScanGated(false); return; }
+    Promise.all([
+      supabase.rpc('has_role', { _user_id: user.id, _role: 'founder' as any }),
+      supabase.rpc('has_role', { _user_id: user.id, _role: 'admin' as any }),
+      supabase.from('body_scans').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
+    ]).then(([founderRes, adminRes, scanRes]) => {
+      const isFounder = !!founderRes.data;
+      const isAdmin = !!adminRes.data;
+      const scanCount = scanRes.count ?? 0;
+      setScanGated(!isFounder && !isAdmin && scanCount >= 1);
+    });
+  }, [user, isSubscribed]);
+
   const handleGenderSelect = async (value: string) => {
     setGenderSet(value);
     if (user) {
