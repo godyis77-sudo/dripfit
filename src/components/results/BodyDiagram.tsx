@@ -96,29 +96,26 @@ const ScrambleValue = ({ value, scrambling }: { value: string; scrambling: boole
   return <span>{display}</span>;
 };
 
-/* ── Dual scan lines ── */
+/* ── Dual scan lines — CSS keyframes for GPU-only compositing ── */
 const ScanLines = () => (
-  <div className="absolute inset-0 z-[3] pointer-events-none" style={{ contain: 'strict' }}>
-    <motion.div
+  <div className="absolute inset-0 z-[3] pointer-events-none overflow-hidden" style={{ contain: 'strict' }}>
+    <div
       className="absolute left-0 right-0 h-[2px]"
       style={{
         background: 'linear-gradient(90deg, transparent, hsl(var(--primary) / 0) 8%, hsl(var(--primary) / 0.85) 50%, hsl(var(--primary) / 0) 92%, transparent)',
         boxShadow: '0 0 30px 10px hsl(var(--primary) / 0.45), 0 0 80px 20px hsl(var(--primary) / 0.12)',
-        willChange: 'top',
+        animation: 'scan-down 6s linear infinite',
+        willChange: 'transform',
       }}
-      initial={{ top: '0%' }}
-      animate={{ top: ['0%', '100%', '0%'] }}
-      transition={{ duration: 6, ease: 'linear', repeat: Infinity }}
     />
-    <motion.div
+    <div
       className="absolute left-0 right-0 h-[1px] opacity-40"
       style={{
         background: 'linear-gradient(90deg, transparent, hsl(var(--primary) / 0.5) 50%, transparent)',
-        willChange: 'top',
+        animation: 'scan-up 6s linear infinite',
+        willChange: 'transform',
+        bottom: 0,
       }}
-      initial={{ top: '100%' }}
-      animate={{ top: ['100%', '0%', '100%'] }}
-      transition={{ duration: 6, ease: 'linear', repeat: Infinity }}
     />
   </div>
 );
