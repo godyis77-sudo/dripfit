@@ -834,19 +834,21 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               {/* ═══ DEPTH-OF-FIELD GLOW LAYERS ═══ */}
 
               {/* DOF: Rear defocused copy — simulates background depth plane */}
-              <motion.img
-                src={silhouetteSrc}
-                alt="" aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
-                style={{
-                  filter: 'blur(16px) brightness(4) saturate(2.5)',
-                  opacity: 0.2,
-                }}
-                animate={{
-                  scale: [1.06, 1.08, 1.06],
-                }}
-                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-              />
+              {!liteMode && (
+                <motion.img
+                  src={silhouetteSrc}
+                  alt="" aria-hidden="true"
+                  className="absolute inset-0 h-full w-full object-contain pointer-events-none"
+                  style={{
+                    filter: 'blur(16px) brightness(4) saturate(2.5)',
+                    opacity: 0.2,
+                  }}
+                  animate={{
+                    scale: [1.06, 1.08, 1.06],
+                  }}
+                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+                />
+              )}
 
               {/* DOF: Tight edge glow — size pulse synced to silhouette */}
               <motion.img
@@ -854,13 +856,15 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 alt="" aria-hidden="true"
                 className="absolute inset-0 h-full w-full object-contain pointer-events-none"
                 style={{
-                  filter: 'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
-                  opacity: 0.85,
+                  filter: liteMode
+                    ? 'blur(2px) brightness(4.4) saturate(2) drop-shadow(0 0 10px hsl(var(--primary) / 0.9)) drop-shadow(0 0 20px hsl(var(--primary) / 0.55))'
+                    : 'blur(3px) brightness(5) saturate(2.2) drop-shadow(0 0 14px hsl(var(--primary) / 1)) drop-shadow(0 0 30px hsl(var(--primary) / 0.7))',
+                  opacity: liteMode ? 0.78 : 0.85,
                   willChange: 'transform, opacity',
                 }}
                 animate={{
-                  scale: [1.01, 1.045, 1.01],
-                  opacity: [0.72, 0.95, 0.72],
+                  scale: liteMode ? [1.005, 1.03, 1.005] : [1.01, 1.045, 1.01],
+                  opacity: liteMode ? [0.68, 0.88, 0.68] : [0.72, 0.95, 0.72],
                 }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
