@@ -841,8 +841,6 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                     style={{ mixBlendMode: 'screen', filter: 'blur(2px) brightness(3) saturate(4) hue-rotate(-40deg)' }} />
                 </>
               )}
-                </>
-              )}
             </div>
           </motion.div>
 
