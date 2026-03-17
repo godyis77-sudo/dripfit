@@ -794,3 +794,13 @@
 .hud-data-glow {
   text-shadow: 0 0 8px hsl(42 76% 50% / 0.2);
 }
+
+/* ── Reduced motion: disable all custom animations ── */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-gold,
+  .shimmer-sweep,
+  .aurora-bg,
+  .animate-pulse-slow {
+    animation: none !important;
+  }
+}
