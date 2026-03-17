@@ -34,9 +34,9 @@ const ALWAYS_MENS_CATEGORIES = new Set<string>([
 const FORCE_WOMENS_NAME_PATTERNS = [
   "sports bra", "sport bra", "bralette", "bikini", "yoga pant",
   "crop top", "tankini", "romper", "lingerie", "maternity",
-  "camisole", "seamless bra", "women's", "womens ", "for women",
-  "for her", "midi dress", "maxi dress", "mini dress", "wrap dress",
-  "slip dress", "pencil skirt", "mini skirt", "pleated skirt",
+  "camisole", "seamless bra", "women's", "women\u2019s", "womens ",
+  "for women", "for her", "midi dress", "maxi dress", "mini dress",
+  "wrap dress", "slip dress", "pencil skirt", "mini skirt", "pleated skirt",
   "bodycon", "babydoll", "corset", "bustier", "peplum",
   "ballerina", "ballet flat", "kitten heel", "platform heel",
   "shapewear", "off shoulder", "smocked", "ruched",
@@ -51,6 +51,8 @@ const FORCE_WOMENS_NAME_PATTERNS = [
   "feminine", "girly", "floral print dress", "lace dress",
   "maternity wear", "nursing", "postpartum",
   "women ", " woman ", "ladies ", "female ",
+  // Possessive / gendered product naming
+  "woman's", "woman\u2019s", "women\u2018s",
 ];
 const FORCE_MENS_NAME_PATTERNS = [
   "boxer", "men's underwear", "compression short", "athletic supporter",
