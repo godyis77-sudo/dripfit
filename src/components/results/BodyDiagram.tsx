@@ -871,8 +871,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
               {/* Layer 1: Wide cast shadow — dark offset for ground-plane depth */}
               <motion.div
-                className="absolute inset-0 pointer-events-none"
+                className="absolute pointer-events-none"
                 style={{
+                  inset: '-5%',
                   background: 'hsl(0 0% 0% / 0.95)',
                   WebkitMaskImage: `url(${bodySilhouetteMask})`,
                   maskImage: `url(${bodySilhouetteMask})`,
@@ -880,8 +881,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   maskRepeat: 'no-repeat',
                   WebkitMaskPosition: 'center',
                   maskPosition: 'center',
-                  WebkitMaskSize: 'contain',
-                  maskSize: 'contain',
+                  WebkitMaskSize: '90%',
+                  maskSize: '90%',
                   filter: 'blur(20px)',
                   transform: 'translateX(4%) translateY(3%)',
                   willChange: 'transform, opacity',
@@ -895,8 +896,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
 
               {/* Layer 2: Tighter contact shadow */}
               <motion.div
-                className="absolute inset-0 pointer-events-none"
+                className="absolute pointer-events-none"
                 style={{
+                  inset: '-2%',
                   background: 'hsl(0 0% 0% / 0.9)',
                   WebkitMaskImage: `url(${bodySilhouetteMask})`,
                   maskImage: `url(${bodySilhouetteMask})`,
@@ -904,8 +906,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   maskRepeat: 'no-repeat',
                   WebkitMaskPosition: 'center',
                   maskPosition: 'center',
-                  WebkitMaskSize: 'contain',
-                  maskSize: 'contain',
+                  WebkitMaskSize: '95%',
+                  maskSize: '95%',
                   filter: 'blur(10px)',
                   transform: 'translateX(2%) translateY(1.5%)',
                   willChange: 'transform, opacity',
@@ -917,10 +919,11 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               />
 
-              {/* Layer 3: Gold inner accent rim */}
+              {/* Layer 3: Gold inner accent rim — silhouette-shaped edge highlight */}
               <motion.div
-                className="absolute inset-0 pointer-events-none"
+                className="absolute pointer-events-none"
                 style={{
+                  inset: '-1%',
                   backgroundImage: 'linear-gradient(180deg, hsl(var(--primary) / 0.85) 0%, hsl(var(--primary) / 0.4) 50%, hsl(var(--primary) / 0.7) 100%)',
                   WebkitMaskImage: `url(${bodySilhouetteMask})`,
                   maskImage: `url(${bodySilhouetteMask})`,
@@ -928,8 +931,8 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
                   maskRepeat: 'no-repeat',
                   WebkitMaskPosition: 'center',
                   maskPosition: 'center',
-                  WebkitMaskSize: 'contain',
-                  maskSize: 'contain',
+                  WebkitMaskSize: '98%',
+                  maskSize: '98%',
                   filter: 'blur(5px)',
                   willChange: 'transform, opacity',
                 } as React.CSSProperties}
@@ -944,8 +947,9 @@ const BodyDiagram = ({ measurements, heightCm }: BodyDiagramProps) => {
               <motion.img
                 src={silhouetteSrc}
                 alt="" aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-contain pointer-events-none"
+                className="absolute h-full w-full object-contain pointer-events-none"
                 style={{
+                  inset: '-2%',
                   filter: 'blur(14px) brightness(6) saturate(2.5) drop-shadow(0 0 40px hsl(var(--primary) / 0.85))',
                   willChange: 'transform, opacity',
                   transform: 'translateX(1.5%) translateY(1.5%)',
