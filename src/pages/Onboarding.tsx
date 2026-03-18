@@ -14,9 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import AuthForm from '@/components/auth/AuthForm';
 
 
-import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
-import heroTryon from '@/assets/hero-tryon-mirror.jpg';
-import heroCommunity from '@/assets/hero-community-feedback.jpg';
+import onboardingHud from '@/assets/onboarding-body-hud.jpg';
 
 type Screen = 'splash' | 'carousel' | 'auth' | 'personalize' | 'gender' | 'scan-prompt';
 
