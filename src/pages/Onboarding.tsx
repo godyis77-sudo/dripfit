@@ -249,7 +249,7 @@ const Onboarding = () => {
                 >
                   {/* Image — centered with safe top padding */}
                   <div className="flex items-center justify-center mx-4 min-h-0 max-w-[480px] w-full self-center" style={{ maxHeight: '50dvh' }}>
-                    {slideIdx === 0 ? (
+                  {false ? (
                       <DecorativeSilhouette height={340} />
                     ) : (
                       <div
