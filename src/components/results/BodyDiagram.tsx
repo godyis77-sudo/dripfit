@@ -508,7 +508,7 @@ const BodyDiagram = ({ measurements, heightCm, decorativeMode }: BodyDiagramProp
     return lowConcurrency || saveData;
   }, []);
 
-  const liteMode = reduceMotion || isLowPerfDevice || !!decorativeMode;
+  const liteMode = reduceMotion || isLowPerfDevice;
 
   useEffect(() => {
     let cancelled = false;
@@ -842,31 +842,31 @@ const BodyDiagram = ({ measurements, heightCm, decorativeMode }: BodyDiagramProp
           </motion.div>
 
           {/* Effects: Tick marks */}
-          {imageLoaded && !decorativeMode && <TickMarks />}
+          {imageLoaded && <TickMarks />}
 
           {/* Effects: CRT scanlines */}
-          {imageLoaded && !decorativeMode && <CrtOverlay />}
+          {imageLoaded && <CrtOverlay />}
 
           {/* Effects: Crosshair reticle */}
-          {imageLoaded && !liteMode && !decorativeMode && <Crosshair />}
+          {imageLoaded && !liteMode && <Crosshair />}
 
           {/* Effects: Scan lines */}
-          {imageLoaded && !decorativeMode && <ScanLines />}
+          {imageLoaded && <ScanLines />}
 
           {/* Effects: Data particles */}
           {imageLoaded && !liteMode && <DataParticles />}
 
           {/* Effects: Corner brackets */}
-          {imageLoaded && !decorativeMode && <CornerBrackets />}
+          {imageLoaded && <CornerBrackets />}
 
           {/* Effects: Micro readouts */}
-          {imageLoaded && !liteMode && !decorativeMode && <MicroReadouts />}
+          {imageLoaded && !liteMode && <MicroReadouts />}
 
           {/* Effects: Signal waveform */}
-          {imageLoaded && !liteMode && !decorativeMode && <SignalWaveform />}
+          {imageLoaded && !liteMode && <SignalWaveform />}
 
           {/* Data: SVG leader lines */}
-          {imageLoaded && !decorativeMode && (
+          {imageLoaded && (
             <svg className="absolute inset-0 w-full h-full pointer-events-none z-[4]" viewBox="0 0 100 100" preserveAspectRatio="none" fill="none">
               <defs>
                 <linearGradient id="lg-l" x1="1" y1="0" x2="0" y2="0">
@@ -902,7 +902,7 @@ const BodyDiagram = ({ measurements, heightCm, decorativeMode }: BodyDiagramProp
           )}
 
           {/* Data: Hotspot dots with scanline-triggered pulse */}
-          {imageLoaded && !decorativeMode && activeOverlays.map(o => {
+          {imageLoaded && activeOverlays.map(o => {
             // Scanline passes top→bottom in 4.5s cycle; calculate when it hits this dot
             const dotY = parseFloat(o.dotTop) / 100;
             const pulseDelay = dotY * 4.5; // sync with scanline duration
@@ -944,7 +944,7 @@ const BodyDiagram = ({ measurements, heightCm, decorativeMode }: BodyDiagramProp
           })}
 
           {/* Data: Glassmorphic labels */}
-          {imageLoaded && !decorativeMode && activeOverlays.map(o => {
+          {imageLoaded && activeOverlays.map(o => {
             const val = getValue(o.key)!;
             return (
               <motion.div
@@ -982,7 +982,7 @@ const BodyDiagram = ({ measurements, heightCm, decorativeMode }: BodyDiagramProp
           })}
 
           {/* HUD status bar */}
-          {imageLoaded && !decorativeMode && <HudStatusBar useCm={useCmState} />}
+          {imageLoaded && <HudStatusBar useCm={useCmState} />}
 
           {/* Outer glow frame */}
           <div className="absolute -inset-[4px] rounded-[calc(1rem+3px)] pointer-events-none z-[8] hud-frame-outer"
