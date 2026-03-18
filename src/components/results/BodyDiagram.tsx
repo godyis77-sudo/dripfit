@@ -842,28 +842,28 @@ const BodyDiagram = ({ measurements, heightCm, decorativeMode }: BodyDiagramProp
           </motion.div>
 
           {/* Effects: Tick marks */}
-          {imageLoaded && <TickMarks />}
+          {imageLoaded && !decorativeMode && <TickMarks />}
 
           {/* Effects: CRT scanlines */}
-          {imageLoaded && <CrtOverlay />}
+          {imageLoaded && !decorativeMode && <CrtOverlay />}
 
           {/* Effects: Crosshair reticle */}
-          {imageLoaded && !liteMode && <Crosshair />}
+          {imageLoaded && !liteMode && !decorativeMode && <Crosshair />}
 
           {/* Effects: Scan lines */}
-          {imageLoaded && <ScanLines />}
+          {imageLoaded && !decorativeMode && <ScanLines />}
 
           {/* Effects: Data particles */}
           {imageLoaded && !liteMode && <DataParticles />}
 
           {/* Effects: Corner brackets */}
-          {imageLoaded && <CornerBrackets />}
+          {imageLoaded && !decorativeMode && <CornerBrackets />}
 
           {/* Effects: Micro readouts */}
-          {imageLoaded && !liteMode && <MicroReadouts />}
+          {imageLoaded && !liteMode && !decorativeMode && <MicroReadouts />}
 
           {/* Effects: Signal waveform */}
-          {imageLoaded && !liteMode && <SignalWaveform />}
+          {imageLoaded && !liteMode && !decorativeMode && <SignalWaveform />}
 
           {/* Data: SVG leader lines */}
           {imageLoaded && (
