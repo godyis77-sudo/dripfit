@@ -6,7 +6,7 @@ import iconStylecheck from '@/assets/icon-stylecheck.webp';
 import iconPost from '@/assets/icon-post.webp';
 import iconHome from '@/assets/icon-home.webp';
 import iconProfile from '@/assets/icon-profile.webp';
-import iconCrown from '@/assets/icon-crown.webp';
+import iconCrown from '@/assets/icon-crown.png';
 import { cn } from '@/lib/utils';
 
 export const featureIcons = {
