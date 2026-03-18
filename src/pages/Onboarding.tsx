@@ -15,6 +15,7 @@ import AuthForm from '@/components/auth/AuthForm';
 
 
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
+import onboardingBodyScan from '@/assets/onboarding-body-scan.jpg';
 import heroTryon from '@/assets/hero-tryon-mirror.jpg';
 import heroCommunity from '@/assets/hero-community-feedback.jpg';
 
