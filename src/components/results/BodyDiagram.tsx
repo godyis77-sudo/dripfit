@@ -866,7 +866,7 @@ const BodyDiagram = ({ measurements, heightCm, decorativeMode }: BodyDiagramProp
           {imageLoaded && !liteMode && !decorativeMode && <SignalWaveform />}
 
           {/* Data: SVG leader lines */}
-          {imageLoaded && (
+          {imageLoaded && !decorativeMode && (
             <svg className="absolute inset-0 w-full h-full pointer-events-none z-[4]" viewBox="0 0 100 100" preserveAspectRatio="none" fill="none">
               <defs>
                 <linearGradient id="lg-l" x1="1" y1="0" x2="0" y2="0">
