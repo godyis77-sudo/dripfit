@@ -683,7 +683,7 @@ function extractFabricComposition(name: string, tags: string[] = []): string[] {
   return [...hits];
 }
 
-
+function normalizeRetailer(name: string): string {
   const lower = name.toLowerCase().trim();
   return RETAILER_NORMALIZE[lower] ?? name;
 }
