@@ -15,6 +15,7 @@ import AuthForm from '@/components/auth/AuthForm';
 
 
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
+import onboardingBodyScan from '@/assets/onboarding-body-scan.jpg';
 import heroTryon from '@/assets/hero-tryon-mirror.jpg';
 import heroCommunity from '@/assets/hero-community-feedback.jpg';
 
@@ -32,7 +33,7 @@ const SLIDES = [
     title: 'Know your exact size in every brand',
     highlight: '',
     desc: 'Stop guessing. Two photos and 60 seconds gives you precise measurements across SHEIN, Zara, H&M, Lululemon, and 10+ more.',
-    image: '',
+    image: onboardingBodyScan,
   },
   {
     featureIcon: 'tryon' as FeatureIconName,
@@ -248,7 +249,7 @@ const Onboarding = () => {
                 >
                   {/* Image — centered with safe top padding */}
                   <div className="flex items-center justify-center mx-4 min-h-0 max-w-[480px] w-full self-center" style={{ maxHeight: '50dvh' }}>
-                    {slideIdx === 0 ? (
+                  {false ? (
                       <DecorativeSilhouette height={340} />
                     ) : (
                       <div
