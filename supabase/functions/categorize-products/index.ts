@@ -627,7 +627,63 @@ function extractFitProfile(name: string, tags: string[] = [], productUrl?: strin
   return [...hits];
 }
 
-function normalizeRetailer(name: string): string {
+/**
+ * Extract fabric_composition from product name and tags using regex patterns.
+ * Returns a deduplicated array of matched fabric/material terms.
+ */
+function extractFabricComposition(name: string, tags: string[] = []): string[] {
+  const combined = `${name.toLowerCase()} ${tags.map(t => t.toLowerCase()).join(" ")}`;
+
+  const FABRIC_PATTERNS: [RegExp, string][] = [
+    [/\bcotton\b/, "cotton"],
+    [/\bpolyester\b/, "polyester"],
+    [/\bnylon\b/, "nylon"],
+    [/\belastane\b|\bspandex\b|\blycra\b/, "elastane"],
+    [/\brayon\b|\bviscose\b/, "rayon"],
+    [/\bsilk\b/, "silk"],
+    [/\bwool\b|\bmerino\b/, "wool"],
+    [/\blinen\b/, "linen"],
+    [/\bcashmere\b/, "cashmere"],
+    [/\bdenim\b/, "denim"],
+    [/\bfleece\b/, "fleece"],
+    [/\bvelvet\b/, "velvet"],
+    [/\bsuede\b/, "suede"],
+    [/\bleather\b/, "leather"],
+    [/\bfaux leather\b|\bvegan leather\b|\bpleather\b/, "faux leather"],
+    [/\bcanvas\b/, "canvas"],
+    [/\btwill\b/, "twill"],
+    [/\bjersey\b/, "jersey"],
+    [/\bchiffon\b/, "chiffon"],
+    [/\bsatin\b/, "satin"],
+    [/\blace\b/, "lace"],
+    [/\btulle\b/, "tulle"],
+    [/\borganza\b/, "organza"],
+    [/\bcorduroy\b/, "corduroy"],
+    [/\btweed\b/, "tweed"],
+    [/\bcrepe\b/, "crepe"],
+    [/\bmodal\b/, "modal"],
+    [/\bbamboo\b/, "bamboo"],
+    [/\btencel\b|\blyocell\b/, "tencel"],
+    [/\bgore-?tex\b/, "gore-tex"],
+    [/\bneoprene\b/, "neoprene"],
+    [/\bmesh\b/, "mesh"],
+    [/\bripstop\b/, "ripstop"],
+    [/\bpoplin\b/, "poplin"],
+    [/\boxford cloth\b/, "oxford"],
+    [/\bchambray\b/, "chambray"],
+    [/\bflannel\b/, "flannel"],
+    [/\bterry\b|\bfrench terry\b/, "terry"],
+    [/\bpiqué\b|\bpique\b/, "piqué"],
+  ];
+
+  const hits = new Set<string>();
+  for (const [regex, label] of FABRIC_PATTERNS) {
+    if (regex.test(combined)) hits.add(label);
+  }
+  return [...hits];
+}
+
+
   const lower = name.toLowerCase().trim();
   return RETAILER_NORMALIZE[lower] ?? name;
 }
