@@ -256,6 +256,47 @@ serve(async (req) => {
     const batchSize = body.batch_size ?? 20;
     const category = body.category;
     const onlyUnchecked = body.only_unchecked ?? true;
+    const enrichOnly = body.enrich_only ?? false;
+
+    // Enrich-only mode: update fit_profile and fabric_composition for already-verified items
+    if (enrichOnly) {
+      const enrichLimit = body.batch_size ?? 200;
+      const { data: enrichProducts, error: enrichErr } = await supabase
+        .from("product_catalog")
+        .select("id, name, brand, tags, product_url, fit_profile, fabric_composition")
+        .eq("is_active", true)
+        .or("fit_profile.is.null,fit_profile.eq.{},fabric_composition.is.null,fabric_composition.eq.{}")
+        .limit(enrichLimit);
+
+      if (enrichErr) return errorResponse(`Enrich fetch error: ${enrichErr.message}`, "DB_ERROR", 500, corsHeaders);
+      if (!enrichProducts || enrichProducts.length === 0) {
+        return successResponse({ message: "No products to enrich", enriched: 0 }, 200, corsHeaders);
+      }
+
+      let enriched = 0;
+      for (const p of enrichProducts) {
+        const pTags = Array.isArray(p.tags) ? p.tags : [];
+        const fitProfile = extractFitProfile(p.name, pTags, p.product_url);
+        const fabricComp = extractFabricComposition(p.name, pTags);
+        const existingFit = Array.isArray(p.fit_profile) && p.fit_profile.length > 0 ? p.fit_profile : [];
+        const existingFabric = Array.isArray(p.fabric_composition) && p.fabric_composition.length > 0 ? p.fabric_composition : [];
+        
+        const newFit = fitProfile.length > 0 ? fitProfile : existingFit;
+        const newFabric = fabricComp.length > 0 ? fabricComp : existingFabric;
+
+        if (newFit.length > 0 || newFabric.length > 0) {
+          const update: Record<string, unknown> = {};
+          if (newFit.length > 0 && existingFit.length === 0) update.fit_profile = newFit;
+          if (newFabric.length > 0 && existingFabric.length === 0) update.fabric_composition = newFabric;
+          if (Object.keys(update).length > 0) {
+            await supabase.from("product_catalog").update(update).eq("id", p.id);
+            enriched++;
+          }
+        }
+      }
+
+      return successResponse({ message: `Enriched ${enriched} of ${enrichProducts.length} products`, enriched, scanned: enrichProducts.length }, 200, corsHeaders);
+    }
 
     // Fetch products
     let query = supabase
