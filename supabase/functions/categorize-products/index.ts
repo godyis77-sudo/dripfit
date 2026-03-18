@@ -448,14 +448,16 @@ serve(async (req) => {
           .eq("id", result.id);
         deactivated++;
       } else {
-        // Extract fit_profile from product name, tags, and URL
+        // Extract fit_profile and fabric_composition from product name, tags, and URL
         const fitProfile = extractFitProfile(product.name, Array.isArray(product.tags) ? product.tags : [], product.product_url);
+        const fabricComp = extractFabricComposition(product.name, Array.isArray(product.tags) ? product.tags : []);
 
         const updatePayload: Record<string, unknown> = {
           tags: newTags,
           image_confidence: Math.max(result.confidence, product.image_confidence ?? 0),
           gender: enforcedGender,
           ...(fitProfile.length > 0 ? { fit_profile: fitProfile } : {}),
+          ...(fabricComp.length > 0 ? { fabric_composition: fabricComp } : {}),
           ...retailerUpdate,
         };
 
