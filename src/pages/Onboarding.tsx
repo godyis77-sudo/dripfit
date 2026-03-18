@@ -246,19 +246,18 @@ const Onboarding = () => {
                   {/* Image */}
                   <div className="flex items-center justify-center mx-4 min-h-0 max-w-[480px] w-full self-center" style={{ maxHeight: '50dvh' }}>
                     <div
-                      className="relative rounded-2xl overflow-hidden"
+                      className="relative rounded-2xl overflow-hidden inline-block"
                       style={{
-                        maxHeight: '50dvh',
-                        maxWidth: 'calc(100% - 30px)',
                         boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15), inset 0 0 14px 3px hsl(45 88% 50% / 0.2)',
                         border: '2px solid hsl(45 88% 55% / 0.8)',
+                        lineHeight: 0,
                       }}
                     >
                       <img
                         src={SLIDES[slideIdx].image}
                         alt={SLIDES[slideIdx].title}
-                        className="w-full h-full object-cover rounded-2xl"
-                        style={{ maxHeight: '100%' }}
+                        className="block rounded-2xl object-contain"
+                        style={{ maxHeight: '50dvh', maxWidth: 'calc(100vw - 60px)' }}
                       />
                     </div>
                   </div>
