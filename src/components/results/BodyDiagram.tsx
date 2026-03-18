@@ -982,7 +982,7 @@ const BodyDiagram = ({ measurements, heightCm, decorativeMode }: BodyDiagramProp
           })}
 
           {/* HUD status bar */}
-          {imageLoaded && <HudStatusBar useCm={useCmState} />}
+          {imageLoaded && !decorativeMode && <HudStatusBar useCm={useCmState} />}
 
           {/* Outer glow frame */}
           <div className="absolute -inset-[4px] rounded-[calc(1rem+3px)] pointer-events-none z-[8] hud-frame-outer"
