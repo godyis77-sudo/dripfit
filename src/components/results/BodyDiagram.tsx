@@ -944,7 +944,7 @@ const BodyDiagram = ({ measurements, heightCm, decorativeMode }: BodyDiagramProp
           })}
 
           {/* Data: Glassmorphic labels */}
-          {imageLoaded && activeOverlays.map(o => {
+          {imageLoaded && !decorativeMode && activeOverlays.map(o => {
             const val = getValue(o.key)!;
             return (
               <motion.div
