@@ -427,7 +427,7 @@ const Onboarding = () => {
               {/* Top section: image + text */}
               <div className="flex flex-col items-center min-h-0 flex-1">
                 <div className="min-h-0 flex-1 flex items-center">
-                  <DecorativeSilhouette height={280} />
+                  <img src={onboardingHud} alt="Body scan preview" className="rounded-2xl object-contain" style={{ maxHeight: '280px' }} />
                 </div>
 
                 <h2 className="font-display text-lg font-bold text-foreground mb-0.5 text-center mt-1 shrink-0">Let's get your measurements</h2>
