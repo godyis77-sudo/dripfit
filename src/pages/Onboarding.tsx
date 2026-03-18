@@ -248,7 +248,7 @@ const Onboarding = () => {
                   className="flex-1 flex flex-col items-center justify-center min-h-0 cursor-grab active:cursor-grabbing gap-6"
                 >
                   {/* Image — centered with safe top padding */}
-                  <div className="flex items-center justify-center mx-4 min-h-0 max-w-[480px] w-full self-center" style={{ maxHeight: '50dvh' }}>
+                  <div className="flex items-center justify-center px-4 min-h-0 max-w-[480px] w-full self-center mx-auto" style={{ maxHeight: '50dvh' }}>
                   {false ? (
                       <DecorativeSilhouette height={340} />
                     ) : (
