@@ -253,7 +253,7 @@ const Onboarding = () => {
                       <DecorativeSilhouette height={340} />
                     ) : (
                       <div
-                        className="relative rounded-2xl overflow-hidden"
+                        className="relative rounded-2xl overflow-hidden mx-auto"
                         style={{
                           maxHeight: '50dvh',
                           maxWidth: 'calc(100% - 30px)',
