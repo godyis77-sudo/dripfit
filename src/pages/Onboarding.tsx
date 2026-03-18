@@ -14,7 +14,9 @@ import { supabase } from '@/integrations/supabase/client';
 import AuthForm from '@/components/auth/AuthForm';
 
 
-import onboardingHud from '@/assets/onboarding-body-hud.jpg';
+import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
+import heroTryon from '@/assets/hero-tryon-mirror.jpg';
+import heroCommunity from '@/assets/hero-community-feedback.jpg';
 
 type Screen = 'splash' | 'carousel' | 'auth' | 'personalize' | 'gender' | 'scan-prompt';
 
@@ -29,21 +31,22 @@ const SLIDES = [
     featureIcon: 'sizeguide' as FeatureIconName,
     title: 'Know your exact size in every brand',
     highlight: '',
-    image: onboardingHud,
+    desc: 'Stop guessing. Two photos and 60 seconds gives you precise measurements across SHEIN, Zara, H&M, Lululemon, and 10+ more.',
+    image: '',
   },
   {
     featureIcon: 'tryon' as FeatureIconName,
     title: 'See how it looks before you buy',
     highlight: '',
     desc: "Upload a photo of any clothing item and see yourself wearing it. No more buying blind — try-on thousands of styles instantly.",
-    image: onboardingHud,
+    image: heroTryon,
   },
   {
     featureIcon: 'stylecheck' as FeatureIconName,
     title: 'Get honest opinions from real people',
     highlight: '',
     desc: 'Post your virtual try-on to the Style Check community. Get votes from people with similar body types. Shop with total confidence.',
-    image: onboardingHud,
+    image: heroCommunity,
   },
 ];
 
@@ -243,24 +246,36 @@ const Onboarding = () => {
                   }}
                   className="flex-1 flex flex-col items-center justify-center min-h-0 cursor-grab active:cursor-grabbing gap-6"
                 >
-                  {/* Image */}
+                  {/* Image — centered with safe top padding */}
                   <div className="flex items-center justify-center mx-4 min-h-0 max-w-[480px] w-full self-center" style={{ maxHeight: '50dvh' }}>
-                    <div
-                      className="relative rounded-2xl overflow-hidden"
-                      style={{
-                        maxHeight: '50dvh',
-                        maxWidth: 'calc(100% - 30px)',
-                        boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15), inset 0 0 14px 3px hsl(45 88% 50% / 0.2)',
-                        border: '2px solid hsl(45 88% 55% / 0.8)',
-                      }}
-                    >
-                      <img
-                        src={SLIDES[slideIdx].image}
-                        alt={SLIDES[slideIdx].title}
-                        className="w-full h-full object-cover rounded-2xl"
-                        style={{ maxHeight: '100%' }}
-                      />
-                    </div>
+                    {slideIdx === 0 ? (
+                      <DecorativeSilhouette height={340} />
+                    ) : (
+                      <div
+                        className="relative rounded-2xl overflow-hidden"
+                        style={{
+                          maxHeight: '50dvh',
+                          maxWidth: 'calc(100% - 30px)',
+                          boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15), inset 0 0 14px 3px hsl(45 88% 50% / 0.2)',
+                          border: '2px solid hsl(45 88% 55% / 0.8)',
+                        }}
+                      >
+                        <img
+                          src={SLIDES[slideIdx].image}
+                          alt={SLIDES[slideIdx].title}
+                          className="w-full h-full object-cover rounded-2xl"
+                          style={{
+                            maxHeight: '100%',
+                            ...(slideIdx === 1 ? { filter: 'brightness(0.8)' } : {}),
+                          }}
+                        />
+                        {slideIdx === 1 && (
+                          <div className="absolute inset-0 rounded-2xl pointer-events-none" style={{
+                            boxShadow: 'inset 0 0 60px 35px rgba(0,0,0,0.4)',
+                          }} />
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Text — below image with consistent gap */}
@@ -427,7 +442,7 @@ const Onboarding = () => {
               {/* Top section: image + text */}
               <div className="flex flex-col items-center min-h-0 flex-1">
                 <div className="min-h-0 flex-1 flex items-center">
-                  <img src={onboardingHud} alt="Body scan preview" className="rounded-2xl object-contain" style={{ maxHeight: '280px' }} />
+                  <DecorativeSilhouette height={280} />
                 </div>
 
                 <h2 className="font-display text-lg font-bold text-foreground mb-0.5 text-center mt-1 shrink-0">Let's get your measurements</h2>
