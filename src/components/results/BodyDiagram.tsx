@@ -508,7 +508,7 @@ const BodyDiagram = ({ measurements, heightCm, decorativeMode }: BodyDiagramProp
     return lowConcurrency || saveData;
   }, []);
 
-  const liteMode = reduceMotion || isLowPerfDevice;
+  const liteMode = reduceMotion || isLowPerfDevice || !!decorativeMode;
 
   useEffect(() => {
     let cancelled = false;
