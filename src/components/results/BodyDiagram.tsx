@@ -902,7 +902,7 @@ const BodyDiagram = ({ measurements, heightCm, decorativeMode }: BodyDiagramProp
           )}
 
           {/* Data: Hotspot dots with scanline-triggered pulse */}
-          {imageLoaded && activeOverlays.map(o => {
+          {imageLoaded && !decorativeMode && activeOverlays.map(o => {
             // Scanline passes top→bottom in 4.5s cycle; calculate when it hits this dot
             const dotY = parseFloat(o.dotTop) / 100;
             const pulseDelay = dotY * 4.5; // sync with scanline duration
