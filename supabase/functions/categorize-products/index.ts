@@ -256,6 +256,47 @@ serve(async (req) => {
     const batchSize = body.batch_size ?? 20;
     const category = body.category;
     const onlyUnchecked = body.only_unchecked ?? true;
+    const enrichOnly = body.enrich_only ?? false;
+
+    // Enrich-only mode: update fit_profile and fabric_composition for already-verified items
+    if (enrichOnly) {
+      const enrichLimit = body.batch_size ?? 200;
+      const { data: enrichProducts, error: enrichErr } = await supabase
+        .from("product_catalog")
+        .select("id, name, brand, tags, product_url, fit_profile, fabric_composition")
+        .eq("is_active", true)
+        .or("fit_profile.is.null,fit_profile.eq.{},fabric_composition.is.null,fabric_composition.eq.{}")
+        .limit(enrichLimit);
+
+      if (enrichErr) return errorResponse(`Enrich fetch error: ${enrichErr.message}`, "DB_ERROR", 500, corsHeaders);
+      if (!enrichProducts || enrichProducts.length === 0) {
+        return successResponse({ message: "No products to enrich", enriched: 0 }, 200, corsHeaders);
+      }
+
+      let enriched = 0;
+      for (const p of enrichProducts) {
+        const pTags = Array.isArray(p.tags) ? p.tags : [];
+        const fitProfile = extractFitProfile(p.name, pTags, p.product_url);
+        const fabricComp = extractFabricComposition(p.name, pTags);
+        const existingFit = Array.isArray(p.fit_profile) && p.fit_profile.length > 0 ? p.fit_profile : [];
+        const existingFabric = Array.isArray(p.fabric_composition) && p.fabric_composition.length > 0 ? p.fabric_composition : [];
+        
+        const newFit = fitProfile.length > 0 ? fitProfile : existingFit;
+        const newFabric = fabricComp.length > 0 ? fabricComp : existingFabric;
+
+        if (newFit.length > 0 || newFabric.length > 0) {
+          const update: Record<string, unknown> = {};
+          if (newFit.length > 0 && existingFit.length === 0) update.fit_profile = newFit;
+          if (newFabric.length > 0 && existingFabric.length === 0) update.fabric_composition = newFabric;
+          if (Object.keys(update).length > 0) {
+            await supabase.from("product_catalog").update(update).eq("id", p.id);
+            enriched++;
+          }
+        }
+      }
+
+      return successResponse({ message: `Enriched ${enriched} of ${enrichProducts.length} products`, enriched, scanned: enrichProducts.length }, 200, corsHeaders);
+    }
 
     // Fetch products
     let query = supabase
@@ -448,14 +489,16 @@ serve(async (req) => {
           .eq("id", result.id);
         deactivated++;
       } else {
-        // Extract fit_profile from product name, tags, and URL
+        // Extract fit_profile and fabric_composition from product name, tags, and URL
         const fitProfile = extractFitProfile(product.name, Array.isArray(product.tags) ? product.tags : [], product.product_url);
+        const fabricComp = extractFabricComposition(product.name, Array.isArray(product.tags) ? product.tags : []);
 
         const updatePayload: Record<string, unknown> = {
           tags: newTags,
           image_confidence: Math.max(result.confidence, product.image_confidence ?? 0),
           gender: enforcedGender,
           ...(fitProfile.length > 0 ? { fit_profile: fitProfile } : {}),
+          ...(fabricComp.length > 0 ? { fabric_composition: fabricComp } : {}),
           ...retailerUpdate,
         };
 
@@ -581,6 +624,62 @@ function extractFitProfile(name: string, tags: string[] = [], productUrl?: strin
     }
   }
 
+  return [...hits];
+}
+
+/**
+ * Extract fabric_composition from product name and tags using regex patterns.
+ * Returns a deduplicated array of matched fabric/material terms.
+ */
+function extractFabricComposition(name: string, tags: string[] = []): string[] {
+  const combined = `${name.toLowerCase()} ${tags.map(t => t.toLowerCase()).join(" ")}`;
+
+  const FABRIC_PATTERNS: [RegExp, string][] = [
+    [/\bcotton\b/, "cotton"],
+    [/\bpolyester\b/, "polyester"],
+    [/\bnylon\b/, "nylon"],
+    [/\belastane\b|\bspandex\b|\blycra\b/, "elastane"],
+    [/\brayon\b|\bviscose\b/, "rayon"],
+    [/\bsilk\b/, "silk"],
+    [/\bwool\b|\bmerino\b/, "wool"],
+    [/\blinen\b/, "linen"],
+    [/\bcashmere\b/, "cashmere"],
+    [/\bdenim\b/, "denim"],
+    [/\bfleece\b/, "fleece"],
+    [/\bvelvet\b/, "velvet"],
+    [/\bsuede\b/, "suede"],
+    [/\bleather\b/, "leather"],
+    [/\bfaux leather\b|\bvegan leather\b|\bpleather\b/, "faux leather"],
+    [/\bcanvas\b/, "canvas"],
+    [/\btwill\b/, "twill"],
+    [/\bjersey\b/, "jersey"],
+    [/\bchiffon\b/, "chiffon"],
+    [/\bsatin\b/, "satin"],
+    [/\blace\b/, "lace"],
+    [/\btulle\b/, "tulle"],
+    [/\borganza\b/, "organza"],
+    [/\bcorduroy\b/, "corduroy"],
+    [/\btweed\b/, "tweed"],
+    [/\bcrepe\b/, "crepe"],
+    [/\bmodal\b/, "modal"],
+    [/\bbamboo\b/, "bamboo"],
+    [/\btencel\b|\blyocell\b/, "tencel"],
+    [/\bgore-?tex\b/, "gore-tex"],
+    [/\bneoprene\b/, "neoprene"],
+    [/\bmesh\b/, "mesh"],
+    [/\bripstop\b/, "ripstop"],
+    [/\bpoplin\b/, "poplin"],
+    [/\boxford cloth\b/, "oxford"],
+    [/\bchambray\b/, "chambray"],
+    [/\bflannel\b/, "flannel"],
+    [/\bterry\b|\bfrench terry\b/, "terry"],
+    [/\bpiqué\b|\bpique\b/, "piqué"],
+  ];
+
+  const hits = new Set<string>();
+  for (const [regex, label] of FABRIC_PATTERNS) {
+    if (regex.test(combined)) hits.add(label);
+  }
   return [...hits];
 }
 
