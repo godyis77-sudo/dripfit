@@ -33,7 +33,7 @@ const SLIDES = [
     title: 'Know your exact size in every brand',
     highlight: '',
     desc: 'Stop guessing. Two photos and 60 seconds gives you precise measurements across SHEIN, Zara, H&M, Lululemon, and 10+ more.',
-    image: '',
+    image: onboardingBodyScan,
   },
   {
     featureIcon: 'tryon' as FeatureIconName,
