@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Camera, ArrowLeft, RotateCcw, Check, Shield, ChevronRight, Upload, LogIn, Shirt, LayoutGrid,
+  ArrowLeft, RotateCcw, Check, ChevronRight, Upload, LogIn, LayoutGrid,
 } from 'lucide-react';
+import FeatureIcon from '@/components/ui/FeatureIcon';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { useToast } from '@/hooks/use-toast';
 import { setGuestMode } from '@/lib/session';
