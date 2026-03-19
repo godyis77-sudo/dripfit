@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { Scan, Shirt, Users, CheckCircle2, ChevronUp, Sparkles, ArrowRight, Mail, Shield, Zap, Star } from 'lucide-react';
+import { ChevronUp, ArrowRight } from 'lucide-react';
+import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
