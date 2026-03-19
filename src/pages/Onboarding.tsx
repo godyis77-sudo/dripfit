@@ -15,7 +15,7 @@ import AuthForm from '@/components/auth/AuthForm';
 
 
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
-const onboardingBodyScan = '/images/onboarding-body-scan.jpg';
+const onboardingBodyScan = '/images/onboarding-body-scan.webp';
 import heroTryon from '@/assets/hero-tryon-mirror.jpg';
 import heroCommunity from '@/assets/hero-community-feedback.jpg';
 
@@ -88,11 +88,11 @@ const Onboarding = () => {
       setScreen('carousel');
     };
 
-    // Show splash for at least 2.5s, then advance once images are ready or after 5s max
-    const minDelay = window.setTimeout(() => { minElapsed = true; if (imagesReady) advance(); }, 1800);
+    // Show splash briefly, then advance once images are ready or after 2.5s max
+    const minDelay = window.setTimeout(() => { minElapsed = true; if (imagesReady) advance(); }, 800);
     let minElapsed = false;
     let imagesReady = false;
-    const timeout = window.setTimeout(advance, 3500);
+    const timeout = window.setTimeout(advance, 2000);
     const imageUrls = SLIDES.map(s => s.image).filter(Boolean);
     let loaded = 0;
     imageUrls.forEach(src => {

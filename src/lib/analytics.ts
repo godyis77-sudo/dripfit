@@ -18,6 +18,7 @@ function lazyInit(): Promise<void> {
       autocapture: false,
       capture_pageview: true,
       persistence: 'localStorage+cookie',
+      disable_session_recording: true,
     });
     posthogInstance = posthog;
   }).catch(() => {
@@ -35,9 +36,9 @@ if (typeof window !== 'undefined' && POSTHOG_KEY) {
     window.removeEventListener('scroll', start);
   };
   if ('requestIdleCallback' in window) {
-    (window as any).requestIdleCallback(() => lazyInit(), { timeout: 4000 });
+    (window as any).requestIdleCallback(() => lazyInit(), { timeout: 8000 });
   } else {
-    setTimeout(() => lazyInit(), 3000);
+    setTimeout(() => lazyInit(), 6000);
   }
   window.addEventListener('click', start, { once: true, passive: true });
   window.addEventListener('scroll', start, { once: true, passive: true });
