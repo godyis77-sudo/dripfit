@@ -34,11 +34,11 @@ const SOCIAL_PROOF = [
 
 const stagger = {
   container: {
-    animate: { transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
+    animate: { transition: { staggerChildren: 0.06, delayChildren: 0 } },
   },
   item: {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const } },
+    initial: { opacity: 0, y: 12 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const } },
   },
 };
 

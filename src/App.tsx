@@ -97,7 +97,7 @@ const AnimatedRoutes = () => {
   return (
     <ErrorBoundary>
     <Suspense fallback={<RouteFallback />}>
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="popLayout">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<PageTransition><Welcome /></PageTransition>} />
           <Route path="/onboarding" element={<PageTransition><Onboarding /></PageTransition>} />
