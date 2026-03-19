@@ -13,7 +13,7 @@ const InlineCrown = ({ size = 16, className }: InlineCrownProps) => (
     src={iconCrown}
     alt=""
     aria-hidden="true"
-    className={cn('object-contain shrink-0 drop-shadow-[0_1px_3px_hsl(var(--drip-gold)/0.4)]', className)}
+    className={cn('object-contain shrink-0 mix-blend-lighten drop-shadow-[0_1px_3px_hsl(var(--drip-gold)/0.4)]', className)}
     style={{ width: size, height: size }}
   />
 );
