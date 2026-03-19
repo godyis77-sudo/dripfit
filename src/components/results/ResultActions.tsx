@@ -90,7 +90,7 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
             disabled={sharing}
             className="w-full h-11 rounded-xl btn-luxury text-primary-foreground font-bold text-sm"
           >
-            <Share className="mr-2 h-4 w-4" />
+            <FeatureIcon name="share" size={18} className="mr-2" />
             {sharing ? 'Generating…' : 'Share My Fit Identity'}
           </Button>
 
