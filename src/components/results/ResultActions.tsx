@@ -110,7 +110,7 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
         className={`w-full h-10 rounded-lg text-sm font-bold ${saved ? 'btn-luxury text-primary-foreground' : ''}`}
         onClick={onTryOn}
       >
-        <Shirt className="mr-1.5 h-4 w-4" /> Try-On This Item
+        <FeatureIcon name="shirt" size={18} className="mr-1.5" /> Try-On This Item
       </Button>
 
       {/* Tertiary: Ask Fit Check */}
