@@ -366,7 +366,7 @@ const Onboarding = () => {
                     <div className={`h-16 w-16 rounded-xl flex items-center justify-center mb-2 ${
                       selected ? 'badge-gold-3d' : 'bg-card border border-border'
                     }`}>
-                      <HabitIcon name={h.icon} size={36} />
+                      <FeatureIcon name={h.icon} size={36} />
                     </div>
                     <p className="font-bold text-[13px] text-foreground leading-tight">{h.label}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{h.desc}</p>
