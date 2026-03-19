@@ -412,7 +412,7 @@ const Onboarding = () => {
                     <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${
                       selected ? 'badge-gold-3d' : 'bg-card border border-border'
                     }`}>
-                      <FeatureIcon name="shop" size={22} />
+                      <FeatureIcon name={g.icon} size={22} />
                     </div>
                     <div className="text-left">
                       <p className="font-bold text-[14px] text-foreground leading-tight">{g.label}</p>
