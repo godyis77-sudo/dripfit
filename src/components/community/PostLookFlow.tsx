@@ -331,7 +331,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
 
               <div className="flex items-center justify-between bg-card border border-border rounded-xl px-4 py-3">
                 <div className="flex items-center gap-2">
-                  {isPublic ? <Globe className="h-4 w-4 text-primary" /> : <Lock className="h-4 w-4 text-muted-foreground" />}
+                  {isPublic ? <FeatureIcon name="globe" size={18} /> : <FeatureIcon name="lock" size={18} />}
                   <div>
                     <p className="text-sm font-semibold text-foreground">{isPublic ? 'Public' : 'Private'}</p>
                     <p className="text-[10px] text-muted-foreground">
