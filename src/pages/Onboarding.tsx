@@ -15,7 +15,7 @@ import AuthForm from '@/components/auth/AuthForm';
 
 
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
-import onboardingBodyScan from '@/assets/onboarding-body-scan.jpg';
+const onboardingBodyScan = '/images/onboarding-body-scan.jpg';
 import heroTryon from '@/assets/hero-tryon-mirror.jpg';
 import heroCommunity from '@/assets/hero-community-feedback.jpg';
 
@@ -267,6 +267,7 @@ const Onboarding = () => {
                           className="w-full h-full object-cover rounded-2xl"
                           fetchPriority={slideIdx === 0 ? 'high' : undefined}
                           loading={slideIdx === 0 ? 'eager' : 'lazy'}
+                          decoding="async"
                           style={{
                             maxHeight: '100%',
                             ...(slideIdx === 1 ? { filter: 'brightness(0.8)' } : {}),
