@@ -144,7 +144,7 @@ function EmailCapture({ id, compact = false, buttonText = 'Join the Waitlist', n
     <form onSubmit={handleSubmit} className="w-full max-w-md" id={id}>
       <div className={`flex ${compact ? 'flex-row' : 'flex-col sm:flex-row'} gap-2.5`}>
         <div className="relative flex-1">
-          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <FeatureIcon name="mail" size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <Input
             type="email"
             required
