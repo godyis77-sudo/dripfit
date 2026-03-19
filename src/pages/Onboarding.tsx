@@ -267,6 +267,7 @@ const Onboarding = () => {
                           className="w-full h-full object-cover rounded-2xl"
                           fetchPriority={slideIdx === 0 ? 'high' : undefined}
                           loading={slideIdx === 0 ? 'eager' : 'lazy'}
+                          decoding="async"
                           style={{
                             maxHeight: '100%',
                             ...(slideIdx === 1 ? { filter: 'brightness(0.8)' } : {}),
