@@ -19,7 +19,6 @@ function lazyInit(): Promise<void> {
       capture_pageview: true,
       persistence: 'localStorage+cookie',
       disable_session_recording: true,
-      loaded: (ph) => { ph.config.disable_surveys = true; },
     });
     posthogInstance = posthog;
   }).catch(() => {
