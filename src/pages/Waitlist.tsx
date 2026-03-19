@@ -18,9 +18,9 @@ import featureStylecheck from '@/assets/feature-stylecheck.jpg';
 
 /* ─── Data ─── */
 
-const FEATURES = [
+const FEATURES: { icon: FeatureIconName; title: string; desc: string; detail: string; badge: string; image: string; imageScale: string; phoneScale: string; noPhone: boolean; useDecorativeSilhouette?: boolean }[] = [
   {
-    icon: Scan,
+    icon: 'scan',
     title: 'AI Body Scan',
     desc: 'Two photos. 60 seconds. Your exact measurements mapped to 300+ size charts.',
     detail: 'No tape measure needed — just your phone camera.',
@@ -32,7 +32,7 @@ const FEATURES = [
     useDecorativeSilhouette: true,
   },
   {
-    icon: Shirt,
+    icon: 'tryon',
     title: 'Virtual Try-On',
     desc: 'See yourself in it before you buy it.',
     detail: 'Upload a clothing photo and AI renders it on your body.',
@@ -43,7 +43,7 @@ const FEATURES = [
     noPhone: true,
   },
   {
-    icon: Users,
+    icon: 'users',
     title: 'Style Check',
     desc: 'Real opinions from people built like you.',
     detail: 'Get outfit ratings from users with your exact measurements.',
@@ -54,7 +54,6 @@ const FEATURES = [
     noPhone: true,
   },
 ];
-
 const CHECKLIST = [
   { text: 'Your exact measurements for 70+ brands including Zara, Nike, H&M, ASOS, and more.', icon: Sparkles },
   { text: 'The 3-question checklist before every online order.', icon: Shield },
