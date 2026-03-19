@@ -514,9 +514,8 @@ const Capture = () => {
 
               <div className="w-full space-y-2 mt-4 text-left">
                 {[
-                  { icon: Camera, text: 'Take 2 photos (front + side)' },
-                  { icon: Shirt, text: 'Wear form-fitting clothes' },
-                  { icon: LayoutGrid, text: 'Stand against a plain wall' },
+                  { icon: 'scan' as const, text: 'Take 2 photos (front + side)' },
+                  { icon: 'shirt' as const, text: 'Wear form-fitting clothes' },
                 ].map((item, i) => (
                   <motion.div
                     key={i}
@@ -526,7 +525,7 @@ const Capture = () => {
                     className="flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 min-h-[44px]"
                   >
                     <span className="h-7 w-7 badge-gold-3d rounded-lg flex items-center justify-center shrink-0">
-                      <item.icon className="h-3.5 w-3.5 text-primary-foreground" />
+                      <FeatureIcon name={item.icon} size={16} />
                     </span>
                     <span className="text-[13px] font-medium text-foreground">{item.text}</span>
                   </motion.div>
