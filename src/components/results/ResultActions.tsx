@@ -139,7 +139,7 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
       </Button>
 
       <div className="flex items-center justify-between pt-1.5 border-t border-border">
-        <p className="text-[10px] text-muted-foreground flex items-center gap-1"><Shield className="h-3 w-3" /> Private by default · delete anytime</p>
+        <p className="text-[10px] text-muted-foreground flex items-center gap-1"><FeatureIcon name="shield" size={14} /> Private by default · delete anytime</p>
         <button onClick={onDelete} className="text-[10px] text-destructive/60 hover:text-destructive flex items-center gap-1 transition-colors"><Trash2 className="h-3 w-3" /> Delete</button>
       </div>
       <p className="text-[10px] text-muted-foreground text-center">
