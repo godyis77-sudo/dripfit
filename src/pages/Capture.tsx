@@ -690,7 +690,7 @@ const Capture = () => {
             ) : (
               <motion.div whileTap={{ scale: 0.97 }}>
                 <Button className="w-full h-12 rounded-xl text-sm font-semibold" onClick={handleCapture}>
-                  <Camera className="mr-2 h-4 w-4" /> Take {config.title} Photo
+                  <FeatureIcon name="scan" size={18} className="mr-2" /> Take {config.title} Photo
                 </Button>
               </motion.div>
             )}
