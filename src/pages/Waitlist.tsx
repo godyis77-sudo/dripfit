@@ -130,7 +130,7 @@ function EmailCapture({ id, compact = false, buttonText = 'Join the Waitlist', n
         className="flex items-center gap-3 justify-center py-5 px-5 rounded-2xl bg-primary/10 border border-primary/25"
       >
         <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
-          <CheckCircle2 className="h-4 w-4 text-primary" />
+          <FeatureIcon name="check" size={18} />
         </div>
         <div className="text-left">
           <p className="text-sm font-bold text-foreground">You're on the list!</p>
