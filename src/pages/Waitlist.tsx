@@ -248,7 +248,7 @@ const Waitlist = () => {
             animate={{ boxShadow: ['0 0 0 0 hsl(42 76% 42% / 0)', '0 0 20px 2px hsl(42 76% 42% / 0.1)', '0 0 0 0 hsl(42 76% 42% / 0)'] }}
             transition={{ duration: 3, repeat: Infinity }}
           >
-            <Sparkles className="h-3 w-3 text-primary" />
+            <FeatureIcon name="sparkles" size={14} />
             <span className="text-[11px] font-bold text-primary uppercase tracking-[0.2em]">Coming Soon</span>
           </motion.div>
         </FadeUp>
