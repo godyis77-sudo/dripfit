@@ -217,7 +217,7 @@ const FoundingMembers = () => {
               className="flex items-start gap-3 bg-card border border-border rounded-xl p-4"
             >
               <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                <perk.icon className="h-4 w-4 text-primary" />
+                <FeatureIcon name={perk.icon} size={20} />
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="font-display font-bold text-[13px]">{perk.title}</h3>
