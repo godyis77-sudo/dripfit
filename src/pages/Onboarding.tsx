@@ -253,7 +253,7 @@ const Onboarding = () => {
                       <DecorativeSilhouette height={340} />
                     ) : (
                       <div
-                        className="relative rounded-2xl overflow-hidden mx-auto"
+                        className="relative rounded-2xl overflow-hidden mx-auto flex items-center justify-center bg-black/80"
                         style={{
                           maxHeight: '50dvh',
                           maxWidth: 'calc(100% - 30px)',
@@ -264,14 +264,14 @@ const Onboarding = () => {
                         <img
                           src={SLIDES[slideIdx].image}
                           alt={SLIDES[slideIdx].title}
-                          className="w-full h-full object-cover rounded-2xl"
+                          className="max-w-full max-h-full w-auto h-auto object-contain rounded-2xl"
                           width={606}
                           height={663}
                           fetchPriority={slideIdx === 0 ? 'high' : undefined}
                           loading={slideIdx === 0 ? 'eager' : 'lazy'}
                           decoding="async"
                           style={{
-                            maxHeight: '100%',
+                            maxHeight: '50dvh',
                             ...(slideIdx === 1 ? { filter: 'brightness(0.8)' } : {}),
                           }}
                         />
