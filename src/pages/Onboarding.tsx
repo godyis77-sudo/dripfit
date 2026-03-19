@@ -265,6 +265,8 @@ const Onboarding = () => {
                           src={SLIDES[slideIdx].image}
                           alt={SLIDES[slideIdx].title}
                           className="w-full h-full object-cover rounded-2xl"
+                          width={606}
+                          height={663}
                           fetchPriority={slideIdx === 0 ? 'high' : undefined}
                           loading={slideIdx === 0 ? 'eager' : 'lazy'}
                           decoding="async"
