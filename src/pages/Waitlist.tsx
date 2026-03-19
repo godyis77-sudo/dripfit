@@ -270,7 +270,9 @@ const Waitlist = () => {
 
         {/* Scan preview */}
         <FadeUp delay={0.15} className="relative z-10 mb-10">
-          <DecorativeSilhouette height={280} />
+          <div className="w-[200px] h-[280px] rounded-2xl overflow-hidden border-2 border-primary/40 shadow-[0_0_30px_rgba(212,175,55,0.15)]">
+            <img src={hudScanBg} alt="AI Body Scan preview" className="w-full h-full object-cover" loading="eager" />
+          </div>
         </FadeUp>
 
         {/* Email form */}
