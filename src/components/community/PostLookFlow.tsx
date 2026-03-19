@@ -347,7 +347,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                 onClick={handlePost}
                 disabled={submitting}
               >
-                {submitting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Sparkles className="mr-1 h-4 w-4" />}
+                {submitting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <FeatureIcon name="sparkles" size={18} className="mr-1" />}
                 {isPublic ? 'Post to Style Check' : 'Save Look'}
               </Button>
             </motion.div>
