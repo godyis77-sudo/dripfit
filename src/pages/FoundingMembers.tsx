@@ -118,7 +118,7 @@ const FoundingMembers = () => {
           >
             <Button size="lg" className="w-full text-base gap-2" asChild>
               <a href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
-                <Users className="h-5 w-5" />
+                <FeatureIcon name="users" size={22} />
                 Join the Discord
                 <ArrowRight className="h-4 w-4" />
               </a>
