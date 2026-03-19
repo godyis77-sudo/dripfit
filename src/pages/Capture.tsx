@@ -722,7 +722,7 @@ const Capture = () => {
         )}
 
         <p className="text-[10px] text-muted-foreground text-center flex items-center justify-center gap-1">
-          <Shield className="h-3 w-3" /> Private by default · delete anytime
+          <FeatureIcon name="shield" size={14} /> Private by default · delete anytime
         </p>
       </div>
 
