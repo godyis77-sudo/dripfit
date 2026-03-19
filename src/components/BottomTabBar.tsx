@@ -8,7 +8,7 @@ const tabs: { icon: FeatureIconName; label: string; path: string }[] = [
   { icon: 'home', label: 'Home', path: '/' },
   { icon: 'scan', label: 'Scan', path: '/capture' },
   { icon: 'tryon', label: 'Try-On', path: '/tryon' },
-  { icon: 'stylecheck', label: 'Style Check', path: '/style-check' },
+  { icon: 'stylecheck', label: 'Style', path: '/style-check' },
   { icon: 'profile', label: 'Profile', path: '/profile' },
 ];
 
