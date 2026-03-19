@@ -54,10 +54,10 @@ const FEATURES: { icon: FeatureIconName; title: string; desc: string; detail: st
     noPhone: true,
   },
 ];
-const CHECKLIST = [
-  { text: 'Your exact measurements for 70+ brands including Zara, Nike, H&M, ASOS, and more.', icon: Sparkles },
-  { text: 'The 3-question checklist before every online order.', icon: Shield },
-  { text: 'How to never pay return shipping again.', icon: Zap },
+const CHECKLIST: { text: string; icon: FeatureIconName }[] = [
+  { text: 'Your exact measurements for 70+ brands including Zara, Nike, H&M, ASOS, and more.', icon: 'sparkles' },
+  { text: 'The 3-question checklist before every online order.', icon: 'shield' },
+  { text: 'How to never pay return shipping again.', icon: 'zap' },
 ];
 
 const STATS = [
