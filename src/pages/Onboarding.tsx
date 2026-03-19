@@ -62,7 +62,7 @@ const Onboarding = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const reduceMotion = useReducedMotion();
-  const [screen, setScreen] = useState<Screen>('carousel');
+  const [screen, setScreen] = useState<Screen>('splash');
   const [slideIdx, setSlideIdx] = useState(0);
   const [slideDir, setSlideDir] = useState(1);
   const [habit, setHabit] = useState<ShoppingHabit | null>(null);
