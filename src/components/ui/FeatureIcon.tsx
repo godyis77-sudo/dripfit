@@ -1,12 +1,12 @@
 import { forwardRef } from 'react';
-import iconScan from '@/assets/icon-scan.webp';
-import iconTryon from '@/assets/icon-tryon-v2.webp';
-import iconSizeguide from '@/assets/icon-sizeguide.webp';
-import iconStylecheck from '@/assets/icon-stylecheck.webp';
-import iconPost from '@/assets/icon-post.webp';
-import iconHome from '@/assets/icon-home.webp';
-import iconProfile from '@/assets/icon-profile.webp';
-import iconCrown from '@/assets/icon-crown.webp';
+import iconScan from '@/assets/icon-scan.png';
+import iconTryon from '@/assets/icon-tryon-v2.png';
+import iconSizeguide from '@/assets/icon-sizeguide.png';
+import iconStylecheck from '@/assets/icon-stylecheck.png';
+import iconPost from '@/assets/icon-post.png';
+import iconHome from '@/assets/icon-home.png';
+import iconProfile from '@/assets/icon-profile.png';
+import iconCrown from '@/assets/icon-crown.png';
 import { cn } from '@/lib/utils';
 
 export const featureIcons = {
