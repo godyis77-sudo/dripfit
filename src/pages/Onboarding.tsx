@@ -470,7 +470,7 @@ const Onboarding = () => {
                 {/* SAFE */}
                 <div className="w-full bg-card border border-border rounded-xl p-2.5 mb-2 space-y-1">
                   <div className="flex items-center gap-2">
-                    <Shield className="h-3.5 w-3.5 text-primary shrink-0" />
+                    <FeatureIcon name="shield" size={16} className="shrink-0" />
                     <p className="text-[10px] text-foreground font-medium">Photos processed privately — never stored without your consent.</p>
                   </div>
                   <p className="text-[11px] text-muted-foreground pl-5.5">Delete anytime from Settings.</p>
