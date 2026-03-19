@@ -283,7 +283,7 @@ const Waitlist = () => {
           <div className="space-y-2.5">
             {CHECKLIST.map((item, i) => (
               <div key={i} className="flex gap-3 items-center bg-secondary/60 border border-border/60 rounded-xl px-4 py-3">
-                <item.icon className="h-4 w-4 text-primary shrink-0" />
+                <FeatureIcon name={item.icon} size={18} className="shrink-0" />
                 <p className="text-[13px] text-foreground/75 leading-snug">{item.text}</p>
               </div>
             ))}
