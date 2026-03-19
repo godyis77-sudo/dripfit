@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Camera, ArrowLeft, RotateCcw, Check, Shield, ChevronRight, Upload, LogIn, Shirt, LayoutGrid,
+  ArrowLeft, RotateCcw, Check, ChevronRight, Upload, LogIn, LayoutGrid,
 } from 'lucide-react';
+import FeatureIcon from '@/components/ui/FeatureIcon';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { useToast } from '@/hooks/use-toast';
 import { setGuestMode } from '@/lib/session';
@@ -513,9 +514,8 @@ const Capture = () => {
 
               <div className="w-full space-y-2 mt-4 text-left">
                 {[
-                  { icon: Camera, text: 'Take 2 photos (front + side)' },
-                  { icon: Shirt, text: 'Wear form-fitting clothes' },
-                  { icon: LayoutGrid, text: 'Stand against a plain wall' },
+                  { icon: 'scan' as const, text: 'Take 2 photos (front + side)' },
+                  { icon: 'shirt' as const, text: 'Wear form-fitting clothes' },
                 ].map((item, i) => (
                   <motion.div
                     key={i}
@@ -525,7 +525,7 @@ const Capture = () => {
                     className="flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 min-h-[44px]"
                   >
                     <span className="h-7 w-7 badge-gold-3d rounded-lg flex items-center justify-center shrink-0">
-                      <item.icon className="h-3.5 w-3.5 text-primary-foreground" />
+                      <FeatureIcon name={item.icon} size={16} />
                     </span>
                     <span className="text-[13px] font-medium text-foreground">{item.text}</span>
                   </motion.div>
@@ -540,7 +540,7 @@ const Capture = () => {
                 className="w-full bg-card border border-border rounded-xl px-4 py-3 mt-5 flex items-start gap-3"
               >
                 <div className="h-7 w-7 badge-gold-3d shimmer-sweep rounded-lg shrink-0 mt-0.5 flex items-center justify-center">
-                  <Shield className="h-3.5 w-3.5 text-primary-foreground" />
+                  <FeatureIcon name="shield" size={16} />
                 </div>
                 <div>
                   <p className="text-[12px] font-bold text-foreground leading-tight mb-0.5">Your privacy is protected</p>
@@ -658,7 +658,7 @@ const Capture = () => {
                 }
               }}
             >
-              <Camera className="mr-2 h-4 w-4" /> Start Scan
+              <FeatureIcon name="scan" size={18} className="mr-2" /> Start Scan
             </Button>
           </motion.div>
           )
@@ -690,7 +690,7 @@ const Capture = () => {
             ) : (
               <motion.div whileTap={{ scale: 0.97 }}>
                 <Button className="w-full h-12 rounded-xl text-sm font-semibold" onClick={handleCapture}>
-                  <Camera className="mr-2 h-4 w-4" /> Take {config.title} Photo
+                  <FeatureIcon name="scan" size={18} className="mr-2" /> Take {config.title} Photo
                 </Button>
               </motion.div>
             )}
@@ -722,7 +722,7 @@ const Capture = () => {
         )}
 
         <p className="text-[10px] text-muted-foreground text-center flex items-center justify-center gap-1">
-          <Shield className="h-3 w-3" /> Private by default · delete anytime
+          <FeatureIcon name="shield" size={14} /> Private by default · delete anytime
         </p>
       </div>
 
@@ -797,7 +797,7 @@ const Capture = () => {
                 onClick={startTimedWebCapture}
                 disabled={captureCountdown !== null}
               >
-                <Camera className="mr-2 h-4 w-4" />
+                <FeatureIcon name="scan" size={18} className="mr-2" />
                 {captureCountdown !== null
                   ? `Capturing in ${captureCountdown}s`
                   : videoReady

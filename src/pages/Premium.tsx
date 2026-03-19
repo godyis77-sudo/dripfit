@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import BottomTabBar from '@/components/BottomTabBar';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Check, Sparkles, Ruler, Shirt, MessageSquare, Store, Shield, Zap, BarChart3, Eye, Star, Ban, Loader2, Quote } from 'lucide-react';
+import { ArrowLeft, Loader2, Quote } from 'lucide-react';
 import InlineCrown from '@/components/ui/InlineCrown';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { trackEvent } from '@/lib/analytics';
@@ -12,21 +12,22 @@ import { motion } from 'framer-motion';
 import { useAuth, STRIPE_TIERS } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 
 const PLANS = [
   { key: 'annual' as const, label: 'Annual', price: '$4.17', period: '/mo', badge: 'Best Value', total: 'Billed $49.99/year (save 48%)', trial: '7-day free trial' },
   { key: 'monthly' as const, label: 'Monthly', price: '$7.99', period: '/mo', badge: '', total: 'Billed $7.99/month', trial: '7-day free trial' },
 ];
 
-const FEATURES = [
-  { icon: Sparkles, title: 'Unlimited AI Try-Ons', description: 'No monthly cap on virtual try-ons', free: '3/month', premium: 'Unlimited' },
-  { icon: Zap, title: 'Priority Generation Queue', description: 'Skip the line — your try-ons render first', free: 'Standard', premium: 'Priority' },
-  { icon: Eye, title: 'Side-by-Side Comparison', description: 'Compare 2 looks on your body at once', free: '—', premium: '✓' },
-  { icon: Store, title: 'Multi-Retailer Size Sync', description: 'Sync your size across 50+ retailers automatically', free: 'Top 10', premium: '50+' },
-  { icon: BarChart3, title: 'Advanced Fit Analytics', description: 'Trend history, fit score over time, body change tracking', free: '—', premium: '✓' },
-  { icon: Ban, title: 'Ad-Free Experience', description: 'No ads or sponsored content — ever', free: 'Ads shown', premium: 'Ad-free' },
-  { icon: Star, title: 'Early Access', description: 'Be first to try new features before everyone else', free: '—', premium: '✓' },
-  { icon: Star, title: 'Premium Crown Badge', description: 'Gold crown on your profile — flex your status', free: '—', premium: '✓' },
+const FEATURES: { icon: FeatureIconName; title: string; description: string; free: string; premium: string }[] = [
+  { icon: 'sparkles', title: 'Unlimited AI Try-Ons', description: 'No monthly cap on virtual try-ons', free: '3/month', premium: 'Unlimited' },
+  { icon: 'zap', title: 'Priority Generation Queue', description: 'Skip the line — your try-ons render first', free: 'Standard', premium: 'Priority' },
+  { icon: 'eye', title: 'Side-by-Side Comparison', description: 'Compare 2 looks on your body at once', free: '—', premium: '✓' },
+  { icon: 'store', title: 'Multi-Retailer Size Sync', description: 'Sync your size across 50+ retailers automatically', free: 'Top 10', premium: '50+' },
+  { icon: 'chart', title: 'Advanced Fit Analytics', description: 'Trend history, fit score over time, body change tracking', free: '—', premium: '✓' },
+  { icon: 'shield', title: 'Ad-Free Experience', description: 'No ads or sponsored content — ever', free: 'Ads shown', premium: 'Ad-free' },
+  { icon: 'star', title: 'Early Access', description: 'Be first to try new features before everyone else', free: '—', premium: '✓' },
+  { icon: 'crown', title: 'Premium Crown Badge', description: 'Gold crown on your profile — flex your status', free: '—', premium: '✓' },
 ];
 
 const Premium = () => {
@@ -221,15 +222,15 @@ const Premium = () => {
             {/* Plan terms */}
             <div className="bg-card border border-border rounded-xl p-3 mb-4 space-y-1">
               <div className="flex items-center gap-1.5">
-                <Check className="h-3 w-3 text-primary" />
+                <FeatureIcon name="check" size={14} />
                 <span className="text-[11px] text-foreground">{currentPlan.trial} included</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <Check className="h-3 w-3 text-primary" />
+                <FeatureIcon name="check" size={14} />
                 <span className="text-[11px] text-foreground">{currentPlan.total}</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <Check className="h-3 w-3 text-primary" />
+                <FeatureIcon name="check" size={14} />
                 <span className="text-[11px] text-foreground">Cancel anytime — no questions asked</span>
               </div>
             </div>
@@ -240,7 +241,7 @@ const Premium = () => {
               onClick={handleStart}
               disabled={checkoutLoading}
             >
-              {checkoutLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+              {checkoutLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FeatureIcon name="sparkles" size={18} className="mr-2" />}
               {checkoutLoading ? 'Opening checkout…' : 'Start 7-Day Free Trial'}
             </Button>
             <p className="text-[11px] text-muted-foreground text-center mb-5">No charge until trial ends · Cancel anytime</p>
@@ -263,7 +264,7 @@ const Premium = () => {
               className="bg-card border border-border rounded-xl p-2.5 flex items-center gap-2"
             >
               <div className="h-7 w-7 badge-gold-3d shrink-0 flex items-center justify-center">
-                <f.icon className="h-3.5 w-3.5 text-primary-foreground" />
+                <FeatureIcon name={f.icon} size={18} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[11px] font-bold text-foreground leading-tight">{f.title}</p>
@@ -292,7 +293,7 @@ const Premium = () => {
                 <div className="mt-1.5 pl-5 flex items-center gap-2">
                   <div className="flex gap-0.5">
                     {Array.from({ length: t.star_rating }).map((_, s) => (
-                      <Star key={s} className="h-2.5 w-2.5 text-primary fill-primary" />
+                      <FeatureIcon key={s} name="star" size={12} />
                     ))}
                   </div>
                   <span className="text-[11px] font-bold text-primary">{t.attribution}</span>
@@ -305,7 +306,7 @@ const Premium = () => {
         {/* Trust footer */}
         <div className="mt-6 text-center space-y-1 pb-4">
           <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1">
-            <Shield className="h-3 w-3" /> Your core results stay free — always
+            <FeatureIcon name="shield" size={14} /> Your core results stay free — always
           </p>
           <p className="text-[11px] text-muted-foreground/50">
             Premium adds confidence, not paywalls. Terms apply.

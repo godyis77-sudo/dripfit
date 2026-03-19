@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { Scan, Shirt, Users, CheckCircle2, ChevronUp, Sparkles, ArrowRight, Mail, Shield, Zap, Star } from 'lucide-react';
+import { ChevronUp, ArrowRight } from 'lucide-react';
+import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,9 +18,9 @@ import featureStylecheck from '@/assets/feature-stylecheck.jpg';
 
 /* ─── Data ─── */
 
-const FEATURES = [
+const FEATURES: { icon: FeatureIconName; title: string; desc: string; detail: string; badge: string; image: string; imageScale: string; phoneScale: string; noPhone: boolean; useDecorativeSilhouette?: boolean }[] = [
   {
-    icon: Scan,
+    icon: 'scan',
     title: 'AI Body Scan',
     desc: 'Two photos. 60 seconds. Your exact measurements mapped to 300+ size charts.',
     detail: 'No tape measure needed — just your phone camera.',
@@ -31,7 +32,7 @@ const FEATURES = [
     useDecorativeSilhouette: true,
   },
   {
-    icon: Shirt,
+    icon: 'tryon',
     title: 'Virtual Try-On',
     desc: 'See yourself in it before you buy it.',
     detail: 'Upload a clothing photo and AI renders it on your body.',
@@ -42,7 +43,7 @@ const FEATURES = [
     noPhone: true,
   },
   {
-    icon: Users,
+    icon: 'users',
     title: 'Style Check',
     desc: 'Real opinions from people built like you.',
     detail: 'Get outfit ratings from users with your exact measurements.',
@@ -53,11 +54,10 @@ const FEATURES = [
     noPhone: true,
   },
 ];
-
-const CHECKLIST = [
-  { text: 'Your exact measurements for 70+ brands including Zara, Nike, H&M, ASOS, and more.', icon: Sparkles },
-  { text: 'The 3-question checklist before every online order.', icon: Shield },
-  { text: 'How to never pay return shipping again.', icon: Zap },
+const CHECKLIST: { text: string; icon: FeatureIconName }[] = [
+  { text: 'Your exact measurements for 70+ brands including Zara, Nike, H&M, ASOS, and more.', icon: 'sparkles' },
+  { text: 'The 3-question checklist before every online order.', icon: 'shield' },
+  { text: 'How to never pay return shipping again.', icon: 'zap' },
 ];
 
 const STATS = [
@@ -130,7 +130,7 @@ function EmailCapture({ id, compact = false, buttonText = 'Join the Waitlist', n
         className="flex items-center gap-3 justify-center py-5 px-5 rounded-2xl bg-primary/10 border border-primary/25"
       >
         <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
-          <CheckCircle2 className="h-4 w-4 text-primary" />
+          <FeatureIcon name="check" size={18} />
         </div>
         <div className="text-left">
           <p className="text-sm font-bold text-foreground">You're on the list!</p>
@@ -144,7 +144,7 @@ function EmailCapture({ id, compact = false, buttonText = 'Join the Waitlist', n
     <form onSubmit={handleSubmit} className="w-full max-w-md" id={id}>
       <div className={`flex ${compact ? 'flex-row' : 'flex-col sm:flex-row'} gap-2.5`}>
         <div className="relative flex-1">
-          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <FeatureIcon name="mail" size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <Input
             type="email"
             required
@@ -248,7 +248,7 @@ const Waitlist = () => {
             animate={{ boxShadow: ['0 0 0 0 hsl(42 76% 42% / 0)', '0 0 20px 2px hsl(42 76% 42% / 0.1)', '0 0 0 0 hsl(42 76% 42% / 0)'] }}
             transition={{ duration: 3, repeat: Infinity }}
           >
-            <Sparkles className="h-3 w-3 text-primary" />
+            <FeatureIcon name="sparkles" size={14} />
             <span className="text-[11px] font-bold text-primary uppercase tracking-[0.2em]">Coming Soon</span>
           </motion.div>
         </FadeUp>
@@ -283,7 +283,7 @@ const Waitlist = () => {
           <div className="space-y-2.5">
             {CHECKLIST.map((item, i) => (
               <div key={i} className="flex gap-3 items-center bg-secondary/60 border border-border/60 rounded-xl px-4 py-3">
-                <item.icon className="h-4 w-4 text-primary shrink-0" />
+                <FeatureIcon name={item.icon} size={18} className="shrink-0" />
                 <p className="text-[13px] text-foreground/75 leading-snug">{item.text}</p>
               </div>
             ))}
@@ -359,7 +359,7 @@ const Waitlist = () => {
                 <div className="p-5 pt-3 flex flex-col justify-end mt-auto">
                   <div className="flex items-center gap-2.5 mb-2">
                     <div className="h-8 w-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
-                      <f.icon className="h-4 w-4 text-primary" />
+                      <FeatureIcon name={f.icon} size={20} />
                     </div>
                     <h3 className="font-display text-[17px] font-bold text-foreground">{f.title}</h3>
                   </div>
@@ -422,7 +422,7 @@ const Waitlist = () => {
             <div className="bg-secondary border border-border rounded-2xl p-5 text-center">
               <div className="flex justify-center gap-0.5 mb-3">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-3.5 w-3.5 text-primary fill-primary" />
+                  <FeatureIcon key={i} name="star" size={16} />
                 ))}
               </div>
               <p className="text-[13px] text-foreground/75 leading-relaxed italic mb-3">

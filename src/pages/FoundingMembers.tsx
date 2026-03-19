@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Users, MessageCircle, Shirt, BarChart3, Sparkles, ArrowRight, Quote } from 'lucide-react';
+import { ArrowRight, Quote } from 'lucide-react';
+import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 import InlineCrown from '@/components/ui/InlineCrown';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import BrandLogo from '@/components/ui/BrandLogo';
@@ -11,11 +12,11 @@ import { supabase } from '@/integrations/supabase/client';
 const TOTAL_SPOTS = 50;
 const FALLBACK_CLAIMED = 12;
 
-const PERKS = [
-  { icon: Sparkles, title: 'Early Access', desc: 'Be the first to test new features like virtual try-on and AI style check before anyone else.' },
-  { icon: MessageCircle, title: 'Direct Input', desc: 'Tell us which brands to add, what features to build, and shape the product roadmap.' },
-  { icon: Shirt, title: 'Free Premium', desc: 'Founding members get free access to premium features for life — no strings attached.' },
-  { icon: BarChart3, title: 'Sizing Intel', desc: 'Get insider sizing notes on 130+ brands from our community of fit-obsessed shoppers.' },
+const PERKS: { icon: FeatureIconName; title: string; desc: string }[] = [
+  { icon: 'sparkles', title: 'Early Access', desc: 'Be the first to test new features like virtual try-on and AI style check before anyone else.' },
+  { icon: 'message', title: 'Direct Input', desc: 'Tell us which brands to add, what features to build, and shape the product roadmap.' },
+  { icon: 'shirt', title: 'Free Premium', desc: 'Founding members get free access to premium features for life — no strings attached.' },
+  { icon: 'chart', title: 'Sizing Intel', desc: 'Get insider sizing notes on 130+ brands from our community of fit-obsessed shoppers.' },
 ];
 
 const EARLY_MEMBERS = [
@@ -117,7 +118,7 @@ const FoundingMembers = () => {
           >
             <Button size="lg" className="w-full text-base gap-2" asChild>
               <a href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
-                <Users className="h-5 w-5" />
+                <FeatureIcon name="users" size={22} />
                 Join the Discord
                 <ArrowRight className="h-4 w-4" />
               </a>
@@ -216,7 +217,7 @@ const FoundingMembers = () => {
               className="flex items-start gap-3 bg-card border border-border rounded-xl p-4"
             >
               <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                <perk.icon className="h-4 w-4 text-primary" />
+                <FeatureIcon name={perk.icon} size={20} />
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="font-display font-bold text-[13px]">{perk.title}</h3>

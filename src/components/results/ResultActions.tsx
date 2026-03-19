@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Shirt, Save, Check, Trash2, RotateCcw, Shield, Share, MessageSquare } from 'lucide-react';
+import { Save, Check, Trash2, RotateCcw } from 'lucide-react';
+import FeatureIcon from '@/components/ui/FeatureIcon';
 import { toPng } from 'html-to-image';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
@@ -89,7 +90,7 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
             disabled={sharing}
             className="w-full h-11 rounded-xl btn-luxury text-primary-foreground font-bold text-sm"
           >
-            <Share className="mr-2 h-4 w-4" />
+            <FeatureIcon name="share" size={18} className="mr-2" />
             {sharing ? 'Generating…' : 'Share My Fit Identity'}
           </Button>
 
@@ -109,7 +110,7 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
         className={`w-full h-10 rounded-lg text-sm font-bold ${saved ? 'btn-luxury text-primary-foreground' : ''}`}
         onClick={onTryOn}
       >
-        <Shirt className="mr-1.5 h-4 w-4" /> Try-On This Item
+        <FeatureIcon name="shirt" size={18} className="mr-1.5" /> Try-On This Item
       </Button>
 
       {/* Tertiary: Ask Fit Check */}
@@ -118,7 +119,7 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
         className="w-full h-9 rounded-lg text-[12px] font-bold"
         onClick={() => navigate('/style-check')}
       >
-        <MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Ask Style Check
+        <FeatureIcon name="message" size={16} className="mr-1.5" /> Ask Style Check
       </Button>
 
       {/* Save / Saved */}
@@ -138,7 +139,7 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
       </Button>
 
       <div className="flex items-center justify-between pt-1.5 border-t border-border">
-        <p className="text-[10px] text-muted-foreground flex items-center gap-1"><Shield className="h-3 w-3" /> Private by default · delete anytime</p>
+        <p className="text-[10px] text-muted-foreground flex items-center gap-1"><FeatureIcon name="shield" size={14} /> Private by default · delete anytime</p>
         <button onClick={onDelete} className="text-[10px] text-destructive/60 hover:text-destructive flex items-center gap-1 transition-colors"><Trash2 className="h-3 w-3" /> Delete</button>
       </div>
       <p className="text-[10px] text-muted-foreground text-center">

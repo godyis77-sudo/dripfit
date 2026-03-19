@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { ArrowRight, ShoppingBag, Store, Shuffle, Eye, Shield, Camera, Check } from 'lucide-react';
+import { ArrowRight, Check } from 'lucide-react';
 import BrandLogo from '@/components/ui/BrandLogo';
 import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 import { setOnboarded, setShoppingHabit, setGuestMode, type ShoppingHabit } from '@/lib/session';
@@ -51,11 +51,11 @@ const SLIDES = [
   },
 ];
 
-const HABITS: { value: ShoppingHabit; icon: typeof ShoppingBag; label: string; desc: string }[] = [
-  { value: 'online', icon: ShoppingBag, label: 'Mostly Online', desc: 'I shop from my phone or laptop' },
-  { value: 'mix', icon: Shuffle, label: 'Mix of Both', desc: 'Browse online, buy in-store or vice versa' },
-  { value: 'instore', icon: Store, label: 'Mostly In-Store', desc: 'I prefer trying things on first' },
-  { value: 'browser', icon: Eye, label: 'I Browse, Rarely Buy', desc: 'Sizing uncertainty stops me' },
+const HABITS: { value: ShoppingHabit; icon: FeatureIconName; label: string; desc: string }[] = [
+  { value: 'online', icon: 'shop', label: 'Mostly Online', desc: 'I shop from my phone or laptop' },
+  { value: 'mix', icon: 'sparkles', label: 'Mix of Both', desc: 'Browse online, buy in-store or vice versa' },
+  { value: 'instore', icon: 'store', label: 'Mostly In-Store', desc: 'I prefer trying things on first' },
+  { value: 'browser', icon: 'eye', label: 'I Browse, Rarely Buy', desc: 'Sizing uncertainty stops me' },
 ];
 
 const Onboarding = () => {
@@ -351,7 +351,6 @@ const Onboarding = () => {
             {/* 2×2 grid */}
             <div className="grid grid-cols-2 gap-2.5 flex-1 content-start">
               {HABITS.map(h => {
-                const Icon = h.icon;
                 const selected = habit === h.value;
                 return (
                   <button
@@ -364,7 +363,7 @@ const Onboarding = () => {
                     <div className={`h-10 w-10 rounded-xl flex items-center justify-center mb-2 ${
                       selected ? 'badge-gold-3d' : 'bg-card border border-border'
                     }`}>
-                      <Icon className={`h-5 w-5 ${selected ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
+                      <FeatureIcon name={h.icon} size={22} />
                     </div>
                     <p className="font-bold text-[13px] text-foreground leading-tight">{h.label}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{h.desc}</p>
@@ -410,7 +409,7 @@ const Onboarding = () => {
                     <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${
                       selected ? 'badge-gold-3d' : 'bg-card border border-border'
                     }`}>
-                      <ShoppingBag className={`h-5 w-5 ${selected ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
+                      <FeatureIcon name="shop" size={22} />
                     </div>
                     <div className="text-left">
                       <p className="font-bold text-[14px] text-foreground leading-tight">{g.label}</p>
@@ -471,7 +470,7 @@ const Onboarding = () => {
                 {/* SAFE */}
                 <div className="w-full bg-card border border-border rounded-xl p-2.5 mb-2 space-y-1">
                   <div className="flex items-center gap-2">
-                    <Shield className="h-3.5 w-3.5 text-primary shrink-0" />
+                    <FeatureIcon name="shield" size={16} className="shrink-0" />
                     <p className="text-[10px] text-foreground font-medium">Photos processed privately — never stored without your consent.</p>
                   </div>
                   <p className="text-[11px] text-muted-foreground pl-5.5">Delete anytime from Settings.</p>
@@ -494,7 +493,7 @@ const Onboarding = () => {
                   onClick={startScan}
                   className="w-full h-11 rounded-xl btn-luxury text-primary-foreground font-display font-bold text-base uppercase tracking-wider active:scale-[0.97] transition-transform"
                 >
-                  <Camera className="mr-2 h-4 w-4" /> Get My Size
+                  <FeatureIcon name="scan" size={18} className="mr-2" /> Get My Size
                 </Button>
                 <button onClick={skipScan} className="text-[11px] text-muted-foreground font-semibold mt-2 hover:text-foreground transition-colors">
                   Skip for now — I'll do this later

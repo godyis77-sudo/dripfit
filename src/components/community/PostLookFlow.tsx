@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, ArrowRight, Check, Globe, Lock, Loader2, Sparkles, ImageIcon, Link2, ChevronDown, ChevronUp, Store, Instagram } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Loader2, ImageIcon, Link2, ChevronDown, ChevronUp, Instagram } from 'lucide-react';
+import FeatureIcon from '@/components/ui/FeatureIcon';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -165,7 +166,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                       <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
                       {post.is_public && (
                         <div className="absolute top-1 right-1 bg-primary/80 rounded-full p-0.5">
-                          <Globe className="h-2.5 w-2.5 text-primary-foreground" />
+                          <FeatureIcon name="globe" size={12} />
                         </div>
                       )}
                     </button>
@@ -234,7 +235,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                     {detectedRetailer && (
                       <div className="flex items-center gap-1.5">
                         <span className="text-[10px] px-2 py-0.5 rounded-md pill pill-filled font-bold flex items-center gap-1">
-                          <Store className="h-3 w-3" /> {detectedRetailer}
+                          <FeatureIcon name="store" size={14} /> {detectedRetailer}
                         </span>
                       </div>
                     )}
@@ -330,7 +331,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
 
               <div className="flex items-center justify-between bg-card border border-border rounded-xl px-4 py-3">
                 <div className="flex items-center gap-2">
-                  {isPublic ? <Globe className="h-4 w-4 text-primary" /> : <Lock className="h-4 w-4 text-muted-foreground" />}
+                  {isPublic ? <FeatureIcon name="globe" size={18} /> : <FeatureIcon name="lock" size={18} />}
                   <div>
                     <p className="text-sm font-semibold text-foreground">{isPublic ? 'Public' : 'Private'}</p>
                     <p className="text-[10px] text-muted-foreground">
@@ -346,7 +347,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                 onClick={handlePost}
                 disabled={submitting}
               >
-                {submitting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Sparkles className="mr-1 h-4 w-4" />}
+                {submitting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <FeatureIcon name="sparkles" size={18} className="mr-1" />}
                 {isPublic ? 'Post to Style Check' : 'Save Look'}
               </Button>
             </motion.div>
