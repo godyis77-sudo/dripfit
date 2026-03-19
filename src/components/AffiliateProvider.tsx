@@ -17,6 +17,13 @@ export default function AffiliateProvider({
   useEffect(() => {
     if (!provider) return;
 
+    // Don't inject placeholder scripts — only inject when real IDs are configured
+    const SKIMLINKS_SITE_ID = ""; // TODO: Set your real Skimlinks publisher site ID
+    const SOVRN_ZONE_ID = ""; // TODO: Set your real Sovrn zone ID
+
+    if (provider === "skimlinks" && !SKIMLINKS_SITE_ID) return;
+    if (provider === "sovrn" && !SOVRN_ZONE_ID) return;
+
     const existing = document.querySelector(`[data-affiliate-provider="${provider}"]`);
     if (existing) return;
 
@@ -25,13 +32,11 @@ export default function AffiliateProvider({
     script.dataset.affiliateProvider = provider;
 
     if (provider === "skimlinks") {
-      // TODO: Replace YOUR_SKIMLINKS_SITE_ID with real Skimlinks publisher site ID
-      script.src = "https://s.skimresources.com/js/YOUR_SKIMLINKS_SITE_ID.skimlinks.js";
+      script.src = `https://s.skimresources.com/js/${SKIMLINKS_SITE_ID}.skimlinks.js`;
     }
 
     if (provider === "sovrn") {
-      // TODO: Replace YOUR_SOVRN_ZONE_ID with real Sovrn zone ID
-      script.src = "https://ap.lijit.com/www/delivery/fpi.js?z=YOUR_SOVRN_ZONE_ID";
+      script.src = `https://ap.lijit.com/www/delivery/fpi.js?z=${SOVRN_ZONE_ID}`;
     }
 
     document.head.appendChild(script);
