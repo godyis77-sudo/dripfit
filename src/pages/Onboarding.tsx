@@ -51,7 +51,55 @@ const SLIDES = [
   },
 ];
 
-const HABITS: { value: ShoppingHabit; icon: FeatureIconName; label: string; desc: string }[] = [
+const HabitIcon = ({ name, size = 32 }: { name: string; size?: number }) => {
+  const gold = 'url(#habit-gold)';
+  const defs = (
+    <defs>
+      <linearGradient id="habit-gold" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="hsl(45, 88%, 60%)" />
+        <stop offset="100%" stopColor="hsl(40, 80%, 42%)" />
+      </linearGradient>
+    </defs>
+  );
+  const s = size;
+  const props = { width: s, height: s, viewBox: '0 0 24 24', fill: 'none' as const, xmlns: 'http://www.w3.org/2000/svg' };
+
+  if (name === 'shop') return (
+    <svg {...props}>
+      {defs}
+      <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke={gold} strokeWidth="1.5" fill="none" />
+      <path d="M3 6h18" stroke={gold} strokeWidth="1.5" />
+      <path d="M16 10a4 4 0 01-8 0" stroke={gold} strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+  if (name === 'sparkles') return (
+    <svg {...props}>
+      {defs}
+      <path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2z" fill={gold} />
+      <path d="M19 14l.75 2.25L22 17l-2.25.75L19 20l-.75-2.25L16 17l2.25-.75L19 14z" fill={gold} />
+      <path d="M5 16l.5 1.5L7 18l-1.5.5L5 20l-.5-1.5L3 18l1.5-.5L5 16z" fill={gold} />
+    </svg>
+  );
+  if (name === 'store') return (
+    <svg {...props}>
+      {defs}
+      <path d="M3 9l1.5-5h15L21 9" stroke={gold} strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M3 9c0 1.1.9 2 2 2s2-.9 2-2m0 0c0 1.1.9 2 2 2s2-.9 2-2m0 0c0 1.1.9 2 2 2s2-.9 2-2m0 0c0 1.1.9 2 2 2s2-.9 2-2" stroke={gold} strokeWidth="1.5" />
+      <path d="M5 11v9a1 1 0 001 1h12a1 1 0 001-1v-9" stroke={gold} strokeWidth="1.5" />
+      <path d="M10 21v-6h4v6" stroke={gold} strokeWidth="1.5" />
+    </svg>
+  );
+  // eye
+  return (
+    <svg {...props}>
+      {defs}
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke={gold} strokeWidth="1.5" fill="none" />
+      <circle cx="12" cy="12" r="3" fill={gold} />
+    </svg>
+  );
+};
+
+const HABITS: { value: ShoppingHabit; icon: string; label: string; desc: string }[] = [
   { value: 'online', icon: 'shop', label: 'Mostly Online', desc: 'I shop from my phone or laptop' },
   { value: 'mix', icon: 'sparkles', label: 'Mix of Both', desc: 'Browse online, buy in-store or vice versa' },
   { value: 'instore', icon: 'store', label: 'Mostly In-Store', desc: 'I prefer trying things on first' },
