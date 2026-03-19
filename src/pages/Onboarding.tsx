@@ -88,8 +88,8 @@ const Onboarding = () => {
       setScreen('carousel');
     };
 
-    // Show splash for at least 2.5s, then advance once images are ready or after 5s max
-    const minDelay = window.setTimeout(() => { minElapsed = true; if (imagesReady) advance(); }, 1800);
+    // Show splash briefly, then advance once images are ready or after 2.5s max
+    const minDelay = window.setTimeout(() => { minElapsed = true; if (imagesReady) advance(); }, 800);
     let minElapsed = false;
     let imagesReady = false;
     const timeout = window.setTimeout(advance, 3500);
