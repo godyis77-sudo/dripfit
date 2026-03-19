@@ -119,7 +119,7 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
         className="w-full h-9 rounded-lg text-[12px] font-bold"
         onClick={() => navigate('/style-check')}
       >
-        <MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Ask Style Check
+        <FeatureIcon name="message" size={16} className="mr-1.5" /> Ask Style Check
       </Button>
 
       {/* Save / Saved */}
