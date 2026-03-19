@@ -166,7 +166,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                       <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
                       {post.is_public && (
                         <div className="absolute top-1 right-1 bg-primary/80 rounded-full p-0.5">
-                          <Globe className="h-2.5 w-2.5 text-primary-foreground" />
+                          <FeatureIcon name="globe" size={12} />
                         </div>
                       )}
                     </button>
