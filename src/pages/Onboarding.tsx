@@ -22,9 +22,9 @@ import heroCommunity from '@/assets/hero-community-feedback.jpg';
 type Screen = 'splash' | 'carousel' | 'auth' | 'personalize' | 'gender' | 'scan-prompt';
 
 const GENDER_CHOICES = [
-  { value: 'male', label: "Men's", desc: 'Show me menswear & sizing' },
-  { value: 'female', label: "Women's", desc: 'Show me womenswear & sizing' },
-  { value: 'both', label: 'Both', desc: "I shop across both sections" },
+  { value: 'male', label: "Men's", desc: 'Show me menswear & sizing', icon: 'man' as FeatureIconName },
+  { value: 'female', label: "Women's", desc: 'Show me womenswear & sizing', icon: 'woman' as FeatureIconName },
+  { value: 'both', label: 'Both', desc: "I shop across both sections", icon: 'manwoman' as FeatureIconName },
 ] as const;
 
 const SLIDES = [
