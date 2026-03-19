@@ -707,6 +707,12 @@
   50% { background-position: 100% 50%; }
 }
 
+/* GPU-composited shimmer using translate for performance */
+@keyframes gold-shine-gpu {
+  0%, 100% { transform: translateX(-100%); }
+  50% { transform: translateX(100%); }
+}
+
 .brand-logo-check {
   background: linear-gradient(
     175deg,
