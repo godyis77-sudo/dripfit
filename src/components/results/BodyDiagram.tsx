@@ -38,11 +38,16 @@ const createProcessedSilhouette = (imageSrc: string): Promise<string> =>
         const r = px[i], g = px[i + 1], b = px[i + 2];
         const lum = (r + g + b) / 3;
         const chroma = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(r - b));
-        // Anything light or neutral-ish → gone
+        // Anything light or neutral-ish → transparent (background)
         if (lum > 120 || (chroma < 40 && lum > 80)) {
           px[i + 3] = 0;
         } else if (lum > 60) {
           px[i + 3] = Math.round(px[i + 3] * Math.max(0, (120 - lum) / 60));
+          // Make the body black
+          px[i] = 0; px[i + 1] = 0; px[i + 2] = 0;
+        } else {
+          // Solid body pixels → black
+          px[i] = 0; px[i + 1] = 0; px[i + 2] = 0;
         }
       }
       ctx.putImageData(frame, 0, 0);
