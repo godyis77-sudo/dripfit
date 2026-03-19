@@ -215,30 +215,48 @@ export const svgIcons: Record<string, SvgBuilder> = {
   man: () => (
     <>
       <GoldDefs />
-      <circle cx="12" cy="5" r="3" stroke={gold} {...s} />
-      <path d="M12 8v8M8 12h8M12 16l-3 5M12 16l3 5" stroke={gold} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* Head */}
+      <circle cx="12" cy="5.5" r="2.8" fill={gold} />
+      {/* Torso */}
+      <path d="M8 10h8v5H8z" fill={gold} rx="1" />
+      {/* Arms */}
+      <rect x="5" y="10" width="3" height="8" rx="1.5" fill={gold} />
+      <rect x="16" y="10" width="3" height="8" rx="1.5" fill={gold} />
+      {/* Legs */}
+      <rect x="8.5" y="15" width="3" height="7" rx="1.5" fill={gold} />
+      <rect x="12.5" y="15" width="3" height="7" rx="1.5" fill={gold} />
     </>
   ),
   woman: () => (
     <>
       <GoldDefs />
-      <circle cx="12" cy="5" r="3" stroke={gold} {...s} />
-      <path d="M12 8v4" stroke={gold} strokeWidth="1.8" strokeLinecap="round" fill="none" />
-      <path d="M8 12h8L14 21H10z" stroke={gold} strokeWidth="1.5" strokeLinejoin="round" fill="none" />
-      <path d="M8 16h8" stroke={gold} strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      {/* Head */}
+      <circle cx="12" cy="5.5" r="2.8" fill={gold} />
+      {/* Torso */}
+      <path d="M9 10h6v4H9z" fill={gold} />
+      {/* Arms */}
+      <rect x="5.5" y="10" width="2.5" height="7" rx="1.2" fill={gold} />
+      <rect x="16" y="10" width="2.5" height="7" rx="1.2" fill={gold} />
+      {/* Skirt/dress */}
+      <path d="M7 14h10l-1.5 8h-7z" fill={gold} />
     </>
   ),
   manwoman: () => (
     <>
       <GoldDefs />
-      {/* Man */}
-      <circle cx="8" cy="4.5" r="2.5" stroke={gold} {...s} />
-      <path d="M8 7v7M5.5 10.5h5M8 14l-2.5 5M8 14l2.5 5" stroke={gold} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      {/* Woman */}
-      <circle cx="16" cy="4.5" r="2.5" stroke={gold} {...s} />
-      <path d="M16 7v3" stroke={gold} strokeWidth="1.5" strokeLinecap="round" fill="none" />
-      <path d="M13 10h6L17 19H15z" stroke={gold} strokeWidth="1.3" strokeLinejoin="round" fill="none" />
-      <path d="M13 14h6" stroke={gold} strokeWidth="1.3" strokeLinecap="round" fill="none" />
+      {/* Man - left */}
+      <circle cx="7.5" cy="5" r="2.2" fill={gold} />
+      <path d="M5 9h5v4H5z" fill={gold} />
+      <rect x="3" y="9" width="2" height="6" rx="1" fill={gold} />
+      <rect x="10" y="9" width="2" height="6" rx="1" fill={gold} />
+      <rect x="5.2" y="13" width="2.2" height="6" rx="1" fill={gold} />
+      <rect x="7.8" y="13" width="2.2" height="6" rx="1" fill={gold} />
+      {/* Woman - right */}
+      <circle cx="16.5" cy="5" r="2.2" fill={gold} />
+      <path d="M14.5 9h4v3h-4z" fill={gold} />
+      <rect x="12.5" y="9" width="2" height="5.5" rx="1" fill={gold} />
+      <rect x="19.5" y="9" width="2" height="5.5" rx="1" fill={gold} />
+      <path d="M13.5 12h6l-1 7h-4z" fill={gold} />
     </>
   ),
 };
