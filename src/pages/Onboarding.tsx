@@ -351,7 +351,6 @@ const Onboarding = () => {
             {/* 2×2 grid */}
             <div className="grid grid-cols-2 gap-2.5 flex-1 content-start">
               {HABITS.map(h => {
-                const Icon = h.icon;
                 const selected = habit === h.value;
                 return (
                   <button
@@ -364,7 +363,7 @@ const Onboarding = () => {
                     <div className={`h-10 w-10 rounded-xl flex items-center justify-center mb-2 ${
                       selected ? 'badge-gold-3d' : 'bg-card border border-border'
                     }`}>
-                      <Icon className={`h-5 w-5 ${selected ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
+                      <FeatureIcon name={h.icon} size={22} />
                     </div>
                     <p className="font-bold text-[13px] text-foreground leading-tight">{h.label}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{h.desc}</p>
