@@ -797,7 +797,7 @@ const Capture = () => {
                 onClick={startTimedWebCapture}
                 disabled={captureCountdown !== null}
               >
-                <Camera className="mr-2 h-4 w-4" />
+                <FeatureIcon name="scan" size={18} className="mr-2" />
                 {captureCountdown !== null
                   ? `Capturing in ${captureCountdown}s`
                   : videoReady
