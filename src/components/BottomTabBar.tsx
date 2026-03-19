@@ -6,7 +6,7 @@ import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 
 const tabs: { icon: FeatureIconName; label: string; path: string }[] = [
   { icon: 'home', label: 'Home', path: '/' },
-  { icon: 'post', label: 'Scan', path: '/capture' },
+  { icon: 'scan', label: 'Scan', path: '/capture' },
   { icon: 'tryon', label: 'Try-On', path: '/tryon' },
   { icon: 'stylecheck', label: 'Style Check', path: '/style-check' },
   { icon: 'profile', label: 'Profile', path: '/profile' },
