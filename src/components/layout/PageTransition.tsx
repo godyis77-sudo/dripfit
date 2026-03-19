@@ -14,19 +14,16 @@ export const PageTransition = ({ children }: { children: React.ReactNode }) => {
       opacity: 0,
       y: reduceMotion ? 0 : 16,
       scale: reduceMotion ? 1 : 0.98,
-      filter: reduceMotion ? 'none' : 'blur(4px)',
     },
     animate: {
       opacity: 1,
       y: 0,
       scale: 1,
-      filter: 'blur(0px)',
     },
     exit: {
       opacity: 0,
       y: reduceMotion ? 0 : -10,
       scale: reduceMotion ? 1 : 0.99,
-      filter: reduceMotion ? 'none' : 'blur(2px)',
     },
   };
 
@@ -38,10 +35,10 @@ export const PageTransition = ({ children }: { children: React.ReactNode }) => {
       animate="animate"
       exit="exit"
       transition={{
-        duration: reduceMotion ? 0 : 0.35,
+        duration: reduceMotion ? 0 : 0.3,
         ease: [0.16, 1, 0.3, 1],
-        filter: { duration: reduceMotion ? 0 : 0.25 },
       }}
+      style={{ willChange: 'opacity, transform' }}
     >
       {children}
     </motion.div>
