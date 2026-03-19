@@ -359,7 +359,7 @@ const Waitlist = () => {
                 <div className="p-5 pt-3 flex flex-col justify-end mt-auto">
                   <div className="flex items-center gap-2.5 mb-2">
                     <div className="h-8 w-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
-                      <f.icon className="h-4 w-4 text-primary" />
+                      <FeatureIcon name={f.icon} size={20} />
                     </div>
                     <h3 className="font-display text-[17px] font-bold text-foreground">{f.title}</h3>
                   </div>
