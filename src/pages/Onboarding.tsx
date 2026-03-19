@@ -22,9 +22,9 @@ import heroCommunity from '@/assets/hero-community-feedback.jpg';
 type Screen = 'splash' | 'carousel' | 'auth' | 'personalize' | 'gender' | 'scan-prompt';
 
 const GENDER_CHOICES = [
-  { value: 'male', label: "Men's", desc: 'Show me menswear & sizing' },
-  { value: 'female', label: "Women's", desc: 'Show me womenswear & sizing' },
-  { value: 'both', label: 'Both', desc: "I shop across both sections" },
+  { value: 'male', label: "Men's", desc: 'Show me menswear & sizing', icon: 'man' as FeatureIconName },
+  { value: 'female', label: "Women's", desc: 'Show me womenswear & sizing', icon: 'woman' as FeatureIconName },
+  { value: 'both', label: 'Both', desc: "I shop across both sections", icon: 'manwoman' as FeatureIconName },
 ] as const;
 
 const SLIDES = [
@@ -412,7 +412,7 @@ const Onboarding = () => {
                     <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${
                       selected ? 'badge-gold-3d' : 'bg-card border border-border'
                     }`}>
-                      <FeatureIcon name="shop" size={22} />
+                      <FeatureIcon name={g.icon} size={22} />
                     </div>
                     <div className="text-left">
                       <p className="font-bold text-[14px] text-foreground leading-tight">{g.label}</p>

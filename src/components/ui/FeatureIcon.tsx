@@ -55,6 +55,9 @@ export const featureIcons = {
   message: iconMessage,
   heart: iconHeart,
   share: iconShare,
+  man: iconShare, // SVG-only, raster fallback unused
+  woman: iconShare,
+  manwoman: iconShare,
 } as const;
 
 export type FeatureIconName = keyof typeof featureIcons;
