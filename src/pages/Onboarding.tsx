@@ -51,11 +51,11 @@ const SLIDES = [
   },
 ];
 
-const HABITS: { value: ShoppingHabit; icon: typeof ShoppingBag; label: string; desc: string }[] = [
-  { value: 'online', icon: ShoppingBag, label: 'Mostly Online', desc: 'I shop from my phone or laptop' },
-  { value: 'mix', icon: Shuffle, label: 'Mix of Both', desc: 'Browse online, buy in-store or vice versa' },
-  { value: 'instore', icon: Store, label: 'Mostly In-Store', desc: 'I prefer trying things on first' },
-  { value: 'browser', icon: Eye, label: 'I Browse, Rarely Buy', desc: 'Sizing uncertainty stops me' },
+const HABITS: { value: ShoppingHabit; icon: FeatureIconName; label: string; desc: string }[] = [
+  { value: 'online', icon: 'shop', label: 'Mostly Online', desc: 'I shop from my phone or laptop' },
+  { value: 'mix', icon: 'sparkles', label: 'Mix of Both', desc: 'Browse online, buy in-store or vice versa' },
+  { value: 'instore', icon: 'store', label: 'Mostly In-Store', desc: 'I prefer trying things on first' },
+  { value: 'browser', icon: 'eye', label: 'I Browse, Rarely Buy', desc: 'Sizing uncertainty stops me' },
 ];
 
 const Onboarding = () => {
