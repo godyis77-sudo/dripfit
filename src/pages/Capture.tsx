@@ -658,7 +658,7 @@ const Capture = () => {
                 }
               }}
             >
-              <Camera className="mr-2 h-4 w-4" /> Start Scan
+              <FeatureIcon name="scan" size={18} className="mr-2" /> Start Scan
             </Button>
           </motion.div>
           )
