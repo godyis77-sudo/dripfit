@@ -21,6 +21,8 @@ export default defineConfig(({ mode }) => ({
   build: {
     // Target modern browsers for smaller output
     target: "es2020",
+    cssCodeSplit: true,
+    cssMinify: true,
     // Split vendor chunks for better caching
     rollupOptions: {
       output: {
@@ -34,5 +36,8 @@ export default defineConfig(({ mode }) => ({
     },
     // Increase chunk size warning threshold (pages are lazy-loaded anyway)
     chunkSizeWarningLimit: 600,
+  },
+  optimizeDeps: {
+    include: ["react", "react-dom"],
   },
 }));
