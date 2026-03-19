@@ -90,7 +90,7 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
               onClick={() => navigate('/tryon')}
               className="relative glass-card rounded-xl overflow-hidden aspect-[3/4] flex flex-col items-center justify-center gap-2 active:scale-[0.97] active:translate-y-[1px] transition-all shadow-3d active:shadow-3d-pressed border-dashed"
             >
-              <FeatureIcon name="post" size={40} />
+              <FeatureIcon name="tryon" size={40} />
               <p className="text-[10px] font-medium text-muted-foreground text-center px-2">Be first to post a look</p>
             </button>
           ))}
