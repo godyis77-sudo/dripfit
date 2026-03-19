@@ -70,6 +70,10 @@ const FeatureIcon = forwardRef<HTMLImageElement, FeatureIconProps>(({ name, size
     ref={ref}
     src={featureIcons[name]}
     alt={name}
+    width={size}
+    height={size}
+    loading="lazy"
+    decoding="async"
     className={cn('object-contain mix-blend-lighten drop-shadow-[0_2px_6px_hsl(var(--drip-gold)/0.4)]', className)}
     style={{ width: size, height: size }}
   />
