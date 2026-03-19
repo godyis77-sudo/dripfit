@@ -15,16 +15,16 @@ import AuthForm from '@/components/auth/AuthForm';
 
 
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
-const onboardingBodyScan = '/images/onboarding-body-scan.webp';
+const onboardingBodyScan = '/images/onboarding-body-scan.jpg';
 import heroTryon from '@/assets/hero-tryon-mirror.jpg';
 import heroCommunity from '@/assets/hero-community-feedback.jpg';
 
 type Screen = 'splash' | 'carousel' | 'auth' | 'personalize' | 'gender' | 'scan-prompt';
 
 const GENDER_CHOICES = [
-  { value: 'male', label: "Men's", desc: 'Show me menswear & sizing', icon: 'man' as FeatureIconName },
-  { value: 'female', label: "Women's", desc: 'Show me womenswear & sizing', icon: 'woman' as FeatureIconName },
-  { value: 'both', label: 'Both', desc: "I shop across both sections", icon: 'manwoman' as FeatureIconName },
+  { value: 'male', label: "Men's", desc: 'Show me menswear & sizing' },
+  { value: 'female', label: "Women's", desc: 'Show me womenswear & sizing' },
+  { value: 'both', label: 'Both', desc: "I shop across both sections" },
 ] as const;
 
 const SLIDES = [
@@ -62,7 +62,7 @@ const Onboarding = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const reduceMotion = useReducedMotion();
-  const [screen, setScreen] = useState<Screen>('carousel');
+  const [screen, setScreen] = useState<Screen>('splash');
   const [slideIdx, setSlideIdx] = useState(0);
   const [slideDir, setSlideDir] = useState(1);
   const [habit, setHabit] = useState<ShoppingHabit | null>(null);
@@ -88,11 +88,11 @@ const Onboarding = () => {
       setScreen('carousel');
     };
 
-    // Show splash briefly, then advance once images are ready or after 2.5s max
-    const minDelay = window.setTimeout(() => { minElapsed = true; if (imagesReady) advance(); }, 800);
+    // Show splash for at least 2.5s, then advance once images are ready or after 5s max
+    const minDelay = window.setTimeout(() => { minElapsed = true; if (imagesReady) advance(); }, 1800);
     let minElapsed = false;
     let imagesReady = false;
-    const timeout = window.setTimeout(advance, 2000);
+    const timeout = window.setTimeout(advance, 3500);
     const imageUrls = SLIDES.map(s => s.image).filter(Boolean);
     let loaded = 0;
     imageUrls.forEach(src => {
@@ -253,7 +253,7 @@ const Onboarding = () => {
                       <DecorativeSilhouette height={340} />
                     ) : (
                       <div
-                        className="relative rounded-2xl overflow-hidden mx-auto flex items-center justify-center bg-black/80"
+                        className="relative rounded-2xl overflow-hidden mx-auto"
                         style={{
                           maxHeight: '50dvh',
                           maxWidth: 'calc(100% - 30px)',
@@ -264,14 +264,14 @@ const Onboarding = () => {
                         <img
                           src={SLIDES[slideIdx].image}
                           alt={SLIDES[slideIdx].title}
-                          className="max-w-full max-h-full w-auto h-auto object-contain rounded-2xl"
+                          className="w-full h-full object-cover rounded-2xl"
                           width={606}
                           height={663}
                           fetchPriority={slideIdx === 0 ? 'high' : undefined}
                           loading={slideIdx === 0 ? 'eager' : 'lazy'}
                           decoding="async"
                           style={{
-                            maxHeight: '50dvh',
+                            maxHeight: '100%',
                             ...(slideIdx === 1 ? { filter: 'brightness(0.8)' } : {}),
                           }}
                         />
@@ -363,10 +363,10 @@ const Onboarding = () => {
                       selected ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/30'
                     }`}
                   >
-                    <div className={`h-16 w-16 rounded-xl flex items-center justify-center mb-2 ${
+                    <div className={`h-10 w-10 rounded-xl flex items-center justify-center mb-2 ${
                       selected ? 'badge-gold-3d' : 'bg-card border border-border'
                     }`}>
-                      <FeatureIcon name={h.icon} size={36} />
+                      <FeatureIcon name={h.icon} size={22} />
                     </div>
                     <p className="font-bold text-[13px] text-foreground leading-tight">{h.label}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{h.desc}</p>
@@ -412,7 +412,7 @@ const Onboarding = () => {
                     <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${
                       selected ? 'badge-gold-3d' : 'bg-card border border-border'
                     }`}>
-                      <FeatureIcon name={g.icon} size={22} />
+                      <FeatureIcon name="shop" size={22} />
                     </div>
                     <div className="text-left">
                       <p className="font-bold text-[14px] text-foreground leading-tight">{g.label}</p>
@@ -446,15 +446,8 @@ const Onboarding = () => {
             <div className="max-w-[320px] w-full flex flex-col items-center flex-1 min-h-0 justify-between">
               {/* Top section: image + text */}
               <div className="flex flex-col items-center min-h-0 flex-1">
-                <div className="min-h-0 flex-1 flex items-center justify-center">
-                  <img
-                    src={onboardingBodyScan}
-                    alt="Body scan measurements preview"
-                    className="max-w-full max-h-full w-auto h-auto object-contain rounded-xl"
-                    style={{ maxHeight: '38dvh' }}
-                    loading="lazy"
-                    decoding="async"
-                  />
+                <div className="min-h-0 flex-1 flex items-center">
+                  <DecorativeSilhouette height={280} />
                 </div>
 
                 <h2 className="font-display text-lg font-bold text-foreground mb-0.5 text-center mt-1 shrink-0">Let's get your measurements</h2>

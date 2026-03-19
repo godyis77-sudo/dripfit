@@ -34,11 +34,11 @@ const SOCIAL_PROOF = [
 
 const stagger = {
   container: {
-    animate: { transition: { staggerChildren: 0.06, delayChildren: 0 } },
+    animate: { transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
   },
   item: {
-    initial: { opacity: 0, y: 12 },
-    animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const } },
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const } },
   },
 };
 
@@ -97,9 +97,15 @@ const Welcome = () => {
         </button>
       </nav>
 
-      {/* Hero — no animation wrapper so LCP paints instantly */}
-      <div className="relative z-10 flex flex-col items-center px-6 pt-10">
-        <div className="text-center max-w-[340px] mb-10">
+      <motion.div
+        variants={stagger.container}
+        initial="initial"
+        animate="animate"
+        className="relative z-10 flex flex-col items-center px-6 pt-10"
+      >
+
+        {/* Hero */}
+        <motion.div variants={stagger.item} className="text-center max-w-[340px] mb-10">
           <h1 className="font-display text-[34px] font-bold tracking-tight mb-4 leading-[1.08] text-foreground">
             Your Tailored Size & Style.{' '}
             <span className="gradient-drip-text italic">Verified Culture,</span>{' '}
@@ -108,15 +114,7 @@ const Welcome = () => {
           <p className="text-muted-foreground text-[14px] leading-relaxed max-w-[300px] mx-auto">
             Two photos. Sixty seconds. Your exact measurements across every brand — plus virtual try-on and real feedback.
           </p>
-        </div>
-      </div>
-
-      <motion.div
-        variants={stagger.container}
-        initial="initial"
-        animate="animate"
-        className="relative z-10 flex flex-col items-center px-6"
-      >
+        </motion.div>
 
         {/* Primary CTA */}
         <motion.div variants={stagger.item} className="w-full max-w-[340px] mb-3">

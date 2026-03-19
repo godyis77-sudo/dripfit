@@ -26,7 +26,6 @@ import iconMessage from '@/assets/icon-message.webp';
 import iconHeart from '@/assets/icon-heart.webp';
 import iconShare from '@/assets/icon-share.webp';
 import { cn } from '@/lib/utils';
-import { svgIcons } from './FeatureIconSvg';
 
 export const featureIcons = {
   scan: iconScan,
@@ -55,9 +54,6 @@ export const featureIcons = {
   message: iconMessage,
   heart: iconHeart,
   share: iconShare,
-  man: iconShare, // SVG-only, raster fallback unused
-  woman: iconShare,
-  manwoman: iconShare,
 } as const;
 
 export type FeatureIconName = keyof typeof featureIcons;
@@ -66,47 +62,22 @@ interface FeatureIconProps {
   name: FeatureIconName;
   size?: number;
   className?: string;
-  /** Force WebP raster icon (used by bottom tab bar). Default: false (uses SVG). */
-  raster?: boolean;
 }
 
 /** Renders one of the core brand identity icons at the given pixel size. */
-const FeatureIcon = forwardRef<HTMLImageElement | SVGSVGElement, FeatureIconProps>(
-  ({ name, size = 40, className, raster = false }, ref) => {
-    const svgBuilder = !raster ? svgIcons[name] : undefined;
-
-    if (svgBuilder) {
-      return (
-        <svg
-          ref={ref as React.Ref<SVGSVGElement>}
-          width={size}
-          height={size}
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className={cn('drop-shadow-[0_2px_6px_hsl(var(--drip-gold)/0.4)]', className)}
-          style={{ width: size, height: size }}
-        >
-          {svgBuilder()}
-        </svg>
-      );
-    }
-
-    return (
-      <img
-        ref={ref as React.Ref<HTMLImageElement>}
-        src={featureIcons[name]}
-        alt={name}
-        width={size}
-        height={size}
-        loading="lazy"
-        decoding="async"
-        className={cn('object-contain mix-blend-lighten drop-shadow-[0_2px_6px_hsl(var(--drip-gold)/0.4)]', className)}
-        style={{ width: size, height: size }}
-      />
-    );
-  }
-);
+const FeatureIcon = forwardRef<HTMLImageElement, FeatureIconProps>(({ name, size = 40, className }, ref) => (
+  <img
+    ref={ref}
+    src={featureIcons[name]}
+    alt={name}
+    width={size}
+    height={size}
+    loading="lazy"
+    decoding="async"
+    className={cn('object-contain mix-blend-lighten drop-shadow-[0_2px_6px_hsl(var(--drip-gold)/0.4)]', className)}
+    style={{ width: size, height: size }}
+  />
+));
 
 FeatureIcon.displayName = 'FeatureIcon';
 
