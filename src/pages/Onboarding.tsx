@@ -493,7 +493,7 @@ const Onboarding = () => {
                   onClick={startScan}
                   className="w-full h-11 rounded-xl btn-luxury text-primary-foreground font-display font-bold text-base uppercase tracking-wider active:scale-[0.97] transition-transform"
                 >
-                  <Camera className="mr-2 h-4 w-4" /> Get My Size
+                  <FeatureIcon name="scan" size={18} className="mr-2" /> Get My Size
                 </Button>
                 <button onClick={skipScan} className="text-[11px] text-muted-foreground font-semibold mt-2 hover:text-foreground transition-colors">
                   Skip for now — I'll do this later
