@@ -422,7 +422,7 @@ const Waitlist = () => {
             <div className="bg-secondary border border-border rounded-2xl p-5 text-center">
               <div className="flex justify-center gap-0.5 mb-3">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-3.5 w-3.5 text-primary fill-primary" />
+                  <FeatureIcon key={i} name="star" size={16} />
                 ))}
               </div>
               <p className="text-[13px] text-foreground/75 leading-relaxed italic mb-3">
