@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
-import hudScanBg from '@/assets/hud-scan-bg.jpg';
+import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
 import BrandMarquee from '@/components/waitlist/BrandMarquee';
 import '@/components/waitlist/BrandMarquee.css';
 
@@ -270,9 +270,7 @@ const Waitlist = () => {
 
         {/* Scan preview */}
         <FadeUp delay={0.15} className="relative z-10 mb-10">
-          <div className="w-[200px] h-[280px] rounded-2xl overflow-hidden border-2 border-primary/40 shadow-[0_0_30px_rgba(212,175,55,0.15)]">
-            <img src={hudScanBg} alt="AI Body Scan preview" className="w-full h-full object-cover" loading="eager" />
-          </div>
+          <DecorativeSilhouette height={280} />
         </FadeUp>
 
         {/* Email form */}
@@ -318,8 +316,8 @@ const Waitlist = () => {
                 {/* App screenshot */}
                 <div className="relative w-full flex-1 min-h-0 md:aspect-[4/5] md:flex-none flex items-center justify-center bg-background overflow-hidden">
                   {f.useDecorativeSilhouette ? (
-                    <div className="absolute inset-0 overflow-hidden">
-                      <img src={hudScanBg} alt={`${f.title} app screen`} className="w-full h-full object-cover object-top" loading="lazy" />
+                    <div className="flex items-center justify-center w-full h-full py-6">
+                      <DecorativeSilhouette height={320} />
                     </div>
                   ) : f.noPhone ? (
                     /* No phone frame — full bleed image */
