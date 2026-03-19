@@ -12,11 +12,11 @@ import { supabase } from '@/integrations/supabase/client';
 const TOTAL_SPOTS = 50;
 const FALLBACK_CLAIMED = 12;
 
-const PERKS = [
-  { icon: Sparkles, title: 'Early Access', desc: 'Be the first to test new features like virtual try-on and AI style check before anyone else.' },
-  { icon: MessageCircle, title: 'Direct Input', desc: 'Tell us which brands to add, what features to build, and shape the product roadmap.' },
-  { icon: Shirt, title: 'Free Premium', desc: 'Founding members get free access to premium features for life — no strings attached.' },
-  { icon: BarChart3, title: 'Sizing Intel', desc: 'Get insider sizing notes on 130+ brands from our community of fit-obsessed shoppers.' },
+const PERKS: { icon: FeatureIconName; title: string; desc: string }[] = [
+  { icon: 'sparkles', title: 'Early Access', desc: 'Be the first to test new features like virtual try-on and AI style check before anyone else.' },
+  { icon: 'message', title: 'Direct Input', desc: 'Tell us which brands to add, what features to build, and shape the product roadmap.' },
+  { icon: 'shirt', title: 'Free Premium', desc: 'Founding members get free access to premium features for life — no strings attached.' },
+  { icon: 'chart', title: 'Sizing Intel', desc: 'Get insider sizing notes on 130+ brands from our community of fit-obsessed shoppers.' },
 ];
 
 const EARLY_MEMBERS = [
