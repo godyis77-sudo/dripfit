@@ -39,7 +39,7 @@ if (typeof window !== 'undefined' && POSTHOG_KEY) {
   if ('requestIdleCallback' in window) {
     (window as any).requestIdleCallback(() => lazyInit(), { timeout: 8000 });
   } else {
-    setTimeout(() => lazyInit(), 3000);
+    setTimeout(() => lazyInit(), 6000);
   }
   window.addEventListener('click', start, { once: true, passive: true });
   window.addEventListener('scroll', start, { once: true, passive: true });

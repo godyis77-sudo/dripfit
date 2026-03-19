@@ -92,7 +92,7 @@ const Onboarding = () => {
     const minDelay = window.setTimeout(() => { minElapsed = true; if (imagesReady) advance(); }, 800);
     let minElapsed = false;
     let imagesReady = false;
-    const timeout = window.setTimeout(advance, 3500);
+    const timeout = window.setTimeout(advance, 2000);
     const imageUrls = SLIDES.map(s => s.image).filter(Boolean);
     let loaded = 0;
     imageUrls.forEach(src => {
