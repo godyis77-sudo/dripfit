@@ -97,15 +97,9 @@ const Welcome = () => {
         </button>
       </nav>
 
-      <motion.div
-        variants={stagger.container}
-        initial="initial"
-        animate="animate"
-        className="relative z-10 flex flex-col items-center px-6 pt-10"
-      >
-
-        {/* Hero */}
-        <motion.div variants={stagger.item} className="text-center max-w-[340px] mb-10">
+      {/* Hero — no animation wrapper so LCP paints instantly */}
+      <div className="relative z-10 flex flex-col items-center px-6 pt-10">
+        <div className="text-center max-w-[340px] mb-10">
           <h1 className="font-display text-[34px] font-bold tracking-tight mb-4 leading-[1.08] text-foreground">
             Your Tailored Size & Style.{' '}
             <span className="gradient-drip-text italic">Verified Culture,</span>{' '}
@@ -114,7 +108,15 @@ const Welcome = () => {
           <p className="text-muted-foreground text-[14px] leading-relaxed max-w-[300px] mx-auto">
             Two photos. Sixty seconds. Your exact measurements across every brand — plus virtual try-on and real feedback.
           </p>
-        </motion.div>
+        </div>
+      </div>
+
+      <motion.div
+        variants={stagger.container}
+        initial="initial"
+        animate="animate"
+        className="relative z-10 flex flex-col items-center px-6"
+      >
 
         {/* Primary CTA */}
         <motion.div variants={stagger.item} className="w-full max-w-[340px] mb-3">
