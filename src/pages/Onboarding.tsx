@@ -265,6 +265,8 @@ const Onboarding = () => {
                           src={SLIDES[slideIdx].image}
                           alt={SLIDES[slideIdx].title}
                           className="w-full h-full object-cover rounded-2xl"
+                          fetchPriority={slideIdx === 0 ? 'high' : undefined}
+                          loading={slideIdx === 0 ? 'eager' : 'lazy'}
                           style={{
                             maxHeight: '100%',
                             ...(slideIdx === 1 ? { filter: 'brightness(0.8)' } : {}),
