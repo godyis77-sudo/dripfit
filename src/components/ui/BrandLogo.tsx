@@ -1,4 +1,4 @@
-import iconCrown from '@/assets/icon-crown.png';
+import iconCrown from '@/assets/icon-crown.webp';
 import { cn } from '@/lib/utils';
 
 interface BrandLogoProps {
