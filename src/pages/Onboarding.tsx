@@ -245,10 +245,10 @@ const Onboarding = () => {
                       setSlideIdx(i => i - 1);
                     }
                   }}
-                  className="flex-1 flex flex-col items-center justify-center min-h-0 cursor-grab active:cursor-grabbing gap-6"
+                  className="flex-1 flex flex-col min-h-0 cursor-grab active:cursor-grabbing"
                 >
-                  {/* Image — centered with safe top padding */}
-                  <div className="flex items-center justify-center px-4 min-h-0 max-w-[480px] w-full self-center mx-auto" style={{ maxHeight: '50dvh' }}>
+                  {/* Image — top portion */}
+                  <div className="flex items-center justify-center px-4 min-h-0 flex-1 max-w-[480px] w-full self-center mx-auto" style={{ maxHeight: '50dvh' }}>
                   {false ? (
                       <DecorativeSilhouette height={340} />
                     ) : (
@@ -284,14 +284,16 @@ const Onboarding = () => {
                     )}
                   </div>
 
-                  {/* Text — below image with consistent gap */}
-                  <div className="flex flex-col items-center px-8 text-center shrink-0">
-                    <h2 className="font-display text-[20px] font-bold text-foreground leading-tight">
-                      {SLIDES[slideIdx].title}
-                    </h2>
-                    <p className="text-[13px] text-muted-foreground mt-1.5 leading-snug max-w-[300px]">
-                      {SLIDES[slideIdx].desc}
-                    </p>
+                  {/* Text — centered in remaining space */}
+                  <div className="flex-1 flex items-center justify-center px-8 text-center shrink-0">
+                    <div>
+                      <h2 className="font-display text-[20px] font-bold text-foreground leading-tight">
+                        {SLIDES[slideIdx].title}
+                      </h2>
+                      <p className="text-[13px] text-muted-foreground mt-1.5 leading-snug max-w-[300px] mx-auto">
+                        {SLIDES[slideIdx].desc}
+                      </p>
+                    </div>
                   </div>
                 </motion.div>
               </AnimatePresence>
