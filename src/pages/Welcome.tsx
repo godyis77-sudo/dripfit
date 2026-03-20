@@ -37,8 +37,8 @@ const stagger = {
     animate: { transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
   },
   item: {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const } },
+    initial: { opacity: 0, y: 20, scale: 0.98 },
+    animate: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const } },
   },
 };
 

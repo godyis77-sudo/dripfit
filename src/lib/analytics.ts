@@ -1,46 +1,20 @@
-// PostHog analytics — lazy-loaded to reduce initial bundle size
+// PostHog analytics — falls back to console.log if key is not set
+
+import posthog from 'posthog-js';
 
 const POSTHOG_KEY = (import.meta.env.VITE_POSTHOG_KEY as string | undefined) || 'phc_YCzbtL0TcOZ0YzB0aGv2kXIYoGuscc09iXqXHIfuoMZ';
 const POSTHOG_HOST = (import.meta.env.VITE_POSTHOG_HOST as string) || 'https://us.i.posthog.com';
 
-let posthogInstance: typeof import('posthog-js').default | null = null;
-let initPromise: Promise<void> | null = null;
+let initialized = false;
 
-function lazyInit(): Promise<void> {
-  if (!POSTHOG_KEY) return Promise.resolve();
-  if (posthogInstance) return Promise.resolve();
-  if (initPromise) return initPromise;
-
-  initPromise = import('posthog-js').then((mod) => {
-    const posthog = mod.default;
-    posthog.init(POSTHOG_KEY, {
-      api_host: POSTHOG_HOST,
-      autocapture: false,
-      capture_pageview: true,
-      persistence: 'localStorage+cookie',
-    });
-    posthogInstance = posthog;
-  }).catch(() => {
-    // never break UI over analytics
+if (POSTHOG_KEY) {
+  posthog.init(POSTHOG_KEY, {
+    api_host: POSTHOG_HOST,
+    autocapture: false,
+    capture_pageview: true,
+    persistence: 'localStorage+cookie',
   });
-
-  return initPromise;
-}
-
-// Kick off loading after first interaction or idle
-if (typeof window !== 'undefined' && POSTHOG_KEY) {
-  const start = () => {
-    lazyInit();
-    window.removeEventListener('click', start);
-    window.removeEventListener('scroll', start);
-  };
-  if ('requestIdleCallback' in window) {
-    (window as any).requestIdleCallback(() => lazyInit(), { timeout: 4000 });
-  } else {
-    setTimeout(() => lazyInit(), 3000);
-  }
-  window.addEventListener('click', start, { once: true, passive: true });
-  window.addEventListener('scroll', start, { once: true, passive: true });
+  initialized = true;
 }
 
 type FunnelEvent =
@@ -144,19 +118,16 @@ type FunnelEvent =
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
-    if (posthogInstance) {
-      posthogInstance.capture(event, meta);
-    } else {
-      // Queue event and send once loaded
-      lazyInit().then(() => {
-        posthogInstance?.capture(event, meta);
-      });
+    if (initialized) {
+      posthog.capture(event, meta);
     }
 
+    // Log to console in dev
     if (import.meta.env.DEV) {
       console.log(`[analytics] ${event}`, meta ?? '');
     }
 
+    // Store locally for lightweight funnel debugging
     const log = JSON.parse(sessionStorage.getItem('df_events') || '[]');
     log.push({ event, ts: Date.now(), ...(meta ?? {}) });
     sessionStorage.setItem('df_events', JSON.stringify(log.slice(-100)));
@@ -167,12 +138,8 @@ export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
 
 export function identify(userId: string, traits?: Record<string, unknown>) {
   try {
-    if (posthogInstance) {
-      posthogInstance.identify(userId, traits);
-    } else {
-      lazyInit().then(() => {
-        posthogInstance?.identify(userId, traits);
-      });
+    if (initialized) {
+      posthog.identify(userId, traits);
     }
     if (import.meta.env.DEV) {
       console.log(`[analytics] identify`, userId, traits ?? '');
@@ -184,7 +151,9 @@ export function identify(userId: string, traits?: Record<string, unknown>) {
 
 export function resetAnalytics() {
   try {
-    posthogInstance?.reset();
+    if (initialized) {
+      posthog.reset();
+    }
   } catch {
     // never break UI over analytics
   }

@@ -6,9 +6,9 @@ import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 
 const tabs: { icon: FeatureIconName; label: string; path: string }[] = [
   { icon: 'home', label: 'Home', path: '/' },
-  { icon: 'scan', label: 'Scan', path: '/capture' },
+  { icon: 'post', label: 'Scan', path: '/capture' },
   { icon: 'tryon', label: 'Try-On', path: '/tryon' },
-  { icon: 'stylecheck', label: 'Style', path: '/style-check' },
+  { icon: 'stylecheck', label: 'Style Check', path: '/style-check' },
   { icon: 'profile', label: 'Profile', path: '/profile' },
 ];
 
@@ -25,7 +25,7 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
       transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.3 }}
       className="fixed bottom-0 left-0 right-0 z-50 lg:max-w-[390px] lg:left-1/2 lg:-translate-x-1/2 glass-bar border-t"
     >
-      <div className="flex items-center justify-evenly px-0 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <div className="flex items-center justify-around px-1 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {tabs.map((tab) => {
           const isActive = tab.path === '/'
             ? location.pathname === '/'

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { ArrowRight, Check } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Store, Shuffle, Eye, Shield, Camera, Check } from 'lucide-react';
 import BrandLogo from '@/components/ui/BrandLogo';
 import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 import { setOnboarded, setShoppingHabit, setGuestMode, type ShoppingHabit } from '@/lib/session';
@@ -15,7 +15,6 @@ import AuthForm from '@/components/auth/AuthForm';
 
 
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
-import onboardingBodyScan from '@/assets/onboarding-body-scan.jpg';
 import heroTryon from '@/assets/hero-tryon-mirror.jpg';
 import heroCommunity from '@/assets/hero-community-feedback.jpg';
 
@@ -33,7 +32,7 @@ const SLIDES = [
     title: 'Know your exact size in every brand',
     highlight: '',
     desc: 'Stop guessing. Two photos and 60 seconds gives you precise measurements across SHEIN, Zara, H&M, Lululemon, and 10+ more.',
-    image: onboardingBodyScan,
+    image: '',
   },
   {
     featureIcon: 'tryon' as FeatureIconName,
@@ -51,11 +50,11 @@ const SLIDES = [
   },
 ];
 
-const HABITS: { value: ShoppingHabit; icon: FeatureIconName; label: string; desc: string }[] = [
-  { value: 'online', icon: 'shop', label: 'Mostly Online', desc: 'I shop from my phone or laptop' },
-  { value: 'mix', icon: 'sparkles', label: 'Mix of Both', desc: 'Browse online, buy in-store or vice versa' },
-  { value: 'instore', icon: 'store', label: 'Mostly In-Store', desc: 'I prefer trying things on first' },
-  { value: 'browser', icon: 'eye', label: 'I Browse, Rarely Buy', desc: 'Sizing uncertainty stops me' },
+const HABITS: { value: ShoppingHabit; icon: typeof ShoppingBag; label: string; desc: string }[] = [
+  { value: 'online', icon: ShoppingBag, label: 'Mostly Online', desc: 'I shop from my phone or laptop' },
+  { value: 'mix', icon: Shuffle, label: 'Mix of Both', desc: 'Browse online, buy in-store or vice versa' },
+  { value: 'instore', icon: Store, label: 'Mostly In-Store', desc: 'I prefer trying things on first' },
+  { value: 'browser', icon: Eye, label: 'I Browse, Rarely Buy', desc: 'Sizing uncertainty stops me' },
 ];
 
 const Onboarding = () => {
@@ -245,27 +244,28 @@ const Onboarding = () => {
                       setSlideIdx(i => i - 1);
                     }
                   }}
-                  className="flex-1 flex flex-col min-h-0 cursor-grab active:cursor-grabbing"
+                  className="flex-1 flex flex-col items-center justify-center min-h-0 cursor-grab active:cursor-grabbing gap-6"
                 >
-                  {/* Image */}
-                  <div className="flex items-center justify-center px-4 min-h-0 flex-1 max-w-[480px] w-full self-center mx-auto overflow-hidden">
-                  {false ? (
+                  {/* Image — centered with safe top padding */}
+                  <div className="flex items-center justify-center mx-4 min-h-0 max-w-[480px] w-full self-center" style={{ maxHeight: '50dvh' }}>
+                    {slideIdx === 0 ? (
                       <DecorativeSilhouette height={340} />
                     ) : (
                       <div
-                        className="relative rounded-2xl overflow-hidden mx-auto w-full h-full"
-                        style={{ maxWidth: 'calc(100% - 16px)' }}
+                        className="relative rounded-2xl overflow-hidden"
+                        style={{
+                          maxHeight: '50dvh',
+                          maxWidth: 'calc(100% - 30px)',
+                          boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15), inset 0 0 14px 3px hsl(45 88% 50% / 0.2)',
+                          border: '2px solid hsl(45 88% 55% / 0.8)',
+                        }}
                       >
                         <img
                           src={SLIDES[slideIdx].image}
                           alt={SLIDES[slideIdx].title}
-                          className="w-full h-full object-contain rounded-2xl"
-                          width={606}
-                          height={663}
-                          fetchPriority={slideIdx === 0 ? 'high' : undefined}
-                          loading={slideIdx === 0 ? 'eager' : 'lazy'}
-                          decoding="async"
+                          className="w-full h-full object-cover rounded-2xl"
                           style={{
+                            maxHeight: '100%',
                             ...(slideIdx === 1 ? { filter: 'brightness(0.8)' } : {}),
                           }}
                         />
@@ -278,12 +278,15 @@ const Onboarding = () => {
                     )}
                   </div>
 
-                  {/* Text */}
-                  <div className="shrink-0 px-8 text-center py-3">
+                  {/* Text — below image with consistent gap */}
+                  <div className="flex flex-col items-center px-8 text-center shrink-0">
+                    <div className="mb-2">
+                      <FeatureIcon name={SLIDES[slideIdx].featureIcon} size={36} />
+                    </div>
                     <h2 className="font-display text-[20px] font-bold text-foreground leading-tight">
                       {SLIDES[slideIdx].title}
                     </h2>
-                    <p className="text-[13px] text-muted-foreground mt-1.5 leading-snug max-w-[300px] mx-auto">
+                    <p className="text-[13px] text-muted-foreground mt-1.5 leading-snug max-w-[300px]">
                       {SLIDES[slideIdx].desc}
                     </p>
                   </div>
@@ -345,6 +348,7 @@ const Onboarding = () => {
             {/* 2×2 grid */}
             <div className="grid grid-cols-2 gap-2.5 flex-1 content-start">
               {HABITS.map(h => {
+                const Icon = h.icon;
                 const selected = habit === h.value;
                 return (
                   <button
@@ -357,7 +361,7 @@ const Onboarding = () => {
                     <div className={`h-10 w-10 rounded-xl flex items-center justify-center mb-2 ${
                       selected ? 'badge-gold-3d' : 'bg-card border border-border'
                     }`}>
-                      <FeatureIcon name={h.icon} size={22} />
+                      <Icon className={`h-5 w-5 ${selected ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
                     </div>
                     <p className="font-bold text-[13px] text-foreground leading-tight">{h.label}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{h.desc}</p>
@@ -403,7 +407,7 @@ const Onboarding = () => {
                     <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${
                       selected ? 'badge-gold-3d' : 'bg-card border border-border'
                     }`}>
-                      <FeatureIcon name="shop" size={22} />
+                      <ShoppingBag className={`h-5 w-5 ${selected ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
                     </div>
                     <div className="text-left">
                       <p className="font-bold text-[14px] text-foreground leading-tight">{g.label}</p>
@@ -464,7 +468,7 @@ const Onboarding = () => {
                 {/* SAFE */}
                 <div className="w-full bg-card border border-border rounded-xl p-2.5 mb-2 space-y-1">
                   <div className="flex items-center gap-2">
-                    <FeatureIcon name="shield" size={16} className="shrink-0" />
+                    <Shield className="h-3.5 w-3.5 text-primary shrink-0" />
                     <p className="text-[10px] text-foreground font-medium">Photos processed privately — never stored without your consent.</p>
                   </div>
                   <p className="text-[11px] text-muted-foreground pl-5.5">Delete anytime from Settings.</p>
@@ -487,7 +491,7 @@ const Onboarding = () => {
                   onClick={startScan}
                   className="w-full h-11 rounded-xl btn-luxury text-primary-foreground font-display font-bold text-base uppercase tracking-wider active:scale-[0.97] transition-transform"
                 >
-                  <FeatureIcon name="scan" size={18} className="mr-2" /> Get My Size
+                  <Camera className="mr-2 h-4 w-4" /> Get My Size
                 </Button>
                 <button onClick={skipScan} className="text-[11px] text-muted-foreground font-semibold mt-2 hover:text-foreground transition-colors">
                   Skip for now — I'll do this later

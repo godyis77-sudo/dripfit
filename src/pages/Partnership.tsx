@@ -1,7 +1,6 @@
-import { ArrowRight } from 'lucide-react';
+import { TrendingDown, Users, ShoppingBag, Scan, Shirt, BarChart3, ArrowRight, Mail, CheckCircle2, ExternalLink } from 'lucide-react';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import BrandLogo from '@/components/ui/BrandLogo';
-import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 
 const STATS = [
   { value: '130+', label: 'Brands Indexed' },
@@ -10,10 +9,10 @@ const STATS = [
   { value: '<60s', label: 'Body Scan Time' },
 ];
 
-const HOW_IT_WORKS: { icon: FeatureIconName; title: string; desc: string }[] = [
-  { icon: 'scan', title: 'AI Body Scan', desc: 'Two smartphone photos → 6 precise body measurements extracted via computer vision in under 60 seconds.' },
-  { icon: 'chart', title: 'Size Matching', desc: 'Measurements mapped against brand-specific size charts. Users see their exact size per brand — not generic S/M/L.' },
-  { icon: 'shop', title: 'Confident Purchase', desc: 'Size-confident shoppers click through to your store, buy the right size first time, and keep what they buy.' },
+const HOW_IT_WORKS = [
+  { icon: Scan, title: 'AI Body Scan', desc: 'Two smartphone photos → 6 precise body measurements extracted via computer vision in under 60 seconds.' },
+  { icon: BarChart3, title: 'Size Matching', desc: 'Measurements mapped against brand-specific size charts. Users see their exact size per brand — not generic S/M/L.' },
+  { icon: ShoppingBag, title: 'Confident Purchase', desc: 'Size-confident shoppers click through to your store, buy the right size first time, and keep what they buy.' },
 ];
 
 const VALUE_PROPS = [
@@ -68,7 +67,7 @@ const Partnership = () => {
       <section className="max-w-3xl mx-auto px-6 py-14">
         <div className="bg-destructive/8 border border-destructive/20 rounded-2xl p-6 sm:p-8">
           <div className="flex items-start gap-3 mb-4">
-            <FeatureIcon name="chart" size={24} className="shrink-0 mt-0.5" />
+            <TrendingDown className="h-6 w-6 text-destructive shrink-0 mt-0.5" />
             <div>
               <h2 className="font-display text-xl font-bold">The $100B Problem</h2>
               <p className="text-muted-foreground text-sm mt-1">Sizing is the #1 reason for online fashion returns.</p>
@@ -96,7 +95,7 @@ const Partnership = () => {
           {HOW_IT_WORKS.map((step, i) => (
             <div key={step.title} className="flex items-start gap-4 bg-card border border-border rounded-2xl p-5">
               <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                <FeatureIcon name={step.icon} size={24} />
+                <step.icon className="h-5 w-5 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
@@ -117,7 +116,7 @@ const Partnership = () => {
           <div className="space-y-3">
             {VALUE_PROPS.map(v => (
               <div key={v} className="flex items-start gap-3">
-                <FeatureIcon name="check" size={20} className="shrink-0 mt-0.5" />
+                <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                 <p className="text-sm text-foreground leading-relaxed">{v}</p>
               </div>
             ))}
@@ -160,7 +159,7 @@ const Partnership = () => {
       {/* ── CTA ──────────────────────────────────────────── */}
       <section className="max-w-3xl mx-auto px-6 py-16 text-center">
         <div className="bg-gradient-to-br from-primary/10 via-card to-card border border-primary/20 rounded-2xl p-8 sm:p-12">
-          <FeatureIcon name="users" size={40} className="mx-auto mb-4" />
+          <Users className="h-10 w-10 text-primary mx-auto mb-4" />
           <h2 className="font-display text-2xl sm:text-3xl font-bold mb-2">Let's Reduce Returns Together</h2>
           <p className="text-muted-foreground text-sm max-w-md mx-auto mb-6">
             We'd love to explore a partnership. Reach out and we'll have you onboarded in days, not weeks.
@@ -169,9 +168,14 @@ const Partnership = () => {
             href="mailto:partnerships@dripfitcheck.com"
             className="inline-flex items-center gap-2 btn-gold-3d shimmer-sweep rounded-xl px-6 py-3 font-semibold text-sm text-primary-foreground"
           >
-            <FeatureIcon name="mail" size={18} />
+            <Mail className="h-4 w-4" />
             partnerships@dripfitcheck.com
           </a>
+          <div className="mt-6 flex items-center justify-center gap-4">
+            <a href="https://dripfitcheck.lovable.app" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline underline-offset-4 inline-flex items-center gap-1">
+              Try the App <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
         </div>
       </section>
 

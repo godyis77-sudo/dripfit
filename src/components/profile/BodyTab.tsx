@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Ruler, Camera, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
-import bodySilhouette from '@/assets/onboarding-body-scan.jpg';
+import bodySilhouette from '@/assets/body-silhouette-clean.webp';
 import type { BodyScanResult, FitPreference } from '@/lib/types';
 import BodyDiagram from '@/components/results/BodyDiagram';
 import ShareResultsButton from '@/components/results/ShareResultsButton';

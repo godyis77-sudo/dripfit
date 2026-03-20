@@ -1,7 +1,7 @@
 import { forwardRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { X } from 'lucide-react';
+import { Camera, ShoppingBag, X } from 'lucide-react';
 import FeatureIcon, { featureIcons } from '@/components/ui/FeatureIcon';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
@@ -76,7 +76,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           {[
             {
               onClick: () => { trackEvent('home_quick_scan'); navigate('/capture'); },
-              img: featureIcons.scan,
+              img: featureIcons.post,
               title: hasScan ? 'Re-Scan' : 'Body Scan',
               subtitle: hasScan ? 'Update fit' : '60s scan',
             },
@@ -148,7 +148,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             className="mb-3 bg-primary/10 border border-primary/20 rounded-xl p-3"
           >
             <div className="flex items-start gap-3">
-              <FeatureIcon name="scan" size={18} className="shrink-0 mt-0.5" />
+              <Camera className="h-4 w-4 text-primary shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
                 <p className="text-[12px] text-foreground leading-snug">
                   Your last scan was {daysSinceLastScan} days ago — re-scan to keep your fit accurate
@@ -184,7 +184,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               className="w-full bg-card border border-primary/20 rounded-xl p-3 flex items-center gap-3 active:scale-[0.98] transition-transform"
             >
               <div className="h-9 w-9 rounded-xl btn-gold-3d flex items-center justify-center shrink-0">
-                <FeatureIcon name="shop" size={20} />
+                <ShoppingBag className="h-4 w-4 text-primary-foreground" />
               </div>
               <div className="text-left flex-1">
                 <p className="text-[12px] font-bold text-foreground">Personalize your picks</p>
@@ -208,7 +208,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               className="w-full bg-card border border-border rounded-xl p-3 flex items-center gap-3 active:scale-[0.98] transition-transform"
             >
               <div className="h-9 w-9 rounded-xl badge-gold-3d shimmer-sweep shrink-0 flex items-center justify-center">
-                <FeatureIcon name="scan" size={20} />
+                <Camera className="h-4 w-4 text-primary-foreground" />
               </div>
               <div className="text-left">
                 <p className="text-[12px] font-bold text-foreground">Get personalized size recommendations</p>
@@ -227,7 +227,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
         >
           <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-1.5">
-              <FeatureIcon name="shop" size={16} />
+              <ShoppingBag className="h-3.5 w-3.5 text-primary" />
               <p className="section-label mb-0">Recommended for you</p>
             </div>
             <button

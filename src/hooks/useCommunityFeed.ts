@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getFollowingIds } from '@/hooks/useFollow';
 import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
-import { useVoting } from '@/hooks/useVoting';
+import { useCart } from '@/hooks/useCart';
 import type { Post, SeedPost, Retailer, FilterType, GenderKey } from '@/components/community/community-types';
 import { seedToPost, isValidImageUrl } from '@/components/community/community-types';
 
@@ -35,15 +35,7 @@ async function enrichPosts(data: any[], filter?: string) {
   let enriched = data.map(p => {
     const pr = ratingsByPost.get(p.id) || [];
     const c = pr.length;
-    return {
-      ...p,
-      profile: profileMap.get(p.user_id) || { display_name: 'Anonymous' },
-      avg_style: c ? pr.reduce((s: number, r: any) => s + r.style_score, 0) / c : 0,
-      avg_color: c ? pr.reduce((s: number, r: any) => s + r.color_score, 0) / c : 0,
-      avg_buy: c ? pr.reduce((s: number, r: any) => s + r.buy_score, 0) / c : 0,
-      avg_suitability: c ? pr.reduce((s: number, r: any) => s + r.suitability_score, 0) / c : 0,
-      rating_count: c,
-    };
+    return { ...p, profile: profileMap.get(p.user_id) || { display_name: 'Anonymous' }, avg_style: c ? pr.reduce((s: number, r: any) => s + r.style_score, 0) / c : 0, avg_color: c ? pr.reduce((s: number, r: any) => s + r.color_score, 0) / c : 0, avg_buy: c ? pr.reduce((s: number, r: any) => s + r.buy_score, 0) / c : 0, avg_suitability: c ? pr.reduce((s: number, r: any) => s + r.suitability_score, 0) / c : 0, rating_count: c };
   });
   if (filter === 'trending') enriched.sort((a, b) => (b.rating_count || 0) - (a.rating_count || 0));
   return enriched;
@@ -51,11 +43,14 @@ async function enrichPosts(data: any[], filter?: string) {
 
 export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFeedOptions) {
   const { toast } = useToast();
+  const { addToCart, removeFromCart } = useCart();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
+  const [votes, setVotes] = useState<Record<string, string[]>>({});
+  const [voteCounts, setVoteCounts] = useState<Record<string, Record<string, number>>>({});
   const [followingIds, setFollowingIds] = useState<string[]>([]);
   const [followToggles, setFollowToggles] = useState<Record<string, boolean>>({});
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
@@ -63,9 +58,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
   const [retailersLoading, setRetailersLoading] = useState(false);
   const [hasScan, setHasScan] = useState(false);
 
-  // Voting is now a dedicated hook
-  const { votes, voteCounts, handleVote } = useVoting(userId, posts);
-
+  // Track cached following IDs for similar feed
   const followingIdsRef = useRef(followingIds);
   followingIdsRef.current = followingIds;
   const followingIdsKey = followingIds.join(',');
@@ -270,6 +263,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     refetchOnWindowFocus: false,
   });
 
+  // Sync query results into existing state so the rest of the hook + UI stays unchanged
   useEffect(() => {
     if (feedQuery.data !== undefined) {
       setPosts(feedQuery.data);
@@ -303,6 +297,102 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
 
     return () => { supabase.removeChannel(channel); };
   }, []);
+
+  // Load vote counts
+  const postIdsKey = posts.map(p => p.id).join(',');
+  useEffect(() => {
+    if (posts.length === 0) return;
+    const loadVoteCounts = async (postIds: string[]) => {
+      const { data: allVotes } = await supabase.from('community_votes').select('post_id, vote_key, user_id').in('post_id', postIds);
+      if (!allVotes) return;
+      const counts: Record<string, Record<string, number>> = {};
+      const userVotes: Record<string, string[]> = {};
+      allVotes.forEach(v => {
+        if (!counts[v.post_id]) counts[v.post_id] = { buy_yes: 0, buy_no: 0, keep_shopping: 0, too_tight: 0, perfect: 0, too_loose: 0 };
+        counts[v.post_id][v.vote_key] = (counts[v.post_id][v.vote_key] || 0) + 1;
+        if (userId && v.user_id === userId) {
+          if (!userVotes[v.post_id]) userVotes[v.post_id] = [];
+          userVotes[v.post_id].push(v.vote_key);
+        }
+      });
+      setVoteCounts(prev => ({ ...prev, ...counts }));
+      setVotes(prev => ({ ...prev, ...userVotes }));
+    };
+    loadVoteCounts(posts.map(p => p.id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [postIdsKey, userId]);
+
+  const handleVote = useCallback(async (postId: string, key: string) => {
+    if (!userId) { toast({ title: 'Sign in to vote', description: 'Create a free account to share your opinion.', variant: 'destructive' }); return; }
+    // Prevent self-voting
+    const post = posts.find(p => p.id === postId);
+    if (post && post.user_id === userId) { toast({ title: 'Can\'t vote on your own post' }); return; }
+    const currentVotes = votes[postId] || [];
+    const isFitVote = ['too_tight', 'perfect', 'too_loose'].includes(key);
+    const hasKey = currentVotes.includes(key);
+
+    let newVotes: string[];
+    if (isFitVote) {
+      const otherFit = currentVotes.filter(v => !['too_tight', 'perfect', 'too_loose'].includes(v));
+      if (hasKey) { newVotes = otherFit; }
+      else {
+        for (const k of currentVotes.filter(v => ['too_tight', 'perfect', 'too_loose'].includes(v))) {
+          await supabase.from('community_votes').delete().eq('post_id', postId).eq('user_id', userId).eq('vote_key', k);
+        }
+        newVotes = [...otherFit, key];
+      }
+    } else if (key === 'keep_shopping') {
+      if (hasKey) {
+        newVotes = currentVotes.filter(v => v !== 'keep_shopping');
+      } else {
+        newVotes = [...currentVotes, 'keep_shopping'];
+      }
+    } else {
+      const otherBuy = currentVotes.filter(v => !['buy_yes', 'buy_no'].includes(v));
+      if (hasKey) {
+        newVotes = [...otherBuy];
+      } else {
+        for (const k of currentVotes.filter(v => ['buy_yes', 'buy_no'].includes(v))) {
+          await supabase.from('community_votes').delete().eq('post_id', postId).eq('user_id', userId).eq('vote_key', k);
+        }
+        newVotes = [...otherBuy, key];
+      }
+    }
+
+    setVotes(prev => ({ ...prev, [postId]: newVotes }));
+    setVoteCounts(prev => {
+      const postCounts = { ...(prev[postId] || { buy_yes: 0, buy_no: 0, keep_shopping: 0, too_tight: 0, perfect: 0, too_loose: 0 }) };
+      for (const k of currentVotes) { if (!newVotes.includes(k)) postCounts[k] = Math.max(0, (postCounts[k] || 0) - 1); }
+      for (const k of newVotes) { if (!currentVotes.includes(k)) postCounts[k] = (postCounts[k] || 0) + 1; }
+      return { ...prev, [postId]: postCounts };
+    });
+
+    if (hasKey) {
+      await supabase.from('community_votes').delete().eq('post_id', postId).eq('user_id', userId).eq('vote_key', key);
+    } else {
+      await supabase.from('community_votes').insert({ post_id: postId, user_id: userId, vote_key: key });
+    }
+
+    if (key === 'keep_shopping') {
+      const post = posts.find(p => p.id === postId);
+      if (post) {
+        if (hasKey) {
+          removeFromCart(postId);
+        } else {
+          addToCart({
+            post_id: post.id,
+            image_url: post.result_photo_url,
+            caption: post.caption,
+            product_urls: post.product_urls || null,
+            clothing_photo_url: post.clothing_photo_url || post.result_photo_url,
+          });
+        }
+      }
+    }
+
+    trackEvent('vote_submitted', { vote: key, source: 'fitcheck' });
+    trackEvent('fitcheck_voted', { vote: key });
+  }, [userId, votes, posts, toast, addToCart, removeFromCart]);
 
   const handleFollowToggle = useCallback(async (targetUserId: string) => {
     if (!userId) { toast({ title: 'Sign in to follow', variant: 'destructive' }); return; }
