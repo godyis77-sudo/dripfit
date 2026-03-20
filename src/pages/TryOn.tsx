@@ -12,6 +12,7 @@ import TryOnResultSection from '@/components/tryon/TryOnResultSection';
 import TryOnPremiumGate from '@/components/tryon/TryOnPremiumGate';
 import { CATEGORIES, ALL_PRODUCT_CATEGORIES, FREE_MONTHLY_LIMIT } from '@/components/tryon/tryon-constants';
 import { BRAND_GENRES, type BrandGenre } from '@/lib/brandGenres';
+import { FIT_OPTIONS, SORT_OPTIONS, type SortKey } from '@/lib/constants';
 import { trackEvent } from '@/lib/analytics';
 import { useTryOnState } from '@/hooks/useTryOnState';
 import { isGuestMode } from '@/lib/session';
