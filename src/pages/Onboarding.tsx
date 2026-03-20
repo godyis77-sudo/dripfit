@@ -255,8 +255,10 @@ const Onboarding = () => {
                       <div
                         className="relative rounded-2xl overflow-hidden mx-auto aspect-[606/663]"
                         style={{
-                          maxHeight: '50dvh',
-                          maxWidth: 'calc(100% - 30px)',
+                          maxHeight: '60dvh',
+                          maxWidth: 'calc(120% - 30px)',
+                          transform: 'scale(1.2)',
+                          transformOrigin: 'center center',
                         }}
                       >
                         <img
