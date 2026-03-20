@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo, forwardRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import type { MeasurementRange } from '@/lib/types';
-import bodySilhouette from '@/assets/body-silhouette-clean-2.webp';
+import bodySilhouette from '@/assets/onboarding-body-scan.jpg';
 import { getUseCm, setUseCm } from '@/lib/session';
 
 const CM_TO_IN = 0.3937;
