@@ -286,9 +286,6 @@ const Onboarding = () => {
 
                   {/* Text — below image with consistent gap */}
                   <div className="flex flex-col items-center px-8 text-center shrink-0">
-                    <div className="mb-2">
-                      <FeatureIcon name={SLIDES[slideIdx].featureIcon} size={36} />
-                    </div>
                     <h2 className="font-display text-[20px] font-bold text-foreground leading-tight">
                       {SLIDES[slideIdx].title}
                     </h2>
