@@ -253,18 +253,19 @@ const Onboarding = () => {
                       <DecorativeSilhouette height={340} />
                     ) : (
                       <div
-                        className="relative rounded-2xl overflow-hidden mx-auto"
+                        className="relative rounded-2xl overflow-hidden mx-auto aspect-[606/663]"
                         style={{
                           maxHeight: '50dvh',
                           maxWidth: 'calc(100% - 30px)',
                           boxShadow: '0 0 16px 6px hsl(45 88% 50% / 0.7), 0 0 50px 18px hsl(45 88% 45% / 0.35), 0 0 90px 30px hsl(45 88% 40% / 0.15), inset 0 0 14px 3px hsl(45 88% 50% / 0.2)',
                           border: '2px solid hsl(45 88% 55% / 0.8)',
+                          background: 'hsl(var(--background))',
                         }}
                       >
                         <img
                           src={SLIDES[slideIdx].image}
                           alt={SLIDES[slideIdx].title}
-                          className="w-full h-full object-cover rounded-2xl"
+                          className="w-full h-full object-contain rounded-2xl"
                           width={606}
                           height={663}
                           fetchPriority={slideIdx === 0 ? 'high' : undefined}
