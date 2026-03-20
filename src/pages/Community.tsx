@@ -30,11 +30,6 @@ import ShopFiltersPanel from '@/components/community/ShopFiltersPanel';
 import type { SortKey } from '@/components/community/ShopFiltersPanel';
 import CommunityFeedGrid from '@/components/community/CommunityFeedGrid';
 
-const FIT_OPTIONS = [
-  'oversized', 'boxy', 'relaxed fit', 'slim fit', 'regular fit',
-  'cropped', 'tapered', 'drop shoulder', 'heavyweight', 'lightweight',
-  'athletic fit', 'classic fit', 'skinny fit', 'loose fit',
-] as const;
 
 const Community = () => {
   const navigate = useNavigate();

@@ -20,6 +20,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { isNativePlatform, takeNativePhoto } from '@/lib/nativeCamera';
 import { compressPhoto } from '@/lib/imageUtils';
 import BottomTabBar from '@/components/BottomTabBar';
+import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
+import bodySilhouetteFrontMask from '@/assets/body-silhouette-mask.png';
+import bodySilhouetteSideMask from '@/assets/body-silhouette-side-mask.png';
+import CaptureViewfinder from '@/components/capture/CaptureViewfinder';
 
 type FlowStep = 'intro' | 'height' | 'front' | 'side' | 'review';
 const FLOW_STEPS: { key: FlowStep; label: string }[] = [
