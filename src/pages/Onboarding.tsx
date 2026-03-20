@@ -247,19 +247,14 @@ const Onboarding = () => {
                   }}
                   className="flex-1 flex flex-col min-h-0 cursor-grab active:cursor-grabbing"
                 >
-                  {/* Image — top portion */}
-                  <div className="flex items-center justify-center px-4 min-h-0 flex-1 max-w-[480px] w-full self-center mx-auto" style={{ maxHeight: '50dvh' }}>
+                  {/* Image */}
+                  <div className="flex items-center justify-center px-4 min-h-0 flex-1 max-w-[480px] w-full self-center mx-auto overflow-hidden">
                   {false ? (
                       <DecorativeSilhouette height={340} />
                     ) : (
                       <div
-                        className="relative rounded-2xl overflow-hidden mx-auto aspect-[606/663]"
-                        style={{
-                          maxHeight: '60dvh',
-                          maxWidth: 'calc(120% - 30px)',
-                          transform: 'scale(1.05)',
-                          transformOrigin: 'center center',
-                        }}
+                        className="relative rounded-2xl overflow-hidden mx-auto w-full h-full"
+                        style={{ maxWidth: 'calc(100% - 16px)' }}
                       >
                         <img
                           src={SLIDES[slideIdx].image}
@@ -271,7 +266,6 @@ const Onboarding = () => {
                           loading={slideIdx === 0 ? 'eager' : 'lazy'}
                           decoding="async"
                           style={{
-                            maxHeight: '100%',
                             ...(slideIdx === 1 ? { filter: 'brightness(0.8)' } : {}),
                           }}
                         />
@@ -284,16 +278,14 @@ const Onboarding = () => {
                     )}
                   </div>
 
-                  {/* Text — centered in remaining space */}
-                  <div className="flex items-center justify-center px-8 text-center py-4">
-                    <div>
-                      <h2 className="font-display text-[20px] font-bold text-foreground leading-tight">
-                        {SLIDES[slideIdx].title}
-                      </h2>
-                      <p className="text-[13px] text-muted-foreground mt-1.5 leading-snug max-w-[300px] mx-auto">
-                        {SLIDES[slideIdx].desc}
-                      </p>
-                    </div>
+                  {/* Text */}
+                  <div className="shrink-0 px-8 text-center py-3">
+                    <h2 className="font-display text-[20px] font-bold text-foreground leading-tight">
+                      {SLIDES[slideIdx].title}
+                    </h2>
+                    <p className="text-[13px] text-muted-foreground mt-1.5 leading-snug max-w-[300px] mx-auto">
+                      {SLIDES[slideIdx].desc}
+                    </p>
                   </div>
                 </motion.div>
               </AnimatePresence>
