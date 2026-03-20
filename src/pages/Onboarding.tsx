@@ -257,7 +257,7 @@ const Onboarding = () => {
                         style={{
                           maxHeight: '60dvh',
                           maxWidth: 'calc(120% - 30px)',
-                          transform: 'scale(1.1)',
+                          transform: 'scale(1.05)',
                           transformOrigin: 'center center',
                         }}
                       >
