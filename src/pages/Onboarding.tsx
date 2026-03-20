@@ -285,7 +285,7 @@ const Onboarding = () => {
                   </div>
 
                   {/* Text — centered in remaining space */}
-                  <div className="flex-1 flex items-center justify-center px-8 text-center shrink-0">
+                  <div className="flex items-center justify-center px-8 text-center py-4">
                     <div>
                       <h2 className="font-display text-[20px] font-bold text-foreground leading-tight">
                         {SLIDES[slideIdx].title}
