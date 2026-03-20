@@ -1,0 +1,21 @@
+# Hashed assets (JS, CSS, images built by Vite) – immutable forever
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Static files in public/ (icons, manifest, robots)
+/*.png
+  Cache-Control: public, max-age=2592000
+/*.ico
+  Cache-Control: public, max-age=2592000
+/*.svg
+  Cache-Control: public, max-age=2592000
+/*.webp
+  Cache-Control: public, max-age=2592000
+/robots.txt
+  Cache-Control: public, max-age=86400
+
+# HTML – always revalidate
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+/
+  Cache-Control: public, max-age=0, must-revalidate
