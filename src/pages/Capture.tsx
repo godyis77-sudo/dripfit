@@ -83,10 +83,6 @@ function clearScanState() {
   } catch {}
 }
 
-import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
-import bodySilhouetteFrontMask from '@/assets/body-silhouette-mask.png';
-import bodySilhouetteSideMask from '@/assets/body-silhouette-side-mask.png';
-import CaptureViewfinder from '@/components/capture/CaptureViewfinder';
 
 const Capture = () => {
   const navigate = useNavigate();
