@@ -1,21 +1,63 @@
-// PostHog analytics — falls back to console.log if key is not set
+// PostHog analytics — deferred initialization to reduce main-thread blocking
 
-import posthog from 'posthog-js';
+import type { PostHog } from 'posthog-js';
 
 const POSTHOG_KEY = (import.meta.env.VITE_POSTHOG_KEY as string | undefined) || 'phc_YCzbtL0TcOZ0YzB0aGv2kXIYoGuscc09iXqXHIfuoMZ';
 const POSTHOG_HOST = (import.meta.env.VITE_POSTHOG_HOST as string) || 'https://us.i.posthog.com';
 
-let initialized = false;
+let ph: PostHog | null = null;
+let initPromise: Promise<PostHog | null> | null = null;
 
-if (POSTHOG_KEY) {
-  posthog.init(POSTHOG_KEY, {
-    api_host: POSTHOG_HOST,
-    autocapture: false,
-    capture_pageview: true,
-    persistence: 'localStorage+cookie',
+/** Lazily load and init PostHog once */
+function getPostHog(): Promise<PostHog | null> {
+  if (ph) return Promise.resolve(ph);
+  if (!POSTHOG_KEY) return Promise.resolve(null);
+  if (initPromise) return initPromise;
+
+  initPromise = import('posthog-js').then((mod) => {
+    const posthog = mod.default;
+    posthog.init(POSTHOG_KEY, {
+      api_host: POSTHOG_HOST,
+      autocapture: false,
+      capture_pageview: true,
+      persistence: 'localStorage+cookie',
+    });
+    ph = posthog;
+    return posthog;
+  }).catch(() => {
+    initPromise = null;
+    return null;
   });
-  initialized = true;
+
+  return initPromise;
 }
+
+/** Trigger PostHog load on first user interaction or after idle timeout */
+function scheduleInit() {
+  const events = ['click', 'scroll', 'keydown', 'touchstart'] as const;
+  let triggered = false;
+
+  const trigger = () => {
+    if (triggered) return;
+    triggered = true;
+    events.forEach((e) => window.removeEventListener(e, trigger, { capture: true }));
+    getPostHog();
+  };
+
+  // Load on first interaction
+  events.forEach((e) => window.addEventListener(e, trigger, { capture: true, once: true, passive: true } as AddEventListenerOptions));
+
+  // Fallback: load after idle (max 8s)
+  if ('requestIdleCallback' in window) {
+    (window as any).requestIdleCallback(trigger, { timeout: 8000 });
+  } else {
+    setTimeout(trigger, 4000);
+  }
+}
+
+scheduleInit();
+
+// --- public API (fire-and-forget, never blocks UI) ---
 
 type FunnelEvent =
   | 'home_start_scan_click'
@@ -118,16 +160,12 @@ type FunnelEvent =
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
-    if (initialized) {
-      posthog.capture(event, meta);
-    }
+    getPostHog().then((p) => p?.capture(event, meta));
 
-    // Log to console in dev
     if (import.meta.env.DEV) {
       console.log(`[analytics] ${event}`, meta ?? '');
     }
 
-    // Store locally for lightweight funnel debugging
     const log = JSON.parse(sessionStorage.getItem('df_events') || '[]');
     log.push({ event, ts: Date.now(), ...(meta ?? {}) });
     sessionStorage.setItem('df_events', JSON.stringify(log.slice(-100)));
@@ -138,9 +176,7 @@ export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
 
 export function identify(userId: string, traits?: Record<string, unknown>) {
   try {
-    if (initialized) {
-      posthog.identify(userId, traits);
-    }
+    getPostHog().then((p) => p?.identify(userId, traits));
     if (import.meta.env.DEV) {
       console.log(`[analytics] identify`, userId, traits ?? '');
     }
@@ -151,9 +187,7 @@ export function identify(userId: string, traits?: Record<string, unknown>) {
 
 export function resetAnalytics() {
   try {
-    if (initialized) {
-      posthog.reset();
-    }
+    getPostHog().then((p) => p?.reset());
   } catch {
     // never break UI over analytics
   }
