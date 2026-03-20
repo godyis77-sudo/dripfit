@@ -20,6 +20,7 @@ import { useProductCatalog } from '@/hooks/useProductCatalog';
 import { isValidImageUrl } from '@/components/community/community-types';
 import type { Post, FilterType, TrendingSort, GenderKey } from '@/components/community/community-types';
 import type { BrandGenre } from '@/lib/brandGenres';
+import { FIT_OPTIONS } from '@/lib/constants';
 
 // Sub-components
 import CommunityHeader from '@/components/community/CommunityHeader';
@@ -29,11 +30,6 @@ import ShopFiltersPanel from '@/components/community/ShopFiltersPanel';
 import type { SortKey } from '@/components/community/ShopFiltersPanel';
 import CommunityFeedGrid from '@/components/community/CommunityFeedGrid';
 
-const FIT_OPTIONS = [
-  'oversized', 'boxy', 'relaxed fit', 'slim fit', 'regular fit',
-  'cropped', 'tapered', 'drop shoulder', 'heavyweight', 'lightweight',
-  'athletic fit', 'classic fit', 'skinny fit', 'loose fit',
-] as const;
 
 const Community = () => {
   const navigate = useNavigate();
