@@ -20,6 +20,7 @@ import { useProductCatalog } from '@/hooks/useProductCatalog';
 import { isValidImageUrl } from '@/components/community/community-types';
 import type { Post, FilterType, TrendingSort, GenderKey } from '@/components/community/community-types';
 import type { BrandGenre } from '@/lib/brandGenres';
+import { FIT_OPTIONS } from '@/lib/constants';
 
 // Sub-components
 import CommunityHeader from '@/components/community/CommunityHeader';
