@@ -129,6 +129,22 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
     }
   };
 
+  const handleFacebookLogin = async () => {
+    setSocialLoading('facebook');
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'facebook',
+        options: { redirectTo: window.location.origin },
+      });
+      if (error) throw error;
+      trackEvent('auth_completed', { method: 'facebook' });
+    } catch (err: any) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setSocialLoading(null);
+    }
+  };
+
   const handleForgotPassword = async () => {
     if (!forgotEmail) {
       toast({ title: 'Enter your email', description: 'Type your email address above first.', variant: 'destructive' });
