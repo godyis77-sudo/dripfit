@@ -220,16 +220,6 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
             </Button>
           </div>
 
-          {/* Facebook login */}
-          <Button
-            variant="outline"
-            className="w-full h-10 rounded-lg text-[12px] font-semibold text-white border-0 active:scale-[0.97] transition-transform hover:opacity-90"
-            style={{ backgroundColor: '#1877F2' }}
-            onClick={handleFacebookLogin}
-            disabled={!!socialLoading}
-          >
-            {socialLoading === 'facebook' ? '…' : (<><FacebookIcon />Continue with Facebook</>)}
-          </Button>
 
           {/* Divider */}
           <div className="relative">
