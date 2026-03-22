@@ -115,18 +115,35 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     letter-spacing: 0.01em;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    overscroll-behavior-y: contain;
   }
 
   /* Serif headings */
   h1, h2, h3 {
     font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
     letter-spacing: -0.01em;
+  }
+
+  /* Safe area padding utilities */
+  .pb-safe-tab {
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
   }
 }
 

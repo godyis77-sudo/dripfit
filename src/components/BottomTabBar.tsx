@@ -2,19 +2,25 @@ import { forwardRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { hapticFeedback } from '@/lib/haptics';
 import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 
 const tabs: { icon: FeatureIconName; label: string; path: string }[] = [
   { icon: 'home', label: 'Home', path: '/' },
   { icon: 'post', label: 'Scan', path: '/capture' },
   { icon: 'tryon', label: 'Try-On', path: '/tryon' },
-  { icon: 'stylecheck', label: 'Style Check', path: '/style-check' },
+  { icon: 'stylecheck', label: 'Style', path: '/style-check' },
   { icon: 'profile', label: 'Profile', path: '/profile' },
 ];
 
 const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const handleTabPress = (path: string) => {
+    hapticFeedback('light');
+    navigate(path);
+  };
 
   return (
     <motion.nav
@@ -23,7 +29,7 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
       initial={{ y: 80 }}
       animate={{ y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.3 }}
-      className="fixed bottom-0 left-0 right-0 z-50 lg:max-w-[390px] lg:left-1/2 lg:-translate-x-1/2 glass-bar border-t"
+      className="fixed bottom-0 left-0 right-0 z-50 lg:max-w-[390px] lg:left-1/2 lg:-translate-x-1/2 glass-bar border-t backdrop-blur-xl"
     >
       <div className="flex items-center justify-around px-1 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {tabs.map((tab) => {
@@ -33,10 +39,13 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
               ? ['/capture', '/analyze', '/scan-success', '/results'].some(p => location.pathname.startsWith(p))
               : location.pathname.startsWith(tab.path);
           return (
-            <button
+            <motion.button
               key={tab.path}
-              onClick={() => navigate(tab.path)}
+              onClick={() => handleTabPress(tab.path)}
+              whileTap={{ scale: 0.9 }}
+              transition={{ duration: 0.1 }}
               aria-label={tab.label}
+              aria-current={isActive ? 'page' : undefined}
               className={cn(
                 'relative flex flex-col items-center gap-0 rounded-xl px-2 py-1 min-h-[44px] min-w-[44px] transition-all duration-300',
                 isActive
@@ -61,7 +70,7 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
-            </button>
+            </motion.button>
           );
         })}
       </div>
