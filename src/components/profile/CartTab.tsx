@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Sparkles, ExternalLink, XCircle, Trash2, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,7 @@ const normalizeProductUrl = (url: string) => {
   }
 };
 
-const CartTab = () => {
+const CartTab = forwardRef<HTMLDivElement>((_, ref) => {
   const navigate = useNavigate();
   const { items, removeFromCart, clearCart } = useCart();
   const [previewProduct, setPreviewProduct] = useState<ProductPreviewData | null>(null);
@@ -86,7 +86,7 @@ const CartTab = () => {
 
   if (items.length === 0) {
     return (
-      <div className="text-center py-10">
+      <div ref={ref} className="text-center py-10">
         <div className="h-12 w-12 rounded-xl badge-gold-3d shimmer-sweep mx-auto mb-3 flex items-center justify-center">
           <ShoppingCart className="h-6 w-6 text-primary-foreground" />
         </div>
@@ -102,7 +102,7 @@ const CartTab = () => {
   }
 
   return (
-    <div className="space-y-2 pb-4">
+    <div ref={ref} className="space-y-2 pb-4">
       <div className="flex items-center justify-between mb-1">
         <p className="text-[11px] text-muted-foreground font-medium">{items.length} item{items.length !== 1 ? 's' : ''}</p>
         <button onClick={clearCart} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1">
@@ -281,6 +281,8 @@ const CartTab = () => {
       />
     </div>
   );
-};
+});
+
+CartTab.displayName = 'CartTab';
 
 export default CartTab;
