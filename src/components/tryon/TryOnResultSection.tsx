@@ -14,6 +14,7 @@ import type { CatalogProduct } from '@/hooks/useProductCatalog';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import TryOnLoadingAnimation from '@/components/tryon/TryOnLoadingAnimation';
+import BackgroundSwapOverlay from '@/components/bgswap/BackgroundSwapOverlay';
 
 interface LookItem {
   brand: string;
