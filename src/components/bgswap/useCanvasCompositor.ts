@@ -7,7 +7,9 @@ interface CompositeOptions {
   width?: number;
   height?: number;
   addWatermark?: boolean;
-  scaleOverride?: number | null; // 0.3–1.2, null = auto
+  scaleOverride?: number | null;
+  offsetX?: number; // -1 to 1 (0 = centered)
+  offsetY?: number; // -1 to 1 (0 = auto ground)
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {
