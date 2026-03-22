@@ -1,4 +1,5 @@
 import type { MeasurementRange } from '@/lib/types';
+import { trackEvent } from '@/lib/analytics';
 
 const CM_TO_IN = 0.3937;
 const W = 1080;
