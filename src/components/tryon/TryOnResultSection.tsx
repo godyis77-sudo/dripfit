@@ -500,6 +500,16 @@ const TryOnResultSection = ({
 
         <p className="text-[10px] text-muted-foreground/50 text-center mt-1">We may earn a commission. It doesn't change your price.</p>
       </motion.div>
+
+      {/* Background Swap Overlay */}
+      <AnimatePresence>
+        {showBgSwap && (
+          <BackgroundSwapOverlay
+            resultImageUrl={resultImage}
+            onClose={() => setShowBgSwap(false)}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 };
