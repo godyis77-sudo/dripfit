@@ -113,22 +113,25 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
     staleTime: 5 * 60 * 1000,
   });
 
+  const [removalError, setRemovalError] = useState(false);
+
+  const attemptRemoval = useCallback(async () => {
+    setRemovalError(false);
+    try {
+      trackEvent('bg_swap_opened');
+      const url = await removeBackground(resultImageUrl);
+      setTransparentSubject(url);
+    } catch (err) {
+      console.error('BG removal failed:', err);
+      setRemovalError(true);
+      toast({ title: 'Background removal failed', description: 'Tap Retry to try again.', variant: 'destructive' });
+    }
+  }, [resultImageUrl, removeBackground, toast]);
+
   // Remove background on mount
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        trackEvent('bg_swap_opened');
-        const url = await removeBackground(resultImageUrl);
-        if (!cancelled) setTransparentSubject(url);
-      } catch (err) {
-        console.error('BG removal failed:', err);
-        toast({ title: 'Background removal failed', description: 'Please try again.', variant: 'destructive' });
-        onClose();
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [resultImageUrl]);
+    attemptRemoval();
+  }, []);
 
   // Update preview when subject or background changes
   useEffect(() => {
