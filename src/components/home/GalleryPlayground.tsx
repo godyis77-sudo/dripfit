@@ -115,6 +115,12 @@ const GalleryPlayground = () => {
               {cat.label}
             </button>
           ))}
+          <button
+            onClick={() => navigate('/browse/tops')}
+            className="shrink-0 px-3.5 py-1.5 rounded-xl text-[11px] font-bold transition-colors min-h-[36px] bg-card border border-primary/30 text-primary flex items-center gap-1"
+          >
+            Browse All →
+          </button>
         </motion.div>
 
         {/* Product Grid */}
