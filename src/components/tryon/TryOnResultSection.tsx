@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Loader2, Check, MessageSquare, Save, RotateCcw, ShoppingBag, Camera, ImageIcon, Bookmark, ChevronRight, ChevronDown, X } from 'lucide-react';
+import { Sparkles, Loader2, Check, MessageSquare, Save, RotateCcw, ShoppingBag, Camera, ImageIcon, Bookmark, ChevronRight, ChevronDown, X, ArrowLeftRight, ExternalLink } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
 import WhatsInThisLook, { type LookItem as WhatsLookItem } from '@/components/community/WhatsInThisLook';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
@@ -80,6 +80,7 @@ const TryOnResultSection = ({
   const accessorySectionRef = useRef<HTMLDivElement>(null);
   const [accessoryStepIndex, setAccessoryStepIndex] = useState(0);
   const [showResultFullscreen, setShowResultFullscreen] = useState(false);
+  const [showBeforeAfter, setShowBeforeAfter] = useState(false);
 
   const handleAddToWardrobe = async (item: WhatsLookItem) => {
     if (!authUser) {
@@ -91,7 +92,6 @@ const TryOnResultSection = ({
       const imageUrl = item.image_url || clothingPhoto || '';
       if (!imageUrl) { onToast({ title: 'No image available', variant: 'destructive' }); return; }
       
-      // Upload base64 if needed
       let finalUrl = imageUrl;
       if (imageUrl.startsWith('data:')) {
         const blob = await fetch(imageUrl).then(r => r.blob());
@@ -168,6 +168,11 @@ const TryOnResultSection = ({
         }]
       : [];
 
+  const shopUrl = displayItems[0]?.url || productLink || selectedQuickPick?.product_url;
+  const productName = selectedQuickPick?.name || displayItems[0]?.name;
+  const productBrand = selectedQuickPick?.brand || displayItems[0]?.brand;
+  const productPrice = selectedQuickPick?.price_cents || displayItems[0]?.price_cents;
+
   return (
     <>
       {/* Success Overlay */}
@@ -182,36 +187,109 @@ const TryOnResultSection = ({
       </AnimatePresence>
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: showSuccessOverlay ? 1.5 : 0 }}>
-        {/* Result image */}
-        <motion.div className="rounded-xl overflow-hidden border border-primary/30 mb-3"
-          initial={{ boxShadow: '0 0 0 0 hsla(var(--primary), 0)' }}
-          animate={{ boxShadow: ['0 0 0 0 hsla(var(--primary), 0)', '0 0 20px 4px hsla(var(--primary), 0.3)', '0 0 0 0 hsla(var(--primary), 0)'] }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
+
+        {/* ── Hero Result Image ── */}
+        <div className="relative rounded-2xl overflow-hidden border border-primary/20 mb-3 shadow-[0_4px_24px_-4px_hsl(var(--primary)/0.15)]">
           <button
             type="button"
             onClick={() => setShowResultFullscreen(true)}
             className="block w-full cursor-zoom-in"
             aria-label="Open try-on result full screen"
           >
-            <img src={resultImage} alt="Try-on result" className="w-full rounded-xl" />
+            <AnimatePresence mode="wait">
+              {showBeforeAfter && clothingPhoto ? (
+                <motion.div key="before-after" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-2 gap-0">
+                  <div className="relative">
+                    <img src={clothingPhoto} alt="Clothing item" className="w-full aspect-[3/4] object-cover" />
+                    <span className="absolute top-2 left-2 text-[9px] font-bold uppercase tracking-wider bg-black/60 text-white px-2 py-0.5 rounded-md">Item</span>
+                  </div>
+                  <div className="relative">
+                    <img src={resultImage} alt="Try-on result" className="w-full aspect-[3/4] object-cover" />
+                    <span className="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wider bg-primary/80 text-primary-foreground px-2 py-0.5 rounded-md">Result</span>
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.img key="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} src={resultImage} alt="Try-on result" className="w-full rounded-2xl" />
+              )}
+            </AnimatePresence>
           </button>
-        </motion.div>
+
+          {/* Before/After toggle */}
+          {clothingPhoto && (
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowBeforeAfter(v => !v); }}
+              className="absolute bottom-3 left-3 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold active:scale-95 transition-transform"
+            >
+              <ArrowLeftRight className="h-3 w-3" />
+              {showBeforeAfter ? 'Full View' : 'Compare'}
+            </button>
+          )}
+        </div>
+
+        {/* ── Product Info Bar ── */}
+        {(productName || shopUrl) && (
+          <div className="flex items-center gap-3 bg-card border border-border rounded-xl px-3 py-2.5 mb-3">
+            {selectedQuickPick?.image_url && (
+              <img src={selectedQuickPick.image_url} alt="" className="w-10 h-10 rounded-lg object-cover border border-border shrink-0" />
+            )}
+            <div className="flex-1 min-w-0">
+              {productBrand && <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{productBrand}</p>}
+              {productName && <p className="text-[11px] font-bold text-foreground truncate">{productName}</p>}
+              {productPrice && <p className="text-[12px] font-bold text-primary">${(productPrice / 100).toFixed(0)}</p>}
+            </div>
+            {shopUrl && (
+              <button
+                onClick={() => window.open(shopUrl, '_blank', 'noopener')}
+                className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-lg btn-luxury text-primary-foreground text-[10px] font-bold active:scale-95 transition-transform"
+              >
+                <ExternalLink className="h-3 w-3" /> Shop
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* ── Quick Action Bar ── */}
+        <div className="grid grid-cols-3 gap-2 mb-3">
+          {!shared && (
+            <button
+              onClick={() => { onSetShowPostUI(true); if (!caption) onSetCaption(getCaptionSuggestions(category)[0]); onSetIsPublic(true); }}
+              className="flex flex-col items-center gap-1 py-2.5 rounded-xl bg-card border border-border active:scale-[0.96] transition-transform"
+            >
+              <MessageSquare className="h-4 w-4 text-primary" />
+              <span className="text-[10px] font-bold text-foreground">Post</span>
+            </button>
+          )}
+          {shared && (
+            <div className="flex flex-col items-center gap-1 py-2.5 rounded-xl bg-primary/5 border border-primary/20">
+              <Check className="h-4 w-4 text-primary" />
+              <span className="text-[10px] font-bold text-primary">Posted</span>
+            </div>
+          )}
+          <button
+            onClick={onTryAnother}
+            className="flex flex-col items-center gap-1 py-2.5 rounded-xl bg-card border border-border active:scale-[0.96] transition-transform"
+          >
+            <RotateCcw className="h-4 w-4 text-foreground/70" />
+            <span className="text-[10px] font-bold text-foreground">New</span>
+          </button>
+          <button
+            onClick={onSaveToItems}
+            className={`flex flex-col items-center gap-1 py-2.5 rounded-xl border active:scale-[0.96] transition-transform ${savedToItems ? 'bg-primary/5 border-primary/20' : 'bg-card border-border'}`}
+          >
+            <Bookmark className={`h-4 w-4 ${savedToItems ? 'text-primary fill-primary' : 'text-foreground/70'}`} />
+            <span className={`text-[10px] font-bold ${savedToItems ? 'text-primary' : 'text-foreground'}`}>{savedToItems ? 'Saved' : 'Save'}</span>
+          </button>
+        </div>
 
         {/* What's In This Look */}
-        <WhatsInThisLook items={displayItems} clothingPhotoUrl={clothingPhoto} defaultOpen={showLookItems} variant="detail" onAddToWardrobe={handleAddToWardrobe} />
-
-        {/* PRIMARY CTA: Save & Post */}
-        {!shared && !showPostUI && (
-          <Button className="w-full h-11 rounded-xl btn-luxury text-primary-foreground text-[13px] font-bold tracking-wide mb-2" onClick={() => { onSetShowPostUI(true); if (!caption) onSetCaption(getCaptionSuggestions(category)[0]); onSetIsPublic(true); }}>
-            <MessageSquare className="mr-1.5 h-4 w-4" /> Save & Post to Style Check
-          </Button>
+        {displayItems.length > 0 && (
+          <WhatsInThisLook items={displayItems} clothingPhotoUrl={clothingPhoto} defaultOpen={showLookItems} variant="detail" onAddToWardrobe={handleAddToWardrobe} />
         )}
 
         {/* Post UI */}
         <AnimatePresence>
           {showPostUI && !shared && (
-            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden mb-2">
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden mb-3">
               <div className="space-y-2 p-3 bg-card border border-border rounded-xl">
                 <div>
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Caption or question</p>
@@ -239,38 +317,7 @@ const TryOnResultSection = ({
           )}
         </AnimatePresence>
 
-        {shared && (
-          <div className="flex items-center gap-2 justify-center mb-2 bg-primary/5 border border-primary/20 rounded-lg px-3 py-2">
-            <Check className="h-3.5 w-3.5 text-primary" />
-            <span className="text-[12px] font-bold text-primary">{isPublic ? 'Posted to Style Check!' : 'Saved!'}</span>
-          </div>
-        )}
-
-
-
-
-        {/* Shop item picker */}
-        <AnimatePresence>
-          {showShopPicker && displayItems.length > 1 && (
-            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden mb-3">
-              <div className="bg-card border border-border rounded-xl p-3 space-y-1.5">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Choose item to shop</p>
-                {displayItems.map((item, i) => (
-                  <button key={i} onClick={() => { if (item.url) window.open(item.url, '_blank', 'noopener'); setShowShopPicker(false); }} className="w-full flex items-center gap-3 p-2 rounded-lg border border-border hover:border-primary/40 active:scale-[0.98] transition-all text-left">
-                    {item.image_url && <img src={item.image_url} alt="" className="w-10 h-10 rounded-md object-cover border border-border shrink-0" />}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{item.brand}</p>
-                      <p className="text-[11px] font-bold text-foreground truncate">{item.name}</p>
-                      {item.price_cents && <p className="text-[11px] font-bold text-primary">${(item.price_cents / 100).toFixed(0)}</p>}
-                    </div>
-                    <ShoppingBag className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                  </button>
-                ))}
-                <button onClick={() => setShowShopPicker(false)} className="w-full text-[10px] text-muted-foreground text-center py-1.5">Cancel</button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* ── Add More Style ── */}
         <div className="mb-3">
           <button onClick={() => { const opening = !showAccessorySection; setShowAccessorySection(opening); if (opening) { setTimeout(() => accessorySectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250); } }} className="w-full flex items-center justify-center gap-2 btn-luxury text-primary-foreground rounded-xl px-4 h-11 active:scale-[0.97] transition-transform shimmer-sweep">
             <Sparkles className="h-4 w-4" />
@@ -358,6 +405,7 @@ const TryOnResultSection = ({
           </AnimatePresence>
         </div>
 
+        {/* ── Fullscreen Portal ── */}
         {showResultFullscreen && createPortal(
           <motion.div
             initial={{ opacity: 0 }}
@@ -385,6 +433,23 @@ const TryOnResultSection = ({
               className="max-w-[calc(100%-2rem)] max-h-[82dvh] w-auto h-auto rounded-xl"
               onPointerDown={(e) => e.stopPropagation()}
             />
+            {/* Fullscreen action buttons */}
+            <div className="flex gap-3 mt-4">
+              {shopUrl && (
+                <button
+                  onClick={() => { window.open(shopUrl, '_blank', 'noopener'); setShowResultFullscreen(false); }}
+                  className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[12px] font-bold text-white bg-white/15 border border-white/20 backdrop-blur-sm active:scale-95 transition-transform"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" /> Shop
+                </button>
+              )}
+              <button
+                onClick={() => { onTryAnother(); setShowResultFullscreen(false); }}
+                className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[12px] font-bold text-white bg-white/15 border border-white/20 backdrop-blur-sm active:scale-95 transition-transform"
+              >
+                <RotateCcw className="h-3.5 w-3.5" /> New
+              </button>
+            </div>
           </motion.div>,
           document.body
         )}
