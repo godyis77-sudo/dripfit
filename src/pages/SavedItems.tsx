@@ -61,7 +61,7 @@ const SavedItems = () => {
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
       <div>
         <div className="flex items-center gap-2 mb-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg" aria-label="Go back">
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back">
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>

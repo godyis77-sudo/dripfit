@@ -271,7 +271,7 @@ const Results = () => {
       />
       <div>
         <div className="flex items-center mb-3">
-          <Button variant="ghost" size="icon" onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/')} className="h-8 w-8 rounded-lg" aria-label="Go back">
+          <Button variant="ghost" size="icon" onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/')} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </div>
