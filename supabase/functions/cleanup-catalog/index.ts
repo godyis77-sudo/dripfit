@@ -468,7 +468,7 @@ Deno.serve(async (req) => {
         const existingFit: string[] = Array.isArray(product.fit_profile) ? product.fit_profile : [];
         const existingFabric: string[] = Array.isArray(product.fabric_composition) ? product.fabric_composition : [];
         if (existingFit.length === 0 || existingFabric.length === 0) {
-          const fitProfile = existingFit.length === 0 ? extractFitProfile(name) : existingFit;
+          const fitProfile = existingFit.length === 0 ? extractFitProfile(name, product.brand || '', product.category || '') : existingFit;
           const fabricComp = existingFabric.length === 0 ? extractFabricComposition(name) : existingFabric;
           if (fitProfile.length > 0 || fabricComp.length > 0) {
             toFitFabric.push({ id: product.id, fit_profile: fitProfile, fabric_composition: fabricComp });
