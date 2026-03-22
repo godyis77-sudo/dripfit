@@ -25,31 +25,37 @@ function analyzeBackgroundLighting(
   width: number,
   height: number
 ): { r: number; g: number; b: number; brightness: number } {
-  // Sample a vertical strip in the center (where the subject will be)
-  const sampleX = Math.floor(width * 0.25);
-  const sampleW = Math.floor(width * 0.5);
-  const sampleH = height;
-  const imageData = ctx.getImageData(sampleX, 0, sampleW, sampleH);
-  const data = imageData.data;
+  try {
+    // Sample a vertical strip in the center (where the subject will be)
+    const sampleX = Math.floor(width * 0.25);
+    const sampleW = Math.floor(width * 0.5);
+    const sampleH = height;
+    const imageData = ctx.getImageData(sampleX, 0, sampleW, sampleH);
+    const data = imageData.data;
 
-  let totalR = 0, totalG = 0, totalB = 0;
-  // Sample every 16th pixel for performance
-  const step = 16 * 4;
-  let count = 0;
-  for (let i = 0; i < data.length; i += step) {
-    totalR += data[i];
-    totalG += data[i + 1];
-    totalB += data[i + 2];
-    count++;
+    let totalR = 0, totalG = 0, totalB = 0;
+    // Sample every 16th pixel for performance
+    const step = 16 * 4;
+    let count = 0;
+    for (let i = 0; i < data.length; i += step) {
+      totalR += data[i];
+      totalG += data[i + 1];
+      totalB += data[i + 2];
+      count++;
+    }
+
+    const r = totalR / Math.max(1, count);
+    const g = totalG / Math.max(1, count);
+    const b = totalB / Math.max(1, count);
+    // Perceived brightness (ITU-R BT.601)
+    const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+
+    return { r, g, b, brightness };
+  } catch {
+    // Cross-origin images can taint canvas and block pixel reads.
+    // Fall back to neutral lighting so compositing never crashes.
+    return { r: 128, g: 128, b: 128, brightness: 128 };
   }
-
-  const r = totalR / count;
-  const g = totalG / count;
-  const b = totalB / count;
-  // Perceived brightness (ITU-R BT.601)
-  const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
-
-  return { r, g, b, brightness };
 }
 
 /**
