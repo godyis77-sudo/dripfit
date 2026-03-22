@@ -457,7 +457,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
                   onClick={() => {
                     setShowOriginal(true);
                     setSelectedBgId('__original__');
-                    trackEvent('bg_original_selected');
+                    trackEvent('bg_background_selected', { bg_id: 'original' });
                   }}
                   className={`relative aspect-square w-full rounded-lg overflow-hidden transition-all ${
                     showOriginal ? 'ring-2 ring-primary ring-offset-1 ring-offset-card' : 'ring-1 ring-border'
