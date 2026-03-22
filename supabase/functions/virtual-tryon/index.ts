@@ -85,8 +85,9 @@ Deno.serve(async (req) => {
         .maybeSingle();
 
       const dailyCount = usage?.count ?? 0;
-      if (dailyCount >= 5) {
-        return errorResponse('Daily try-on limit reached. Upgrade to Premium for unlimited.', 'DAILY_LIMIT', 403, corsHeaders);
+      const FREE_DAILY_LIMIT = 10;
+      if (dailyCount >= FREE_DAILY_LIMIT) {
+        return errorResponse(`Daily try-on limit reached (${FREE_DAILY_LIMIT}/day). Upgrade to Premium for unlimited.`, 'DAILY_LIMIT', 403, corsHeaders);
       }
     }
     // Premium: no limit
