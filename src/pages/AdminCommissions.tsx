@@ -164,7 +164,7 @@ export default function AdminCommissions() {
 
         {activeTab === "commissions" && (
           <>
-            <div className="flex gap-2 overflow-x-auto pb-1">
+            <div className="flex gap-2 overflow-x-auto pb-1" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
               {filters.map((f) => (
                 <button
                   key={f}

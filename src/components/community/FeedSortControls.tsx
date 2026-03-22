@@ -56,7 +56,7 @@ const FeedSortControls = ({
         <AnimatePresence>
           {showSortOptions && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-              <div className="flex gap-1.5 mt-2 overflow-x-auto no-scrollbar">
+              <div className="flex gap-1.5 mt-2 overflow-x-auto no-scrollbar" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
                 {sorts.map(s => (
                   <button
                     key={s.key}
@@ -77,7 +77,7 @@ const FeedSortControls = ({
       </div>
 
       {showUserChips && (
-        <div className="flex gap-1.5 mb-3 overflow-x-auto no-scrollbar">
+        <div className="flex gap-1.5 mb-3 overflow-x-auto no-scrollbar" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
           <button onClick={() => onFilterUserIdChange(null)} aria-label="Show all users" className={`pill ${!filterUserId ? 'pill-active' : ''}`}>All</button>
           {[...new Map(posts.filter(p => p.profile?.display_name).map(p => [p.user_id, p.profile?.display_name])).entries()].map(([uid, name]) => (
             <button key={uid} onClick={() => onFilterUserIdChange(filterUserId === uid ? null : uid)} aria-label={`Filter by ${name}`} className={`pill ${filterUserId === uid ? 'pill-active' : ''}`}>{name}</button>
