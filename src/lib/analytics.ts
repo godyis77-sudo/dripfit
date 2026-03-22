@@ -166,7 +166,8 @@ type FunnelEvent =
   | 'bg_category_selected'
   | 'bg_background_selected'
   | 'bg_composite_shared'
-  | 'bg_composite_saved';
+  | 'bg_composite_saved'
+  | 'bg_search_photo_selected';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
