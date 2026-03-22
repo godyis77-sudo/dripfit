@@ -206,7 +206,7 @@ const TryOnResultSection = ({
                     <span className="absolute top-2 left-2 text-[9px] font-bold uppercase tracking-wider bg-black/60 text-white px-2 py-0.5 rounded-md">Before</span>
                   </div>
                   <div className="relative">
-                    <img src={resultImage} alt="Try-on result" className="w-full aspect-[3/4] object-cover" />
+                    <img src={resultImage} alt="Try-on result" className="w-full aspect-[3/4] object-cover rounded-r-xl" />
                     <span className="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wider bg-primary/80 text-primary-foreground px-2 py-0.5 rounded-md">Result</span>
                   </div>
                 </motion.div>

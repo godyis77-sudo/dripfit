@@ -130,7 +130,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
           <img
             src={product.image_url}
             alt={product.name}
-            className="h-full w-auto max-w-full object-contain rounded-xl block"
+            className="h-full w-auto max-w-full object-contain rounded-2xl block"
             draggable={false}
           />
           {caption && (
