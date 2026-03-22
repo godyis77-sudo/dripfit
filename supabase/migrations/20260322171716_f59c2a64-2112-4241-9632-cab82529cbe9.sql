@@ -1,0 +1,1 @@
+UPDATE tryon_usage SET count = 0 WHERE user_id = 'f83b26d7-453c-411a-aba8-5688fc8baa18' AND daily_key = '2026-03-22';
