@@ -527,6 +527,12 @@ const TryOn = () => {
 
       {s.showPremiumGate && <TryOnPremiumGate onClose={() => s.setShowPremiumGate(false)} />}
 
+      <AnimatePresence>
+        {s.showAuthWall && (
+          <TryOnAuthWall onClose={() => s.setShowAuthWall(false)} reason={s.authWallReason} />
+        )}
+      </AnimatePresence>
+
       {showScrollTop && createPortal(
         <AnimatePresence>
           <motion.button
