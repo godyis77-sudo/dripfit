@@ -24,6 +24,7 @@ interface LookItem {
 
 interface TryOnResultSectionProps {
   resultImage: string;
+  userPhoto: string | null;
   clothingPhoto: string | null;
   category: string;
   productLink: string;
