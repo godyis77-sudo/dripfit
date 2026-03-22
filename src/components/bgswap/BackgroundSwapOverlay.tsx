@@ -313,6 +313,12 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
               <button onClick={attemptRemoval} className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-bold">Retry</button>
             </div>
           </div>
+        ) : showOriginal ? (
+          <img
+            src={resultImageUrl}
+            alt="Original"
+            className="max-h-full max-w-full rounded-xl object-contain"
+          />
         ) : (
           <canvas
             ref={canvasRef}
