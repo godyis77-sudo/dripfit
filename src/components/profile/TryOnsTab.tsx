@@ -222,7 +222,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                         className="w-full active:scale-[0.97] transition-transform"
                       >
                         <div className="relative">
-                          <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover" />
+                          <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover rounded-xl" />
                           {postedCaption && (
                             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-2 pb-1.5 pt-4">
                               <p className="text-[10px] font-bold text-white text-center line-clamp-2 drop-shadow-sm">{postedCaption}</p>

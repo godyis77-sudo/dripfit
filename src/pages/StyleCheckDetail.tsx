@@ -73,7 +73,7 @@ const StyleCheckDetail = () => {
 
         {/* Full post display */}
         <div className="rounded-xl overflow-hidden border border-border bg-card mb-3">
-          <img src={post.result_photo_url} alt={post.caption || 'Style Check'} className="w-full aspect-[3/4] object-cover bg-black" />
+          <img src={post.result_photo_url} alt={post.caption || 'Style Check'} className="w-full aspect-[3/4] object-cover bg-black rounded-xl" />
           <div className="p-3">
             <p className="text-[11px] font-bold text-foreground">
               {post.profile?.display_name || 'Anonymous'}
