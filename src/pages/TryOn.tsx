@@ -395,21 +395,7 @@ const TryOn = () => {
             )}
 
             {s.loading && (
-              <div className="flex flex-col items-center mt-3 mb-1 gap-2">
-                <p className="text-[12px] text-muted-foreground font-medium">
-                  {s.loadingStepIndex === 0 && 'Analyzing your body scan…'}
-                  {s.loadingStepIndex === 1 && 'Compositing the outfit…'}
-                  {s.loadingStepIndex === 2 && 'Finalizing your preview…'}
-                </p>
-                <div className="flex gap-1.5">
-                  {[0, 1, 2].map(i => (
-                    <div
-                      key={i}
-                      className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${i <= s.loadingStepIndex ? 'bg-primary' : 'border border-muted-foreground/40'}`}
-                    />
-                  ))}
-                </div>
-              </div>
+              <TryOnLoadingAnimation stepIndex={s.loadingStepIndex} />
             )}
 
             {!s.canGenerate && !s.loading && (
