@@ -461,6 +461,8 @@ export function useTryOnState() {
     showLookItems, layerHistory, hasSavedProfile,
     canGenerate, remainingTryOns, hasUnlimitedTryOns: !!hasUnlimitedTryOns,
     addingAccessory, tryOnError, autoSaved,
+    // Guest auth wall
+    showAuthWall, setShowAuthWall, authWallReason,
     // Handlers
     handleTryOn, handleShare, handleTryAnother, handleAddAccessory,
     handleSelectProduct, handleSaveToItems,
