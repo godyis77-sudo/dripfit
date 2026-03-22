@@ -70,6 +70,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   const [selectedBgColor, setSelectedBgColor] = useState('#0A0A0A');
   const [activeCategory, setActiveCategory] = useState<string>('solid-colors');
   const [usingCache, setUsingCache] = useState(false);
+  const [showOriginal, setShowOriginal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
 
