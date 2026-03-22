@@ -310,7 +310,8 @@ export async function generateTryOnShareCard(params: TryOnShareCardParams): Prom
     ctx.lineWidth = 2;
     roundRect(ctx, drawX, drawY, drawW, drawH, 20);
     ctx.stroke();
-  } catch {
+  } catch (err) {
+    trackEvent('drip_card_render_failed' as any, { card: 'tryon_share', reason: String(err) });
     // If image can't load, show placeholder text
     ctx.fillStyle = '#333333';
     roundRect(ctx, 60, imgTop, W - 120, imgMaxH, 20);
