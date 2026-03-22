@@ -253,6 +253,8 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         backgroundColor: selectedBgColor,
         addWatermark: true,
         scaleOverride: subjectScale,
+        offsetX,
+        offsetY,
       });
       const res = await fetch(dataUrl);
       const blob = await res.blob();
