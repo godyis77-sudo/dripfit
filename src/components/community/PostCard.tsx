@@ -167,12 +167,12 @@ const PostCard = ({
                   whileTap={{ scale: 1.18 }}
                   transition={{ duration: 0.2 }}
                   onClick={(e) => { e.stopPropagation(); onVote(post.id, v.key); }}
-                  className={`px-2 py-0.5 rounded text-[8px] font-bold border transition-all flex items-center gap-0.5 backdrop-blur-sm ${
+                  className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all flex items-center gap-1 backdrop-blur-sm ${
                     active ? 'bg-primary/30 border-primary/50 text-white' : 'border-white/15 text-white/70'
                   }`}
                 >
-                  <span className="text-[9px] leading-none">{v.emoji}</span>
-                  <span className="text-[8px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
+                  <span className="text-[13px] leading-none">{v.emoji}</span>
+                  <span className="text-[10px] font-semibold leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
                 </motion.button>
               );
             })}
