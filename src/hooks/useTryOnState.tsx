@@ -370,6 +370,7 @@ export function useTryOnState() {
       toast({ title: 'Try-On failed', description: msg, variant: 'destructive' });
     } finally { setLoading(false); }
   };
+  };
 
   const handleShare = async () => {
     if (!user) { toast({ title: 'Sign in to share', description: 'Create a free account to post your look.', variant: 'destructive' }); navigate('/auth'); return; }
