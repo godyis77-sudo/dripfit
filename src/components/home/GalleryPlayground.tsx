@@ -120,6 +120,9 @@ const GalleryPlayground = () => {
           ))}
         </motion.div>
 
+        {/* Demo Try-On Results */}
+        <DemoTryOnSection />
+
         <button
           onClick={() => navigate('/browse/tops')}
           className="w-full mb-3 py-2 rounded-xl border border-primary/20 bg-card text-[11px] font-bold text-primary active:scale-[0.97] transition-transform flex items-center justify-center gap-1"
