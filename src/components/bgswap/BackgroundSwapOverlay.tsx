@@ -148,6 +148,10 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
     if (bg.storage_path.startsWith('solid:')) {
       setSelectedBgUrl(null);
       setSelectedBgColor(bg.storage_path.replace('solid:', ''));
+    } else if (bg.storage_path.startsWith('http')) {
+      // External URL (e.g. Pexels)
+      setSelectedBgUrl(bg.storage_path);
+      setSelectedBgColor('#0A0A0A');
     } else {
       const { data } = supabase.storage.from('backgrounds-curated').getPublicUrl(bg.storage_path);
       setSelectedBgUrl(data.publicUrl);
