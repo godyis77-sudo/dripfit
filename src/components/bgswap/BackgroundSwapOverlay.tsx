@@ -67,7 +67,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   }, [searchQuery]);
 
   // Fetch categories
-  const { data: categories = [] } = useQuery({
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
     queryKey: ['bg-categories'],
     queryFn: async () => {
       const { data } = await supabase
@@ -79,10 +79,11 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
     staleTime: 60 * 60 * 1000,
   });
 
-  // Fetch backgrounds for active category
+  // Auto-select first category with backgrounds when categories load
   const activeCategoryId = useMemo(() => categories.find(c => c.slug === activeCategory)?.id, [categories, activeCategory]);
 
-  const { data: backgrounds = [] } = useQuery({
+  // Fetch backgrounds for active category
+  const { data: backgrounds = [], isLoading: backgroundsLoading } = useQuery({
     queryKey: ['bg-items', activeCategoryId],
     queryFn: async () => {
       if (!activeCategoryId) return [];
