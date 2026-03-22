@@ -6,12 +6,22 @@ export function useBackgroundRemoval() {
 
   const removeBackground = useCallback(async (imageUrl: string): Promise<string> => {
     setRemoving(true);
-    setProgress(0);
+    setProgress(5);
     try {
       const { removeBackground: removeBg } = await import('@imgly/background-removal');
+      
+      // Track progress across all keys
+      const keyProgress = new Map<string, number>();
+      
       const blob = await removeBg(imageUrl, {
         progress: (key: string, current: number, total: number) => {
-          if (total > 0) setProgress(Math.round((current / total) * 100));
+          if (total > 0) {
+            keyProgress.set(key, current / total);
+            // Average progress across all tracked keys
+            const values = Array.from(keyProgress.values());
+            const avg = values.reduce((a, b) => a + b, 0) / values.length;
+            setProgress(Math.max(5, Math.min(99, Math.round(avg * 100))));
+          }
         },
         output: { format: 'image/png' as any },
       });
