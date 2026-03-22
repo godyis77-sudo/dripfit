@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX IF NOT EXISTS backgrounds_source_id_unique ON backgrounds (source_id) WHERE source_id IS NOT NULL;
