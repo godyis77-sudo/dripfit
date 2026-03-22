@@ -278,14 +278,33 @@ export function useTryOnState() {
     setLoading(true);
     setResultImage(null);
     setDescription(null);
-    trackEvent('tryon_started');
+    trackEvent('tryon_started', { tier: user ? 'authenticated' : 'guest' });
     try {
       setTryOnError(null);
-      const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto, clothingPhoto, itemType: category || 'clothing' } });
+      const body: Record<string, unknown> = { userPhoto, clothingPhoto, itemType: category || 'clothing' };
+      // Pass guest UUID for unauthenticated users
+      if (!user) {
+        body.guestUuid = getGuestUuid();
+      }
+      const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', { body });
       if (error) throw new Error(error.message);
-      if (resp?.error) throw new Error(resp.error.message || resp.error);
+      if (resp?.error) {
+        // Handle specific error codes from edge function
+        const errCode = resp.error.code;
+        if (errCode === 'GUEST_LIMIT') {
+          setAuthWallReason('guest_limit');
+          setShowAuthWall(true);
+          return;
+        }
+        if (errCode === 'DAILY_LIMIT') {
+          setAuthWallReason('daily_limit');
+          setShowAuthWall(true);
+          return;
+        }
+        throw new Error(resp.error.message || resp.error);
+      }
       const payload = resp?.data ?? resp;
-      trackEvent('tryon_generated');
+      trackEvent('tryon_generated', { tier: user ? (payload.userTier || 'free') : 'guest' });
       await incrementUsage();
       if (payload.resultImage) {
         setResultImage(payload.resultImage);
