@@ -156,7 +156,9 @@ type FunnelEvent =
   | 'retailer_clickout_cancelled'
   | 'referral_link_copied'
   | 'referral_signup_attributed'
-  | 'creator_commission_earned';
+  | 'creator_commission_earned'
+  | 'gallery_tryon_click'
+  | 'gallery_hero_tryon';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
