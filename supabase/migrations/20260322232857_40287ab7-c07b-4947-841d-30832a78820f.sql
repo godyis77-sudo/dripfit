@@ -1,0 +1,1 @@
+DELETE FROM tryon_usage WHERE user_id = 'f83b26d7-453c-411a-aba8-5688fc8baa18';
