@@ -75,7 +75,10 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [fullscreenPreview, setFullscreenPreview] = useState(false);
-  const [subjectScale, setSubjectScale] = useState<number | null>(null); // null = auto
+  const [subjectScale, setSubjectScale] = useState<number | null>(null);
+  const [offsetX, setOffsetX] = useState(0); // -1 to 1
+  const [offsetY, setOffsetY] = useState(0); // -1 to 1
+  const dragRef = useRef<{ startX: number; startY: number; startOX: number; startOY: number } | null>(null);
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
