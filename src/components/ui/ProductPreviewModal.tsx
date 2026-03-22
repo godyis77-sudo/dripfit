@@ -120,7 +120,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
 
       {/* Image — maximized */}
       <div className="flex-1 flex items-center justify-center p-2 min-h-0 overflow-hidden" onClick={(e) => e.stopPropagation()}>
-        <div className="relative h-full w-full">
+        <div className="relative h-full w-full rounded-2xl overflow-hidden bg-muted">
           {/* Brand badge */}
           {product.brand && (
             <span className="absolute bottom-3 right-3 z-10 brand-label-lg">
@@ -130,7 +130,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
           <img
             src={product.image_url}
             alt={product.name}
-            className="h-full w-full object-contain rounded-2xl block"
+            className="absolute inset-0 h-full w-full object-cover rounded-2xl block"
             draggable={false}
           />
           {caption && (
