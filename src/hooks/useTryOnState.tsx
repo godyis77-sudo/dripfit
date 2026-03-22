@@ -295,6 +295,8 @@ export function useTryOnState() {
     setLoading(true);
     setResultImage(null);
     setDescription(null);
+    setLookItems([]);
+    setLayerHistory([]);
     trackEvent('tryon_started', { tier: user ? 'authenticated' : 'guest' });
     try {
       setTryOnError(null);
