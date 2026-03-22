@@ -1,4 +1,5 @@
 import type { MeasurementRange } from '@/lib/types';
+import { trackEvent } from '@/lib/analytics';
 
 const CM_TO_IN = 0.3937;
 const W = 1080;
@@ -162,8 +163,13 @@ export async function generateShareImage(data: ShareImageData): Promise<Blob> {
   ctx.font = '24px Inter, system-ui, sans-serif';
   ctx.fillText('Download free — dripfitcheck.lovable.app', W / 2, H - 50);
 
-  return new Promise((resolve) => {
-    canvas.toBlob((blob) => resolve(blob!), 'image/png');
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) { resolve(blob); } else {
+        trackEvent('drip_card_render_failed', { card: 'scan_share' });
+        reject(new Error('Canvas toBlob returned null'));
+      }
+    }, 'image/png');
   });
 }
 
@@ -304,7 +310,8 @@ export async function generateTryOnShareCard(params: TryOnShareCardParams): Prom
     ctx.lineWidth = 2;
     roundRect(ctx, drawX, drawY, drawW, drawH, 20);
     ctx.stroke();
-  } catch {
+  } catch (err) {
+    trackEvent('drip_card_render_failed', { card: 'tryon_share', reason: String(err) });
     // If image can't load, show placeholder text
     ctx.fillStyle = '#333333';
     roundRect(ctx, 60, imgTop, W - 120, imgMaxH, 20);
@@ -361,7 +368,12 @@ export async function generateTryOnShareCard(params: TryOnShareCardParams): Prom
   ctx.textAlign = 'center';
   ctx.fillText('Try yours free at dripfitcheck.lovable.app', W / 2, H - 60);
 
-  return new Promise((resolve) => {
-    canvas.toBlob((blob) => resolve(blob!), 'image/png');
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) { resolve(blob); } else {
+        trackEvent('drip_card_render_failed', { card: 'tryon_share' });
+        reject(new Error('Canvas toBlob returned null'));
+      }
+    }, 'image/png');
   });
 }
