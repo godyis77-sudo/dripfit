@@ -354,7 +354,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         </div>
 
         {/* Background grid */}
-        <div className="flex gap-1.5 overflow-x-auto px-3 pb-3 pt-1 scrollbar-hide">
+        <div className="flex gap-1.5 overflow-x-auto px-3 pb-2 pt-1 scrollbar-hide">
           {displayItems ? (
             // Search results
             displayItems.length > 0 ? (
