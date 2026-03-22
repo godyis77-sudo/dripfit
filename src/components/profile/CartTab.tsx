@@ -102,7 +102,7 @@ const CartTab = forwardRef<HTMLDivElement>((_, ref) => {
   }
 
   return (
-    <div className="space-y-2 pb-4">
+    <div ref={ref} className="space-y-2 pb-4">
       <div className="flex items-center justify-between mb-1">
         <p className="text-[11px] text-muted-foreground font-medium">{items.length} item{items.length !== 1 ? 's' : ''}</p>
         <button onClick={clearCart} className="text-[10px] text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1">
