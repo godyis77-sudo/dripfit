@@ -1,11 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, forwardRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import FeatureIcon from '@/components/ui/FeatureIcon';
 
-const HomeFAB = () => {
+const HomeFAB = forwardRef<HTMLDivElement>((_, ref) => {
   const navigate = useNavigate();
   const [fabOpen, setFabOpen] = useState(false);
   const closeFab = useCallback(() => setFabOpen(false), []);
