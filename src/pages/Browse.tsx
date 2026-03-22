@@ -70,13 +70,15 @@ const Browse = () => {
   const genderFilter: GenderKey = genderOverride ?? defaultGender;
   const effectiveGender = genderFilter === 'all' ? undefined : genderFilter;
 
-  const { products, loading } = useProductCatalog(category === 'all' ? undefined : category, undefined, undefined, effectiveGender, genreFilter ?? undefined, fitFilter ?? undefined);
   // search state removed — brand filter handled by BrandFilter component
   const [sort, setSort] = useState<SortKey>('default');
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
   const [retailerFilter, setRetailerFilter] = useState<string | null>(null);
   const [genreFilter, setGenreFilter] = useState<BrandGenre | null>(null);
   const [fitFilter, setFitFilter] = useState<string | null>(null);
+
+  const effectiveGender = genderFilter === 'all' ? undefined : genderFilter;
+  const { products, loading } = useProductCatalog(category === 'all' ? undefined : category, undefined, undefined, effectiveGender, genreFilter ?? undefined, fitFilter ?? undefined);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [genreOpen, setGenreOpen] = useState(false);
