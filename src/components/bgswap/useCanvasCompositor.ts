@@ -236,10 +236,12 @@ export function useCanvasCompositor() {
     }
     drawBackground(ctx, bgImg, backgroundColor, width, height);
 
-    // Analyze scene scale
-    const { scaleFraction, groundY } = bgImg
+    // Analyze scene scale (use override if provided)
+    const auto = bgImg
       ? analyzeSceneScale(ctx, width, height)
       : { scaleFraction: 0.80, groundY: height * 0.95 };
+    const finalScale = scaleOverride != null ? scaleOverride : auto.scaleFraction;
+    const groundY = auto.groundY;
 
     // Analyze background lighting
     const lighting = bgImg
