@@ -337,7 +337,7 @@ export function useCanvasCompositor() {
     // Analyze background lighting
     const lighting = bgImg
       ? analyzeBackgroundLighting(ctx, width, height)
-      : (() => { const c = hexToRgb(backgroundColor); return { ...c, brightness: 0.299 * c.r + 0.587 * c.g + 0.114 * c.b }; })();
+      : (() => { const c = hexToRgb(backgroundColor); const br = 0.299 * c.r + 0.587 * c.g + 0.114 * c.b; return { ...c, brightness: br, leftR: c.r, leftG: c.g, leftB: c.b, leftBright: br, rightR: c.r, rightG: c.g, rightB: c.b, rightBright: br, topBright: br, bottomBright: br, warmth: 0, saturation: 0 } as LightingProfile; })();
 
     // Draw subject (scene-aware scale, anchored to ground)
     const subjectImg = await loadImage(subjectUrl);
