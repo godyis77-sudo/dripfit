@@ -86,7 +86,14 @@ function seededShuffle<T>(arr: T[], seed: number): T[] {
   return copy;
 }
 
-export function useProductCatalog(category?: string, brand?: string, seed?: number, gender?: string) {
+export function useProductCatalog(
+  category?: string,
+  brand?: string,
+  seed?: number,
+  gender?: string,
+  genre?: string,
+  fitProfile?: string,
+) {
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [loading, setLoading] = useState(false);
   // Stable random seed — generated once per hook instance to prevent flickering on re-fetch
