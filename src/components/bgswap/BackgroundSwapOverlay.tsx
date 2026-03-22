@@ -70,6 +70,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   const [selectedBgColor, setSelectedBgColor] = useState('#0A0A0A');
   const [activeCategory, setActiveCategory] = useState<string>('solid-colors');
   const [usingCache, setUsingCache] = useState(false);
+  const [showOriginal, setShowOriginal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
 
@@ -174,6 +175,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       return;
     }
     setSelectedBgId(bg.id);
+    setShowOriginal(false);
     setShowSearch(false);
     trackEvent('bg_background_selected', { bg_id: bg.id, source: bg.source });
 
@@ -195,6 +197,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
     setSelectedBgId(photo.id);
     setSelectedBgUrl(photo.url);
     setSelectedBgColor('#0A0A0A');
+    setShowOriginal(false);
     trackEvent('bg_search_photo_selected', { photo_id: photo.id, source: photo.source });
   }, []);
 
@@ -312,6 +315,12 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
               <button onClick={attemptRemoval} className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-bold">Retry</button>
             </div>
           </div>
+        ) : showOriginal ? (
+          <img
+            src={resultImageUrl}
+            alt="Original"
+            className="max-h-full max-w-full rounded-xl object-contain"
+          />
         ) : (
           <canvas
             ref={canvasRef}
@@ -445,6 +454,22 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
             // Category backgrounds
             <>
               <div className="grid grid-cols-4 gap-1.5">
+                {/* Original background tile */}
+                <button
+                  onClick={() => {
+                    setShowOriginal(true);
+                    setSelectedBgId('__original__');
+                    trackEvent('bg_background_selected', { bg_id: 'original' });
+                  }}
+                  className={`relative aspect-square w-full rounded-lg overflow-hidden transition-all ${
+                    showOriginal ? 'ring-2 ring-primary ring-offset-1 ring-offset-card' : 'ring-1 ring-border'
+                  }`}
+                >
+                  <img src={resultImageUrl} alt="Original" className="w-full h-full object-cover" />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-1 py-0.5">
+                    <p className="text-[8px] text-white/90 font-bold text-center">Original</p>
+                  </div>
+                </button>
                 {backgrounds.map(bg => {
                   const isSolid = bg.storage_path.startsWith('solid:');
                   const color = isSolid ? bg.storage_path.replace('solid:', '') : undefined;
