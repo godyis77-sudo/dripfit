@@ -25,23 +25,71 @@ Deno.serve(async (req) => {
       return errorResponse('Invalid clothing photo', 'VALIDATION_ERROR', 400, corsHeaders);
     }
 
-    // JWT verification
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return errorResponse('Unauthorized', 'AUTH_ERROR', 401, corsHeaders);
-    }
-
-    const supabaseAnon = createClient(
+    // Service role client for guest session management
+    const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } }
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabaseAnon.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
-      return errorResponse('Unauthorized', 'AUTH_ERROR', 401, corsHeaders);
+    // Determine user type: authenticated, free, or guest
+    const authHeader = req.headers.get('Authorization');
+    const guestUuid = typeof raw.guestUuid === 'string' ? raw.guestUuid : null;
+    let userId: string | null = null;
+    let userTier: 'guest' | 'free' | 'premium' = 'guest';
+
+    if (authHeader?.startsWith('Bearer ')) {
+      const supabaseAnon = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_ANON_KEY")!,
+        { global: { headers: { Authorization: authHeader } } }
+      );
+      const token = authHeader.replace("Bearer ", "");
+      const { data: claimsData, error: claimsError } = await supabaseAnon.auth.getClaims(token);
+      if (!claimsError && claimsData?.claims) {
+        userId = claimsData.claims.sub as string;
+        // Check subscription
+        const { data: sub } = await supabaseAdmin
+          .from('user_subscriptions')
+          .select('is_active')
+          .eq('user_id', userId)
+          .eq('is_active', true)
+          .maybeSingle();
+        userTier = sub ? 'premium' : 'free';
+      }
     }
+
+    // Rate limiting based on tier
+    if (userTier === 'guest') {
+      if (!guestUuid) {
+        return errorResponse('Guest UUID required for unauthenticated access', 'AUTH_ERROR', 401, corsHeaders);
+      }
+      // Check/create guest session
+      const { data: session } = await supabaseAdmin
+        .from('guest_sessions')
+        .select('tryon_count')
+        .eq('guest_uuid', guestUuid)
+        .maybeSingle();
+
+      const count = session?.tryon_count ?? 0;
+      if (count >= 3) {
+        return errorResponse('Guest try-on limit reached. Create a free account for more.', 'GUEST_LIMIT', 403, corsHeaders);
+      }
+    } else if (userTier === 'free' && userId) {
+      // Check daily limit (5/day)
+      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      const { data: usage } = await supabaseAdmin
+        .from('tryon_usage')
+        .select('count')
+        .eq('user_id', userId)
+        .eq('daily_key', today)
+        .maybeSingle();
+
+      const dailyCount = usage?.count ?? 0;
+      if (dailyCount >= 5) {
+        return errorResponse('Daily try-on limit reached. Upgrade to Premium for unlimited.', 'DAILY_LIMIT', 403, corsHeaders);
+      }
+    }
+    // Premium: no limit
 
     const parsed = parseOrError(VirtualTryonSchema, raw);
     if (!parsed.success) {
@@ -161,7 +209,51 @@ Deno.serve(async (req) => {
       }, 200, corsHeaders);
     }
 
-    return successResponse({ resultImage }, 200, corsHeaders);
+    // Increment usage AFTER successful generation
+    if (userTier === 'guest' && guestUuid) {
+      await supabaseAdmin
+        .from('guest_sessions')
+        .upsert(
+          { guest_uuid: guestUuid, tryon_count: 1 },
+          { onConflict: 'guest_uuid' }
+        );
+      // Increment if already exists
+      const { data: existing } = await supabaseAdmin
+        .from('guest_sessions')
+        .select('tryon_count')
+        .eq('guest_uuid', guestUuid)
+        .single();
+      if (existing && existing.tryon_count < 3) {
+        await supabaseAdmin
+          .from('guest_sessions')
+          .update({ tryon_count: (existing.tryon_count || 0) + 1 })
+          .eq('guest_uuid', guestUuid);
+      }
+    } else if (userTier === 'free' && userId) {
+      const today = new Date().toISOString().split('T')[0];
+      const monthKey = today.substring(0, 7); // YYYY-MM
+      // Upsert daily usage
+      const { data: existing } = await supabaseAdmin
+        .from('tryon_usage')
+        .select('count')
+        .eq('user_id', userId)
+        .eq('daily_key', today)
+        .maybeSingle();
+
+      if (existing) {
+        await supabaseAdmin
+          .from('tryon_usage')
+          .update({ count: existing.count + 1 })
+          .eq('user_id', userId)
+          .eq('daily_key', today);
+      } else {
+        await supabaseAdmin
+          .from('tryon_usage')
+          .insert({ user_id: userId, month_key: monthKey, daily_key: today, count: 1 });
+      }
+    }
+
+    return successResponse({ resultImage, userTier }, 200, corsHeaders);
   } catch (e) {
     console.error("virtual-tryon error:", e);
     return errorResponse(e instanceof Error ? e.message : "Try-on failed", "INTERNAL_ERROR", 500, corsHeaders);
