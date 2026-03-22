@@ -258,7 +258,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       </button>
 
       {/* Preview area */}
-      <div className="flex-1 relative flex items-center justify-center overflow-hidden" style={{ minHeight: '60%' }}>
+      <div className="flex-1 relative flex items-center justify-center overflow-hidden min-h-0">
         {removing ? (
           <div className="flex flex-col items-center gap-3">
             <div className="relative h-16 w-16">
