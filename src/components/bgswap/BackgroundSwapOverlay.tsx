@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Share2, Save, Loader2, Search, Crown, Maximize2 } from 'lucide-react';
+import { X, Share2, Save, Loader2, Search, Crown, Maximize2, ZoomIn, ZoomOut } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -75,6 +75,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [fullscreenPreview, setFullscreenPreview] = useState(false);
+  const [subjectScale, setSubjectScale] = useState<number | null>(null); // null = auto
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -168,8 +169,8 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   // Update preview when subject or background changes
   useEffect(() => {
     if (!transparentSubject || !canvasRef.current) return;
-    compositePreview(canvasRef.current, transparentSubject, selectedBgUrl, selectedBgColor);
-  }, [transparentSubject, selectedBgUrl, selectedBgColor, compositePreview]);
+    compositePreview(canvasRef.current, transparentSubject, selectedBgUrl, selectedBgColor, subjectScale);
+  }, [transparentSubject, selectedBgUrl, selectedBgColor, subjectScale, compositePreview]);
 
   const handleSelectBackground = useCallback((bg: BackgroundItem) => {
     if (bg.is_premium && !user) {
@@ -212,6 +213,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         backgroundUrl: selectedBgUrl,
         backgroundColor: selectedBgColor,
         addWatermark: true,
+        scaleOverride: subjectScale,
       });
       const res = await fetch(dataUrl);
       const blob = await res.blob();
@@ -245,6 +247,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         backgroundUrl: selectedBgUrl,
         backgroundColor: selectedBgColor,
         addWatermark: true,
+        scaleOverride: subjectScale,
       });
       const res = await fetch(dataUrl);
       const blob = await res.blob();
@@ -362,7 +365,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
           ) : (
             <canvas
               ref={el => {
-                if (el && transparentSubject) compositePreview(el, transparentSubject, selectedBgUrl, selectedBgColor);
+                if (el && transparentSubject) compositePreview(el, transparentSubject, selectedBgUrl, selectedBgColor, subjectScale);
               }}
               width={1080}
               height={1920}
@@ -399,6 +402,29 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
           </div>
         )}
       </div>
+
+      {/* Scale slider */}
+      {transparentSubject && (
+        <div className="shrink-0 flex items-center gap-3 px-4 py-1.5">
+          <ZoomOut className="h-4 w-4 text-muted-foreground shrink-0" />
+          <input
+            type="range"
+            min={30}
+            max={100}
+            step={1}
+            value={subjectScale != null ? Math.round(subjectScale * 100) : 80}
+            onChange={e => setSubjectScale(Number(e.target.value) / 100)}
+            className="flex-1 h-1.5 accent-primary cursor-pointer"
+          />
+          <ZoomIn className="h-4 w-4 text-muted-foreground shrink-0" />
+          <button
+            onClick={() => setSubjectScale(null)}
+            className="text-[10px] font-bold text-primary px-2 py-1 rounded-md bg-primary/10 shrink-0"
+          >
+            Auto
+          </button>
+        </div>
+      )}
 
       {/* Action bar */}
       {transparentSubject && (

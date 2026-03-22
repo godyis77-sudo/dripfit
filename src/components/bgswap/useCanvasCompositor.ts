@@ -2,11 +2,12 @@ import { useCallback } from 'react';
 
 interface CompositeOptions {
   subjectUrl: string;
-  backgroundUrl: string | null; // null = solid color
+  backgroundUrl: string | null;
   backgroundColor?: string;
   width?: number;
   height?: number;
   addWatermark?: boolean;
+  scaleOverride?: number | null; // 0.3–1.2, null = auto
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -221,7 +222,7 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
 
 export function useCanvasCompositor() {
   const composite = useCallback(async (options: CompositeOptions): Promise<string> => {
-    const { subjectUrl, backgroundUrl, backgroundColor = '#0A0A0A', width = 1080, height = 1920, addWatermark = false } = options;
+    const { subjectUrl, backgroundUrl, backgroundColor = '#0A0A0A', width = 1080, height = 1920, addWatermark = false, scaleOverride = null } = options;
 
     const canvas = document.createElement('canvas');
     canvas.width = width;
@@ -235,10 +236,12 @@ export function useCanvasCompositor() {
     }
     drawBackground(ctx, bgImg, backgroundColor, width, height);
 
-    // Analyze scene scale
-    const { scaleFraction, groundY } = bgImg
+    // Analyze scene scale (use override if provided)
+    const auto = bgImg
       ? analyzeSceneScale(ctx, width, height)
       : { scaleFraction: 0.80, groundY: height * 0.95 };
+    const finalScale = scaleOverride != null ? scaleOverride : auto.scaleFraction;
+    const groundY = auto.groundY;
 
     // Analyze background lighting
     const lighting = bgImg
@@ -247,7 +250,7 @@ export function useCanvasCompositor() {
 
     // Draw subject (scene-aware scale, anchored to ground)
     const subjectImg = await loadImage(subjectUrl);
-    const scale = (height * scaleFraction) / subjectImg.height;
+    const scale = (height * finalScale) / subjectImg.height;
     const subW = subjectImg.width * scale;
     const subH = subjectImg.height * scale;
     const subX = (width - subW) / 2;
@@ -285,7 +288,8 @@ export function useCanvasCompositor() {
     canvas: HTMLCanvasElement,
     subjectUrl: string,
     backgroundUrl: string | null,
-    backgroundColor: string = '#0A0A0A'
+    backgroundColor: string = '#0A0A0A',
+    scaleOverride: number | null = null
   ): Promise<void> => {
     const ctx = canvas.getContext('2d')!;
     const { width, height } = canvas;
@@ -302,10 +306,12 @@ export function useCanvasCompositor() {
     }
     drawBackground(ctx, bgImg, backgroundColor, width, height);
 
-    // Analyze scene scale
-    const { scaleFraction, groundY } = bgImg
+    // Analyze scene scale (use override if provided)
+    const auto = bgImg
       ? analyzeSceneScale(ctx, width, height)
       : { scaleFraction: 0.80, groundY: height * 0.95 };
+    const finalScale = scaleOverride != null ? scaleOverride : auto.scaleFraction;
+    const groundY = auto.groundY;
 
     // Analyze background lighting
     const lighting = bgImg
@@ -315,7 +321,7 @@ export function useCanvasCompositor() {
     // Draw subject (scene-aware scale)
     try {
       const subjectImg = await loadImage(subjectUrl);
-      const scale = (height * scaleFraction) / subjectImg.height;
+      const scale = (height * finalScale) / subjectImg.height;
       const subW = subjectImg.width * scale;
       const subH = subjectImg.height * scale;
       const subX = (width - subW) / 2;
