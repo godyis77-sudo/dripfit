@@ -315,39 +315,35 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
 
 export function useCanvasCompositor() {
   const composite = useCallback(async (options: CompositeOptions): Promise<string> => {
-    const { subjectUrl, backgroundUrl, backgroundColor = '#0A0A0A', width = 1080, height = 1920, addWatermark = false, scaleOverride = null } = options;
+    const { subjectUrl, backgroundUrl, backgroundColor = '#0A0A0A', width = 1080, height = 1920, addWatermark = false, scaleOverride = null, offsetX = 0, offsetY = 0 } = options;
 
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
     const ctx = canvas.getContext('2d')!;
 
-    // Draw background
     let bgImg: HTMLImageElement | null = null;
     if (backgroundUrl) {
       bgImg = await loadImage(backgroundUrl);
     }
     drawBackground(ctx, bgImg, backgroundColor, width, height);
 
-    // Analyze scene scale (use override if provided)
     const auto = bgImg
       ? analyzeSceneScale(ctx, width, height)
       : { scaleFraction: 0.80, groundY: height * 0.95 };
     const finalScale = scaleOverride != null ? scaleOverride : auto.scaleFraction;
     const groundY = auto.groundY;
 
-    // Analyze background lighting
     const lighting = bgImg
       ? analyzeBackgroundLighting(ctx, width, height)
       : (() => { const c = hexToRgb(backgroundColor); const br = 0.299 * c.r + 0.587 * c.g + 0.114 * c.b; return { ...c, brightness: br, leftR: c.r, leftG: c.g, leftB: c.b, leftBright: br, rightR: c.r, rightG: c.g, rightB: c.b, rightBright: br, topBright: br, bottomBright: br, warmth: 0, saturation: 0 } as LightingProfile; })();
 
-    // Draw subject (scene-aware scale, anchored to ground)
     const subjectImg = await loadImage(subjectUrl);
     const scale = (height * finalScale) / subjectImg.height;
     const subW = subjectImg.width * scale;
     const subH = subjectImg.height * scale;
-    const subX = (width - subW) / 2;
-    const subY = groundY - subH;
+    const subX = (width - subW) / 2 + offsetX * (width * 0.4);
+    const subY = groundY - subH + offsetY * (height * 0.4);
 
     // Soft shadow beneath subject
     ctx.save();
