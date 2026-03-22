@@ -322,7 +322,16 @@ export function useTryOnState() {
     trackEvent('tryon_started', { tier: user ? 'authenticated' : 'guest' });
     try {
       setTryOnError(null);
-      const body: Record<string, unknown> = { userPhoto, clothingPhoto, itemType: category || 'clothing' };
+      const [preparedUserPhoto, preparedClothingPhoto] = await Promise.all([
+        prepareTryOnImage(userPhoto!),
+        prepareTryOnImage(clothingPhoto!),
+      ]);
+
+      const body: Record<string, unknown> = {
+        userPhoto: preparedUserPhoto,
+        clothingPhoto: preparedClothingPhoto,
+        itemType: category || 'clothing',
+      };
       // Pass guest UUID for unauthenticated users
       if (!user) {
         body.guestUuid = getGuestUuid();
