@@ -56,7 +56,7 @@ const FeedSortControls = ({
         <AnimatePresence>
           {showSortOptions && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-              <div className="flex gap-1.5 mt-2 overflow-x-auto no-scrollbar">
+              <div className="flex gap-1.5 mt-2 overflow-x-auto no-scrollbar" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
                 {sorts.map(s => (
                   <button
                     key={s.key}
