@@ -68,22 +68,14 @@ const GalleryPlayground = () => {
             <BrandLogo size="lg" />
             <p className="text-[11px] text-muted-foreground mt-0.5">Tap any item to try it on instantly</p>
           </div>
-          <div className="flex items-center gap-2">
+          {!user && (
             <button
-              onClick={() => navigate('/browse/tops')}
-              className="text-[11px] font-bold text-primary active:opacity-70 tracking-wide flex items-center gap-1 min-h-[44px]"
+              onClick={() => navigate('/auth')}
+              className="text-[11px] font-semibold text-muted-foreground active:opacity-70 tracking-widest uppercase"
             >
-              <ShoppingBag className="h-3.5 w-3.5" /> Browse All
+              Sign In
             </button>
-            {!user && (
-              <button
-                onClick={() => navigate('/auth')}
-                className="text-[11px] font-semibold text-muted-foreground active:opacity-70 tracking-widest uppercase"
-              >
-                Sign In
-              </button>
-            )}
-          </div>
+          )}
         </motion.div>
 
         {/* Hero Try-On CTA */}
@@ -123,6 +115,12 @@ const GalleryPlayground = () => {
               {cat.label}
             </button>
           ))}
+          <button
+            onClick={() => navigate('/browse/tops')}
+            className="shrink-0 px-3.5 py-1.5 rounded-xl text-[11px] font-bold transition-colors min-h-[36px] bg-card border border-primary/30 text-primary flex items-center gap-1"
+          >
+            Browse All →
+          </button>
         </motion.div>
 
         {/* Product Grid */}
