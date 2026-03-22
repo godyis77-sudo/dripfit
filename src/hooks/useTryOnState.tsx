@@ -252,7 +252,7 @@ export function useTryOnState() {
       setAutoSaved(true);
       // Persist the uploaded URL (small string) so result survives navigation & tab close
       setResultImage(resultUrl);
-      persistState({ autoSaved: true, resultImage: resultUrl });
+      persistState({ autoSaved: true, resultImage: resultUrl, userPhoto: userUrl, clothingPhoto: clothingUrl });
       try { localStorage.setItem(TRYON_RESULT_KEY, resultUrl); } catch { /* ignore */ }
       trackEvent('tryon_saved');
       toast({ title: 'Saved to Profile', description: 'Your Try-On is saved privately.' });
