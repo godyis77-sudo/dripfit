@@ -149,7 +149,7 @@ const PostCard = ({
             alt={post.caption || "Try-on look"}
             loading="lazy"
             decoding="async"
-            className="absolute inset-0 h-full w-full object-cover object-top"
+            className="absolute inset-0 h-full w-full object-cover object-top rounded-lg"
             onError={() => onImageError(post.id)}
           />
           {hasPostedCaption && (

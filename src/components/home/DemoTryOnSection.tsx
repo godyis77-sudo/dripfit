@@ -57,7 +57,7 @@ const DemoTryOnSection = () => {
               <img
                 src={demo.image}
                 alt={demo.label}
-                className="w-full h-full object-cover object-top"
+                className="w-full h-full object-cover object-top rounded-xl"
                 loading="lazy"
               />
               {/* AI badge */}

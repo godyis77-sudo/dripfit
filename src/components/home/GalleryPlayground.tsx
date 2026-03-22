@@ -156,7 +156,7 @@ const GalleryPlayground = () => {
                       alt={product.name}
                       loading="lazy"
                       decoding="async"
-                      className="w-full h-full object-cover object-top"
+                      className="w-full h-full object-cover object-top rounded-xl"
                       onError={() => setFailedIds(prev => new Set(prev).add(product.id))}
                     />
                     {/* Quick Try-On overlay */}

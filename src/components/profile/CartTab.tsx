@@ -169,7 +169,7 @@ const CartTab = () => {
               <img
                 src={item.image_url}
                 alt={item.caption || 'Look'}
-                className="w-full h-full object-cover object-top"
+                className="w-full h-full object-cover object-top rounded-lg"
                 loading="lazy"
               />
             </button>
