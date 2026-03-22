@@ -282,7 +282,7 @@ export function useTryOnState() {
   const incrementUsage = async () => {
     if (hasUnlimitedTryOns) return;
     if (user) {
-      await incrementServerTryOnCount(supabase, user.id);
+      // Edge function already increments server-side count — just update local state
       setServerCount(prev => (prev ?? 0) + 1);
     } else {
       incrementGuestTryOnCount();
