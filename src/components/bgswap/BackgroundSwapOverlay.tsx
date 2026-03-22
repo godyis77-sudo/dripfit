@@ -169,11 +169,11 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
     attemptRemoval();
   }, []);
 
-  // Update preview when subject or background changes
+  // Update preview when subject, background, scale, or position changes
   useEffect(() => {
     if (!transparentSubject || !canvasRef.current) return;
-    compositePreview(canvasRef.current, transparentSubject, selectedBgUrl, selectedBgColor, subjectScale);
-  }, [transparentSubject, selectedBgUrl, selectedBgColor, subjectScale, compositePreview]);
+    compositePreview(canvasRef.current, transparentSubject, selectedBgUrl, selectedBgColor, subjectScale, offsetX, offsetY);
+  }, [transparentSubject, selectedBgUrl, selectedBgColor, subjectScale, offsetX, offsetY, compositePreview]);
 
   const handleSelectBackground = useCallback((bg: BackgroundItem) => {
     if (bg.is_premium && !user) {
