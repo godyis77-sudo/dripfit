@@ -106,6 +106,7 @@ const Backgrounds = () => {
 
   const resolveUrl = useCallback((bg: BackgroundItem) => {
     if (bg.storage_path.startsWith('solid:')) return null;
+    if (bg.storage_path.startsWith('http')) return bg.storage_path;
     const { data } = supabase.storage.from('backgrounds-curated').getPublicUrl(bg.storage_path);
     return data.publicUrl;
   }, []);
