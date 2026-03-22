@@ -185,25 +185,16 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           </motion.div>
         )}
 
-        {/* Scan upsell — above product grid so users see it */}
+        {/* Scan upsell — compact */}
         {hasScan === false && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mb-3"
-          >
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-3">
             <button
               onClick={() => navigate('/capture')}
-              className="w-full bg-card border border-border rounded-xl p-3 flex items-center gap-3 active:scale-[0.98] transition-transform"
+              className="w-full bg-card border border-border rounded-xl px-3 py-2 flex items-center gap-2.5 active:scale-[0.98] transition-transform"
             >
-              <div className="h-9 w-9 rounded-xl badge-gold-3d shimmer-sweep shrink-0 flex items-center justify-center">
-                <Camera className="h-4 w-4 text-primary-foreground" />
-              </div>
-              <div className="text-left">
-                <p className="text-[12px] font-bold text-foreground">Get personalized size recommendations</p>
-                <p className="text-[10px] text-muted-foreground">Complete a 60-second body scan for perfect fit</p>
-              </div>
+              <Camera className="h-3.5 w-3.5 text-primary shrink-0" />
+              <p className="text-[11px] font-bold text-foreground flex-1 text-left">60s body scan for perfect sizing</p>
+              <span className="text-[10px] font-bold text-primary shrink-0">Scan →</span>
             </button>
           </motion.div>
         )}
