@@ -76,19 +76,155 @@ function getBrandGenre(brand: string): string {
 }
 
 // ─── Fabric & Fit extraction (regex-based) ──────────────────────────────────
-const FIT_REGEX = /(oversized|boxy|relaxed\s*fit|slim\s*fit|regular\s*fit|heavyweight|lightweight|cropped|tapered|drop\s*shoulder|straight\s*fit|loose\s*fit|skinny\s*fit|athletic\s*fit|classic\s*fit|modern\s*fit|tailored\s*fit|muscle\s*fit|oversize)/gi;
-const FABRIC_REGEX = /(\d{1,3}%\s?[a-zA-Z\s\-]+(?:\s?(?:and|,)\s?\d{1,3}%\s?[a-zA-Z\s\-]+)*)|(french\s*terry|fleece|selvedge\s*denim|nylon\s*blend|organic\s*cotton|recycled\s*polyester|merino\s*wool|modal|tencel|lyocell|viscose|spandex|elastane|linen\s*blend|cotton\s*blend|ponte|jersey|terry\s*cloth|satin|silk|velvet|corduroy|twill|chambray|poplin|ripstop|mesh|piqué|waffle\s*knit|sherpa|faux\s*leather)/gi;
+// ─── Multi-signal fit & fabric extraction (mirrors categorize-products) ─────
+const FIT_PATTERNS: [RegExp, string][] = [
+  [/\bslim[- ]?fit\b/, "slim fit"],
+  [/\bclassic[- ]?fit\b/, "classic fit"],
+  [/\bregular[- ]?fit\b/, "regular fit"],
+  [/\brelaxed[- ]?fit\b|\brelaxed\b/, "relaxed fit"],
+  [/\bathletic[- ]?fit\b/, "athletic fit"],
+  [/\bskinny[- ]?fit\b|\bskinny\b/, "skinny fit"],
+  [/\bloose[- ]?fit\b|\bloose\b/, "loose fit"],
+  [/\bstraight[- ]?fit\b|\bstraight[- ]?leg\b/, "straight fit"],
+  [/\bmuscle[- ]?fit\b|\bmuscle\b/, "muscle fit"],
+  [/\btailored[- ]?fit\b|\btailored\b/, "tailored fit"],
+  [/\bmodern[- ]?fit\b/, "modern fit"],
+  [/\bstandard[- ]?fit\b/, "standard fit"],
+  [/\boversized?\b|\bover[- ]sized\b/, "oversized"],
+  [/\bboxy\b/, "boxy"],
+  [/\bcropped?\b|\bcrop\b/, "cropped"],
+  [/\btapered?\b|\btaper\b/, "tapered"],
+  [/\bdrop[- ]shoulder\b/, "drop shoulder"],
+  [/\bwide[- ]?leg\b/, "wide leg"],
+  [/\bbootcut\b|\bboot[- ]?cut\b/, "bootcut"],
+  [/\bflare[d]?\b|\bflare[- ]?leg\b/, "flare"],
+  [/\bfitted\b/, "fitted"],
+  [/\ba[- ]?line\b/, "a-line"],
+  [/\bbaggy\b/, "baggy"],
+  [/\bslouchyy?\b/, "slouchy"],
+  [/\blongline\b|\blong[- ]?line\b/, "longline"],
+  [/\bheavy[- ]?weight\b/, "heavyweight"],
+  [/\blight[- ]?weight\b/, "lightweight"],
+  [/\bmid[- ]?weight\b/, "midweight"],
+  [/\bhigh[- ]?rise\b|\bhigh[- ]?waist(ed)?\b/, "high rise"],
+  [/\bmid[- ]?rise\b/, "mid rise"],
+  [/\blow[- ]?rise\b/, "low rise"],
+];
 
-function extractFitProfile(text: string): string[] {
-  const matches = text.match(FIT_REGEX);
-  if (!matches) return [];
-  return [...new Set(matches.map(m => m.toLowerCase().trim()))];
+const BRAND_FIT_DEFAULTS: Record<string, string[]> = {
+  "essentials": ["oversized"],
+  "fear of god": ["oversized"],
+  "true classic": ["athletic fit"],
+  "lululemon": ["athletic fit"],
+  "gymshark": ["athletic fit"],
+  "carhartt": ["relaxed fit"],
+  "dickies": ["relaxed fit"],
+  "uniqlo": ["regular fit"],
+  "nike": ["athletic fit"],
+  "adidas": ["athletic fit"],
+  "puma": ["athletic fit"],
+  "palace skateboards": ["oversized"],
+  "stüssy": ["oversized"],
+  "supreme": ["oversized"],
+  "off-white": ["oversized"],
+  "corteiz": ["oversized"],
+  "trapstar": ["oversized"],
+  "rhone": ["athletic fit"],
+  "vuori": ["relaxed fit"],
+  "taylor stitch": ["classic fit"],
+  "grayers": ["classic fit"],
+  "bonobos": ["tailored fit"],
+  "ralph lauren": ["classic fit"],
+  "marine layer": ["relaxed fit"],
+  "faherty": ["relaxed fit"],
+  "outerknown": ["relaxed fit"],
+  "roark": ["relaxed fit"],
+  "free people": ["relaxed fit"],
+  "reformation": ["slim fit"],
+  "skims": ["fitted"],
+  "mango": ["slim fit"],
+  "zara": ["slim fit"],
+  "h&m": ["regular fit"],
+  "asos": ["regular fit"],
+};
+
+const CATEGORY_FIT_DEFAULTS: Record<string, string[]> = {
+  "jeans": ["straight fit"],
+  "leggings": ["fitted"],
+  "blazers": ["tailored fit"],
+  "activewear": ["athletic fit"],
+  "swimwear": ["fitted"],
+  "underwear": ["fitted"],
+  "dresses": ["a-line"],
+  "skirts": ["a-line"],
+};
+
+const FABRIC_PATTERNS: [RegExp, string][] = [
+  [/\bcotton\b/, "cotton"],
+  [/\bpolyester\b/, "polyester"],
+  [/\bnylon\b/, "nylon"],
+  [/\belastane\b|\bspandex\b|\blycra\b/, "elastane"],
+  [/\brayon\b|\bviscose\b/, "rayon"],
+  [/\bsilk\b/, "silk"],
+  [/\bwool\b|\bmerino\b/, "wool"],
+  [/\blinen\b/, "linen"],
+  [/\bcashmere\b/, "cashmere"],
+  [/\bdenim\b/, "denim"],
+  [/\bfleece\b/, "fleece"],
+  [/\bvelvet\b/, "velvet"],
+  [/\bsuede\b/, "suede"],
+  [/\bleather\b/, "leather"],
+  [/\bfaux leather\b|\bvegan leather\b/, "faux leather"],
+  [/\bcanvas\b/, "canvas"],
+  [/\btwill\b/, "twill"],
+  [/\bjersey\b/, "jersey"],
+  [/\bchiffon\b/, "chiffon"],
+  [/\bsatin\b/, "satin"],
+  [/\blace\b/, "lace"],
+  [/\bcorduroy\b/, "corduroy"],
+  [/\bmodal\b/, "modal"],
+  [/\btencel\b|\blyocell\b/, "tencel"],
+  [/\bgore-?tex\b/, "gore-tex"],
+  [/\bmesh\b/, "mesh"],
+  [/\bripstop\b/, "ripstop"],
+  [/\bpoplin\b/, "poplin"],
+  [/\bchambray\b/, "chambray"],
+  [/\bflannel\b/, "flannel"],
+  [/\bterry\b|\bfrench terry\b/, "terry"],
+  [/\bpiqué\b|\bpique\b/, "piqué"],
+  [/\bsherpa\b/, "sherpa"],
+];
+
+function extractFitProfile(name: string, brand: string, category: string): string[] {
+  const combined = name.toLowerCase();
+  const hits = new Set<string>();
+  for (const [regex, label] of FIT_PATTERNS) {
+    if (regex.test(combined)) hits.add(label);
+  }
+  // Brand-level defaults when no fit detected from name
+  if (hits.size === 0) {
+    const brandLower = brand.toLowerCase().trim();
+    if (BRAND_FIT_DEFAULTS[brandLower]) {
+      BRAND_FIT_DEFAULTS[brandLower].forEach(d => hits.add(d));
+    }
+  }
+  // Category-level defaults when still nothing
+  if (hits.size === 0) {
+    const catLower = category.toLowerCase().trim();
+    if (CATEGORY_FIT_DEFAULTS[catLower]) {
+      CATEGORY_FIT_DEFAULTS[catLower].forEach(d => hits.add(d));
+    }
+  }
+  return [...hits];
 }
 
 function extractFabricComposition(text: string): string[] {
-  const matches = text.match(FABRIC_REGEX);
-  if (!matches) return [];
-  return [...new Set(matches.map(m => m.toLowerCase().trim()).filter(m => m.length > 2))];
+  const combined = text.toLowerCase();
+  const hits = new Set<string>();
+  for (const [regex, label] of FABRIC_PATTERNS) {
+    if (regex.test(combined)) hits.add(label);
+  }
+  return [...hits];
 }
 
 // ─── Listing / category page detection ──────────────────────────────────────
