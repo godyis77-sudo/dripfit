@@ -261,7 +261,7 @@ const Backgrounds = () => {
             {searching && <Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-muted-foreground" />}
           </div>
         ) : (
-          <div className="flex-1 flex gap-1.5 overflow-x-auto scrollbar-hide">
+          <div className="flex-1 flex gap-1.5 overflow-x-auto scrollbar-hide" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
             {categories.map(cat => (
               <button
                 key={cat.slug}
