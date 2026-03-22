@@ -84,6 +84,7 @@ const TryOnResultSection = ({
   const [accessoryStepIndex, setAccessoryStepIndex] = useState(0);
   const [showResultFullscreen, setShowResultFullscreen] = useState(false);
   const [showBeforeAfter, setShowBeforeAfter] = useState(false);
+  const [showBgSwap, setShowBgSwap] = useState(false);
 
   const handleAddToWardrobe = async (item: WhatsLookItem) => {
     if (!authUser) {
