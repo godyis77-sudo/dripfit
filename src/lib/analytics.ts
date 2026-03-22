@@ -161,7 +161,12 @@ type FunnelEvent =
   | 'gallery_hero_tryon'
   | 'demo_tryon_cta_click'
   | 'photo_quality_tip_viewed'
-  | 'drip_card_render_failed';
+  | 'drip_card_render_failed'
+  | 'bg_swap_opened'
+  | 'bg_category_selected'
+  | 'bg_background_selected'
+  | 'bg_composite_shared'
+  | 'bg_composite_saved';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {

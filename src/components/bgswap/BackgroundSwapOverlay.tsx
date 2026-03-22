@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import { useBackgroundRemoval } from './useBackgroundRemoval';
 import { useCanvasCompositor } from './useCanvasCompositor';
-import { shareImage } from '@/lib/shareImage';
+// Share utility - uses Web Share API or downloads
 
 interface BackgroundSwapOverlayProps {
   resultImageUrl: string;
