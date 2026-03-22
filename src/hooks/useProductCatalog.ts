@@ -127,6 +127,12 @@ export function useProductCatalog(
       if (gender && gender !== 'all') {
         query = query.in('gender', [gender, 'unisex']);
       }
+      if (genre) {
+        query = query.eq('style_genre', genre);
+      }
+      if (fitProfile) {
+        query = query.contains('fit_profile', [fitProfile]);
+      }
 
       const { data } = await query;
 
