@@ -118,7 +118,7 @@ const Browse = () => {
     return [...new Set(products.map(p => p.category))].sort();
   }, [products]);
 
-  // Filter and sort
+  // Filter and sort (genre & fit are now server-side)
   const displayed = useMemo(() => {
     let result = [...products];
 
@@ -128,16 +128,6 @@ const Browse = () => {
 
     if (retailerFilter) {
       result = result.filter(p => p.retailer === retailerFilter);
-    }
-
-    if (genreFilter) {
-      result = result.filter(p => getBrandGenre(p.brand) === genreFilter);
-    }
-
-    if (fitFilter) {
-      result = result.filter(p =>
-        Array.isArray(p.fit_profile) && p.fit_profile.some(f => f === fitFilter)
-      );
     }
 
     switch (sort) {
@@ -168,7 +158,7 @@ const Browse = () => {
     }
 
     return result;
-  }, [products, sort, brandFilter, retailerFilter, genreFilter, fitFilter, categoryFilter]);
+  }, [products, sort, brandFilter, retailerFilter, categoryFilter]);
 
   // Compute available fits from current products (to only show relevant pills)
   const availableFits = useMemo(() => {
