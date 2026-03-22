@@ -86,7 +86,7 @@ const CartTab = forwardRef<HTMLDivElement>((_, ref) => {
 
   if (items.length === 0) {
     return (
-      <div className="text-center py-10">
+      <div ref={ref} className="text-center py-10">
         <div className="h-12 w-12 rounded-xl badge-gold-3d shimmer-sweep mx-auto mb-3 flex items-center justify-center">
           <ShoppingCart className="h-6 w-6 text-primary-foreground" />
         </div>
