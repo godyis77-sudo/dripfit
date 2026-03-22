@@ -19,7 +19,7 @@ const normalizeProductUrl = (url: string) => {
   }
 };
 
-const CartTab = () => {
+const CartTab = forwardRef<HTMLDivElement>((_, ref) => {
   const navigate = useNavigate();
   const { items, removeFromCart, clearCart } = useCart();
   const [previewProduct, setPreviewProduct] = useState<ProductPreviewData | null>(null);
