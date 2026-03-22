@@ -175,6 +175,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       return;
     }
     setSelectedBgId(bg.id);
+    setShowOriginal(false);
     setShowSearch(false);
     trackEvent('bg_background_selected', { bg_id: bg.id, source: bg.source });
 
