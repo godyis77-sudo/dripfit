@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Share2, Save, Loader2, Search, Crown } from 'lucide-react';
+import { X, Share2, Save, Loader2, Search, Crown, Maximize2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -74,6 +74,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   const [showOriginal, setShowOriginal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [fullscreenPreview, setFullscreenPreview] = useState(false);
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -340,8 +341,43 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         document.body
       )}
 
+      {/* Fullscreen preview portal */}
+      {fullscreenPreview && createPortal(
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[230] bg-black flex items-center justify-center"
+          onClick={() => setFullscreenPreview(false)}
+        >
+          <button
+            onClick={() => setFullscreenPreview(false)}
+            className="absolute top-4 right-4 z-[231] h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center"
+            style={{ top: 'max(1rem, env(safe-area-inset-top, 1rem))' }}
+          >
+            <X className="h-5 w-5 text-white" />
+          </button>
+          {showOriginal ? (
+            <img src={resultImageUrl} alt="Original fullscreen" className="max-h-full max-w-full object-contain" />
+          ) : (
+            <canvas
+              ref={el => {
+                if (el && transparentSubject) compositePreview(el, transparentSubject, selectedBgUrl, selectedBgColor);
+              }}
+              width={1080}
+              height={1920}
+              className="max-h-full max-w-full object-contain"
+            />
+          )}
+        </motion.div>,
+        document.body
+      )}
+
       {/* Preview area */}
-      <div className="flex-1 relative flex items-center justify-center overflow-hidden min-h-[30dvh]">
+      <div
+        className="flex-1 relative flex items-center justify-center overflow-hidden min-h-[30dvh] cursor-pointer group"
+        onClick={() => transparentSubject && setFullscreenPreview(true)}
+      >
         {showOriginal ? (
           <img
             src={resultImageUrl}
@@ -356,6 +392,11 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
             className="max-h-full max-w-full rounded-xl object-contain"
             style={{ imageRendering: 'auto' }}
           />
+        )}
+        {transparentSubject && (
+          <div className="absolute top-2 right-2 h-8 w-8 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            <Maximize2 className="h-4 w-4 text-white" />
+          </div>
         )}
       </div>
 
