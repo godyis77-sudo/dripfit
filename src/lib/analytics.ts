@@ -158,7 +158,9 @@ type FunnelEvent =
   | 'referral_signup_attributed'
   | 'creator_commission_earned'
   | 'gallery_tryon_click'
-  | 'gallery_hero_tryon';
+  | 'gallery_hero_tryon'
+  | 'demo_tryon_cta_click'
+  | 'photo_quality_tip_viewed';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
