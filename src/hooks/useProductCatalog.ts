@@ -86,7 +86,14 @@ function seededShuffle<T>(arr: T[], seed: number): T[] {
   return copy;
 }
 
-export function useProductCatalog(category?: string, brand?: string, seed?: number, gender?: string) {
+export function useProductCatalog(
+  category?: string,
+  brand?: string,
+  seed?: number,
+  gender?: string,
+  genre?: string,
+  fitProfile?: string,
+) {
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [loading, setLoading] = useState(false);
   // Stable random seed — generated once per hook instance to prevent flickering on re-fetch
@@ -119,6 +126,12 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
       if (brand) query = query.eq('brand', brand);
       if (gender && gender !== 'all') {
         query = query.in('gender', [gender, 'unisex']);
+      }
+      if (genre) {
+        query = query.eq('style_genre', genre);
+      }
+      if (fitProfile) {
+        query = query.contains('fit_profile', [fitProfile]);
       }
 
       const { data } = await query;
@@ -163,7 +176,7 @@ export function useProductCatalog(category?: string, brand?: string, seed?: numb
         setLoading(false);
       }
     }
-  }, [category, brand, seed, gender]);
+  }, [category, brand, seed, gender, genre, fitProfile]);
 
   useEffect(() => {
     fetchProducts();

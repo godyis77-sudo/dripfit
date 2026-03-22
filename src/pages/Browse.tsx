@@ -68,15 +68,16 @@ const Browse = () => {
 
   // Use override if user manually selected, otherwise default to profile preference
   const genderFilter: GenderKey = genderOverride ?? defaultGender;
-  const effectiveGender = genderFilter === 'all' ? undefined : genderFilter;
 
-  const { products, loading } = useProductCatalog(category === 'all' ? undefined : category, undefined, undefined, effectiveGender);
   // search state removed — brand filter handled by BrandFilter component
   const [sort, setSort] = useState<SortKey>('default');
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
   const [retailerFilter, setRetailerFilter] = useState<string | null>(null);
   const [genreFilter, setGenreFilter] = useState<BrandGenre | null>(null);
   const [fitFilter, setFitFilter] = useState<string | null>(null);
+
+  const effectiveGender = genderFilter === 'all' ? undefined : genderFilter;
+  const { products, loading } = useProductCatalog(category === 'all' ? undefined : category, undefined, undefined, effectiveGender, genreFilter ?? undefined, fitFilter ?? undefined);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [genreOpen, setGenreOpen] = useState(false);
@@ -117,7 +118,7 @@ const Browse = () => {
     return [...new Set(products.map(p => p.category))].sort();
   }, [products]);
 
-  // Filter and sort
+  // Filter and sort (genre & fit are now server-side)
   const displayed = useMemo(() => {
     let result = [...products];
 
@@ -127,16 +128,6 @@ const Browse = () => {
 
     if (retailerFilter) {
       result = result.filter(p => p.retailer === retailerFilter);
-    }
-
-    if (genreFilter) {
-      result = result.filter(p => getBrandGenre(p.brand) === genreFilter);
-    }
-
-    if (fitFilter) {
-      result = result.filter(p =>
-        Array.isArray(p.fit_profile) && p.fit_profile.some(f => f === fitFilter)
-      );
     }
 
     switch (sort) {
@@ -167,7 +158,7 @@ const Browse = () => {
     }
 
     return result;
-  }, [products, sort, brandFilter, retailerFilter, genreFilter, fitFilter, categoryFilter]);
+  }, [products, sort, brandFilter, retailerFilter, categoryFilter]);
 
   // Compute available fits from current products (to only show relevant pills)
   const availableFits = useMemo(() => {
