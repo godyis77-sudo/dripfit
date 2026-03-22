@@ -250,7 +250,7 @@ export function useCanvasCompositor() {
 
     // Draw subject (scene-aware scale, anchored to ground)
     const subjectImg = await loadImage(subjectUrl);
-    const scale = (height * scaleFraction) / subjectImg.height;
+    const scale = (height * finalScale) / subjectImg.height;
     const subW = subjectImg.width * scale;
     const subH = subjectImg.height * scale;
     const subX = (width - subW) / 2;
