@@ -19,6 +19,132 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
+/** Sample a background image and return average RGB + perceived brightness (0-255). */
+function analyzeBackgroundLighting(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number
+): { r: number; g: number; b: number; brightness: number } {
+  // Sample a vertical strip in the center (where the subject will be)
+  const sampleX = Math.floor(width * 0.25);
+  const sampleW = Math.floor(width * 0.5);
+  const sampleH = height;
+  const imageData = ctx.getImageData(sampleX, 0, sampleW, sampleH);
+  const data = imageData.data;
+
+  let totalR = 0, totalG = 0, totalB = 0;
+  // Sample every 16th pixel for performance
+  const step = 16 * 4;
+  let count = 0;
+  for (let i = 0; i < data.length; i += step) {
+    totalR += data[i];
+    totalG += data[i + 1];
+    totalB += data[i + 2];
+    count++;
+  }
+
+  const r = totalR / count;
+  const g = totalG / count;
+  const b = totalB / count;
+  // Perceived brightness (ITU-R BT.601)
+  const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+
+  return { r, g, b, brightness };
+}
+
+/**
+ * Apply lighting harmonization to the subject area:
+ * 1. Color tint overlay (multiply blend) to match the scene's ambient color
+ * 2. Brightness adjustment via luminosity overlay
+ * 3. Subtle ambient light from the background edges
+ */
+function applyLightingMatch(
+  ctx: CanvasRenderingContext2D,
+  subX: number,
+  subY: number,
+  subW: number,
+  subH: number,
+  lighting: { r: number; g: number; b: number; brightness: number }
+) {
+  const { r, g, b, brightness } = lighting;
+
+  // Normalize brightness: 128 = neutral, <128 = darken, >128 = brighten
+  const brightnessFactor = brightness / 128; // 0-2 range
+
+  ctx.save();
+
+  // 1. Color tint — soft multiply-style overlay matching background hue
+  //    Use very low opacity so it tints without overpowering
+  ctx.globalCompositeOperation = 'source-atop';
+  ctx.globalAlpha = 0.12;
+  ctx.fillStyle = `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+  ctx.fillRect(subX, subY, subW, subH);
+
+  // 2. Brightness correction
+  if (brightnessFactor < 0.85) {
+    // Dark background → darken subject slightly
+    ctx.globalCompositeOperation = 'source-atop';
+    ctx.globalAlpha = Math.min(0.25, (1 - brightnessFactor) * 0.3);
+    ctx.fillStyle = 'rgb(0, 0, 0)';
+    ctx.fillRect(subX, subY, subW, subH);
+  } else if (brightnessFactor > 1.3) {
+    // Bright background → brighten subject slightly
+    ctx.globalCompositeOperation = 'source-atop';
+    ctx.globalAlpha = Math.min(0.15, (brightnessFactor - 1) * 0.2);
+    ctx.fillStyle = 'rgb(255, 255, 255)';
+    ctx.fillRect(subX, subY, subW, subH);
+  }
+
+  // 3. Ambient rim light on edges — gradient from background color
+  ctx.globalCompositeOperation = 'source-atop';
+  ctx.globalAlpha = 0.08;
+  const rimLeft = ctx.createLinearGradient(subX, subY, subX + subW * 0.15, subY);
+  rimLeft.addColorStop(0, `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`);
+  rimLeft.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = rimLeft;
+  ctx.fillRect(subX, subY, subW, subH);
+
+  const rimRight = ctx.createLinearGradient(subX + subW, subY, subX + subW * 0.85, subY);
+  rimRight.addColorStop(0, `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`);
+  rimRight.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = rimRight;
+  ctx.fillRect(subX, subY, subW, subH);
+
+  ctx.restore();
+}
+
+function drawBackground(
+  ctx: CanvasRenderingContext2D,
+  bgImg: HTMLImageElement | null,
+  backgroundColor: string,
+  width: number,
+  height: number
+) {
+  if (bgImg) {
+    const bgRatio = bgImg.width / bgImg.height;
+    const canvasRatio = width / height;
+    let sx = 0, sy = 0, sw = bgImg.width, sh = bgImg.height;
+    if (bgRatio > canvasRatio) {
+      sw = bgImg.height * canvasRatio;
+      sx = (bgImg.width - sw) / 2;
+    } else {
+      sh = bgImg.width / canvasRatio;
+      sy = (bgImg.height - sh) / 2;
+    }
+    ctx.drawImage(bgImg, sx, sy, sw, sh, 0, 0, width, height);
+  } else {
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, width, height);
+  }
+}
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) }
+    : { r: 10, g: 10, b: 10 };
+}
+
 export function useCanvasCompositor() {
   const composite = useCallback(async (options: CompositeOptions): Promise<string> => {
     const { subjectUrl, backgroundUrl, backgroundColor = '#0A0A0A', width = 1080, height = 1920, addWatermark = false } = options;
@@ -29,24 +155,16 @@ export function useCanvasCompositor() {
     const ctx = canvas.getContext('2d')!;
 
     // Draw background
+    let bgImg: HTMLImageElement | null = null;
     if (backgroundUrl) {
-      const bgImg = await loadImage(backgroundUrl);
-      // Cover fill
-      const bgRatio = bgImg.width / bgImg.height;
-      const canvasRatio = width / height;
-      let sx = 0, sy = 0, sw = bgImg.width, sh = bgImg.height;
-      if (bgRatio > canvasRatio) {
-        sw = bgImg.height * canvasRatio;
-        sx = (bgImg.width - sw) / 2;
-      } else {
-        sh = bgImg.width / canvasRatio;
-        sy = (bgImg.height - sh) / 2;
-      }
-      ctx.drawImage(bgImg, sx, sy, sw, sh, 0, 0, width, height);
-    } else {
-      ctx.fillStyle = backgroundColor;
-      ctx.fillRect(0, 0, width, height);
+      bgImg = await loadImage(backgroundUrl);
     }
+    drawBackground(ctx, bgImg, backgroundColor, width, height);
+
+    // Analyze background lighting
+    const lighting = bgImg
+      ? analyzeBackgroundLighting(ctx, width, height)
+      : (() => { const c = hexToRgb(backgroundColor); return { ...c, brightness: 0.299 * c.r + 0.587 * c.g + 0.114 * c.b }; })();
 
     // Draw subject (centered, scaled to 80% height, anchored to bottom)
     const subjectImg = await loadImage(subjectUrl);
@@ -66,9 +184,13 @@ export function useCanvasCompositor() {
     // Draw actual subject
     ctx.drawImage(subjectImg, subX, subY, subW, subH);
 
+    // Apply lighting harmonization
+    applyLightingMatch(ctx, subX, subY, subW, subH, lighting);
+
     // Optional watermark
     if (addWatermark) {
       ctx.save();
+      ctx.globalCompositeOperation = 'source-over';
       ctx.globalAlpha = 0.5;
       ctx.font = 'bold 24px sans-serif';
       ctx.fillStyle = '#D4AF37';
@@ -91,28 +213,20 @@ export function useCanvasCompositor() {
     ctx.clearRect(0, 0, width, height);
 
     // Draw background
+    let bgImg: HTMLImageElement | null = null;
     if (backgroundUrl) {
       try {
-        const bgImg = await loadImage(backgroundUrl);
-        const bgRatio = bgImg.width / bgImg.height;
-        const canvasRatio = width / height;
-        let sx = 0, sy = 0, sw = bgImg.width, sh = bgImg.height;
-        if (bgRatio > canvasRatio) {
-          sw = bgImg.height * canvasRatio;
-          sx = (bgImg.width - sw) / 2;
-        } else {
-          sh = bgImg.width / canvasRatio;
-          sy = (bgImg.height - sh) / 2;
-        }
-        ctx.drawImage(bgImg, sx, sy, sw, sh, 0, 0, width, height);
+        bgImg = await loadImage(backgroundUrl);
       } catch {
-        ctx.fillStyle = backgroundColor;
-        ctx.fillRect(0, 0, width, height);
+        // fallback to solid
       }
-    } else {
-      ctx.fillStyle = backgroundColor;
-      ctx.fillRect(0, 0, width, height);
     }
+    drawBackground(ctx, bgImg, backgroundColor, width, height);
+
+    // Analyze background lighting
+    const lighting = bgImg
+      ? analyzeBackgroundLighting(ctx, width, height)
+      : (() => { const c = hexToRgb(backgroundColor); return { ...c, brightness: 0.299 * c.r + 0.587 * c.g + 0.114 * c.b }; })();
 
     // Draw subject
     try {
@@ -130,7 +244,11 @@ export function useCanvasCompositor() {
       ctx.drawImage(subjectImg, subX + 5, subY + 10, subW, subH);
       ctx.restore();
 
+      // Subject
       ctx.drawImage(subjectImg, subX, subY, subW, subH);
+
+      // Apply lighting harmonization
+      applyLightingMatch(ctx, subX, subY, subW, subH, lighting);
     } catch {
       // Subject not ready yet
     }
