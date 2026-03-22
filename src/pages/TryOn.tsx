@@ -10,11 +10,14 @@ import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import TryOnUploadSection from '@/components/tryon/TryOnUploadSection';
 import TryOnResultSection from '@/components/tryon/TryOnResultSection';
 import TryOnPremiumGate from '@/components/tryon/TryOnPremiumGate';
+import TryOnAuthWall from '@/components/tryon/TryOnAuthWall';
+import TryOnLoadingAnimation from '@/components/tryon/TryOnLoadingAnimation';
 import { CATEGORIES, ALL_PRODUCT_CATEGORIES, FREE_MONTHLY_LIMIT } from '@/components/tryon/tryon-constants';
 import { BRAND_GENRES, type BrandGenre } from '@/lib/brandGenres';
 import { trackEvent } from '@/lib/analytics';
 import { useTryOnState } from '@/hooks/useTryOnState';
 import { isGuestMode } from '@/lib/session';
+import { getGuestTryOnCount, GUEST_LIFETIME_LIMIT } from '@/lib/guestSession';
 import BrandFilter from '@/components/tryon/BrandFilter';
 import { supabase } from '@/integrations/supabase/client';
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
@@ -392,21 +395,7 @@ const TryOn = () => {
             )}
 
             {s.loading && (
-              <div className="flex flex-col items-center mt-3 mb-1 gap-2">
-                <p className="text-[12px] text-muted-foreground font-medium">
-                  {s.loadingStepIndex === 0 && 'Analyzing your body scan…'}
-                  {s.loadingStepIndex === 1 && 'Compositing the outfit…'}
-                  {s.loadingStepIndex === 2 && 'Finalizing your preview…'}
-                </p>
-                <div className="flex gap-1.5">
-                  {[0, 1, 2].map(i => (
-                    <div
-                      key={i}
-                      className={`h-1.5 w-1.5 rounded-full transition-colors duration-300 ${i <= s.loadingStepIndex ? 'bg-primary' : 'border border-muted-foreground/40'}`}
-                    />
-                  ))}
-                </div>
-              </div>
+              <TryOnLoadingAnimation stepIndex={s.loadingStepIndex} />
             )}
 
             {!s.canGenerate && !s.loading && (
@@ -524,7 +513,12 @@ const TryOn = () => {
           <Shield className="h-3 w-3" /> Private by default · delete anytime
         </p>
 
-        {!s.resultImage && !s.hasUnlimitedTryOns && s.remainingTryOns <= FREE_MONTHLY_LIMIT && (
+        {!s.resultImage && !s.hasUnlimitedTryOns && !s.user && (
+          <p className="text-[12px] text-foreground/40 text-center mb-2">
+            {Math.max(0, GUEST_LIFETIME_LIMIT - getGuestTryOnCount())} free try-on{Math.max(0, GUEST_LIFETIME_LIMIT - getGuestTryOnCount()) !== 1 ? 's' : ''} remaining
+          </p>
+        )}
+        {!s.resultImage && !s.hasUnlimitedTryOns && s.user && s.remainingTryOns <= FREE_MONTHLY_LIMIT && (
           <p className="text-[12px] text-foreground/40 text-center mb-2">
             {s.remainingTryOns} free try-on{s.remainingTryOns !== 1 ? 's' : ''} left this month
           </p>
@@ -532,6 +526,12 @@ const TryOn = () => {
       </div>
 
       {s.showPremiumGate && <TryOnPremiumGate onClose={() => s.setShowPremiumGate(false)} />}
+
+      <AnimatePresence>
+        {s.showAuthWall && (
+          <TryOnAuthWall onClose={() => s.setShowAuthWall(false)} reason={s.authWallReason} />
+        )}
+      </AnimatePresence>
 
       {showScrollTop && createPortal(
         <AnimatePresence>

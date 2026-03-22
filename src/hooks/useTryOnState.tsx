@@ -11,6 +11,10 @@ import {
   getServerTryOnCount, incrementServerTryOnCount,
 } from '@/components/tryon/tryon-constants';
 import type { CatalogProduct } from '@/hooks/useProductCatalog';
+import {
+  getGuestUuid, getGuestTryOnCount, incrementGuestTryOnCount,
+  guestHasRemainingTryOns, GUEST_LIFETIME_LIMIT, FREE_DAILY_LIMIT,
+} from '@/lib/guestSession';
 
 export type LookItem = { brand: string; name: string; url: string; price_cents?: number | null; image_url?: string | null };
 export type WardrobeItem = { id: string; image_url: string; category: string; product_link: string | null };
@@ -238,13 +242,23 @@ export function useTryOnState() {
     } catch (err: unknown) { console.error('Auto-save failed:', err); }
   };
 
+  const [showAuthWall, setShowAuthWall] = useState(false);
+  const [authWallReason, setAuthWallReason] = useState<'guest_limit' | 'daily_limit'>('guest_limit');
+
   const checkUsageLimit = async (): Promise<boolean> => {
     if (hasUnlimitedTryOns) return true;
     if (user) {
       const count = await getServerTryOnCount(supabase, user.id);
       setServerCount(count);
       if (count >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return false; }
-    } else if (getMonthlyTryOnCount() >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return false; }
+    } else {
+      // Guest mode — check local count
+      if (!guestHasRemainingTryOns()) {
+        setAuthWallReason('guest_limit');
+        setShowAuthWall(true);
+        return false;
+      }
+    }
     return true;
   };
 
@@ -254,7 +268,7 @@ export function useTryOnState() {
       await incrementServerTryOnCount(supabase, user.id);
       setServerCount(prev => (prev ?? 0) + 1);
     } else {
-      incrementTryOnCount();
+      incrementGuestTryOnCount();
     }
   };
 
@@ -264,14 +278,33 @@ export function useTryOnState() {
     setLoading(true);
     setResultImage(null);
     setDescription(null);
-    trackEvent('tryon_started');
+    trackEvent('tryon_started', { tier: user ? 'authenticated' : 'guest' });
     try {
       setTryOnError(null);
-      const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto, clothingPhoto, itemType: category || 'clothing' } });
+      const body: Record<string, unknown> = { userPhoto, clothingPhoto, itemType: category || 'clothing' };
+      // Pass guest UUID for unauthenticated users
+      if (!user) {
+        body.guestUuid = getGuestUuid();
+      }
+      const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', { body });
       if (error) throw new Error(error.message);
-      if (resp?.error) throw new Error(resp.error.message || resp.error);
+      if (resp?.error) {
+        // Handle specific error codes from edge function
+        const errCode = resp.error.code;
+        if (errCode === 'GUEST_LIMIT') {
+          setAuthWallReason('guest_limit');
+          setShowAuthWall(true);
+          return;
+        }
+        if (errCode === 'DAILY_LIMIT') {
+          setAuthWallReason('daily_limit');
+          setShowAuthWall(true);
+          return;
+        }
+        throw new Error(resp.error.message || resp.error);
+      }
       const payload = resp?.data ?? resp;
-      trackEvent('tryon_generated');
+      trackEvent('tryon_generated', { tier: user ? (payload.userTier || 'free') : 'guest' });
       await incrementUsage();
       if (payload.resultImage) {
         setResultImage(payload.resultImage);
@@ -428,6 +461,8 @@ export function useTryOnState() {
     showLookItems, layerHistory, hasSavedProfile,
     canGenerate, remainingTryOns, hasUnlimitedTryOns: !!hasUnlimitedTryOns,
     addingAccessory, tryOnError, autoSaved,
+    // Guest auth wall
+    showAuthWall, setShowAuthWall, authWallReason,
     // Handlers
     handleTryOn, handleShare, handleTryAnother, handleAddAccessory,
     handleSelectProduct, handleSaveToItems,

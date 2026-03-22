@@ -55,11 +55,8 @@ const Welcome = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useEffect(() => {
-    if (!loading && !user && !isGuestMode() && !isOnboarded()) {
-      navigate('/onboarding', { replace: true });
-    }
-  }, [user, loading, navigate]);
+  // Skip onboarding — users go directly to the app (Try-On First strategy)
+  // Onboarding is killed; gender selection happens inline via profile settings
 
   const handleStartScan = () => {
     trackEvent('home_start_scan_click');
