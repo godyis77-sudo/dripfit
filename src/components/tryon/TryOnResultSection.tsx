@@ -216,7 +216,7 @@ const TryOnResultSection = ({
           </button>
 
           {/* Before/After toggle */}
-          {clothingPhoto && (
+          {userPhoto && (
             <button
               onClick={(e) => { e.stopPropagation(); setShowBeforeAfter(v => !v); }}
               className="absolute bottom-3 left-3 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold active:scale-95 transition-transform"
