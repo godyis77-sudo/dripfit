@@ -51,6 +51,7 @@ interface ProductPreviewModalProps {
 const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookItems, onLookItemTryOn, onLookItemShop }: ProductPreviewModalProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { addToCart, removeFromCart, isInCart } = useCart();
   const [lookOpen, setLookOpen] = useState(false);
   const [addingToWardrobe, setAddingToWardrobe] = useState(false);
   const [addedToWardrobe, setAddedToWardrobe] = useState(false);
