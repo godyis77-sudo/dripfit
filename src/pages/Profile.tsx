@@ -236,7 +236,8 @@ const Profile = () => {
               }`}
             >
               <span className="flex items-center justify-center gap-1">
-                <t.icon className="h-3.5 w-3.5" /> {t.label}
+                <t.icon className="h-3.5 w-3.5" />
+                <span className="hidden min-[360px]:inline">{t.label}</span>
               </span>
             </button>
           ))}

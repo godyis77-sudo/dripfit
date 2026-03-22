@@ -84,21 +84,15 @@ const TryOn = () => {
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
       <div>
-        {/* Header */}
-        <div className="flex items-center gap-2 mb-3">
-          <Button variant="ghost" size="icon" onClick={() => s.navigate(-1)} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-base font-bold text-foreground">Try-On</h1>
-            <p className="text-[12px] text-foreground/70">See how it looks before you buy</p>
-          </div>
-          {s.resultImage && (
+        <PageHeader
+          title="Try-On"
+          subtitle="See how it looks before you buy"
+          actions={s.resultImage ? (
             <Button variant="outline" size="sm" onClick={s.handleTryAnother} className="h-8 rounded-lg text-[11px] font-bold gap-1.5">
               <RotateCcw className="h-3.5 w-3.5" /> New
             </Button>
-          )}
-        </div>
+          ) : undefined}
+        />
 
         {/* Body profile badge */}
         {(s.hasSavedProfile || s.bodyProfile) && !s.resultImage && (
