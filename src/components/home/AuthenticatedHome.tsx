@@ -171,25 +171,15 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           </motion.div>
         )}
 
-        {/* Gender nudge — above product grid so users see it */}
+        {/* Gender nudge — compact inline */}
         {!userGender && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.19 }}
-            className="mb-3"
-          >
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.19 }} className="mb-3">
             <button
               onClick={() => navigate('/profile/settings')}
-              className="w-full bg-card border border-primary/20 rounded-xl p-3 flex items-center gap-3 active:scale-[0.98] transition-transform"
+              className="w-full bg-card border border-primary/20 rounded-xl px-3 py-2 flex items-center gap-2.5 active:scale-[0.98] transition-transform"
             >
-              <div className="h-9 w-9 rounded-xl btn-gold-3d flex items-center justify-center shrink-0">
-                <ShoppingBag className="h-4 w-4 text-primary-foreground" />
-              </div>
-              <div className="text-left flex-1">
-                <p className="text-[12px] font-bold text-foreground">Personalize your picks</p>
-                <p className="text-[10px] text-muted-foreground">Tell us how you shop for better recommendations</p>
-              </div>
+              <ShoppingBag className="h-3.5 w-3.5 text-primary shrink-0" />
+              <p className="text-[11px] font-bold text-foreground flex-1 text-left">Personalize your picks</p>
               <span className="text-[10px] font-bold text-primary shrink-0">Set →</span>
             </button>
           </motion.div>
