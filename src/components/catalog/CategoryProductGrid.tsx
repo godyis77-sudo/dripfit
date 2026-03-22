@@ -40,7 +40,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
   fitProfile,
 }, ref) => {
   const navigate = useNavigate();
-  const { products, loading } = useProductCatalog(category, brand, seed, gender);
+  const { products, loading } = useProductCatalog(category, brand, seed, gender, genre ?? undefined, fitProfile);
   const [expanded, setExpanded] = useState(!collapsed);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
   const [failedImageIds, setFailedImageIds] = useState<Set<string>>(new Set());
@@ -56,21 +56,9 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
 
   let visibleProducts = products;
 
-  // Apply genre filter
-  if (genre) {
-    visibleProducts = visibleProducts.filter(p => getBrandGenre(p.brand) === genre);
-  }
-
-  // Apply retailer filter
+  // Apply retailer filter (still client-side since it's derived from loaded products)
   if (retailer) {
     visibleProducts = visibleProducts.filter(p => p.retailer === retailer);
-  }
-
-  // Apply fit profile filter
-  if (fitProfile) {
-    visibleProducts = visibleProducts.filter(p =>
-      Array.isArray(p.fit_profile) && p.fit_profile.includes(fitProfile)
-    );
   }
 
   // Apply price filter
