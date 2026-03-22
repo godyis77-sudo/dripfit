@@ -6,7 +6,7 @@ import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalo
 import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
 import ProductPreviewModal from '@/components/ui/ProductPreviewModal';
-import { getBrandGenre, type BrandGenre } from '@/lib/brandGenres';
+import { type BrandGenre } from '@/lib/brandGenres';
 
 interface CategoryProductGridProps {
   category: string;
