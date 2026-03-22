@@ -383,30 +383,52 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         document.body
       )}
 
-      {/* Preview area */}
+      {/* Preview area — drag to reposition subject */}
       <div
-        className="flex-1 relative flex items-center justify-center overflow-hidden min-h-[30dvh] cursor-pointer group"
-        onClick={() => transparentSubject && setFullscreenPreview(true)}
+        className="flex-1 relative flex items-center justify-center overflow-hidden min-h-[30dvh] cursor-grab active:cursor-grabbing group touch-none"
+        onPointerDown={e => {
+          if (!transparentSubject) return;
+          e.preventDefault();
+          (e.target as HTMLElement).setPointerCapture(e.pointerId);
+          dragRef.current = { startX: e.clientX, startY: e.clientY, startOX: offsetX, startOY: offsetY };
+        }}
+        onPointerMove={e => {
+          if (!dragRef.current) return;
+          const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+          const dx = (e.clientX - dragRef.current.startX) / rect.width * 2;
+          const dy = (e.clientY - dragRef.current.startY) / rect.height * 2;
+          setOffsetX(Math.max(-1, Math.min(1, dragRef.current.startOX + dx)));
+          setOffsetY(Math.max(-1, Math.min(1, dragRef.current.startOY + dy)));
+        }}
+        onPointerUp={() => { dragRef.current = null; }}
+        onPointerCancel={() => { dragRef.current = null; }}
+        onDoubleClick={() => transparentSubject && setFullscreenPreview(true)}
       >
         {showOriginal ? (
           <img
             src={resultImageUrl}
             alt="Original"
-            className="max-h-full max-w-full rounded-xl object-contain"
+            className="max-h-full max-w-full rounded-xl object-contain pointer-events-none"
           />
         ) : (
           <canvas
             ref={canvasRef}
             width={540}
             height={960}
-            className="max-h-full max-w-full rounded-xl object-contain"
+            className="max-h-full max-w-full rounded-xl object-contain pointer-events-none"
             style={{ imageRendering: 'auto' }}
           />
         )}
         {transparentSubject && (
-          <div className="absolute top-2 right-2 h-8 w-8 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-            <Maximize2 className="h-4 w-4 text-white" />
-          </div>
+          <>
+            <div className="absolute top-2 left-2 h-7 px-2 rounded-lg bg-black/50 backdrop-blur-sm flex items-center gap-1.5 pointer-events-none">
+              <Move className="h-3 w-3 text-white/70" />
+              <span className="text-[9px] text-white/70 font-medium">Drag to move</span>
+            </div>
+            <div className="absolute top-2 right-2 h-8 w-8 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              <Maximize2 className="h-4 w-4 text-white" />
+            </div>
+          </>
         )}
       </div>
 
