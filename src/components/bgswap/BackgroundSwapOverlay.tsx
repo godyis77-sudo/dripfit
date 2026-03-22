@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Share2, Save, Loader2, Search, Crown } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
@@ -292,30 +293,56 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         <X className="h-5 w-5 text-foreground" />
       </button>
 
+      {/* Fullscreen removal progress portal */}
+      {(removing || removalError) && createPortal(
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[220] bg-background flex flex-col items-center justify-center"
+        >
+          {removing ? (
+            <div className="flex flex-col items-center gap-5 px-8">
+              <div className="relative h-24 w-24">
+                <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping" />
+                <div className="absolute inset-2 rounded-full border-[3px] border-primary border-t-transparent animate-spin" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-lg font-bold text-primary">{progress}%</span>
+                </div>
+              </div>
+              <div className="text-center space-y-2">
+                <p className="text-base font-bold text-foreground">Removing background…</p>
+                <p className="text-xs text-muted-foreground">This may take a moment on mobile devices</p>
+              </div>
+              <div className="w-56 h-2 bg-muted rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-primary rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.3, ease: 'easeOut' }}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-4 px-8 text-center">
+              <div className="h-16 w-16 rounded-full bg-destructive/10 flex items-center justify-center">
+                <X className="h-8 w-8 text-destructive" />
+              </div>
+              <p className="text-base font-bold text-foreground">Background removal failed</p>
+              <p className="text-sm text-muted-foreground">This can happen on devices with limited memory.</p>
+              <div className="flex gap-3 mt-2">
+                <button onClick={onClose} className="px-6 py-2.5 rounded-xl border border-border text-sm font-medium text-muted-foreground">Close</button>
+                <button onClick={attemptRemoval} className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold">Retry</button>
+              </div>
+            </div>
+          )}
+        </motion.div>,
+        document.body
+      )}
+
       {/* Preview area */}
       <div className="flex-1 relative flex items-center justify-center overflow-hidden min-h-[30dvh]">
-        {removing ? (
-          <div className="flex flex-col items-center gap-3">
-            <div className="relative h-16 w-16">
-              <div className="absolute inset-0 rounded-full border-2 border-primary/30 animate-ping" />
-              <div className="absolute inset-0 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-            </div>
-            <p className="text-sm text-foreground/80 font-medium">Removing background…</p>
-            <div className="w-48 h-1.5 bg-muted rounded-full overflow-hidden">
-              <div className="h-full bg-primary rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
-            </div>
-            <p className="text-[10px] text-muted-foreground">{progress}%</p>
-          </div>
-        ) : removalError ? (
-          <div className="flex flex-col items-center gap-3 px-6 text-center">
-            <p className="text-sm text-foreground/80 font-medium">Background removal failed</p>
-            <p className="text-xs text-muted-foreground">This can happen on devices with limited memory.</p>
-            <div className="flex gap-2">
-              <button onClick={onClose} className="px-4 py-2 rounded-lg border border-border text-sm text-muted-foreground">Close</button>
-              <button onClick={attemptRemoval} className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-bold">Retry</button>
-            </div>
-          </div>
-        ) : showOriginal ? (
+        {showOriginal ? (
           <img
             src={resultImageUrl}
             alt="Original"
