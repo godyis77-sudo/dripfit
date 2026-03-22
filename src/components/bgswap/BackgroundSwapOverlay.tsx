@@ -508,7 +508,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
               )}
             </div>
           ) : (
-            <div className="flex-1 flex gap-1 overflow-x-auto scrollbar-hide">
+            <div className="flex-1 flex gap-1 overflow-x-auto scrollbar-hide" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
               {categories.map(cat => (
                 <button
                   key={cat.slug}
