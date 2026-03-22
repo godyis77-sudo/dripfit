@@ -100,7 +100,9 @@ const GalleryPlayground = () => {
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-hide mb-3"
+          className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-hide mb-2"
+          onTouchStart={e => e.stopPropagation()}
+          onTouchEnd={e => e.stopPropagation()}
         >
           {visibleCategories.map(cat => (
             <button
@@ -115,13 +117,14 @@ const GalleryPlayground = () => {
               {cat.label}
             </button>
           ))}
-          <button
-            onClick={() => navigate('/browse/tops')}
-            className="shrink-0 px-3.5 py-1.5 rounded-xl text-[11px] font-bold transition-colors min-h-[36px] bg-card border border-primary/30 text-primary flex items-center gap-1"
-          >
-            Browse All →
-          </button>
         </motion.div>
+
+        <button
+          onClick={() => navigate('/browse/tops')}
+          className="w-full mb-3 py-2 rounded-xl border border-primary/20 bg-card text-[11px] font-bold text-primary active:scale-[0.97] transition-transform flex items-center justify-center gap-1"
+        >
+          <ShoppingBag className="h-3.5 w-3.5" /> Browse All →
+        </button>
 
         {/* Product Grid */}
         <motion.div
