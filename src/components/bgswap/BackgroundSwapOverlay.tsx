@@ -197,6 +197,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
     setSelectedBgId(photo.id);
     setSelectedBgUrl(photo.url);
     setSelectedBgColor('#0A0A0A');
+    setShowOriginal(false);
     trackEvent('bg_search_photo_selected', { photo_id: photo.id, source: photo.source });
   }, []);
 
