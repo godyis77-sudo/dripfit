@@ -403,6 +403,29 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         )}
       </div>
 
+      {/* Scale slider */}
+      {transparentSubject && (
+        <div className="shrink-0 flex items-center gap-3 px-4 py-1.5">
+          <ZoomOut className="h-4 w-4 text-muted-foreground shrink-0" />
+          <input
+            type="range"
+            min={30}
+            max={100}
+            step={1}
+            value={subjectScale != null ? Math.round(subjectScale * 100) : 80}
+            onChange={e => setSubjectScale(Number(e.target.value) / 100)}
+            className="flex-1 h-1.5 accent-primary cursor-pointer"
+          />
+          <ZoomIn className="h-4 w-4 text-muted-foreground shrink-0" />
+          <button
+            onClick={() => setSubjectScale(null)}
+            className="text-[10px] font-bold text-primary px-2 py-1 rounded-md bg-primary/10 shrink-0"
+          >
+            Auto
+          </button>
+        </div>
+      )}
+
       {/* Action bar */}
       {transparentSubject && (
         <div className="shrink-0 flex gap-2 px-4 py-2">
