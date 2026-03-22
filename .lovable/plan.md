@@ -1,14 +1,14 @@
 # UI/UX Fix Plan — DripFitCheck
 
-## Phase 1: High-Priority Fixes
-1. **Sticky Try-On CTA** — Make the "Generate" button on `/tryon` sticky at bottom so it's never pushed below fold
-2. **Community filter simplification** — Collapse advanced sort pills behind a single toggle; reduce cognitive load on Style Check page
-3. **Auth loading state** — Add skeleton/spinner during `authLoading` on protected routes instead of blank screen
+## Phase 1: High-Priority Fixes ✅
+1. ~~**Sticky Try-On CTA**~~ ✅ — Generate button sticky at bottom with gradient fade
+2. ~~**Community filter simplification**~~ ✅ — Sort options collapsed behind SlidersHorizontal toggle
+3. ~~**Auth loading state**~~ ✅ — Skeleton layout in ProtectedRoute during loading
 
-## Phase 2: Accessibility & Touch Targets
-4. **44px touch targets** — Enforce min-h-[44px] on all filter pills, sort buttons, and small interactive elements across Community, Shop, and Profile
-5. **Light mode contrast** — Darken `--muted-foreground` to meet WCAG AA 4.5:1 contrast ratio
-6. **Aria labels audit** — Ensure all icon-only buttons have descriptive aria-labels
+## Phase 2: Accessibility & Touch Targets ✅
+4. ~~**44px touch targets**~~ ✅ — All pills (.pill class), filter buttons, community tabs, and icon buttons enforced to min-h-[44px]
+5. ~~**Light mode contrast**~~ ✅ — Already WCAG AA compliant (Light: ~7.5:1, Dark: ~5.8:1)
+6. ~~**Aria labels audit**~~ ✅ — All icon-only buttons have aria-labels or sr-only text
 
 ## Phase 3: Layout & Consistency
 7. **Reusable PageHeader component** — Standardize back button + title + actions pattern across Welcome, Community, Profile, TryOn pages
