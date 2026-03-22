@@ -15,6 +15,7 @@ import {
   getGuestUuid, getGuestTryOnCount, incrementGuestTryOnCount,
   guestHasRemainingTryOns, GUEST_LIFETIME_LIMIT, FREE_DAILY_LIMIT,
 } from '@/lib/guestSession';
+import { compressPhoto } from '@/lib/imageUtils';
 
 export type LookItem = { brand: string; name: string; url: string; price_cents?: number | null; image_url?: string | null };
 export type WardrobeItem = { id: string; image_url: string; category: string; product_link: string | null };
@@ -301,6 +302,15 @@ export function useTryOnState() {
     }
   };
 
+  const prepareTryOnImage = useCallback(async (input: string): Promise<string> => {
+    if (!input?.startsWith('data:')) return input;
+    try {
+      return await compressPhoto(input, 1280, 0.82);
+    } catch {
+      return input;
+    }
+  }, []);
+
   const handleTryOn = async () => {
     if (!canGenerate) return;
     if (!(await checkUsageLimit())) return;
@@ -312,7 +322,16 @@ export function useTryOnState() {
     trackEvent('tryon_started', { tier: user ? 'authenticated' : 'guest' });
     try {
       setTryOnError(null);
-      const body: Record<string, unknown> = { userPhoto, clothingPhoto, itemType: category || 'clothing' };
+      const [preparedUserPhoto, preparedClothingPhoto] = await Promise.all([
+        prepareTryOnImage(userPhoto!),
+        prepareTryOnImage(clothingPhoto!),
+      ]);
+
+      const body: Record<string, unknown> = {
+        userPhoto: preparedUserPhoto,
+        clothingPhoto: preparedClothingPhoto,
+        itemType: category || 'clothing',
+      };
       // Pass guest UUID for unauthenticated users
       if (!user) {
         body.guestUuid = getGuestUuid();
@@ -411,7 +430,19 @@ export function useTryOnState() {
     setAddingAccessory(true);
     trackEvent('tryon_accessory_started', { category: accessoryCategory });
     try {
-      const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto: resultImage, clothingPhoto: accessoryPhoto, itemType: accessoryCategory || 'accessory', isLayering: true } });
+      const [preparedResultImage, preparedAccessoryPhoto] = await Promise.all([
+        prepareTryOnImage(resultImage),
+        prepareTryOnImage(accessoryPhoto),
+      ]);
+
+      const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', {
+        body: {
+          userPhoto: preparedResultImage,
+          clothingPhoto: preparedAccessoryPhoto,
+          itemType: accessoryCategory || 'accessory',
+          isLayering: true,
+        },
+      });
       if (error) throw new Error(error.message);
       if (resp?.error) throw new Error(resp.error.message || resp.error);
       const payload = resp?.data ?? resp;

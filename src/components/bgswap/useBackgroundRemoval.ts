@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 
-const ATTEMPT_MAX_EDGES = [1600, 1280, 960, 720] as const;
+const ATTEMPT_MAX_EDGES = [1600, 1280, 960, 720, 640, 512] as const;
 
 const MEMORY_ERROR_PATTERNS = [
   'memory',
@@ -66,7 +66,7 @@ async function resizeBlobIfNeeded(blob: Blob, maxEdge: number): Promise<Blob> {
     canvas.toBlob((nextBlob) => {
       if (nextBlob) resolve(nextBlob);
       else reject(new Error('Failed to prepare resized image'));
-    }, 'image/png');
+    }, 'image/jpeg', 0.88);
   });
 
   return resized;
