@@ -176,7 +176,7 @@ export function useProductCatalog(
         setLoading(false);
       }
     }
-  }, [category, brand, seed, gender]);
+  }, [category, brand, seed, gender, genre, fitProfile]);
 
   useEffect(() => {
     fetchProducts();
