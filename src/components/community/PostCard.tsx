@@ -153,14 +153,14 @@ const PostCard = ({
             onError={() => onImageError(post.id)}
           />
           {hasPostedCaption && (
-            <div className="absolute bottom-8 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-2 pt-4 pb-2">
+            <div className="absolute bottom-12 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-2 pt-4 pb-2">
               <p className="text-[11px] font-semibold text-white line-clamp-2 drop-shadow-sm">{postedCaption}</p>
             </div>
           )}
           {/* Vote bar overlay */}
           <div className="absolute bottom-0 left-0 right-0 px-1 pb-1 pt-0.5 bg-gradient-to-t from-black/60 to-transparent" onClick={(e) => e.stopPropagation()}>
             <div className="flex gap-1">
-              {VOTE_OPTIONS.map(v => {
+              {VOTE_OPTIONS.filter(v => v.key !== 'buy_no').map(v => {
                 const active = v.key === 'keep_shopping' ? isInCart(post.id) : (votes[post.id] || []).includes(v.key);
                 return (
                   <motion.button
