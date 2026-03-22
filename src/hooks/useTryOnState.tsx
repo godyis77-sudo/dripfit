@@ -154,6 +154,15 @@ export function useTryOnState() {
     const state = location.state as { clothingUrl?: string; clothingImageUrl?: string; productUrl?: string } | null;
     const clothingUrl = state?.clothingUrl || state?.clothingImageUrl;
     if (clothingUrl) {
+      // Clear previous result so user sees the fresh generation view
+      setResultImageRaw(null);
+      setDescription(null);
+      setAutoSaved(false);
+      setShared(false);
+      setShowPostUI(false);
+      try { localStorage.removeItem(TRYON_RESULT_KEY); } catch { /* ignore */ }
+      persistState({ resultImage: null, autoSaved: false });
+
       imageUrlToBase64(clothingUrl)
         .then(base64 => {
           setClothingPhoto(base64);
