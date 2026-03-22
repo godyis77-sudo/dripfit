@@ -281,6 +281,8 @@ const CartTab = forwardRef<HTMLDivElement>((_, ref) => {
       />
     </div>
   );
-};
+});
+
+CartTab.displayName = 'CartTab';
 
 export default CartTab;
