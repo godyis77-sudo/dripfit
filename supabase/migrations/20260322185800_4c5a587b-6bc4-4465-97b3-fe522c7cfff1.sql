@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Anyone can read access codes" ON public.access_codes;
