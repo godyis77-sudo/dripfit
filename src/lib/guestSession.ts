@@ -7,7 +7,7 @@ const GUEST_UUID_KEY = 'dripcheck_guest_uuid';
 const GUEST_TRYON_COUNT_KEY = 'dripcheck_guest_tryon_count';
 
 export const GUEST_LIFETIME_LIMIT = 3;
-export const FREE_DAILY_LIMIT = 5;
+export const FREE_DAILY_LIMIT = 10;
 
 /** Get or create a persistent guest UUID */
 export function getGuestUuid(): string {
