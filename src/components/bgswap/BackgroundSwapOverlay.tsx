@@ -169,8 +169,8 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   // Update preview when subject or background changes
   useEffect(() => {
     if (!transparentSubject || !canvasRef.current) return;
-    compositePreview(canvasRef.current, transparentSubject, selectedBgUrl, selectedBgColor);
-  }, [transparentSubject, selectedBgUrl, selectedBgColor, compositePreview]);
+    compositePreview(canvasRef.current, transparentSubject, selectedBgUrl, selectedBgColor, subjectScale);
+  }, [transparentSubject, selectedBgUrl, selectedBgColor, subjectScale, compositePreview]);
 
   const handleSelectBackground = useCallback((bg: BackgroundItem) => {
     if (bg.is_premium && !user) {
