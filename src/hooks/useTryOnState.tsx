@@ -430,7 +430,19 @@ export function useTryOnState() {
     setAddingAccessory(true);
     trackEvent('tryon_accessory_started', { category: accessoryCategory });
     try {
-      const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', { body: { userPhoto: resultImage, clothingPhoto: accessoryPhoto, itemType: accessoryCategory || 'accessory', isLayering: true } });
+      const [preparedResultImage, preparedAccessoryPhoto] = await Promise.all([
+        prepareTryOnImage(resultImage),
+        prepareTryOnImage(accessoryPhoto),
+      ]);
+
+      const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', {
+        body: {
+          userPhoto: preparedResultImage,
+          clothingPhoto: preparedAccessoryPhoto,
+          itemType: accessoryCategory || 'accessory',
+          isLayering: true,
+        },
+      });
       if (error) throw new Error(error.message);
       if (resp?.error) throw new Error(resp.error.message || resp.error);
       const payload = resp?.data ?? resp;
