@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { trackEvent } from '@/lib/analytics';
-import { PageHeader } from '@/components/layout/PageHeader';
+import PageHeader from '@/components/layout/PageHeader';
 
 interface BackgroundItem {
   id: string;

@@ -137,6 +137,7 @@ const AnimatedRoutes = () => {
           <Route path="/founding-members" element={<PageTransition><FoundingMembers /></PageTransition>} />
           <Route path="/media-kit" element={<PageTransition><MediaKit /></PageTransition>} />
           <Route path="/links" element={<PageTransition><LinkHub /></PageTransition>} />
+          <Route path="/backgrounds" element={<PageTransition><Backgrounds /></PageTransition>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </AnimatePresence>
