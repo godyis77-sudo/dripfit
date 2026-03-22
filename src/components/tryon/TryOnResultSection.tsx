@@ -197,11 +197,11 @@ const TryOnResultSection = ({
             aria-label="Open try-on result full screen"
           >
             <AnimatePresence mode="wait">
-              {showBeforeAfter && clothingPhoto ? (
+              {showBeforeAfter && userPhoto ? (
                 <motion.div key="before-after" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-2 gap-0">
                   <div className="relative">
-                    <img src={clothingPhoto} alt="Clothing item" className="w-full aspect-[3/4] object-cover" />
-                    <span className="absolute top-2 left-2 text-[9px] font-bold uppercase tracking-wider bg-black/60 text-white px-2 py-0.5 rounded-md">Item</span>
+                    <img src={userPhoto} alt="Your photo" className="w-full aspect-[3/4] object-cover" />
+                    <span className="absolute top-2 left-2 text-[9px] font-bold uppercase tracking-wider bg-black/60 text-white px-2 py-0.5 rounded-md">Before</span>
                   </div>
                   <div className="relative">
                     <img src={resultImage} alt="Try-on result" className="w-full aspect-[3/4] object-cover" />
