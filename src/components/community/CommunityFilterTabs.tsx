@@ -25,7 +25,7 @@ const CommunityFilterTabs = ({ filter, onFilterChange }: CommunityFilterTabsProp
           key={f.key}
           onClick={() => onFilterChange(f.key)}
           aria-label={f.key === 'shop' ? 'Open filters' : 'Change sort order'}
-          className={`flex-1 py-1.5 min-h-[32px] text-[12px] font-bold transition-all relative whitespace-nowrap px-2 flex items-center justify-center gap-0.5 ${
+          className={`flex-1 py-1.5 min-h-[44px] text-[12px] font-bold transition-all relative whitespace-nowrap px-2 flex items-center justify-center gap-0.5 ${
             filter === f.key ? 'btn-gold-3d text-primary-foreground rounded-lg' : 'text-muted-foreground hover:text-foreground'
           }`}
         >

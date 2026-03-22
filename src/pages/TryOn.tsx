@@ -164,7 +164,7 @@ const TryOn = () => {
                               <button
                                 key={opt.key}
                                 onClick={() => setSort(opt.key)}
-                                className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                className={`px-2.5 py-1.5 min-h-[44px] rounded-lg text-[10px] font-semibold transition-colors ${
                                   sort === opt.key
                                     ? 'btn-luxury text-primary-foreground'
                                     : 'bg-background border border-border text-foreground/70'
@@ -180,9 +180,9 @@ const TryOn = () => {
                         <div>
                           <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Category</p>
                           <div className="flex flex-wrap gap-1.5 max-h-[120px] overflow-y-auto">
-                            <button
+                              <button
                               onClick={() => s.setCategory('all')}
-                              className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                              className={`px-2.5 py-1.5 min-h-[44px] rounded-lg text-[10px] font-semibold transition-colors ${
                                 s.category === 'all'
                                   ? 'btn-luxury text-primary-foreground'
                                   : 'bg-background border border-border text-foreground/70'
@@ -194,7 +194,7 @@ const TryOn = () => {
                               <button
                                 key={c.key}
                                 onClick={() => s.setCategory(c.key)}
-                                className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                className={`px-2.5 py-1.5 min-h-[44px] rounded-lg text-[10px] font-semibold transition-colors ${
                                   s.category === c.key
                                     ? 'btn-luxury text-primary-foreground'
                                     : 'bg-background border border-border text-foreground/70'
@@ -220,9 +220,9 @@ const TryOn = () => {
                         <div>
                           <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Retailer</p>
                           <div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto">
-                            <button
+                              <button
                               onClick={() => s.setSelectedRetailer(null)}
-                              className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                              className={`px-2.5 py-1.5 min-h-[44px] rounded-lg text-[10px] font-semibold transition-colors ${
                                 !s.selectedRetailer
                                   ? 'btn-luxury text-primary-foreground'
                                   : 'bg-background border border-border text-foreground/70'
@@ -231,10 +231,10 @@ const TryOn = () => {
                               All
                             </button>
                             {availableRetailers.map(retailer => (
-                              <button
+                                <button
                                 key={retailer}
                                 onClick={() => s.setSelectedRetailer(retailer === s.selectedRetailer ? null : retailer)}
-                                className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                                className={`px-2.5 py-1.5 min-h-[44px] rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                                   s.selectedRetailer === retailer
                                     ? 'btn-luxury text-primary-foreground'
                                     : 'bg-background border border-border text-foreground/70'
@@ -266,9 +266,9 @@ const TryOn = () => {
                                 className="overflow-hidden"
                               >
                                 <div className="flex flex-wrap gap-1.5 mt-1.5">
-                                  <button
+                                    <button
                                     onClick={() => s.setSelectedGenre(null)}
-                                    className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                    className={`px-2.5 py-1.5 min-h-[44px] rounded-lg text-[10px] font-semibold transition-colors ${
                                       !s.selectedGenre
                                         ? 'btn-luxury text-primary-foreground'
                                         : 'bg-background border border-border text-foreground/70'
@@ -277,10 +277,10 @@ const TryOn = () => {
                                     All
                                   </button>
                                   {BRAND_GENRES.map(genre => (
-                                    <button
+                                      <button
                                       key={genre}
                                       onClick={() => s.setSelectedGenre(genre === s.selectedGenre ? null : genre)}
-                                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                      className={`px-2.5 py-1.5 min-h-[44px] rounded-lg text-[10px] font-semibold transition-colors ${
                                         s.selectedGenre === genre
                                           ? 'btn-luxury text-primary-foreground'
                                           : 'bg-background border border-border text-foreground/70'
@@ -320,7 +320,7 @@ const TryOn = () => {
                                       <button
                                         key={fit}
                                         onClick={() => s.setSelectedFit(fit === s.selectedFit ? null : fit)}
-                                        className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                                        className={`px-2.5 py-1.5 min-h-[44px] rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                                           s.selectedFit === fit
                                             ? 'btn-luxury text-primary-foreground'
                                             : 'bg-background border border-border text-foreground/70'
