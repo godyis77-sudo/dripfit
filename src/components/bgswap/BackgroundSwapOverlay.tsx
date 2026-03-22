@@ -274,6 +274,15 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
             </div>
             <p className="text-[10px] text-muted-foreground">{progress}%</p>
           </div>
+        ) : removalError ? (
+          <div className="flex flex-col items-center gap-3 px-6 text-center">
+            <p className="text-sm text-foreground/80 font-medium">Background removal failed</p>
+            <p className="text-xs text-muted-foreground">This can happen on devices with limited memory.</p>
+            <div className="flex gap-2">
+              <button onClick={onClose} className="px-4 py-2 rounded-lg border border-border text-sm text-muted-foreground">Close</button>
+              <button onClick={attemptRemoval} className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-bold">Retry</button>
+            </div>
+          </div>
         ) : (
           <canvas
             ref={canvasRef}
