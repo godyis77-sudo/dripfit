@@ -84,9 +84,16 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
 
   if (loading && visibleProducts.length === 0) {
     return (
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-3">
         {[1, 2, 3, 4].map(i => (
-          <div key={i} className="rounded-xl skeleton-gold aspect-[3/4]" />
+          <div key={i} className="rounded-2xl border border-border/50 overflow-hidden">
+            <div className="aspect-[3/4] skeleton-gold" />
+            <div className="p-2.5 space-y-1.5">
+              <div className="h-2.5 w-3/4 rounded skeleton-gold" />
+              <div className="h-2 w-1/2 rounded skeleton-gold" />
+              <div className="h-3 w-1/3 rounded skeleton-gold mt-1" />
+            </div>
+          </div>
         ))}
       </div>
     );

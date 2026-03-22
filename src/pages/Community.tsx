@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { PullToRefresh } from '@/components/layout/PullToRefresh';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowUp } from 'lucide-react';
@@ -156,8 +157,13 @@ const Community = () => {
     return false;
   };
 
+  const handleRefresh = useCallback(async () => {
+    await fetchPosts();
+  }, [fetchPosts]);
+
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
+      <PullToRefresh onRefresh={handleRefresh}>
       <div className="px-4 pt-4">
         <CommunityHeader cartCount={cartCount} onPostLook={onPostLook} />
         <CommunityFilterTabs filter={filter} onFilterChange={setFilter} />
@@ -226,6 +232,7 @@ const Community = () => {
           />
         )}
       </div>
+      </PullToRefresh>
 
       <PostLookFlow open={showPostFlow} onOpenChange={setShowPostFlow} onPosted={fetchPosts} />
       <PostDetailSheet
