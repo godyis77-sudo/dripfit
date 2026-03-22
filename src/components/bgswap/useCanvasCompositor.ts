@@ -222,7 +222,7 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
 
 export function useCanvasCompositor() {
   const composite = useCallback(async (options: CompositeOptions): Promise<string> => {
-    const { subjectUrl, backgroundUrl, backgroundColor = '#0A0A0A', width = 1080, height = 1920, addWatermark = false } = options;
+    const { subjectUrl, backgroundUrl, backgroundColor = '#0A0A0A', width = 1080, height = 1920, addWatermark = false, scaleOverride = null } = options;
 
     const canvas = document.createElement('canvas');
     canvas.width = width;
