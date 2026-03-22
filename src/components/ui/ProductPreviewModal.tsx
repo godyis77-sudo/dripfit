@@ -175,18 +175,42 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
           )}
         </div>
 
-        {/* Add to Wardrobe */}
+        {/* Add to Wardrobe + Add to Cart */}
         {user && (
-          <div className="max-w-sm mx-auto w-full">
+          <div className="max-w-sm mx-auto w-full flex gap-2">
             <Button
               variant={addedToWardrobe ? 'default' : 'outline'}
-              className={`w-full h-11 rounded-xl text-[12px] font-bold gap-1.5 ${addedToWardrobe ? 'bg-primary/20 text-primary border-primary/30' : 'border-white/20 text-white hover:bg-white/10'}`}
+              className={`flex-1 h-11 rounded-xl text-[12px] font-bold gap-1.5 ${addedToWardrobe ? 'bg-primary/20 text-primary border-primary/30' : 'border-white/20 text-white hover:bg-white/10'}`}
               onClick={handleAddToWardrobe}
               disabled={addingToWardrobe || addedToWardrobe}
             >
               <ShoppingBag className="h-4 w-4" />
-              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added to Wardrobe ✓' : '+ Wardrobe'}
+              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Saved ✓' : '+ Wardrobe'}
             </Button>
+            {product.id && (
+              <Button
+                variant="outline"
+                className={`flex-1 h-11 rounded-xl text-[12px] font-bold gap-1.5 ${isInCart(product.id) ? 'border-primary/40 bg-primary/20 text-primary' : 'border-white/20 text-white hover:bg-white/10'}`}
+                onClick={() => {
+                  if (!product.id) return;
+                  if (isInCart(product.id)) {
+                    removeFromCart(product.id);
+                  } else {
+                    addToCart({
+                      post_id: product.id,
+                      image_url: product.image_url,
+                      caption: product.name,
+                      product_urls: product.product_url ? [product.product_url] : null,
+                      clothing_photo_url: product.image_url,
+                      brand: product.brand,
+                    });
+                  }
+                }}
+              >
+                <ShoppingCart className="h-4 w-4" />
+                {product.id && isInCart(product.id) ? 'In Cart ✓' : '+ Cart'}
+              </Button>
+            )}
           </div>
         )}
 
