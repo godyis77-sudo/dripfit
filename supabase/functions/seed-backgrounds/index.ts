@@ -125,7 +125,7 @@ Deno.serve(async (req) => {
   }
 
   return new Response(
-    JSON.stringify({ success: true, count: rows.length, categories: Object.keys(CATEGORY_QUERIES).length }),
+    JSON.stringify({ success: true, fetched: rows.length, inserted: newRows.length, categories: Object.keys(CATEGORY_QUERIES).length }),
     { headers: { ...corsHeaders, "Content-Type": "application/json" } }
   );
 });
