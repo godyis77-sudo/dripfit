@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 
-const ATTEMPT_MAX_EDGES = [1600, 1280, 960, 720] as const;
+const ATTEMPT_MAX_EDGES = [1600, 1280, 960, 720, 640, 512] as const;
 
 const MEMORY_ERROR_PATTERNS = [
   'memory',
