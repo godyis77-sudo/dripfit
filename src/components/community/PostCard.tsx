@@ -153,13 +153,13 @@ const PostCard = ({
             onError={() => onImageError(post.id)}
           />
           {hasPostedCaption && (
-            <div className="absolute bottom-12 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-2 pt-4 pb-2">
+            <div className="absolute bottom-8 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-2 pt-4 pb-1">
               <p className="text-[11px] font-semibold text-white line-clamp-2 drop-shadow-sm">{postedCaption}</p>
             </div>
           )}
           {/* Vote bar overlay */}
-          <div className="absolute bottom-0 left-0 right-0 px-1 pb-1 pt-0.5 bg-gradient-to-t from-black/60 to-transparent" onClick={(e) => e.stopPropagation()}>
-            <div className="flex gap-1">
+          <div className="absolute bottom-0 left-0 right-0 px-1 pb-0.5 bg-gradient-to-t from-black/50 to-transparent" onClick={(e) => e.stopPropagation()}>
+            <div className="flex gap-0.5">
               {VOTE_OPTIONS.filter(v => v.key !== 'buy_no').map(v => {
                 const active = v.key === 'keep_shopping' ? isInCart(post.id) : (votes[post.id] || []).includes(v.key);
                 return (
@@ -168,12 +168,12 @@ const PostCard = ({
                     whileTap={{ scale: 1.18 }}
                     transition={{ duration: 0.2 }}
                     onClick={(e) => { e.stopPropagation(); onVote(post.id, v.key); }}
-                    className={`flex-1 py-1 rounded-md text-[9px] font-bold border transition-all flex items-center justify-center gap-1 ${
-                      active ? 'bg-primary/30 border-primary/50 text-white backdrop-blur-sm' : 'border-white/20 text-white/80 backdrop-blur-sm'
+                    className={`flex-1 py-0.5 rounded text-[8px] font-bold border transition-all flex items-center justify-center gap-0.5 ${
+                      active ? 'bg-primary/30 border-primary/50 text-white backdrop-blur-sm' : 'border-white/15 text-white/70 backdrop-blur-sm'
                     }`}
                   >
-                    <span className="text-[10px]">{v.emoji}</span>
-                    <span className="text-[9px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
+                    <span className="text-[9px] leading-none">{v.emoji}</span>
+                    <span className="text-[8px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
                   </motion.button>
                 );
               })}
