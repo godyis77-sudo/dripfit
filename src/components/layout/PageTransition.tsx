@@ -2,8 +2,8 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 
 /**
- * Wrap page content for smooth luxury page transitions.
- * Enhanced with scale, blur, and layered opacity for a premium feel.
+ * GPU-optimized page transition with scale, blur, and opacity.
+ * Uses will-change and transform3d for compositor-only animations.
  */
 export const PageTransition = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
@@ -12,9 +12,9 @@ export const PageTransition = ({ children }: { children: React.ReactNode }) => {
   const pageVariants = {
     initial: {
       opacity: 0,
-      y: reduceMotion ? 0 : 16,
-      scale: reduceMotion ? 1 : 0.98,
-      filter: reduceMotion ? 'none' : 'blur(4px)',
+      y: reduceMotion ? 0 : 12,
+      scale: reduceMotion ? 1 : 0.985,
+      filter: reduceMotion ? 'none' : 'blur(3px)',
     },
     animate: {
       opacity: 1,
@@ -24,9 +24,9 @@ export const PageTransition = ({ children }: { children: React.ReactNode }) => {
     },
     exit: {
       opacity: 0,
-      y: reduceMotion ? 0 : -10,
-      scale: reduceMotion ? 1 : 0.99,
-      filter: reduceMotion ? 'none' : 'blur(2px)',
+      y: reduceMotion ? 0 : -8,
+      scale: reduceMotion ? 1 : 0.995,
+      filter: reduceMotion ? 'none' : 'blur(1px)',
     },
   };
 
@@ -38,10 +38,11 @@ export const PageTransition = ({ children }: { children: React.ReactNode }) => {
       animate="animate"
       exit="exit"
       transition={{
-        duration: reduceMotion ? 0 : 0.35,
+        duration: reduceMotion ? 0 : 0.28,
         ease: [0.16, 1, 0.3, 1],
-        filter: { duration: reduceMotion ? 0 : 0.25 },
+        filter: { duration: reduceMotion ? 0 : 0.2 },
       }}
+      style={{ willChange: 'transform, opacity' }}
     >
       {children}
     </motion.div>
