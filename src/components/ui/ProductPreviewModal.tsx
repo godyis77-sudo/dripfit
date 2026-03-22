@@ -112,7 +112,8 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
       {/* Close */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 z-[101] h-10 w-10 rounded-full bg-white/10 flex items-center justify-center active:scale-90 transition-transform"
+        className="absolute right-4 z-[120] h-11 w-11 min-h-[44px] min-w-[44px] rounded-full bg-black/70 border border-white/25 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
+        style={{ top: 'max(1rem, env(safe-area-inset-top, 1rem))' }}
         aria-label="Close"
       >
         <X className="h-5 w-5 text-white" />
@@ -123,7 +124,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
         <div className="relative h-full w-full rounded-2xl overflow-hidden bg-muted">
           {/* Brand badge */}
           {product.brand && (
-            <span className="absolute bottom-3 right-3 z-10 brand-label-lg">
+            <span className="absolute top-3 left-3 z-20 brand-label-lg">
               {product.brand}
             </span>
           )}
@@ -134,7 +135,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
             draggable={false}
           />
           {caption && (
-            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-b-2xl px-4 py-3">
+            <div className="absolute bottom-0 inset-x-0 z-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-b-2xl px-4 py-3">
               <p className="text-[13px] text-white font-medium leading-snug text-center">"{caption}"</p>
             </div>
           )}
