@@ -15,6 +15,7 @@ import {
   getGuestUuid, getGuestTryOnCount, incrementGuestTryOnCount,
   guestHasRemainingTryOns, GUEST_LIFETIME_LIMIT, FREE_DAILY_LIMIT,
 } from '@/lib/guestSession';
+import { compressPhoto } from '@/lib/imageUtils';
 
 export type LookItem = { brand: string; name: string; url: string; price_cents?: number | null; image_url?: string | null };
 export type WardrobeItem = { id: string; image_url: string; category: string; product_link: string | null };
