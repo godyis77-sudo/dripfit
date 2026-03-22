@@ -458,7 +458,14 @@ const TryOnResultSection = ({
 
         {/* Full-screen loading animation when adding accessories */}
         {addingAccessory && createPortal(
-          <TryOnLoadingAnimation stepIndex={accessoryStepIndex} />,
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[120] bg-background/90 backdrop-blur-md flex items-center justify-center"
+          >
+            <TryOnLoadingAnimation stepIndex={accessoryStepIndex} />
+          </motion.div>,
           document.body
         )}
 
