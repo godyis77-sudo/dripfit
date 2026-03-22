@@ -301,7 +301,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       )}
 
       {/* Background picker */}
-      <div className="bg-card/90 backdrop-blur-xl border-t border-border rounded-t-2xl" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+      <div className="bg-card/90 backdrop-blur-xl border-t border-border rounded-t-2xl pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         {/* Search bar + category tabs */}
         <div className="px-3 pt-2.5 pb-1 flex items-center gap-2">
           <button
