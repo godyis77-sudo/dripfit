@@ -2,11 +2,12 @@ import { useCallback } from 'react';
 
 interface CompositeOptions {
   subjectUrl: string;
-  backgroundUrl: string | null; // null = solid color
+  backgroundUrl: string | null;
   backgroundColor?: string;
   width?: number;
   height?: number;
   addWatermark?: boolean;
+  scaleOverride?: number | null; // 0.3–1.2, null = auto
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {
