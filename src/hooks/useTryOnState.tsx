@@ -302,6 +302,15 @@ export function useTryOnState() {
     }
   };
 
+  const prepareTryOnImage = useCallback(async (input: string): Promise<string> => {
+    if (!input?.startsWith('data:')) return input;
+    try {
+      return await compressPhoto(input, 1280, 0.82);
+    } catch {
+      return input;
+    }
+  }, []);
+
   const handleTryOn = async () => {
     if (!canGenerate) return;
     if (!(await checkUsageLimit())) return;
