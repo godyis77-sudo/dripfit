@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, Send, Trash2, User, UserPlus, UserCheck, ShoppingBag } from 'lucide-react';
+import { Trash2, User, UserPlus, UserCheck } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -21,7 +21,7 @@ import { useCart } from '@/hooks/useCart';
 import type { Post, FilterType } from './community-types';
 
 import { getPostedCaption } from './community-types';
-import { VOTE_OPTIONS, FIT_OPTIONS } from './community-types';
+import { VOTE_OPTIONS } from './community-types';
 
 
 interface PostCardProps {
@@ -61,25 +61,6 @@ const PostCard = ({
   const postedCaption = getPostedCaption(localCaption);
   const hasPostedCaption = !!postedCaption;
 
-  const saveCaption = async (value: string, input?: HTMLInputElement | null) => {
-    if (!user) return;
-    const nextCaption = value.trim();
-    const { error } = await supabase
-      .from('tryon_posts')
-      .update({ caption: nextCaption || null })
-      .eq('id', post.id)
-      .eq('user_id', user.id);
-
-    if (error) {
-      toast({ title: 'Could not save caption', variant: 'destructive' });
-      return;
-    }
-
-    setLocalCaption(nextCaption);
-    onCaptionUpdated?.(post.id, nextCaption || null);
-    toast({ title: 'Caption saved' });
-    if (input) input.value = '';
-  };
 
 
   return (

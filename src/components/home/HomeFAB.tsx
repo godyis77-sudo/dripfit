@@ -1,11 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, forwardRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import FeatureIcon from '@/components/ui/FeatureIcon';
 
-const HomeFAB = () => {
+const HomeFAB = forwardRef<HTMLDivElement>((_, ref) => {
   const navigate = useNavigate();
   const [fabOpen, setFabOpen] = useState(false);
   const closeFab = useCallback(() => setFabOpen(false), []);
@@ -18,7 +18,7 @@ const HomeFAB = () => {
   ];
 
   return createPortal(
-    <div className="fixed bottom-20 right-5 z-50 lg:right-[calc(50%-195px+20px)]">
+    <div ref={ref} className="fixed bottom-20 right-5 z-50 lg:right-[calc(50%-195px+20px)]">
       <AnimatePresence>
         {fabOpen && (
           <motion.div
@@ -75,6 +75,8 @@ const HomeFAB = () => {
     </div>,
     document.body
   );
-};
+});
+
+HomeFAB.displayName = 'HomeFAB';
 
 export default HomeFAB;
