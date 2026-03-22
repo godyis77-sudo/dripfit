@@ -39,6 +39,24 @@ interface SearchPhoto {
   sourceUrl: string;
 }
 
+const BG_SUBJECT_CACHE_KEY = 'dripcheck_bg_subject';
+
+function getCachedSubject(sourceUrl: string): string | null {
+  try {
+    const raw = sessionStorage.getItem(BG_SUBJECT_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed.sourceUrl === sourceUrl && parsed.blobUrl) return parsed.blobUrl;
+  } catch { /* ignore */ }
+  return null;
+}
+
+function setCachedSubject(sourceUrl: string, blobUrl: string) {
+  try {
+    sessionStorage.setItem(BG_SUBJECT_CACHE_KEY, JSON.stringify({ sourceUrl, blobUrl }));
+  } catch { /* quota */ }
+}
+
 const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverlayProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -51,6 +69,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   const [selectedBgUrl, setSelectedBgUrl] = useState<string | null>(null);
   const [selectedBgColor, setSelectedBgColor] = useState('#0A0A0A');
   const [activeCategory, setActiveCategory] = useState<string>('solid-colors');
+  const [usingCache, setUsingCache] = useState(false);
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
 
@@ -117,10 +136,20 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
 
   const attemptRemoval = useCallback(async () => {
     setRemovalError(false);
+
+    // Check cache first — skip expensive WASM if we already removed this image
+    const cached = getCachedSubject(resultImageUrl);
+    if (cached) {
+      setTransparentSubject(cached);
+      setUsingCache(true);
+      return;
+    }
+
     try {
       trackEvent('bg_swap_opened');
       const url = await removeBackground(resultImageUrl);
       setTransparentSubject(url);
+      setCachedSubject(resultImageUrl, url);
     } catch (err) {
       console.error('BG removal failed:', err);
       setRemovalError(true);
