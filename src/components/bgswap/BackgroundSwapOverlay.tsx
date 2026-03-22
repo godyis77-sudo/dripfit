@@ -406,6 +406,16 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
                 const isSolid = bg.storage_path.startsWith('solid:');
                 const color = isSolid ? bg.storage_path.replace('solid:', '') : undefined;
                 const selected = selectedBgId === bg.id;
+                // Resolve thumbnail: use thumbnail_path if available, fall back to storage_path
+                const thumbSrc = !isSolid
+                  ? (bg.thumbnail_path?.startsWith('http')
+                      ? bg.thumbnail_path
+                      : bg.storage_path.startsWith('http')
+                        ? bg.storage_path
+                        : bg.thumbnail_path
+                          ? supabase.storage.from('backgrounds-curated').getPublicUrl(bg.thumbnail_path).data.publicUrl
+                          : supabase.storage.from('backgrounds-curated').getPublicUrl(bg.storage_path).data.publicUrl)
+                  : undefined;
                 return (
                   <button
                     key={bg.id}
@@ -418,9 +428,12 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
                     {isSolid ? (
                       <div className="w-full h-full" style={{ backgroundColor: color }} />
                     ) : (
-                      <div className="w-full h-full bg-muted flex items-center justify-center">
-                        <span className="text-[8px] text-muted-foreground">{bg.name}</span>
-                      </div>
+                      <img
+                        src={thumbSrc}
+                        alt={bg.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
                     )}
                     {bg.is_premium && (
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
