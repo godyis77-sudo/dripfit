@@ -119,8 +119,8 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
       </button>
 
       {/* Image — maximized */}
-      <div className="flex-1 flex items-center justify-center p-4 min-h-0 overflow-hidden" onClick={(e) => e.stopPropagation()}>
-        <div className="relative h-full w-fit max-w-full">
+      <div className="flex-1 flex items-center justify-center p-2 min-h-0 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <div className="relative h-full w-full">
           {/* Brand badge */}
           {product.brand && (
             <span className="absolute bottom-3 right-3 z-10 brand-label-lg">
@@ -130,11 +130,11 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
           <img
             src={product.image_url}
             alt={product.name}
-            className="h-full w-auto max-w-full object-contain rounded-2xl block"
+            className="h-full w-full object-contain rounded-2xl block"
             draggable={false}
           />
           {caption && (
-            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-b-xl px-4 py-3">
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-b-2xl px-4 py-3">
               <p className="text-[13px] text-white font-medium leading-snug text-center">"{caption}"</p>
             </div>
           )}
