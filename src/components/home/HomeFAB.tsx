@@ -75,6 +75,8 @@ const HomeFAB = forwardRef<HTMLDivElement>((_, ref) => {
     </div>,
     document.body
   );
-};
+});
+
+HomeFAB.displayName = 'HomeFAB';
 
 export default HomeFAB;
