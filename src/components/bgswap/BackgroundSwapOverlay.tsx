@@ -447,10 +447,10 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
           />
           <ZoomIn className="h-4 w-4 text-muted-foreground shrink-0" />
           <button
-            onClick={() => setSubjectScale(null)}
+            onClick={() => { setSubjectScale(null); setOffsetX(0); setOffsetY(0); }}
             className="text-[10px] font-bold text-primary px-2 py-1 rounded-md bg-primary/10 shrink-0"
           >
-            Auto
+            Reset
           </button>
         </div>
       )}
