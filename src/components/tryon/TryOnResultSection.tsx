@@ -62,7 +62,7 @@ const AnimatedCheckmark = () => (
 );
 
 const TryOnResultSection = ({
-  resultImage, clothingPhoto, category, productLink, selectedQuickPick,
+  resultImage, userPhoto, clothingPhoto, category, productLink, selectedQuickPick,
   lookItems, showLookItems, user, isPublic, caption, shared, showPostUI,
   showSuccessOverlay, savedToItems, layerHistory, userGender,
   hasUnlimitedTryOns, addingAccessory,
