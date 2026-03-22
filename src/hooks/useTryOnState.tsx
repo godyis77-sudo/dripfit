@@ -20,6 +20,7 @@ export type LookItem = { brand: string; name: string; url: string; price_cents?:
 export type WardrobeItem = { id: string; image_url: string; category: string; product_link: string | null };
 
 const TRYON_STATE_KEY = 'dripcheck_tryon_state';
+const TRYON_RESULT_KEY = 'dripcheck_tryon_result'; // localStorage — survives tab close
 
 type PersistedTryOnState = {
   userPhoto: string | null;
@@ -35,19 +36,19 @@ type PersistedTryOnState = {
 function loadPersistedTryOnState(): PersistedTryOnState {
   try {
     const raw = sessionStorage.getItem(TRYON_STATE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      return {
-        userPhoto: parsed.userPhoto || null,
-        clothingPhoto: parsed.clothingPhoto || null,
-        productLink: parsed.productLink || '',
-        category: parsed.category || 'top',
-        resultImage: parsed.resultImage || null,
-        lookItems: parsed.lookItems || [],
-        caption: parsed.caption || '',
-        autoSaved: parsed.autoSaved || false,
-      };
-    }
+    const parsed = raw ? JSON.parse(raw) : {};
+    // Prefer localStorage result URL (small string, survives tab close)
+    const savedResultUrl = localStorage.getItem(TRYON_RESULT_KEY);
+    return {
+      userPhoto: parsed.userPhoto || null,
+      clothingPhoto: parsed.clothingPhoto || null,
+      productLink: parsed.productLink || '',
+      category: parsed.category || 'top',
+      resultImage: savedResultUrl || parsed.resultImage || null,
+      lookItems: parsed.lookItems || [],
+      caption: parsed.caption || '',
+      autoSaved: parsed.autoSaved || !!savedResultUrl,
+    };
   } catch { /* ignore */ }
   return { userPhoto: null, clothingPhoto: null, productLink: '', category: 'top', resultImage: null, lookItems: [], caption: '', autoSaved: false };
 }
