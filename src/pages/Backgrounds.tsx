@@ -166,7 +166,7 @@ const Backgrounds = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <PageHeader title="Backgrounds" onBack={() => navigate(-1)} />
+      <PageHeader title="Backgrounds" />
 
       {/* Large preview area */}
       <div className="px-4 pt-2 pb-4">
