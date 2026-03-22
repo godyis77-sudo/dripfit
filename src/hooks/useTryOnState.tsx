@@ -337,22 +337,26 @@ export function useTryOnState() {
         body.guestUuid = getGuestUuid();
       }
       const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', { body });
-      if (error) throw new Error(error.message);
-      if (resp?.error) {
-        // Handle specific error codes from edge function
-        const errCode = resp.error.code;
-        if (errCode === 'GUEST_LIMIT') {
-          setAuthWallReason('guest_limit');
-          setShowAuthWall(true);
-          return;
-        }
-        if (errCode === 'DAILY_LIMIT') {
-          setAuthWallReason('daily_limit');
-          setShowAuthWall(true);
-          return;
-        }
-        throw new Error(resp.error.message || resp.error);
+
+      // Check for limit errors in both `error` and `resp` — supabase puts 
+      // non-2xx response body in `data` but also sets `error`
+      const errorPayload = resp?.error || (error && typeof resp === 'object' ? resp?.error : null);
+      const errCode = errorPayload?.code;
+
+      if (errCode === 'GUEST_LIMIT') {
+        setAuthWallReason('guest_limit');
+        setShowAuthWall(true);
+        return;
       }
+      if (errCode === 'DAILY_LIMIT') {
+        setAuthWallReason('daily_limit');
+        setShowAuthWall(true);
+        return;
+      }
+
+      // For other errors, throw
+      if (error) throw new Error(errorPayload?.message || error.message);
+      if (resp?.error) throw new Error(resp.error.message || resp.error);
       const payload = resp?.data ?? resp;
       trackEvent('tryon_generated', { tier: user ? (payload.userTier || 'free') : 'guest' });
       await incrementUsage();

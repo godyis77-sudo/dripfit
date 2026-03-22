@@ -525,7 +525,7 @@ const TryOn = () => {
 
       <AnimatePresence>
         {s.showAuthWall && (
-          <TryOnAuthWall onClose={() => s.setShowAuthWall(false)} reason={s.authWallReason} />
+          <TryOnAuthWall onClose={() => s.setShowAuthWall(false)} reason={s.authWallReason} isAuthenticated={!!s.user} />
         )}
       </AnimatePresence>
 
