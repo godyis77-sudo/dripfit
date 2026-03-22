@@ -157,27 +157,25 @@ const PostCard = ({
               <p className="text-[11px] font-semibold text-white line-clamp-2 drop-shadow-sm">{postedCaption}</p>
             </div>
           )}
-          {/* Vote bar overlay */}
-          <div className="absolute bottom-0 left-0 right-0 px-1 pb-0.5 bg-gradient-to-t from-black/50 to-transparent" onClick={(e) => e.stopPropagation()}>
-            <div className="flex gap-0.5">
-              {VOTE_OPTIONS.filter(v => v.key !== 'buy_no').map(v => {
-                const active = v.key === 'keep_shopping' ? isInCart(post.id) : (votes[post.id] || []).includes(v.key);
-                return (
-                  <motion.button
-                    key={v.key}
-                    whileTap={{ scale: 1.18 }}
-                    transition={{ duration: 0.2 }}
-                    onClick={(e) => { e.stopPropagation(); onVote(post.id, v.key); }}
-                    className={`flex-1 py-0.5 rounded text-[8px] font-bold border transition-all flex items-center justify-center gap-0.5 ${
-                      active ? 'bg-primary/30 border-primary/50 text-white backdrop-blur-sm' : 'border-white/15 text-white/70 backdrop-blur-sm'
-                    }`}
-                  >
-                    <span className="text-[9px] leading-none">{v.emoji}</span>
-                    <span className="text-[8px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
-                  </motion.button>
-                );
-              })}
-            </div>
+          {/* Vote buttons */}
+          <div className="absolute bottom-1 left-1 right-1 flex justify-between" onClick={(e) => e.stopPropagation()}>
+            {VOTE_OPTIONS.filter(v => v.key !== 'buy_no').map((v, i) => {
+              const active = v.key === 'keep_shopping' ? isInCart(post.id) : (votes[post.id] || []).includes(v.key);
+              return (
+                <motion.button
+                  key={v.key}
+                  whileTap={{ scale: 1.18 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={(e) => { e.stopPropagation(); onVote(post.id, v.key); }}
+                  className={`px-2 py-0.5 rounded text-[8px] font-bold border transition-all flex items-center gap-0.5 backdrop-blur-sm ${
+                    active ? 'bg-primary/30 border-primary/50 text-white' : 'border-white/15 text-white/70'
+                  }`}
+                >
+                  <span className="text-[9px] leading-none">{v.emoji}</span>
+                  <span className="text-[8px] font-medium leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
+                </motion.button>
+              );
+            })}
           </div>
         </div>
         {filter === 'similar' && (post as any).match_score && (
