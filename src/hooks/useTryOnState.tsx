@@ -154,25 +154,31 @@ export function useTryOnState() {
     const state = location.state as { clothingUrl?: string; clothingImageUrl?: string; productUrl?: string } | null;
     const clothingUrl = state?.clothingUrl || state?.clothingImageUrl;
     if (clothingUrl) {
-      // Clear previous result so user sees the fresh generation view
-      setResultImageRaw(null);
-      setDescription(null);
-      setAutoSaved(false);
-      setShared(false);
-      setShowPostUI(false);
-      try { localStorage.removeItem(TRYON_RESULT_KEY); } catch { /* ignore */ }
-      persistState({ resultImage: null, autoSaved: false });
+      const loadAndApply = async () => {
+        let photo: string;
+        try {
+          photo = await imageUrlToBase64(clothingUrl);
+        } catch {
+          photo = clothingUrl;
+        }
 
-      imageUrlToBase64(clothingUrl)
-        .then(base64 => {
-          setClothingPhoto(base64);
+        // If a result already exists, layer the new item as an accessory
+        if (resultImage) {
+          if (state?.productUrl) {
+            setProductLink(state.productUrl);
+            const detected = detectBrandFromUrl(state.productUrl);
+            setLookItems(prev => [...prev, { brand: detected?.brand || '', name: '', url: state.productUrl!, image_url: clothingUrl }]);
+          }
+          // Trigger accessory generation on the existing result
+          handleAddAccessory(photo, detectCategoryFromUrl(state?.productUrl || '') || null);
+        } else {
+          // No result yet — set as primary clothing
+          setClothingPhoto(photo);
           if (state?.productUrl) setProductLink(state.productUrl);
           trackEvent('tryon_clothing_uploaded');
-        })
-        .catch(() => {
-          setClothingPhoto(clothingUrl);
-          if (state?.productUrl) setProductLink(state.productUrl);
-        });
+        }
+      };
+      loadAndApply();
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
