@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ import { ACCESSORY_CATEGORIES, ALL_PRODUCT_CATEGORIES, getCaptionSuggestions, sa
 import type { CatalogProduct } from '@/hooks/useProductCatalog';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import TryOnLoadingAnimation from '@/components/tryon/TryOnLoadingAnimation';
 
 interface LookItem {
   brand: string;
@@ -455,29 +456,16 @@ const TryOnResultSection = ({
           document.body
         )}
 
-        {/* Floating generating bar — portal to escape transforms */}
+        {/* Full-screen loading animation when adding accessories */}
         {addingAccessory && createPortal(
-          <div className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-[120] px-4 animate-in slide-in-from-bottom-8 duration-300">
-            <div className="mx-auto w-full max-w-[390px]">
-              <div className="glass-card border border-primary/20 rounded-2xl px-4 py-3 shadow-[0_-4px_30px_-8px_hsl(var(--primary)/0.25)] backdrop-blur-xl">
-                <Button className="w-full h-11 rounded-xl text-sm font-bold btn-luxury text-primary-foreground opacity-100 animate-pulse" disabled>
-                  <Loader2 className="mr-2 h-4.5 w-4.5 animate-spin" /> Generating Try-On…
-                </Button>
-                <div className="flex flex-col items-center mt-2 gap-1">
-                  <p className="text-[11px] text-muted-foreground font-medium">
-                  {accessoryStepIndex === 0 && 'Analyzing the accessory…'}
-                  {accessoryStepIndex === 1 && 'Compositing onto your look…'}
-                  {accessoryStepIndex === 2 && 'Finalizing your preview…'}
-                  </p>
-                  <div className="flex gap-1.5">
-                    {[0, 1, 2].map(i => (
-                      <div key={i} className={`h-1.5 w-1.5 rounded-full transition-colors duration-500 ${i <= accessoryStepIndex ? 'bg-primary shadow-[0_0_6px_hsl(var(--primary)/0.5)]' : 'bg-muted-foreground/20'}`} />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>,
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[120] bg-background/90 backdrop-blur-md flex items-center justify-center"
+          >
+            <TryOnLoadingAnimation stepIndex={accessoryStepIndex} />
+          </motion.div>,
           document.body
         )}
 
