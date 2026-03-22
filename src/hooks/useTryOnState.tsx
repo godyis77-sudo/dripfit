@@ -31,6 +31,8 @@ type PersistedTryOnState = {
   lookItems: LookItem[];
   caption: string;
   autoSaved: boolean;
+  shared: boolean;
+  savedToItems: boolean;
 };
 
 function loadPersistedTryOnState(): PersistedTryOnState {
@@ -48,9 +50,11 @@ function loadPersistedTryOnState(): PersistedTryOnState {
       lookItems: parsed.lookItems || [],
       caption: parsed.caption || '',
       autoSaved: parsed.autoSaved || !!savedResultUrl,
+      shared: !!parsed.shared,
+      savedToItems: !!parsed.savedToItems,
     };
   } catch { /* ignore */ }
-  return { userPhoto: null, clothingPhoto: null, productLink: '', category: 'top', resultImage: null, lookItems: [], caption: '', autoSaved: false };
+  return { userPhoto: null, clothingPhoto: null, productLink: '', category: 'top', resultImage: null, lookItems: [], caption: '', autoSaved: false, shared: false, savedToItems: false };
 }
 
 export function useTryOnState() {
@@ -71,7 +75,7 @@ export function useTryOnState() {
   const [loadingStepIndex, setLoadingStepIndex] = useState(0);
   const [caption, setCaptionRaw] = useState(persisted.caption);
   const [isPublic, setIsPublic] = useState(() => getDefaultSharePreference());
-  const [shared, setShared] = useState(false);
+  const [shared, setShared] = useState(persisted.shared);
   const [autoSaved, setAutoSaved] = useState(persisted.autoSaved);
   const [productLink, setProductLinkRaw] = useState(persisted.productLink);
   const [lookItems, setLookItemsRaw] = useState<LookItem[]>(persisted.lookItems);
@@ -80,7 +84,7 @@ export function useTryOnState() {
 
   // Persist critical state to sessionStorage so it survives mobile camera handoff reloads
   // NOTE: Don't persist large base64 photos — they can exceed sessionStorage quota (~5MB)
-  const persistState = useCallback((updates: Partial<{ userPhoto: string | null; clothingPhoto: string | null; productLink: string; category: string; resultImage: string | null; lookItems: LookItem[]; caption: string; autoSaved: boolean }>) => {
+  const persistState = useCallback((updates: Partial<{ userPhoto: string | null; clothingPhoto: string | null; productLink: string; category: string; resultImage: string | null; lookItems: LookItem[]; caption: string; autoSaved: boolean; shared: boolean; savedToItems: boolean }>) => {
     try {
       const current = (() => { try { return JSON.parse(sessionStorage.getItem(TRYON_STATE_KEY) || '{}'); } catch { return {}; } })();
       const merged = { ...current, ...updates };
@@ -102,7 +106,7 @@ export function useTryOnState() {
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
   const [showWardrobe, setShowWardrobe] = useState(false);
   const [showPremiumGate, setShowPremiumGate] = useState(false);
-  const [savedToItems, setSavedToItems] = useState(false);
+  const [savedToItems, setSavedToItems] = useState(persisted.savedToItems);
   const [showSuccessOverlay, setShowSuccessOverlay] = useState(false);
   const [showPostUI, setShowPostUI] = useState(false);
   const [showLookItems, setShowLookItems] = useState(false);
@@ -119,6 +123,14 @@ export function useTryOnState() {
   const [serverCount, setServerCount] = useState<number | null>(null);
   const remainingTryOns = Math.max(0, FREE_MONTHLY_LIMIT - (user ? (serverCount ?? 0) : getMonthlyTryOnCount()));
   const canGenerate = !!userPhoto && !!clothingPhoto;
+
+  useEffect(() => {
+    persistState({ shared });
+  }, [shared, persistState]);
+
+  useEffect(() => {
+    persistState({ savedToItems });
+  }, [savedToItems, persistState]);
 
   const [hasSavedProfile, setHasSavedProfile] = useState(() => {
     try { return JSON.parse(localStorage.getItem('dripcheck_scans') || '[]').length > 0; } catch { return false; }
@@ -342,24 +354,44 @@ export function useTryOnState() {
 
   const handleShare = async () => {
     if (!user) { toast({ title: 'Sign in to share', description: 'Create a free account to post your look.', variant: 'destructive' }); navigate('/auth'); return; }
-    setShared(true);
-    trackEvent('tryon_posted', { isPublic });
+    if (shared) {
+      toast({ title: isPublic ? 'Already posted' : 'Already saved', description: 'This look has already been submitted.' });
+      return;
+    }
     try {
       const allUrls = getAllUrls();
       if (autoSaved) {
-        const { data: latestPosts } = await supabase.from('tryon_posts').select('id').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
-        if (latestPosts && latestPosts.length > 0) await supabase.from('tryon_posts').update({ caption: caption || null, is_public: isPublic, product_urls: allUrls }).eq('id', latestPosts[0].id);
+        const { data: latestPosts, error: latestError } = await supabase
+          .from('tryon_posts')
+          .select('id')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(1);
+        if (latestError) throw latestError;
+
+        if (latestPosts && latestPosts.length > 0) {
+          const { error: updateError } = await supabase
+            .from('tryon_posts')
+            .update({ caption: caption || null, is_public: isPublic, product_urls: allUrls })
+            .eq('id', latestPosts[0].id);
+          if (updateError) throw updateError;
+        }
       } else {
         const [userUrl, clothingUrl, resultUrl] = await Promise.all([
           uploadBase64ToStorage(userPhoto!, 'user'),
           uploadBase64ToStorage(clothingPhoto!, 'clothing'),
           uploadBase64ToStorage(resultImage!, 'result'),
         ]);
-        await supabase.from('tryon_posts').insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic, product_urls: allUrls });
+        const { error: insertError } = await supabase
+          .from('tryon_posts')
+          .insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic, product_urls: allUrls });
+        if (insertError) throw insertError;
       }
+      setShared(true);
+      setShowPostUI(false);
+      trackEvent('tryon_posted', { isPublic });
       toast({ title: isPublic ? 'Posted to Style Check!' : 'Saved!', description: isPublic ? 'Your look is live — get feedback from the community.' : 'Caption updated.' });
     } catch (err: unknown) {
-      setShared(false);
       toast({ title: 'Share failed', description: (err as Error).message, variant: 'destructive' });
     }
   };
@@ -430,10 +462,29 @@ export function useTryOnState() {
 
   const handleSaveToItems = async () => {
     if (!user || !clothingPhoto) return;
+    if (savedToItems) {
+      toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
+      return;
+    }
     try {
+      if (productLink) {
+        const { data: existing, error: existingError } = await supabase
+          .from('clothing_wardrobe')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('product_link', productLink)
+          .limit(1);
+        if (existingError) throw existingError;
+        if (existing && existing.length > 0) {
+          setSavedToItems(true);
+          toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
+          return;
+        }
+      }
+
       const imageUrl = await uploadBase64ToStorage(clothingPhoto, 'wardrobe');
       const detected = productLink ? detectBrandFromUrl(productLink) : null;
-      await supabase.from('clothing_wardrobe').insert({
+      const { error: insertError } = await supabase.from('clothing_wardrobe').insert({
         user_id: user.id,
         image_url: imageUrl,
         category: category || (productLink ? detectCategoryFromUrl(productLink) : null) || 'top',
@@ -441,14 +492,24 @@ export function useTryOnState() {
         brand: selectedQuickPick?.brand || (detected?.brand && detected.brand !== detected.retailer ? detected.brand : null),
         retailer: selectedQuickPick?.retailer || detected?.retailer || null,
       });
+
+      if (insertError) {
+        if ((insertError as { code?: string }).code === '23505') {
+          setSavedToItems(true);
+          toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
+          return;
+        }
+        throw insertError;
+      }
+
       setSavedToItems(true);
       trackEvent('saved_item_added', { source: 'tryon_wardrobe', category });
       toast({
         title: '✓ Saved to Wardrobe', description: 'View in your wardrobe anytime.',
         action: <button onClick={() => navigate('/profile', { state: { tab: 'wardrobe' } })} className="text-[11px] font-bold text-primary underline" aria-label="View your wardrobe">View Wardrobe</button>,
       });
-    } catch {
-      toast({ title: 'Could not save', variant: 'destructive' });
+    } catch (err: unknown) {
+      toast({ title: 'Could not save', description: (err as Error).message, variant: 'destructive' });
     }
   };
 
