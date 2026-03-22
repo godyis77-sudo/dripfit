@@ -16,84 +16,96 @@ interface BgRow {
   tags: string[];
 }
 
-// Queries explicitly designed to return EMPTY scenes — no people, portraits, or models.
-// Each query ends with "-people -person -model -portrait -face" to bias Pexels away from
-// results containing humans.
+// Beautiful, portrait-oriented backdrop queries ideal for full-body person overlays.
+// Focus: spacious vertical composition, stunning lighting, no humans.
 const CATEGORY_QUERIES: Record<string, string[]> = {
   "street-urban": [
-    "empty urban alley graffiti wall no people",
-    "city street brick wall background empty",
-    "urban concrete wall texture backdrop",
+    "beautiful empty city street golden hour vertical",
+    "aesthetic urban alley colorful walls no people",
+    "cinematic city sidewalk night lights empty",
+    "stunning graffiti wall urban backdrop empty",
   ],
   "studio-minimal": [
-    "empty white photography backdrop studio lighting",
-    "plain grey seamless paper studio background",
-    "minimal beige studio backdrop clean wall",
-    "empty photography studio softbox lighting",
+    "professional photography studio backdrop empty clean",
+    "elegant white cyclorama studio lighting empty",
+    "minimalist beige textured wall studio backdrop",
+    "soft gradient studio background pastel empty",
   ],
   "nature-outdoor": [
-    "forest trail path no people nature",
-    "green park empty bench scenic landscape",
-    "mountain meadow wildflowers no person",
+    "beautiful forest path sunlight rays no people",
+    "stunning flower field golden hour landscape empty",
+    "scenic mountain trail vista no person",
+    "lush green garden pathway beautiful empty",
   ],
   "architecture": [
-    "modern architecture building exterior empty",
-    "concrete brutalist facade no people",
-    "glass building reflection geometric empty",
+    "grand architecture columns symmetry empty beautiful",
+    "modern glass building reflection empty stunning",
+    "elegant staircase marble interior empty",
+    "beautiful archway corridor perspective empty",
   ],
   "luxury-interior": [
-    "luxury marble hallway interior empty",
-    "elegant chandelier room decor no people",
-    "velvet curtain gold frame empty room",
+    "luxurious hotel lobby marble floor empty elegant",
+    "beautiful mansion interior chandelier empty room",
+    "opulent art gallery white walls empty spacious",
+    "elegant ballroom golden light empty stunning",
   ],
   "nightlife-neon": [
-    "neon sign alley night empty street",
-    "neon lights wall purple blue glow",
-    "night city bokeh lights no people",
+    "beautiful neon lights alley night cyberpunk empty",
+    "stunning neon sign wall purple pink glow empty",
+    "cinematic rainy night street neon reflections empty",
+    "vibrant led lights corridor futuristic empty",
   ],
   "spring-summer": [
-    "summer beach empty golden hour sand",
-    "cherry blossom tree empty path spring",
-    "tropical palm trees blue sky no people",
+    "beautiful tropical beach sunset golden hour empty",
+    "stunning cherry blossom path spring empty",
+    "gorgeous palm tree boulevard blue sky empty",
+    "idyllic lavender field sunset no people",
   ],
   "fall-winter": [
-    "autumn leaves orange forest trail empty",
-    "winter snow covered trees landscape empty",
-    "foggy morning forest path no person",
+    "beautiful autumn leaves path golden light empty",
+    "stunning snowy forest winter wonderland empty",
+    "gorgeous foggy mountain morning landscape empty",
+    "cozy autumn street fallen leaves no person",
   ],
   "travel-iconic": [
-    "eiffel tower paris skyline no people",
-    "tokyo city skyline night buildings",
-    "new york skyline empty rooftop view",
+    "paris eiffel tower beautiful skyline no people",
+    "stunning tokyo street neon signs empty",
+    "beautiful santorini blue dome sunset empty",
+    "gorgeous new york skyline rooftop view empty",
   ],
   "sports-active": [
-    "empty basketball court outdoor no people",
-    "running track empty stadium no person",
-    "skate park empty concrete ramp",
+    "beautiful empty basketball court sunset golden hour",
+    "stunning running track stadium empty aerial",
+    "aesthetic skatepark concrete empty golden light",
+    "gorgeous tennis court empty overhead view",
   ],
   "abstract-artistic": [
-    "abstract colorful paint texture wall",
-    "gradient blue purple artistic background",
-    "marble texture abstract pattern surface",
+    "beautiful abstract colorful mural wall artistic",
+    "stunning holographic gradient background iridescent",
+    "gorgeous marble texture gold veins luxury",
+    "aesthetic paint splatter wall colorful artistic",
   ],
 };
 
-// Words that strongly indicate a photo contains people — used to filter results.
+// Words indicating a photo contains people — filter these out
 const PEOPLE_KEYWORDS = [
   "person", "people", "man", "woman", "girl", "boy", "model",
   "portrait", "face", "selfie", "couple", "child", "kid", "baby",
   "group", "crowd", "dancer", "athlete", "posing", "smiling",
-  "fashion model", "headshot",
+  "fashion model", "headshot", "wedding", "family", "friends",
 ];
 
-function looksLikePeoplePhoto(photo: {
-  alt?: string;
-  url?: string;
-  photographer?: string;
-}): boolean {
+// Minimum image dimensions for a quality full-body backdrop
+const MIN_WIDTH = 800;
+const MIN_HEIGHT = 1000;
+
+function looksLikePeoplePhoto(photo: { alt?: string }): boolean {
   const alt = (photo.alt || "").toLowerCase();
-  // Check alt text for people-related keywords
   return PEOPLE_KEYWORDS.some((kw) => alt.includes(kw));
+}
+
+function isTooSmall(photo: { width?: number; height?: number }): boolean {
+  return (photo.width || 0) < MIN_WIDTH || (photo.height || 0) < MIN_HEIGHT;
 }
 
 Deno.serve(async (req) => {
@@ -114,11 +126,9 @@ Deno.serve(async (req) => {
   const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const sb = createClient(supabaseUrl, supabaseKey);
 
-  // Parse optional ?replace=true to clear old seeded backgrounds first
   const url = new URL(req.url);
   const shouldReplace = url.searchParams.get("replace") === "true";
 
-  // Get categories
   const { data: cats } = await sb
     .from("background_categories")
     .select("id, slug")
@@ -133,7 +143,6 @@ Deno.serve(async (req) => {
 
   const slugToId = new Map(cats.map((c: { id: string; slug: string }) => [c.slug, c.id]));
 
-  // If replace mode, delete all pexels-sourced backgrounds so we get a clean slate
   if (shouldReplace) {
     const { error: delErr } = await sb
       .from("backgrounds")
@@ -144,7 +153,8 @@ Deno.serve(async (req) => {
 
   const rows: BgRow[] = [];
   const seenIds = new Set<string>();
-  let filteredCount = 0;
+  let filteredPeople = 0;
+  let filteredSmall = 0;
 
   for (const [slug, queries] of Object.entries(CATEGORY_QUERIES)) {
     const catId = slugToId.get(slug);
@@ -152,9 +162,9 @@ Deno.serve(async (req) => {
 
     for (const query of queries) {
       try {
-        // Fetch more results (8) so we still have enough after filtering out people
+        // Fetch 15 results to have enough after filtering people + small images
         const res = await fetch(
-          `${PEXELS_BASE}/search?query=${encodeURIComponent(query)}&per_page=8&orientation=portrait`,
+          `${PEXELS_BASE}/search?query=${encodeURIComponent(query)}&per_page=15&orientation=portrait`,
           { headers: { Authorization: pexelsKey } }
         );
         if (!res.ok) {
@@ -164,11 +174,15 @@ Deno.serve(async (req) => {
         const data = await res.json();
         let kept = 0;
         for (const photo of data.photos || []) {
-          if (kept >= 4) break; // cap at 4 per query
+          if (kept >= 4) break;
 
-          // Filter out photos that contain people
           if (looksLikePeoplePhoto(photo)) {
-            filteredCount++;
+            filteredPeople++;
+            continue;
+          }
+
+          if (isTooSmall(photo)) {
+            filteredSmall++;
             continue;
           }
 
@@ -189,18 +203,16 @@ Deno.serve(async (req) => {
             photographer: photo.photographer || "Unknown",
             tags: query
               .split(" ")
-              .filter((t: string) => t.length > 2 && t !== "people" && t !== "person" && t !== "empty"),
+              .filter((t: string) => t.length > 2 && !["people", "person", "empty", "no"].includes(t)),
           });
         }
       } catch (e) {
         console.error(`Fetch failed for "${query}":`, e);
       }
-      // Small delay to respect rate limits
       await new Promise((r) => setTimeout(r, 250));
     }
   }
 
-  // Get existing source_ids to avoid duplicates (only when not replacing)
   let newRows = rows;
   if (!shouldReplace) {
     const { data: existing } = await sb
@@ -226,7 +238,8 @@ Deno.serve(async (req) => {
     JSON.stringify({
       success: true,
       fetched: rows.length,
-      filtered_people: filteredCount,
+      filtered_people: filteredPeople,
+      filtered_small: filteredSmall,
       inserted: newRows.length,
       replaced: shouldReplace,
       categories: Object.keys(CATEGORY_QUERIES).length,
