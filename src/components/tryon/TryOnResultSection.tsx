@@ -452,7 +452,7 @@ const TryOnResultSection = ({
               transition={{ duration: 0.2 }}
               src={resultImage}
               alt="Try-on result full screen"
-              className="max-w-[calc(100%-2rem)] max-h-[82dvh] w-auto h-auto rounded-xl"
+              className="max-w-[calc(100%-2rem)] max-h-[82dvh] w-auto h-auto rounded-2xl"
               onPointerDown={(e) => e.stopPropagation()}
             />
             {/* Fullscreen action buttons */}

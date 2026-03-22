@@ -333,8 +333,8 @@ export const PostDetailSheet = ({
               onTouchEnd={handleTouchEnd}
               onDoubleClick={handleDoubleClick}
             >
-              <div className="relative mx-auto w-full aspect-[3/3.5] overflow-hidden rounded-xl bg-background touch-none">
-                <img src={post.result_photo_url} alt={post.caption || 'Try-on look'} className="absolute inset-0 h-full w-full object-contain object-top transition-transform duration-100" style={{ transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)` }} draggable={false} />
+              <div className="relative mx-auto w-full aspect-[3/3.5] overflow-hidden rounded-2xl bg-background touch-none">
+                <img src={post.result_photo_url} alt={post.caption || 'Try-on look'} className="absolute inset-0 h-full w-full object-contain object-top rounded-2xl transition-transform duration-100" style={{ transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)` }} draggable={false} />
               {retailers.length > 0 && zoom <= 1 && (
                 <div className="absolute bottom-3 right-4 flex flex-col gap-1 items-end">
                   {retailers.map((r) => (
