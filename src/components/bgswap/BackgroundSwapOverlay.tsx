@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Share2, Save, Loader2, Search, Crown, Maximize2, ZoomIn, ZoomOut } from 'lucide-react';
+import { X, Share2, Save, Loader2, Search, Crown, Maximize2, ZoomIn, ZoomOut, Move } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -75,7 +75,10 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [fullscreenPreview, setFullscreenPreview] = useState(false);
-  const [subjectScale, setSubjectScale] = useState<number | null>(null); // null = auto
+  const [subjectScale, setSubjectScale] = useState<number | null>(null);
+  const [offsetX, setOffsetX] = useState(0); // -1 to 1
+  const [offsetY, setOffsetY] = useState(0); // -1 to 1
+  const dragRef = useRef<{ startX: number; startY: number; startOX: number; startOY: number } | null>(null);
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -166,11 +169,11 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
     attemptRemoval();
   }, []);
 
-  // Update preview when subject or background changes
+  // Update preview when subject, background, scale, or position changes
   useEffect(() => {
     if (!transparentSubject || !canvasRef.current) return;
-    compositePreview(canvasRef.current, transparentSubject, selectedBgUrl, selectedBgColor, subjectScale);
-  }, [transparentSubject, selectedBgUrl, selectedBgColor, subjectScale, compositePreview]);
+    compositePreview(canvasRef.current, transparentSubject, selectedBgUrl, selectedBgColor, subjectScale, offsetX, offsetY);
+  }, [transparentSubject, selectedBgUrl, selectedBgColor, subjectScale, offsetX, offsetY, compositePreview]);
 
   const handleSelectBackground = useCallback((bg: BackgroundItem) => {
     if (bg.is_premium && !user) {
@@ -214,6 +217,8 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         backgroundColor: selectedBgColor,
         addWatermark: true,
         scaleOverride: subjectScale,
+        offsetX,
+        offsetY,
       });
       const res = await fetch(dataUrl);
       const blob = await res.blob();
@@ -248,6 +253,8 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         backgroundColor: selectedBgColor,
         addWatermark: true,
         scaleOverride: subjectScale,
+        offsetX,
+        offsetY,
       });
       const res = await fetch(dataUrl);
       const blob = await res.blob();
@@ -365,7 +372,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
           ) : (
             <canvas
               ref={el => {
-                if (el && transparentSubject) compositePreview(el, transparentSubject, selectedBgUrl, selectedBgColor, subjectScale);
+                if (el && transparentSubject) compositePreview(el, transparentSubject, selectedBgUrl, selectedBgColor, subjectScale, offsetX, offsetY);
               }}
               width={1080}
               height={1920}
@@ -376,30 +383,52 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         document.body
       )}
 
-      {/* Preview area */}
+      {/* Preview area — drag to reposition subject */}
       <div
-        className="flex-1 relative flex items-center justify-center overflow-hidden min-h-[30dvh] cursor-pointer group"
-        onClick={() => transparentSubject && setFullscreenPreview(true)}
+        className="flex-1 relative flex items-center justify-center overflow-hidden min-h-[30dvh] cursor-grab active:cursor-grabbing group touch-none"
+        onPointerDown={e => {
+          if (!transparentSubject) return;
+          e.preventDefault();
+          (e.target as HTMLElement).setPointerCapture(e.pointerId);
+          dragRef.current = { startX: e.clientX, startY: e.clientY, startOX: offsetX, startOY: offsetY };
+        }}
+        onPointerMove={e => {
+          if (!dragRef.current) return;
+          const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+          const dx = (e.clientX - dragRef.current.startX) / rect.width * 2;
+          const dy = (e.clientY - dragRef.current.startY) / rect.height * 2;
+          setOffsetX(Math.max(-1, Math.min(1, dragRef.current.startOX + dx)));
+          setOffsetY(Math.max(-1, Math.min(1, dragRef.current.startOY + dy)));
+        }}
+        onPointerUp={() => { dragRef.current = null; }}
+        onPointerCancel={() => { dragRef.current = null; }}
+        onDoubleClick={() => transparentSubject && setFullscreenPreview(true)}
       >
         {showOriginal ? (
           <img
             src={resultImageUrl}
             alt="Original"
-            className="max-h-full max-w-full rounded-xl object-contain"
+            className="max-h-full max-w-full rounded-xl object-contain pointer-events-none"
           />
         ) : (
           <canvas
             ref={canvasRef}
             width={540}
             height={960}
-            className="max-h-full max-w-full rounded-xl object-contain"
+            className="max-h-full max-w-full rounded-xl object-contain pointer-events-none"
             style={{ imageRendering: 'auto' }}
           />
         )}
         {transparentSubject && (
-          <div className="absolute top-2 right-2 h-8 w-8 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-            <Maximize2 className="h-4 w-4 text-white" />
-          </div>
+          <>
+            <div className="absolute top-2 left-2 h-7 px-2 rounded-lg bg-black/50 backdrop-blur-sm flex items-center gap-1.5 pointer-events-none">
+              <Move className="h-3 w-3 text-white/70" />
+              <span className="text-[9px] text-white/70 font-medium">Drag to move</span>
+            </div>
+            <div className="absolute top-2 right-2 h-8 w-8 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              <Maximize2 className="h-4 w-4 text-white" />
+            </div>
+          </>
         )}
       </div>
 
@@ -418,10 +447,10 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
           />
           <ZoomIn className="h-4 w-4 text-muted-foreground shrink-0" />
           <button
-            onClick={() => setSubjectScale(null)}
+            onClick={() => { setSubjectScale(null); setOffsetX(0); setOffsetY(0); }}
             className="text-[10px] font-bold text-primary px-2 py-1 rounded-md bg-primary/10 shrink-0"
           >
-            Auto
+            Reset
           </button>
         </div>
       )}
