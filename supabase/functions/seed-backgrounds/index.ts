@@ -105,12 +105,16 @@ Deno.serve(async (req) => {
     }
   }
 
-  // Upsert into backgrounds
-  if (rows.length > 0) {
-    const { error } = await sb.from("backgrounds").upsert(rows, {
-      onConflict: "source_id",
-      ignoreDuplicates: true,
-    });
+  // Get existing source_ids to avoid duplicates
+  const { data: existing } = await sb
+    .from("backgrounds")
+    .select("source_id")
+    .not("source_id", "is", null);
+  const existingIds = new Set((existing || []).map((e: { source_id: string }) => e.source_id));
+  const newRows = rows.filter((r) => !existingIds.has(r.source_id));
+
+  if (newRows.length > 0) {
+    const { error } = await sb.from("backgrounds").insert(newRows);
     if (error) {
       console.error("Insert error:", error);
       return new Response(JSON.stringify({ error: error.message, count: 0 }), {
@@ -121,7 +125,7 @@ Deno.serve(async (req) => {
   }
 
   return new Response(
-    JSON.stringify({ success: true, count: rows.length, categories: Object.keys(CATEGORY_QUERIES).length }),
+    JSON.stringify({ success: true, fetched: rows.length, inserted: newRows.length, categories: Object.keys(CATEGORY_QUERIES).length }),
     { headers: { ...corsHeaders, "Content-Type": "application/json" } }
   );
 });
