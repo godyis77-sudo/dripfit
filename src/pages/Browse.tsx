@@ -68,7 +68,6 @@ const Browse = () => {
 
   // Use override if user manually selected, otherwise default to profile preference
   const genderFilter: GenderKey = genderOverride ?? defaultGender;
-  const effectiveGender = genderFilter === 'all' ? undefined : genderFilter;
 
   // search state removed — brand filter handled by BrandFilter component
   const [sort, setSort] = useState<SortKey>('default');
