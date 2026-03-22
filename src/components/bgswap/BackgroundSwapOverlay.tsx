@@ -129,7 +129,18 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         backgroundColor: selectedBgColor,
         addWatermark: true,
       });
-      await shareImage(dataUrl, 'My DripFit look');
+      // Share via Web Share API or download
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const file = new File([blob], 'dripfit-look.jpg', { type: 'image/jpeg' });
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'My DripFit Look' });
+      } else {
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = 'dripfit-look.jpg';
+        a.click();
+      }
       trackEvent('bg_composite_shared');
     } catch (err) {
       console.error('Share failed:', err);
