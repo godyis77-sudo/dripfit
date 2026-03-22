@@ -136,10 +136,20 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
 
   const attemptRemoval = useCallback(async () => {
     setRemovalError(false);
+
+    // Check cache first — skip expensive WASM if we already removed this image
+    const cached = getCachedSubject(resultImageUrl);
+    if (cached) {
+      setTransparentSubject(cached);
+      setUsingCache(true);
+      return;
+    }
+
     try {
       trackEvent('bg_swap_opened');
       const url = await removeBackground(resultImageUrl);
       setTransparentSubject(url);
+      setCachedSubject(resultImageUrl, url);
     } catch (err) {
       console.error('BG removal failed:', err);
       setRemovalError(true);
