@@ -10,12 +10,14 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export interface ProductPreviewData {
+  id?: string;
   image_url: string;
   name: string;
   brand: string;
   price_cents?: number | null;
   product_url?: string | null;
   category?: string;
+  currency?: string;
   fit_profile?: string[] | null;
   fabric_composition?: string[] | null;
   style_genre?: string | null;
