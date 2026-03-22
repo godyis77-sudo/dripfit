@@ -163,8 +163,13 @@ export async function generateShareImage(data: ShareImageData): Promise<Blob> {
   ctx.font = '24px Inter, system-ui, sans-serif';
   ctx.fillText('Download free — dripfitcheck.lovable.app', W / 2, H - 50);
 
-  return new Promise((resolve) => {
-    canvas.toBlob((blob) => resolve(blob!), 'image/png');
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) { resolve(blob); } else {
+        trackEvent('drip_card_render_failed' as any, { card: 'scan_share' });
+        reject(new Error('Canvas toBlob returned null'));
+      }
+    }, 'image/png');
   });
 }
 
