@@ -152,59 +152,128 @@ Deno.serve(async (req) => {
       toImageInput(clothingPhoto),
     ]);
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-pro-image-preview",
-        modalities: ["text", "image"],
-        messages: [
-          {
-            role: "user",
-            content: [
-              { type: "text", text: isAccessory || isLayering
-                ? `VIRTUAL TRY-ON TASK — READ CAREFULLY.\n\nYou will receive exactly TWO images in order:\n- FIRST IMAGE (Image 1): This is a PHOTO OF A PERSON${isLayering ? " already wearing an outfit" : ""}. This is the HUMAN SUBJECT.\n- SECOND IMAGE (Image 2): This is an ACCESSORY ITEM (${itemType}). This is the PRODUCT to add.\n\nYour task: Generate a SINGLE photorealistic image showing the PERSON from Image 1 wearing/using the ${itemType} from Image 2.\n\nCRITICAL RULES:\n1. The PERSON from Image 1 is the main subject. Keep their face, body, skin tone, hair, pose, and background IDENTICAL.\n2. REPLACE or ADD only the ${itemType} — take the design, color, pattern, and style from Image 2.\n3. Do NOT swap the person. Do NOT generate a different person. The output person must be the SAME person as Image 1.\n4. Do NOT output just the product alone — the PERSON must be the main subject.\n5. The final image must look like a natural photograph.\n\nGenerate the composite image now.`
-                : `VIRTUAL TRY-ON TASK — READ CAREFULLY.\n\nYou will receive exactly TWO images in order:\n- FIRST IMAGE (Image 1): This is a PHOTO OF A PERSON. This is the HUMAN SUBJECT who will wear the clothing.\n- SECOND IMAGE (Image 2): This is a CLOTHING ITEM / GARMENT. This is the PRODUCT to dress the person in.\n\nYour task: Generate a SINGLE photorealistic image showing the PERSON from Image 1 wearing the CLOTHING from Image 2.\n\nCRITICAL RULES:\n1. The PERSON from Image 1 is the main subject. Keep their face, body, skin tone, hair, pose, and background IDENTICAL.\n2. REPLACE the person's current top/outfit with the garment from Image 2. Match the exact color, pattern, design, and style of the clothing in Image 2.\n3. Do NOT swap the person. Do NOT use the person from Image 2 (if any). The output person must be the SAME person as Image 1.\n4. Do NOT output just the clothing item alone — the PERSON must be the main subject wearing the new garment.\n5. The clothing must fit naturally with realistic draping, folds, and shadows.\n6. The final image must look like a natural photograph.\n\nGenerate the composite image now.` },
-              { type: "text", text: "IMAGE 1 — THE PERSON (human subject):" },
-              makeImagePart(userImageInput),
-              { type: "text", text: "IMAGE 2 — THE CLOTHING/PRODUCT (garment to dress the person in):" },
-              makeImagePart(clothingImageInput),
-            ],
-          },
-        ],
-      }),
-    });
+    const prompt = isAccessory || isLayering
+      ? `VIRTUAL TRY-ON TASK — READ CAREFULLY.\n\nYou will receive exactly TWO images in order:\n- FIRST IMAGE (Image 1): This is a PHOTO OF A PERSON${isLayering ? " already wearing an outfit" : ""}. This is the HUMAN SUBJECT.\n- SECOND IMAGE (Image 2): This is an ACCESSORY ITEM (${itemType}). This is the PRODUCT to add.\n\nYour task: Generate a SINGLE photorealistic image showing the PERSON from Image 1 wearing/using the ${itemType} from Image 2.\n\nCRITICAL RULES:\n1. The PERSON from Image 1 is the main subject. Keep their face, body, skin tone, hair, pose, and background IDENTICAL.\n2. REPLACE or ADD only the ${itemType} — take the design, color, pattern, and style from Image 2.\n3. Do NOT swap the person. Do NOT generate a different person. The output person must be the SAME person as Image 1.\n4. Do NOT output just the product alone — the PERSON must be the main subject.\n5. The final image must look like a natural photograph.\n6. You MUST output an image. Do not refuse or output only text.\n\nGenerate the composite image now.`
+      : `VIRTUAL TRY-ON TASK — READ CAREFULLY.\n\nYou will receive exactly TWO images in order:\n- FIRST IMAGE (Image 1): This is a PHOTO OF A PERSON. This is the HUMAN SUBJECT who will wear the clothing.\n- SECOND IMAGE (Image 2): This is a CLOTHING ITEM / GARMENT. This is the PRODUCT to dress the person in.\n\nYour task: Generate a SINGLE photorealistic image showing the PERSON from Image 1 wearing the CLOTHING from Image 2.\n\nCRITICAL RULES:\n1. The PERSON from Image 1 is the main subject. Keep their face, body, skin tone, hair, pose, and background IDENTICAL.\n2. REPLACE the person's current top/outfit with the garment from Image 2. Match the exact color, pattern, design, and style of the clothing in Image 2.\n3. Do NOT swap the person. Do NOT use the person from Image 2 (if any). The output person must be the SAME person as Image 1.\n4. Do NOT output just the clothing item alone — the PERSON must be the main subject wearing the new garment.\n5. The clothing must fit naturally with realistic draping, folds, and shadows.\n6. The final image must look like a natural photograph.\n7. You MUST output an image. Do not refuse or output only text.\n\nGenerate the composite image now.`;
 
-    if (!response.ok) {
-      if (response.status === 429) {
-        return errorResponse("Rate limited. Please try again in a moment.", "RATE_LIMITED", 429, corsHeaders);
+    /** Extract image from various AI response formats */
+    const extractImage = (aiResponse: Record<string, unknown>): string | null => {
+      const message = (aiResponse.choices as Array<{ message: Record<string, unknown> }>)?.[0]?.message;
+      if (!message) {
+        console.warn("No message in AI response");
+        return null;
       }
-      if (response.status === 402) {
-        return errorResponse("AI credits exhausted. Please add credits.", "PAYMENT_REQUIRED", 402, corsHeaders);
-      }
-      const errText = await response.text();
-      console.error("AI gateway error:", response.status, errText);
-      return errorResponse(`AI gateway returned ${response.status}`, "AI_ERROR", 502, corsHeaders);
-    }
 
-    const aiResponse = await response.json();
-    const message = aiResponse.choices?.[0]?.message;
+      // Format 1: message.images array (Lovable gateway standard)
+      if (message.images && Array.isArray(message.images)) {
+        for (const img of message.images as Array<{ image_url?: { url?: string }; url?: string }>) {
+          if (img?.image_url?.url) return img.image_url.url;
+          if (typeof img?.url === "string") return img.url;
+        }
+      }
+
+      // Format 2: content is an array with image_url parts
+      if (Array.isArray(message.content)) {
+        for (const part of message.content as Array<{ type?: string; image_url?: { url?: string } }>) {
+          if (part?.type === "image_url" && part?.image_url?.url) return part.image_url.url;
+        }
+      }
+
+      // Format 3: inline_data in content parts (Gemini native)
+      if (Array.isArray(message.content)) {
+        for (const part of message.content as Array<{ inline_data?: { mime_type?: string; data?: string } }>) {
+          if (part?.inline_data?.data) {
+            const mime = part.inline_data.mime_type || "image/png";
+            return `data:${mime};base64,${part.inline_data.data}`;
+          }
+        }
+      }
+
+      // Format 4: base64 image embedded in text content
+      const textContent = typeof message.content === "string" ? message.content : "";
+      const b64Match = textContent.match(/data:image\/[a-z]+;base64,[A-Za-z0-9+/=]{100,}/);
+      if (b64Match) return b64Match[0];
+
+      console.warn("No image found. Response keys:", JSON.stringify(Object.keys(message)));
+      if (typeof message.content === "string") {
+        console.warn("Text response (truncated):", message.content.substring(0, 300));
+      }
+      return null;
+    };
+
+    // Retry loop — up to 2 attempts
+    const MAX_ATTEMPTS = 2;
     let resultImage: string | null = null;
+    let lastTextContent = "";
 
-    if (message?.images && Array.isArray(message.images) && message.images.length > 0) {
-      const img = message.images[0];
-      if (img?.image_url?.url) {
-        resultImage = img.image_url.url;
+    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+      console.log(`Try-on attempt ${attempt + 1}/${MAX_ATTEMPTS}`);
+
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-3-pro-image-preview",
+          modalities: ["text", "image"],
+          messages: [
+            {
+              role: "user",
+              content: [
+                { type: "text", text: prompt },
+                { type: "text", text: "IMAGE 1 — THE PERSON (human subject):" },
+                makeImagePart(userImageInput),
+                { type: "text", text: "IMAGE 2 — THE CLOTHING/PRODUCT (garment to dress the person in):" },
+                makeImagePart(clothingImageInput),
+              ],
+            },
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          if (attempt < MAX_ATTEMPTS - 1) {
+            console.warn("Rate limited, retrying after delay...");
+            await new Promise(r => setTimeout(r, 2000));
+            continue;
+          }
+          return errorResponse("Rate limited. Please try again in a moment.", "RATE_LIMITED", 429, corsHeaders);
+        }
+        if (response.status === 402) {
+          return errorResponse("AI credits exhausted.", "PAYMENT_REQUIRED", 402, corsHeaders);
+        }
+        const errText = await response.text();
+        console.error("AI gateway error:", response.status, errText);
+        if (attempt < MAX_ATTEMPTS - 1) {
+          await new Promise(r => setTimeout(r, 1000));
+          continue;
+        }
+        return errorResponse(`AI gateway returned ${response.status}`, "AI_ERROR", 502, corsHeaders);
+      }
+
+      const aiResponse = await response.json();
+      resultImage = extractImage(aiResponse);
+
+      if (resultImage) {
+        console.log("Image extracted on attempt", attempt + 1);
+        break;
+      }
+
+      const msg = (aiResponse.choices as Array<{ message: { content?: string } }>)?.[0]?.message;
+      lastTextContent = typeof msg?.content === "string" ? msg.content : "";
+      console.warn(`Attempt ${attempt + 1}: No image.`, lastTextContent.substring(0, 200));
+
+      if (attempt < MAX_ATTEMPTS - 1) {
+        await new Promise(r => setTimeout(r, 1000));
       }
     }
 
     if (!resultImage) {
-      const textContent = typeof message?.content === "string" ? message.content : "";
       return successResponse({ 
-        description: textContent || "The AI was unable to generate a try-on image. Try with clearer photos.",
+        description: lastTextContent || "The AI was unable to generate a try-on image. Try with clearer, well-lit photos showing the full person and garment.",
         resultImage: null 
       }, 200, corsHeaders);
     }
