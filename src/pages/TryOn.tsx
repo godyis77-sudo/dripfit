@@ -220,9 +220,9 @@ const TryOn = () => {
                         <div>
                           <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Retailer</p>
                           <div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto">
-                            <button
+                              <button
                               onClick={() => s.setSelectedRetailer(null)}
-                              className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                              className={`px-2.5 py-1.5 min-h-[44px] rounded-lg text-[10px] font-semibold transition-colors ${
                                 !s.selectedRetailer
                                   ? 'btn-luxury text-primary-foreground'
                                   : 'bg-background border border-border text-foreground/70'
