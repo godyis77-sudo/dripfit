@@ -452,6 +452,22 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
             // Category backgrounds
             <>
               <div className="grid grid-cols-4 gap-1.5">
+                {/* Original background tile */}
+                <button
+                  onClick={() => {
+                    setShowOriginal(true);
+                    setSelectedBgId('__original__');
+                    trackEvent('bg_original_selected');
+                  }}
+                  className={`relative aspect-square w-full rounded-lg overflow-hidden transition-all ${
+                    showOriginal ? 'ring-2 ring-primary ring-offset-1 ring-offset-card' : 'ring-1 ring-border'
+                  }`}
+                >
+                  <img src={resultImageUrl} alt="Original" className="w-full h-full object-cover" />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-1 py-0.5">
+                    <p className="text-[8px] text-white/90 font-bold text-center">Original</p>
+                  </div>
+                </button>
                 {backgrounds.map(bg => {
                   const isSolid = bg.storage_path.startsWith('solid:');
                   const color = isSolid ? bg.storage_path.replace('solid:', '') : undefined;
