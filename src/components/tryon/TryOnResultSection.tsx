@@ -283,6 +283,26 @@ const TryOnResultSection = ({
           </button>
         </div>
 
+        {/* Post-try-on scan nudge */}
+        {!user?.lastScanDate && (
+          <motion.button
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            onClick={() => { trackEvent('postscan_tryon_click'); navigate('/capture'); }}
+            className="w-full flex items-center gap-3 p-3 mb-3 rounded-xl border border-primary/25 bg-primary/5 active:scale-[0.97] transition-transform"
+          >
+            <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <Camera className="h-4 w-4 text-primary" />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-[12px] font-bold text-foreground">Get Your Perfect Size</p>
+              <p className="text-[10px] text-muted-foreground">Quick body scan → know your exact size for this brand</p>
+            </div>
+            <ChevronRight className="h-4 w-4 text-primary shrink-0" />
+          </motion.button>
+        )}
+
         {/* What's In This Look */}
         {displayItems.length > 0 && (
           <WhatsInThisLook items={displayItems} clothingPhotoUrl={clothingPhoto} defaultOpen={showLookItems} variant="detail" onAddToWardrobe={handleAddToWardrobe} />

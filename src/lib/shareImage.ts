@@ -368,7 +368,12 @@ export async function generateTryOnShareCard(params: TryOnShareCardParams): Prom
   ctx.textAlign = 'center';
   ctx.fillText('Try yours free at dripfitcheck.lovable.app', W / 2, H - 60);
 
-  return new Promise((resolve) => {
-    canvas.toBlob((blob) => resolve(blob!), 'image/png');
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) { resolve(blob); } else {
+        trackEvent('drip_card_render_failed' as any, { card: 'tryon_share' });
+        reject(new Error('Canvas toBlob returned null'));
+      }
+    }, 'image/png');
   });
 }
