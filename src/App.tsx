@@ -19,7 +19,7 @@ import GuestTimedNudge from "./components/guest/GuestTimedNudge";
 
 // ── Lazy-loaded pages (code-split per route) ──────────────────────────
 const Welcome = lazy(() => import("./pages/Welcome"));
-const Onboarding = lazy(() => import("./pages/Onboarding"));
+
 const Analyze = lazy(() => import("./pages/Analyze"));
 const Results = lazy(() => import("./pages/Results"));
 const ScanSuccess = lazy(() => import("./pages/ScanSuccess"));
