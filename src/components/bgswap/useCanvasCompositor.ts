@@ -119,6 +119,74 @@ function applyLightingMatch(
   ctx.restore();
 }
 
+/**
+ * Analyze background scene to determine appropriate subject scale.
+ * Uses edge density gradient (top-to-bottom) and brightness variance
+ * to infer scene depth: wide landscapes → smaller subject, close walls → larger.
+ * Returns a scale fraction (0.50 – 0.85) of canvas height.
+ */
+function analyzeSceneScale(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number
+): { scaleFraction: number; groundY: number } {
+  try {
+    const sampleW = Math.min(width, 200);
+    const sampleH = Math.min(height, 350);
+    const offX = Math.floor((width - sampleW) / 2);
+    const data = ctx.getImageData(offX, 0, sampleW, sampleH).data;
+
+    // Divide into vertical bands and measure edge density + brightness
+    const bands = 7;
+    const bandH = Math.floor(sampleH / bands);
+    const bandEdge: number[] = [];
+    const bandBright: number[] = [];
+
+    for (let b = 0; b < bands; b++) {
+      let edges = 0, bright = 0, count = 0;
+      const yStart = b * bandH;
+      for (let y = yStart; y < yStart + bandH; y += 2) {
+        for (let x = 2; x < sampleW - 2; x += 4) {
+          const i = (y * sampleW + x) * 4;
+          const iLeft = (y * sampleW + (x - 2)) * 4;
+          const diff = Math.abs(data[i] - data[iLeft]) +
+                       Math.abs(data[i + 1] - data[iLeft + 1]) +
+                       Math.abs(data[i + 2] - data[iLeft + 2]);
+          edges += diff;
+          bright += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+          count++;
+        }
+      }
+      bandEdge.push(edges / Math.max(1, count));
+      bandBright.push(bright / Math.max(1, count));
+    }
+
+    // Heuristic 1: Edge increase bottom-to-top ratio → depth cue
+    const topEdge = (bandEdge[0] + bandEdge[1]) / 2;
+    const bottomEdge = (bandEdge[bands - 2] + bandEdge[bands - 1]) / 2;
+    const edgeRatio = topEdge / Math.max(1, bottomEdge); // >1 = landscape, <1 = close wall
+
+    // Heuristic 2: Brightness variance across bands → depth diversity
+    const avgBright = bandBright.reduce((a, b) => a + b, 0) / bands;
+    const variance = bandBright.reduce((a, b) => a + (b - avgBright) ** 2, 0) / bands;
+    const normalizedVar = Math.min(variance / 2000, 1); // 0-1
+
+    // Combine: high edge ratio + high variance = deep scene (smaller subject)
+    const depthScore = Math.min(1, edgeRatio * 0.5 + normalizedVar * 0.5);
+
+    // Map depthScore → scale: 0 (close) → 0.82, 1 (deep landscape) → 0.55
+    const scaleFraction = 0.82 - depthScore * 0.27;
+
+    // Estimate ground position: find where bottom brightness stabilizes
+    // Default to 95% height (small gap at bottom)
+    const groundY = height * (0.97 - depthScore * 0.05);
+
+    return { scaleFraction: Math.max(0.50, Math.min(0.85, scaleFraction)), groundY };
+  } catch {
+    return { scaleFraction: 0.80, groundY: height * 0.95 };
+  }
+}
+
 function drawBackground(
   ctx: CanvasRenderingContext2D,
   bgImg: HTMLImageElement | null,
