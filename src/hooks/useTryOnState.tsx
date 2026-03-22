@@ -20,6 +20,7 @@ export type LookItem = { brand: string; name: string; url: string; price_cents?:
 export type WardrobeItem = { id: string; image_url: string; category: string; product_link: string | null };
 
 const TRYON_STATE_KEY = 'dripcheck_tryon_state';
+const TRYON_RESULT_KEY = 'dripcheck_tryon_result'; // localStorage — survives tab close
 
 type PersistedTryOnState = {
   userPhoto: string | null;
@@ -35,19 +36,19 @@ type PersistedTryOnState = {
 function loadPersistedTryOnState(): PersistedTryOnState {
   try {
     const raw = sessionStorage.getItem(TRYON_STATE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      return {
-        userPhoto: parsed.userPhoto || null,
-        clothingPhoto: parsed.clothingPhoto || null,
-        productLink: parsed.productLink || '',
-        category: parsed.category || 'top',
-        resultImage: parsed.resultImage || null,
-        lookItems: parsed.lookItems || [],
-        caption: parsed.caption || '',
-        autoSaved: parsed.autoSaved || false,
-      };
-    }
+    const parsed = raw ? JSON.parse(raw) : {};
+    // Prefer localStorage result URL (small string, survives tab close)
+    const savedResultUrl = localStorage.getItem(TRYON_RESULT_KEY);
+    return {
+      userPhoto: parsed.userPhoto || null,
+      clothingPhoto: parsed.clothingPhoto || null,
+      productLink: parsed.productLink || '',
+      category: parsed.category || 'top',
+      resultImage: savedResultUrl || parsed.resultImage || null,
+      lookItems: parsed.lookItems || [],
+      caption: parsed.caption || '',
+      autoSaved: parsed.autoSaved || !!savedResultUrl,
+    };
   } catch { /* ignore */ }
   return { userPhoto: null, clothingPhoto: null, productLink: '', category: 'top', resultImage: null, lookItems: [], caption: '', autoSaved: false };
 }
@@ -234,9 +235,10 @@ export function useTryOnState() {
       const { error } = await supabase.from('tryon_posts').insert({ user_id: user!.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false, product_urls: getAllUrls() });
       if (error) throw error;
       setAutoSaved(true);
-      // Persist the uploaded URL (small string) so result survives navigation
+      // Persist the uploaded URL (small string) so result survives navigation & tab close
       setResultImage(resultUrl);
       persistState({ autoSaved: true, resultImage: resultUrl });
+      try { localStorage.setItem(TRYON_RESULT_KEY, resultUrl); } catch { /* ignore */ }
       trackEvent('tryon_saved');
       toast({ title: 'Saved to Profile', description: 'Your Try-On is saved privately.' });
     } catch (err: unknown) { console.error('Auto-save failed:', err); }
@@ -351,7 +353,7 @@ export function useTryOnState() {
     setProductLink(''); setLookItems([]); setClothingSaved(false); setSavedToItems(false);
     setShowPostUI(false); setShowLookItems(false); setLayerHistory([]);
     setSelectedQuickPick(null);
-    try { sessionStorage.removeItem(TRYON_STATE_KEY); } catch { /* ignore */ }
+    try { sessionStorage.removeItem(TRYON_STATE_KEY); localStorage.removeItem(TRYON_RESULT_KEY); } catch { /* ignore */ }
   };
 
   const handleAddAccessory = async (accessoryPhoto: string, accessoryCategory: string | null) => {

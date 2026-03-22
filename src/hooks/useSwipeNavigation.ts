@@ -20,6 +20,8 @@ export function useSwipeNavigation() {
   );
 
   const onTouchStart = useCallback((e: React.TouchEvent) => {
+    // Ignore multi-touch (pinch zoom) — only track single-finger swipes
+    if (e.touches.length > 1) { touchStart.current = null; return; }
     const t = e.touches[0];
     touchStart.current = { x: t.clientX, y: t.clientY, t: Date.now() };
   }, []);
