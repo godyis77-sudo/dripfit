@@ -160,7 +160,7 @@ const PostCard = ({
           {/* Vote bar overlay */}
           <div className="absolute bottom-0 left-0 right-0 px-1 pb-1 pt-0.5 bg-gradient-to-t from-black/60 to-transparent" onClick={(e) => e.stopPropagation()}>
             <div className="flex gap-1">
-              {VOTE_OPTIONS.map(v => {
+              {VOTE_OPTIONS.filter(v => v.key !== 'buy_no').map(v => {
                 const active = v.key === 'keep_shopping' ? isInCart(post.id) : (votes[post.id] || []).includes(v.key);
                 return (
                   <motion.button
