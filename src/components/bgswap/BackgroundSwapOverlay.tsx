@@ -245,7 +245,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] bg-[hsl(var(--background))] flex flex-col"
+      className="fixed inset-0 z-[100] bg-[hsl(var(--background))] flex flex-col overflow-hidden"
     >
       {/* Close button */}
       <button
@@ -258,7 +258,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       </button>
 
       {/* Preview area */}
-      <div className="flex-1 relative flex items-center justify-center overflow-hidden min-h-0">
+      <div className="flex-1 relative flex items-center justify-center overflow-hidden min-h-[30dvh]">
         {removing ? (
           <div className="flex flex-col items-center gap-3">
             <div className="relative h-16 w-16">
@@ -284,7 +284,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
 
       {/* Action bar */}
       {transparentSubject && (
-        <div className="flex gap-2 px-4 py-2">
+        <div className="shrink-0 flex gap-2 px-4 py-2">
           <button
             onClick={handleShare}
             disabled={sharing}
@@ -305,9 +305,9 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       )}
 
       {/* Background picker */}
-      <div className="bg-card/90 backdrop-blur-xl border-t border-border rounded-t-2xl pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      <div className="shrink-0 flex max-h-[52dvh] min-h-[220px] flex-col bg-card/90 backdrop-blur-xl border-t border-border rounded-t-2xl pb-[max(1rem,env(safe-area-inset-bottom))]">
         {/* Search bar + category tabs */}
-        <div className="px-3 pt-2.5 pb-1 flex items-center gap-2">
+        <div className="shrink-0 px-3 pt-2.5 pb-1 flex items-center gap-2">
           <button
             onClick={() => {
               setShowSearch(s => !s);
@@ -358,33 +358,34 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         </div>
 
         {/* Background grid */}
-        <div className="flex gap-1.5 overflow-x-auto px-3 pb-2 pt-1 scrollbar-hide">
+        <div className="flex-1 min-h-0 overflow-y-auto px-3 pb-2 pt-1">
           {displayItems ? (
             // Search results
             displayItems.length > 0 ? (
-              displayItems.map(photo => {
-                const selected = selectedBgId === photo.id;
-                return (
-                  <button
-                    key={photo.id}
-                    onClick={() => handleSelectSearchPhoto(photo)}
-                    className={`shrink-0 relative rounded-lg overflow-hidden transition-all ${
-                      selected ? 'ring-2 ring-primary ring-offset-1 ring-offset-card' : 'ring-1 ring-border'
-                    }`}
-                    style={{ width: 72, height: 72 }}
-                  >
-                    <img
-                      src={photo.thumb}
-                      alt={photo.photographer}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-1 py-0.5">
-                      <p className="text-[7px] text-white/70 truncate">📷 {photo.photographer}</p>
-                    </div>
-                  </button>
-                );
-              })
+              <div className="grid grid-cols-4 gap-1.5">
+                {displayItems.map(photo => {
+                  const selected = selectedBgId === photo.id;
+                  return (
+                    <button
+                      key={photo.id}
+                      onClick={() => handleSelectSearchPhoto(photo)}
+                      className={`relative aspect-square w-full rounded-lg overflow-hidden transition-all ${
+                        selected ? 'ring-2 ring-primary ring-offset-1 ring-offset-card' : 'ring-1 ring-border'
+                      }`}
+                    >
+                      <img
+                        src={photo.thumb}
+                        alt={photo.photographer}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-1 py-0.5">
+                        <p className="text-[7px] text-white/70 truncate">📷 {photo.photographer}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             ) : (
               <div className="flex items-center justify-center w-full py-4">
                 <p className="text-[11px] text-muted-foreground">
@@ -394,55 +395,56 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
             )
           ) : (categoriesLoading || backgroundsLoading) ? (
             // Loading state
-            <div className="flex gap-1.5">
+            <div className="grid grid-cols-4 gap-1.5">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="shrink-0 w-[72px] h-[72px] rounded-lg bg-muted animate-pulse" />
+                <div key={i} className="aspect-square w-full rounded-lg bg-muted animate-pulse" />
               ))}
             </div>
           ) : (
             // Category backgrounds
             <>
-              {backgrounds.map(bg => {
-                const isSolid = bg.storage_path.startsWith('solid:');
-                const color = isSolid ? bg.storage_path.replace('solid:', '') : undefined;
-                const selected = selectedBgId === bg.id;
-                // Resolve thumbnail: use thumbnail_path if available, fall back to storage_path
-                const thumbSrc = !isSolid
-                  ? (bg.thumbnail_path?.startsWith('http')
-                      ? bg.thumbnail_path
-                      : bg.storage_path.startsWith('http')
-                        ? bg.storage_path
-                        : bg.thumbnail_path
-                          ? supabase.storage.from('backgrounds-curated').getPublicUrl(bg.thumbnail_path).data.publicUrl
-                          : supabase.storage.from('backgrounds-curated').getPublicUrl(bg.storage_path).data.publicUrl)
-                  : undefined;
-                return (
-                  <button
-                    key={bg.id}
-                    onClick={() => handleSelectBackground(bg)}
-                    className={`shrink-0 relative rounded-lg overflow-hidden transition-all ${
-                      selected ? 'ring-2 ring-primary ring-offset-1 ring-offset-card' : 'ring-1 ring-border'
-                    }`}
-                    style={{ width: 72, height: 72 }}
-                  >
-                    {isSolid ? (
-                      <div className="w-full h-full" style={{ backgroundColor: color }} />
-                    ) : (
-                      <img
-                        src={thumbSrc}
-                        alt={bg.name}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    )}
-                    {bg.is_premium && (
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                        <Crown className="h-4 w-4 text-primary" />
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
+              <div className="grid grid-cols-4 gap-1.5">
+                {backgrounds.map(bg => {
+                  const isSolid = bg.storage_path.startsWith('solid:');
+                  const color = isSolid ? bg.storage_path.replace('solid:', '') : undefined;
+                  const selected = selectedBgId === bg.id;
+                  // Resolve thumbnail: use thumbnail_path if available, fall back to storage_path
+                  const thumbSrc = !isSolid
+                    ? (bg.thumbnail_path?.startsWith('http')
+                        ? bg.thumbnail_path
+                        : bg.storage_path.startsWith('http')
+                          ? bg.storage_path
+                          : bg.thumbnail_path
+                            ? supabase.storage.from('backgrounds-curated').getPublicUrl(bg.thumbnail_path).data.publicUrl
+                            : supabase.storage.from('backgrounds-curated').getPublicUrl(bg.storage_path).data.publicUrl)
+                    : undefined;
+                  return (
+                    <button
+                      key={bg.id}
+                      onClick={() => handleSelectBackground(bg)}
+                      className={`relative aspect-square w-full rounded-lg overflow-hidden transition-all ${
+                        selected ? 'ring-2 ring-primary ring-offset-1 ring-offset-card' : 'ring-1 ring-border'
+                      }`}
+                    >
+                      {isSolid ? (
+                        <div className="w-full h-full" style={{ backgroundColor: color }} />
+                      ) : (
+                        <img
+                          src={thumbSrc}
+                          alt={bg.name}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      )}
+                      {bg.is_premium && (
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                          <Crown className="h-4 w-4 text-primary" />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
               {backgrounds.length === 0 && !backgroundsLoading && (
                 <div className="flex items-center justify-center w-full py-4">
                   <p className="text-[11px] text-muted-foreground">No backgrounds in this category yet</p>
