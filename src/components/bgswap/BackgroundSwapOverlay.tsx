@@ -67,7 +67,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   }, [searchQuery]);
 
   // Fetch categories
-  const { data: categories = [] } = useQuery({
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
     queryKey: ['bg-categories'],
     queryFn: async () => {
       const { data } = await supabase
@@ -79,10 +79,11 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
     staleTime: 60 * 60 * 1000,
   });
 
-  // Fetch backgrounds for active category
+  // Auto-select first category with backgrounds when categories load
   const activeCategoryId = useMemo(() => categories.find(c => c.slug === activeCategory)?.id, [categories, activeCategory]);
 
-  const { data: backgrounds = [] } = useQuery({
+  // Fetch backgrounds for active category
+  const { data: backgrounds = [], isLoading: backgroundsLoading } = useQuery({
     queryKey: ['bg-items', activeCategoryId],
     queryFn: async () => {
       if (!activeCategoryId) return [];
@@ -387,6 +388,13 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
                 </p>
               </div>
             )
+          ) : (categoriesLoading || backgroundsLoading) ? (
+            // Loading state
+            <div className="flex gap-1.5">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="shrink-0 w-[72px] h-[72px] rounded-lg bg-muted animate-pulse" />
+              ))}
+            </div>
           ) : (
             // Category backgrounds
             <>
@@ -418,7 +426,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
                   </button>
                 );
               })}
-              {backgrounds.length === 0 && (
+              {backgrounds.length === 0 && !backgroundsLoading && (
                 <div className="flex items-center justify-center w-full py-4">
                   <p className="text-[11px] text-muted-foreground">No backgrounds in this category yet</p>
                 </div>
