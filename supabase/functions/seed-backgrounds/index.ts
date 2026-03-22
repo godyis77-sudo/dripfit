@@ -95,9 +95,9 @@ const PEOPLE_KEYWORDS = [
   "fashion model", "headshot", "wedding", "family", "friends",
 ];
 
-// Minimum image dimensions for a quality full-body backdrop
-const MIN_WIDTH = 800;
-const MIN_HEIGHT = 1000;
+// Minimum image dimensions for a quality full-body backdrop (reject phone-sized images)
+const MIN_WIDTH = 1600;
+const MIN_HEIGHT = 2000;
 
 function looksLikePeoplePhoto(photo: { alt?: string }): boolean {
   const alt = (photo.alt || "").toLowerCase();
