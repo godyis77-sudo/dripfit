@@ -513,7 +513,12 @@ const TryOn = () => {
           <Shield className="h-3 w-3" /> Private by default · delete anytime
         </p>
 
-        {!s.resultImage && !s.hasUnlimitedTryOns && s.remainingTryOns <= FREE_MONTHLY_LIMIT && (
+        {!s.resultImage && !s.hasUnlimitedTryOns && !s.user && (
+          <p className="text-[12px] text-foreground/40 text-center mb-2">
+            {Math.max(0, GUEST_LIFETIME_LIMIT - getGuestTryOnCount())} free try-on{Math.max(0, GUEST_LIFETIME_LIMIT - getGuestTryOnCount()) !== 1 ? 's' : ''} remaining
+          </p>
+        )}
+        {!s.resultImage && !s.hasUnlimitedTryOns && s.user && s.remainingTryOns <= FREE_MONTHLY_LIMIT && (
           <p className="text-[12px] text-foreground/40 text-center mb-2">
             {s.remainingTryOns} free try-on{s.remainingTryOns !== 1 ? 's' : ''} left this month
           </p>
