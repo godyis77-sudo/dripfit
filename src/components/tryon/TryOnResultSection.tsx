@@ -24,6 +24,7 @@ interface LookItem {
 
 interface TryOnResultSectionProps {
   resultImage: string;
+  userPhoto: string | null;
   clothingPhoto: string | null;
   category: string;
   productLink: string;
@@ -61,7 +62,7 @@ const AnimatedCheckmark = () => (
 );
 
 const TryOnResultSection = ({
-  resultImage, clothingPhoto, category, productLink, selectedQuickPick,
+  resultImage, userPhoto, clothingPhoto, category, productLink, selectedQuickPick,
   lookItems, showLookItems, user, isPublic, caption, shared, showPostUI,
   showSuccessOverlay, savedToItems, layerHistory, userGender,
   hasUnlimitedTryOns, addingAccessory,
@@ -197,11 +198,11 @@ const TryOnResultSection = ({
             aria-label="Open try-on result full screen"
           >
             <AnimatePresence mode="wait">
-              {showBeforeAfter && clothingPhoto ? (
+              {showBeforeAfter && userPhoto ? (
                 <motion.div key="before-after" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-2 gap-0">
                   <div className="relative">
-                    <img src={clothingPhoto} alt="Clothing item" className="w-full aspect-[3/4] object-cover" />
-                    <span className="absolute top-2 left-2 text-[9px] font-bold uppercase tracking-wider bg-black/60 text-white px-2 py-0.5 rounded-md">Item</span>
+                    <img src={userPhoto} alt="Your photo" className="w-full aspect-[3/4] object-cover" />
+                    <span className="absolute top-2 left-2 text-[9px] font-bold uppercase tracking-wider bg-black/60 text-white px-2 py-0.5 rounded-md">Before</span>
                   </div>
                   <div className="relative">
                     <img src={resultImage} alt="Try-on result" className="w-full aspect-[3/4] object-cover" />
@@ -215,7 +216,7 @@ const TryOnResultSection = ({
           </button>
 
           {/* Before/After toggle */}
-          {clothingPhoto && (
+          {userPhoto && (
             <button
               onClick={(e) => { e.stopPropagation(); setShowBeforeAfter(v => !v); }}
               className="absolute bottom-3 left-3 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold active:scale-95 transition-transform"

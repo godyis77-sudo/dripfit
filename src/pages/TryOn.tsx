@@ -473,6 +473,7 @@ const TryOn = () => {
             )}
             <TryOnResultSection
               resultImage={s.resultImage}
+              userPhoto={s.userPhoto}
               clothingPhoto={s.clothingPhoto}
               category={s.category}
               productLink={s.productLink}
