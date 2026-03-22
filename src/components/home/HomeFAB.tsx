@@ -18,7 +18,7 @@ const HomeFAB = forwardRef<HTMLDivElement>((_, ref) => {
   ];
 
   return createPortal(
-    <div className="fixed bottom-20 right-5 z-50 lg:right-[calc(50%-195px+20px)]">
+    <div ref={ref} className="fixed bottom-20 right-5 z-50 lg:right-[calc(50%-195px+20px)]">
       <AnimatePresence>
         {fabOpen && (
           <motion.div
