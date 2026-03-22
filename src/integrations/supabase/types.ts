@@ -59,6 +59,98 @@ export type Database = {
         }
         Relationships: []
       }
+      background_categories: {
+        Row: {
+          created_at: string | null
+          icon: string | null
+          id: string
+          is_seasonal: boolean | null
+          name: string
+          season_end: string | null
+          season_start: string | null
+          slug: string
+          sort_order: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          is_seasonal?: boolean | null
+          name: string
+          season_end?: string | null
+          season_start?: string | null
+          slug: string
+          sort_order?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          is_seasonal?: boolean | null
+          name?: string
+          season_end?: string | null
+          season_start?: string | null
+          slug?: string
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
+      backgrounds: {
+        Row: {
+          category_id: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          is_premium: boolean | null
+          name: string
+          photographer: string | null
+          source: string | null
+          source_id: string | null
+          storage_path: string
+          tags: string[] | null
+          thumbnail_path: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_premium?: boolean | null
+          name: string
+          photographer?: string | null
+          source?: string | null
+          source_id?: string | null
+          storage_path: string
+          tags?: string[] | null
+          thumbnail_path?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_premium?: boolean | null
+          name?: string
+          photographer?: string | null
+          source?: string | null
+          source_id?: string | null
+          storage_path?: string
+          tags?: string[] | null
+          thumbnail_path?: string | null
+          usage_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backgrounds_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "background_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       body_scans: {
         Row: {
           bust_max: number | null
@@ -722,6 +814,39 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_composites: {
+        Row: {
+          background_id: string | null
+          background_source: string | null
+          created_at: string | null
+          id: string
+          shared: boolean | null
+          storage_path: string
+          tryon_result_id: string | null
+          user_id: string
+        }
+        Insert: {
+          background_id?: string | null
+          background_source?: string | null
+          created_at?: string | null
+          id?: string
+          shared?: boolean | null
+          storage_path: string
+          tryon_result_id?: string | null
+          user_id: string
+        }
+        Update: {
+          background_id?: string | null
+          background_source?: string | null
+          created_at?: string | null
+          id?: string
+          shared?: boolean | null
+          storage_path?: string
+          tryon_result_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       saved_items: {
         Row: {
           brand: string | null
@@ -1063,6 +1188,33 @@ export type Database = {
           count?: number
           daily_key?: string | null
           month_key?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_backgrounds: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string | null
+          storage_path: string
+          thumbnail_path: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name?: string | null
+          storage_path: string
+          thumbnail_path?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string | null
+          storage_path?: string
+          thumbnail_path?: string | null
           user_id?: string
         }
         Relationships: []
