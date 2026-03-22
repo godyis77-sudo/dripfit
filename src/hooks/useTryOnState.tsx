@@ -242,13 +242,23 @@ export function useTryOnState() {
     } catch (err: unknown) { console.error('Auto-save failed:', err); }
   };
 
+  const [showAuthWall, setShowAuthWall] = useState(false);
+  const [authWallReason, setAuthWallReason] = useState<'guest_limit' | 'daily_limit'>('guest_limit');
+
   const checkUsageLimit = async (): Promise<boolean> => {
     if (hasUnlimitedTryOns) return true;
     if (user) {
       const count = await getServerTryOnCount(supabase, user.id);
       setServerCount(count);
       if (count >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return false; }
-    } else if (getMonthlyTryOnCount() >= FREE_MONTHLY_LIMIT) { setShowPremiumGate(true); return false; }
+    } else {
+      // Guest mode — check local count
+      if (!guestHasRemainingTryOns()) {
+        setAuthWallReason('guest_limit');
+        setShowAuthWall(true);
+        return false;
+      }
+    }
     return true;
   };
 
@@ -258,7 +268,7 @@ export function useTryOnState() {
       await incrementServerTryOnCount(supabase, user.id);
       setServerCount(prev => (prev ?? 0) + 1);
     } else {
-      incrementTryOnCount();
+      incrementGuestTryOnCount();
     }
   };
 
