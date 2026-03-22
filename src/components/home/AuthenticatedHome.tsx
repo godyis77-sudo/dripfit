@@ -124,7 +124,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           transition={{ delay: 0.18 }}
           className="mb-3"
         >
-          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
             {PRICE_FILTERS.map((filter, idx) => (
               <button
                 key={filter.label}

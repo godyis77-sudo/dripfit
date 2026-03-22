@@ -19,7 +19,7 @@ const CommunityFilterTabs = ({ filter, onFilterChange }: CommunityFilterTabsProp
   const [similarFitTooltip, setSimilarFitTooltip] = useState(false);
 
   return (
-    <div className="flex border-b border-border mb-4 overflow-x-auto no-scrollbar relative">
+    <div className="flex border-b border-border mb-4 overflow-x-auto no-scrollbar relative" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
       {TABS.map(f => (
         <button
           key={f.key}

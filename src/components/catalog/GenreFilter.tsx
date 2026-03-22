@@ -8,7 +8,7 @@ interface GenreFilterProps {
 const GenreFilter = ({ selectedGenre, onGenreChange }: GenreFilterProps) => (
   <div className="mb-3">
     <p className="text-[12px] font-bold text-foreground/70 uppercase tracking-wider mb-1.5">Genre</p>
-    <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
+    <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }} onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
       <button
         onClick={() => onGenreChange(null)}
         className={`shrink-0 pill ${!selectedGenre ? 'pill-active' : ''}`}

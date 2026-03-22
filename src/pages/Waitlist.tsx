@@ -309,7 +309,7 @@ const Waitlist = () => {
         </div>
 
         {/* Carousel — full bleed on mobile */}
-        <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 pl-4 pr-4 sm:pl-8 sm:pr-8 md:max-w-4xl md:mx-auto md:grid md:grid-cols-3 md:overflow-visible md:px-8">
+        <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 pl-4 pr-4 sm:pl-8 sm:pr-8 md:max-w-4xl md:mx-auto md:grid md:grid-cols-3 md:overflow-visible md:px-8" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
           {FEATURES.map((f, i) => (
             <FadeUp key={f.title} delay={i * 0.08} className="min-w-[78vw] max-w-[82vw] sm:min-w-[260px] md:min-w-0 snap-start flex-shrink-0 md:flex-shrink h-[80vh] md:h-auto">
               <div className="relative bg-secondary border border-border rounded-2xl overflow-hidden h-full flex flex-col group hover:border-primary/30 transition-all">
