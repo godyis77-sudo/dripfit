@@ -378,6 +378,36 @@ export type Database = {
         }
         Relationships: []
       }
+      guest_sessions: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          guest_uuid: string
+          id: string
+          migrated_to_user: string | null
+          session_data: Json | null
+          tryon_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          guest_uuid: string
+          id?: string
+          migrated_to_user?: string | null
+          session_data?: Json | null
+          tryon_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          guest_uuid?: string
+          id?: string
+          migrated_to_user?: string | null
+          session_data?: Json | null
+          tryon_count?: number | null
+        }
+        Relationships: []
+      }
       payout_requests: {
         Row: {
           amount_cents: number
@@ -498,6 +528,7 @@ export type Database = {
           scraped_at: string | null
           style_genre: string | null
           tags: string[] | null
+          tryon_ready: boolean | null
           updated_at: string
         }
         Insert: {
@@ -521,6 +552,7 @@ export type Database = {
           scraped_at?: string | null
           style_genre?: string | null
           tags?: string[] | null
+          tryon_ready?: boolean | null
           updated_at?: string
         }
         Update: {
@@ -544,6 +576,7 @@ export type Database = {
           scraped_at?: string | null
           style_genre?: string | null
           tags?: string[] | null
+          tryon_ready?: boolean | null
           updated_at?: string
         }
         Relationships: []
@@ -1016,16 +1049,19 @@ export type Database = {
       tryon_usage: {
         Row: {
           count: number
+          daily_key: string | null
           month_key: string
           user_id: string
         }
         Insert: {
           count?: number
+          daily_key?: string | null
           month_key: string
           user_id: string
         }
         Update: {
           count?: number
+          daily_key?: string | null
           month_key?: string
           user_id?: string
         }
@@ -1208,6 +1244,7 @@ export type Database = {
         Args: { p_code: string; p_email: string }
         Returns: boolean
       }
+      cleanup_expired_guest_sessions: { Args: never; Returns: undefined }
       get_creator_month_count: {
         Args: { p_creator_id: string; p_month_key: string }
         Returns: number
