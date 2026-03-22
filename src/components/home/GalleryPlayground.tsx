@@ -7,6 +7,7 @@ import { trackEvent } from '@/lib/analytics';
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 import BrandLogo from '@/components/ui/BrandLogo';
 import HomeFAB from '@/components/home/HomeFAB';
+import DemoTryOnSection from '@/components/home/DemoTryOnSection';
 import ProductPreviewModal from '@/components/ui/ProductPreviewModal';
 
 const HERO_CATEGORIES = [
