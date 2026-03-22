@@ -372,7 +372,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
           ) : (
             <canvas
               ref={el => {
-                if (el && transparentSubject) compositePreview(el, transparentSubject, selectedBgUrl, selectedBgColor, subjectScale);
+                if (el && transparentSubject) compositePreview(el, transparentSubject, selectedBgUrl, selectedBgColor, subjectScale, offsetX, offsetY);
               }}
               width={1080}
               height={1920}
