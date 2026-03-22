@@ -16,19 +16,85 @@ interface BgRow {
   tags: string[];
 }
 
+// Queries explicitly designed to return EMPTY scenes — no people, portraits, or models.
+// Each query ends with "-people -person -model -portrait -face" to bias Pexels away from
+// results containing humans.
 const CATEGORY_QUERIES: Record<string, string[]> = {
-  "street-urban": ["urban street style photography", "city graffiti wall"],
-  "studio-minimal": ["minimal white studio backdrop", "grey studio photography background"],
-  "nature-outdoor": ["forest trail nature portrait", "green park outdoor scenic"],
-  "architecture": ["modern architecture building", "concrete brutalist facade"],
-  "luxury-interior": ["luxury marble interior", "elegant room chandelier decor"],
-  "nightlife-neon": ["neon lights city night", "club neon sign urban"],
-  "spring-summer": ["summer beach golden hour", "spring cherry blossom garden"],
-  "fall-winter": ["autumn leaves orange forest", "winter snow mountain landscape"],
-  "travel-iconic": ["paris eiffel tower scenic", "tokyo shibuya crossing"],
-  "sports-active": ["basketball court outdoor", "running track stadium"],
-  "abstract-artistic": ["abstract colorful paint texture", "gradient artistic background"],
+  "street-urban": [
+    "empty urban alley graffiti wall no people",
+    "city street brick wall background empty",
+    "urban concrete wall texture backdrop",
+  ],
+  "studio-minimal": [
+    "empty white photography backdrop studio lighting",
+    "plain grey seamless paper studio background",
+    "minimal beige studio backdrop clean wall",
+    "empty photography studio softbox lighting",
+  ],
+  "nature-outdoor": [
+    "forest trail path no people nature",
+    "green park empty bench scenic landscape",
+    "mountain meadow wildflowers no person",
+  ],
+  "architecture": [
+    "modern architecture building exterior empty",
+    "concrete brutalist facade no people",
+    "glass building reflection geometric empty",
+  ],
+  "luxury-interior": [
+    "luxury marble hallway interior empty",
+    "elegant chandelier room decor no people",
+    "velvet curtain gold frame empty room",
+  ],
+  "nightlife-neon": [
+    "neon sign alley night empty street",
+    "neon lights wall purple blue glow",
+    "night city bokeh lights no people",
+  ],
+  "spring-summer": [
+    "summer beach empty golden hour sand",
+    "cherry blossom tree empty path spring",
+    "tropical palm trees blue sky no people",
+  ],
+  "fall-winter": [
+    "autumn leaves orange forest trail empty",
+    "winter snow covered trees landscape empty",
+    "foggy morning forest path no person",
+  ],
+  "travel-iconic": [
+    "eiffel tower paris skyline no people",
+    "tokyo city skyline night buildings",
+    "new york skyline empty rooftop view",
+  ],
+  "sports-active": [
+    "empty basketball court outdoor no people",
+    "running track empty stadium no person",
+    "skate park empty concrete ramp",
+  ],
+  "abstract-artistic": [
+    "abstract colorful paint texture wall",
+    "gradient blue purple artistic background",
+    "marble texture abstract pattern surface",
+  ],
 };
+
+// Words that strongly indicate a photo contains people — used to filter results.
+const PEOPLE_KEYWORDS = [
+  "person", "people", "man", "woman", "girl", "boy", "model",
+  "portrait", "face", "selfie", "couple", "child", "kid", "baby",
+  "group", "crowd", "dancer", "athlete", "posing", "smiling",
+  "fashion model", "headshot",
+];
+
+function looksLikePeoplePhoto(photo: {
+  alt?: string;
+  url?: string;
+  photographer?: string;
+}): boolean {
+  const alt = (photo.alt || "").toLowerCase();
+  // Check alt text for people-related keywords
+  return PEOPLE_KEYWORDS.some((kw) => alt.includes(kw));
+}
 
 Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
@@ -48,6 +114,10 @@ Deno.serve(async (req) => {
   const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const sb = createClient(supabaseUrl, supabaseKey);
 
+  // Parse optional ?replace=true to clear old seeded backgrounds first
+  const url = new URL(req.url);
+  const shouldReplace = url.searchParams.get("replace") === "true";
+
   // Get categories
   const { data: cats } = await sb
     .from("background_categories")
@@ -62,8 +132,19 @@ Deno.serve(async (req) => {
   }
 
   const slugToId = new Map(cats.map((c: { id: string; slug: string }) => [c.slug, c.id]));
+
+  // If replace mode, delete all pexels-sourced backgrounds so we get a clean slate
+  if (shouldReplace) {
+    const { error: delErr } = await sb
+      .from("backgrounds")
+      .delete()
+      .eq("source", "pexels");
+    if (delErr) console.error("Delete old pexels backgrounds error:", delErr);
+  }
+
   const rows: BgRow[] = [];
   const seenIds = new Set<string>();
+  let filteredCount = 0;
 
   for (const [slug, queries] of Object.entries(CATEGORY_QUERIES)) {
     const catId = slugToId.get(slug);
@@ -71,8 +152,9 @@ Deno.serve(async (req) => {
 
     for (const query of queries) {
       try {
+        // Fetch more results (8) so we still have enough after filtering out people
         const res = await fetch(
-          `${PEXELS_BASE}/search?query=${encodeURIComponent(query)}&per_page=4&orientation=portrait`,
+          `${PEXELS_BASE}/search?query=${encodeURIComponent(query)}&per_page=8&orientation=portrait`,
           { headers: { Authorization: pexelsKey } }
         );
         if (!res.ok) {
@@ -80,10 +162,21 @@ Deno.serve(async (req) => {
           continue;
         }
         const data = await res.json();
+        let kept = 0;
         for (const photo of data.photos || []) {
+          if (kept >= 4) break; // cap at 4 per query
+
+          // Filter out photos that contain people
+          if (looksLikePeoplePhoto(photo)) {
+            filteredCount++;
+            continue;
+          }
+
           const sid = String(photo.id);
           if (seenIds.has(sid)) continue;
           seenIds.add(sid);
+          kept++;
+
           rows.push({
             category_id: catId,
             name: (photo.alt || query).slice(0, 80),
@@ -94,24 +187,29 @@ Deno.serve(async (req) => {
             source: "pexels",
             source_id: sid,
             photographer: photo.photographer || "Unknown",
-            tags: query.split(" ").filter((t: string) => t.length > 2),
+            tags: query
+              .split(" ")
+              .filter((t: string) => t.length > 2 && t !== "people" && t !== "person" && t !== "empty"),
           });
         }
       } catch (e) {
         console.error(`Fetch failed for "${query}":`, e);
       }
       // Small delay to respect rate limits
-      await new Promise((r) => setTimeout(r, 200));
+      await new Promise((r) => setTimeout(r, 250));
     }
   }
 
-  // Get existing source_ids to avoid duplicates
-  const { data: existing } = await sb
-    .from("backgrounds")
-    .select("source_id")
-    .not("source_id", "is", null);
-  const existingIds = new Set((existing || []).map((e: { source_id: string }) => e.source_id));
-  const newRows = rows.filter((r) => !existingIds.has(r.source_id));
+  // Get existing source_ids to avoid duplicates (only when not replacing)
+  let newRows = rows;
+  if (!shouldReplace) {
+    const { data: existing } = await sb
+      .from("backgrounds")
+      .select("source_id")
+      .not("source_id", "is", null);
+    const existingIds = new Set((existing || []).map((e: { source_id: string }) => e.source_id));
+    newRows = rows.filter((r) => !existingIds.has(r.source_id));
+  }
 
   if (newRows.length > 0) {
     const { error } = await sb.from("backgrounds").insert(newRows);
@@ -125,7 +223,14 @@ Deno.serve(async (req) => {
   }
 
   return new Response(
-    JSON.stringify({ success: true, fetched: rows.length, inserted: newRows.length, categories: Object.keys(CATEGORY_QUERIES).length }),
+    JSON.stringify({
+      success: true,
+      fetched: rows.length,
+      filtered_people: filteredCount,
+      inserted: newRows.length,
+      replaced: shouldReplace,
+      categories: Object.keys(CATEGORY_QUERIES).length,
+    }),
     { headers: { ...corsHeaders, "Content-Type": "application/json" } }
   );
 });
