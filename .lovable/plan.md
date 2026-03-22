@@ -15,7 +15,7 @@
 8. ~~**Profile tab truncation**~~ ✅ — Icons always visible, labels hidden below 360px via `hidden min-[360px]:inline`. Tabs enforced to min-h-[44px].
 9. ~~**Authenticated Home density**~~ ✅ — Gender nudge and scan upsell compacted to single-line banners. Quick actions grid spacing tightened.
 
-## Phase 4: Polish & Feedback
-10. **Pull-to-refresh** — Add pull-to-refresh on Community feed and product grids
-11. **Empty state improvements** — Better illustrations and CTAs for zero-data states
-12. **Skeleton consistency** — Use unified Skeleton components instead of inline `skeleton-gold` classes
+## Phase 4: Polish & Feedback ✅
+10. ~~**Pull-to-refresh**~~ ✅ — PullToRefresh wrapper added to Community feed (both feed tabs and shop tab)
+11. ~~**Empty state improvements**~~ ✅ — Unified EmptyIcon component, added GenericEmptyState export, cleaner copy and sizing
+12. ~~**Skeleton consistency**~~ ✅ — CategoryProductGrid skeletons now match ProductCardSkeletons structure (border, info rows, spacing)
