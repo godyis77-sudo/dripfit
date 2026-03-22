@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Share2, Save, Loader2, Upload, Search, Lock, Crown } from 'lucide-react';
+import { X, Share2, Save, Loader2, Search, Crown } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -8,7 +8,6 @@ import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import { useBackgroundRemoval } from './useBackgroundRemoval';
 import { useCanvasCompositor } from './useCanvasCompositor';
-// Share utility - uses Web Share API or downloads
 
 interface BackgroundSwapOverlayProps {
   resultImageUrl: string;
@@ -31,6 +30,15 @@ interface CategoryItem {
   icon: string | null;
 }
 
+interface SearchPhoto {
+  id: string;
+  url: string;
+  thumb: string;
+  photographer: string;
+  source: 'pexels' | 'unsplash';
+  sourceUrl: string;
+}
+
 const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverlayProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -45,6 +53,18 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   const [activeCategory, setActiveCategory] = useState<string>('solid-colors');
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
+
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Debounce search
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQuery(searchQuery.trim()), 400);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
 
   // Fetch categories
   const { data: categories = [] } = useQuery({
@@ -78,6 +98,20 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
     staleTime: 5 * 60 * 1000,
   });
 
+  // Search backgrounds via edge function
+  const { data: searchResults = [], isFetching: searching } = useQuery({
+    queryKey: ['bg-search', debouncedQuery],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('search-backgrounds', {
+        body: { query: debouncedQuery, perPage: 20 },
+      });
+      if (error) throw error;
+      return (data?.results || []) as SearchPhoto[];
+    },
+    enabled: debouncedQuery.length >= 2,
+    staleTime: 5 * 60 * 1000,
+  });
+
   // Remove background on mount
   useEffect(() => {
     let cancelled = false;
@@ -107,6 +141,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       return;
     }
     setSelectedBgId(bg.id);
+    setShowSearch(false);
     trackEvent('bg_background_selected', { bg_id: bg.id, source: bg.source });
 
     if (bg.storage_path.startsWith('solid:')) {
@@ -119,6 +154,13 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
     }
   }, [user, toast]);
 
+  const handleSelectSearchPhoto = useCallback((photo: SearchPhoto) => {
+    setSelectedBgId(photo.id);
+    setSelectedBgUrl(photo.url);
+    setSelectedBgColor('#0A0A0A');
+    trackEvent('bg_search_photo_selected', { photo_id: photo.id, source: photo.source });
+  }, []);
+
   const handleShare = useCallback(async () => {
     if (!transparentSubject) return;
     setSharing(true);
@@ -129,7 +171,6 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         backgroundColor: selectedBgColor,
         addWatermark: true,
       });
-      // Share via Web Share API or download
       const res = await fetch(dataUrl);
       const blob = await res.blob();
       const file = new File([blob], 'dripfit-look.jpg', { type: 'image/jpeg' });
@@ -163,7 +204,6 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         backgroundColor: selectedBgColor,
         addWatermark: true,
       });
-      // Convert to blob
       const res = await fetch(dataUrl);
       const blob = await res.blob();
       const path = `${user.id}/${Date.now()}.jpg`;
@@ -173,7 +213,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       await supabase.from('saved_composites').insert({
         user_id: user.id,
         background_id: selectedBgId,
-        background_source: selectedBgUrl ? 'curated' : 'solid',
+        background_source: selectedBgUrl ? 'search' : 'solid',
         storage_path: path,
       });
       trackEvent('bg_composite_saved');
@@ -193,12 +233,14 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
     return () => { document.body.style.overflow = prev; };
   }, []);
 
+  const displayItems = showSearch && debouncedQuery.length >= 2 ? searchResults : null;
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] bg-[#0A0A0A] flex flex-col"
+      className="fixed inset-0 z-[100] bg-[hsl(var(--background))] flex flex-col"
     >
       {/* Close button */}
       <button
@@ -207,10 +249,10 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         style={{ top: 'max(1rem, env(safe-area-inset-top, 1rem))' }}
         aria-label="Close background swap"
       >
-        <X className="h-5 w-5 text-white" />
+        <X className="h-5 w-5 text-foreground" />
       </button>
 
-      {/* Preview area (top 65%) */}
+      {/* Preview area */}
       <div className="flex-1 relative flex items-center justify-center overflow-hidden" style={{ minHeight: '60%' }}>
         {removing ? (
           <div className="flex flex-col items-center gap-3">
@@ -218,11 +260,11 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
               <div className="absolute inset-0 rounded-full border-2 border-primary/30 animate-ping" />
               <div className="absolute inset-0 rounded-full border-2 border-primary border-t-transparent animate-spin" />
             </div>
-            <p className="text-sm text-white/80 font-medium">Removing background…</p>
-            <div className="w-48 h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <p className="text-sm text-foreground/80 font-medium">Removing background…</p>
+            <div className="w-48 h-1.5 bg-muted rounded-full overflow-hidden">
               <div className="h-full bg-primary rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
             </div>
-            <p className="text-[10px] text-white/40">{progress}%</p>
+            <p className="text-[10px] text-muted-foreground">{progress}%</p>
           </div>
         ) : (
           <canvas
@@ -249,7 +291,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center justify-center gap-2 h-11 px-5 rounded-xl border border-white/20 text-white font-bold text-sm active:scale-[0.97] transition-transform disabled:opacity-50"
+            className="flex items-center justify-center gap-2 h-11 px-5 rounded-xl border border-border text-foreground font-bold text-sm active:scale-[0.97] transition-transform disabled:opacity-50"
           >
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             Save
@@ -257,63 +299,131 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         </div>
       )}
 
-      {/* Background picker (bottom ~35%) */}
-      <div className="bg-[#1C1C1C]/90 backdrop-blur-xl border-t border-white/5 rounded-t-2xl" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
-        {/* Category tabs */}
-        <div className="flex gap-1 overflow-x-auto px-3 py-2.5 scrollbar-hide">
-          {categories.map(cat => (
-            <button
-              key={cat.slug}
-              onClick={() => {
-                setActiveCategory(cat.slug);
-                trackEvent('bg_category_selected', { category: cat.slug });
-              }}
-              className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors ${
-                activeCategory === cat.slug
-                  ? 'bg-primary/20 text-primary border border-primary/30'
-                  : 'text-white/60 border border-white/10 hover:border-white/20'
-              }`}
-            >
-              <span className="text-sm">{cat.icon}</span>
-              <span className="whitespace-nowrap">{cat.name}</span>
-            </button>
-          ))}
+      {/* Background picker */}
+      <div className="bg-card/90 backdrop-blur-xl border-t border-border rounded-t-2xl" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+        {/* Search bar + category tabs */}
+        <div className="px-3 pt-2.5 pb-1 flex items-center gap-2">
+          <button
+            onClick={() => {
+              setShowSearch(s => !s);
+              if (!showSearch) setTimeout(() => searchInputRef.current?.focus(), 100);
+            }}
+            className={`shrink-0 h-8 w-8 rounded-lg flex items-center justify-center transition-colors ${
+              showSearch ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'
+            }`}
+          >
+            <Search className="h-4 w-4" />
+          </button>
+
+          {showSearch ? (
+            <div className="flex-1 relative">
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Search backgrounds… (e.g. Tokyo, studio, beach)"
+                className="w-full h-8 rounded-lg bg-muted border border-border px-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+              {searching && (
+                <Loader2 className="absolute right-2 top-2 h-4 w-4 animate-spin text-muted-foreground" />
+              )}
+            </div>
+          ) : (
+            <div className="flex-1 flex gap-1 overflow-x-auto scrollbar-hide">
+              {categories.map(cat => (
+                <button
+                  key={cat.slug}
+                  onClick={() => {
+                    setActiveCategory(cat.slug);
+                    trackEvent('bg_category_selected', { category: cat.slug });
+                  }}
+                  className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors ${
+                    activeCategory === cat.slug
+                      ? 'bg-primary/20 text-primary border border-primary/30'
+                      : 'text-muted-foreground border border-border hover:border-foreground/20'
+                  }`}
+                >
+                  <span className="text-sm">{cat.icon}</span>
+                  <span className="whitespace-nowrap">{cat.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Background grid */}
-        <div className="flex gap-1.5 overflow-x-auto px-3 pb-3 scrollbar-hide">
-          {backgrounds.map(bg => {
-            const isSolid = bg.storage_path.startsWith('solid:');
-            const color = isSolid ? bg.storage_path.replace('solid:', '') : undefined;
-            const selected = selectedBgId === bg.id;
-            return (
-              <button
-                key={bg.id}
-                onClick={() => handleSelectBackground(bg)}
-                className={`shrink-0 relative rounded-lg overflow-hidden transition-all ${
-                  selected ? 'ring-2 ring-primary ring-offset-1 ring-offset-[#1C1C1C]' : 'ring-1 ring-white/10'
-                }`}
-                style={{ width: 72, height: 72 }}
-              >
-                {isSolid ? (
-                  <div className="w-full h-full" style={{ backgroundColor: color }} />
-                ) : (
-                  <div className="w-full h-full bg-muted flex items-center justify-center">
-                    <span className="text-[8px] text-white/30">{bg.name}</span>
-                  </div>
-                )}
-                {bg.is_premium && (
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <Crown className="h-4 w-4 text-primary" />
-                  </div>
-                )}
-              </button>
-            );
-          })}
-          {backgrounds.length === 0 && (
-            <div className="flex items-center justify-center w-full py-4">
-              <p className="text-[11px] text-white/40">No backgrounds in this category yet</p>
-            </div>
+        <div className="flex gap-1.5 overflow-x-auto px-3 pb-3 pt-1 scrollbar-hide">
+          {displayItems ? (
+            // Search results
+            displayItems.length > 0 ? (
+              displayItems.map(photo => {
+                const selected = selectedBgId === photo.id;
+                return (
+                  <button
+                    key={photo.id}
+                    onClick={() => handleSelectSearchPhoto(photo)}
+                    className={`shrink-0 relative rounded-lg overflow-hidden transition-all ${
+                      selected ? 'ring-2 ring-primary ring-offset-1 ring-offset-card' : 'ring-1 ring-border'
+                    }`}
+                    style={{ width: 72, height: 72 }}
+                  >
+                    <img
+                      src={photo.thumb}
+                      alt={photo.photographer}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-1 py-0.5">
+                      <p className="text-[7px] text-white/70 truncate">📷 {photo.photographer}</p>
+                    </div>
+                  </button>
+                );
+              })
+            ) : (
+              <div className="flex items-center justify-center w-full py-4">
+                <p className="text-[11px] text-muted-foreground">
+                  {debouncedQuery.length < 2 ? 'Type at least 2 characters…' : 'No results found'}
+                </p>
+              </div>
+            )
+          ) : (
+            // Category backgrounds
+            <>
+              {backgrounds.map(bg => {
+                const isSolid = bg.storage_path.startsWith('solid:');
+                const color = isSolid ? bg.storage_path.replace('solid:', '') : undefined;
+                const selected = selectedBgId === bg.id;
+                return (
+                  <button
+                    key={bg.id}
+                    onClick={() => handleSelectBackground(bg)}
+                    className={`shrink-0 relative rounded-lg overflow-hidden transition-all ${
+                      selected ? 'ring-2 ring-primary ring-offset-1 ring-offset-card' : 'ring-1 ring-border'
+                    }`}
+                    style={{ width: 72, height: 72 }}
+                  >
+                    {isSolid ? (
+                      <div className="w-full h-full" style={{ backgroundColor: color }} />
+                    ) : (
+                      <div className="w-full h-full bg-muted flex items-center justify-center">
+                        <span className="text-[8px] text-muted-foreground">{bg.name}</span>
+                      </div>
+                    )}
+                    {bg.is_premium && (
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <Crown className="h-4 w-4 text-primary" />
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+              {backgrounds.length === 0 && (
+                <div className="flex items-center justify-center w-full py-4">
+                  <p className="text-[11px] text-muted-foreground">No backgrounds in this category yet</p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
