@@ -74,6 +74,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   const [showOriginal, setShowOriginal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [fullscreenPreview, setFullscreenPreview] = useState(false);
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
