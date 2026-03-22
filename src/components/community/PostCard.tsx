@@ -61,25 +61,6 @@ const PostCard = ({
   const postedCaption = getPostedCaption(localCaption);
   const hasPostedCaption = !!postedCaption;
 
-  const saveCaption = async (value: string, input?: HTMLInputElement | null) => {
-    if (!user) return;
-    const nextCaption = value.trim();
-    const { error } = await supabase
-      .from('tryon_posts')
-      .update({ caption: nextCaption || null })
-      .eq('id', post.id)
-      .eq('user_id', user.id);
-
-    if (error) {
-      toast({ title: 'Could not save caption', variant: 'destructive' });
-      return;
-    }
-
-    setLocalCaption(nextCaption);
-    onCaptionUpdated?.(post.id, nextCaption || null);
-    toast({ title: 'Caption saved' });
-    if (input) input.value = '';
-  };
 
 
   return (
