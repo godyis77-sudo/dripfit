@@ -71,7 +71,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="grid grid-cols-4 gap-1.5 mb-6"
+          className="grid grid-cols-4 gap-1.5 mb-4"
         >
           {[
             {
