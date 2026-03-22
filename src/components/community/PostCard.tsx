@@ -153,7 +153,7 @@ const PostCard = ({
             onError={() => onImageError(post.id)}
           />
           {hasPostedCaption && (
-            <div className="absolute bottom-12 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-2 pt-4 pb-2">
+            <div className="absolute bottom-8 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-2 pt-4 pb-1">
               <p className="text-[11px] font-semibold text-white line-clamp-2 drop-shadow-sm">{postedCaption}</p>
             </div>
           )}
