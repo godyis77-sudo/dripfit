@@ -285,7 +285,8 @@ const TryOnResultSection = ({
           </button>
           <button
             onClick={onSaveToItems}
-            className={`flex flex-col items-center gap-1 py-2.5 rounded-xl border active:scale-[0.96] transition-transform ${savedToItems ? 'bg-primary/5 border-primary/20' : 'bg-card border-border'}`}
+            disabled={savedToItems}
+            className={`flex flex-col items-center gap-1 py-2.5 rounded-xl border transition-transform disabled:opacity-70 disabled:cursor-not-allowed ${savedToItems ? 'bg-primary/5 border-primary/20' : 'bg-card border-border active:scale-[0.96]'}`}
           >
             <Bookmark className={`h-4 w-4 ${savedToItems ? 'text-primary fill-primary' : 'text-foreground/70'}`} />
             <span className={`text-[10px] font-bold ${savedToItems ? 'text-primary' : 'text-foreground'}`}>{savedToItems ? 'Saved' : 'Save'}</span>
