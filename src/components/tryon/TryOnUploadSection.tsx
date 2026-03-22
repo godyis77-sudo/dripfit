@@ -101,10 +101,10 @@ const TryOnUploadSection = ({
                 {/* Photo quality guidance */}
                 <div className="w-full flex items-center justify-center gap-2 my-0.5">
                   <div className="flex flex-col items-center gap-0.5">
-                    <div className="h-7 w-7 rounded-md bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                    <div className="h-7 w-7 rounded-md bg-accent/40 border border-accent flex items-center justify-center">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-accent-foreground" />
                     </div>
-                    <span className="text-[8px] text-emerald-600 font-medium">Full body</span>
+                    <span className="text-[8px] text-accent-foreground font-medium">Full body</span>
                   </div>
                   <div className="flex flex-col items-center gap-0.5">
                     <div className="h-7 w-7 rounded-md bg-destructive/15 border border-destructive/30 flex items-center justify-center">
