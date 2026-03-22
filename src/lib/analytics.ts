@@ -160,7 +160,8 @@ type FunnelEvent =
   | 'gallery_tryon_click'
   | 'gallery_hero_tryon'
   | 'demo_tryon_cta_click'
-  | 'photo_quality_tip_viewed';
+  | 'photo_quality_tip_viewed'
+  | 'drip_card_render_failed';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
