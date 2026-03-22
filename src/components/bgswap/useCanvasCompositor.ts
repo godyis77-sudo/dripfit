@@ -235,18 +235,23 @@ export function useCanvasCompositor() {
     }
     drawBackground(ctx, bgImg, backgroundColor, width, height);
 
+    // Analyze scene scale
+    const { scaleFraction, groundY } = bgImg
+      ? analyzeSceneScale(ctx, width, height)
+      : { scaleFraction: 0.80, groundY: height * 0.95 };
+
     // Analyze background lighting
     const lighting = bgImg
       ? analyzeBackgroundLighting(ctx, width, height)
       : (() => { const c = hexToRgb(backgroundColor); return { ...c, brightness: 0.299 * c.r + 0.587 * c.g + 0.114 * c.b }; })();
 
-    // Draw subject (centered, scaled to 80% height, anchored to bottom)
+    // Draw subject (scene-aware scale, anchored to ground)
     const subjectImg = await loadImage(subjectUrl);
-    const scale = (height * 0.8) / subjectImg.height;
+    const scale = (height * scaleFraction) / subjectImg.height;
     const subW = subjectImg.width * scale;
     const subH = subjectImg.height * scale;
     const subX = (width - subW) / 2;
-    const subY = height - subH - 100;
+    const subY = groundY - subH;
 
     // Soft shadow beneath subject
     ctx.save();
