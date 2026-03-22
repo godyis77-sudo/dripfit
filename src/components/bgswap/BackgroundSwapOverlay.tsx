@@ -388,6 +388,13 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
                 </p>
               </div>
             )
+          ) : (categoriesLoading || backgroundsLoading) ? (
+            // Loading state
+            <div className="flex gap-1.5">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="shrink-0 w-[72px] h-[72px] rounded-lg bg-muted animate-pulse" />
+              ))}
+            </div>
           ) : (
             // Category backgrounds
             <>
@@ -419,7 +426,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
                   </button>
                 );
               })}
-              {backgrounds.length === 0 && (
+              {backgrounds.length === 0 && !backgroundsLoading && (
                 <div className="flex items-center justify-center w-full py-4">
                   <p className="text-[11px] text-muted-foreground">No backgrounds in this category yet</p>
                 </div>
