@@ -425,6 +425,7 @@ TASK — CLOTHING SWAP:
 3. Match Image B exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
 4. Keep Image A person identity (face, body, hair, skin tone, pose). ${bgInstruction}
 5. Keep garment fit realistic with natural wrinkles and shadows.
+6. CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate or turn the model to match Image B's pose/angle. Copy only the garment from Image B, never its pose.
 
 CRITICAL: Do NOT keep any original clothing from Image A. The ONLY clothing in the output must be the garment from Image B.
 
