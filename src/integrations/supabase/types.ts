@@ -667,6 +667,100 @@ export type Database = {
         }
         Relationships: []
       }
+      price_drop_notifications: {
+        Row: {
+          created_at: string
+          drop_percent: number
+          id: string
+          is_read: boolean
+          new_price_cents: number
+          old_price_cents: number
+          user_id: string
+          watch_id: string
+        }
+        Insert: {
+          created_at?: string
+          drop_percent: number
+          id?: string
+          is_read?: boolean
+          new_price_cents: number
+          old_price_cents: number
+          user_id: string
+          watch_id: string
+        }
+        Update: {
+          created_at?: string
+          drop_percent?: number
+          id?: string
+          is_read?: boolean
+          new_price_cents?: number
+          old_price_cents?: number
+          user_id?: string
+          watch_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_drop_notifications_watch_id_fkey"
+            columns: ["watch_id"]
+            isOneToOne: false
+            referencedRelation: "price_watches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      price_watches: {
+        Row: {
+          brand: string | null
+          created_at: string
+          currency: string
+          current_price_cents: number
+          id: string
+          last_checked_at: string | null
+          lowest_price_cents: number
+          original_price_cents: number
+          product_id: string | null
+          product_name: string | null
+          product_url: string | null
+          user_id: string
+        }
+        Insert: {
+          brand?: string | null
+          created_at?: string
+          currency?: string
+          current_price_cents: number
+          id?: string
+          last_checked_at?: string | null
+          lowest_price_cents: number
+          original_price_cents: number
+          product_id?: string | null
+          product_name?: string | null
+          product_url?: string | null
+          user_id: string
+        }
+        Update: {
+          brand?: string | null
+          created_at?: string
+          currency?: string
+          current_price_cents?: number
+          id?: string
+          last_checked_at?: string | null
+          lowest_price_cents?: number
+          original_price_cents?: number
+          product_id?: string | null
+          product_name?: string | null
+          product_url?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_watches_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "product_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_catalog: {
         Row: {
           brand: string
