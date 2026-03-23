@@ -298,13 +298,13 @@ No text/watermark.`;
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const attemptPlan: Array<{ model: string; prompt: string; label: string }> = isIntimateGarment
       ? [
-          { model: "google/gemini-3-pro-image-preview", prompt, label: `${typeLabel}-pro-primary` },
-          { model: "google/gemini-3.1-flash-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-flash2-fallback` },
-          { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-flash-last` },
+          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary` },
+          { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-fallback` },
+          { model: "google/gemini-3.1-flash-image-preview", prompt: fastIntimatePrompt, label: `${typeLabel}-flash-last` },
         ]
       : [
-          { model: "google/gemini-2.5-flash-image", prompt, label: `${typeLabel}-primary` },
-          { model: "google/gemini-2.5-flash-image", prompt: fallbackPrompt, label: `${typeLabel}-retry` },
+          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary` },
+          { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-retry` },
         ];
 
     let resultImage: string | null = null;
