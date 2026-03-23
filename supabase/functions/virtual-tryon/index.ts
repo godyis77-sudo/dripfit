@@ -347,8 +347,11 @@ Deno.serve(async (req) => {
         : "Replace only the clothing area needed for this garment and keep all unrelated body/background details unchanged.";
 
     const identityInstruction = isSwimwearOnly
-      ? "Use Image A as pose, proportions, and scene reference, but do not attempt exact facial identity replication."
+      ? "Use Image A as pose, proportions, and scene reference, but do not attempt exact facial identity replication; prefer neck-down framing or softly de-emphasized face details."
       : "Keep the model's face, body shape, skin tone, hair, and pose identical to Image A.";
+    const swimwearFramingInstruction = isSwimwearOnly
+      ? "- Prefer neck-down framing (or softened face details) while preserving pose and background continuity."
+      : "";
 
     // ── BUILD PROMPT ──
     const safetyNote = isExplicitIntimate
@@ -388,6 +391,7 @@ STYLING RULES:
 - ${garmentSwapScopeInstruction}
 - Match product details exactly: color, fabric texture, cut lines, straps, neckline, hemline, logos, and prints.
 - ${identityInstruction}
+- ${swimwearFramingInstruction}
 - CRITICAL: ${bgInstruction}
 - Realistic fabric drape and shadows that match the scene lighting.
 - Do NOT add extra clothing items not present in the provided garment reference.
@@ -455,9 +459,12 @@ ${garmentSwapScopeInstruction} ${bgFallbackHint}
 ${identityInstruction} Keep result clean and commercially appropriate. No text/watermark.`;
 
     const buildTryOnContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
+      const userImageLabel = isSwimwearOnly
+        ? "\n\n========== IMAGE A — BODY/POSE REFERENCE (do NOT preserve exact face identity) =========="
+        : "\n\n========== IMAGE A — THE PERSON (keep this person's face/body) ==========";
       const content: Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> = [
         { type: "text", text: promptText },
-        { type: "text", text: "\n\n========== IMAGE A — THE PERSON (keep this person's face/body) ==========" },
+        { type: "text", text: userImageLabel },
         { type: "image_url", image_url: { url: userImageInput } },
       ];
 
