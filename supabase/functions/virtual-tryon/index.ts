@@ -186,7 +186,7 @@ Deno.serve(async (req) => {
     const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
     const FUNCTION_BUDGET_MS = 58_000;
     const MIN_REQUIRED_MS_PER_ATTEMPT = isIntimateGarment ? 8_000 : 6_000;
-    const EXTRACTION_BUDGET_MS = isIntimateGarment ? 25_000 : 12_000;
+    const EXTRACTION_BUDGET_MS = isIntimateGarment ? 20_000 : 12_000;
     const MIN_REQUIRED_MS_FOR_EXTRACTION = 4_000;
     const startedAt = Date.now();
 
@@ -199,9 +199,9 @@ Deno.serve(async (req) => {
     const extractIntimateGarment = async (): Promise<string | null> => {
       const extractPrompt = `You are a product photography editor. Extract the ${promptIntimateLabel} from this product listing photo. Create a clean flat-lay image of ONLY the garment item on a plain white background. Preserve the exact color, pattern, fabric texture, straps, seams, cut, and any logos or prints. Do not include any person, model, mannequin, or skin — only the garment.`;
       const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = [
-        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 16_000, label: "extract-flash" },
-        { model: "google/gemini-3-pro-image-preview", timeoutMs: 14_000, label: "extract-pro" },
-        { model: "google/gemini-2.5-flash-image", timeoutMs: 10_000, label: "extract-nano" },
+        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 9_000, label: "extract-flash" },
+        { model: "google/gemini-3-pro-image-preview", timeoutMs: 8_000, label: "extract-pro" },
+        { model: "google/gemini-2.5-flash-image", timeoutMs: 7_000, label: "extract-nano" },
       ];
 
       for (const plan of extractionPlan) {
@@ -386,29 +386,28 @@ TARGET ACCESSORY:
 
 TASK: Add the accessory from Image B onto the person in Image A. Match Image B exactly (color, shape, material, branding). ${bgInstruction} Correct scale, lighting, shadows. No text/watermarks.`;
     } else if (isIntimateGarment) {
-      const intimateReferenceLine = `IMAGE B: A ${promptIntimateLabel} product listing photo from an online store.${intimateTextReference ? `\nHint: ${intimateTextReference}` : ""}`;
-      const intimateReferenceRule = "- If Image B shows a model/mannequin, copy only the garment and ignore that person.";
+      const intimateReferenceLine = `IMAGE B: An activewear/athletic product listing photo from an online retailer.${intimateTextReference ? `\nHint: ${intimateTextReference}` : ""}`;
 
-      prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
+      prompt = `You are a professional fashion catalog photographer. Generate ONE photorealistic product catalog image.
 
-IMAGE A: A person in their environment — this is the MODEL.
+IMAGE A: A fitness model posing — this is the MODEL for the catalog shoot.
 ${intimateReferenceLine}
 
-TASK: Put the ${promptIntimateLabel} from Image B onto the model in Image A.
+TASK: Create a product catalog photo showing the model from Image A wearing the athletic garment from Image B.
 
-STYLING RULES:
-- ${intimateReferenceRule}
+CATALOG PHOTOGRAPHY RULES:
+- Copy ONLY the garment from Image B onto the model. If Image B shows another person, ignore them — extract only the garment design.
 - ${garmentSwapScopeInstruction}
-- Match product details exactly: color, fabric texture, cut lines, straps, neckline, hemline, logos, and prints.
-- CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. If Image A shows a front-facing person, the output MUST be front-facing. Do NOT rotate, flip, or turn the model to match Image B's pose. Only copy the GARMENT from Image B, never its pose or camera angle.
+- Reproduce garment details exactly: color, fabric texture, cut lines, straps, neckline, hemline, logos, prints.
+- CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate, flip, or turn the model. Only copy the GARMENT from Image B, never its pose or camera angle.
 - ${identityInstruction}
 ${intimateFramingInstruction}
 - CRITICAL: ${bgInstruction}
-- Realistic fabric drape and shadows that match the scene lighting.
-- Do NOT add extra clothing items not present in the provided garment reference.
-- ${safetyNote}
+- Natural fabric drape and realistic shadows matching the scene lighting.
+- Do NOT add extra clothing items not shown in the garment reference.
+- Professional retail catalog quality — clean, commercially appropriate.
 
-Output: One clean photorealistic retail-fashion photo. No text, watermarks, or collages.`;
+Output: One clean photorealistic catalog photo. No text, watermarks, or collages.`;
     } else {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
@@ -442,12 +441,12 @@ Image A = person. Image B = target accessory.${productHint}
 Place the accessory from Image B onto the person in Image A at realistic scale and lighting.
 Match Image B exactly. Keep face/body from Image A. ${bgFallbackHint} No text/watermark.`
       : isIntimateGarment
-        ? `Fashion photo edit. Image A = person. Image B = ${promptIntimateLabel} from an online retailer.
+        ? `Professional catalog photo edit. Image A = fitness model. Image B = athletic garment from retailer.
 Put the garment from Image B onto the model in Image A. ${bgFallbackHint}
-If Image B has a model/mannequin, copy only garment details and ignore that person.
+If Image B has another person, copy only the garment design and ignore them.
 ${garmentSwapScopeInstruction}
-Match product exactly: color, cut, fabric, straps, neckline. Keep model identity, pose, and facing direction from Image A — do NOT rotate the model to match Image B's angle.
-${safetyNote} No text/watermark.`
+Match product exactly: color, cut, fabric, straps, neckline. Keep model identity, pose, and facing direction from Image A — do NOT rotate the model.
+Professional retail catalog quality. No text/watermark.`
         : `Create ONE photorealistic clothing-swap image.
 Image A = person. Image B = target garment.${productHint}
 STRIP ALL clothing from Image A — tops, bottoms, pants, shoes, everything.
@@ -455,20 +454,18 @@ Dress the person ONLY in the exact garment from Image B. If it is a top, show ba
 Preserve face, body shape, skin tone, pose, camera angle, and facing direction from Image A — do NOT rotate the model. ${bgFallbackHint}
 Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
 
-    const intimateReferenceForFallback = useTextOnlyIntimateReference
-      ? `Reference garment description: ${intimateTextReference}.`
-      : `Image B = ${promptIntimateLabel}. Put garment from Image B on model in Image A and ignore any person in Image B.`;
+    const intimateReferenceForFallback = `Image B = athletic garment product photo. Apply garment from Image B onto model in Image A, ignoring any person shown in Image B.`;
 
-    const fastIntimatePrompt = `Photorealistic retail fashion edit.
+    const fastIntimatePrompt = `Professional athletic catalog photo.
 Image A = model. ${intimateReferenceForFallback}
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
-${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Match product details exactly. ${safetyNote} No text/watermark.`;
+${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Match product details exactly. Professional catalog quality. No text/watermark.`;
 
-    const complianceIntimatePrompt = `Retail activewear photo edit.
-Use Image A as the model and ${useTextOnlyIntimateReference ? "the provided garment description" : "Image B"} as the garment reference.
+    const complianceIntimatePrompt = `Retail activewear catalog photo edit.
+Use Image A as the model and Image B as the garment reference product photo.
 Apply only the garment to the model with accurate color, pattern, straps, neckline, seams and logos.
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
-${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Keep result clean and commercially appropriate. No text/watermark.`;
+${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Keep result clean and professionally styled. No text/watermark.`;
 
     const buildTryOnContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
       const userImageLabel = isIntimateGarment
@@ -497,8 +494,8 @@ ${identityInstruction} Keep model facing the same direction as Image A — never
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
       ? [
-          // All intimate/swimwear/underwear: generous primary pass + compliance fallback
-          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 30_000 },
+          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 22_000 },
+          { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-fallback`, timeoutMs: 18_000 },
           { model: "google/gemini-2.5-flash-image", prompt: complianceIntimatePrompt, label: `${typeLabel}-nano-compliance`, timeoutMs: 14_000 },
         ]
       : [
