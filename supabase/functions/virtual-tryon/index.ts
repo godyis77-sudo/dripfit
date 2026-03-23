@@ -336,13 +336,13 @@ Deno.serve(async (req) => {
     };
 
     // Retry loop with model + prompt fallback
-    const MAX_ATTEMPTS = isUnderwear ? 4 : 3;
     const MODELS = isUnderwear
       ? [
-          "google/gemini-2.5-flash-image",
-          "google/gemini-2.5-flash-image",
           "google/gemini-3.1-flash-image-preview",
           "google/gemini-2.5-flash-image",
+          "google/gemini-3-pro-image-preview",
+          "google/gemini-2.5-flash-image",
+          "google/gemini-3.1-flash-image-preview",
         ]
       : (isSwimwear || isIntimate)
       ? [
@@ -355,6 +355,7 @@ Deno.serve(async (req) => {
           "google/gemini-3.1-flash-image-preview",
           "google/gemini-3-pro-image-preview",     // fallback model on last attempt
         ];
+    const MAX_ATTEMPTS = Math.max(promptVariants.length, isUnderwear ? 5 : 3);
     let resultImage: string | null = null;
     let lastTextContent = "";
 
