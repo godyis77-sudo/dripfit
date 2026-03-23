@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigationType } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigationType, useParams } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
@@ -92,6 +92,12 @@ const ScrollToTop = () => {
   return null;
 };
 
+/** Redirects /community/:postId → /style-check/:postId preserving the param */
+const CommunityPostRedirect = () => {
+  const { postId } = useParams();
+  return <Navigate to={`/style-check/${postId}`} replace />;
+};
+
 /** Extracts location for AnimatePresence keying */
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -114,7 +120,8 @@ const AnimatedRoutes = () => {
           <Route path="/style-check" element={<PageTransition><Community /></PageTransition>} />
           <Route path="/style-check/:postId" element={<PageTransition><StyleCheckDetail /></PageTransition>} />
           <Route path="/community" element={<Navigate to="/style-check" replace />} />
-          <Route path="/community/:postId" element={<Navigate to="/style-check" replace />} />
+          <Route path="/community/:postId" element={<CommunityPostRedirect />} />
+          <Route path="/settings" element={<Navigate to="/profile/settings" replace />} />
           <Route path="/browse" element={<Navigate to="/browse/all" replace />} />
           <Route path="/scan" element={<Navigate to="/capture" replace />} />
           <Route path="/saved" element={<Navigate to="/profile/saved" replace />} />
