@@ -177,7 +177,15 @@ export function useTryOnState() {
   const [showSuccessOverlay, setShowSuccessOverlay] = useState(false);
   const [showPostUI, setShowPostUI] = useState(false);
   const [showLookItems, setShowLookItems] = useState(false);
-  const [selectedQuickPick, setSelectedQuickPick] = useState<CatalogProduct | null>(null);
+  const [selectedQuickPick, setSelectedQuickPickRaw] = useState<CatalogProduct | null>(() => persisted.selectedQuickPick as CatalogProduct | null);
+  const setSelectedQuickPick = useCallback((v: CatalogProduct | null) => {
+    setSelectedQuickPickRaw(v);
+    if (v) {
+      persistState({ selectedQuickPick: { id: v.id, brand: v.brand, retailer: v.retailer, category: v.category, name: v.name, image_url: v.image_url, product_url: v.product_url ?? null, price_cents: v.price_cents ?? null } });
+    } else {
+      persistState({ selectedQuickPick: null });
+    }
+  }, [persistState]);
   const [layerHistory, setLayerHistory] = useState<string[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
