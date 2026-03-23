@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import BrandLogo from '@/components/ui/BrandLogo';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const links = [
   {

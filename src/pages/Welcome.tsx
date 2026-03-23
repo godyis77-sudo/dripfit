@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import BottomTabBar from '@/components/BottomTabBar';
 import GalleryPlayground from '@/components/home/GalleryPlayground';
 import AuthenticatedHome from '@/components/home/AuthenticatedHome';

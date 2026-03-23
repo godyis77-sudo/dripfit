@@ -5,7 +5,7 @@ import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';

@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowUp, Sparkles, Loader2, Check, Info, ShoppingBag, Store, Shield, X, RotateCcw, SlidersHorizontal, ChevronDown } from 'lucide-react';

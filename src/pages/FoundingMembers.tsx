@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Users, MessageCircle, Shirt, BarChart3, Sparkles, ArrowRight, Quote } from 'lucide-react';
 import InlineCrown from '@/components/ui/InlineCrown';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';

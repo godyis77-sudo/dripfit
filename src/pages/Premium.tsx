@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import BottomTabBar from '@/components/BottomTabBar';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';

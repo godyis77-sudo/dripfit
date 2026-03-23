@@ -8,7 +8,7 @@ import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
 import { AnimatePresence } from 'framer-motion';
 import BottomTabBar from '@/components/BottomTabBar';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { useAuth } from '@/hooks/useAuth';
 import BrandFilter from '@/components/tryon/BrandFilter';
 import ProductPreviewModal from '@/components/ui/ProductPreviewModal';

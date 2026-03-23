@@ -1,5 +1,5 @@
 import { TrendingDown, Users, ShoppingBag, Scan, Shirt, BarChart3, ArrowRight, Mail, CheckCircle2, ExternalLink } from 'lucide-react';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
 
 const STATS = [
