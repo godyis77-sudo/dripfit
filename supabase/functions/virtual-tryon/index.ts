@@ -157,6 +157,7 @@ Deno.serve(async (req) => {
       }
       return "";
     };
+    const hasMeaningfulWords = (value: string) => /[a-z]{3}/i.test(value);
 
     const swimwearGarmentLabel = (() => {
       const context = normalizeMatchText([itemLower, productName, productCategory].join(" "));
@@ -282,54 +283,37 @@ Deno.serve(async (req) => {
       console.log(`Intimate extraction took ${Date.now() - startedAt}ms`);
     }
 
-    const describeSwimwearReference = async (): Promise<string> => {
-      if (!isSwimwearOnly || preExtractedGarment) return "";
+    const buildSwimwearReferenceFromMetadata = (): string => {
+      if (!isSwimwearOnly) return "";
+      const context = normalizeMatchText([productName, productCategory, itemLower, typeof raw.productUrl === "string" ? raw.productUrl : ""].join(" "));
 
-      const remainingMs = FUNCTION_BUDGET_MS - (Date.now() - startedAt);
-      const timeoutMs = Math.min(8_000, remainingMs - 1_000);
-      if (timeoutMs < 4_000) return "";
+      const colorTerms = ["black", "white", "blue", "navy", "red", "pink", "green", "teal", "orange", "yellow", "purple", "brown", "beige", "tan", "gold", "silver", "multi", "floral"];
+      const primaryColor = colorTerms.find(c => hasContextTerm(context, c));
+      const pattern = hasContextTerm(context, "floral") ? "floral print"
+        : hasContextTerm(context, "stripe") ? "striped pattern"
+        : hasContextTerm(context, "polka") ? "polka-dot pattern"
+        : "solid color";
 
-      try {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), timeoutMs);
-        try {
-          const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-            method: "POST",
-            signal: controller.signal,
-            headers: {
-              Authorization: `Bearer ${LOVABLE_API_KEY}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              model: "google/gemini-2.5-flash",
-              messages: [{
-                role: "user",
-                content: [
-                  {
-                    type: "text",
-                    text: "Describe ONLY the garment in this product image in one concise sentence. Ignore any person/mannequin. Include garment type, primary color, pattern, neckline, straps/sleeves, and coverage.",
-                  },
-                  { type: "image_url", image_url: { url: clothingImageInput } },
-                ],
-              }],
-            }),
-          });
+      const garmentType = /\b(one piece|one-piece|monokini)\b/.test(context)
+        ? "one-piece swimsuit"
+        : /\b(bottom|brief|bikini bottom|swim short)\b/.test(context)
+          ? "swim bottom"
+          : /\b(top|triangle|tri|tankini top|bralette)\b/.test(context)
+            ? "triangle bikini top"
+            : "swimwear set";
 
-          if (!response.ok) return "";
-          const data = await response.json();
-          const firstChoice = (data.choices as Array<Record<string, unknown>>)?.[0];
-          const msg = firstChoice?.message as Record<string, unknown> | undefined;
-          return messageContentToText(msg?.content).slice(0, 280);
-        } finally {
-          clearTimeout(timer);
-        }
-      } catch {
-        return "";
-      }
+      const colorText = primaryColor ? `${primaryColor} ${pattern}` : pattern;
+      const detailText = /\btriangle|tri\b/.test(context)
+        ? "thin straps and triangle cups"
+        : /\bone piece|one-piece\b/.test(context)
+          ? "clean one-piece silhouette"
+          : "minimal modern swim silhouette";
+
+      return `Reference garment: ${colorText} ${garmentType} with ${detailText}. Keep it commercially styled and fully covering as swimwear.`;
     };
 
-    const swimwearTextReference = await describeSwimwearReference();
-    const useTextOnlySwimwearReference = isSwimwearOnly && !preExtractedGarment && swimwearTextReference.length > 0;
+    const swimwearTextReference = buildSwimwearReferenceFromMetadata();
+    const useTextOnlySwimwearReference = isSwimwearOnly && !preExtractedGarment;
 
     const productDesc = [productName, productBrand ? `by ${productBrand}` : "", productCategory ? `(${productCategory})` : ""].filter(Boolean).join(" ");
     const sanitizedProductDesc = isIntimateGarment
@@ -349,8 +333,8 @@ Deno.serve(async (req) => {
       : `${itemType} with catalog-style details`);
 
     const swimwearScopeInstruction = isTopOnlyGarment
-      ? "This is a SWIM TOP. Replace the entire outfit in Image A with swimwear styling: apply the swim top from Image B on the upper body and add a simple matching swim bottom in the same color family. Keep the person fully clothed in swimwear and do NOT retain streetwear from Image A (pants, jeans, skirts, shorts, blazer, shirts)."
-      : "Replace the entire outfit in Image A with the COMPLETE swimwear look from Image B. Keep the person fully clothed in swimwear and do NOT retain streetwear from Image A.";
+      ? "This is a SWIM TOP. Style the model in a complete swimwear look: apply the swim top reference and add a simple matching swim bottom in the same color family. Avoid layering streetwear items (pants, jeans, skirts, shorts, blazers, shirts)."
+      : "Style the model in the complete swimwear look from the garment reference and avoid layering streetwear items.";
 
     const intimateScopeInstruction = isSwimwear
       ? swimwearScopeInstruction
@@ -361,6 +345,13 @@ Deno.serve(async (req) => {
       : isTopOnlyGarment
         ? "This is a TOP-only garment: replace upper-body clothing only and keep lower-body clothing from Image A unchanged."
         : "Replace only the clothing area needed for this garment and keep all unrelated body/background details unchanged.";
+
+    const identityInstruction = isSwimwearOnly
+      ? "Use Image A as pose, proportions, and scene reference, but do not attempt exact facial identity replication; prefer neck-down framing or softly de-emphasized face details."
+      : "Keep the model's face, body shape, skin tone, hair, and pose identical to Image A.";
+    const swimwearFramingInstruction = isSwimwearOnly
+      ? "- Prefer neck-down framing (or softened face details) while preserving pose and background continuity."
+      : "";
 
     // ── BUILD PROMPT ──
     const safetyNote = isExplicitIntimate
@@ -390,7 +381,7 @@ TASK: Add the accessory from Image B onto the person in Image A. Match Image B e
 
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
-IMAGE A: A person in their environment — this is the MODEL. Keep their face, body, hair, skin tone, and pose exactly as shown.
+IMAGE A: A person in their environment — this is the MODEL.
 ${intimateReferenceLine}
 
 TASK: Put the ${promptIntimateLabel} from Image B onto the model in Image A.
@@ -399,7 +390,8 @@ STYLING RULES:
 - ${intimateReferenceRule}
 - ${garmentSwapScopeInstruction}
 - Match product details exactly: color, fabric texture, cut lines, straps, neckline, hemline, logos, and prints.
-- Keep the model's face, body shape, skin tone, hair, and pose identical to Image A.
+- ${identityInstruction}
+${swimwearFramingInstruction}
 - CRITICAL: ${bgInstruction}
 - Realistic fabric drape and shadows that match the scene lighting.
 - Do NOT add extra clothing items not present in the provided garment reference.
@@ -458,18 +450,21 @@ Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos).
     const fastIntimatePrompt = `Photorealistic retail fashion edit.
 Image A = model. ${intimateReferenceForFallback}
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
-Keep model identity and pose from Image A. Match product details exactly. ${safetyNote} No text/watermark.`;
+${identityInstruction} Match product details exactly. ${safetyNote} No text/watermark.`;
 
     const complianceIntimatePrompt = `Retail activewear photo edit.
 Use Image A as the model and ${useTextOnlySwimwearReference ? "the provided garment description" : "Image B"} as the garment reference.
 Apply only the garment to the model with accurate color, pattern, straps, neckline, seams and logos.
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
-Preserve face, body, pose, and scene from Image A. Keep result clean and commercially appropriate. No text/watermark.`;
+${identityInstruction} Keep result clean and commercially appropriate. No text/watermark.`;
 
     const buildTryOnContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
+      const userImageLabel = isSwimwearOnly
+        ? "\n\n========== IMAGE A — BODY/POSE REFERENCE (do NOT preserve exact face identity) =========="
+        : "\n\n========== IMAGE A — THE PERSON (keep this person's face/body) ==========";
       const content: Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> = [
         { type: "text", text: promptText },
-        { type: "text", text: "\n\n========== IMAGE A — THE PERSON (keep this person's face/body) ==========" },
+        { type: "text", text: userImageLabel },
         { type: "image_url", image_url: { url: userImageInput } },
       ];
 
@@ -482,6 +477,10 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
 
       return content;
     };
+
+    if (useTextOnlySwimwearReference) {
+      console.log("Swimwear generation using metadata-only garment reference (no product image input).");
+    }
 
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
@@ -598,6 +597,12 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
         break;
       }
 
+      try {
+        console.warn(`No-image payload snapshot (${plan.label}):`, JSON.stringify(aiData).substring(0, 1200));
+      } catch {
+        // ignore logging serialization failures
+      }
+
       const firstChoice = (aiData.choices as Array<Record<string, unknown>>)?.[0];
       const finishReason = typeof firstChoice?.finish_reason === "string" ? firstChoice.finish_reason : "";
       const msg = firstChoice?.message as Record<string, unknown> | undefined;
@@ -622,7 +627,7 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
       if (looksLikeRefusal && isIntimateGarment) {
         sawIntimateRefusal = true;
         if (!lastTextContent) {
-          lastTextContent = "Try-on was blocked for this product photo. Use a front-facing product-only image or flat-lay with the full garment visible.";
+          lastTextContent = "Try-on was blocked by safety checks for this image combination. Try a full-body user photo and a clear product-only or flat-lay garment image.";
         }
 
         if (!attemptedRefusalExtraction) {
@@ -645,8 +650,8 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
           /wearing the .* from image b/i.test(lowerMessage);
 
         if (isIntimateGarment && looksLikeStyleRejection) {
-          lastTextContent = "Try-on was blocked for this product photo. Use a front-facing product-only image or flat-lay with the full garment visible.";
-        } else if (!looksLikeNonDiagnosticTextOnly) {
+          lastTextContent = "Try-on was blocked by safety checks for this image combination. Try a full-body user photo and a clear product-only or flat-lay garment image.";
+        } else if (!looksLikeNonDiagnosticTextOnly && hasMeaningfulWords(messageText) && messageText.length >= 12) {
           lastTextContent = messageText;
         }
       }
@@ -720,6 +725,9 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
         lastTextContent = "The AI request timed out across all retries. Try again with a clearer front-facing clothing photo.";
       }
       if (looksLikeNonDiagnosticTextOnly) {
+        lastTextContent = "";
+      }
+      if (lastTextContent && lastTextContent.replace(/[`'".\s-]/g, "").length < 4) {
         lastTextContent = "";
       }
 
