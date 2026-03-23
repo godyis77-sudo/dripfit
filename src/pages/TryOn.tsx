@@ -134,6 +134,35 @@ const TryOn = () => {
             {/* Filters button + dropdown */}
             {!s.clothingPhoto && (
               <>
+                {/* Gender toggle + Browse All */}
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="flex gap-1.5 flex-1">
+                    {([
+                      { key: 'all', label: 'All' },
+                      { key: 'mens', label: "Men's" },
+                      { key: 'womens', label: "Women's" },
+                    ] as const).map(g => (
+                      <button
+                        key={g.key}
+                        onClick={() => setGenderFilter(g.key)}
+                        className={`flex-1 px-2.5 py-2 min-h-[44px] rounded-xl text-[12px] font-bold transition-all active:scale-[0.97] ${
+                          genderFilter === g.key
+                            ? 'btn-luxury text-primary-foreground'
+                            : 'bg-card border border-border text-foreground/70'
+                        }`}
+                      >
+                        {g.label}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => navigate('/browse')}
+                    className="shrink-0 px-3 py-2 min-h-[44px] rounded-xl text-[12px] font-bold bg-card border border-border text-foreground/70 active:scale-[0.97] transition-all flex items-center gap-1"
+                  >
+                    <ShoppingBag className="h-3.5 w-3.5" /> Browse
+                  </button>
+                </div>
+
                 <div className="mb-3">
                   <button
                     onClick={() => setFiltersOpen(!filtersOpen)}
