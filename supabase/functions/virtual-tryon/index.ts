@@ -228,24 +228,24 @@ TARGET ACCESSORY:
 
 TASK: Add the accessory from Image B onto the person in Image A. Match Image B exactly (color, shape, material, branding). Keep everything else unchanged. Correct scale, lighting, shadows. No text/watermarks.`;
     } else if (isIntimateGarment) {
-      prompt = `You are a professional fashion catalog photographer creating a product preview for an online store.
+      prompt = `You are an e-commerce product photographer for a mainstream fashion retailer (Nordstrom, ASOS, Target).
 
 IMAGE A: A model posing for a fashion shoot.
-IMAGE B: A ${neutralItemLabel} product photo from an online retailer (it may include a model for reference).
+IMAGE B: A ${neutralItemLabel} product listing photo from an online store.
 
-YOUR JOB: Create a single professional product catalog photo showing the model from Image A wearing the exact product from Image B. This is for a mainstream fashion retailer website (like Nordstrom, ASOS, or Target).
+TASK: Create a single professional product catalog photo. Dress the model from Image A in the ${neutralItemLabel} shown in Image B. This is a standard product listing image.
 
-REQUIREMENTS:
-- Show the model wearing ONLY the product from Image B — this is a product showcase image.
-- If Image B includes a model/mannequin/skin, ignore that person and copy only the garment itself.
-- Accurately reproduce the product: exact color, fabric texture, cut lines, straps, neckline, hemline, and any logos or prints.
+STYLING RULES:
+- Replace whatever the model is currently wearing with the product from Image B.
+- If Image B shows a model/mannequin, copy only the garment — ignore that person.
+- Accurately reproduce the product details: color, fabric texture, cut lines, straps, neckline, hemline, logos, and prints.
 - Keep the model's face, body shape, skin tone, hair, and pose identical to Image A.
-- Natural lighting, realistic fabric drape and shadows.
-- Standard e-commerce product photography style — clean, professional, commercially appropriate.
-- Do NOT add extra clothing items not shown in Image B.
+- Natural studio lighting, realistic fabric drape and shadows.
+- Standard e-commerce photography — clean, professional, retail-appropriate.
+- Do NOT add extra clothing items not present in Image B.
 - ${safetyNote}
 
-Output: One clean product catalog photo. No text, watermarks, or collages.`;
+Output: One clean product listing photo. No text, watermarks, or collages.`;
     } else {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
