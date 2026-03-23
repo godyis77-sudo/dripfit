@@ -301,8 +301,8 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const attemptPlan: Array<{ model: string; prompt: string; label: string }> = isIntimateGarment
       ? [
-          { model: "google/gemini-2.5-flash-image", prompt, label: `${typeLabel}-nano-primary` },
-          { model: "google/gemini-3.1-flash-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-flash-fallback` },
+          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary` },
+          { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-fallback` },
           { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-nano-last` },
         ]
       : [
@@ -329,7 +329,7 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
       const attemptsLeftAfterThis = attemptPlan.length - attempt - 1;
       const reserveForRetriesMs = attemptsLeftAfterThis * MIN_REQUIRED_MS_PER_ATTEMPT + 2_000;
       const maxAttemptBudgetMs = isIntimateGarment
-        ? (attempt === 0 ? 11_000 : attempt === 1 ? 11_000 : 10_000)
+        ? (attempt === 0 ? 18_000 : attempt === 1 ? 16_000 : 14_000)
         : (attempt === 0 ? 30_000 : 18_000);
       const timeoutMs = Math.min(
         maxAttemptBudgetMs,
