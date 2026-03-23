@@ -375,6 +375,8 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const dryRun = body.dry_run ?? false;
     const batchSize = body.batch_size ?? 500;
+    const maxItems = body.max_items ?? 99999;
+    const startOffset = body.offset ?? 0;
 
     const stats = {
       checked: 0,
