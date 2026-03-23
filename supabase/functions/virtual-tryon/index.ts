@@ -597,6 +597,12 @@ ${identityInstruction} Keep result clean and commercially appropriate. No text/w
         break;
       }
 
+      try {
+        console.warn(`No-image payload snapshot (${plan.label}):`, JSON.stringify(aiData).substring(0, 1200));
+      } catch {
+        // ignore logging serialization failures
+      }
+
       const firstChoice = (aiData.choices as Array<Record<string, unknown>>)?.[0];
       const finishReason = typeof firstChoice?.finish_reason === "string" ? firstChoice.finish_reason : "";
       const msg = firstChoice?.message as Record<string, unknown> | undefined;
