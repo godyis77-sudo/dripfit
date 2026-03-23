@@ -2,7 +2,7 @@ import { useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { hapticFeedback } from '@/lib/haptics';
 
-const TAB_PATHS = ['/', '/capture', '/tryon', '/style-check', '/profile'];
+const TAB_PATHS = ['/home', '/capture', '/tryon', '/style-check', '/profile'];
 
 const SWIPE_THRESHOLD = 80;
 const SWIPE_VELOCITY = 0.3;
