@@ -378,7 +378,7 @@ TASK: Add the accessory from Image B onto the person in Image A. Match Image B e
 
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
-IMAGE A: A person in their environment — this is the MODEL. Keep their face, body, hair, skin tone, and pose exactly as shown.
+IMAGE A: A person in their environment — this is the MODEL.
 ${intimateReferenceLine}
 
 TASK: Put the ${promptIntimateLabel} from Image B onto the model in Image A.
@@ -387,7 +387,7 @@ STYLING RULES:
 - ${intimateReferenceRule}
 - ${garmentSwapScopeInstruction}
 - Match product details exactly: color, fabric texture, cut lines, straps, neckline, hemline, logos, and prints.
-- Keep the model's face, body shape, skin tone, hair, and pose identical to Image A.
+- ${identityInstruction}
 - CRITICAL: ${bgInstruction}
 - Realistic fabric drape and shadows that match the scene lighting.
 - Do NOT add extra clothing items not present in the provided garment reference.
