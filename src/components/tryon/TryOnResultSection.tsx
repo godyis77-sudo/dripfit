@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Loader2, Check, MessageSquare, Save, RotateCcw, ShoppingBag, Camera, ImageIcon, Bookmark, ChevronRight, ChevronDown, X, ArrowLeftRight, ExternalLink, Image } from 'lucide-react';
+import { Sparkles, Loader2, Check, MessageSquare, Save, RotateCcw, ShoppingBag, Camera, ImageIcon, Bookmark, ChevronRight, ChevronDown, X, ArrowLeftRight, ExternalLink, Image, Share, Download, Copy } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
 import WhatsInThisLook, { type LookItem as WhatsLookItem } from '@/components/community/WhatsInThisLook';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
@@ -16,6 +17,7 @@ import { useAuth } from '@/hooks/useAuth';
 import TryOnLoadingAnimation from '@/components/tryon/TryOnLoadingAnimation';
 import BackgroundSwapOverlay from '@/components/bgswap/BackgroundSwapOverlay';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import DripCard from '@/components/results/DripCard';
 
 interface LookItem {
   brand: string;
