@@ -462,7 +462,7 @@ Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos).
     const fastIntimatePrompt = `Photorealistic retail fashion edit.
 Image A = model. ${intimateReferenceForFallback}
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
-${identityInstruction} Match product details exactly. ${safetyNote} No text/watermark.`;
+${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Match product details exactly. ${safetyNote} No text/watermark.`;
 
     const complianceIntimatePrompt = `Retail activewear photo edit.
 Use Image A as the model and ${useTextOnlyIntimateReference ? "the provided garment description" : "Image B"} as the garment reference.
