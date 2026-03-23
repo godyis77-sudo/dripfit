@@ -22,6 +22,9 @@ import TryOnLoadingAnimation from '@/components/tryon/TryOnLoadingAnimation';
 import BackgroundSwapOverlay from '@/components/bgswap/BackgroundSwapOverlay';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import DripCard from '@/components/results/DripCard';
+import ProductPreviewModal, { type ProductPreviewData } from '@/components/ui/ProductPreviewModal';
+import { useCart } from '@/hooks/useCart';
+import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
 
 interface LookItem {
   brand: string;
