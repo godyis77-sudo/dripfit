@@ -179,7 +179,10 @@ type FunnelEvent =
   | 'price_watch_removed'
   | 'price_drops_viewed'
   | 'onetap_photo_uploaded'
-  | 'onetap_garment_tapped';
+  | 'onetap_garment_tapped'
+  | 'tryon_drip_card_share_start'
+  | 'tryon_drip_card_generated'
+  | 'tryon_drip_card_downloaded';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {

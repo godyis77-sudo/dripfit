@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Loader2, Check, MessageSquare, Save, RotateCcw, ShoppingBag, Camera, ImageIcon, Bookmark, ChevronRight, ChevronDown, X, ArrowLeftRight, ExternalLink, Image } from 'lucide-react';
+import { Sparkles, Loader2, Check, MessageSquare, Save, RotateCcw, ShoppingBag, Camera, ImageIcon, Bookmark, ChevronRight, ChevronDown, X, ArrowLeftRight, ExternalLink, Image, Share, Download, Copy } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
 import WhatsInThisLook, { type LookItem as WhatsLookItem } from '@/components/community/WhatsInThisLook';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
@@ -16,6 +17,7 @@ import { useAuth } from '@/hooks/useAuth';
 import TryOnLoadingAnimation from '@/components/tryon/TryOnLoadingAnimation';
 import BackgroundSwapOverlay from '@/components/bgswap/BackgroundSwapOverlay';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import DripCard from '@/components/results/DripCard';
 
 interface LookItem {
   brand: string;
@@ -86,6 +88,50 @@ const TryOnResultSection = ({
   const [showResultFullscreen, setShowResultFullscreen] = useState(false);
   const [showBeforeAfter, setShowBeforeAfter] = useState(false);
   const [showBgSwap, setShowBgSwap] = useState(false);
+  const [sharingDripCard, setSharingDripCard] = useState(false);
+  const [shareFallbackOpen, setShareFallbackOpen] = useState(false);
+  const [shareImageUrl, setShareImageUrl] = useState<string | null>(null);
+  const dripCardRef = useRef<HTMLDivElement>(null);
+
+  const handleShareDripCard = async () => {
+    setSharingDripCard(true);
+    trackEvent('tryon_drip_card_share_start');
+    try {
+      const { toPng } = await import('html-to-image');
+      // Allow DripCard to mount
+      await new Promise(r => setTimeout(r, 300));
+      if (!dripCardRef.current) throw new Error('DripCard not mounted');
+      const dataUrl = await toPng(dripCardRef.current, { width: 1080, height: 1920, pixelRatio: 1 });
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const file = new File([blob], 'drip-fit-tryon.png', { type: 'image/png' });
+      trackEvent('tryon_drip_card_generated');
+
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ text: 'Check out my fit — verified by DRIPFIT ✔', url: 'https://dripfitcheck.lovable.app', files: [file] });
+      } else {
+        const url = URL.createObjectURL(blob);
+        setShareImageUrl(url);
+        setShareFallbackOpen(true);
+      }
+    } catch (err: any) {
+      if (err?.name !== 'AbortError') {
+        console.error('DripCard share failed:', err);
+        onToast({ title: 'Share failed', description: 'Could not generate share card.', variant: 'destructive' });
+      }
+    } finally {
+      setSharingDripCard(false);
+    }
+  };
+
+  const handleShareDownload = () => {
+    if (!shareImageUrl) return;
+    const a = document.createElement('a');
+    a.href = shareImageUrl;
+    a.download = 'drip-fit-tryon.png';
+    a.click();
+    trackEvent('tryon_drip_card_downloaded');
+  };
 
   const handleAddToWardrobe = async (item: WhatsLookItem) => {
     if (!authUser) {
@@ -254,7 +300,7 @@ const TryOnResultSection = ({
         )}
 
         {/* ── Quick Action Bar ── */}
-        <div className="grid grid-cols-4 gap-2 mb-3">
+        <div className="grid grid-cols-5 gap-1.5 mb-3">
           {!shared && (
             <button
               onClick={() => { onSetShowPostUI(true); if (!caption) onSetCaption(getCaptionSuggestions(category)[0]); onSetIsPublic(true); }}
@@ -271,11 +317,19 @@ const TryOnResultSection = ({
             </div>
           )}
           <button
+            onClick={handleShareDripCard}
+            disabled={sharingDripCard}
+            className="flex flex-col items-center gap-1 py-2.5 rounded-xl bg-card border border-primary/20 active:scale-[0.96] transition-transform"
+          >
+            {sharingDripCard ? <Loader2 className="h-4 w-4 text-primary animate-spin" /> : <Share className="h-4 w-4 text-primary" />}
+            <span className="text-[10px] font-bold text-primary">Share</span>
+          </button>
+          <button
             onClick={() => setShowBgSwap(true)}
             className="flex flex-col items-center gap-1 py-2.5 rounded-xl bg-card border border-primary/20 active:scale-[0.96] transition-transform"
           >
             <Image className="h-4 w-4 text-primary" />
-            <span className="text-[10px] font-bold text-primary">Background</span>
+            <span className="text-[10px] font-bold text-primary">BG</span>
           </button>
           <button
             onClick={onTryAnother}
@@ -523,6 +577,48 @@ const TryOnResultSection = ({
           </ErrorBoundary>
         )}
       </AnimatePresence>
+
+      {/* DripCard v2 — off-screen render target for html-to-image */}
+      {sharingDripCard && (
+        <DripCard
+          ref={dripCardRef}
+          measurements={{}}
+          heightCm={0}
+          recommendedSize={selectedQuickPick?.name ? 'TRY-ON' : '—'}
+          tryOnImageUrl={resultImage}
+          brandMatch={selectedQuickPick ? { brand: selectedQuickPick.brand, size: selectedQuickPick.name, confidence: 0.92 } : null}
+          displayName={authUser?.user_metadata?.display_name || null}
+        />
+      )}
+
+      {/* Share fallback dialog */}
+      <Dialog open={shareFallbackOpen} onOpenChange={(open) => { if (!open) { setShareFallbackOpen(false); if (shareImageUrl) { URL.revokeObjectURL(shareImageUrl); setShareImageUrl(null); } } }}>
+        <DialogContent className="max-w-[320px] bg-card border-border p-4 rounded-2xl">
+          <DialogTitle className="text-foreground text-sm font-bold mb-3 text-center">
+            Share Your Fit
+          </DialogTitle>
+          {shareImageUrl && (
+            <div className="w-full rounded-xl overflow-hidden border border-border mb-4" style={{ aspectRatio: '9/16' }}>
+              <img src={shareImageUrl} alt="Shareable try-on card" className="w-full h-full object-cover" />
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground text-center mb-3">
+            Save the image, then share to Instagram Stories, WhatsApp or anywhere.
+          </p>
+          <div className="flex flex-col gap-2">
+            <Button onClick={handleShareDownload} className="w-full h-11 rounded-xl btn-luxury text-primary-foreground font-bold">
+              <Download className="mr-2 h-4 w-4" /> Save to Photos
+            </Button>
+            <Button
+              variant="outline"
+              onClick={async () => { await navigator.clipboard.writeText('https://dripfitcheck.lovable.app'); onToast({ title: 'Link copied!' }); }}
+              className="w-full h-10 rounded-xl border-primary/30 text-primary text-sm font-semibold"
+            >
+              <Copy className="mr-2 h-3.5 w-3.5" /> Copy Link
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
