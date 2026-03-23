@@ -4,8 +4,6 @@ import { successResponse, errorResponse, getCorsHeaders } from "../_shared/valid
 
 const VALID_GENDERS = ["mens", "womens", "unisex"] as const;
 
-const VALID_GENDERS = ["mens", "womens", "unisex"] as const;
-
 interface ClassifyResult {
   id: string;
   name: string;
