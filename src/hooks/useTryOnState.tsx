@@ -526,6 +526,8 @@ export function useTryOnState() {
           clothingPhoto: preparedAccessoryPhoto,
           itemType: accessoryCategory || 'accessory',
           isLayering: true,
+          productName: selectedQuickPick?.name || '',
+          productBrand: selectedQuickPick?.brand || '',
         },
       });
       if (error) throw new Error(error.message);
