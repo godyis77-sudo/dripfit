@@ -240,11 +240,17 @@ Deno.serve(async (req) => {
 
     // Retry loop — up to 3 attempts, last attempt uses fallback model
     const MAX_ATTEMPTS = 3;
-    const MODELS = [
-      "google/gemini-3.1-flash-image-preview",
-      "google/gemini-3.1-flash-image-preview",
-      "google/gemini-3-pro-image-preview", // fallback model on last attempt
-    ];
+    const MODELS = isIntimate
+      ? [
+          "google/gemini-2.5-flash-image",        // least restrictive for intimate items
+          "google/gemini-3.1-flash-image-preview",
+          "google/gemini-3-pro-image-preview",
+        ]
+      : [
+          "google/gemini-3.1-flash-image-preview",
+          "google/gemini-3.1-flash-image-preview",
+          "google/gemini-3-pro-image-preview",     // fallback model on last attempt
+        ];
     let resultImage: string | null = null;
     let lastTextContent = "";
 
