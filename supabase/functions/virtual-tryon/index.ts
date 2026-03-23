@@ -118,37 +118,10 @@ Deno.serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) return errorResponse("LOVABLE_API_KEY is not configured", "CONFIG_ERROR", 500, corsHeaders);
 
-    // Normalize input image; for remote URLs, fetch and convert to data URI when possible.
+    // Keep remote URLs as-is to avoid expensive in-function re-encoding (prevents WORKER_LIMIT)
     const toImageInput = async (input: string): Promise<string> => {
       if (input.startsWith("data:")) return input;
-      if (input.startsWith("http://") || input.startsWith("https://")) {
-        for (let attempt = 0; attempt < 2; attempt++) {
-          try {
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 8000);
-            const res = await fetch(input, {
-              signal: controller.signal,
-              headers: {
-                "User-Agent": "Mozilla/5.0 (compatible; DripCheck/1.0)",
-                "Accept": "image/*",
-              },
-            });
-            clearTimeout(timeout);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const buf = await res.arrayBuffer();
-            if (buf.byteLength < 100) throw new Error("Image too small, likely invalid");
-            const contentType = res.headers.get("content-type") || "image/jpeg";
-            const bytes = new Uint8Array(buf);
-            let binary = "";
-            for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-            return `data:${contentType};base64,${btoa(binary)}`;
-          } catch (e) {
-            console.warn(`Image fetch attempt ${attempt + 1} failed for ${input}: ${e}`);
-            if (attempt === 1) return input;
-            await new Promise(r => setTimeout(r, 300));
-          }
-        }
-      }
+      if (input.startsWith("http://") || input.startsWith("https://")) return input.trim();
       return `data:image/jpeg;base64,${input}`;
     };
 
@@ -335,14 +308,16 @@ Deno.serve(async (req) => {
       return null;
     };
 
-    // Retry loop with model + prompt fallback
+    // Retry loop with model + prompt fallback (bounded to avoid worker compute exhaustion)
+    const FUNCTION_BUDGET_MS = 55_000;
+    const ATTEMPT_TIMEOUT_MS = 18_000;
+    const startedAt = Date.now();
+
     const MODELS = isUnderwear
       ? [
           "google/gemini-3.1-flash-image-preview",
           "google/gemini-2.5-flash-image",
           "google/gemini-3-pro-image-preview",
-          "google/gemini-2.5-flash-image",
-          "google/gemini-3.1-flash-image-preview",
         ]
       : (isSwimwear || isIntimate)
       ? [
@@ -355,38 +330,61 @@ Deno.serve(async (req) => {
           "google/gemini-3.1-flash-image-preview",
           "google/gemini-3-pro-image-preview",     // fallback model on last attempt
         ];
-    const MAX_ATTEMPTS = Math.max(promptVariants.length, isUnderwear ? 5 : 3);
+    const MAX_ATTEMPTS = Math.min(promptVariants.length, MODELS.length, 3);
     let resultImage: string | null = null;
     let lastTextContent = "";
 
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+      if (Date.now() - startedAt > FUNCTION_BUDGET_MS - ATTEMPT_TIMEOUT_MS) {
+        console.warn("Stopping retries early to stay within worker compute budget.");
+        break;
+      }
+
       const model = MODELS[attempt] || MODELS[0];
       const prompt = promptVariants[attempt] || promptVariants[0];
       console.log(`Try-on attempt ${attempt + 1}/${MAX_ATTEMPTS} with model ${model}`);
 
-      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model,
-          modalities: ["text", "image"],
-          messages: [
-            {
-              role: "user",
-              content: [
-                { type: "text", text: prompt },
-                { type: "text", text: "IMAGE 1 — THE PERSON (human subject):" },
-                makeImagePart(userImageInput),
-                { type: "text", text: "IMAGE 2 — THE CLOTHING/PRODUCT (garment to dress the person in):" },
-                makeImagePart(clothingImageInput),
-              ],
+      let response: Response;
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), ATTEMPT_TIMEOUT_MS);
+        try {
+          response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+            method: "POST",
+            signal: controller.signal,
+            headers: {
+              Authorization: `Bearer ${LOVABLE_API_KEY}`,
+              "Content-Type": "application/json",
             },
-          ],
-        }),
-      });
+            body: JSON.stringify({
+              model,
+              modalities: ["text", "image"],
+              messages: [
+                {
+                  role: "user",
+                  content: [
+                    { type: "text", text: prompt },
+                    { type: "text", text: "IMAGE 1 — THE PERSON (human subject):" },
+                    makeImagePart(userImageInput),
+                    { type: "text", text: "IMAGE 2 — THE CLOTHING/PRODUCT (garment to dress the person in):" },
+                    makeImagePart(clothingImageInput),
+                  ],
+                },
+              ],
+            }),
+          });
+        } finally {
+          clearTimeout(timeout);
+        }
+      } catch (fetchErr) {
+        console.warn(`Attempt ${attempt + 1}: AI request failed`, fetchErr);
+        lastTextContent = "The AI request timed out. Retrying with fallback settings.";
+        if (attempt < MAX_ATTEMPTS - 1) {
+          await new Promise(r => setTimeout(r, 700));
+          continue;
+        }
+        break;
+      }
 
       if (!response.ok) {
         if (response.status === 429) {
@@ -420,7 +418,7 @@ Deno.serve(async (req) => {
       }
 
       const aiResponse = await response.json();
-      
+
       // Log full response structure for debugging
       const msg = (aiResponse.choices as Array<Record<string, unknown>>)?.[0]?.message as Record<string, unknown> | undefined;
       if (msg?.refusal) {
@@ -432,7 +430,7 @@ Deno.serve(async (req) => {
       if (msg?.reasoning) {
         console.log(`Attempt ${attempt + 1}: Reasoning (truncated):`, JSON.stringify(msg.reasoning).substring(0, 200));
       }
-      
+
       resultImage = extractImage(aiResponse);
 
       if (resultImage) {
@@ -440,12 +438,12 @@ Deno.serve(async (req) => {
         break;
       }
 
-      lastTextContent = typeof msg?.content === "string" ? msg.content : 
+      lastTextContent = typeof msg?.content === "string" ? msg.content :
         (Array.isArray(msg?.content) ? (msg.content as Array<{ type?: string; text?: string }>).filter((p: { type?: string }) => p.type === "text").map((p: { text?: string }) => p.text).join("") : "");
       console.warn(`Attempt ${attempt + 1}: No image extracted.`);
 
       if (attempt < MAX_ATTEMPTS - 1) {
-        await new Promise(r => setTimeout(r, 1500));
+        await new Promise(r => setTimeout(r, 1200));
       }
     }
 
