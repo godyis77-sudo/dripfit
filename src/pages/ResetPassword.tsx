@@ -9,7 +9,7 @@ import { Lock, Eye, EyeOff, CheckCircle, AlertTriangle } from 'lucide-react';
 import InlineCrown from '@/components/ui/InlineCrown';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const ResetPassword = () => {
   usePageTitle('Reset Password');
