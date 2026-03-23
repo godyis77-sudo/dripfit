@@ -108,6 +108,22 @@ const TryOnResultSection = ({
   const [accFitFilter, setAccFitFilter] = useState<string | null>(null);
   const [accGenreOpen, setAccGenreOpen] = useState(false);
   const [accFitOpen, setAccFitOpen] = useState(false);
+  const defaultAccGender = userGender === 'male' ? 'mens' as const : userGender === 'female' ? 'womens' as const : 'all' as const;
+  const accGender = accGenderOverride ?? defaultAccGender;
+  const accEffectiveGender = accGender === 'all' ? undefined : accGender;
+
+  // Fetch products for accessory grid to derive retailers/fits
+  const { products: accProducts } = useProductCatalog(
+    accessoryCategory || undefined, undefined, undefined, accEffectiveGender, accGenreFilter ?? undefined, accFitFilter ?? undefined
+  );
+
+  const accAvailableRetailers = useMemo(() => [...new Set(accProducts.map(p => p.retailer))].sort(), [accProducts]);
+  const accAvailableFits = useMemo(() => {
+    const fits = new Set<string>();
+    accProducts.forEach(p => { if (Array.isArray(p.fit_profile)) p.fit_profile.forEach(f => fits.add(f)); });
+    return FIT_OPTIONS.filter(f => fits.has(f));
+  }, [accProducts]);
+
   const accessoryPhotoRef = useRef<HTMLInputElement>(null);
   const accessoryCameraRef = useRef<HTMLInputElement>(null);
   const accessorySectionRef = useRef<HTMLDivElement>(null);
