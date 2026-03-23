@@ -395,7 +395,7 @@ Deno.serve(async (req) => {
     let offset = startOffset;
     let hasMore = true;
 
-    while (hasMore) {
+    while (hasMore && stats.checked < maxItems) {
       const { data: products, error } = await supabase
         .from("product_catalog")
         .select("id, name, brand, category, style_genre, is_active, fit_profile, fabric_composition")
