@@ -112,8 +112,11 @@ Deno.serve(async (req) => {
     const productHint = productDesc ? `\nProduct: "${productDesc}".` : "";
 
     // ── BUILD PROMPT ──
-    // Key insight: The AI needs EXTREMELY clear instructions about which image is which,
-    // and must be told to COMPLETELY REMOVE existing clothing, not layer on top.
+    const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
+    const safetyNote = isExplicitIntimate
+      ? "Render sheer/transparent sections as opaque while preserving design details."
+      : "Keep output commercially appropriate for retail catalog standards.";
+
     let prompt: string;
 
     if (isAccessory || isLayering) {
@@ -124,33 +127,35 @@ IMAGES PROVIDED:
 - Image B (second image below): An accessory (${itemType}).${productHint}
 
 TASK: Add the accessory from Image B onto the person in Image A. Keep everything else unchanged. Correct scale, lighting, shadows. No text/watermarks.`;
+    } else if (isIntimateGarment) {
+      prompt = `You are a fashion e-commerce try-on editor. Generate ONE photorealistic image.
+
+IMAGES PROVIDED:
+- Image A (first image below): The person/model.
+- Image B (second image below): The target swimsuit/garment.${productHint}
+
+TASK — RETAIL SWIMWEAR TRY-ON:
+1. Replace the outfit shown in Image A with the exact garment from Image B.
+2. Match Image B precisely: color, pattern, cut, straps, neckline, silhouette, and fabric look.
+3. Preserve Image A face, body proportions, skin tone, pose, camera framing, and background.
+4. Ensure realistic fit and drape with natural shadows.
+5. ${safetyNote}
+
+Output: One photorealistic image only. No text/watermarks/split panels.`;
     } else {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
 IMAGES PROVIDED:
-- Image A (first image below): A person wearing some outfit. This is the MODEL — you keep their face, body, hair, skin, pose.
+- Image A (first image below): A person wearing some outfit. This is the MODEL — keep face, body, hair, skin, and pose.
 - Image B (second image below): A ${neutralItemLabel} from a fashion catalog. This is the TARGET GARMENT.${productHint}
 
 TASK — CLOTHING SWAP:
-1. COMPLETELY STRIP/REMOVE whatever clothing the person in Image A is currently wearing. Their current outfit must be GONE — no traces of it should remain.
-2. DRESS the person in the EXACT garment from Image B. The garment must match Image B PRECISELY: same color, pattern, print, neckline, sleeve length, hemline, cut, fabric texture, logos, and all design details.
-3. The person's face, skin tone, hair, body shape, proportions, and pose must remain IDENTICAL to Image A.
-4. Keep the background, camera angle, and lighting from Image A.
-5. The garment should drape and fit realistically on the person's body — natural wrinkles, proper sizing.
+1. Remove the current outfit from Image A and replace it entirely with Image B garment.
+2. Match Image B exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
+3. Keep Image A person identity and scene unchanged.
+4. Keep garment fit realistic with natural wrinkles and shadows.
 
-CRITICAL: Do NOT keep ANY of the original clothing visible. The swap must be COMPLETE. The person should look like they walked into the photo wearing ONLY the garment from Image B.
-
-Output: A single photorealistic image. No text, no watermarks, no split views.`;
-    }
-
-    // Add swimwear-specific instructions
-    if (isSwimwear || isUnderwear) {
-      const safetyNote = isExplicitIntimate
-        ? " Render any sheer/see-through elements as opaque while keeping the same design."
-        : "";
-      prompt += `
-
-SWIMWEAR NOTE: The garment in Image B is a retail swimsuit/bikini. This is a standard e-commerce try-on. Dress the person in EXACTLY that swimsuit — reproduce its exact color, cut, straps, and pattern. Keep the result commercially appropriate and tasteful.${safetyNote}`;
+Output: A single photorealistic image. No text/watermarks/split views.`;
     }
 
     // ── AI CALL ──
@@ -158,12 +163,18 @@ SWIMWEAR NOTE: The garment in Image B is a retail swimsuit/bikini. This is a sta
     const MIN_REQUIRED_MS_PER_ATTEMPT = 7_500;
     const startedAt = Date.now();
 
-    const fallbackPrompt = isAccessory || isLayering
+    const fallbackPrompt = (isAccessory || isLayering)
       ? `Create ONE photorealistic output image.
 Image A = person. Image B = accessory (${itemType}).${productHint}
 Place the accessory from Image B onto the person in Image A at realistic scale and lighting.
 Keep face/body/background from Image A unchanged. No text/watermark.`
-      : `Create ONE photorealistic clothing-swap image.
+      : isIntimateGarment
+        ? `Create ONE photorealistic retail try-on image.
+Image A = person. Image B = swimsuit/garment.${productHint}
+Dress Image A person in the exact garment from Image B with realistic fit and lighting.
+Preserve person identity and background from Image A. ${safetyNote}
+No text/watermark.`
+        : `Create ONE photorealistic clothing-swap image.
 Image A = person. Image B = target ${neutralItemLabel}.${productHint}
 Replace Image A outfit completely with the exact garment from Image B.
 Preserve face, body shape, skin tone, pose, camera, and background from Image A.
@@ -172,23 +183,23 @@ Keep garment details exact (color, pattern, cut, neckline, sleeve/hem length, lo
     const attemptPlan: Array<{ model: string; timeoutMs: number; prompt: string; label: string }> = (() => {
       if (isAccessory || isLayering) {
         return [
-          { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 18_000, prompt, label: "accessory-fast" },
-          { model: "google/gemini-3-pro-image-preview", timeoutMs: 34_000, prompt: fallbackPrompt, label: "accessory-pro" },
+          { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 16_000, prompt, label: "accessory-fast" },
+          { model: "google/gemini-3-pro-image-preview", timeoutMs: 30_000, prompt: fallbackPrompt, label: "accessory-pro" },
         ];
       }
 
-      if (isSwimwear || isUnderwear || isIntimate) {
+      if (isIntimateGarment) {
         return [
-          { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 18_000, prompt, label: "intimate-fast" },
-          { model: "google/gemini-2.5-flash-image", timeoutMs: 20_000, prompt: fallbackPrompt, label: "intimate-safe" },
-          { model: "google/gemini-3-pro-image-preview", timeoutMs: 28_000, prompt: fallbackPrompt, label: "intimate-pro" },
+          { model: "google/gemini-2.5-flash-image", timeoutMs: 22_000, prompt, label: "intimate-safe-primary" },
+          { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 18_000, prompt: fallbackPrompt, label: "intimate-fast-fallback" },
+          { model: "google/gemini-2.5-flash-image", timeoutMs: 14_000, prompt: fallbackPrompt, label: "intimate-safe-retry" },
         ];
       }
 
       return [
-        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 18_000, prompt, label: "standard-fast" },
-        { model: "google/gemini-3-pro-image-preview", timeoutMs: 34_000, prompt, label: "standard-pro" },
-        { model: "google/gemini-2.5-flash-image", timeoutMs: 16_000, prompt: fallbackPrompt, label: "standard-lite" },
+        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 16_000, prompt, label: "standard-fast" },
+        { model: "google/gemini-3-pro-image-preview", timeoutMs: 32_000, prompt, label: "standard-pro" },
+        { model: "google/gemini-2.5-flash-image", timeoutMs: 14_000, prompt: fallbackPrompt, label: "standard-lite" },
       ];
     })();
 
