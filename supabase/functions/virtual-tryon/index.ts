@@ -75,19 +75,25 @@ Deno.serve(async (req) => {
 
     // ── CLASSIFY ITEM ──
     const itemType: string = (raw.itemType as string) || "clothing";
-    const itemLower = itemType.toLowerCase();
+    const normalizedItemType = itemType.toLowerCase().replace(/underware/g, "underwear");
+    const itemLower = normalizedItemType;
     const productName = typeof raw.productName === "string" ? raw.productName : "";
     const productBrand = typeof raw.productBrand === "string" ? raw.productBrand : "";
     const productCategory = typeof raw.productCategory === "string" ? raw.productCategory : "";
 
     const ACCESSORY_TYPES = ["accessory", "jewelry", "necklace", "bracelet", "earrings", "ring", "watch", "hat", "hats", "cap", "sunglasses", "glasses", "bag", "bags", "purse", "handbag", "belt", "belts", "scarf", "scarves", "shoes", "sneakers", "boots", "heels", "loafers", "sandals"];
-    const INTIMATE_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece", "bra", "bralette", "sports bra", "underwear", "panties", "briefs", "boxers", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise", "lounge", "loungewear", "sleepwear", "pajamas", "robe"];
-    const UNDERWEAR_TYPES = ["underwear", "panties", "briefs", "boxers", "bra", "bralette", "sports bra", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise"];
+    const INTIMATE_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece", "bra", "bralette", "sports bra", "underwear", "underware", "panties", "briefs", "boxers", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise", "lounge", "loungewear", "sleepwear", "pajamas", "robe"];
+    const UNDERWEAR_TYPES = ["underwear", "underware", "panties", "briefs", "boxers", "bra", "bralette", "sports bra", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise"];
     const SWIM_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece"];
     const EXPLICIT_TERMS = ["open cup", "open-cup", "sheer", "see-through", "transparent", "thong", "g-string", "pasties", "nude", "exposed"];
 
     const isAccessory = ACCESSORY_TYPES.includes(itemLower);
-    const productContext = [itemLower, productName.toLowerCase(), typeof raw.productUrl === "string" ? raw.productUrl.toLowerCase() : ""].join(" ");
+    const productContext = [
+      itemLower,
+      productName.toLowerCase(),
+      productCategory.toLowerCase(),
+      typeof raw.productUrl === "string" ? raw.productUrl.toLowerCase() : "",
+    ].join(" ");
     const isSwimwear = SWIM_TYPES.some(t => productContext.includes(t));
     const isUnderwear = UNDERWEAR_TYPES.some(t => productContext.includes(t));
     const isIntimate = INTIMATE_TYPES.some(t => itemLower.includes(t)) || isSwimwear || isUnderwear;
@@ -123,12 +129,13 @@ Deno.serve(async (req) => {
     // Keep off by default to avoid burning budget before first generation attempt.
     // Use refusal-rescue extraction, or force via request for troubleshooting.
     const forceIntimateExtraction = raw.forceIntimateExtraction === true;
-    const enableIntimateExtraction = isIntimateGarment && forceIntimateExtraction;
+    const disableIntimateExtraction = raw.disableIntimateExtraction === true;
+    const enableIntimateExtraction = isIntimateGarment && !disableIntimateExtraction && (forceIntimateExtraction || isUnderwear);
     const extractIntimateGarment = async (): Promise<string | null> => {
       const extractPrompt = `Isolate ONLY the target garment from this product photo. Remove any person/model/mannequin and any visible skin. Return a clean product-only image of the ${neutralItemLabel} on a plain white background. Keep garment color, shape, straps, seams, and logos accurate.`;
       const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = [
-        { model: "google/gemini-2.5-flash-image", timeoutMs: 7_000, label: "extract-nano" },
-        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 8_000, label: "extract-fast" },
+        { model: "google/gemini-2.5-flash-image", timeoutMs: 10_000, label: "extract-nano" },
+        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 12_000, label: "extract-fast" },
       ];
 
       for (const plan of extractionPlan) {
@@ -306,6 +313,7 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
     let resultImage: string | null = null;
     let lastTextContent = "";
     let sawIntimateRefusal = false;
+    let attemptedRefusalExtraction = false;
 
     for (let attempt = 0; attempt < attemptPlan.length; attempt++) {
       const plan = attemptPlan[attempt];
@@ -422,10 +430,22 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
         console.warn(`REFUSED (${plan.label}):`, JSON.stringify(refusal).substring(0, 300));
       }
 
+      let extractedAfterRefusal = false;
+
       if (looksLikeRefusal && isIntimateGarment) {
         sawIntimateRefusal = true;
         if (!lastTextContent) {
           lastTextContent = "Try-on was blocked for this product photo. Use a front-facing product-only image or flat-lay with the full garment visible.";
+        }
+
+        if (!attemptedRefusalExtraction) {
+          attemptedRefusalExtraction = true;
+          const rescuedGarment = await extractIntimateGarment();
+          if (rescuedGarment) {
+            garmentOnlyImage = rescuedGarment;
+            extractedAfterRefusal = true;
+            console.log(`Refusal rescue extracted garment (${plan.label}); retrying with cleaned product image.`);
+          }
         }
       }
 
@@ -437,6 +457,10 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
       }
       if (lastTextContent) console.warn(`Text-only response (${plan.label}):`, lastTextContent.substring(0, 300));
       console.warn(`Attempt ${attempt + 1} (${plan.label}): No image extracted. Keys=${JSON.stringify(Object.keys(msg || {}))}`);
+
+      if (extractedAfterRefusal && !isFinalAttempt) {
+        continue;
+      }
 
       if (!isFinalAttempt) await new Promise(r => setTimeout(r, 600));
     }
