@@ -301,8 +301,8 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const attemptPlan: Array<{ model: string; prompt: string; label: string }> = isIntimateGarment
       ? [
-          { model: "google/gemini-2.5-flash-image", prompt, label: `${typeLabel}-nano-primary` },
-          { model: "google/gemini-3.1-flash-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-flash-fallback` },
+          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary` },
+          { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-fallback` },
           { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-nano-last` },
         ]
       : [
