@@ -258,10 +258,13 @@ TARGET GARMENT:
 - The garment shown in Image B.${productHint}
 
 TASK — CLOTHING SWAP:
-1. Remove the current outfit from Image A and replace it entirely with the garment from Image B.
-2. Match Image B exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
-3. Keep Image A person identity and scene unchanged.
-4. Keep garment fit realistic with natural wrinkles and shadows.
+1. COMPLETELY STRIP every piece of clothing from Image A — tops, bottoms, pants, skirts, shoes, accessories — remove ALL of them.
+2. Dress the now-bare person ONLY in the garment from Image B. If Image B is a top/shirt/blouse, the person should wear ONLY that top with bare legs (no pants, no skirt, no shorts unless Image B includes them).
+3. Match Image B exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
+4. Keep Image A person identity (face, body, hair, skin tone, pose) and background/scene unchanged.
+5. Keep garment fit realistic with natural wrinkles and shadows.
+
+CRITICAL: Do NOT keep any original clothing from Image A. The ONLY clothing in the output must be the garment from Image B.
 
 Output: A single photorealistic image. No text/watermarks/split views.`;
     }
@@ -282,7 +285,8 @@ ${safetyNote}
 No text/watermark.`
         : `Create ONE photorealistic clothing-swap image.
 Image A = person. Image B = target garment.${productHint}
-Replace Image A outfit completely with the exact garment from Image B.
+STRIP ALL clothing from Image A — tops, bottoms, pants, shoes, everything.
+Dress the person ONLY in the exact garment from Image B. If it is a top, show bare legs — do NOT keep pants or bottoms from Image A.
 Preserve face, body shape, skin tone, pose, camera, and background from Image A.
 Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
 
