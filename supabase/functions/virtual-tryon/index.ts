@@ -185,14 +185,13 @@ Deno.serve(async (req) => {
     const disableIntimateExtraction = raw.disableIntimateExtraction === true;
     const enableIntimateExtraction = isIntimateGarment && !disableIntimateExtraction && (
       forceIntimateExtraction ||
-      isUnderwear ||
-      (isSwimwear && !useClothingBg)
+      isUnderwear
     );
     const extractIntimateGarment = async (): Promise<string | null> => {
       const extractPrompt = `Isolate ONLY the target garment from this product photo. Remove any person/model/mannequin and any visible skin. Return a clean product-only image of the ${promptIntimateLabel} on a plain white background. Keep garment color, shape, straps, seams, and logos accurate.`;
       const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = [
-        { model: "google/gemini-2.5-flash-image", timeoutMs: 8_000, label: "extract-nano-primary" },
-        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 10_000, label: "extract-flash-fallback" },
+        { model: "google/gemini-2.5-flash-image", timeoutMs: 6_000, label: "extract-nano-primary" },
+        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 7_000, label: "extract-flash-fallback" },
       ];
 
       for (const plan of extractionPlan) {
@@ -251,9 +250,13 @@ Deno.serve(async (req) => {
     };
 
     let garmentOnlyImage = clothingImageInput;
+    let preExtractedGarment = false;
     if (enableIntimateExtraction) {
       const extracted = await extractIntimateGarment();
-      if (extracted) garmentOnlyImage = extracted;
+      if (extracted) {
+        garmentOnlyImage = extracted;
+        preExtractedGarment = true;
+      }
       console.log(`Intimate extraction took ${Date.now() - startedAt}ms`);
     }
 
@@ -387,10 +390,10 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
       ? isSwimwearOnly
         ? [
-            // Swimwear: quality flash first, then stronger instruction-following fallback, then fast compliance fallback.
-            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 18_000 },
-            { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-fallback`, timeoutMs: 18_000 },
-            { model: "google/gemini-2.5-flash-image", prompt: complianceIntimatePrompt, label: `${typeLabel}-nano-compliance`, timeoutMs: 16_000 },
+            // Swimwear: prioritize fast, instruction-following models to avoid full-chain timeouts.
+            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 15_000 },
+            { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-nano-fallback`, timeoutMs: 12_000 },
+            { model: "google/gemini-2.5-flash-image", prompt: complianceIntimatePrompt, label: `${typeLabel}-nano-compliance`, timeoutMs: 10_000 },
           ]
         : [
             { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 18_000 },
@@ -405,7 +408,7 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
     let resultImage: string | null = null;
     let lastTextContent = "";
     let sawIntimateRefusal = false;
-    let attemptedRefusalExtraction = enableIntimateExtraction;
+    let attemptedRefusalExtraction = preExtractedGarment;
 
     for (let attempt = 0; attempt < attemptPlan.length; attempt++) {
       const plan = attemptPlan[attempt];
