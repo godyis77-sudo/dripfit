@@ -446,13 +446,13 @@ Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos).
     const fastIntimatePrompt = `Photorealistic retail fashion edit.
 Image A = model. ${intimateReferenceForFallback}
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
-Keep model identity and pose from Image A. Match product details exactly. ${safetyNote} No text/watermark.`;
+${identityInstruction} Match product details exactly. ${safetyNote} No text/watermark.`;
 
     const complianceIntimatePrompt = `Retail activewear photo edit.
 Use Image A as the model and ${useTextOnlySwimwearReference ? "the provided garment description" : "Image B"} as the garment reference.
 Apply only the garment to the model with accurate color, pattern, straps, neckline, seams and logos.
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
-Preserve face, body, pose, and scene from Image A. Keep result clean and commercially appropriate. No text/watermark.`;
+${identityInstruction} Keep result clean and commercially appropriate. No text/watermark.`;
 
     const buildTryOnContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
       const content: Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> = [
