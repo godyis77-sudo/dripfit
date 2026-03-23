@@ -39,6 +39,7 @@ const TryOnUploadSection = forwardRef<HTMLDivElement, TryOnUploadSectionProps>((
   onUserPhotoChange, onClothingPhotoChange, onProductLinkChange,
   onSaveClothingToWardrobe, onSelectFromWardrobe, onToggleWardrobe, onToast,
   onRemoveClothing, onBrowseProducts,
+  backgroundSource, onBackgroundSourceChange,
 }, ref) => {
   const userPhotoRef = useRef<HTMLInputElement>(null);
   const userCameraRef = useRef<HTMLInputElement>(null);
