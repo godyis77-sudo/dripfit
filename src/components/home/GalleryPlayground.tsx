@@ -9,6 +9,7 @@ import BrandLogo from '@/components/ui/BrandLogo';
 import FeatureIcon from '@/components/ui/FeatureIcon';
 import HomeFAB from '@/components/home/HomeFAB';
 import DemoTryOnSection from '@/components/home/DemoTryOnSection';
+import OneTapPlayground from '@/components/home/OneTapPlayground';
 import ProductPreviewModal from '@/components/ui/ProductPreviewModal';
 
 const HERO_CATEGORIES = [
@@ -120,6 +121,9 @@ const GalleryPlayground = () => {
             </button>
           ))}
         </motion.div>
+
+        {/* One-Tap Playground — interactive split-screen */}
+        <OneTapPlayground />
 
         {/* Demo Try-On Results */}
         <DemoTryOnSection />
