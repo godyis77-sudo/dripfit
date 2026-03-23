@@ -10,7 +10,9 @@ import { Sparkles, Loader2, Check, MessageSquare, Save, RotateCcw, ShoppingBag, 
 import { trackEvent } from '@/lib/analytics';
 import WhatsInThisLook, { type LookItem as WhatsLookItem } from '@/components/community/WhatsInThisLook';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
+import BrandFilter from '@/components/tryon/BrandFilter';
 import { ACCESSORY_CATEGORIES, ALL_PRODUCT_CATEGORIES, getCaptionSuggestions, saveSharePreference, compressImage, imageUrlToBase64 } from './tryon-constants';
+import { isCategoryVisibleForGender } from '@/lib/genderCategories';
 import type { CatalogProduct } from '@/hooks/useProductCatalog';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
