@@ -558,6 +558,21 @@ export function useTryOnState() {
   const handleSelectProduct = async (product: CatalogProduct) => {
     setSelectedQuickPick(product);
     if (product.category) setCategory(product.category);
+
+    // If a result already exists, layer the new item as an accessory instead of resetting
+    if (resultImage) {
+      if (product.product_url) {
+        setProductLink(product.product_url);
+        setLookItems(prev => [...prev, { brand: product.brand, name: product.name, url: product.product_url!, price_cents: product.price_cents, image_url: product.image_url }]);
+      }
+      trackEvent('tryon_add_item_to_result', { brand: product.brand, category: product.category });
+      let photo: string;
+      try { photo = await imageUrlToBase64(product.image_url); } catch { photo = product.image_url; }
+      handleAddAccessory(photo, product.category || null);
+      return;
+    }
+
+    // No result yet — set as primary clothing
     if (product.product_url) {
       setProductLink(product.product_url);
       setLookItems([{ brand: product.brand, name: product.name, url: product.product_url, price_cents: product.price_cents, image_url: product.image_url }]);
