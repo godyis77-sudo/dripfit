@@ -325,8 +325,8 @@ No text/watermark.`;
       const attemptsLeftAfterThis = attemptPlan.length - attempt - 1;
       const reserveForRetriesMs = attemptsLeftAfterThis * MIN_REQUIRED_MS_PER_ATTEMPT + 2_000;
       const maxAttemptBudgetMs = isIntimateGarment
-        ? (attempt === 0 ? 24_000 : attempt === 1 ? 16_000 : 10_000)
-        : (attempt === 0 ? 28_000 : 16_000);
+        ? (attempt === 0 ? 22_000 : attempt === 1 ? 20_000 : 10_000)
+        : (attempt === 0 ? 30_000 : 18_000);
       const timeoutMs = Math.min(
         maxAttemptBudgetMs,
         Math.max(MIN_REQUIRED_MS_PER_ATTEMPT, remainingMs - reserveForRetriesMs),
