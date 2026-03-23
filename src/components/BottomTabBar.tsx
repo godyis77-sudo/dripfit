@@ -6,7 +6,7 @@ import { hapticFeedback } from '@/lib/haptics';
 import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 
 const tabs: { icon: FeatureIconName; label: string; path: string }[] = [
-  { icon: 'home', label: 'Home', path: '/' },
+  { icon: 'home', label: 'Home', path: '/home' },
   { icon: 'post', label: 'Scan', path: '/capture' },
   { icon: 'tryon', label: 'Try-On', path: '/tryon' },
   { icon: 'stylecheck', label: 'Style', path: '/style-check' },
