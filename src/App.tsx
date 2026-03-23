@@ -168,6 +168,7 @@ const AnimatedRoutes = () => {
 const App = () => {
   useTheme();
   return (
+  <MotionConfig reducedMotion="user">
   <QueryClientProvider client={queryClient}>
     <AffiliateProvider provider="skimlinks" />
     <OfflineBanner />
@@ -185,6 +186,7 @@ const App = () => {
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
+  </MotionConfig>
   );
 };
 

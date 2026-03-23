@@ -502,13 +502,24 @@ const TryOnResultSection = ({
         <p className="text-[10px] text-muted-foreground/50 text-center mt-1">We may earn a commission. It doesn't change your price.</p>
       </motion.div>
 
-      {/* Background Swap Overlay */}
+      {/* Background Swap Overlay — wrapped in ErrorBoundary for WASM safety */}
       <AnimatePresence>
         {showBgSwap && (
-          <BackgroundSwapOverlay
-            resultImageUrl={resultImage}
-            onClose={() => setShowBgSwap(false)}
-          />
+          <ErrorBoundary fallback={
+            <div className="fixed inset-0 z-50 bg-background/95 flex flex-col items-center justify-center gap-4 p-6">
+              <p className="text-sm font-semibold text-foreground">Background swap unavailable</p>
+              <p className="text-xs text-muted-foreground text-center">Your browser may not support this feature. Try sharing the original image instead.</p>
+              <div className="flex gap-3">
+                <button onClick={() => setShowBgSwap(false)} className="px-4 py-2 rounded-xl bg-card border border-border text-xs font-bold text-foreground">Close</button>
+                <button onClick={() => { setShowBgSwap(false); setTimeout(() => setShowBgSwap(true), 100); }} className="px-4 py-2 rounded-xl btn-luxury text-primary-foreground text-xs font-bold">Retry</button>
+              </div>
+            </div>
+          }>
+            <BackgroundSwapOverlay
+              resultImageUrl={resultImage}
+              onClose={() => setShowBgSwap(false)}
+            />
+          </ErrorBoundary>
         )}
       </AnimatePresence>
     </>
