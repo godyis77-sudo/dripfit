@@ -291,6 +291,19 @@ Deno.serve(async (req) => {
       }
 
       const aiResponse = await response.json();
+      
+      // Log full response structure for debugging
+      const msg = (aiResponse.choices as Array<Record<string, unknown>>)?.[0]?.message as Record<string, unknown> | undefined;
+      if (msg?.refusal) {
+        console.warn(`Attempt ${attempt + 1}: Model REFUSED. Refusal:`, JSON.stringify(msg.refusal).substring(0, 500));
+      }
+      if (msg?.content && typeof msg.content === "string") {
+        console.log(`Attempt ${attempt + 1}: Text content:`, msg.content.substring(0, 300));
+      }
+      if (msg?.reasoning) {
+        console.log(`Attempt ${attempt + 1}: Reasoning (truncated):`, JSON.stringify(msg.reasoning).substring(0, 200));
+      }
+      
       resultImage = extractImage(aiResponse);
 
       if (resultImage) {
@@ -298,12 +311,12 @@ Deno.serve(async (req) => {
         break;
       }
 
-      const msg = (aiResponse.choices as Array<{ message: { content?: string } }>)?.[0]?.message;
-      lastTextContent = typeof msg?.content === "string" ? msg.content : "";
-      console.warn(`Attempt ${attempt + 1}: No image.`, lastTextContent.substring(0, 200));
+      lastTextContent = typeof msg?.content === "string" ? msg.content : 
+        (Array.isArray(msg?.content) ? (msg.content as Array<{ type?: string; text?: string }>).filter((p: { type?: string }) => p.type === "text").map((p: { text?: string }) => p.text).join("") : "");
+      console.warn(`Attempt ${attempt + 1}: No image extracted.`);
 
       if (attempt < MAX_ATTEMPTS - 1) {
-        await new Promise(r => setTimeout(r, 1000));
+        await new Promise(r => setTimeout(r, 1500));
       }
     }
 
