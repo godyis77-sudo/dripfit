@@ -41,7 +41,7 @@ const ProfileBody = () => {
   const [loading, setLoading] = useState(true);
   const [fitPref, setFitPref] = useState<FitPreference>(getFitPreference());
   const [saved, setSaved] = useState(false);
-  const [confidence, setConfidence] = useState('medium');
+  const [confidence, setConfidence] = useState<Confidence>('medium');
   const [adjustedMeasurements, setAdjustedMeasurements] = useState<Record<string, MeasurementRange>>({});
 
   useEffect(() => {
