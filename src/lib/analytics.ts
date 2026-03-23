@@ -177,7 +177,9 @@ type FunnelEvent =
   | 'outfit_edit_started'
   | 'price_watch_added'
   | 'price_watch_removed'
-  | 'price_drops_viewed';
+  | 'price_drops_viewed'
+  | 'onetap_photo_uploaded'
+  | 'onetap_garment_tapped';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
