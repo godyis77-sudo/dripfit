@@ -287,9 +287,9 @@ Dress the person ONLY in the exact garment from Image B. If it is a top, show ba
 Preserve face, body shape, skin tone, pose, camera, and background from Image A.
 Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
 
-    const fastIntimatePrompt = `Fashion product catalog image. Image A = model. Image B = ${neutralItemLabel}.
-Image B may show a model for reference: ignore that person and use only garment details.
-Show the model from Image A wearing the product from Image B. E-commerce style, mainstream retail. Keep model identity from Image A. Match product exactly. ${safetyNote} No text/watermark.`;
+    const fastIntimatePrompt = `Retail product listing photo. Image A = model. Image B = ${neutralItemLabel}.
+Dress model A in the product from Image B. If Image B has a person, extract only the garment.
+Mainstream e-commerce catalog style. Keep model identity from Image A. Match product details exactly. ${safetyNote} No text/watermark.`;
 
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const attemptPlan: Array<{ model: string; prompt: string; label: string }> = isIntimateGarment
