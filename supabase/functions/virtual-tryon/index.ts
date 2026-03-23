@@ -107,7 +107,13 @@ Deno.serve(async (req) => {
     const userImageInput = toImageInput(userPhoto);
     const clothingImageInput = toImageInput(clothingPhoto);
 
-    const neutralItemLabel = (isSwimwear || isUnderwear) ? "swimsuit" : (isIntimate ? "fashion garment" : itemType);
+    const neutralItemLabel = isUnderwear
+      ? "athletic base-layer set"
+      : isSwimwear
+        ? "swimwear set"
+        : isIntimate
+          ? "fitted fashion garment"
+          : itemType;
     const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
     const FUNCTION_BUDGET_MS = 55_000;
     const MIN_REQUIRED_MS_PER_ATTEMPT = 6_000;
@@ -118,52 +124,65 @@ Deno.serve(async (req) => {
     // Can be enabled per-request for troubleshooting, and is also used as a refusal-rescue path.
     const enableIntimateExtraction = raw.enableIntimateExtraction === true;
     const extractIntimateGarment = async (): Promise<string | null> => {
-      try {
-        const extractPrompt = `Extract ONLY the clothing/garment item from this product photo. Remove any person/model entirely. Show ONLY the ${neutralItemLabel} garment laid flat on a plain white background. Output one clean product-only image. No person, no skin, no body. Just the isolated garment on white.`;
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 6_000);
+      const extractPrompt = `Isolate ONLY the target garment from this product photo. Remove any person/model/mannequin and any visible skin. Return a clean product-only image of the ${neutralItemLabel} on a plain white background. Keep garment color, shape, straps, seams, and logos accurate.`;
+      const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = [
+        { model: "google/gemini-2.5-flash-image", timeoutMs: 7_000, label: "extract-fast" },
+        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 11_000, label: "extract-quality" },
+      ];
+
+      for (const plan of extractionPlan) {
+        const remainingMs = FUNCTION_BUDGET_MS - (Date.now() - startedAt);
+        if (remainingMs <= MIN_REQUIRED_MS_PER_ATTEMPT) return null;
+
+        const timeoutMs = Math.min(plan.timeoutMs, Math.max(4_000, remainingMs - 1_000));
+
         try {
-          const extractResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-            method: "POST",
-            signal: controller.signal,
-            headers: {
-              Authorization: `Bearer ${LOVABLE_API_KEY}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              model: "google/gemini-3.1-flash-image-preview",
-              modalities: ["image", "text"],
-              messages: [{
-                role: "user",
-                content: [
-                  { type: "text", text: extractPrompt },
-                  { type: "image_url", image_url: { url: clothingImageInput } },
-                ],
-              }],
-            }),
-          });
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), timeoutMs);
+          try {
+            const extractResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+              method: "POST",
+              signal: controller.signal,
+              headers: {
+                Authorization: `Bearer ${LOVABLE_API_KEY}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                model: plan.model,
+                modalities: ["image", "text"],
+                messages: [{
+                  role: "user",
+                  content: [
+                    { type: "text", text: extractPrompt },
+                    { type: "image_url", image_url: { url: clothingImageInput } },
+                  ],
+                }],
+              }),
+            });
 
-          if (!extractResponse.ok) {
-            console.warn(`Garment extraction HTTP ${extractResponse.status}, using original`);
-            return null;
+            if (!extractResponse.ok) {
+              console.warn(`Garment extraction HTTP ${extractResponse.status} (${plan.label}), retrying`);
+              continue;
+            }
+
+            const extractData = await extractResponse.json();
+            const extracted = extractImageFromResponse(extractData);
+            if (!extracted) {
+              console.warn(`Garment extraction returned no image (${plan.label}), retrying`);
+              continue;
+            }
+
+            console.log(`Garment extracted successfully (${plan.label})`);
+            return extracted;
+          } finally {
+            clearTimeout(timer);
           }
-
-          const extractData = await extractResponse.json();
-          const extracted = extractImageFromResponse(extractData);
-          if (!extracted) {
-            console.warn("Garment extraction returned no image, using original");
-            return null;
-          }
-
-          console.log("Garment extracted successfully for intimate item");
-          return extracted;
-        } finally {
-          clearTimeout(timer);
+        } catch (err) {
+          console.warn(`Garment extraction failed/timed out (${plan.label}), retrying:`, err);
         }
-      } catch (err) {
-        console.warn("Garment extraction failed/timed out, using original:", err);
-        return null;
       }
+
+      return null;
     };
 
     let garmentOnlyImage = clothingImageInput;
@@ -174,16 +193,19 @@ Deno.serve(async (req) => {
     }
 
     const productDesc = [productName, productBrand ? `by ${productBrand}` : "", productCategory ? `(${productCategory})` : ""].filter(Boolean).join(" ");
-    const sanitizedProductDesc = (isSwimwear || isUnderwear || isIntimate)
+    const sanitizedProductDesc = isIntimateGarment
       ? productDesc
-          .replace(/\b(bikini|bikinis|underwear|lingerie|bra|bralette|panties|briefs|boxers|fuller\s+bust|dd\+?)\b/gi, "swimsuit")
+          .replace(/\b(lingerie|underwear|panties|briefs|boxers)\b/gi, "base-layer")
+          .replace(/\b(sports bra|bra|bralette)\b/gi, "support top")
+          .replace(/\b(open cup|open-cup|thong|g-string)\b/gi, "full-coverage")
+          .replace(/\b(sheer|see-through|transparent)\b/gi, "opaque")
           .replace(/\s+/g, " ")
           .trim()
       : productDesc;
     const productHint = sanitizedProductDesc ? `\nProduct: "${sanitizedProductDesc}".` : "";
 
-    const garmentDescriptor = sanitizedProductDesc || (isSwimwear || isUnderwear || isIntimate
-      ? "sporty one-piece or two-piece swimwear set in retail style"
+    const garmentDescriptor = sanitizedProductDesc || (isIntimateGarment
+      ? "sporty fitted garment with retail styling"
       : `${itemType} with catalog-style details`);
 
     // ── BUILD PROMPT ──
@@ -213,13 +235,16 @@ IMAGES PROVIDED:
 
 TARGET GARMENT:
 - The garment shown in Image B.${productHint}
+- Product detail hint: ${garmentDescriptor}.
 
-TASK — FASHION EDITORIAL TRY-ON:
+TASK — RETAIL FIT PREVIEW:
 1. Replace the outfit shown in Image A with the garment from Image B.
 2. Match Image B garment details precisely: color, pattern, cut, straps, neckline, silhouette, and fabric look.
 3. Preserve Image A face, body proportions, skin tone, pose, camera framing, and background.
 4. Ensure realistic fit and drape with natural shadows.
-5. This is standard retail fashion photography — keep output appropriate for an online store product page.
+5. Keep the output commercially appropriate for standard online retail fashion imagery.
+6. ${safetyNote}
+7. Do not redesign the garment into a different category.
 
 Output: One photorealistic image only. No text/watermarks/split panels.`;
     } else {
@@ -250,8 +275,10 @@ Match Image B exactly. Keep face/body/background from Image A unchanged. No text
       : isIntimateGarment
         ? `Create ONE photorealistic retail try-on image.
 Image A = person. Image B = isolated garment on white.${productHint}
+Garment hint: ${garmentDescriptor}.
 Dress the person from Image A in the garment from Image B. Standard fashion catalog style.
 Match Image B exactly. Preserve person identity and background from Image A.
+${safetyNote}
 No text/watermark.`
         : `Create ONE photorealistic clothing-swap image.
 Image A = person. Image B = target garment.${productHint}
@@ -261,16 +288,19 @@ Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos).
 
     const fastIntimatePrompt = `Create ONE photorealistic retail try-on image.
 Image A = person. Image B = target garment.${productHint}
+Garment hint: ${garmentDescriptor}.
 Dress the person from Image A in the garment from Image B.
 Preserve person identity, body shape, and background from Image A.
-Keep output commercially appropriate for fashion e-commerce. No text/watermark.`;
+Keep output commercially appropriate for fashion e-commerce.
+${safetyNote}
+No text/watermark.`;
 
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const attemptPlan: Array<{ model: string; prompt: string; label: string }> = isIntimateGarment
       ? [
-          // Faster path first to avoid timeouts on mobile intimate try-ons.
-          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash2-primary` },
-          { model: "google/gemini-2.5-flash-image", prompt: fallbackPrompt, label: `${typeLabel}-flash-fallback` },
+          { model: "google/gemini-3-pro-image-preview", prompt, label: `${typeLabel}-pro-primary` },
+          { model: "google/gemini-3.1-flash-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-flash2-fallback` },
+          { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-flash-last` },
         ]
       : [
           { model: "google/gemini-2.5-flash-image", prompt, label: `${typeLabel}-primary` },
@@ -295,7 +325,7 @@ Keep output commercially appropriate for fashion e-commerce. No text/watermark.`
       const attemptsLeftAfterThis = attemptPlan.length - attempt - 1;
       const reserveForRetriesMs = attemptsLeftAfterThis * MIN_REQUIRED_MS_PER_ATTEMPT + 2_000;
       const maxAttemptBudgetMs = isIntimateGarment
-        ? (attempt === 0 ? 20_000 : attempt === 1 ? 14_000 : 10_000)
+        ? (attempt === 0 ? 24_000 : attempt === 1 ? 16_000 : 10_000)
         : (attempt === 0 ? 28_000 : 16_000);
       const timeoutMs = Math.min(
         maxAttemptBudgetMs,
@@ -379,19 +409,32 @@ Keep output commercially appropriate for fashion e-commerce. No text/watermark.`
 
       const msg = (aiData.choices as Array<Record<string, unknown>>)?.[0]?.message as Record<string, unknown> | undefined;
       const refusal = msg && Object.prototype.hasOwnProperty.call(msg, "refusal") ? msg.refusal : undefined;
-      if (refusal !== undefined) {
-        console.warn(`REFUSED (${plan.label}):`, JSON.stringify(refusal).substring(0, 300));
-        if (isIntimateGarment) sawIntimateRefusal = true;
-        if (!lastTextContent && isIntimateGarment) {
-          lastTextContent = "The model rejected this garment style in this photo. Try a simpler front-facing product image with clear swimsuit coverage.";
-        }
-      }
       const messageText = typeof msg?.content === "string"
         ? msg.content
         : (Array.isArray(msg?.content)
           ? (msg.content as Array<{ type?: string; text?: string }>).filter(p => p.type === "text").map(p => p.text || "").join("")
           : "");
-      if (messageText) lastTextContent = messageText;
+
+      const refusalSignal = `${typeof refusal === "string" ? refusal : ""} ${messageText}`.toLowerCase();
+      const looksLikeRefusal = refusal !== undefined || /reject|refus|policy|unsafe|cannot|can't|unable/.test(refusalSignal);
+
+      if (refusal !== undefined) {
+        console.warn(`REFUSED (${plan.label}):`, JSON.stringify(refusal).substring(0, 300));
+      }
+
+      if (looksLikeRefusal && isIntimateGarment) {
+        sawIntimateRefusal = true;
+        if (!lastTextContent) {
+          lastTextContent = "Try-on was blocked for this product photo. Use a front-facing product-only image or flat-lay with the full garment visible.";
+        }
+      }
+
+      if (messageText) {
+        const looksLikeStyleRejection = /rejected this garment style|cannot generate|unable to generate|policy|safety/.test(messageText.toLowerCase());
+        lastTextContent = (isIntimateGarment && looksLikeStyleRejection)
+          ? "Try-on was blocked for this product photo. Use a front-facing product-only image or flat-lay with the full garment visible."
+          : messageText;
+      }
       if (lastTextContent) console.warn(`Text-only response (${plan.label}):`, lastTextContent.substring(0, 300));
       console.warn(`Attempt ${attempt + 1} (${plan.label}): No image extracted. Keys=${JSON.stringify(Object.keys(msg || {}))}`);
 
@@ -406,7 +449,7 @@ Keep output commercially appropriate for fashion e-commerce. No text/watermark.`
         const remainingMs = FUNCTION_BUDGET_MS - elapsedMs;
         if (remainingMs > MIN_REQUIRED_MS_PER_ATTEMPT) {
           const rescueTimeoutMs = Math.min(22_000, Math.max(MIN_REQUIRED_MS_PER_ATTEMPT, remainingMs - 1_000));
-          console.log(`Try-on refusal rescue model=google/gemini-3.1-flash-image-preview timeout=${rescueTimeoutMs}ms`);
+          console.log(`Try-on refusal rescue model=google/gemini-3-pro-image-preview timeout=${rescueTimeoutMs}ms`);
           try {
             const controller = new AbortController();
             const timer = setTimeout(() => controller.abort(), rescueTimeoutMs);
@@ -419,7 +462,7 @@ Keep output commercially appropriate for fashion e-commerce. No text/watermark.`
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                  model: "google/gemini-3.1-flash-image-preview",
+                  model: "google/gemini-3-pro-image-preview",
                   modalities: ["image", "text"],
                   messages: [{
                     role: "user",
@@ -454,7 +497,7 @@ Keep output commercially appropriate for fashion e-commerce. No text/watermark.`
 
     if (!resultImage) {
       const failHint = (isSwimwear || isUnderwear || isIntimate)
-        ? "The AI could not generate this swimwear try-on. Try a full-body user photo and a different product image."
+        ? "The AI could not generate this try-on from the current product photo. Try a full-body user photo plus a front-facing product-only or flat-lay garment image."
         : "The AI was unable to generate a try-on image. Try clearer, well-lit photos showing the full person and garment.";
       return successResponse({ description: lastTextContent || failHint, resultImage: null }, 200, corsHeaders);
     }

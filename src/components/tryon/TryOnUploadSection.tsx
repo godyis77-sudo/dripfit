@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { forwardRef, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Check, User, Shirt, Camera, ImageIcon, Link2, Store, Bookmark, FolderOpen, CheckCircle2, XCircle, Lightbulb } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
@@ -31,13 +31,13 @@ interface TryOnUploadSectionProps {
   onBrowseProducts?: () => void;
 }
 
-const TryOnUploadSection = ({
+const TryOnUploadSection = forwardRef<HTMLDivElement, TryOnUploadSectionProps>(({ 
   userPhoto, clothingPhoto, productLink, clothingSaved,
   wardrobeItems, showWardrobe, user,
   onUserPhotoChange, onClothingPhotoChange, onProductLinkChange,
   onSaveClothingToWardrobe, onSelectFromWardrobe, onToggleWardrobe, onToast,
   onRemoveClothing, onBrowseProducts,
-}: TryOnUploadSectionProps) => {
+}, ref) => {
   const userPhotoRef = useRef<HTMLInputElement>(null);
   const userCameraRef = useRef<HTMLInputElement>(null);
   const clothingPhotoRef = useRef<HTMLInputElement>(null);
@@ -72,7 +72,7 @@ const TryOnUploadSection = ({
   };
 
   return (
-    <>
+    <div ref={ref}>
       <div className="grid grid-cols-2 gap-2 mb-3 items-start">
         <input ref={userPhotoRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileSelect(onUserPhotoChange, 'photo')} className="hidden" />
         <input ref={userCameraRef} type="file" accept="image/jpeg,image/png,image/webp" capture="user" onChange={handleFileSelect(onUserPhotoChange, 'photo')} className="hidden" />
@@ -231,8 +231,10 @@ const TryOnUploadSection = ({
           ) : null;
         })()}
       </div>
-    </>
+    </div>
   );
-};
+});
+
+TryOnUploadSection.displayName = 'TryOnUploadSection';
 
 export default TryOnUploadSection;
