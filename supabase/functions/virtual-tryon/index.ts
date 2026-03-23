@@ -449,7 +449,7 @@ Deno.serve(async (req) => {
 
     if (!resultImage) {
       const failHint = isUnderwear
-        ? "The AI could not generate this underwear try-on safely. Try a full-body user photo plus a fuller-coverage opaque underwear product image (e.g., brief/boyshort/full-cup style)."
+        ? "The AI could not generate this swimsuit try-on safely. Try a full-body user photo plus a fuller-coverage opaque product image (e.g., one-piece/full-coverage style)."
         : (isSwimwear || isIntimate)
         ? "The AI could not generate this try-on safely. Try a full-body user photo plus a non-revealing, opaque product image (e.g. one-piece/full-coverage style)."
         : "The AI was unable to generate a try-on image. Try with clearer, well-lit photos showing the full person and garment.";
