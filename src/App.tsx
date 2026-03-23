@@ -119,6 +119,7 @@ const AnimatedRoutes = () => {
           <Route path="/scan" element={<Navigate to="/capture" replace />} />
           <Route path="/saved" element={<Navigate to="/profile/saved" replace />} />
           <Route path="/size-guide" element={<PageTransition><SizeGuide /></PageTransition>} />
+          <Route path="/sizing" element={<Navigate to="/size-guide" replace />} />
           <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
           <Route path="/profile/settings" element={<ProtectedRoute><PageTransition><ProfileSettings /></PageTransition></ProtectedRoute>} />
           <Route path="/profile/saved" element={<ProtectedRoute><PageTransition><SavedItems /></PageTransition></ProtectedRoute>} />
