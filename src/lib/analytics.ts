@@ -171,7 +171,10 @@ type FunnelEvent =
   | 'bg_page_selected'
   | 'bg_page_search_selected'
   | 'bg_page_downloaded'
-  | 'bg_page_category';
+  | 'bg_page_category'
+  | 'outfit_build_started'
+  | 'outfit_saved'
+  | 'outfit_edit_started';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
