@@ -53,6 +53,12 @@ const TryOn = () => {
   const [genreOpen, setGenreOpen] = useState(false);
   const [fitOpen, setFitOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [genderFilter, setGenderFilter] = useState<'all' | 'mens' | 'womens'>(
+    s.userGender === 'mens' ? 'mens' : s.userGender === 'womens' ? 'womens' : 'all'
+  );
+
+  // Effective gender for catalog filtering — manual toggle overrides profile
+  const effectiveGender = genderFilter === 'all' ? undefined : genderFilter;
 
   // Load product catalog for retailer/fit pills
   const { products: catalogProducts } = useProductCatalog(
