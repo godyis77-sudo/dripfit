@@ -75,7 +75,10 @@ Deno.serve(async (req) => {
 
     // ── CLASSIFY ITEM ──
     const itemType: string = (raw.itemType as string) || "clothing";
-    const normalizedItemType = itemType.toLowerCase().replace(/underware/g, "underwear");
+    const normalizedItemType = itemType
+      .toLowerCase()
+      .replace(/underware/g, "underwear")
+      .replace(/underwater/g, "underwear");
     const itemLower = normalizedItemType;
     const productName = typeof raw.productName === "string" ? raw.productName : "";
     const productBrand = typeof raw.productBrand === "string" ? raw.productBrand : "";
@@ -87,17 +90,25 @@ Deno.serve(async (req) => {
     const SWIM_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece"];
     const EXPLICIT_TERMS = ["open cup", "open-cup", "sheer", "see-through", "transparent", "thong", "g-string", "pasties", "nude", "exposed"];
 
+    const normalizeMatchText = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+    const hasContextTerm = (normalizedContext: string, term: string) => {
+      const normalizedTerm = normalizeMatchText(term);
+      if (!normalizedTerm) return false;
+      return ` ${normalizedContext} `.includes(` ${normalizedTerm} `);
+    };
+
     const isAccessory = ACCESSORY_TYPES.includes(itemLower);
-    const productContext = [
+    const normalizedItemContext = normalizeMatchText(itemLower);
+    const normalizedProductContext = normalizeMatchText([
       itemLower,
       productName.toLowerCase(),
       productCategory.toLowerCase(),
       typeof raw.productUrl === "string" ? raw.productUrl.toLowerCase() : "",
-    ].join(" ");
-    const isSwimwear = SWIM_TYPES.some(t => productContext.includes(t));
-    const isUnderwear = UNDERWEAR_TYPES.some(t => productContext.includes(t));
-    const isIntimate = INTIMATE_TYPES.some(t => itemLower.includes(t)) || isSwimwear || isUnderwear;
-    const isExplicitIntimate = EXPLICIT_TERMS.some(t => productContext.includes(t));
+    ].join(" "));
+    const isSwimwear = SWIM_TYPES.some(t => hasContextTerm(normalizedProductContext, t));
+    const isUnderwear = UNDERWEAR_TYPES.some(t => hasContextTerm(normalizedProductContext, t));
+    const isIntimate = INTIMATE_TYPES.some(t => hasContextTerm(normalizedItemContext, t) || hasContextTerm(normalizedProductContext, t)) || isSwimwear || isUnderwear;
+    const isExplicitIntimate = EXPLICIT_TERMS.some(t => hasContextTerm(normalizedProductContext, t));
     const isLayering = raw.isLayering === true;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -121,7 +132,7 @@ Deno.serve(async (req) => {
           ? "fitted fashion garment"
           : itemType;
     const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
-    const FUNCTION_BUDGET_MS = 55_000;
+    const FUNCTION_BUDGET_MS = 58_000;
     const MIN_REQUIRED_MS_PER_ATTEMPT = 6_000;
     const startedAt = Date.now();
 
@@ -299,15 +310,22 @@ Dress model A in the product from Image B. If Image B has a person, extract only
 Mainstream e-commerce catalog style. Keep model identity from Image A. Match product details exactly. ${safetyNote} No text/watermark.`;
 
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
-    const attemptPlan: Array<{ model: string; prompt: string; label: string }> = isIntimateGarment
-      ? [
-          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary` },
-          { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-fallback` },
-          { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-nano-last` },
-        ]
+    const isSwimwearOnly = isSwimwear && !isUnderwear;
+    const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
+      ? isSwimwearOnly
+        ? [
+            { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-nano-primary`, timeoutMs: 14_000 },
+            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-fallback`, timeoutMs: 18_000 },
+            { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-last`, timeoutMs: 20_000 },
+          ]
+        : [
+            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 18_000 },
+            { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-fallback`, timeoutMs: 18_000 },
+            { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-nano-last`, timeoutMs: 16_000 },
+          ]
       : [
-          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary` },
-          { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-retry` },
+          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary`, timeoutMs: 28_000 },
+          { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-retry`, timeoutMs: 20_000 },
         ];
 
     let resultImage: string | null = null;
@@ -328,11 +346,8 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
       // Cap each attempt so one slow model can't starve later retries.
       const attemptsLeftAfterThis = attemptPlan.length - attempt - 1;
       const reserveForRetriesMs = attemptsLeftAfterThis * MIN_REQUIRED_MS_PER_ATTEMPT + 2_000;
-      const maxAttemptBudgetMs = isIntimateGarment
-        ? (attempt === 0 ? 18_000 : attempt === 1 ? 16_000 : 14_000)
-        : (attempt === 0 ? 30_000 : 18_000);
       const timeoutMs = Math.min(
-        maxAttemptBudgetMs,
+        plan.timeoutMs,
         Math.max(MIN_REQUIRED_MS_PER_ATTEMPT, remainingMs - reserveForRetriesMs),
       );
       const isFinalAttempt = attempt === attemptPlan.length - 1;
