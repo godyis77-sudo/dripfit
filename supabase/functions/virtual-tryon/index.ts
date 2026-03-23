@@ -158,10 +158,26 @@ Deno.serve(async (req) => {
 
     /** Extract image from various AI response formats */
     const extractImage = (aiResponse: Record<string, unknown>): string | null => {
-      const message = (aiResponse.choices as Array<{ message: Record<string, unknown> }>)?.[0]?.message;
+      // Log full structure for debugging
+      console.log("AI response keys:", JSON.stringify(Object.keys(aiResponse)));
+      
+      const choices = aiResponse.choices as Array<Record<string, unknown>> | undefined;
+      const message = choices?.[0]?.message as Record<string, unknown> | undefined;
       if (!message) {
-        console.warn("No message in AI response");
+        console.warn("No message in AI response. Top-level keys:", JSON.stringify(Object.keys(aiResponse)));
+        // Check if image is at top level (some gateway formats)
+        if (aiResponse.data && Array.isArray(aiResponse.data)) {
+          for (const item of aiResponse.data as Array<{ url?: string; b64_json?: string }>) {
+            if (item?.url) return item.url;
+            if (item?.b64_json) return `data:image/png;base64,${item.b64_json}`;
+          }
+        }
         return null;
+      }
+
+      console.log("Message keys:", JSON.stringify(Object.keys(message)));
+      if (Array.isArray(message.content)) {
+        console.log("Content parts types:", JSON.stringify((message.content as Array<Record<string, unknown>>).map(p => ({ type: p.type, keys: Object.keys(p) }))));
       }
 
       // Format 1: message.images array (Lovable gateway standard)
@@ -172,31 +188,45 @@ Deno.serve(async (req) => {
         }
       }
 
-      // Format 2: content is an array with image_url parts
+      // Format 2: content array — check all image-bearing part types
       if (Array.isArray(message.content)) {
-        for (const part of message.content as Array<{ type?: string; image_url?: { url?: string } }>) {
-          if (part?.type === "image_url" && part?.image_url?.url) return part.image_url.url;
-        }
-      }
-
-      // Format 3: inline_data in content parts (Gemini native)
-      if (Array.isArray(message.content)) {
-        for (const part of message.content as Array<{ inline_data?: { mime_type?: string; data?: string } }>) {
-          if (part?.inline_data?.data) {
-            const mime = part.inline_data.mime_type || "image/png";
-            return `data:${mime};base64,${part.inline_data.data}`;
+        for (const part of message.content as Array<Record<string, unknown>>) {
+          // image_url part
+          if (part?.type === "image_url") {
+            const iu = part.image_url as { url?: string } | undefined;
+            if (iu?.url) return iu.url;
+          }
+          // inline_data part (Gemini native)
+          if (part?.inline_data) {
+            const id = part.inline_data as { mime_type?: string; data?: string };
+            if (id?.data) return `data:${id.mime_type || "image/png"};base64,${id.data}`;
+          }
+          // Some gateways use "image" type
+          if (part?.type === "image") {
+            const src = (part as { source?: { data?: string; media_type?: string } }).source;
+            if (src?.data) return `data:${src.media_type || "image/png"};base64,${src.data}`;
+            if (typeof (part as { url?: string }).url === "string") return (part as { url?: string }).url!;
           }
         }
       }
 
-      // Format 4: base64 image embedded in text content
-      const textContent = typeof message.content === "string" ? message.content : "";
-      const b64Match = textContent.match(/data:image\/[a-z]+;base64,[A-Za-z0-9+/=]{100,}/);
-      if (b64Match) return b64Match[0];
+      // Format 3: base64 image embedded in text content
+      const textContent = typeof message.content === "string" ? message.content : 
+        (Array.isArray(message.content) ? (message.content as Array<{ type?: string; text?: string }>).filter(p => p.type === "text").map(p => p.text).join("") : "");
+      
+      if (textContent) {
+        const b64Match = textContent.match(/data:image\/[a-z]+;base64,[A-Za-z0-9+/=]{100,}/);
+        if (b64Match) return b64Match[0];
+      }
 
-      console.warn("No image found. Response keys:", JSON.stringify(Object.keys(message)));
-      if (typeof message.content === "string") {
-        console.warn("Text response (truncated):", message.content.substring(0, 300));
+      // Format 4: refusal present — model refused to generate
+      if (message.refusal) {
+        console.warn("Model refused:", JSON.stringify(message.refusal));
+      }
+
+      console.warn("No image found. Message keys:", JSON.stringify(Object.keys(message)));
+      if (textContent) {
+        console.warn("Text response (truncated):", textContent.substring(0, 500));
       }
       return null;
     };
