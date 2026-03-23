@@ -508,12 +508,14 @@ export function useTryOnState() {
   };
 
   const handleTryAnother = () => {
-    setUserPhoto(null); setClothingPhoto(null); setResultImage(null); setDescription(null);
+    // Keep user photo — only reset clothing, result, and session state
+    setClothingPhoto(null); setResultImage(null); setDescription(null);
     setCaption(''); setIsPublic(getDefaultSharePreference()); setShared(false); setAutoSaved(false);
     setProductLink(''); setLookItems([]); setClothingSaved(false); setSavedToItems(false);
     setShowPostUI(false); setShowLookItems(false); setLayerHistory([]);
     setSelectedQuickPick(null);
     try { sessionStorage.removeItem(TRYON_STATE_KEY); localStorage.removeItem(TRYON_RESULT_KEY); } catch { /* ignore */ }
+    // userPhoto persists in localStorage (TRYON_USER_PHOTO_KEY) automatically
   };
 
   const handleAddAccessory = async (accessoryPhoto: string, accessoryCategory: string | null) => {
