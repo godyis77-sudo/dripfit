@@ -188,9 +188,9 @@ Place the accessory from Image B onto the person in Image A at realistic scale a
 Match Image B exactly. Keep face/body/background from Image A unchanged. No text/watermark.`
       : isIntimateGarment
         ? `Create ONE photorealistic retail try-on image.
-Image A = person. Image B = target garment.${productHint}
-Dress Image A person in the exact garment from Image B with realistic fit and lighting.
-Match Image B exactly. Preserve person identity and background from Image A. ${safetyNote}
+Image A = person. Target garment = ${garmentDescriptor}.${productHint}
+Dress Image A person in the target garment with realistic fit and lighting.
+Match the described garment exactly. Preserve person identity and background from Image A. ${safetyNote}
 No text/watermark.`
         : `Create ONE photorealistic clothing-swap image.
 Image A = person. Image B = target garment.${productHint}
