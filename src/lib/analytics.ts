@@ -182,7 +182,8 @@ type FunnelEvent =
   | 'onetap_garment_tapped'
   | 'tryon_drip_card_share_start'
   | 'tryon_drip_card_generated'
-  | 'tryon_drip_card_downloaded';
+  | 'tryon_drip_card_downloaded'
+  | 'tryon_add_item_to_result';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
