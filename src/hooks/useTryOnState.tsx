@@ -97,19 +97,72 @@ export function useTryOnState() {
   const [clothingSaved, setClothingSaved] = useState(false);
 
   // Persist critical state to sessionStorage so it survives mobile camera handoff reloads
-  // NOTE: Don't persist large base64 photos — they can exceed sessionStorage quota (~5MB)
-  const persistState = useCallback((updates: Partial<{ userPhoto: string | null; clothingPhoto: string | null; productLink: string; category: string; resultImage: string | null; lookItems: LookItem[]; caption: string; autoSaved: boolean; shared: boolean; savedToItems: boolean }>) => {
+  // NOTE: Only persist URLs — never large base64 strings
+  const persistState = useCallback((updates: Partial<PersistedTryOnState>) => {
     try {
       const current = (() => { try { return JSON.parse(sessionStorage.getItem(TRYON_STATE_KEY) || '{}'); } catch { return {}; } })();
       const merged = { ...current, ...updates };
-      // Skip persisting result images that are large base64 — they're already auto-saved to DB
-      if (typeof merged.resultImage === 'string' && merged.resultImage.length > 500_000) delete merged.resultImage;
+      // Skip persisting any value that looks like a large base64 string
+      for (const key of ['userPhoto', 'clothingPhoto', 'resultImage'] as const) {
+        if (typeof merged[key] === 'string' && merged[key].startsWith('data:')) delete merged[key];
+      }
       sessionStorage.setItem(TRYON_STATE_KEY, JSON.stringify(merged));
-    } catch { /* quota exceeded — silently skip, photos stay in memory */ }
+    } catch { /* quota exceeded — silently skip */ }
   }, []);
 
-  const setUserPhoto = useCallback((v: string | null) => { setUserPhotoRaw(v); persistState({ userPhoto: v }); }, [persistState]);
-  const setClothingPhoto = useCallback((v: string | null) => { setClothingPhotoRaw(v); persistState({ clothingPhoto: v }); }, [persistState]);
+  // Background upload: converts base64 to a storage URL for persistence
+  const uploadInflightRef = useRef<Record<string, AbortController>>({});
+  const eagerUpload = useCallback(async (base64: string, folder: string): Promise<string | null> => {
+    if (!user) return null; // guests can't upload
+    if (!base64.startsWith('data:')) return null; // already a URL
+    // Abort any previous upload for this folder
+    uploadInflightRef.current[folder]?.abort();
+    const controller = new AbortController();
+    uploadInflightRef.current[folder] = controller;
+    try {
+      const match = base64.match(/^data:(image\/\w+);base64,(.+)$/);
+      const ext = match ? match[1].split('/')[1] : 'jpeg';
+      const rawB64 = match ? match[2] : base64;
+      const bytes = Uint8Array.from(atob(rawB64), c => c.charCodeAt(0));
+      const fileName = `${user.id}/${folder}/${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from('tryon-images').upload(fileName, bytes, { contentType: match ? match[1] : 'image/jpeg' });
+      if (controller.signal.aborted) return null;
+      if (error) { console.warn('Eager upload failed:', error.message); return null; }
+      const { data: signedData } = await supabase.storage.from('tryon-images').createSignedUrl(fileName, 60 * 60 * 24 * 365);
+      if (controller.signal.aborted) return null;
+      return signedData?.signedUrl || null;
+    } catch { return null; }
+  }, [user]);
+
+  const setUserPhoto = useCallback((v: string | null) => {
+    setUserPhotoRaw(v);
+    if (v && v.startsWith('data:')) {
+      // Upload in background, swap to URL when done
+      eagerUpload(v, 'user-staged').then(url => {
+        if (url) {
+          setUserPhotoRaw(url);
+          persistState({ userPhoto: url });
+        }
+      });
+    } else {
+      persistState({ userPhoto: v });
+    }
+  }, [persistState, eagerUpload]);
+
+  const setClothingPhoto = useCallback((v: string | null) => {
+    setClothingPhotoRaw(v);
+    if (v && v.startsWith('data:')) {
+      eagerUpload(v, 'clothing-staged').then(url => {
+        if (url) {
+          setClothingPhotoRaw(url);
+          persistState({ clothingPhoto: url });
+        }
+      });
+    } else {
+      persistState({ clothingPhoto: v });
+    }
+  }, [persistState, eagerUpload]);
+
   const setProductLink = useCallback((v: string) => { setProductLinkRaw(v); persistState({ productLink: v }); }, [persistState]);
   const setCategory = useCallback((v: string) => { setCategoryRaw(v); persistState({ category: v }); }, [persistState]);
   const setResultImage = useCallback((v: string | null) => { setResultImageRaw(v); persistState({ resultImage: v }); }, [persistState]);
