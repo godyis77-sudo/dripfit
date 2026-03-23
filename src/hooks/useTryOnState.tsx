@@ -97,6 +97,7 @@ export function useTryOnState() {
   const [lookItems, setLookItemsRaw] = useState<LookItem[]>(persisted.lookItems);
   const [category, setCategoryRaw] = useState<string>(persisted.category);
   const [clothingSaved, setClothingSaved] = useState(false);
+  const [backgroundSource, setBackgroundSource] = useState<'user' | 'clothing'>('user');
 
   // Persist critical state to sessionStorage so it survives mobile camera handoff reloads
   // NOTE: Only persist URLs — never large base64 strings
