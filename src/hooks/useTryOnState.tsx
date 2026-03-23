@@ -444,14 +444,14 @@ export function useTryOnState() {
       if (resp?.error) throw new Error(resp.error.message || resp.error);
       const payload = resp?.data ?? resp;
       trackEvent('tryon_generated', { tier: user ? (payload.userTier || 'free') : 'guest' });
-      await incrementUsage();
       if (payload.resultImage) {
+        await incrementUsage();
         setResultImage(payload.resultImage);
         setShowSuccessOverlay(true);
         setTimeout(() => setShowSuccessOverlay(false), 1500);
         if (user) autoSaveToProfile(payload.resultImage);
       } else {
-        // No image generated — model may have refused or returned text only
+        // No image generated — don't consume credits
         const fallbackMsg = payload.description || 'The AI could not generate this try-on. Try different photos — well-lit, full body shots work best.';
         setTryOnError(fallbackMsg);
         toast({ title: 'Try-On couldn\'t generate', description: fallbackMsg, variant: 'destructive' });
