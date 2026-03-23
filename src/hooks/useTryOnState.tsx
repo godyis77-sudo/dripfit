@@ -417,6 +417,7 @@ export function useTryOnState() {
         productBrand: selectedQuickPick?.brand || '',
         productCategory: selectedQuickPick?.category || category || '',
         productUrl: selectedQuickPick?.product_url || productLink || '',
+        backgroundSource,
       };
       // Pass guest UUID for unauthenticated users
       if (!user) {
