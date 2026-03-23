@@ -400,6 +400,7 @@ STYLING RULES:
 - ${intimateReferenceRule}
 - ${garmentSwapScopeInstruction}
 - Match product details exactly: color, fabric texture, cut lines, straps, neckline, hemline, logos, and prints.
+- CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. If Image A shows a front-facing person, the output MUST be front-facing. Do NOT rotate, flip, or turn the model to match Image B's pose. Only copy the GARMENT from Image B, never its pose or camera angle.
 - ${identityInstruction}
 ${intimateFramingInstruction}
 - CRITICAL: ${bgInstruction}
@@ -424,6 +425,7 @@ TASK — CLOTHING SWAP:
 3. Match Image B exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
 4. Keep Image A person identity (face, body, hair, skin tone, pose). ${bgInstruction}
 5. Keep garment fit realistic with natural wrinkles and shadows.
+6. CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate or turn the model to match Image B's pose/angle. Copy only the garment from Image B, never its pose.
 
 CRITICAL: Do NOT keep any original clothing from Image A. The ONLY clothing in the output must be the garment from Image B.
 
@@ -444,13 +446,13 @@ Match Image B exactly. Keep face/body from Image A. ${bgFallbackHint} No text/wa
 Put the garment from Image B onto the model in Image A. ${bgFallbackHint}
 If Image B has a model/mannequin, copy only garment details and ignore that person.
 ${garmentSwapScopeInstruction}
-Match product exactly: color, cut, fabric, straps, neckline. Keep model identity and pose from Image A.
+Match product exactly: color, cut, fabric, straps, neckline. Keep model identity, pose, and facing direction from Image A — do NOT rotate the model to match Image B's angle.
 ${safetyNote} No text/watermark.`
         : `Create ONE photorealistic clothing-swap image.
 Image A = person. Image B = target garment.${productHint}
 STRIP ALL clothing from Image A — tops, bottoms, pants, shoes, everything.
 Dress the person ONLY in the exact garment from Image B. If it is a top, show bare legs — do NOT keep pants or bottoms from Image A.
-Preserve face, body shape, skin tone, pose, camera from Image A. ${bgFallbackHint}
+Preserve face, body shape, skin tone, pose, camera angle, and facing direction from Image A — do NOT rotate the model. ${bgFallbackHint}
 Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
 
     const intimateReferenceForFallback = useTextOnlyIntimateReference
@@ -460,13 +462,13 @@ Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos).
     const fastIntimatePrompt = `Photorealistic retail fashion edit.
 Image A = model. ${intimateReferenceForFallback}
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
-${identityInstruction} Match product details exactly. ${safetyNote} No text/watermark.`;
+${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Match product details exactly. ${safetyNote} No text/watermark.`;
 
     const complianceIntimatePrompt = `Retail activewear photo edit.
 Use Image A as the model and ${useTextOnlyIntimateReference ? "the provided garment description" : "Image B"} as the garment reference.
 Apply only the garment to the model with accurate color, pattern, straps, neckline, seams and logos.
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
-${identityInstruction} Keep result clean and commercially appropriate. No text/watermark.`;
+${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Keep result clean and commercially appropriate. No text/watermark.`;
 
     const buildTryOnContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
       const userImageLabel = isIntimateGarment
