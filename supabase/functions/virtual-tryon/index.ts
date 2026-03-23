@@ -334,9 +334,10 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
       ? isSwimwearOnly
         ? [
-            { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-nano-primary`, timeoutMs: 14_000 },
-            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-fallback`, timeoutMs: 18_000 },
-            { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-last`, timeoutMs: 20_000 },
+            // Swimwear works better with flash/pro first; nano is final fallback.
+            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 24_000 },
+            { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-fallback`, timeoutMs: 22_000 },
+            { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-nano-last`, timeoutMs: 14_000 },
           ]
         : [
             { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 18_000 },
@@ -407,6 +408,18 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
       } catch (fetchErr) {
         const isTimeout = (fetchErr instanceof DOMException || fetchErr instanceof Error) && (fetchErr as { name: string }).name === "AbortError";
         console.warn(`Attempt ${attempt + 1} (${plan.label}): ${isTimeout ? "TIMEOUT" : "FAILED"}`, fetchErr);
+
+        let extractedAfterTimeout = false;
+        if (isTimeout && isIntimateGarment && !attemptedRefusalExtraction) {
+          attemptedRefusalExtraction = true;
+          const rescuedGarment = await extractIntimateGarment();
+          if (rescuedGarment) {
+            garmentOnlyImage = rescuedGarment;
+            extractedAfterTimeout = true;
+            console.log(`Timeout rescue extracted garment (${plan.label}); retrying with cleaned product image.`);
+          }
+        }
+
         if (!lastTextContent || !lastTextContent.toLowerCase().includes("rejected this garment style")) {
           lastTextContent = isFinalAttempt
             ? (isTimeout
@@ -417,7 +430,7 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
               : "The AI request failed. Trying a fallback now.");
         }
         if (!isFinalAttempt) {
-          await new Promise(r => setTimeout(r, isTimeout ? 300 : 700));
+          await new Promise(r => setTimeout(r, extractedAfterTimeout ? 120 : (isTimeout ? 300 : 700)));
           continue;
         }
         break;
