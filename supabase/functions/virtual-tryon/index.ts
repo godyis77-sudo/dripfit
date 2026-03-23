@@ -274,8 +274,16 @@ Deno.serve(async (req) => {
       ? "sporty fitted garment with retail styling"
       : `${itemType} with catalog-style details`);
 
+    const swimwearScopeInstruction = isTopOnlyGarment
+      ? "This is a SWIM TOP. Remove all existing streetwear from Image A (blazer, shirts, pants, jeans, shorts, skirts, leggings, dresses). Put the swim top from Image B on the upper body and pair it with a simple matching swim bottom in the same color family. Do NOT keep any pants/jeans/shorts/skirts from Image A."
+      : "Remove all existing clothing from Image A (tops, pants, shorts, skirts — everything). Dress the model in the COMPLETE swimwear look from Image B and show all visible garment parts accurately.";
+
+    const intimateScopeInstruction = isSwimwear
+      ? swimwearScopeInstruction
+      : "Remove all existing clothing from Image A (tops, pants, shorts, skirts — everything). Then dress them ONLY in the COMPLETE garment from Image B — show every part of it (all straps, panels, cups, ties, etc). Do not crop or omit any portion of the garment. The ONLY clothing in the output must be the garment from Image B.";
+
     const garmentSwapScopeInstruction = isIntimateGarment
-      ? "FIRST remove ALL existing clothing from the person in Image A (tops, pants, shorts, skirts — everything). Then dress them ONLY in the COMPLETE garment from Image B — show every part of it (all straps, panels, cups, ties, etc). Do not crop or omit any portion of the garment. The ONLY clothing in the output must be the garment from Image B."
+      ? intimateScopeInstruction
       : isTopOnlyGarment
         ? "This is a TOP-only garment: replace upper-body clothing only and keep lower-body clothing from Image A unchanged."
         : "Replace only the clothing area needed for this garment and keep all unrelated body/background details unchanged.";
@@ -379,9 +387,9 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
       ? isSwimwearOnly
         ? [
-            // Swimwear: quality flash first, then two fast compliance fallbacks.
+            // Swimwear: quality flash first, then stronger instruction-following fallback, then fast compliance fallback.
             { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 18_000 },
-            { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-nano-fallback`, timeoutMs: 16_000 },
+            { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-fallback`, timeoutMs: 18_000 },
             { model: "google/gemini-2.5-flash-image", prompt: complianceIntimatePrompt, label: `${typeLabel}-nano-compliance`, timeoutMs: 16_000 },
           ]
         : [
