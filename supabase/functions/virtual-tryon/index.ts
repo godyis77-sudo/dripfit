@@ -462,8 +462,8 @@ Dress the person ONLY in the exact garment from Image B. If it is a top, show ba
 Preserve face, body shape, skin tone, pose, camera from Image A. ${bgFallbackHint}
 Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
 
-    const intimateReferenceForFallback = useTextOnlySwimwearReference
-      ? `Reference garment description: ${swimwearTextReference}.`
+    const intimateReferenceForFallback = useTextOnlyIntimateReference
+      ? `Reference garment description: ${intimateTextReference}.`
       : `Image B = ${promptIntimateLabel}. Put garment from Image B on model in Image A and ignore any person in Image B.`;
 
     const fastIntimatePrompt = `Photorealistic retail fashion edit.
@@ -472,7 +472,7 @@ ${garmentSwapScopeInstruction} ${bgFallbackHint}
 ${identityInstruction} Match product details exactly. ${safetyNote} No text/watermark.`;
 
     const complianceIntimatePrompt = `Retail activewear photo edit.
-Use Image A as the model and ${useTextOnlySwimwearReference ? "the provided garment description" : "Image B"} as the garment reference.
+Use Image A as the model and ${useTextOnlyIntimateReference ? "the provided garment description" : "Image B"} as the garment reference.
 Apply only the garment to the model with accurate color, pattern, straps, neckline, seams and logos.
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
 ${identityInstruction} Keep result clean and commercially appropriate. No text/watermark.`;
