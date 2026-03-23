@@ -151,27 +151,48 @@ Deno.serve(async (req) => {
     const userImageInput = toImageInput(userPhoto);
     const clothingImageInput = toImageInput(clothingPhoto);
 
+    const swimwearGarmentLabel = (() => {
+      const context = normalizeMatchText([itemLower, productName, productCategory].join(" "));
+      if (/\b(one piece|one-piece|monokini)\b/.test(context)) return "athletic one-piece";
+      if (/\b(bottom|brief|short|bottoms|bikini bottom)\b/.test(context)) return "athletic bottom";
+      if (/\b(top|triangle|bralette|bikini top|tankini top)\b/.test(context)) return "athletic top";
+      return "athletic garment";
+    })();
+
+    const isTopOnlyGarment =
+      /\b(top|bralette|bra|tankini top|bikini top|triangle)\b/.test(normalizedProductContext) &&
+      !/\b(bottom|brief|bottoms|short|shorts|set|two piece|2 piece|one piece|one-piece)\b/.test(normalizedProductContext);
+
     const neutralItemLabel = isUnderwear
-      ? "athletic base-layer set"
+      ? "athletic base-layer garment"
       : isSwimwear
-        ? "swimwear set"
+        ? swimwearGarmentLabel
         : isIntimate
           ? "fitted fashion garment"
           : itemType;
+    const promptIntimateLabel = isSwimwear
+      ? (isTopOnlyGarment ? "athletic crop top" : "athletic activewear piece")
+      : neutralItemLabel;
+
     const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
     const FUNCTION_BUDGET_MS = 58_000;
     const MIN_REQUIRED_MS_PER_ATTEMPT = isIntimateGarment ? 4_000 : 6_000;
     const startedAt = Date.now();
 
     // ── EXTRACT GARMENT FROM PRODUCT IMAGE (OPTIONAL) ──
-    // Keep pre-extraction off for swimwear to preserve attempt budget; use rescue extraction after refusal/timeout.
+    // For swimwear + user background, pre-extract to reduce refusals from model-in-product photos.
     const forceIntimateExtraction = raw.forceIntimateExtraction === true;
     const disableIntimateExtraction = raw.disableIntimateExtraction === true;
-    const enableIntimateExtraction = isIntimateGarment && !disableIntimateExtraction && (forceIntimateExtraction || isUnderwear);
+    const enableIntimateExtraction = isIntimateGarment && !disableIntimateExtraction && (
+      forceIntimateExtraction ||
+      isUnderwear ||
+      (isSwimwear && !useClothingBg)
+    );
     const extractIntimateGarment = async (): Promise<string | null> => {
-      const extractPrompt = `Isolate ONLY the target garment from this product photo. Remove any person/model/mannequin and any visible skin. Return a clean product-only image of the ${neutralItemLabel} on a plain white background. Keep garment color, shape, straps, seams, and logos accurate.`;
+      const extractPrompt = `Isolate ONLY the target garment from this product photo. Remove any person/model/mannequin and any visible skin. Return a clean product-only image of the ${promptIntimateLabel} on a plain white background. Keep garment color, shape, straps, seams, and logos accurate.`;
       const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = [
-        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 13_000, label: "extract-flash" },
+        { model: "google/gemini-2.5-flash-image", timeoutMs: 8_000, label: "extract-nano-primary" },
+        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 10_000, label: "extract-flash-fallback" },
       ];
 
       for (const plan of extractionPlan) {
@@ -240,6 +261,7 @@ Deno.serve(async (req) => {
     const sanitizedProductDesc = isIntimateGarment
       ? productDesc
           .replace(/\b(lingerie|underwear|panties|briefs|boxers)\b/gi, "base-layer")
+          .replace(/\b(swimwear|swimsuit|bikini|one-piece|one piece|tankini)\b/gi, "activewear")
           .replace(/\b(sports bra|bra|bralette)\b/gi, "support top")
           .replace(/\b(open cup|open-cup|thong|g-string)\b/gi, "full-coverage")
           .replace(/\b(sheer|see-through|transparent)\b/gi, "opaque")
@@ -251,6 +273,10 @@ Deno.serve(async (req) => {
     const garmentDescriptor = sanitizedProductDesc || (isIntimateGarment
       ? "sporty fitted garment with retail styling"
       : `${itemType} with catalog-style details`);
+
+    const garmentSwapScopeInstruction = isTopOnlyGarment
+      ? "This is a TOP-only garment: replace upper-body clothing only and keep lower-body clothing from Image A unchanged."
+      : "Replace only the clothing area needed for this garment and keep all unrelated body/background details unchanged.";
 
     // ── BUILD PROMPT ──
     const safetyNote = isExplicitIntimate
@@ -274,21 +300,21 @@ TASK: Add the accessory from Image B onto the person in Image A. Match Image B e
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
 IMAGE A: A person in their environment — this is the MODEL. Keep their face, body, hair, skin tone, and pose exactly as shown.
-IMAGE B: A ${neutralItemLabel} product listing photo from an online store.
+IMAGE B: A ${promptIntimateLabel} product listing photo from an online store.
 
-TASK: Dress the model from Image A in the ${neutralItemLabel} shown in Image B.
+TASK: Put the ${promptIntimateLabel} from Image B onto the model in Image A.
 
 STYLING RULES:
-- Replace whatever the model is currently wearing with the product from Image B.
-- If Image B shows a model/mannequin, copy only the garment — ignore that person.
-- Accurately reproduce the product details: color, fabric texture, cut lines, straps, neckline, hemline, logos, and prints.
+- If Image B shows a model/mannequin, copy only the garment and ignore that person.
+- ${garmentSwapScopeInstruction}
+- Match product details exactly: color, fabric texture, cut lines, straps, neckline, hemline, logos, and prints.
 - Keep the model's face, body shape, skin tone, hair, and pose identical to Image A.
 - CRITICAL: ${bgInstruction}
 - Realistic fabric drape and shadows that match the scene lighting.
 - Do NOT add extra clothing items not present in Image B.
 - ${safetyNote}
 
-Output: One clean photorealistic photo. No text, watermarks, or collages.`;
+Output: One clean photorealistic retail-fashion photo. No text, watermarks, or collages.`;
     } else {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
@@ -321,9 +347,10 @@ Image A = person. Image B = target accessory.${productHint}
 Place the accessory from Image B onto the person in Image A at realistic scale and lighting.
 Match Image B exactly. Keep face/body from Image A. ${bgFallbackHint} No text/watermark.`
       : isIntimateGarment
-        ? `Fashion photo edit. Image A = person. Image B = ${neutralItemLabel} from an online retailer.
-Dress the person from Image A in the product from Image B. ${bgFallbackHint}
-If Image B has a model/mannequin, copy only the garment details — ignore that person.
+        ? `Fashion photo edit. Image A = person. Image B = ${promptIntimateLabel} from an online retailer.
+Put the garment from Image B onto the model in Image A. ${bgFallbackHint}
+If Image B has a model/mannequin, copy only garment details and ignore that person.
+${garmentSwapScopeInstruction}
 Match product exactly: color, cut, fabric, straps, neckline. Keep model identity and pose from Image A.
 ${safetyNote} No text/watermark.`
         : `Create ONE photorealistic clothing-swap image.
@@ -333,20 +360,27 @@ Dress the person ONLY in the exact garment from Image B. If it is a top, show ba
 Preserve face, body shape, skin tone, pose, camera from Image A. ${bgFallbackHint}
 Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
 
-    const fastIntimatePrompt = `Fashion photo edit. Image A = person. Image B = ${neutralItemLabel}.
-Dress the person from Image A in the product from Image B. If Image B has a person, extract only the garment.
-${bgFallbackHint}
+    const fastIntimatePrompt = `Photorealistic retail fashion edit.
+Image A = model. Image B = ${promptIntimateLabel}.
+Put garment from Image B on model in Image A and ignore any person in Image B.
+${garmentSwapScopeInstruction} ${bgFallbackHint}
 Keep model identity and pose from Image A. Match product details exactly. ${safetyNote} No text/watermark.`;
+
+    const complianceIntimatePrompt = `Retail activewear photo edit.
+Use Image A as the model and Image B as the garment reference.
+Apply only the garment to the model with accurate color, pattern, straps, neckline, seams and logos.
+${garmentSwapScopeInstruction} ${bgFallbackHint}
+Preserve face, body, pose, and scene from Image A. Keep result clean and commercially appropriate. No text/watermark.`;
 
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const isSwimwearOnly = isSwimwear && !isUnderwear;
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
       ? isSwimwearOnly
         ? [
-            // Swimwear: quick flash probe → pro fallback → nano rescue with extracted garment.
-            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 10_000 },
-            { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-fallback`, timeoutMs: 25_000 },
-            { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-nano-last`, timeoutMs: 16_000 },
+            // Swimwear: quality flash first, then two fast compliance fallbacks.
+            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 18_000 },
+            { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-nano-fallback`, timeoutMs: 16_000 },
+            { model: "google/gemini-2.5-flash-image", prompt: complianceIntimatePrompt, label: `${typeLabel}-nano-compliance`, timeoutMs: 16_000 },
           ]
         : [
             { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 18_000 },
