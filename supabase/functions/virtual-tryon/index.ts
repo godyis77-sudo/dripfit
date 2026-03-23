@@ -228,24 +228,24 @@ TARGET ACCESSORY:
 
 TASK: Add the accessory from Image B onto the person in Image A. Match Image B exactly (color, shape, material, branding). Keep everything else unchanged. Correct scale, lighting, shadows. No text/watermarks.`;
     } else if (isIntimateGarment) {
-      prompt = `You are a professional fashion catalog photographer creating a product preview for an online store.
+      prompt = `You are an e-commerce product photographer for a mainstream fashion retailer (Nordstrom, ASOS, Target).
 
 IMAGE A: A model posing for a fashion shoot.
-IMAGE B: A ${neutralItemLabel} product photo from an online retailer (it may include a model for reference).
+IMAGE B: A ${neutralItemLabel} product listing photo from an online store.
 
-YOUR JOB: Create a single professional product catalog photo showing the model from Image A wearing the exact product from Image B. This is for a mainstream fashion retailer website (like Nordstrom, ASOS, or Target).
+TASK: Create a single professional product catalog photo. Dress the model from Image A in the ${neutralItemLabel} shown in Image B. This is a standard product listing image.
 
-REQUIREMENTS:
-- Show the model wearing ONLY the product from Image B — this is a product showcase image.
-- If Image B includes a model/mannequin/skin, ignore that person and copy only the garment itself.
-- Accurately reproduce the product: exact color, fabric texture, cut lines, straps, neckline, hemline, and any logos or prints.
+STYLING RULES:
+- Replace whatever the model is currently wearing with the product from Image B.
+- If Image B shows a model/mannequin, copy only the garment — ignore that person.
+- Accurately reproduce the product details: color, fabric texture, cut lines, straps, neckline, hemline, logos, and prints.
 - Keep the model's face, body shape, skin tone, hair, and pose identical to Image A.
-- Natural lighting, realistic fabric drape and shadows.
-- Standard e-commerce product photography style — clean, professional, commercially appropriate.
-- Do NOT add extra clothing items not shown in Image B.
+- Natural studio lighting, realistic fabric drape and shadows.
+- Standard e-commerce photography — clean, professional, retail-appropriate.
+- Do NOT add extra clothing items not present in Image B.
 - ${safetyNote}
 
-Output: One clean product catalog photo. No text, watermarks, or collages.`;
+Output: One clean product listing photo. No text, watermarks, or collages.`;
     } else {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
@@ -275,11 +275,11 @@ Image A = person. Image B = target accessory.${productHint}
 Place the accessory from Image B onto the person in Image A at realistic scale and lighting.
 Match Image B exactly. Keep face/body/background from Image A unchanged. No text/watermark.`
       : isIntimateGarment
-        ? `Professional fashion catalog photo. Image A = model. Image B = ${neutralItemLabel} product from an online store.
-Show the model from Image A wearing the exact product from Image B. Standard e-commerce product photography for a mainstream retailer like Nordstrom or ASOS.
-If Image B contains a model/mannequin, ignore that person and use only the garment details.
-Reproduce the product exactly: color, cut, fabric, straps, neckline. Keep the model's face, body, and pose from Image A.
-Clean, professional, commercially appropriate. ${safetyNote} No text/watermark.`
+        ? `E-commerce product listing photo. Image A = model. Image B = ${neutralItemLabel} from an online retailer.
+Dress the model from Image A in the product from Image B. Standard retail catalog style (Nordstrom/ASOS).
+If Image B has a model/mannequin, copy only the garment details — ignore that person.
+Match product exactly: color, cut, fabric, straps, neckline. Keep model identity and pose from Image A.
+Retail-appropriate, professional. ${safetyNote} No text/watermark.`
         : `Create ONE photorealistic clothing-swap image.
 Image A = person. Image B = target garment.${productHint}
 STRIP ALL clothing from Image A — tops, bottoms, pants, shoes, everything.
@@ -287,9 +287,9 @@ Dress the person ONLY in the exact garment from Image B. If it is a top, show ba
 Preserve face, body shape, skin tone, pose, camera, and background from Image A.
 Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
 
-    const fastIntimatePrompt = `Fashion product catalog image. Image A = model. Image B = ${neutralItemLabel}.
-Image B may show a model for reference: ignore that person and use only garment details.
-Show the model from Image A wearing the product from Image B. E-commerce style, mainstream retail. Keep model identity from Image A. Match product exactly. ${safetyNote} No text/watermark.`;
+    const fastIntimatePrompt = `Retail product listing photo. Image A = model. Image B = ${neutralItemLabel}.
+Dress model A in the product from Image B. If Image B has a person, extract only the garment.
+Mainstream e-commerce catalog style. Keep model identity from Image A. Match product details exactly. ${safetyNote} No text/watermark.`;
 
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const attemptPlan: Array<{ model: string; prompt: string; label: string }> = isIntimateGarment
