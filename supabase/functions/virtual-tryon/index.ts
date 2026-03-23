@@ -446,7 +446,7 @@ Match Image B exactly. Keep face/body from Image A. ${bgFallbackHint} No text/wa
 Put the garment from Image B onto the model in Image A. ${bgFallbackHint}
 If Image B has a model/mannequin, copy only garment details and ignore that person.
 ${garmentSwapScopeInstruction}
-Match product exactly: color, cut, fabric, straps, neckline. Keep model identity and pose from Image A.
+Match product exactly: color, cut, fabric, straps, neckline. Keep model identity, pose, and facing direction from Image A — do NOT rotate the model to match Image B's angle.
 ${safetyNote} No text/watermark.`
         : `Create ONE photorealistic clothing-swap image.
 Image A = person. Image B = target garment.${productHint}
