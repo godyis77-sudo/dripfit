@@ -516,7 +516,7 @@ ${identityInstruction} Keep result clean and commercially appropriate. No text/w
     let resultImage: string | null = null;
     let lastTextContent = "";
     let sawIntimateRefusal = false;
-    let attemptedRefusalExtraction = isSwimwearOnly ? true : preExtractedGarment;
+    let attemptedRefusalExtraction = isIntimateGarment ? true : preExtractedGarment;
 
     for (let attempt = 0; attempt < attemptPlan.length; attempt++) {
       const plan = attemptPlan[attempt];
