@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Sparkles, ExternalLink, ShoppingCart, ChevronDown, ShoppingBag } from 'lucide-react';
+import { PriceWatchButton } from '@/components/pricing/PriceWatchUI';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -212,6 +213,20 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
                 {product.id && isInCart(product.id) ? 'In Cart ✓' : '+ Cart'}
               </Button>
             )}
+          </div>
+        )}
+
+        {/* Price Watch button */}
+        {user && product.id && product.price_cents != null && (
+          <div className="flex justify-center">
+            <PriceWatchButton
+              productId={product.id}
+              productName={product.name}
+              brand={product.brand}
+              productUrl={product.product_url || undefined}
+              priceCents={product.price_cents}
+              currency={product.currency}
+            />
           </div>
         )}
 
