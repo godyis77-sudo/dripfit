@@ -463,11 +463,12 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
 
       const msg = (aiData.choices as Array<Record<string, unknown>>)?.[0]?.message as Record<string, unknown> | undefined;
       const refusal = msg && Object.prototype.hasOwnProperty.call(msg, "refusal") ? msg.refusal : undefined;
-      const messageText = typeof msg?.content === "string"
+      const messageTextRaw = typeof msg?.content === "string"
         ? msg.content
         : (Array.isArray(msg?.content)
           ? (msg.content as Array<{ type?: string; text?: string }>).filter(p => p.type === "text").map(p => p.text || "").join("")
           : "");
+      const messageText = messageTextRaw.trim();
 
       const refusalSignal = `${typeof refusal === "string" ? refusal : ""} ${messageText}`.toLowerCase();
       const looksLikeRefusal = refusal !== undefined || /reject|refus|policy|unsafe|cannot|can't|unable/.test(refusalSignal);
@@ -496,10 +497,18 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
       }
 
       if (messageText) {
-        const looksLikeStyleRejection = /rejected this garment style|cannot generate|unable to generate|policy|safety/.test(messageText.toLowerCase());
-        lastTextContent = (isIntimateGarment && looksLikeStyleRejection)
-          ? "Try-on was blocked for this product photo. Use a front-facing product-only image or flat-lay with the full garment visible."
-          : messageText;
+        const lowerMessage = messageText.toLowerCase();
+        const looksLikeStyleRejection = /rejected this garment style|cannot generate|unable to generate|policy|safety/.test(lowerMessage);
+        const looksLikeNonDiagnosticTextOnly =
+          /^(absolutely|sure|great|okay|ok|here(?:'|’)s|i(?:'|’)ve|i have|done|generated)/i.test(messageText) ||
+          /here(?:'|’)s the model/i.test(lowerMessage) ||
+          /wearing the .* from image b/i.test(lowerMessage);
+
+        if (isIntimateGarment && looksLikeStyleRejection) {
+          lastTextContent = "Try-on was blocked for this product photo. Use a front-facing product-only image or flat-lay with the full garment visible.";
+        } else if (!looksLikeNonDiagnosticTextOnly) {
+          lastTextContent = messageText;
+        }
       }
       if (lastTextContent) console.warn(`Text-only response (${plan.label}):`, lastTextContent.substring(0, 300));
       console.warn(`Attempt ${attempt + 1} (${plan.label}): No image extracted. Keys=${JSON.stringify(Object.keys(msg || {}))}`);
@@ -567,9 +576,19 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
     }
 
     if (!resultImage) {
-      if (lastTextContent.toLowerCase().includes("trying a quicker fallback now") || lastTextContent.toLowerCase().includes("trying a fallback now")) {
+      const lowerLastText = lastTextContent.toLowerCase();
+      const looksLikeNonDiagnosticTextOnly =
+        /^(absolutely|sure|great|okay|ok|here(?:'|’)s|i(?:'|’)ve|i have|done|generated)/i.test(lastTextContent.trim()) ||
+        /here(?:'|’)s the model/i.test(lowerLastText) ||
+        /wearing the .* from image b/i.test(lowerLastText);
+
+      if (lowerLastText.includes("trying a quicker fallback now") || lowerLastText.includes("trying a fallback now")) {
         lastTextContent = "The AI request timed out across all retries. Try again with a clearer front-facing clothing photo.";
       }
+      if (looksLikeNonDiagnosticTextOnly) {
+        lastTextContent = "";
+      }
+
       const failHint = (isSwimwear || isUnderwear || isIntimate)
         ? "The AI could not generate this try-on from the current product photo. Try a full-body user photo plus a front-facing product-only or flat-lay garment image."
         : "The AI was unable to generate a try-on image. Try clearer, well-lit photos showing the full person and garment.";
