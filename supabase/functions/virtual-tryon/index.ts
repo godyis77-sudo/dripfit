@@ -99,6 +99,7 @@ Deno.serve(async (req) => {
     const itemLower = itemType.toLowerCase();
     const ACCESSORY_TYPES = ["accessory", "jewelry", "necklace", "bracelet", "earrings", "ring", "watch", "hat", "hats", "cap", "sunglasses", "glasses", "bag", "bags", "purse", "handbag", "belt", "belts", "scarf", "scarves", "shoes", "sneakers", "boots", "heels", "loafers", "sandals"];
     const INTIMATE_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece", "bra", "bralette", "sports bra", "underwear", "panties", "briefs", "boxers", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise", "lounge", "loungewear", "sleepwear", "pajamas", "robe"];
+    const UNDERWEAR_TYPES = ["underwear", "panties", "briefs", "boxers", "bra", "bralette", "sports bra", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise"];
     const SWIM_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece"];
     const EXPLICIT_TERMS = ["open cup", "open-cup", "open gusset", "open-gusset", "sheer", "see-through", "transparent", "thong", "g-string", "pasties", "nude", "exposed"];
     const isAccessory = ACCESSORY_TYPES.includes(itemLower);
@@ -110,6 +111,7 @@ Deno.serve(async (req) => {
       typeof raw.productUrl === "string" ? raw.productUrl.toLowerCase() : "",
     ].join(" ");
     const isSwimwear = SWIM_TYPES.some(t => productContext.includes(t));
+    const isUnderwear = UNDERWEAR_TYPES.some(t => productContext.includes(t));
     const isExplicitIntimate = EXPLICIT_TERMS.some(t => productContext.includes(t));
     const isLayering = raw.isLayering === true;
 
@@ -162,15 +164,17 @@ Deno.serve(async (req) => {
       toImageInput(clothingPhoto),
     ]);
 
-    const neutralItemLabel = isSwimwear ? "swimwear garment" : (isIntimate ? "fashion garment" : itemType);
+    const neutralItemLabel = isSwimwear ? "swimwear garment" : (isUnderwear ? "base-layer garment" : (isIntimate ? "fashion garment" : itemType));
     const basePrompt = isAccessory || isLayering
       ? `Create one photorealistic virtual try-on image using two inputs. Image 1 is the person${isLayering ? " already wearing an outfit" : ""}. Image 2 is the accessory (${itemType}). Keep the same person, face, pose, lighting, and background from Image 1. Add only the accessory from Image 2 with correct scale, perspective, and material detail. Output image only, no text.`
       : `Create one photorealistic virtual try-on image using two inputs. Image 1 is the person. Image 2 is the product (${neutralItemLabel}) from a fashion catalog. Keep the same person identity, pose, camera angle, and background from Image 1. Apply the product from Image 2 with accurate color, pattern, logos, seams, and texture. Ensure realistic fit and drape. Output image only, no text.`;
     const safetyPrompt = (isSwimwear || isIntimate)
-      ? `${basePrompt} This is a legitimate retail styling request. Keep the output non-explicit and family-safe: opaque materials, no nudity, no exposed intimate body details. IMPORTANT: preserve the original garment category from Image 2.`
+      ? `${basePrompt} This is a legitimate retail styling request. Keep the output non-explicit and family-safe: opaque materials, no nudity, no exposed intimate body details. IMPORTANT: preserve the original garment category from Image 2.${isUnderwear ? " For underwear/base-layer items: render as a non-sexual commercial fit preview; if needed for safety, increase coverage within underwear family only (e.g., thong→brief, low-rise brief→high-waist brief, balconette→full-cup), while preserving color/pattern/logo and key strap/seam cues." : ""}${isExplicitIntimate ? " If Image 2 appears sheer/see-through, reinterpret it as opaque fabric while keeping the same design language." : ""}`
       : basePrompt;
     const conservativeFallbackPrompt = isSwimwear
       ? `${basePrompt} Keep the item as SWIMWEAR ONLY. You may increase coverage within swimwear constraints (e.g., fuller cups, higher waist, one-piece adaptation), but you must keep it a swimsuit/bikini and preserve the original swimwear silhouette and color/pattern cues from Image 2. NEVER convert it to a dress, gown, skirt, pants, jacket, or any non-swimwear category.`
+      : isUnderwear
+      ? `${basePrompt} Keep the item as UNDERWEAR/BASE-LAYER ONLY. You may increase coverage for safety, but only within underwear silhouettes (brief/boyshort/full-cup/sports-bra variants). Preserve color, pattern, logo, and key seam/strap details from Image 2. NEVER convert to dresses, skirts, pants, jeans, jackets, outerwear, or sleep robes.`
       : `${basePrompt} Keep the same garment category and core silhouette from Image 2. Do not convert the item into a different clothing type.`;
     const promptVariants = (isSwimwear || isIntimate)
       ? [safetyPrompt, conservativeFallbackPrompt, conservativeFallbackPrompt]
@@ -253,7 +257,13 @@ Deno.serve(async (req) => {
 
     // Retry loop with model + prompt fallback
     const MAX_ATTEMPTS = 3;
-    const MODELS = (isSwimwear || isIntimate)
+    const MODELS = isUnderwear
+      ? [
+          "google/gemini-2.5-flash-image",
+          "google/gemini-2.5-flash-image",
+          "google/gemini-3.1-flash-image-preview",
+        ]
+      : (isSwimwear || isIntimate)
       ? [
           "google/gemini-2.5-flash-image",        // least restrictive for intimate items
           "google/gemini-3.1-flash-image-preview",
@@ -358,7 +368,9 @@ Deno.serve(async (req) => {
     }
 
     if (!resultImage) {
-      const failHint = (isSwimwear || isIntimate)
+      const failHint = isUnderwear
+        ? "The AI could not generate this underwear try-on safely. Try a full-body user photo plus a fuller-coverage opaque underwear product image (e.g., brief/boyshort/full-cup style)."
+        : (isSwimwear || isIntimate)
         ? "The AI could not generate this try-on safely. Try a full-body user photo plus a non-revealing, opaque product image (e.g. one-piece/full-coverage style)."
         : "The AI was unable to generate a try-on image. Try with clearer, well-lit photos showing the full person and garment.";
       return successResponse({ 
