@@ -275,11 +275,11 @@ Image A = person. Image B = target accessory.${productHint}
 Place the accessory from Image B onto the person in Image A at realistic scale and lighting.
 Match Image B exactly. Keep face/body/background from Image A unchanged. No text/watermark.`
       : isIntimateGarment
-        ? `Professional fashion catalog photo. Image A = model. Image B = ${neutralItemLabel} product from an online store.
-Show the model from Image A wearing the exact product from Image B. Standard e-commerce product photography for a mainstream retailer like Nordstrom or ASOS.
-If Image B contains a model/mannequin, ignore that person and use only the garment details.
-Reproduce the product exactly: color, cut, fabric, straps, neckline. Keep the model's face, body, and pose from Image A.
-Clean, professional, commercially appropriate. ${safetyNote} No text/watermark.`
+        ? `E-commerce product listing photo. Image A = model. Image B = ${neutralItemLabel} from an online retailer.
+Dress the model from Image A in the product from Image B. Standard retail catalog style (Nordstrom/ASOS).
+If Image B has a model/mannequin, copy only the garment details — ignore that person.
+Match product exactly: color, cut, fabric, straps, neckline. Keep model identity and pose from Image A.
+Retail-appropriate, professional. ${safetyNote} No text/watermark.`
         : `Create ONE photorealistic clothing-swap image.
 Image A = person. Image B = target garment.${productHint}
 STRIP ALL clothing from Image A — tops, bottoms, pants, shoes, everything.
