@@ -425,16 +425,144 @@ const TryOnResultSection = ({
                   <input ref={accessoryPhotoRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileSelect(setAccessoryPhoto)} className="hidden" />
                   <input ref={accessoryCameraRef} type="file" accept="image/jpeg,image/png,image/webp" capture="environment" onChange={handleFileSelect(setAccessoryPhoto)} className="hidden" />
                   <p className="text-[12px] text-foreground/70 mb-2">Layer one item at a time — tops, bottoms, shoes, and more</p>
-                  <div className="flex gap-1.5 flex-wrap mb-2">
-                    <button onClick={() => { setShowAllCategories(prev => !prev); setAccessoryCategory(null); }} className={`pill ${showAllCategories ? 'pill-filled' : ''}`}>
-                      🛍️ All Products
-                    </button>
-                    {ACCESSORY_CATEGORIES.map(c => (
-                      <button key={c.key} onClick={() => { setAccessoryCategory(prev => prev === c.key ? null : c.key); setShowAllCategories(false); }} className={`pill ${accessoryCategory === c.key && !showAllCategories ? 'pill-filled' : ''}`}>
-                        {c.label}
-                      </button>
-                    ))}
+
+                  {/* ── Brand Search ── */}
+                  <div className="mb-2">
+                    <BrandFilter
+                      gender={userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : null}
+                      selectedBrand={accBrandFilter}
+                      onBrandChange={setAccBrandFilter}
+                    />
                   </div>
+
+                  {/* ── Filters Button (Browse-style) ── */}
+                  <button
+                    onClick={() => setAccFiltersOpen(!accFiltersOpen)}
+                    className={`relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold mb-2 ${
+                      (accessoryCategory || accRetailerFilter || accSort !== 'default' || accBrandFilter)
+                        ? 'btn-luxury text-primary-foreground'
+                        : 'bg-background border border-border text-foreground/70'
+                    }`}
+                  >
+                    <SlidersHorizontal className="h-4 w-4" />
+                    {(() => {
+                      const count = (accessoryCategory ? 1 : 0) + (accRetailerFilter ? 1 : 0) + (accSort !== 'default' ? 1 : 0) + (accBrandFilter ? 1 : 0);
+                      return count > 0 ? `Filters (${count})` : 'Filters';
+                    })()}
+                  </button>
+
+                  {/* ── Expandable Filters Panel ── */}
+                  <AnimatePresence>
+                    {accFiltersOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden mb-2"
+                      >
+                        <div className="bg-background border border-border rounded-xl p-3 space-y-3">
+                          {/* Sort */}
+                          <div>
+                            <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Sort by</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {([
+                                { key: 'default' as const, label: 'Recommended' },
+                                { key: 'price_asc' as const, label: 'Price: Low → High' },
+                                { key: 'price_desc' as const, label: 'Price: High → Low' },
+                                { key: 'brand_az' as const, label: 'Brand: A → Z' },
+                              ]).map(opt => (
+                                <button
+                                  key={opt.key}
+                                  onClick={() => setAccSort(opt.key)}
+                                  className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                    accSort === opt.key
+                                      ? 'btn-luxury text-primary-foreground'
+                                      : 'bg-card border border-border text-foreground/70'
+                                  }`}
+                                >
+                                  {opt.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Category */}
+                          <div>
+                            <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Category</p>
+                            <div className="flex flex-wrap gap-1.5 max-h-[140px] overflow-y-auto">
+                              <button
+                                onClick={() => { setAccessoryCategory(null); setShowAllCategories(true); }}
+                                className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                  !accessoryCategory && showAllCategories
+                                    ? 'btn-luxury text-primary-foreground'
+                                    : 'bg-card border border-border text-foreground/70'
+                                }`}
+                              >
+                                All
+                              </button>
+                              {[
+                                { key: 'tops', label: 'Tops' },
+                                { key: 't-shirts', label: 'T-Shirts' },
+                                { key: 'shirts', label: 'Shirts' },
+                                { key: 'polos', label: 'Polos' },
+                                { key: 'sweaters', label: 'Sweaters' },
+                                { key: 'hoodies', label: 'Hoodies' },
+                                { key: 'bottom', label: 'Bottoms' },
+                                { key: 'pants', label: 'Pants' },
+                                { key: 'jeans', label: 'Jeans' },
+                                { key: 'shorts', label: 'Shorts' },
+                                { key: 'skirts', label: 'Skirts' },
+                                { key: 'leggings', label: 'Leggings' },
+                                { key: 'dresses', label: 'Dresses' },
+                                { key: 'jumpsuits', label: 'Jumpsuits' },
+                                { key: 'outerwear', label: 'Outerwear' },
+                                { key: 'jackets', label: 'Jackets' },
+                                { key: 'coats', label: 'Coats' },
+                                { key: 'blazers', label: 'Blazers' },
+                                { key: 'vests', label: 'Vests' },
+                                { key: 'shoes', label: 'Shoes' },
+                                { key: 'sneakers', label: 'Sneakers' },
+                                { key: 'boots', label: 'Boots' },
+                                { key: 'sandals', label: 'Sandals' },
+                                { key: 'loafers', label: 'Loafers' },
+                                { key: 'heels', label: 'Heels' },
+                                { key: 'activewear', label: 'Activewear' },
+                                { key: 'swimwear', label: 'Swimwear' },
+                                { key: 'bags', label: 'Bags' },
+                                { key: 'hats', label: 'Hats' },
+                                { key: 'jewelry', label: 'Jewelry' },
+                                { key: 'sunglasses', label: 'Sunglasses' },
+                                { key: 'belts', label: 'Belts' },
+                                { key: 'scarves', label: 'Scarves' },
+                              ].filter(cat => isCategoryVisibleForGender(cat.key, userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : 'all')).map(cat => (
+                                <button
+                                  key={cat.key}
+                                  onClick={() => { setAccessoryCategory(cat.key); setShowAllCategories(false); }}
+                                  className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                    accessoryCategory === cat.key
+                                      ? 'btn-luxury text-primary-foreground'
+                                      : 'bg-card border border-border text-foreground/70'
+                                  }`}
+                                >
+                                  {cat.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Clear filters */}
+                          {(accessoryCategory || accRetailerFilter || accSort !== 'default' || accBrandFilter) && (
+                            <button
+                              onClick={() => { setAccessoryCategory(null); setAccRetailerFilter(null); setAccSort('default'); setAccBrandFilter(null); setShowAllCategories(true); }}
+                              className="text-[10px] text-primary font-semibold"
+                            >
+                              Clear all filters
+                            </button>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
                   {accessoryPhoto ? (
                     <div className="flex items-center gap-3 mb-2">
@@ -460,7 +588,7 @@ const TryOnResultSection = ({
                           <ImageIcon className="h-3.5 w-3.5" /><span className="text-[10px] font-bold">Gallery</span>
                         </button>
                       </div>
-                      {showAllCategories && (
+                      {showAllCategories && !accessoryCategory && (
                         <div className="space-y-2 mb-2">
                           {ALL_PRODUCT_CATEGORIES.map(cat => (
                             <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={true} maxItems={1000} showViewAll={true} gender={userGender || undefined}
@@ -473,7 +601,7 @@ const TryOnResultSection = ({
                           ))}
                         </div>
                       )}
-                      {accessoryCategory && !showAllCategories && (
+                      {accessoryCategory && (
                         <div className="mb-2">
                           <CategoryProductGrid category={accessoryCategory} title={`Shop ${accessoryCategory}`} collapsed={false} maxItems={1000} gender={userGender || undefined}
                             onSelectProduct={async (product) => {
