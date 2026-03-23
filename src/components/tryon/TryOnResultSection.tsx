@@ -632,44 +632,105 @@ const TryOnResultSection = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[220] h-dvh w-screen overflow-hidden overscroll-none bg-black/95 flex flex-col items-center justify-center"
+            className="fixed inset-0 z-[220] h-dvh w-screen overflow-hidden overscroll-none bg-black/95 flex flex-col"
             onPointerDown={(e) => {
               if (e.target === e.currentTarget) setShowResultFullscreen(false);
             }}
           >
+            {/* Close */}
             <button
               type="button"
               onClick={() => setShowResultFullscreen(false)}
-              className="absolute top-4 right-4 z-[221] h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
+              className="absolute right-4 z-[221] h-11 w-11 min-h-[44px] min-w-[44px] rounded-full bg-black/70 border border-white/25 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
+              style={{ top: 'max(1rem, env(safe-area-inset-top, 1rem))' }}
               aria-label="Close full screen image"
             >
               <X className="h-5 w-5 text-white" />
             </button>
-            <motion.img
-              initial={{ scale: 0.96, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.2 }}
-              src={resultImage}
-              alt="Try-on result full screen"
-              className="max-w-[calc(100%-2rem)] max-h-[82dvh] w-auto h-auto rounded-2xl"
-              onPointerDown={(e) => e.stopPropagation()}
-            />
-            {/* Fullscreen action buttons */}
-            <div className="flex gap-3 mt-4">
-              {shopUrl && (
-                <button
-                  onClick={() => { window.open(shopUrl, '_blank', 'noopener'); setShowResultFullscreen(false); }}
-                  className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[12px] font-bold text-white bg-white/15 border border-white/20 backdrop-blur-sm active:scale-95 transition-transform"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" /> Shop
-                </button>
+
+            {/* Image — maximized */}
+            <div className="flex-1 flex items-center justify-center p-2 min-h-0 overflow-hidden" onPointerDown={(e) => e.stopPropagation()}>
+              <div className="relative h-full w-full rounded-2xl overflow-hidden bg-muted">
+                {productBrand && (
+                  <span className="absolute top-3 left-3 z-20 px-2.5 py-1 rounded-lg bg-black/70 border border-white/25 backdrop-blur-sm text-[10px] font-bold text-white uppercase tracking-wider">
+                    {productBrand}
+                  </span>
+                )}
+                <motion.img
+                  initial={{ scale: 0.96, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.2 }}
+                  src={resultImage}
+                  alt="Try-on result full screen"
+                  className="absolute inset-0 h-full w-full object-cover rounded-2xl block"
+                  draggable={false}
+                />
+              </div>
+            </div>
+
+            {/* Info + Actions — pinned to bottom */}
+            <div className="shrink-0 px-5 pb-6 pt-3 space-y-3" onPointerDown={(e) => e.stopPropagation()}>
+              {/* Product info */}
+              <div className="text-center">
+                {productBrand && <p className="text-[11px] text-white/50 uppercase tracking-wider font-bold">{productBrand}</p>}
+                {productName && <p className="text-[12px] font-bold text-white mt-0.5 truncate">{productName}</p>}
+                {productPrice != null && (
+                  <p className="text-sm font-bold text-primary mt-1">${(productPrice / 100).toFixed(0)}</p>
+                )}
+              </div>
+
+              {/* Wardrobe + Cart row */}
+              {authUser && (
+                <div className="max-w-sm mx-auto w-full flex gap-2">
+                  <button
+                    onClick={() => {
+                      handleAddToWardrobe({
+                        brand: productBrand || '',
+                        name: productName || 'Try-on item',
+                        url: shopUrl || '',
+                        price_cents: productPrice,
+                        image_url: clothingPhoto,
+                      });
+                    }}
+                    className="flex-1 h-11 rounded-xl text-[12px] font-bold gap-1.5 flex items-center justify-center border border-white/20 text-white hover:bg-white/10 active:scale-95 transition-transform"
+                  >
+                    <ShoppingBag className="h-4 w-4" />
+                    + Wardrobe
+                  </button>
+                  <button
+                    onClick={onSaveToItems}
+                    disabled={savedToItems}
+                    className={`flex-1 h-11 rounded-xl text-[12px] font-bold gap-1.5 flex items-center justify-center active:scale-95 transition-transform ${
+                      savedToItems
+                        ? 'border border-primary/40 bg-primary/20 text-primary'
+                        : 'border border-white/20 text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Bookmark className="h-4 w-4" />
+                    {savedToItems ? 'Saved ✓' : '+ Save'}
+                  </button>
+                </div>
               )}
-              <button
-                onClick={() => { onTryAnother(); setShowResultFullscreen(false); }}
-                className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[12px] font-bold text-white bg-white/15 border border-white/20 backdrop-blur-sm active:scale-95 transition-transform"
-              >
-                <RotateCcw className="h-3.5 w-3.5" /> New
-              </button>
+
+              {/* Primary actions */}
+              <div className="flex gap-3 max-w-sm mx-auto w-full">
+                {shopUrl && (
+                  <button
+                    onClick={() => { window.open(shopUrl, '_blank', 'noopener'); setShowResultFullscreen(false); }}
+                    className="flex-1 gap-2 h-12 rounded-xl font-bold btn-luxury text-primary-foreground flex items-center justify-center active:scale-95 transition-transform"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Buy!
+                  </button>
+                )}
+                <button
+                  onClick={() => { onTryAnother(); setShowResultFullscreen(false); }}
+                  className="flex-1 gap-2 h-12 rounded-xl font-bold flex items-center justify-center border border-white/20 text-white hover:bg-white/10 active:scale-95 transition-transform"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  New
+                </button>
+              </div>
             </div>
           </motion.div>,
           document.body
