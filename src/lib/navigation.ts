@@ -9,7 +9,7 @@ export function authRedirectUrl(returnTo: string): string {
 }
 
 /** Parse returnTo from current URL search params */
-export function getReturnTo(search: string, fallback = '/'): string {
+export function getReturnTo(search: string, fallback = '/home'): string {
   const params = new URLSearchParams(search);
   return params.get('returnTo') || fallback;
 }
