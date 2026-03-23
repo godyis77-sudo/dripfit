@@ -305,11 +305,12 @@ Keep garment details exact (color, pattern, cut, neckline, sleeve/hem length, lo
           lastTextContent = "The model rejected this garment style in this photo. Try a simpler front-facing product image with clear swimsuit coverage.";
         }
       }
-      lastTextContent = typeof msg?.content === "string"
+      const messageText = typeof msg?.content === "string"
         ? msg.content
         : (Array.isArray(msg?.content)
           ? (msg.content as Array<{ type?: string; text?: string }>).filter(p => p.type === "text").map(p => p.text || "").join("")
           : "");
+      if (messageText) lastTextContent = messageText;
       if (lastTextContent) console.warn(`Text-only response (${plan.label}):`, lastTextContent.substring(0, 300));
       console.warn(`Attempt ${attempt + 1} (${plan.label}): No image extracted. Keys=${JSON.stringify(Object.keys(msg || {}))}`);
 
