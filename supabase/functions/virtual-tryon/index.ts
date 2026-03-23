@@ -298,7 +298,13 @@ Keep garment details exact (color, pattern, cut, neckline, sleeve/hem length, lo
       }
 
       const msg = (aiData.choices as Array<Record<string, unknown>>)?.[0]?.message as Record<string, unknown> | undefined;
-      if (msg?.refusal) console.warn(`REFUSED (${plan.label}):`, JSON.stringify(msg.refusal).substring(0, 300));
+      const refusal = msg && Object.prototype.hasOwnProperty.call(msg, "refusal") ? msg.refusal : undefined;
+      if (refusal !== undefined) {
+        console.warn(`REFUSED (${plan.label}):`, JSON.stringify(refusal).substring(0, 300));
+        if (!lastTextContent && isIntimateGarment) {
+          lastTextContent = "The model rejected this garment style in this photo. Try a simpler front-facing product image with clear swimsuit coverage.";
+        }
+      }
       lastTextContent = typeof msg?.content === "string"
         ? msg.content
         : (Array.isArray(msg?.content)
