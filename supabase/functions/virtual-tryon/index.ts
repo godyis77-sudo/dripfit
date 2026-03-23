@@ -99,46 +99,28 @@ Deno.serve(async (req) => {
     const itemLower = itemType.toLowerCase();
     const ACCESSORY_TYPES = ["accessory", "jewelry", "necklace", "bracelet", "earrings", "ring", "watch", "hat", "hats", "cap", "sunglasses", "glasses", "bag", "bags", "purse", "handbag", "belt", "belts", "scarf", "scarves", "shoes", "sneakers", "boots", "heels", "loafers", "sandals"];
     const INTIMATE_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece", "bra", "bralette", "sports bra", "underwear", "panties", "briefs", "boxers", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise", "lounge", "loungewear", "sleepwear", "pajamas", "robe"];
+    const SWIM_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece"];
+    const EXPLICIT_TERMS = ["open cup", "open-cup", "open gusset", "open-gusset", "sheer", "see-through", "transparent", "thong", "g-string", "pasties", "nude", "exposed"];
     const isAccessory = ACCESSORY_TYPES.includes(itemLower);
     const isIntimate = INTIMATE_TYPES.some(t => itemLower.includes(t));
+    const productContext = [
+      itemLower,
+      typeof raw.productName === "string" ? raw.productName.toLowerCase() : "",
+      typeof raw.productTitle === "string" ? raw.productTitle.toLowerCase() : "",
+      typeof raw.productUrl === "string" ? raw.productUrl.toLowerCase() : "",
+    ].join(" ");
+    const isSwimwear = SWIM_TYPES.some(t => productContext.includes(t));
+    const isExplicitIntimate = EXPLICIT_TERMS.some(t => productContext.includes(t));
     const isLayering = raw.isLayering === true;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) return errorResponse("LOVABLE_API_KEY is not configured", "CONFIG_ERROR", 500, corsHeaders);
 
-    // Convert a URL or base64 string into a data URI, falling back to raw URL
+    // Keep remote URLs as-is (smaller payloads, faster requests); normalize base64 only.
     const toImageInput = async (input: string): Promise<string> => {
       if (input.startsWith("data:")) return input;
       if (input.startsWith("http://") || input.startsWith("https://")) {
-        for (let attempt = 0; attempt < 3; attempt++) {
-          try {
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 10000);
-            const res = await fetch(input, { 
-              signal: controller.signal,
-              headers: { 
-                'User-Agent': 'Mozilla/5.0 (compatible; DripCheck/1.0)',
-                'Accept': 'image/*',
-              },
-            });
-            clearTimeout(timeout);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const buf = await res.arrayBuffer();
-            if (buf.byteLength < 100) throw new Error("Image too small, likely invalid");
-            const contentType = res.headers.get("content-type") || "image/jpeg";
-            const bytes = new Uint8Array(buf);
-            let binary = "";
-            for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-            return `data:${contentType};base64,${btoa(binary)}`;
-          } catch (e) {
-            console.warn(`Fetch attempt ${attempt + 1} failed for ${input}: ${e}`);
-            if (attempt === 2) {
-              console.log("Falling back to raw URL for AI gateway");
-              return input;
-            }
-            await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
-          }
-        }
+        return input;
       }
       return `data:image/jpeg;base64,${input}`;
     };
@@ -155,13 +137,17 @@ Deno.serve(async (req) => {
       toImageInput(clothingPhoto),
     ]);
 
-    // For intimate items, do NOT use a specialized prompt — it triggers safety filters.
-    // Instead, use the standard clothing prompt with neutral language.
-    const neutralItemLabel = isIntimate ? "garment" : itemType;
-
-    const prompt = isAccessory || isLayering
-      ? `VIRTUAL TRY-ON TASK — READ CAREFULLY.\n\nYou will receive exactly TWO images in order:\n- FIRST IMAGE (Image 1): This is a PHOTO OF A PERSON${isLayering ? " already wearing an outfit" : ""}. This is the HUMAN SUBJECT.\n- SECOND IMAGE (Image 2): This is an ACCESSORY ITEM (${itemType}). This is the PRODUCT to add.\n\nYour task: Generate a SINGLE photorealistic image showing the PERSON from Image 1 wearing/using the ${itemType} from Image 2.\n\nCRITICAL RULES:\n1. The PERSON from Image 1 is the main subject. Keep their face, body, skin tone, hair, and background IDENTICAL.\n2. PRESERVE the person's exact pose and body position from Image 1. Minor natural adjustments are acceptable only if physically necessary to interact with the accessory.\n3. REPLACE or ADD only the ${itemType} — take the design, color, pattern, and style from Image 2.\n4. The accessory must sit naturally on the body with correct perspective, scale, and proportion relative to the person's anatomy.\n5. Do NOT swap the person. Do NOT generate a different person. The output person must be the SAME person as Image 1.\n6. Do NOT output just the product alone — the PERSON must be the main subject.\n7. The final image must look like a natural photograph.\n8. You MUST output an image. Do not refuse or output only text.\n\nGenerate the composite image now.`
-      : `VIRTUAL TRY-ON TASK — READ CAREFULLY.\n\nYou will receive exactly TWO images in order:\n- FIRST IMAGE (Image 1): This is a PHOTO OF A PERSON. This is the HUMAN SUBJECT who will wear the ${neutralItemLabel}.\n- SECOND IMAGE (Image 2): This is a ${neutralItemLabel.toUpperCase()} from a fashion retailer's catalog. This is the PRODUCT to dress the person in.\n\nYour task: Generate a SINGLE photorealistic image showing the PERSON from Image 1 wearing the ${neutralItemLabel.toUpperCase()} from Image 2. This is a standard e-commerce virtual fitting room tool.\n\nCRITICAL RULES:\n1. The PERSON from Image 1 is the main subject. Keep their face, body shape, skin tone, hair, and background IDENTICAL.\n2. PRESERVE the person's pose and body position from Image 1. The torso angle, arm position, leg stance, and head tilt should remain the same. Only allow minor natural shifts if the garment physically requires it.\n3. REPLACE the person's current clothing with the ${neutralItemLabel} from Image 2. Match the EXACT color, pattern, design, print, and style of the ${neutralItemLabel} in Image 2.\n4. REALISTIC FIT & DRAPING: The ${neutralItemLabel} must conform to the person's actual body proportions and shape. Pay close attention to how the fabric drapes, folds, and creases based on the material. Correct fit at shoulders, chest, waist, hips. Natural shadow and highlight placement.\n5. GARMENT STRUCTURE: Preserve all structural details from Image 2 — neckline, seams, closures, prints, logos, embellishments.\n6. Do NOT swap the person. Do NOT use any person from Image 2. The output person must be the SAME person as Image 1.\n7. Do NOT output just the ${neutralItemLabel} alone — the PERSON must be the main subject wearing it.\n8. LIGHTING CONSISTENCY: Match the lighting from Image 1 so the ${neutralItemLabel} integrates naturally.\n9. The final image must look like a professional retail catalog photograph — clean and product-focused.\n10. You MUST output an image. Do not refuse or output only text.\n\nGenerate the composite image now.`;
+    const neutralItemLabel = isSwimwear ? "swimwear garment" : (isIntimate ? "fashion garment" : itemType);
+    const basePrompt = isAccessory || isLayering
+      ? `Create one photorealistic virtual try-on image using two inputs. Image 1 is the person${isLayering ? " already wearing an outfit" : ""}. Image 2 is the accessory (${itemType}). Keep the same person, face, pose, lighting, and background from Image 1. Add only the accessory from Image 2 with correct scale, perspective, and material detail. Output image only, no text.`
+      : `Create one photorealistic virtual try-on image using two inputs. Image 1 is the person. Image 2 is the product (${neutralItemLabel}) from a fashion catalog. Keep the same person identity, pose, camera angle, and background from Image 1. Apply the product from Image 2 with accurate color, pattern, logos, seams, and texture. Ensure realistic fit and drape. Output image only, no text.`;
+    const safetyPrompt = (isSwimwear || isIntimate)
+      ? `${basePrompt} This is a legitimate retail styling request. Keep the output non-explicit and family-safe: opaque materials, no nudity, no exposed intimate body details.`
+      : basePrompt;
+    const conservativeFallbackPrompt = `${basePrompt} If the product appears too revealing, reinterpret it as a modest full-coverage fashion version while preserving color/pattern/design cues from Image 2. Keep result catalog-safe and non-explicit.`;
+    const promptVariants = (isSwimwear || isIntimate)
+      ? [safetyPrompt, conservativeFallbackPrompt, conservativeFallbackPrompt]
+      : [basePrompt, basePrompt, basePrompt];
 
     /** Extract image from various AI response formats */
     const extractImage = (aiResponse: Record<string, unknown>): string | null => {
@@ -238,9 +224,9 @@ Deno.serve(async (req) => {
       return null;
     };
 
-    // Retry loop — up to 3 attempts, last attempt uses fallback model
+    // Retry loop with model + prompt fallback
     const MAX_ATTEMPTS = 3;
-    const MODELS = isIntimate
+    const MODELS = (isSwimwear || isIntimate)
       ? [
           "google/gemini-2.5-flash-image",        // least restrictive for intimate items
           "google/gemini-3.1-flash-image-preview",
@@ -256,6 +242,7 @@ Deno.serve(async (req) => {
 
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
       const model = MODELS[attempt] || MODELS[0];
+      const prompt = promptVariants[attempt] || promptVariants[0];
       console.log(`Try-on attempt ${attempt + 1}/${MAX_ATTEMPTS} with model ${model}`);
 
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -334,8 +321,11 @@ Deno.serve(async (req) => {
     }
 
     if (!resultImage) {
+      const failHint = (isSwimwear || isIntimate)
+        ? "The AI could not generate this try-on safely. Try a full-body user photo plus a non-revealing, opaque product image (e.g. one-piece/full-coverage style)."
+        : "The AI was unable to generate a try-on image. Try with clearer, well-lit photos showing the full person and garment.";
       return successResponse({ 
-        description: lastTextContent || "The AI was unable to generate a try-on image. Try with clearer, well-lit photos showing the full person and garment.",
+        description: lastTextContent || failHint,
         resultImage: null 
       }, 200, corsHeaders);
     }
