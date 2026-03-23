@@ -109,7 +109,13 @@ Deno.serve(async (req) => {
 
     const productDesc = [productName, productBrand ? `by ${productBrand}` : "", productCategory ? `(${productCategory})` : ""].filter(Boolean).join(" ");
     const neutralItemLabel = (isSwimwear || isUnderwear) ? "swimsuit" : (isIntimate ? "fashion garment" : itemType);
-    const productHint = productDesc ? `\nProduct: "${productDesc}".` : "";
+    const sanitizedProductDesc = (isSwimwear || isUnderwear || isIntimate)
+      ? productDesc
+          .replace(/\b(bikini|bikinis|underwear|lingerie|bra|bralette|panties|briefs|boxers|fuller\s+bust|dd\+?)\b/gi, "swimsuit")
+          .replace(/\s+/g, " ")
+          .trim()
+      : productDesc;
+    const productHint = sanitizedProductDesc ? `\nProduct: "${sanitizedProductDesc}".` : "";
 
     // ── BUILD PROMPT ──
     const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
