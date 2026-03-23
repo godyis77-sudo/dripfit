@@ -22,6 +22,7 @@ export type WardrobeItem = { id: string; image_url: string; category: string; pr
 
 const TRYON_STATE_KEY = 'dripcheck_tryon_state';
 const TRYON_RESULT_KEY = 'dripcheck_tryon_result'; // localStorage — survives tab close
+const TRYON_USER_PHOTO_KEY = 'dripcheck_tryon_user_photo'; // localStorage — persists until user changes
 
 type PersistedQuickPick = {
   id: string;
