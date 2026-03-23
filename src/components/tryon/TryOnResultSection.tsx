@@ -1007,6 +1007,21 @@ const TryOnResultSection = ({
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Item detail preview modal */}
+      <ProductPreviewModal
+        product={itemPreview}
+        onClose={() => setItemPreview(null)}
+        onTryOn={undefined}
+        onShop={(p) => {
+          if (p.product_url) {
+            beginClickout(p.product_url, { brand: p.brand, product: p.name });
+            window.open(p.product_url, '_blank', 'noopener');
+            confirmClickout();
+          }
+          setItemPreview(null);
+        }}
+      />
     </>
   );
 };
