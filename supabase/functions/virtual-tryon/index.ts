@@ -120,14 +120,15 @@ Deno.serve(async (req) => {
     const startedAt = Date.now();
 
     // ── EXTRACT GARMENT FROM PRODUCT IMAGE (OPTIONAL) ──
-    // Enabled by default for intimate items to reduce safety refusals from model-worn product photos.
-    const disableIntimateExtraction = raw.disableIntimateExtraction === true;
-    const enableIntimateExtraction = isIntimateGarment && !disableIntimateExtraction;
+    // Keep off by default to avoid burning budget before first generation attempt.
+    // Use refusal-rescue extraction, or force via request for troubleshooting.
+    const forceIntimateExtraction = raw.forceIntimateExtraction === true;
+    const enableIntimateExtraction = isIntimateGarment && forceIntimateExtraction;
     const extractIntimateGarment = async (): Promise<string | null> => {
       const extractPrompt = `Isolate ONLY the target garment from this product photo. Remove any person/model/mannequin and any visible skin. Return a clean product-only image of the ${neutralItemLabel} on a plain white background. Keep garment color, shape, straps, seams, and logos accurate.`;
       const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = [
-        { model: "google/gemini-2.5-flash-image", timeoutMs: 10_000, label: "extract-nano" },
-        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 11_000, label: "extract-fast" },
+        { model: "google/gemini-2.5-flash-image", timeoutMs: 7_000, label: "extract-nano" },
+        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 8_000, label: "extract-fast" },
       ];
 
       for (const plan of extractionPlan) {
@@ -295,7 +296,7 @@ Show the model from Image A wearing the product from Image B. E-commerce style, 
       ? [
           { model: "google/gemini-2.5-flash-image", prompt, label: `${typeLabel}-nano-primary` },
           { model: "google/gemini-3.1-flash-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-flash-fallback` },
-          { model: "google/gemini-3-pro-image-preview", prompt: fastIntimatePrompt, label: `${typeLabel}-pro-last` },
+          { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-nano-last` },
         ]
       : [
           { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary` },
@@ -320,7 +321,7 @@ Show the model from Image A wearing the product from Image B. E-commerce style, 
       const attemptsLeftAfterThis = attemptPlan.length - attempt - 1;
       const reserveForRetriesMs = attemptsLeftAfterThis * MIN_REQUIRED_MS_PER_ATTEMPT + 2_000;
       const maxAttemptBudgetMs = isIntimateGarment
-        ? (attempt === 0 ? 14_000 : attempt === 1 ? 14_000 : 16_000)
+        ? (attempt === 0 ? 11_000 : attempt === 1 ? 11_000 : 10_000)
         : (attempt === 0 ? 30_000 : 18_000);
       const timeoutMs = Math.min(
         maxAttemptBudgetMs,
@@ -364,9 +365,13 @@ Show the model from Image A wearing the product from Image B. E-commerce style, 
         const isTimeout = (fetchErr instanceof DOMException || fetchErr instanceof Error) && (fetchErr as { name: string }).name === "AbortError";
         console.warn(`Attempt ${attempt + 1} (${plan.label}): ${isTimeout ? "TIMEOUT" : "FAILED"}`, fetchErr);
         if (!lastTextContent || !lastTextContent.toLowerCase().includes("rejected this garment style")) {
-          lastTextContent = isTimeout
-            ? "The AI request timed out. Retrying with faster fallback settings."
-            : "The AI request failed. Retrying with fallback settings.";
+          lastTextContent = isFinalAttempt
+            ? (isTimeout
+              ? "The AI request timed out across all retries. Try again with a clearer front-facing clothing photo."
+              : "The AI request failed after all retries. Please try a different photo.")
+            : (isTimeout
+              ? "The AI request timed out. Trying a quicker fallback now."
+              : "The AI request failed. Trying a fallback now.");
         }
         if (!isFinalAttempt) {
           await new Promise(r => setTimeout(r, isTimeout ? 300 : 700));
@@ -491,6 +496,9 @@ Show the model from Image A wearing the product from Image B. E-commerce style, 
     }
 
     if (!resultImage) {
+      if (lastTextContent.toLowerCase().includes("trying a quicker fallback now") || lastTextContent.toLowerCase().includes("trying a fallback now")) {
+        lastTextContent = "The AI request timed out across all retries. Try again with a clearer front-facing clothing photo.";
+      }
       const failHint = (isSwimwear || isUnderwear || isIntimate)
         ? "The AI could not generate this try-on from the current product photo. Try a full-body user photo plus a front-facing product-only or flat-lay garment image."
         : "The AI was unable to generate a try-on image. Try clearer, well-lit photos showing the full person and garment.";
