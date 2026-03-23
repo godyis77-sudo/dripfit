@@ -614,7 +614,7 @@ ${identityInstruction} Keep result clean and commercially appropriate. No text/w
       if (looksLikeRefusal && isIntimateGarment) {
         sawIntimateRefusal = true;
         if (!lastTextContent) {
-          lastTextContent = "Try-on was blocked for this product photo. Use a front-facing product-only image or flat-lay with the full garment visible.";
+          lastTextContent = "Try-on was blocked by safety checks for this image combination. Try a full-body user photo and a clear product-only or flat-lay garment image.";
         }
 
         if (!attemptedRefusalExtraction) {
@@ -637,7 +637,7 @@ ${identityInstruction} Keep result clean and commercially appropriate. No text/w
           /wearing the .* from image b/i.test(lowerMessage);
 
         if (isIntimateGarment && looksLikeStyleRejection) {
-          lastTextContent = "Try-on was blocked for this product photo. Use a front-facing product-only image or flat-lay with the full garment visible.";
+          lastTextContent = "Try-on was blocked by safety checks for this image combination. Try a full-body user photo and a clear product-only or flat-lay garment image.";
         } else if (!looksLikeNonDiagnosticTextOnly && hasMeaningfulWords(messageText) && messageText.length >= 12) {
           lastTextContent = messageText;
         }
