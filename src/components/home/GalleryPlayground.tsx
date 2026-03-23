@@ -158,9 +158,10 @@ const GalleryPlayground = () => {
                   <div className="aspect-[3/4] relative overflow-hidden">
                     <img
                       src={product.image_url}
-                      alt={product.name}
-                      loading="lazy"
-                      decoding="async"
+                      alt={`${product.brand} ${product.name}`}
+                      loading={displayProducts.indexOf(product) < 6 ? 'eager' : 'lazy'}
+                      decoding={displayProducts.indexOf(product) < 6 ? 'sync' : 'async'}
+                      {...(displayProducts.indexOf(product) < 6 ? { fetchPriority: 'high' as const } : {})}
                       className="w-full h-full object-cover object-top rounded-2xl"
                       onError={() => setFailedIds(prev => new Set(prev).add(product.id))}
                     />
