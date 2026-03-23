@@ -259,6 +259,8 @@ Keep garment details exact (color, pattern, cut, neckline, sleeve/hem length, lo
                   { type: "text", text: plan.prompt },
                   { type: "text", text: "\n\n========== IMAGE A — THE PERSON (keep this person's face/body) ==========" },
                   { type: "image_url", image_url: { url: userImageInput } },
+                  { type: "text", text: "\n\n========== IMAGE B — THE TARGET GARMENT (replicate this garment exactly) ==========" },
+                  { type: "image_url", image_url: { url: clothingImageInput } },
                 ],
               }],
             }),
