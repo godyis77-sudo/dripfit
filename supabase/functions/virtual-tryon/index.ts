@@ -107,6 +107,64 @@ Deno.serve(async (req) => {
     const userImageInput = toImageInput(userPhoto);
     const clothingImageInput = toImageInput(clothingPhoto);
 
+    // ── EXTRACT GARMENT FROM PRODUCT IMAGE ──
+    // If the product photo contains a model, isolate just the clothing item
+    async function extractGarmentImage(originalImageUrl: string, itemLabel: string, isIntimatePiece: boolean): Promise<string> {
+      const elapsedBefore = Date.now() - startedAt;
+      if (FUNCTION_BUDGET_MS - elapsedBefore < 15_000) {
+        console.log("Skipping garment extraction — insufficient time budget");
+        return originalImageUrl;
+      }
+      const extractPrompt = isIntimatePiece
+        ? `Extract ONLY the clothing/garment item from this product photo. Remove any person/model entirely. Show ONLY the ${itemLabel} garment laid flat or floating on a plain white background. Output one clean product-only image. No person, no skin, no body parts. Just the garment item isolated on white.`
+        : `Extract ONLY the clothing/garment item from this product photo. If a model is wearing the item, remove the model and show ONLY the garment isolated on a plain white background, laid flat or floating. If the image already shows just the garment (no model), return it as-is on white. Output one clean product-only image.`;
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 12_000);
+        let extractResponse: Response;
+        try {
+          extractResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+            method: "POST",
+            signal: controller.signal,
+            headers: {
+              Authorization: `Bearer ${LOVABLE_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model: "google/gemini-2.5-flash-image",
+              modalities: ["image", "text"],
+              messages: [{
+                role: "user",
+                content: [
+                  { type: "text", text: extractPrompt },
+                  { type: "image_url", image_url: { url: originalImageUrl } },
+                ],
+              }],
+            }),
+          });
+        } finally {
+          clearTimeout(timer);
+        }
+        if (!extractResponse.ok) {
+          console.warn(`Garment extraction HTTP ${extractResponse.status}, using original`);
+          return originalImageUrl;
+        }
+        const extractData = await extractResponse.json();
+        const extracted = extractImageFromResponse(extractData);
+        if (extracted) {
+          console.log("Garment extracted successfully from product image");
+          return extracted;
+        }
+        console.warn("Garment extraction returned no image, using original");
+        return originalImageUrl;
+      } catch (err) {
+        console.warn("Garment extraction failed, using original:", err);
+        return originalImageUrl;
+      }
+    }
+
+    const garmentOnlyImage = await extractGarmentImage(clothingImageInput, neutralItemLabel, isIntimateGarment);
+
     const productDesc = [productName, productBrand ? `by ${productBrand}` : "", productCategory ? `(${productCategory})` : ""].filter(Boolean).join(" ");
     const neutralItemLabel = (isSwimwear || isUnderwear) ? "swimsuit" : (isIntimate ? "fashion garment" : itemType);
     const sanitizedProductDesc = (isSwimwear || isUnderwear || isIntimate)
@@ -134,7 +192,7 @@ Deno.serve(async (req) => {
 
 IMAGES PROVIDED:
 - Image A (first image below): A person — preserve their face, body, pose, background EXACTLY.
-- Image B (second image below): The target accessory — replicate this EXACT item.
+- Image B (second image below): The isolated target accessory — replicate this EXACT item.
 
 TARGET ACCESSORY:
 - The accessory shown in Image B.${productHint}
@@ -143,15 +201,16 @@ TASK: Add the accessory from Image B onto the person in Image A. Match Image B e
     } else if (isIntimateGarment) {
       prompt = `You are a fashion e-commerce try-on editor. Generate ONE photorealistic image.
 
-IMAGE PROVIDED:
+IMAGES PROVIDED:
 - Image A (first image below): The person/model.
+- Image B (second image below): The isolated target garment on a white background — replicate this EXACT garment.
 
 TARGET GARMENT:
-- ${garmentDescriptor}.${productHint}
+- The garment shown in Image B.${productHint}
 
 TASK — RETAIL SWIMWEAR TRY-ON:
-1. Replace the outfit shown in Image A with the target garment described above.
-2. Match target garment details precisely: color, pattern, cut, straps, neckline, silhouette, and fabric look.
+1. Replace the outfit shown in Image A with the garment from Image B.
+2. Match Image B garment details precisely: color, pattern, cut, straps, neckline, silhouette, and fabric look.
 3. Preserve Image A face, body proportions, skin tone, pose, camera framing, and background.
 4. Ensure realistic fit and drape with natural shadows.
 5. ${safetyNote}
@@ -188,9 +247,9 @@ Place the accessory from Image B onto the person in Image A at realistic scale a
 Match Image B exactly. Keep face/body/background from Image A unchanged. No text/watermark.`
       : isIntimateGarment
         ? `Create ONE photorealistic retail try-on image.
-Image A = person. Target garment = ${garmentDescriptor}.${productHint}
-Dress Image A person in the target garment with realistic fit and lighting.
-Match the described garment exactly. Preserve person identity and background from Image A. ${safetyNote}
+Image A = person. Image B = isolated target garment on white.${productHint}
+Dress Image A person in the exact garment from Image B with realistic fit and lighting.
+Match Image B exactly. Preserve person identity and background from Image A. ${safetyNote}
 No text/watermark.`
         : `Create ONE photorealistic clothing-swap image.
 Image A = person. Image B = target garment.${productHint}
@@ -258,12 +317,8 @@ Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos).
                   { type: "text", text: plan.prompt },
                   { type: "text", text: "\n\n========== IMAGE A — THE PERSON (keep this person's face/body) ==========" },
                   { type: "image_url", image_url: { url: userImageInput } },
-                  // For intimate garments, skip sending the product image to avoid safety filter refusals
-                  // The prompt uses detailed text description instead
-                  ...(isIntimateGarment ? [] : [
-                    { type: "text", text: "\n\n========== IMAGE B — THE TARGET GARMENT (replicate this garment exactly) ==========" },
-                    { type: "image_url", image_url: { url: clothingImageInput } },
-                  ]),
+                  { type: "text", text: "\n\n========== IMAGE B — THE TARGET GARMENT (replicate this garment exactly) ==========" },
+                  { type: "image_url", image_url: { url: garmentOnlyImage } },
                 ],
               }],
             }),
