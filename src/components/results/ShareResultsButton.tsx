@@ -21,7 +21,7 @@ interface ShareResultsButtonProps {
 const SHARE_TEXT = "I just got my exact measurements across every brand. Measured with DRIPFIT ✔ — try it free: dripfitcheck.lovable.app";
 const SHARE_URL = "https://dripfitcheck.lovable.app";
 
-const ShareResultsButton = ({ measurements, heightCm, recommendedSize, fitPreference, variant = 'button' }: ShareResultsButtonProps) => {
+const ShareResultsButton = ({ measurements, heightCm, recommendedSize, fitPreference, variant = 'button', tryOnImageUrl, brandMatch, displayName }: ShareResultsButtonProps) => {
   const [generating, setGenerating] = useState(false);
   const [fallbackOpen, setFallbackOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
