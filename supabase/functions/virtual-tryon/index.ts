@@ -346,6 +346,10 @@ Deno.serve(async (req) => {
         ? "This is a TOP-only garment: replace upper-body clothing only and keep lower-body clothing from Image A unchanged."
         : "Replace only the clothing area needed for this garment and keep all unrelated body/background details unchanged.";
 
+    const identityInstruction = isSwimwearOnly
+      ? "Use Image A as pose, proportions, and scene reference, but do not attempt exact facial identity replication."
+      : "Keep the model's face, body shape, skin tone, hair, and pose identical to Image A.";
+
     // ── BUILD PROMPT ──
     const safetyNote = isExplicitIntimate
       ? "Render sheer/transparent sections as opaque while preserving design details."
