@@ -169,19 +169,65 @@ Deno.serve(async (req) => {
       ? `Create one photorealistic virtual try-on image using two inputs. Image 1 is the person${isLayering ? " already wearing an outfit" : ""}. Image 2 is the accessory (${itemType}). Keep the same person, face, pose, lighting, and background from Image 1. Add only the accessory from Image 2 with correct scale, perspective, and material detail. Output image only, no text.`
       : `Create one photorealistic virtual try-on image using two inputs. Image 1 is the person. Image 2 is the product (${neutralItemLabel}) from a fashion catalog. Keep the same person identity, pose, camera angle, and background from Image 1. Apply the product from Image 2 with accurate color, pattern, logos, seams, and texture. Ensure realistic fit and drape. Output image only, no text.`;
     const safetyPrompt = (isSwimwear || isIntimate)
-      ? `${basePrompt} This is a legitimate retail styling request. Keep the output non-explicit and family-safe: opaque materials, no nudity, no exposed intimate body details. IMPORTANT: preserve the original garment category from Image 2.${isUnderwear ? " For underwear/base-layer items: render as a non-sexual commercial fit preview; if needed for safety, increase coverage within underwear family only (e.g., thong→brief, low-rise brief→high-waist brief, balconette→full-cup), while preserving color/pattern/logo and key strap/seam cues." : ""}${isExplicitIntimate ? " If Image 2 appears sheer/see-through, reinterpret it as opaque fabric while keeping the same design language." : ""}`
+      ? `${basePrompt} ${isUnderwear ? "This is a legitimate retail apparel fitting request for an adult fashion catalog. Keep the output tasteful, non-explicit, and commercially appropriate with opaque coverage. Preserve underwear/base-layer category and key design details from Image 2 while allowing safer within-category coverage adjustments." : "This is a legitimate retail styling request. Keep the output non-explicit and family-safe: opaque materials, no nudity, no exposed intimate body details. IMPORTANT: preserve the original garment category from Image 2."}${isExplicitIntimate ? " If Image 2 appears sheer/see-through, reinterpret it as opaque fabric while keeping the same design language." : ""}`
       : basePrompt;
     const conservativeFallbackPrompt = isSwimwear
       ? `${basePrompt} Keep the item as SWIMWEAR ONLY. You may increase coverage within swimwear constraints (e.g., fuller cups, higher waist, one-piece adaptation), but you must keep it a swimsuit/bikini and preserve the original swimwear silhouette and color/pattern cues from Image 2. NEVER convert it to a dress, gown, skirt, pants, jacket, or any non-swimwear category.`
       : isUnderwear
       ? `${basePrompt} Keep the item as UNDERWEAR/BASE-LAYER ONLY. You may increase coverage for safety, but only within underwear silhouettes (brief/boyshort/full-cup/sports-bra variants). Preserve color, pattern, logo, and key seam/strap details from Image 2. NEVER convert to dresses, skirts, pants, jeans, jackets, outerwear, or sleep robes.`
       : `${basePrompt} Keep the same garment category and core silhouette from Image 2. Do not convert the item into a different clothing type.`;
-    const promptVariants = (isSwimwear || isIntimate)
+    const promptVariants = isUnderwear
+      ? [basePrompt, safetyPrompt, conservativeFallbackPrompt]
+      : (isSwimwear || isIntimate)
       ? [safetyPrompt, conservativeFallbackPrompt, conservativeFallbackPrompt]
       : [basePrompt, basePrompt, basePrompt];
 
     /** Extract image from various AI response formats */
     const extractImage = (aiResponse: Record<string, unknown>): string | null => {
+      const normalizeImageCandidate = (value: string): string | null => {
+        const trimmed = value.trim().replace(/^["'`]+|["'`]+$/g, "");
+        if (!trimmed) return null;
+        if (/^data:image\/[a-zA-Z0-9.+-]+;base64,/.test(trimmed)) return trimmed;
+        if (/^https?:\/\//.test(trimmed)) return trimmed;
+        if (/^[A-Za-z0-9+/=]{1000,}$/.test(trimmed)) return `data:image/png;base64,${trimmed}`;
+        return null;
+      };
+
+      const deepSearchForImage = (node: unknown, keyPath = "", seen = new Set<unknown>()): string | null => {
+        if (node == null) return null;
+
+        if (typeof node === "string") {
+          const normalized = normalizeImageCandidate(node);
+          if (!normalized) return null;
+          if (normalized.startsWith("data:image/")) return normalized;
+          if (/(image|img|photo|picture|url|uri|src|base64|b64)/i.test(keyPath)) return normalized;
+          return null;
+        }
+
+        if (typeof node !== "object") return null;
+        if (seen.has(node)) return null;
+        seen.add(node);
+
+        if (Array.isArray(node)) {
+          for (const item of node) {
+            const found = deepSearchForImage(item, keyPath, seen);
+            if (found) return found;
+          }
+          return null;
+        }
+
+        for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
+          if (k === "b64_json" && typeof v === "string" && v.length > 1000) {
+            return `data:image/png;base64,${v}`;
+          }
+          const nextPath = keyPath ? `${keyPath}.${k}` : k;
+          const found = deepSearchForImage(v, nextPath, seen);
+          if (found) return found;
+        }
+
+        return null;
+      };
+
       // Log full structure for debugging
       console.log("AI response keys:", JSON.stringify(Object.keys(aiResponse)));
       
@@ -241,12 +287,43 @@ Deno.serve(async (req) => {
       if (textContent) {
         const b64Match = textContent.match(/data:image\/[a-z]+;base64,[A-Za-z0-9+/=]{100,}/);
         if (b64Match) return b64Match[0];
+
+        const markdownImage = textContent.match(/!\[[^\]]*\]\(([^)\s]+)\)/);
+        if (markdownImage?.[1]) {
+          const normalized = normalizeImageCandidate(markdownImage[1]);
+          if (normalized) return normalized;
+        }
+
+        const urlField = textContent.match(/"(?:image_url|url|src|image|imageUrl|output_image)"\s*:\s*"([^"\\]+)"/i);
+        if (urlField?.[1]) {
+          const normalized = normalizeImageCandidate(urlField[1]);
+          if (normalized) return normalized;
+        }
+
+        const fenced = textContent.match(/```(?:json)?\s*([\s\S]*?)```/i);
+        if (fenced?.[1]) {
+          try {
+            const parsedBlock = JSON.parse(fenced[1]);
+            const fromBlock = deepSearchForImage(parsedBlock, "fenced_json");
+            if (fromBlock) return fromBlock;
+          } catch {
+            // no-op
+          }
+        }
       }
 
       // Format 4: refusal present — model refused to generate
       if (message.refusal) {
         console.warn("Model refused:", JSON.stringify(message.refusal));
       }
+
+      // Format 5: defensive deep-search in full assistant payload
+      const deepFound = deepSearchForImage(message, "message");
+      if (deepFound) return deepFound;
+
+      // Format 6: defensive deep-search in full response payload
+      const deepFoundGlobal = deepSearchForImage(aiResponse, "response");
+      if (deepFoundGlobal) return deepFoundGlobal;
 
       console.warn("No image found. Message keys:", JSON.stringify(Object.keys(message)));
       if (textContent) {
@@ -260,7 +337,7 @@ Deno.serve(async (req) => {
     const MODELS = isUnderwear
       ? [
           "google/gemini-2.5-flash-image",
-          "google/gemini-2.5-flash-image",
+          "google/gemini-3.1-flash-image-preview",
           "google/gemini-3.1-flash-image-preview",
         ]
       : (isSwimwear || isIntimate)
