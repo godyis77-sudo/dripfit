@@ -514,14 +514,7 @@ const TryOnResultSection = ({
                   {/* ── Filters Button (Browse-style) ── */}
                   <button
                     onClick={() => setAccFiltersOpen(!accFiltersOpen)}
-                    className={`relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold mb-2 ${
-                      (() => {
-                        const count = (accessoryCategory ? 1 : 0) + (accRetailerFilter ? 1 : 0) + (accSort !== 'default' ? 1 : 0) + (accBrandFilter ? 1 : 0) + (accGenreFilter ? 1 : 0) + (accFitFilter ? 1 : 0) + (accGender !== 'all' ? 1 : 0);
-                        return count > 0;
-                      })()
-                        ? 'btn-luxury text-primary-foreground'
-                        : 'bg-background border border-border text-foreground/70'
-                    }`}
+                    className="relative w-full h-10 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-bold mb-2 btn-luxury text-primary-foreground"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
                     {(() => {
