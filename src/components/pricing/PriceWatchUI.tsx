@@ -27,7 +27,7 @@ export function PriceWatchButton({ productId, productName, brand, productUrl, pr
     if (watching && watch) {
       removeWatch.mutate(watch.id);
       toast({ title: 'Price alert removed' });
-      trackEvent('price_watch_removed' as any);
+      trackEvent('price_watch_removed');
     } else {
       addWatch.mutate({
         product_id: productId,
