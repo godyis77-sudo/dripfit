@@ -132,25 +132,27 @@ Deno.serve(async (req) => {
     if (isAccessory || isLayering) {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
-IMAGE PROVIDED:
+IMAGES PROVIDED:
 - Image A (first image below): A person — preserve their face, body, pose, background EXACTLY.
+- Image B (second image below): The target accessory — replicate this EXACT item.
 
 TARGET ACCESSORY:
-- ${garmentDescriptor}.${productHint}
+- The accessory shown in Image B.${productHint}
 
-TASK: Add the target accessory onto the person in Image A. Keep everything else unchanged. Correct scale, lighting, shadows. No text/watermarks.`;
+TASK: Add the accessory from Image B onto the person in Image A. Match Image B exactly (color, shape, material, branding). Keep everything else unchanged. Correct scale, lighting, shadows. No text/watermarks.`;
     } else if (isIntimateGarment) {
       prompt = `You are a fashion e-commerce try-on editor. Generate ONE photorealistic image.
 
-IMAGE PROVIDED:
+IMAGES PROVIDED:
 - Image A (first image below): The person/model.
+- Image B (second image below): The target garment — replicate this EXACT garment.
 
 TARGET GARMENT:
-- ${garmentDescriptor}.${productHint}
+- The garment shown in Image B.${productHint}
 
 TASK — RETAIL SWIMWEAR TRY-ON:
-1. Replace the outfit shown in Image A with the target swimsuit/garment.
-2. Match target garment details precisely: color, pattern, cut, straps, neckline, silhouette, and fabric look.
+1. Replace the outfit shown in Image A with the garment from Image B.
+2. Match Image B garment details precisely: color, pattern, cut, straps, neckline, silhouette, and fabric look.
 3. Preserve Image A face, body proportions, skin tone, pose, camera framing, and background.
 4. Ensure realistic fit and drape with natural shadows.
 5. ${safetyNote}
@@ -159,15 +161,16 @@ Output: One photorealistic image only. No text/watermarks/split panels.`;
     } else {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
-IMAGE PROVIDED:
+IMAGES PROVIDED:
 - Image A (first image below): A person wearing some outfit. This is the MODEL — keep face, body, hair, skin, and pose.
+- Image B (second image below): The target garment — replicate this EXACT garment.
 
 TARGET GARMENT:
-- ${garmentDescriptor}.${productHint}
+- The garment shown in Image B.${productHint}
 
 TASK — CLOTHING SWAP:
-1. Remove the current outfit from Image A and replace it entirely with the target garment.
-2. Match the target garment exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
+1. Remove the current outfit from Image A and replace it entirely with the garment from Image B.
+2. Match Image B exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
 3. Keep Image A person identity and scene unchanged.
 4. Keep garment fit realistic with natural wrinkles and shadows.
 
@@ -181,23 +184,20 @@ Output: A single photorealistic image. No text/watermarks/split views.`;
 
     const fallbackPrompt = (isAccessory || isLayering)
       ? `Create ONE photorealistic output image.
-Image A = person.
-Target accessory = ${garmentDescriptor}.${productHint}
-Place the target accessory onto the person in Image A at realistic scale and lighting.
-Keep face/body/background from Image A unchanged. No text/watermark.`
+Image A = person. Image B = target accessory.${productHint}
+Place the accessory from Image B onto the person in Image A at realistic scale and lighting.
+Match Image B exactly. Keep face/body/background from Image A unchanged. No text/watermark.`
       : isIntimateGarment
         ? `Create ONE photorealistic retail try-on image.
-Image A = person.
-Target garment = ${garmentDescriptor}.${productHint}
-Dress Image A person in the target garment with realistic fit and lighting.
-Preserve person identity and background from Image A. ${safetyNote}
+Image A = person. Image B = target garment.${productHint}
+Dress Image A person in the exact garment from Image B with realistic fit and lighting.
+Match Image B exactly. Preserve person identity and background from Image A. ${safetyNote}
 No text/watermark.`
         : `Create ONE photorealistic clothing-swap image.
-Image A = person.
-Target garment = ${garmentDescriptor}.${productHint}
-Replace Image A outfit completely with the target garment.
+Image A = person. Image B = target garment.${productHint}
+Replace Image A outfit completely with the exact garment from Image B.
 Preserve face, body shape, skin tone, pose, camera, and background from Image A.
-Keep garment details exact (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
+Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
 
     const attemptPlan: Array<{ model: string; timeoutMs: number; prompt: string; label: string }> = (() => {
       if (isAccessory || isLayering) {
