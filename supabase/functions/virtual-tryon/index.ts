@@ -186,7 +186,7 @@ Deno.serve(async (req) => {
     const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
     const FUNCTION_BUDGET_MS = 58_000;
     const MIN_REQUIRED_MS_PER_ATTEMPT = isIntimateGarment ? 8_000 : 6_000;
-    const EXTRACTION_BUDGET_MS = isIntimateGarment ? 25_000 : 12_000;
+    const EXTRACTION_BUDGET_MS = isIntimateGarment ? 20_000 : 12_000;
     const MIN_REQUIRED_MS_FOR_EXTRACTION = 4_000;
     const startedAt = Date.now();
 
