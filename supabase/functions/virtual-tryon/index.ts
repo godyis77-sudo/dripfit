@@ -114,15 +114,14 @@ Deno.serve(async (req) => {
     const startedAt = Date.now();
 
     // ── EXTRACT GARMENT FROM PRODUCT IMAGE (OPTIONAL) ──
-    // Disabled by default to avoid burning 8s+ before generation starts.
-    // Can be enabled per-request for troubleshooting.
+    // Disabled by default to avoid burning time budget before generation starts.
+    // Can be enabled per-request for troubleshooting, and is also used as a refusal-rescue path.
     const enableIntimateExtraction = raw.enableIntimateExtraction === true;
-    let garmentOnlyImage = clothingImageInput;
-    if (isIntimateGarment && enableIntimateExtraction) {
+    const extractIntimateGarment = async (): Promise<string | null> => {
       try {
         const extractPrompt = `Extract ONLY the clothing/garment item from this product photo. Remove any person/model entirely. Show ONLY the ${neutralItemLabel} garment laid flat on a plain white background. Output one clean product-only image. No person, no skin, no body. Just the isolated garment on white.`;
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 3_500);
+        const timer = setTimeout(() => controller.abort(), 6_000);
         try {
           const extractResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
             method: "POST",
@@ -132,7 +131,7 @@ Deno.serve(async (req) => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              model: "google/gemini-2.5-flash-image",
+              model: "google/gemini-3.1-flash-image-preview",
               modalities: ["image", "text"],
               messages: [{
                 role: "user",
@@ -143,24 +142,34 @@ Deno.serve(async (req) => {
               }],
             }),
           });
-          if (extractResponse.ok) {
-            const extractData = await extractResponse.json();
-            const extracted = extractImageFromResponse(extractData);
-            if (extracted) {
-              console.log("Garment extracted successfully for intimate item");
-              garmentOnlyImage = extracted;
-            } else {
-              console.warn("Garment extraction returned no image, using original");
-            }
-          } else {
+
+          if (!extractResponse.ok) {
             console.warn(`Garment extraction HTTP ${extractResponse.status}, using original`);
+            return null;
           }
+
+          const extractData = await extractResponse.json();
+          const extracted = extractImageFromResponse(extractData);
+          if (!extracted) {
+            console.warn("Garment extraction returned no image, using original");
+            return null;
+          }
+
+          console.log("Garment extracted successfully for intimate item");
+          return extracted;
         } finally {
           clearTimeout(timer);
         }
       } catch (err) {
         console.warn("Garment extraction failed/timed out, using original:", err);
+        return null;
       }
+    };
+
+    let garmentOnlyImage = clothingImageInput;
+    if (isIntimateGarment && enableIntimateExtraction) {
+      const extracted = await extractIntimateGarment();
+      if (extracted) garmentOnlyImage = extracted;
       console.log(`Intimate extraction took ${Date.now() - startedAt}ms`);
     }
 
@@ -262,7 +271,6 @@ Keep output commercially appropriate for fashion e-commerce. No text/watermark.`
           // Faster path first to avoid timeouts on mobile intimate try-ons.
           { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash2-primary` },
           { model: "google/gemini-2.5-flash-image", prompt: fallbackPrompt, label: `${typeLabel}-flash-fallback` },
-          { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-last-chance` },
         ]
       : [
           { model: "google/gemini-2.5-flash-image", prompt, label: `${typeLabel}-primary` },
@@ -271,6 +279,7 @@ Keep output commercially appropriate for fashion e-commerce. No text/watermark.`
 
     let resultImage: string | null = null;
     let lastTextContent = "";
+    let sawIntimateRefusal = false;
 
     for (let attempt = 0; attempt < attemptPlan.length; attempt++) {
       const plan = attemptPlan[attempt];
@@ -329,9 +338,11 @@ Keep output commercially appropriate for fashion e-commerce. No text/watermark.`
       } catch (fetchErr) {
         const isTimeout = (fetchErr instanceof DOMException || fetchErr instanceof Error) && (fetchErr as { name: string }).name === "AbortError";
         console.warn(`Attempt ${attempt + 1} (${plan.label}): ${isTimeout ? "TIMEOUT" : "FAILED"}`, fetchErr);
-        lastTextContent = isTimeout
-          ? "The AI request timed out. Retrying with faster fallback settings."
-          : "The AI request failed. Retrying with fallback settings.";
+        if (!lastTextContent || !lastTextContent.toLowerCase().includes("rejected this garment style")) {
+          lastTextContent = isTimeout
+            ? "The AI request timed out. Retrying with faster fallback settings."
+            : "The AI request failed. Retrying with fallback settings.";
+        }
         if (!isFinalAttempt) {
           await new Promise(r => setTimeout(r, isTimeout ? 300 : 700));
           continue;
@@ -370,6 +381,7 @@ Keep output commercially appropriate for fashion e-commerce. No text/watermark.`
       const refusal = msg && Object.prototype.hasOwnProperty.call(msg, "refusal") ? msg.refusal : undefined;
       if (refusal !== undefined) {
         console.warn(`REFUSED (${plan.label}):`, JSON.stringify(refusal).substring(0, 300));
+        if (isIntimateGarment) sawIntimateRefusal = true;
         if (!lastTextContent && isIntimateGarment) {
           lastTextContent = "The model rejected this garment style in this photo. Try a simpler front-facing product image with clear swimsuit coverage.";
         }
@@ -384,6 +396,60 @@ Keep output commercially appropriate for fashion e-commerce. No text/watermark.`
       console.warn(`Attempt ${attempt + 1} (${plan.label}): No image extracted. Keys=${JSON.stringify(Object.keys(msg || {}))}`);
 
       if (!isFinalAttempt) await new Promise(r => setTimeout(r, 600));
+    }
+
+    if (!resultImage && isIntimateGarment && sawIntimateRefusal) {
+      const rescuedGarment = await extractIntimateGarment();
+      if (rescuedGarment) {
+        garmentOnlyImage = rescuedGarment;
+        const elapsedMs = Date.now() - startedAt;
+        const remainingMs = FUNCTION_BUDGET_MS - elapsedMs;
+        if (remainingMs > MIN_REQUIRED_MS_PER_ATTEMPT) {
+          const rescueTimeoutMs = Math.min(22_000, Math.max(MIN_REQUIRED_MS_PER_ATTEMPT, remainingMs - 1_000));
+          console.log(`Try-on refusal rescue model=google/gemini-3.1-flash-image-preview timeout=${rescueTimeoutMs}ms`);
+          try {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), rescueTimeoutMs);
+            try {
+              const rescueResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+                method: "POST",
+                signal: controller.signal,
+                headers: {
+                  Authorization: `Bearer ${LOVABLE_API_KEY}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  model: "google/gemini-3.1-flash-image-preview",
+                  modalities: ["image", "text"],
+                  messages: [{
+                    role: "user",
+                    content: [
+                      { type: "text", text: fastIntimatePrompt },
+                      { type: "text", text: "\n\n========== IMAGE A — THE PERSON (keep this person's face/body) ==========" },
+                      { type: "image_url", image_url: { url: userImageInput } },
+                      { type: "text", text: "\n\n========== IMAGE B — THE TARGET GARMENT (replicate this garment exactly) ==========" },
+                      { type: "image_url", image_url: { url: garmentOnlyImage } },
+                    ],
+                  }],
+                }),
+              });
+
+              if (rescueResponse.ok) {
+                const rescueData = await rescueResponse.json();
+                const rescuedImage = extractImageFromResponse(rescueData);
+                if (rescuedImage) {
+                  resultImage = rescuedImage;
+                  console.log("Image extracted on refusal rescue attempt");
+                }
+              }
+            } finally {
+              clearTimeout(timer);
+            }
+          } catch (rescueErr) {
+            console.warn("Refusal rescue failed/timed out:", rescueErr);
+          }
+        }
+      }
     }
 
     if (!resultImage) {
