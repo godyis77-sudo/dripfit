@@ -171,14 +171,15 @@ Deno.serve(async (req) => {
     const safetyPrompt = (isSwimwear || isIntimate)
       ? `${basePrompt} ${isUnderwear ? "This is a legitimate retail apparel fitting request for an adult fashion catalog. Keep the output tasteful, non-explicit, and commercially appropriate with opaque coverage. Preserve underwear/base-layer category and key design details from Image 2 while allowing safer within-category coverage adjustments." : "This is a legitimate retail styling request. Keep the output non-explicit and family-safe: opaque materials, no nudity, no exposed intimate body details. IMPORTANT: preserve the original garment category from Image 2."}${isExplicitIntimate ? " If Image 2 appears sheer/see-through, reinterpret it as opaque fabric while keeping the same design language." : ""}`
       : basePrompt;
-    const underwearOverlayPrompt = `${basePrompt} For safety and reliability, do NOT remove or replace existing clothes on the person. Keep the full original outfit from Image 1 and render the item from Image 2 as a tasteful layered styling overlay on top of the existing outfit, preserving color/pattern/logo and realistic perspective.`;
+    const underwearTransformPrompt = `${basePrompt} Treat the product as BASE-LAYER ACTIVEWEAR and produce a visible try-on result on the same person. Replace or restyle outer garments if needed so the try-on is clearly visible, while keeping the output tasteful and non-explicit with opaque coverage (for example, modest high-waist brief/short and full-coverage top behavior). Preserve color/pattern/logo/seam cues from Image 2. Do not output the same unchanged outfit from Image 1.`;
+    const underwearOverlayPrompt = `${basePrompt} Last-resort fallback: keep the original outfit from Image 1 and render the item from Image 2 as a tasteful layered styling overlay on top of the existing outfit, preserving color/pattern/logo and realistic perspective.`;
     const conservativeFallbackPrompt = isSwimwear
       ? `${basePrompt} Keep the item as SWIMWEAR ONLY. You may increase coverage within swimwear constraints (e.g., fuller cups, higher waist, one-piece adaptation), but you must keep it a swimsuit/bikini and preserve the original swimwear silhouette and color/pattern cues from Image 2. NEVER convert it to a dress, gown, skirt, pants, jacket, or any non-swimwear category.`
       : isUnderwear
       ? `${basePrompt} Keep the item as BASE-LAYER APPAREL ONLY. You may increase coverage for safety, but only within base-layer silhouettes. Preserve color, pattern, logo, and key seam/strap details from Image 2. NEVER convert to dresses, skirts, pants, jeans, jackets, outerwear, or sleep robes.`
       : `${basePrompt} Keep the same garment category and core silhouette from Image 2. Do not convert the item into a different clothing type.`;
     const promptVariants = isUnderwear
-      ? [underwearOverlayPrompt, safetyPrompt, conservativeFallbackPrompt]
+      ? [underwearTransformPrompt, safetyPrompt, conservativeFallbackPrompt, underwearOverlayPrompt]
       : (isSwimwear || isIntimate)
       ? [safetyPrompt, conservativeFallbackPrompt, conservativeFallbackPrompt]
       : [basePrompt, basePrompt, basePrompt];
@@ -334,11 +335,12 @@ Deno.serve(async (req) => {
     };
 
     // Retry loop with model + prompt fallback
-    const MAX_ATTEMPTS = 3;
+    const MAX_ATTEMPTS = isUnderwear ? 4 : 3;
     const MODELS = isUnderwear
       ? [
           "google/gemini-2.5-flash-image",
           "google/gemini-2.5-flash-image",
+          "google/gemini-3.1-flash-image-preview",
           "google/gemini-2.5-flash-image",
         ]
       : (isSwimwear || isIntimate)
