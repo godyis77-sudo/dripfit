@@ -391,7 +391,7 @@ STYLING RULES:
 - ${garmentSwapScopeInstruction}
 - Match product details exactly: color, fabric texture, cut lines, straps, neckline, hemline, logos, and prints.
 - ${identityInstruction}
-- ${swimwearFramingInstruction}
+${swimwearFramingInstruction}
 - CRITICAL: ${bgInstruction}
 - Realistic fabric drape and shadows that match the scene lighting.
 - Do NOT add extra clothing items not present in the provided garment reference.
