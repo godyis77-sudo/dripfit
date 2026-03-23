@@ -514,14 +514,7 @@ const TryOnResultSection = ({
                   {/* ── Filters Button (Browse-style) ── */}
                   <button
                     onClick={() => setAccFiltersOpen(!accFiltersOpen)}
-                    className={`relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold mb-2 ${
-                      (() => {
-                        const count = (accessoryCategory ? 1 : 0) + (accRetailerFilter ? 1 : 0) + (accSort !== 'default' ? 1 : 0) + (accBrandFilter ? 1 : 0) + (accGenreFilter ? 1 : 0) + (accFitFilter ? 1 : 0) + (accGender !== 'all' ? 1 : 0);
-                        return count > 0;
-                      })()
-                        ? 'btn-luxury text-primary-foreground'
-                        : 'bg-background border border-border text-foreground/70'
-                    }`}
+                    className="relative w-full h-10 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-bold mb-2 btn-luxury text-primary-foreground"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
                     {(() => {
@@ -774,11 +767,11 @@ const TryOnResultSection = ({
                   ) : (
                     <>
                       <div className="flex gap-1.5 mb-2">
-                        <button onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryCameraRef.current?.click(); }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg btn-gold-3d active:scale-95 transition-transform">
-                          <Camera className="h-3.5 w-3.5" /><span className="text-[10px] font-bold">Camera</span>
+                        <button onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryCameraRef.current?.click(); }} className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg bg-card border border-border text-foreground/70 active:scale-95 transition-transform">
+                          <Camera className="h-3 w-3" /><span className="text-[10px] font-semibold">Camera</span>
                         </button>
-                        <button onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryPhotoRef.current?.click(); }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg pill active:scale-95 transition-transform">
-                          <ImageIcon className="h-3.5 w-3.5" /><span className="text-[10px] font-bold">Gallery</span>
+                        <button onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryPhotoRef.current?.click(); }} className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg bg-card border border-border text-foreground/70 active:scale-95 transition-transform">
+                          <ImageIcon className="h-3 w-3" /><span className="text-[10px] font-semibold">Gallery</span>
                         </button>
                       </div>
                       {showAllCategories && !accessoryCategory && (
