@@ -44,13 +44,33 @@ Deno.serve(async (req) => {
       const { data: userData, error: userError } = await supabaseAnon.auth.getUser();
       if (!userError && userData?.user) {
         userId = userData.user.id;
-        const { data: sub } = await supabaseAdmin
-          .from('user_subscriptions')
-          .select('is_active')
-          .eq('user_id', userId)
-          .eq('is_active', true)
-          .maybeSingle();
-        userTier = sub ? 'premium' : 'free';
+
+        // Check admin role first (grants premium)
+        const { data: isAdmin } = await supabaseAdmin.rpc('has_role', { _user_id: userId, _role: 'admin' });
+        if (isAdmin) {
+          userTier = 'premium';
+        } else {
+          // Check Stripe for active/trialing subscription
+          const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+          if (stripeKey && userData.user.email) {
+            try {
+              const { default: Stripe } = await import("https://esm.sh/stripe@18.5.0");
+              const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
+              const customers = await stripe.customers.list({ email: userData.user.email, limit: 1 });
+              if (customers.data.length > 0) {
+                const custId = customers.data[0].id;
+                const activeSubs = await stripe.subscriptions.list({ customer: custId, status: "active", limit: 1 });
+                const trialSubs = await stripe.subscriptions.list({ customer: custId, status: "trialing", limit: 1 });
+                if (activeSubs.data.length > 0 || trialSubs.data.length > 0) {
+                  userTier = 'premium';
+                }
+              }
+            } catch (e) {
+              console.warn("Stripe check failed in tryon, defaulting to free:", e);
+            }
+          }
+          if (userTier !== 'premium') userTier = 'free';
+        }
       }
     }
 
