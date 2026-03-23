@@ -206,6 +206,38 @@ const TryOnUploadSection = forwardRef<HTMLDivElement, TryOnUploadSectionProps>((
         </div>
       </div>
 
+      {/* Background source picker — show when both photos are set */}
+      {userPhoto && clothingPhoto && (
+        <div className="mb-3">
+          <div className="flex items-center gap-1.5 mb-1">
+            <Image className="h-3.5 w-3.5 text-foreground/70" />
+            <p className="text-[12px] text-foreground/70">Background from</p>
+          </div>
+          <div className="flex gap-1.5">
+            <button
+              onClick={() => onBackgroundSourceChange('user')}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[12px] font-bold transition-all active:scale-[0.97] ${
+                backgroundSource === 'user'
+                  ? 'btn-luxury text-primary-foreground'
+                  : 'bg-card border border-border text-foreground/70'
+              }`}
+            >
+              <User className="h-3.5 w-3.5" /> Your Photo
+            </button>
+            <button
+              onClick={() => onBackgroundSourceChange('clothing')}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[12px] font-bold transition-all active:scale-[0.97] ${
+                backgroundSource === 'clothing'
+                  ? 'btn-luxury text-primary-foreground'
+                  : 'bg-card border border-border text-foreground/70'
+              }`}
+            >
+              <Shirt className="h-3.5 w-3.5" /> Clothing Photo
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Product link */}
       <div className="mb-3">
         <div className="flex items-center gap-1.5 mb-1">
