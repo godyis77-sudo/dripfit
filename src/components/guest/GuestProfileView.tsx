@@ -6,7 +6,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 
 const GuestProfileView = () => {
   const navigate = useNavigate();
-  usePageTitle('Profile');
+  usePageMeta({ title: 'Profile', path: '/profile' });
 
   return (
     <div className="min-h-screen bg-background px-4 pt-6 pb-safe-tab">
