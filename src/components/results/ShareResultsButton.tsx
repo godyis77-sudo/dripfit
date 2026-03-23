@@ -13,6 +13,9 @@ interface ShareResultsButtonProps {
   recommendedSize: string;
   fitPreference: string;
   variant?: 'button' | 'icon';
+  tryOnImageUrl?: string | null;
+  brandMatch?: { brand: string; size: string; confidence: number } | null;
+  displayName?: string | null;
 }
 
 const SHARE_TEXT = "I just got my exact measurements across every brand. Measured with DRIPFIT ✔ — try it free: dripfitcheck.lovable.app";
