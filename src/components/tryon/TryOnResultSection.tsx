@@ -933,16 +933,8 @@ const TryOnResultSection = ({
         )}
 
         {/* Full-screen loading animation when adding accessories */}
-        {addingAccessory && createPortal(
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[120] bg-background/90 backdrop-blur-md flex items-center justify-center"
-          >
-            <TryOnLoadingAnimation stepIndex={accessoryStepIndex} />
-          </motion.div>,
-          document.body
+        {addingAccessory && (
+          <TryOnLoadingAnimation stepIndex={accessoryStepIndex} />
         )}
 
         <p className="text-[10px] text-muted-foreground/50 text-center mt-1">We may earn a commission. It doesn't change your price.</p>
