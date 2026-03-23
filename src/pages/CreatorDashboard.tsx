@@ -5,7 +5,7 @@ import { ArrowLeft, Copy, Check, Share2, TrendingUp, Wallet, Users, Clock } from
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { trackEvent } from "@/lib/analytics";
