@@ -408,7 +408,7 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
         console.warn(`Attempt ${attempt + 1} (${plan.label}): ${isTimeout ? "TIMEOUT" : "FAILED"}`, fetchErr);
 
         let extractedAfterTimeout = false;
-        if (isTimeout && isIntimateGarment && !attemptedRefusalExtraction) {
+        if (isTimeout && isIntimateGarment && !isSwimwearOnly && !attemptedRefusalExtraction) {
           attemptedRefusalExtraction = true;
           const rescuedGarment = await extractIntimateGarment();
           if (rescuedGarment) {
