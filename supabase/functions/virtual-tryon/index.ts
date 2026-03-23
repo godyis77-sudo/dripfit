@@ -181,6 +181,7 @@ Deno.serve(async (req) => {
       ? (isTopOnlyGarment ? "athletic crop top" : "athletic activewear piece")
       : neutralItemLabel;
 
+    const isSwimwearOnly = isSwimwear && !isUnderwear;
     const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
     const FUNCTION_BUDGET_MS = 58_000;
     const MIN_REQUIRED_MS_PER_ATTEMPT = isSwimwear ? 8_000 : isIntimateGarment ? 5_000 : 6_000;
@@ -483,7 +484,6 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
     };
 
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
-    const isSwimwearOnly = isSwimwear && !isUnderwear;
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
       ? isSwimwearOnly
         ? [
