@@ -197,16 +197,12 @@ Deno.serve(async (req) => {
     // Enable extraction for ALL intimate categories, not just swimwear/underwear
     const enableIntimateExtraction = isIntimateGarment && !disableIntimateExtraction;
     const extractIntimateGarment = async (): Promise<string | null> => {
-      const extractPrompt = `Isolate ONLY the target garment from this product photo. Remove any person/model/mannequin and any visible skin. Return a clean product-only image of the ${promptIntimateLabel} on a plain white background. Keep garment color, shape, straps, seams, and logos accurate.`;
-      const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = isSwimwear
-        ? [
-            { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 12_000, label: "extract-swim-flash" },
-            { model: "google/gemini-2.5-flash-image", timeoutMs: 8_000, label: "extract-swim-nano" },
-          ]
-        : [
-            { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 8_000, label: "extract-flash-primary" },
-            { model: "google/gemini-2.5-flash-image", timeoutMs: 6_000, label: "extract-nano-fallback" },
-          ];
+      const extractPrompt = `You are a product photography editor. Extract the ${promptIntimateLabel} from this product listing photo. Create a clean flat-lay image of ONLY the garment item on a plain white background. Preserve the exact color, pattern, fabric texture, straps, seams, cut, and any logos or prints. Do not include any person, model, mannequin, or skin — only the garment.`;
+      const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = [
+        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 16_000, label: "extract-flash" },
+        { model: "google/gemini-3-pro-image-preview", timeoutMs: 14_000, label: "extract-pro" },
+        { model: "google/gemini-2.5-flash-image", timeoutMs: 10_000, label: "extract-nano" },
+      ];
 
       for (const plan of extractionPlan) {
         const elapsedMs = Date.now() - startedAt;
