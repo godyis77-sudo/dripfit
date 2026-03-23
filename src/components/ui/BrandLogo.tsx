@@ -2,8 +2,8 @@ import iconCrown from '@/assets/icon-crown.webp';
 import { cn } from '@/lib/utils';
 
 interface BrandLogoProps {
-  /** sm = nav/footer, md = auth, lg = compact nav mark, xl = hero/splash */
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  /** sm = nav/footer, md = auth, lg = compact nav mark, xl = hero/splash, xxl = splash full */
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
   className?: string;
   /** Show just the icon (no text) */
   iconOnly?: boolean;
