@@ -405,6 +405,10 @@ export function useTryOnState() {
         userPhoto: preparedUserPhoto,
         clothingPhoto: preparedClothingPhoto,
         itemType: category || 'clothing',
+        productName: selectedQuickPick?.name || '',
+        productBrand: selectedQuickPick?.brand || '',
+        productCategory: selectedQuickPick?.category || category || '',
+        productUrl: selectedQuickPick?.product_url || productLink || '',
       };
       // Pass guest UUID for unauthenticated users
       if (!user) {

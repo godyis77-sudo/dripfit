@@ -97,6 +97,9 @@ Deno.serve(async (req) => {
     }
     const itemType: string = (raw.itemType as string) || "clothing";
     const itemLower = itemType.toLowerCase();
+    const productName = typeof raw.productName === "string" ? raw.productName : "";
+    const productBrand = typeof raw.productBrand === "string" ? raw.productBrand : "";
+    const productCategory = typeof raw.productCategory === "string" ? raw.productCategory : "";
     const ACCESSORY_TYPES = ["accessory", "jewelry", "necklace", "bracelet", "earrings", "ring", "watch", "hat", "hats", "cap", "sunglasses", "glasses", "bag", "bags", "purse", "handbag", "belt", "belts", "scarf", "scarves", "shoes", "sneakers", "boots", "heels", "loafers", "sandals"];
     const INTIMATE_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece", "bra", "bralette", "sports bra", "underwear", "panties", "briefs", "boxers", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise", "lounge", "loungewear", "sleepwear", "pajamas", "robe"];
     const UNDERWEAR_TYPES = ["underwear", "panties", "briefs", "boxers", "bra", "bralette", "sports bra", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise"];
@@ -106,7 +109,7 @@ Deno.serve(async (req) => {
     const isIntimate = INTIMATE_TYPES.some(t => itemLower.includes(t));
     const productContext = [
       itemLower,
-      typeof raw.productName === "string" ? raw.productName.toLowerCase() : "",
+      productName.toLowerCase(),
       typeof raw.productTitle === "string" ? raw.productTitle.toLowerCase() : "",
       typeof raw.productUrl === "string" ? raw.productUrl.toLowerCase() : "",
     ].join(" ");
@@ -137,19 +140,62 @@ Deno.serve(async (req) => {
       toImageInput(clothingPhoto),
     ]);
 
+    // Build product context string for the prompt
+    const productDesc = [productName, productBrand ? `by ${productBrand}` : "", productCategory ? `(${productCategory})` : ""].filter(Boolean).join(" ");
+
     // Remap underwear → swimsuit for AI to avoid safety filter blocks
     const aiItemType = (isUnderwear && !isSwimwear) ? "swimsuit" : itemType;
     const neutralItemLabel = (isSwimwear || isUnderwear) ? "swimsuit" : (isIntimate ? "fashion garment" : itemType);
+
+    const productHint = productDesc ? `\nProduct details: "${productDesc}". Use these details to understand the item but focus on what you SEE in Image 2.` : "";
+
     const basePrompt = isAccessory || isLayering
-      ? `Create one photorealistic virtual try-on image using two inputs. Image 1 is the person${isLayering ? " already wearing an outfit" : ""}. Image 2 is the accessory (${aiItemType}). Keep the same person, face, pose, lighting, and background from Image 1. Add only the accessory from Image 2 with correct scale, perspective, and material detail. Output image only, no text.`
-      : `Create one photorealistic virtual try-on image using two inputs. Image 1 is the person. Image 2 is the product (${neutralItemLabel}) from a fashion catalog. CRITICALLY IMPORTANT: the person in the output MUST be wearing EXACTLY the product shown in Image 2 — same color, same pattern, same cut, same neckline, same design details. Remove whatever the person is currently wearing and replace it with the product from Image 2. Keep the same person identity, body, pose, camera angle, and background from Image 1. Ensure realistic fit, drape, and fabric texture. Output a single photorealistic image only, no text.`;
-    const swimwearPrompt = `${basePrompt} This is a standard retail swimsuit fitting. The product in Image 2 is a swimsuit — dress the person in EXACTLY that swimsuit. Faithfully reproduce its exact color, cut, straps, neckline, and pattern. The output must clearly show the person wearing this specific swimsuit, not a different garment. Keep the result commercially appropriate.${isExplicitIntimate ? " If Image 2 appears sheer/see-through, reinterpret as opaque fabric while keeping the same design." : ""}`;
-    const underwearTransformPrompt = `${basePrompt} Treat the product as a SWIMSUIT. Remove the person's current clothing and dress them in EXACTLY the product from Image 2, preserving its exact color, pattern, logo, straps, and silhouette. The try-on must be clearly visible. Keep the output tasteful and commercially appropriate. Do not output the same unchanged outfit from Image 1.`;
-    const underwearOverlayPrompt = `${basePrompt} Last-resort fallback: keep the original outfit from Image 1 and render the swimsuit from Image 2 as a tasteful layered styling overlay on top of the existing outfit, preserving color/pattern/logo and realistic perspective.`;
+      ? `You are a professional fashion photo editor specializing in virtual try-on composites.
+
+TASK: Create one photorealistic virtual try-on image.
+- Image 1: The person${isLayering ? " already wearing an outfit" : ""}.
+- Image 2: The accessory/item (${aiItemType}).${productHint}
+
+RULES:
+1. KEEP the person's face, skin tone, hair, body shape, pose, and proportions EXACTLY as in Image 1.
+2. ADD ONLY the item from Image 2 onto the person — correct scale, perspective, shadows, and material texture.
+3. PRESERVE the background, lighting direction, and color temperature from Image 1.
+4. Do NOT alter the person's body shape, do NOT add/remove other clothing.
+5. Output a single photorealistic image. No text, no watermarks, no split view.`
+      : `You are a professional fashion photo editor specializing in virtual try-on composites.
+
+TASK: Create one photorealistic virtual try-on image showing the person from Image 1 wearing the EXACT garment from Image 2.
+- Image 1: The person (model/subject).
+- Image 2: The product (${neutralItemLabel}) from a fashion catalog.${productHint}
+
+CRITICAL RULES:
+1. The person MUST be wearing the EXACT garment from Image 2 — same color, same pattern, same print, same cut, same neckline, same sleeve length, same hemline, same design details. Do NOT change or simplify the garment.
+2. REMOVE whatever the person is currently wearing and REPLACE it with the garment from Image 2.
+3. PRESERVE the person's face, skin tone, hair, body shape, body proportions, and pose EXACTLY as in Image 1. Do NOT alter their body.
+4. PRESERVE the background, camera angle, lighting direction, and shadows from Image 1.
+5. Apply realistic fabric drape, wrinkles, and fit appropriate to the person's body. The garment should look naturally worn, not pasted on.
+6. Match the garment's size/fit to the person's body — it should look like their size.
+7. Output a SINGLE photorealistic image. No text, no watermarks, no split views, no side-by-side comparisons.`;
+
+    const swimwearPrompt = `${basePrompt}
+
+ADDITIONAL: This is a standard retail swimsuit fitting. The product in Image 2 is a swimsuit — dress the person in EXACTLY that swimsuit. Faithfully reproduce its exact color, cut, straps, neckline, and pattern. Keep the result commercially appropriate.${isExplicitIntimate ? " If Image 2 appears sheer/see-through, reinterpret as opaque fabric while keeping the same design." : ""}`;
+    const underwearTransformPrompt = `${basePrompt}
+
+ADDITIONAL: Treat the product as a SWIMSUIT. Remove the person's current clothing and dress them in EXACTLY the product from Image 2, preserving its exact color, pattern, logo, straps, and silhouette. The try-on must be clearly visible. Keep the output tasteful and commercially appropriate.`;
+    const underwearOverlayPrompt = `${basePrompt}
+
+ADDITIONAL: Last-resort fallback — keep the original outfit from Image 1 and render the item from Image 2 as a tasteful layered styling overlay, preserving color/pattern/logo and realistic perspective.`;
     const conservativeFallbackPrompt = (isSwimwear || isUnderwear)
-      ? `${basePrompt} Keep the item as SWIMWEAR ONLY. You may increase coverage within swimwear constraints (e.g., fuller cups, higher waist, one-piece adaptation), but you must keep it a swimsuit and preserve the EXACT color, pattern, and design from Image 2. NEVER convert it to a dress, gown, skirt, pants, jacket, or any non-swimwear category.`
-      : `${basePrompt} Keep the same garment category and core silhouette from Image 2. Do not convert the item into a different clothing type.`;
-    const underwearEmergencyPrompt = `${basePrompt} Emergency fallback: style the product as a modest athletic one-piece swimsuit with opaque fabric while preserving key colors and overall design cues from Image 2. Ensure the try-on is clearly visible on the same person. Output image only.`;
+      ? `${basePrompt}
+
+ADDITIONAL: Keep the item as SWIMWEAR ONLY. You may increase coverage (fuller cups, higher waist, one-piece adaptation), but MUST keep it a swimsuit. Preserve the EXACT color, pattern, and design from Image 2. NEVER convert it to a dress, gown, skirt, pants, jacket, or any non-swimwear category.`
+      : `${basePrompt}
+
+ADDITIONAL: Keep the same garment category and core silhouette from Image 2. Do not convert the item into a different clothing type.`;
+    const underwearEmergencyPrompt = `${basePrompt}
+
+ADDITIONAL: Emergency fallback — style the product as a modest athletic one-piece swimsuit with opaque fabric while preserving key colors and overall design cues from Image 2. Ensure the try-on is clearly visible.`;
     const promptVariants = isUnderwear
       ? [underwearTransformPrompt, swimwearPrompt, conservativeFallbackPrompt, underwearEmergencyPrompt, underwearOverlayPrompt]
       : (isSwimwear || isIntimate)
