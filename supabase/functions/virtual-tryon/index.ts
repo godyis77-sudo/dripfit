@@ -332,7 +332,9 @@ Deno.serve(async (req) => {
     };
 
     const intimateTextReference = buildIntimateReferenceFromMetadata();
-    const useTextOnlyIntimateReference = isIntimateGarment && !preExtractedGarment;
+    // NEVER go text-only — always send the original product image so the AI
+    // replicates the exact garment. The text hint is supplementary context only.
+    const useTextOnlyIntimateReference = false;
 
     const productDesc = [productName, productBrand ? `by ${productBrand}` : "", productCategory ? `(${productCategory})` : ""].filter(Boolean).join(" ");
     const sanitizedProductDesc = isIntimateGarment
