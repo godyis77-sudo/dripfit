@@ -92,6 +92,12 @@ const ScrollToTop = () => {
   return null;
 };
 
+/** Redirects /community/:postId → /style-check/:postId preserving the param */
+const CommunityPostRedirect = () => {
+  const { postId } = useParams();
+  return <Navigate to={`/style-check/${postId}`} replace />;
+};
+
 /** Extracts location for AnimatePresence keying */
 const AnimatedRoutes = () => {
   const location = useLocation();
