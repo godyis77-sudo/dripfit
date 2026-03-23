@@ -88,6 +88,50 @@ const TryOnResultSection = ({
   const [showResultFullscreen, setShowResultFullscreen] = useState(false);
   const [showBeforeAfter, setShowBeforeAfter] = useState(false);
   const [showBgSwap, setShowBgSwap] = useState(false);
+  const [sharingDripCard, setSharingDripCard] = useState(false);
+  const [shareFallbackOpen, setShareFallbackOpen] = useState(false);
+  const [shareImageUrl, setShareImageUrl] = useState<string | null>(null);
+  const dripCardRef = useRef<HTMLDivElement>(null);
+
+  const handleShareDripCard = async () => {
+    setSharingDripCard(true);
+    trackEvent('tryon_drip_card_share_start');
+    try {
+      const { toPng } = await import('html-to-image');
+      // Allow DripCard to mount
+      await new Promise(r => setTimeout(r, 300));
+      if (!dripCardRef.current) throw new Error('DripCard not mounted');
+      const dataUrl = await toPng(dripCardRef.current, { width: 1080, height: 1920, pixelRatio: 1 });
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const file = new File([blob], 'drip-fit-tryon.png', { type: 'image/png' });
+      trackEvent('tryon_drip_card_generated');
+
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ text: 'Check out my fit — verified by DRIPFIT ✔', url: 'https://dripfitcheck.lovable.app', files: [file] });
+      } else {
+        const url = URL.createObjectURL(blob);
+        setShareImageUrl(url);
+        setShareFallbackOpen(true);
+      }
+    } catch (err: any) {
+      if (err?.name !== 'AbortError') {
+        console.error('DripCard share failed:', err);
+        onToast({ title: 'Share failed', description: 'Could not generate share card.', variant: 'destructive' });
+      }
+    } finally {
+      setSharingDripCard(false);
+    }
+  };
+
+  const handleShareDownload = () => {
+    if (!shareImageUrl) return;
+    const a = document.createElement('a');
+    a.href = shareImageUrl;
+    a.download = 'drip-fit-tryon.png';
+    a.click();
+    trackEvent('tryon_drip_card_downloaded');
+  };
 
   const handleAddToWardrobe = async (item: WhatsLookItem) => {
     if (!authUser) {
