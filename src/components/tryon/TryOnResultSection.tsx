@@ -138,6 +138,8 @@ const TryOnResultSection = ({
   const [shareFallbackOpen, setShareFallbackOpen] = useState(false);
   const [shareImageUrl, setShareImageUrl] = useState<string | null>(null);
   const dripCardRef = useRef<HTMLDivElement>(null);
+  const [itemPreview, setItemPreview] = useState<ProductPreviewData | null>(null);
+  const { pendingClickout, beginClickout, confirmClickout, cancelClickout } = useAffiliateClickout({ extraProps: { source: 'tryon_item_preview' } });
 
   const handleShareDripCard = async () => {
     setSharingDripCard(true);
