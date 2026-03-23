@@ -520,16 +520,25 @@ Deno.serve(async (req) => {
           }
         }
 
-        // Batch fit/fabric tagging — individual updates (different values per product)
+        // Batch fit/fabric tagging — group by value for efficient bulk updates
+        const fitGroups = new Map<string, string[]>();
         for (const item of toFitFabric) {
-          await supabase
-            .from("product_catalog")
-            .update({
-              fit_profile: item.fit_profile,
-              fabric_composition: item.fabric_composition,
-              updated_at: new Date().toISOString(),
-            } as any)
-            .eq("id", item.id);
+          const key = JSON.stringify({ f: item.fit_profile, c: item.fabric_composition });
+          if (!fitGroups.has(key)) fitGroups.set(key, []);
+          fitGroups.get(key)!.push(item.id);
+        }
+        for (const [key, ids] of fitGroups) {
+          const { f, c } = JSON.parse(key);
+          const updatePayload: Record<string, unknown> = { updated_at: new Date().toISOString() };
+          if (f.length > 0) updatePayload.fit_profile = f;
+          if (c.length > 0) updatePayload.fabric_composition = c;
+          for (let i = 0; i < ids.length; i += 100) {
+            const chunk = ids.slice(i, i + 100);
+            await supabase
+              .from("product_catalog")
+              .update(updatePayload as any)
+              .in("id", chunk);
+          }
         }
       }
 
