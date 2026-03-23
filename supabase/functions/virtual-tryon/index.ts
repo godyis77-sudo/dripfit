@@ -478,7 +478,7 @@ ${garmentSwapScopeInstruction} ${bgFallbackHint}
 ${identityInstruction} Keep result clean and commercially appropriate. No text/watermark.`;
 
     const buildTryOnContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
-      const userImageLabel = isSwimwearOnly
+      const userImageLabel = isIntimateGarment
         ? "\n\n========== IMAGE A — BODY/POSE REFERENCE (do NOT preserve exact face identity) =========="
         : "\n\n========== IMAGE A — THE PERSON (keep this person's face/body) ==========";
       const content: Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> = [
@@ -487,8 +487,8 @@ ${identityInstruction} Keep result clean and commercially appropriate. No text/w
         { type: "image_url", image_url: { url: userImageInput } },
       ];
 
-      if (useTextOnlySwimwearReference) {
-        content.push({ type: "text", text: `\n\n========== GARMENT REFERENCE (TEXT) ==========\n${swimwearTextReference}` });
+      if (useTextOnlyIntimateReference) {
+        content.push({ type: "text", text: `\n\n========== GARMENT REFERENCE (TEXT) ==========\n${intimateTextReference}` });
       } else {
         content.push({ type: "text", text: "\n\n========== IMAGE B — THE TARGET GARMENT (replicate this garment exactly) ==========" });
         content.push({ type: "image_url", image_url: { url: garmentOnlyImage } });
@@ -497,8 +497,8 @@ ${identityInstruction} Keep result clean and commercially appropriate. No text/w
       return content;
     };
 
-    if (useTextOnlySwimwearReference) {
-      console.log("Swimwear generation using metadata-only garment reference (no product image input).");
+    if (useTextOnlyIntimateReference) {
+      console.log("Intimate generation using metadata-only garment reference (no product image input).");
     }
 
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
