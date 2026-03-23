@@ -1015,7 +1015,7 @@ const TryOnResultSection = ({
         onTryOn={undefined}
         onShop={(p) => {
           if (p.product_url) {
-            beginClickout(p.product_url, { brand: p.brand, product: p.name });
+            beginClickout(p.brand || 'Product', p.product_url);
             window.open(p.product_url, '_blank', 'noopener');
             confirmClickout();
           }
