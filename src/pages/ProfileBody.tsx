@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import { getFitPreference, getUseCm } from '@/lib/session';
-import type { BodyScanResult, FitPreference, MeasurementRange } from '@/lib/types';
+import type { BodyScanResult, FitPreference, MeasurementRange, Confidence } from '@/lib/types';
 
 import BottomTabBar from '@/components/BottomTabBar';
 import BodyDiagram from '@/components/results/BodyDiagram';
