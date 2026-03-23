@@ -393,12 +393,8 @@ TARGET ACCESSORY:
 
 TASK: Add the accessory from Image B onto the person in Image A. Match Image B exactly (color, shape, material, branding). ${bgInstruction} Correct scale, lighting, shadows. No text/watermarks.`;
     } else if (isIntimateGarment) {
-      const intimateReferenceLine = useTextOnlyIntimateReference
-        ? `REFERENCE: ${intimateTextReference}`
-        : `IMAGE B: A ${promptIntimateLabel} product listing photo from an online store.`;
-      const intimateReferenceRule = useTextOnlyIntimateReference
-        ? "- Use the REFERENCE description exactly for color, print, cut, neckline, straps, seams, and coverage."
-        : "- If Image B shows a model/mannequin, copy only the garment and ignore that person.";
+      const intimateReferenceLine = `IMAGE B: A ${promptIntimateLabel} product listing photo from an online store.${intimateTextReference ? `\nHint: ${intimateTextReference}` : ""}`;
+      const intimateReferenceRule = "- If Image B shows a model/mannequin, copy only the garment and ignore that person.";
 
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
