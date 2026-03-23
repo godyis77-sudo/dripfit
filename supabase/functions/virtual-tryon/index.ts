@@ -185,31 +185,24 @@ Deno.serve(async (req) => {
     const isSwimwearOnly = isSwimwear && !isUnderwear;
     const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
     const FUNCTION_BUDGET_MS = 58_000;
-    const MIN_REQUIRED_MS_PER_ATTEMPT = isSwimwear ? 8_000 : isIntimateGarment ? 5_000 : 6_000;
-    const EXTRACTION_BUDGET_MS = isSwimwear ? 18_000 : 12_000;
-    const MIN_REQUIRED_MS_FOR_EXTRACTION = isSwimwear ? 6_000 : 4_000;
+    const MIN_REQUIRED_MS_PER_ATTEMPT = isIntimateGarment ? 8_000 : 6_000;
+    const EXTRACTION_BUDGET_MS = isIntimateGarment ? 25_000 : 12_000;
+    const MIN_REQUIRED_MS_FOR_EXTRACTION = 4_000;
     const startedAt = Date.now();
 
     // ── EXTRACT GARMENT FROM PRODUCT IMAGE (OPTIONAL) ──
     // For swimwear/underwear, pre-extract to reduce refusals from model-in-product photos.
     const forceIntimateExtraction = raw.forceIntimateExtraction === true;
     const disableIntimateExtraction = raw.disableIntimateExtraction === true;
-    const enableIntimateExtraction = isIntimateGarment && !disableIntimateExtraction && (
-      forceIntimateExtraction ||
-      isUnderwear ||
-      isSwimwear
-    );
+    // Enable extraction for ALL intimate categories, not just swimwear/underwear
+    const enableIntimateExtraction = isIntimateGarment && !disableIntimateExtraction;
     const extractIntimateGarment = async (): Promise<string | null> => {
-      const extractPrompt = `Isolate ONLY the target garment from this product photo. Remove any person/model/mannequin and any visible skin. Return a clean product-only image of the ${promptIntimateLabel} on a plain white background. Keep garment color, shape, straps, seams, and logos accurate.`;
-      const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = isSwimwear
-        ? [
-            { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 12_000, label: "extract-swim-flash" },
-            { model: "google/gemini-2.5-flash-image", timeoutMs: 8_000, label: "extract-swim-nano" },
-          ]
-        : [
-            { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 8_000, label: "extract-flash-primary" },
-            { model: "google/gemini-2.5-flash-image", timeoutMs: 6_000, label: "extract-nano-fallback" },
-          ];
+      const extractPrompt = `You are a product photography editor. Extract the ${promptIntimateLabel} from this product listing photo. Create a clean flat-lay image of ONLY the garment item on a plain white background. Preserve the exact color, pattern, fabric texture, straps, seams, cut, and any logos or prints. Do not include any person, model, mannequin, or skin — only the garment.`;
+      const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = [
+        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 16_000, label: "extract-flash" },
+        { model: "google/gemini-3-pro-image-preview", timeoutMs: 14_000, label: "extract-pro" },
+        { model: "google/gemini-2.5-flash-image", timeoutMs: 10_000, label: "extract-nano" },
+      ];
 
       for (const plan of extractionPlan) {
         const elapsedMs = Date.now() - startedAt;
