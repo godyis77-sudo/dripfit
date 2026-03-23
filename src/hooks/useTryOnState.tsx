@@ -55,8 +55,9 @@ function loadPersistedTryOnState(): PersistedTryOnState {
     const parsed = raw ? JSON.parse(raw) : {};
     // Prefer localStorage result URL (small string, survives tab close)
     const savedResultUrl = localStorage.getItem(TRYON_RESULT_KEY);
+    const savedUserPhoto = localStorage.getItem(TRYON_USER_PHOTO_KEY);
     return {
-      userPhoto: parsed.userPhoto || null,
+      userPhoto: savedUserPhoto || parsed.userPhoto || null,
       clothingPhoto: parsed.clothingPhoto || null,
       productLink: parsed.productLink || '',
       category: parsed.category || 'top',
