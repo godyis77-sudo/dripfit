@@ -512,7 +512,8 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
       if (!isFinalAttempt) await new Promise(r => setTimeout(r, 600));
     }
 
-    if (!resultImage && isIntimateGarment && sawIntimateRefusal) {
+    if (!resultImage && isIntimateGarment && sawIntimateRefusal && !attemptedRefusalExtraction) {
+      attemptedRefusalExtraction = true;
       const rescuedGarment = await extractIntimateGarment();
       if (rescuedGarment) {
         garmentOnlyImage = rescuedGarment;
