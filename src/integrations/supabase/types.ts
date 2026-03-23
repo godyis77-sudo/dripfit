@@ -1337,19 +1337,19 @@ export type Database = {
       tryon_usage: {
         Row: {
           count: number
-          daily_key: string | null
+          daily_key: string
           month_key: string
           user_id: string
         }
         Insert: {
           count?: number
-          daily_key?: string | null
+          daily_key?: string
           month_key: string
           user_id: string
         }
         Update: {
           count?: number
-          daily_key?: string | null
+          daily_key?: string
           month_key?: string
           user_id?: string
         }
