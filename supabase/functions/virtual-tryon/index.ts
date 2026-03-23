@@ -249,26 +249,11 @@ Replace Image A outfit completely with the exact garment from Image B.
 Preserve face, body shape, skin tone, pose, camera, and background from Image A.
 Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
 
-    const attemptPlan: Array<{ model: string; timeoutMs: number; prompt: string; label: string }> = (() => {
-      if (isAccessory || isLayering) {
-        return [
-          { model: "google/gemini-2.5-flash-image", timeoutMs: 18_000, prompt, label: "accessory-primary" },
-          { model: "google/gemini-2.5-flash-image", timeoutMs: 12_000, prompt: fallbackPrompt, label: "accessory-retry" },
-        ];
-      }
-
-      if (isIntimateGarment) {
-        return [
-          { model: "google/gemini-2.5-flash-image", timeoutMs: 18_000, prompt, label: "intimate-safe-primary" },
-          { model: "google/gemini-2.5-flash-image", timeoutMs: 12_000, prompt: fallbackPrompt, label: "intimate-safe-retry" },
-        ];
-      }
-
-      return [
-        { model: "google/gemini-2.5-flash-image", timeoutMs: 20_000, prompt, label: "standard-primary" },
-        { model: "google/gemini-2.5-flash-image", timeoutMs: 12_000, prompt: fallbackPrompt, label: "standard-retry" },
-      ];
-    })();
+    const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
+    const attemptPlan: Array<{ model: string; prompt: string; label: string }> = [
+      { model: "google/gemini-2.5-flash-image", prompt, label: `${typeLabel}-primary` },
+      { model: "google/gemini-2.5-flash-image", prompt: fallbackPrompt, label: `${typeLabel}-retry` },
+    ];
 
     let resultImage: string | null = null;
     let lastTextContent = "";
@@ -283,7 +268,10 @@ Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos).
         break;
       }
 
-      const timeoutMs = Math.min(plan.timeoutMs, Math.max(MIN_REQUIRED_MS_PER_ATTEMPT, remainingMs - 1_500));
+      // Give the primary attempt most of the remaining budget; reserve time for retry
+      const timeoutMs = attempt === 0
+        ? Math.max(MIN_REQUIRED_MS_PER_ATTEMPT, remainingMs - MIN_REQUIRED_MS_PER_ATTEMPT - 3_000)
+        : Math.max(MIN_REQUIRED_MS_PER_ATTEMPT, remainingMs - 2_000);
       const isFinalAttempt = attempt === attemptPlan.length - 1;
 
       console.log(`Try-on attempt ${attempt + 1}/${attemptPlan.length} model=${plan.model} timeout=${timeoutMs}ms label=${plan.label}`);
