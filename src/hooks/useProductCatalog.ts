@@ -134,6 +134,13 @@ export function useProductCatalog(
         query = query.contains('fit_profile', [fitProfile]);
       }
 
+      // For swimwear, only show model shots (forward-facing body photos)
+      const swimCategories = ['swimwear', 'underwear', 'lingerie'];
+      const effectiveCategory = category?.toLowerCase() ?? '';
+      if (swimCategories.includes(effectiveCategory)) {
+        query = query.eq('presentation', 'model_shot').gte('image_confidence', 0.15);
+      }
+
       const { data } = await query;
 
       if (requestId !== fetchRequestIdRef.current) return;
