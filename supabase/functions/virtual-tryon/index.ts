@@ -494,8 +494,8 @@ ${identityInstruction} Keep model facing the same direction as Image A — never
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
       ? [
-          // All intimate/swimwear/underwear: generous primary pass + compliance fallback
-          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 30_000 },
+          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 22_000 },
+          { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-fallback`, timeoutMs: 18_000 },
           { model: "google/gemini-2.5-flash-image", prompt: complianceIntimatePrompt, label: `${typeLabel}-nano-compliance`, timeoutMs: 14_000 },
         ]
       : [
