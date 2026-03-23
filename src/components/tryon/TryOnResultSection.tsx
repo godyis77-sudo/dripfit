@@ -300,7 +300,7 @@ const TryOnResultSection = ({
         )}
 
         {/* ── Quick Action Bar ── */}
-        <div className="grid grid-cols-4 gap-2 mb-3">
+        <div className="grid grid-cols-5 gap-1.5 mb-3">
           {!shared && (
             <button
               onClick={() => { onSetShowPostUI(true); if (!caption) onSetCaption(getCaptionSuggestions(category)[0]); onSetIsPublic(true); }}
@@ -317,11 +317,19 @@ const TryOnResultSection = ({
             </div>
           )}
           <button
+            onClick={handleShareDripCard}
+            disabled={sharingDripCard}
+            className="flex flex-col items-center gap-1 py-2.5 rounded-xl bg-card border border-primary/20 active:scale-[0.96] transition-transform"
+          >
+            {sharingDripCard ? <Loader2 className="h-4 w-4 text-primary animate-spin" /> : <Share className="h-4 w-4 text-primary" />}
+            <span className="text-[10px] font-bold text-primary">Share</span>
+          </button>
+          <button
             onClick={() => setShowBgSwap(true)}
             className="flex flex-col items-center gap-1 py-2.5 rounded-xl bg-card border border-primary/20 active:scale-[0.96] transition-transform"
           >
             <Image className="h-4 w-4 text-primary" />
-            <span className="text-[10px] font-bold text-primary">Background</span>
+            <span className="text-[10px] font-bold text-primary">BG</span>
           </button>
           <button
             onClick={onTryAnother}
