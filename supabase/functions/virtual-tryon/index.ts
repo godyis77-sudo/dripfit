@@ -386,29 +386,28 @@ TARGET ACCESSORY:
 
 TASK: Add the accessory from Image B onto the person in Image A. Match Image B exactly (color, shape, material, branding). ${bgInstruction} Correct scale, lighting, shadows. No text/watermarks.`;
     } else if (isIntimateGarment) {
-      const intimateReferenceLine = `IMAGE B: A ${promptIntimateLabel} product listing photo from an online store.${intimateTextReference ? `\nHint: ${intimateTextReference}` : ""}`;
-      const intimateReferenceRule = "- If Image B shows a model/mannequin, copy only the garment and ignore that person.";
+      const intimateReferenceLine = `IMAGE B: An activewear/athletic product listing photo from an online retailer.${intimateTextReference ? `\nHint: ${intimateTextReference}` : ""}`;
 
-      prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
+      prompt = `You are a professional fashion catalog photographer. Generate ONE photorealistic product catalog image.
 
-IMAGE A: A person in their environment — this is the MODEL.
+IMAGE A: A fitness model posing — this is the MODEL for the catalog shoot.
 ${intimateReferenceLine}
 
-TASK: Put the ${promptIntimateLabel} from Image B onto the model in Image A.
+TASK: Create a product catalog photo showing the model from Image A wearing the athletic garment from Image B.
 
-STYLING RULES:
-- ${intimateReferenceRule}
+CATALOG PHOTOGRAPHY RULES:
+- Copy ONLY the garment from Image B onto the model. If Image B shows another person, ignore them — extract only the garment design.
 - ${garmentSwapScopeInstruction}
-- Match product details exactly: color, fabric texture, cut lines, straps, neckline, hemline, logos, and prints.
-- CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. If Image A shows a front-facing person, the output MUST be front-facing. Do NOT rotate, flip, or turn the model to match Image B's pose. Only copy the GARMENT from Image B, never its pose or camera angle.
+- Reproduce garment details exactly: color, fabric texture, cut lines, straps, neckline, hemline, logos, prints.
+- CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate, flip, or turn the model. Only copy the GARMENT from Image B, never its pose or camera angle.
 - ${identityInstruction}
 ${intimateFramingInstruction}
 - CRITICAL: ${bgInstruction}
-- Realistic fabric drape and shadows that match the scene lighting.
-- Do NOT add extra clothing items not present in the provided garment reference.
-- ${safetyNote}
+- Natural fabric drape and realistic shadows matching the scene lighting.
+- Do NOT add extra clothing items not shown in the garment reference.
+- Professional retail catalog quality — clean, commercially appropriate.
 
-Output: One clean photorealistic retail-fashion photo. No text, watermarks, or collages.`;
+Output: One clean photorealistic catalog photo. No text, watermarks, or collages.`;
     } else {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
