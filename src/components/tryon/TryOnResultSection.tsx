@@ -466,24 +466,44 @@ const TryOnResultSection = ({
                   {/* ── Brand Search ── */}
                   <div className="mb-2">
                     <BrandFilter
-                      gender={userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : null}
+                      gender={accGender === 'all' ? null : accGender}
                       selectedBrand={accBrandFilter}
                       onBrandChange={setAccBrandFilter}
                     />
+                  </div>
+
+                  {/* ── Gender Toggle ── */}
+                  <div className="flex gap-1.5 mb-2">
+                    {GENDER_OPTIONS.map(opt => (
+                      <button
+                        key={opt.key}
+                        onClick={() => setAccGenderOverride(opt.key)}
+                        className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
+                          accGender === opt.key
+                            ? 'btn-luxury text-primary-foreground'
+                            : 'bg-background border border-border text-foreground/70'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
                   </div>
 
                   {/* ── Filters Button (Browse-style) ── */}
                   <button
                     onClick={() => setAccFiltersOpen(!accFiltersOpen)}
                     className={`relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold mb-2 ${
-                      (accessoryCategory || accRetailerFilter || accSort !== 'default' || accBrandFilter)
+                      (() => {
+                        const count = (accessoryCategory ? 1 : 0) + (accRetailerFilter ? 1 : 0) + (accSort !== 'default' ? 1 : 0) + (accBrandFilter ? 1 : 0) + (accGenreFilter ? 1 : 0) + (accFitFilter ? 1 : 0) + (accGender !== 'all' ? 1 : 0);
+                        return count > 0;
+                      })()
                         ? 'btn-luxury text-primary-foreground'
                         : 'bg-background border border-border text-foreground/70'
                     }`}
                   >
                     <SlidersHorizontal className="h-4 w-4" />
                     {(() => {
-                      const count = (accessoryCategory ? 1 : 0) + (accRetailerFilter ? 1 : 0) + (accSort !== 'default' ? 1 : 0) + (accBrandFilter ? 1 : 0);
+                      const count = (accessoryCategory ? 1 : 0) + (accRetailerFilter ? 1 : 0) + (accSort !== 'default' ? 1 : 0) + (accBrandFilter ? 1 : 0) + (accGenreFilter ? 1 : 0) + (accFitFilter ? 1 : 0) + (accGender !== 'all' ? 1 : 0);
                       return count > 0 ? `Filters (${count})` : 'Filters';
                     })()}
                   </button>
@@ -507,6 +527,7 @@ const TryOnResultSection = ({
                                 { key: 'price_asc' as const, label: 'Price: Low → High' },
                                 { key: 'price_desc' as const, label: 'Price: High → Low' },
                                 { key: 'brand_az' as const, label: 'Brand: A → Z' },
+                                { key: 'genre' as const, label: 'Genre' },
                               ]).map(opt => (
                                 <button
                                   key={opt.key}
@@ -565,13 +586,17 @@ const TryOnResultSection = ({
                                 { key: 'heels', label: 'Heels' },
                                 { key: 'activewear', label: 'Activewear' },
                                 { key: 'swimwear', label: 'Swimwear' },
+                                { key: 'loungewear', label: 'Loungewear' },
+                                { key: 'underwear', label: 'Underwear' },
+                                { key: 'accessories', label: 'Accessories' },
                                 { key: 'bags', label: 'Bags' },
                                 { key: 'hats', label: 'Hats' },
                                 { key: 'jewelry', label: 'Jewelry' },
+                                { key: 'watches', label: 'Watches' },
                                 { key: 'sunglasses', label: 'Sunglasses' },
                                 { key: 'belts', label: 'Belts' },
                                 { key: 'scarves', label: 'Scarves' },
-                              ].filter(cat => isCategoryVisibleForGender(cat.key, userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : 'all')).map(cat => (
+                              ].filter(cat => isCategoryVisibleForGender(cat.key, accGender)).map(cat => (
                                 <button
                                   key={cat.key}
                                   onClick={() => { setAccessoryCategory(cat.key); setShowAllCategories(false); }}
@@ -587,15 +612,124 @@ const TryOnResultSection = ({
                             </div>
                           </div>
 
-                          {/* Clear filters */}
-                          {(accessoryCategory || accRetailerFilter || accSort !== 'default' || accBrandFilter) && (
-                            <button
-                              onClick={() => { setAccessoryCategory(null); setAccRetailerFilter(null); setAccSort('default'); setAccBrandFilter(null); setShowAllCategories(true); }}
-                              className="text-[10px] text-primary font-semibold"
-                            >
-                              Clear all filters
+                          {/* Retailer */}
+                          <div>
+                            <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Retailer</p>
+                            <div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto">
+                              <button
+                                onClick={() => setAccRetailerFilter(null)}
+                                className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                  !accRetailerFilter
+                                    ? 'btn-luxury text-primary-foreground'
+                                    : 'bg-card border border-border text-foreground/70'
+                                }`}
+                              >
+                                All
+                              </button>
+                              {accAvailableRetailers.map(retailer => (
+                                <button
+                                  key={retailer}
+                                  onClick={() => setAccRetailerFilter(retailer === accRetailerFilter ? null : retailer)}
+                                  className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                                    accRetailerFilter === retailer
+                                      ? 'btn-luxury text-primary-foreground'
+                                      : 'bg-card border border-border text-foreground/70'
+                                  }`}
+                                >
+                                  {retailer}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Genre — collapsible */}
+                          <div>
+                            <button onClick={() => setAccGenreOpen(!accGenreOpen)} className="flex items-center justify-between w-full">
+                              <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
+                                Genre {accGenreFilter ? `· ${accGenreFilter}` : ''}
+                              </p>
+                              <ChevronDown className={`h-3.5 w-3.5 text-foreground/50 transition-transform ${accGenreOpen ? 'rotate-180' : ''}`} />
                             </button>
+                            <AnimatePresence>
+                              {accGenreOpen && (
+                                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                                  <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                    <button
+                                      onClick={() => setAccGenreFilter(null)}
+                                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                        !accGenreFilter ? 'btn-luxury text-primary-foreground' : 'bg-card border border-border text-foreground/70'
+                                      }`}
+                                    >
+                                      All
+                                    </button>
+                                    {BRAND_GENRES.map(genre => (
+                                      <button
+                                        key={genre}
+                                        onClick={() => setAccGenreFilter(genre === accGenreFilter ? null : genre)}
+                                        className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                          accGenreFilter === genre ? 'btn-luxury text-primary-foreground' : 'bg-card border border-border text-foreground/70'
+                                        }`}
+                                      >
+                                        {genre}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+
+                          {/* Fit / Cut — collapsible */}
+                          {accAvailableFits.length > 0 && accProducts.filter(p => Array.isArray(p.fit_profile) && p.fit_profile.length > 0).length >= 5 && (
+                            <div>
+                              <button onClick={() => setAccFitOpen(!accFitOpen)} className="flex items-center justify-between w-full">
+                                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
+                                  Fit / Cut {accFitFilter ? `· ${accFitFilter}` : ''}
+                                </p>
+                                <ChevronDown className={`h-3.5 w-3.5 text-foreground/50 transition-transform ${accFitOpen ? 'rotate-180' : ''}`} />
+                              </button>
+                              <AnimatePresence>
+                                {accFitOpen && (
+                                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                                    <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                      <button
+                                        onClick={() => setAccFitFilter(null)}
+                                        className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                          !accFitFilter ? 'btn-luxury text-primary-foreground' : 'bg-card border border-border text-foreground/70'
+                                        }`}
+                                      >
+                                        All
+                                      </button>
+                                      {accAvailableFits.map(fit => (
+                                        <button
+                                          key={fit}
+                                          onClick={() => setAccFitFilter(fit === accFitFilter ? null : fit)}
+                                          className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                                            accFitFilter === fit ? 'btn-luxury text-primary-foreground' : 'bg-card border border-border text-foreground/70'
+                                          }`}
+                                        >
+                                          {fit}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
                           )}
+
+                          {/* Clear filters */}
+                          {(() => {
+                            const count = (accessoryCategory ? 1 : 0) + (accRetailerFilter ? 1 : 0) + (accSort !== 'default' ? 1 : 0) + (accBrandFilter ? 1 : 0) + (accGenreFilter ? 1 : 0) + (accFitFilter ? 1 : 0) + (accGender !== 'all' ? 1 : 0);
+                            return count > 0 ? (
+                              <button
+                                onClick={() => { setAccessoryCategory(null); setAccRetailerFilter(null); setAccSort('default'); setAccBrandFilter(null); setAccGenreFilter(null); setAccFitFilter(null); setAccGenderOverride(null); setShowAllCategories(true); }}
+                                className="text-[10px] text-primary font-semibold"
+                              >
+                                Clear all filters
+                              </button>
+                            ) : null;
+                          })()}
                         </div>
                       </motion.div>
                     )}
