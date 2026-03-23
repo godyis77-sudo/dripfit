@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Shirt, MessageSquare, Instagram, UserPlus, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
