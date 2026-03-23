@@ -32,7 +32,7 @@ const ResetPassword = () => {
 
   useEffect(() => {
     if (success) {
-      const timer = setTimeout(() => navigate('/'), 3000);
+      const timer = setTimeout(() => navigate('/home'), 3000);
       return () => clearTimeout(timer);
     }
   }, [success, navigate]);

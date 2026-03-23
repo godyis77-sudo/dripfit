@@ -74,7 +74,7 @@ const Premium = () => {
   const handleBack = () => {
     const hasHistory = typeof window !== 'undefined' && (window.history.state?.idx ?? 0) > 0;
     if (hasHistory) navigate(-1);
-    else navigate('/');
+    else navigate('/home');
   };
 
   const handleStart = async () => {

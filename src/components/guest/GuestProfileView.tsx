@@ -48,7 +48,7 @@ const GuestProfileView = () => {
       </div>
 
       <div className="mt-6 text-center">
-        <Button variant="ghost" className="text-[12px] text-muted-foreground" onClick={() => navigate('/')}>
+        <Button variant="ghost" className="text-[12px] text-muted-foreground" onClick={() => navigate('/home')}>
           ← Back to Home
         </Button>
       </div>

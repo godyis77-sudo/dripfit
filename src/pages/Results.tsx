@@ -235,7 +235,7 @@ const Results = () => {
           <Button className="w-full h-11 rounded-lg btn-luxury text-primary-foreground text-sm font-bold" onClick={() => navigate('/capture')}>
             Start Scan
           </Button>
-          <Button variant="ghost" className="w-full mt-2 text-xs text-muted-foreground" onClick={() => navigate('/')}>
+          <Button variant="ghost" className="w-full mt-2 text-xs text-muted-foreground" onClick={() => navigate('/home')}>
             Back to Home
           </Button>
         </div>
@@ -253,7 +253,7 @@ const Results = () => {
     trackEvent('save_item', { type: 'scan' });
   };
 
-  const handleDelete = () => { toast({ title: 'Deleted', description: 'Scan data removed.' }); navigate('/'); };
+  const handleDelete = () => { toast({ title: 'Deleted', description: 'Scan data removed.' }); navigate('/home'); };
 
   const handleCalibrate = (data: { type: 'waist'; value: number } | { type: 'brand'; brand: string; size: string }) => {
     setConfidence('medium');
@@ -271,7 +271,7 @@ const Results = () => {
       />
       <div>
         <div className="flex items-center mb-3">
-          <Button variant="ghost" size="icon" onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/')} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back">
+          <Button variant="ghost" size="icon" onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/home')} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </div>
@@ -364,7 +364,7 @@ const Results = () => {
                 onClick={() => {
                   setGuestNudgeDismissed(true);
                   try { sessionStorage.setItem('guest_nudge_dismissed', 'true'); } catch {}
-                  navigate('/');
+                  navigate('/home');
                 }}
               >
                 Explore App

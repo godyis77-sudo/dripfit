@@ -30,7 +30,7 @@ const NotFound = () => {
         <div className="space-y-2">
           <Button
             className="w-full h-11 rounded-xl btn-luxury text-primary-foreground text-sm font-bold"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/home')}
           >
             <Home className="mr-2 h-4 w-4" /> Back to Home
           </Button>
