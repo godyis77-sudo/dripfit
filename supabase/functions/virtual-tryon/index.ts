@@ -153,19 +153,19 @@ Deno.serve(async (req) => {
           : itemType;
     const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
     const FUNCTION_BUDGET_MS = 58_000;
-    const MIN_REQUIRED_MS_PER_ATTEMPT = 6_000;
+    const MIN_REQUIRED_MS_PER_ATTEMPT = isIntimateGarment ? 4_000 : 6_000;
     const startedAt = Date.now();
 
     // ── EXTRACT GARMENT FROM PRODUCT IMAGE (OPTIONAL) ──
-    // Intimate garments often come as model photos; pre-extract for underwear/swimwear to improve reliability.
+    // Keep pre-extraction off for swimwear to preserve attempt budget; use rescue extraction after refusal/timeout.
     const forceIntimateExtraction = raw.forceIntimateExtraction === true;
     const disableIntimateExtraction = raw.disableIntimateExtraction === true;
-    const enableIntimateExtraction = isIntimateGarment && !disableIntimateExtraction && (forceIntimateExtraction || isUnderwear || isSwimwear);
+    const enableIntimateExtraction = isIntimateGarment && !disableIntimateExtraction && (forceIntimateExtraction || isUnderwear);
     const extractIntimateGarment = async (): Promise<string | null> => {
       const extractPrompt = `Isolate ONLY the target garment from this product photo. Remove any person/model/mannequin and any visible skin. Return a clean product-only image of the ${neutralItemLabel} on a plain white background. Keep garment color, shape, straps, seams, and logos accurate.`;
       const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = [
-        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 14_000, label: "extract-flash-primary" },
-        { model: "google/gemini-2.5-flash-image", timeoutMs: 8_000, label: "extract-nano-fallback" },
+        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 9_000, label: "extract-flash-primary" },
+        { model: "google/gemini-2.5-flash-image", timeoutMs: 6_000, label: "extract-nano-fallback" },
       ];
 
       for (const plan of extractionPlan) {
