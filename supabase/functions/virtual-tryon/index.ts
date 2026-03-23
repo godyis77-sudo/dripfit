@@ -107,6 +107,8 @@ Deno.serve(async (req) => {
     const userImageInput = toImageInput(userPhoto);
     const clothingImageInput = toImageInput(clothingPhoto);
 
+    const neutralItemLabel = (isSwimwear || isUnderwear) ? "swimsuit" : (isIntimate ? "fashion garment" : itemType);
+
     // ── EXTRACT GARMENT FROM PRODUCT IMAGE ──
     // If the product photo contains a model, isolate just the clothing item
     async function extractGarmentImage(originalImageUrl: string, itemLabel: string, isIntimatePiece: boolean): Promise<string> {
@@ -166,7 +168,6 @@ Deno.serve(async (req) => {
     const garmentOnlyImage = await extractGarmentImage(clothingImageInput, neutralItemLabel, isIntimateGarment);
 
     const productDesc = [productName, productBrand ? `by ${productBrand}` : "", productCategory ? `(${productCategory})` : ""].filter(Boolean).join(" ");
-    const neutralItemLabel = (isSwimwear || isUnderwear) ? "swimsuit" : (isIntimate ? "fashion garment" : itemType);
     const sanitizedProductDesc = (isSwimwear || isUnderwear || isIntimate)
       ? productDesc
           .replace(/\b(bikini|bikinis|underwear|lingerie|bra|bralette|panties|briefs|boxers|fuller\s+bust|dd\+?)\b/gi, "swimsuit")
