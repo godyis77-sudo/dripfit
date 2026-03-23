@@ -439,8 +439,11 @@ export function useTryOnState() {
         setShowSuccessOverlay(true);
         setTimeout(() => setShowSuccessOverlay(false), 1500);
         if (user) autoSaveToProfile(payload.resultImage);
-      } else if (payload.description) {
-        setDescription(payload.description);
+      } else {
+        // No image generated — model may have refused or returned text only
+        const fallbackMsg = payload.description || 'The AI could not generate this try-on. Try different photos — well-lit, full body shots work best.';
+        setTryOnError(fallbackMsg);
+        toast({ title: 'Try-On couldn\'t generate', description: fallbackMsg, variant: 'destructive' });
       }
     } catch (err: unknown) {
       const msg = (err as Error).message || 'Generation failed. Please try again.';
