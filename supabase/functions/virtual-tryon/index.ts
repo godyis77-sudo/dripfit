@@ -351,7 +351,7 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
     let resultImage: string | null = null;
     let lastTextContent = "";
     let sawIntimateRefusal = false;
-    let attemptedRefusalExtraction = false;
+    let attemptedRefusalExtraction = enableIntimateExtraction;
 
     for (let attempt = 0; attempt < attemptPlan.length; attempt++) {
       const plan = attemptPlan[attempt];
