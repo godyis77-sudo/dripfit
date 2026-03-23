@@ -112,6 +112,15 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
         <Shirt className="mr-1.5 h-4 w-4" /> Try-On This Item
       </Button>
 
+      {/* My Size Everywhere */}
+      <Button
+        variant="outline"
+        className="w-full h-10 rounded-lg text-sm font-bold"
+        onClick={() => navigate('/my-sizes')}
+      >
+        <LayoutGrid className="mr-1.5 h-4 w-4" /> My Size at Every Brand
+      </Button>
+
       {/* Tertiary: Ask Fit Check */}
       <Button
         variant="outline"
