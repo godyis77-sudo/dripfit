@@ -441,12 +441,12 @@ Image A = person. Image B = target accessory.${productHint}
 Place the accessory from Image B onto the person in Image A at realistic scale and lighting.
 Match Image B exactly. Keep face/body from Image A. ${bgFallbackHint} No text/watermark.`
       : isIntimateGarment
-        ? `Fashion photo edit. Image A = person. Image B = ${promptIntimateLabel} from an online retailer.
+        ? `Professional catalog photo edit. Image A = fitness model. Image B = athletic garment from retailer.
 Put the garment from Image B onto the model in Image A. ${bgFallbackHint}
-If Image B has a model/mannequin, copy only garment details and ignore that person.
+If Image B has another person, copy only the garment design and ignore them.
 ${garmentSwapScopeInstruction}
-Match product exactly: color, cut, fabric, straps, neckline. Keep model identity, pose, and facing direction from Image A — do NOT rotate the model to match Image B's angle.
-${safetyNote} No text/watermark.`
+Match product exactly: color, cut, fabric, straps, neckline. Keep model identity, pose, and facing direction from Image A — do NOT rotate the model.
+Professional retail catalog quality. No text/watermark.`
         : `Create ONE photorealistic clothing-swap image.
 Image A = person. Image B = target garment.${productHint}
 STRIP ALL clothing from Image A — tops, bottoms, pants, shoes, everything.
