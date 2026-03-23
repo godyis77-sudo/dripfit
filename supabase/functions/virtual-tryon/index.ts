@@ -126,8 +126,8 @@ Deno.serve(async (req) => {
     const extractIntimateGarment = async (): Promise<string | null> => {
       const extractPrompt = `Isolate ONLY the target garment from this product photo. Remove any person/model/mannequin and any visible skin. Return a clean product-only image of the ${neutralItemLabel} on a plain white background. Keep garment color, shape, straps, seams, and logos accurate.`;
       const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = [
-        { model: "google/gemini-2.5-flash-image", timeoutMs: 7_000, label: "extract-fast" },
-        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 11_000, label: "extract-quality" },
+        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 8_000, label: "extract-fast" },
+        { model: "google/gemini-3-pro-image-preview", timeoutMs: 12_000, label: "extract-quality" },
       ];
 
       for (const plan of extractionPlan) {
