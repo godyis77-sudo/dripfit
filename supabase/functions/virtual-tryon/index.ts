@@ -454,20 +454,18 @@ Dress the person ONLY in the exact garment from Image B. If it is a top, show ba
 Preserve face, body shape, skin tone, pose, camera angle, and facing direction from Image A — do NOT rotate the model. ${bgFallbackHint}
 Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
 
-    const intimateReferenceForFallback = useTextOnlyIntimateReference
-      ? `Reference garment description: ${intimateTextReference}.`
-      : `Image B = ${promptIntimateLabel}. Put garment from Image B on model in Image A and ignore any person in Image B.`;
+    const intimateReferenceForFallback = `Image B = athletic garment product photo. Apply garment from Image B onto model in Image A, ignoring any person shown in Image B.`;
 
-    const fastIntimatePrompt = `Photorealistic retail fashion edit.
+    const fastIntimatePrompt = `Professional athletic catalog photo.
 Image A = model. ${intimateReferenceForFallback}
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
-${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Match product details exactly. ${safetyNote} No text/watermark.`;
+${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Match product details exactly. Professional catalog quality. No text/watermark.`;
 
-    const complianceIntimatePrompt = `Retail activewear photo edit.
-Use Image A as the model and ${useTextOnlyIntimateReference ? "the provided garment description" : "Image B"} as the garment reference.
+    const complianceIntimatePrompt = `Retail activewear catalog photo edit.
+Use Image A as the model and Image B as the garment reference product photo.
 Apply only the garment to the model with accurate color, pattern, straps, neckline, seams and logos.
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
-${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Keep result clean and commercially appropriate. No text/watermark.`;
+${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Keep result clean and professionally styled. No text/watermark.`;
 
     const buildTryOnContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
       const userImageLabel = isIntimateGarment
