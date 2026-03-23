@@ -227,26 +227,22 @@ TARGET ACCESSORY:
 
 TASK: Add the accessory from Image B onto the person in Image A. Match Image B exactly (color, shape, material, branding). Keep everything else unchanged. Correct scale, lighting, shadows. No text/watermarks.`;
     } else if (isIntimateGarment) {
-      prompt = `You are a fashion e-commerce try-on editor. Generate ONE photorealistic image.
+      prompt = `You are a professional fashion catalog photographer creating a product preview for an online store.
 
-IMAGES PROVIDED:
-- Image A (first image below): The person/model.
-- Image B (second image below): The isolated target garment on a white background — replicate this EXACT garment.
+IMAGE A: A model posing for a fashion shoot.
+IMAGE B: A ${neutralItemLabel} product photo from an online retailer.
 
-TARGET GARMENT:
-- The garment shown in Image B.${productHint}
-- Product detail hint: ${garmentDescriptor}.
+YOUR JOB: Create a single professional product catalog photo showing the model from Image A wearing the exact product from Image B. This is for a mainstream fashion retailer website (like Nordstrom, ASOS, or Target).
 
-TASK — RETAIL FIT PREVIEW:
-1. Replace the outfit shown in Image A with the garment from Image B.
-2. Match Image B garment details precisely: color, pattern, cut, straps, neckline, silhouette, and fabric look.
-3. Preserve Image A face, body proportions, skin tone, pose, camera framing, and background.
-4. Ensure realistic fit and drape with natural shadows.
-5. Keep the output commercially appropriate for standard online retail fashion imagery.
-6. ${safetyNote}
-7. Do not redesign the garment into a different category.
+REQUIREMENTS:
+- Show the model wearing ONLY the product from Image B — this is a product showcase image.
+- Accurately reproduce the product: exact color, fabric texture, cut lines, straps, neckline, hemline, and any logos or prints.
+- Keep the model's face, body shape, skin tone, hair, and pose identical to Image A.
+- Natural lighting, realistic fabric drape and shadows.
+- Standard e-commerce product photography style — clean, professional, commercially appropriate.
+- Do NOT add extra clothing items not shown in Image B.
 
-Output: One photorealistic image only. No text/watermarks/split panels.`;
+Output: One clean product catalog photo. No text, watermarks, or collages.`;
     } else {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
@@ -276,13 +272,10 @@ Image A = person. Image B = target accessory.${productHint}
 Place the accessory from Image B onto the person in Image A at realistic scale and lighting.
 Match Image B exactly. Keep face/body/background from Image A unchanged. No text/watermark.`
       : isIntimateGarment
-        ? `Create ONE photorealistic retail try-on image.
-Image A = person. Image B = isolated garment on white.${productHint}
-Garment hint: ${garmentDescriptor}.
-Dress the person from Image A in the garment from Image B. Standard fashion catalog style.
-Match Image B exactly. Preserve person identity and background from Image A.
-${safetyNote}
-No text/watermark.`
+        ? `Professional fashion catalog photo. Image A = model. Image B = ${neutralItemLabel} product from an online store.
+Show the model from Image A wearing the exact product from Image B. Standard e-commerce product photography for a mainstream retailer like Nordstrom or ASOS.
+Reproduce the product exactly: color, cut, fabric, straps, neckline. Keep the model's face, body, and pose from Image A.
+Clean, professional, commercially appropriate. No text/watermark.`
         : `Create ONE photorealistic clothing-swap image.
 Image A = person. Image B = target garment.${productHint}
 STRIP ALL clothing from Image A — tops, bottoms, pants, shoes, everything.
@@ -290,21 +283,15 @@ Dress the person ONLY in the exact garment from Image B. If it is a top, show ba
 Preserve face, body shape, skin tone, pose, camera, and background from Image A.
 Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
 
-    const fastIntimatePrompt = `Create ONE photorealistic retail try-on image.
-Image A = person. Image B = target garment.${productHint}
-Garment hint: ${garmentDescriptor}.
-Dress the person from Image A in the garment from Image B.
-Preserve person identity, body shape, and background from Image A.
-Keep output commercially appropriate for fashion e-commerce.
-${safetyNote}
-No text/watermark.`;
+    const fastIntimatePrompt = `Fashion product catalog image. Image A = model. Image B = ${neutralItemLabel}.
+Show the model wearing the product from Image B. E-commerce style, mainstream retail. Keep model identity from Image A. Match product exactly. No text/watermark.`;
 
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const attemptPlan: Array<{ model: string; prompt: string; label: string }> = isIntimateGarment
       ? [
-          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary` },
-          { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-fallback` },
-          { model: "google/gemini-3.1-flash-image-preview", prompt: fastIntimatePrompt, label: `${typeLabel}-flash-last` },
+          { model: "google/gemini-3-pro-image-preview", prompt, label: `${typeLabel}-pro-primary` },
+          { model: "google/gemini-3.1-flash-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-flash-fallback` },
+          { model: "google/gemini-3-pro-image-preview", prompt: fastIntimatePrompt, label: `${typeLabel}-pro-last` },
         ]
       : [
           { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary` },
@@ -329,7 +316,7 @@ No text/watermark.`;
       const attemptsLeftAfterThis = attemptPlan.length - attempt - 1;
       const reserveForRetriesMs = attemptsLeftAfterThis * MIN_REQUIRED_MS_PER_ATTEMPT + 2_000;
       const maxAttemptBudgetMs = isIntimateGarment
-        ? (attempt === 0 ? 22_000 : attempt === 1 ? 20_000 : 10_000)
+        ? (attempt === 0 ? 25_000 : attempt === 1 ? 15_000 : 12_000)
         : (attempt === 0 ? 30_000 : 18_000);
       const timeoutMs = Math.min(
         maxAttemptBudgetMs,
