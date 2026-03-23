@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 import BrandLogo from '@/components/ui/BrandLogo';
+import FeatureIcon from '@/components/ui/FeatureIcon';
 import HomeFAB from '@/components/home/HomeFAB';
 import DemoTryOnSection from '@/components/home/DemoTryOnSection';
 import ProductPreviewModal from '@/components/ui/ProductPreviewModal';
@@ -88,7 +89,7 @@ const GalleryPlayground = () => {
           className="w-full mb-4 btn-luxury text-primary-foreground rounded-2xl px-5 py-4 flex items-center gap-3 active:scale-[0.97] transition-transform shimmer-sweep"
         >
           <div className="h-10 w-10 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
-            <Sparkles className="h-5 w-5" />
+            <FeatureIcon name="tryon" size={28} />
           </div>
           <div className="text-left flex-1">
             <p className="text-[14px] font-bold">Virtual Try-On</p>
