@@ -157,6 +157,7 @@ Deno.serve(async (req) => {
       }
       return "";
     };
+    const hasMeaningfulWords = (value: string) => /[a-z]{3}/i.test(value);
 
     const swimwearGarmentLabel = (() => {
       const context = normalizeMatchText([itemLower, productName, productCategory].join(" "));
@@ -282,54 +283,37 @@ Deno.serve(async (req) => {
       console.log(`Intimate extraction took ${Date.now() - startedAt}ms`);
     }
 
-    const describeSwimwearReference = async (): Promise<string> => {
-      if (!isSwimwearOnly || preExtractedGarment) return "";
+    const buildSwimwearReferenceFromMetadata = (): string => {
+      if (!isSwimwearOnly) return "";
+      const context = normalizeMatchText([productName, productCategory, itemLower, typeof raw.productUrl === "string" ? raw.productUrl : ""].join(" "));
 
-      const remainingMs = FUNCTION_BUDGET_MS - (Date.now() - startedAt);
-      const timeoutMs = Math.min(8_000, remainingMs - 1_000);
-      if (timeoutMs < 4_000) return "";
+      const colorTerms = ["black", "white", "blue", "navy", "red", "pink", "green", "teal", "orange", "yellow", "purple", "brown", "beige", "tan", "gold", "silver", "multi", "floral"];
+      const primaryColor = colorTerms.find(c => hasContextTerm(context, c));
+      const pattern = hasContextTerm(context, "floral") ? "floral print"
+        : hasContextTerm(context, "stripe") ? "striped pattern"
+        : hasContextTerm(context, "polka") ? "polka-dot pattern"
+        : "solid color";
 
-      try {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), timeoutMs);
-        try {
-          const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-            method: "POST",
-            signal: controller.signal,
-            headers: {
-              Authorization: `Bearer ${LOVABLE_API_KEY}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              model: "google/gemini-2.5-flash",
-              messages: [{
-                role: "user",
-                content: [
-                  {
-                    type: "text",
-                    text: "Describe ONLY the garment in this product image in one concise sentence. Ignore any person/mannequin. Include garment type, primary color, pattern, neckline, straps/sleeves, and coverage.",
-                  },
-                  { type: "image_url", image_url: { url: clothingImageInput } },
-                ],
-              }],
-            }),
-          });
+      const garmentType = /\b(one piece|one-piece|monokini)\b/.test(context)
+        ? "one-piece swimsuit"
+        : /\b(bottom|brief|bikini bottom|swim short)\b/.test(context)
+          ? "swim bottom"
+          : /\b(top|triangle|tri|tankini top|bralette)\b/.test(context)
+            ? "triangle bikini top"
+            : "swimwear set";
 
-          if (!response.ok) return "";
-          const data = await response.json();
-          const firstChoice = (data.choices as Array<Record<string, unknown>>)?.[0];
-          const msg = firstChoice?.message as Record<string, unknown> | undefined;
-          return messageContentToText(msg?.content).slice(0, 280);
-        } finally {
-          clearTimeout(timer);
-        }
-      } catch {
-        return "";
-      }
+      const colorText = primaryColor ? `${primaryColor} ${pattern}` : pattern;
+      const detailText = /\btriangle|tri\b/.test(context)
+        ? "thin straps and triangle cups"
+        : /\bone piece|one-piece\b/.test(context)
+          ? "clean one-piece silhouette"
+          : "minimal modern swim silhouette";
+
+      return `Reference garment: ${colorText} ${garmentType} with ${detailText}. Keep it commercially styled and fully covering as swimwear.`;
     };
 
-    const swimwearTextReference = await describeSwimwearReference();
-    const useTextOnlySwimwearReference = isSwimwearOnly && !preExtractedGarment && swimwearTextReference.length > 0;
+    const swimwearTextReference = buildSwimwearReferenceFromMetadata();
+    const useTextOnlySwimwearReference = isSwimwearOnly && !preExtractedGarment;
 
     const productDesc = [productName, productBrand ? `by ${productBrand}` : "", productCategory ? `(${productCategory})` : ""].filter(Boolean).join(" ");
     const sanitizedProductDesc = isIntimateGarment
@@ -646,7 +630,7 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
 
         if (isIntimateGarment && looksLikeStyleRejection) {
           lastTextContent = "Try-on was blocked for this product photo. Use a front-facing product-only image or flat-lay with the full garment visible.";
-        } else if (!looksLikeNonDiagnosticTextOnly) {
+        } else if (!looksLikeNonDiagnosticTextOnly && hasMeaningfulWords(messageText) && messageText.length >= 12) {
           lastTextContent = messageText;
         }
       }
@@ -720,6 +704,9 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
         lastTextContent = "The AI request timed out across all retries. Try again with a clearer front-facing clothing photo.";
       }
       if (looksLikeNonDiagnosticTextOnly) {
+        lastTextContent = "";
+      }
+      if (lastTextContent && lastTextContent.replace(/[`'".\s-]/g, "").length < 4) {
         lastTextContent = "";
       }
 
