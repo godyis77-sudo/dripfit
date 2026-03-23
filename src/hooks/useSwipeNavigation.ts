@@ -14,8 +14,8 @@ export function useSwipeNavigation() {
   const touchStart = useRef<{ x: number; y: number; t: number } | null>(null);
 
   const currentIndex = TAB_PATHS.findIndex((p) =>
-    p === '/'
-      ? location.pathname === '/'
+    p === '/home'
+      ? location.pathname === '/home'
       : location.pathname.startsWith(p)
   );
 

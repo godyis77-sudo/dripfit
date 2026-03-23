@@ -35,7 +35,7 @@ function useFeatureFlag(flag: string, defaultValue = true): boolean {
 }
 
 const Welcome = () => {
-  usePageMeta({ path: '/' });
+  usePageMeta({ path: '/home' });
   const galleryEnabled = useFeatureFlag('gallery_playground_enabled', true);
 
   return (
