@@ -364,10 +364,10 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
 
       // Cap each attempt so one slow model can't starve later retries.
       const attemptsLeftAfterThis = attemptPlan.length - attempt - 1;
-      const reserveForRetriesMs = attemptsLeftAfterThis * MIN_REQUIRED_MS_PER_ATTEMPT + 2_000;
+      const reserveForRetriesMs = attemptsLeftAfterThis * MIN_REQUIRED_MS_PER_ATTEMPT + 1_000;
       const timeoutMs = Math.min(
         plan.timeoutMs,
-        Math.max(MIN_REQUIRED_MS_PER_ATTEMPT, remainingMs - reserveForRetriesMs),
+        Math.max(MIN_REQUIRED_MS_PER_ATTEMPT, remainingMs - (isFinalAttempt ? 0 : reserveForRetriesMs)),
       );
       const isFinalAttempt = attempt === attemptPlan.length - 1;
 
