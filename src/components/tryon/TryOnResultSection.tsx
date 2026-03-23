@@ -15,6 +15,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import TryOnLoadingAnimation from '@/components/tryon/TryOnLoadingAnimation';
 import BackgroundSwapOverlay from '@/components/bgswap/BackgroundSwapOverlay';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 interface LookItem {
   brand: string;
