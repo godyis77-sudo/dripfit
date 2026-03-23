@@ -46,7 +46,6 @@ Deno.serve(async (req) => {
       const { data: userData, error: userError } = await supabaseAnon.auth.getUser();
       if (!userError && userData?.user) {
         userId = userData.user.id;
-        // Check subscription
         const { data: sub } = await supabaseAdmin
           .from('user_subscriptions')
           .select('is_active')
@@ -62,7 +61,6 @@ Deno.serve(async (req) => {
       if (!guestUuid) {
         return errorResponse('Guest UUID required for unauthenticated access', 'AUTH_ERROR', 401, corsHeaders);
       }
-      // Check/create guest session
       const { data: session } = await supabaseAdmin
         .from('guest_sessions')
         .select('tryon_count')
@@ -74,8 +72,7 @@ Deno.serve(async (req) => {
         return errorResponse('Guest try-on limit reached. Create a free account for more.', 'GUEST_LIMIT', 403, corsHeaders);
       }
     } else if (userTier === 'free' && userId) {
-      // Check daily limit (5/day)
-      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      const today = new Date().toISOString().split('T')[0];
       const { data: usage } = await supabaseAdmin
         .from('tryon_usage')
         .select('count')
@@ -89,22 +86,24 @@ Deno.serve(async (req) => {
         return errorResponse(`Daily try-on limit reached (${FREE_DAILY_LIMIT}/day). Upgrade to Premium for unlimited.`, 'DAILY_LIMIT', 403, corsHeaders);
       }
     }
-    // Premium: no limit
 
     const parsed = parseOrError(VirtualTryonSchema, raw);
     if (!parsed.success) {
       return errorResponse(parsed.error, "VALIDATION_ERROR", 400, corsHeaders);
     }
+
     const itemType: string = (raw.itemType as string) || "clothing";
     const itemLower = itemType.toLowerCase();
     const productName = typeof raw.productName === "string" ? raw.productName : "";
     const productBrand = typeof raw.productBrand === "string" ? raw.productBrand : "";
     const productCategory = typeof raw.productCategory === "string" ? raw.productCategory : "";
+
     const ACCESSORY_TYPES = ["accessory", "jewelry", "necklace", "bracelet", "earrings", "ring", "watch", "hat", "hats", "cap", "sunglasses", "glasses", "bag", "bags", "purse", "handbag", "belt", "belts", "scarf", "scarves", "shoes", "sneakers", "boots", "heels", "loafers", "sandals"];
     const INTIMATE_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece", "bra", "bralette", "sports bra", "underwear", "panties", "briefs", "boxers", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise", "lounge", "loungewear", "sleepwear", "pajamas", "robe"];
     const UNDERWEAR_TYPES = ["underwear", "panties", "briefs", "boxers", "bra", "bralette", "sports bra", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise"];
     const SWIM_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece"];
     const EXPLICIT_TERMS = ["open cup", "open-cup", "open gusset", "open-gusset", "sheer", "see-through", "transparent", "thong", "g-string", "pasties", "nude", "exposed"];
+
     const isAccessory = ACCESSORY_TYPES.includes(itemLower);
     const isIntimate = INTIMATE_TYPES.some(t => itemLower.includes(t));
     const productContext = [
@@ -121,85 +120,83 @@ Deno.serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) return errorResponse("LOVABLE_API_KEY is not configured", "CONFIG_ERROR", 500, corsHeaders);
 
-    // Keep remote URLs as-is to avoid expensive in-function re-encoding (prevents WORKER_LIMIT)
+    // Keep remote URLs as-is to avoid expensive in-function re-encoding
     const toImageInput = async (input: string): Promise<string> => {
       if (input.startsWith("data:")) return input;
       if (input.startsWith("http://") || input.startsWith("https://")) return input.trim();
       return `data:image/jpeg;base64,${input}`;
     };
 
-    const makeImagePart = (input: string) => {
-      return {
-        type: "image_url" as const,
-        image_url: { url: input },
-      };
-    };
+    const makeImagePart = (input: string) => ({
+      type: "image_url" as const,
+      image_url: { url: input },
+    });
 
     const [userImageInput, clothingImageInput] = await Promise.all([
       toImageInput(userPhoto),
       toImageInput(clothingPhoto),
     ]);
 
-    // Build product context string for the prompt
+    // Build product context string
     const productDesc = [productName, productBrand ? `by ${productBrand}` : "", productCategory ? `(${productCategory})` : ""].filter(Boolean).join(" ");
 
-    // Remap underwear → swimsuit for AI to avoid safety filter blocks
+    // Remap underwear → swimsuit for AI safety
     const aiItemType = (isUnderwear && !isSwimwear) ? "swimsuit" : itemType;
     const neutralItemLabel = (isSwimwear || isUnderwear) ? "swimsuit" : (isIntimate ? "fashion garment" : itemType);
+    const productHint = productDesc ? `\nProduct context: "${productDesc}".` : "";
 
-    const productHint = productDesc ? `\nProduct details: "${productDesc}". Use these details to understand the item but focus on what you SEE in Image 2.` : "";
-
+    // ── BUILD PROMPTS ──
     const basePrompt = isAccessory || isLayering
-      ? `You are a professional fashion photo editor specializing in virtual try-on composites.
+      ? `VIRTUAL TRY-ON — ACCESSORY/LAYER MODE
 
-TASK: Create one photorealistic virtual try-on image.
-- Image 1: The person${isLayering ? " already wearing an outfit" : ""}.
-- Image 2: The accessory/item (${aiItemType}).${productHint}
+You will receive TWO images below:
+• FIRST IMAGE = the person (keep their face, body, pose, background EXACTLY)
+• SECOND IMAGE = the accessory/item to ADD (${aiItemType})${productHint}
 
-RULES:
-1. KEEP the person's face, skin tone, hair, body shape, pose, and proportions EXACTLY as in Image 1.
-2. ADD ONLY the item from Image 2 onto the person — correct scale, perspective, shadows, and material texture.
-3. PRESERVE the background, lighting direction, and color temperature from Image 1.
-4. Do NOT alter the person's body shape, do NOT add/remove other clothing.
-5. Output a single photorealistic image. No text, no watermarks, no split view.`
-      : `You are a professional fashion photo editor specializing in virtual try-on composites.
+Instructions:
+1. Add ONLY the item from the SECOND IMAGE onto the person in the FIRST IMAGE.
+2. Preserve the person's face, skin tone, hair, body, pose, and background exactly.
+3. Match correct scale, perspective, shadows, and material texture.
+4. Do NOT remove or change any existing clothing.
+5. Output a single photorealistic image — no text, no watermarks, no split views.`
+      : `VIRTUAL TRY-ON — CLOTHING SWAP MODE
 
-TASK: Create one photorealistic virtual try-on image showing the person from Image 1 wearing the EXACT garment from Image 2.
-- Image 1: The person (model/subject).
-- Image 2: The product (${neutralItemLabel}) from a fashion catalog.${productHint}
+You will receive TWO images below:
+• FIRST IMAGE = the person/model (this is who you are dressing)
+• SECOND IMAGE = the clothing item to put ON the person (this is the product — a ${neutralItemLabel})${productHint}
 
-CRITICAL RULES:
-1. The person MUST be wearing the EXACT garment from Image 2 — same color, same pattern, same print, same cut, same neckline, same sleeve length, same hemline, same design details. Do NOT change or simplify the garment.
-2. REMOVE whatever the person is currently wearing and REPLACE it with the garment from Image 2.
-3. PRESERVE the person's face, skin tone, hair, body shape, body proportions, and pose EXACTLY as in Image 1. Do NOT alter their body.
-4. PRESERVE the background, camera angle, lighting direction, and shadows from Image 1.
-5. Apply realistic fabric drape, wrinkles, and fit appropriate to the person's body. The garment should look naturally worn, not pasted on.
-6. Match the garment's size/fit to the person's body — it should look like their size.
-7. Output a SINGLE photorealistic image. No text, no watermarks, no split views, no side-by-side comparisons.`;
+Instructions:
+1. REMOVE whatever the person in the FIRST IMAGE is currently wearing.
+2. DRESS them in the EXACT garment shown in the SECOND IMAGE.
+3. The garment must match the SECOND IMAGE exactly: same color, same pattern, same print, same neckline, same sleeve length, same hemline, same cut.
+4. PRESERVE the person's face, skin tone, hair, body shape, proportions, and pose from the FIRST IMAGE — do NOT alter their body.
+5. PRESERVE the background, camera angle, lighting, and shadows from the FIRST IMAGE.
+6. Apply realistic fabric drape and fit appropriate to the person's body.
+7. Output a SINGLE photorealistic image — no text, no watermarks, no split views, no side-by-side.`;
 
-    const swimwearPrompt = `${basePrompt}
+    const swimwearAddendum = `
 
-ADDITIONAL: This is a standard retail swimsuit fitting. The product in Image 2 is a swimsuit — dress the person in EXACTLY that swimsuit. Faithfully reproduce its exact color, cut, straps, neckline, and pattern. Keep the result commercially appropriate.${isExplicitIntimate ? " If Image 2 appears sheer/see-through, reinterpret as opaque fabric while keeping the same design." : ""}`;
-    const underwearTransformPrompt = `${basePrompt}
+ADDITIONAL CONTEXT: This is a standard retail swimsuit fitting. The SECOND IMAGE is a swimsuit — dress the person in EXACTLY that swimsuit. Faithfully reproduce its exact color, cut, straps, neckline, and pattern. Keep the result commercially appropriate.${isExplicitIntimate ? " If the product appears sheer/see-through, reinterpret as opaque fabric while keeping the same design." : ""}`;
 
-ADDITIONAL: Treat the product as a SWIMSUIT. Remove the person's current clothing and dress them in EXACTLY the product from Image 2, preserving its exact color, pattern, logo, straps, and silhouette. The try-on must be clearly visible. Keep the output tasteful and commercially appropriate.`;
-    const underwearOverlayPrompt = `${basePrompt}
+    const underwearAddendum = `
 
-ADDITIONAL: Last-resort fallback — keep the original outfit from Image 1 and render the item from Image 2 as a tasteful layered styling overlay, preserving color/pattern/logo and realistic perspective.`;
-    const conservativeFallbackPrompt = (isSwimwear || isUnderwear)
-      ? `${basePrompt}
+ADDITIONAL CONTEXT: Treat the product as a SWIMSUIT. Remove the person's current clothing and dress them in EXACTLY the product from the SECOND IMAGE, preserving its exact color, pattern, logo, straps, and silhouette. Keep the output tasteful and commercially appropriate.`;
 
-ADDITIONAL: Keep the item as SWIMWEAR ONLY. You may increase coverage (fuller cups, higher waist, one-piece adaptation), but MUST keep it a swimsuit. Preserve the EXACT color, pattern, and design from Image 2. NEVER convert it to a dress, gown, skirt, pants, jacket, or any non-swimwear category.`
-      : `${basePrompt}
+    const conservativeAddendum = (isSwimwear || isUnderwear)
+      ? `
 
-ADDITIONAL: Keep the same garment category and core silhouette from Image 2. Do not convert the item into a different clothing type.`;
-    const underwearEmergencyPrompt = `${basePrompt}
+ADDITIONAL CONTEXT: Keep the item as SWIMWEAR. You may increase coverage slightly, but MUST keep it a swimsuit. Preserve the EXACT color, pattern, and design from the SECOND IMAGE. Do NOT convert to a dress, jacket, or non-swimwear item.`
+      : "";
 
-ADDITIONAL: Emergency fallback — style the product as a modest athletic one-piece swimsuit with opaque fabric while preserving key colors and overall design cues from Image 2. Ensure the try-on is clearly visible.`;
+    const emergencyAddendum = `
+
+ADDITIONAL CONTEXT: Emergency fallback — style the product as a modest one-piece swimsuit with opaque fabric while preserving key colors and design from the SECOND IMAGE. Ensure the try-on is clearly visible.`;
+
+    // Build prompt variants for retry attempts
     const promptVariants = isUnderwear
-      ? [underwearTransformPrompt, swimwearPrompt, conservativeFallbackPrompt, underwearEmergencyPrompt, underwearOverlayPrompt]
+      ? [basePrompt + underwearAddendum, basePrompt + swimwearAddendum, basePrompt + emergencyAddendum]
       : (isSwimwear || isIntimate)
-      ? [swimwearPrompt, conservativeFallbackPrompt, conservativeFallbackPrompt]
+      ? [basePrompt + swimwearAddendum, basePrompt + conservativeAddendum, basePrompt + conservativeAddendum]
       : [basePrompt, basePrompt, basePrompt];
 
     /** Extract image from various AI response formats */
@@ -215,7 +212,6 @@ ADDITIONAL: Emergency fallback — style the product as a modest athletic one-pi
 
       const deepSearchForImage = (node: unknown, keyPath = "", seen = new Set<unknown>()): string | null => {
         if (node == null) return null;
-
         if (typeof node === "string") {
           const normalized = normalizeImageCandidate(node);
           if (!normalized) return null;
@@ -223,11 +219,9 @@ ADDITIONAL: Emergency fallback — style the product as a modest athletic one-pi
           if (/(image|img|photo|picture|url|uri|src|base64|b64)/i.test(keyPath)) return normalized;
           return null;
         }
-
         if (typeof node !== "object") return null;
         if (seen.has(node)) return null;
         seen.add(node);
-
         if (Array.isArray(node)) {
           for (const item of node) {
             const found = deepSearchForImage(item, keyPath, seen);
@@ -235,7 +229,6 @@ ADDITIONAL: Emergency fallback — style the product as a modest athletic one-pi
           }
           return null;
         }
-
         for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
           if (k === "b64_json" && typeof v === "string" && v.length > 1000) {
             return `data:image/png;base64,${v}`;
@@ -244,18 +237,15 @@ ADDITIONAL: Emergency fallback — style the product as a modest athletic one-pi
           const found = deepSearchForImage(v, nextPath, seen);
           if (found) return found;
         }
-
         return null;
       };
 
-      // Log full structure for debugging
       console.log("AI response keys:", JSON.stringify(Object.keys(aiResponse)));
-      
+
       const choices = aiResponse.choices as Array<Record<string, unknown>> | undefined;
       const message = choices?.[0]?.message as Record<string, unknown> | undefined;
       if (!message) {
-        console.warn("No message in AI response. Top-level keys:", JSON.stringify(Object.keys(aiResponse)));
-        // Check if image is at top level (some gateway formats)
+        console.warn("No message in AI response.");
         if (aiResponse.data && Array.isArray(aiResponse.data)) {
           for (const item of aiResponse.data as Array<{ url?: string; b64_json?: string }>) {
             if (item?.url) return item.url;
@@ -266,9 +256,6 @@ ADDITIONAL: Emergency fallback — style the product as a modest athletic one-pi
       }
 
       console.log("Message keys:", JSON.stringify(Object.keys(message)));
-      if (Array.isArray(message.content)) {
-        console.log("Content parts types:", JSON.stringify((message.content as Array<Record<string, unknown>>).map(p => ({ type: p.type, keys: Object.keys(p) }))));
-      }
 
       // Format 1: message.images array (Lovable gateway standard)
       if (message.images && Array.isArray(message.images)) {
@@ -278,20 +265,17 @@ ADDITIONAL: Emergency fallback — style the product as a modest athletic one-pi
         }
       }
 
-      // Format 2: content array — check all image-bearing part types
+      // Format 2: content array
       if (Array.isArray(message.content)) {
         for (const part of message.content as Array<Record<string, unknown>>) {
-          // image_url part
           if (part?.type === "image_url") {
             const iu = part.image_url as { url?: string } | undefined;
             if (iu?.url) return iu.url;
           }
-          // inline_data part (Gemini native)
           if (part?.inline_data) {
             const id = part.inline_data as { mime_type?: string; data?: string };
             if (id?.data) return `data:${id.mime_type || "image/png"};base64,${id.data}`;
           }
-          // Some gateways use "image" type
           if (part?.type === "image") {
             const src = (part as { source?: { data?: string; media_type?: string } }).source;
             if (src?.data) return `data:${src.media_type || "image/png"};base64,${src.data}`;
@@ -300,107 +284,98 @@ ADDITIONAL: Emergency fallback — style the product as a modest athletic one-pi
         }
       }
 
-      // Format 3: base64 image embedded in text content
-      const textContent = typeof message.content === "string" ? message.content : 
+      // Format 3: base64 image in text
+      const textContent = typeof message.content === "string" ? message.content :
         (Array.isArray(message.content) ? (message.content as Array<{ type?: string; text?: string }>).filter(p => p.type === "text").map(p => p.text).join("") : "");
-      
+
       if (textContent) {
         const b64Match = textContent.match(/data:image\/[a-z]+;base64,[A-Za-z0-9+/=]{100,}/);
         if (b64Match) return b64Match[0];
-
         const markdownImage = textContent.match(/!\[[^\]]*\]\(([^)\s]+)\)/);
         if (markdownImage?.[1]) {
           const normalized = normalizeImageCandidate(markdownImage[1]);
           if (normalized) return normalized;
         }
-
         const urlField = textContent.match(/"(?:image_url|url|src|image|imageUrl|output_image)"\s*:\s*"([^"\\]+)"/i);
         if (urlField?.[1]) {
           const normalized = normalizeImageCandidate(urlField[1]);
           if (normalized) return normalized;
         }
-
         const fenced = textContent.match(/```(?:json)?\s*([\s\S]*?)```/i);
         if (fenced?.[1]) {
           try {
             const parsedBlock = JSON.parse(fenced[1]);
             const fromBlock = deepSearchForImage(parsedBlock, "fenced_json");
             if (fromBlock) return fromBlock;
-          } catch {
-            // no-op
-          }
+          } catch { /* no-op */ }
         }
       }
 
-      // Format 4: refusal present — model refused to generate
       if (message.refusal) {
-        console.warn("Model refused:", JSON.stringify(message.refusal));
+        console.warn("Model refused:", JSON.stringify(message.refusal).substring(0, 500));
       }
 
-      // Format 5: defensive deep-search in full assistant payload
       const deepFound = deepSearchForImage(message, "message");
       if (deepFound) return deepFound;
-
-      // Format 6: defensive deep-search in full response payload
       const deepFoundGlobal = deepSearchForImage(aiResponse, "response");
       if (deepFoundGlobal) return deepFoundGlobal;
 
-      console.warn("No image found. Message keys:", JSON.stringify(Object.keys(message)));
-      if (textContent) {
-        console.warn("Text response (truncated):", textContent.substring(0, 500));
-      }
+      console.warn("No image found in response.");
+      if (textContent) console.warn("Text (truncated):", textContent.substring(0, 500));
       return null;
     };
 
-    // Retry loop with model + prompt fallback (bounded to avoid worker compute exhaustion)
+    // ── RETRY LOOP ──
+    // Key insight from logs: gemini-3-pro-image-preview is the ONLY model that reliably
+    // produces images. Flash models often return text-only responses ("Sure, here is...").
+    // Strategy: Use pro model FIRST with generous timeout, then flash as fallback.
     const FUNCTION_BUDGET_MS = 58_000;
-    const BASE_ATTEMPT_TIMEOUT_MS = (isSwimwear || isIntimate) ? 28_000 : 20_000;
-    const MIN_ATTEMPT_TIMEOUT_MS = 8_000;
     const startedAt = Date.now();
 
     const MODELS = isUnderwear
       ? [
+          "google/gemini-3-pro-image-preview",
           "google/gemini-3.1-flash-image-preview",
           "google/gemini-2.5-flash-image",
-          "google/gemini-3-pro-image-preview",
         ]
       : (isSwimwear || isIntimate)
       ? [
+          "google/gemini-3-pro-image-preview",
           "google/gemini-3.1-flash-image-preview",
           "google/gemini-2.5-flash-image",
-          "google/gemini-3-pro-image-preview",
         ]
       : [
-          "google/gemini-3.1-flash-image-preview",
+          "google/gemini-3-pro-image-preview",
           "google/gemini-3.1-flash-image-preview",
           "google/gemini-3-pro-image-preview",
         ];
-    const requestedAttempts = isUnderwear ? 3 : ((isSwimwear || isIntimate) ? 2 : 3);
-    const MAX_ATTEMPTS = Math.min(promptVariants.length, MODELS.length, requestedAttempts);
+
+    const MAX_ATTEMPTS = 3;
     let resultImage: string | null = null;
     let lastTextContent = "";
 
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
       const elapsedMs = Date.now() - startedAt;
       const remainingBudgetMs = FUNCTION_BUDGET_MS - elapsedMs;
-      if (remainingBudgetMs <= MIN_ATTEMPT_TIMEOUT_MS + 2_000) {
-        console.warn("Stopping retries early to stay within worker compute budget.");
+      if (remainingBudgetMs <= 10_000) {
+        console.warn("Stopping retries — insufficient time budget.");
         break;
       }
 
-      const effectiveTimeoutMs = Math.max(
-        MIN_ATTEMPT_TIMEOUT_MS,
-        Math.min(BASE_ATTEMPT_TIMEOUT_MS, remainingBudgetMs - 2_000),
-      );
+      // Give the first attempt (pro model) the most time
+      const attemptTimeoutMs = Math.max(10_000, Math.min(
+        attempt === 0 ? 40_000 : 25_000,
+        remainingBudgetMs - 2_000,
+      ));
 
       const model = MODELS[attempt] || MODELS[0];
       const prompt = promptVariants[attempt] || promptVariants[0];
-      console.log(`Try-on attempt ${attempt + 1}/${MAX_ATTEMPTS} with model ${model} (timeout=${effectiveTimeoutMs}ms)`);
+      console.log(`Try-on attempt ${attempt + 1}/${MAX_ATTEMPTS} with model ${model} (timeout=${attemptTimeoutMs}ms)`);
 
       let response: Response;
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), effectiveTimeoutMs);
+        const timeout = setTimeout(() => controller.abort(), attemptTimeoutMs);
         try {
           response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
             method: "POST",
@@ -417,9 +392,9 @@ ADDITIONAL: Emergency fallback — style the product as a modest athletic one-pi
                   role: "user",
                   content: [
                     { type: "text", text: prompt },
-                    { type: "text", text: "IMAGE 1 — THE PERSON (human subject):" },
+                    { type: "text", text: "\n\n--- FIRST IMAGE: THE PERSON (keep this person's face and body exactly) ---" },
                     makeImagePart(userImageInput),
-                    { type: "text", text: "IMAGE 2 — THE CLOTHING/PRODUCT (garment to dress the person in):" },
+                    { type: "text", text: "\n\n--- SECOND IMAGE: THE CLOTHING/PRODUCT (dress the person in THIS exact garment) ---" },
                     makeImagePart(clothingImageInput),
                   ],
                 },
@@ -436,7 +411,7 @@ ADDITIONAL: Emergency fallback — style the product as a modest athletic one-pi
           : (fetchErr instanceof Error && fetchErr.name === "AbortError");
         lastTextContent = isTimeout
           ? "The AI request timed out. Retrying with fallback settings."
-          : "The AI request failed to reach the model. Retrying with fallback settings.";
+          : "The AI request failed. Retrying with fallback settings.";
         if (attempt < MAX_ATTEMPTS - 1) {
           await new Promise(r => setTimeout(r, 700));
           continue;
@@ -458,8 +433,8 @@ ADDITIONAL: Emergency fallback — style the product as a modest athletic one-pi
         }
         if (response.status === 400) {
           const errText = await response.text();
-          console.warn("AI input image rejected on attempt", attempt + 1, errText);
-          lastTextContent = "The selected product image could not be processed. Try a clearer product image or another listing.";
+          console.warn("AI input rejected on attempt", attempt + 1, errText);
+          lastTextContent = "The selected product image could not be processed. Try a clearer product image.";
           if (attempt < MAX_ATTEMPTS - 1) {
             await new Promise(r => setTimeout(r, 500));
             continue;
@@ -477,16 +452,12 @@ ADDITIONAL: Emergency fallback — style the product as a modest athletic one-pi
 
       const aiResponse = await response.json();
 
-      // Log full response structure for debugging
       const msg = (aiResponse.choices as Array<Record<string, unknown>>)?.[0]?.message as Record<string, unknown> | undefined;
       if (msg?.refusal) {
-        console.warn(`Attempt ${attempt + 1}: Model REFUSED. Refusal:`, JSON.stringify(msg.refusal).substring(0, 500));
+        console.warn(`Attempt ${attempt + 1}: Model REFUSED:`, JSON.stringify(msg.refusal).substring(0, 500));
       }
       if (msg?.content && typeof msg.content === "string") {
-        console.log(`Attempt ${attempt + 1}: Text content:`, msg.content.substring(0, 300));
-      }
-      if (msg?.reasoning) {
-        console.log(`Attempt ${attempt + 1}: Reasoning (truncated):`, JSON.stringify(msg.reasoning).substring(0, 200));
+        console.log(`Attempt ${attempt + 1}: Text:`, msg.content.substring(0, 300));
       }
 
       resultImage = extractImage(aiResponse);
@@ -501,19 +472,19 @@ ADDITIONAL: Emergency fallback — style the product as a modest athletic one-pi
       console.warn(`Attempt ${attempt + 1}: No image extracted.`);
 
       if (attempt < MAX_ATTEMPTS - 1) {
-        await new Promise(r => setTimeout(r, 1200));
+        await new Promise(r => setTimeout(r, 1000));
       }
     }
 
     if (!resultImage) {
       const failHint = isUnderwear
-        ? "The AI could not generate this swimsuit try-on safely. Try a full-body user photo plus a fuller-coverage opaque product image (e.g., one-piece/full-coverage style)."
+        ? "The AI could not generate this swimsuit try-on safely. Try a full-body user photo plus a fuller-coverage product image."
         : (isSwimwear || isIntimate)
-        ? "The AI could not generate this try-on safely. Try a full-body user photo plus a non-revealing, opaque product image (e.g. one-piece/full-coverage style)."
+        ? "The AI could not generate this try-on safely. Try a full-body user photo plus a non-revealing product image."
         : "The AI was unable to generate a try-on image. Try with clearer, well-lit photos showing the full person and garment.";
-      return successResponse({ 
+      return successResponse({
         description: lastTextContent || failHint,
-        resultImage: null 
+        resultImage: null,
       }, 200, corsHeaders);
     }
 
@@ -525,7 +496,6 @@ ADDITIONAL: Emergency fallback — style the product as a modest athletic one-pi
           { guest_uuid: guestUuid, tryon_count: 1 },
           { onConflict: 'guest_uuid' }
         );
-      // Increment if already exists
       const { data: existing } = await supabaseAdmin
         .from('guest_sessions')
         .select('tryon_count')
@@ -539,8 +509,7 @@ ADDITIONAL: Emergency fallback — style the product as a modest athletic one-pi
       }
     } else if (userTier === 'free' && userId) {
       const today = new Date().toISOString().split('T')[0];
-      const monthKey = today.substring(0, 7); // YYYY-MM
-      // Upsert daily usage
+      const monthKey = today.substring(0, 7);
       const { data: existing } = await supabaseAdmin
         .from('tryon_usage')
         .select('count')
