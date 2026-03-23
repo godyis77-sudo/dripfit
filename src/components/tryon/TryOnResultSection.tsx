@@ -62,6 +62,20 @@ interface TryOnResultSectionProps {
   onToast: (opts: any) => void;
 }
 
+const GENDER_OPTIONS = [
+  { key: 'all' as const, label: 'All' },
+  { key: 'mens' as const, label: "Men's" },
+  { key: 'womens' as const, label: "Women's" },
+];
+
+const FIT_OPTIONS = [
+  'oversized', 'boxy', 'relaxed fit', 'slim fit', 'regular fit',
+  'cropped', 'tapered', 'drop shoulder', 'heavyweight', 'lightweight',
+  'athletic fit', 'classic fit', 'skinny fit', 'loose fit',
+  'straight fit', 'muscle fit', 'wide leg', 'fitted', 'tailored fit',
+  'bootcut', 'flare', 'baggy', 'longline', 'high rise', 'mid rise', 'low rise',
+] as const;
+
 // Gold checkmark SVG
 const AnimatedCheckmark = () => (
   <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
