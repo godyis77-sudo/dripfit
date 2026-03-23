@@ -114,7 +114,8 @@ const AnimatedRoutes = () => {
           <Route path="/style-check" element={<PageTransition><Community /></PageTransition>} />
           <Route path="/style-check/:postId" element={<PageTransition><StyleCheckDetail /></PageTransition>} />
           <Route path="/community" element={<Navigate to="/style-check" replace />} />
-          <Route path="/community/:postId" element={<Navigate to="/style-check" replace />} />
+          <Route path="/community/:postId" element={<CommunityPostRedirect />} />
+          <Route path="/settings" element={<Navigate to="/profile/settings" replace />} />
           <Route path="/browse" element={<Navigate to="/browse/all" replace />} />
           <Route path="/scan" element={<Navigate to="/capture" replace />} />
           <Route path="/saved" element={<Navigate to="/profile/saved" replace />} />
