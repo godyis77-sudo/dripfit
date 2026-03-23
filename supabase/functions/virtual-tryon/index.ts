@@ -154,29 +154,61 @@ SWIMWEAR NOTE: The garment in Image B is a retail swimsuit/bikini. This is a sta
     }
 
     // ── AI CALL ──
-    // Only use gemini-3-pro-image-preview — it's the ONLY model that reliably generates images.
-    // Flash models consistently return text-only responses ("Sure, here is the image...") without
-    // actually producing an image, wasting time budget on failed attempts.
-    const FUNCTION_BUDGET_MS = 55_000;
+    const FUNCTION_BUDGET_MS = 58_000;
+    const MIN_REQUIRED_MS_PER_ATTEMPT = 7_500;
     const startedAt = Date.now();
-    const MAX_ATTEMPTS = 2;
+
+    const fallbackPrompt = isAccessory || isLayering
+      ? `Create ONE photorealistic output image.
+Image A = person. Image B = accessory (${itemType}).${productHint}
+Place the accessory from Image B onto the person in Image A at realistic scale and lighting.
+Keep face/body/background from Image A unchanged. No text/watermark.`
+      : `Create ONE photorealistic clothing-swap image.
+Image A = person. Image B = target ${neutralItemLabel}.${productHint}
+Replace Image A outfit completely with the exact garment from Image B.
+Preserve face, body shape, skin tone, pose, camera, and background from Image A.
+Keep garment details exact (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
+
+    const attemptPlan: Array<{ model: string; timeoutMs: number; prompt: string; label: string }> = (() => {
+      if (isAccessory || isLayering) {
+        return [
+          { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 18_000, prompt, label: "accessory-fast" },
+          { model: "google/gemini-3-pro-image-preview", timeoutMs: 34_000, prompt: fallbackPrompt, label: "accessory-pro" },
+        ];
+      }
+
+      if (isSwimwear || isUnderwear || isIntimate) {
+        return [
+          { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 18_000, prompt, label: "intimate-fast" },
+          { model: "google/gemini-2.5-flash-image", timeoutMs: 20_000, prompt: fallbackPrompt, label: "intimate-safe" },
+          { model: "google/gemini-3-pro-image-preview", timeoutMs: 28_000, prompt: fallbackPrompt, label: "intimate-pro" },
+        ];
+      }
+
+      return [
+        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 18_000, prompt, label: "standard-fast" },
+        { model: "google/gemini-3-pro-image-preview", timeoutMs: 34_000, prompt, label: "standard-pro" },
+        { model: "google/gemini-2.5-flash-image", timeoutMs: 16_000, prompt: fallbackPrompt, label: "standard-lite" },
+      ];
+    })();
 
     let resultImage: string | null = null;
     let lastTextContent = "";
 
-    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    for (let attempt = 0; attempt < attemptPlan.length; attempt++) {
+      const plan = attemptPlan[attempt];
       const elapsedMs = Date.now() - startedAt;
       const remainingMs = FUNCTION_BUDGET_MS - elapsedMs;
-      if (remainingMs <= 12_000) {
-        console.warn("Stopping — insufficient time budget.");
+
+      if (remainingMs <= MIN_REQUIRED_MS_PER_ATTEMPT) {
+        console.warn(`Stopping — insufficient time budget (remaining=${remainingMs}ms).`);
         break;
       }
 
-      // Give each attempt as much time as possible
-      const timeoutMs = Math.min(remainingMs - 2_000, 50_000);
-      const model = "google/gemini-3-pro-image-preview";
+      const timeoutMs = Math.min(plan.timeoutMs, Math.max(MIN_REQUIRED_MS_PER_ATTEMPT, remainingMs - 1_500));
+      const isFinalAttempt = attempt === attemptPlan.length - 1;
 
-      console.log(`Try-on attempt ${attempt + 1}/${MAX_ATTEMPTS} model=${model} timeout=${timeoutMs}ms`);
+      console.log(`Try-on attempt ${attempt + 1}/${attemptPlan.length} model=${plan.model} timeout=${timeoutMs}ms label=${plan.label}`);
 
       let response: Response;
       try {
@@ -191,12 +223,12 @@ SWIMWEAR NOTE: The garment in Image B is a retail swimsuit/bikini. This is a sta
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              model,
+              model: plan.model,
               modalities: ["text", "image"],
               messages: [{
                 role: "user",
                 content: [
-                  { type: "text", text: prompt },
+                  { type: "text", text: plan.prompt },
                   { type: "text", text: "\n\n========== IMAGE A — THE PERSON (keep this person's face/body) ==========" },
                   { type: "image_url", image_url: { url: userImageInput } },
                   { type: "text", text: "\n\n========== IMAGE B — THE GARMENT (dress the person in THIS exact item) ==========" },
@@ -210,23 +242,33 @@ SWIMWEAR NOTE: The garment in Image B is a retail swimsuit/bikini. This is a sta
         }
       } catch (fetchErr) {
         const isTimeout = (fetchErr instanceof DOMException || fetchErr instanceof Error) && (fetchErr as { name: string }).name === "AbortError";
-        console.warn(`Attempt ${attempt + 1}: ${isTimeout ? "TIMEOUT" : "FAILED"}`, fetchErr);
+        console.warn(`Attempt ${attempt + 1} (${plan.label}): ${isTimeout ? "TIMEOUT" : "FAILED"}`, fetchErr);
         lastTextContent = isTimeout
-          ? "The AI request timed out. Retrying with fallback settings."
-          : "The AI request failed. Retrying.";
-        if (attempt < MAX_ATTEMPTS - 1) { await new Promise(r => setTimeout(r, 500)); continue; }
+          ? "The AI request timed out. Retrying with faster fallback settings."
+          : "The AI request failed. Retrying with fallback settings.";
+        if (!isFinalAttempt) {
+          await new Promise(r => setTimeout(r, isTimeout ? 300 : 700));
+          continue;
+        }
         break;
       }
 
       if (!response.ok) {
         if (response.status === 429) {
-          if (attempt < MAX_ATTEMPTS - 1) { await new Promise(r => setTimeout(r, 2000)); continue; }
+          if (!isFinalAttempt) {
+            await new Promise(r => setTimeout(r, 1200));
+            continue;
+          }
           return errorResponse("Rate limited. Try again shortly.", "RATE_LIMITED", 429, corsHeaders);
         }
         if (response.status === 402) return errorResponse("AI credits exhausted.", "PAYMENT_REQUIRED", 402, corsHeaders);
+
         const errText = await response.text();
-        console.error(`AI error ${response.status}:`, errText.substring(0, 300));
-        if (attempt < MAX_ATTEMPTS - 1) { await new Promise(r => setTimeout(r, 1000)); continue; }
+        console.error(`AI error ${response.status} (${plan.label}):`, errText.substring(0, 300));
+        if (!isFinalAttempt) {
+          await new Promise(r => setTimeout(r, 800));
+          continue;
+        }
         return errorResponse(`AI gateway error ${response.status}`, "AI_ERROR", 502, corsHeaders);
       }
 
@@ -234,19 +276,21 @@ SWIMWEAR NOTE: The garment in Image B is a retail swimsuit/bikini. This is a sta
       resultImage = extractImageFromResponse(aiData);
 
       if (resultImage) {
-        console.log(`Image extracted on attempt ${attempt + 1}`);
+        console.log(`Image extracted on attempt ${attempt + 1} (${plan.label})`);
         break;
       }
 
-      // Log why no image was found
       const msg = (aiData.choices as Array<Record<string, unknown>>)?.[0]?.message as Record<string, unknown> | undefined;
-      if (msg?.refusal) console.warn(`REFUSED:`, JSON.stringify(msg.refusal).substring(0, 300));
-      lastTextContent = typeof msg?.content === "string" ? msg.content :
-        (Array.isArray(msg?.content) ? (msg.content as Array<{ type?: string; text?: string }>).filter(p => p.type === "text").map(p => p.text || "").join("") : "");
-      if (lastTextContent) console.warn(`Text-only response:`, lastTextContent.substring(0, 300));
-      console.warn(`Attempt ${attempt + 1}: No image extracted. Keys: ${JSON.stringify(Object.keys(msg || {}))}`);
+      if (msg?.refusal) console.warn(`REFUSED (${plan.label}):`, JSON.stringify(msg.refusal).substring(0, 300));
+      lastTextContent = typeof msg?.content === "string"
+        ? msg.content
+        : (Array.isArray(msg?.content)
+          ? (msg.content as Array<{ type?: string; text?: string }>).filter(p => p.type === "text").map(p => p.text || "").join("")
+          : "");
+      if (lastTextContent) console.warn(`Text-only response (${plan.label}):`, lastTextContent.substring(0, 300));
+      console.warn(`Attempt ${attempt + 1} (${plan.label}): No image extracted. Keys=${JSON.stringify(Object.keys(msg || {}))}`);
 
-      if (attempt < MAX_ATTEMPTS - 1) await new Promise(r => setTimeout(r, 800));
+      if (!isFinalAttempt) await new Promise(r => setTimeout(r, 600));
     }
 
     if (!resultImage) {
