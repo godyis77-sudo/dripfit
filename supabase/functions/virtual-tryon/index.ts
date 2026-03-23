@@ -176,7 +176,9 @@ Deno.serve(async (req) => {
 
     const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
     const FUNCTION_BUDGET_MS = 58_000;
-    const MIN_REQUIRED_MS_PER_ATTEMPT = isIntimateGarment ? 4_000 : 6_000;
+    const MIN_REQUIRED_MS_PER_ATTEMPT = isSwimwear ? 8_000 : isIntimateGarment ? 5_000 : 6_000;
+    const EXTRACTION_BUDGET_MS = isSwimwear ? 18_000 : 12_000;
+    const MIN_REQUIRED_MS_FOR_EXTRACTION = isSwimwear ? 6_000 : 4_000;
     const startedAt = Date.now();
 
     // ── EXTRACT GARMENT FROM PRODUCT IMAGE (OPTIONAL) ──
@@ -190,16 +192,27 @@ Deno.serve(async (req) => {
     );
     const extractIntimateGarment = async (): Promise<string | null> => {
       const extractPrompt = `Isolate ONLY the target garment from this product photo. Remove any person/model/mannequin and any visible skin. Return a clean product-only image of the ${promptIntimateLabel} on a plain white background. Keep garment color, shape, straps, seams, and logos accurate.`;
-      const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = [
-        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 8_000, label: "extract-flash-primary" },
-        { model: "google/gemini-2.5-flash-image", timeoutMs: 6_000, label: "extract-nano-fallback" },
-      ];
+      const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = isSwimwear
+        ? [
+            { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 12_000, label: "extract-swim-flash" },
+            { model: "google/gemini-2.5-flash-image", timeoutMs: 8_000, label: "extract-swim-nano" },
+          ]
+        : [
+            { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 8_000, label: "extract-flash-primary" },
+            { model: "google/gemini-2.5-flash-image", timeoutMs: 6_000, label: "extract-nano-fallback" },
+          ];
 
       for (const plan of extractionPlan) {
-        const remainingMs = FUNCTION_BUDGET_MS - (Date.now() - startedAt);
-        if (remainingMs <= MIN_REQUIRED_MS_PER_ATTEMPT) return null;
+        const elapsedMs = Date.now() - startedAt;
+        const remainingMs = FUNCTION_BUDGET_MS - elapsedMs;
+        const extractionBudgetLeft = EXTRACTION_BUDGET_MS - elapsedMs;
 
-        const timeoutMs = Math.min(plan.timeoutMs, Math.max(4_000, remainingMs - 1_000));
+        if (remainingMs <= MIN_REQUIRED_MS_PER_ATTEMPT || extractionBudgetLeft <= MIN_REQUIRED_MS_FOR_EXTRACTION) {
+          return null;
+        }
+
+        const timeoutMs = Math.min(plan.timeoutMs, extractionBudgetLeft, remainingMs - 1_000);
+        if (timeoutMs < MIN_REQUIRED_MS_FOR_EXTRACTION) return null;
 
         try {
           const controller = new AbortController();
@@ -391,10 +404,9 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
       ? isSwimwearOnly
         ? [
-            // Swimwear: prefer a stronger first generation pass and cleaner references.
-            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 22_000 },
-            { model: "google/gemini-3-pro-image-preview", prompt: complianceIntimatePrompt, label: `${typeLabel}-pro-compliance`, timeoutMs: 16_000 },
-            { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-nano-last`, timeoutMs: 10_000 },
+            // Swimwear: prioritize one high-confidence generation pass with enough time.
+            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 30_000 },
+            { model: "google/gemini-2.5-flash-image", prompt: complianceIntimatePrompt, label: `${typeLabel}-nano-compliance`, timeoutMs: 14_000 },
           ]
         : [
             { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 18_000 },
@@ -409,7 +421,7 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
     let resultImage: string | null = null;
     let lastTextContent = "";
     let sawIntimateRefusal = false;
-    let attemptedRefusalExtraction = preExtractedGarment;
+    let attemptedRefusalExtraction = isSwimwearOnly ? enableIntimateExtraction : preExtractedGarment;
 
     for (let attempt = 0; attempt < attemptPlan.length; attempt++) {
       const plan = attemptPlan[attempt];
