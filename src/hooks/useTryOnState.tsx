@@ -23,6 +23,17 @@ export type WardrobeItem = { id: string; image_url: string; category: string; pr
 const TRYON_STATE_KEY = 'dripcheck_tryon_state';
 const TRYON_RESULT_KEY = 'dripcheck_tryon_result'; // localStorage — survives tab close
 
+type PersistedQuickPick = {
+  id: string;
+  brand: string;
+  retailer: string;
+  category: string;
+  name: string;
+  image_url: string;
+  product_url: string | null;
+  price_cents: number | null;
+} | null;
+
 type PersistedTryOnState = {
   userPhoto: string | null;
   clothingPhoto: string | null;
@@ -34,6 +45,7 @@ type PersistedTryOnState = {
   autoSaved: boolean;
   shared: boolean;
   savedToItems: boolean;
+  selectedQuickPick: PersistedQuickPick;
 };
 
 function loadPersistedTryOnState(): PersistedTryOnState {
@@ -53,9 +65,10 @@ function loadPersistedTryOnState(): PersistedTryOnState {
       autoSaved: parsed.autoSaved || !!savedResultUrl,
       shared: !!parsed.shared,
       savedToItems: !!parsed.savedToItems,
+      selectedQuickPick: parsed.selectedQuickPick || null,
     };
   } catch { /* ignore */ }
-  return { userPhoto: null, clothingPhoto: null, productLink: '', category: 'top', resultImage: null, lookItems: [], caption: '', autoSaved: false, shared: false, savedToItems: false };
+  return { userPhoto: null, clothingPhoto: null, productLink: '', category: 'top', resultImage: null, lookItems: [], caption: '', autoSaved: false, shared: false, savedToItems: false, selectedQuickPick: null };
 }
 
 export function useTryOnState() {
