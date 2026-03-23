@@ -93,6 +93,13 @@ Deno.serve(async (req) => {
     const parsed = parseOrError(VirtualTryonSchema, raw);
     if (!parsed.success) return errorResponse(parsed.error, "VALIDATION_ERROR", 400, corsHeaders);
 
+    // ── BACKGROUND SOURCE ──
+    const backgroundSource: string = (raw.backgroundSource as string) || "user";
+    const useClothingBg = backgroundSource === "clothing";
+    const bgInstruction = useClothingBg
+      ? "Use the background/environment from Image B (the clothing/product photo). Place the model into that scene."
+      : "Keep the EXACT same background, environment, and scene from Image A. Do NOT replace it with a studio backdrop.";
+
     // ── CLASSIFY ITEM ──
     const itemType: string = (raw.itemType as string) || "clothing";
     const normalizedItemType = itemType
