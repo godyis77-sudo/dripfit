@@ -2,19 +2,20 @@ import { getCorsHeaders } from "../_shared/validation.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 /**
- * Generate AI backgrounds for each category using Lovable AI image generation.
- * Replaces the Pexels-based seed-backgrounds function.
+ * Generate AI backgrounds using Lovable AI image generation.
  *
- * Query params:
- *   ?replace=true   — delete existing AI-generated backgrounds first
- *   ?category=slug  — generate for a single category only
- *   ?count=N        — number of images per prompt (default 1, max 2)
+ * POST body:
+ *   category: string (slug) — which category to generate for
+ *   prompt_index?: number   — which prompt to use (0-3), default 0
+ *   replace?: boolean       — delete existing AI backgrounds for this category first
+ *
+ * Generates ONE image per call for fast responses.
+ * Call repeatedly with different prompt_index values to populate a category.
  */
 
 const AI_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const IMAGE_MODEL = "google/gemini-3.1-flash-image-preview";
 
-// Prompts per category: each yields a beautiful, portrait-oriented scene with no people
 const CATEGORY_PROMPTS: Record<string, { prompts: string[]; premium: boolean[] }> = {
   "street-urban": {
     prompts: [
@@ -118,38 +119,32 @@ const CATEGORY_PROMPTS: Record<string, { prompts: string[]; premium: boolean[] }
 };
 
 async function generateImage(prompt: string, apiKey: string): Promise<string | null> {
-  try {
-    const res = await fetch(AI_GATEWAY, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: IMAGE_MODEL,
-        messages: [
-          {
-            role: "user",
-            content: `Generate a beautiful high-quality background image with portrait/vertical orientation (3:4 aspect ratio). No people, no text, no watermarks. ${prompt}`,
-          },
-        ],
-        modalities: ["image", "text"],
-      }),
-    });
+  const res = await fetch(AI_GATEWAY, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: IMAGE_MODEL,
+      messages: [
+        {
+          role: "user",
+          content: `Generate a beautiful high-quality background image with portrait/vertical orientation (3:4 aspect ratio). No people, no text, no watermarks. ${prompt}`,
+        },
+      ],
+      modalities: ["image", "text"],
+    }),
+  });
 
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error(`AI gateway error ${res.status}:`, errText);
-      return null;
-    }
-
-    const data = await res.json();
-    const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-    return imageUrl || null;
-  } catch (e) {
-    console.error("Image generation failed:", e);
+  if (!res.ok) {
+    const errText = await res.text();
+    console.error(`AI gateway error ${res.status}:`, errText);
     return null;
   }
+
+  const data = await res.json();
+  return data.choices?.[0]?.message?.images?.[0]?.image_url?.url || null;
 }
 
 async function uploadToStorage(
@@ -157,162 +152,131 @@ async function uploadToStorage(
   base64Data: string,
   fileName: string
 ): Promise<string | null> {
-  try {
-    // Strip data URI prefix
-    const base64Clean = base64Data.replace(/^data:image\/\w+;base64,/, "");
-    const bytes = Uint8Array.from(atob(base64Clean), (c) => c.charCodeAt(0));
+  const base64Clean = base64Data.replace(/^data:image\/\w+;base64,/, "");
+  const bytes = Uint8Array.from(atob(base64Clean), (c) => c.charCodeAt(0));
 
-    const { error } = await sb.storage
-      .from("backgrounds-curated")
-      .upload(fileName, bytes, {
-        contentType: "image/png",
-        upsert: true,
-      });
+  const { error } = await sb.storage
+    .from("backgrounds-curated")
+    .upload(fileName, bytes, { contentType: "image/png", upsert: true });
 
-    if (error) {
-      console.error("Storage upload error:", error);
-      return null;
-    }
-
-    const { data: urlData } = sb.storage
-      .from("backgrounds-curated")
-      .getPublicUrl(fileName);
-
-    return urlData.publicUrl;
-  } catch (e) {
-    console.error("Upload failed:", e);
+  if (error) {
+    console.error("Storage upload error:", error);
     return null;
   }
+
+  return sb.storage.from("backgrounds-curated").getPublicUrl(fileName).data.publicUrl;
 }
 
 Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   const apiKey = Deno.env.get("LOVABLE_API_KEY");
   if (!apiKey) {
     return new Response(JSON.stringify({ error: "LOVABLE_API_KEY not set" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
+
+  let body: { category?: string; prompt_index?: number; replace?: boolean } = {};
+  try { body = await req.json(); } catch { /* use defaults from query params */ }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
   const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const sb = createClient(supabaseUrl, supabaseKey);
 
   const url = new URL(req.url);
-  const shouldReplace = url.searchParams.get("replace") === "true";
-  const targetCategory = url.searchParams.get("category");
-  const countPerPrompt = Math.min(parseInt(url.searchParams.get("count") || "1"), 2);
+  const category = body.category || url.searchParams.get("category");
+  const promptIndex = body.prompt_index ?? parseInt(url.searchParams.get("prompt_index") || "0");
+  const shouldReplace = body.replace ?? url.searchParams.get("replace") === "true";
 
-  // Get categories
-  const { data: cats } = await sb
-    .from("background_categories")
-    .select("id, slug")
-    .order("sort_order");
+  // List available categories
+  if (!category) {
+    return new Response(JSON.stringify({
+      available_categories: Object.keys(CATEGORY_PROMPTS),
+      usage: "POST with { category: 'slug', prompt_index: 0-3, replace?: true }",
+    }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  }
 
-  if (!cats) {
-    return new Response(JSON.stringify({ error: "No categories found" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+  const config = CATEGORY_PROMPTS[category];
+  if (!config) {
+    return new Response(JSON.stringify({ error: `Unknown category: ${category}`, available: Object.keys(CATEGORY_PROMPTS) }), {
+      status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
-  const slugToId = new Map(cats.map((c: { id: string; slug: string }) => [c.slug, c.id]));
-
-  // Delete old AI-generated backgrounds if replacing
-  if (shouldReplace) {
-    const deleteQuery = sb.from("backgrounds").delete().eq("source", "ai-generated");
-    if (targetCategory) {
-      const catId = slugToId.get(targetCategory);
-      if (catId) deleteQuery.eq("category_id", catId);
-    }
-    const { error: delErr } = await deleteQuery;
-    if (delErr) console.error("Delete old AI backgrounds error:", delErr);
+  if (promptIndex < 0 || promptIndex >= config.prompts.length) {
+    return new Response(JSON.stringify({ error: `prompt_index must be 0-${config.prompts.length - 1}` }), {
+      status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 
-  let generated = 0;
-  let failed = 0;
-  const results: { category: string; name: string; success: boolean }[] = [];
-
-  const categoriesToProcess = targetCategory
-    ? { [targetCategory]: CATEGORY_PROMPTS[targetCategory] }
-    : CATEGORY_PROMPTS;
-
-  for (const [slug, config] of Object.entries(categoriesToProcess)) {
-    if (!config) continue;
-    const catId = slugToId.get(slug);
-    if (!catId) continue;
-
-    for (let pi = 0; pi < config.prompts.length; pi++) {
-      const prompt = config.prompts[pi];
-      const isPremium = config.premium[pi] ?? false;
-
-      for (let ci = 0; ci < countPerPrompt; ci++) {
-        const suffix = countPerPrompt > 1 ? `-v${ci + 1}` : "";
-        const fileName = `ai/${slug}/${slug}-${pi + 1}${suffix}.png`;
-        const bgName = prompt
-          .split(",")[0]
-          .replace(/^(A |An |The )/, "")
-          .slice(0, 60);
-
-        console.log(`Generating: ${slug}/${pi + 1}${suffix} — ${bgName}`);
-
-        const base64 = await generateImage(prompt, apiKey);
-        if (!base64) {
-          failed++;
-          results.push({ category: slug, name: bgName, success: false });
-          continue;
-        }
-
-        const publicUrl = await uploadToStorage(sb, base64, fileName);
-        if (!publicUrl) {
-          failed++;
-          results.push({ category: slug, name: bgName, success: false });
-          continue;
-        }
-
-        // Insert into backgrounds table
-        const { error: insertErr } = await sb.from("backgrounds").insert({
-          category_id: catId,
-          name: bgName,
-          storage_path: publicUrl,
-          thumbnail_path: publicUrl,
-          is_premium: isPremium,
-          is_active: true,
-          source: "ai-generated",
-          source_id: `ai-${slug}-${pi + 1}${suffix}`,
-          photographer: "AI Generated",
-          tags: slug.split("-"),
-        });
-
-        if (insertErr) {
-          console.error("Insert error:", insertErr);
-          failed++;
-          results.push({ category: slug, name: bgName, success: false });
-        } else {
-          generated++;
-          results.push({ category: slug, name: bgName, success: true });
-        }
-
-        // Rate limit courtesy delay
-        await new Promise((r) => setTimeout(r, 2000));
-      }
-    }
+  // Get category ID
+  const { data: cats } = await sb.from("background_categories").select("id, slug").eq("slug", category).single();
+  if (!cats) {
+    return new Response(JSON.stringify({ error: "Category not found in database" }), {
+      status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 
-  return new Response(
-    JSON.stringify({
-      success: true,
-      generated,
-      failed,
-      replaced: shouldReplace,
-      category: targetCategory || "all",
-      results,
-    }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-  );
+  // Delete existing AI backgrounds for this category if replacing
+  if (shouldReplace && promptIndex === 0) {
+    await sb.from("backgrounds").delete().eq("source", "ai-generated").eq("category_id", cats.id);
+  }
+
+  const prompt = config.prompts[promptIndex];
+  const isPremium = config.premium[promptIndex] ?? false;
+  const fileName = `ai/${category}/${category}-${promptIndex + 1}.png`;
+  const bgName = prompt.split(",")[0].replace(/^(A |An |The )/, "").slice(0, 60);
+
+  console.log(`Generating: ${category}/${promptIndex + 1} — ${bgName}`);
+
+  const base64 = await generateImage(prompt, apiKey);
+  if (!base64) {
+    return new Response(JSON.stringify({ error: "Image generation failed" }), {
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const publicUrl = await uploadToStorage(sb, base64, fileName);
+  if (!publicUrl) {
+    return new Response(JSON.stringify({ error: "Storage upload failed" }), {
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  // Upsert into backgrounds table
+  const sourceId = `ai-${category}-${promptIndex + 1}`;
+
+  // Delete existing with same source_id to avoid duplicates
+  await sb.from("backgrounds").delete().eq("source_id", sourceId);
+
+  const { error: insertErr } = await sb.from("backgrounds").insert({
+    category_id: cats.id,
+    name: bgName,
+    storage_path: publicUrl,
+    thumbnail_path: publicUrl,
+    is_premium: isPremium,
+    is_active: true,
+    source: "ai-generated",
+    source_id: sourceId,
+    photographer: "AI Generated",
+    tags: category.split("-"),
+  });
+
+  if (insertErr) {
+    return new Response(JSON.stringify({ error: insertErr.message }), {
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  return new Response(JSON.stringify({
+    success: true,
+    category,
+    prompt_index: promptIndex,
+    name: bgName,
+    url: publicUrl,
+    is_premium: isPremium,
+    next_prompt_index: promptIndex + 1 < config.prompts.length ? promptIndex + 1 : null,
+  }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
 });
