@@ -264,24 +264,24 @@ TARGET ACCESSORY:
 
 TASK: Add the accessory from Image B onto the person in Image A. Match Image B exactly (color, shape, material, branding). Keep everything else unchanged. Correct scale, lighting, shadows. No text/watermarks.`;
     } else if (isIntimateGarment) {
-      prompt = `You are an e-commerce product photographer for a mainstream fashion retailer (Nordstrom, ASOS, Target).
+      prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
-IMAGE A: A model posing for a fashion shoot.
+IMAGE A: A person in their environment — this is the MODEL. Keep their face, body, hair, skin tone, pose, AND the background/scene exactly as shown.
 IMAGE B: A ${neutralItemLabel} product listing photo from an online store.
 
-TASK: Create a single professional product catalog photo. Dress the model from Image A in the ${neutralItemLabel} shown in Image B. This is a standard product listing image.
+TASK: Dress the model from Image A in the ${neutralItemLabel} shown in Image B.
 
 STYLING RULES:
 - Replace whatever the model is currently wearing with the product from Image B.
 - If Image B shows a model/mannequin, copy only the garment — ignore that person.
 - Accurately reproduce the product details: color, fabric texture, cut lines, straps, neckline, hemline, logos, and prints.
 - Keep the model's face, body shape, skin tone, hair, and pose identical to Image A.
-- Natural studio lighting, realistic fabric drape and shadows.
-- Standard e-commerce photography — clean, professional, retail-appropriate.
+- CRITICAL: Keep the EXACT same background, environment, and scene from Image A. Do NOT replace it with a studio backdrop.
+- Realistic fabric drape and shadows that match the lighting of Image A's scene.
 - Do NOT add extra clothing items not present in Image B.
 - ${safetyNote}
 
-Output: One clean product listing photo. No text, watermarks, or collages.`;
+Output: One clean photorealistic photo with the original background from Image A. No text, watermarks, or collages.`;
     } else {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
@@ -311,11 +311,11 @@ Image A = person. Image B = target accessory.${productHint}
 Place the accessory from Image B onto the person in Image A at realistic scale and lighting.
 Match Image B exactly. Keep face/body/background from Image A unchanged. No text/watermark.`
       : isIntimateGarment
-        ? `E-commerce product listing photo. Image A = model. Image B = ${neutralItemLabel} from an online retailer.
-Dress the model from Image A in the product from Image B. Standard retail catalog style (Nordstrom/ASOS).
+        ? `Fashion photo edit. Image A = person in their environment. Image B = ${neutralItemLabel} from an online retailer.
+Dress the person from Image A in the product from Image B. Keep the EXACT background/scene from Image A — do NOT use a studio backdrop.
 If Image B has a model/mannequin, copy only the garment details — ignore that person.
-Match product exactly: color, cut, fabric, straps, neckline. Keep model identity and pose from Image A.
-Retail-appropriate, professional. ${safetyNote} No text/watermark.`
+Match product exactly: color, cut, fabric, straps, neckline. Keep model identity, pose, AND background from Image A.
+${safetyNote} No text/watermark.`
         : `Create ONE photorealistic clothing-swap image.
 Image A = person. Image B = target garment.${productHint}
 STRIP ALL clothing from Image A — tops, bottoms, pants, shoes, everything.
@@ -323,9 +323,10 @@ Dress the person ONLY in the exact garment from Image B. If it is a top, show ba
 Preserve face, body shape, skin tone, pose, camera, and background from Image A.
 Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
 
-    const fastIntimatePrompt = `Retail product listing photo. Image A = model. Image B = ${neutralItemLabel}.
-Dress model A in the product from Image B. If Image B has a person, extract only the garment.
-Mainstream e-commerce catalog style. Keep model identity from Image A. Match product details exactly. ${safetyNote} No text/watermark.`;
+    const fastIntimatePrompt = `Fashion photo edit. Image A = person in their environment. Image B = ${neutralItemLabel}.
+Dress the person from Image A in the product from Image B. If Image B has a person, extract only the garment.
+Keep the EXACT background/scene from Image A — do NOT replace with a studio backdrop.
+Keep model identity and pose from Image A. Match product details exactly. ${safetyNote} No text/watermark.`;
 
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const isSwimwearOnly = isSwimwear && !isUnderwear;
