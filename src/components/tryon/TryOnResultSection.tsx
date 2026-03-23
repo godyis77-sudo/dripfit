@@ -767,11 +767,11 @@ const TryOnResultSection = ({
                   ) : (
                     <>
                       <div className="flex gap-1.5 mb-2">
-                        <button onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryCameraRef.current?.click(); }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg btn-gold-3d active:scale-95 transition-transform">
-                          <Camera className="h-3.5 w-3.5" /><span className="text-[10px] font-bold">Camera</span>
+                        <button onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryCameraRef.current?.click(); }} className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg bg-card border border-border text-foreground/70 active:scale-95 transition-transform">
+                          <Camera className="h-3 w-3" /><span className="text-[10px] font-semibold">Camera</span>
                         </button>
-                        <button onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryPhotoRef.current?.click(); }} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg pill active:scale-95 transition-transform">
-                          <ImageIcon className="h-3.5 w-3.5" /><span className="text-[10px] font-bold">Gallery</span>
+                        <button onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryPhotoRef.current?.click(); }} className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg bg-card border border-border text-foreground/70 active:scale-95 transition-transform">
+                          <ImageIcon className="h-3 w-3" /><span className="text-[10px] font-semibold">Gallery</span>
                         </button>
                       </div>
                       {showAllCategories && !accessoryCategory && (
