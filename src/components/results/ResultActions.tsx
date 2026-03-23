@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Shirt, Save, Check, Trash2, RotateCcw, Shield, Share, MessageSquare } from 'lucide-react';
+import { Shirt, Save, Check, Trash2, RotateCcw, Shield, Share, MessageSquare, LayoutGrid } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
