@@ -18,6 +18,7 @@ import Capture from "./pages/Capture";
 import GuestTimedNudge from "./components/guest/GuestTimedNudge";
 
 // ── Lazy-loaded pages (code-split per route) ──────────────────────────
+const Splash = lazy(() => import("./pages/Splash"));
 const Welcome = lazy(() => import("./pages/Welcome"));
 
 const Analyze = lazy(() => import("./pages/Analyze"));
