@@ -122,6 +122,9 @@ const GalleryPlayground = () => {
           ))}
         </motion.div>
 
+        {/* One-Tap Playground — interactive split-screen */}
+        <OneTapPlayground />
+
         {/* Demo Try-On Results */}
         <DemoTryOnSection />
 
