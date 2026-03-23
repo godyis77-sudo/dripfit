@@ -332,9 +332,9 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
       ? isSwimwearOnly
         ? [
-            // Swimwear works better with flash/pro first; nano is final fallback.
-            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 24_000 },
-            { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-fallback`, timeoutMs: 22_000 },
+            // Swimwear: short flash probe to detect refusal quickly, then pro gets bulk of budget.
+            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 18_000 },
+            { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-fallback`, timeoutMs: 26_000 },
             { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-nano-last`, timeoutMs: 14_000 },
           ]
         : [
@@ -364,10 +364,10 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
 
       // Cap each attempt so one slow model can't starve later retries.
       const attemptsLeftAfterThis = attemptPlan.length - attempt - 1;
-      const reserveForRetriesMs = attemptsLeftAfterThis * MIN_REQUIRED_MS_PER_ATTEMPT + 2_000;
+      const reserveForRetriesMs = attemptsLeftAfterThis * MIN_REQUIRED_MS_PER_ATTEMPT + 1_000;
       const timeoutMs = Math.min(
         plan.timeoutMs,
-        Math.max(MIN_REQUIRED_MS_PER_ATTEMPT, remainingMs - reserveForRetriesMs),
+        Math.max(MIN_REQUIRED_MS_PER_ATTEMPT, remainingMs - (isFinalAttempt ? 0 : reserveForRetriesMs)),
       );
       const isFinalAttempt = attempt === attemptPlan.length - 1;
 
@@ -408,7 +408,7 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
         console.warn(`Attempt ${attempt + 1} (${plan.label}): ${isTimeout ? "TIMEOUT" : "FAILED"}`, fetchErr);
 
         let extractedAfterTimeout = false;
-        if (isTimeout && isIntimateGarment && !attemptedRefusalExtraction) {
+        if (isTimeout && isIntimateGarment && !isSwimwearOnly && !attemptedRefusalExtraction) {
           attemptedRefusalExtraction = true;
           const rescuedGarment = await extractIntimateGarment();
           if (rescuedGarment) {
@@ -484,7 +484,7 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
           lastTextContent = "Try-on was blocked for this product photo. Use a front-facing product-only image or flat-lay with the full garment visible.";
         }
 
-        if (!attemptedRefusalExtraction) {
+        if (!attemptedRefusalExtraction && !isSwimwearOnly) {
           attemptedRefusalExtraction = true;
           const rescuedGarment = await extractIntimateGarment();
           if (rescuedGarment) {
