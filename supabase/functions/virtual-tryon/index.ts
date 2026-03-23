@@ -452,7 +452,7 @@ ${safetyNote} No text/watermark.`
 Image A = person. Image B = target garment.${productHint}
 STRIP ALL clothing from Image A — tops, bottoms, pants, shoes, everything.
 Dress the person ONLY in the exact garment from Image B. If it is a top, show bare legs — do NOT keep pants or bottoms from Image A.
-Preserve face, body shape, skin tone, pose, camera from Image A. ${bgFallbackHint}
+Preserve face, body shape, skin tone, pose, camera angle, and facing direction from Image A — do NOT rotate the model. ${bgFallbackHint}
 Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
 
     const intimateReferenceForFallback = useTextOnlyIntimateReference
