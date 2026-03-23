@@ -106,7 +106,7 @@ const Browse = () => {
   // Scroll lock handled by ProductPreviewModal
 
   const title = CATEGORY_LABELS[category] || category.charAt(0).toUpperCase() + category.slice(1);
-  usePageTitle(`Browse ${title}`);
+  usePageMeta({ title: `Browse ${title}`, description: `Shop ${title.toLowerCase()} from 130+ brands with AI size recommendations. Find your perfect fit.`, path: `/browse/${category}` });
 
   // Extract available brands from loaded products
   const availableRetailers = useMemo(() => {

@@ -58,7 +58,7 @@ const socials = [
 ];
 
 const LinkHub = () => {
-  usePageTitle('DripFit Check — Links');
+  usePageMeta({ title: 'Links', description: 'All DripFit links in one place — waitlist, Discord, Instagram, and more.', path: '/links' });
 
   return (
     <div className="min-h-[100dvh] bg-background flex items-center justify-center px-4 py-10">

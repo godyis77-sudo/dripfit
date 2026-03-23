@@ -30,7 +30,7 @@ const INTEGRATIONS = [
 ];
 
 const Partnership = () => {
-  usePageTitle('Partnership');
+  usePageMeta({ title: 'Brand Partnership', description: 'Partner with DripFit to reduce returns by 30-40%. AI-powered size matching drives confident purchases.', path: '/partnership' });
 
   return (
     <div className="min-h-screen bg-background text-foreground">

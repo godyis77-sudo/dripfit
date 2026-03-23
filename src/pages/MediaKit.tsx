@@ -90,7 +90,7 @@ const fade = (delay: number) => ({
 
 /* ── Component ───────────────────────────────────────── */
 const MediaKit = () => {
-  usePageTitle('Media Kit');
+  usePageMeta({ title: 'Media Kit', description: 'DripFit brand assets, logos, colors, and press materials for media and partners.', path: '/media-kit' });
   const [stats, setStats] = useState<DbStats>(FALLBACK_STATS);
 
   useEffect(() => {

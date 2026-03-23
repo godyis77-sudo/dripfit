@@ -90,7 +90,7 @@ import CaptureViewfinder from '@/components/capture/CaptureViewfinder';
 const Capture = () => {
   const navigate = useNavigate();
   const { user, isSubscribed, userGender, genderLoaded: authGenderLoaded, updateGender } = useAuth();
-  usePageTitle('Scan');
+  usePageMeta({ title: 'Body Scan', description: 'Get your exact body measurements from 2 photos in under 60 seconds with AI-powered scanning.', path: '/capture' });
   const saved = loadScanState();
   const [flowStep, setFlowStep] = useState<FlowStep>(saved?.flowStep || 'intro');
   const [photos, setPhotos] = useState<PhotoSet>({

@@ -38,7 +38,7 @@ const FIT_OPTIONS = [
 
 const Community = () => {
   const navigate = useNavigate();
-  usePageTitle('Style Check');
+  usePageMeta({ title: 'Style Check', description: 'Get real feedback on your outfits from the DripFit community. Post your look and let others rate it.', path: '/style-check' });
   const { user } = useAuth();
   const { toast } = useToast();
 

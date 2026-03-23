@@ -208,7 +208,7 @@ function GoldParticles() {
 
 /* ─── Main Page ─── */
 const Waitlist = () => {
-  usePageTitle('DripFit — Your Exact Size, Every Brand');
+  usePageMeta({ title: 'Join the Waitlist', description: 'Get early access to DripFit — AI body scanning, virtual try-on, and size matching for 130+ brands. Free to join.', path: '/waitlist' });
   const [showTop, setShowTop] = useState(false);
 
   useEffect(() => {

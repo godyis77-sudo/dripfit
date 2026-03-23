@@ -7,7 +7,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 
 const Privacy = () => {
   const navigate = useNavigate();
-  usePageTitle('Privacy Policy');
+  usePageMeta({ title: 'Privacy Policy', description: 'How DripFit collects, uses, and protects your personal data and body scan information.', path: '/privacy' });
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">

@@ -43,7 +43,7 @@ const FIT_OPTIONS = [
 ] as const;
 
 const TryOn = () => {
-  usePageTitle('Virtual Try-On');
+  usePageMeta({ title: 'Virtual Try-On', description: 'Try on clothes virtually before you buy. Upload your photo and see how any outfit looks on you.', path: '/tryon' });
   const s = useTryOnState();
   const navigate = useNavigate();
   const isGuest = !s.user && isGuestMode();
