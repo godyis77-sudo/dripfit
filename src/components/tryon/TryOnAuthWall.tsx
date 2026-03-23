@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Lock, Sparkles, ArrowRight, Crown } from 'lucide-react';
@@ -11,13 +12,14 @@ interface TryOnAuthWallProps {
   isAuthenticated?: boolean;
 }
 
-const TryOnAuthWall = ({ onClose, reason = 'guest_limit', isAuthenticated = false }: TryOnAuthWallProps) => {
+const TryOnAuthWall = forwardRef<HTMLDivElement, TryOnAuthWallProps>(({ onClose, reason = 'guest_limit', isAuthenticated = false }, ref) => {
   const navigate = useNavigate();
 
   const isAuthenticatedDailyLimit = reason === 'daily_limit' && isAuthenticated;
 
   return (
     <motion.div
+      ref={ref}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -136,6 +138,8 @@ const TryOnAuthWall = ({ onClose, reason = 'guest_limit', isAuthenticated = fals
       </motion.div>
     </motion.div>
   );
-};
+});
+
+TryOnAuthWall.displayName = 'TryOnAuthWall';
 
 export default TryOnAuthWall;
