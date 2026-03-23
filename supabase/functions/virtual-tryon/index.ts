@@ -309,8 +309,9 @@ Deno.serve(async (req) => {
     };
 
     // Retry loop with model + prompt fallback (bounded to avoid worker compute exhaustion)
-    const FUNCTION_BUDGET_MS = 55_000;
-    const ATTEMPT_TIMEOUT_MS = 18_000;
+    const FUNCTION_BUDGET_MS = 58_000;
+    const BASE_ATTEMPT_TIMEOUT_MS = (isSwimwear || isIntimate) ? 28_000 : 20_000;
+    const MIN_ATTEMPT_TIMEOUT_MS = 8_000;
     const startedAt = Date.now();
 
     const MODELS = isUnderwear
@@ -321,33 +322,41 @@ Deno.serve(async (req) => {
         ]
       : (isSwimwear || isIntimate)
       ? [
-          "google/gemini-2.5-flash-image",        // least restrictive for intimate items
           "google/gemini-3.1-flash-image-preview",
+          "google/gemini-2.5-flash-image",
           "google/gemini-3-pro-image-preview",
         ]
       : [
           "google/gemini-3.1-flash-image-preview",
           "google/gemini-3.1-flash-image-preview",
-          "google/gemini-3-pro-image-preview",     // fallback model on last attempt
+          "google/gemini-3-pro-image-preview",
         ];
-    const MAX_ATTEMPTS = Math.min(promptVariants.length, MODELS.length, 3);
+    const requestedAttempts = isUnderwear ? 3 : ((isSwimwear || isIntimate) ? 2 : 3);
+    const MAX_ATTEMPTS = Math.min(promptVariants.length, MODELS.length, requestedAttempts);
     let resultImage: string | null = null;
     let lastTextContent = "";
 
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-      if (Date.now() - startedAt > FUNCTION_BUDGET_MS - ATTEMPT_TIMEOUT_MS) {
+      const elapsedMs = Date.now() - startedAt;
+      const remainingBudgetMs = FUNCTION_BUDGET_MS - elapsedMs;
+      if (remainingBudgetMs <= MIN_ATTEMPT_TIMEOUT_MS + 2_000) {
         console.warn("Stopping retries early to stay within worker compute budget.");
         break;
       }
 
+      const effectiveTimeoutMs = Math.max(
+        MIN_ATTEMPT_TIMEOUT_MS,
+        Math.min(BASE_ATTEMPT_TIMEOUT_MS, remainingBudgetMs - 2_000),
+      );
+
       const model = MODELS[attempt] || MODELS[0];
       const prompt = promptVariants[attempt] || promptVariants[0];
-      console.log(`Try-on attempt ${attempt + 1}/${MAX_ATTEMPTS} with model ${model}`);
+      console.log(`Try-on attempt ${attempt + 1}/${MAX_ATTEMPTS} with model ${model} (timeout=${effectiveTimeoutMs}ms)`);
 
       let response: Response;
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), ATTEMPT_TIMEOUT_MS);
+        const timeout = setTimeout(() => controller.abort(), effectiveTimeoutMs);
         try {
           response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
             method: "POST",
@@ -378,7 +387,12 @@ Deno.serve(async (req) => {
         }
       } catch (fetchErr) {
         console.warn(`Attempt ${attempt + 1}: AI request failed`, fetchErr);
-        lastTextContent = "The AI request timed out. Retrying with fallback settings.";
+        const isTimeout = fetchErr instanceof DOMException
+          ? fetchErr.name === "AbortError"
+          : (fetchErr instanceof Error && fetchErr.name === "AbortError");
+        lastTextContent = isTimeout
+          ? "The AI request timed out. Retrying with fallback settings."
+          : "The AI request failed to reach the model. Retrying with fallback settings.";
         if (attempt < MAX_ATTEMPTS - 1) {
           await new Promise(r => setTimeout(r, 700));
           continue;
