@@ -97,6 +97,7 @@ export function useTryOnState() {
   const [lookItems, setLookItemsRaw] = useState<LookItem[]>(persisted.lookItems);
   const [category, setCategoryRaw] = useState<string>(persisted.category);
   const [clothingSaved, setClothingSaved] = useState(false);
+  const [backgroundSource, setBackgroundSource] = useState<'user' | 'clothing'>('user');
 
   // Persist critical state to sessionStorage so it survives mobile camera handoff reloads
   // NOTE: Only persist URLs — never large base64 strings
@@ -416,6 +417,7 @@ export function useTryOnState() {
         productBrand: selectedQuickPick?.brand || '',
         productCategory: selectedQuickPick?.category || category || '',
         productUrl: selectedQuickPick?.product_url || productLink || '',
+        backgroundSource,
       };
       // Pass guest UUID for unauthenticated users
       if (!user) {
@@ -678,6 +680,8 @@ export function useTryOnState() {
     selectedQuickPick, selectedBrand, setSelectedBrand, selectedGenre, setSelectedGenre, selectedRetailer, setSelectedRetailer, selectedFit, setSelectedFit,
     // Wardrobe
     clothingSaved, wardrobeItems, showWardrobe, setShowWardrobe,
+    // Background source
+    backgroundSource, setBackgroundSource,
     // State flags
     showPremiumGate, setShowPremiumGate, savedToItems, showSuccessOverlay,
     showLookItems, layerHistory, hasSavedProfile,

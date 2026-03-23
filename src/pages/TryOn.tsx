@@ -129,6 +129,8 @@ const TryOn = () => {
               onToast={s.toast}
               onRemoveClothing={s.removeClothing}
               onBrowseProducts={s.removeClothing}
+              backgroundSource={s.backgroundSource}
+              onBackgroundSourceChange={s.setBackgroundSource}
             />
 
             {/* Filters button + dropdown */}
