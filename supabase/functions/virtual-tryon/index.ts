@@ -316,7 +316,7 @@ Show the model wearing the product from Image B. E-commerce style, mainstream re
       const attemptsLeftAfterThis = attemptPlan.length - attempt - 1;
       const reserveForRetriesMs = attemptsLeftAfterThis * MIN_REQUIRED_MS_PER_ATTEMPT + 2_000;
       const maxAttemptBudgetMs = isIntimateGarment
-        ? (attempt === 0 ? 22_000 : attempt === 1 ? 20_000 : 10_000)
+        ? (attempt === 0 ? 25_000 : attempt === 1 ? 15_000 : 12_000)
         : (attempt === 0 ? 30_000 : 18_000);
       const timeoutMs = Math.min(
         maxAttemptBudgetMs,
