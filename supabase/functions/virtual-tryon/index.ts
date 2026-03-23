@@ -143,16 +143,15 @@ TASK: Add the accessory from Image B onto the person in Image A. Match Image B e
     } else if (isIntimateGarment) {
       prompt = `You are a fashion e-commerce try-on editor. Generate ONE photorealistic image.
 
-IMAGES PROVIDED:
+IMAGE PROVIDED:
 - Image A (first image below): The person/model.
-- Image B (second image below): The target garment — replicate this EXACT garment.
 
 TARGET GARMENT:
-- The garment shown in Image B.${productHint}
+- ${garmentDescriptor}.${productHint}
 
 TASK — RETAIL SWIMWEAR TRY-ON:
-1. Replace the outfit shown in Image A with the garment from Image B.
-2. Match Image B garment details precisely: color, pattern, cut, straps, neckline, silhouette, and fabric look.
+1. Replace the outfit shown in Image A with the target garment described above.
+2. Match target garment details precisely: color, pattern, cut, straps, neckline, silhouette, and fabric look.
 3. Preserve Image A face, body proportions, skin tone, pose, camera framing, and background.
 4. Ensure realistic fit and drape with natural shadows.
 5. ${safetyNote}
