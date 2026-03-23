@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Camera, Sparkles, Shield, User } from 'lucide-react';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import BottomTabBar from '@/components/BottomTabBar';
 
 const GuestProfileView = () => {
