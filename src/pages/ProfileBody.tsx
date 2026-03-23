@@ -1,22 +1,48 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Ruler, Camera } from 'lucide-react';
+import { ArrowLeft, Camera, Ruler, Sparkles } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { trackEvent } from '@/lib/analytics';
+import { getFitPreference, getUseCm } from '@/lib/session';
+import type { BodyScanResult, FitPreference, MeasurementRange, Confidence } from '@/lib/types';
+
 import BottomTabBar from '@/components/BottomTabBar';
 import BodyDiagram from '@/components/results/BodyDiagram';
 import MeasurementGrid from '@/components/results/MeasurementGrid';
-import type { BodyScanResult } from '@/lib/types';
-import { getFitPreference, getUseCm } from '@/lib/session';
+import FitPreferenceToggle from '@/components/results/FitPreferenceToggle';
+import AlternativeSizes from '@/components/results/AlternativeSizes';
+import TrustPanel from '@/components/results/TrustPanel';
+import ResultActions from '@/components/results/ResultActions';
+import ShopThisSize from '@/components/monetization/ShopThisSize';
+import ShareResultsButton from '@/components/results/ShareResultsButton';
+import LowConfidenceRescue from '@/components/results/LowConfidenceRescue';
+
+const SIZE_LADDER = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL'];
+function shiftSize(size: string, delta: number): string {
+  const idx = SIZE_LADDER.indexOf(size);
+  if (idx === -1) return size;
+  return SIZE_LADDER[Math.max(0, Math.min(SIZE_LADDER.length - 1, idx + delta))];
+}
 
 const ProfileBody = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   usePageMeta({ title: 'Body & Fit' });
+
   const [scan, setScan] = useState<BodyScanResult | null>(null);
   const [loading, setLoading] = useState(true);
+  const [fitPref, setFitPref] = useState<FitPreference>(getFitPreference());
+  const [saved, setSaved] = useState(false);
+  const [confidence, setConfidence] = useState<Confidence>('medium');
+  const [adjustedMeasurements, setAdjustedMeasurements] = useState<Record<string, MeasurementRange>>({});
 
   useEffect(() => {
     if (!user) { setLoading(false); return; }
@@ -28,9 +54,9 @@ const ProfileBody = () => {
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
-      
+
       if (data) {
-        setScan({
+        const s: BodyScanResult = {
           id: data.id,
           date: data.created_at,
           shoulder: { min: data.shoulder_min, max: data.shoulder_max },
@@ -48,31 +74,77 @@ const ProfileBody = () => {
           fitPreference: 'regular',
           alternatives: { sizeDown: '', sizeUp: '' },
           whyLine: '',
-        });
+        };
+        setScan(s);
+        setConfidence(s.confidence);
       }
       setLoading(false);
     })();
   }, [user]);
 
-  const fit = getFitPreference();
-  const measurements: Record<string, { min: number; max: number }> = scan ? {
-    shoulder: scan.shoulder, chest: scan.chest, waist: scan.waist,
-    hips: scan.hips, inseam: scan.inseam,
-    ...(scan.bust ? { bust: scan.bust } : {}),
-    ...(scan.sleeve ? { sleeve: scan.sleeve } : {}),
-  } : {};
+  const adjustedSize = useMemo(() => {
+    if (!scan) return '';
+    const base = scan.recommendedSize;
+    if (fitPref === 'fitted' || fitPref === 'slim') return shiftSize(base, -1);
+    if (fitPref === 'relaxed') return shiftSize(base, 1);
+    return base;
+  }, [fitPref, scan]);
+
+  const alternatives = useMemo(() => ({
+    sizeDown: shiftSize(adjustedSize, -1),
+    sizeUp: shiftSize(adjustedSize, 1),
+  }), [adjustedSize]);
+
+  const measurements: Record<string, MeasurementRange> = useMemo(() => {
+    if (!scan) return {};
+    const base: Record<string, MeasurementRange> = {
+      shoulder: scan.shoulder, chest: scan.chest, waist: scan.waist,
+      hips: scan.hips, inseam: scan.inseam,
+      ...(scan.bust ? { bust: scan.bust } : {}),
+      ...(scan.sleeve ? { sleeve: scan.sleeve } : {}),
+    };
+    return { ...base, ...adjustedMeasurements };
+  }, [scan, adjustedMeasurements]);
+
+  const handleMeasurementAdjust = useCallback((key: string, newRange: MeasurementRange) => {
+    setAdjustedMeasurements(prev => ({ ...prev, [key]: newRange }));
+    trackEvent('measurement_adjusted', { key });
+  }, []);
+
+  const handleSave = () => {
+    const history = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]');
+    if (scan) history.unshift(scan);
+    localStorage.setItem('dripcheck_scans', JSON.stringify(history));
+    setSaved(true);
+    trackEvent('results_saved');
+  };
+
+  const handleCalibrate = () => {
+    setConfidence('medium');
+    toast({ title: 'Confidence improved', description: 'Your size recommendation is now more accurate.' });
+  };
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
       <div>
+        {/* Header */}
         <div className="flex items-center gap-2 mb-4">
           <Button variant="ghost" size="icon" onClick={() => navigate('/profile')} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back">
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
+          <div className="flex-1">
             <h1 className="text-base font-bold text-foreground">Body & Fit Identity</h1>
             <p className="text-[10px] text-muted-foreground">Your measurements and fit preferences</p>
           </div>
+          {scan && (
+            <ShareResultsButton
+              measurements={measurements}
+              heightCm={scan.heightCm}
+              recommendedSize={adjustedSize}
+              fitPreference={fitPref}
+              variant="icon"
+            />
+          )}
         </div>
 
         {loading ? (
@@ -94,43 +166,75 @@ const ProfileBody = () => {
           </div>
         ) : (
           <div className="space-y-3">
-            {/* Fit Identity Card */}
-            <div className="bg-card border border-border rounded-xl p-3">
-              <div className="flex items-center gap-2 mb-2.5">
-                <div className="h-7 w-7 rounded-lg btn-gold-3d flex items-center justify-center">
-                  <Ruler className="h-3.5 w-3.5 text-primary-foreground" />
-                </div>
-                <p className="text-[13px] font-bold text-foreground">Fit Identity</p>
+            {/* Size Guide Tool */}
+            <button
+              onClick={() => navigate('/size-guide')}
+              className="w-full flex items-center gap-3 rounded-xl border border-border bg-card p-3 active:scale-[0.98] transition-transform"
+            >
+              <div className="h-9 w-9 rounded-lg badge-gold-3d flex items-center justify-center shrink-0">
+                <span className="text-sm">📏</span>
               </div>
-              <div className="grid grid-cols-4 gap-1.5">
-                {[
-                  { label: 'Fit', value: fit, cls: 'capitalize' },
-                  { label: 'Size', value: scan.recommendedSize },
-                  { label: 'Height', value: getUseCm() ? `${scan.heightCm}cm` : `${Math.floor(Math.round(scan.heightCm * 0.3937) / 12)}' ${Math.round(scan.heightCm * 0.3937) % 12}"` },
-                  { label: 'Confidence', value: scan.confidence, cls: 'capitalize' },
-                ].map(d => (
-                  <div key={d.label} className="bg-background rounded-lg py-1.5 text-center">
-                    <p className="text-[11px] text-muted-foreground uppercase tracking-wider">{d.label}</p>
-                    <p className={`text-[12px] font-bold text-foreground ${d.cls || ''}`}>{d.value}</p>
-                  </div>
-                ))}
+              <div className="text-left">
+                <p className="text-[12px] font-bold text-foreground">Size Guide Tool</p>
+                <p className="text-[10px] text-muted-foreground">Check your size for any brand</p>
               </div>
-              <p className="text-[11px] text-muted-foreground mt-2">
-                Last scan: {new Date(scan.date).toLocaleDateString()}
-              </p>
-            </div>
+            </button>
 
-            {/* Body Diagram + Measurement Grid */}
+            {/* Fit Preference Toggle & Alternatives */}
+            <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
+            <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} fitPreference={fitPref} />
+
+            {/* Shop This Size */}
+            <ShopThisSize
+              recommendedSize={adjustedSize}
+              confidence={confidence}
+            />
+
+            {/* Return Risk warning */}
+            {(confidence === 'low' || confidence === 'medium') && (
+              <div className={`rounded-xl border px-3 py-2.5 ${confidence === 'low' ? 'bg-destructive/10 border-destructive/30' : 'bg-primary/5 border-primary/20'}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <Sparkles className={`h-4 w-4 ${confidence === 'low' ? 'text-destructive' : 'text-primary'}`} />
+                  <p className="text-[12px] font-bold text-foreground">
+                    {confidence === 'low' ? '⚠️ Higher Return Risk' : '📏 Between Sizes'}
+                  </p>
+                </div>
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  {confidence === 'low'
+                    ? `We recommend trying ${shiftSize(adjustedSize, 1)} as a safer alternative.`
+                    : `You're close to the boundary. ${adjustedSize} is our best pick, but ${shiftSize(adjustedSize, 1)} could also work.`}
+                </p>
+              </div>
+            )}
+
+            {/* Trust Panel with measurement sliders */}
+            <TrustPanel
+              confidence={confidence}
+              recommendedSize={adjustedSize}
+              measurements={measurements}
+              onAdjust={handleMeasurementAdjust}
+            />
+
+            {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
+
+            {/* Result Actions */}
+            <ResultActions
+              saved={saved}
+              scanDate={scan.date}
+              onSave={handleSave}
+              onTryOn={() => { trackEvent('results_tryon_click'); navigate('/tryon', { state: { bodyProfile: scan } }); }}
+              onNewScan={() => navigate('/capture')}
+              onDelete={() => { toast({ title: 'Deleted' }); navigate('/profile'); }}
+              recommendedSize={adjustedSize}
+              measurements={measurements}
+              heightCm={scan.heightCm}
+            />
+
+            {/* Body Map + Measurements */}
             <BodyDiagram measurements={measurements} heightCm={scan.heightCm} />
             <MeasurementGrid measurements={measurements} heightCm={scan.heightCm} />
 
-            {/* Actions */}
-            <Button
-              className="w-full h-10 rounded-lg btn-luxury text-primary-foreground text-sm font-bold"
-              onClick={() => navigate('/results', { state: { result: scan } })}
-            >
-              View Full Results
-            </Button>
+            {/* New Scan button */}
             <Button
               variant="outline"
               className="w-full h-9 rounded-lg text-[12px] font-bold"
