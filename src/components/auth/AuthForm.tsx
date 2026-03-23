@@ -63,7 +63,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         trackEvent('auth_completed', { method: 'email' });
-        if (!onComplete) navigate('/');
+        if (!onComplete) navigate('/home');
       } else {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -147,7 +147,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
     setOnboarded();
     trackEvent('auth_guest_mode');
     if (onComplete) onComplete();
-    else navigate('/');
+    else navigate('/home');
   };
 
   return (

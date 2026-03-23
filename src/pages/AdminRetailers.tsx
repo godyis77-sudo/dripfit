@@ -99,7 +99,7 @@ export default function AdminRetailers() {
       <div className="flex flex-col items-center justify-center min-h-screen gap-4 px-6">
         <XCircle className="h-12 w-12 text-destructive" />
         <p className="text-lg font-medium">Admin access required</p>
-        <Button variant="outline" onClick={() => navigate("/")}>Go Home</Button>
+        <Button variant="outline" onClick={() => navigate("/home")}>Go Home</Button>
       </div>
     );
   }

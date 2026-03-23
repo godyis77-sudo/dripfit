@@ -89,7 +89,7 @@ const ProfileSettings = () => {
       if (resp?.error) throw new Error(resp.error.message || resp.error);
       localStorage.clear();
       toast({ title: 'Account deleted', description: 'Your account and all data have been permanently removed.' });
-      navigate('/');
+      navigate('/home');
     } catch (e: any) {
       toast({ title: 'Error', description: e.message || 'Failed to delete account. Please try again.', variant: 'destructive' });
     }

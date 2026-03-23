@@ -6,7 +6,7 @@ import { hapticFeedback } from '@/lib/haptics';
 import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 
 const tabs: { icon: FeatureIconName; label: string; path: string }[] = [
-  { icon: 'home', label: 'Home', path: '/' },
+  { icon: 'home', label: 'Home', path: '/home' },
   { icon: 'post', label: 'Scan', path: '/capture' },
   { icon: 'tryon', label: 'Try-On', path: '/tryon' },
   { icon: 'stylecheck', label: 'Style', path: '/style-check' },
@@ -33,8 +33,8 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
     >
       <div className="flex items-center justify-around px-1 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {tabs.map((tab) => {
-          const isActive = tab.path === '/'
-            ? location.pathname === '/'
+          const isActive = tab.path === '/home'
+            ? location.pathname === '/home'
             : tab.path === '/capture'
               ? ['/capture', '/analyze', '/scan-success', '/results'].some(p => location.pathname.startsWith(p))
               : location.pathname.startsWith(tab.path);

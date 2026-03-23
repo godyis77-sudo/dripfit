@@ -233,7 +233,7 @@ const ScanSuccess = () => {
             See My Sizes <ChevronRight className="ml-1 h-4 w-4" />
           </Button>
           <button
-            onClick={() => handleNavigate('/')}
+            onClick={() => handleNavigate('/home')}
             className="w-full text-center text-[11px] text-muted-foreground py-2"
           >
             Go Home

@@ -25,7 +25,7 @@ const Auth = () => {
 
   const handleBack = () => {
     if (window.history.length > 1) navigate(-1);
-    else navigate('/');
+    else navigate('/home');
   };
 
   return (
