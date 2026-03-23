@@ -108,6 +108,7 @@ Deno.serve(async (req) => {
     const clothingImageInput = toImageInput(clothingPhoto);
 
     const neutralItemLabel = (isSwimwear || isUnderwear) ? "swimsuit" : (isIntimate ? "fashion garment" : itemType);
+    const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
 
     // ── EXTRACT GARMENT FROM PRODUCT IMAGE ──
     // If the product photo contains a model, isolate just the clothing item
@@ -181,7 +182,6 @@ Deno.serve(async (req) => {
       : `${itemType} with catalog-style details`);
 
     // ── BUILD PROMPT ──
-    const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
     const safetyNote = isExplicitIntimate
       ? "Render sheer/transparent sections as opaque while preserving design details."
       : "Keep output commercially appropriate for retail catalog standards.";
