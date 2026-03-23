@@ -95,9 +95,12 @@ Deno.serve(async (req) => {
     if (!parsed.success) {
       return errorResponse(parsed.error, "VALIDATION_ERROR", 400, corsHeaders);
     }
-    const itemType: string = raw.itemType || "clothing";
+    const itemType: string = (raw.itemType as string) || "clothing";
+    const itemLower = itemType.toLowerCase();
     const ACCESSORY_TYPES = ["accessory", "jewelry", "necklace", "bracelet", "earrings", "ring", "watch", "hat", "hats", "cap", "sunglasses", "glasses", "bag", "bags", "purse", "handbag", "belt", "belts", "scarf", "scarves", "shoes", "sneakers", "boots", "heels", "loafers", "sandals"];
-    const isAccessory = ACCESSORY_TYPES.includes(itemType.toLowerCase());
+    const INTIMATE_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece", "bra", "bralette", "sports bra", "underwear", "panties", "briefs", "boxers", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise", "lounge", "loungewear", "sleepwear", "pajamas", "robe"];
+    const isAccessory = ACCESSORY_TYPES.includes(itemLower);
+    const isIntimate = INTIMATE_TYPES.some(t => itemLower.includes(t));
     const isLayering = raw.isLayering === true;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
