@@ -365,10 +365,10 @@ Deno.serve(async (req) => {
         ? "This is a TOP-only garment: replace upper-body clothing only and keep lower-body clothing from Image A unchanged."
         : "Replace only the clothing area needed for this garment and keep all unrelated body/background details unchanged.";
 
-    const identityInstruction = isSwimwearOnly
+    const identityInstruction = isIntimateGarment
       ? "Use Image A as pose, proportions, and scene reference, but do not attempt exact facial identity replication; prefer neck-down framing or softly de-emphasized face details."
       : "Keep the model's face, body shape, skin tone, hair, and pose identical to Image A.";
-    const swimwearFramingInstruction = isSwimwearOnly
+    const intimateFramingInstruction = isIntimateGarment
       ? "- Prefer neck-down framing (or softened face details) while preserving pose and background continuity."
       : "";
 
