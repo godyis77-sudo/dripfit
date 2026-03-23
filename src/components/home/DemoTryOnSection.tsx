@@ -8,10 +8,10 @@ import demoImg3 from '@/assets/demo-tryon-3.jpg';
 import demoImg4 from '@/assets/demo-tryon-4.jpg';
 
 const DEMO_RESULTS = [
-  { id: 'demo-1', image: demoImg1, label: 'Cream Blazer Look', brand: 'Zara' },
-  { id: 'demo-2', image: demoImg2, label: 'Navy Bomber Fit', brand: 'H&M' },
-  { id: 'demo-3', image: demoImg3, label: 'Red Midi Dress', brand: 'Mango' },
-  { id: 'demo-4', image: demoImg4, label: 'Leather Jacket', brand: 'ASOS' },
+  { id: 'demo-1', image: demoImg1, label: 'Power Blazer Outfit', brand: 'Zara' },
+  { id: 'demo-2', image: demoImg2, label: 'Casual Bomber Fit', brand: 'H&M' },
+  { id: 'demo-3', image: demoImg3, label: 'Garden Party Look', brand: 'Mango' },
+  { id: 'demo-4', image: demoImg4, label: 'Rooftop Edge Fit', brand: 'ASOS' },
 ] as const;
 
 const DemoTryOnSection = () => {
