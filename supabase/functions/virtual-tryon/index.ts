@@ -116,11 +116,36 @@ Deno.serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) return errorResponse("LOVABLE_API_KEY is not configured", "CONFIG_ERROR", 500, corsHeaders);
 
-    // Keep remote URLs as-is (smaller payloads, faster requests); normalize base64 only.
+    // Normalize input image; for remote URLs, fetch and convert to data URI when possible.
     const toImageInput = async (input: string): Promise<string> => {
       if (input.startsWith("data:")) return input;
       if (input.startsWith("http://") || input.startsWith("https://")) {
-        return input;
+        for (let attempt = 0; attempt < 2; attempt++) {
+          try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 8000);
+            const res = await fetch(input, {
+              signal: controller.signal,
+              headers: {
+                "User-Agent": "Mozilla/5.0 (compatible; DripCheck/1.0)",
+                "Accept": "image/*",
+              },
+            });
+            clearTimeout(timeout);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const buf = await res.arrayBuffer();
+            if (buf.byteLength < 100) throw new Error("Image too small, likely invalid");
+            const contentType = res.headers.get("content-type") || "image/jpeg";
+            const bytes = new Uint8Array(buf);
+            let binary = "";
+            for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+            return `data:${contentType};base64,${btoa(binary)}`;
+          } catch (e) {
+            console.warn(`Image fetch attempt ${attempt + 1} failed for ${input}: ${e}`);
+            if (attempt === 1) return input;
+            await new Promise(r => setTimeout(r, 300));
+          }
+        }
       }
       return `data:image/jpeg;base64,${input}`;
     };
@@ -280,6 +305,16 @@ Deno.serve(async (req) => {
         }
         if (response.status === 402) {
           return errorResponse("AI credits exhausted.", "PAYMENT_REQUIRED", 402, corsHeaders);
+        }
+        if (response.status === 400) {
+          const errText = await response.text();
+          console.warn("AI input image rejected on attempt", attempt + 1, errText);
+          lastTextContent = "The selected product image could not be processed. Try a clearer product image or another listing.";
+          if (attempt < MAX_ATTEMPTS - 1) {
+            await new Promise(r => setTimeout(r, 500));
+            continue;
+          }
+          break;
         }
         const errText = await response.text();
         console.error("AI gateway error:", response.status, errText);
