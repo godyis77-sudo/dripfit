@@ -263,17 +263,17 @@ Deno.serve(async (req) => {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
 IMAGES PROVIDED:
-- Image A (first image below): A person — preserve their face, body, pose, background EXACTLY.
+- Image A (first image below): A person — preserve their face, body, pose EXACTLY.
 - Image B (second image below): The isolated target accessory — replicate this EXACT item.
 
 TARGET ACCESSORY:
 - The accessory shown in Image B.${productHint}
 
-TASK: Add the accessory from Image B onto the person in Image A. Match Image B exactly (color, shape, material, branding). Keep everything else unchanged. Correct scale, lighting, shadows. No text/watermarks.`;
+TASK: Add the accessory from Image B onto the person in Image A. Match Image B exactly (color, shape, material, branding). ${bgInstruction} Correct scale, lighting, shadows. No text/watermarks.`;
     } else if (isIntimateGarment) {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
-IMAGE A: A person in their environment — this is the MODEL. Keep their face, body, hair, skin tone, pose, AND the background/scene exactly as shown.
+IMAGE A: A person in their environment — this is the MODEL. Keep their face, body, hair, skin tone, and pose exactly as shown.
 IMAGE B: A ${neutralItemLabel} product listing photo from an online store.
 
 TASK: Dress the model from Image A in the ${neutralItemLabel} shown in Image B.
@@ -283,12 +283,12 @@ STYLING RULES:
 - If Image B shows a model/mannequin, copy only the garment — ignore that person.
 - Accurately reproduce the product details: color, fabric texture, cut lines, straps, neckline, hemline, logos, and prints.
 - Keep the model's face, body shape, skin tone, hair, and pose identical to Image A.
-- CRITICAL: Keep the EXACT same background, environment, and scene from Image A. Do NOT replace it with a studio backdrop.
-- Realistic fabric drape and shadows that match the lighting of Image A's scene.
+- CRITICAL: ${bgInstruction}
+- Realistic fabric drape and shadows that match the scene lighting.
 - Do NOT add extra clothing items not present in Image B.
 - ${safetyNote}
 
-Output: One clean photorealistic photo with the original background from Image A. No text, watermarks, or collages.`;
+Output: One clean photorealistic photo. No text, watermarks, or collages.`;
     } else {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
@@ -303,7 +303,7 @@ TASK — CLOTHING SWAP:
 1. COMPLETELY STRIP every piece of clothing from Image A — tops, bottoms, pants, skirts, shoes, accessories — remove ALL of them.
 2. Dress the now-bare person ONLY in the garment from Image B. If Image B is a top/shirt/blouse, the person should wear ONLY that top with bare legs (no pants, no skirt, no shorts unless Image B includes them).
 3. Match Image B exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
-4. Keep Image A person identity (face, body, hair, skin tone, pose) and background/scene unchanged.
+4. Keep Image A person identity (face, body, hair, skin tone, pose). ${bgInstruction}
 5. Keep garment fit realistic with natural wrinkles and shadows.
 
 CRITICAL: Do NOT keep any original clothing from Image A. The ONLY clothing in the output must be the garment from Image B.
@@ -312,27 +312,30 @@ Output: A single photorealistic image. No text/watermarks/split views.`;
     }
 
     // ── AI CALL ──
+    const bgFallbackHint = useClothingBg
+      ? "Use the background from Image B (the product photo)."
+      : "Keep background from Image A unchanged.";
     const fallbackPrompt = (isAccessory || isLayering)
       ? `Create ONE photorealistic output image.
 Image A = person. Image B = target accessory.${productHint}
 Place the accessory from Image B onto the person in Image A at realistic scale and lighting.
-Match Image B exactly. Keep face/body/background from Image A unchanged. No text/watermark.`
+Match Image B exactly. Keep face/body from Image A. ${bgFallbackHint} No text/watermark.`
       : isIntimateGarment
-        ? `Fashion photo edit. Image A = person in their environment. Image B = ${neutralItemLabel} from an online retailer.
-Dress the person from Image A in the product from Image B. Keep the EXACT background/scene from Image A — do NOT use a studio backdrop.
+        ? `Fashion photo edit. Image A = person. Image B = ${neutralItemLabel} from an online retailer.
+Dress the person from Image A in the product from Image B. ${bgFallbackHint}
 If Image B has a model/mannequin, copy only the garment details — ignore that person.
-Match product exactly: color, cut, fabric, straps, neckline. Keep model identity, pose, AND background from Image A.
+Match product exactly: color, cut, fabric, straps, neckline. Keep model identity and pose from Image A.
 ${safetyNote} No text/watermark.`
         : `Create ONE photorealistic clothing-swap image.
 Image A = person. Image B = target garment.${productHint}
 STRIP ALL clothing from Image A — tops, bottoms, pants, shoes, everything.
 Dress the person ONLY in the exact garment from Image B. If it is a top, show bare legs — do NOT keep pants or bottoms from Image A.
-Preserve face, body shape, skin tone, pose, camera, and background from Image A.
+Preserve face, body shape, skin tone, pose, camera from Image A. ${bgFallbackHint}
 Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
 
-    const fastIntimatePrompt = `Fashion photo edit. Image A = person in their environment. Image B = ${neutralItemLabel}.
+    const fastIntimatePrompt = `Fashion photo edit. Image A = person. Image B = ${neutralItemLabel}.
 Dress the person from Image A in the product from Image B. If Image B has a person, extract only the garment.
-Keep the EXACT background/scene from Image A — do NOT replace with a studio backdrop.
+${bgFallbackHint}
 Keep model identity and pose from Image A. Match product details exactly. ${safetyNote} No text/watermark.`;
 
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
