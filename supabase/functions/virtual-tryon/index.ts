@@ -150,6 +150,13 @@ Deno.serve(async (req) => {
 
     const userImageInput = toImageInput(userPhoto);
     const clothingImageInput = toImageInput(clothingPhoto);
+    const messageContentToText = (content: unknown): string => {
+      if (typeof content === "string") return content;
+      if (Array.isArray(content)) {
+        return (content as Array<{ type?: string; text?: string }>).filter(p => p.type === "text").map(p => p.text || "").join(" ").trim();
+      }
+      return "";
+    };
 
     const swimwearGarmentLabel = (() => {
       const context = normalizeMatchText([itemLower, productName, productCategory].join(" "));
@@ -174,9 +181,12 @@ Deno.serve(async (req) => {
       ? (isTopOnlyGarment ? "athletic crop top" : "athletic activewear piece")
       : neutralItemLabel;
 
+    const isSwimwearOnly = isSwimwear && !isUnderwear;
     const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
     const FUNCTION_BUDGET_MS = 58_000;
-    const MIN_REQUIRED_MS_PER_ATTEMPT = isIntimateGarment ? 4_000 : 6_000;
+    const MIN_REQUIRED_MS_PER_ATTEMPT = isSwimwear ? 8_000 : isIntimateGarment ? 5_000 : 6_000;
+    const EXTRACTION_BUDGET_MS = isSwimwear ? 18_000 : 12_000;
+    const MIN_REQUIRED_MS_FOR_EXTRACTION = isSwimwear ? 6_000 : 4_000;
     const startedAt = Date.now();
 
     // ── EXTRACT GARMENT FROM PRODUCT IMAGE (OPTIONAL) ──
@@ -190,16 +200,27 @@ Deno.serve(async (req) => {
     );
     const extractIntimateGarment = async (): Promise<string | null> => {
       const extractPrompt = `Isolate ONLY the target garment from this product photo. Remove any person/model/mannequin and any visible skin. Return a clean product-only image of the ${promptIntimateLabel} on a plain white background. Keep garment color, shape, straps, seams, and logos accurate.`;
-      const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = [
-        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 8_000, label: "extract-flash-primary" },
-        { model: "google/gemini-2.5-flash-image", timeoutMs: 6_000, label: "extract-nano-fallback" },
-      ];
+      const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = isSwimwear
+        ? [
+            { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 12_000, label: "extract-swim-flash" },
+            { model: "google/gemini-2.5-flash-image", timeoutMs: 8_000, label: "extract-swim-nano" },
+          ]
+        : [
+            { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 8_000, label: "extract-flash-primary" },
+            { model: "google/gemini-2.5-flash-image", timeoutMs: 6_000, label: "extract-nano-fallback" },
+          ];
 
       for (const plan of extractionPlan) {
-        const remainingMs = FUNCTION_BUDGET_MS - (Date.now() - startedAt);
-        if (remainingMs <= MIN_REQUIRED_MS_PER_ATTEMPT) return null;
+        const elapsedMs = Date.now() - startedAt;
+        const remainingMs = FUNCTION_BUDGET_MS - elapsedMs;
+        const extractionBudgetLeft = EXTRACTION_BUDGET_MS - elapsedMs;
 
-        const timeoutMs = Math.min(plan.timeoutMs, Math.max(4_000, remainingMs - 1_000));
+        if (remainingMs <= MIN_REQUIRED_MS_PER_ATTEMPT || extractionBudgetLeft <= MIN_REQUIRED_MS_FOR_EXTRACTION) {
+          return null;
+        }
+
+        const timeoutMs = Math.min(plan.timeoutMs, extractionBudgetLeft, remainingMs - 1_000);
+        if (timeoutMs < MIN_REQUIRED_MS_FOR_EXTRACTION) return null;
 
         try {
           const controller = new AbortController();
@@ -261,6 +282,55 @@ Deno.serve(async (req) => {
       console.log(`Intimate extraction took ${Date.now() - startedAt}ms`);
     }
 
+    const describeSwimwearReference = async (): Promise<string> => {
+      if (!isSwimwearOnly || preExtractedGarment) return "";
+
+      const remainingMs = FUNCTION_BUDGET_MS - (Date.now() - startedAt);
+      const timeoutMs = Math.min(8_000, remainingMs - 1_000);
+      if (timeoutMs < 4_000) return "";
+
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+          const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+            method: "POST",
+            signal: controller.signal,
+            headers: {
+              Authorization: `Bearer ${LOVABLE_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model: "google/gemini-2.5-flash",
+              messages: [{
+                role: "user",
+                content: [
+                  {
+                    type: "text",
+                    text: "Describe ONLY the garment in this product image in one concise sentence. Ignore any person/mannequin. Include garment type, primary color, pattern, neckline, straps/sleeves, and coverage.",
+                  },
+                  { type: "image_url", image_url: { url: clothingImageInput } },
+                ],
+              }],
+            }),
+          });
+
+          if (!response.ok) return "";
+          const data = await response.json();
+          const firstChoice = (data.choices as Array<Record<string, unknown>>)?.[0];
+          const msg = firstChoice?.message as Record<string, unknown> | undefined;
+          return messageContentToText(msg?.content).slice(0, 280);
+        } finally {
+          clearTimeout(timer);
+        }
+      } catch {
+        return "";
+      }
+    };
+
+    const swimwearTextReference = await describeSwimwearReference();
+    const useTextOnlySwimwearReference = isSwimwearOnly && !preExtractedGarment && swimwearTextReference.length > 0;
+
     const productDesc = [productName, productBrand ? `by ${productBrand}` : "", productCategory ? `(${productCategory})` : ""].filter(Boolean).join(" ");
     const sanitizedProductDesc = isIntimateGarment
       ? productDesc
@@ -311,21 +381,28 @@ TARGET ACCESSORY:
 
 TASK: Add the accessory from Image B onto the person in Image A. Match Image B exactly (color, shape, material, branding). ${bgInstruction} Correct scale, lighting, shadows. No text/watermarks.`;
     } else if (isIntimateGarment) {
+      const intimateReferenceLine = useTextOnlySwimwearReference
+        ? `REFERENCE: ${swimwearTextReference}`
+        : `IMAGE B: A ${promptIntimateLabel} product listing photo from an online store.`;
+      const intimateReferenceRule = useTextOnlySwimwearReference
+        ? "- Use the REFERENCE description exactly for color, print, cut, neckline, straps, seams, and coverage."
+        : "- If Image B shows a model/mannequin, copy only the garment and ignore that person.";
+
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
 IMAGE A: A person in their environment — this is the MODEL. Keep their face, body, hair, skin tone, and pose exactly as shown.
-IMAGE B: A ${promptIntimateLabel} product listing photo from an online store.
+${intimateReferenceLine}
 
 TASK: Put the ${promptIntimateLabel} from Image B onto the model in Image A.
 
 STYLING RULES:
-- If Image B shows a model/mannequin, copy only the garment and ignore that person.
+- ${intimateReferenceRule}
 - ${garmentSwapScopeInstruction}
 - Match product details exactly: color, fabric texture, cut lines, straps, neckline, hemline, logos, and prints.
 - Keep the model's face, body shape, skin tone, hair, and pose identical to Image A.
 - CRITICAL: ${bgInstruction}
 - Realistic fabric drape and shadows that match the scene lighting.
-- Do NOT add extra clothing items not present in Image B.
+- Do NOT add extra clothing items not present in the provided garment reference.
 - ${safetyNote}
 
 Output: One clean photorealistic retail-fashion photo. No text, watermarks, or collages.`;
@@ -374,27 +451,45 @@ Dress the person ONLY in the exact garment from Image B. If it is a top, show ba
 Preserve face, body shape, skin tone, pose, camera from Image A. ${bgFallbackHint}
 Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
 
+    const intimateReferenceForFallback = useTextOnlySwimwearReference
+      ? `Reference garment description: ${swimwearTextReference}.`
+      : `Image B = ${promptIntimateLabel}. Put garment from Image B on model in Image A and ignore any person in Image B.`;
+
     const fastIntimatePrompt = `Photorealistic retail fashion edit.
-Image A = model. Image B = ${promptIntimateLabel}.
-Put garment from Image B on model in Image A and ignore any person in Image B.
+Image A = model. ${intimateReferenceForFallback}
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
 Keep model identity and pose from Image A. Match product details exactly. ${safetyNote} No text/watermark.`;
 
     const complianceIntimatePrompt = `Retail activewear photo edit.
-Use Image A as the model and Image B as the garment reference.
+Use Image A as the model and ${useTextOnlySwimwearReference ? "the provided garment description" : "Image B"} as the garment reference.
 Apply only the garment to the model with accurate color, pattern, straps, neckline, seams and logos.
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
 Preserve face, body, pose, and scene from Image A. Keep result clean and commercially appropriate. No text/watermark.`;
 
+    const buildTryOnContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
+      const content: Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> = [
+        { type: "text", text: promptText },
+        { type: "text", text: "\n\n========== IMAGE A — THE PERSON (keep this person's face/body) ==========" },
+        { type: "image_url", image_url: { url: userImageInput } },
+      ];
+
+      if (useTextOnlySwimwearReference) {
+        content.push({ type: "text", text: `\n\n========== GARMENT REFERENCE (TEXT) ==========\n${swimwearTextReference}` });
+      } else {
+        content.push({ type: "text", text: "\n\n========== IMAGE B — THE TARGET GARMENT (replicate this garment exactly) ==========" });
+        content.push({ type: "image_url", image_url: { url: garmentOnlyImage } });
+      }
+
+      return content;
+    };
+
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
-    const isSwimwearOnly = isSwimwear && !isUnderwear;
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
       ? isSwimwearOnly
         ? [
-            // Swimwear: prefer a stronger first generation pass and cleaner references.
-            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 22_000 },
-            { model: "google/gemini-3-pro-image-preview", prompt: complianceIntimatePrompt, label: `${typeLabel}-pro-compliance`, timeoutMs: 16_000 },
-            { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-nano-last`, timeoutMs: 10_000 },
+            // Swimwear: prioritize one high-confidence generation pass with enough time.
+            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 30_000 },
+            { model: "google/gemini-2.5-flash-image", prompt: complianceIntimatePrompt, label: `${typeLabel}-nano-compliance`, timeoutMs: 14_000 },
           ]
         : [
             { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 18_000 },
@@ -409,7 +504,7 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
     let resultImage: string | null = null;
     let lastTextContent = "";
     let sawIntimateRefusal = false;
-    let attemptedRefusalExtraction = preExtractedGarment;
+    let attemptedRefusalExtraction = isSwimwearOnly ? true : preExtractedGarment;
 
     for (let attempt = 0; attempt < attemptPlan.length; attempt++) {
       const plan = attemptPlan[attempt];
@@ -449,13 +544,7 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
               modalities: ["image", "text"],
               messages: [{
                 role: "user",
-                content: [
-                  { type: "text", text: plan.prompt },
-                  { type: "text", text: "\n\n========== IMAGE A — THE PERSON (keep this person's face/body) ==========" },
-                  { type: "image_url", image_url: { url: userImageInput } },
-                  { type: "text", text: "\n\n========== IMAGE B — THE TARGET GARMENT (replicate this garment exactly) ==========" },
-                  { type: "image_url", image_url: { url: garmentOnlyImage } },
-                ],
+                content: buildTryOnContent(plan.prompt),
               }],
             }),
           });
@@ -515,9 +604,7 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
       const refusal = msg && Object.prototype.hasOwnProperty.call(msg, "refusal") ? msg.refusal : undefined;
       const messageTextRaw = typeof msg?.content === "string"
         ? msg.content
-        : (Array.isArray(msg?.content)
-          ? (msg.content as Array<{ type?: string; text?: string }>).filter(p => p.type === "text").map(p => p.text || "").join("")
-          : "");
+        : messageContentToText(msg?.content);
       const messageText = messageTextRaw.trim();
 
       const refusalSignal = `${typeof refusal === "string" ? refusal : ""} ${messageText}`.toLowerCase();
@@ -599,13 +686,7 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
                   modalities: ["image", "text"],
                   messages: [{
                     role: "user",
-                    content: [
-                      { type: "text", text: fastIntimatePrompt },
-                      { type: "text", text: "\n\n========== IMAGE A — THE PERSON (keep this person's face/body) ==========" },
-                      { type: "image_url", image_url: { url: userImageInput } },
-                      { type: "text", text: "\n\n========== IMAGE B — THE TARGET GARMENT (replicate this garment exactly) ==========" },
-                      { type: "image_url", image_url: { url: garmentOnlyImage } },
-                    ],
+                    content: buildTryOnContent(fastIntimatePrompt),
                   }],
                 }),
               });
