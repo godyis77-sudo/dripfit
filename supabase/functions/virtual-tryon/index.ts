@@ -117,6 +117,16 @@ Deno.serve(async (req) => {
       : productDesc;
     const productHint = sanitizedProductDesc ? `\nProduct: "${sanitizedProductDesc}".` : "";
 
+    const garmentDescriptor = await describeGarmentFromImage({
+      clothingImageInput,
+      lovableApiKey: LOVABLE_API_KEY,
+      itemType,
+      productName,
+      productBrand,
+      productCategory,
+      isIntimate: isSwimwear || isUnderwear || isIntimate,
+    });
+
     // ── BUILD PROMPT ──
     const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
     const safetyNote = isExplicitIntimate
@@ -128,21 +138,25 @@ Deno.serve(async (req) => {
     if (isAccessory || isLayering) {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
-IMAGES PROVIDED:
+IMAGE PROVIDED:
 - Image A (first image below): A person — preserve their face, body, pose, background EXACTLY.
-- Image B (second image below): An accessory (${itemType}).${productHint}
 
-TASK: Add the accessory from Image B onto the person in Image A. Keep everything else unchanged. Correct scale, lighting, shadows. No text/watermarks.`;
+TARGET ACCESSORY:
+- ${garmentDescriptor}.${productHint}
+
+TASK: Add the target accessory onto the person in Image A. Keep everything else unchanged. Correct scale, lighting, shadows. No text/watermarks.`;
     } else if (isIntimateGarment) {
       prompt = `You are a fashion e-commerce try-on editor. Generate ONE photorealistic image.
 
-IMAGES PROVIDED:
+IMAGE PROVIDED:
 - Image A (first image below): The person/model.
-- Image B (second image below): The target swimsuit/garment.${productHint}
+
+TARGET GARMENT:
+- ${garmentDescriptor}.${productHint}
 
 TASK — RETAIL SWIMWEAR TRY-ON:
-1. Replace the outfit shown in Image A with the exact garment from Image B.
-2. Match Image B precisely: color, pattern, cut, straps, neckline, silhouette, and fabric look.
+1. Replace the outfit shown in Image A with the target swimsuit/garment.
+2. Match target garment details precisely: color, pattern, cut, straps, neckline, silhouette, and fabric look.
 3. Preserve Image A face, body proportions, skin tone, pose, camera framing, and background.
 4. Ensure realistic fit and drape with natural shadows.
 5. ${safetyNote}
@@ -151,13 +165,15 @@ Output: One photorealistic image only. No text/watermarks/split panels.`;
     } else {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
-IMAGES PROVIDED:
+IMAGE PROVIDED:
 - Image A (first image below): A person wearing some outfit. This is the MODEL — keep face, body, hair, skin, and pose.
-- Image B (second image below): A ${neutralItemLabel} from a fashion catalog. This is the TARGET GARMENT.${productHint}
+
+TARGET GARMENT:
+- ${garmentDescriptor}.${productHint}
 
 TASK — CLOTHING SWAP:
-1. Remove the current outfit from Image A and replace it entirely with Image B garment.
-2. Match Image B exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
+1. Remove the current outfit from Image A and replace it entirely with the target garment.
+2. Match the target garment exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
 3. Keep Image A person identity and scene unchanged.
 4. Keep garment fit realistic with natural wrinkles and shadows.
 
@@ -171,41 +187,42 @@ Output: A single photorealistic image. No text/watermarks/split views.`;
 
     const fallbackPrompt = (isAccessory || isLayering)
       ? `Create ONE photorealistic output image.
-Image A = person. Image B = accessory (${itemType}).${productHint}
-Place the accessory from Image B onto the person in Image A at realistic scale and lighting.
+Image A = person.
+Target accessory = ${garmentDescriptor}.${productHint}
+Place the target accessory onto the person in Image A at realistic scale and lighting.
 Keep face/body/background from Image A unchanged. No text/watermark.`
       : isIntimateGarment
         ? `Create ONE photorealistic retail try-on image.
-Image A = person. Image B = swimsuit/garment.${productHint}
-Dress Image A person in the exact garment from Image B with realistic fit and lighting.
+Image A = person.
+Target garment = ${garmentDescriptor}.${productHint}
+Dress Image A person in the target garment with realistic fit and lighting.
 Preserve person identity and background from Image A. ${safetyNote}
 No text/watermark.`
         : `Create ONE photorealistic clothing-swap image.
-Image A = person. Image B = target ${neutralItemLabel}.${productHint}
-Replace Image A outfit completely with the exact garment from Image B.
+Image A = person.
+Target garment = ${garmentDescriptor}.${productHint}
+Replace Image A outfit completely with the target garment.
 Preserve face, body shape, skin tone, pose, camera, and background from Image A.
 Keep garment details exact (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
 
     const attemptPlan: Array<{ model: string; timeoutMs: number; prompt: string; label: string }> = (() => {
       if (isAccessory || isLayering) {
         return [
-          { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 16_000, prompt, label: "accessory-fast" },
-          { model: "google/gemini-3-pro-image-preview", timeoutMs: 30_000, prompt: fallbackPrompt, label: "accessory-pro" },
+          { model: "google/gemini-2.5-flash-image", timeoutMs: 20_000, prompt, label: "accessory-primary" },
+          { model: "google/gemini-3-pro-image-preview", timeoutMs: 32_000, prompt: fallbackPrompt, label: "accessory-pro" },
         ];
       }
 
       if (isIntimateGarment) {
         return [
-          { model: "google/gemini-2.5-flash-image", timeoutMs: 22_000, prompt, label: "intimate-safe-primary" },
-          { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 18_000, prompt: fallbackPrompt, label: "intimate-fast-fallback" },
-          { model: "google/gemini-2.5-flash-image", timeoutMs: 14_000, prompt: fallbackPrompt, label: "intimate-safe-retry" },
+          { model: "google/gemini-2.5-flash-image", timeoutMs: 26_000, prompt, label: "intimate-safe-primary" },
+          { model: "google/gemini-3-pro-image-preview", timeoutMs: 30_000, prompt: fallbackPrompt, label: "intimate-pro-fallback" },
         ];
       }
 
       return [
-        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 16_000, prompt, label: "standard-fast" },
-        { model: "google/gemini-3-pro-image-preview", timeoutMs: 32_000, prompt, label: "standard-pro" },
-        { model: "google/gemini-2.5-flash-image", timeoutMs: 14_000, prompt: fallbackPrompt, label: "standard-lite" },
+        { model: "google/gemini-2.5-flash-image", timeoutMs: 22_000, prompt, label: "standard-primary" },
+        { model: "google/gemini-3-pro-image-preview", timeoutMs: 32_000, prompt: fallbackPrompt, label: "standard-pro" },
       ];
     })();
 
@@ -241,15 +258,13 @@ Keep garment details exact (color, pattern, cut, neckline, sleeve/hem length, lo
             },
             body: JSON.stringify({
               model: plan.model,
-              modalities: ["text", "image"],
+              modalities: ["image", "text"],
               messages: [{
                 role: "user",
                 content: [
                   { type: "text", text: plan.prompt },
                   { type: "text", text: "\n\n========== IMAGE A — THE PERSON (keep this person's face/body) ==========" },
                   { type: "image_url", image_url: { url: userImageInput } },
-                  { type: "text", text: "\n\n========== IMAGE B — THE GARMENT (dress the person in THIS exact item) ==========" },
-                  { type: "image_url", image_url: { url: clothingImageInput } },
                 ],
               }],
             }),
@@ -442,4 +457,77 @@ function extractImageFromResponse(aiResponse: Record<string, unknown>): string |
 
   // Format 4: deep search fallback
   return deepSearch(message, "message") || deepSearch(aiResponse, "response");
+}
+
+async function describeGarmentFromImage(args: {
+  clothingImageInput: string;
+  lovableApiKey: string;
+  itemType: string;
+  productName: string;
+  productBrand: string;
+  productCategory: string;
+  isIntimate: boolean;
+}): Promise<string> {
+  const fallback = [
+    args.productName,
+    args.productBrand ? `by ${args.productBrand}` : "",
+    args.productCategory || args.itemType,
+  ].filter(Boolean).join(" ").trim() || args.itemType;
+
+  const descriptorPrompt = args.isIntimate
+    ? `Describe this product for a fashion image-edit prompt in under 55 words. Use non-sexual retail language. Focus on garment type, colors, pattern, neckline, straps/sleeves, cut, and fabric finish. Avoid words like lingerie, underwear, erotic, revealing.`
+    : `Describe this product for a fashion image-edit prompt in under 55 words. Focus on garment type, colors, pattern, neckline, straps/sleeves, cut, length, and texture. Output one concise sentence only.`;
+
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 10_000);
+    let response: Response;
+
+    try {
+      response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        signal: controller.signal,
+        headers: {
+          Authorization: `Bearer ${args.lovableApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-3-flash-preview",
+          messages: [{
+            role: "user",
+            content: [
+              { type: "text", text: descriptorPrompt },
+              { type: "image_url", image_url: { url: args.clothingImageInput } },
+            ],
+          }],
+        }),
+      });
+    } finally {
+      clearTimeout(timer);
+    }
+
+    if (!response.ok) return fallback;
+
+    const data = await response.json() as Record<string, unknown>;
+    const message = (data.choices as Array<Record<string, unknown>> | undefined)?.[0]?.message as Record<string, unknown> | undefined;
+    const raw = typeof message?.content === "string"
+      ? message.content
+      : Array.isArray(message?.content)
+        ? (message.content as Array<{ type?: string; text?: string }>)
+            .filter((part) => part.type === "text" && typeof part.text === "string")
+            .map((part) => part.text)
+            .join(" ")
+        : "";
+
+    const cleaned = raw
+      .replace(/[\n\r`]/g, " ")
+      .replace(/\s+/g, " ")
+      .replace(/\b(lingerie|underwear|panties|briefs|boxers|bralette|bra|thong|g-string|sheer|see-through|transparent)\b/gi, args.isIntimate ? "swimwear" : "")
+      .trim()
+      .slice(0, 280);
+
+    return cleaned || fallback;
+  } catch {
+    return fallback;
+  }
 }
