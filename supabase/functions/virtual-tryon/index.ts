@@ -180,18 +180,19 @@ Deno.serve(async (req) => {
     const startedAt = Date.now();
 
     // ── EXTRACT GARMENT FROM PRODUCT IMAGE (OPTIONAL) ──
-    // For swimwear + user background, pre-extract to reduce refusals from model-in-product photos.
+    // For swimwear/underwear, pre-extract to reduce refusals from model-in-product photos.
     const forceIntimateExtraction = raw.forceIntimateExtraction === true;
     const disableIntimateExtraction = raw.disableIntimateExtraction === true;
     const enableIntimateExtraction = isIntimateGarment && !disableIntimateExtraction && (
       forceIntimateExtraction ||
-      isUnderwear
+      isUnderwear ||
+      isSwimwear
     );
     const extractIntimateGarment = async (): Promise<string | null> => {
       const extractPrompt = `Isolate ONLY the target garment from this product photo. Remove any person/model/mannequin and any visible skin. Return a clean product-only image of the ${promptIntimateLabel} on a plain white background. Keep garment color, shape, straps, seams, and logos accurate.`;
       const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = [
-        { model: "google/gemini-2.5-flash-image", timeoutMs: 6_000, label: "extract-nano-primary" },
-        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 7_000, label: "extract-flash-fallback" },
+        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 8_000, label: "extract-flash-primary" },
+        { model: "google/gemini-2.5-flash-image", timeoutMs: 6_000, label: "extract-nano-fallback" },
       ];
 
       for (const plan of extractionPlan) {
@@ -278,12 +279,12 @@ Deno.serve(async (req) => {
       : `${itemType} with catalog-style details`);
 
     const swimwearScopeInstruction = isTopOnlyGarment
-      ? "This is a SWIM TOP. Remove all existing streetwear from Image A (blazer, shirts, pants, jeans, shorts, skirts, leggings, dresses). Put the swim top from Image B on the upper body and pair it with a simple matching swim bottom in the same color family. Do NOT keep any pants/jeans/shorts/skirts from Image A."
-      : "Remove all existing clothing from Image A (tops, pants, shorts, skirts — everything). Dress the model in the COMPLETE swimwear look from Image B and show all visible garment parts accurately.";
+      ? "This is a SWIM TOP. Replace the entire outfit in Image A with swimwear styling: apply the swim top from Image B on the upper body and add a simple matching swim bottom in the same color family. Keep the person fully clothed in swimwear and do NOT retain streetwear from Image A (pants, jeans, skirts, shorts, blazer, shirts)."
+      : "Replace the entire outfit in Image A with the COMPLETE swimwear look from Image B. Keep the person fully clothed in swimwear and do NOT retain streetwear from Image A.";
 
     const intimateScopeInstruction = isSwimwear
       ? swimwearScopeInstruction
-      : "Remove all existing clothing from Image A (tops, pants, shorts, skirts — everything). Then dress them ONLY in the COMPLETE garment from Image B — show every part of it (all straps, panels, cups, ties, etc). Do not crop or omit any portion of the garment. The ONLY clothing in the output must be the garment from Image B.";
+      : "Replace the outfit in Image A with ONLY the COMPLETE garment from Image B — show every part of it (all straps, panels, cups, ties, etc). Keep the person fully clothed in the final output and do not retain unrelated clothing from Image A.";
 
     const garmentSwapScopeInstruction = isIntimateGarment
       ? intimateScopeInstruction
@@ -390,10 +391,10 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
       ? isSwimwearOnly
         ? [
-            // Swimwear: prioritize fast, instruction-following models to avoid full-chain timeouts.
-            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 15_000 },
-            { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-nano-fallback`, timeoutMs: 12_000 },
-            { model: "google/gemini-2.5-flash-image", prompt: complianceIntimatePrompt, label: `${typeLabel}-nano-compliance`, timeoutMs: 10_000 },
+            // Swimwear: prefer a stronger first generation pass and cleaner references.
+            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 22_000 },
+            { model: "google/gemini-3-pro-image-preview", prompt: complianceIntimatePrompt, label: `${typeLabel}-pro-compliance`, timeoutMs: 16_000 },
+            { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-nano-last`, timeoutMs: 10_000 },
           ]
         : [
             { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 18_000 },
@@ -508,7 +509,9 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
         break;
       }
 
-      const msg = (aiData.choices as Array<Record<string, unknown>>)?.[0]?.message as Record<string, unknown> | undefined;
+      const firstChoice = (aiData.choices as Array<Record<string, unknown>>)?.[0];
+      const finishReason = typeof firstChoice?.finish_reason === "string" ? firstChoice.finish_reason : "";
+      const msg = firstChoice?.message as Record<string, unknown> | undefined;
       const refusal = msg && Object.prototype.hasOwnProperty.call(msg, "refusal") ? msg.refusal : undefined;
       const messageTextRaw = typeof msg?.content === "string"
         ? msg.content
@@ -518,7 +521,10 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
       const messageText = messageTextRaw.trim();
 
       const refusalSignal = `${typeof refusal === "string" ? refusal : ""} ${messageText}`.toLowerCase();
-      const looksLikeRefusal = refusal !== undefined || /reject|refus|policy|unsafe|cannot|can't|unable/.test(refusalSignal);
+      const looksLikeRefusal =
+        refusal !== undefined ||
+        /reject|refus|policy|unsafe|cannot|can't|unable/.test(refusalSignal) ||
+        /safety|content_filter|blocked|other|no_image/.test(finishReason.toLowerCase());
 
       if (refusal !== undefined) {
         console.warn(`REFUSED (${plan.label}):`, JSON.stringify(refusal).substring(0, 300));
@@ -547,7 +553,7 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
         const lowerMessage = messageText.toLowerCase();
         const looksLikeStyleRejection = /rejected this garment style|cannot generate|unable to generate|policy|safety/.test(lowerMessage);
         const looksLikeNonDiagnosticTextOnly =
-          /^(absolutely|sure|great|okay|ok|here(?:'|’)s|i(?:'|’)ve|i have|done|generated)/i.test(messageText) ||
+          /^(absolutely|sure|great|okay|ok|here(?:'|’)s|here you go|i(?:'|’)ve|i have|done|generated)/i.test(messageText) ||
           /here(?:'|’)s the model/i.test(lowerMessage) ||
           /wearing the .* from image b/i.test(lowerMessage);
 
@@ -625,7 +631,7 @@ Preserve face, body, pose, and scene from Image A. Keep result clean and commerc
     if (!resultImage) {
       const lowerLastText = lastTextContent.toLowerCase();
       const looksLikeNonDiagnosticTextOnly =
-        /^(absolutely|sure|great|okay|ok|here(?:'|’)s|i(?:'|’)ve|i have|done|generated)/i.test(lastTextContent.trim()) ||
+        /^(absolutely|sure|great|okay|ok|here(?:'|’)s|here you go|i(?:'|’)ve|i have|done|generated)/i.test(lastTextContent.trim()) ||
         /here(?:'|’)s the model/i.test(lowerLastText) ||
         /wearing the .* from image b/i.test(lowerLastText);
 
