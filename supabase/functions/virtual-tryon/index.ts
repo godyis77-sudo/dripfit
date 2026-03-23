@@ -329,7 +329,7 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
       const attemptsLeftAfterThis = attemptPlan.length - attempt - 1;
       const reserveForRetriesMs = attemptsLeftAfterThis * MIN_REQUIRED_MS_PER_ATTEMPT + 2_000;
       const maxAttemptBudgetMs = isIntimateGarment
-        ? (attempt === 0 ? 11_000 : attempt === 1 ? 11_000 : 10_000)
+        ? (attempt === 0 ? 18_000 : attempt === 1 ? 16_000 : 14_000)
         : (attempt === 0 ? 30_000 : 18_000);
       const timeoutMs = Math.min(
         maxAttemptBudgetMs,
