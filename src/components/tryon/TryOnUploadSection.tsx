@@ -1,6 +1,6 @@
 import { forwardRef, useRef } from 'react';
 import { Input } from '@/components/ui/input';
-import { Check, User, Shirt, Camera, ImageIcon, Link2, Store, Bookmark, FolderOpen, CheckCircle2, XCircle, Lightbulb } from 'lucide-react';
+import { Check, User, Shirt, Camera, ImageIcon, Link2, Store, Bookmark, FolderOpen, CheckCircle2, XCircle, Lightbulb, Image } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
 import { compressImage } from './tryon-constants';
 import { isNativePlatform, takeNativePhoto } from '@/lib/nativeCamera';
@@ -29,6 +29,8 @@ interface TryOnUploadSectionProps {
   onToast: (opts: any) => void;
   onRemoveClothing?: () => void;
   onBrowseProducts?: () => void;
+  backgroundSource: 'user' | 'clothing';
+  onBackgroundSourceChange: (v: 'user' | 'clothing') => void;
 }
 
 const TryOnUploadSection = forwardRef<HTMLDivElement, TryOnUploadSectionProps>(({ 
