@@ -391,10 +391,10 @@ TARGET ACCESSORY:
 
 TASK: Add the accessory from Image B onto the person in Image A. Match Image B exactly (color, shape, material, branding). ${bgInstruction} Correct scale, lighting, shadows. No text/watermarks.`;
     } else if (isIntimateGarment) {
-      const intimateReferenceLine = useTextOnlySwimwearReference
-        ? `REFERENCE: ${swimwearTextReference}`
+      const intimateReferenceLine = useTextOnlyIntimateReference
+        ? `REFERENCE: ${intimateTextReference}`
         : `IMAGE B: A ${promptIntimateLabel} product listing photo from an online store.`;
-      const intimateReferenceRule = useTextOnlySwimwearReference
+      const intimateReferenceRule = useTextOnlyIntimateReference
         ? "- Use the REFERENCE description exactly for color, print, cut, neckline, straps, seams, and coverage."
         : "- If Image B shows a model/mannequin, copy only the garment and ignore that person.";
 
@@ -410,7 +410,7 @@ STYLING RULES:
 - ${garmentSwapScopeInstruction}
 - Match product details exactly: color, fabric texture, cut lines, straps, neckline, hemline, logos, and prints.
 - ${identityInstruction}
-${swimwearFramingInstruction}
+${intimateFramingInstruction}
 - CRITICAL: ${bgInstruction}
 - Realistic fabric drape and shadows that match the scene lighting.
 - Do NOT add extra clothing items not present in the provided garment reference.
