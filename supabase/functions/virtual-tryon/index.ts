@@ -471,6 +471,10 @@ ${identityInstruction} Keep result clean and commercially appropriate. No text/w
       return content;
     };
 
+    if (useTextOnlySwimwearReference) {
+      console.log("Swimwear generation using metadata-only garment reference (no product image input).");
+    }
+
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
       ? isSwimwearOnly
