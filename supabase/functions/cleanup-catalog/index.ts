@@ -392,7 +392,7 @@ Deno.serve(async (req) => {
     };
 
     // Process in batches
-    let offset = 0;
+    let offset = startOffset;
     let hasMore = true;
 
     while (hasMore) {
