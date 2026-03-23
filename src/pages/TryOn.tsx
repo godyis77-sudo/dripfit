@@ -220,7 +220,7 @@ const TryOn = () => {
                             >
                               <ShoppingBag className="h-3 w-3 inline mr-0.5" /> All
                             </button>
-                            {CATEGORIES.filter(c => isCategoryVisibleForGender(c.key, s.userGender === 'male' ? 'mens' : s.userGender === 'female' ? 'womens' : 'all')).map(c => (
+                            {CATEGORIES.filter(c => isCategoryVisibleForGender(c.key, effectiveGender || 'all')).map(c => (
                               <button
                                 key={c.key}
                                 onClick={() => s.setCategory(c.key)}
