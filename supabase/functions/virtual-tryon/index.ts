@@ -400,6 +400,7 @@ STYLING RULES:
 - ${intimateReferenceRule}
 - ${garmentSwapScopeInstruction}
 - Match product details exactly: color, fabric texture, cut lines, straps, neckline, hemline, logos, and prints.
+- CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. If Image A shows a front-facing person, the output MUST be front-facing. Do NOT rotate, flip, or turn the model to match Image B's pose. Only copy the GARMENT from Image B, never its pose or camera angle.
 - ${identityInstruction}
 ${intimateFramingInstruction}
 - CRITICAL: ${bgInstruction}
