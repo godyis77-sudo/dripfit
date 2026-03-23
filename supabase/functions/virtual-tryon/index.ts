@@ -231,13 +231,19 @@ Deno.serve(async (req) => {
       return null;
     };
 
-    // Retry loop — up to 2 attempts
-    const MAX_ATTEMPTS = 2;
+    // Retry loop — up to 3 attempts, last attempt uses fallback model
+    const MAX_ATTEMPTS = 3;
+    const MODELS = [
+      "google/gemini-3.1-flash-image-preview",
+      "google/gemini-3.1-flash-image-preview",
+      "google/gemini-3-pro-image-preview", // fallback model on last attempt
+    ];
     let resultImage: string | null = null;
     let lastTextContent = "";
 
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-      console.log(`Try-on attempt ${attempt + 1}/${MAX_ATTEMPTS}`);
+      const model = MODELS[attempt] || MODELS[0];
+      console.log(`Try-on attempt ${attempt + 1}/${MAX_ATTEMPTS} with model ${model}`);
 
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
@@ -246,7 +252,7 @@ Deno.serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-3.1-flash-image-preview",
+          model,
           modalities: ["text", "image"],
           messages: [
             {
