@@ -216,6 +216,20 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
           </div>
         )}
 
+        {/* Price Watch button */}
+        {user && product.id && product.price_cents != null && (
+          <div className="flex justify-center">
+            <PriceWatchButton
+              productId={product.id}
+              productName={product.name}
+              brand={product.brand}
+              productUrl={product.product_url || undefined}
+              priceCents={product.price_cents}
+              currency={product.currency}
+            />
+          </div>
+        )}
+
         <div className="flex gap-3 max-w-sm mx-auto w-full">
           {onTryOn && (
             <Button
