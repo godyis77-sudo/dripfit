@@ -22,6 +22,7 @@ export type WardrobeItem = { id: string; image_url: string; category: string; pr
 
 const TRYON_STATE_KEY = 'dripcheck_tryon_state';
 const TRYON_RESULT_KEY = 'dripcheck_tryon_result'; // localStorage — survives tab close
+const TRYON_USER_PHOTO_KEY = 'dripcheck_tryon_user_photo'; // localStorage — persists until user changes
 
 type PersistedQuickPick = {
   id: string;
@@ -54,8 +55,9 @@ function loadPersistedTryOnState(): PersistedTryOnState {
     const parsed = raw ? JSON.parse(raw) : {};
     // Prefer localStorage result URL (small string, survives tab close)
     const savedResultUrl = localStorage.getItem(TRYON_RESULT_KEY);
+    const savedUserPhoto = localStorage.getItem(TRYON_USER_PHOTO_KEY);
     return {
-      userPhoto: parsed.userPhoto || null,
+      userPhoto: savedUserPhoto || parsed.userPhoto || null,
       clothingPhoto: parsed.clothingPhoto || null,
       productLink: parsed.productLink || '',
       category: parsed.category || 'top',
@@ -142,10 +144,15 @@ export function useTryOnState() {
         if (url) {
           setUserPhotoRaw(url);
           persistState({ userPhoto: url });
+          try { localStorage.setItem(TRYON_USER_PHOTO_KEY, url); } catch { /* ignore */ }
         }
       });
-    } else {
+    } else if (v && (v.startsWith('http://') || v.startsWith('https://'))) {
       persistState({ userPhoto: v });
+      try { localStorage.setItem(TRYON_USER_PHOTO_KEY, v); } catch { /* ignore */ }
+    } else if (!v) {
+      persistState({ userPhoto: null });
+      try { localStorage.removeItem(TRYON_USER_PHOTO_KEY); } catch { /* ignore */ }
     }
   }, [persistState, eagerUpload]);
 
