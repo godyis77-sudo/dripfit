@@ -236,7 +236,7 @@ Output: A single photorealistic image. No text/watermarks/split views.`;
     }
 
     // ── AI CALL ──
-    const FUNCTION_BUDGET_MS = 46_000;
+    const FUNCTION_BUDGET_MS = 50_000;
     const MIN_REQUIRED_MS_PER_ATTEMPT = 6_000;
     const startedAt = Date.now();
 
