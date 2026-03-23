@@ -327,9 +327,29 @@ const TryOnResultSection = ({
 
         {/* ── Product Info Bar ── */}
         {(productName || shopUrl) && (
-          <div className="flex items-center gap-3 bg-card border border-border rounded-xl px-3 py-2.5 mb-3">
-            {selectedQuickPick?.image_url && (
-              <img src={selectedQuickPick.image_url} alt="" className="w-10 h-10 rounded-lg object-cover border border-border shrink-0" />
+          <button
+            type="button"
+            onClick={() => {
+              const imgUrl = selectedQuickPick?.image_url || clothingPhoto || '';
+              if (imgUrl) {
+                setItemPreview({
+                  id: selectedQuickPick?.id,
+                  image_url: imgUrl,
+                  name: productName || 'Product',
+                  brand: productBrand || '',
+                  price_cents: productPrice,
+                  product_url: shopUrl || null,
+                  category: category || undefined,
+                  fit_profile: selectedQuickPick?.fit_profile,
+                  fabric_composition: selectedQuickPick?.fabric_composition,
+                  style_genre: selectedQuickPick?.style_genre,
+                });
+              }
+            }}
+            className="w-full flex items-center gap-3 bg-card border border-border rounded-xl px-3 py-2.5 mb-3 active:scale-[0.98] transition-transform text-left"
+          >
+            {(selectedQuickPick?.image_url || clothingPhoto) && (
+              <img src={selectedQuickPick?.image_url || clothingPhoto!} alt="" className="w-10 h-10 rounded-lg object-cover border border-border shrink-0" />
             )}
             <div className="flex-1 min-w-0">
               {productBrand && <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{productBrand}</p>}
@@ -337,14 +357,11 @@ const TryOnResultSection = ({
               {productPrice && <p className="text-[12px] font-bold text-primary">${(productPrice / 100).toFixed(0)}</p>}
             </div>
             {shopUrl && (
-              <button
-                onClick={() => window.open(shopUrl, '_blank', 'noopener')}
-                className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-lg btn-luxury text-primary-foreground text-[10px] font-bold active:scale-95 transition-transform"
-              >
+              <span className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-lg btn-luxury text-primary-foreground text-[10px] font-bold">
                 <ExternalLink className="h-3 w-3" /> Shop
-              </button>
+              </span>
             )}
-          </div>
+          </button>
         )}
 
         {/* ── Quick Action Bar ── */}
