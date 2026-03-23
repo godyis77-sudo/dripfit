@@ -500,6 +500,75 @@ export type Database = {
         }
         Relationships: []
       }
+      outfit_items: {
+        Row: {
+          created_at: string
+          id: string
+          outfit_id: string
+          slot: string
+          sort_order: number
+          wardrobe_item_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          outfit_id: string
+          slot?: string
+          sort_order?: number
+          wardrobe_item_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          outfit_id?: string
+          slot?: string
+          sort_order?: number
+          wardrobe_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outfit_items_outfit_id_fkey"
+            columns: ["outfit_id"]
+            isOneToOne: false
+            referencedRelation: "outfits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "outfit_items_wardrobe_item_id_fkey"
+            columns: ["wardrobe_item_id"]
+            isOneToOne: false
+            referencedRelation: "clothing_wardrobe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      outfits: {
+        Row: {
+          cover_image_url: string | null
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cover_image_url?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cover_image_url?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       payout_requests: {
         Row: {
           amount_cents: number
