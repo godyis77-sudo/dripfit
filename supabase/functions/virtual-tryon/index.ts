@@ -194,11 +194,8 @@ Deno.serve(async (req) => {
     // For swimwear/underwear, pre-extract to reduce refusals from model-in-product photos.
     const forceIntimateExtraction = raw.forceIntimateExtraction === true;
     const disableIntimateExtraction = raw.disableIntimateExtraction === true;
-    const enableIntimateExtraction = isIntimateGarment && !disableIntimateExtraction && (
-      forceIntimateExtraction ||
-      isUnderwear ||
-      isSwimwear
-    );
+    // Enable extraction for ALL intimate categories, not just swimwear/underwear
+    const enableIntimateExtraction = isIntimateGarment && !disableIntimateExtraction;
     const extractIntimateGarment = async (): Promise<string | null> => {
       const extractPrompt = `Isolate ONLY the target garment from this product photo. Remove any person/model/mannequin and any visible skin. Return a clean product-only image of the ${promptIntimateLabel} on a plain white background. Keep garment color, shape, straps, seams, and logos accurate.`;
       const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = isSwimwear
