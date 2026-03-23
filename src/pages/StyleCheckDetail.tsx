@@ -12,7 +12,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 const StyleCheckDetail = () => {
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
-  usePageTitle('Style Check');
+  usePageMeta({ title: 'Style Check' });
   const [post, setPost] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const { addToCart, removeFromCart, isInCart } = useCart();

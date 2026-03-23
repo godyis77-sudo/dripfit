@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
 const ResetPassword = () => {
-  usePageTitle('Reset Password');
+  usePageMeta({ title: 'Reset Password' });
   const navigate = useNavigate();
   const { toast } = useToast();
   const [password, setPassword] = useState('');

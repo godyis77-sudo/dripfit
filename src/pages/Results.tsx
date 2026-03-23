@@ -42,7 +42,7 @@ function shiftSize(size: string, delta: number): string {
 
 const Results = () => {
   const location = useLocation();
-  usePageTitle('Your Fit Results');
+  usePageMeta({ title: 'Your Fit Results', description: 'Your personalized body measurements and size recommendations across brands.', path: '/results' });
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
