@@ -14,7 +14,7 @@ const TryOnDetail = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
-  usePageTitle('Try-On');
+  usePageMeta({ title: 'Try-On' });
   const [post, setPost] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [addingToWardrobe, setAddingToWardrobe] = useState(false);

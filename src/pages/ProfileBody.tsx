@@ -14,7 +14,7 @@ import { getFitPreference, getUseCm } from '@/lib/session';
 const ProfileBody = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  usePageTitle('Body & Fit');
+  usePageMeta({ title: 'Body & Fit' });
   const [scan, setScan] = useState<BodyScanResult | null>(null);
   const [loading, setLoading] = useState(true);
 

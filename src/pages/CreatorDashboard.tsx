@@ -37,7 +37,7 @@ function StatCard({ icon: Icon, label, value, sub }: { icon: any; label: string;
 }
 
 export default function CreatorDashboard() {
-  usePageTitle("Creator Dashboard");
+  usePageMeta({ title: "Creator Dashboard" });
   const navigate = useNavigate();
   const { user } = useAuth();
   const [copied, setCopied] = useState(false);

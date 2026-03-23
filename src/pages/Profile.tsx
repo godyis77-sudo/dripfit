@@ -24,7 +24,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 const Profile = () => {
   const navigate = useNavigate();
-  usePageTitle('Profile');
+  usePageMeta({ title: 'Profile', path: '/profile' });
   const { user, signOut, isSubscribed } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();

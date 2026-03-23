@@ -27,7 +27,7 @@ const PublicProfile = () => {
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  usePageTitle(username ? `@${username}` : 'Profile');
+  usePageMeta({ title: username ? `@${username}` : 'Profile' });
 
   const [profile, setProfile] = useState<PublicProfileData | null>(null);
   const [tryOns, setTryOns] = useState<PublicTryOn[]>([]);

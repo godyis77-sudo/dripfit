@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import AuthForm from '@/components/auth/AuthForm';
 
 const Auth = () => {
-  usePageTitle('Sign In');
+  usePageMeta({ title: 'Sign In', path: '/auth' });
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, loading: authLoading } = useAuth();

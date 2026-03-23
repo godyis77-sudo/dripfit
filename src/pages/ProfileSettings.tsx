@@ -15,7 +15,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 
 const ProfileSettings = () => {
   const navigate = useNavigate();
-  usePageTitle('Settings');
+  usePageMeta({ title: 'Settings' });
   const { user, isSubscribed, subscriptionEnd, productId, updateGender } = useAuth();
   const { toast } = useToast();
   const [displayName, setDisplayName] = useState('');

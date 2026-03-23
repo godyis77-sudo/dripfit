@@ -36,7 +36,7 @@ interface SearchPhoto {
 }
 
 const Backgrounds = () => {
-  usePageTitle('Backgrounds');
+  usePageMeta({ title: 'Backgrounds' });
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();

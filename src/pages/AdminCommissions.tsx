@@ -13,7 +13,7 @@ import { toast } from "@/hooks/use-toast";
 const CURRENCY = "$";
 
 export default function AdminCommissions() {
-  usePageTitle("Admin — Commissions");
+  usePageMeta({ title: "Admin — Commissions" });
   const navigate = useNavigate();
   const { user } = useAuth();
   const qc = useQueryClient();

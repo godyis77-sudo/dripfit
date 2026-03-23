@@ -12,7 +12,7 @@ const ResultsDetail = () => {
   const { scanId } = useParams<{ scanId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  usePageTitle('Scan Results');
+  usePageMeta({ title: 'Scan Results' });
   const [scan, setScan] = useState<BodyScanResult | null>(null);
   const [loading, setLoading] = useState(true);
 
