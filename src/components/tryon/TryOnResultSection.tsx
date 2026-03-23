@@ -577,6 +577,48 @@ const TryOnResultSection = ({
           </ErrorBoundary>
         )}
       </AnimatePresence>
+
+      {/* DripCard v2 — off-screen render target for html-to-image */}
+      {sharingDripCard && (
+        <DripCard
+          ref={dripCardRef}
+          measurements={{}}
+          heightCm={0}
+          recommendedSize={selectedQuickPick?.name ? 'TRY-ON' : '—'}
+          tryOnImageUrl={resultImage}
+          brandMatch={selectedQuickPick ? { brand: selectedQuickPick.brand, size: selectedQuickPick.name, confidence: 0.92 } : null}
+          displayName={authUser?.user_metadata?.display_name || null}
+        />
+      )}
+
+      {/* Share fallback dialog */}
+      <Dialog open={shareFallbackOpen} onOpenChange={(open) => { if (!open) { setShareFallbackOpen(false); if (shareImageUrl) { URL.revokeObjectURL(shareImageUrl); setShareImageUrl(null); } } }}>
+        <DialogContent className="max-w-[320px] bg-card border-border p-4 rounded-2xl">
+          <DialogTitle className="text-foreground text-sm font-bold mb-3 text-center">
+            Share Your Fit
+          </DialogTitle>
+          {shareImageUrl && (
+            <div className="w-full rounded-xl overflow-hidden border border-border mb-4" style={{ aspectRatio: '9/16' }}>
+              <img src={shareImageUrl} alt="Shareable try-on card" className="w-full h-full object-cover" />
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground text-center mb-3">
+            Save the image, then share to Instagram Stories, WhatsApp or anywhere.
+          </p>
+          <div className="flex flex-col gap-2">
+            <Button onClick={handleShareDownload} className="w-full h-11 rounded-xl btn-luxury text-primary-foreground font-bold">
+              <Download className="mr-2 h-4 w-4" /> Save to Photos
+            </Button>
+            <Button
+              variant="outline"
+              onClick={async () => { await navigator.clipboard.writeText('https://dripfitcheck.lovable.app'); onToast({ title: 'Link copied!' }); }}
+              className="w-full h-10 rounded-xl border-primary/30 text-primary text-sm font-semibold"
+            >
+              <Copy className="mr-2 h-3.5 w-3.5" /> Copy Link
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
