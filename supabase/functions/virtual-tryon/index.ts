@@ -113,15 +113,16 @@ Deno.serve(async (req) => {
     const MIN_REQUIRED_MS_PER_ATTEMPT = 6_000;
     const startedAt = Date.now();
 
-    // ── EXTRACT GARMENT FROM PRODUCT IMAGE ──
-    // Only extract/isolate garment for intimate items (to bypass safety filters)
-    // For regular items, send the original product image directly — it works better
+    // ── EXTRACT GARMENT FROM PRODUCT IMAGE (OPTIONAL) ──
+    // Disabled by default to avoid burning 8s+ before generation starts.
+    // Can be enabled per-request for troubleshooting.
+    const enableIntimateExtraction = raw.enableIntimateExtraction === true;
     let garmentOnlyImage = clothingImageInput;
-    if (isIntimateGarment) {
+    if (isIntimateGarment && enableIntimateExtraction) {
       try {
         const extractPrompt = `Extract ONLY the clothing/garment item from this product photo. Remove any person/model entirely. Show ONLY the ${neutralItemLabel} garment laid flat on a plain white background. Output one clean product-only image. No person, no skin, no body. Just the isolated garment on white.`;
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 8_000);
+        const timer = setTimeout(() => controller.abort(), 3_500);
         try {
           const extractResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
             method: "POST",
@@ -249,12 +250,19 @@ Replace Image A outfit completely with the exact garment from Image B.
 Preserve face, body shape, skin tone, pose, camera, and background from Image A.
 Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
 
+    const fastIntimatePrompt = `Create ONE photorealistic retail try-on image.
+Image A = person. Image B = target garment.${productHint}
+Dress the person from Image A in the garment from Image B.
+Preserve person identity, body shape, and background from Image A.
+Keep output commercially appropriate for fashion e-commerce. No text/watermark.`;
+
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const attemptPlan: Array<{ model: string; prompt: string; label: string }> = isIntimateGarment
       ? [
-          // Use pro model for intimate items — flash consistently refuses these
-          { model: "google/gemini-3-pro-image-preview", prompt, label: `${typeLabel}-pro` },
+          // Faster path first to avoid timeouts on mobile intimate try-ons.
+          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash2-primary` },
           { model: "google/gemini-2.5-flash-image", prompt: fallbackPrompt, label: `${typeLabel}-flash-fallback` },
+          { model: "google/gemini-2.5-flash-image", prompt: fastIntimatePrompt, label: `${typeLabel}-last-chance` },
         ]
       : [
           { model: "google/gemini-2.5-flash-image", prompt, label: `${typeLabel}-primary` },
@@ -274,10 +282,16 @@ Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos).
         break;
       }
 
-      // Give the primary attempt most of the remaining budget; reserve time for retry
-      const timeoutMs = attempt === 0
-        ? Math.max(MIN_REQUIRED_MS_PER_ATTEMPT, remainingMs - MIN_REQUIRED_MS_PER_ATTEMPT - 3_000)
-        : Math.max(MIN_REQUIRED_MS_PER_ATTEMPT, remainingMs - 2_000);
+      // Cap each attempt so one slow model can't starve later retries.
+      const attemptsLeftAfterThis = attemptPlan.length - attempt - 1;
+      const reserveForRetriesMs = attemptsLeftAfterThis * MIN_REQUIRED_MS_PER_ATTEMPT + 2_000;
+      const maxAttemptBudgetMs = isIntimateGarment
+        ? (attempt === 0 ? 20_000 : attempt === 1 ? 14_000 : 10_000)
+        : (attempt === 0 ? 28_000 : 16_000);
+      const timeoutMs = Math.min(
+        maxAttemptBudgetMs,
+        Math.max(MIN_REQUIRED_MS_PER_ATTEMPT, remainingMs - reserveForRetriesMs),
+      );
       const isFinalAttempt = attempt === attemptPlan.length - 1;
 
       console.log(`Try-on attempt ${attempt + 1}/${attemptPlan.length} model=${plan.model} timeout=${timeoutMs}ms label=${plan.label}`);
