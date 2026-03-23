@@ -117,15 +117,9 @@ Deno.serve(async (req) => {
       : productDesc;
     const productHint = sanitizedProductDesc ? `\nProduct: "${sanitizedProductDesc}".` : "";
 
-    const garmentDescriptor = await describeGarmentFromImage({
-      clothingImageInput,
-      lovableApiKey: LOVABLE_API_KEY,
-      itemType,
-      productName,
-      productBrand,
-      productCategory,
-      isIntimate: isSwimwear || isUnderwear || isIntimate,
-    });
+    const garmentDescriptor = sanitizedProductDesc || (isSwimwear || isUnderwear || isIntimate
+      ? "sporty one-piece or two-piece swimwear set in retail style"
+      : `${itemType} with catalog-style details`);
 
     // ── BUILD PROMPT ──
     const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
@@ -181,8 +175,8 @@ Output: A single photorealistic image. No text/watermarks/split views.`;
     }
 
     // ── AI CALL ──
-    const FUNCTION_BUDGET_MS = 58_000;
-    const MIN_REQUIRED_MS_PER_ATTEMPT = 7_500;
+    const FUNCTION_BUDGET_MS = 46_000;
+    const MIN_REQUIRED_MS_PER_ATTEMPT = 6_000;
     const startedAt = Date.now();
 
     const fallbackPrompt = (isAccessory || isLayering)
@@ -208,21 +202,21 @@ Keep garment details exact (color, pattern, cut, neckline, sleeve/hem length, lo
     const attemptPlan: Array<{ model: string; timeoutMs: number; prompt: string; label: string }> = (() => {
       if (isAccessory || isLayering) {
         return [
-          { model: "google/gemini-2.5-flash-image", timeoutMs: 20_000, prompt, label: "accessory-primary" },
-          { model: "google/gemini-3-pro-image-preview", timeoutMs: 32_000, prompt: fallbackPrompt, label: "accessory-pro" },
+          { model: "google/gemini-2.5-flash-image", timeoutMs: 18_000, prompt, label: "accessory-primary" },
+          { model: "google/gemini-2.5-flash-image", timeoutMs: 12_000, prompt: fallbackPrompt, label: "accessory-retry" },
         ];
       }
 
       if (isIntimateGarment) {
         return [
-          { model: "google/gemini-2.5-flash-image", timeoutMs: 26_000, prompt, label: "intimate-safe-primary" },
-          { model: "google/gemini-3-pro-image-preview", timeoutMs: 30_000, prompt: fallbackPrompt, label: "intimate-pro-fallback" },
+          { model: "google/gemini-2.5-flash-image", timeoutMs: 18_000, prompt, label: "intimate-safe-primary" },
+          { model: "google/gemini-2.5-flash-image", timeoutMs: 12_000, prompt: fallbackPrompt, label: "intimate-safe-retry" },
         ];
       }
 
       return [
-        { model: "google/gemini-2.5-flash-image", timeoutMs: 22_000, prompt, label: "standard-primary" },
-        { model: "google/gemini-3-pro-image-preview", timeoutMs: 32_000, prompt: fallbackPrompt, label: "standard-pro" },
+        { model: "google/gemini-2.5-flash-image", timeoutMs: 20_000, prompt, label: "standard-primary" },
+        { model: "google/gemini-2.5-flash-image", timeoutMs: 12_000, prompt: fallbackPrompt, label: "standard-retry" },
       ];
     })();
 
@@ -459,75 +453,3 @@ function extractImageFromResponse(aiResponse: Record<string, unknown>): string |
   return deepSearch(message, "message") || deepSearch(aiResponse, "response");
 }
 
-async function describeGarmentFromImage(args: {
-  clothingImageInput: string;
-  lovableApiKey: string;
-  itemType: string;
-  productName: string;
-  productBrand: string;
-  productCategory: string;
-  isIntimate: boolean;
-}): Promise<string> {
-  const fallback = [
-    args.productName,
-    args.productBrand ? `by ${args.productBrand}` : "",
-    args.productCategory || args.itemType,
-  ].filter(Boolean).join(" ").trim() || args.itemType;
-
-  const descriptorPrompt = args.isIntimate
-    ? `Describe this product for a fashion image-edit prompt in under 55 words. Use non-sexual retail language. Focus on garment type, colors, pattern, neckline, straps/sleeves, cut, and fabric finish. Avoid words like lingerie, underwear, erotic, revealing.`
-    : `Describe this product for a fashion image-edit prompt in under 55 words. Focus on garment type, colors, pattern, neckline, straps/sleeves, cut, length, and texture. Output one concise sentence only.`;
-
-  try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 10_000);
-    let response: Response;
-
-    try {
-      response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        signal: controller.signal,
-        headers: {
-          Authorization: `Bearer ${args.lovableApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-3-flash-preview",
-          messages: [{
-            role: "user",
-            content: [
-              { type: "text", text: descriptorPrompt },
-              { type: "image_url", image_url: { url: args.clothingImageInput } },
-            ],
-          }],
-        }),
-      });
-    } finally {
-      clearTimeout(timer);
-    }
-
-    if (!response.ok) return fallback;
-
-    const data = await response.json() as Record<string, unknown>;
-    const message = (data.choices as Array<Record<string, unknown>> | undefined)?.[0]?.message as Record<string, unknown> | undefined;
-    const raw = typeof message?.content === "string"
-      ? message.content
-      : Array.isArray(message?.content)
-        ? (message.content as Array<{ type?: string; text?: string }>)
-            .filter((part) => part.type === "text" && typeof part.text === "string")
-            .map((part) => part.text)
-            .join(" ")
-        : "";
-
-    const cleaned = raw
-      .replace(/[\n\r`]/g, " ")
-      .replace(/\s+/g, " ")
-      .replace(/\b(lingerie|underwear|panties|briefs|boxers|bralette|bra|thong|g-string|sheer|see-through|transparent)\b/gi, args.isIntimate ? "swimwear" : "")
-      .trim()
-      .slice(0, 280);
-
-    return cleaned || fallback;
-  } catch {
-    return fallback;
-  }
-}
