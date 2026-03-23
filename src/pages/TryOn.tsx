@@ -64,7 +64,7 @@ const TryOn = () => {
   const { products: catalogProducts } = useProductCatalog(
     s.category === 'all' ? undefined : s.category,
     undefined, undefined,
-    s.userGender === 'male' ? 'mens' : s.userGender === 'female' ? 'womens' : undefined
+    effectiveGender
   );
 
   const availableRetailers = useMemo(() => {
