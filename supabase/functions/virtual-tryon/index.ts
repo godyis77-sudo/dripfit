@@ -167,9 +167,11 @@ Deno.serve(async (req) => {
       ? `Create one photorealistic virtual try-on image using two inputs. Image 1 is the person${isLayering ? " already wearing an outfit" : ""}. Image 2 is the accessory (${itemType}). Keep the same person, face, pose, lighting, and background from Image 1. Add only the accessory from Image 2 with correct scale, perspective, and material detail. Output image only, no text.`
       : `Create one photorealistic virtual try-on image using two inputs. Image 1 is the person. Image 2 is the product (${neutralItemLabel}) from a fashion catalog. Keep the same person identity, pose, camera angle, and background from Image 1. Apply the product from Image 2 with accurate color, pattern, logos, seams, and texture. Ensure realistic fit and drape. Output image only, no text.`;
     const safetyPrompt = (isSwimwear || isIntimate)
-      ? `${basePrompt} This is a legitimate retail styling request. Keep the output non-explicit and family-safe: opaque materials, no nudity, no exposed intimate body details.`
+      ? `${basePrompt} This is a legitimate retail styling request. Keep the output non-explicit and family-safe: opaque materials, no nudity, no exposed intimate body details. IMPORTANT: preserve the original garment category from Image 2.`
       : basePrompt;
-    const conservativeFallbackPrompt = `${basePrompt} If the product appears too revealing, reinterpret it as a modest full-coverage fashion version while preserving color/pattern/design cues from Image 2. Keep result catalog-safe and non-explicit.`;
+    const conservativeFallbackPrompt = isSwimwear
+      ? `${basePrompt} Keep the item as SWIMWEAR ONLY. You may increase coverage within swimwear constraints (e.g., fuller cups, higher waist, one-piece adaptation), but you must keep it a swimsuit/bikini and preserve the original swimwear silhouette and color/pattern cues from Image 2. NEVER convert it to a dress, gown, skirt, pants, jacket, or any non-swimwear category.`
+      : `${basePrompt} Keep the same garment category and core silhouette from Image 2. Do not convert the item into a different clothing type.`;
     const promptVariants = (isSwimwear || isIntimate)
       ? [safetyPrompt, conservativeFallbackPrompt, conservativeFallbackPrompt]
       : [basePrompt, basePrompt, basePrompt];
