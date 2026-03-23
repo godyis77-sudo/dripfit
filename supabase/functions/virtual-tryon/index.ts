@@ -275,7 +275,7 @@ Deno.serve(async (req) => {
       : `${itemType} with catalog-style details`);
 
     const garmentSwapScopeInstruction = isIntimateGarment
-      ? "Apply the COMPLETE garment from Image B — show every part of it (all straps, panels, cups, ties, etc). Do not crop or omit any portion of the garment."
+      ? "FIRST remove ALL existing clothing from the person in Image A (tops, pants, shorts, skirts — everything). Then dress them ONLY in the COMPLETE garment from Image B — show every part of it (all straps, panels, cups, ties, etc). Do not crop or omit any portion of the garment. The ONLY clothing in the output must be the garment from Image B."
       : isTopOnlyGarment
         ? "This is a TOP-only garment: replace upper-body clothing only and keep lower-body clothing from Image A unchanged."
         : "Replace only the clothing area needed for this garment and keep all unrelated body/background details unchanged.";
