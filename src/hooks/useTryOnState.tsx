@@ -680,6 +680,8 @@ export function useTryOnState() {
     selectedQuickPick, selectedBrand, setSelectedBrand, selectedGenre, setSelectedGenre, selectedRetailer, setSelectedRetailer, selectedFit, setSelectedFit,
     // Wardrobe
     clothingSaved, wardrobeItems, showWardrobe, setShowWardrobe,
+    // Background source
+    backgroundSource, setBackgroundSource,
     // State flags
     showPremiumGate, setShowPremiumGate, savedToItems, showSuccessOverlay,
     showLookItems, layerHistory, hasSavedProfile,
