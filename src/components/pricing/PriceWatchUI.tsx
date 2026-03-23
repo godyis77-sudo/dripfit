@@ -38,7 +38,7 @@ export function PriceWatchButton({ productId, productName, brand, productUrl, pr
         currency,
       });
       toast({ title: '🔔 Watching price', description: `We'll alert you if ${brand || 'this item'} drops.` });
-      trackEvent('price_watch_added' as any);
+      trackEvent('price_watch_added');
     }
   };
 
