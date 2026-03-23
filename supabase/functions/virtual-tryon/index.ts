@@ -484,7 +484,7 @@ Mainstream e-commerce catalog style. Keep model identity from Image A. Match pro
           lastTextContent = "Try-on was blocked for this product photo. Use a front-facing product-only image or flat-lay with the full garment visible.";
         }
 
-        if (!attemptedRefusalExtraction) {
+        if (!attemptedRefusalExtraction && !isSwimwearOnly) {
           attemptedRefusalExtraction = true;
           const rescuedGarment = await extractIntimateGarment();
           if (rescuedGarment) {
