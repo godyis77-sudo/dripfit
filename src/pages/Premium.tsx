@@ -32,6 +32,7 @@ const FEATURES = [
 
 const Premium = () => {
   const navigate = useNavigate();
+  usePageMeta({ title: 'Premium', description: 'Unlock unlimited try-ons, priority scans, and exclusive features with DripFit Premium.', path: '/premium' });
   const { toast } = useToast();
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
   const [checkoutLoading, setCheckoutLoading] = useState(false);
