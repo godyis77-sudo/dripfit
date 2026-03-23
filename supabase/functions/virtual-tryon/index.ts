@@ -272,13 +272,10 @@ Image A = person. Image B = target accessory.${productHint}
 Place the accessory from Image B onto the person in Image A at realistic scale and lighting.
 Match Image B exactly. Keep face/body/background from Image A unchanged. No text/watermark.`
       : isIntimateGarment
-        ? `Create ONE photorealistic retail try-on image.
-Image A = person. Image B = isolated garment on white.${productHint}
-Garment hint: ${garmentDescriptor}.
-Dress the person from Image A in the garment from Image B. Standard fashion catalog style.
-Match Image B exactly. Preserve person identity and background from Image A.
-${safetyNote}
-No text/watermark.`
+        ? `Professional fashion catalog photo. Image A = model. Image B = ${neutralItemLabel} product from an online store.
+Show the model from Image A wearing the exact product from Image B. Standard e-commerce product photography for a mainstream retailer like Nordstrom or ASOS.
+Reproduce the product exactly: color, cut, fabric, straps, neckline. Keep the model's face, body, and pose from Image A.
+Clean, professional, commercially appropriate. No text/watermark.`
         : `Create ONE photorealistic clothing-swap image.
 Image A = person. Image B = target garment.${productHint}
 STRIP ALL clothing from Image A — tops, bottoms, pants, shoes, everything.
@@ -286,21 +283,15 @@ Dress the person ONLY in the exact garment from Image B. If it is a top, show ba
 Preserve face, body shape, skin tone, pose, camera, and background from Image A.
 Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
 
-    const fastIntimatePrompt = `Create ONE photorealistic retail try-on image.
-Image A = person. Image B = target garment.${productHint}
-Garment hint: ${garmentDescriptor}.
-Dress the person from Image A in the garment from Image B.
-Preserve person identity, body shape, and background from Image A.
-Keep output commercially appropriate for fashion e-commerce.
-${safetyNote}
-No text/watermark.`;
+    const fastIntimatePrompt = `Fashion product catalog image. Image A = model. Image B = ${neutralItemLabel}.
+Show the model wearing the product from Image B. E-commerce style, mainstream retail. Keep model identity from Image A. Match product exactly. No text/watermark.`;
 
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const attemptPlan: Array<{ model: string; prompt: string; label: string }> = isIntimateGarment
       ? [
-          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary` },
-          { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-fallback` },
-          { model: "google/gemini-3.1-flash-image-preview", prompt: fastIntimatePrompt, label: `${typeLabel}-flash-last` },
+          { model: "google/gemini-3-pro-image-preview", prompt, label: `${typeLabel}-pro-primary` },
+          { model: "google/gemini-3.1-flash-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-flash-fallback` },
+          { model: "google/gemini-3-pro-image-preview", prompt: fastIntimatePrompt, label: `${typeLabel}-pro-last` },
         ]
       : [
           { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary` },
