@@ -178,8 +178,9 @@ Deno.serve(async (req) => {
     const conservativeFallbackPrompt = (isSwimwear || isUnderwear)
       ? `${basePrompt} Keep the item as SWIMWEAR ONLY. You may increase coverage within swimwear constraints (e.g., fuller cups, higher waist, one-piece adaptation), but you must keep it a swimsuit and preserve the original swimwear silhouette and color/pattern cues from Image 2. NEVER convert it to a dress, gown, skirt, pants, jacket, or any non-swimwear category.`
       : `${basePrompt} Keep the same garment category and core silhouette from Image 2. Do not convert the item into a different clothing type.`;
+    const underwearEmergencyPrompt = `${basePrompt} Emergency fallback: style the product as a modest athletic one-piece swimsuit with opaque fabric while preserving key colors and overall design cues from Image 2. Ensure the try-on is clearly visible on the same person. Output image only.`;
     const promptVariants = isUnderwear
-      ? [underwearTransformPrompt, safetyPrompt, conservativeFallbackPrompt, underwearOverlayPrompt]
+      ? [underwearTransformPrompt, safetyPrompt, conservativeFallbackPrompt, underwearEmergencyPrompt, underwearOverlayPrompt]
       : (isSwimwear || isIntimate)
       ? [safetyPrompt, conservativeFallbackPrompt, conservativeFallbackPrompt]
       : [basePrompt, basePrompt, basePrompt];
@@ -335,13 +336,13 @@ Deno.serve(async (req) => {
     };
 
     // Retry loop with model + prompt fallback
-    const MAX_ATTEMPTS = isUnderwear ? 4 : 3;
     const MODELS = isUnderwear
       ? [
-          "google/gemini-2.5-flash-image",
-          "google/gemini-2.5-flash-image",
           "google/gemini-3.1-flash-image-preview",
           "google/gemini-2.5-flash-image",
+          "google/gemini-3-pro-image-preview",
+          "google/gemini-2.5-flash-image",
+          "google/gemini-3.1-flash-image-preview",
         ]
       : (isSwimwear || isIntimate)
       ? [
@@ -354,6 +355,7 @@ Deno.serve(async (req) => {
           "google/gemini-3.1-flash-image-preview",
           "google/gemini-3-pro-image-preview",     // fallback model on last attempt
         ];
+    const MAX_ATTEMPTS = Math.max(promptVariants.length, isUnderwear ? 5 : 3);
     let resultImage: string | null = null;
     let lastTextContent = "";
 
