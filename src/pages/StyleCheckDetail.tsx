@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Sparkles, ShoppingCart } from 'lucide-react';
@@ -12,7 +12,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 const StyleCheckDetail = () => {
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
-  usePageTitle('Style Check');
+  usePageMeta({ title: 'Style Check' });
   const [post, setPost] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const { addToCart, removeFromCart, isInCart } = useCart();

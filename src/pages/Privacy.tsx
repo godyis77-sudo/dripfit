@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
@@ -7,7 +7,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 
 const Privacy = () => {
   const navigate = useNavigate();
-  usePageTitle('Privacy Policy');
+  usePageMeta({ title: 'Privacy Policy', description: 'How DripFit collects, uses, and protects your personal data and body scan information.', path: '/privacy' });
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">

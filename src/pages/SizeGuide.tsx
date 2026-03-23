@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -43,7 +43,7 @@ function bodyScansToMeasurement(scan: any): MeasurementResult {
 
 const SizeGuide = () => {
   const navigate = useNavigate();
-  usePageTitle('Size Guide Match');
+  usePageMeta({ title: 'Size Guide Match', description: 'Find your perfect size across 130+ brands. Upload a size chart or search by brand to get your exact fit.', path: '/size-guide' });
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);

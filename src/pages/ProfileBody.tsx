@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Ruler, Camera } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -14,7 +14,7 @@ import { getFitPreference, getUseCm } from '@/lib/session';
 const ProfileBody = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  usePageTitle('Body & Fit');
+  usePageMeta({ title: 'Body & Fit' });
   const [scan, setScan] = useState<BodyScanResult | null>(null);
   const [loading, setLoading] = useState(true);
 

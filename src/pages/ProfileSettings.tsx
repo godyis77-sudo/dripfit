@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
@@ -15,7 +15,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 
 const ProfileSettings = () => {
   const navigate = useNavigate();
-  usePageTitle('Settings');
+  usePageMeta({ title: 'Settings' });
   const { user, isSubscribed, subscriptionEnd, productId, updateGender } = useAuth();
   const { toast } = useToast();
   const [displayName, setDisplayName] = useState('');

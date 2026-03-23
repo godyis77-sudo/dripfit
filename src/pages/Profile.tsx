@@ -1,5 +1,5 @@
 import { useState, lazy, Suspense } from 'react';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -24,7 +24,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 const Profile = () => {
   const navigate = useNavigate();
-  usePageTitle('Profile');
+  usePageMeta({ title: 'Profile', path: '/profile' });
   const { user, signOut, isSubscribed } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();

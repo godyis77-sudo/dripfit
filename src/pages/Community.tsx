@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { PullToRefresh } from '@/components/layout/PullToRefresh';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -38,7 +38,7 @@ const FIT_OPTIONS = [
 
 const Community = () => {
   const navigate = useNavigate();
-  usePageTitle('Style Check');
+  usePageMeta({ title: 'Style Check', description: 'Get real feedback on your outfits from the DripFit community. Post your look and let others rate it.', path: '/style-check' });
   const { user } = useAuth();
   const { toast } = useToast();
 

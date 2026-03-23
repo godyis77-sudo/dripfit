@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
@@ -7,7 +7,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 
 const Terms = () => {
   const navigate = useNavigate();
-  usePageTitle('Terms of Service');
+  usePageMeta({ title: 'Terms of Service', description: 'DripFit terms of service — rules and guidelines for using the platform.', path: '/terms' });
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">

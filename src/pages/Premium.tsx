@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import BottomTabBar from '@/components/BottomTabBar';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,7 @@ const FEATURES = [
 
 const Premium = () => {
   const navigate = useNavigate();
+  usePageMeta({ title: 'Premium', description: 'Unlock unlimited try-ons, priority scans, and exclusive features with DripFit Premium.', path: '/premium' });
   const { toast } = useToast();
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
   const [checkoutLoading, setCheckoutLoading] = useState(false);

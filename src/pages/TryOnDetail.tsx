@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Shirt, ShoppingBag } from 'lucide-react';
@@ -14,7 +14,7 @@ const TryOnDetail = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
-  usePageTitle('Try-On');
+  usePageMeta({ title: 'Try-On' });
   const [post, setPost] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [addingToWardrobe, setAddingToWardrobe] = useState(false);

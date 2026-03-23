@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Download, Palette, Type, Image, BarChart3, Users, ShoppingBag, Ruler, Eye, ExternalLink } from 'lucide-react';
 import InlineCrown from '@/components/ui/InlineCrown';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -90,7 +90,7 @@ const fade = (delay: number) => ({
 
 /* ── Component ───────────────────────────────────────── */
 const MediaKit = () => {
-  usePageTitle('Media Kit');
+  usePageMeta({ title: 'Media Kit', description: 'DripFit brand assets, logos, colors, and press materials for media and partners.', path: '/media-kit' });
   const [stats, setStats] = useState<DbStats>(FALLBACK_STATS);
 
   useEffect(() => {

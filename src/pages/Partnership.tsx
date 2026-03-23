@@ -1,5 +1,5 @@
 import { TrendingDown, Users, ShoppingBag, Scan, Shirt, BarChart3, ArrowRight, Mail, CheckCircle2, ExternalLink } from 'lucide-react';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
 
 const STATS = [
@@ -30,7 +30,7 @@ const INTEGRATIONS = [
 ];
 
 const Partnership = () => {
-  usePageTitle('Partnership');
+  usePageMeta({ title: 'Brand Partnership', description: 'Partner with DripFit to reduce returns by 30-40%. AI-powered size matching drives confident purchases.', path: '/partnership' });
 
   return (
     <div className="min-h-screen bg-background text-foreground">

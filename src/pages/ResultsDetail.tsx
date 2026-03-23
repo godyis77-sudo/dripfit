@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Ruler } from 'lucide-react';
@@ -12,7 +12,7 @@ const ResultsDetail = () => {
   const { scanId } = useParams<{ scanId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  usePageTitle('Scan Results');
+  usePageMeta({ title: 'Scan Results' });
   const [scan, setScan] = useState<BodyScanResult | null>(null);
   const [loading, setLoading] = useState(true);
 

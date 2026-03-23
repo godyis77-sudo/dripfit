@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Shirt, MessageSquare, Instagram, UserPlus, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -27,7 +27,7 @@ const PublicProfile = () => {
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  usePageTitle(username ? `@${username}` : 'Profile');
+  usePageMeta({ title: username ? `@${username}` : 'Profile' });
 
   const [profile, setProfile] = useState<PublicProfileData | null>(null);
   const [tryOns, setTryOns] = useState<PublicTryOn[]>([]);

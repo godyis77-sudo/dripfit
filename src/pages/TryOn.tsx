@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowUp, Sparkles, Loader2, Check, Info, ShoppingBag, Store, Shield, X, RotateCcw, SlidersHorizontal, ChevronDown } from 'lucide-react';
@@ -43,7 +43,7 @@ const FIT_OPTIONS = [
 ] as const;
 
 const TryOn = () => {
-  usePageTitle('Virtual Try-On');
+  usePageMeta({ title: 'Virtual Try-On', description: 'Try on clothes virtually before you buy. Upload your photo and see how any outfit looks on you.', path: '/tryon' });
   const s = useTryOnState();
   const navigate = useNavigate();
   const isGuest = !s.user && isGuestMode();
