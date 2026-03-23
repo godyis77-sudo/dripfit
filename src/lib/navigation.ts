@@ -17,7 +17,7 @@ export function getReturnTo(search: string, fallback = '/'): string {
 /** Supported deep link paths */
 const DEEP_LINK_ROUTES = [
   '/capture', '/tryon', '/style-check', '/profile',
-  '/results', '/browse', '/premium', '/size-guide', '/my-sizes',
+  '/results', '/browse', '/premium', '/size-guide', '/my-sizes', '/outfits',
 ] as const;
 
 /** Validate and resolve a deep link path, returning null for invalid paths */
