@@ -283,8 +283,8 @@ Deno.serve(async (req) => {
       console.log(`Intimate extraction took ${Date.now() - startedAt}ms`);
     }
 
-    const buildSwimwearReferenceFromMetadata = (): string => {
-      if (!isSwimwearOnly) return "";
+    const buildIntimateReferenceFromMetadata = (): string => {
+      if (!isIntimateGarment) return "";
       const context = normalizeMatchText([productName, productCategory, itemLower, typeof raw.productUrl === "string" ? raw.productUrl : ""].join(" "));
 
       const colorTerms = ["black", "white", "blue", "navy", "red", "pink", "green", "teal", "orange", "yellow", "purple", "brown", "beige", "tan", "gold", "silver", "multi", "floral"];
@@ -294,26 +294,45 @@ Deno.serve(async (req) => {
         : hasContextTerm(context, "polka") ? "polka-dot pattern"
         : "solid color";
 
-      const garmentType = /\b(one piece|one-piece|monokini)\b/.test(context)
-        ? "one-piece swimsuit"
-        : /\b(bottom|brief|bikini bottom|swim short)\b/.test(context)
-          ? "swim bottom"
-          : /\b(top|triangle|tri|tankini top|bralette)\b/.test(context)
-            ? "triangle bikini top"
-            : "swimwear set";
+      let garmentType: string;
+      if (isSwimwear) {
+        garmentType = /\b(one piece|one-piece|monokini)\b/.test(context)
+          ? "one-piece swimsuit"
+          : /\b(bottom|brief|bikini bottom|swim short)\b/.test(context)
+            ? "swim bottom"
+            : /\b(top|triangle|tri|tankini top|bralette)\b/.test(context)
+              ? "triangle bikini top"
+              : "swimwear set";
+      } else if (isUnderwear) {
+        garmentType = /\b(bra|bralette|sports bra|support top)\b/.test(context)
+          ? "athletic support top"
+          : /\b(boxer|brief|trunk)\b/.test(context)
+            ? "athletic brief"
+            : /\b(bodysuit|body)\b/.test(context)
+              ? "fitted bodysuit"
+              : "base-layer garment";
+      } else {
+        garmentType = /\b(robe|kimono)\b/.test(context)
+          ? "lounge robe"
+          : /\b(pajama|pj|sleep)\b/.test(context)
+            ? "sleepwear set"
+            : "fitted fashion garment";
+      }
 
       const colorText = primaryColor ? `${primaryColor} ${pattern}` : pattern;
       const detailText = /\btriangle|tri\b/.test(context)
         ? "thin straps and triangle cups"
         : /\bone piece|one-piece\b/.test(context)
           ? "clean one-piece silhouette"
-          : "minimal modern swim silhouette";
+          : /\b(lace|lacey)\b/.test(context)
+            ? "lace detailing"
+            : "minimal modern silhouette";
 
-      return `Reference garment: ${colorText} ${garmentType} with ${detailText}. Keep it commercially styled and fully covering as swimwear.`;
+      return `Reference garment: ${colorText} ${garmentType} with ${detailText}. Keep it commercially styled and fully covering.`;
     };
 
-    const swimwearTextReference = buildSwimwearReferenceFromMetadata();
-    const useTextOnlySwimwearReference = isSwimwearOnly && !preExtractedGarment;
+    const intimateTextReference = buildIntimateReferenceFromMetadata();
+    const useTextOnlyIntimateReference = isIntimateGarment && !preExtractedGarment;
 
     const productDesc = [productName, productBrand ? `by ${productBrand}` : "", productCategory ? `(${productCategory})` : ""].filter(Boolean).join(" ");
     const sanitizedProductDesc = isIntimateGarment
