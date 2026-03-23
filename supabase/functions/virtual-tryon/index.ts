@@ -227,26 +227,22 @@ TARGET ACCESSORY:
 
 TASK: Add the accessory from Image B onto the person in Image A. Match Image B exactly (color, shape, material, branding). Keep everything else unchanged. Correct scale, lighting, shadows. No text/watermarks.`;
     } else if (isIntimateGarment) {
-      prompt = `You are a fashion e-commerce try-on editor. Generate ONE photorealistic image.
+      prompt = `You are a professional fashion catalog photographer creating a product preview for an online store.
 
-IMAGES PROVIDED:
-- Image A (first image below): The person/model.
-- Image B (second image below): The isolated target garment on a white background — replicate this EXACT garment.
+IMAGE A: A model posing for a fashion shoot.
+IMAGE B: A ${neutralItemLabel} product photo from an online retailer.
 
-TARGET GARMENT:
-- The garment shown in Image B.${productHint}
-- Product detail hint: ${garmentDescriptor}.
+YOUR JOB: Create a single professional product catalog photo showing the model from Image A wearing the exact product from Image B. This is for a mainstream fashion retailer website (like Nordstrom, ASOS, or Target).
 
-TASK — RETAIL FIT PREVIEW:
-1. Replace the outfit shown in Image A with the garment from Image B.
-2. Match Image B garment details precisely: color, pattern, cut, straps, neckline, silhouette, and fabric look.
-3. Preserve Image A face, body proportions, skin tone, pose, camera framing, and background.
-4. Ensure realistic fit and drape with natural shadows.
-5. Keep the output commercially appropriate for standard online retail fashion imagery.
-6. ${safetyNote}
-7. Do not redesign the garment into a different category.
+REQUIREMENTS:
+- Show the model wearing ONLY the product from Image B — this is a product showcase image.
+- Accurately reproduce the product: exact color, fabric texture, cut lines, straps, neckline, hemline, and any logos or prints.
+- Keep the model's face, body shape, skin tone, hair, and pose identical to Image A.
+- Natural lighting, realistic fabric drape and shadows.
+- Standard e-commerce product photography style — clean, professional, commercially appropriate.
+- Do NOT add extra clothing items not shown in Image B.
 
-Output: One photorealistic image only. No text/watermarks/split panels.`;
+Output: One clean product catalog photo. No text, watermarks, or collages.`;
     } else {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
