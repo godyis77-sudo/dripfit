@@ -144,10 +144,15 @@ export function useTryOnState() {
         if (url) {
           setUserPhotoRaw(url);
           persistState({ userPhoto: url });
+          try { localStorage.setItem(TRYON_USER_PHOTO_KEY, url); } catch { /* ignore */ }
         }
       });
-    } else {
+    } else if (v && (v.startsWith('http://') || v.startsWith('https://'))) {
       persistState({ userPhoto: v });
+      try { localStorage.setItem(TRYON_USER_PHOTO_KEY, v); } catch { /* ignore */ }
+    } else if (!v) {
+      persistState({ userPhoto: null });
+      try { localStorage.removeItem(TRYON_USER_PHOTO_KEY); } catch { /* ignore */ }
     }
   }, [persistState, eagerUpload]);
 
