@@ -152,6 +152,7 @@ const AnimatedRoutes = () => {
           <Route path="/media-kit" element={<PageTransition><MediaKit /></PageTransition>} />
           <Route path="/links" element={<PageTransition><LinkHub /></PageTransition>} />
           <Route path="/backgrounds" element={<PageTransition><Backgrounds /></PageTransition>} />
+          <Route path="/my-sizes" element={<ProtectedRoute><PageTransition><SizeComparison /></PageTransition></ProtectedRoute>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </AnimatePresence>
