@@ -52,6 +52,7 @@ const FoundingMembers = lazy(() => import("./pages/FoundingMembers"));
 const MediaKit = lazy(() => import("./pages/MediaKit"));
 const LinkHub = lazy(() => import("./pages/LinkHub"));
 const Backgrounds = lazy(() => import("./pages/Backgrounds"));
+const SizeComparison = lazy(() => import("./pages/SizeComparison"));
 
 // ── Suspense fallback (minimal, matches app background) ───────────────
 const RouteFallback = () => (
@@ -151,6 +152,7 @@ const AnimatedRoutes = () => {
           <Route path="/media-kit" element={<PageTransition><MediaKit /></PageTransition>} />
           <Route path="/links" element={<PageTransition><LinkHub /></PageTransition>} />
           <Route path="/backgrounds" element={<PageTransition><Backgrounds /></PageTransition>} />
+          <Route path="/my-sizes" element={<ProtectedRoute><PageTransition><SizeComparison /></PageTransition></ProtectedRoute>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </AnimatePresence>

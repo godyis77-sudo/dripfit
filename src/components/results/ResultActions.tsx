@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Shirt, Save, Check, Trash2, RotateCcw, Shield, Share, MessageSquare } from 'lucide-react';
+import { Shirt, Save, Check, Trash2, RotateCcw, Shield, Share, MessageSquare, LayoutGrid } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
@@ -110,6 +110,15 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
         onClick={onTryOn}
       >
         <Shirt className="mr-1.5 h-4 w-4" /> Try-On This Item
+      </Button>
+
+      {/* My Size Everywhere */}
+      <Button
+        variant="outline"
+        className="w-full h-10 rounded-lg text-sm font-bold"
+        onClick={() => navigate('/my-sizes')}
+      >
+        <LayoutGrid className="mr-1.5 h-4 w-4" /> My Size at Every Brand
       </Button>
 
       {/* Tertiary: Ask Fit Check */}
