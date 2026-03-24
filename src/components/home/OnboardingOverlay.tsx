@@ -1,5 +1,5 @@
-import { useState, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import BrandLogo from '@/components/ui/BrandLogo';
 
@@ -25,10 +25,19 @@ const STORAGE_KEY = 'onboarding_complete';
 
 export default function OnboardingOverlay() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [visible, setVisible] = useState(() => !localStorage.getItem(STORAGE_KEY));
   const [slide, setSlide] = useState(0);
   const [dir, setDir] = useState(1);
   const touchStartX = useRef(0);
+
+  // Re-check localStorage when navigating back (e.g. from /onboarding reset)
+  useEffect(() => {
+    if (!localStorage.getItem(STORAGE_KEY)) {
+      setVisible(true);
+      setSlide(0);
+    }
+  }, [location.key]);
 
   const complete = useCallback((dest?: string) => {
     localStorage.setItem(STORAGE_KEY, 'true');
@@ -49,7 +58,7 @@ export default function OnboardingOverlay() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center px-8"
+      className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center px-8 overflow-hidden"
       onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
       onTouchEnd={(e) => {
         const dx = e.changedTouches[0].clientX - touchStartX.current;
