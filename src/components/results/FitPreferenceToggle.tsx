@@ -26,7 +26,7 @@ const FitPreferenceToggle = ({ value, onChange }: FitPreferenceToggleProps) => {
             aria-checked={value === opt.value}
             onClick={() => onChange(opt.value)}
             className={`relative z-10 flex-1 py-2 text-[12px] font-semibold rounded-md transition-colors ${
-              value === opt.value ? 'text-primary-foreground' : 'text-muted-foreground'
+              value === opt.value ? 'text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             {opt.label}
