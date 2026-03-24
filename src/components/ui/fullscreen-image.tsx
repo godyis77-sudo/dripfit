@@ -65,6 +65,7 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
           pointerStartRef.current = null;
           pointerMovedRef.current = false;
         }}
+        onClick={() => setOpen(true)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
