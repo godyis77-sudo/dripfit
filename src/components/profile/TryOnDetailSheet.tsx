@@ -200,7 +200,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
                 className="h-11 rounded-xl text-[12px] font-bold gap-1.5 btn-luxury text-primary-foreground col-span-2"
                 onClick={() => {
                   window.open(post.product_urls![0], '_blank', 'noopener');
-                  trackEvent('shop_from_detail_sheet', { post_id: post.id });
+                  trackEvent('shop_clickout', { post_id: post.id });
                 }}
               >
                 <ShoppingBag className="h-4 w-4" />
