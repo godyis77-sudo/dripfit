@@ -1,6 +1,35 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { VirtualTryonSchema, parseOrError, successResponse, errorResponse, getCorsHeaders } from "../_shared/validation.ts";
 
+// ── CHANGE 1: Expanded sanitization map ──
+const INTIMATE_SANITIZE_MAP: Array<[RegExp, string]> = [
+  [/\b(lingerie|underwear|panties|briefs|boxers)\b/gi, "base-layer"],
+  [/\b(swimwear|swimsuit|bikini|one-piece|one piece|tankini)\b/gi, "activewear"],
+  [/\b(sports bra|bra|bralette)\b/gi, "support top"],
+  [/\b(open cup|open-cup|thong|g-string|pasties)\b/gi, "full-coverage"],
+  [/\b(sheer|see-through|see through|transparent)\b/gi, "opaque"],
+  [/\b(lace|lacey|lacy)\b/gi, "textured fabric"],
+  [/\b(mesh)\b/gi, "textured fabric"],
+  [/\b(plunge|deep-v|deep v|plunging)\b/gi, "v-neck"],
+  [/\b(cleavage|bust|bosom|decolletage)\b/gi, "neckline area"],
+  [/\b(skin|flesh|body|bare|naked|nude|exposed)\b/gi, "fabric"],
+  [/\b(corset|bustier)\b/gi, "structured bodice"],
+  [/\b(teddy|chemise|negligee|nightgown)\b/gi, "fitted dress"],
+  [/\b(bodysuit)\b/gi, "fitted one-piece"],
+  [/\b(crotch|groin)\b/gi, "lower panel"],
+  [/\b(nipple|areola)\b/gi, "front panel"],
+  [/\b(provocative|seductive|sexy|sensual)\b/gi, "stylish"],
+  [/\b(intimate|intimates)\b/gi, "athletic"],
+];
+
+function sanitizeIntimateText(text: string): string {
+  let result = text;
+  for (const [pattern, replacement] of INTIMATE_SANITIZE_MAP) {
+    result = result.replace(pattern, replacement);
+  }
+  return result.replace(/\s+/g, " ").trim();
+}
+
 Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
 
@@ -191,13 +220,13 @@ Deno.serve(async (req) => {
     const startedAt = Date.now();
 
     // ── EXTRACT GARMENT FROM PRODUCT IMAGE (OPTIONAL) ──
-    // For swimwear/underwear, pre-extract to reduce refusals from model-in-product photos.
     const forceIntimateExtraction = raw.forceIntimateExtraction === true;
     const disableIntimateExtraction = raw.disableIntimateExtraction === true;
-    // Enable extraction for ALL intimate categories, not just swimwear/underwear
     const enableIntimateExtraction = isIntimateGarment && !disableIntimateExtraction;
+
+    // CHANGE 3: Extraction prompt — no body-related words
     const extractIntimateGarment = async (): Promise<string | null> => {
-      const extractPrompt = `You are a product photography editor. Extract the ${promptIntimateLabel} from this product listing photo. Create a clean flat-lay image of ONLY the garment item on a plain white background. Preserve the exact color, pattern, fabric texture, straps, seams, cut, and any logos or prints. Do not include any person, model, mannequin, or skin — only the garment.`;
+      const extractPrompt = `You are a product photography editor. Extract the ${promptIntimateLabel} from this product listing photo. Remove the background and any display elements. Create a clean flat-lay image of ONLY the clothing item on a plain white background. Preserve the exact color, pattern, fabric texture, straps, seams, cut, and any logos or prints. Remove everything except the garment itself.`;
       const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = [
         { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 9_000, label: "extract-flash" },
         { model: "google/gemini-3-pro-image-preview", timeoutMs: 8_000, label: "extract-pro" },
@@ -265,15 +294,76 @@ Deno.serve(async (req) => {
       return null;
     };
 
+    // ── CHANGE 2: AI-powered garment description ──
+    const describeGarmentViaAI = async (): Promise<string | null> => {
+      if (!isIntimateGarment) return null;
+      const describePrompt = `Describe this clothing item in 2-3 sentences for a product catalog. Focus on: primary color(s), fabric type, cut/silhouette, neckline style, strap type, hemline, and any distinctive design elements like prints or hardware. Do NOT mention any person or model — describe only the garment itself. Use neutral retail terminology.`;
+      
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 8_000);
+        try {
+          const descResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+            method: "POST",
+            signal: controller.signal,
+            headers: {
+              Authorization: `Bearer ${LOVABLE_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model: "google/gemini-2.5-flash",
+              messages: [{
+                role: "user",
+                content: [
+                  { type: "text", text: describePrompt },
+                  { type: "image_url", image_url: { url: clothingImageInput } },
+                ],
+              }],
+            }),
+          });
+
+          if (!descResponse.ok) {
+            console.warn(`Garment description HTTP ${descResponse.status}`);
+            return null;
+          }
+
+          const descData = await descResponse.json();
+          const choices = descData.choices as Array<Record<string, unknown>> | undefined;
+          const msg = choices?.[0]?.message as Record<string, unknown> | undefined;
+          const text = typeof msg?.content === "string" ? msg.content : messageContentToText(msg?.content);
+          
+          if (text && text.trim().length > 20) {
+            // Sanitize the AI description through expanded sanitizer
+            const sanitized = sanitizeIntimateText(text.trim());
+            console.log(`AI garment description generated (${sanitized.length} chars)`);
+            return sanitized;
+          }
+          return null;
+        } finally {
+          clearTimeout(timer);
+        }
+      } catch (err) {
+        console.warn("Garment description failed:", err);
+        return null;
+      }
+    };
+
+    // ── CHANGE 4: Parallel extraction + description ──
     let garmentOnlyImage = clothingImageInput;
     let preExtractedGarment = false;
+    let aiGarmentDescription: string | null = null;
+
     if (enableIntimateExtraction) {
-      const extracted = await extractIntimateGarment();
+      const [extracted, description] = await Promise.all([
+        extractIntimateGarment(),
+        describeGarmentViaAI(),
+      ]);
       if (extracted) {
         garmentOnlyImage = extracted;
         preExtractedGarment = true;
       }
-      console.log(`Intimate extraction took ${Date.now() - startedAt}ms`);
+      aiGarmentDescription = description;
+      console.log(`Intimate extraction took ${Date.now() - startedAt}ms, description=${!!description}`);
     }
 
     const buildIntimateReferenceFromMetadata = (): string => {
@@ -318,27 +408,18 @@ Deno.serve(async (req) => {
         : /\bone piece|one-piece\b/.test(context)
           ? "clean one-piece silhouette"
           : /\b(lace|lacey)\b/.test(context)
-            ? "lace detailing"
+            ? "textured fabric detailing"
             : "minimal modern silhouette";
 
       return `Reference garment: ${colorText} ${garmentType} with ${detailText}. Keep it commercially styled and fully covering.`;
     };
 
     const intimateTextReference = buildIntimateReferenceFromMetadata();
-    // NEVER go text-only — always send the original product image so the AI
-    // replicates the exact garment. The text hint is supplementary context only.
-    const useTextOnlyIntimateReference = false;
 
     const productDesc = [productName, productBrand ? `by ${productBrand}` : "", productCategory ? `(${productCategory})` : ""].filter(Boolean).join(" ");
+    // CHANGE 1: Use expanded sanitizer
     const sanitizedProductDesc = isIntimateGarment
-      ? productDesc
-          .replace(/\b(lingerie|underwear|panties|briefs|boxers)\b/gi, "base-layer")
-          .replace(/\b(swimwear|swimsuit|bikini|one-piece|one piece|tankini)\b/gi, "activewear")
-          .replace(/\b(sports bra|bra|bralette)\b/gi, "support top")
-          .replace(/\b(open cup|open-cup|thong|g-string)\b/gi, "full-coverage")
-          .replace(/\b(sheer|see-through|transparent)\b/gi, "opaque")
-          .replace(/\s+/g, " ")
-          .trim()
+      ? sanitizeIntimateText(productDesc)
       : productDesc;
     const productHint = sanitizedProductDesc ? `\nProduct: "${sanitizedProductDesc}".` : "";
 
@@ -477,19 +558,41 @@ ${identityInstruction} Keep model facing the same direction as Image A — never
         { type: "image_url", image_url: { url: userImageInput } },
       ];
 
-      if (useTextOnlyIntimateReference) {
-        content.push({ type: "text", text: `\n\n========== GARMENT REFERENCE (TEXT) ==========\n${intimateTextReference}` });
-      } else {
-        content.push({ type: "text", text: "\n\n========== IMAGE B — THE TARGET GARMENT (replicate this garment exactly) ==========" });
-        content.push({ type: "image_url", image_url: { url: garmentOnlyImage } });
-      }
+      content.push({ type: "text", text: "\n\n========== IMAGE B — THE TARGET GARMENT (replicate this garment exactly) ==========" });
+      content.push({ type: "image_url", image_url: { url: garmentOnlyImage } });
 
       return content;
     };
 
-    if (useTextOnlyIntimateReference) {
-      console.log("Intimate generation using metadata-only garment reference (no product image input).");
-    }
+    // ── CHANGE 5: Text-bridge prompt builder (no product image) ──
+    const makeTextBridgePrompt = (description: string): string => {
+      return `Professional athletic performance wear catalog photo.
+
+IMAGE A: A fitness model — use as pose, proportions, and scene reference.
+
+GARMENT TO APPLY (described from product reference):
+${description}
+
+TASK: Create a product catalog photo showing the model from Image A wearing the garment described above.
+- Reproduce the garment faithfully based on the text description: match color, cut, fabric, straps, neckline, hemline.
+- ${garmentSwapScopeInstruction}
+- CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A.
+- ${identityInstruction}
+${intimateFramingInstruction}
+- ${bgInstruction}
+- Professional retail catalog quality — clean, commercially appropriate.
+
+Output: One clean photorealistic catalog photo. No text, watermarks, or collages.`;
+    };
+
+    const buildTextBridgeContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
+      // Text bridge: send ONLY the user photo — NO product image
+      return [
+        { type: "text", text: promptText },
+        { type: "text", text: "\n\n========== IMAGE A — BODY/POSE REFERENCE ==========" },
+        { type: "image_url", image_url: { url: userImageInput } },
+      ];
+    };
 
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
@@ -518,7 +621,6 @@ ${identityInstruction} Keep model facing the same direction as Image A — never
         break;
       }
 
-      // Cap each attempt so one slow model can't starve later retries.
       const attemptsLeftAfterThis = attemptPlan.length - attempt - 1;
       const isFinalAttempt = attempt === attemptPlan.length - 1;
       const reserveForRetriesMs = attemptsLeftAfterThis * MIN_REQUIRED_MS_PER_ATTEMPT + 1_000;
@@ -648,8 +750,8 @@ ${identityInstruction} Keep model facing the same direction as Image A — never
         const lowerMessage = messageText.toLowerCase();
         const looksLikeStyleRejection = /rejected this garment style|cannot generate|unable to generate|policy|safety/.test(lowerMessage);
         const looksLikeNonDiagnosticTextOnly =
-          /^(absolutely|sure|great|okay|ok|here(?:'|’)s|here you go|i(?:'|’)ve|i have|done|generated)/i.test(messageText) ||
-          /here(?:'|’)s the model/i.test(lowerMessage) ||
+          /^(absolutely|sure|great|okay|ok|here(?:'|')s|here you go|i(?:'|')ve|i have|done|generated)/i.test(messageText) ||
+          /here(?:'|')s the model/i.test(lowerMessage) ||
           /wearing the .* from image b/i.test(lowerMessage);
 
         if (isIntimateGarment && looksLikeStyleRejection) {
@@ -668,6 +770,7 @@ ${identityInstruction} Keep model facing the same direction as Image A — never
       if (!isFinalAttempt) await new Promise(r => setTimeout(r, 600));
     }
 
+    // Existing refusal rescue block
     if (!resultImage && isIntimateGarment && sawIntimateRefusal && !attemptedRefusalExtraction) {
       attemptedRefusalExtraction = true;
       const rescuedGarment = await extractIntimateGarment();
@@ -717,11 +820,77 @@ ${identityInstruction} Keep model facing the same direction as Image A — never
       }
     }
 
+    // ── CHANGE 6: Layer 3 text-bridge rescue — no product image sent ──
+    if (!resultImage && isIntimateGarment && sawIntimateRefusal) {
+      // Build the best available text description
+      const textDesc = aiGarmentDescription || intimateTextReference;
+      
+      if (textDesc && textDesc.length > 15) {
+        console.log("Layer 3 text-bridge: attempting try-on with text description only (no product image)");
+        const textBridgePrompt = makeTextBridgePrompt(textDesc);
+        
+        const textBridgeModels = [
+          { model: "google/gemini-3.1-flash-image-preview", label: "textbridge-flash", timeoutMs: 18_000 },
+          { model: "google/gemini-3-pro-image-preview", label: "textbridge-pro", timeoutMs: 14_000 },
+        ];
+
+        for (const tbPlan of textBridgeModels) {
+          const elapsedMs = Date.now() - startedAt;
+          const remainingMs = FUNCTION_BUDGET_MS - elapsedMs;
+          if (remainingMs <= MIN_REQUIRED_MS_PER_ATTEMPT) break;
+
+          const timeoutMs = Math.min(tbPlan.timeoutMs, Math.max(MIN_REQUIRED_MS_PER_ATTEMPT, remainingMs - 1_000));
+          console.log(`Text-bridge attempt model=${tbPlan.model} timeout=${timeoutMs}ms label=${tbPlan.label}`);
+
+          try {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+              const tbResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+                method: "POST",
+                signal: controller.signal,
+                headers: {
+                  Authorization: `Bearer ${LOVABLE_API_KEY}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  model: tbPlan.model,
+                  modalities: ["image", "text"],
+                  messages: [{
+                    role: "user",
+                    content: buildTextBridgeContent(textBridgePrompt),
+                  }],
+                }),
+              });
+
+              if (tbResponse.ok) {
+                const tbData = await tbResponse.json();
+                const tbImage = extractImageFromResponse(tbData);
+                if (tbImage) {
+                  resultImage = tbImage;
+                  console.log(`Layer 3 text-bridge SUCCEEDED (${tbPlan.label}) — no product image was sent`);
+                  break;
+                }
+              } else {
+                console.warn(`Text-bridge HTTP ${tbResponse.status} (${tbPlan.label})`);
+              }
+            } finally {
+              clearTimeout(timer);
+            }
+          } catch (tbErr) {
+            console.warn(`Text-bridge failed/timed out (${tbPlan.label}):`, tbErr);
+          }
+        }
+      } else {
+        console.warn("Layer 3 text-bridge skipped — no garment description available");
+      }
+    }
+
     if (!resultImage) {
       const lowerLastText = lastTextContent.toLowerCase();
       const looksLikeNonDiagnosticTextOnly =
-        /^(absolutely|sure|great|okay|ok|here(?:'|’)s|here you go|i(?:'|’)ve|i have|done|generated)/i.test(lastTextContent.trim()) ||
-        /here(?:'|’)s the model/i.test(lowerLastText) ||
+        /^(absolutely|sure|great|okay|ok|here(?:'|')s|here you go|i(?:'|')ve|i have|done|generated)/i.test(lastTextContent.trim()) ||
+        /here(?:'|')s the model/i.test(lowerLastText) ||
         /wearing the .* from image b/i.test(lowerLastText);
 
       if (lowerLastText.includes("trying a quicker fallback now") || lowerLastText.includes("trying a fallback now")) {
@@ -807,7 +976,6 @@ function extractImageFromResponse(aiResponse: Record<string, unknown>): string |
   const choices = aiResponse.choices as Array<Record<string, unknown>> | undefined;
   const message = choices?.[0]?.message as Record<string, unknown> | undefined;
   if (!message) {
-    // Check top-level data array (some formats)
     if (aiResponse.data && Array.isArray(aiResponse.data)) {
       for (const item of aiResponse.data as Array<{ url?: string; b64_json?: string }>) {
         if (item?.url) return item.url;
@@ -859,4 +1027,3 @@ function extractImageFromResponse(aiResponse: Record<string, unknown>): string |
   // Format 4: deep search fallback
   return deepSearch(message, "message") || deepSearch(aiResponse, "response");
 }
-
