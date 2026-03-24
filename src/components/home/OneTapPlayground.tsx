@@ -71,14 +71,19 @@ const OneTapPlayground = () => {
 
   const handleTapItem = useCallback((product: CatalogProduct) => {
     trackEvent('onetap_garment_tapped', { brand: product.brand, category: product.category });
-    navigate('/tryon', {
-      state: {
-        userPhoto: userPhoto || undefined,
-        clothingUrl: product.image_url,
-        productUrl: product.product_url,
-      },
+    setPreviewProduct({
+      id: product.id,
+      brand: product.brand,
+      name: product.name,
+      image_url: product.image_url,
+      product_url: product.product_url,
+      price_cents: product.price_cents,
+      category: product.category,
+      fit_profile: product.fit_profile,
+      fabric_composition: product.fabric_composition,
+      style_genre: product.style_genre,
     });
-  }, [navigate, userPhoto]);
+  }, []);
 
   return (
     <motion.section
