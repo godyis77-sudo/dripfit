@@ -7,6 +7,7 @@ import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalo
 import { useAuth } from '@/hooks/useAuth';
 import { compressImage } from '@/components/tryon/tryon-constants';
 import { isNativePlatform, takeNativePhoto } from '@/lib/nativeCamera';
+import { FullscreenImage } from '@/components/ui/fullscreen-image';
 
 /**
  * One-Tap Playground: split-screen camera + trending garment carousel.
@@ -158,7 +159,7 @@ const OneTapPlayground = () => {
           <div className="flex items-center justify-between px-3 pt-2.5 pb-1">
             <div className="flex items-center gap-1">
               <Sparkles className="h-3 w-3 text-primary" />
-              <span className="text-[11px] font-bold text-foreground">Tap a Fit</span>
+              <span className="text-[12px] font-bold text-foreground">Tap a Style</span>
             </div>
             <button
               onClick={() => navigate('/browse/all')}
@@ -177,25 +178,27 @@ const OneTapPlayground = () => {
                   <div key={i} className="rounded-lg skeleton-gold aspect-[3/4]" />
                 ))
               : curated.map(product => (
-                  <motion.button
-                    key={product.id}
-                    whileTap={{ scale: 0.93 }}
-                    onClick={() => handleTapItem(product)}
-                    className="relative rounded-lg overflow-hidden border border-border bg-background active:border-primary/50 transition-colors"
-                  >
-                    <div className="aspect-[3/4]">
-                      <img
-                        src={product.image_url}
-                        alt={product.name}
-                        loading="lazy"
-                        className="w-full h-full object-cover object-top"
-                      />
+                  <div key={product.id} className="relative rounded-lg overflow-hidden border border-border bg-background">
+                    <FullscreenImage
+                      src={product.image_url}
+                      alt={product.name}
+                      onTryOn={() => handleTapItem(product)}
+                      onShop={product.product_url ? () => window.open(product.product_url!, '_blank') : undefined}
+                    >
+                      <div className="aspect-[3/4] relative overflow-hidden">
+                        <img
+                          src={product.image_url}
+                          alt={product.name}
+                          loading="lazy"
+                          className="w-full h-full object-contain bg-muted/30"
+                        />
+                      </div>
+                    </FullscreenImage>
+                    <div className="px-1.5 py-1.5 bg-card">
+                      <p className="text-[10px] font-bold text-foreground uppercase tracking-wide truncate">{product.brand}</p>
+                      <p className="text-[10px] text-muted-foreground truncate leading-tight">{product.name}</p>
                     </div>
-                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-1.5">
-                      <p className="text-[8px] text-white/70 uppercase tracking-wider truncate">{product.brand}</p>
-                      <p className="text-[10px] font-bold text-white truncate">{product.name}</p>
-                    </div>
-                  </motion.button>
+                  </div>
                 ))}
           </div>
         </div>
