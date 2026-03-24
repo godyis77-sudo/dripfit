@@ -218,16 +218,14 @@ const OneTapPlayground = () => {
                     key={product.id}
                     whileTap={{ scale: 0.93 }}
                     onClick={() => handleTapItem(product)}
-                    className="relative rounded-lg overflow-hidden border border-border bg-background active:border-primary/50 transition-colors"
+                    className="relative rounded-xl overflow-hidden border border-border bg-muted/20 active:border-primary/50 transition-colors aspect-[3/4] flex items-center justify-center"
                   >
-                    <div className="aspect-[3/4] bg-muted/30">
-                      <img
-                        src={product.image_url}
-                        alt={product.name}
-                        loading="lazy"
-                        className="w-full h-full object-contain object-center"
-                      />
-                    </div>
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      loading="lazy"
+                      className="w-full h-full object-contain"
+                    />
                     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-1.5">
                       <p className="text-[8px] text-white/70 uppercase tracking-wider truncate">{product.brand}</p>
                       <p className="text-[10px] font-bold text-white truncate">{product.name}</p>
