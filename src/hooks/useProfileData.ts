@@ -130,79 +130,35 @@ export function useSavedItemCount(userId: string | undefined) {
   });
 }
 
-/** Trending fits for home page */
-export function useTrendingFits(userId: string | undefined) {
+/** Trending fits for home page — full-body model-shot products */
+export function useTrendingFits(_userId: string | undefined) {
   return useQuery({
-    queryKey: ['trending-fits', userId],
+    queryKey: ['trending-fits-catalog'],
     queryFn: async () => {
-      const TARGET = 6;
-      let posts: Array<{
-        id: string;
-        username: string;
-        caption: string | null;
-        image_url: string;
-        like_count: number;
-        created_at: string;
-        isLive?: boolean;
-      }> = [];
+      const { data } = await supabase
+        .from('product_catalog')
+        .select('id, brand, name, image_url, product_url, price_cents, category')
+        .eq('is_active', true)
+        .eq('presentation', 'model_shot')
+        .gte('image_confidence', 0.15)
+        .not('image_url', 'is', null)
+        .order('image_confidence', { ascending: false })
+        .limit(30);
 
-      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      if (!data || data.length === 0) return [];
 
-      if (userId) {
-        const { data: livePosts } = await supabase
-          .from('tryon_posts')
-          .select('id, user_id, caption, result_photo_url, created_at, is_public')
-          .eq('is_public', true)
-          .neq('user_id', userId)
-          .gte('created_at', sevenDaysAgo)
-          .order('created_at', { ascending: false })
-          .limit(TARGET);
-
-        if (livePosts && livePosts.length > 0) {
-          const userIds = [...new Set(livePosts.map(p => p.user_id))];
-          const { data: profiles } = await supabase
-            .from('profiles')
-            .select('user_id, display_name')
-            .in('user_id', userIds);
-          const nameMap = new Map(profiles?.map(p => [p.user_id, p.display_name]) || []);
-
-          const postIds = livePosts.map(p => p.id);
-          const { data: votes } = await supabase
-            .from('community_votes')
-            .select('post_id')
-            .in('post_id', postIds);
-          const voteCounts = new Map<string, number>();
-          votes?.forEach(v => voteCounts.set(v.post_id, (voteCounts.get(v.post_id) || 0) + 1));
-
-          posts = livePosts
-            .map(p => ({
-              id: p.id,
-              username: nameMap.get(p.user_id) || 'User',
-              caption: p.caption,
-              image_url: p.result_photo_url,
-              like_count: voteCounts.get(p.id) || 0,
-              created_at: p.created_at,
-              isLive: true,
-            }))
-            .sort((a, b) => b.like_count - a.like_count);
-        }
-      }
-
-      if (posts.length < TARGET) {
-        const remaining = TARGET - posts.length;
-        const { data: seeds } = await supabase
-          .from('seed_posts')
-          .select('*')
-          .eq('is_public', true)
-          .order('like_count', { ascending: false })
-          .limit(remaining);
-        if (seeds) {
-          posts = [...posts, ...seeds.map(s => ({ ...s, isLive: false }))];
-        }
-      }
-
-      return posts;
+      // Shuffle and pick 6
+      const shuffled = [...data].sort(() => Math.random() - 0.5);
+      return shuffled.slice(0, 6).map(p => ({
+        id: p.id,
+        brand: p.brand,
+        name: p.name,
+        image_url: p.image_url,
+        product_url: p.product_url,
+        price_cents: p.price_cents,
+        category: p.category,
+      }));
     },
-    staleTime: 2 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
   });
 }
