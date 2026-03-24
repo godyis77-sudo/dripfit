@@ -197,30 +197,30 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
 
         {/* Image */}
         <div className="relative w-full flex-1 min-h-0 flex items-center justify-center overflow-hidden px-2 pt-1">
-          <div className="relative w-full h-full rounded-2xl overflow-hidden bg-black flex items-center justify-center">
-          {/* Date — top left overlay */}
-          <div className="absolute top-3 left-3 z-10">
-            <p className="text-[11px] text-white/80 font-medium drop-shadow-sm">{new Date(post.created_at).toLocaleDateString()}</p>
-          </div>
-          <img
-            src={post.result_photo_url}
-            alt={post.caption || 'Try-on result'}
-            className="max-w-full max-h-full w-auto h-auto rounded-2xl"
-          />
-          {/* Caption — bottom right overlay on image */}
-          {postedCaption && (
-            <div className="absolute bottom-3 right-14 left-14 z-10">
-              <p className="text-[13px] text-white font-medium drop-shadow-sm text-center">{postedCaption}</p>
+          <div className="relative inline-flex rounded-2xl overflow-hidden bg-black max-w-full max-h-full">
+            {/* Date — top left overlay */}
+            <div className="absolute top-3 left-3 z-10">
+              <p className="text-[11px] text-white/80 font-medium drop-shadow-sm">{new Date(post.created_at).toLocaleDateString()}</p>
             </div>
-          )}
-          {/* Fire — bottom left overlay on image */}
-          <button
-            onClick={(e) => { e.stopPropagation(); handleLike(); }}
-            className={`absolute bottom-3 left-3 z-10 h-10 w-10 rounded-full backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform ${liked ? 'bg-primary/30 border border-primary/50' : 'bg-black/40'}`}
-            aria-label={liked ? 'Unlike' : 'Like'}
-          >
-            <span className="text-[20px] leading-none">🔥</span>
-          </button>
+            <img
+              src={post.result_photo_url}
+              alt={post.caption || 'Try-on result'}
+              className="max-w-full max-h-[calc(95dvh-220px)] w-auto h-auto rounded-2xl object-contain"
+            />
+            {/* Caption overlay on image */}
+            {postedCaption && (
+              <div className="absolute bottom-14 right-4 left-4 z-10">
+                <p className="text-[13px] text-white font-medium drop-shadow-sm text-center">{postedCaption}</p>
+              </div>
+            )}
+            {/* Fire — bottom left overlay on image */}
+            <button
+              onClick={(e) => { e.stopPropagation(); handleLike(); }}
+              className={`absolute bottom-3 left-3 z-10 h-10 w-10 rounded-full backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform ${liked ? 'bg-primary/30 border border-primary/50' : 'bg-black/40'}`}
+              aria-label={liked ? 'Unlike' : 'Like'}
+            >
+              <span className="text-[20px] leading-none">🔥</span>
+            </button>
           </div>
         </div>
 
