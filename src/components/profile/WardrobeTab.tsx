@@ -52,10 +52,38 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
     return () => { clearTimeout(t); document.removeEventListener('pointerdown', handler); };
   }, [longPressId]);
 
+  const likedCount = wardrobeItems.filter(i => i.is_liked).length;
+  const savedCount = wardrobeItems.filter(i => i.is_saved).length;
+  const filteredItems = filter === 'all' ? wardrobeItems
+    : filter === 'liked' ? wardrobeItems.filter(i => i.is_liked)
+    : wardrobeItems.filter(i => i.is_saved);
+
   return (
     <>
+      {/* Filter tabs */}
+      <div className="flex gap-2 mb-3">
+        {([
+          { key: 'all' as const, label: 'All', count: wardrobeItems.length, icon: null },
+          { key: 'liked' as const, label: 'Liked', count: likedCount, icon: <Heart className="h-3 w-3" /> },
+          { key: 'saved' as const, label: 'Saved', count: savedCount, icon: <Bookmark className="h-3 w-3" /> },
+        ]).map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setFilter(tab.key)}
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-bold transition-colors ${
+              filter === tab.key
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground'
+            }`}
+          >
+            {tab.icon}
+            {tab.label} ({tab.count})
+          </button>
+        ))}
+      </div>
+
       {/* Outfit Builder entry point */}
-      {wardrobeItems.length >= 2 && (
+      {wardrobeItems.length >= 2 && filter === 'all' && (
         <button
           onClick={() => navigate('/outfits')}
           className="w-full flex items-center gap-3 rounded-xl border border-border bg-card p-3 mb-3 active:scale-[0.98] transition-transform"
