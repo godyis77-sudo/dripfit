@@ -54,6 +54,7 @@ interface TryOnResultSectionProps {
   userGender: string | null;
   hasUnlimitedTryOns: boolean;
   addingAccessory: boolean;
+  sharing: boolean;
   onSetCaption: (v: string) => void;
   onSetIsPublic: (v: boolean) => void;
   onSetShowPostUI: (v: boolean) => void;
@@ -91,7 +92,7 @@ const TryOnResultSection = ({
   resultImage, userPhoto, clothingPhoto, category, productLink, selectedQuickPick,
   lookItems, showLookItems, user, isPublic, caption, shared, showPostUI,
   showSuccessOverlay, savedToItems, layerHistory, userGender,
-  hasUnlimitedTryOns, addingAccessory,
+  hasUnlimitedTryOns, addingAccessory, sharing,
   onSetCaption, onSetIsPublic, onSetShowPostUI, onShare, onTryAnother,
   onSaveToItems, onAddAccessory, onSetLookItems, onToast,
 }: TryOnResultSectionProps) => {
@@ -271,6 +272,7 @@ const TryOnResultSection = ({
   const productName = selectedQuickPick?.name || displayItems[0]?.name;
   const productBrand = selectedQuickPick?.brand || displayItems[0]?.brand;
   const productPrice = selectedQuickPick?.price_cents || displayItems[0]?.price_cents;
+  const isPostSelected = !shared && showPostUI && isPublic;
 
   return (
     <>
@@ -369,16 +371,16 @@ const TryOnResultSection = ({
           {!shared && (
             <button
               onClick={() => { onSetShowPostUI(true); if (!caption) onSetCaption(getCaptionSuggestions(category)[0]); onSetIsPublic(true); }}
-              className="flex flex-col items-center gap-1 py-2.5 rounded-xl bg-card border border-border active:scale-[0.96] transition-transform"
+              className={`flex flex-col items-center gap-1 py-2.5 rounded-xl border active:scale-[0.96] transition-transform ${isPostSelected ? 'bg-primary/5 border-primary/20' : 'bg-card border-border'}`}
             >
-              <MessageSquare className="h-4 w-4 text-primary" />
-              <span className="text-[10px] font-bold text-foreground">Post</span>
+              {isPostSelected ? <Check className="h-4 w-4 text-primary" /> : <MessageSquare className="h-4 w-4 text-primary" />}
+              <span className={`text-[10px] font-bold ${isPostSelected ? 'text-primary' : 'text-foreground'}`}>{isPostSelected ? 'Selected' : 'Post'}</span>
             </button>
           )}
           {shared && (
             <div className="flex flex-col items-center gap-1 py-2.5 rounded-xl bg-primary/5 border border-primary/20">
               <Check className="h-4 w-4 text-primary" />
-              <span className="text-[10px] font-bold text-primary">Posted</span>
+              <span className="text-[10px] font-bold text-primary">{isPublic ? 'Posted' : 'Saved'}</span>
             </div>
           )}
           <button
@@ -461,8 +463,12 @@ const TryOnResultSection = ({
                   </div>
                   <Switch checked={isPublic} onCheckedChange={(v) => { onSetIsPublic(v); saveSharePreference(v); }} />
                 </div>
-                <Button className="w-full h-10 rounded-lg btn-luxury text-primary-foreground text-[13px] font-bold tracking-wide" onClick={onShare}>
-                  {isPublic ? <><MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Save & Post</> : <><Save className="mr-1.5 h-3.5 w-3.5" /> Save to Profile</>}
+                <Button className="w-full h-10 rounded-lg btn-luxury text-primary-foreground text-[13px] font-bold tracking-wide" onClick={onShare} disabled={sharing}>
+                  {sharing
+                    ? <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> Saving…</>
+                    : isPublic
+                      ? <><MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Save & Post</>
+                      : <><Save className="mr-1.5 h-3.5 w-3.5" /> Save to Profile</>}
                 </Button>
               </div>
             </motion.div>
