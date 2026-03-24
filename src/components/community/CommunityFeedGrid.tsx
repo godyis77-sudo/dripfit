@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import PostCard from './PostCard';
