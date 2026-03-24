@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import ProductPreviewModal, { type ProductPreviewData } from '@/components/ui/ProductPreviewModal';
-import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
+import { trackEvent } from '@/lib/analytics';
 
 interface TrendingFit {
   id: string;
