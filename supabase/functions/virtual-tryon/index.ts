@@ -20,6 +20,8 @@ const INTIMATE_SANITIZE_MAP: Array<[RegExp, string]> = [
   [/\b(nipple|areola)\b/gi, "front panel"],
   [/\b(provocative|seductive|sexy|sensual)\b/gi, "stylish"],
   [/\b(intimate|intimates)\b/gi, "athletic"],
+  [/\b(minimal coverage|very little coverage|revealing)\b/gi, "streamlined fit"],
+  [/\b(string (bottoms?|briefs?)|high-cut|high cut)\b/gi, "athletic lower garment"],
 ];
 
 function sanitizeIntimateText(text: string): string {
