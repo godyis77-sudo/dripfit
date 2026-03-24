@@ -426,6 +426,11 @@ Deno.serve(async (req) => {
       : "Style the model in the complete swimwear look from the garment reference and avoid layering streetwear items.";
 
     const isSetGarment = /\b(set|two piece|2 piece|2-piece|pajama set|pj set|lounge set|sleep set|matching)\b/.test(normalizedProductContext);
+    const isBottomOnlyIntimate =
+      isIntimateGarment &&
+      !isSwimwear &&
+      /\b(panties|briefs|boxers|trunk|thong|g string|g-string|underwear|bottom|bottoms|boyshort|hipster)\b/.test(normalizedProductContext) &&
+      !/\b(top|bra|bralette|support top|sports bra|set|two piece|2 piece|one piece|one-piece|bodysuit)\b/.test(normalizedProductContext);
 
     const intimateScopeInstruction = isSwimwear
       ? swimwearScopeInstruction
@@ -433,6 +438,8 @@ Deno.serve(async (req) => {
         ? "Image B shows a MATCHING SET (top + bottom). Replace ALL clothing from Image A with BOTH pieces from Image B. Show ONLY what is visible in Image B — do NOT add leggings, pants, shorts, or any garment not shown in Image B."
         : isTopOnlyGarment
           ? "Image B shows a TOP-only garment. Replace the upper body clothing from Image A with the top from Image B. Keep the person's EXISTING lower-body clothing from Image A unchanged — do NOT replace bottoms."
+          : isBottomOnlyIntimate
+            ? "Image B shows a BOTTOM-only garment. Replace only the lower-body clothing from Image A with the bottom from Image B. Keep the person's EXISTING upper-body clothing from Image A unchanged — do NOT add leggings, pants, or extra garments."
           : "Replace the outfit in Image A with ONLY the COMPLETE garment from Image B — show every part of it (all straps, panels, cups, ties, etc). Show ONLY clothing visible in Image B. Do NOT add leggings, pants, or any extra garment not present in Image B.";
 
     const garmentSwapScopeInstruction = isIntimateGarment
@@ -605,15 +612,24 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
     };
 
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
+    const shouldBypassPrimaryForIntimate = isIntimateGarment && (isUnderwear || isExplicitIntimate || isBottomOnlyIntimate);
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
-      ? [
-          // Single generous attempt — intimate items either succeed in ~15-25s or get refused quickly (~3s)
-          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 28_000 },
-        ]
+      ? (
+          shouldBypassPrimaryForIntimate
+            ? []
+            : [
+                // Single generous attempt — intimate items either succeed in ~15-25s or get refused quickly (~3s)
+                { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 28_000 },
+              ]
+        )
       : [
           { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary`, timeoutMs: 28_000 },
           { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-retry`, timeoutMs: 20_000 },
         ];
+
+    if (shouldBypassPrimaryForIntimate) {
+      console.log("Intimate routing: bypassing product-image primary attempt and starting with text-bridge.");
+    }
 
     let resultImage: string | null = null;
     let lastTextContent = "";
@@ -853,7 +869,7 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
     }
 
     // ── CHANGE 6: Layer 3 text-bridge rescue — no product image sent ──
-    if (!resultImage && isIntimateGarment && (sawIntimateRefusal || sawIntimateTimeout)) {
+    if (!resultImage && isIntimateGarment && (sawIntimateRefusal || sawIntimateTimeout || shouldBypassPrimaryForIntimate)) {
       // Build the best available text description
       const textDesc = aiGarmentDescription || intimateTextReference;
       
@@ -861,17 +877,20 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
         console.log("Layer 3 text-bridge: attempting try-on with text description only (no product image)");
         const textBridgePrompt = makeTextBridgePrompt(textDesc);
         
-        // Single text-bridge attempt using ALL remaining budget
         const textBridgeModels = [
-          { model: "google/gemini-3.1-flash-image-preview", label: "textbridge-flash", timeoutMs: 50_000 },
+          { model: "google/gemini-3.1-flash-image-preview", label: "textbridge-flash", timeoutMs: 24_000 },
+          { model: "google/gemini-3-pro-image-preview", label: "textbridge-pro", timeoutMs: 24_000 },
         ];
 
-        for (const tbPlan of textBridgeModels) {
+        for (let tbIndex = 0; tbIndex < textBridgeModels.length; tbIndex++) {
+          const tbPlan = textBridgeModels[tbIndex];
           const elapsedMs = Date.now() - startedAt;
           const remainingMs = FUNCTION_BUDGET_MS - elapsedMs;
           if (remainingMs <= MIN_REQUIRED_MS_PER_ATTEMPT) break;
 
-          const timeoutMs = Math.min(tbPlan.timeoutMs, Math.max(MIN_REQUIRED_MS_PER_ATTEMPT, remainingMs - 1_000));
+          const attemptsLeftAfterThis = textBridgeModels.length - tbIndex - 1;
+          const reserveForRetriesMs = attemptsLeftAfterThis * MIN_REQUIRED_MS_PER_ATTEMPT + (attemptsLeftAfterThis > 0 ? 1_000 : 0);
+          const timeoutMs = Math.min(tbPlan.timeoutMs, Math.max(MIN_REQUIRED_MS_PER_ATTEMPT, remainingMs - reserveForRetriesMs));
           console.log(`Text-bridge attempt model=${tbPlan.model} timeout=${timeoutMs}ms label=${tbPlan.label}`);
 
           try {
@@ -902,6 +921,23 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
                   resultImage = tbImage;
                   console.log(`Layer 3 text-bridge SUCCEEDED (${tbPlan.label}) — no product image was sent`);
                   break;
+                }
+
+                try {
+                  console.warn(`Text-bridge no-image payload (${tbPlan.label}):`, JSON.stringify(tbData).substring(0, 1200));
+                } catch {
+                  // ignore logging serialization failures
+                }
+
+                const tbFirstChoice = (tbData.choices as Array<Record<string, unknown>>)?.[0];
+                const tbMessage = tbFirstChoice?.message as Record<string, unknown> | undefined;
+                const tbFinishReason = typeof tbFirstChoice?.finish_reason === "string" ? tbFirstChoice.finish_reason : "";
+                const tbNativeFinishReason = typeof tbFirstChoice?.native_finish_reason === "string" ? tbFirstChoice.native_finish_reason : "";
+                const tbRefusal = tbMessage && Object.prototype.hasOwnProperty.call(tbMessage, "refusal") ? tbMessage.refusal : undefined;
+                const tbRefusalSignal = `${typeof tbRefusal === "string" ? tbRefusal : ""} ${tbFinishReason} ${tbNativeFinishReason}`.toLowerCase();
+
+                if (/(image_prohibited_content|image_safety|prohibited|blocked|safety|no_image|image_other)/.test(tbRefusalSignal)) {
+                  lastTextContent = "Try-on was blocked by safety checks for this image combination. Retrying with a stricter fallback.";
                 }
               } else {
                 console.warn(`Text-bridge HTTP ${tbResponse.status} (${tbPlan.label})`);
