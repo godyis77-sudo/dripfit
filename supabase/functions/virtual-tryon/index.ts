@@ -609,6 +609,7 @@ Output: One clean photorealistic catalog photo. No text, watermarks, or collages
     let resultImage: string | null = null;
     let lastTextContent = "";
     let sawIntimateRefusal = false;
+    let sawIntimateTimeout = false;
     let attemptedRefusalExtraction = isIntimateGarment ? true : preExtractedGarment;
 
     for (let attempt = 0; attempt < attemptPlan.length; attempt++) {
@@ -658,6 +659,15 @@ Output: One clean photorealistic catalog photo. No text, watermarks, or collages
       } catch (fetchErr) {
         const isTimeout = (fetchErr instanceof DOMException || fetchErr instanceof Error) && (fetchErr as { name: string }).name === "AbortError";
         console.warn(`Attempt ${attempt + 1} (${plan.label}): ${isTimeout ? "TIMEOUT" : "FAILED"}`, fetchErr);
+
+        if (isTimeout && isIntimateGarment) {
+          sawIntimateTimeout = true;
+          const hasTextBridgeReference = Boolean(aiGarmentDescription || intimateTextReference);
+          if (hasTextBridgeReference) {
+            console.warn(`Attempt ${attempt + 1} (${plan.label}): timed out for intimate item, switching to text-bridge rescue early.`);
+            break;
+          }
+        }
 
         if (!lastTextContent || !lastTextContent.toLowerCase().includes("rejected this garment style")) {
           lastTextContent = isFinalAttempt
@@ -821,7 +831,7 @@ Output: One clean photorealistic catalog photo. No text, watermarks, or collages
     }
 
     // ── CHANGE 6: Layer 3 text-bridge rescue — no product image sent ──
-    if (!resultImage && isIntimateGarment && sawIntimateRefusal) {
+    if (!resultImage && isIntimateGarment && (sawIntimateRefusal || sawIntimateTimeout)) {
       // Build the best available text description
       const textDesc = aiGarmentDescription || intimateTextReference;
       
