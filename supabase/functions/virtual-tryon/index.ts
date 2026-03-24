@@ -398,7 +398,7 @@ Deno.serve(async (req) => {
         garmentType = /\b(bra|bralette|sports bra|support top)\b/.test(context)
           ? "athletic support top"
           : /\b(boxer|brief|trunk)\b/.test(context)
-            ? "athletic brief"
+            ? "athletic lower garment"
             : /\b(bodysuit|body)\b/.test(context)
               ? "fitted bodysuit"
               : "base-layer garment";
