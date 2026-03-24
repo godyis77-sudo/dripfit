@@ -14,6 +14,7 @@ import { trackEvent } from '@/lib/analytics';
 import { generateTryOnShareCard } from '@/lib/shareImage';
 import { useCart } from '@/hooks/useCart';
 import { getPostedCaption } from '@/components/community/community-types';
+import { useQueryClient } from '@tanstack/react-query';
 interface TryOnPost {
   id: string;
   result_photo_url: string;
