@@ -79,11 +79,7 @@ export default function OnboardingOverlay() {
       <div className="text-center mb-10">
         {/* Slide-specific icon */}
         <div className="mb-4 flex items-center justify-center">
-          {SLIDES[slide].icon === 'logo' ? (
-            <BrandLogo size="lg" className="scale-110" />
-          ) : (
-            <FeatureIcon variant={SLIDES[slide].icon} className="h-14 w-14" />
-          )}
+          <FeatureIcon name={SLIDES[slide].icon} size={56} />
         </div>
         <h2 className="text-xl font-bold font-display text-foreground mb-2">{SLIDES[slide].headline}</h2>
         <p className="text-[13px] text-muted-foreground max-w-[260px] mx-auto">{SLIDES[slide].sub}</p>
