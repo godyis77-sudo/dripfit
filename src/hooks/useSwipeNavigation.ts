@@ -4,9 +4,9 @@ import { hapticFeedback } from '@/lib/haptics';
 
 const TAB_PATHS = ['/home', '/capture', '/tryon', '/style-check', '/profile'];
 
-const SWIPE_THRESHOLD = 80;
-const SWIPE_VELOCITY = 0.3;
-const SWIPE_MAX_Y = 60;
+const SWIPE_THRESHOLD = 120;
+const SWIPE_VELOCITY = 0.5;
+const SWIPE_MAX_Y = 40;
 
 export function useSwipeNavigation() {
   const navigate = useNavigate();
