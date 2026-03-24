@@ -410,7 +410,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
 
     trackEvent('vote_submitted', { vote: key, source: 'fitcheck' });
     trackEvent('fitcheck_voted', { vote: key });
-  }, [userId, votes, posts, toast, addToCart, removeFromCart]);
+  }, [userId, votes, posts, toast, addToCart, removeFromCart, isInCart]);
 
   const handleFollowToggle = useCallback(async (targetUserId: string) => {
     if (!userId) { toast({ title: 'Sign in to follow', variant: 'destructive' }); return; }
