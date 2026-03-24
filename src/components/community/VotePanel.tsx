@@ -26,7 +26,7 @@ const VotePanel = ({ postId, votes, voteCounts, onVote }: VotePanelProps) => {
       {/* Outcome summary */}
       {totalBuy > 0 && (
         <div className="text-center">
-          <p className="text-[16px] font-bold text-white">{buyPct}% Buy it</p>
+          <p className="text-[16px] font-bold text-white">{buyPct}% COP</p>
           <p className="text-[11px] text-white/50">{totalBuy} vote{totalBuy !== 1 ? 's' : ''}</p>
         </div>
       )}
