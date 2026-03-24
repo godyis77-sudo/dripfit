@@ -7,6 +7,7 @@ import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalo
 import { useAuth } from '@/hooks/useAuth';
 import { compressImage } from '@/components/tryon/tryon-constants';
 import { isNativePlatform, takeNativePhoto } from '@/lib/nativeCamera';
+import { FullscreenImage } from '@/components/ui/fullscreen-image';
 
 /**
  * One-Tap Playground: split-screen camera + trending garment carousel.
