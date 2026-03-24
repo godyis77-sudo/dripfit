@@ -67,7 +67,7 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
                 alt={fit.name}
                 loading="lazy"
                 decoding="async"
-                className="absolute inset-0 w-full h-full object-cover object-top rounded-xl"
+                className="absolute inset-0 w-full h-full object-cover object-center rounded-xl"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-1.5">

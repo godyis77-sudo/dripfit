@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Camera, ImageIcon, ChevronRight } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
-import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
+import { type CatalogProduct } from '@/hooks/useProductCatalog';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { compressImage } from '@/components/tryon/tryon-constants';
 import { isNativePlatform, takeNativePhoto } from '@/lib/nativeCamera';
@@ -14,13 +16,13 @@ import ProductPreviewModal, { type ProductPreviewData } from '@/components/ui/Pr
  * Users tap a garment → get sent to try-on with both photos pre-loaded.
  * Zero reading required — pure visual interaction.
  */
-const FULL_BODY_CATEGORIES = new Set([
+const FULL_BODY_CATS = [
   'tops', 'top', 't-shirts', 'shirts', 'hoodies', 'polos', 'sweaters',
-  'bottoms', 'bottom', 'jeans', 'pants', 'shorts', 'skirts', 'leggings',
+  'bottoms', 'bottom', 'jeans', 'pants', 'shorts',
   'dresses', 'dress', 'jumpsuits',
   'outerwear', 'jackets', 'coats', 'blazers', 'vests',
   'activewear', 'loungewear',
-]);
+];
 
 const OneTapPlayground = () => {
   const navigate = useNavigate();
@@ -33,24 +35,35 @@ const OneTapPlayground = () => {
   const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
 
-  const { products, loading } = useProductCatalog(undefined, undefined, undefined, mappedGender);
+  const { data: allModelShots = [], isLoading: loading } = useQuery({
+    queryKey: ['onetap-model-shots', mappedGender],
+    queryFn: async () => {
+      let query = supabase
+        .from('product_catalog')
+        .select('id, brand, name, image_url, product_url, price_cents, currency, category, presentation, image_confidence, tags, fit_profile, fabric_composition, style_genre, retailer, gender')
+        .eq('is_active', true)
+        .eq('presentation', 'model_shot')
+        .in('category', FULL_BODY_CATS)
+        .gte('image_confidence', 0.5)
+        .not('image_url', 'is', null)
+        .order('image_confidence', { ascending: false })
+        .limit(30);
+
+      if (mappedGender) {
+        query = query.in('gender', [mappedGender, 'unisex']);
+      }
+
+      const { data } = await query;
+      return (data ?? []) as unknown as CatalogProduct[];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
   const curated = useMemo(() => {
-    const filtered = products.filter((p) => {
-      const category = (p.category ?? '').toLowerCase();
-      const confidence = p.image_confidence ?? 0;
-      return (
-        Boolean(p.image_url) &&
-        p.presentation === 'model_shot' &&
-        confidence >= 0.45 &&
-        FULL_BODY_CATEGORIES.has(category)
-      );
-    });
-
-    // Pick a mix of categories, limit to 8
+    const shuffled = [...allModelShots].sort(() => Math.random() - 0.5);
     const seen = new Set<string>();
     const result: CatalogProduct[] = [];
-    for (const p of filtered) {
+    for (const p of shuffled) {
       if (result.length >= 8) break;
       const key = `${p.brand}-${p.category}`;
       if (seen.has(key)) continue;
@@ -58,7 +71,7 @@ const OneTapPlayground = () => {
       result.push(p);
     }
     return result;
-  }, [products]);
+  }, [allModelShots]);
 
   const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -212,7 +225,7 @@ const OneTapPlayground = () => {
                         src={product.image_url}
                         alt={product.name}
                         loading="lazy"
-                        className="w-full h-full object-cover object-top"
+                        className="w-full h-full object-cover object-center"
                       />
                     </div>
                     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-1.5">
