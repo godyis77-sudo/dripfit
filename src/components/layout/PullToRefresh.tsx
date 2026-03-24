@@ -49,13 +49,14 @@ export function PullToRefresh({ onRefresh, children }: PullToRefreshProps) {
 
   return (
     <div
+      className="relative"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       <motion.div
-        style={{ opacity: indicatorOpacity }}
-        className="flex items-center justify-center py-3"
+        style={{ opacity: indicatorOpacity, y: pullY }}
+        className="absolute inset-x-0 top-0 z-50 flex items-center justify-center py-3 pointer-events-none -translate-y-full"
       >
         <motion.div
           style={{ rotate: refreshing ? undefined : indicatorRotation }}
