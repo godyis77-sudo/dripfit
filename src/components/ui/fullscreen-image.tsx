@@ -97,7 +97,7 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-[240] h-dvh w-screen overflow-hidden overscroll-none bg-black/95 flex flex-col items-center justify-center"
-            onClick={(e) => {
+            onPointerDown={(e) => {
               if (e.target === e.currentTarget) setOpen(false);
             }}
           >
