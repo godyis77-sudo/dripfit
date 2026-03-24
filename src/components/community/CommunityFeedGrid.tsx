@@ -89,7 +89,7 @@ const CommunityFeedGrid = ({
         </div>
       )}
       {!hasMore && posts.length > 0 && (
-        <p className="text-center text-[10px] text-muted-foreground pb-20 pt-2">You've seen it all ✨</p>
+        <EndOfFeedCTA onPostLook={onPostLook} />
       )}
     </>
   );
