@@ -95,4 +95,29 @@ const CommunityFeedGrid = ({
   );
 };
 
+/** End-of-feed CTA — replaces dead-end "You've seen it all" */
+const EndOfFeedCTA = ({ onPostLook }: { onPostLook: () => void }) => {
+  const navigate = useNavigate();
+  return (
+    <div className="flex flex-col items-center pb-20 pt-4 text-center">
+      <p className="text-[11px] text-muted-foreground mb-3">You've seen it all ✨</p>
+      <div className="flex gap-2">
+        <Button
+          className="h-10 px-4 rounded-xl btn-luxury text-primary-foreground text-[12px] font-bold"
+          onClick={onPostLook}
+        >
+          Post a Look
+        </Button>
+        <Button
+          variant="outline"
+          className="h-10 px-4 rounded-xl text-[12px] font-semibold"
+          onClick={() => navigate('/tryon')}
+        >
+          Try On Something New
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 export default CommunityFeedGrid;
