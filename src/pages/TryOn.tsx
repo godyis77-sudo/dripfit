@@ -446,15 +446,15 @@ const TryOn = () => {
               <p className="text-[12px] text-muted-foreground leading-relaxed">AI preview — actual fit, drape, and texture may vary. Use your Scan profile for the most accurate sizing.</p>
             </div>
 
-            {/* Generate CTA — only show when user has at least one photo */}
-            {(s.userPhoto || s.clothingPhoto) && !s.loading && (
+            {/* Generate CTA — only show when user has at least one photo and no result */}
+            {(s.userPhoto || s.clothingPhoto) && !s.loading && !s.resultImage && (
               <div className="sticky bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 -mx-4 px-4 py-3 bg-gradient-to-t from-background via-background to-background/0">
                 <Button className="w-full h-12 min-h-[44px] rounded-lg text-sm font-bold btn-luxury text-primary-foreground active:scale-[0.97] transition-transform shadow-lg disabled:opacity-30" onClick={s.handleTryOn} disabled={!s.canGenerate}>
                   <Sparkles className="mr-2 h-4 w-4" /> Generate Try-On
                 </Button>
               </div>
             )}
-            {(s.userPhoto || s.clothingPhoto) && s.loading && createPortal(
+            {(s.userPhoto || s.clothingPhoto) && s.loading && !s.resultImage && createPortal(
               <div className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-[120] px-4 animate-in slide-in-from-bottom-8 duration-300">
                 <div className="mx-auto w-full max-w-[390px]">
                   <div className="glass-card border border-primary/20 rounded-2xl px-4 py-3 shadow-[0_-4px_30px_-8px_hsl(var(--primary)/0.25)] backdrop-blur-xl">
