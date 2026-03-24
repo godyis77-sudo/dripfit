@@ -49,32 +49,33 @@ const DemoTryOnSection = () => {
         onTouchEnd={e => e.stopPropagation()}
       >
         {DEMO_RESULTS.map((demo) => (
-          <button
+          <div
             key={demo.id}
-            onClick={handleTryThis}
-            className="shrink-0 w-[130px] rounded-xl overflow-hidden border border-primary/20 bg-card active:scale-[0.96] transition-transform group"
+            className="shrink-0 w-[130px] rounded-xl overflow-hidden border border-primary/20 bg-card"
           >
-            <div className="aspect-[3/4] relative overflow-hidden">
-              <img
-                src={demo.image}
-                alt={demo.label}
-                className="w-full h-full object-cover object-top rounded-xl"
-                loading="lazy"
-              />
-              {/* AI badge */}
-              <span className="absolute top-1.5 left-1.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-primary/90 text-primary-foreground text-[8px] font-bold uppercase tracking-wider">
-                <Sparkles className="h-2.5 w-2.5" /> AI Try-On
-              </span>
-              {/* Hover CTA */}
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent pt-6 pb-2 px-2 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity">
-                <span className="text-[10px] font-bold text-white">Try This Look →</span>
+            <FullscreenImage
+              src={demo.image}
+              alt={demo.label}
+              onTryOn={handleTryThis}
+            >
+              <div className="aspect-[3/4] relative overflow-hidden">
+                <img
+                  src={demo.image}
+                  alt={demo.label}
+                  className="w-full h-full object-cover object-top rounded-xl"
+                  loading="lazy"
+                />
+                {/* AI badge */}
+                <span className="absolute top-1.5 left-1.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-primary/90 text-primary-foreground text-[8px] font-bold uppercase tracking-wider">
+                  <Sparkles className="h-2.5 w-2.5" /> AI Try-On
+                </span>
               </div>
-            </div>
+            </FullscreenImage>
             <div className="px-2 py-1.5">
-              <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{demo.brand}</p>
+              <p className="text-[10px] font-bold text-foreground uppercase tracking-wide">{demo.brand}</p>
               <p className="text-[11px] font-semibold text-foreground truncate leading-tight">{demo.label}</p>
             </div>
-          </button>
+          </div>
         ))}
       </div>
     </motion.section>
