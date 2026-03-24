@@ -875,7 +875,7 @@ const TryOnResultSection = ({
             <div className="shrink-0 px-5 pb-6 pt-3 space-y-3" onPointerDown={(e) => e.stopPropagation()}>
               {/* Product info */}
               <div className="text-center">
-                {productBrand && <p className="text-[11px] text-white/50 uppercase tracking-wider font-bold">{productBrand}</p>}
+                {productBrand && <p className="text-[11px] text-white font-extrabold uppercase tracking-wider drop-shadow-sm">{productBrand}</p>}
                 {productName && <p className="text-[12px] font-bold text-white mt-0.5 truncate">{productName}</p>}
                 {productPrice != null && (
                   <p className="text-sm font-bold text-primary mt-1">${(productPrice / 100).toFixed(0)}</p>
