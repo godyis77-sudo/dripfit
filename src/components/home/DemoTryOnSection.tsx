@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
+import { FullscreenImage } from '@/components/ui/fullscreen-image';
 import demoImg1 from '@/assets/demo-tryon-1.jpg';
 import demoImg2 from '@/assets/demo-tryon-2.jpg';
 import demoImg3 from '@/assets/demo-tryon-3.jpg';
