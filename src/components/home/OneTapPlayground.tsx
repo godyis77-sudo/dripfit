@@ -7,6 +7,7 @@ import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalo
 import { useAuth } from '@/hooks/useAuth';
 import { compressImage } from '@/components/tryon/tryon-constants';
 import { isNativePlatform, takeNativePhoto } from '@/lib/nativeCamera';
+import ProductPreviewModal, { type ProductPreviewData } from '@/components/ui/ProductPreviewModal';
 
 /**
  * One-Tap Playground: split-screen camera + trending garment carousel.
@@ -22,6 +23,7 @@ const OneTapPlayground = () => {
 
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [previewProduct, setPreviewProduct] = useState<ProductPreviewData | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
 
@@ -69,16 +71,22 @@ const OneTapPlayground = () => {
 
   const handleTapItem = useCallback((product: CatalogProduct) => {
     trackEvent('onetap_garment_tapped', { brand: product.brand, category: product.category });
-    navigate('/tryon', {
-      state: {
-        userPhoto: userPhoto || undefined,
-        clothingUrl: product.image_url,
-        productUrl: product.product_url,
-      },
+    setPreviewProduct({
+      id: product.id,
+      brand: product.brand,
+      name: product.name,
+      image_url: product.image_url,
+      product_url: product.product_url,
+      price_cents: product.price_cents,
+      category: product.category,
+      fit_profile: product.fit_profile,
+      fabric_composition: product.fabric_composition,
+      style_genre: product.style_genre,
     });
-  }, [navigate, userPhoto]);
+  }, []);
 
   return (
+    <>
     <motion.section
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -210,6 +218,27 @@ const OneTapPlayground = () => {
         </div>
       )}
     </motion.section>
+
+      <ProductPreviewModal
+        product={previewProduct}
+        onClose={() => setPreviewProduct(null)}
+        onTryOn={(p) => {
+          setPreviewProduct(null);
+          navigate('/tryon', {
+            state: {
+              userPhoto: userPhoto || undefined,
+              clothingUrl: p.image_url,
+              productUrl: p.product_url,
+            },
+          });
+        }}
+        onShop={(p) => {
+          if (p.product_url) {
+            window.open(p.product_url, '_blank', 'noopener');
+          }
+        }}
+      />
+    </>
   );
 };
 
