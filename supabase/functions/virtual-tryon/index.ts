@@ -761,6 +761,13 @@ Output: One clean photorealistic catalog photo. No text, watermarks, or collages
             console.log(`Refusal rescue extracted garment (${plan.label}); retrying with cleaned product image.`);
           }
         }
+
+        const hasTextBridgeReference = Boolean(aiGarmentDescription || intimateTextReference);
+        const hasCleanGarmentRef = garmentOnlyImage !== clothingImageInput;
+        if (!extractedAfterRefusal && hasTextBridgeReference && !hasCleanGarmentRef) {
+          console.warn(`Attempt ${attempt + 1} (${plan.label}): refusal with no clean garment extract, switching to text-bridge early.`);
+          break;
+        }
       }
 
       if (messageText) {
