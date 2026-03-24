@@ -1,6 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import BrandLogo from '@/components/ui/BrandLogo';
 
 const SLIDES = [
@@ -28,7 +27,6 @@ export default function OnboardingOverlay() {
   const location = useLocation();
   const [visible, setVisible] = useState(() => !localStorage.getItem(STORAGE_KEY));
   const [slide, setSlide] = useState(0);
-  const [dir, setDir] = useState(1);
   const touchStartX = useRef(0);
 
   // Re-check localStorage when navigating back (e.g. from /onboarding reset)
@@ -47,17 +45,13 @@ export default function OnboardingOverlay() {
 
   const goTo = useCallback((next: number) => {
     if (next < 0 || next >= SLIDES.length) return;
-    setDir(next > slide ? 1 : -1);
     setSlide(next);
-  }, [slide]);
+  }, []);
 
   if (!visible) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+    <div
       className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center px-8 overflow-hidden"
       onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
       onTouchEnd={(e) => {
@@ -78,21 +72,11 @@ export default function OnboardingOverlay() {
 
       <BrandLogo size="xl" iconOnly className="mb-8" />
 
-      <AnimatePresence mode="wait" custom={dir}>
-        <motion.div
-          key={slide}
-          custom={dir}
-          initial={{ opacity: 0, x: dir * 60 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: dir * -60 }}
-          transition={{ duration: 0.25 }}
-          className="text-center mb-10"
-        >
-          <span className="text-5xl mb-4 block">{SLIDES[slide].emoji}</span>
-          <h2 className="text-xl font-bold font-display text-foreground mb-2">{SLIDES[slide].headline}</h2>
-          <p className="text-[13px] text-muted-foreground max-w-[260px] mx-auto">{SLIDES[slide].sub}</p>
-        </motion.div>
-      </AnimatePresence>
+      <div className="text-center mb-10">
+        <span className="text-5xl mb-4 block">{SLIDES[slide].emoji}</span>
+        <h2 className="text-xl font-bold font-display text-foreground mb-2">{SLIDES[slide].headline}</h2>
+        <p className="text-[13px] text-muted-foreground max-w-[260px] mx-auto">{SLIDES[slide].sub}</p>
+      </div>
 
       {/* Dots */}
       <div className="flex gap-2 mb-8">
@@ -130,6 +114,6 @@ export default function OnboardingOverlay() {
           </button>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }
