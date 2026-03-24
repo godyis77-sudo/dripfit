@@ -224,42 +224,44 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
           </div>
         </div>
 
-        {/* Caption field */}
-        <div className="px-4 pt-2">
-          {editingCaption ? (
-            <div className="flex items-center gap-2">
-              <input
-                autoFocus
-                value={captionDraft}
-                onChange={(e) => setCaptionDraft(e.target.value)}
-                maxLength={200}
-                placeholder="Add a caption…"
-                className="flex-1 h-10 rounded-xl border border-border bg-muted/50 px-3 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                onKeyDown={(e) => { if (e.key === 'Enter') handleSaveCaption(); }}
-              />
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-10 w-10 rounded-xl shrink-0"
-                onClick={handleSaveCaption}
-                disabled={savingCaption}
+        {/* Caption field — only shown when posting to community */}
+        {showCaptionForPost && (
+          <div className="px-4 pt-2">
+            {editingCaption ? (
+              <div className="flex items-center gap-2">
+                <input
+                  autoFocus
+                  value={captionDraft}
+                  onChange={(e) => setCaptionDraft(e.target.value)}
+                  maxLength={200}
+                  placeholder="Add a caption…"
+                  className="flex-1 h-10 rounded-xl border border-border bg-muted/50 px-3 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleSaveCaption(); }}
+                />
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-10 w-10 rounded-xl shrink-0"
+                  onClick={handleSaveCaption}
+                  disabled={savingCaption}
+                >
+                  <Check className="h-4 w-4 text-primary" />
+                </Button>
+              </div>
+            ) : (
+              <button
+                className="flex items-center gap-1.5 text-[12px] text-muted-foreground hover:text-foreground transition-colors min-h-[44px]"
+                onClick={() => {
+                  setCaptionDraft(post.caption || '');
+                  setEditingCaption(true);
+                }}
               >
-                <Check className="h-4 w-4 text-primary" />
-              </Button>
-            </div>
-          ) : (
-            <button
-              className="flex items-center gap-1.5 text-[12px] text-muted-foreground hover:text-foreground transition-colors min-h-[44px]"
-              onClick={() => {
-                setCaptionDraft(post.caption || '');
-                setEditingCaption(true);
-              }}
-            >
-              <Pencil className="h-3.5 w-3.5" />
-              {postedCaption || 'Add a caption…'}
-            </button>
-          )}
-        </div>
+                <Pencil className="h-3.5 w-3.5" />
+                {postedCaption || 'Add a caption…'}
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Actions */}
         <div className="px-4 pt-2 pb-[max(1.5rem,env(safe-area-inset-bottom,1.5rem))] space-y-3 overflow-y-auto">
