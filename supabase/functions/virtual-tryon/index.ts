@@ -487,8 +487,9 @@ ${intimateFramingInstruction}
 - Natural fabric drape and realistic shadows matching the scene lighting.
 - Do NOT add extra clothing items not shown in the garment reference.
 - Professional retail catalog quality — clean, commercially appropriate.
+- CRITICAL: Show the model's FULL BODY from head to feet in the output image. Include legs and feet — do NOT crop at the waist or torso.
 
-Output: One clean photorealistic catalog photo. No text, watermarks, or collages.`;
+Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, or collages.`;
     } else {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
