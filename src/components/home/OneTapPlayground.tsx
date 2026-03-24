@@ -127,7 +127,7 @@ const OneTapPlayground = () => {
       <input ref={cameraRef} type="file" accept="image/jpeg,image/png,image/webp" capture="user" onChange={handleFileSelect} className="hidden" />
 
       {/* Split screen layout */}
-      <div className="grid grid-cols-[1fr_1.5fr] min-h-[280px]">
+      <div className="grid grid-cols-[1fr_1.5fr]">
         {/* Left: User photo / camera prompt */}
         <div className="relative border-r border-border/50 flex flex-col items-center justify-center p-3 bg-gradient-to-b from-primary/5 to-transparent">
           <AnimatePresence mode="wait">
