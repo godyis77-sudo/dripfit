@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shirt, Sparkles, Store, ExternalLink, Trash2, MoreHorizontal } from 'lucide-react';
+import { Shirt, Sparkles, Store, ExternalLink, Trash2, MoreHorizontal, Heart, Bookmark } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
 import { detectBrandFromUrl, detectCategoryFromUrl } from '@/lib/retailerDetect';
 import WardrobeDetailSheet from './WardrobeDetailSheet';
@@ -16,7 +16,12 @@ interface WardrobeItem {
   brand: string | null;
   notes: string | null;
   created_at: string;
+  is_liked?: boolean;
+  is_saved?: boolean;
+  source_post_id?: string | null;
 }
+
+type WardrobeFilter = 'all' | 'liked' | 'saved';
 
 interface WardrobeTabProps {
   wardrobeItems: WardrobeItem[];
@@ -25,6 +30,7 @@ interface WardrobeTabProps {
 }
 
 const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: WardrobeTabProps) => {
+  const [filter, setFilter] = useState<WardrobeFilter>('all');
   const navigate = useNavigate();
   const [selectedItem, setSelectedItem] = useState<WardrobeItem | null>(null);
   const [longPressId, setLongPressId] = useState<string | null>(null);
