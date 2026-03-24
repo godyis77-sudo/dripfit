@@ -206,27 +206,27 @@ const OneTapPlayground = () => {
           </div>
 
           <div
-            className="grid grid-cols-2 gap-2 px-2 pb-2 overflow-y-auto max-h-[320px]"
+            className="grid grid-cols-2 auto-rows-[120px] gap-2 px-2 pb-2 overflow-y-auto max-h-[320px]"
             onTouchStart={e => e.stopPropagation()}
           >
             {loading && !curated.length
               ? Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="rounded-2xl skeleton-gold aspect-[3/4]" />
+                  <div key={i} className="rounded-2xl skeleton-gold h-full" />
                 ))
               : curated.map(product => (
                   <motion.button
                     key={product.id}
                     whileTap={{ scale: 0.93 }}
                     onClick={() => handleTapItem(product)}
-                    className="relative rounded-2xl overflow-hidden border border-border/60 bg-muted/20 active:border-primary/50 transition-colors aspect-[3/4]"
+                    className="relative rounded-2xl overflow-hidden border border-border/60 bg-muted/20 active:border-primary/50 transition-colors h-full"
                   >
                     <img
                       src={product.image_url}
                       alt={product.name}
                       loading="lazy"
-                      className="absolute inset-0 w-full h-full object-cover object-top rounded-2xl"
+                      className="absolute inset-0 w-full h-full object-cover object-top"
                     />
-                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-1.5 rounded-b-2xl">
+                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-1.5">
                       <p className="text-[8px] text-white/70 uppercase tracking-wider truncate">{product.brand}</p>
                       <p className="text-[10px] font-bold text-white truncate">{product.name}</p>
                     </div>
