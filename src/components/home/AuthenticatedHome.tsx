@@ -190,10 +190,10 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               <p className="section-label mb-0">Recommended for you</p>
             </div>
             <button
-              onClick={() => navigate('/browse/tops')}
-              className="text-[10px] text-primary font-semibold min-h-[44px] flex items-center"
+              onClick={() => navigate('/browse/all')}
+              className="text-[11px] font-bold min-h-[44px] flex items-center px-3 py-1 rounded-lg btn-luxury text-primary-foreground"
             >
-              Browse All →
+              Browse All 7,000+ →
             </button>
           </div>
 

@@ -1,4 +1,4 @@
-import { useState, useCallback, forwardRef } from 'react';
+import { useState, useCallback, useEffect, forwardRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,6 +9,16 @@ const HomeFAB = forwardRef<HTMLDivElement>((_, ref) => {
   const navigate = useNavigate();
   const [fabOpen, setFabOpen] = useState(false);
   const closeFab = useCallback(() => setFabOpen(false), []);
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  useEffect(() => {
+    const key = 'fab_tooltip_shown';
+    if (!localStorage.getItem(key)) {
+      const t = setTimeout(() => setShowTooltip(true), 1000);
+      const dismiss = setTimeout(() => { setShowTooltip(false); localStorage.setItem(key, 'true'); }, 4000);
+      return () => { clearTimeout(t); clearTimeout(dismiss); };
+    }
+  }, []);
 
   const items = [
     { icon: <FeatureIcon name="scan" size={22} />, label: 'New Body Scan', action: () => navigate('/capture') },
@@ -64,14 +74,30 @@ const HomeFAB = forwardRef<HTMLDivElement>((_, ref) => {
           </motion.div>
         )}
       </AnimatePresence>
-      <motion.button
-        whileTap={{ scale: 0.93 }}
-        onClick={() => setFabOpen(!fabOpen)}
-        className="h-12 w-12 rounded-full badge-gold-3d shimmer-sweep glow-primary relative z-50 flex items-center justify-center"
-        aria-label={fabOpen ? 'Close menu' : 'Quick actions'}
-      >
-        <Plus className={`h-5 w-5 text-primary-foreground transition-transform duration-200 ease-in-out ${fabOpen ? 'rotate-45' : ''}`} />
-      </motion.button>
+      <div className="relative">
+        <AnimatePresence>
+          {showTooltip && !fabOpen && (
+            <motion.div
+              key="tooltip"
+              initial={{ opacity: 0, y: 4, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 4, scale: 0.9 }}
+              className="absolute -top-10 right-0 bg-card border border-primary/30 rounded-lg px-3 py-1.5 shadow-lg whitespace-nowrap z-50"
+            >
+              <span className="text-[11px] font-bold text-primary">Quick Try-On ✨</span>
+              <div className="absolute -bottom-1 right-4 w-2 h-2 bg-card border-b border-r border-primary/30 rotate-45" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <motion.button
+          whileTap={{ scale: 0.93 }}
+          onClick={() => { setFabOpen(!fabOpen); setShowTooltip(false); }}
+          className="h-12 w-12 rounded-full badge-gold-3d shimmer-sweep glow-primary relative z-50 flex items-center justify-center"
+          aria-label={fabOpen ? 'Close menu' : 'Quick actions'}
+        >
+          <Plus className={`h-5 w-5 text-primary-foreground transition-transform duration-200 ease-in-out ${fabOpen ? 'rotate-45' : ''}`} />
+        </motion.button>
+      </div>
     </div>,
     document.body
   );

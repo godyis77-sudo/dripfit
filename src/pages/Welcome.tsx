@@ -3,6 +3,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import BottomTabBar from '@/components/BottomTabBar';
 import GalleryPlayground from '@/components/home/GalleryPlayground';
 import AuthenticatedHome from '@/components/home/AuthenticatedHome';
+import OnboardingOverlay from '@/components/home/OnboardingOverlay';
 
 /** Check PostHog feature flag (async, defaults to true) */
 function useFeatureFlag(flag: string, defaultValue = true): boolean {
@@ -40,6 +41,7 @@ const Welcome = () => {
 
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
+      <OnboardingOverlay />
       {galleryEnabled ? <GalleryPlayground /> : <AuthenticatedHome />}
       <BottomTabBar />
     </div>
