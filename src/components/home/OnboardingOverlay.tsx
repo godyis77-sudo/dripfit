@@ -17,7 +17,7 @@ const SLIDES: { icon: FeatureIconName; headline: string; sub: string }[] = [
   },
   {
     icon: 'stylecheck',
-    headline: 'COP or DROP. Your Body Twins decide.',
+    headline: 'COP or DROP. Your Body & Drip Twins decide.',
     sub: 'People with your exact measurements rate every fit. The verdict is real.',
   },
 ];
