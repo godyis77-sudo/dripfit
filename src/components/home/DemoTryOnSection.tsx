@@ -43,11 +43,7 @@ const DemoTryOnSection = () => {
         </button>
       </div>
 
-      <div
-        className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1"
-        onTouchStart={e => e.stopPropagation()}
-        onTouchEnd={e => e.stopPropagation()}
-      >
+      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
         {DEMO_RESULTS.map((demo) => (
           <FullscreenImage
             key={demo.id}
