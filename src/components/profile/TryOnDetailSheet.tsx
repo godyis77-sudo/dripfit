@@ -360,11 +360,19 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
           <Button
             variant="outline"
             className={`w-full h-11 rounded-xl text-[12px] font-bold gap-1.5 ${post.is_public ? 'border-primary/40 bg-primary/10' : ''}`}
-            onClick={handleToggleCommunity}
+            onClick={() => {
+              if (!post.is_public && !showCaptionForPost) {
+                setShowCaptionForPost(true);
+                setCaptionDraft(post.caption || '');
+                setEditingCaption(true);
+                return;
+              }
+              handleToggleCommunity();
+            }}
             disabled={posting}
           >
             <MessageSquare className="h-4 w-4" />
-            {posting ? (post.is_public ? 'Removing…' : 'Posting…') : post.is_public ? 'Shared in Style Check ✓' : 'Post to Community'}
+            {posting ? (post.is_public ? 'Removing…' : 'Posting…') : post.is_public ? 'Shared in Style Check ✓' : showCaptionForPost ? 'Post Style Check' : 'Post Style Check'}
           </Button>
 
           {/* Delete */}
