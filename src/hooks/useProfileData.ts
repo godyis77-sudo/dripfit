@@ -130,8 +130,17 @@ export function useSavedItemCount(userId: string | undefined) {
   });
 }
 
-/** Trending fits for home page — full-body model-shot products */
+/** Trending fits for home page — full-body model-shot products only */
 export function useTrendingFits(_userId: string | undefined) {
+  // Only clothing categories that reliably produce full-body photos
+  const FULL_BODY_CATEGORIES = [
+    'tops', 'top', 't-shirts', 'shirts', 'hoodies', 'polos', 'sweaters',
+    'bottoms', 'bottom', 'jeans', 'pants', 'shorts',
+    'dresses', 'dress', 'jumpsuits',
+    'outerwear', 'jackets', 'coats', 'blazers',
+    'activewear', 'swimwear',
+  ];
+
   return useQuery({
     queryKey: ['trending-fits-catalog'],
     queryFn: async () => {
@@ -140,10 +149,11 @@ export function useTrendingFits(_userId: string | undefined) {
         .select('id, brand, name, image_url, product_url, price_cents, category')
         .eq('is_active', true)
         .eq('presentation', 'model_shot')
-        .gte('image_confidence', 0.15)
+        .in('category', FULL_BODY_CATEGORIES)
+        .gte('image_confidence', 0.4)
         .not('image_url', 'is', null)
         .order('image_confidence', { ascending: false })
-        .limit(30);
+        .limit(40);
 
       if (!data || data.length === 0) return [];
 
