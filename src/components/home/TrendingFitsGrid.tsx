@@ -21,7 +21,6 @@ interface TrendingFitsGridProps {
 
 const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
   const navigate = useNavigate();
-  const { handleClickout } = useAffiliateClickout();
   const [previewProduct, setPreviewProduct] = useState<ProductPreviewData | null>(null);
 
   if (!fits.length) return null;
