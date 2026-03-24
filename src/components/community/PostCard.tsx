@@ -182,6 +182,32 @@ const PostCard = ({
         )}
       </div>
 
+      {/* Share */}
+      <div className="px-2 pb-1">
+        <button
+          onClick={async () => {
+            const shareData: ShareData = {
+              title: 'Check this look on DripFit',
+              text: postedCaption || 'Check out this look!',
+              url: `${window.location.origin}/style-check/${post.id}`,
+            };
+            try {
+              if (navigator.share) {
+                await navigator.share(shareData);
+              } else {
+                await navigator.clipboard.writeText(shareData.url!);
+                toast({ title: 'Link copied!' });
+              }
+              trackEvent('style_check_share', { postId: post.id });
+            } catch { /* user cancelled */ }
+          }}
+          className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-primary transition-colors min-h-[32px]"
+        >
+          <Share2 className="h-3 w-3" />
+          <span>Share</span>
+        </button>
+      </div>
+
       {/* What's In This Look */}
       <WhatsInThisLook
         productUrls={(post as any).product_urls}
