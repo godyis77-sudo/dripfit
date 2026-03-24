@@ -499,11 +499,11 @@ const Browse = () => {
                 }}
                 className="bg-card border border-border rounded-xl overflow-hidden active:scale-[0.97] transition-transform text-left"
               >
-                <div className="aspect-square bg-muted relative">
+                <div className="aspect-[3/4] bg-muted relative">
                   <img
                     src={product.image_url}
                     alt={product.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-top"
                     loading="lazy"
                     onError={(e) => {
                       const img = e.currentTarget;
