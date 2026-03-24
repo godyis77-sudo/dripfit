@@ -1,8 +1,8 @@
 import { useCart } from '@/hooks/useCart';
 
 const VOTE_OPTIONS = [
-  { key: 'buy_yes', label: 'Buy it', emoji: '🔥' },
-  { key: 'buy_no', label: 'Pass', emoji: '👎' },
+  { key: 'buy_yes', label: 'COP', emoji: '🔥' },
+  { key: 'buy_no', label: 'DROP', emoji: '👎' },
   { key: 'keep_shopping', label: 'Add to Cart', emoji: '🛒' },
 ] as const;
 
