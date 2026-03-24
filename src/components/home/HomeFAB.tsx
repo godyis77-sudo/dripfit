@@ -9,6 +9,16 @@ const HomeFAB = forwardRef<HTMLDivElement>((_, ref) => {
   const navigate = useNavigate();
   const [fabOpen, setFabOpen] = useState(false);
   const closeFab = useCallback(() => setFabOpen(false), []);
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  useEffect(() => {
+    const key = 'fab_tooltip_shown';
+    if (!localStorage.getItem(key)) {
+      const t = setTimeout(() => setShowTooltip(true), 1000);
+      const dismiss = setTimeout(() => { setShowTooltip(false); localStorage.setItem(key, 'true'); }, 4000);
+      return () => { clearTimeout(t); clearTimeout(dismiss); };
+    }
+  }, []);
 
   const items = [
     { icon: <FeatureIcon name="scan" size={22} />, label: 'New Body Scan', action: () => navigate('/capture') },
