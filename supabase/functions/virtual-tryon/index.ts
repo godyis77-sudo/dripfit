@@ -442,10 +442,10 @@ Deno.serve(async (req) => {
         : "Replace only the clothing area needed for this garment and keep all unrelated body/background details unchanged.";
 
     const identityInstruction = isIntimateGarment
-      ? "Use Image A as pose, proportions, and scene reference, but do not attempt exact facial identity replication; prefer neck-down framing or softly de-emphasized face details."
+      ? "Use Image A as pose, proportions, and scene reference with softly de-emphasized facial details. CRITICAL: Show the FULL BODY from shoulders to feet — never crop at the waist or torso."
       : "Keep the model's face, body shape, skin tone, hair, and pose identical to Image A.";
     const intimateFramingInstruction = isIntimateGarment
-      ? "- Prefer neck-down framing (or softened face details) while preserving pose and background continuity."
+      ? "- CRITICAL: Output MUST show FULL BODY from head to feet, including legs and shoes/feet. Never crop at the waist or mid-thigh. Softly de-emphasize facial details while preserving pose and background continuity."
       : "";
 
     // ── BUILD PROMPT ──
@@ -487,8 +487,9 @@ ${intimateFramingInstruction}
 - Natural fabric drape and realistic shadows matching the scene lighting.
 - Do NOT add extra clothing items not shown in the garment reference.
 - Professional retail catalog quality — clean, commercially appropriate.
+- CRITICAL: Show the model's FULL BODY from head to feet in the output image. Include legs and feet — do NOT crop at the waist or torso.
 
-Output: One clean photorealistic catalog photo. No text, watermarks, or collages.`;
+Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, or collages.`;
     } else {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
@@ -527,6 +528,7 @@ Put the garment from Image B onto the model in Image A. ${bgFallbackHint}
 If Image B has another person, copy only the garment design and ignore them.
 ${garmentSwapScopeInstruction}
 Match product exactly: color, cut, fabric, straps, neckline. Keep model identity, pose, and facing direction from Image A — do NOT rotate the model.
+CRITICAL: Show FULL BODY from head to feet — include legs. Do NOT crop at waist.
 Professional retail catalog quality. No text/watermark.`
         : `Create ONE photorealistic clothing-swap image.
 Image A = person. Image B = target garment.${productHint}
@@ -540,13 +542,13 @@ Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos).
     const fastIntimatePrompt = `Professional athletic catalog photo.
 Image A = model. ${intimateReferenceForFallback}
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
-${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Match product details exactly. Professional catalog quality. No text/watermark.`;
+${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Match product details exactly. CRITICAL: Show FULL BODY from head to feet — include legs. Professional catalog quality. No text/watermark.`;
 
     const complianceIntimatePrompt = `Retail activewear catalog photo edit.
 Use Image A as the model and Image B as the garment reference product photo.
 Apply only the garment to the model with accurate color, pattern, straps, neckline, seams and logos.
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
-${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Keep result clean and professionally styled. No text/watermark.`;
+${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. CRITICAL: Show FULL BODY from head to feet — include legs. Keep result clean and professionally styled. No text/watermark.`;
 
     const buildTryOnContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
       const userImageLabel = isIntimateGarment
@@ -581,8 +583,9 @@ TASK: Create a product catalog photo showing the model from Image A wearing the 
 ${intimateFramingInstruction}
 - ${bgInstruction}
 - Professional retail catalog quality — clean, commercially appropriate.
+- CRITICAL: Show FULL BODY from head to feet — include legs and feet. Do NOT crop at the waist.
 
-Output: One clean photorealistic catalog photo. No text, watermarks, or collages.`;
+Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, or collages.`;
     };
 
     const buildTextBridgeContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
