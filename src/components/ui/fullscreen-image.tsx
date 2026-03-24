@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ExternalLink, Sparkles, Plus } from 'lucide-react';
@@ -14,10 +14,15 @@ interface FullscreenImageProps {
   onAddToWardrobe?: () => void;
 }
 
+const TAP_THRESHOLD_PX = 10;
+
 export const FullscreenImage = ({ src, alt = '', className = '', children, onShop, onTryOn, onAddToWardrobe }: FullscreenImageProps) => {
   const [open, setOpen] = useState(false);
   const hasActions = !!(onShop || onTryOn || onAddToWardrobe);
   const portalTarget = typeof document !== 'undefined' ? document.body : null;
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const touchMovedRef = useRef(false);
+  const lastTouchOpenRef = useRef(0);
 
   useEffect(() => {
     const prevBodyOverflow = document.body.style.overflow;
@@ -34,12 +39,45 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
     };
   }, [open]);
 
+  const handleTouchStart: React.TouchEventHandler<HTMLDivElement> = (e) => {
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    touchMovedRef.current = false;
+  };
+
+  const handleTouchMove: React.TouchEventHandler<HTMLDivElement> = (e) => {
+    if (!touchStartRef.current) return;
+    const touch = e.touches[0];
+    const dx = Math.abs(touch.clientX - touchStartRef.current.x);
+    const dy = Math.abs(touch.clientY - touchStartRef.current.y);
+    if (dx > TAP_THRESHOLD_PX || dy > TAP_THRESHOLD_PX) {
+      touchMovedRef.current = true;
+    }
+  };
+
+  const handleTouchEnd: React.TouchEventHandler<HTMLDivElement> = () => {
+    if (!touchMovedRef.current) {
+      lastTouchOpenRef.current = Date.now();
+      setOpen(true);
+    }
+    touchStartRef.current = null;
+    touchMovedRef.current = false;
+  };
+
+  const handleClick: React.MouseEventHandler<HTMLDivElement> = () => {
+    if (Date.now() - lastTouchOpenRef.current < 450) return;
+    setOpen(true);
+  };
+
   return (
     <>
       <div
         role="button"
         tabIndex={0}
-        onClick={() => setOpen(true)}
+        onClick={handleClick}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
@@ -58,14 +96,14 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden overscroll-none bg-black/95 flex flex-col items-center justify-center"
+            className="fixed inset-0 z-[240] h-dvh w-screen overflow-hidden overscroll-none bg-black/95 flex flex-col items-center justify-center"
             onClick={(e) => {
               if (e.target === e.currentTarget) setOpen(false);
             }}
           >
             <button
               onClick={() => setOpen(false)}
-              className="absolute top-4 right-4 z-[101] h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
+              className="absolute top-4 right-4 z-[241] h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
             >
               <X className="h-5 w-5 text-white" />
             </button>
