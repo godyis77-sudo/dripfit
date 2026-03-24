@@ -217,7 +217,29 @@ const OneTapPlayground = () => {
         </div>
       )}
     </motion.section>
+
+      <ProductPreviewModal
+        product={previewProduct}
+        onClose={() => setPreviewProduct(null)}
+        onTryOn={(p) => {
+          setPreviewProduct(null);
+          navigate('/tryon', {
+            state: {
+              userPhoto: userPhoto || undefined,
+              clothingUrl: p.image_url,
+              productUrl: p.product_url,
+            },
+          });
+        }}
+        onShop={(p) => {
+          if (p.product_url) {
+            window.open(p.product_url, '_blank', 'noopener');
+          }
+        }}
+      />
+    </>
   );
+};
 };
 
 export default OneTapPlayground;
