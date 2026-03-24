@@ -2,20 +2,21 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import BrandLogo from '@/components/ui/BrandLogo';
+import FeatureIcon from '@/components/ui/FeatureIcon';
 
 const SLIDES = [
   {
-    emoji: '👑',
+    icon: 'logo' as const,
     headline: 'Shop 7,000+ real products',
     sub: 'From 130 brands you already love.',
   },
   {
-    emoji: '👕',
+    icon: 'tryon' as const,
     headline: 'See them on your body',
     sub: 'AI-powered virtual try-on — before you buy.',
   },
   {
-    emoji: '🔥',
+    icon: 'style' as const,
     headline: 'Your Body Twins verify every fit',
     sub: 'Real people with your measurements COP or DROP.',
   },
@@ -71,10 +72,19 @@ export default function OnboardingOverlay() {
         Skip
       </button>
 
-      <BrandLogo size="xl" iconOnly className="mb-8" />
+      {/* Brand logo — always visible at top */}
+      <BrandLogo size="xl" iconOnly className="mb-6" />
 
+      {/* Slide content */}
       <div className="text-center mb-10">
-        <span className="text-5xl mb-4 block">{SLIDES[slide].emoji}</span>
+        {/* Slide-specific icon */}
+        <div className="mb-4 flex items-center justify-center">
+          {SLIDES[slide].icon === 'logo' ? (
+            <BrandLogo size="lg" className="scale-110" />
+          ) : (
+            <FeatureIcon variant={SLIDES[slide].icon} className="h-14 w-14" />
+          )}
+        </div>
         <h2 className="text-xl font-bold font-display text-foreground mb-2">{SLIDES[slide].headline}</h2>
         <p className="text-[13px] text-muted-foreground max-w-[260px] mx-auto">{SLIDES[slide].sub}</p>
       </div>
