@@ -586,12 +586,20 @@ Output: One clean photorealistic catalog photo. No text, watermarks, or collages
     };
 
     const buildTextBridgeContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
-      // Text bridge: send ONLY the user photo — NO product image
-      return [
+      const content: Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> = [
         { type: "text", text: promptText },
         { type: "text", text: "\n\n========== IMAGE A — BODY/POSE REFERENCE ==========" },
         { type: "image_url", image_url: { url: userImageInput } },
       ];
+
+      // If we have a pre-extracted clean garment image (flat-lay on white, no model),
+      // include it so the AI can match the actual garment instead of guessing from text
+      if (preExtractedGarment && garmentOnlyImage !== clothingImageInput) {
+        content.push({ type: "text", text: "\n\n========== GARMENT REFERENCE (clean product flat-lay) ==========" });
+        content.push({ type: "image_url", image_url: { url: garmentOnlyImage } });
+      }
+
+      return content;
     };
 
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
