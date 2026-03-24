@@ -195,7 +195,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               {isInCart(post.id) ? 'In Cart ✓' : 'Add to Cart'}
             </Button>
 
-            {post.product_urls?.[0] && (
+            {post.product_urls && post.product_urls.length === 1 && (
               <Button
                 className="h-11 rounded-xl text-[12px] font-bold gap-1.5 btn-luxury text-primary-foreground col-span-2"
                 onClick={() => {
@@ -206,6 +206,13 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
                 <ShoppingBag className="h-4 w-4" />
                 Shop This Item
               </Button>
+            )}
+
+            {post.product_urls && post.product_urls.length > 1 && (
+              <ShopDropdown
+                urls={post.product_urls}
+                onClickout={() => trackEvent('shop_clickout', { post_id: post.id })}
+              />
             )}
 
             <Button
