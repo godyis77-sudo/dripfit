@@ -81,12 +81,13 @@ const FIT_OPTIONS = [
 ] as const;
 
 // Gold checkmark SVG
-const AnimatedCheckmark = () => (
-  <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+const AnimatedCheckmark = forwardRef<SVGSVGElement>((_, ref) => (
+  <svg ref={ref} width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="32" cy="32" r="30" stroke="hsl(var(--primary))" strokeWidth="2" opacity="0.3" />
     <motion.path d="M20 32L28 40L44 24" stroke="hsl(var(--primary))" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.4, ease: 'easeOut' }} />
   </svg>
-);
+));
+AnimatedCheckmark.displayName = 'AnimatedCheckmark';
 
 const TryOnResultSection = ({
   resultImage, userPhoto, clothingPhoto, category, productLink, selectedQuickPick,
