@@ -241,6 +241,5 @@ const OneTapPlayground = () => {
     </>
   );
 };
-};
 
 export default OneTapPlayground;
