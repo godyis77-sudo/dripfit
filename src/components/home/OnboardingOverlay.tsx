@@ -108,13 +108,13 @@ export default function OnboardingOverlay() {
             onClick={() => complete('/capture')}
             className="w-full h-12 rounded-xl btn-luxury text-primary-foreground text-sm font-bold"
           >
-            Start Your Scan
+            Map Your Body
           </button>
           <button
             onClick={() => complete()}
             className="w-full h-12 rounded-xl border border-border text-foreground text-sm font-semibold"
           >
-            Browse First
+            Enter the Closet
           </button>
         </div>
       )}
