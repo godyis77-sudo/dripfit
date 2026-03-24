@@ -4,11 +4,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import BrandLogo from '@/components/ui/BrandLogo';
 import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 
-const SLIDES: { icon: FeatureIconName; headline: string; sub: string }[] = [
+const SLIDES: { icon: FeatureIconName; headline: string; sub: string; tag?: string }[] = [
   {
     icon: 'crown',
     headline: '7,000 pieces. 130 brands. Yours.',
     sub: 'Real products. Real prices. Real links. Not a mood board.',
+    tag: 'SHOP DRIPFIT',
   },
   {
     icon: 'tryon',
@@ -78,6 +79,7 @@ export default function OnboardingOverlay() {
         <div className="mb-4 flex items-center justify-center">
           <FeatureIcon name={SLIDES[slide].icon} size={80} />
         </div>
+        {SLIDES[slide].tag && <p className="text-[11px] font-bold tracking-[0.2em] text-primary uppercase mb-1">{SLIDES[slide].tag}</p>}
         <h2 className="text-xl font-bold font-display text-foreground mb-2">{SLIDES[slide].headline}</h2>
         <p className="text-[13px] text-muted-foreground max-w-[260px] mx-auto">{SLIDES[slide].sub}</p>
       </div>
