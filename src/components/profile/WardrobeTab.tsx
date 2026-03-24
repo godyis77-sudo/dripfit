@@ -131,6 +131,11 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                 >
                   <div className="relative aspect-[3/4] px-1.5 pt-1.5">
                     <img src={item.image_url} alt={item.notes || item.category} className="w-full h-full object-cover object-top rounded-xl" />
+                    {/* Liked/Saved badges */}
+                    <div className="absolute top-3 left-3 flex gap-1">
+                      {item.is_liked && <span className="h-5 w-5 rounded-full bg-destructive/90 flex items-center justify-center"><Heart className="h-3 w-3 text-white fill-white" /></span>}
+                      {item.is_saved && <span className="h-5 w-5 rounded-full bg-primary/90 flex items-center justify-center"><Bookmark className="h-3 w-3 text-white fill-white" /></span>}
+                    </div>
                     {(() => {
                       const displayBrand = item.brand || (item.product_link ? detectBrandFromUrl(item.product_link).brand : null) || item.retailer;
                       return displayBrand ? (
