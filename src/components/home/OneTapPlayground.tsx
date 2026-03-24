@@ -14,7 +14,13 @@ import ProductPreviewModal, { type ProductPreviewData } from '@/components/ui/Pr
  * Users tap a garment → get sent to try-on with both photos pre-loaded.
  * Zero reading required — pure visual interaction.
  */
-const CURATED_CATEGORIES = ['outerwear', 'tops', 'dress'] as const;
+const FULL_BODY_CATEGORIES = new Set([
+  'tops', 'top', 't-shirts', 'shirts', 'hoodies', 'polos', 'sweaters',
+  'bottoms', 'bottom', 'jeans', 'pants', 'shorts', 'skirts', 'leggings',
+  'dresses', 'dress', 'jumpsuits',
+  'outerwear', 'jackets', 'coats', 'blazers', 'vests',
+  'activewear', 'loungewear',
+]);
 
 const OneTapPlayground = () => {
   const navigate = useNavigate();
@@ -30,7 +36,17 @@ const OneTapPlayground = () => {
   const { products, loading } = useProductCatalog(undefined, undefined, undefined, mappedGender);
 
   const curated = useMemo(() => {
-    const filtered = products.filter(p => p.image_url);
+    const filtered = products.filter((p) => {
+      const category = (p.category ?? '').toLowerCase();
+      const confidence = p.image_confidence ?? 0;
+      return (
+        Boolean(p.image_url) &&
+        p.presentation === 'model_shot' &&
+        confidence >= 0.45 &&
+        FULL_BODY_CATEGORIES.has(category)
+      );
+    });
+
     // Pick a mix of categories, limit to 8
     const seen = new Set<string>();
     const result: CatalogProduct[] = [];
