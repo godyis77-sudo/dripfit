@@ -17,6 +17,12 @@ import AffiliateProvider from "./components/AffiliateProvider";
 import Capture from "./pages/Capture";
 import GuestTimedNudge from "./components/guest/GuestTimedNudge";
 
+/** Clears onboarding flag and redirects to /home so the overlay re-appears */
+function OnboardingReset() {
+  localStorage.removeItem('onboarding_complete');
+  return <Navigate to="/home" replace />;
+}
+
 // ── Lazy-loaded pages (code-split per route) ──────────────────────────
 const Splash = lazy(() => import("./pages/Splash"));
 const Welcome = lazy(() => import("./pages/Welcome"));
@@ -111,7 +117,7 @@ const AnimatedRoutes = () => {
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Splash />} />
           <Route path="/home" element={<PageTransition><Welcome /></PageTransition>} />
-          <Route path="/onboarding" element={<Navigate to="/home" replace />} />
+          <Route path="/onboarding" element={<OnboardingReset />} />
           <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
           <Route path="/capture" element={<PageTransition><Capture /></PageTransition>} />
           <Route path="/analyze" element={<PageTransition><Analyze /></PageTransition>} />
