@@ -49,15 +49,13 @@ const DemoTryOnSection = () => {
         onTouchEnd={e => e.stopPropagation()}
       >
         {DEMO_RESULTS.map((demo) => (
-          <div
+          <FullscreenImage
             key={demo.id}
-            className="shrink-0 w-[130px] rounded-xl overflow-hidden border border-primary/20 bg-card"
+            src={demo.image}
+            alt={demo.label}
+            onTryOn={handleTryThis}
           >
-            <FullscreenImage
-              src={demo.image}
-              alt={demo.label}
-              onTryOn={handleTryThis}
-            >
+            <div className="shrink-0 w-[130px] rounded-xl overflow-hidden border border-primary/20 bg-card">
               <div className="aspect-[3/4] relative overflow-hidden">
                 <img
                   src={demo.image}
@@ -65,17 +63,16 @@ const DemoTryOnSection = () => {
                   className="w-full h-full object-cover object-top rounded-xl"
                   loading="lazy"
                 />
-                {/* AI badge */}
                 <span className="absolute top-1.5 left-1.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-primary/90 text-primary-foreground text-[8px] font-bold uppercase tracking-wider">
                   <Sparkles className="h-2.5 w-2.5" /> AI Try-On
                 </span>
               </div>
-            </FullscreenImage>
-            <div className="px-2 py-1.5">
-              <p className="text-[10px] font-bold text-foreground uppercase tracking-wide">{demo.brand}</p>
-              <p className="text-[11px] font-semibold text-foreground truncate leading-tight">{demo.label}</p>
+              <div className="px-2 py-1.5">
+                <p className="text-[10px] font-bold text-foreground uppercase tracking-wide">{demo.brand}</p>
+                <p className="text-[11px] font-semibold text-foreground truncate leading-tight">{demo.label}</p>
+              </div>
             </div>
-          </div>
+          </FullscreenImage>
         ))}
       </div>
     </motion.section>

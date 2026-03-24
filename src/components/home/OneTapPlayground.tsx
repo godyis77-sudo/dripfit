@@ -170,35 +170,35 @@ const OneTapPlayground = () => {
           </div>
 
           <div
-            className="flex-1 grid grid-cols-2 gap-1.5 px-2 pb-2 overflow-y-auto max-h-[260px]"
-            onTouchStart={e => e.stopPropagation()}
+            className="flex-1 grid grid-cols-2 gap-1.5 px-2 pb-2 overflow-y-auto max-h-[300px]"
           >
             {loading && !curated.length
               ? Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="rounded-lg skeleton-gold aspect-[3/4]" />
                 ))
               : curated.map(product => (
-                  <div key={product.id} className="relative rounded-lg overflow-hidden border border-border bg-background">
-                    <FullscreenImage
-                      src={product.image_url}
-                      alt={product.name}
-                      onTryOn={() => handleTapItem(product)}
-                      onShop={product.product_url ? () => window.open(product.product_url!, '_blank') : undefined}
-                    >
-                      <div className="aspect-[3/4] relative overflow-hidden">
+                  <FullscreenImage
+                    key={product.id}
+                    src={product.image_url}
+                    alt={product.name}
+                    onTryOn={() => handleTapItem(product)}
+                    onShop={product.product_url ? () => window.open(product.product_url!, '_blank') : undefined}
+                  >
+                    <div className="relative rounded-lg overflow-hidden border border-border bg-background">
+                      <div className="aspect-[3/4] overflow-hidden">
                         <img
                           src={product.image_url}
                           alt={product.name}
                           loading="lazy"
-                          className="w-full h-full object-contain bg-muted/30"
+                          className="w-full h-full object-cover object-top"
                         />
                       </div>
-                    </FullscreenImage>
-                    <div className="px-1.5 py-1.5 bg-card">
-                      <p className="text-[10px] font-bold text-foreground uppercase tracking-wide truncate">{product.brand}</p>
-                      <p className="text-[10px] text-muted-foreground truncate leading-tight">{product.name}</p>
+                      <div className="px-1.5 py-1 bg-card">
+                        <p className="text-[10px] font-bold text-foreground uppercase tracking-wide truncate">{product.brand}</p>
+                        <p className="text-[9px] text-muted-foreground truncate leading-tight">{product.name}</p>
+                      </div>
                     </div>
-                  </div>
+                  </FullscreenImage>
                 ))}
           </div>
         </div>
