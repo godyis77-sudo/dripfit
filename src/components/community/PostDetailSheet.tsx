@@ -1,8 +1,7 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { scrollIntoViewIfNeeded } from '@/lib/autoScroll';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, UserPlus, UserCheck, ExternalLink, Pencil, Check, ZoomIn, ZoomOut, Sparkles, Trash2, MessageCircle } from 'lucide-react';
+import { X, UserPlus, UserCheck, Trash2 } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -12,8 +11,13 @@ import { getPostedCaption } from './community-types';
 import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 import type { LookItem } from '@/components/community/WhatsInThisLook';
 import { supabase } from '@/integrations/supabase/client';
-import { useCart } from '@/hooks/useCart';
+import ImageViewer from './ImageViewer';
+import VotePanel from './VotePanel';
+import CommentsSection from './CommentsSection';
+import type { Comment } from './CommentsSection';
 
+// Re-export VOTE_OPTIONS for consumers that imported from here
+export { VOTE_OPTIONS } from './VotePanel';
 
 interface Post {
   id: string;
@@ -30,29 +34,6 @@ interface Post {
   avg_suitability?: number;
   rating_count?: number;
 }
-
-interface Comment {
-  id: string;
-  comment_text: string;
-  created_at: string;
-  user_id: string;
-  profile?: { display_name: string | null; avatar_url?: string | null };
-}
-
-// ... keep existing code (VOTE_OPTIONS, FIT_OPTIONS, interface PostDetailSheetProps)
-const VOTE_OPTIONS = [
-  { key: 'buy_yes', label: 'Buy it', emoji: '🔥' },
-  { key: 'buy_no', label: 'Pass', emoji: '👎' },
-  { key: 'keep_shopping', label: 'Add to Cart', emoji: '🛒' },
-] as const;
-
-const FIT_OPTIONS = [
-  { key: 'too_tight', label: 'Too small' },
-  { key: 'perfect', label: 'Perfect' },
-  { key: 'too_loose', label: 'Too big' },
-] as const;
-
-
 
 interface PostDetailSheetProps {
   post: Post | null;
@@ -97,26 +78,16 @@ export const PostDetailSheet = ({
   isPlaceholder,
   currentUserId,
 }: PostDetailSheetProps) => {
-  const { addToCart, removeFromCart, isInCart } = useCart();
-  const [commentText, setCommentText] = useState('');
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
-  const [showComments, setShowComments] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(false);
   const [questionText, setQuestionText] = useState('');
   const [savingCaption, setSavingCaption] = useState(false);
-  const [zoom, setZoom] = useState(1);
-  const [pan, setPan] = useState({ x: 0, y: 0 });
-  const [isPanning, setIsPanning] = useState(false);
-  const lastTouch = useRef<{ x: number; y: number } | null>(null);
-  const lastDist = useRef<number | null>(null);
-  const commentsEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const commentsSectionRef = useRef<HTMLDivElement>(null);
 
   // Fetch comments when sheet opens
   useEffect(() => {
-    if (!open || !post) { setComments([]); setShowComments(false); return; }
+    if (!open || !post) { setComments([]); return; }
     const fetchComments = async () => {
       const { data } = await supabase
         .from('post_comments')
@@ -125,7 +96,6 @@ export const PostDetailSheet = ({
         .order('created_at', { ascending: true })
         .limit(50);
       if (!data || data.length === 0) { setComments([]); return; }
-      // Fetch profiles for commenters
       const userIds = [...new Set(data.map(c => c.user_id))];
       const { data: profiles } = await supabase
         .from('profiles')
@@ -136,21 +106,17 @@ export const PostDetailSheet = ({
         ...c,
         profile: profileMap.get(c.user_id) || { display_name: null, avatar_url: null },
       })));
-      setShowComments(false);
     };
     fetchComments();
   }, [open, post?.id]);
 
+  // Reset state on open
   useEffect(() => {
     if (!open || !post) return;
-    setZoom(1);
-    setPan({ x: 0, y: 0 });
-
     const postedCaption = getPostedCaption(post.caption);
     setQuestionText(postedCaption ?? '');
     setEditingQuestion(false);
 
-    // Scroll lock
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
@@ -160,51 +126,9 @@ export const PostDetailSheet = ({
     };
   }, [open, post?.id, post?.caption]);
 
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (e.touches.length === 2) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      lastDist.current = Math.hypot(dx, dy);
-    } else if (e.touches.length === 1 && zoom > 1) {
-      lastTouch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      setIsPanning(true);
-    }
-  }, [zoom]);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (e.touches.length === 2 && lastDist.current !== null) {
-      e.preventDefault();
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      const dist = Math.hypot(dx, dy);
-      const scale = dist / lastDist.current;
-      setZoom(prev => Math.min(4, Math.max(1, prev * scale)));
-      lastDist.current = dist;
-    } else if (e.touches.length === 1 && isPanning && lastTouch.current && zoom > 1) {
-      const dx = e.touches[0].clientX - lastTouch.current.x;
-      const dy = e.touches[0].clientY - lastTouch.current.y;
-      setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }));
-      lastTouch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    }
-  }, [isPanning, zoom]);
-
-  const handleTouchEnd = useCallback(() => {
-    lastDist.current = null;
-    lastTouch.current = null;
-    setIsPanning(false);
-    if (zoom <= 1) setPan({ x: 0, y: 0 });
-  }, [zoom]);
-
-  const toggleZoom = () => {
-    if (zoom > 1) { setZoom(1); setPan({ x: 0, y: 0 }); } else { setZoom(2.5); }
-  };
-
-  const handleDoubleClick = useCallback(() => {
-    if (zoom > 1) { setZoom(1); setPan({ x: 0, y: 0 }); } else { setZoom(2.5); }
-  }, [zoom]);
-
   if (!post) return null;
 
+  // Retailer extraction
   const allUrls = (post.product_urls && post.product_urls.length > 0) ? post.product_urls : [];
   const retailerUrlMap = new Map<string, string>();
   allUrls.forEach(u => {
@@ -216,32 +140,9 @@ export const PostDetailSheet = ({
   const userCaption = getPostedCaption(post.caption) ?? '';
   const displayQuestion = questionText || userCaption;
 
-  const handleSendComment = () => {
-    if (commentText.trim()) {
-      onComment(post.id, commentText.trim());
-      // Optimistically add the comment
-      const newComment: Comment = {
-        id: crypto.randomUUID(),
-        comment_text: commentText.trim(),
-        created_at: new Date().toISOString(),
-        user_id: currentUserId || '',
-        profile: { display_name: 'You', avatar_url: null },
-      };
-      setComments(prev => [...prev, newComment]);
-      setShowComments(true);
-      setCommentText('');
-      // Scroll to new comment without shifting image
-      setTimeout(() => commentsEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
-    }
-  };
-
   const handleStartEditQuestion = () => { setQuestionText(displayQuestion); setEditingQuestion(true); };
   const handleSaveQuestion = async () => {
-    if (!isOwnPost || !currentUserId) {
-      setEditingQuestion(false);
-      return;
-    }
-
+    if (!isOwnPost || !currentUserId) { setEditingQuestion(false); return; }
     const nextCaption = questionText.trim();
     setSavingCaption(true);
     const { error } = await supabase
@@ -250,31 +151,22 @@ export const PostDetailSheet = ({
       .eq('id', post.id)
       .eq('user_id', currentUserId);
     setSavingCaption(false);
-
-    if (error) {
-      console.error('Failed to save caption', error);
-      return;
-    }
-
+    if (error) { console.error('Failed to save caption', error); return; }
     onCaptionUpdated?.(post.id, nextCaption || null);
     setQuestionText(nextCaption);
     setEditingQuestion(false);
   };
 
-  const buyYes = voteCounts[post.id]?.buy_yes ?? 0;
-  const buyNo = voteCounts[post.id]?.buy_no ?? 0;
-  const addToCartCount = voteCounts[post.id]?.keep_shopping ?? 0;
-  const totalBuy = buyYes + buyNo;
-  const buyPct = totalBuy > 0 ? Math.round((buyYes / totalBuy) * 100) : 0;
-
-  const timeAgo = (dateStr: string) => {
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 1) return 'now';
-    if (mins < 60) return `${mins}m`;
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs}h`;
-    return `${Math.floor(hrs / 24)}d`;
+  const handleSendComment = (text: string) => {
+    onComment(post.id, text);
+    const newComment: Comment = {
+      id: crypto.randomUUID(),
+      comment_text: text,
+      created_at: new Date().toISOString(),
+      user_id: currentUserId || '',
+      profile: { display_name: 'You', avatar_url: null },
+    };
+    setComments(prev => [...prev, newComment]);
   };
 
   const sheetContent = (
@@ -332,60 +224,40 @@ export const PostDetailSheet = ({
               </div>
             </motion.div>
 
-            {/* Image with pinch-to-zoom */}
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="px-2"
-              onClick={(e) => e.stopPropagation()}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-              onDoubleClick={handleDoubleClick}
-            >
-              <div className="relative mx-auto w-full aspect-[3/3.5] overflow-hidden rounded-2xl bg-background touch-none">
-                <img src={post.result_photo_url} alt={post.caption || 'Try-on look'} className="absolute inset-0 h-full w-full object-contain object-top rounded-2xl transition-transform duration-100" style={{ transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)` }} draggable={false} />
-              {retailers.length > 0 && zoom <= 1 && (
-                <div className="absolute bottom-3 right-4 flex flex-col gap-1 items-end">
-                  {retailers.map((r) => (
-                    <button key={r} onClick={() => { window.open(retailerUrlMap.get(r), '_blank', 'noopener'); }} className="brand-label flex items-center gap-1.5 active:scale-95 transition-transform">
-                      {r}
-                      <ExternalLink className="h-3 w-3" />
-                    </button>
-                  ))}
-                </div>
-              )}
-              </div>
-            </motion.div>
+            {/* Image */}
+            <ImageViewer
+              src={post.result_photo_url}
+              alt={post.caption || 'Try-on look'}
+              retailers={retailers}
+              retailerUrlMap={retailerUrlMap}
+            />
 
             {/* Caption section */}
             {isOwnPost ? (
-            <div className="px-4 pt-1.5" onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center gap-2">
-                {editingQuestion ? (
-                  <>
-                    <input type="text" value={questionText} onChange={(e) => setQuestionText(e.target.value)} placeholder="Add Caption / Comment…" className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" autoFocus maxLength={300} onKeyDown={(e) => { if (e.key === 'Enter') handleSaveQuestion(); }} />
-                    <button onClick={handleSaveQuestion} disabled={savingCaption} className="h-8 px-3 rounded-lg bg-primary text-primary-foreground text-[11px] font-bold active:scale-95 transition-transform disabled:opacity-60 disabled:cursor-not-allowed">
-                      {savingCaption ? 'Saving…' : 'Post'}
+              <div className="px-4 pt-1.5" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center gap-2">
+                  {editingQuestion ? (
+                    <>
+                      <input type="text" value={questionText} onChange={(e) => setQuestionText(e.target.value)} placeholder="Add Caption / Comment…" className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" autoFocus maxLength={300} onKeyDown={(e) => { if (e.key === 'Enter') handleSaveQuestion(); }} />
+                      <button onClick={handleSaveQuestion} disabled={savingCaption} className="h-8 px-3 rounded-lg bg-primary text-primary-foreground text-[11px] font-bold active:scale-95 transition-transform disabled:opacity-60 disabled:cursor-not-allowed">
+                        {savingCaption ? 'Saving…' : 'Post'}
+                      </button>
+                    </>
+                  ) : displayQuestion ? (
+                    <button onClick={handleStartEditQuestion} className="flex-1 text-left">
+                      <p className="text-white font-bold text-sm leading-snug">{displayQuestion}</p>
                     </button>
-                  </>
-                ) : displayQuestion ? (
-                  <button onClick={handleStartEditQuestion} className="flex-1 text-left">
-                    <p className="text-white font-bold text-sm leading-snug">{displayQuestion}</p>
-                  </button>
-                ) : (
-                  <button onClick={() => { setQuestionText(''); setEditingQuestion(true); }} className="flex-1 h-10 rounded-lg bg-white/10 border border-white/20 px-3 flex items-center">
-                    <span className="text-sm text-white/40">Add Caption / Comment…</span>
-                  </button>
-                )}
+                  ) : (
+                    <button onClick={() => { setQuestionText(''); setEditingQuestion(true); }} className="flex-1 h-10 rounded-lg bg-white/10 border border-white/20 px-3 flex items-center">
+                      <span className="text-sm text-white/40">Add Caption / Comment…</span>
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
             ) : displayQuestion ? (
-            <div className="px-4 pt-1.5" onClick={(e) => e.stopPropagation()}>
-              <p className="text-white font-bold text-sm leading-snug">{displayQuestion}</p>
-            </div>
+              <div className="px-4 pt-1.5" onClick={(e) => e.stopPropagation()}>
+                <p className="text-white font-bold text-sm leading-snug">{displayQuestion}</p>
+              </div>
             ) : null}
 
             {/* What's In This Look */}
@@ -406,90 +278,18 @@ export const PostDetailSheet = ({
               className="px-4 pb-4 pt-2 space-y-2"
               onClick={(e) => e.stopPropagation()}
             >
+              <VotePanel
+                postId={post.id}
+                votes={votes}
+                voteCounts={voteCounts}
+                onVote={onVote}
+              />
 
-              {/* Outcome summary */}
-              {totalBuy > 0 && (
-                <div className="text-center">
-                  <p className="text-[16px] font-bold text-white">{buyPct}% Buy it</p>
-                  <p className="text-[11px] text-white/50">{totalBuy} vote{totalBuy !== 1 ? 's' : ''}</p>
-                </div>
-              )}
-
-              {/* Section A: WOULD YOU BUY IT? */}
-              <p className="text-[11px] text-white/50 font-bold uppercase tracking-wider">Would you buy it?</p>
-              <div className="flex gap-2">
-                {VOTE_OPTIONS.map(v => {
-                  const active = v.key === 'keep_shopping' ? isInCart(post.id) : (votes[post.id] || []).includes(v.key);
-                  return (
-                    <button
-                      key={v.key}
-                      onClick={() => onVote(post.id, v.key)}
-                      className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all active:scale-95 flex flex-col items-center gap-0.5 ${active ? 'btn-gold-3d border-transparent text-primary-foreground' : 'border-border text-muted-foreground'}`}
-                    >
-                      <div>
-                        <span className="mr-1">{v.emoji}</span>
-                        <span className="text-[11px]">{v.label}</span>
-                      </div>
-                      <span className={`text-[10px] font-medium leading-none ${active ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>{voteCounts[post.id]?.[v.key] ?? 0}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Comments section */}
-              {comments.length > 0 && (
-                <div ref={commentsSectionRef}>
-                  <div className="h-px bg-border" />
-                  <button
-                    onClick={() => {
-                      const next = !showComments;
-                      setShowComments(next);
-                      if (next) {
-                        setTimeout(() => {
-                          if (commentsSectionRef.current) {
-                            scrollIntoViewIfNeeded(commentsSectionRef.current);
-                          }
-                        }, 100);
-                      }
-                    }}
-                    className="flex items-center gap-1.5 text-[11px] text-white/50 font-bold uppercase tracking-wider py-1"
-                  >
-                    <MessageCircle className="h-3 w-3" />
-                    {comments.length} Comment{comments.length !== 1 ? 's' : ''} · {showComments ? 'Hide' : 'Show'}
-                  </button>
-                  {showComments && (
-                    <div className="space-y-2 max-h-[200px] overflow-y-auto">
-                      {comments.map(c => (
-                        <div key={c.id} className="flex items-start gap-2">
-                          {c.profile?.avatar_url ? (
-                            <img src={c.profile.avatar_url} alt="" className="h-6 w-6 rounded-full object-cover border border-white/10 shrink-0 mt-0.5" />
-                          ) : (
-                            <div className="h-6 w-6 rounded-full bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
-                              <span className="text-[11px] font-bold text-white/70">{(c.profile?.display_name || 'A')[0].toUpperCase()}</span>
-                            </div>
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-baseline gap-1.5">
-                              <span className="text-[11px] font-bold text-white/80">{c.profile?.display_name || 'Anonymous'}</span>
-                              <span className="text-[11px] text-white/30">{timeAgo(c.created_at)}</span>
-                            </div>
-                            <p className="text-[12px] text-white/70 leading-snug break-words">{c.comment_text}</p>
-                          </div>
-                        </div>
-                      ))}
-                      <div ref={commentsEndRef} />
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Chat input */}
-              <div className="flex items-center gap-2 pb-[env(safe-area-inset-bottom,16px)]">
-                <input type="text" placeholder="Drop a comment…" value={commentText} onChange={(e) => setCommentText(e.target.value)} className="flex-1 h-10 rounded-xl bg-white/10 border border-white/20 px-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 transition-colors" maxLength={500} onKeyDown={(e) => { if (e.key === 'Enter') handleSendComment(); }} />
-                <button onClick={handleSendComment} aria-label="Send comment" className="shrink-0 h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center active:scale-90 transition-transform">
-                  <Send className="h-4 w-4 text-white" />
-                </button>
-              </div>
+              <CommentsSection
+                comments={comments}
+                onSendComment={handleSendComment}
+                currentUserId={currentUserId}
+              />
             </motion.div>
           </motion.div>
         )}
