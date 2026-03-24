@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Heart, MessageSquare, ShoppingBag, ShoppingCart, X, Instagram, Trash2, ChevronDown, ExternalLink, Check, Pencil } from 'lucide-react';
+import { MessageSquare, ShoppingBag, ShoppingCart, X, Instagram, Trash2, ChevronDown, ExternalLink, Check, Pencil, Flame } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -213,13 +213,13 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               <p className="text-[13px] text-white font-medium drop-shadow-sm text-center">{postedCaption}</p>
             </div>
           )}
-          {/* Like — bottom left overlay on image */}
+          {/* Fire — bottom left overlay on image */}
           <button
             onClick={(e) => { e.stopPropagation(); handleLike(); }}
             className="absolute bottom-3 left-3 z-10 h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
             aria-label={liked ? 'Unlike' : 'Like'}
           >
-            <Heart className={`h-5 w-5 ${liked ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+            <Flame className={`h-5 w-5 ${liked ? 'fill-orange-500 text-orange-500' : 'text-white'}`} />
           </button>
           </div>
         </div>
