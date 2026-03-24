@@ -617,7 +617,7 @@ Output: One clean photorealistic catalog photo. No text, watermarks, or collages
     let lastTextContent = "";
     let sawIntimateRefusal = false;
     let sawIntimateTimeout = false;
-    let attemptedRefusalExtraction = isIntimateGarment ? true : preExtractedGarment;
+    let attemptedRefusalExtraction = preExtractedGarment;
 
     for (let attempt = 0; attempt < attemptPlan.length; attempt++) {
       const plan = attemptPlan[attempt];
