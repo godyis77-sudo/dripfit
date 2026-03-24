@@ -98,7 +98,13 @@ const GalleryPlayground = () => {
           </div>
         </motion.button>
 
-        {/* Category pills */}
+        {/* Demo Try-On Results */}
+        <DemoTryOnSection />
+
+        {/* One-Tap Playground — interactive split-screen */}
+        <OneTapPlayground />
+
+        {/* Category pills — just above Browse All */}
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
@@ -121,12 +127,6 @@ const GalleryPlayground = () => {
             </button>
           ))}
         </motion.div>
-
-        {/* Demo Try-On Results */}
-        <DemoTryOnSection />
-
-        {/* One-Tap Playground — interactive split-screen */}
-        <OneTapPlayground />
 
         <button
           onClick={() => navigate('/browse/tops')}
