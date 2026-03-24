@@ -151,42 +151,38 @@ const GalleryPlayground = () => {
           ) : (
             <div className="grid grid-cols-2 gap-2">
               {displayProducts.map((product, idx) => (
-                <div
+                <FullscreenImage
                   key={product.id}
-                  className="relative rounded-xl overflow-hidden bg-card border border-border text-left"
+                  src={product.image_url}
+                  alt={`${product.brand} ${product.name}`}
+                  onTryOn={() => handleTryOn(product)}
+                  onShop={product.product_url ? () => window.open(product.product_url!, '_blank') : undefined}
                 >
-                  <FullscreenImage
-                    src={product.image_url}
-                    alt={`${product.brand} ${product.name}`}
-                    onTryOn={() => handleTryOn(product)}
-                    onShop={product.product_url ? () => window.open(product.product_url!, '_blank') : undefined}
-                  >
+                  <div className="relative rounded-xl overflow-hidden bg-card border border-border text-left">
                     <div className="aspect-[3/4] relative overflow-hidden">
                       <img
                         src={product.image_url}
                         alt={`${product.brand} ${product.name}`}
                         loading={idx < 6 ? 'eager' : 'lazy'}
                         decoding={idx < 6 ? 'sync' : 'async'}
-                        {...(idx < 6 ? { fetchPriority: 'high' as const } : {})}
                         className="w-full h-full object-cover object-top rounded-2xl"
                         onError={() => setFailedIds(prev => new Set(prev).add(product.id))}
                       />
-                      {/* Retailer badge */}
                       <span className="absolute bottom-1.5 right-1.5 brand-label text-[9px] px-1.5 py-0.5">
                         {product.retailer}
                       </span>
                     </div>
-                  </FullscreenImage>
-                  <div className="px-2 py-1.5">
-                    <p className="text-[10px] font-bold text-foreground uppercase tracking-wide truncate">{product.brand}</p>
-                    <p className="text-[11px] font-semibold text-foreground truncate leading-tight">{product.name}</p>
-                    {product.price_cents && (
-                      <p className="text-[12px] font-bold text-primary mt-0.5">
-                        {formatPrice(product.price_cents, product.currency)}
-                      </p>
-                    )}
+                    <div className="px-2 py-1.5">
+                      <p className="text-[10px] font-bold text-foreground uppercase tracking-wide truncate">{product.brand}</p>
+                      <p className="text-[11px] font-semibold text-foreground truncate leading-tight">{product.name}</p>
+                      {product.price_cents && (
+                        <p className="text-[12px] font-bold text-primary mt-0.5">
+                          {formatPrice(product.price_cents, product.currency)}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
+                </FullscreenImage>
               ))}
             </div>
           )}
