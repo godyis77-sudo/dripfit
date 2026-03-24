@@ -86,6 +86,28 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
   const [addingToWardrobe, setAddingToWardrobe] = useState(false);
   const [addedToWardrobe, setAddedToWardrobe] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [editingCaption, setEditingCaption] = useState(false);
+  const [captionDraft, setCaptionDraft] = useState('');
+  const [savingCaption, setSavingCaption] = useState(false);
+
+  const handleSaveCaption = async () => {
+    if (!user || !post) return;
+    setSavingCaption(true);
+    const trimmed = captionDraft.trim();
+    const { error } = await supabase
+      .from('tryon_posts')
+      .update({ caption: trimmed || null })
+      .eq('id', post.id)
+      .eq('user_id', user.id);
+    setSavingCaption(false);
+    if (error) {
+      toast({ title: 'Error', description: 'Could not save caption.', variant: 'destructive' });
+      return;
+    }
+    setEditingCaption(false);
+    toast({ title: 'Caption saved' });
+    onPostUpdated?.();
+  };
 
   if (!post) return null;
 
