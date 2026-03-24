@@ -847,8 +847,8 @@ Output: One clean photorealistic catalog photo. No text, watermarks, or collages
         const textBridgePrompt = makeTextBridgePrompt(textDesc);
         
         const textBridgeModels = [
-          { model: "google/gemini-3.1-flash-image-preview", label: "textbridge-flash", timeoutMs: 18_000 },
-          { model: "google/gemini-3-pro-image-preview", label: "textbridge-pro", timeoutMs: 14_000 },
+          { model: "google/gemini-3.1-flash-image-preview", label: "textbridge-flash", timeoutMs: 25_000 },
+          { model: "google/gemini-3-pro-image-preview", label: "textbridge-pro", timeoutMs: 20_000 },
         ];
 
         for (const tbPlan of textBridgeModels) {
