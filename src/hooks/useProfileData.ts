@@ -85,11 +85,23 @@ export function useWardrobe(userId: string | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('clothing_wardrobe')
-        .select('*')
+        .select('id, image_url, category, product_link, retailer, brand, notes, created_at, is_liked, is_saved, source_post_id')
         .eq('user_id', userId!)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data ?? [];
+      return (data ?? []) as Array<{
+        id: string;
+        image_url: string;
+        category: string;
+        product_link: string | null;
+        retailer: string | null;
+        brand: string | null;
+        notes: string | null;
+        created_at: string;
+        is_liked: boolean;
+        is_saved: boolean;
+        source_post_id: string | null;
+      }>;
     },
     enabled: !!userId,
     staleTime: 2 * 60 * 1000,

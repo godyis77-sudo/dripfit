@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shirt, Sparkles, Store, ExternalLink, Trash2, MoreHorizontal } from 'lucide-react';
+import { Shirt, Sparkles, Store, ExternalLink, Trash2, MoreHorizontal, Heart, Bookmark } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
 import { detectBrandFromUrl, detectCategoryFromUrl } from '@/lib/retailerDetect';
 import WardrobeDetailSheet from './WardrobeDetailSheet';
@@ -16,7 +16,12 @@ interface WardrobeItem {
   brand: string | null;
   notes: string | null;
   created_at: string;
+  is_liked?: boolean;
+  is_saved?: boolean;
+  source_post_id?: string | null;
 }
+
+type WardrobeFilter = 'all' | 'liked' | 'saved';
 
 interface WardrobeTabProps {
   wardrobeItems: WardrobeItem[];
@@ -25,6 +30,7 @@ interface WardrobeTabProps {
 }
 
 const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: WardrobeTabProps) => {
+  const [filter, setFilter] = useState<WardrobeFilter>('all');
   const navigate = useNavigate();
   const [selectedItem, setSelectedItem] = useState<WardrobeItem | null>(null);
   const [longPressId, setLongPressId] = useState<string | null>(null);
@@ -46,10 +52,38 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
     return () => { clearTimeout(t); document.removeEventListener('pointerdown', handler); };
   }, [longPressId]);
 
+  const likedCount = wardrobeItems.filter(i => i.is_liked).length;
+  const savedCount = wardrobeItems.filter(i => i.is_saved).length;
+  const filteredItems = filter === 'all' ? wardrobeItems
+    : filter === 'liked' ? wardrobeItems.filter(i => i.is_liked)
+    : wardrobeItems.filter(i => i.is_saved);
+
   return (
     <>
+      {/* Filter tabs */}
+      <div className="flex gap-2 mb-3">
+        {([
+          { key: 'all' as const, label: 'All', count: wardrobeItems.length, icon: null },
+          { key: 'liked' as const, label: 'Liked', count: likedCount, icon: <Heart className="h-3 w-3" /> },
+          { key: 'saved' as const, label: 'Saved', count: savedCount, icon: <Bookmark className="h-3 w-3" /> },
+        ]).map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setFilter(tab.key)}
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-bold transition-colors ${
+              filter === tab.key
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground'
+            }`}
+          >
+            {tab.icon}
+            {tab.label} ({tab.count})
+          </button>
+        ))}
+      </div>
+
       {/* Outfit Builder entry point */}
-      {wardrobeItems.length >= 2 && (
+      {wardrobeItems.length >= 2 && filter === 'all' && (
         <button
           onClick={() => navigate('/outfits')}
           className="w-full flex items-center gap-3 rounded-xl border border-border bg-card p-3 mb-3 active:scale-[0.98] transition-transform"
@@ -64,20 +98,26 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
         </button>
       )}
       
-      {wardrobeItems.length === 0 ? (
+      {filteredItems.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
           <div className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
-            <Shirt className="h-6 w-6 text-primary/60" />
+            {filter === 'liked' ? <Heart className="h-6 w-6 text-primary/60" /> : filter === 'saved' ? <Bookmark className="h-6 w-6 text-primary/60" /> : <Shirt className="h-6 w-6 text-primary/60" />}
           </div>
-          <h2 className="text-[18px] font-bold text-foreground mb-1">Your wardrobe is empty</h2>
-          <p className="text-[14px] text-muted-foreground max-w-[260px] mb-5">Save clothing items to try-on and track your fits.</p>
-          <Button className="rounded-full btn-luxury text-primary-foreground text-sm h-11 px-6 font-bold" onClick={() => navigate('/home')}>
-            Browse Items
-          </Button>
+          <h2 className="text-[18px] font-bold text-foreground mb-1">
+            {filter === 'all' ? 'Your wardrobe is empty' : filter === 'liked' ? 'No liked items yet' : 'No saved items yet'}
+          </h2>
+          <p className="text-[14px] text-muted-foreground max-w-[260px] mb-5">
+            {filter === 'all' ? 'Save clothing items to try-on and track your fits.' : 'Like or save items from try-ons and the community feed.'}
+          </p>
+          {filter === 'all' && (
+            <Button className="rounded-full btn-luxury text-primary-foreground text-sm h-11 px-6 font-bold" onClick={() => navigate('/home')}>
+              Browse Items
+            </Button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-2">
-          {wardrobeItems.map(item => (
+          {filteredItems.map(item => (
             <motion.div key={item.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
               <div
                 className="relative w-full rounded-xl overflow-hidden border border-border bg-card text-left"
@@ -91,6 +131,11 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                 >
                   <div className="relative aspect-[3/4] px-1.5 pt-1.5">
                     <img src={item.image_url} alt={item.notes || item.category} className="w-full h-full object-cover object-top rounded-xl" />
+                    {/* Liked/Saved badges */}
+                    <div className="absolute top-3 left-3 flex gap-1">
+                      {item.is_liked && <span className="h-5 w-5 rounded-full bg-destructive/90 flex items-center justify-center"><Heart className="h-3 w-3 text-white fill-white" /></span>}
+                      {item.is_saved && <span className="h-5 w-5 rounded-full bg-primary/90 flex items-center justify-center"><Bookmark className="h-3 w-3 text-white fill-white" /></span>}
+                    </div>
                     {(() => {
                       const displayBrand = item.brand || (item.product_link ? detectBrandFromUrl(item.product_link).brand : null) || item.retailer;
                       return displayBrand ? (

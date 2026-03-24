@@ -14,6 +14,7 @@ import { trackEvent } from '@/lib/analytics';
 import { generateTryOnShareCard } from '@/lib/shareImage';
 import { useCart } from '@/hooks/useCart';
 import { getPostedCaption } from '@/components/community/community-types';
+import { useQueryClient } from '@tanstack/react-query';
 interface TryOnPost {
   id: string;
   result_photo_url: string;
@@ -36,6 +37,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { addToCart, removeFromCart, isInCart } = useCart();
   const [liked, setLiked] = useState(false);
   const [posting, setPosting] = useState(false);
@@ -47,10 +49,32 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
 
   const postedCaption = getPostedCaption(post.caption);
 
-  const handleLike = () => {
-    setLiked(prev => !prev);
+  const handleLike = async () => {
+    if (!user) return;
+    const newLiked = !liked;
+    setLiked(newLiked);
     trackEvent('tryon_liked', { post_id: post.id });
-    toast({ title: liked ? 'Removed from favorites' : '❤️ Added to favorites' });
+
+    if (newLiked) {
+      // Upsert into wardrobe with is_liked
+      await supabase.from('clothing_wardrobe').upsert({
+        user_id: user.id,
+        image_url: post.clothing_photo_url || post.result_photo_url,
+        category: 'top',
+        product_link: (post.product_urls && post.product_urls.length > 0) ? post.product_urls[0] : null,
+        is_liked: true,
+        source_post_id: post.id,
+      }, { onConflict: 'user_id,image_url' });
+      toast({ title: '❤️ Liked & saved to wardrobe' });
+    } else {
+      // Remove liked flag (update, don't delete — they may have saved it too)
+      await supabase.from('clothing_wardrobe')
+        .update({ is_liked: false } as any)
+        .eq('user_id', user.id)
+        .eq('source_post_id', post.id);
+      toast({ title: 'Removed from liked' });
+    }
+    queryClient.invalidateQueries({ queryKey: ['wardrobe'] });
   };
 
   const handleToggleCommunity = async () => {
@@ -75,25 +99,23 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
   const handleAddToWardrobe = async () => {
     if (!user) return;
     setAddingToWardrobe(true);
-    const { error } = await supabase.from('clothing_wardrobe').insert({
+    const { error } = await supabase.from('clothing_wardrobe').upsert({
       user_id: user.id,
       image_url: post.clothing_photo_url || post.result_photo_url,
       category: 'top',
       product_link: (post.product_urls && post.product_urls.length > 0) ? post.product_urls[0] : null,
-    });
+      is_saved: true,
+      source_post_id: post.id,
+    }, { onConflict: 'user_id,image_url' });
     setAddingToWardrobe(false);
     if (error) {
-      if (error.code === '23505') {
-        setAddedToWardrobe(true);
-        toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
-      } else {
-        toast({ title: 'Error', description: 'Could not add to wardrobe.', variant: 'destructive' });
-      }
+      toast({ title: 'Error', description: 'Could not add to wardrobe.', variant: 'destructive' });
       return;
     }
     setAddedToWardrobe(true);
     trackEvent('wardrobe_added_from_tryon', { post_id: post.id });
-    toast({ title: '👕 Added to Wardrobe!', description: 'You can find it in your Wardrobe tab.' });
+    toast({ title: '👕 Saved to Wardrobe!', description: 'You can find it in your Wardrobe tab.' });
+    queryClient.invalidateQueries({ queryKey: ['wardrobe'] });
   };
 
   return (
