@@ -196,6 +196,26 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
         {/* Actions */}
         <div className="px-4 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom,1.5rem))] space-y-3 overflow-y-auto">
 
+          {post.product_urls && post.product_urls.length === 1 && (
+            <Button
+              className="h-11 rounded-xl text-[12px] font-bold gap-1.5 btn-luxury text-primary-foreground w-full"
+              onClick={() => {
+                window.open(post.product_urls![0], '_blank', 'noopener');
+                trackEvent('shop_clickout', { post_id: post.id });
+              }}
+            >
+              <ShoppingBag className="h-4 w-4" />
+              Shop this Style
+            </Button>
+          )}
+
+          {post.product_urls && post.product_urls.length > 1 && (
+            <ShopDropdown
+              urls={post.product_urls}
+              onClickout={() => trackEvent('shop_clickout', { post_id: post.id })}
+            />
+          )}
+
           <div className="grid grid-cols-2 gap-2">
             <Button
               variant={liked ? 'default' : 'outline'}
@@ -236,26 +256,6 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               <ShoppingCart className="h-4 w-4" />
               {isInCart(post.id) ? 'In Cart ✓' : 'Add to Cart'}
             </Button>
-
-            {post.product_urls && post.product_urls.length === 1 && (
-              <Button
-                className="h-11 rounded-xl text-[12px] font-bold gap-1.5 btn-luxury text-primary-foreground col-span-2"
-                onClick={() => {
-                  window.open(post.product_urls![0], '_blank', 'noopener');
-                  trackEvent('shop_clickout', { post_id: post.id });
-                }}
-              >
-                <ShoppingBag className="h-4 w-4" />
-                Shop This Item
-              </Button>
-            )}
-
-            {post.product_urls && post.product_urls.length > 1 && (
-              <ShopDropdown
-                urls={post.product_urls}
-                onClickout={() => trackEvent('shop_clickout', { post_id: post.id })}
-              />
-            )}
 
             <Button
               variant="outline"
