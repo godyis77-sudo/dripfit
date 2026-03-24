@@ -86,6 +86,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
   const [addingToWardrobe, setAddingToWardrobe] = useState(false);
   const [addedToWardrobe, setAddedToWardrobe] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [showCaptionForPost, setShowCaptionForPost] = useState(false);
   const [editingCaption, setEditingCaption] = useState(false);
   const [captionDraft, setCaptionDraft] = useState('');
   const [savingCaption, setSavingCaption] = useState(false);
