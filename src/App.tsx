@@ -17,6 +17,12 @@ import AffiliateProvider from "./components/AffiliateProvider";
 import Capture from "./pages/Capture";
 import GuestTimedNudge from "./components/guest/GuestTimedNudge";
 
+/** Clears onboarding flag and redirects to /home so the overlay re-appears */
+function OnboardingReset() {
+  localStorage.removeItem('onboarding_complete');
+  return <Navigate to="/home" replace />;
+}
+
 // ── Lazy-loaded pages (code-split per route) ──────────────────────────
 const Splash = lazy(() => import("./pages/Splash"));
 const Welcome = lazy(() => import("./pages/Welcome"));
