@@ -1,8 +1,8 @@
 import { useCart } from '@/hooks/useCart';
 
 const VOTE_OPTIONS = [
-  { key: 'buy_yes', label: 'Buy it', emoji: '🔥' },
-  { key: 'buy_no', label: 'Pass', emoji: '👎' },
+  { key: 'buy_yes', label: 'COP', emoji: '🔥' },
+  { key: 'buy_no', label: 'DROP', emoji: '👎' },
   { key: 'keep_shopping', label: 'Add to Cart', emoji: '🛒' },
 ] as const;
 
@@ -26,13 +26,13 @@ const VotePanel = ({ postId, votes, voteCounts, onVote }: VotePanelProps) => {
       {/* Outcome summary */}
       {totalBuy > 0 && (
         <div className="text-center">
-          <p className="text-[16px] font-bold text-white">{buyPct}% Buy it</p>
+          <p className="text-[16px] font-bold text-white">{buyPct}% COP</p>
           <p className="text-[11px] text-white/50">{totalBuy} vote{totalBuy !== 1 ? 's' : ''}</p>
         </div>
       )}
 
       {/* Would you buy it? */}
-      <p className="text-[11px] text-white/50 font-bold uppercase tracking-wider">Would you buy it?</p>
+      <p className="text-[11px] text-white/50 font-bold uppercase tracking-wider">COP or DROP?</p>
       <div className="flex gap-2">
         {VOTE_OPTIONS.map(v => {
           const active = v.key === 'keep_shopping'

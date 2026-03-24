@@ -30,7 +30,7 @@ const TryOnPremiumGate = ({ onClose }: TryOnPremiumGateProps) => {
         <div className="h-12 w-12 rounded-full badge-gold-3d shimmer-sweep mx-auto mb-3 flex items-center justify-center">
           <InlineCrown size={24} />
         </div>
-        <h2 className="text-lg font-bold text-foreground mb-1">You've used your free try-ons</h2>
+        <h2 className="text-lg font-bold text-foreground mb-1">You've hit today's free limit</h2>
         <p className="text-sm text-muted-foreground mb-4">
           Upgrade to Premium for unlimited try-ons, priority generation, and side-by-side comparison mode.
         </p>

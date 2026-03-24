@@ -20,7 +20,7 @@ const PLANS = [
 ];
 
 const FEATURES = [
-  { icon: Sparkles, title: 'Unlimited AI Try-Ons', description: 'No monthly cap on virtual try-ons', free: '3/month', premium: 'Unlimited' },
+  { icon: Sparkles, title: 'Unlimited AI Try-Ons', description: 'No monthly cap on virtual try-ons', free: '10/day', premium: 'Unlimited' },
   { icon: Zap, title: 'Priority Generation Queue', description: 'Skip the line — your try-ons render first', free: 'Standard', premium: 'Priority' },
   { icon: Eye, title: 'Side-by-Side Comparison', description: 'Compare 2 looks on your body at once', free: '—', premium: '✓' },
   { icon: Store, title: 'Multi-Retailer Size Sync', description: 'Sync your size across 50+ retailers automatically', free: 'Top 10', premium: '50+' },

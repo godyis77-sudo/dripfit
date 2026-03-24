@@ -882,7 +882,7 @@ const TryOnResultSection = ({
                 )}
               </div>
 
-              {/* Wardrobe + Cart row */}
+              {/* Wardrobe + Save row */}
               {authUser && (
                 <div className="max-w-sm mx-auto w-full flex gap-2">
                   <button
@@ -895,21 +895,21 @@ const TryOnResultSection = ({
                         image_url: clothingPhoto,
                       });
                     }}
-                    className="flex-1 h-11 rounded-xl text-[12px] font-bold gap-1.5 flex items-center justify-center border border-white/20 text-white hover:bg-white/10 active:scale-95 transition-transform"
+                    className="flex-1 h-10 rounded-xl text-[11px] font-bold gap-1.5 flex items-center justify-center border border-white/10 text-white/70 hover:bg-white/10 active:scale-95 transition-transform"
                   >
-                    <ShoppingBag className="h-4 w-4" />
+                    <ShoppingBag className="h-3.5 w-3.5" />
                     + Wardrobe
                   </button>
                   <button
                     onClick={onSaveToItems}
                     disabled={savedToItems}
-                    className={`flex-1 h-11 rounded-xl text-[12px] font-bold gap-1.5 flex items-center justify-center active:scale-95 transition-transform ${
+                    className={`flex-1 h-10 rounded-xl text-[11px] font-bold gap-1.5 flex items-center justify-center active:scale-95 transition-transform ${
                       savedToItems
                         ? 'border border-primary/40 bg-primary/20 text-primary'
-                        : 'border border-white/20 text-white hover:bg-white/10'
+                        : 'border border-white/10 text-white/70 hover:bg-white/10'
                     }`}
                   >
-                    <Bookmark className="h-4 w-4" />
+                    <Bookmark className="h-3.5 w-3.5" />
                     {savedToItems ? 'Saved ✓' : '+ Save'}
                   </button>
                 </div>
@@ -926,6 +926,14 @@ const TryOnResultSection = ({
                     Buy!
                   </button>
                 )}
+                <button
+                  onClick={() => { handleShareDripCard(); setShowResultFullscreen(false); }}
+                  disabled={sharingDripCard}
+                  className="flex-1 gap-2 h-12 rounded-xl font-bold flex items-center justify-center border border-white/20 text-white hover:bg-white/10 active:scale-95 transition-transform"
+                >
+                  {sharingDripCard ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share className="h-4 w-4" />}
+                  Share
+                </button>
                 <button
                   onClick={() => { onTryAnother(); setShowResultFullscreen(false); }}
                   className="flex-1 gap-2 h-12 rounded-xl font-bold flex items-center justify-center border border-white/20 text-white hover:bg-white/10 active:scale-95 transition-transform"
