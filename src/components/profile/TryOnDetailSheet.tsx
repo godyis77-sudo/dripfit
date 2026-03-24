@@ -288,27 +288,18 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
 
           <div className="grid grid-cols-2 gap-2">
             <Button
-              variant={liked ? 'default' : 'outline'}
-              className="h-11 rounded-xl text-[12px] font-bold gap-1.5"
-              onClick={handleLike}
-            >
-              <Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} />
-              {liked ? 'Liked' : 'Like'}
-            </Button>
-
-            <Button
               variant={addedToWardrobe ? 'default' : 'outline'}
               className={`h-11 rounded-xl text-[12px] font-bold gap-1.5 ${addedToWardrobe ? 'bg-primary/20 text-primary border-primary/30' : ''}`}
               onClick={handleAddToWardrobe}
               disabled={addingToWardrobe || addedToWardrobe}
             >
               <ShoppingBag className="h-4 w-4" />
-              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added ✓' : 'Add to Wardrobe'}
+              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added ✓' : 'Wardrobe'}
             </Button>
 
             <Button
               variant="outline"
-              className={`h-11 rounded-xl text-[12px] font-bold gap-1.5 col-span-2 ${isInCart(post.id) ? 'border-primary/40 bg-primary/10' : ''}`}
+              className={`h-11 rounded-xl text-[12px] font-bold gap-1.5 ${isInCart(post.id) ? 'border-primary/40 bg-primary/10' : ''}`}
               onClick={() => {
                 if (isInCart(post.id)) {
                   removeFromCart(post.id);
@@ -324,7 +315,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               }}
             >
               <ShoppingCart className="h-4 w-4" />
-              {isInCart(post.id) ? 'In Cart ✓' : 'Add to Cart'}
+              {isInCart(post.id) ? 'In Cart ✓' : 'Cart'}
             </Button>
 
             <Button
