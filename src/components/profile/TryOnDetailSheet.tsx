@@ -195,22 +195,18 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               {isInCart(post.id) ? 'In Cart ✓' : 'Add to Cart'}
             </Button>
 
-            <Button
-              className="h-11 rounded-xl text-[12px] font-bold gap-1.5 btn-luxury text-primary-foreground col-span-2"
-              onClick={() => {
-                onOpenChange(false);
-                navigate('/tryon', {
-                  state: {
-                    clothingImageUrl: post.clothing_photo_url || undefined,
-                    productUrl: (post.product_urls && post.product_urls.length > 0) ? post.product_urls[0] : undefined,
-                  },
-                });
-                trackEvent('tryon_from_detail_sheet', { post_id: post.id });
-              }}
-            >
-              <Sparkles className="h-4 w-4" />
-              Try-On This Look
-            </Button>
+            {post.product_urls?.[0] && (
+              <Button
+                className="h-11 rounded-xl text-[12px] font-bold gap-1.5 btn-luxury text-primary-foreground col-span-2"
+                onClick={() => {
+                  window.open(post.product_urls![0], '_blank', 'noopener');
+                  trackEvent('shop_from_detail_sheet', { post_id: post.id });
+                }}
+              >
+                <ShoppingBag className="h-4 w-4" />
+                Shop This Item
+              </Button>
+            )}
 
             <Button
               variant="outline"
