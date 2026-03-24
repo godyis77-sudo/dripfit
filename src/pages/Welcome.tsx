@@ -41,6 +41,7 @@ const Welcome = () => {
 
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
+      <OnboardingOverlay />
       {galleryEnabled ? <GalleryPlayground /> : <AuthenticatedHome />}
       <BottomTabBar />
     </div>
