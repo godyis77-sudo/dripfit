@@ -289,7 +289,6 @@ export const PostDetailSheet = ({
             className="fixed inset-0 z-[100] h-[100dvh] bg-black flex flex-col overflow-y-auto overscroll-y-contain"
             style={{ WebkitOverflowScrolling: 'touch' }}
             ref={scrollContainerRef}
-            onClick={onClose}
           >
             {/* Top bar */}
             <motion.div
@@ -323,7 +322,11 @@ export const PostDetailSheet = ({
                     {isFollowing ? 'Following' : 'Follow'}
                   </button>
                 )}
-                <button onClick={onClose} aria-label="Close" className="h-11 w-11 min-h-[44px] min-w-[44px] rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform">
+                <button
+                  onClick={(e) => { e.stopPropagation(); onClose(); }}
+                  aria-label="Close"
+                  className="h-11 w-11 min-h-[44px] min-w-[44px] rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
+                >
                   <X className="h-5 w-5 text-white" />
                 </button>
               </div>
