@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Heart, MessageSquare, ShoppingBag, ShoppingCart, X, Instagram, Trash2 } from 'lucide-react';
+import { Heart, MessageSquare, ShoppingBag, ShoppingCart, X, Instagram, Trash2, ChevronDown, ExternalLink } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
