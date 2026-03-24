@@ -442,10 +442,10 @@ Deno.serve(async (req) => {
         : "Replace only the clothing area needed for this garment and keep all unrelated body/background details unchanged.";
 
     const identityInstruction = isIntimateGarment
-      ? "Use Image A as pose, proportions, and scene reference, but do not attempt exact facial identity replication; prefer neck-down framing or softly de-emphasized face details."
+      ? "Use Image A as pose, proportions, and scene reference with softly de-emphasized facial details. CRITICAL: Show the FULL BODY from shoulders to feet — never crop at the waist or torso."
       : "Keep the model's face, body shape, skin tone, hair, and pose identical to Image A.";
     const intimateFramingInstruction = isIntimateGarment
-      ? "- Prefer neck-down framing (or softened face details) while preserving pose and background continuity."
+      ? "- CRITICAL: Output MUST show FULL BODY from head to feet, including legs and shoes/feet. Never crop at the waist or mid-thigh. Softly de-emphasize facial details while preserving pose and background continuity."
       : "";
 
     // ── BUILD PROMPT ──
