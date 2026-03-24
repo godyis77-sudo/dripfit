@@ -86,6 +86,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
   const [addingToWardrobe, setAddingToWardrobe] = useState(false);
   const [addedToWardrobe, setAddedToWardrobe] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [showCaptionForPost, setShowCaptionForPost] = useState(false);
   const [editingCaption, setEditingCaption] = useState(false);
   const [captionDraft, setCaptionDraft] = useState('');
   const [savingCaption, setSavingCaption] = useState(false);
@@ -206,51 +207,61 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
             alt={post.caption || 'Try-on result'}
             className="max-w-full max-h-full w-auto h-auto rounded-2xl"
           />
-          {/* Caption — bottom left overlay on image */}
+          {/* Caption — bottom right overlay on image */}
           {postedCaption && (
-            <div className="absolute bottom-3 left-3 z-10">
-              <p className="text-[13px] text-white font-medium drop-shadow-sm">{postedCaption}</p>
+            <div className="absolute bottom-3 right-14 left-14 z-10">
+              <p className="text-[13px] text-white font-medium drop-shadow-sm text-center">{postedCaption}</p>
             </div>
           )}
+          {/* Like — bottom left overlay on image */}
+          <button
+            onClick={(e) => { e.stopPropagation(); handleLike(); }}
+            className="absolute bottom-3 left-3 z-10 h-10 w-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
+            aria-label={liked ? 'Unlike' : 'Like'}
+          >
+            <Heart className={`h-5 w-5 ${liked ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+          </button>
           </div>
         </div>
 
-        {/* Caption field */}
-        <div className="px-4 pt-2">
-          {editingCaption ? (
-            <div className="flex items-center gap-2">
-              <input
-                autoFocus
-                value={captionDraft}
-                onChange={(e) => setCaptionDraft(e.target.value)}
-                maxLength={200}
-                placeholder="Add a caption…"
-                className="flex-1 h-10 rounded-xl border border-border bg-muted/50 px-3 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                onKeyDown={(e) => { if (e.key === 'Enter') handleSaveCaption(); }}
-              />
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-10 w-10 rounded-xl shrink-0"
-                onClick={handleSaveCaption}
-                disabled={savingCaption}
+        {/* Caption field — only shown when posting to community */}
+        {showCaptionForPost && (
+          <div className="px-4 pt-2">
+            {editingCaption ? (
+              <div className="flex items-center gap-2">
+                <input
+                  autoFocus
+                  value={captionDraft}
+                  onChange={(e) => setCaptionDraft(e.target.value)}
+                  maxLength={200}
+                  placeholder="Add a caption…"
+                  className="flex-1 h-10 rounded-xl border border-border bg-muted/50 px-3 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleSaveCaption(); }}
+                />
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-10 w-10 rounded-xl shrink-0"
+                  onClick={handleSaveCaption}
+                  disabled={savingCaption}
+                >
+                  <Check className="h-4 w-4 text-primary" />
+                </Button>
+              </div>
+            ) : (
+              <button
+                className="flex items-center gap-1.5 text-[12px] text-muted-foreground hover:text-foreground transition-colors min-h-[44px]"
+                onClick={() => {
+                  setCaptionDraft(post.caption || '');
+                  setEditingCaption(true);
+                }}
               >
-                <Check className="h-4 w-4 text-primary" />
-              </Button>
-            </div>
-          ) : (
-            <button
-              className="flex items-center gap-1.5 text-[12px] text-muted-foreground hover:text-foreground transition-colors min-h-[44px]"
-              onClick={() => {
-                setCaptionDraft(post.caption || '');
-                setEditingCaption(true);
-              }}
-            >
-              <Pencil className="h-3.5 w-3.5" />
-              {postedCaption || 'Add a caption…'}
-            </button>
-          )}
-        </div>
+                <Pencil className="h-3.5 w-3.5" />
+                {postedCaption || 'Add a caption…'}
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Actions */}
         <div className="px-4 pt-2 pb-[max(1.5rem,env(safe-area-inset-bottom,1.5rem))] space-y-3 overflow-y-auto">
@@ -277,27 +288,18 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
 
           <div className="grid grid-cols-2 gap-2">
             <Button
-              variant={liked ? 'default' : 'outline'}
-              className="h-11 rounded-xl text-[12px] font-bold gap-1.5"
-              onClick={handleLike}
-            >
-              <Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} />
-              {liked ? 'Liked' : 'Like'}
-            </Button>
-
-            <Button
               variant={addedToWardrobe ? 'default' : 'outline'}
               className={`h-11 rounded-xl text-[12px] font-bold gap-1.5 ${addedToWardrobe ? 'bg-primary/20 text-primary border-primary/30' : ''}`}
               onClick={handleAddToWardrobe}
               disabled={addingToWardrobe || addedToWardrobe}
             >
               <ShoppingBag className="h-4 w-4" />
-              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added ✓' : 'Add to Wardrobe'}
+              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added ✓' : 'Wardrobe'}
             </Button>
 
             <Button
               variant="outline"
-              className={`h-11 rounded-xl text-[12px] font-bold gap-1.5 col-span-2 ${isInCart(post.id) ? 'border-primary/40 bg-primary/10' : ''}`}
+              className={`h-11 rounded-xl text-[12px] font-bold gap-1.5 ${isInCart(post.id) ? 'border-primary/40 bg-primary/10' : ''}`}
               onClick={() => {
                 if (isInCart(post.id)) {
                   removeFromCart(post.id);
@@ -313,7 +315,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               }}
             >
               <ShoppingCart className="h-4 w-4" />
-              {isInCart(post.id) ? 'In Cart ✓' : 'Add to Cart'}
+              {isInCart(post.id) ? 'In Cart ✓' : 'Cart'}
             </Button>
 
             <Button
@@ -358,11 +360,19 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
           <Button
             variant="outline"
             className={`w-full h-11 rounded-xl text-[12px] font-bold gap-1.5 ${post.is_public ? 'border-primary/40 bg-primary/10' : ''}`}
-            onClick={handleToggleCommunity}
+            onClick={() => {
+              if (!post.is_public && !showCaptionForPost) {
+                setShowCaptionForPost(true);
+                setCaptionDraft(post.caption || '');
+                setEditingCaption(true);
+                return;
+              }
+              handleToggleCommunity();
+            }}
             disabled={posting}
           >
             <MessageSquare className="h-4 w-4" />
-            {posting ? (post.is_public ? 'Removing…' : 'Posting…') : post.is_public ? 'Shared in Style Check ✓' : 'Post to Community'}
+            {posting ? (post.is_public ? 'Removing…' : 'Posting…') : post.is_public ? 'Shared in Style Check ✓' : showCaptionForPost ? 'Post Style Check' : 'Post Style Check'}
           </Button>
 
           {/* Delete */}
