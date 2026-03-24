@@ -166,7 +166,7 @@ const Backgrounds = () => {
   const isLoading = categoriesLoading || backgroundsLoading;
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-safe-tab">
       <PageHeader title="Backgrounds" />
 
       {/* Large preview area */}
