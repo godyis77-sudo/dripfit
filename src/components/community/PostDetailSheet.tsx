@@ -149,6 +149,15 @@ export const PostDetailSheet = ({
     const postedCaption = getPostedCaption(post.caption);
     setQuestionText(postedCaption ?? '');
     setEditingQuestion(false);
+
+    // Scroll lock
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+      document.documentElement.style.overflow = '';
+    };
   }, [open, post?.id, post?.caption]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
@@ -286,7 +295,7 @@ export const PostDetailSheet = ({
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center justify-between px-4 pt-3 pb-1 z-10"
+              className="sticky top-0 flex items-center justify-between px-4 pt-3 pb-1 z-20 bg-black/80 backdrop-blur-sm"
               onClick={(e) => e.stopPropagation()}
             >
               <button onClick={() => onNavigateProfile(post)} className="flex items-center gap-2 active:opacity-70 transition-opacity">
