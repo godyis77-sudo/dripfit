@@ -90,7 +90,6 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
         }}
         onShop={(p) => {
           if (p.product_url) {
-            trackEvent('tap_a_fit_shop', { brand: p.brand });
             window.open(p.product_url, '_blank', 'noopener');
           }
         }}
