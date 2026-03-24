@@ -117,28 +117,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
         {/* Trending Fits */}
         <TrendingFitsGrid fits={trendingFits} />
 
-        {/* Price filter chips */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.18 }}
-          className="mb-3"
-        >
-          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-            {PRICE_FILTERS.map((filter, idx) => (
-              <button
-                key={filter.label}
-                onClick={() => setActivePriceIdx(idx)}
-                className={`shrink-0 pill shimmer-sweep ${
-                  activePriceIdx === idx ? 'pill-filled' : ''
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
-          </div>
-        </motion.div>
-
         {/* Re-scan nudge banner — above product grid for visibility */}
         {hasScan && daysSinceLastScan !== null && daysSinceLastScan >= 30 && !rescanDismissed && (
           <motion.div
@@ -218,6 +196,22 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               Browse All →
             </button>
           </div>
+
+          {/* Price / category filter chips — just above grids */}
+          <div className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-hide mb-1" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
+            {PRICE_FILTERS.map((filter, idx) => (
+              <button
+                key={filter.label}
+                onClick={() => setActivePriceIdx(idx)}
+                className={`shrink-0 pill shimmer-sweep ${
+                  activePriceIdx === idx ? 'pill-filled' : ''
+                }`}
+              >
+                {filter.label}
+              </button>
+            ))}
+          </div>
+
           {genderLoaded && [
             { category: 'tops', title: 'Tops' },
             { category: 'bottom', title: 'Bottoms' },
