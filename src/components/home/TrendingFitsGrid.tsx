@@ -60,14 +60,14 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
                   category: fit.category,
                 })
               }
-              className="relative glass-card rounded-xl overflow-hidden aspect-[3/4] group active:scale-[0.97] active:translate-y-[1px] transition-all shadow-3d active:shadow-3d-pressed bg-muted/20"
+              className="relative glass-card rounded-xl overflow-hidden aspect-[3/4] group active:scale-[0.97] active:translate-y-[1px] transition-all shadow-3d active:shadow-3d-pressed"
             >
               <img
                 src={fit.image_url}
                 alt={fit.name}
                 loading="lazy"
                 decoding="async"
-                className="absolute inset-0 w-full h-full object-contain rounded-xl"
+                className="absolute inset-0 w-full h-full object-cover object-center rounded-xl"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-1.5">
