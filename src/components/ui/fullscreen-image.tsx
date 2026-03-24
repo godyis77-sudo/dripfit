@@ -20,9 +20,8 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
   const [open, setOpen] = useState(false);
   const hasActions = !!(onShop || onTryOn || onAddToWardrobe);
   const portalTarget = typeof document !== 'undefined' ? document.body : null;
-  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
-  const touchMovedRef = useRef(false);
-  const lastTouchOpenRef = useRef(0);
+  const pointerStartRef = useRef<{ x: number; y: number; id: number } | null>(null);
+  const pointerMovedRef = useRef(false);
 
   useEffect(() => {
     const prevBodyOverflow = document.body.style.overflow;
@@ -39,45 +38,33 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
     };
   }, [open]);
 
-  const handleTouchStart: React.TouchEventHandler<HTMLDivElement> = (e) => {
-    const touch = e.touches[0];
-    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
-    touchMovedRef.current = false;
-  };
-
-  const handleTouchMove: React.TouchEventHandler<HTMLDivElement> = (e) => {
-    if (!touchStartRef.current) return;
-    const touch = e.touches[0];
-    const dx = Math.abs(touch.clientX - touchStartRef.current.x);
-    const dy = Math.abs(touch.clientY - touchStartRef.current.y);
-    if (dx > TAP_THRESHOLD_PX || dy > TAP_THRESHOLD_PX) {
-      touchMovedRef.current = true;
-    }
-  };
-
-  const handleTouchEnd: React.TouchEventHandler<HTMLDivElement> = () => {
-    if (!touchMovedRef.current) {
-      lastTouchOpenRef.current = Date.now();
-      setOpen(true);
-    }
-    touchStartRef.current = null;
-    touchMovedRef.current = false;
-  };
-
-  const handleClick: React.MouseEventHandler<HTMLDivElement> = () => {
-    if (Date.now() - lastTouchOpenRef.current < 450) return;
-    setOpen(true);
-  };
-
   return (
     <>
       <div
         role="button"
         tabIndex={0}
-        onClick={handleClick}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
+        onPointerDown={(e) => {
+          pointerStartRef.current = { x: e.clientX, y: e.clientY, id: e.pointerId };
+          pointerMovedRef.current = false;
+        }}
+        onPointerMove={(e) => {
+          if (!pointerStartRef.current || pointerStartRef.current.id !== e.pointerId) return;
+          const dx = Math.abs(e.clientX - pointerStartRef.current.x);
+          const dy = Math.abs(e.clientY - pointerStartRef.current.y);
+          if (dx > TAP_THRESHOLD_PX || dy > TAP_THRESHOLD_PX) {
+            pointerMovedRef.current = true;
+          }
+        }}
+        onPointerUp={(e) => {
+          if (!pointerStartRef.current || pointerStartRef.current.id !== e.pointerId) return;
+          if (!pointerMovedRef.current) setOpen(true);
+          pointerStartRef.current = null;
+          pointerMovedRef.current = false;
+        }}
+        onPointerCancel={() => {
+          pointerStartRef.current = null;
+          pointerMovedRef.current = false;
+        }}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
