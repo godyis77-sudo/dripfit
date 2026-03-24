@@ -42,7 +42,7 @@ const OneTapPlayground = () => {
       return (
         Boolean(p.image_url) &&
         p.presentation === 'model_shot' &&
-        confidence >= 0.45 &&
+        confidence >= 0.5 &&
         FULL_BODY_CATEGORIES.has(category)
       );
     });
