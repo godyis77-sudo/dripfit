@@ -60,9 +60,9 @@ const DemoTryOnSection = () => {
                 className="w-full h-full object-cover object-top rounded-xl"
                 loading="lazy"
               />
-              {/* AI badge */}
-              <span className="absolute top-1.5 left-1.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-primary/90 text-primary-foreground text-[8px] font-bold uppercase tracking-wider">
-                <Sparkles className="h-2.5 w-2.5" /> AI Try-On
+              {/* Brand badge */}
+              <span className="absolute top-1.5 left-1.5 inline-flex items-center px-1.5 py-0.5 rounded-md bg-black/60 backdrop-blur-sm text-white text-[8px] font-bold uppercase tracking-wider">
+                {demo.brand}
               </span>
               {/* Hover CTA */}
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent pt-6 pb-2 px-2 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity">
