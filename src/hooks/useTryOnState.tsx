@@ -41,6 +41,7 @@ type PersistedTryOnState = {
   productLink: string;
   category: string;
   resultImage: string | null;
+  activePostId: string | null;
   lookItems: LookItem[];
   caption: string;
   autoSaved: boolean;
@@ -62,6 +63,7 @@ function loadPersistedTryOnState(): PersistedTryOnState {
       productLink: parsed.productLink || '',
       category: parsed.category || 'top',
       resultImage: savedResultUrl || parsed.resultImage || null,
+      activePostId: parsed.activePostId || null,
       lookItems: parsed.lookItems || [],
       caption: parsed.caption || '',
       autoSaved: parsed.autoSaved || !!savedResultUrl,
@@ -70,7 +72,7 @@ function loadPersistedTryOnState(): PersistedTryOnState {
       selectedQuickPick: parsed.selectedQuickPick || null,
     };
   } catch { /* ignore */ }
-  return { userPhoto: null, clothingPhoto: null, productLink: '', category: 'top', resultImage: null, lookItems: [], caption: '', autoSaved: false, shared: false, savedToItems: false, selectedQuickPick: null };
+  return { userPhoto: null, clothingPhoto: null, productLink: '', category: 'top', resultImage: null, activePostId: null, lookItems: [], caption: '', autoSaved: false, shared: false, savedToItems: false, selectedQuickPick: null };
 }
 
 export function useTryOnState() {
@@ -86,8 +88,10 @@ export function useTryOnState() {
   const [userPhoto, setUserPhotoRaw] = useState<string | null>(persisted.userPhoto);
   const [clothingPhoto, setClothingPhotoRaw] = useState<string | null>(persisted.clothingPhoto);
   const [resultImage, setResultImageRaw] = useState<string | null>(persisted.resultImage);
+  const [activePostId, setActivePostId] = useState<string | null>(persisted.activePostId);
   const [description, setDescription] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const [loadingStepIndex, setLoadingStepIndex] = useState(0);
   const [caption, setCaptionRaw] = useState(persisted.caption);
   const [isPublic, setIsPublic] = useState(() => getDefaultSharePreference());
@@ -342,12 +346,17 @@ export function useTryOnState() {
         uploadBase64ToStorage(clothingPhoto!, 'clothing'),
         uploadBase64ToStorage(resultBase64, 'result'),
       ]);
-      const { error } = await supabase.from('tryon_posts').insert({ user_id: user!.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false, product_urls: getAllUrls() });
+      const { data: insertedPost, error } = await supabase
+        .from('tryon_posts')
+        .insert({ user_id: user!.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false, product_urls: getAllUrls() })
+        .select('id')
+        .single();
       if (error) throw error;
       setAutoSaved(true);
+      setActivePostId(insertedPost.id);
       // Persist the uploaded URL (small string) so result survives navigation & tab close
       setResultImage(resultUrl);
-      persistState({ autoSaved: true, resultImage: resultUrl, userPhoto: userUrl, clothingPhoto: clothingUrl });
+      persistState({ autoSaved: true, resultImage: resultUrl, userPhoto: userUrl, clothingPhoto: clothingUrl, activePostId: insertedPost.id });
       try { localStorage.setItem(TRYON_RESULT_KEY, resultUrl); } catch { /* ignore */ }
       trackEvent('tryon_saved');
       toast({ title: 'Saved to Profile', description: 'Your Try-On is saved privately.' });
@@ -398,6 +407,8 @@ export function useTryOnState() {
     if (!(await checkUsageLimit())) return;
     setLoading(true);
     setResultImage(null);
+    setActivePostId(null);
+    persistState({ activePostId: null });
     setDescription(null);
     setLookItems([]);
     setLayerHistory([]);
@@ -467,45 +478,68 @@ export function useTryOnState() {
 
   const handleShare = async () => {
     if (!user) { toast({ title: 'Sign in to share', description: 'Create a free account to post your look.', variant: 'destructive' }); navigate('/auth'); return; }
+    if (sharing) return;
     if (shared) {
       toast({ title: isPublic ? 'Already posted' : 'Already saved', description: 'This look has already been submitted.' });
       return;
     }
+    setSharing(true);
     try {
       const allUrls = getAllUrls();
-      if (autoSaved) {
-        const { data: latestPosts, error: latestError } = await supabase
-          .from('tryon_posts')
-          .select('id')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(1);
-        if (latestError) throw latestError;
+      let targetPostId = activePostId;
 
-        if (latestPosts && latestPosts.length > 0) {
-          const { error: updateError } = await supabase
+      if (autoSaved) {
+        if (!targetPostId) {
+          const { data: latestPosts, error: latestError } = await supabase
             .from('tryon_posts')
-            .update({ caption: caption || null, is_public: isPublic, product_urls: allUrls })
-            .eq('id', latestPosts[0].id);
-          if (updateError) throw updateError;
+            .select('id')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(1);
+          if (latestError) throw latestError;
+          targetPostId = latestPosts?.[0]?.id ?? null;
         }
+
+        if (!targetPostId) throw new Error('Your look is still syncing. Please tap Save & Post again in a second.');
+
+        const { data: updatedPost, error: updateError } = await supabase
+          .from('tryon_posts')
+          .update({ caption: caption || null, is_public: isPublic, product_urls: allUrls })
+          .eq('id', targetPostId)
+          .eq('user_id', user.id)
+          .select('id')
+          .single();
+        if (updateError) throw updateError;
+        targetPostId = updatedPost.id;
       } else {
         const [userUrl, clothingUrl, resultUrl] = await Promise.all([
           uploadBase64ToStorage(userPhoto!, 'user'),
           uploadBase64ToStorage(clothingPhoto!, 'clothing'),
           uploadBase64ToStorage(resultImage!, 'result'),
         ]);
-        const { error: insertError } = await supabase
+        const { data: insertedPost, error: insertError } = await supabase
           .from('tryon_posts')
-          .insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic, product_urls: allUrls });
+          .insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic, product_urls: allUrls })
+          .select('id')
+          .single();
         if (insertError) throw insertError;
+        targetPostId = insertedPost.id;
+        setAutoSaved(true);
+        setResultImage(resultUrl);
+        persistState({ autoSaved: true, resultImage: resultUrl, userPhoto: userUrl, clothingPhoto: clothingUrl, activePostId: targetPostId });
+        try { localStorage.setItem(TRYON_RESULT_KEY, resultUrl); } catch { /* ignore */ }
       }
+
+      setActivePostId(targetPostId);
+      persistState({ activePostId: targetPostId });
       setShared(true);
       setShowPostUI(false);
       trackEvent('tryon_posted', { isPublic });
       toast({ title: isPublic ? 'Posted to Style Check!' : 'Saved!', description: isPublic ? 'Your look is live — get feedback from the community.' : 'Caption updated.' });
     } catch (err: unknown) {
       toast({ title: 'Share failed', description: (err as Error).message, variant: 'destructive' });
+    } finally {
+      setSharing(false);
     }
   };
 
@@ -515,7 +549,7 @@ export function useTryOnState() {
     setCaption(''); setIsPublic(getDefaultSharePreference()); setShared(false); setAutoSaved(false);
     setProductLink(''); setLookItems([]); setClothingSaved(false); setSavedToItems(false);
     setShowPostUI(false); setShowLookItems(false); setLayerHistory([]);
-    setSelectedQuickPick(null);
+    setSelectedQuickPick(null); setActivePostId(null);
     try { sessionStorage.removeItem(TRYON_STATE_KEY); localStorage.removeItem(TRYON_RESULT_KEY); } catch { /* ignore */ }
     // userPhoto persists in localStorage (TRYON_USER_PHOTO_KEY) automatically
   };
@@ -686,7 +720,7 @@ export function useTryOnState() {
     showPremiumGate, setShowPremiumGate, savedToItems, showSuccessOverlay,
     showLookItems, layerHistory, hasSavedProfile,
     canGenerate, remainingTryOns, hasUnlimitedTryOns: !!hasUnlimitedTryOns,
-    addingAccessory, tryOnError, autoSaved,
+    addingAccessory, tryOnError, autoSaved, sharing,
     // Guest auth wall
     showAuthWall, setShowAuthWall, authWallReason,
     // Handlers
