@@ -314,9 +314,12 @@ export type Database = {
           created_at: string
           id: string
           image_url: string
+          is_liked: boolean
+          is_saved: boolean
           notes: string | null
           product_link: string | null
           retailer: string | null
+          source_post_id: string | null
           user_id: string
         }
         Insert: {
@@ -325,9 +328,12 @@ export type Database = {
           created_at?: string
           id?: string
           image_url: string
+          is_liked?: boolean
+          is_saved?: boolean
           notes?: string | null
           product_link?: string | null
           retailer?: string | null
+          source_post_id?: string | null
           user_id: string
         }
         Update: {
@@ -336,9 +342,12 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string
+          is_liked?: boolean
+          is_saved?: boolean
           notes?: string | null
           product_link?: string | null
           retailer?: string | null
+          source_post_id?: string | null
           user_id?: string
         }
         Relationships: []
