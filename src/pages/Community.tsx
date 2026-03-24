@@ -81,21 +81,12 @@ const Community = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Close detail sheet on browser/hardware back button
+  // Stable close handling for fullscreen detail view
   const closeDetail = useCallback(() => setDetailPost(null), []);
 
-  useEffect(() => {
-    if (detailPost) {
-      window.history.pushState({ detailOpen: true }, '');
-      const onPopState = () => closeDetail();
-      window.addEventListener('popstate', onPopState);
-      return () => window.removeEventListener('popstate', onPopState);
-    }
-  }, [detailPost, closeDetail]);
-
   const handleCloseDetail = useCallback(() => {
-    if (detailPost) window.history.back();
-  }, [detailPost]);
+    closeDetail();
+  }, [closeDetail]);
 
   const {
     posts, loading, loadingMore, hasMore, loadMore,
