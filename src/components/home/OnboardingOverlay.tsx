@@ -25,10 +25,19 @@ const STORAGE_KEY = 'onboarding_complete';
 
 export default function OnboardingOverlay() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [visible, setVisible] = useState(() => !localStorage.getItem(STORAGE_KEY));
   const [slide, setSlide] = useState(0);
   const [dir, setDir] = useState(1);
   const touchStartX = useRef(0);
+
+  // Re-check localStorage when navigating back (e.g. from /onboarding reset)
+  useEffect(() => {
+    if (!localStorage.getItem(STORAGE_KEY)) {
+      setVisible(true);
+      setSlide(0);
+    }
+  }, [location.key]);
 
   const complete = useCallback((dest?: string) => {
     localStorage.setItem(STORAGE_KEY, 'true');
