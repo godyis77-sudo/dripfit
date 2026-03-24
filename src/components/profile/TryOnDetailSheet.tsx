@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Heart, MessageSquare, ShoppingBag, ShoppingCart, X, Instagram, Trash2, ChevronDown, ExternalLink } from 'lucide-react';
+import { Heart, MessageSquare, ShoppingBag, ShoppingCart, X, Instagram, Trash2, ChevronDown, ExternalLink, Check, Pencil } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -86,6 +86,28 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
   const [addingToWardrobe, setAddingToWardrobe] = useState(false);
   const [addedToWardrobe, setAddedToWardrobe] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [editingCaption, setEditingCaption] = useState(false);
+  const [captionDraft, setCaptionDraft] = useState('');
+  const [savingCaption, setSavingCaption] = useState(false);
+
+  const handleSaveCaption = async () => {
+    if (!user || !post) return;
+    setSavingCaption(true);
+    const trimmed = captionDraft.trim();
+    const { error } = await supabase
+      .from('tryon_posts')
+      .update({ caption: trimmed || null })
+      .eq('id', post.id)
+      .eq('user_id', user.id);
+    setSavingCaption(false);
+    if (error) {
+      toast({ title: 'Error', description: 'Could not save caption.', variant: 'destructive' });
+      return;
+    }
+    setEditingCaption(false);
+    toast({ title: 'Caption saved' });
+    onPostUpdated?.();
+  };
 
   if (!post) return null;
 
@@ -193,8 +215,45 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
           </div>
         </div>
 
+        {/* Caption field */}
+        <div className="px-4 pt-2">
+          {editingCaption ? (
+            <div className="flex items-center gap-2">
+              <input
+                autoFocus
+                value={captionDraft}
+                onChange={(e) => setCaptionDraft(e.target.value)}
+                maxLength={200}
+                placeholder="Add a caption…"
+                className="flex-1 h-10 rounded-xl border border-border bg-muted/50 px-3 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                onKeyDown={(e) => { if (e.key === 'Enter') handleSaveCaption(); }}
+              />
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-10 w-10 rounded-xl shrink-0"
+                onClick={handleSaveCaption}
+                disabled={savingCaption}
+              >
+                <Check className="h-4 w-4 text-primary" />
+              </Button>
+            </div>
+          ) : (
+            <button
+              className="flex items-center gap-1.5 text-[12px] text-muted-foreground hover:text-foreground transition-colors min-h-[44px]"
+              onClick={() => {
+                setCaptionDraft(post.caption || '');
+                setEditingCaption(true);
+              }}
+            >
+              <Pencil className="h-3.5 w-3.5" />
+              {postedCaption || 'Add a caption…'}
+            </button>
+          )}
+        </div>
+
         {/* Actions */}
-        <div className="px-4 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom,1.5rem))] space-y-3 overflow-y-auto">
+        <div className="px-4 pt-2 pb-[max(1.5rem,env(safe-area-inset-bottom,1.5rem))] space-y-3 overflow-y-auto">
 
           {post.product_urls && post.product_urls.length === 1 && (
             <Button
