@@ -7,18 +7,18 @@ import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 const SLIDES: { icon: FeatureIconName; headline: string; sub: string }[] = [
   {
     icon: 'crown',
-    headline: 'Shop 7,000+ real products',
-    sub: 'From 130 brands you already love.',
+    headline: '7,000 pieces. 130 brands. Yours.',
+    sub: 'Real products. Real prices. Real links. Not a mood board.',
   },
   {
     icon: 'tryon',
-    headline: 'See them on your body',
-    sub: 'AI-powered virtual try-on — before you buy.',
+    headline: 'On your body. Before your wallet.',
+    sub: 'AI try-on. Any piece. Any background. See the drape before you drop the bag.',
   },
   {
     icon: 'stylecheck',
-    headline: 'Your Body Twins verify every fit',
-    sub: 'Real people with your measurements COP or DROP.',
+    headline: 'COP or DROP. Your Body Twins decide.',
+    sub: 'People with your exact measurements rate every fit. The verdict is real.',
   },
 ];
 
@@ -108,13 +108,13 @@ export default function OnboardingOverlay() {
             onClick={() => complete('/capture')}
             className="w-full h-12 rounded-xl btn-luxury text-primary-foreground text-sm font-bold"
           >
-            Start Your Scan
+            Map Your Body
           </button>
           <button
             onClick={() => complete()}
             className="w-full h-12 rounded-xl border border-border text-foreground text-sm font-semibold"
           >
-            Browse First
+            Enter the Closet
           </button>
         </div>
       )}
