@@ -583,8 +583,9 @@ TASK: Create a product catalog photo showing the model from Image A wearing the 
 ${intimateFramingInstruction}
 - ${bgInstruction}
 - Professional retail catalog quality — clean, commercially appropriate.
+- CRITICAL: Show FULL BODY from head to feet — include legs and feet. Do NOT crop at the waist.
 
-Output: One clean photorealistic catalog photo. No text, watermarks, or collages.`;
+Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, or collages.`;
     };
 
     const buildTextBridgeContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
