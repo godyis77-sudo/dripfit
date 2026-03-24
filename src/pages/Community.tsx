@@ -155,7 +155,7 @@ const Community = () => {
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
       <PullToRefresh onRefresh={handleRefresh}>
-      <div className="px-4 pt-4">
+      <div className="px-4 pt-2">
         <CommunityHeader cartCount={cartCount} onPostLook={onPostLook} />
         <CommunityFilterTabs filter={filter} onFilterChange={setFilter} />
 
