@@ -20,6 +20,8 @@ const INTIMATE_SANITIZE_MAP: Array<[RegExp, string]> = [
   [/\b(nipple|areola)\b/gi, "front panel"],
   [/\b(provocative|seductive|sexy|sensual)\b/gi, "stylish"],
   [/\b(intimate|intimates)\b/gi, "athletic"],
+  [/\b(minimal coverage|very little coverage|revealing)\b/gi, "streamlined fit"],
+  [/\b(string (bottoms?|briefs?)|high-cut|high cut)\b/gi, "athletic lower garment"],
 ];
 
 function sanitizeIntimateText(text: string): string {
@@ -215,7 +217,7 @@ Deno.serve(async (req) => {
     const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
     const FUNCTION_BUDGET_MS = 58_000;
     const MIN_REQUIRED_MS_PER_ATTEMPT = isIntimateGarment ? 8_000 : 6_000;
-    const EXTRACTION_BUDGET_MS = isIntimateGarment ? 20_000 : 12_000;
+    const EXTRACTION_BUDGET_MS = isIntimateGarment ? 14_000 : 12_000;
     const MIN_REQUIRED_MS_FOR_EXTRACTION = 4_000;
     const startedAt = Date.now();
 
@@ -224,14 +226,15 @@ Deno.serve(async (req) => {
     const disableIntimateExtraction = raw.disableIntimateExtraction === true;
     const enableIntimateExtraction = isIntimateGarment && !disableIntimateExtraction;
 
-    // CHANGE 3: Extraction prompt — no body-related words
+    // Prioritize fast extraction for intimate requests (avoid 17s timeout cascades)
     const extractIntimateGarment = async (): Promise<string | null> => {
-      const extractPrompt = `You are a product photography editor. Extract the ${promptIntimateLabel} from this product listing photo. Remove the background and any display elements. Create a clean flat-lay image of ONLY the clothing item on a plain white background. Preserve the exact color, pattern, fabric texture, straps, seams, cut, and any logos or prints. Remove everything except the garment itself.`;
-      const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = [
-        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 9_000, label: "extract-flash" },
-        { model: "google/gemini-3-pro-image-preview", timeoutMs: 8_000, label: "extract-pro" },
-        { model: "google/gemini-2.5-flash-image", timeoutMs: 7_000, label: "extract-nano" },
-      ];
+      const extractPrompt = `Create a clean product cutout of the garment only. Remove all background and display elements. Output a single flat-lay garment image on pure white background, preserving exact color, texture, seams, logos, and shape.`;
+      const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = isIntimateGarment
+        ? [{ model: "google/gemini-2.5-flash-image", timeoutMs: 10_000, label: "extract-nano-fast" }]
+        : [
+            { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 9_000, label: "extract-flash" },
+            { model: "google/gemini-2.5-flash-image", timeoutMs: 7_000, label: "extract-nano" },
+          ];
 
       for (const plan of extractionPlan) {
         const elapsedMs = Date.now() - startedAt;
@@ -395,7 +398,7 @@ Deno.serve(async (req) => {
         garmentType = /\b(bra|bralette|sports bra|support top)\b/.test(context)
           ? "athletic support top"
           : /\b(boxer|brief|trunk)\b/.test(context)
-            ? "athletic brief"
+            ? "athletic lower garment"
             : /\b(bodysuit|body)\b/.test(context)
               ? "fitted bodysuit"
               : "base-layer garment";
@@ -639,7 +642,8 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
     };
 
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
-    const shouldBypassPrimaryForIntimate = isIntimateGarment && (isUnderwear || isExplicitIntimate || isBottomOnlyIntimate);
+    // Only bypass primary when we already have a clean flat-lay; otherwise keep one primary attempt.
+    const shouldBypassPrimaryForIntimate = isIntimateGarment && preExtractedGarment && (isUnderwear || isExplicitIntimate || isBottomOnlyIntimate);
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
       ? (
           shouldBypassPrimaryForIntimate
@@ -897,8 +901,10 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
 
     // ── CHANGE 6: Layer 3 text-bridge rescue ──
     if (!resultImage && isIntimateGarment && (sawIntimateRefusal || sawIntimateTimeout || shouldBypassPrimaryForIntimate)) {
-      // Build the best available text description
-      const textDesc = aiGarmentDescription || intimateTextReference;
+      // Prefer metadata reference for high-risk intimate bottoms; it is safer than free-form AI descriptions.
+      const textDesc = (isBottomOnlyIntimate || isUnderwear || isExplicitIntimate)
+        ? (intimateTextReference || aiGarmentDescription)
+        : (aiGarmentDescription || intimateTextReference);
       const hasCleanFlatLay = garmentOnlyImage !== clothingImageInput;
       
       if ((textDesc && textDesc.length > 15) || hasCleanFlatLay) {
@@ -907,8 +913,9 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
         const textBridgePrompt = makeTextBridgePrompt(descForPrompt, hasCleanFlatLay);
         
         const textBridgeModels = [
-          { model: "google/gemini-3.1-flash-image-preview", label: "textbridge-flash", timeoutMs: 24_000 },
-          { model: "google/gemini-3-pro-image-preview", label: "textbridge-pro", timeoutMs: 24_000 },
+          { model: "google/gemini-3.1-flash-image-preview", label: "textbridge-flash", timeoutMs: 22_000 },
+          { model: "google/gemini-2.5-flash-image", label: "textbridge-nano", timeoutMs: 16_000 },
+          { model: "google/gemini-3-pro-image-preview", label: "textbridge-pro", timeoutMs: 18_000 },
         ];
 
         for (let tbIndex = 0; tbIndex < textBridgeModels.length; tbIndex++) {
