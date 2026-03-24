@@ -427,15 +427,13 @@ Deno.serve(async (req) => {
 
     const isSetGarment = /\b(set|two piece|2 piece|2-piece|pajama set|pj set|lounge set|sleep set|matching)\b/.test(normalizedProductContext);
 
-    const fullBodyFraming = "CRITICAL FRAMING: Always show the model's FULL BODY from head to feet, including bare legs and feet. Even if the product photo is cropped, the output must show the complete person standing.";
-
     const intimateScopeInstruction = isSwimwear
       ? swimwearScopeInstruction
       : isSetGarment
-        ? `Image B shows a MATCHING SET (top + bottom). Replace ALL clothing from Image A with BOTH pieces from Image B. Do NOT add leggings, pants, shorts, or any garment not shown in Image B. ${fullBodyFraming}`
+        ? "Image B shows a MATCHING SET (top + bottom). Replace ALL clothing from Image A with BOTH pieces from Image B. Show ONLY what is visible in Image B — do NOT add leggings, pants, shorts, or any garment not shown in Image B."
         : isTopOnlyGarment
-          ? `Image B shows a TOP-only garment. Replace the upper body clothing from Image A with the top from Image B. Keep the person's EXISTING lower-body clothing from Image A unchanged — do NOT replace bottoms. ${fullBodyFraming}`
-          : `Replace the outfit in Image A with ONLY the COMPLETE garment from Image B — show every part of it (all straps, panels, cups, ties, etc). Do NOT add leggings, pants, or any extra garment not present in Image B. ${fullBodyFraming}`;
+          ? "Image B shows a TOP-only garment. Replace the upper body clothing from Image A with the top from Image B. Keep the person's EXISTING lower-body clothing from Image A unchanged — do NOT replace bottoms."
+          : "Replace the outfit in Image A with ONLY the COMPLETE garment from Image B — show every part of it (all straps, panels, cups, ties, etc). Show ONLY clothing visible in Image B. Do NOT add leggings, pants, or any extra garment not present in Image B.";
 
     const garmentSwapScopeInstruction = isIntimateGarment
       ? intimateScopeInstruction
