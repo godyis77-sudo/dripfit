@@ -71,7 +71,7 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-1.5">
-                <p className="text-[9px] font-bold text-white/70 uppercase tracking-wide truncate">{fit.brand}</p>
+                <p className="text-[9px] font-extrabold text-white uppercase tracking-wide truncate drop-shadow-sm">{fit.brand}</p>
                 {fit.price_cents != null && (
                   <p className="text-[11px] font-extrabold text-white">${(fit.price_cents / 100).toFixed(0)}</p>
                 )}

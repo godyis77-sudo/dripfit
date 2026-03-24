@@ -61,7 +61,7 @@ const DemoTryOnSection = () => {
                 loading="lazy"
               />
               {/* Brand badge */}
-              <span className="absolute top-1.5 left-1.5 inline-flex items-center px-1.5 py-0.5 rounded-md bg-black/60 backdrop-blur-sm text-white text-[8px] font-bold uppercase tracking-wider">
+              <span className="absolute top-1.5 left-1.5 inline-flex items-center px-1.5 py-0.5 rounded-md bg-black/70 backdrop-blur-sm text-white text-[9px] font-extrabold uppercase tracking-wider drop-shadow-sm">
                 {demo.brand}
               </span>
               {/* Hover CTA */}
