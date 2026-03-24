@@ -862,8 +862,8 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
         const textBridgePrompt = makeTextBridgePrompt(textDesc);
         
         const textBridgeModels = [
-          { model: "google/gemini-3.1-flash-image-preview", label: "textbridge-flash", timeoutMs: 25_000 },
-          { model: "google/gemini-3-pro-image-preview", label: "textbridge-pro", timeoutMs: 20_000 },
+          { model: "google/gemini-3.1-flash-image-preview", label: "textbridge-flash", timeoutMs: 30_000 },
+          { model: "google/gemini-3-pro-image-preview", label: "textbridge-pro", timeoutMs: 25_000 },
         ];
 
         for (const tbPlan of textBridgeModels) {
