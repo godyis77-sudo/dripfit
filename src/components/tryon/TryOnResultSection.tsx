@@ -927,6 +927,14 @@ const TryOnResultSection = ({
                   </button>
                 )}
                 <button
+                  onClick={() => { handleShareDripCard(); setShowResultFullscreen(false); }}
+                  disabled={sharingDripCard}
+                  className="flex-1 gap-2 h-12 rounded-xl font-bold flex items-center justify-center border border-white/20 text-white hover:bg-white/10 active:scale-95 transition-transform"
+                >
+                  {sharingDripCard ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share className="h-4 w-4" />}
+                  Share
+                </button>
+                <button
                   onClick={() => { onTryAnother(); setShowResultFullscreen(false); }}
                   className="flex-1 gap-2 h-12 rounded-xl font-bold flex items-center justify-center border border-white/20 text-white hover:bg-white/10 active:scale-95 transition-transform"
                 >

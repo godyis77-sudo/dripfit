@@ -32,7 +32,7 @@ const VotePanel = ({ postId, votes, voteCounts, onVote }: VotePanelProps) => {
       )}
 
       {/* Would you buy it? */}
-      <p className="text-[11px] text-white/50 font-bold uppercase tracking-wider">Would you buy it?</p>
+      <p className="text-[11px] text-white/50 font-bold uppercase tracking-wider">COP or DROP?</p>
       <div className="flex gap-2">
         {VOTE_OPTIONS.map(v => {
           const active = v.key === 'keep_shopping'
