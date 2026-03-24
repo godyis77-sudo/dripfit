@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ExternalLink, Sparkles, Plus } from 'lucide-react';
@@ -14,13 +14,10 @@ interface FullscreenImageProps {
   onAddToWardrobe?: () => void;
 }
 
-const TAP_THRESHOLD = 8; // px — movement below this counts as a tap, not a scroll
-
 export const FullscreenImage = ({ src, alt = '', className = '', children, onShop, onTryOn, onAddToWardrobe }: FullscreenImageProps) => {
   const [open, setOpen] = useState(false);
   const hasActions = !!(onShop || onTryOn || onAddToWardrobe);
   const portalTarget = typeof document !== 'undefined' ? document.body : null;
-  const startPos = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     const prevBodyOverflow = document.body.style.overflow;
@@ -42,18 +39,7 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
       <div
         role="button"
         tabIndex={0}
-        onPointerDown={(e) => {
-          startPos.current = { x: e.clientX, y: e.clientY };
-        }}
-        onPointerUp={(e) => {
-          if (!startPos.current) return;
-          const dx = Math.abs(e.clientX - startPos.current.x);
-          const dy = Math.abs(e.clientY - startPos.current.y);
-          startPos.current = null;
-          if (dx < TAP_THRESHOLD && dy < TAP_THRESHOLD) {
-            setOpen(true);
-          }
-        }}
+        onClick={() => setOpen(true)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
