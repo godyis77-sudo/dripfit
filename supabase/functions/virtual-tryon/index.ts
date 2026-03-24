@@ -542,7 +542,7 @@ Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos).
     const fastIntimatePrompt = `Professional athletic catalog photo.
 Image A = model. ${intimateReferenceForFallback}
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
-${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Match product details exactly. Professional catalog quality. No text/watermark.`;
+${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Match product details exactly. CRITICAL: Show FULL BODY from head to feet — include legs. Professional catalog quality. No text/watermark.`;
 
     const complianceIntimatePrompt = `Retail activewear catalog photo edit.
 Use Image A as the model and Image B as the garment reference product photo.
