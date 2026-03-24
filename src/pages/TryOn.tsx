@@ -454,7 +454,7 @@ const TryOn = () => {
                 </Button>
               </div>
             )}
-            {(s.userPhoto || s.clothingPhoto) && s.loading && createPortal(
+            {(s.userPhoto || s.clothingPhoto) && s.loading && !s.resultImage && createPortal(
               <div className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-[120] px-4 animate-in slide-in-from-bottom-8 duration-300">
                 <div className="mx-auto w-full max-w-[390px]">
                   <div className="glass-card border border-primary/20 rounded-2xl px-4 py-3 shadow-[0_-4px_30px_-8px_hsl(var(--primary)/0.25)] backdrop-blur-xl">
