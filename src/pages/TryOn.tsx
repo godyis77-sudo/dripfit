@@ -523,6 +523,7 @@ const TryOn = () => {
               userGender={s.userGender}
               hasUnlimitedTryOns={s.hasUnlimitedTryOns}
               addingAccessory={s.addingAccessory}
+              sharing={s.sharing}
               onSetCaption={s.setCaption}
               onSetIsPublic={s.setIsPublic}
               onSetShowPostUI={s.setShowPostUI}
