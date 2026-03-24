@@ -153,7 +153,9 @@ const PostCard = ({
           {/* Vote buttons */}
           <div className="absolute bottom-1 left-1 right-1 flex justify-between" onClick={(e) => e.stopPropagation()}>
             {VOTE_OPTIONS.filter(v => v.key !== 'buy_no').map((v) => {
-              const active = v.key === 'keep_shopping' ? isInCart(post.id) : (votes[post.id] || []).includes(v.key);
+              const inCart = isInCart(post.id);
+              const voted = (votes[post.id] || []).includes(v.key);
+              const active = v.key === 'keep_shopping' ? inCart : v.key === 'buy_yes' ? (voted || inCart) : voted;
               return (
                 <motion.button
                   key={v.key}
