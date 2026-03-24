@@ -607,8 +607,8 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
       ? [
-          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 20_000 },
-          { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-fallback`, timeoutMs: 16_000 },
+          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 14_000 },
+          { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-fallback`, timeoutMs: 12_000 },
         ]
       : [
           { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary`, timeoutMs: 28_000 },
@@ -754,6 +754,13 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
           lastTextContent = "Try-on was blocked by safety checks for this image combination. Try a full-body user photo and a clear product-only or flat-lay garment image.";
         }
 
+        // If we already have a text description, skip extraction and go straight to text-bridge
+        const hasTextBridgeReference = Boolean(aiGarmentDescription || intimateTextReference);
+        if (hasTextBridgeReference) {
+          console.warn(`Attempt ${attempt + 1} (${plan.label}): refusal with text description available, skipping extraction — going to text-bridge.`);
+          break;
+        }
+
         if (!attemptedRefusalExtraction) {
           attemptedRefusalExtraction = true;
           const rescuedGarment = await extractIntimateGarment();
@@ -764,10 +771,9 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
           }
         }
 
-        const hasTextBridgeReference = Boolean(aiGarmentDescription || intimateTextReference);
         const hasCleanGarmentRef = garmentOnlyImage !== clothingImageInput;
-        if (!extractedAfterRefusal && hasTextBridgeReference && !hasCleanGarmentRef) {
-          console.warn(`Attempt ${attempt + 1} (${plan.label}): refusal with no clean garment extract, switching to text-bridge early.`);
+        if (!extractedAfterRefusal && !hasCleanGarmentRef) {
+          console.warn(`Attempt ${attempt + 1} (${plan.label}): refusal with no clean garment extract and no text ref.`);
           break;
         }
       }
@@ -856,8 +862,8 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
         const textBridgePrompt = makeTextBridgePrompt(textDesc);
         
         const textBridgeModels = [
-          { model: "google/gemini-3.1-flash-image-preview", label: "textbridge-flash", timeoutMs: 25_000 },
-          { model: "google/gemini-3-pro-image-preview", label: "textbridge-pro", timeoutMs: 20_000 },
+          { model: "google/gemini-3.1-flash-image-preview", label: "textbridge-flash", timeoutMs: 30_000 },
+          { model: "google/gemini-3-pro-image-preview", label: "textbridge-pro", timeoutMs: 25_000 },
         ];
 
         for (const tbPlan of textBridgeModels) {
