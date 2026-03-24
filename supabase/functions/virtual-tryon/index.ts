@@ -217,7 +217,7 @@ Deno.serve(async (req) => {
     const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
     const FUNCTION_BUDGET_MS = 58_000;
     const MIN_REQUIRED_MS_PER_ATTEMPT = isIntimateGarment ? 8_000 : 6_000;
-    const EXTRACTION_BUDGET_MS = isIntimateGarment ? 20_000 : 12_000;
+    const EXTRACTION_BUDGET_MS = isIntimateGarment ? 14_000 : 12_000;
     const MIN_REQUIRED_MS_FOR_EXTRACTION = 4_000;
     const startedAt = Date.now();
 
@@ -226,14 +226,15 @@ Deno.serve(async (req) => {
     const disableIntimateExtraction = raw.disableIntimateExtraction === true;
     const enableIntimateExtraction = isIntimateGarment && !disableIntimateExtraction;
 
-    // CHANGE 3: Extraction prompt — no body-related words
+    // Prioritize fast extraction for intimate requests (avoid 17s timeout cascades)
     const extractIntimateGarment = async (): Promise<string | null> => {
-      const extractPrompt = `You are a product photography editor. Extract the ${promptIntimateLabel} from this product listing photo. Remove the background and any display elements. Create a clean flat-lay image of ONLY the clothing item on a plain white background. Preserve the exact color, pattern, fabric texture, straps, seams, cut, and any logos or prints. Remove everything except the garment itself.`;
-      const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = [
-        { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 9_000, label: "extract-flash" },
-        { model: "google/gemini-3-pro-image-preview", timeoutMs: 8_000, label: "extract-pro" },
-        { model: "google/gemini-2.5-flash-image", timeoutMs: 7_000, label: "extract-nano" },
-      ];
+      const extractPrompt = `Create a clean product cutout of the garment only. Remove all background and display elements. Output a single flat-lay garment image on pure white background, preserving exact color, texture, seams, logos, and shape.`;
+      const extractionPlan: Array<{ model: string; timeoutMs: number; label: string }> = isIntimateGarment
+        ? [{ model: "google/gemini-2.5-flash-image", timeoutMs: 10_000, label: "extract-nano-fast" }]
+        : [
+            { model: "google/gemini-3.1-flash-image-preview", timeoutMs: 9_000, label: "extract-flash" },
+            { model: "google/gemini-2.5-flash-image", timeoutMs: 7_000, label: "extract-nano" },
+          ];
 
       for (const plan of extractionPlan) {
         const elapsedMs = Date.now() - startedAt;
