@@ -11,6 +11,7 @@ import HomeFAB from '@/components/home/HomeFAB';
 import DemoTryOnSection from '@/components/home/DemoTryOnSection';
 import OneTapPlayground from '@/components/home/OneTapPlayground';
 import ProductPreviewModal from '@/components/ui/ProductPreviewModal';
+import { FullscreenImage } from '@/components/ui/fullscreen-image';
 
 const HERO_CATEGORIES = [
   { key: 'all', label: 'For You' },
