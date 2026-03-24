@@ -69,7 +69,7 @@ const GalleryPlayground = () => {
         >
           <div>
             <BrandLogo size="lg" />
-            <p className="text-[11px] text-muted-foreground mt-0.5">Tap any item to try it on instantly</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">Join 500+ early testers · Tap any item to try it on</p>
           </div>
           {!user && (
             <button
