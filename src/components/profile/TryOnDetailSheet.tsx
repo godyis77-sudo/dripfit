@@ -76,6 +76,7 @@ const ShopDropdown = ({ urls, onClickout }: { urls: string[]; onClickout: () => 
 };
 
 const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }: TryOnDetailSheetProps) => {
+  const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
