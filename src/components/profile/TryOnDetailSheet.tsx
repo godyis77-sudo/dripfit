@@ -33,7 +33,49 @@ interface TryOnDetailSheetProps {
   onDelete?: (id: string) => void;
 }
 
-const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }: TryOnDetailSheetProps) => {
+const ShopDropdown = ({ urls, onClickout }: { urls: string[]; onClickout: () => void }) => {
+  const [open, setOpen] = useState(false);
+  const extractLabel = (url: string, idx: number) => {
+    try {
+      const host = new URL(url).hostname.replace('www.', '');
+      return `Item ${idx + 1} — ${host}`;
+    } catch {
+      return `Item ${idx + 1}`;
+    }
+  };
+
+  return (
+    <div className="col-span-2 relative">
+      <Button
+        className="h-11 rounded-xl text-[12px] font-bold gap-1.5 btn-luxury text-primary-foreground w-full"
+        onClick={() => setOpen((v) => !v)}
+      >
+        <ShoppingBag className="h-4 w-4" />
+        Shop Items
+        <ChevronDown className={`h-3.5 w-3.5 ml-auto transition-transform ${open ? 'rotate-180' : ''}`} />
+      </Button>
+      {open && (
+        <div className="mt-1.5 rounded-xl border border-border bg-card overflow-hidden shadow-lg">
+          {urls.map((url, i) => (
+            <button
+              key={i}
+              className="flex items-center gap-2 w-full px-4 py-3 text-[12px] font-medium text-foreground hover:bg-muted/50 active:bg-muted transition-colors border-b border-border last:border-b-0 min-h-[44px]"
+              onClick={() => {
+                window.open(url, '_blank', 'noopener');
+                onClickout();
+              }}
+            >
+              <ExternalLink className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+              {extractLabel(url, i)}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
