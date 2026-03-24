@@ -13,7 +13,7 @@ const SLIDES: { icon: FeatureIconName; headline: string; sub: string; tag?: stri
   },
   {
     icon: 'tryon',
-    headline: 'On your body. Before your wallet.',
+    headline: 'DRIPFIT on your body. Before you commit.',
     sub: 'AI try-on. Any piece. Any background. See the drape before you drop the bag.',
   },
   {
