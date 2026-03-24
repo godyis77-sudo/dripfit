@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import BrandLogo from '@/components/ui/BrandLogo';
 
@@ -50,9 +51,9 @@ export default function OnboardingOverlay() {
 
   if (!visible) return null;
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center px-8 overflow-hidden"
+      className="fixed inset-0 z-[100] w-screen h-dvh bg-background flex flex-col items-center justify-center px-8 overflow-hidden"
       onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
       onTouchEnd={(e) => {
         const dx = e.changedTouches[0].clientX - touchStartX.current;
@@ -114,6 +115,7 @@ export default function OnboardingOverlay() {
           </button>
         </div>
       )}
-    </div>
+    </div>,
+    document.body
   );
 }
