@@ -23,6 +23,7 @@ const OneTapPlayground = () => {
 
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [previewProduct, setPreviewProduct] = useState<ProductPreviewData | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
 
