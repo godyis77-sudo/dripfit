@@ -4,19 +4,19 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import BrandLogo from '@/components/ui/BrandLogo';
 import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 
-const SLIDES = [
+const SLIDES: { icon: FeatureIconName; headline: string; sub: string }[] = [
   {
-    icon: 'logo' as const,
+    icon: 'crown',
     headline: 'Shop 7,000+ real products',
     sub: 'From 130 brands you already love.',
   },
   {
-    icon: 'tryon' as const,
+    icon: 'tryon',
     headline: 'See them on your body',
     sub: 'AI-powered virtual try-on — before you buy.',
   },
   {
-    icon: 'style' as const,
+    icon: 'stylecheck',
     headline: 'Your Body Twins verify every fit',
     sub: 'Real people with your measurements COP or DROP.',
   },
