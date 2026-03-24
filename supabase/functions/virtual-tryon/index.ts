@@ -607,8 +607,8 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
     const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
       ? [
-          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 14_000 },
-          { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-fallback`, timeoutMs: 12_000 },
+          // Single generous attempt — intimate items either succeed in ~15-25s or get refused quickly (~3s)
+          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 28_000 },
         ]
       : [
           { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary`, timeoutMs: 28_000 },
@@ -861,9 +861,9 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
         console.log("Layer 3 text-bridge: attempting try-on with text description only (no product image)");
         const textBridgePrompt = makeTextBridgePrompt(textDesc);
         
+        // Single text-bridge attempt using ALL remaining budget
         const textBridgeModels = [
-          { model: "google/gemini-3.1-flash-image-preview", label: "textbridge-flash", timeoutMs: 30_000 },
-          { model: "google/gemini-3-pro-image-preview", label: "textbridge-pro", timeoutMs: 25_000 },
+          { model: "google/gemini-3.1-flash-image-preview", label: "textbridge-flash", timeoutMs: 50_000 },
         ];
 
         for (const tbPlan of textBridgeModels) {
