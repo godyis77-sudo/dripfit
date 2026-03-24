@@ -98,20 +98,26 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
         </button>
       )}
       
-      {wardrobeItems.length === 0 ? (
+      {filteredItems.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
           <div className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
-            <Shirt className="h-6 w-6 text-primary/60" />
+            {filter === 'liked' ? <Heart className="h-6 w-6 text-primary/60" /> : filter === 'saved' ? <Bookmark className="h-6 w-6 text-primary/60" /> : <Shirt className="h-6 w-6 text-primary/60" />}
           </div>
-          <h2 className="text-[18px] font-bold text-foreground mb-1">Your wardrobe is empty</h2>
-          <p className="text-[14px] text-muted-foreground max-w-[260px] mb-5">Save clothing items to try-on and track your fits.</p>
-          <Button className="rounded-full btn-luxury text-primary-foreground text-sm h-11 px-6 font-bold" onClick={() => navigate('/home')}>
-            Browse Items
-          </Button>
+          <h2 className="text-[18px] font-bold text-foreground mb-1">
+            {filter === 'all' ? 'Your wardrobe is empty' : filter === 'liked' ? 'No liked items yet' : 'No saved items yet'}
+          </h2>
+          <p className="text-[14px] text-muted-foreground max-w-[260px] mb-5">
+            {filter === 'all' ? 'Save clothing items to try-on and track your fits.' : 'Like or save items from try-ons and the community feed.'}
+          </p>
+          {filter === 'all' && (
+            <Button className="rounded-full btn-luxury text-primary-foreground text-sm h-11 px-6 font-bold" onClick={() => navigate('/home')}>
+              Browse Items
+            </Button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-2">
-          {wardrobeItems.map(item => (
+          {filteredItems.map(item => (
             <motion.div key={item.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
               <div
                 className="relative w-full rounded-xl overflow-hidden border border-border bg-card text-left"
