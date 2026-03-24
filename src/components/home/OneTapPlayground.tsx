@@ -127,7 +127,7 @@ const OneTapPlayground = () => {
       <input ref={cameraRef} type="file" accept="image/jpeg,image/png,image/webp" capture="user" onChange={handleFileSelect} className="hidden" />
 
       {/* Split screen layout */}
-      <div className="grid grid-cols-[1fr_1.5fr] min-h-[280px]">
+      <div className="grid grid-cols-[1fr_1.5fr]">
         {/* Left: User photo / camera prompt */}
         <div className="relative border-r border-border/50 flex flex-col items-center justify-center p-3 bg-gradient-to-b from-primary/5 to-transparent">
           <AnimatePresence mode="wait">
@@ -191,8 +191,8 @@ const OneTapPlayground = () => {
         </div>
 
         {/* Right: Garment carousel */}
-        <div className="flex flex-col">
-          <div className="flex items-center justify-between px-3 pt-2.5 pb-1">
+        <div className="flex flex-col min-h-0">
+          <div className="flex items-center justify-between px-3 pt-2.5 pb-1 shrink-0">
             <div className="flex items-center gap-1">
               <Sparkles className="h-3 w-3 text-primary" />
               <span className="text-[11px] font-bold text-foreground">Tap a Fit</span>
@@ -206,7 +206,7 @@ const OneTapPlayground = () => {
           </div>
 
           <div
-            className="flex-1 grid grid-cols-2 gap-2 px-2 pb-2 overflow-y-auto max-h-[340px]"
+            className="grid grid-cols-2 gap-2 px-2 pb-2 overflow-y-auto max-h-[320px]"
             onTouchStart={e => e.stopPropagation()}
           >
             {loading && !curated.length
