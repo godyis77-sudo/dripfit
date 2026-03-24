@@ -99,25 +99,23 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
   const handleAddToWardrobe = async () => {
     if (!user) return;
     setAddingToWardrobe(true);
-    const { error } = await supabase.from('clothing_wardrobe').insert({
+    const { error } = await supabase.from('clothing_wardrobe').upsert({
       user_id: user.id,
       image_url: post.clothing_photo_url || post.result_photo_url,
       category: 'top',
       product_link: (post.product_urls && post.product_urls.length > 0) ? post.product_urls[0] : null,
-    });
+      is_saved: true,
+      source_post_id: post.id,
+    }, { onConflict: 'user_id,image_url' });
     setAddingToWardrobe(false);
     if (error) {
-      if (error.code === '23505') {
-        setAddedToWardrobe(true);
-        toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
-      } else {
-        toast({ title: 'Error', description: 'Could not add to wardrobe.', variant: 'destructive' });
-      }
+      toast({ title: 'Error', description: 'Could not add to wardrobe.', variant: 'destructive' });
       return;
     }
     setAddedToWardrobe(true);
     trackEvent('wardrobe_added_from_tryon', { post_id: post.id });
-    toast({ title: '👕 Added to Wardrobe!', description: 'You can find it in your Wardrobe tab.' });
+    toast({ title: '👕 Saved to Wardrobe!', description: 'You can find it in your Wardrobe tab.' });
+    queryClient.invalidateQueries({ queryKey: ['wardrobe'] });
   };
 
   return (
