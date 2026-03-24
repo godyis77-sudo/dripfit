@@ -134,11 +134,14 @@ const Profile = () => {
       <div>
         {/* Premium banner / status bar */}
         {isSubscribed ? (
-          <div className="w-full flex items-center gap-2 px-3 py-0 rounded-xl btn-gold-3d mb-3">
+          <button
+            onClick={() => navigate('/premium')}
+            className="w-full flex items-center gap-2 px-3 py-0 rounded-xl btn-gold-3d mb-3 active:scale-[0.98] transition-transform"
+          >
             <InlineCrown size={48} />
             <span className="text-[11px] font-bold text-primary-foreground flex-1 text-left">DRIPFIT ✔ PREMIUM</span>
             <PremiumBadge label="Active" />
-          </div>
+          </button>
         ) : !bannerDismissed ? (
           <div className="relative w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-primary/20 bg-primary/5 mb-3">
             <button
