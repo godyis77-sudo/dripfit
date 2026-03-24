@@ -49,7 +49,7 @@ const OneTapPlayground = () => {
         .order('image_confidence', { ascending: false })
         .limit(30);
 
-      if (mappedGender && mappedGender !== 'all') {
+      if (mappedGender) {
         query = query.in('gender', [mappedGender, 'unisex']);
       }
 
