@@ -220,12 +220,12 @@ const OneTapPlayground = () => {
                     onClick={() => handleTapItem(product)}
                     className="relative rounded-lg overflow-hidden border border-border bg-background active:border-primary/50 transition-colors"
                   >
-                    <div className="aspect-[3/4]">
+                    <div className="aspect-[3/4] bg-muted/30">
                       <img
                         src={product.image_url}
                         alt={product.name}
                         loading="lazy"
-                        className="w-full h-full object-cover object-center"
+                        className="w-full h-full object-contain object-center"
                       />
                     </div>
                     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-1.5">
