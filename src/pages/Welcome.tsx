@@ -39,7 +39,7 @@ const Welcome = () => {
   const galleryEnabled = useFeatureFlag('gallery_playground_enabled', true);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-safe-tab">
       {galleryEnabled ? <GalleryPlayground /> : <AuthenticatedHome />}
       <BottomTabBar />
     </div>
