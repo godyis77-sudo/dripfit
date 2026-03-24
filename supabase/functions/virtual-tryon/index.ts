@@ -901,8 +901,10 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
 
     // ── CHANGE 6: Layer 3 text-bridge rescue ──
     if (!resultImage && isIntimateGarment && (sawIntimateRefusal || sawIntimateTimeout || shouldBypassPrimaryForIntimate)) {
-      // Build the best available text description
-      const textDesc = aiGarmentDescription || intimateTextReference;
+      // Prefer metadata reference for high-risk intimate bottoms; it is safer than free-form AI descriptions.
+      const textDesc = (isBottomOnlyIntimate || isUnderwear || isExplicitIntimate)
+        ? (intimateTextReference || aiGarmentDescription)
+        : (aiGarmentDescription || intimateTextReference);
       const hasCleanFlatLay = garmentOnlyImage !== clothingImageInput;
       
       if ((textDesc && textDesc.length > 15) || hasCleanFlatLay) {
@@ -911,8 +913,9 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
         const textBridgePrompt = makeTextBridgePrompt(descForPrompt, hasCleanFlatLay);
         
         const textBridgeModels = [
-          { model: "google/gemini-3.1-flash-image-preview", label: "textbridge-flash", timeoutMs: 24_000 },
-          { model: "google/gemini-3-pro-image-preview", label: "textbridge-pro", timeoutMs: 24_000 },
+          { model: "google/gemini-3.1-flash-image-preview", label: "textbridge-flash", timeoutMs: 22_000 },
+          { model: "google/gemini-2.5-flash-image", label: "textbridge-nano", timeoutMs: 16_000 },
+          { model: "google/gemini-3-pro-image-preview", label: "textbridge-pro", timeoutMs: 18_000 },
         ];
 
         for (let tbIndex = 0; tbIndex < textBridgeModels.length; tbIndex++) {
