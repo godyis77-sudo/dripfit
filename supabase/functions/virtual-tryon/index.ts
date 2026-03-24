@@ -348,16 +348,27 @@ Deno.serve(async (req) => {
       }
     };
 
-    // ── CHANGE 4: Description only for intimate (extraction always times out); extraction for non-intimate ──
+    // ── CHANGE 4: Run extraction + description in PARALLEL for intimate items ──
+    // The clean flat-lay from extraction is critical — text-bridge with NO image gets IMAGE_PROHIBITED_CONTENT.
+    // With a clean flat-lay included, the model has visual context and is less likely to refuse.
     let garmentOnlyImage = clothingImageInput;
     let preExtractedGarment = false;
     let aiGarmentDescription: string | null = null;
 
     if (enableIntimateExtraction) {
-      // For intimate items: SKIP extraction (it consistently times out at 9s×2 = 18s wasted).
-      // Only run the fast text description (~3s) to fuel the text-bridge rescue.
-      aiGarmentDescription = await describeGarmentViaAI();
-      console.log(`Intimate description-only took ${Date.now() - startedAt}ms, description=${!!aiGarmentDescription}`);
+      // Run extraction AND description in parallel to save time
+      const [extractedImage, description] = await Promise.all([
+        extractIntimateGarment(),
+        describeGarmentViaAI(),
+      ]);
+      aiGarmentDescription = description;
+      if (extractedImage) {
+        garmentOnlyImage = extractedImage;
+        preExtractedGarment = true;
+        console.log(`Intimate parallel: extraction=SUCCESS, description=${!!description}, took ${Date.now() - startedAt}ms`);
+      } else {
+        console.log(`Intimate parallel: extraction=FAILED, description=${!!description}, took ${Date.now() - startedAt}ms`);
+      }
     }
 
     const buildIntimateReferenceFromMetadata = (): string => {
