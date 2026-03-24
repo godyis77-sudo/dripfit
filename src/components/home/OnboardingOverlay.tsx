@@ -73,13 +73,10 @@ export default function OnboardingOverlay() {
       </button>
 
       {/* Brand logo — always visible at top */}
-      <BrandLogo size="xl" iconOnly className="mb-6" />
-
-      {/* Slide content */}
       <div className="text-center mb-10">
         {/* Slide-specific icon */}
         <div className="mb-4 flex items-center justify-center">
-          <FeatureIcon name={SLIDES[slide].icon} size={56} />
+          <FeatureIcon name={SLIDES[slide].icon} size={80} />
         </div>
         <h2 className="text-xl font-bold font-display text-foreground mb-2">{SLIDES[slide].headline}</h2>
         <p className="text-[13px] text-muted-foreground max-w-[260px] mx-auto">{SLIDES[slide].sub}</p>
