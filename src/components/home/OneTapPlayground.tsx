@@ -16,13 +16,13 @@ import ProductPreviewModal, { type ProductPreviewData } from '@/components/ui/Pr
  * Users tap a garment → get sent to try-on with both photos pre-loaded.
  * Zero reading required — pure visual interaction.
  */
-const FULL_BODY_CATEGORIES = new Set([
+const FULL_BODY_CATS = [
   'tops', 'top', 't-shirts', 'shirts', 'hoodies', 'polos', 'sweaters',
-  'bottoms', 'bottom', 'jeans', 'pants', 'shorts', 'skirts', 'leggings',
+  'bottoms', 'bottom', 'jeans', 'pants', 'shorts',
   'dresses', 'dress', 'jumpsuits',
   'outerwear', 'jackets', 'coats', 'blazers', 'vests',
   'activewear', 'loungewear',
-]);
+];
 
 const OneTapPlayground = () => {
   const navigate = useNavigate();
