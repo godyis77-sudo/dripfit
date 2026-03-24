@@ -4,11 +4,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import BrandLogo from '@/components/ui/BrandLogo';
 import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
 
-const SLIDES: { icon: FeatureIconName; headline: string; sub: string }[] = [
+const SLIDES: { icon: FeatureIconName; headline: string; sub: string; tag?: string }[] = [
   {
     icon: 'crown',
     headline: '7,000 pieces. 130 brands. Yours.',
     sub: 'Real products. Real prices. Real links. Not a mood board.',
+    tag: 'SHOP DRIPFIT',
   },
   {
     icon: 'tryon',
