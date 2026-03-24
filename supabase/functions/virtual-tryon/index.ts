@@ -548,7 +548,7 @@ ${identityInstruction} Keep model facing the same direction as Image A — never
 Use Image A as the model and Image B as the garment reference product photo.
 Apply only the garment to the model with accurate color, pattern, straps, neckline, seams and logos.
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
-${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Keep result clean and professionally styled. No text/watermark.`;
+${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. CRITICAL: Show FULL BODY from head to feet — include legs. Keep result clean and professionally styled. No text/watermark.`;
 
     const buildTryOnContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
       const userImageLabel = isIntimateGarment
