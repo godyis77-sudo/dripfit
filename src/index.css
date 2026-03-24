@@ -152,7 +152,7 @@
 
   /* Safe area padding utilities */
   .pb-safe-tab {
-    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
   }
   .pt-safe {
     padding-top: env(safe-area-inset-top, 0px);
@@ -694,13 +694,7 @@
   }
 }
 
-/* pb-safe-tab is defined inside @layer utilities above as .pb-safe-bottom */
-/* Legacy alias kept for backwards compat */
-@layer utilities {
-  .pb-safe-tab {
-    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
-  }
-}
+/* pb-safe-tab consolidated into @layer base above */
 
 /* scrollbar-none consolidated into scrollbar-hide above */
 
