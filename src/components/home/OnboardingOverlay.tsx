@@ -79,6 +79,7 @@ export default function OnboardingOverlay() {
         <div className="mb-4 flex items-center justify-center">
           <FeatureIcon name={SLIDES[slide].icon} size={80} />
         </div>
+        {SLIDES[slide].tag && <p className="text-[11px] font-bold tracking-[0.2em] text-primary uppercase mb-1">{SLIDES[slide].tag}</p>}
         <h2 className="text-xl font-bold font-display text-foreground mb-2">{SLIDES[slide].headline}</h2>
         <p className="text-[13px] text-muted-foreground max-w-[260px] mx-auto">{SLIDES[slide].sub}</p>
       </div>
