@@ -592,9 +592,8 @@ Output: One clean photorealistic catalog photo. No text, watermarks, or collages
         { type: "image_url", image_url: { url: userImageInput } },
       ];
 
-      // If we have a pre-extracted clean garment image (flat-lay on white, no model),
-      // include it so the AI can match the actual garment instead of guessing from text
-      if (preExtractedGarment && garmentOnlyImage !== clothingImageInput) {
+      // Include a clean extracted garment reference whenever available (pre or rescue extraction)
+      if (garmentOnlyImage !== clothingImageInput) {
         content.push({ type: "text", text: "\n\n========== GARMENT REFERENCE (clean product flat-lay) ==========" });
         content.push({ type: "image_url", image_url: { url: garmentOnlyImage } });
       }
@@ -618,7 +617,7 @@ Output: One clean photorealistic catalog photo. No text, watermarks, or collages
     let lastTextContent = "";
     let sawIntimateRefusal = false;
     let sawIntimateTimeout = false;
-    let attemptedRefusalExtraction = isIntimateGarment ? true : preExtractedGarment;
+    let attemptedRefusalExtraction = preExtractedGarment;
 
     for (let attempt = 0; attempt < attemptPlan.length; attempt++) {
       const plan = attemptPlan[attempt];
@@ -761,6 +760,13 @@ Output: One clean photorealistic catalog photo. No text, watermarks, or collages
             extractedAfterRefusal = true;
             console.log(`Refusal rescue extracted garment (${plan.label}); retrying with cleaned product image.`);
           }
+        }
+
+        const hasTextBridgeReference = Boolean(aiGarmentDescription || intimateTextReference);
+        const hasCleanGarmentRef = garmentOnlyImage !== clothingImageInput;
+        if (!extractedAfterRefusal && hasTextBridgeReference && !hasCleanGarmentRef) {
+          console.warn(`Attempt ${attempt + 1} (${plan.label}): refusal with no clean garment extract, switching to text-bridge early.`);
+          break;
         }
       }
 
