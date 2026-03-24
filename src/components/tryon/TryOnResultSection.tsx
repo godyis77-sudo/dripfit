@@ -374,7 +374,7 @@ const TryOnResultSection = ({
               className={`flex flex-col items-center gap-1 py-2.5 rounded-xl border active:scale-[0.96] transition-transform ${isPostSelected ? 'bg-primary/5 border-primary/20' : 'bg-card border-border'}`}
             >
               {isPostSelected ? <Check className="h-4 w-4 text-primary" /> : <MessageSquare className="h-4 w-4 text-primary" />}
-              <span className={`text-[10px] font-bold ${isPostSelected ? 'text-primary' : 'text-foreground'}`}>{isPostSelected ? 'Selected' : 'Post'}</span>
+              <span className={`text-[10px] font-bold ${isPostSelected ? 'text-primary' : 'text-foreground'}`}>{isPostSelected ? 'Posted' : 'Post'}</span>
             </button>
           )}
           {shared && (
