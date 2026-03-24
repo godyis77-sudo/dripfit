@@ -149,6 +149,15 @@ export const PostDetailSheet = ({
     const postedCaption = getPostedCaption(post.caption);
     setQuestionText(postedCaption ?? '');
     setEditingQuestion(false);
+
+    // Scroll lock
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+      document.documentElement.style.overflow = '';
+    };
   }, [open, post?.id, post?.caption]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
