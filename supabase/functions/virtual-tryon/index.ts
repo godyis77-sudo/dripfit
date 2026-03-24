@@ -348,16 +348,27 @@ Deno.serve(async (req) => {
       }
     };
 
-    // ── CHANGE 4: Description only for intimate (extraction always times out); extraction for non-intimate ──
+    // ── CHANGE 4: Run extraction + description in PARALLEL for intimate items ──
+    // The clean flat-lay from extraction is critical — text-bridge with NO image gets IMAGE_PROHIBITED_CONTENT.
+    // With a clean flat-lay included, the model has visual context and is less likely to refuse.
     let garmentOnlyImage = clothingImageInput;
     let preExtractedGarment = false;
     let aiGarmentDescription: string | null = null;
 
     if (enableIntimateExtraction) {
-      // For intimate items: SKIP extraction (it consistently times out at 9s×2 = 18s wasted).
-      // Only run the fast text description (~3s) to fuel the text-bridge rescue.
-      aiGarmentDescription = await describeGarmentViaAI();
-      console.log(`Intimate description-only took ${Date.now() - startedAt}ms, description=${!!aiGarmentDescription}`);
+      // Run extraction AND description in parallel to save time
+      const [extractedImage, description] = await Promise.all([
+        extractIntimateGarment(),
+        describeGarmentViaAI(),
+      ]);
+      aiGarmentDescription = description;
+      if (extractedImage) {
+        garmentOnlyImage = extractedImage;
+        preExtractedGarment = true;
+        console.log(`Intimate parallel: extraction=SUCCESS, description=${!!description}, took ${Date.now() - startedAt}ms`);
+      } else {
+        console.log(`Intimate parallel: extraction=FAILED, description=${!!description}, took ${Date.now() - startedAt}ms`);
+      }
     }
 
     const buildIntimateReferenceFromMetadata = (): string => {
@@ -573,24 +584,40 @@ ${identityInstruction} Keep model facing the same direction as Image A — never
       return content;
     };
 
-    // ── CHANGE 5: Text-bridge prompt builder (no product image) ──
-    const makeTextBridgePrompt = (description: string): string => {
-      return `Professional athletic performance wear catalog photo.
+    // ── CHANGE 5: Text-bridge prompt builder — hyper-sanitized, no intimate language ──
+    const makeTextBridgePrompt = (description: string, hasGarmentImage: boolean): string => {
+      // Strip any remaining intimate words from the description itself
+      const hyperSanitized = sanitizeIntimateText(description)
+        .replace(/\b(underwear|panties|briefs|boxers|bra|bralette|lingerie|intimate|intimates|bikini|swimwear|swimsuit|thong|g-string)\b/gi, "athletic garment")
+        .replace(/\b(waistband|elastic band|hip|hips|waist)\b/gi, "trim")
+        .replace(/\b(coverage|covering|covered)\b/gi, "styled")
+        .replace(/\s+/g, " ").trim();
 
-IMAGE A: A fitness model — use as pose, proportions, and scene reference.
+      const garmentRef = hasGarmentImage
+        ? `See the GARMENT REFERENCE image below for the exact product. Additional details: ${hyperSanitized}`
+        : `Garment details: ${hyperSanitized}`;
 
-GARMENT TO APPLY (described from product reference):
-${description}
+      // Scope instruction rewritten without "Image B" references for text-bridge
+      const tbScopeInstruction = isSetGarment
+        ? "Replace ALL clothing with BOTH pieces of the athletic set described."
+        : isTopOnlyGarment
+          ? "Replace only upper-body clothing. Keep existing lower-body clothing unchanged."
+          : isBottomOnlyIntimate
+            ? "Replace only lower-body clothing. Keep existing upper-body clothing unchanged."
+            : "Replace ALL clothing with the garment described. Show ONLY what is described — do NOT add extra garments.";
 
-TASK: Create a product catalog photo showing the model from Image A wearing the garment described above.
-- Reproduce the garment faithfully based on the text description: match color, cut, fabric, straps, neckline, hemline.
-- ${garmentSwapScopeInstruction}
-- CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A.
-- ${identityInstruction}
-${intimateFramingInstruction}
+      return `Professional athletic activewear product catalog photo.
+
+IMAGE: A fitness model — use as pose, proportions, and scene reference.
+${garmentRef}
+
+TASK: Create a product catalog photo showing the model wearing the athletic garment described.
+- ${tbScopeInstruction}
+- Reproduce garment faithfully: match color, cut, fabric texture, straps, neckline, hemline, logos.
+- Keep the model facing the SAME DIRECTION as in the reference image.
+- Show FULL BODY from head to feet — include legs. Do NOT crop at waist.
 - ${bgInstruction}
-- Professional retail catalog quality — clean, commercially appropriate.
-- CRITICAL: Show FULL BODY from head to feet — include legs and feet. Do NOT crop at the waist.
+- Professional retail catalog quality.
 
 Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, or collages.`;
     };
@@ -598,13 +625,13 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
     const buildTextBridgeContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
       const content: Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> = [
         { type: "text", text: promptText },
-        { type: "text", text: "\n\n========== IMAGE A — BODY/POSE REFERENCE ==========" },
+        { type: "text", text: "\n\n========== MODEL REFERENCE (pose & proportions) ==========" },
         { type: "image_url", image_url: { url: userImageInput } },
       ];
 
-      // Include a clean extracted garment reference whenever available (pre or rescue extraction)
+      // Include clean extracted garment flat-lay — this is CRITICAL for avoiding IMAGE_PROHIBITED_CONTENT
       if (garmentOnlyImage !== clothingImageInput) {
-        content.push({ type: "text", text: "\n\n========== GARMENT REFERENCE (clean product flat-lay) ==========" });
+        content.push({ type: "text", text: "\n\n========== GARMENT REFERENCE (clean product flat-lay on white background) ==========" });
         content.push({ type: "image_url", image_url: { url: garmentOnlyImage } });
       }
 
@@ -868,14 +895,16 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       }
     }
 
-    // ── CHANGE 6: Layer 3 text-bridge rescue — no product image sent ──
+    // ── CHANGE 6: Layer 3 text-bridge rescue ──
     if (!resultImage && isIntimateGarment && (sawIntimateRefusal || sawIntimateTimeout || shouldBypassPrimaryForIntimate)) {
       // Build the best available text description
       const textDesc = aiGarmentDescription || intimateTextReference;
+      const hasCleanFlatLay = garmentOnlyImage !== clothingImageInput;
       
-      if (textDesc && textDesc.length > 15) {
-        console.log("Layer 3 text-bridge: attempting try-on with text description only (no product image)");
-        const textBridgePrompt = makeTextBridgePrompt(textDesc);
+      if ((textDesc && textDesc.length > 15) || hasCleanFlatLay) {
+        const descForPrompt = textDesc || "athletic fitted garment matching the reference image";
+        console.log(`Layer 3 text-bridge: hasCleanFlatLay=${hasCleanFlatLay}, textDesc=${!!textDesc} (${textDesc?.length || 0} chars)`);
+        const textBridgePrompt = makeTextBridgePrompt(descForPrompt, hasCleanFlatLay);
         
         const textBridgeModels = [
           { model: "google/gemini-3.1-flash-image-preview", label: "textbridge-flash", timeoutMs: 24_000 },
