@@ -206,7 +206,7 @@ const OneTapPlayground = () => {
           </div>
 
           <div
-            className="flex-1 grid grid-cols-2 gap-1.5 px-2 pb-2 overflow-y-auto max-h-[260px]"
+            className="flex-1 grid grid-cols-2 gap-2 px-2 pb-2 overflow-y-auto max-h-[340px]"
             onTouchStart={e => e.stopPropagation()}
           >
             {loading && !curated.length
