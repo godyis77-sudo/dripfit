@@ -324,9 +324,6 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
 
   const handleVote = useCallback(async (postId: string, key: string) => {
     if (!userId) { toast({ title: 'Sign in to vote', description: 'Create a free account to share your opinion.', variant: 'destructive' }); return; }
-    // Prevent self-voting
-    const post = posts.find(p => p.id === postId);
-    if (post && post.user_id === userId) { toast({ title: 'Can\'t vote on your own post' }); return; }
     const currentVotes = votes[postId] || [];
     const isFitVote = ['too_tight', 'perfect', 'too_loose'].includes(key);
     const hasKey = currentVotes.includes(key);
@@ -373,9 +370,30 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
       await supabase.from('community_votes').insert({ post_id: postId, user_id: userId, vote_key: key });
     }
 
-    if (key === 'keep_shopping') {
-      const post = posts.find(p => p.id === postId);
-      if (post) {
+    // Cart sync: buy_yes and keep_shopping add to cart; buy_no and untoggling removes
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+      if (key === 'buy_yes') {
+        if (hasKey) {
+          removeFromCart(postId);
+        } else {
+          // Remove buy_no cart state if any, then add
+          if (!isInCart(postId)) {
+            addToCart({
+              post_id: post.id,
+              image_url: post.result_photo_url,
+              caption: post.caption,
+              product_urls: post.product_urls || null,
+              clothing_photo_url: post.clothing_photo_url || post.result_photo_url,
+            });
+          }
+        }
+      } else if (key === 'buy_no') {
+        // Pass = remove from cart if present
+        if (isInCart(postId)) {
+          removeFromCart(postId);
+        }
+      } else if (key === 'keep_shopping') {
         if (hasKey) {
           removeFromCart(postId);
         } else {
