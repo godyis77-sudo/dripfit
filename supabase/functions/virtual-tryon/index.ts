@@ -895,14 +895,16 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       }
     }
 
-    // ── CHANGE 6: Layer 3 text-bridge rescue — no product image sent ──
+    // ── CHANGE 6: Layer 3 text-bridge rescue ──
     if (!resultImage && isIntimateGarment && (sawIntimateRefusal || sawIntimateTimeout || shouldBypassPrimaryForIntimate)) {
       // Build the best available text description
       const textDesc = aiGarmentDescription || intimateTextReference;
+      const hasCleanFlatLay = garmentOnlyImage !== clothingImageInput;
       
-      if (textDesc && textDesc.length > 15) {
-        console.log("Layer 3 text-bridge: attempting try-on with text description only (no product image)");
-        const textBridgePrompt = makeTextBridgePrompt(textDesc);
+      if ((textDesc && textDesc.length > 15) || hasCleanFlatLay) {
+        const descForPrompt = textDesc || "athletic fitted garment matching the reference image";
+        console.log(`Layer 3 text-bridge: hasCleanFlatLay=${hasCleanFlatLay}, textDesc=${!!textDesc} (${textDesc?.length || 0} chars)`);
+        const textBridgePrompt = makeTextBridgePrompt(descForPrompt, hasCleanFlatLay);
         
         const textBridgeModels = [
           { model: "google/gemini-3.1-flash-image-preview", label: "textbridge-flash", timeoutMs: 24_000 },
