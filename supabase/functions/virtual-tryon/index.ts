@@ -478,7 +478,27 @@ Deno.serve(async (req) => {
 
     let prompt: string;
 
-    if (isAccessory || isLayering) {
+    if (isFootwear && !isLayering) {
+      prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
+
+IMAGES PROVIDED:
+- Image A (first image below): A person wearing an outfit — preserve their face, body, pose, and ALL clothing EXACTLY.
+- Image B (second image below): The target footwear — replicate this EXACT shoe/sneaker.
+
+TARGET FOOTWEAR:
+- The shoes shown in Image B.${productHint}
+
+TASK — FOOTWEAR SWAP:
+1. REMOVE whatever shoes/footwear the person in Image A is currently wearing.
+2. REPLACE them with the EXACT footwear from Image B — match color, shape, material, branding, sole, laces, and all details precisely.
+3. Keep ALL other clothing from Image A completely unchanged — do NOT modify tops, bottoms, or any other garment.
+4. Keep the person's face, body, hair, skin tone, pose, and leg position identical to Image A.
+5. CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A.
+6. ${bgInstruction}
+7. Correct scale — shoes must match the person's foot size realistically. Natural shadows and lighting.
+
+Output: A single photorealistic FULL-BODY image showing the person head to feet. No text/watermarks/split views.`;
+    } else if (isAccessory || isLayering) {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
 IMAGES PROVIDED:
