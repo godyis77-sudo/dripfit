@@ -560,7 +560,11 @@ Output: A single photorealistic image. No text/watermarks/split views.`;
     const bgFallbackHint = useClothingBg
       ? "Use the background from Image B (the product photo)."
       : "Keep background from Image A unchanged.";
-    const fallbackPrompt = (isAccessory || isLayering)
+    const fallbackPrompt = isFootwear && !isLayering
+      ? `Create ONE photorealistic FULL-BODY output image.
+Image A = person wearing an outfit. Image B = target footwear (shoes/sneakers).${productHint}
+REMOVE current footwear from Image A and REPLACE with the exact shoes from Image B. Keep ALL other clothing unchanged. Match Image B exactly (color, shape, material, branding, sole). Keep face/body/pose from Image A. ${bgFallbackHint} Show full body head to feet. No text/watermark.`
+      : (isAccessory || isLayering)
       ? `Create ONE photorealistic output image.
 Image A = person. Image B = target accessory.${productHint}
 Place the accessory from Image B onto the person in Image A at realistic scale and lighting.
