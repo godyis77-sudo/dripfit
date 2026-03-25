@@ -553,7 +553,7 @@ export function useTryOnState() {
 
   const handleTryAnother = () => {
     // Keep user photo — only reset clothing, result, and session state
-    setClothingPhoto(null); setResultImage(null); setDescription(null);
+    setClothingPhoto(null); setResultImage(null); setDescription(null); setCategory('top');
     setCaption(''); setIsPublic(getDefaultSharePreference()); setShared(false); setAutoSaved(false);
     setProductLink(''); setLookItems([]); setClothingSaved(false); setSavedToItems(false);
     setShowPostUI(false); setShowLookItems(false); setLayerHistory([]);
