@@ -667,7 +667,7 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       return content;
     };
 
-    const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
+    const typeLabel = isFootwear ? "footwear" : isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     // Only bypass primary when we already have a clean flat-lay; otherwise keep one primary attempt.
     const shouldBypassPrimaryForIntimate = isIntimateGarment && preExtractedGarment && (isUnderwear || isExplicitIntimate || isBottomOnlyIntimate);
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
