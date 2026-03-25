@@ -534,6 +534,39 @@ ${intimateFramingInstruction}
 
 Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, or collages.`;
     } else {
+      // Detect if garment is top-only or bottom-only to preserve existing clothing
+      const BOTTOM_TYPES = ["jeans", "pants", "trousers", "shorts", "skirt", "skirts", "leggings", "chinos", "joggers", "sweatpants", "cargo", "culottes", "bottom", "bottoms"];
+      const TOP_TYPES = ["top", "tops", "shirt", "shirts", "blouse", "t-shirt", "t-shirts", "tee", "sweater", "sweaters", "hoodie", "hoodies", "polo", "polos", "tank", "tank top", "crop top", "cardigan", "pullover", "henley", "jersey"];
+      const FULL_BODY_TYPES = ["dress", "dresses", "jumpsuit", "jumpsuits", "romper", "overalls", "full"];
+      const OUTERWEAR_TYPES = ["jacket", "jackets", "coat", "coats", "blazer", "blazers", "vest", "vests", "parka", "windbreaker", "outerwear"];
+
+      const stdContext = normalizeMatchText([itemLower, productName.toLowerCase(), productCategory.toLowerCase()].join(" "));
+      const isBottomGarment = BOTTOM_TYPES.some(t => hasContextTerm(stdContext, t));
+      const isTopGarment = TOP_TYPES.some(t => hasContextTerm(stdContext, t)) && !isBottomGarment;
+      const isFullBodyGarment = FULL_BODY_TYPES.some(t => hasContextTerm(stdContext, t));
+      const isOuterwearGarment = OUTERWEAR_TYPES.some(t => hasContextTerm(stdContext, t));
+
+      let swapInstruction: string;
+      if (isBottomGarment) {
+        swapInstruction = `1. Replace ONLY the lower-body clothing (pants, jeans, shorts, skirt, etc.) from Image A with the garment from Image B.
+2. Keep the person's EXISTING upper-body clothing (shirt, top, jacket, etc.) from Image A completely UNCHANGED.
+3. Keep the person's EXISTING footwear from Image A completely UNCHANGED.`;
+      } else if (isOuterwearGarment) {
+        swapInstruction = `1. ADD the outerwear garment from Image B on top of the person's existing outfit in Image A.
+2. Keep the person's EXISTING inner clothing from Image A visible underneath where appropriate.
+3. Keep the person's EXISTING lower-body clothing and footwear from Image A completely UNCHANGED.`;
+      } else if (isFullBodyGarment) {
+        swapInstruction = `1. REPLACE ALL clothing from Image A with the full-body garment from Image B.
+2. The person should wear ONLY the garment from Image B. Remove all previous clothing.`;
+      } else if (isTopGarment) {
+        swapInstruction = `1. Replace ONLY the upper-body clothing (shirt, top, sweater, etc.) from Image A with the garment from Image B.
+2. Keep the person's EXISTING lower-body clothing (pants, jeans, skirt, etc.) from Image A completely UNCHANGED.
+3. Keep the person's EXISTING footwear from Image A completely UNCHANGED.`;
+      } else {
+        swapInstruction = `1. Replace the clothing from Image A with the garment from Image B.
+2. Keep other unrelated clothing items from Image A where appropriate.`;
+      }
+
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
 IMAGES PROVIDED:
@@ -544,16 +577,13 @@ TARGET GARMENT:
 - The garment shown in Image B.${productHint}
 
 TASK — CLOTHING SWAP:
-1. COMPLETELY STRIP every piece of clothing from Image A — tops, bottoms, pants, skirts, shoes, accessories — remove ALL of them.
-2. Dress the now-bare person ONLY in the garment from Image B. If Image B is a top/shirt/blouse, the person should wear ONLY that top with bare legs (no pants, no skirt, no shorts unless Image B includes them).
-3. Match Image B exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
-4. Keep Image A person identity (face, body, hair, skin tone, pose). ${bgInstruction}
-5. Keep garment fit realistic with natural wrinkles and shadows.
-6. CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate or turn the model to match Image B's pose/angle. Copy only the garment from Image B, never its pose.
+${swapInstruction}
+- Match Image B exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
+- Keep Image A person identity (face, body, hair, skin tone, pose). ${bgInstruction}
+- Keep garment fit realistic with natural wrinkles and shadows.
+- CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate or turn the model to match Image B's pose/angle. Copy only the garment from Image B, never its pose.
 
-CRITICAL: Do NOT keep any original clothing from Image A. The ONLY clothing in the output must be the garment from Image B.
-
-Output: A single photorealistic image. No text/watermarks/split views.`;
+Output: A single photorealistic FULL-BODY image. No text/watermarks/split views.`;
     }
 
     // ── AI CALL ──
@@ -577,12 +607,24 @@ ${garmentSwapScopeInstruction}
 Match product exactly: color, cut, fabric, straps, neckline. Keep model identity, pose, and facing direction from Image A — do NOT rotate the model.
 CRITICAL: Show FULL BODY from head to feet — include legs. Do NOT crop at waist.
 Professional retail catalog quality. No text/watermark.`
-        : `Create ONE photorealistic clothing-swap image.
+        : (() => {
+          const fbContext = normalizeMatchText([itemLower, productName.toLowerCase(), productCategory.toLowerCase()].join(" "));
+          const fbBottom = ["jeans","pants","trousers","shorts","skirt","leggings","joggers","chinos","bottom","bottoms"].some(t => hasContextTerm(fbContext, t));
+          const fbTop = ["top","shirt","blouse","t-shirt","sweater","hoodie","polo","tank","cardigan","pullover","tee"].some(t => hasContextTerm(fbContext, t)) && !fbBottom;
+          const fbOuterwear = ["jacket","coat","blazer","vest","parka","outerwear"].some(t => hasContextTerm(fbContext, t));
+          const scopeHint = fbBottom
+            ? "Replace ONLY the lower-body clothing (pants/jeans/shorts/skirt). Keep the existing top, shirt, and shoes from Image A UNCHANGED."
+            : fbOuterwear
+              ? "ADD this outerwear ON TOP of existing clothing. Keep inner layers and lower body from Image A."
+              : fbTop
+                ? "Replace ONLY the upper-body clothing (shirt/top/sweater). Keep existing pants/jeans/shoes from Image A UNCHANGED."
+                : "Replace the clothing with the garment from Image B.";
+          return `Create ONE photorealistic clothing-swap image.
 Image A = person. Image B = target garment.${productHint}
-STRIP ALL clothing from Image A — tops, bottoms, pants, shoes, everything.
-Dress the person ONLY in the exact garment from Image B. If it is a top, show bare legs — do NOT keep pants or bottoms from Image A.
+${scopeHint}
 Preserve face, body shape, skin tone, pose, camera angle, and facing direction from Image A — do NOT rotate the model. ${bgFallbackHint}
-Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
+Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). Full body head to feet. No text/watermark.`;
+        })()
 
     const intimateReferenceForFallback = `Image B = athletic garment product photo. Apply garment from Image B onto model in Image A, ignoring any person shown in Image B.`;
 
