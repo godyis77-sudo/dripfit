@@ -143,6 +143,7 @@ Deno.serve(async (req) => {
     const productCategory = typeof raw.productCategory === "string" ? raw.productCategory : "";
 
     const ACCESSORY_TYPES = ["accessory", "jewelry", "necklace", "bracelet", "earrings", "ring", "watch", "hat", "hats", "cap", "sunglasses", "glasses", "bag", "bags", "purse", "handbag", "belt", "belts", "scarf", "scarves", "shoes", "sneakers", "boots", "heels", "loafers", "sandals"];
+    const FOOTWEAR_TYPES = ["shoes", "sneakers", "boots", "heels", "loafers", "sandals", "trainers", "pumps", "mules", "slides", "flats", "oxfords", "derby", "espadrilles"];
     const INTIMATE_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece", "bra", "bralette", "sports bra", "underwear", "underware", "panties", "briefs", "boxers", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise", "lounge", "loungewear", "sleepwear", "pajamas", "robe"];
     const UNDERWEAR_TYPES = ["underwear", "underware", "panties", "briefs", "boxers", "bra", "bralette", "sports bra", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise"];
     const SWIM_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece"];
@@ -156,6 +157,7 @@ Deno.serve(async (req) => {
     };
 
     const isAccessory = ACCESSORY_TYPES.includes(itemLower);
+    const isFootwear = FOOTWEAR_TYPES.includes(itemLower) || FOOTWEAR_TYPES.some(t => hasContextTerm(normalizeMatchText([itemLower, productName.toLowerCase(), productCategory.toLowerCase()].join(" ")), t));
     const normalizedItemContext = normalizeMatchText(itemLower);
     const normalizedProductContext = normalizeMatchText([
       itemLower,
@@ -476,7 +478,27 @@ Deno.serve(async (req) => {
 
     let prompt: string;
 
-    if (isAccessory || isLayering) {
+    if (isFootwear && !isLayering) {
+      prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
+
+IMAGES PROVIDED:
+- Image A (first image below): A person wearing an outfit — preserve their face, body, pose, and ALL clothing EXACTLY.
+- Image B (second image below): The target footwear — replicate this EXACT shoe/sneaker.
+
+TARGET FOOTWEAR:
+- The shoes shown in Image B.${productHint}
+
+TASK — FOOTWEAR SWAP:
+1. REMOVE whatever shoes/footwear the person in Image A is currently wearing.
+2. REPLACE them with the EXACT footwear from Image B — match color, shape, material, branding, sole, laces, and all details precisely.
+3. Keep ALL other clothing from Image A completely unchanged — do NOT modify tops, bottoms, or any other garment.
+4. Keep the person's face, body, hair, skin tone, pose, and leg position identical to Image A.
+5. CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A.
+6. ${bgInstruction}
+7. Correct scale — shoes must match the person's foot size realistically. Natural shadows and lighting.
+
+Output: A single photorealistic FULL-BODY image showing the person head to feet. No text/watermarks/split views.`;
+    } else if (isAccessory || isLayering) {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
 IMAGES PROVIDED:
@@ -538,7 +560,11 @@ Output: A single photorealistic image. No text/watermarks/split views.`;
     const bgFallbackHint = useClothingBg
       ? "Use the background from Image B (the product photo)."
       : "Keep background from Image A unchanged.";
-    const fallbackPrompt = (isAccessory || isLayering)
+    const fallbackPrompt = isFootwear && !isLayering
+      ? `Create ONE photorealistic FULL-BODY output image.
+Image A = person wearing an outfit. Image B = target footwear (shoes/sneakers).${productHint}
+REMOVE current footwear from Image A and REPLACE with the exact shoes from Image B. Keep ALL other clothing unchanged. Match Image B exactly (color, shape, material, branding, sole). Keep face/body/pose from Image A. ${bgFallbackHint} Show full body head to feet. No text/watermark.`
+      : (isAccessory || isLayering)
       ? `Create ONE photorealistic output image.
 Image A = person. Image B = target accessory.${productHint}
 Place the accessory from Image B onto the person in Image A at realistic scale and lighting.
@@ -641,7 +667,7 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       return content;
     };
 
-    const typeLabel = isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
+    const typeLabel = isFootwear ? "footwear" : isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     // Only bypass primary when we already have a clean flat-lay; otherwise keep one primary attempt.
     const shouldBypassPrimaryForIntimate = isIntimateGarment && preExtractedGarment && (isUnderwear || isExplicitIntimate || isBottomOnlyIntimate);
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
