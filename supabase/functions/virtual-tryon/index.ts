@@ -616,7 +616,7 @@ Professional retail catalog quality. No text/watermark.`
           const scopeHint = fbBottom
             ? "Replace ONLY the lower-body clothing (pants/jeans/shorts/skirt). Keep the existing top, shirt, and shoes from Image A UNCHANGED."
             : fbOuterwear
-              ? "ADD this outerwear ON TOP of existing clothing. Keep inner layers and lower body from Image A."
+              ? "REPLACE any existing outerwear (jacket/coat/blazer) with this garment. Keep inner layers and lower body from Image A UNCHANGED."
               : fbTop
                 ? "Replace ONLY the upper-body clothing (shirt/top/sweater). Keep existing pants/jeans/shoes from Image A UNCHANGED."
                 : "Replace the clothing with the garment from Image B.";
