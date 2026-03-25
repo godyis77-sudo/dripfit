@@ -552,9 +552,10 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
 2. Keep the person's EXISTING upper-body clothing (shirt, top, jacket, etc.) from Image A completely UNCHANGED.
 3. Keep the person's EXISTING footwear from Image A completely UNCHANGED.`;
       } else if (isOuterwearGarment) {
-        swapInstruction = `1. ADD the outerwear garment from Image B on top of the person's existing outfit in Image A.
-2. Keep the person's EXISTING inner clothing from Image A visible underneath where appropriate.
-3. Keep the person's EXISTING lower-body clothing and footwear from Image A completely UNCHANGED.`;
+        swapInstruction = `1. REPLACE any existing outerwear (jacket, coat, blazer, vest, etc.) from Image A with the outerwear garment from Image B.
+2. If the person in Image A is wearing a jacket/coat/blazer, REMOVE it and put the new one from Image B instead.
+3. Keep the person's EXISTING inner clothing (shirt, top, sweater) from Image A visible underneath where appropriate.
+4. Keep the person's EXISTING lower-body clothing and footwear from Image A completely UNCHANGED.`;
       } else if (isFullBodyGarment) {
         swapInstruction = `1. REPLACE ALL clothing from Image A with the full-body garment from Image B.
 2. The person should wear ONLY the garment from Image B. Remove all previous clothing.`;
@@ -615,7 +616,7 @@ Professional retail catalog quality. No text/watermark.`
           const scopeHint = fbBottom
             ? "Replace ONLY the lower-body clothing (pants/jeans/shorts/skirt). Keep the existing top, shirt, and shoes from Image A UNCHANGED."
             : fbOuterwear
-              ? "ADD this outerwear ON TOP of existing clothing. Keep inner layers and lower body from Image A."
+              ? "REPLACE any existing outerwear (jacket/coat/blazer) with this garment. Keep inner layers and lower body from Image A UNCHANGED."
               : fbTop
                 ? "Replace ONLY the upper-body clothing (shirt/top/sweater). Keep existing pants/jeans/shoes from Image A UNCHANGED."
                 : "Replace the clothing with the garment from Image B.";
