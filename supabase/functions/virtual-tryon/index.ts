@@ -157,6 +157,7 @@ Deno.serve(async (req) => {
     };
 
     const isAccessory = ACCESSORY_TYPES.includes(itemLower);
+    const isFootwear = FOOTWEAR_TYPES.includes(itemLower) || FOOTWEAR_TYPES.some(t => hasContextTerm(normalizeMatchText([itemLower, productName.toLowerCase(), productCategory.toLowerCase()].join(" ")), t));
     const normalizedItemContext = normalizeMatchText(itemLower);
     const normalizedProductContext = normalizeMatchText([
       itemLower,
