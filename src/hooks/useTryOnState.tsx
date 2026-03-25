@@ -144,6 +144,8 @@ export function useTryOnState() {
   const setUserPhoto = useCallback((v: string | null) => {
     setUserPhotoRaw(v);
     if (v && v.startsWith('data:')) {
+      // Immediately clear stale persisted URL so it can't override the new photo on remount
+      try { localStorage.removeItem(TRYON_USER_PHOTO_KEY); } catch { /* ignore */ }
       // Upload in background, swap to URL when done
       eagerUpload(v, 'user-staged').then(url => {
         if (url) {
