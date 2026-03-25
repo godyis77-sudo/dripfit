@@ -143,6 +143,7 @@ Deno.serve(async (req) => {
     const productCategory = typeof raw.productCategory === "string" ? raw.productCategory : "";
 
     const ACCESSORY_TYPES = ["accessory", "jewelry", "necklace", "bracelet", "earrings", "ring", "watch", "hat", "hats", "cap", "sunglasses", "glasses", "bag", "bags", "purse", "handbag", "belt", "belts", "scarf", "scarves", "shoes", "sneakers", "boots", "heels", "loafers", "sandals"];
+    const FOOTWEAR_TYPES = ["shoes", "sneakers", "boots", "heels", "loafers", "sandals", "trainers", "pumps", "mules", "slides", "flats", "oxfords", "derby", "espadrilles"];
     const INTIMATE_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece", "bra", "bralette", "sports bra", "underwear", "underware", "panties", "briefs", "boxers", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise", "lounge", "loungewear", "sleepwear", "pajamas", "robe"];
     const UNDERWEAR_TYPES = ["underwear", "underware", "panties", "briefs", "boxers", "bra", "bralette", "sports bra", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise"];
     const SWIM_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece"];
