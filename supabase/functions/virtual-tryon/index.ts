@@ -607,12 +607,24 @@ ${garmentSwapScopeInstruction}
 Match product exactly: color, cut, fabric, straps, neckline. Keep model identity, pose, and facing direction from Image A — do NOT rotate the model.
 CRITICAL: Show FULL BODY from head to feet — include legs. Do NOT crop at waist.
 Professional retail catalog quality. No text/watermark.`
-        : `Create ONE photorealistic clothing-swap image.
+        : (() => {
+          const fbContext = normalizeMatchText([itemLower, productName.toLowerCase(), productCategory.toLowerCase()].join(" "));
+          const fbBottom = ["jeans","pants","trousers","shorts","skirt","leggings","joggers","chinos","bottom","bottoms"].some(t => hasContextTerm(fbContext, t));
+          const fbTop = ["top","shirt","blouse","t-shirt","sweater","hoodie","polo","tank","cardigan","pullover","tee"].some(t => hasContextTerm(fbContext, t)) && !fbBottom;
+          const fbOuterwear = ["jacket","coat","blazer","vest","parka","outerwear"].some(t => hasContextTerm(fbContext, t));
+          const scopeHint = fbBottom
+            ? "Replace ONLY the lower-body clothing (pants/jeans/shorts/skirt). Keep the existing top, shirt, and shoes from Image A UNCHANGED."
+            : fbOuterwear
+              ? "ADD this outerwear ON TOP of existing clothing. Keep inner layers and lower body from Image A."
+              : fbTop
+                ? "Replace ONLY the upper-body clothing (shirt/top/sweater). Keep existing pants/jeans/shoes from Image A UNCHANGED."
+                : "Replace the clothing with the garment from Image B.";
+          return `Create ONE photorealistic clothing-swap image.
 Image A = person. Image B = target garment.${productHint}
-STRIP ALL clothing from Image A — tops, bottoms, pants, shoes, everything.
-Dress the person ONLY in the exact garment from Image B. If it is a top, show bare legs — do NOT keep pants or bottoms from Image A.
+${scopeHint}
 Preserve face, body shape, skin tone, pose, camera angle, and facing direction from Image A — do NOT rotate the model. ${bgFallbackHint}
-Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). No text/watermark.`;
+Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). Full body head to feet. No text/watermark.`;
+        })()
 
     const intimateReferenceForFallback = `Image B = athletic garment product photo. Apply garment from Image B onto model in Image A, ignoring any person shown in Image B.`;
 
