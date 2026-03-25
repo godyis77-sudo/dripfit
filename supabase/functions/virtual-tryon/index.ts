@@ -668,6 +668,8 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
     };
 
     const typeLabel = isFootwear ? "footwear" : isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
+    const footwearFastPrompt = `Fast shoe swap. Image A is the person, Image B is the exact shoe.${productHint} Replace only footwear in Image A with Image B. Keep all other clothing, pose, and framing unchanged. ${bgFallbackHint} No text/watermark.`;
+    const footwearRetryPrompt = `Photorealistic shoe replacement.${productHint} Replace only the shoes from Image A with the shoes from Image B. Keep body, outfit, orientation, and lighting natural. ${bgFallbackHint} No text/watermark.`;
     // Only bypass primary when we already have a clean flat-lay; otherwise keep one primary attempt.
     const shouldBypassPrimaryForIntimate = isIntimateGarment && preExtractedGarment && (isUnderwear || isExplicitIntimate || isBottomOnlyIntimate);
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
@@ -679,10 +681,15 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
                 { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 28_000 },
               ]
         )
-      : [
-          { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary`, timeoutMs: 28_000 },
-          { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-retry`, timeoutMs: 20_000 },
-        ];
+      : isFootwear && !isLayering
+        ? [
+            { model: "google/gemini-2.5-flash-image", prompt: footwearFastPrompt, label: `${typeLabel}-nano-primary`, timeoutMs: 14_000 },
+            { model: "google/gemini-3.1-flash-image-preview", prompt: footwearRetryPrompt, label: `${typeLabel}-flash-retry`, timeoutMs: 16_000 },
+          ]
+        : [
+            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary`, timeoutMs: 28_000 },
+            { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-retry`, timeoutMs: 20_000 },
+          ];
 
     if (shouldBypassPrimaryForIntimate) {
       console.log("Intimate routing: bypassing product-image primary attempt and starting with text-bridge.");
