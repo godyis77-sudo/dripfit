@@ -175,7 +175,15 @@ export function useTryOnState() {
     }
   }, [persistState, eagerUpload]);
 
-  const setProductLink = useCallback((v: string) => { setProductLinkRaw(v); persistState({ productLink: v }); }, [persistState]);
+  const setProductLink = useCallback((v: string) => {
+    setProductLinkRaw(v);
+    persistState({ productLink: v });
+    // Auto-detect category from URL when product link changes
+    if (v) {
+      const detected = detectCategoryFromUrl(v);
+      if (detected) { setCategoryRaw(detected); persistState({ category: detected }); }
+    }
+  }, [persistState]);
   const setCategory = useCallback((v: string) => { setCategoryRaw(v); persistState({ category: v }); }, [persistState]);
   const setResultImage = useCallback((v: string | null) => { setResultImageRaw(v); persistState({ resultImage: v }); }, [persistState]);
   const setLookItems = useCallback((v: LookItem[] | ((prev: LookItem[]) => LookItem[])) => {
