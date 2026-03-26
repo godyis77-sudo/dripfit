@@ -174,6 +174,10 @@ Deno.serve(async (req) => {
     const isExplicitIntimate = EXPLICIT_TERMS.some(t => hasContextTerm(normalizedProductContext, t));
     const isLayering = raw.isLayering === true;
 
+    // Underwear is frequently blocked by the image model safety filter.
+    // IMPORTANT: This does NOT change any category — it only changes rendering and routing behavior.
+    const isUnderwearSafeMode = (isUnderwear || isExplicitIntimate) && !isSwimwear;
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) return errorResponse("LOVABLE_API_KEY not configured", "CONFIG_ERROR", 500, corsHeaders);
 
@@ -460,10 +464,6 @@ Deno.serve(async (req) => {
       !isSwimwear &&
       /\b(panties|briefs|boxers|trunk|thong|g string|g-string|underwear|bottom|bottoms|boyshort|hipster)\b/.test(normalizedProductContext) &&
       !/\b(top|bra|bralette|support top|sports bra|set|two piece|2 piece|one piece|one-piece|bodysuit)\b/.test(normalizedProductContext);
-
-    // Underwear is frequently blocked by image model safety; keep output fully clothed while still “working”.
-    // IMPORTANT: This does NOT change any category — it only changes rendering instructions.
-    const isUnderwearSafeMode = (isUnderwear || isExplicitIntimate) && !isSwimwear;
 
     const intimateScopeInstruction = isSwimwear
       ? swimwearScopeInstruction
