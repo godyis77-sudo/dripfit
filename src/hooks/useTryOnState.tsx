@@ -593,7 +593,11 @@ export function useTryOnState() {
     // userPhoto persists in localStorage (TRYON_USER_PHOTO_KEY) automatically
   };
 
-  const handleAddAccessory = async (accessoryPhoto: string, accessoryCategory: string | null) => {
+  const handleAddAccessory = async (
+    accessoryPhoto: string,
+    accessoryCategory: string | null,
+    accessoryProduct?: CatalogProduct | null,
+  ) => {
     if (!resultImage || !accessoryPhoto) return;
     if (!(await checkUsageLimit())) return;
     setAddingAccessory(true);
@@ -604,20 +608,31 @@ export function useTryOnState() {
         prepareTryOnImage(accessoryPhoto),
       ]);
 
-      // Clothing categories (top, bottom, shoes, skirts, dress, etc.) should REPLACE, not layer
-      const REPLACE_CATEGORIES = ['top', 'tops', 'bottom', 'bottoms', 'shoes', 'sneakers', 'boots', 'heels', 'loafers', 'sandals', 'jeans', 'pants', 'shorts', 'skirts', 'skirt', 'dress', 'dresses', 'jacket', 'jackets', 'coat', 'coats', 'blazer', 'blazers', 'outerwear', 'sweaters', 'hoodies', 'shirts'];
-      const normalizedAccCat = (accessoryCategory || '').toLowerCase();
+      const resolvedCategory = accessoryProduct?.category || accessoryCategory;
+      const resolvedProductName = accessoryProduct?.name || selectedQuickPick?.name || '';
+      const resolvedProductBrand = accessoryProduct?.brand || selectedQuickPick?.brand || '';
+      const resolvedProductUrl = accessoryProduct?.product_url || selectedQuickPick?.product_url || productLink || '';
+
+      // Clothing categories (top, bottom, shoes, swimwear, etc.) should REPLACE, not layer
+      const REPLACE_CATEGORIES = [
+        'top', 'tops', 'bottom', 'bottoms', 'shoes', 'sneakers', 'boots', 'heels', 'loafers', 'sandals',
+        'jeans', 'pants', 'shorts', 'skirts', 'skirt', 'dress', 'dresses', 'jacket', 'jackets', 'coat',
+        'coats', 'blazer', 'blazers', 'outerwear', 'sweaters', 'hoodies', 'shirts', 'swimwear', 'swimsuit',
+        'bikini', 'one-piece', 'one piece', 'underwear', 'lingerie', 'bralette', 'bra', 'sports bra',
+      ];
+      const normalizedAccCat = (resolvedCategory || '').toLowerCase();
       const shouldReplace = REPLACE_CATEGORIES.includes(normalizedAccCat);
 
       const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', {
         body: {
           userPhoto: preparedResultImage,
           clothingPhoto: preparedAccessoryPhoto,
-          itemType: accessoryCategory || 'accessory',
+          itemType: resolvedCategory || 'accessory',
           isLayering: !shouldReplace,
-          productName: selectedQuickPick?.name || '',
-          productBrand: selectedQuickPick?.brand || '',
-          productCategory: accessoryCategory || '',
+          productName: resolvedProductName,
+          productBrand: resolvedProductBrand,
+          productCategory: resolvedCategory || '',
+          productUrl: resolvedProductUrl,
         },
       });
       if (error) throw new Error(error.message);
