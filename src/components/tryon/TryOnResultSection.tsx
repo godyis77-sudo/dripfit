@@ -109,7 +109,12 @@ const TryOnResultSection = ({
   const [accBrandFilter, setAccBrandFilter] = useState<string | null>(null);
   const [accRetailerFilter, setAccRetailerFilter] = useState<string | null>(null);
   const [accSort, setAccSort] = useState<'default' | 'price_asc' | 'price_desc' | 'brand_az'>('default');
-  const [accGenderOverride, setAccGenderOverride] = useState<'all' | 'mens' | 'womens' | null>(null);
+  const [accGenderOverride, setAccGenderOverrideRaw] = useState<'all' | 'mens' | 'womens' | null>(() => {
+    const saved = localStorage.getItem('drip_gender_filter');
+    if (saved === 'mens' || saved === 'womens' || saved === 'all') return saved;
+    return null;
+  });
+  const setAccGenderOverride = (v: 'all' | 'mens' | 'womens' | null) => { setAccGenderOverrideRaw(v); if (v) localStorage.setItem('drip_gender_filter', v); };
   const [accGenreFilter, setAccGenreFilter] = useState<BrandGenre | null>(null);
   const [accFitFilter, setAccFitFilter] = useState<string | null>(null);
   const [accGenreOpen, setAccGenreOpen] = useState(false);
