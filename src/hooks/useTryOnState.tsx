@@ -56,7 +56,6 @@ function loadPersistedTryOnState(): PersistedTryOnState {
     const lsRaw = localStorage.getItem(TRYON_STATE_KEY);
     const ssRaw = sessionStorage.getItem(TRYON_STATE_KEY);
     const parsed = { ...(lsRaw ? JSON.parse(lsRaw) : {}), ...(ssRaw ? JSON.parse(ssRaw) : {}) };
-    // Prefer dedicated localStorage keys for result/user photo
     const savedResultUrl = localStorage.getItem(TRYON_RESULT_KEY);
     const savedUserPhoto = localStorage.getItem(TRYON_USER_PHOTO_KEY);
     return {
@@ -64,11 +63,12 @@ function loadPersistedTryOnState(): PersistedTryOnState {
       clothingPhoto: parsed.clothingPhoto || null,
       productLink: parsed.productLink || '',
       category: parsed.category || 'all',
-      resultImage: savedResultUrl || parsed.resultImage || null,
+      // Prefer latest in-session value before older persisted URL
+      resultImage: parsed.resultImage || savedResultUrl || null,
       activePostId: parsed.activePostId || null,
       lookItems: parsed.lookItems || [],
       caption: parsed.caption || '',
-      autoSaved: parsed.autoSaved || !!savedResultUrl,
+      autoSaved: parsed.autoSaved || !!(parsed.resultImage || savedResultUrl),
       shared: !!parsed.shared,
       savedToItems: !!parsed.savedToItems,
       selectedQuickPick: parsed.selectedQuickPick || null,
@@ -105,19 +105,29 @@ export function useTryOnState() {
   const [clothingSaved, setClothingSaved] = useState(false);
   const [backgroundSource, setBackgroundSource] = useState<'user' | 'clothing'>('user');
 
-  // Persist critical state to sessionStorage so it survives mobile camera handoff reloads
-  // NOTE: Only persist URLs — never large base64 strings
+  // Persist critical state to survive refresh/navigation while avoiding localStorage quota issues
   const persistState = useCallback((updates: Partial<PersistedTryOnState>) => {
     try {
-      const current = (() => { try { return JSON.parse(localStorage.getItem(TRYON_STATE_KEY) || '{}'); } catch { return {}; } })();
-      const merged = { ...current, ...updates };
-      // Skip persisting any value that looks like a large base64 string
-      for (const key of ['userPhoto', 'clothingPhoto', 'resultImage'] as const) {
-        if (typeof merged[key] === 'string' && merged[key].startsWith('data:')) delete merged[key];
+      const currentLocal = (() => { try { return JSON.parse(localStorage.getItem(TRYON_STATE_KEY) || '{}'); } catch { return {}; } })();
+      const currentSession = (() => { try { return JSON.parse(sessionStorage.getItem(TRYON_STATE_KEY) || '{}'); } catch { return {}; } })();
+      const merged = { ...currentLocal, ...currentSession, ...updates } as Record<string, unknown>;
+
+      const sessionState = { ...merged };
+      // Skip base64 source photos in persisted state
+      for (const key of ['userPhoto', 'clothingPhoto'] as const) {
+        if (typeof sessionState[key] === 'string' && (sessionState[key] as string).startsWith('data:')) {
+          delete sessionState[key];
+        }
       }
-      const serialized = JSON.stringify(merged);
-      localStorage.setItem(TRYON_STATE_KEY, serialized);
-      sessionStorage.setItem(TRYON_STATE_KEY, serialized);
+
+      const localState = { ...sessionState };
+      // Keep data-URL result in sessionStorage only (latest image recovery), not localStorage
+      if (typeof localState.resultImage === 'string' && (localState.resultImage as string).startsWith('data:')) {
+        delete localState.resultImage;
+      }
+
+      sessionStorage.setItem(TRYON_STATE_KEY, JSON.stringify(sessionState));
+      localStorage.setItem(TRYON_STATE_KEY, JSON.stringify(localState));
     } catch { /* quota exceeded — silently skip */ }
   }, []);
 
