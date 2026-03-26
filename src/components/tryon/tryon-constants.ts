@@ -50,7 +50,6 @@ export const CATEGORIES = [
   { key: 'swimwear', label: 'Swimwear' },
   { key: 't-shirts', label: 'T-Shirts' },
   { key: 'top', label: 'Top' },
-  { key: 'underwear', label: 'Underwear' },
   { key: 'vests', label: 'Vests' },
 ] as const;
 
