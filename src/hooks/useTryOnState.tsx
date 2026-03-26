@@ -578,14 +578,20 @@ export function useTryOnState() {
         prepareTryOnImage(accessoryPhoto),
       ]);
 
+      // Clothing categories (top, bottom, shoes, skirts, dress, etc.) should REPLACE, not layer
+      const REPLACE_CATEGORIES = ['top', 'tops', 'bottom', 'bottoms', 'shoes', 'sneakers', 'boots', 'heels', 'loafers', 'sandals', 'jeans', 'pants', 'shorts', 'skirts', 'skirt', 'dress', 'dresses', 'jacket', 'jackets', 'coat', 'coats', 'blazer', 'blazers', 'outerwear', 'sweaters', 'hoodies', 'shirts'];
+      const normalizedAccCat = (accessoryCategory || '').toLowerCase();
+      const shouldReplace = REPLACE_CATEGORIES.includes(normalizedAccCat);
+
       const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', {
         body: {
           userPhoto: preparedResultImage,
           clothingPhoto: preparedAccessoryPhoto,
           itemType: accessoryCategory || 'accessory',
-          isLayering: true,
+          isLayering: !shouldReplace,
           productName: selectedQuickPick?.name || '',
           productBrand: selectedQuickPick?.brand || '',
+          productCategory: accessoryCategory || '',
         },
       });
       if (error) throw new Error(error.message);
