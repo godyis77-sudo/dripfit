@@ -553,15 +553,23 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       const TOP_TYPES = ["top", "tops", "shirt", "shirts", "blouse", "t-shirt", "t-shirts", "tee", "sweater", "sweaters", "hoodie", "hoodies", "polo", "polos", "tank", "tank top", "crop top", "cardigan", "pullover", "henley", "jersey"];
       const FULL_BODY_TYPES = ["dress", "dresses", "jumpsuit", "jumpsuits", "romper", "overalls", "full"];
       const OUTERWEAR_TYPES = ["jacket", "jackets", "coat", "coats", "blazer", "blazers", "vest", "vests", "parka", "windbreaker", "outerwear"];
+      const SET_TYPES = ["set", "matching set", "two piece", "2 piece", "2-piece", "co-ord", "co ord", "coord", "pajama set", "pj set", "lounge set", "sleep set", "tracksuit", "sweatsuit", "matching"];
+      const COMFORTWEAR_STD_TYPES = ["loungewear", "loungeware", "sleepwear", "pajamas", "pyjamas", "robe", "robes", "lounge"];
 
       const stdContext = normalizeMatchText([itemLower, productName.toLowerCase(), productCategory.toLowerCase()].join(" "));
       const isBottomGarment = BOTTOM_TYPES.some(t => hasContextTerm(stdContext, t));
       const isTopGarment = TOP_TYPES.some(t => hasContextTerm(stdContext, t)) && !isBottomGarment;
       const isFullBodyGarment = FULL_BODY_TYPES.some(t => hasContextTerm(stdContext, t));
       const isOuterwearGarment = OUTERWEAR_TYPES.some(t => hasContextTerm(stdContext, t));
+      const isSetGarmentStd = SET_TYPES.some(t => hasContextTerm(stdContext, t)) || COMFORTWEAR_STD_TYPES.some(t => hasContextTerm(stdContext, t));
 
       let swapInstruction: string;
-      if (isBottomGarment) {
+      if (isSetGarmentStd) {
+        swapInstruction = `1. Image B shows a COMPLETE MATCHING SET or loungewear/sleepwear outfit (typically a top AND bottom together). Replace ALL clothing from Image A with the ENTIRE outfit shown in Image B — BOTH the top AND bottom pieces.
+2. Do NOT apply only part of the set. If Image B shows a person wearing a matching top and matching bottom, the output MUST show BOTH pieces on the model.
+3. Keep the person's EXISTING footwear from Image A UNCHANGED.
+4. Match every detail from Image B: color, pattern, print, fabric texture, fit, and styling of BOTH pieces.`;
+      } else if (isBottomGarment) {
         swapInstruction = `1. Replace ONLY the lower-body clothing (pants, jeans, shorts, skirt, etc.) from Image A with the garment from Image B.
 2. Keep the person's EXISTING upper-body clothing (shirt, top, jacket, etc.) from Image A completely UNCHANGED.
 3. Keep the person's EXISTING footwear from Image A completely UNCHANGED.`;
@@ -579,7 +587,7 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
 2. Keep the person's EXISTING lower-body clothing (pants, jeans, skirt, etc.) from Image A completely UNCHANGED.
 3. Keep the person's EXISTING footwear from Image A completely UNCHANGED.`;
       } else {
-        swapInstruction = `1. Replace the clothing from Image A with the garment from Image B.
+        swapInstruction = `1. Replace the clothing from Image A with the garment from Image B. If Image B shows a complete outfit (top + bottom), apply the ENTIRE outfit — do NOT apply only one piece.
 2. Keep other unrelated clothing items from Image A where appropriate.`;
       }
 
