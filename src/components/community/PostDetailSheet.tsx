@@ -12,6 +12,7 @@ import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 import type { LookItem } from '@/components/community/WhatsInThisLook';
 import { supabase } from '@/integrations/supabase/client';
 import ImageViewer from './ImageViewer';
+import { trackEvent } from '@/lib/analytics';
 import VotePanel from './VotePanel';
 import CommentsSection from './CommentsSection';
 import type { Comment } from './CommentsSection';
