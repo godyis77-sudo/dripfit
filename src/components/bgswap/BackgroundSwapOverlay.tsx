@@ -479,7 +479,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       )}
 
       {/* Background picker */}
-      <div className="flex-1 min-h-0 flex flex-col bg-card/90 backdrop-blur-xl border-t border-border rounded-t-2xl pb-[max(1rem,env(safe-area-inset-bottom))]">
+      <div ref={gridPanelRef} className="flex-1 min-h-0 flex flex-col bg-card/90 backdrop-blur-xl border-t border-border rounded-t-2xl pb-[max(1rem,env(safe-area-inset-bottom))]">
         {/* Search bar + category tabs */}
         <div className="shrink-0 px-3 pt-2.5 pb-1 flex items-center gap-2">
           <button
