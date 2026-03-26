@@ -52,9 +52,11 @@ type PersistedTryOnState = {
 
 function loadPersistedTryOnState(): PersistedTryOnState {
   try {
-    const raw = sessionStorage.getItem(TRYON_STATE_KEY);
-    const parsed = raw ? JSON.parse(raw) : {};
-    // Prefer localStorage result URL (small string, survives tab close)
+    // Try localStorage first (survives tab close), then sessionStorage as fallback
+    const lsRaw = localStorage.getItem(TRYON_STATE_KEY);
+    const ssRaw = sessionStorage.getItem(TRYON_STATE_KEY);
+    const parsed = { ...(lsRaw ? JSON.parse(lsRaw) : {}), ...(ssRaw ? JSON.parse(ssRaw) : {}) };
+    // Prefer dedicated localStorage keys for result/user photo
     const savedResultUrl = localStorage.getItem(TRYON_RESULT_KEY);
     const savedUserPhoto = localStorage.getItem(TRYON_USER_PHOTO_KEY);
     return {
