@@ -190,15 +190,36 @@ const Community = () => {
               onSortChange={setShopSort}
               onClearAll={() => { setShopBrand(null); setShopGenre(null); setShopRetailer(null); setShopGender('all'); setShopCategory('all'); setShopSort('default'); }}
             />
-            <CategoryProductGrid
-              category={shopCategory}
-              collapsed={false}
-              maxItems={50}
-              gender={shopGender === 'all' ? undefined : shopGender}
-              brand={shopBrand || undefined}
-              genre={shopGenre}
-              onSelectProduct={(product) => navigateToTryOn(navigate, { productUrl: product.product_url || undefined, fallbackClothingImageUrl: product.image_url, source: 'style_check_shop' })}
-            />
+            <div className="space-y-2">
+              {shopCategory === 'all' ? (
+                ALL_PRODUCT_CATEGORIES.map(cat => (
+                  <CategoryProductGrid
+                    key={cat.key}
+                    category={cat.key}
+                    title={cat.label}
+                    collapsed={true}
+                    maxItems={100}
+                    gender={shopGender === 'all' ? undefined : shopGender}
+                    brand={shopBrand || undefined}
+                    genre={shopGenre}
+                    retailer={shopRetailer || undefined}
+                    onSelectProduct={(product) => navigateToTryOn(navigate, { productUrl: product.product_url || undefined, fallbackClothingImageUrl: product.image_url, source: 'style_check_shop' })}
+                  />
+                ))
+              ) : (
+                <CategoryProductGrid
+                  category={shopCategory}
+                  title={shopCategory.charAt(0).toUpperCase() + shopCategory.slice(1)}
+                  collapsed={false}
+                  maxItems={100}
+                  gender={shopGender === 'all' ? undefined : shopGender}
+                  brand={shopBrand || undefined}
+                  genre={shopGenre}
+                  retailer={shopRetailer || undefined}
+                  onSelectProduct={(product) => navigateToTryOn(navigate, { productUrl: product.product_url || undefined, fallbackClothingImageUrl: product.image_url, source: 'style_check_shop' })}
+                />
+              )}
+            </div>
           </>
         ) : (
           <CommunityFeedGrid
