@@ -3,19 +3,32 @@ import { useEffect, useState } from 'react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Sparkles, ShoppingCart } from 'lucide-react';
-import { PostDetailSheet } from '@/components/community/PostDetailSheet';
+import { ArrowLeft, Sparkles, ShoppingCart, Link2, Check, Share2 } from 'lucide-react';
 import { navigateToTryOn } from '@/lib/tryonNavigate';
 import { useCart } from '@/hooks/useCart';
+import { useToast } from '@/hooks/use-toast';
+import { trackEvent } from '@/lib/analytics';
 import BottomTabBar from '@/components/BottomTabBar';
 
 const StyleCheckDetail = () => {
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
-  usePageMeta({ title: 'Style Check' });
+  const { toast } = useToast();
   const [post, setPost] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
   const { addToCart, removeFromCart, isInCart } = useCart();
+
+  // Dynamic OG meta — set once post loads
+  const ogImageUrl = post?.result_photo_url || '';
+  const ogTitle = post ? `${post.profile?.display_name || 'DripFit User'} — Style Check` : 'Style Check';
+  const ogDesc = post?.caption || 'Check out this virtual try-on on DripFitCheck!';
+
+  usePageMeta({
+    title: ogTitle,
+    description: ogDesc,
+    ogImage: ogImageUrl,
+  });
 
   useEffect(() => {
     if (!postId) return;
@@ -37,6 +50,31 @@ const StyleCheckDetail = () => {
       setLoading(false);
     })();
   }, [postId]);
+
+  const handleCopyLink = async () => {
+    const url = `${window.location.origin}/style-check/${postId}`;
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    trackEvent('share_post_link_copied', { postId });
+    toast({ title: 'Link copied!' });
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShare = async () => {
+    const url = `${window.location.origin}/style-check/${postId}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: ogTitle,
+          text: ogDesc,
+          url,
+        });
+        trackEvent('style_check_share', { postId: postId! });
+      } else {
+        handleCopyLink();
+      }
+    } catch { /* cancelled */ }
+  };
 
   if (loading) {
     return (
@@ -68,7 +106,13 @@ const StyleCheckDetail = () => {
           <Button variant="ghost" size="icon" onClick={() => navigate('/style-check')} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back">
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-base font-bold text-foreground">Style Check</h1>
+          <h1 className="text-base font-bold text-foreground flex-1">Style Check</h1>
+          <Button variant="ghost" size="icon" onClick={handleCopyLink} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Copy link">
+            {copied ? <Check className="h-4 w-4 text-green-500" /> : <Link2 className="h-4 w-4" />}
+          </Button>
+          <Button variant="ghost" size="icon" onClick={handleShare} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Share">
+            <Share2 className="h-4 w-4" />
+          </Button>
         </div>
 
         {/* Full post display */}
