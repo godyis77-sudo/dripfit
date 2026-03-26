@@ -542,21 +542,37 @@ export function useCanvasCompositor() {
       // Dynamic shadow based on lighting direction
       const lrDiff = lighting.leftBright - lighting.rightBright;
       const tbDiff = lighting.topBright - lighting.bottomBright;
-      const shadowOffsetX = Math.round((-lrDiff / 255) * 30);
-      const shadowOffsetY = Math.max(8, Math.round((tbDiff / 255) * 25 + 15));
-      const shadowAlpha = Math.min(0.4, 0.15 + (lighting.brightness / 255) * 0.2);
+      const shadowOffsetX = Math.round((-lrDiff / 255) * 25);
+      const shadowOffsetY = Math.max(6, Math.round((tbDiff / 255) * 20 + 12));
+      const shadowAlpha = Math.min(0.35, 0.12 + (lighting.brightness / 255) * 0.18);
+      const shR = Math.round(lighting.floorR * 0.3);
+      const shG = Math.round(lighting.floorG * 0.3);
+      const shB = Math.round(lighting.floorB * 0.3);
+
+      // Ambient occlusion
+      ctx.save();
+      const aoY = subY + subH;
+      const aoCX = subX + subW / 2;
+      ctx.beginPath();
+      ctx.ellipse(aoCX, aoY + 2, subW * 0.4, subH * 0.025 * 3, 0, 0, Math.PI * 2);
+      const aoGrad = ctx.createRadialGradient(aoCX, aoY + 2, 0, aoCX, aoY + 2, subW * 0.4);
+      aoGrad.addColorStop(0, `rgba(${shR},${shG},${shB},${shadowAlpha * 0.3})`);
+      aoGrad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = aoGrad;
+      ctx.fill();
+      ctx.restore();
 
       // Ground contact shadow
       ctx.save();
       const footY = subY + subH;
-      const footCenterX = subX + subW / 2 + shadowOffsetX * 0.5;
-      const ellipseW = subW * 0.6;
-      const ellipseH = subH * 0.04;
+      const footCenterX = subX + subW / 2 + shadowOffsetX * 0.4;
+      const ellipseW = subW * 0.5;
+      const ellipseH = subH * 0.03;
       ctx.beginPath();
       ctx.ellipse(footCenterX, footY, ellipseW / 2, ellipseH, 0, 0, Math.PI * 2);
       const contactGrad = ctx.createRadialGradient(footCenterX, footY, 0, footCenterX, footY, ellipseW / 2);
-      contactGrad.addColorStop(0, `rgba(0,0,0,${shadowAlpha * 0.8})`);
-      contactGrad.addColorStop(0.6, `rgba(0,0,0,${shadowAlpha * 0.3})`);
+      contactGrad.addColorStop(0, `rgba(${shR},${shG},${shB},${shadowAlpha * 0.9})`);
+      contactGrad.addColorStop(0.5, `rgba(${shR},${shG},${shB},${shadowAlpha * 0.35})`);
       contactGrad.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = contactGrad;
       ctx.fill();
@@ -564,9 +580,9 @@ export function useCanvasCompositor() {
 
       // Directional drop shadow
       ctx.save();
-      ctx.filter = `blur(${Math.round(12 + shadowOffsetY * 0.4)}px)`;
-      ctx.globalAlpha = shadowAlpha * 0.5;
-      ctx.drawImage(subjectImg, subX + shadowOffsetX, subY + shadowOffsetY, subW, subH);
+      ctx.filter = `blur(${Math.round(14 + shadowOffsetY * 0.4)}px)`;
+      ctx.globalAlpha = shadowAlpha * 0.45;
+      ctx.drawImage(subjectImg, subX + shadowOffsetX, subY + shadowOffsetY * 0.8, subW, subH);
       ctx.restore();
 
       // Subject
@@ -574,6 +590,31 @@ export function useCanvasCompositor() {
 
       // Apply lighting harmonization
       applyLightingMatch(ctx, subX, subY, subW, subH, lighting);
+
+      // Specular highlight on light-facing edge
+      ctx.save();
+      ctx.globalCompositeOperation = 'source-atop';
+      const specSide = lrDiff > 0 ? 'left' : 'right';
+      const specX = specSide === 'left' ? subX : subX + subW * 0.85;
+      const specW = subW * 0.15;
+      const specGrad = ctx.createLinearGradient(
+        specSide === 'left' ? specX : specX + specW, subY,
+        specSide === 'left' ? specX + specW : specX, subY
+      );
+      specGrad.addColorStop(0, 'rgba(255,255,255,0.12)');
+      specGrad.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.globalAlpha = Math.min(0.10, Math.abs(lrDiff) / 400 + 0.02);
+      ctx.fillStyle = specGrad;
+      ctx.fillRect(specX, subY, specW, subH * 0.4);
+      if (tbDiff > 20) {
+        const topGrad = ctx.createLinearGradient(subX, subY, subX, subY + subH * 0.08);
+        topGrad.addColorStop(0, 'rgba(255,255,255,0.10)');
+        topGrad.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.globalAlpha = Math.min(0.08, tbDiff / 600);
+        ctx.fillStyle = topGrad;
+        ctx.fillRect(subX, subY, subW, subH * 0.08);
+      }
+      ctx.restore();
     } catch {
       // Subject not ready yet
     }
