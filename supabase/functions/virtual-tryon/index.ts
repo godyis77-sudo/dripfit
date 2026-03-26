@@ -567,7 +567,7 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       if (isSetGarmentStd) {
         swapInstruction = `1. Image B shows a COMPLETE MATCHING SET or loungewear/sleepwear outfit (typically a top AND bottom together). Replace ALL clothing from Image A with the ENTIRE outfit shown in Image B — BOTH the top AND bottom pieces.
 2. Do NOT apply only part of the set. If Image B shows a person wearing a matching top and matching bottom, the output MUST show BOTH pieces on the model.
-3. Keep the person's EXISTING footwear from Image A UNCHANGED.
+3. REMOVE all footwear/shoes from Image A — the model should be BAREFOOT. Loungewear and sleepwear are worn without shoes.
 4. Match every detail from Image B: color, pattern, print, fabric texture, fit, and styling of BOTH pieces.`;
       } else if (isBottomGarment) {
         swapInstruction = `1. Replace ONLY the lower-body clothing (pants, jeans, shorts, skirt, etc.) from Image A with the garment from Image B.
