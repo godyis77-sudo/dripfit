@@ -1619,6 +1619,15 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      get_fit_recommended_products: {
+        Args: { p_limit?: number; p_user_id: string }
+        Returns: {
+          category: string
+          clothing_photo_url: string
+          engagement_count: number
+          product_url: string
+        }[]
+      }
       get_public_profile_by_name: {
         Args: { p_display_name: string }
         Returns: {
@@ -1650,6 +1659,21 @@ export type Database = {
         }
         Returns: {
           match_score: number
+          user_id: string
+        }[]
+      }
+      get_trending_posts: {
+        Args: { p_hours_window?: number; p_limit?: number; p_offset?: number }
+        Returns: {
+          caption: string
+          clothing_category: string
+          clothing_photo_url: string
+          created_at: string
+          id: string
+          is_public: boolean
+          product_urls: string[]
+          result_photo_url: string
+          trending_score: number
           user_id: string
         }[]
       }
