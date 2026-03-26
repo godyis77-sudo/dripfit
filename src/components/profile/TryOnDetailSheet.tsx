@@ -378,7 +378,6 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
                 setShowCaptionForPost(true);
                 setCaptionDraft(post.caption || '');
                 setEditingCaption(true);
-                return;
               }
               handleToggleCommunity();
             }}
