@@ -50,6 +50,7 @@ const TryOn = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [sort, setSort] = useState<SortKey>('default');
   const [genreOpen, setGenreOpen] = useState(false);
+  const [retailerOpen, setRetailerOpen] = useState(false);
   const [fitOpen, setFitOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [genderFilter, setGenderFilter] = useState<'all' | 'mens' | 'womens'>(
