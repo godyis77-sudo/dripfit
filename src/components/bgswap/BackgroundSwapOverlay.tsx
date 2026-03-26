@@ -81,9 +81,10 @@ function setCachedSubject(sourceUrl: string, dataUrl: string) {
   } catch { /* quota */ }
 }
 
-const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverlayProps) => {
+const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl, clothingCategory, onClose }: BackgroundSwapOverlayProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { removeBackground, removing, progress } = useBackgroundRemoval();
   const { composite, compositePreview } = useCanvasCompositor();
