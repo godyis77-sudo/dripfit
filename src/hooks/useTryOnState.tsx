@@ -561,6 +561,8 @@ export function useTryOnState() {
     setDescription(null);
     setLookItems([]);
     setLayerHistory([]);
+    setSavedToItems(false);
+    setShared(false);
     trackEvent('tryon_started', { tier: user ? 'authenticated' : 'guest' });
 
     try {
@@ -765,6 +767,7 @@ export function useTryOnState() {
       if (payload.resultImage) {
         setLayerHistory(prev => [...prev, resultImage!]);
         setResultImage(payload.resultImage);
+        setSavedToItems(false);
         window.scrollTo({ top: 0, behavior: 'smooth' });
         trackEvent('tryon_accessory_generated', { category: accessoryCategory });
         toast({ title: `${accessoryCategory || 'Accessory'} added!`, description: 'Keep adding items or finish your look.' });
@@ -890,6 +893,7 @@ export function useTryOnState() {
       }
 
       trackEvent('saved_item_added', { source: 'tryon_wardrobe', category });
+      queryClient.invalidateQueries({ queryKey: ['wardrobe', user.id] });
       toast({
         title: '✓ Saved to Wardrobe', description: 'View in your wardrobe anytime.',
         action: <button onClick={() => navigate('/profile', { state: { tab: 'wardrobe' } })} className="text-[11px] font-bold text-primary underline" aria-label="View your wardrobe">View Wardrobe</button>,
