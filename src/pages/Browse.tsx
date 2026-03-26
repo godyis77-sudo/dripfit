@@ -471,69 +471,43 @@ const Browse = () => {
         )}
       </AnimatePresence>
 
-      {/* Product grid */}
-      <div className="px-4 py-4">
-        {loading && products.length === 0 ? (
-          <div className="grid grid-cols-2 gap-3">
-            {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="aspect-[3/4] rounded-xl skeleton-gold" />
-            ))}
-          </div>
-        ) : displayed.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground text-sm">No items found</p>
-            {brandFilter && (
-              <button
-                onClick={() => { setBrandFilter(null); }}
-                className="text-primary text-[11px] font-semibold mt-2"
-              >
-                Clear filters
-              </button>
-            )}
-          </div>
+      {/* Product grid — broken down by category */}
+      <div className="px-4 py-4 space-y-2">
+        {category === 'all' && !categoryFilter ? (
+          ALL_PRODUCT_CATEGORIES.map(cat => (
+            <CategoryProductGrid
+              key={cat.key}
+              category={cat.key}
+              title={cat.label}
+              collapsed={true}
+              maxItems={100}
+              gender={effectiveGender}
+              brand={brandFilter || undefined}
+              genre={genreFilter}
+              retailer={retailerFilter || undefined}
+              fitProfile={fitFilter || undefined}
+              onSelectProduct={(product) => {
+                trackEvent('browse_product_preview', { brand: product.brand, category: product.category });
+                setPreviewProduct(product);
+              }}
+            />
+          ))
         ) : (
-          <div className="grid grid-cols-2 gap-3">
-            {displayed.map((product, idx) => (
-              <motion.button
-                key={product.id}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(idx * 0.03, 0.3) }}
-                onClick={() => {
-                  trackEvent('browse_product_preview', { brand: product.brand, category: product.category });
-                  setPreviewProduct(product);
-                }}
-                className="bg-card border border-border rounded-xl overflow-hidden active:scale-[0.97] transition-transform text-left"
-              >
-                <div className="aspect-[3/4] bg-muted relative">
-                  <img
-                    src={product.image_url}
-                    alt={product.name}
-                    className="w-full h-full object-cover object-top"
-                    loading="lazy"
-                    onError={(e) => {
-                      const img = e.currentTarget;
-                      img.style.display = 'none';
-                      const fallback = img.parentElement?.querySelector('.fallback-badge');
-                      if (fallback) (fallback as HTMLElement).style.display = 'flex';
-                    }}
-                  />
-                  <div className="fallback-badge hidden absolute inset-0 items-center justify-center bg-muted">
-                    <span className="text-[10px] text-muted-foreground font-semibold capitalize">{product.brand}</span>
-                  </div>
-                </div>
-                <div className="p-2.5">
-                  <p className="text-[11px] font-bold text-primary uppercase tracking-wider">{product.brand}</p>
-                  <p className="text-[12px] font-semibold text-foreground line-clamp-2 leading-tight mt-0.5">{product.name}</p>
-                  {product.price_cents && (
-                    <p className="text-[12px] font-bold text-primary mt-1">
-                      ${(product.price_cents / 100).toFixed(0)}
-                    </p>
-                  )}
-                </div>
-              </motion.button>
-            ))}
-          </div>
+          <CategoryProductGrid
+            category={categoryFilter || category}
+            title={CATEGORY_LABELS[categoryFilter || category] || (categoryFilter || category).charAt(0).toUpperCase() + (categoryFilter || category).slice(1)}
+            collapsed={false}
+            maxItems={100}
+            gender={effectiveGender}
+            brand={brandFilter || undefined}
+            genre={genreFilter}
+            retailer={retailerFilter || undefined}
+            fitProfile={fitFilter || undefined}
+            onSelectProduct={(product) => {
+              trackEvent('browse_product_preview', { brand: product.brand, category: product.category });
+              setPreviewProduct(product);
+            }}
+          />
         )}
       </div>
 
