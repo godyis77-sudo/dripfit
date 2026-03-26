@@ -431,7 +431,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               className="absolute inset-0 flex items-center justify-center pointer-events-none z-30"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: [0, 1, 1], scale: [0.8, 1.05, 1] }}
-              transition={{ duration: 1.2, delay: 0.8, ease: luxuryEase }}
+              transition={{ duration: 0.6, delay: 0.4, ease: luxuryEase }}
             >
               <div
                 className="px-6 py-3 rounded-xl backdrop-blur-lg"

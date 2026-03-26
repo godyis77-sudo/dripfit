@@ -157,7 +157,7 @@ const Analyze = () => {
         state: { result: scanResult },
         replace: true,
       });
-    }, 2800);
+    }, 1400);
   };
 
   const analyzePhotos = async () => {
