@@ -8,6 +8,9 @@ interface BrandFilterProps {
   gender: string | null; // 'mens' | 'womens' | null
   selectedBrand: string | null;
   onBrandChange: (brand: string | null) => void;
+  selectedBrands?: string[];
+  onBrandsChange?: (brands: string[]) => void;
+  multiSelect?: boolean;
 }
 
 const BrandFilter = ({ gender, selectedBrand, onBrandChange }: BrandFilterProps) => {
