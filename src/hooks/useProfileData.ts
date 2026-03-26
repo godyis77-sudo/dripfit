@@ -34,7 +34,7 @@ export function useTryOnPosts(userId: string | undefined) {
       return data ?? [];
     },
     enabled: !!userId,
-    staleTime: 2 * 60 * 1000,
+    staleTime: 0,
   });
 }
 

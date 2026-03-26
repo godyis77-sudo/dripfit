@@ -254,6 +254,20 @@ export function useTryOnState() {
     persistState({ savedToItems });
   }, [savedToItems, persistState]);
 
+  // Check if current clothing is already saved to wardrobe on mount/product change
+  useEffect(() => {
+    if (!user || !productLink || savedToItems) return;
+    supabase
+      .from('clothing_wardrobe')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('product_link', productLink)
+      .limit(1)
+      .then(({ data }) => {
+        if (data && data.length > 0) setSavedToItems(true);
+      });
+  }, [user, productLink]);
+
   const [hasSavedProfile, setHasSavedProfile] = useState(() => {
     try { return JSON.parse(localStorage.getItem('dripcheck_scans') || '[]').length > 0; } catch { return false; }
   });
@@ -377,11 +391,14 @@ export function useTryOnState() {
     trackEvent('tryon_clothing_uploaded');
   };
 
-  const autoSaveToProfile = async (resultBase64: string) => {
+  const autoSaveToProfile = async (resultBase64: string, capturedUserPhoto?: string, capturedClothingPhoto?: string) => {
+    const uPhoto = capturedUserPhoto || userPhoto;
+    const cPhoto = capturedClothingPhoto || clothingPhoto;
+    if (!uPhoto || !cPhoto) { console.warn('autoSaveToProfile: missing photos'); return; }
     try {
       const [userUrl, clothingUrl, resultUrl] = await Promise.all([
-        uploadBase64ToStorage(userPhoto!, 'user'),
-        uploadBase64ToStorage(clothingPhoto!, 'clothing'),
+        uploadBase64ToStorage(uPhoto, 'user'),
+        uploadBase64ToStorage(cPhoto, 'clothing'),
         uploadBase64ToStorage(resultBase64, 'result'),
       ]);
       const { data: insertedPost, error } = await supabase
@@ -523,7 +540,7 @@ export function useTryOnState() {
         setResultImage(payload.resultImage);
         setShowSuccessOverlay(true);
         setTimeout(() => setShowSuccessOverlay(false), 1500);
-        if (user) autoSaveToProfile(payload.resultImage);
+        if (user) autoSaveToProfile(payload.resultImage, preparedUserPhoto, preparedClothingPhoto);
       } else {
         restorePreviousState();
         const fallbackMsg = payload.description || 'The AI could not generate this try-on. Try different photos — well-lit, full body shots work best.';
