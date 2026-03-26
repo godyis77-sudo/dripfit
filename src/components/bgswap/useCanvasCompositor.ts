@@ -348,11 +348,34 @@ export function useCanvasCompositor() {
     const subX = (width - subW) / 2 + offsetX * (width * 0.4);
     const subY = groundY - subH + offsetY * (height * 0.4);
 
-    // Soft shadow beneath subject
+    // Dynamic shadow based on lighting direction
+    const lrDiff = lighting.leftBright - lighting.rightBright;
+    const tbDiff = lighting.topBright - lighting.bottomBright;
+    const shadowOffsetX = Math.round((-lrDiff / 255) * 30); // light from left → shadow goes right
+    const shadowOffsetY = Math.max(8, Math.round((tbDiff / 255) * 25 + 15)); // overhead light → longer shadow below
+    const shadowAlpha = Math.min(0.4, 0.15 + (lighting.brightness / 255) * 0.2);
+
+    // Ground contact shadow (ellipse at feet)
     ctx.save();
-    ctx.filter = 'blur(20px)';
-    ctx.globalAlpha = 0.25;
-    ctx.drawImage(subjectImg, subX + 10, subY + 20, subW, subH);
+    const footY = subY + subH;
+    const footCenterX = subX + subW / 2 + shadowOffsetX * 0.5;
+    const ellipseW = subW * 0.6;
+    const ellipseH = subH * 0.04;
+    ctx.beginPath();
+    ctx.ellipse(footCenterX, footY, ellipseW / 2, ellipseH, 0, 0, Math.PI * 2);
+    const contactGrad = ctx.createRadialGradient(footCenterX, footY, 0, footCenterX, footY, ellipseW / 2);
+    contactGrad.addColorStop(0, `rgba(0,0,0,${shadowAlpha * 0.8})`);
+    contactGrad.addColorStop(0.6, `rgba(0,0,0,${shadowAlpha * 0.3})`);
+    contactGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = contactGrad;
+    ctx.fill();
+    ctx.restore();
+
+    // Directional drop shadow (blurred, offset copy)
+    ctx.save();
+    ctx.filter = `blur(${Math.round(18 + shadowOffsetY * 0.5)}px)`;
+    ctx.globalAlpha = shadowAlpha * 0.6;
+    ctx.drawImage(subjectImg, subX + shadowOffsetX, subY + shadowOffsetY, subW, subH);
     ctx.restore();
 
     // Draw actual subject
@@ -413,11 +436,34 @@ export function useCanvasCompositor() {
       const subX = (width - subW) / 2 + offsetX * (width * 0.4);
       const subY = groundY - subH + offsetY * (height * 0.4);
 
-      // Shadow
+      // Dynamic shadow based on lighting direction
+      const lrDiff = lighting.leftBright - lighting.rightBright;
+      const tbDiff = lighting.topBright - lighting.bottomBright;
+      const shadowOffsetX = Math.round((-lrDiff / 255) * 30);
+      const shadowOffsetY = Math.max(8, Math.round((tbDiff / 255) * 25 + 15));
+      const shadowAlpha = Math.min(0.4, 0.15 + (lighting.brightness / 255) * 0.2);
+
+      // Ground contact shadow
       ctx.save();
-      ctx.filter = 'blur(12px)';
-      ctx.globalAlpha = 0.2;
-      ctx.drawImage(subjectImg, subX + 5, subY + 10, subW, subH);
+      const footY = subY + subH;
+      const footCenterX = subX + subW / 2 + shadowOffsetX * 0.5;
+      const ellipseW = subW * 0.6;
+      const ellipseH = subH * 0.04;
+      ctx.beginPath();
+      ctx.ellipse(footCenterX, footY, ellipseW / 2, ellipseH, 0, 0, Math.PI * 2);
+      const contactGrad = ctx.createRadialGradient(footCenterX, footY, 0, footCenterX, footY, ellipseW / 2);
+      contactGrad.addColorStop(0, `rgba(0,0,0,${shadowAlpha * 0.8})`);
+      contactGrad.addColorStop(0.6, `rgba(0,0,0,${shadowAlpha * 0.3})`);
+      contactGrad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = contactGrad;
+      ctx.fill();
+      ctx.restore();
+
+      // Directional drop shadow
+      ctx.save();
+      ctx.filter = `blur(${Math.round(12 + shadowOffsetY * 0.4)}px)`;
+      ctx.globalAlpha = shadowAlpha * 0.5;
+      ctx.drawImage(subjectImg, subX + shadowOffsetX, subY + shadowOffsetY, subW, subH);
       ctx.restore();
 
       // Subject
