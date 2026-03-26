@@ -797,12 +797,9 @@ export function useTryOnState() {
       const normalizedAccCat = (resolvedCategory || '').toLowerCase();
       const shouldReplace = REPLACE_CATEGORIES.includes(normalizedAccCat);
 
-      // For intimate/swimwear categories, use the ORIGINAL user photo to avoid safety blocks
-      const INTIMATE_REPLACE_CATEGORIES = [
-        'underwear', 'lingerie', 'bralette', 'bra', 'sports bra',
-        'swimwear', 'swimsuit', 'swimware', 'bikini', 'bikini-top', 'bikini-bottom', 'one-piece', 'one piece',
-      ];
-      const useOriginalPhoto = INTIMATE_REPLACE_CATEGORIES.includes(normalizedAccCat) && userPhoto;
+      // For replace categories, use the ORIGINAL user photo to avoid safety blocks
+      // (sending a result image of someone already dressed triggers AI refusals)
+      const useOriginalPhoto = shouldReplace && userPhoto;
       let basePhoto = preparedResultImage;
       if (useOriginalPhoto) {
         basePhoto = await prepareTryOnImage(userPhoto);
