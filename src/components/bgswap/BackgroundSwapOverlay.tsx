@@ -296,7 +296,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
     }
   }, [transparentSubject, user, selectedBgUrl, selectedBgColor, selectedBgId, composite, toast]);
 
-  // Lock body scroll
+  // Lock body scroll — prevent background page from scrolling
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -310,7 +310,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] bg-[hsl(var(--background))] flex flex-col overflow-y-auto"
+      className="fixed inset-0 z-[100] bg-[hsl(var(--background))] flex flex-col overflow-hidden"
     >
       {/* Close button */}
       <button
