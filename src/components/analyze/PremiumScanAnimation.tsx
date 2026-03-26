@@ -336,7 +336,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
                 transform: 'translateY(-50%)',
               }}
               animate={{ opacity: [0.6, 1, 0.6] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              transition={{ duration: 1, repeat: Infinity }}
             />
             <div
               className="backdrop-blur-md rounded-md px-2 py-1"
