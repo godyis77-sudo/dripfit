@@ -190,7 +190,7 @@ const Community = () => {
               onClearAll={() => { setShopBrand(null); setShopGenre(null); setShopRetailer(null); setShopGender('all'); setShopCategory('all'); setShopSort('default'); }}
             />
             <CategoryProductGrid
-              category={shopCategory === 'all' ? undefined as any : shopCategory}
+              category={shopCategory}
               collapsed={false}
               maxItems={50}
               gender={shopGender === 'all' ? undefined : shopGender}

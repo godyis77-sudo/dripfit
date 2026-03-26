@@ -115,7 +115,7 @@ export function useProductCatalog(
         .order('id', { ascending: true })
         .limit(500);
 
-      if (category) {
+      if (category && category !== 'all') {
         const mapped = CATEGORY_MAP[category];
         if (mapped && mapped.length > 0) {
           query = query.in('category', mapped);
