@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Share2, Save, Loader2, Search, Crown, Maximize2, ZoomIn, ZoomOut, Move } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -12,6 +12,9 @@ import { useCanvasCompositor } from './useCanvasCompositor';
 
 interface BackgroundSwapOverlayProps {
   resultImageUrl: string;
+  userPhotoUrl?: string;
+  clothingPhotoUrl?: string;
+  clothingCategory?: string;
   onClose: () => void;
 }
 
@@ -78,9 +81,10 @@ function setCachedSubject(sourceUrl: string, dataUrl: string) {
   } catch { /* quota */ }
 }
 
-const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverlayProps) => {
+const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl, clothingCategory, onClose }: BackgroundSwapOverlayProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { removeBackground, removing, progress } = useBackgroundRemoval();
   const { composite, compositePreview } = useCanvasCompositor();
@@ -302,8 +306,22 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         background_source: selectedBgUrl ? 'search' : 'solid',
         storage_path: path,
       });
+
+      // Also auto-save to tryon_posts so it appears in Profile → Try-Ons
+      const compositePublicUrl = supabase.storage.from('tryon-composites').getPublicUrl(path).data.publicUrl;
+      const fallbackPhoto = resultImageUrl.startsWith('data:') ? resultImageUrl : compositePublicUrl;
+      await supabase.from('tryon_posts').insert({
+        user_id: user.id,
+        user_photo_url: userPhotoUrl || fallbackPhoto,
+        clothing_photo_url: clothingPhotoUrl || fallbackPhoto,
+        result_photo_url: compositePublicUrl,
+        clothing_category: clothingCategory || 'clothing',
+        is_public: false,
+      });
+      queryClient.invalidateQueries({ queryKey: ['tryon-posts', user.id] });
+
       trackEvent('bg_composite_saved');
-      toast({ title: 'Saved!', description: 'Composite saved to your gallery.' });
+      toast({ title: 'Saved!', description: 'Composite saved to your gallery & try-ons.' });
     } catch (err) {
       console.error('Save failed:', err);
       toast({ title: 'Save failed', variant: 'destructive' });
