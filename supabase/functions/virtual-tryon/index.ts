@@ -557,10 +557,9 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
 3. Keep the person's EXISTING inner clothing (shirt, top, sweater) from Image A visible underneath where appropriate.
 4. Keep the person's EXISTING lower-body clothing and footwear from Image A completely UNCHANGED.`;
       } else if (isFullBodyGarment) {
-        swapInstruction = `1. REPLACE ALL clothing from Image A with the full-body garment (dress, jumpsuit, romper, etc.) from Image B.
-2. REMOVE all previous clothing — including pants, jeans, trousers, shorts, skirts, tops, shirts, and any layered items. The person should wear ONLY the garment from Image B.
-3. No part of the old outfit should be visible underneath or alongside the new garment.
-4. Keep the person's EXISTING footwear from Image A UNCHANGED unless the garment from Image B includes footwear.`;
+        swapInstruction = `1. Put the dress/jumpsuit/romper from Image B onto the person in Image A.
+2. REMOVE any pants, jeans, trousers, or shorts visible in Image A so they don't show beneath the new garment.
+3. Keep the person's EXISTING footwear from Image A UNCHANGED unless the garment from Image B includes footwear.`;
       } else if (isTopGarment) {
         swapInstruction = `1. Replace ONLY the upper-body clothing (shirt, top, sweater, etc.) from Image A with the garment from Image B.
 2. Keep the person's EXISTING lower-body clothing (pants, jeans, skirt, etc.) from Image A completely UNCHANGED.
@@ -617,7 +616,7 @@ Professional retail catalog quality. No text/watermark.`
           const fbOuterwear = ["jacket","coat","blazer","vest","parka","outerwear"].some(t => hasContextTerm(fbContext, t));
           const fbFullBody = ["dress","dresses","jumpsuit","jumpsuits","romper","overalls","full"].some(t => hasContextTerm(fbContext, t));
           const scopeHint = fbFullBody
-            ? "REPLACE ALL clothing — remove pants, jeans, tops, shirts, everything. The person should wear ONLY the dress/jumpsuit/romper from Image B. No old clothing should be visible."
+            ? "Put the dress/jumpsuit/romper from Image B onto the person. Remove any pants/jeans/trousers visible so they don't show beneath the new garment. Keep existing footwear."
             : fbBottom
             ? "Replace ONLY the lower-body clothing (pants/jeans/shorts/skirt). Keep the existing top, shirt, and shoes from Image A UNCHANGED."
             : fbOuterwear
