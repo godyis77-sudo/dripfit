@@ -504,12 +504,13 @@ Output: A single photorealistic FULL-BODY image showing the person head to feet.
 
 IMAGES PROVIDED:
 - Image A (first image below): A person — preserve their face, body, pose EXACTLY.
-- Image B (second image below): The isolated target accessory — replicate this EXACT item.
+- Image B (second image below): The target accessory reference.
 
 TARGET ACCESSORY:
 - The accessory shown in Image B.${productHint}
+- IMPORTANT: If Image B shows a full-body photo of a person, use the product name above to identify ONLY the specific accessory and ignore all other clothing.
 
-TASK: Add the accessory from Image B onto the person in Image A. Match Image B exactly (color, shape, material, branding). ${bgInstruction} Correct scale, lighting, shadows. No text/watermarks.`;
+TASK: Add the accessory from Image B onto the person in Image A. Match the target item exactly (color, shape, material, branding). ${bgInstruction} Correct scale, lighting, shadows. No text/watermarks.`;
     } else if (isIntimateGarment) {
       const intimateReferenceLine = `IMAGE B: An activewear/athletic product listing photo from an online retailer.${intimateTextReference ? `\nHint: ${intimateTextReference}` : ""}`;
 
