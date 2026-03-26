@@ -25,6 +25,30 @@ import DripCard from '@/components/results/DripCard';
 import ProductPreviewModal, { type ProductPreviewData } from '@/components/ui/ProductPreviewModal';
 import { useCart } from '@/hooks/useCart';
 import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
+import { Share2, Link2, MessageCircle } from 'lucide-react';
+import { useToast as useToastHook } from '@/hooks/use-toast';
+
+/** Inline share nudge shown in the success overlay */
+function ShareNudgeInline({ resultImage, caption, onShareStory }: { resultImage: string; caption: string; onShareStory: () => void }) {
+  const { toast } = useToastHook();
+  const shareUrl = `${window.location.origin}/style-check`;
+  const handleCopy = async () => { await navigator.clipboard.writeText(shareUrl); toast({ title: 'Link copied!' }); trackEvent('share_nudge_copy_link', {}); };
+  const handleShare = async () => {
+    trackEvent('share_nudge_native', {});
+    try { if (navigator.share) { await navigator.share({ title: 'Check my fit on DripFit', text: caption || 'Check out this try-on!', url: shareUrl }); } else { handleCopy(); } } catch {}
+  };
+  const handleWhatsApp = () => { trackEvent('share_nudge_whatsapp', {}); window.open(`https://wa.me/?text=${encodeURIComponent(`${caption || 'Check out my fit!'} ${shareUrl}`)}`, '_blank', 'noopener'); };
+  return (
+    <div className="bg-card border border-border rounded-xl p-3">
+      <p className="text-sm font-bold text-foreground mb-2 text-center">Share this look? 🔥</p>
+      <div className="flex gap-2">
+        <Button variant="outline" size="sm" onClick={handleCopy} className="flex-1 h-9 rounded-lg text-[11px] font-semibold gap-1.5"><Link2 className="h-3.5 w-3.5" /> Copy</Button>
+        <Button variant="outline" size="sm" onClick={handleWhatsApp} className="h-9 rounded-lg text-[11px] font-semibold gap-1.5 px-3"><MessageCircle className="h-3.5 w-3.5" /></Button>
+        <Button size="sm" onClick={handleShare} className="h-9 rounded-lg text-[11px] font-bold gap-1.5 btn-luxury text-primary-foreground px-3"><Share2 className="h-3.5 w-3.5" /> Share</Button>
+      </div>
+    </div>
+  );
+}
 
 interface LookItem {
   brand: string;
