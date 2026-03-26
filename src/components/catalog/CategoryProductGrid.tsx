@@ -37,8 +37,10 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
   priceFilter,
   gender,
   brand,
+  brands,
   genre,
   retailer,
+  retailers,
   fitProfile,
 }, ref) => {
   const navigate = useNavigate();
