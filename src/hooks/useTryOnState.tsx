@@ -237,8 +237,10 @@ export function useTryOnState() {
   }, [persistState]);
   const [layerHistory, setLayerHistory] = useState<string[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [selectedRetailer, setSelectedRetailer] = useState<string | null>(null);
+  const [selectedRetailers, setSelectedRetailers] = useState<string[]>([]);
   const [selectedFit, setSelectedFit] = useState<string | null>(null);
   const [tryOnError, setTryOnError] = useState<string | null>(null);
   const [addingAccessory, setAddingAccessory] = useState(false);
@@ -974,7 +976,7 @@ export function useTryOnState() {
     caption, setCaption, isPublic, setIsPublic, shared, showPostUI, setShowPostUI,
     // Product
     productLink, setProductLink, lookItems, setLookItems, category, setCategory,
-    selectedQuickPick, selectedBrand, setSelectedBrand, selectedGenre, setSelectedGenre, selectedRetailer, setSelectedRetailer, selectedFit, setSelectedFit,
+    selectedQuickPick, selectedBrand, setSelectedBrand, selectedBrands, setSelectedBrands, selectedGenre, setSelectedGenre, selectedRetailer, setSelectedRetailer, selectedRetailers, setSelectedRetailers, selectedFit, setSelectedFit,
     // Wardrobe
     clothingSaved, wardrobeItems, showWardrobe, setShowWardrobe,
     // Background source

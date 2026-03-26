@@ -78,7 +78,9 @@ const Browse = () => {
   // search state removed — brand filter handled by BrandFilter component
   const [sort, setSort] = useState<SortKey>('default');
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
+  const [brandFilters, setBrandFilters] = useState<string[]>([]);
   const [retailerFilter, setRetailerFilter] = useState<string | null>(null);
+  const [retailerFilters, setRetailerFilters] = useState<string[]>([]);
   const [genreFilter, setGenreFilter] = useState<BrandGenre | null>(null);
   const [fitFilter, setFitFilter] = useState<string | null>(null);
 
@@ -129,11 +131,15 @@ const Browse = () => {
   const displayed = useMemo(() => {
     let result = [...products];
 
-    if (brandFilter) {
+    if (brandFilters.length > 0) {
+      result = result.filter(p => brandFilters.includes(p.brand));
+    } else if (brandFilter) {
       result = result.filter(p => p.brand === brandFilter);
     }
 
-    if (retailerFilter) {
+    if (retailerFilters.length > 0) {
+      result = result.filter(p => retailerFilters.includes(p.retailer));
+    } else if (retailerFilter) {
       result = result.filter(p => p.retailer === retailerFilter);
     }
 
@@ -154,7 +160,7 @@ const Browse = () => {
     }
 
     return result;
-  }, [products, sort, brandFilter, retailerFilter, categoryFilter]);
+  }, [products, sort, brandFilter, brandFilters, retailerFilter, retailerFilters, categoryFilter]);
 
   // Compute available fits from current products (to only show relevant pills)
   const availableFits = useMemo(() => {
@@ -165,7 +171,7 @@ const Browse = () => {
     return FIT_OPTIONS.filter(f => fits.has(f));
   }, [products]);
 
-  const activeFilterCount = (retailerFilter ? 1 : 0) + (genreFilter ? 1 : 0) + (fitFilter ? 1 : 0) + (categoryFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0) + (brandFilter ? 1 : 0);
+  const activeFilterCount = (retailerFilters.length || (retailerFilter ? 1 : 0)) + (genreFilter ? 1 : 0) + (fitFilter ? 1 : 0) + (categoryFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0) + (brandFilters.length || (brandFilter ? 1 : 0));
 
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
@@ -191,6 +197,9 @@ const Browse = () => {
           gender={genderFilter === 'all' ? null : genderFilter}
           selectedBrand={brandFilter}
           onBrandChange={setBrandFilter}
+          selectedBrands={brandFilters}
+          onBrandsChange={setBrandFilters}
+          multiSelect
         />
       </div>
 
@@ -320,7 +329,7 @@ const Browse = () => {
                   className="flex items-center justify-between w-full"
                 >
                   <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
-                    Retailer {retailerFilter ? `· ${retailerFilter}` : ''}
+                    Retailer {retailerFilters.length > 0 ? `· ${retailerFilters.length} selected` : retailerFilter ? `· ${retailerFilter}` : ''}
                   </p>
                   <ChevronDown className={`h-3.5 w-3.5 text-foreground/50 transition-transform ${retailerOpen ? 'rotate-180' : ''}`} />
                 </button>
@@ -334,28 +343,36 @@ const Browse = () => {
                     >
                       <div className="flex flex-wrap gap-1.5 mt-1.5">
                         <button
-                          onClick={() => setRetailerFilter(null)}
+                          onClick={() => { setRetailerFilter(null); setRetailerFilters([]); }}
                           className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
-                            !retailerFilter
+                            !retailerFilter && retailerFilters.length === 0
                               ? 'btn-luxury text-primary-foreground'
                               : 'bg-card border border-primary/30 text-foreground'
                           }`}
                         >
                           All
                         </button>
-                        {availableRetailers.map(retailer => (
-                          <button
-                            key={retailer}
-                            onClick={() => setRetailerFilter(retailer === retailerFilter ? null : retailer)}
-                            className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
-                              retailerFilter === retailer
-                                ? 'btn-luxury text-primary-foreground'
-                                : 'bg-card border border-primary/30 text-foreground'
-                            }`}
-                          >
-                            {retailer}
-                          </button>
-                        ))}
+                        {availableRetailers.map(retailer => {
+                          const isSelected = retailerFilters.includes(retailer);
+                          return (
+                            <button
+                              key={retailer}
+                              onClick={() => {
+                                setRetailerFilter(null);
+                                setRetailerFilters(prev =>
+                                  isSelected ? prev.filter(r => r !== retailer) : [...prev, retailer]
+                                );
+                              }}
+                              className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                                isSelected
+                                  ? 'btn-luxury text-primary-foreground'
+                                  : 'bg-card border border-primary/30 text-foreground'
+                              }`}
+                            >
+                              {retailer}
+                            </button>
+                          );
+                        })}
                       </div>
                     </motion.div>
                   )}
@@ -465,7 +482,7 @@ const Browse = () => {
               {/* Clear filters */}
               {activeFilterCount > 0 && (
                 <button
-                  onClick={() => { setSort('default'); setBrandFilter(null); setRetailerFilter(null); setGenreFilter(null); setFitFilter(null); setCategoryFilter(null); }}
+                  onClick={() => { setSort('default'); setBrandFilter(null); setBrandFilters([]); setRetailerFilter(null); setRetailerFilters([]); setGenreFilter(null); setFitFilter(null); setCategoryFilter(null); }}
                   className="text-[10px] text-primary font-semibold"
                 >
                   Clear all filters
@@ -487,9 +504,11 @@ const Browse = () => {
               collapsed={true}
               maxItems={100}
               gender={effectiveGender}
-              brand={brandFilter || undefined}
+              brand={brandFilters.length > 0 ? undefined : (brandFilter || undefined)}
+              brands={brandFilters.length > 0 ? brandFilters : undefined}
               genre={genreFilter}
-              retailer={retailerFilter || undefined}
+              retailer={retailerFilters.length > 0 ? undefined : (retailerFilter || undefined)}
+              retailers={retailerFilters.length > 0 ? retailerFilters : undefined}
               fitProfile={fitFilter || undefined}
               onSelectProduct={(product) => {
                 trackEvent('browse_product_preview', { brand: product.brand, category: product.category });
@@ -504,9 +523,11 @@ const Browse = () => {
             collapsed={false}
             maxItems={100}
             gender={effectiveGender}
-            brand={brandFilter || undefined}
+            brand={brandFilters.length > 0 ? undefined : (brandFilter || undefined)}
+            brands={brandFilters.length > 0 ? brandFilters : undefined}
             genre={genreFilter}
-            retailer={retailerFilter || undefined}
+            retailer={retailerFilters.length > 0 ? undefined : (retailerFilter || undefined)}
+            retailers={retailerFilters.length > 0 ? retailerFilters : undefined}
             fitProfile={fitFilter || undefined}
             onSelectProduct={(product) => {
               trackEvent('browse_product_preview', { brand: product.brand, category: product.category });

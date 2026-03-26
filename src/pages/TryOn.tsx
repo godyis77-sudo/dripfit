@@ -88,7 +88,7 @@ const TryOn = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const activeFilterCount = (s.selectedBrand ? 1 : 0) + (s.selectedGenre ? 1 : 0) + (s.selectedRetailer ? 1 : 0) + (s.selectedFit ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (s.category !== 'all' ? 1 : 0);
+  const activeFilterCount = (s.selectedBrands.length || (s.selectedBrand ? 1 : 0)) + (s.selectedGenre ? 1 : 0) + (s.selectedRetailers.length || (s.selectedRetailer ? 1 : 0)) + (s.selectedFit ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (s.category !== 'all' ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
@@ -240,10 +240,13 @@ const TryOn = () => {
                         {/* Brand search */}
                         <div>
                           <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Brand</p>
-                          <BrandFilter
+                        <BrandFilter
                             gender={effectiveGender || null}
                             selectedBrand={s.selectedBrand}
                             onBrandChange={s.setSelectedBrand}
+                            selectedBrands={s.selectedBrands}
+                            onBrandsChange={s.setSelectedBrands}
+                            multiSelect
                           />
                         </div>
 
@@ -254,7 +257,7 @@ const TryOn = () => {
                             className="flex items-center justify-between w-full"
                           >
                             <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
-                              Retailer {s.selectedRetailer ? `· ${s.selectedRetailer}` : ''}
+                              Retailer {s.selectedRetailers.length > 0 ? `· ${s.selectedRetailers.length} selected` : s.selectedRetailer ? `· ${s.selectedRetailer}` : ''}
                             </p>
                             <ChevronDown className={`h-3.5 w-3.5 text-foreground/50 transition-transform ${retailerOpen ? 'rotate-180' : ''}`} />
                           </button>
@@ -268,28 +271,36 @@ const TryOn = () => {
                               >
                                 <div className="flex flex-wrap gap-1.5 mt-1.5">
                                   <button
-                                    onClick={() => s.setSelectedRetailer(null)}
+                                    onClick={() => { s.setSelectedRetailer(null); s.setSelectedRetailers([]); }}
                                     className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
-                                      !s.selectedRetailer
+                                      !s.selectedRetailer && s.selectedRetailers.length === 0
                                         ? 'btn-luxury text-primary-foreground'
                                         : 'bg-card border border-primary/30 text-foreground'
                                     }`}
                                   >
                                     All
                                   </button>
-                                  {availableRetailers.map(retailer => (
-                                    <button
-                                      key={retailer}
-                                      onClick={() => s.setSelectedRetailer(retailer === s.selectedRetailer ? null : retailer)}
-                                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
-                                        s.selectedRetailer === retailer
-                                          ? 'btn-luxury text-primary-foreground'
-                                          : 'bg-card border border-primary/30 text-foreground'
-                                      }`}
-                                    >
-                                      {retailer}
-                                    </button>
-                                  ))}
+                                  {availableRetailers.map(retailer => {
+                                    const isSelected = s.selectedRetailers.includes(retailer);
+                                    return (
+                                      <button
+                                        key={retailer}
+                                        onClick={() => {
+                                          s.setSelectedRetailer(null);
+                                          s.setSelectedRetailers(prev =>
+                                            isSelected ? prev.filter(r => r !== retailer) : [...prev, retailer]
+                                          );
+                                        }}
+                                        className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                                          isSelected
+                                            ? 'btn-luxury text-primary-foreground'
+                                            : 'bg-card border border-primary/30 text-foreground'
+                                        }`}
+                                      >
+                                        {retailer}
+                                      </button>
+                                    );
+                                  })}
                                 </div>
                               </motion.div>
                             )}
@@ -389,7 +400,7 @@ const TryOn = () => {
                         {/* Clear filters */}
                         {activeFilterCount > 0 && (
                           <button
-                            onClick={() => { setSort('default'); s.setSelectedBrand(null); s.setSelectedGenre(null); s.setSelectedRetailer(null); s.setSelectedFit(null); s.setCategory('all'); }}
+                            onClick={() => { setSort('default'); s.setSelectedBrand(null); s.setSelectedBrands([]); s.setSelectedGenre(null); s.setSelectedRetailer(null); s.setSelectedRetailers([]); s.setSelectedFit(null); s.setCategory('all'); }}
                             className="text-[10px] text-primary font-semibold"
                           >
                             Clear all filters
@@ -407,10 +418,10 @@ const TryOn = () => {
               <div className="mb-3 space-y-2">
                 {s.category === 'all' ? (
                   ALL_PRODUCT_CATEGORIES.map(cat => (
-                    <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={true} maxItems={100} gender={effectiveGender} brand={s.selectedBrand || undefined} genre={s.selectedGenre as any} retailer={s.selectedRetailer || undefined} fitProfile={s.selectedFit || undefined} onSelectProduct={s.handleSelectProduct} />
+                    <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={true} maxItems={100} gender={effectiveGender} brand={s.selectedBrands.length > 0 ? undefined : (s.selectedBrand || undefined)} brands={s.selectedBrands.length > 0 ? s.selectedBrands : undefined} genre={s.selectedGenre as any} retailer={s.selectedRetailers.length > 0 ? undefined : (s.selectedRetailer || undefined)} retailers={s.selectedRetailers.length > 0 ? s.selectedRetailers : undefined} fitProfile={s.selectedFit || undefined} onSelectProduct={s.handleSelectProduct} />
                   ))
                 ) : (
-                  <CategoryProductGrid category={s.category} title={`Shop ${CATEGORIES.find(c => c.key === s.category)?.label || s.category}`} collapsed={false} maxItems={100} gender={effectiveGender} brand={s.selectedBrand || undefined} genre={s.selectedGenre as any} retailer={s.selectedRetailer || undefined} fitProfile={s.selectedFit || undefined} onSelectProduct={s.handleSelectProduct} />
+                  <CategoryProductGrid category={s.category} title={`Shop ${CATEGORIES.find(c => c.key === s.category)?.label || s.category}`} collapsed={false} maxItems={100} gender={effectiveGender} brand={s.selectedBrands.length > 0 ? undefined : (s.selectedBrand || undefined)} brands={s.selectedBrands.length > 0 ? s.selectedBrands : undefined} genre={s.selectedGenre as any} retailer={s.selectedRetailers.length > 0 ? undefined : (s.selectedRetailer || undefined)} retailers={s.selectedRetailers.length > 0 ? s.selectedRetailers : undefined} fitProfile={s.selectedFit || undefined} onSelectProduct={s.handleSelectProduct} />
                 )}
               </div>
             )}

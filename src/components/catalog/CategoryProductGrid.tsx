@@ -19,8 +19,10 @@ interface CategoryProductGridProps {
   priceFilter?: { min: number; max: number } | null;
   gender?: string;
   brand?: string;
+  brands?: string[];
   genre?: BrandGenre | null;
   retailer?: string;
+  retailers?: string[];
   fitProfile?: string;
 }
 
@@ -35,8 +37,10 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
   priceFilter,
   gender,
   brand,
+  brands,
   genre,
   retailer,
+  retailers,
   fitProfile,
 }, ref) => {
   const navigate = useNavigate();
@@ -56,9 +60,16 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
 
   let visibleProducts = products;
 
-  // Apply retailer filter (still client-side since it's derived from loaded products)
-  if (retailer) {
+  // Apply retailer filter (client-side)
+  if (retailers && retailers.length > 0) {
+    visibleProducts = visibleProducts.filter(p => retailers.includes(p.retailer));
+  } else if (retailer) {
     visibleProducts = visibleProducts.filter(p => p.retailer === retailer);
+  }
+
+  // Apply brand filter (client-side for multi)
+  if (brands && brands.length > 0) {
+    visibleProducts = visibleProducts.filter(p => brands.includes(p.brand));
   }
 
   // Apply price filter
