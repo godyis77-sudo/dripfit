@@ -482,7 +482,7 @@ const Browse = () => {
               {/* Clear filters */}
               {activeFilterCount > 0 && (
                 <button
-                  onClick={() => { setSort('default'); setBrandFilter(null); setRetailerFilter(null); setGenreFilter(null); setFitFilter(null); setCategoryFilter(null); }}
+                  onClick={() => { setSort('default'); setBrandFilter(null); setBrandFilters([]); setRetailerFilter(null); setRetailerFilters([]); setGenreFilter(null); setFitFilter(null); setCategoryFilter(null); }}
                   className="text-[10px] text-primary font-semibold"
                 >
                   Clear all filters
