@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, UserPlus, UserCheck, Trash2 } from 'lucide-react';
+import { X, UserPlus, UserCheck, Trash2, Link2, Share2, Check } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -12,6 +12,7 @@ import WhatsInThisLook from '@/components/community/WhatsInThisLook';
 import type { LookItem } from '@/components/community/WhatsInThisLook';
 import { supabase } from '@/integrations/supabase/client';
 import ImageViewer from './ImageViewer';
+import { trackEvent } from '@/lib/analytics';
 import VotePanel from './VotePanel';
 import CommentsSection from './CommentsSection';
 import type { Comment } from './CommentsSection';
@@ -83,7 +84,17 @@ export const PostDetailSheet = ({
   const [editingQuestion, setEditingQuestion] = useState(false);
   const [questionText, setQuestionText] = useState('');
   const [savingCaption, setSavingCaption] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleCopyPostLink = async () => {
+    if (!post) return;
+    const url = `${window.location.origin}/style-check/${post.id}`;
+    await navigator.clipboard.writeText(url);
+    setLinkCopied(true);
+    trackEvent('share_post_link_copied', { postId: post.id });
+    setTimeout(() => setLinkCopied(false), 2000);
+  };
 
   // Fetch comments when sheet opens
   useEffect(() => {
@@ -203,6 +214,9 @@ export const PostDetailSheet = ({
                 </div>
               </button>
               <div className="flex items-center gap-2">
+                <button onClick={(e) => { e.stopPropagation(); handleCopyPostLink(); }} aria-label="Copy link" className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center active:scale-90 transition-transform">
+                  {linkCopied ? <Check className="h-3.5 w-3.5 text-green-400" /> : <Link2 className="h-3.5 w-3.5 text-white" />}
+                </button>
                 {isOwnPost && !isPlaceholder && onDelete && (
                   <button onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(post.id); }} aria-label="Remove post" className="h-8 px-3 rounded-full bg-destructive/20 text-destructive text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95">
                     <Trash2 className="h-3 w-3" /> Remove

@@ -21,6 +21,8 @@ import CartTab from '@/components/profile/CartTab';
 import AvatarUploadSheet from '@/components/profile/AvatarUploadSheet';
 import { useProfileInfo, useTryOnPosts, useLatestScan, useWardrobe, useFavoriteRetailers } from '@/hooks/useProfileData';
 import { useQueryClient } from '@tanstack/react-query';
+import { InviteFriendsCard } from '@/components/profile/InviteFriendsCard';
+import MilestoneBadges from '@/components/profile/MilestoneBadges';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -245,6 +247,12 @@ const Profile = () => {
             </button>
           ))}
         </div>
+
+        {/* Milestone Badges */}
+        <MilestoneBadges />
+
+        {/* Invite Friends */}
+        <InviteFriendsCard />
 
         <AnimatePresence mode="wait">
           {activeTab === 'tryons' ? (

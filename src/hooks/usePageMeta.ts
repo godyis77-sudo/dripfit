@@ -8,6 +8,7 @@ interface PageMeta {
   title?: string;
   description?: string;
   path?: string;
+  ogImage?: string;
 }
 
 function setMeta(name: string, content: string, attr: 'name' | 'property' = 'name') {
@@ -20,7 +21,7 @@ function setMeta(name: string, content: string, attr: 'name' | 'property' = 'nam
   el.content = content;
 }
 
-export function usePageMeta({ title, description, path }: PageMeta = {}) {
+export function usePageMeta({ title, description, path, ogImage }: PageMeta = {}) {
   useEffect(() => {
     const fullTitle = title ? `${title} — ${BASE_TITLE}` : `${BASE_TITLE} — Your Tailored Size & Style`;
     const desc = description || DEFAULT_DESC;
@@ -31,6 +32,11 @@ export function usePageMeta({ title, description, path }: PageMeta = {}) {
     setMeta('og:description', desc, 'property');
     setMeta('twitter:title', fullTitle, 'name');
     setMeta('twitter:description', desc, 'name');
+
+    if (ogImage) {
+      setMeta('og:image', ogImage, 'property');
+      setMeta('twitter:image', ogImage, 'name');
+    }
 
     if (path) {
       const canonical = `${SITE_URL}${path}`;
@@ -47,5 +53,5 @@ export function usePageMeta({ title, description, path }: PageMeta = {}) {
       setMeta('twitter:title', `${BASE_TITLE} — Your Tailored Size & Style`, 'name');
       setMeta('twitter:description', DEFAULT_DESC, 'name');
     };
-  }, [title, description, path]);
+  }, [title, description, path, ogImage]);
 }
