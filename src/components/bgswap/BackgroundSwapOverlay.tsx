@@ -142,25 +142,6 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   });
 
   const [removalError, setRemovalError] = useState(false);
-  // Convert resultImageUrl to a reliable data URL on mount
-  const [safeResultUrl, setSafeResultUrl] = useState<string>(resultImageUrl);
-  useEffect(() => {
-    // If already a data URL, skip
-    if (resultImageUrl.startsWith('data:')) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const resp = await fetch(resultImageUrl);
-        const blob = await resp.blob();
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          if (!cancelled && reader.result) setSafeResultUrl(reader.result as string);
-        };
-        reader.readAsDataURL(blob);
-      } catch { /* keep original */ }
-    })();
-    return () => { cancelled = true; };
-  }, [resultImageUrl]);
 
   const attemptRemoval = useCallback(async () => {
     setRemovalError(false);
@@ -175,7 +156,21 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
 
     try {
       trackEvent('bg_swap_opened');
-      const url = await removeBackground(safeResultUrl);
+      // Convert to data URL first to avoid CORS issues with canvas
+      let imgSrc = resultImageUrl;
+      if (!resultImageUrl.startsWith('data:') && !resultImageUrl.startsWith('blob:')) {
+        try {
+          const resp = await fetch(resultImageUrl);
+          const blob = await resp.blob();
+          imgSrc = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        } catch { /* use original URL as fallback */ }
+      }
+      const url = await removeBackground(imgSrc);
       setTransparentSubject(url);
       setCachedSubject(resultImageUrl, url);
       // Auto-scroll to background grid after removal
@@ -185,19 +180,12 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       setRemovalError(true);
       toast({ title: 'Background removal failed', description: 'Tap Retry to try again.', variant: 'destructive' });
     }
-  }, [resultImageUrl, safeResultUrl, removeBackground, toast]);
+  }, [resultImageUrl, removeBackground, toast]);
 
-  // Remove background on mount (wait for safeResultUrl to be ready, or use cache)
-  const hasStartedRemoval = useRef(false);
+  // Remove background on mount
   useEffect(() => {
-    if (hasStartedRemoval.current) return;
-    // If there's a cached subject, start immediately
-    const hasCached = !!getCachedSubject(resultImageUrl);
-    const urlReady = safeResultUrl.startsWith('data:') || safeResultUrl.startsWith('blob:') || safeResultUrl.startsWith('http');
-    if (!hasCached && !urlReady) return;
-    hasStartedRemoval.current = true;
     attemptRemoval();
-  }, [safeResultUrl, attemptRemoval, resultImageUrl]);
+  }, []);
 
   // Update preview when subject, background, scale, or position changes
   useEffect(() => {
@@ -308,7 +296,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
     }
   }, [transparentSubject, user, selectedBgUrl, selectedBgColor, selectedBgId, composite, toast]);
 
-  // Lock body scroll
+  // Lock body scroll — prevent background page from scrolling
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -322,7 +310,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] bg-[hsl(var(--background))] flex flex-col overflow-y-auto"
+      className="fixed inset-0 z-[100] bg-[hsl(var(--background))] flex flex-col overflow-hidden"
     >
       {/* Close button */}
       <button
@@ -415,7 +403,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
 
       {/* Preview area — drag to reposition, pinch to scale */}
       <div
-        className="relative flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing group touch-none"
+        className="shrink-0 relative flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing group touch-none"
         style={{ height: 'min(55dvh, 420px)' }}
         onPointerDown={e => {
           if (!transparentSubject) return;
@@ -464,13 +452,19 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
             alt="Original"
             className="max-h-full max-w-full rounded-xl object-contain pointer-events-none"
           />
-        ) : (
+        ) : transparentSubject ? (
           <canvas
             ref={canvasRef}
             width={540}
             height={960}
             className="max-h-full max-w-full rounded-xl object-contain pointer-events-none"
             style={{ imageRendering: 'auto' }}
+          />
+        ) : (
+          <img
+            src={resultImageUrl}
+            alt="Processing"
+            className="max-h-full max-w-full rounded-xl object-contain pointer-events-none opacity-60"
           />
         )}
         {transparentSubject && (
@@ -532,7 +526,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       )}
 
       {/* Background picker */}
-      <div ref={gridPanelRef} className="flex-1 min-h-[280px] flex flex-col bg-card/90 backdrop-blur-xl border-t border-border rounded-t-2xl pb-[max(1rem,env(safe-area-inset-bottom))]">
+      <div ref={gridPanelRef} className="flex-1 min-h-0 flex flex-col bg-card/90 backdrop-blur-xl border-t border-border rounded-t-2xl pb-[max(1rem,env(safe-area-inset-bottom))]">
         {/* Search bar + category tabs */}
         <div className="shrink-0 px-3 pt-2.5 pb-1 flex items-center gap-2">
           <button
