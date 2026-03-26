@@ -185,7 +185,16 @@ type FunnelEvent =
   | 'tryon_drip_card_downloaded'
   | 'tryon_add_item_to_result'
   | 'style_check_share'
-  | 'fit_rec_click';
+  | 'fit_rec_click'
+  | 'share_nudge_copy_link'
+  | 'share_nudge_native'
+  | 'share_nudge_whatsapp'
+  | 'invite_copy_link'
+  | 'invite_native_share'
+  | 'invite_sms'
+  | 'invite_whatsapp'
+  | 'share_story_generated'
+  | 'share_post_link_copied';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
