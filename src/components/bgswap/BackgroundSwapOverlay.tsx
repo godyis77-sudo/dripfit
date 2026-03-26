@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Share2, Save, Loader2, Search, Crown, Maximize2, ZoomIn, ZoomOut, Move } from 'lucide-react';
+import { X, Share2, Save, Loader2, Search, Crown, Maximize2, ZoomIn, ZoomOut, Move, Check } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -112,6 +112,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
   const [activeCategory, setActiveCategory] = useState<string>('street-urban');
   const [showOriginal, setShowOriginal] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [fullscreenPreview, setFullscreenPreview] = useState(false);
   const [subjectScale, setSubjectScale] = useState<number | null>(null);
@@ -228,6 +229,10 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
     if (!transparentSubject || !canvasRef.current) return;
     compositePreview(canvasRef.current, transparentSubject, selectedBgUrl, selectedBgColor, subjectScale, offsetX, offsetY);
   }, [transparentSubject, selectedBgUrl, selectedBgColor, subjectScale, offsetX, offsetY, compositePreview]);
+
+  useEffect(() => {
+    setSaved(false);
+  }, [transparentSubject, selectedBgId, selectedBgUrl, selectedBgColor, subjectScale, offsetX, offsetY]);
 
   const handleSelectBackground = useCallback((bg: BackgroundItem) => {
     if (bg.is_premium && !user) {
@@ -364,6 +369,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
       queryClient.invalidateQueries({ queryKey: ['tryon-posts', user.id] });
 
       trackEvent('bg_composite_saved');
+      setSaved(true);
       toast({ title: 'Saved to Try-Ons!', description: 'Background try-on saved successfully.' });
     } catch (err: any) {
       console.error('Save failed:', err);
@@ -611,11 +617,11 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
           </button>
           <button
             onClick={handleSave}
-            disabled={saving}
-            className="flex items-center justify-center gap-2 h-11 px-5 rounded-xl border border-border text-foreground font-bold text-sm active:scale-[0.97] transition-transform disabled:opacity-50"
+            disabled={saving || saved}
+            className={`flex items-center justify-center gap-2 h-11 px-5 rounded-xl border text-foreground font-bold text-sm active:scale-[0.97] transition-transform disabled:opacity-50 ${saved ? 'border-primary bg-primary/10 text-primary' : 'border-border'}`}
           >
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            Save
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : saved ? <Check className="h-4 w-4" /> : <Save className="h-4 w-4" />}
+            {saving ? 'Saving…' : saved ? 'Saved' : 'Save'}
           </button>
         </div>
       )}
