@@ -305,6 +305,10 @@ const TryOnResultSection = ({
           image_url: selectedQuickPick?.image_url || null,
         }]
       : [];
+  const lookProductUrls = useMemo(
+    () => Array.from(new Set(displayItems.map((item) => item.url).filter(Boolean))),
+    [displayItems]
+  );
 
   // Show the LATEST item details (last in the list), not the first
   const latestItem = displayItems.length > 0 ? displayItems[displayItems.length - 1] : null;
@@ -1044,6 +1048,7 @@ const TryOnResultSection = ({
               userPhotoUrl={userPhoto || undefined}
               clothingPhotoUrl={clothingPhoto || undefined}
               clothingCategory={category || undefined}
+              productUrls={lookProductUrls}
               onClose={() => setShowBgSwap(false)}
             />
           </ErrorBoundary>
