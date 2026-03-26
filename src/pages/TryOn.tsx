@@ -257,7 +257,7 @@ const TryOn = () => {
                             className="flex items-center justify-between w-full"
                           >
                             <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
-                              Retailer {s.selectedRetailer ? `· ${s.selectedRetailer}` : ''}
+                              Retailer {s.selectedRetailers.length > 0 ? `· ${s.selectedRetailers.length} selected` : s.selectedRetailer ? `· ${s.selectedRetailer}` : ''}
                             </p>
                             <ChevronDown className={`h-3.5 w-3.5 text-foreground/50 transition-transform ${retailerOpen ? 'rotate-180' : ''}`} />
                           </button>
@@ -271,28 +271,36 @@ const TryOn = () => {
                               >
                                 <div className="flex flex-wrap gap-1.5 mt-1.5">
                                   <button
-                                    onClick={() => s.setSelectedRetailer(null)}
+                                    onClick={() => { s.setSelectedRetailer(null); s.setSelectedRetailers([]); }}
                                     className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
-                                      !s.selectedRetailer
+                                      !s.selectedRetailer && s.selectedRetailers.length === 0
                                         ? 'btn-luxury text-primary-foreground'
                                         : 'bg-card border border-primary/30 text-foreground'
                                     }`}
                                   >
                                     All
                                   </button>
-                                  {availableRetailers.map(retailer => (
-                                    <button
-                                      key={retailer}
-                                      onClick={() => s.setSelectedRetailer(retailer === s.selectedRetailer ? null : retailer)}
-                                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
-                                        s.selectedRetailer === retailer
-                                          ? 'btn-luxury text-primary-foreground'
-                                          : 'bg-card border border-primary/30 text-foreground'
-                                      }`}
-                                    >
-                                      {retailer}
-                                    </button>
-                                  ))}
+                                  {availableRetailers.map(retailer => {
+                                    const isSelected = s.selectedRetailers.includes(retailer);
+                                    return (
+                                      <button
+                                        key={retailer}
+                                        onClick={() => {
+                                          s.setSelectedRetailer(null);
+                                          s.setSelectedRetailers(prev =>
+                                            isSelected ? prev.filter(r => r !== retailer) : [...prev, retailer]
+                                          );
+                                        }}
+                                        className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                                          isSelected
+                                            ? 'btn-luxury text-primary-foreground'
+                                            : 'bg-card border border-primary/30 text-foreground'
+                                        }`}
+                                      >
+                                        {retailer}
+                                      </button>
+                                    );
+                                  })}
                                 </div>
                               </motion.div>
                             )}
