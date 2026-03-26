@@ -240,10 +240,13 @@ const TryOn = () => {
                         {/* Brand search */}
                         <div>
                           <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Brand</p>
-                          <BrandFilter
+                        <BrandFilter
                             gender={effectiveGender || null}
                             selectedBrand={s.selectedBrand}
                             onBrandChange={s.setSelectedBrand}
+                            selectedBrands={s.selectedBrands}
+                            onBrandsChange={s.setSelectedBrands}
+                            multiSelect
                           />
                         </div>
 
