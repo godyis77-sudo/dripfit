@@ -423,7 +423,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               }}
               initial={{ opacity: 0, rotate: 0 }}
               animate={{ opacity: [0, 0.7, 0.4], rotate: 25 }}
-              transition={{ duration: 3, ease: 'easeOut' }}
+              transition={{ duration: 1.5, ease: 'easeOut' }}
             />
 
             {/* "SCAN COMPLETE" text */}
