@@ -399,7 +399,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: [0, 1, 0.55, 1, 0.7] }}
-              transition={{ duration: 2.5, ease: 'easeInOut', times: [0, 0.12, 0.4, 0.65, 1] }}
+              transition={{ duration: 1.25, ease: 'easeInOut', times: [0, 0.12, 0.4, 0.65, 1] }}
             />
 
             {/* Gold ring burst */}
