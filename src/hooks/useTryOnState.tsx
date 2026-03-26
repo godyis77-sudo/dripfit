@@ -405,6 +405,57 @@ export function useTryOnState() {
     return allUrls;
   };
 
+  const persistTryOnPost = async ({
+    userInput,
+    clothingInput,
+    resultInput,
+    clothingCategory = null,
+  }: {
+    userInput: string;
+    clothingInput: string;
+    resultInput: string;
+    clothingCategory?: string | null;
+  }) => {
+    if (!user) throw new Error('Sign in required');
+
+    const toPersistableUrl = async (input: string, folder: 'user' | 'clothing' | 'result') => {
+      try {
+        return await uploadBase64ToStorage(input, folder);
+      } catch {
+        // Fallback to raw value so DB insert can still complete instead of failing silently
+        return input;
+      }
+    };
+
+    const [userUrl, clothingUrl, resultUrl] = await Promise.all([
+      toPersistableUrl(userInput, 'user'),
+      toPersistableUrl(clothingInput, 'clothing'),
+      toPersistableUrl(resultInput, 'result'),
+    ]);
+
+    const { data: post, error } = await supabase
+      .from('tryon_posts')
+      .insert({
+        user_id: user.id,
+        user_photo_url: userUrl,
+        clothing_photo_url: clothingUrl,
+        result_photo_url: resultUrl,
+        caption: null,
+        is_public: false,
+        product_urls: getAllUrls(),
+        clothing_category: clothingCategory,
+      })
+      .select('id, result_photo_url, clothing_photo_url, caption, is_public, created_at, product_urls')
+      .single();
+
+    if (error) throw error;
+
+    return {
+      post,
+      urls: { userUrl, clothingUrl, resultUrl },
+    };
+  };
+
   const getSaveImageSource = () => {
     const latestLookImage = [...lookItems].reverse().find(i => !!i.image_url)?.image_url || null;
     return clothingPhoto || latestLookImage || selectedQuickPick?.image_url || resultImage || null;
@@ -440,32 +491,25 @@ export function useTryOnState() {
 
   const autoSaveToProfile = async (resultBase64: string, capturedUserPhoto?: string, capturedClothingPhoto?: string) => {
     if (!user) return;
-    const uPhoto = capturedUserPhoto || userPhoto;
-    const cPhoto = capturedClothingPhoto || clothingPhoto;
+    const uPhoto = capturedUserPhoto || userPhoto || resultBase64;
+    const cPhoto = capturedClothingPhoto || clothingPhoto || selectedQuickPick?.image_url || resultBase64;
     if (!uPhoto || !cPhoto) { console.warn('autoSaveToProfile: missing photos'); return; }
     let lastError: unknown = null;
 
     for (let attempt = 1; attempt <= 2; attempt += 1) {
       try {
-        const [userUrl, clothingUrl, resultUrl] = await Promise.all([
-          uploadBase64ToStorage(uPhoto, 'user'),
-          uploadBase64ToStorage(cPhoto, 'clothing'),
-          uploadBase64ToStorage(resultBase64, 'result'),
-        ]);
-
-        const { data: insertedPost, error } = await supabase
-          .from('tryon_posts')
-          .insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false, product_urls: getAllUrls() })
-          .select('id, result_photo_url, clothing_photo_url, caption, is_public, created_at, product_urls')
-          .single();
-        if (error) throw error;
+        const { post: insertedPost, urls } = await persistTryOnPost({
+          userInput: uPhoto,
+          clothingInput: cPhoto,
+          resultInput: resultBase64,
+        });
 
         setAutoSaved(true);
         setActivePostId(insertedPost.id);
         // Persist the uploaded URL (small string) so result survives navigation & tab close
-        setResultImage(resultUrl);
-        persistState({ autoSaved: true, resultImage: resultUrl, userPhoto: userUrl, clothingPhoto: clothingUrl, activePostId: insertedPost.id });
-        try { localStorage.setItem(TRYON_RESULT_KEY, resultUrl); } catch { /* ignore */ }
+        setResultImage(urls.resultUrl);
+        persistState({ autoSaved: true, resultImage: urls.resultUrl, userPhoto: urls.userUrl, clothingPhoto: urls.clothingUrl, activePostId: insertedPost.id });
+        try { localStorage.setItem(TRYON_RESULT_KEY, urls.resultUrl); } catch { /* ignore */ }
 
         queryClient.setQueryData(
           ['tryon-posts', user.id],
@@ -773,32 +817,35 @@ export function useTryOnState() {
         toast({ title: `${accessoryCategory || 'Accessory'} added!`, description: 'Keep adding items or finish your look.' });
         if (user) {
           try {
-            const resultUrl = await uploadBase64ToStorage(payload.resultImage, 'result');
-            // Create a NEW post for each accessory/item added (separate posts per item)
-            const clothingUrl = await uploadBase64ToStorage(accessoryPhoto, 'clothing');
-            const userUrl = userPhoto?.startsWith('http') ? userPhoto : await uploadBase64ToStorage(userPhoto!, 'user');
-            const { data: newPost } = await supabase
-              .from('tryon_posts')
-              .insert({
-                user_id: user.id,
-                user_photo_url: userUrl,
-                clothing_photo_url: clothingUrl,
-                result_photo_url: resultUrl,
-                caption: null,
-                is_public: false,
-                product_urls: getAllUrls(),
-                clothing_category: accessoryCategory || null,
-              })
-              .select('id')
-              .single();
+            const { post: newPost, urls } = await persistTryOnPost({
+              userInput: userPhoto || resultImage || payload.resultImage,
+              clothingInput: accessoryPhoto,
+              resultInput: payload.resultImage,
+              clothingCategory: accessoryCategory || null,
+            });
+
             if (newPost) {
               setActivePostId(newPost.id);
               setAutoSaved(true);
-              setResultImage(resultUrl);
-              persistState({ autoSaved: true, resultImage: resultUrl, activePostId: newPost.id });
-              try { localStorage.setItem(TRYON_RESULT_KEY, resultUrl); } catch { /* ignore */ }
+              setResultImage(urls.resultUrl);
+              persistState({ autoSaved: true, resultImage: urls.resultUrl, activePostId: newPost.id });
+              try { localStorage.setItem(TRYON_RESULT_KEY, urls.resultUrl); } catch { /* ignore */ }
+              queryClient.setQueryData(
+                ['tryon-posts', user.id],
+                (prev: Array<{ id: string }> | undefined) => [
+                  newPost,
+                  ...(prev ?? []).filter((post) => post.id !== newPost.id),
+                ],
+              );
+              queryClient.invalidateQueries({ queryKey: ['tryon-posts', user.id] });
             }
-          } catch { /* silent */ }
+          } catch (autoSaveError: unknown) {
+            toast({
+              title: 'Auto-save failed',
+              description: (autoSaveError as Error)?.message || 'Try-on generated, but could not save to profile.',
+              variant: 'destructive',
+            });
+          }
         }
       } else {
         toast({ title: 'Could not add accessory', description: payload?.description || 'Try a clearer photo.', variant: 'destructive' });
