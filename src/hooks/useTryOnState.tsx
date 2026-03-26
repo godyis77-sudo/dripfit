@@ -607,11 +607,29 @@ export function useTryOnState() {
         if (user) {
           try {
             const resultUrl = await uploadBase64ToStorage(payload.resultImage, 'result');
-            const { data: latestPosts } = await supabase.from('tryon_posts').select('id, product_urls').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
-            if (latestPosts && latestPosts.length > 0) {
-              const existingUrls: string[] = (latestPosts[0].product_urls as string[]) || [];
-              const merged = [...new Set([...getAllUrls(), ...existingUrls])];
-              await supabase.from('tryon_posts').update({ result_photo_url: resultUrl, product_urls: merged }).eq('id', latestPosts[0].id);
+            // Create a NEW post for each accessory/item added (separate posts per item)
+            const clothingUrl = await uploadBase64ToStorage(accessoryPhoto, 'clothing');
+            const userUrl = userPhoto?.startsWith('http') ? userPhoto : await uploadBase64ToStorage(userPhoto!, 'user');
+            const { data: newPost } = await supabase
+              .from('tryon_posts')
+              .insert({
+                user_id: user.id,
+                user_photo_url: userUrl,
+                clothing_photo_url: clothingUrl,
+                result_photo_url: resultUrl,
+                caption: null,
+                is_public: false,
+                product_urls: getAllUrls(),
+                clothing_category: accessoryCategory || null,
+              })
+              .select('id')
+              .single();
+            if (newPost) {
+              setActivePostId(newPost.id);
+              setAutoSaved(true);
+              setResultImage(resultUrl);
+              persistState({ autoSaved: true, resultImage: resultUrl, activePostId: newPost.id });
+              try { localStorage.setItem(TRYON_RESULT_KEY, resultUrl); } catch { /* ignore */ }
             }
           } catch { /* silent */ }
         }
