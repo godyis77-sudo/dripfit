@@ -1260,7 +1260,7 @@ export type Database = {
       tryon_posts: {
         Row: {
           caption: string | null
-          clothing_category: string | null
+          clothing_category: string
           clothing_photo_url: string
           created_at: string
           id: string
@@ -1273,7 +1273,7 @@ export type Database = {
         }
         Insert: {
           caption?: string | null
-          clothing_category?: string | null
+          clothing_category?: string
           clothing_photo_url: string
           created_at?: string
           id?: string
@@ -1286,7 +1286,7 @@ export type Database = {
         }
         Update: {
           caption?: string | null
-          clothing_category?: string | null
+          clothing_category?: string
           clothing_photo_url?: string
           created_at?: string
           id?: string
