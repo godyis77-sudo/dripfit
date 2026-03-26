@@ -510,7 +510,9 @@ TARGET ACCESSORY:
 - The accessory shown in Image B.${productHint}
 - IMPORTANT: If Image B shows a full-body photo of a person, use the product name above to identify ONLY the specific accessory and ignore all other clothing.
 
-TASK: Add the accessory from Image B onto the person in Image A. Match the target item exactly (color, shape, material, branding). ${bgInstruction} Correct scale, lighting, shadows. No text/watermarks.`;
+TASK: Add the accessory from Image B onto the person in Image A. Match the target item exactly (color, shape, material, branding).
+${itemLower.includes('belt') ? 'BELT-SPECIFIC: The belt MUST be clearly visible around the waist, worn OVER the existing clothing. Show the full belt including buckle/chain details. Do NOT hide it under clothing layers.' : ''}
+${bgInstruction} Correct scale, lighting, shadows. No text/watermarks.`;
     } else if (isIntimateGarment) {
       const intimateReferenceLine = `IMAGE B: An activewear/athletic product listing photo from an online retailer.${intimateTextReference ? `\nHint: ${intimateTextReference}` : ""}`;
 
@@ -606,6 +608,7 @@ REMOVE current footwear from Image A and REPLACE with the exact shoes from Image
 Image A = person. Image B = target accessory reference.${productHint}
 ${fullBodyImageHint}
 Place the target accessory from Image B onto the person in Image A at realistic scale and lighting.
+${itemLower.includes('belt') ? 'BELT: Must be clearly visible around the waist OVER clothing. Show full belt with buckle/chain details.' : ''}
 Match target item exactly. Keep face/body from Image A. ${bgFallbackHint} No text/watermark.`
       : isIntimateGarment
         ? `Professional catalog photo edit. Image A = fitness model. Image B = athletic garment from retailer.
