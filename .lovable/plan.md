@@ -19,3 +19,21 @@
 10. ~~**Pull-to-refresh**~~ ✅ — PullToRefresh wrapper added to Community feed (both feed tabs and shop tab)
 11. ~~**Empty state improvements**~~ ✅ — Unified EmptyIcon component, added GenericEmptyState export, cleaner copy and sizing
 12. ~~**Skeleton consistency**~~ ✅ — CategoryProductGrid skeletons now match ProductCardSkeletons structure (border, info rows, spacing)
+
+---
+
+# Product Roadmap
+
+## Phase 1: Core UX & Catalog ✅
+- Product catalog pagination fix, expanded load-more
+
+## Phase 2: Community & Discovery ✅
+- Engagement-weighted trending algorithm (`get_trending_posts` RPC)
+- "For Your Fit" body-match recommendations (`get_fit_recommended_products` RPC)
+- ForYourFit horizontal scroll on home
+
+## Phase 3: Attribution & Premium ✅
+- `affiliate_clicks` table — server-side clickout attribution tracking
+- `useAffiliateClickout` + `retailerLinks` persists every clickout to DB
+- OG share image edge function (`og-share-image`) for social previews
+- Tiered try-on limits enforced server-side (guest=3, free=10/day, premium=unlimited)

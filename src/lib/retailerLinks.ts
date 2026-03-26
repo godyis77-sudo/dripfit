@@ -1,6 +1,7 @@
 import { getUserRegion, type UserRegion } from '@/lib/session';
 import { resolveClickoutByName } from '@/lib/affiliateRouter';
 import { trackEvent } from '@/lib/analytics';
+import { supabase } from '@/integrations/supabase/client';
 
 /** Region-specific domain overrides */
 const REGION_DOMAINS: Partial<Record<string, Partial<Record<UserRegion, string>>>> = {
@@ -71,6 +72,19 @@ export function buildRetailerSearchUrl(retailerName: string, baseUrl: string, qu
       monetization_mode: result.monetizationMode,
       affiliate_provider: result.provider,
       retailer_used: result.retailerUsed,
+    });
+    // Persist attribution
+    supabase.auth.getUser().then(({ data }) => {
+      supabase.from("affiliate_clicks").insert({
+        user_id: data?.user?.id ?? null,
+        session_id: data?.user?.id ? null : (localStorage.getItem("dripcheck_guest_uuid") || null),
+        retailer: retailerName,
+        destination_url: result.finalUrl,
+        monetization_mode: result.monetizationMode,
+        affiliate_provider: result.provider,
+        retailer_used: result.retailerUsed,
+        source: 'retailer_search',
+      } as any).then(() => {});
     });
   } catch { /* never break navigation */ }
 

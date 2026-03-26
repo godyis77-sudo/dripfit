@@ -41,6 +41,45 @@ export type Database = {
         }
         Relationships: []
       }
+      affiliate_clicks: {
+        Row: {
+          affiliate_provider: string | null
+          created_at: string
+          destination_url: string
+          id: string
+          monetization_mode: string
+          retailer: string
+          retailer_used: string | null
+          session_id: string | null
+          source: string | null
+          user_id: string | null
+        }
+        Insert: {
+          affiliate_provider?: string | null
+          created_at?: string
+          destination_url: string
+          id?: string
+          monetization_mode?: string
+          retailer: string
+          retailer_used?: string | null
+          session_id?: string | null
+          source?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          affiliate_provider?: string | null
+          created_at?: string
+          destination_url?: string
+          id?: string
+          monetization_mode?: string
+          retailer?: string
+          retailer_used?: string | null
+          session_id?: string | null
+          source?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       app_config: {
         Row: {
           key: string

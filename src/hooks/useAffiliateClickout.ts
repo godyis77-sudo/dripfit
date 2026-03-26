@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { resolveClickoutByName } from "@/lib/affiliateRouter";
 import { trackEvent } from "@/lib/analytics";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PendingClickout {
   retailer: string;
@@ -50,6 +51,22 @@ export function useAffiliateClickout(options: AffiliateClickoutOptions = {}) {
       destination_domain: safeDomain(pendingClickout.url),
       ...options.extraProps,
     });
+
+    // Persist clickout to database for attribution reporting
+    supabase.auth.getUser().then(({ data }) => {
+      const userId = data?.user?.id ?? null;
+      supabase.from("affiliate_clicks").insert({
+        user_id: userId,
+        session_id: userId ? null : (localStorage.getItem("dripcheck_guest_uuid") || null),
+        retailer: pendingClickout.retailer,
+        destination_url: pendingClickout.url,
+        monetization_mode: pendingClickout.monetizationMode,
+        affiliate_provider: pendingClickout.provider,
+        retailer_used: pendingClickout.retailerUsed,
+        source: (options.extraProps?.source as string) || "app",
+      } as any).then(() => { /* fire and forget */ });
+    });
+
     // Open in new tab; if popup blocked, use a temporary <a> click instead of
     // replacing location.href (which would destroy the SPA and cause a crash).
     const win = window.open(pendingClickout.url, "_blank", "noopener");

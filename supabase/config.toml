@@ -44,3 +44,6 @@ verify_jwt = false
 
 [functions.generate-backgrounds]
 verify_jwt = false
+
+[functions.og-share-image]
+verify_jwt = false
