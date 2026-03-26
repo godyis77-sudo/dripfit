@@ -126,17 +126,31 @@ const BrandFilter = ({ gender, selectedBrand, onBrandChange, selectedBrands = []
         Sort by Brand
       </p>
 
-      {/* Selected brand pill */}
-      {selectedBrand ? (
-        <div className="flex items-center gap-1.5">
-          <span className="pill pill-active inline-flex items-center gap-1.5">
-            {selectedBrand}
-            <button onClick={handleClear} className="hover:text-destructive transition-colors" aria-label="Clear brand filter">
-              <X className="h-3 w-3" />
-            </button>
-          </span>
-        </div>
-      ) : (
+      {/* Selected brand pills */}
+      {hasSelection ? (
+        <div className="space-y-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
+            {multiSelect ? selectedBrands.map(brand => (
+              <span key={brand} className="pill pill-active inline-flex items-center gap-1.5">
+                {brand}
+                <button onClick={() => handleRemoveBrand(brand)} className="hover:text-destructive transition-colors" aria-label={`Remove ${brand}`}>
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            )) : (
+              <span className="pill pill-active inline-flex items-center gap-1.5">
+                {selectedBrand}
+                <button onClick={handleClear} className="hover:text-destructive transition-colors" aria-label="Clear brand filter">
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            )}
+            {multiSelect && selectedBrands.length > 0 && (
+              <button onClick={handleClear} className="text-[10px] text-primary font-semibold">Clear all</button>
+            )}
+          </div>
+          {/* Still show search when multi-select to add more */}
+          {multiSelect && (
         <div className="relative">
           <div className="flex gap-1.5">
             <div className="relative flex-1">
