@@ -260,6 +260,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
   const feedQuery = useQuery({
     queryKey: ['community-feed', filter, shopGender, userId, followingIdsKey],
     queryFn: feedQueryFn,
+    refetchOnMount: 'always',
     refetchOnWindowFocus: false,
   });
 
@@ -273,6 +274,13 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
   useEffect(() => {
     setLoading(feedQuery.isLoading || feedQuery.isFetching);
   }, [feedQuery.isLoading, feedQuery.isFetching]);
+
+  const refreshFeed = useCallback(async (): Promise<Post[]> => {
+    const result = await feedQuery.refetch();
+    const nextPosts = result.data ?? [];
+    setPosts(nextPosts);
+    return nextPosts;
+  }, [feedQuery]);
 
   // Realtime: prepend new public posts as they arrive
   useEffect(() => {
@@ -450,6 +458,6 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     votes, voteCounts, followToggles, failedImages,
     retailers, retailersLoading, hasScan,
     handleVote, handleFollowToggle, handleDeletePost, handleImageError,
-    fetchPosts, setPosts,
+    fetchPosts: refreshFeed, setPosts,
   };
 }

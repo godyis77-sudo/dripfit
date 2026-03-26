@@ -15,6 +15,7 @@ interface BackgroundSwapOverlayProps {
   userPhotoUrl?: string;
   clothingPhotoUrl?: string;
   clothingCategory?: string;
+  productUrls?: string[];
   onClose: () => void;
 }
 
@@ -96,7 +97,7 @@ function setCachedSubject(sourceUrl: string, dataUrl: string) {
   } catch { /* quota */ }
 }
 
-const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl, clothingCategory, onClose }: BackgroundSwapOverlayProps) => {
+const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl, clothingCategory, productUrls, onClose }: BackgroundSwapOverlayProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -320,6 +321,13 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
         .createSignedUrl(path, 60 * 60 * 24 * 365);
       if (signErr || !signedData?.signedUrl) throw signErr || new Error('Could not create image URL');
       const compositeViewUrl = signedData.signedUrl;
+      const normalizedProductUrls = Array.from(
+        new Set(
+          (productUrls || [])
+            .map((url) => url?.trim())
+            .filter((url): url is string => !!url && /^https?:\/\//i.test(url))
+        )
+      );
 
       const { error: compositeErr } = await supabase.from('saved_composites').insert({
         user_id: user.id,
@@ -341,6 +349,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
           clothing_photo_url: safeClothingPhotoUrl,
           result_photo_url: compositeViewUrl,
           clothing_category: normalizeTryOnCategory(clothingCategory),
+          product_urls: normalizedProductUrls.length > 0 ? normalizedProductUrls : null,
           is_public: false,
         })
         .select('id, result_photo_url, clothing_photo_url, caption, is_public, created_at, product_urls')
@@ -375,6 +384,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
     userPhotoUrl,
     clothingPhotoUrl,
     clothingCategory,
+    productUrls,
     queryClient,
     toast,
   ]);

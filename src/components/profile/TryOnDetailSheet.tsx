@@ -156,6 +156,11 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
       toast({ title: 'Error', description: newPublic ? 'Could not post to community.' : 'Could not remove from community.', variant: 'destructive' });
       return;
     }
+    queryClient.setQueryData(['tryon-posts', user.id], (prev: TryOnPost[] | undefined) => {
+      if (!prev) return prev;
+      return prev.map((item) => item.id === post.id ? { ...item, is_public: newPublic } : item);
+    });
+    queryClient.invalidateQueries({ queryKey: ['community-feed'] });
     trackEvent(newPublic ? 'tryon_posted_to_community' : 'tryon_posted_to_community', { post_id: post.id });
     toast({ title: newPublic ? '🔥 Posted!' : 'Removed', description: newPublic ? 'Your look is now live in the community feed.' : 'Removed from Style Check Feed.' });
     onPostUpdated?.();

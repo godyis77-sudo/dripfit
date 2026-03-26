@@ -409,7 +409,7 @@ export function useTryOnState() {
     userInput,
     clothingInput,
     resultInput,
-    clothingCategory = null,
+    clothingCategory = 'other',
   }: {
     userInput: string;
     clothingInput: string;
@@ -443,7 +443,7 @@ export function useTryOnState() {
         caption: null,
         is_public: false,
         product_urls: getAllUrls(),
-        clothing_category: clothingCategory,
+        clothing_category: clothingCategory || 'other',
       })
       .select('id, result_photo_url, clothing_photo_url, caption, is_public, created_at, product_urls')
       .single();
@@ -726,7 +726,7 @@ export function useTryOnState() {
         ]);
         const { data: insertedPost, error: insertError } = await supabase
           .from('tryon_posts')
-          .insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic, product_urls: allUrls })
+          .insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic, product_urls: allUrls, clothing_category: category || 'other' })
           .select('id')
           .single();
         if (insertError) throw insertError;
@@ -739,6 +739,9 @@ export function useTryOnState() {
 
       setActivePostId(targetPostId);
       persistState({ activePostId: targetPostId });
+      if (isPublic) {
+        queryClient.invalidateQueries({ queryKey: ['community-feed'] });
+      }
       trackEvent('tryon_posted', { isPublic });
       toast({ title: isPublic ? 'Posted to Style Check!' : 'Saved!', description: isPublic ? 'Your look is live — get feedback from the community.' : 'Caption updated.' });
     } catch (err: unknown) {
