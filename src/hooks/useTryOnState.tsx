@@ -418,6 +418,27 @@ export function useTryOnState() {
   const handleTryOn = async () => {
     if (!canGenerate) return;
     if (!(await checkUsageLimit())) return;
+
+    const previousState = {
+      resultImage,
+      activePostId,
+      description,
+      lookItems: [...lookItems],
+      layerHistory: [...layerHistory],
+    };
+
+    const restorePreviousState = () => {
+      setResultImage(previousState.resultImage);
+      setActivePostId(previousState.activePostId);
+      persistState({
+        resultImage: previousState.resultImage,
+        activePostId: previousState.activePostId,
+      });
+      setDescription(previousState.description);
+      setLookItems(previousState.lookItems);
+      setLayerHistory(previousState.layerHistory);
+    };
+
     setLoading(true);
     setResultImage(null);
     setActivePostId(null);
@@ -426,6 +447,7 @@ export function useTryOnState() {
     setLookItems([]);
     setLayerHistory([]);
     trackEvent('tryon_started', { tier: user ? 'authenticated' : 'guest' });
+
     try {
       setTryOnError(null);
       const [preparedUserPhoto, preparedClothingPhoto] = await Promise.all([
@@ -443,33 +465,34 @@ export function useTryOnState() {
         productUrl: selectedQuickPick?.product_url || productLink || '',
         backgroundSource,
       };
-      // Pass guest UUID for unauthenticated users
       if (!user) {
         body.guestUuid = getGuestUuid();
       }
+
       const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', { body });
 
-      // Check for limit errors in both `error` and `resp` — supabase puts 
-      // non-2xx response body in `data` but also sets `error`
       const errorPayload = resp?.error || (error && typeof resp === 'object' ? resp?.error : null);
       const errCode = errorPayload?.code;
 
       if (errCode === 'GUEST_LIMIT') {
+        restorePreviousState();
         setAuthWallReason('guest_limit');
         setShowAuthWall(true);
         return;
       }
       if (errCode === 'DAILY_LIMIT') {
+        restorePreviousState();
         setAuthWallReason('daily_limit');
         setShowAuthWall(true);
         return;
       }
 
-      // For other errors, throw
       if (error) throw new Error(errorPayload?.message || error.message);
       if (resp?.error) throw new Error(resp.error.message || resp.error);
+
       const payload = resp?.data ?? resp;
       trackEvent('tryon_generated', { tier: user ? (payload.userTier || 'free') : 'guest' });
+
       if (payload.resultImage) {
         await incrementUsage();
         setResultImage(payload.resultImage);
@@ -477,16 +500,19 @@ export function useTryOnState() {
         setTimeout(() => setShowSuccessOverlay(false), 1500);
         if (user) autoSaveToProfile(payload.resultImage);
       } else {
-        // No image generated — don't consume credits
+        restorePreviousState();
         const fallbackMsg = payload.description || 'The AI could not generate this try-on. Try different photos — well-lit, full body shots work best.';
         setTryOnError(fallbackMsg);
         toast({ title: 'Try-On couldn\'t generate', description: fallbackMsg, variant: 'destructive' });
       }
     } catch (err: unknown) {
+      restorePreviousState();
       const msg = (err as Error).message || 'Generation failed. Please try again.';
       setTryOnError(msg);
       toast({ title: 'Try-On failed', description: msg, variant: 'destructive' });
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleShare = async () => {
