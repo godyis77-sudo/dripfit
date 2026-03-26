@@ -201,7 +201,18 @@ export function useTryOnState() {
     }
   }, [persistState]);
   const setCategory = useCallback((v: string) => { setCategoryRaw(v); persistState({ category: v }); }, [persistState]);
-  const setResultImage = useCallback((v: string | null) => { setResultImageRaw(v); persistState({ resultImage: v }); }, [persistState]);
+  const setResultImage = useCallback((v: string | null) => {
+    setResultImageRaw(v);
+    persistState({ resultImage: v });
+    try {
+      if (v && (v.startsWith('http://') || v.startsWith('https://'))) {
+        localStorage.setItem(TRYON_RESULT_KEY, v);
+      } else {
+        // Avoid stale older URL winning when latest image is still base64/session-backed
+        localStorage.removeItem(TRYON_RESULT_KEY);
+      }
+    } catch { /* ignore */ }
+  }, [persistState]);
   const setLookItems = useCallback((v: LookItem[] | ((prev: LookItem[]) => LookItem[])) => {
     setLookItemsRaw(prev => { const next = typeof v === 'function' ? v(prev) : v; persistState({ lookItems: next }); return next; });
   }, [persistState]);
