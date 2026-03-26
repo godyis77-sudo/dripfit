@@ -24,7 +24,7 @@ const MESSAGES = [
   'Generating recommendations…',
 ];
 
-const TOTAL_SCAN_TIME = 30000;
+const TOTAL_SCAN_TIME = 15000;
 const REVEAL_ORDER = ['height', 'shoulder', 'chest', 'bust', 'waist', 'hips', 'inseam'];
 
 interface AnalyzeState {
