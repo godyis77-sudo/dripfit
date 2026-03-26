@@ -483,10 +483,11 @@ Deno.serve(async (req) => {
 
 IMAGES PROVIDED:
 - Image A (first image below): A person wearing an outfit — preserve their face, body, pose, and ALL clothing EXACTLY.
-- Image B (second image below): The target footwear — replicate this EXACT shoe/sneaker.
+- Image B (second image below): The target footwear reference.
 
 TARGET FOOTWEAR:
 - The shoes shown in Image B.${productHint}
+- IMPORTANT: If Image B shows a full-body photo of a person, use the product name above to identify ONLY the footwear and ignore all other clothing.
 
 TASK — FOOTWEAR SWAP:
 1. REMOVE whatever shoes/footwear the person in Image A is currently wearing.
@@ -503,12 +504,13 @@ Output: A single photorealistic FULL-BODY image showing the person head to feet.
 
 IMAGES PROVIDED:
 - Image A (first image below): A person — preserve their face, body, pose EXACTLY.
-- Image B (second image below): The isolated target accessory — replicate this EXACT item.
+- Image B (second image below): The target accessory reference.
 
 TARGET ACCESSORY:
 - The accessory shown in Image B.${productHint}
+- IMPORTANT: If Image B shows a full-body photo of a person, use the product name above to identify ONLY the specific accessory and ignore all other clothing.
 
-TASK: Add the accessory from Image B onto the person in Image A. Match Image B exactly (color, shape, material, branding). ${bgInstruction} Correct scale, lighting, shadows. No text/watermarks.`;
+TASK: Add the accessory from Image B onto the person in Image A. Match the target item exactly (color, shape, material, branding). ${bgInstruction} Correct scale, lighting, shadows. No text/watermarks.`;
     } else if (isIntimateGarment) {
       const intimateReferenceLine = `IMAGE B: An activewear/athletic product listing photo from an online retailer.${intimateTextReference ? `\nHint: ${intimateTextReference}` : ""}`;
 
@@ -573,14 +575,15 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
 
 IMAGES PROVIDED:
 - Image A (first image below): A person wearing some outfit. This is the MODEL — keep face, body, hair, skin, and pose.
-- Image B (second image below): The target garment — replicate this EXACT garment.
+- Image B (second image below): The target garment reference.
 
 TARGET GARMENT:
 - The garment shown in Image B.${productHint}
+- IMPORTANT: If Image B shows a full-body photo of another person wearing multiple clothing items, use the product name/description above to identify the SPECIFIC item to try on. Extract ONLY that one item and ignore every other piece of clothing in Image B.
 
 TASK — CLOTHING SWAP:
 ${swapInstruction}
-- Match Image B exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
+- Match the target item from Image B exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
 - Keep Image A person identity (face, body, hair, skin tone, pose). ${bgInstruction}
 - Keep garment fit realistic with natural wrinkles and shadows.
 - CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate or turn the model to match Image B's pose/angle. Copy only the garment from Image B, never its pose.
@@ -592,15 +595,18 @@ Output: A single photorealistic FULL-BODY image. No text/watermarks/split views.
     const bgFallbackHint = useClothingBg
       ? "Use the background from Image B (the product photo)."
       : "Keep background from Image A unchanged.";
+    const fullBodyImageHint = `If Image B shows a full-body photo of a person wearing multiple items, use the product name/description to identify ONLY the specific target item and ignore everything else in Image B.`;
     const fallbackPrompt = isFootwear && !isLayering
       ? `Create ONE photorealistic FULL-BODY output image.
-Image A = person wearing an outfit. Image B = target footwear (shoes/sneakers).${productHint}
-REMOVE current footwear from Image A and REPLACE with the exact shoes from Image B. Keep ALL other clothing unchanged. Match Image B exactly (color, shape, material, branding, sole). Keep face/body/pose from Image A. ${bgFallbackHint} Show full body head to feet. No text/watermark.`
+Image A = person wearing an outfit. Image B = target footwear reference.${productHint}
+${fullBodyImageHint}
+REMOVE current footwear from Image A and REPLACE with the exact shoes from Image B. Keep ALL other clothing unchanged. Match target item exactly (color, shape, material, branding, sole). Keep face/body/pose from Image A. ${bgFallbackHint} Show full body head to feet. No text/watermark.`
       : (isAccessory || isLayering)
       ? `Create ONE photorealistic output image.
-Image A = person. Image B = target accessory.${productHint}
-Place the accessory from Image B onto the person in Image A at realistic scale and lighting.
-Match Image B exactly. Keep face/body from Image A. ${bgFallbackHint} No text/watermark.`
+Image A = person. Image B = target accessory reference.${productHint}
+${fullBodyImageHint}
+Place the target accessory from Image B onto the person in Image A at realistic scale and lighting.
+Match target item exactly. Keep face/body from Image A. ${bgFallbackHint} No text/watermark.`
       : isIntimateGarment
         ? `Professional catalog photo edit. Image A = fitness model. Image B = athletic garment from retailer.
 Put the garment from Image B onto the model in Image A. ${bgFallbackHint}
@@ -625,10 +631,11 @@ Professional retail catalog quality. No text/watermark.`
                 ? "Replace ONLY the upper-body clothing (shirt/top/sweater). Keep existing pants/jeans/shoes from Image A UNCHANGED."
                 : "Replace the clothing with the garment from Image B.";
           return `Create ONE photorealistic clothing-swap image.
-Image A = person. Image B = target garment.${productHint}
+Image A = person. Image B = target garment reference.${productHint}
+${fullBodyImageHint}
 ${scopeHint}
 Preserve face, body shape, skin tone, pose, camera angle, and facing direction from Image A — do NOT rotate the model. ${bgFallbackHint}
-Match Image B exactly (color, pattern, cut, neckline, sleeve/hem length, logos). Full body head to feet. No text/watermark.`;
+Match the target item exactly (color, pattern, cut, neckline, sleeve/hem length, logos). Full body head to feet. No text/watermark.`;
         })()
 
     const intimateReferenceForFallback = `Image B = athletic garment product photo. Apply garment from Image B onto model in Image A, ignoring any person shown in Image B.`;
