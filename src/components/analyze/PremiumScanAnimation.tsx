@@ -302,7 +302,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
           key={i}
           className={`absolute ${pos} ${border} border-primary w-7 h-7 rounded-sm`}
           animate={{ opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.4, ease: 'easeInOut' }}
+          transition={{ duration: 1.25, repeat: Infinity, delay: i * 0.2, ease: 'easeInOut' }}
           style={{ boxShadow: '0 0 8px 2px hsl(45 88% 50% / 0.25)' }}
         />
       ))}
