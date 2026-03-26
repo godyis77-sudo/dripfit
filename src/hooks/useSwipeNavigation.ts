@@ -13,11 +13,12 @@ export function useSwipeNavigation() {
   const location = useLocation();
   const touchStart = useRef<{ x: number; y: number; t: number } | null>(null);
 
-  const currentIndex = TAB_PATHS.findIndex((p) =>
-    p === '/home'
-      ? location.pathname === '/home'
-      : location.pathname.startsWith(p)
-  );
+  const currentIndex = TAB_PATHS.findIndex((p) => {
+    if (p === '/home') {
+      return location.pathname === '/home' || location.pathname.startsWith('/browse');
+    }
+    return location.pathname.startsWith(p);
+  });
 
   const onTouchStart = useCallback((e: React.TouchEvent) => {
     // Ignore multi-touch (pinch zoom) — only track single-finger swipes
