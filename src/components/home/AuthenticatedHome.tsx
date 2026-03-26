@@ -1,7 +1,7 @@
 import { forwardRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Camera, ShoppingBag, X } from 'lucide-react';
+import { Camera, ShoppingBag, X, Sparkles } from 'lucide-react';
 import FeatureIcon, { featureIcons } from '@/components/ui/FeatureIcon';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
@@ -11,6 +11,7 @@ import { useProfileInfo, useLatestScan, useTrendingFits } from '@/hooks/useProfi
 import TrendingFitsGrid from '@/components/home/TrendingFitsGrid';
 import HomeFAB from '@/components/home/HomeFAB';
 import BrandLogo from '@/components/ui/BrandLogo';
+import { useForYourFit } from '@/hooks/useForYourFit';
 
 /* ── Price filter config ── */
 const PRICE_FILTERS = [
@@ -34,6 +35,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const { data: profileData } = useProfileInfo(user?.id);
   const { data: scanData } = useLatestScan(user?.id);
   const { data: trendingFits = [] } = useTrendingFits(user?.id);
+  const { data: fitRecs = [] } = useForYourFit(user?.id);
 
   const hasScan = scanData !== undefined ? !!scanData : null;
   const daysSinceLastScan = scanData?.createdAt
@@ -117,6 +119,49 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
 
         {/* Trending Fits */}
         <TrendingFitsGrid fits={trendingFits} />
+
+        {/* For Your Fit — items similar-body users loved */}
+        {fitRecs.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="mb-4"
+          >
+            <div className="flex items-center gap-1.5 mb-2">
+              <Sparkles className="h-3.5 w-3.5 text-primary" />
+              <p className="section-label mb-0">For Your Fit</p>
+            </div>
+            <p className="text-[10px] text-muted-foreground mb-2">Loved by people with similar measurements</p>
+            <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
+              {fitRecs.map((rec, i) => (
+                <button
+                  key={`${rec.product_url}-${i}`}
+                  onClick={() => {
+                    trackEvent('fit_rec_click', { category: rec.category });
+                    if (rec.product_url) window.open(rec.product_url, '_blank', 'noopener');
+                  }}
+                  className="shrink-0 w-[120px] rounded-xl overflow-hidden border border-border/50 bg-card active:scale-[0.97] transition-transform"
+                >
+                  <div className="aspect-[3/4] bg-muted relative">
+                    <img
+                      src={rec.clothing_photo_url}
+                      alt={rec.category || 'Recommended'}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className="absolute bottom-1 right-1 bg-primary/90 text-primary-foreground text-[9px] font-bold px-1.5 py-0.5 rounded-full">
+                      {rec.engagement_count}🔥
+                    </div>
+                  </div>
+                  <div className="p-1.5">
+                    <p className="text-[10px] font-bold text-foreground capitalize truncate">{rec.category || 'Item'}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {/* Re-scan nudge banner — above product grid for visibility */}
         {hasScan && daysSinceLastScan !== null && daysSinceLastScan >= 30 && !rescanDismissed && (
