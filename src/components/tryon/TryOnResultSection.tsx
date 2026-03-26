@@ -634,34 +634,45 @@ const TryOnResultSection = ({
                             </div>
                           </div>
 
-                          {/* Retailer */}
+                          {/* Retailer — collapsible */}
                           <div>
-                            <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Retailer</p>
-                            <div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto">
-                              <button
-                                onClick={() => setAccRetailerFilter(null)}
-                                className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
-                                  !accRetailerFilter
-                                    ? 'btn-luxury text-primary-foreground'
-                                    : 'bg-card border border-border text-foreground/70'
-                                }`}
-                              >
-                                All
-                              </button>
-                              {accAvailableRetailers.map(retailer => (
-                                <button
-                                  key={retailer}
-                                  onClick={() => setAccRetailerFilter(retailer === accRetailerFilter ? null : retailer)}
-                                  className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
-                                    accRetailerFilter === retailer
-                                      ? 'btn-luxury text-primary-foreground'
-                                      : 'bg-card border border-border text-foreground/70'
-                                  }`}
-                                >
-                                  {retailer}
-                                </button>
-                              ))}
-                            </div>
+                            <button onClick={() => setAccRetailerOpen(!accRetailerOpen)} className="flex items-center justify-between w-full">
+                              <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
+                                Retailer {accRetailerFilter ? `· ${accRetailerFilter}` : ''}
+                              </p>
+                              <ChevronDown className={`h-3.5 w-3.5 text-foreground/50 transition-transform ${accRetailerOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                            <AnimatePresence>
+                              {accRetailerOpen && (
+                                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                                  <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                    <button
+                                      onClick={() => setAccRetailerFilter(null)}
+                                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
+                                        !accRetailerFilter
+                                          ? 'btn-luxury text-primary-foreground'
+                                          : 'bg-card border border-border text-foreground/70'
+                                      }`}
+                                    >
+                                      All
+                                    </button>
+                                    {accAvailableRetailers.map(retailer => (
+                                      <button
+                                        key={retailer}
+                                        onClick={() => setAccRetailerFilter(retailer === accRetailerFilter ? null : retailer)}
+                                        className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                                          accRetailerFilter === retailer
+                                            ? 'btn-luxury text-primary-foreground'
+                                            : 'bg-card border border-border text-foreground/70'
+                                        }`}
+                                      >
+                                        {retailer}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
                           </div>
 
                           {/* Genre — collapsible */}
