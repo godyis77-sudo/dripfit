@@ -187,7 +187,7 @@ const Community = () => {
               onGenreChange={setShopGenre}
               onRetailerChange={setShopRetailer}
               onSortChange={setShopSort}
-              onClearAll={() => { setShopBrand(null); setShopGenre(null); setShopRetailer(null); setShopGender('all'); setShopCategory('tops'); setShopSort('default'); }}
+              onClearAll={() => { setShopBrand(null); setShopGenre(null); setShopRetailer(null); setShopGender('all'); setShopCategory('all'); setShopSort('default'); }}
             />
             <CategoryProductGrid
               category={shopCategory}
