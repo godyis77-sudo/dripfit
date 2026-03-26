@@ -385,7 +385,8 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
 
       {/* Preview area — drag to reposition subject */}
       <div
-        className="flex-1 relative flex items-center justify-center overflow-hidden min-h-[30dvh] cursor-grab active:cursor-grabbing group touch-none"
+        className="relative flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing group touch-none"
+        style={{ height: 'min(55dvh, 420px)' }}
         onPointerDown={e => {
           if (!transparentSubject) return;
           e.preventDefault();
