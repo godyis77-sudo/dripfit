@@ -240,7 +240,7 @@ const Browse = () => {
                       className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                         sort === opt.key
                           ? 'btn-luxury text-primary-foreground'
-                          : 'bg-background border border-border text-foreground/70'
+                          : 'bg-card border border-primary/30 text-foreground'
                       }`}
                     >
                       {opt.label}
@@ -301,7 +301,7 @@ const Browse = () => {
                       className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                         (category === cat.key || CATEGORY_LABELS[category] === cat.label)
                           ? 'btn-luxury text-primary-foreground'
-                          : 'bg-background border border-border text-foreground/70'
+                          : 'bg-card border border-primary/30 text-foreground'
                       }`}
                     >
                       {cat.label}
@@ -335,7 +335,7 @@ const Browse = () => {
                           className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                             !retailerFilter
                               ? 'btn-luxury text-primary-foreground'
-                              : 'bg-background border border-border text-foreground/70'
+                              : 'bg-card border border-primary/30 text-foreground'
                           }`}
                         >
                           All
@@ -347,7 +347,7 @@ const Browse = () => {
                             className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                               retailerFilter === retailer
                                 ? 'btn-luxury text-primary-foreground'
-                                : 'bg-background border border-border text-foreground/70'
+                                : 'bg-card border border-primary/30 text-foreground'
                             }`}
                           >
                             {retailer}
@@ -384,7 +384,7 @@ const Browse = () => {
                           className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                             !genreFilter
                               ? 'btn-luxury text-primary-foreground'
-                              : 'bg-background border border-border text-foreground/70'
+                              : 'bg-card border border-primary/30 text-foreground'
                           }`}
                         >
                           All
@@ -396,7 +396,7 @@ const Browse = () => {
                             className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                               genreFilter === genre
                                 ? 'btn-luxury text-primary-foreground'
-                                : 'bg-background border border-border text-foreground/70'
+                                : 'bg-card border border-primary/30 text-foreground'
                             }`}
                           >
                             {genre}
@@ -434,7 +434,7 @@ const Browse = () => {
                             className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                               !fitFilter
                                 ? 'btn-luxury text-primary-foreground'
-                                : 'bg-background border border-border text-foreground/70'
+                                : 'bg-card border border-primary/30 text-foreground'
                             }`}
                           >
                             All
@@ -446,7 +446,7 @@ const Browse = () => {
                               className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                                 fitFilter === fit
                                   ? 'btn-luxury text-primary-foreground'
-                                  : 'bg-background border border-border text-foreground/70'
+                                  : 'bg-card border border-primary/30 text-foreground'
                               }`}
                             >
                               {fit}

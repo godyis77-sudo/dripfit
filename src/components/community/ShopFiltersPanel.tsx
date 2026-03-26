@@ -96,7 +96,7 @@ const ShopFiltersPanel = ({
                 <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Sort by</p>
                 <div className="flex flex-wrap gap-1.5">
                   {SORT_OPTIONS.map(opt => (
-                    <button key={opt.key} onClick={() => onSortChange(opt.key)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${shopSort === opt.key ? 'btn-luxury text-primary-foreground' : 'bg-background border border-border text-foreground/70'}`}>{opt.label}</button>
+                    <button key={opt.key} onClick={() => onSortChange(opt.key)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${shopSort === opt.key ? 'btn-luxury text-primary-foreground' : 'bg-card border border-primary/30 text-foreground'}`}>{opt.label}</button>
                   ))}
                 </div>
               </div>
@@ -106,7 +106,7 @@ const ShopFiltersPanel = ({
                 <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Category</p>
                 <div className="flex flex-wrap gap-1.5">
                   {SHOP_CATEGORIES.map(cat => (
-                    <button key={cat.key} onClick={() => onCategoryChange(cat.key)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${shopCategory === cat.key ? 'btn-luxury text-primary-foreground' : 'bg-background border border-border text-foreground/70'}`}>{cat.label}</button>
+                    <button key={cat.key} onClick={() => onCategoryChange(cat.key)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${shopCategory === cat.key ? 'btn-luxury text-primary-foreground' : 'bg-card border border-primary/30 text-foreground'}`}>{cat.label}</button>
                   ))}
                 </div>
               </div>
@@ -129,9 +129,9 @@ const ShopFiltersPanel = ({
                   {retailerOpen && (
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                       <div className="flex flex-wrap gap-1.5 mt-1.5">
-                        <button onClick={() => onRetailerChange(null)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${!shopRetailer ? 'btn-luxury text-primary-foreground' : 'bg-background border border-border text-foreground/70'}`}>All</button>
+                        <button onClick={() => onRetailerChange(null)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${!shopRetailer ? 'btn-luxury text-primary-foreground' : 'bg-card border border-primary/30 text-foreground'}`}>All</button>
                         {availableRetailers.map(retailer => (
-                          <button key={retailer} onClick={() => onRetailerChange(retailer === shopRetailer ? null : retailer)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${shopRetailer === retailer ? 'btn-luxury text-primary-foreground' : 'bg-background border border-border text-foreground/70'}`}>{retailer}</button>
+                          <button key={retailer} onClick={() => onRetailerChange(retailer === shopRetailer ? null : retailer)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${shopRetailer === retailer ? 'btn-luxury text-primary-foreground' : 'bg-card border border-primary/30 text-foreground'}`}>{retailer}</button>
                         ))}
                       </div>
                     </motion.div>
@@ -149,9 +149,9 @@ const ShopFiltersPanel = ({
                   {genreOpen && (
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                       <div className="flex flex-wrap gap-1.5 mt-1.5">
-                        <button onClick={() => onGenreChange(null)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${!shopGenre ? 'btn-luxury text-primary-foreground' : 'bg-background border border-border text-foreground/70'}`}>All</button>
+                        <button onClick={() => onGenreChange(null)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${!shopGenre ? 'btn-luxury text-primary-foreground' : 'bg-card border border-primary/30 text-foreground'}`}>All</button>
                         {BRAND_GENRES.map(genre => (
-                          <button key={genre} onClick={() => onGenreChange(genre === shopGenre ? null : genre)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${shopGenre === genre ? 'btn-luxury text-primary-foreground' : 'bg-background border border-border text-foreground/70'}`}>{genre}</button>
+                          <button key={genre} onClick={() => onGenreChange(genre === shopGenre ? null : genre)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${shopGenre === genre ? 'btn-luxury text-primary-foreground' : 'bg-card border border-primary/30 text-foreground'}`}>{genre}</button>
                         ))}
                       </div>
                     </motion.div>
@@ -171,7 +171,7 @@ const ShopFiltersPanel = ({
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                         <div className="flex flex-wrap gap-1.5 mt-1.5">
                           {availableFits.map(fit => (
-                            <button key={fit} className="px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize bg-background border border-border text-foreground/70">{fit}</button>
+                            <button key={fit} className="px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize bg-card border border-primary/30 text-foreground">{fit}</button>
                           ))}
                         </div>
                       </motion.div>
