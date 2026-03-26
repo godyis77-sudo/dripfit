@@ -618,7 +618,7 @@ export function useTryOnState() {
         'top', 'tops', 'bottom', 'bottoms', 'shoes', 'sneakers', 'boots', 'heels', 'loafers', 'sandals',
         'jeans', 'pants', 'shorts', 'skirts', 'skirt', 'dress', 'dresses', 'jacket', 'jackets', 'coat',
         'coats', 'blazer', 'blazers', 'outerwear', 'sweaters', 'hoodies', 'shirts', 'swimwear', 'swimsuit',
-        'bikini', 'one-piece', 'one piece', 'underwear', 'lingerie', 'bralette', 'bra', 'sports bra',
+        'bikini', 'bikini-top', 'bikini-bottom', 'one-piece', 'one piece', 'underwear', 'lingerie', 'bralette', 'bra', 'sports bra',
       ];
       const normalizedAccCat = (resolvedCategory || '').toLowerCase();
       const shouldReplace = REPLACE_CATEGORIES.includes(normalizedAccCat);
