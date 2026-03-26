@@ -372,7 +372,8 @@ Deno.serve(async (req) => {
     let preExtractedGarment = false;
     let aiGarmentDescription: string | null = null;
 
-    if (enableIntimateExtraction) {
+    // For underwear-like items, avoid touching product images at all (high refusal rate).
+    if (enableIntimateExtraction && !isUnderwearSafeMode) {
       // Run extraction AND description in parallel to save time
       const [extractedImage, description] = await Promise.all([
         extractIntimateGarment(),
@@ -754,7 +755,8 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       ];
 
       // Include clean extracted garment flat-lay — this is CRITICAL for avoiding IMAGE_PROHIBITED_CONTENT
-      if (garmentOnlyImage !== clothingImageInput) {
+      // BUT for underwear safe-mode, never attach a product/garment image at all.
+      if (!isUnderwearSafeMode && garmentOnlyImage !== clothingImageInput) {
         content.push({ type: "text", text: "\n\n========== GARMENT REFERENCE (clean product flat-lay on white background) ==========" });
         content.push({ type: "image_url", image_url: { url: garmentOnlyImage } });
       }
@@ -771,7 +773,13 @@ TASK: Place the belt from Image B around the waist of the person in Image A. The
     const beltRetryPrompt = `Photorealistic belt placement. Image A = person. Image B = belt reference.${beltDescHint}${productHint}
 TASK: Add the belt from Image B onto the person in Image A at the natural waistline. The belt must be prominently visible over their clothing with accurate buckle/chain detail, correct scale, realistic shadows and lighting. Do NOT remove or change any existing clothing. Keep face, body, pose from Image A. ${bgFallbackHint} No text/watermark.`;
     // Only bypass primary when we already have a clean flat-lay; otherwise keep one primary attempt.
-    const shouldBypassPrimaryForIntimate = isIntimateGarment && preExtractedGarment && (isUnderwear || isExplicitIntimate || isBottomOnlyIntimate);
+    // Underwear-like items: bypass primary entirely and go straight to the safe-mode text-bridge path.
+    const shouldBypassPrimaryForIntimate =
+      isIntimateGarment &&
+      (
+        isUnderwearSafeMode ||
+        (preExtractedGarment && (isUnderwear || isExplicitIntimate || isBottomOnlyIntimate))
+      );
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
       ? (
           shouldBypassPrimaryForIntimate
@@ -1053,7 +1061,9 @@ TASK: Add the belt from Image B onto the person in Image A at the natural waistl
       const hasCleanFlatLay = garmentOnlyImage !== clothingImageInput;
       
       if ((textDesc && textDesc.length > 15) || hasCleanFlatLay) {
-        const descForPrompt = textDesc || "athletic fitted garment matching the reference image";
+        const descForPrompt = isUnderwearSafeMode
+          ? "commercially appropriate fully-covered athletic styling (no nudity, no exposed base-layer areas). Create an athletic outfit inspired by the brand/colors (e.g., cropped athletic top + high-waisted athletic shorts)."
+          : (textDesc || "athletic fitted garment matching the reference image");
         console.log(`Layer 3 text-bridge: hasCleanFlatLay=${hasCleanFlatLay}, textDesc=${!!textDesc} (${textDesc?.length || 0} chars)`);
         const textBridgePrompt = makeTextBridgePrompt(descForPrompt, hasCleanFlatLay);
         
