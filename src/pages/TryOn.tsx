@@ -196,7 +196,7 @@ const TryOn = () => {
                               <button
                                 key={opt.key}
                                 onClick={() => setSort(opt.key)}
-                                className={`px-2.5 py-1.5 min-h-[44px] rounded-lg text-[10px] font-semibold transition-colors ${
+                                className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                   sort === opt.key
                                     ? 'btn-luxury text-primary-foreground'
                                     : 'bg-background border border-border text-foreground/70'
@@ -214,7 +214,7 @@ const TryOn = () => {
                           <div className="flex flex-wrap gap-1.5">
                               <button
                               onClick={() => s.setCategory('all')}
-                              className={`px-2.5 py-1.5 min-h-[44px] rounded-lg text-[10px] font-semibold transition-colors ${
+                              className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                 s.category === 'all'
                                   ? 'btn-luxury text-primary-foreground'
                                   : 'bg-background border border-border text-foreground/70'
@@ -226,7 +226,7 @@ const TryOn = () => {
                               <button
                                 key={c.key}
                                 onClick={() => s.setCategory(c.key)}
-                                className={`px-2.5 py-1.5 min-h-[44px] rounded-lg text-[10px] font-semibold transition-colors ${
+                                className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                   s.category === c.key
                                     ? 'btn-luxury text-primary-foreground'
                                     : 'bg-background border border-border text-foreground/70'
@@ -270,7 +270,7 @@ const TryOn = () => {
                                 <div className="flex flex-wrap gap-1.5 mt-1.5">
                                   <button
                                     onClick={() => s.setSelectedRetailer(null)}
-                                    className={`px-2.5 py-1.5 min-h-[44px] rounded-lg text-[10px] font-semibold transition-colors ${
+                                    className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                       !s.selectedRetailer
                                         ? 'btn-luxury text-primary-foreground'
                                         : 'bg-background border border-border text-foreground/70'
@@ -282,7 +282,7 @@ const TryOn = () => {
                                     <button
                                       key={retailer}
                                       onClick={() => s.setSelectedRetailer(retailer === s.selectedRetailer ? null : retailer)}
-                                      className={`px-2.5 py-1.5 min-h-[44px] rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                                         s.selectedRetailer === retailer
                                           ? 'btn-luxury text-primary-foreground'
                                           : 'bg-background border border-border text-foreground/70'
@@ -319,7 +319,7 @@ const TryOn = () => {
                                 <div className="flex flex-wrap gap-1.5 mt-1.5">
                                     <button
                                     onClick={() => s.setSelectedGenre(null)}
-                                    className={`px-2.5 py-1.5 min-h-[44px] rounded-lg text-[10px] font-semibold transition-colors ${
+                                    className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                       !s.selectedGenre
                                         ? 'btn-luxury text-primary-foreground'
                                         : 'bg-background border border-border text-foreground/70'
@@ -331,7 +331,7 @@ const TryOn = () => {
                                       <button
                                       key={genre}
                                       onClick={() => s.setSelectedGenre(genre === s.selectedGenre ? null : genre)}
-                                      className={`px-2.5 py-1.5 min-h-[44px] rounded-lg text-[10px] font-semibold transition-colors ${
+                                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                         s.selectedGenre === genre
                                           ? 'btn-luxury text-primary-foreground'
                                           : 'bg-background border border-border text-foreground/70'
@@ -371,7 +371,7 @@ const TryOn = () => {
                                       <button
                                         key={fit}
                                         onClick={() => s.setSelectedFit(fit === s.selectedFit ? null : fit)}
-                                        className={`px-2.5 py-1.5 min-h-[44px] rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                                        className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                                           s.selectedFit === fit
                                             ? 'btn-luxury text-primary-foreground'
                                             : 'bg-background border border-border text-foreground/70'
