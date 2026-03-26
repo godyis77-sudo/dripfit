@@ -540,7 +540,7 @@ export function useTryOnState() {
         setResultImage(payload.resultImage);
         setShowSuccessOverlay(true);
         setTimeout(() => setShowSuccessOverlay(false), 1500);
-        if (user) autoSaveToProfile(payload.resultImage);
+        if (user) autoSaveToProfile(payload.resultImage, preparedUserPhoto, preparedClothingPhoto);
       } else {
         restorePreviousState();
         const fallbackMsg = payload.description || 'The AI could not generate this try-on. Try different photos — well-lit, full body shots work best.';
