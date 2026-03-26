@@ -391,11 +391,14 @@ export function useTryOnState() {
     trackEvent('tryon_clothing_uploaded');
   };
 
-  const autoSaveToProfile = async (resultBase64: string) => {
+  const autoSaveToProfile = async (resultBase64: string, capturedUserPhoto?: string, capturedClothingPhoto?: string) => {
+    const uPhoto = capturedUserPhoto || userPhoto;
+    const cPhoto = capturedClothingPhoto || clothingPhoto;
+    if (!uPhoto || !cPhoto) { console.warn('autoSaveToProfile: missing photos'); return; }
     try {
       const [userUrl, clothingUrl, resultUrl] = await Promise.all([
-        uploadBase64ToStorage(userPhoto!, 'user'),
-        uploadBase64ToStorage(clothingPhoto!, 'clothing'),
+        uploadBase64ToStorage(uPhoto, 'user'),
+        uploadBase64ToStorage(cPhoto, 'clothing'),
         uploadBase64ToStorage(resultBase64, 'result'),
       ]);
       const { data: insertedPost, error } = await supabase
