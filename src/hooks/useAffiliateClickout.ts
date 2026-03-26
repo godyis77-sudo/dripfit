@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { resolveClickoutByName } from "@/lib/affiliateRouter";
 import { trackEvent } from "@/lib/analytics";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PendingClickout {
   retailer: string;
