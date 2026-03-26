@@ -146,9 +146,13 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
     if (!user) return;
     setPosting(true);
     const newPublic = !post.is_public;
+    const publishAt = new Date().toISOString();
+    const updatePayload: { is_public: boolean; created_at?: string } = { is_public: newPublic };
+    if (newPublic) updatePayload.created_at = publishAt;
+
     const { error } = await supabase
       .from('tryon_posts')
-      .update({ is_public: newPublic })
+      .update(updatePayload)
       .eq('id', post.id)
       .eq('user_id', user.id);
     setPosting(false);
@@ -156,11 +160,15 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
       toast({ title: 'Error', description: newPublic ? 'Could not post to community.' : 'Could not remove from community.', variant: 'destructive' });
       return;
     }
+
+    const nextCreatedAt = newPublic ? publishAt : post.created_at;
     queryClient.setQueryData(['tryon-posts', user.id], (prev: TryOnPost[] | undefined) => {
       if (!prev) return prev;
-      return prev.map((item) => item.id === post.id ? { ...item, is_public: newPublic } : item);
+      return prev
+        .map((item) => item.id === post.id ? { ...item, is_public: newPublic, created_at: nextCreatedAt } : item)
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     });
-    queryClient.invalidateQueries({ queryKey: ['community-feed'] });
+    queryClient.invalidateQueries({ queryKey: ['community-feed'], exact: false, refetchType: 'all' });
     trackEvent(newPublic ? 'tryon_posted_to_community' : 'tryon_posted_to_community', { post_id: post.id });
     toast({ title: newPublic ? '🔥 Posted!' : 'Removed', description: newPublic ? 'Your look is now live in the community feed.' : 'Removed from Style Check Feed.' });
     onPostUpdated?.();
