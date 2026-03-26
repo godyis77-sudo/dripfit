@@ -744,8 +744,8 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
             { model: "google/gemini-3.1-flash-image-preview", prompt: footwearRetryPrompt, label: `${typeLabel}-flash-retry`, timeoutMs: 16_000 },
           ]
         : [
-            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary`, timeoutMs: 28_000 },
-            { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-retry`, timeoutMs: 20_000 },
+            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary`, timeoutMs: 38_000 },
+            { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-retry`, timeoutMs: 30_000 },
           ];
 
     if (shouldBypassPrimaryForIntimate) {
