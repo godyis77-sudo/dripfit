@@ -197,6 +197,9 @@ const Browse = () => {
           gender={genderFilter === 'all' ? null : genderFilter}
           selectedBrand={brandFilter}
           onBrandChange={setBrandFilter}
+          selectedBrands={brandFilters}
+          onBrandsChange={setBrandFilters}
+          multiSelect
         />
       </div>
 
