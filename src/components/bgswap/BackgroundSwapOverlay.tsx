@@ -79,6 +79,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   const [offsetX, setOffsetX] = useState(0); // -1 to 1
   const [offsetY, setOffsetY] = useState(0); // -1 to 1
   const dragRef = useRef<{ startX: number; startY: number; startOX: number; startOY: number } | null>(null);
+  const gridPanelRef = useRef<HTMLDivElement>(null);
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -157,6 +158,8 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       const url = await removeBackground(resultImageUrl);
       setTransparentSubject(url);
       setCachedSubject(resultImageUrl, url);
+      // Auto-scroll to background grid after removal
+      setTimeout(() => gridPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 300);
     } catch (err) {
       console.error('BG removal failed:', err);
       setRemovalError(true);
@@ -385,7 +388,8 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
 
       {/* Preview area — drag to reposition subject */}
       <div
-        className="flex-1 relative flex items-center justify-center overflow-hidden min-h-[30dvh] cursor-grab active:cursor-grabbing group touch-none"
+        className="relative flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing group touch-none"
+        style={{ height: 'min(55dvh, 420px)' }}
         onPointerDown={e => {
           if (!transparentSubject) return;
           e.preventDefault();
@@ -478,7 +482,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       )}
 
       {/* Background picker */}
-      <div className="flex-1 min-h-0 flex flex-col bg-card/90 backdrop-blur-xl border-t border-border rounded-t-2xl pb-[max(1rem,env(safe-area-inset-bottom))]">
+      <div ref={gridPanelRef} className="flex-1 min-h-0 flex flex-col bg-card/90 backdrop-blur-xl border-t border-border rounded-t-2xl pb-[max(1rem,env(safe-area-inset-bottom))]">
         {/* Search bar + category tabs */}
         <div className="shrink-0 px-3 pt-2.5 pb-1 flex items-center gap-2">
           <button
