@@ -452,13 +452,19 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
             alt="Original"
             className="max-h-full max-w-full rounded-xl object-contain pointer-events-none"
           />
-        ) : (
+        ) : transparentSubject ? (
           <canvas
             ref={canvasRef}
             width={540}
             height={960}
             className="max-h-full max-w-full rounded-xl object-contain pointer-events-none"
             style={{ imageRendering: 'auto' }}
+          />
+        ) : (
+          <img
+            src={resultImageUrl}
+            alt="Processing"
+            className="max-h-full max-w-full rounded-xl object-contain pointer-events-none opacity-60"
           />
         )}
         {transparentSubject && (
