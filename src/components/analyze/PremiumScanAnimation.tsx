@@ -163,7 +163,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
           background: 'radial-gradient(ellipse at 50% 45%, hsl(45 88% 50% / 0.15) 0%, transparent 60%)',
         }}
         animate={{ opacity: [0.2, 0.6, 0.2] }}
-        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
       />
 
       {/* Primary scan line — vibrant laser */}
