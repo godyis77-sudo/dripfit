@@ -37,6 +37,8 @@ interface LightingProfile {
   warmth: number;
   // Saturation intensity of the scene
   saturation: number;
+  // Floor-level color (bottom 15% of image)
+  floorR: number; floorG: number; floorB: number; floorBright: number;
 }
 
 /** Deep-analyze background lighting: directional, color temp, saturation. */
