@@ -797,9 +797,20 @@ export function useTryOnState() {
       const normalizedAccCat = (resolvedCategory || '').toLowerCase();
       const shouldReplace = REPLACE_CATEGORIES.includes(normalizedAccCat);
 
+      // For intimate/swimwear categories, use the ORIGINAL user photo to avoid safety blocks
+      const INTIMATE_REPLACE_CATEGORIES = [
+        'underwear', 'lingerie', 'bralette', 'bra', 'sports bra',
+        'swimwear', 'swimsuit', 'swimware', 'bikini', 'bikini-top', 'bikini-bottom', 'one-piece', 'one piece',
+      ];
+      const useOriginalPhoto = INTIMATE_REPLACE_CATEGORIES.includes(normalizedAccCat) && userPhoto;
+      let basePhoto = preparedResultImage;
+      if (useOriginalPhoto) {
+        basePhoto = await prepareTryOnImage(userPhoto);
+      }
+
       const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', {
         body: {
-          userPhoto: preparedResultImage,
+          userPhoto: basePhoto,
           clothingPhoto: preparedAccessoryPhoto,
           itemType: resolvedCategory || 'accessory',
           isLayering: !shouldReplace,
