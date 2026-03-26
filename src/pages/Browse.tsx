@@ -343,28 +343,36 @@ const Browse = () => {
                     >
                       <div className="flex flex-wrap gap-1.5 mt-1.5">
                         <button
-                          onClick={() => setRetailerFilter(null)}
+                          onClick={() => { setRetailerFilter(null); setRetailerFilters([]); }}
                           className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
-                            !retailerFilter
+                            !retailerFilter && retailerFilters.length === 0
                               ? 'btn-luxury text-primary-foreground'
                               : 'bg-card border border-primary/30 text-foreground'
                           }`}
                         >
                           All
                         </button>
-                        {availableRetailers.map(retailer => (
-                          <button
-                            key={retailer}
-                            onClick={() => setRetailerFilter(retailer === retailerFilter ? null : retailer)}
-                            className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
-                              retailerFilter === retailer
-                                ? 'btn-luxury text-primary-foreground'
-                                : 'bg-card border border-primary/30 text-foreground'
-                            }`}
-                          >
-                            {retailer}
-                          </button>
-                        ))}
+                        {availableRetailers.map(retailer => {
+                          const isSelected = retailerFilters.includes(retailer);
+                          return (
+                            <button
+                              key={retailer}
+                              onClick={() => {
+                                setRetailerFilter(null);
+                                setRetailerFilters(prev =>
+                                  isSelected ? prev.filter(r => r !== retailer) : [...prev, retailer]
+                                );
+                              }}
+                              className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
+                                isSelected
+                                  ? 'btn-luxury text-primary-foreground'
+                                  : 'bg-card border border-primary/30 text-foreground'
+                              }`}
+                            >
+                              {retailer}
+                            </button>
+                          );
+                        })}
                       </div>
                     </motion.div>
                   )}
