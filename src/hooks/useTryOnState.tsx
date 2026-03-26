@@ -561,6 +561,8 @@ export function useTryOnState() {
     setDescription(null);
     setLookItems([]);
     setLayerHistory([]);
+    setSavedToItems(false);
+    setShared(false);
     trackEvent('tryon_started', { tier: user ? 'authenticated' : 'guest' });
 
     try {
@@ -765,6 +767,7 @@ export function useTryOnState() {
       if (payload.resultImage) {
         setLayerHistory(prev => [...prev, resultImage!]);
         setResultImage(payload.resultImage);
+        setSavedToItems(false);
         window.scrollTo({ top: 0, behavior: 'smooth' });
         trackEvent('tryon_accessory_generated', { category: accessoryCategory });
         toast({ title: `${accessoryCategory || 'Accessory'} added!`, description: 'Keep adding items or finish your look.' });
