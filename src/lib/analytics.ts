@@ -184,7 +184,8 @@ type FunnelEvent =
   | 'tryon_drip_card_generated'
   | 'tryon_drip_card_downloaded'
   | 'tryon_add_item_to_result'
-  | 'style_check_share';
+  | 'style_check_share'
+  | 'fit_rec_click';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
