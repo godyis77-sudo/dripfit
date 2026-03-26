@@ -235,19 +235,13 @@ export function usePreferredBrands() {
 
 // Master brand list for search/select
 export const MASTER_BRANDS = [
-  // Luxury
-  'Gucci', 'Louis Vuitton', 'Prada', 'Balenciaga', 'Dior',
-  'Burberry', 'Versace', 'Saint Laurent', 'Givenchy', 'Fendi',
-  // Streetwear
-  'Supreme', 'Off-White', 'Stüssy', 'A Bathing Ape', 'Palace',
-  'Fear of God', 'Kith', 'Essentials', 'Corteiz', 'Trapstar',
-  // Mass-market & fast fashion
-  'SHEIN', 'Zara', 'H&M', 'Gap', 'Old Navy', 'Banana Republic',
-  'Uniqlo', 'Mango', 'Forever 21', 'Boohoo', 'PrettyLittleThing',
-  'Fashion Nova', 'Target', 'Topshop',
-  // Department & multi-brand
-  'Nordstrom', 'ASOS', 'Revolve', 'Amazon Fashion', 'Urban Outfitters',
-  'Abercrombie & Fitch', 'J.Crew',
-  // Athletic & activewear
-  'Nike', 'Adidas', 'Puma', 'Lululemon',
+  'A Bathing Ape', 'Abercrombie & Fitch', 'Adidas', 'Amazon Fashion', 'ASOS',
+  'Balenciaga', 'Banana Republic', 'Boohoo', 'Burberry', 'Corteiz',
+  'Dior', 'Essentials', 'Fashion Nova', 'Fear of God', 'Fendi',
+  'Forever 21', 'Gap', 'Givenchy', 'Gucci', 'H&M',
+  'J.Crew', 'Kith', 'Louis Vuitton', 'Lululemon', 'Mango',
+  'Nike', 'Nordstrom', 'Off-White', 'Old Navy', 'Palace',
+  'Prada', 'PrettyLittleThing', 'Puma', 'Revolve', 'Saint Laurent',
+  'SHEIN', 'Stüssy', 'Supreme', 'Target', 'Topshop',
+  'Trapstar', 'Uniqlo', 'Urban Outfitters', 'Versace', 'Zara',
 ] as const;

@@ -5,17 +5,17 @@
  */
 
 export const BRAND_GENRES = [
-  'Luxury',
-  'Streetwear',
   'Athletic',
-  'Casual',
-  'Minimalist',
-  'Loungewear',
   'Bohemian',
+  'Casual',
   'Contemporary',
+  'Loungewear',
+  'Luxury',
+  'Minimalist',
   'Outdoor & Active',
-  'Workwear & Heritage',
+  'Streetwear',
   'Surf & Skate',
+  'Workwear & Heritage',
 ] as const;
 
 export type BrandGenre = typeof BRAND_GENRES[number];

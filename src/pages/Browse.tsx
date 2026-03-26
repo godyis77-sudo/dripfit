@@ -52,11 +52,11 @@ const GENDER_OPTIONS = [
 type GenderKey = typeof GENDER_OPTIONS[number]['key'];
 
 const FIT_OPTIONS = [
-  'oversized', 'boxy', 'relaxed fit', 'slim fit', 'regular fit',
-  'cropped', 'tapered', 'drop shoulder', 'heavyweight', 'lightweight',
-  'athletic fit', 'classic fit', 'skinny fit', 'loose fit',
-  'straight fit', 'muscle fit', 'wide leg', 'fitted', 'tailored fit',
-  'bootcut', 'flare', 'baggy', 'longline', 'high rise', 'mid rise', 'low rise',
+  'athletic fit', 'baggy', 'bootcut', 'boxy', 'classic fit', 'cropped',
+  'drop shoulder', 'fitted', 'flare', 'heavyweight', 'high rise',
+  'lightweight', 'longline', 'loose fit', 'low rise', 'mid rise',
+  'muscle fit', 'oversized', 'regular fit', 'relaxed fit', 'skinny fit',
+  'slim fit', 'straight fit', 'tailored fit', 'tapered', 'wide leg',
 ] as const;
 
 const Browse = () => {
