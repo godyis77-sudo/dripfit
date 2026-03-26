@@ -593,7 +593,7 @@ export function useTryOnState() {
     setProductLink(''); setLookItems([]); setClothingSaved(false); setSavedToItems(false);
     setShowPostUI(false); setShowLookItems(false); setLayerHistory([]);
     setSelectedQuickPick(null); setActivePostId(null);
-    try { sessionStorage.removeItem(TRYON_STATE_KEY); localStorage.removeItem(TRYON_RESULT_KEY); } catch { /* ignore */ }
+    try { sessionStorage.removeItem(TRYON_STATE_KEY); localStorage.removeItem(TRYON_STATE_KEY); localStorage.removeItem(TRYON_RESULT_KEY); } catch { /* ignore */ }
     // userPhoto persists in localStorage (TRYON_USER_PHOTO_KEY) automatically
   };
 
