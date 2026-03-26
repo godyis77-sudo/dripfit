@@ -134,120 +134,139 @@ function applyLightingMatch(
   ctx.save();
   ctx.globalCompositeOperation = 'source-atop';
 
-  // 1. Ambient color tint — stronger when scene is more saturated
-  const tintAlpha = 0.06 + saturation * 0.14; // 0.06–0.20
-  ctx.globalAlpha = Math.min(0.22, tintAlpha);
+  // --- 1. Soft ambient color wash using 'multiply' for natural blending ---
+  // Multiply darkens naturally — use a lightened version of the scene color
+  const ambientR = Math.round(128 + (r - 128) * 0.4);
+  const ambientG = Math.round(128 + (g - 128) * 0.4);
+  const ambientB = Math.round(128 + (b - 128) * 0.4);
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.globalAlpha = 0.08 + saturation * 0.10; // 0.08–0.18
+  ctx.fillStyle = `rgb(${ambientR}, ${ambientG}, ${ambientB})`;
+  ctx.fillRect(subX, subY, subW, subH);
+
+  // --- 2. Overlay pass for mid-tone color integration ---
+  ctx.globalCompositeOperation = 'overlay';
+  ctx.globalAlpha = 0.04 + saturation * 0.06; // very subtle 0.04–0.10
   ctx.fillStyle = `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
   ctx.fillRect(subX, subY, subW, subH);
 
-  // 2. Directional side lighting — gradient shading based on L/R brightness diff
-  const lrDiff = lighting.leftBright - lighting.rightBright; // positive = light from left
-  const dirStrength = Math.min(0.18, Math.abs(lrDiff) / 400);
-  if (Math.abs(lrDiff) > 15) {
+  // Switch back to source-atop for remaining passes
+  ctx.globalCompositeOperation = 'source-atop';
+
+  // --- 3. Directional side lighting — smooth gradient from brighter side ---
+  const lrDiff = lighting.leftBright - lighting.rightBright;
+  const dirStrength = Math.min(0.14, Math.abs(lrDiff) / 500);
+  if (Math.abs(lrDiff) > 12) {
     ctx.globalAlpha = dirStrength;
+    // Bright side gets a soft colored highlight, dark side gets shadow
+    const brightSideColor = lrDiff > 0
+      ? `rgba(${Math.round(lighting.leftR)}, ${Math.round(lighting.leftG)}, ${Math.round(lighting.leftB)}, 0.5)`
+      : `rgba(${Math.round(lighting.rightR)}, ${Math.round(lighting.rightG)}, ${Math.round(lighting.rightB)}, 0.5)`;
     const dirGrad = lrDiff > 0
-      ? ctx.createLinearGradient(subX + subW, subY, subX, subY) // dark on right
-      : ctx.createLinearGradient(subX, subY, subX + subW, subY); // dark on left
-    dirGrad.addColorStop(0, 'rgb(0,0,0)');
-    dirGrad.addColorStop(0.6, 'rgba(0,0,0,0)');
+      ? ctx.createLinearGradient(subX, subY, subX + subW, subY)
+      : ctx.createLinearGradient(subX + subW, subY, subX, subY);
+    dirGrad.addColorStop(0, brightSideColor);
+    dirGrad.addColorStop(0.35, 'rgba(0,0,0,0)');
+    dirGrad.addColorStop(0.65, 'rgba(0,0,0,0)');
+    dirGrad.addColorStop(1, `rgba(0,0,0,0.4)`);
     ctx.fillStyle = dirGrad;
     ctx.fillRect(subX, subY, subW, subH);
   }
 
-  // 3. Top-down light direction
+  // --- 4. Top-down light gradient (overhead vs underlit) ---
   const tbDiff = lighting.topBright - lighting.bottomBright;
-  if (Math.abs(tbDiff) > 20) {
-    ctx.globalAlpha = Math.min(0.12, Math.abs(tbDiff) / 500);
+  if (Math.abs(tbDiff) > 15) {
+    ctx.globalAlpha = Math.min(0.10, Math.abs(tbDiff) / 600);
     const tbGrad = tbDiff > 0
-      ? ctx.createLinearGradient(subX, subY + subH, subX, subY) // light from top, darken bottom
-      : ctx.createLinearGradient(subX, subY, subX, subY + subH); // light from below, darken top
-    tbGrad.addColorStop(0, 'rgb(0,0,0)');
-    tbGrad.addColorStop(0.5, 'rgba(0,0,0,0)');
+      ? ctx.createLinearGradient(subX, subY, subX, subY + subH)
+      : ctx.createLinearGradient(subX, subY + subH, subX, subY);
+    tbGrad.addColorStop(0, `rgba(255,255,255,0.3)`);
+    tbGrad.addColorStop(0.4, 'rgba(0,0,0,0)');
+    tbGrad.addColorStop(1, `rgba(0,0,0,0.3)`);
     ctx.fillStyle = tbGrad;
     ctx.fillRect(subX, subY, subW, subH);
   }
 
-  // 4. Color temperature shift — warm orange or cool blue wash
-  if (Math.abs(warmth) > 0.15) {
-    ctx.globalAlpha = Math.min(0.10, Math.abs(warmth) * 0.06);
-    ctx.fillStyle = warmth > 0 ? 'rgb(255, 180, 80)' : 'rgb(100, 160, 255)';
+  // --- 5. Color temperature shift — warm or cool wash ---
+  if (Math.abs(warmth) > 0.12) {
+    ctx.globalAlpha = Math.min(0.07, Math.abs(warmth) * 0.04);
+    ctx.fillStyle = warmth > 0
+      ? `rgb(255, 200, 120)` // warm golden
+      : `rgb(120, 170, 255)`; // cool blue
     ctx.fillRect(subX, subY, subW, subH);
   }
 
-  // 5. Colored rim light from the brighter side
+  // --- 6. Colored rim/edge light from dominant side ---
   const rimSide = lighting.leftBright > lighting.rightBright ? 'left' : 'right';
-  const rimColor = rimSide === 'left'
-    ? `rgb(${Math.round(lighting.leftR)}, ${Math.round(lighting.leftG)}, ${Math.round(lighting.leftB)})`
-    : `rgb(${Math.round(lighting.rightR)}, ${Math.round(lighting.rightG)}, ${Math.round(lighting.rightB)})`;
-  ctx.globalAlpha = 0.10 + saturation * 0.06;
+  const rimR = rimSide === 'left' ? lighting.leftR : lighting.rightR;
+  const rimG = rimSide === 'left' ? lighting.leftG : lighting.rightG;
+  const rimB = rimSide === 'left' ? lighting.leftB : lighting.rightB;
+  ctx.globalAlpha = 0.06 + saturation * 0.05; // softer rim 0.06–0.11
 
-  if (rimSide === 'left') {
-    const rimGrad = ctx.createLinearGradient(subX, subY, subX + subW * 0.18, subY);
-    rimGrad.addColorStop(0, rimColor);
-    rimGrad.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = rimGrad;
-  } else {
-    const rimGrad = ctx.createLinearGradient(subX + subW, subY, subX + subW * 0.82, subY);
-    rimGrad.addColorStop(0, rimColor);
-    rimGrad.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = rimGrad;
-  }
+  const rimEdge = rimSide === 'left' ? subX : subX + subW;
+  const rimInner = rimSide === 'left' ? subX + subW * 0.12 : subX + subW * 0.88;
+  const rimGrad = ctx.createLinearGradient(rimEdge, subY, rimInner, subY);
+  rimGrad.addColorStop(0, `rgb(${Math.round(rimR)}, ${Math.round(rimG)}, ${Math.round(rimB)})`);
+  rimGrad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = rimGrad;
   ctx.fillRect(subX, subY, subW, subH);
 
-  // Opposite side gets a softer fill light
-  const fillColor = rimSide === 'left'
-    ? `rgb(${Math.round(lighting.rightR)}, ${Math.round(lighting.rightG)}, ${Math.round(lighting.rightB)})`
-    : `rgb(${Math.round(lighting.leftR)}, ${Math.round(lighting.leftG)}, ${Math.round(lighting.leftB)})`;
-  ctx.globalAlpha = 0.05;
-  if (rimSide === 'left') {
-    const fillGrad = ctx.createLinearGradient(subX + subW, subY, subX + subW * 0.85, subY);
-    fillGrad.addColorStop(0, fillColor);
-    fillGrad.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = fillGrad;
-  } else {
-    const fillGrad = ctx.createLinearGradient(subX, subY, subX + subW * 0.15, subY);
-    fillGrad.addColorStop(0, fillColor);
-    fillGrad.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = fillGrad;
-  }
+  // Opposite side softer fill light
+  const fillEdge = rimSide === 'left' ? subX + subW : subX;
+  const fillInner = rimSide === 'left' ? subX + subW * 0.90 : subX + subW * 0.10;
+  const fillR = rimSide === 'left' ? lighting.rightR : lighting.leftR;
+  const fillG = rimSide === 'left' ? lighting.rightG : lighting.leftG;
+  const fillB = rimSide === 'left' ? lighting.rightB : lighting.leftB;
+  ctx.globalAlpha = 0.03;
+  const fillGrad = ctx.createLinearGradient(fillEdge, subY, fillInner, subY);
+  fillGrad.addColorStop(0, `rgb(${Math.round(fillR)}, ${Math.round(fillG)}, ${Math.round(fillB)})`);
+  fillGrad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = fillGrad;
   ctx.fillRect(subX, subY, subW, subH);
 
-  // 6. Global brightness match
-  if (brightnessFactor < 0.80) {
-    ctx.globalAlpha = Math.min(0.30, (1 - brightnessFactor) * 0.35);
+  // --- 7. Global brightness match (darken or brighten to match scene) ---
+  if (brightnessFactor < 0.82) {
+    ctx.globalAlpha = Math.min(0.25, (1 - brightnessFactor) * 0.30);
     ctx.fillStyle = 'rgb(0, 0, 0)';
     ctx.fillRect(subX, subY, subW, subH);
-  } else if (brightnessFactor > 1.25) {
-    ctx.globalAlpha = Math.min(0.18, (brightnessFactor - 1) * 0.22);
+  } else if (brightnessFactor > 1.20) {
+    ctx.globalAlpha = Math.min(0.14, (brightnessFactor - 1) * 0.18);
     ctx.fillStyle = 'rgb(255, 255, 255)';
     ctx.fillRect(subX, subY, subW, subH);
   }
 
-  // 7. Floor-level color blending — match subject's lower 25% to background ground color
+  // --- 8. Floor-level color blending — feathered ground transition ---
   const floorColor = `rgb(${Math.round(lighting.floorR)}, ${Math.round(lighting.floorG)}, ${Math.round(lighting.floorB)})`;
-  const floorBlendStart = subY + subH * 0.70; // start blending at 70% down
+  const floorBlendStart = subY + subH * 0.75; // start at 75% (gentler)
   const floorGrad = ctx.createLinearGradient(subX, floorBlendStart, subX, subY + subH);
   floorGrad.addColorStop(0, 'rgba(0,0,0,0)');
+  floorGrad.addColorStop(0.5, 'rgba(0,0,0,0)');
   floorGrad.addColorStop(1, floorColor);
-  ctx.globalAlpha = 0.18 + lighting.saturation * 0.10; // 0.18–0.28
+  ctx.globalAlpha = 0.12 + lighting.saturation * 0.06; // softer: 0.12–0.18
   ctx.fillStyle = floorGrad;
-  ctx.fillRect(subX, floorBlendStart, subW, subH * 0.30);
+  ctx.fillRect(subX, floorBlendStart, subW, subH * 0.25);
 
-  // 8. Floor brightness match — darken or lighten feet area to match ground luminance
-  const subjectBottomBright = lighting.brightness; // approximate
-  const floorBrightDiff = lighting.floorBright - subjectBottomBright;
-  if (Math.abs(floorBrightDiff) > 15) {
+  // --- 9. Floor brightness match — subtle luminance correction at feet ---
+  const floorBrightDiff = lighting.floorBright - lighting.brightness;
+  if (Math.abs(floorBrightDiff) > 20) {
     const fbGrad = ctx.createLinearGradient(subX, floorBlendStart, subX, subY + subH);
     fbGrad.addColorStop(0, 'rgba(0,0,0,0)');
-    if (floorBrightDiff < 0) {
-      fbGrad.addColorStop(1, 'rgb(0,0,0)');
-    } else {
-      fbGrad.addColorStop(1, 'rgb(255,255,255)');
-    }
-    ctx.globalAlpha = Math.min(0.20, Math.abs(floorBrightDiff) / 400);
+    fbGrad.addColorStop(0.6, 'rgba(0,0,0,0)');
+    fbGrad.addColorStop(1, floorBrightDiff < 0 ? 'rgb(0,0,0)' : 'rgb(255,255,255)');
+    ctx.globalAlpha = Math.min(0.12, Math.abs(floorBrightDiff) / 500);
     ctx.fillStyle = fbGrad;
-    ctx.fillRect(subX, floorBlendStart, subW, subH * 0.30);
+    ctx.fillRect(subX, floorBlendStart, subW, subH * 0.25);
   }
+
+  // --- 10. Environment bounce light — upward glow from floor onto lower body ---
+  const bounceStart = subY + subH * 0.55;
+  const bounceGrad = ctx.createLinearGradient(subX, subY + subH, subX, bounceStart);
+  bounceGrad.addColorStop(0, floorColor);
+  bounceGrad.addColorStop(0.3, `rgba(${Math.round(lighting.floorR)}, ${Math.round(lighting.floorG)}, ${Math.round(lighting.floorB)}, 0.3)`);
+  bounceGrad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.globalAlpha = 0.05 + saturation * 0.03; // very subtle 0.05–0.08
+  ctx.fillStyle = bounceGrad;
+  ctx.fillRect(subX, bounceStart, subW, subH * 0.45);
 
   ctx.restore();
 }
