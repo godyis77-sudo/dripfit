@@ -315,6 +315,12 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
       const { error: upErr } = await supabase.storage.from('tryon-composites').upload(path, blob, { contentType: 'image/jpeg' });
       if (upErr) throw upErr;
 
+      const { data: signedData, error: signErr } = await supabase.storage
+        .from('tryon-composites')
+        .createSignedUrl(path, 60 * 60 * 24 * 365);
+      if (signErr || !signedData?.signedUrl) throw signErr || new Error('Could not create image URL');
+      const compositeViewUrl = signedData.signedUrl;
+
       const { error: compositeErr } = await supabase.from('saved_composites').insert({
         user_id: user.id,
         background_id: selectedBgId,
@@ -324,9 +330,8 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
       if (compositeErr) throw compositeErr;
 
       // Also auto-save to tryon_posts so it appears in Profile → Try-Ons
-      const compositePublicUrl = supabase.storage.from('tryon-composites').getPublicUrl(path).data.publicUrl;
-      const safeUserPhotoUrl = userPhotoUrl?.startsWith('http') ? userPhotoUrl : compositePublicUrl;
-      const safeClothingPhotoUrl = clothingPhotoUrl?.startsWith('http') ? clothingPhotoUrl : compositePublicUrl;
+      const safeUserPhotoUrl = userPhotoUrl?.startsWith('http') ? userPhotoUrl : compositeViewUrl;
+      const safeClothingPhotoUrl = clothingPhotoUrl?.startsWith('http') ? clothingPhotoUrl : compositeViewUrl;
 
       const { data: insertedPost, error: tryOnErr } = await supabase
         .from('tryon_posts')
@@ -334,7 +339,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
           user_id: user.id,
           user_photo_url: safeUserPhotoUrl,
           clothing_photo_url: safeClothingPhotoUrl,
-          result_photo_url: compositePublicUrl,
+          result_photo_url: compositeViewUrl,
           clothing_category: normalizeTryOnCategory(clothingCategory),
           is_public: false,
         })
