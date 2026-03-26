@@ -86,7 +86,7 @@ export const ALL_PRODUCT_CATEGORIES = [
   { key: 'sunglasses', label: 'Sunglasses' },
   { key: 'swimwear', label: 'Swimwear' },
   { key: 'tops', label: 'Tops' },
-  { key: 'underwear', label: 'Underwear' },
+  
 ] as const;
 
 const CAPTION_SUGGESTIONS: Record<string, string[]> = {
