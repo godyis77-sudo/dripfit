@@ -550,7 +550,6 @@ const TryOnResultSection = ({
                                 { key: 'price_asc' as const, label: 'Price: Low → High' },
                                 { key: 'price_desc' as const, label: 'Price: High → Low' },
                                 { key: 'brand_az' as const, label: 'Brand: A → Z' },
-                                { key: 'genre' as const, label: 'Genre' },
                               ]).map(opt => (
                                 <button
                                   key={opt.key}
