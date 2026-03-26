@@ -95,12 +95,16 @@ function analyzeBackgroundLighting(
     const lBr = 0.299 * avg(lR, lCnt) + 0.587 * avg(lG, lCnt) + 0.114 * avg(lB, lCnt);
     const rBr = 0.299 * avg(rR, rCnt) + 0.587 * avg(rG, rCnt) + 0.114 * avg(rB, rCnt);
 
+    const flrR = avg(fR, fCnt), flrG = avg(fG, fCnt), flrB = avg(fB, fCnt);
+    const flrBr = 0.299 * flrR + 0.587 * flrG + 0.114 * flrB;
+
     return {
       r: gR, g: gG, b: gB, brightness: gBr,
       leftR: avg(lR, lCnt), leftG: avg(lG, lCnt), leftB: avg(lB, lCnt), leftBright: lBr,
       rightR: avg(rR, rCnt), rightG: avg(rG, rCnt), rightB: avg(rB, rCnt), rightBright: rBr,
       topBright: avg(topB, topCnt), bottomBright: avg(botB, botCnt),
       warmth, saturation,
+      floorR: flrR, floorG: flrG, floorB: flrB, floorBright: flrBr,
     };
   } catch {
     return neutral;
