@@ -369,27 +369,36 @@ Deno.serve(async (req) => {
       }
     };
 
-    // ── CHANGE 4: Run extraction + description in PARALLEL for intimate items ──
-    // The clean flat-lay from extraction is critical — text-bridge with NO image gets IMAGE_PROHIBITED_CONTENT.
-    // With a clean flat-lay included, the model has visual context and is less likely to refuse.
+    // ── CHANGE 4: Run extraction + description for intimate items ──
+    // The clean flat-lay from extraction is critical for many intimate items.
+    // For underwear safe-mode, we avoid attaching ANY product image to image-generation calls,
+    // but we still attempt to derive a text-only garment fingerprint (colors/logos/waistband/pattern)
+    // from the product photo to keep outputs closer to the exact item.
     let garmentOnlyImage = clothingImageInput;
     let preExtractedGarment = false;
     let aiGarmentDescription: string | null = null;
 
-    // For underwear-like items, avoid touching product images at all (high refusal rate).
-    if (enableIntimateExtraction && !isUnderwearSafeMode) {
-      // Run extraction AND description in parallel to save time
-      const [extractedImage, description] = await Promise.all([
-        extractIntimateGarment(),
-        describeGarmentViaAI(),
-      ]);
-      aiGarmentDescription = description;
-      if (extractedImage) {
-        garmentOnlyImage = extractedImage;
-        preExtractedGarment = true;
-        console.log(`Intimate parallel: extraction=SUCCESS, description=${!!description}, took ${Date.now() - startedAt}ms`);
+    if (enableIntimateExtraction) {
+      if (isUnderwearSafeMode) {
+        // Safe-mode: DO NOT generate or attach a garment-only image reference; only compute text cues.
+        aiGarmentDescription = await describeGarmentViaAI();
+        console.log(
+          `Underwear safe-mode: description=${!!aiGarmentDescription} (${aiGarmentDescription?.length || 0} chars), took ${Date.now() - startedAt}ms`,
+        );
       } else {
-        console.log(`Intimate parallel: extraction=FAILED, description=${!!description}, took ${Date.now() - startedAt}ms`);
+        // Run extraction AND description in parallel to save time
+        const [extractedImage, description] = await Promise.all([
+          extractIntimateGarment(),
+          describeGarmentViaAI(),
+        ]);
+        aiGarmentDescription = description;
+        if (extractedImage) {
+          garmentOnlyImage = extractedImage;
+          preExtractedGarment = true;
+          console.log(`Intimate parallel: extraction=SUCCESS, description=${!!description}, took ${Date.now() - startedAt}ms`);
+        } else {
+          console.log(`Intimate parallel: extraction=FAILED, description=${!!description}, took ${Date.now() - startedAt}ms`);
+        }
       }
     }
 
@@ -430,6 +439,10 @@ Deno.serve(async (req) => {
       }
 
       const colorText = primaryColor ? `${primaryColor} ${pattern}` : pattern;
+      const brandTextRaw = (productBrand || "").trim();
+      const brandText = brandTextRaw ? sanitizeIntimateText(brandTextRaw) : "";
+      const hasLogo = /\b(logo|branded)\b/.test(context);
+      const hasWaistband = /\b(waistband|elastic)\b/.test(context);
       const detailText = /\btriangle|tri\b/.test(context)
         ? "thin straps and triangle cups"
         : /\bone piece|one-piece\b/.test(context)
@@ -438,7 +451,7 @@ Deno.serve(async (req) => {
             ? "textured fabric detailing"
             : "minimal modern silhouette";
 
-      return `Reference garment: ${colorText} ${garmentType} with ${detailText}. Keep it commercially styled and fully covering.`;
+      return `Reference garment: ${colorText} ${garmentType} with ${detailText}.${brandText ? ` Brand: ${brandText}.` : ""}${hasWaistband || hasLogo ? " Include a clearly visible branded waistband/logo detail consistent with the product." : ""} Keep it commercially styled and fully covering.`;
     };
 
     const intimateTextReference = buildIntimateReferenceFromMetadata();
@@ -1062,7 +1075,13 @@ TASK: Add the belt from Image B onto the person in Image A at the natural waistl
       
       if ((textDesc && textDesc.length > 15) || hasCleanFlatLay) {
         const descForPrompt = isUnderwearSafeMode
-          ? "commercially appropriate fully-covered athletic styling (no nudity, no exposed base-layer areas). Create an athletic outfit inspired by the brand/colors (e.g., cropped athletic top + high-waisted athletic shorts)."
+          ? (
+              // Keep it fully covered, but preserve ITEM-SPECIFIC cues (color/pattern/waistband/logo/brand) via textDesc.
+              `${(textDesc || "").trim()}\nCommercially appropriate fully-covered athletic styling (no nudity, no exposed base-layer areas). Preserve the exact colorway/pattern and any visible branded waistband/logo cues.`
+                .replace(/\s+/g, " ")
+                .trim() ||
+              "Commercially appropriate fully-covered athletic styling (no nudity, no exposed base-layer areas). Preserve the exact colorway/pattern and any visible branded waistband/logo cues."
+            )
           : (textDesc || "athletic fitted garment matching the reference image");
         console.log(`Layer 3 text-bridge: hasCleanFlatLay=${hasCleanFlatLay}, textDesc=${!!textDesc} (${textDesc?.length || 0} chars)`);
         const textBridgePrompt = makeTextBridgePrompt(descForPrompt, hasCleanFlatLay);
