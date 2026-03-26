@@ -511,7 +511,7 @@ const TryOnResultSection = ({
                         className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
                           accGender === opt.key
                             ? 'btn-luxury text-primary-foreground'
-                            : 'bg-background border border-border text-foreground/70'
+                            : 'bg-card border border-primary/30 text-foreground'
                         }`}
                       >
                         {opt.label}
