@@ -1,7 +1,7 @@
 import { forwardRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Camera, ShoppingBag, X } from 'lucide-react';
+import { Camera, ShoppingBag, X, Sparkles } from 'lucide-react';
 import FeatureIcon, { featureIcons } from '@/components/ui/FeatureIcon';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
@@ -11,6 +11,7 @@ import { useProfileInfo, useLatestScan, useTrendingFits } from '@/hooks/useProfi
 import TrendingFitsGrid from '@/components/home/TrendingFitsGrid';
 import HomeFAB from '@/components/home/HomeFAB';
 import BrandLogo from '@/components/ui/BrandLogo';
+import { useForYourFit } from '@/hooks/useForYourFit';
 
 /* ── Price filter config ── */
 const PRICE_FILTERS = [
