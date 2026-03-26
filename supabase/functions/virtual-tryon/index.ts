@@ -201,12 +201,15 @@ Deno.serve(async (req) => {
       return "athletic garment";
     })();
 
+    const isCropTopOrSportsBra =
+      /\b(sports?\s*bra|crop\s*top|bralette|support\s*top)\b/.test(normalizedProductContext);
+
     const isTopOnlyGarment =
-      /\b(top|bralette|bra|tankini top|bikini top|triangle)\b/.test(normalizedProductContext) &&
+      (isCropTopOrSportsBra || /\b(top|bralette|bra|tankini top|bikini top|triangle)\b/.test(normalizedProductContext)) &&
       !/\b(bottom|brief|bottoms|short|shorts|set|two piece|2 piece|one piece|one-piece)\b/.test(normalizedProductContext);
 
     const neutralItemLabel = isUnderwear
-      ? "athletic base-layer garment"
+      ? (isCropTopOrSportsBra ? "cropped athletic top" : "athletic base-layer garment")
       : isSwimwear
         ? swimwearGarmentLabel
         : isIntimate
@@ -214,7 +217,9 @@ Deno.serve(async (req) => {
           : itemType;
     const promptIntimateLabel = isSwimwear
       ? (isTopOnlyGarment ? "athletic crop top" : "athletic activewear piece")
-      : neutralItemLabel;
+      : isCropTopOrSportsBra
+        ? "cropped athletic top"
+        : neutralItemLabel;
 
     const isSwimwearOnly = isSwimwear && !isUnderwear;
     const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
