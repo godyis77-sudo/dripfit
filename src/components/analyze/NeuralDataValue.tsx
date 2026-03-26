@@ -22,12 +22,12 @@ const NeuralDataValue = ({ value, isHeight = false }: Props) => {
       const r1 = Math.floor(Math.random() * 900 + 100);
       const r2 = Math.floor(Math.random() * 900 + 100);
       setDisplay(`${r1}–${r2}`);
-    }, 40);
+    }, 30);
 
     const timer = window.setTimeout(() => {
       clearInterval(intervalRef.current);
       setScrambling(false);
-    }, 600);
+    }, 300);
 
     return () => {
       clearInterval(intervalRef.current);

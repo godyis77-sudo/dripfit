@@ -24,7 +24,7 @@ const MESSAGES = [
   'Generating recommendations…',
 ];
 
-const TOTAL_SCAN_TIME = 30000;
+const TOTAL_SCAN_TIME = 15000;
 const REVEAL_ORDER = ['height', 'shoulder', 'chest', 'bust', 'waist', 'hips', 'inseam'];
 
 interface AnalyzeState {
@@ -60,7 +60,7 @@ const Analyze = () => {
     if (effectRan.current) return;
     effectRan.current = true;
 
-    const msgInterval = setInterval(() => setMsgIdx(p => (p + 1) % MESSAGES.length), 2500);
+    const msgInterval = setInterval(() => setMsgIdx(p => (p + 1) % MESSAGES.length), 1250);
 
     const progressInterval = setInterval(() => {
       setProgress(p => Math.min(p + (90 / (TOTAL_SCAN_TIME / 100)), 90));
@@ -70,7 +70,7 @@ const Analyze = () => {
     const scanStart = Date.now();
     const scanLineInterval = setInterval(() => {
       const elapsed = Date.now() - scanStart;
-      const cycleMs = 4500; // one full sweep cycle — slower for 30s
+      const cycleMs = 2250; // one full sweep cycle — 2x faster
       const phase = (elapsed % cycleMs) / cycleMs; // 0→1
       // Triangle wave: 0→1→0
       const tri = phase < 0.5 ? phase * 2 : 2 - phase * 2;
@@ -157,7 +157,7 @@ const Analyze = () => {
         state: { result: scanResult },
         replace: true,
       });
-    }, 2800);
+    }, 1400);
   };
 
   const analyzePhotos = async () => {

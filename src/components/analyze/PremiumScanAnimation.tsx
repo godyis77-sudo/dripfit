@@ -163,7 +163,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
           background: 'radial-gradient(ellipse at 50% 45%, hsl(45 88% 50% / 0.15) 0%, transparent 60%)',
         }}
         animate={{ opacity: [0.2, 0.6, 0.2] }}
-        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
       />
 
       {/* Primary scan line — vibrant laser */}
@@ -266,7 +266,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               ],
             }}
             transition={{
-              duration: 1.6,
+              duration: 0.8,
               ease: [0.16, 1, 0.3, 1],
               times: [0, 0.2, 0.7, 1],
             }}
@@ -302,7 +302,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
           key={i}
           className={`absolute ${pos} ${border} border-primary w-7 h-7 rounded-sm`}
           animate={{ opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.4, ease: 'easeInOut' }}
+          transition={{ duration: 1.25, repeat: Infinity, delay: i * 0.2, ease: 'easeInOut' }}
           style={{ boxShadow: '0 0 8px 2px hsl(45 88% 50% / 0.25)' }}
         />
       ))}
@@ -336,7 +336,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
                 transform: 'translateY(-50%)',
               }}
               animate={{ opacity: [0.6, 1, 0.6] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              transition={{ duration: 1, repeat: Infinity }}
             />
             <div
               className="backdrop-blur-md rounded-md px-2 py-1"
@@ -388,7 +388,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               style={{ background: 'hsl(45 90% 75%)' }}
               initial={{ opacity: 0 }}
               animate={{ opacity: [0, 0.95, 0] }}
-              transition={{ duration: 0.7, ease: 'easeOut' }}
+              transition={{ duration: 0.35, ease: 'easeOut' }}
             />
 
             {/* Sustained gold illumination */}
@@ -399,7 +399,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: [0, 1, 0.55, 1, 0.7] }}
-              transition={{ duration: 2.5, ease: 'easeInOut', times: [0, 0.12, 0.4, 0.65, 1] }}
+              transition={{ duration: 1.25, ease: 'easeInOut', times: [0, 0.12, 0.4, 0.65, 1] }}
             />
 
             {/* Gold ring burst */}
@@ -412,7 +412,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               }}
               initial={{ opacity: 0, scale: 0.94 }}
               animate={{ opacity: [0, 1, 0.5, 1], scale: [0.94, 1.03, 0.98, 1] }}
-              transition={{ duration: 2.2, ease: 'easeOut' }}
+              transition={{ duration: 1.1, ease: 'easeOut' }}
             />
 
             {/* Radial rays */}
@@ -423,7 +423,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               }}
               initial={{ opacity: 0, rotate: 0 }}
               animate={{ opacity: [0, 0.7, 0.4], rotate: 25 }}
-              transition={{ duration: 3, ease: 'easeOut' }}
+              transition={{ duration: 1.5, ease: 'easeOut' }}
             />
 
             {/* "SCAN COMPLETE" text */}
@@ -431,7 +431,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               className="absolute inset-0 flex items-center justify-center pointer-events-none z-30"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: [0, 1, 1], scale: [0.8, 1.05, 1] }}
-              transition={{ duration: 1.2, delay: 0.8, ease: luxuryEase }}
+              transition={{ duration: 0.6, delay: 0.4, ease: luxuryEase }}
             >
               <div
                 className="px-6 py-3 rounded-xl backdrop-blur-lg"

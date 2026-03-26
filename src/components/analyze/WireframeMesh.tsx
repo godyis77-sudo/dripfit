@@ -9,7 +9,7 @@ const WireframeMesh = () => (
     className="absolute inset-0 w-full h-full pointer-events-none z-[28]"
     initial={{ opacity: 0, scale: 0.85 }}
     animate={{ opacity: [0, 0.7, 0.3, 0], scale: [0.85, 1.08, 1.12] }}
-    transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+    transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
   >
     {/* Head */}
     <ellipse cx="100" cy="38" rx="18" ry="22" fill="none" stroke="hsl(45 88% 55%)" strokeWidth="0.6" opacity="0.6" />
