@@ -39,7 +39,8 @@ const Backgrounds = () => {
   usePageMeta({ title: 'Backgrounds' });
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Delay to ensure content is rendered before scrolling
+    requestAnimationFrame(() => window.scrollTo(0, 0));
   }, []);
   const navigate = useNavigate();
 
