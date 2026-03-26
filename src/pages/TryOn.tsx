@@ -88,7 +88,7 @@ const TryOn = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const activeFilterCount = (s.selectedBrand ? 1 : 0) + (s.selectedGenre ? 1 : 0) + (s.selectedRetailer ? 1 : 0) + (s.selectedFit ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (s.category !== 'all' ? 1 : 0);
+  const activeFilterCount = (s.selectedBrands.length || (s.selectedBrand ? 1 : 0)) + (s.selectedGenre ? 1 : 0) + (s.selectedRetailers.length || (s.selectedRetailer ? 1 : 0)) + (s.selectedFit ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (s.category !== 'all' ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
