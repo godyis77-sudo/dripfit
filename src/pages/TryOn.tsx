@@ -150,7 +150,7 @@ const TryOn = () => {
                         className={`flex-1 px-2.5 py-2 min-h-[44px] rounded-xl text-[12px] font-bold transition-all active:scale-[0.97] ${
                           genderFilter === g.key
                             ? 'btn-luxury text-primary-foreground'
-                            : 'bg-card border border-border text-foreground/70'
+                            : 'bg-card border border-primary/30 text-foreground'
                         }`}
                       >
                         {g.label}
@@ -159,7 +159,7 @@ const TryOn = () => {
                   </div>
                   <button
                     onClick={() => navigate('/browse')}
-                    className="shrink-0 px-3 py-2 min-h-[44px] rounded-xl text-[12px] font-bold bg-card border border-border text-foreground/70 active:scale-[0.97] transition-all flex items-center gap-1"
+                    className="shrink-0 px-3 py-2 min-h-[44px] rounded-xl text-[12px] font-bold bg-card border border-primary/30 text-foreground active:scale-[0.97] transition-all flex items-center gap-1"
                   >
                     <ShoppingBag className="h-3.5 w-3.5" /> Browse
                   </button>
@@ -171,7 +171,7 @@ const TryOn = () => {
                     className={`relative w-full h-11 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold ${
                       activeFilterCount > 0
                         ? 'btn-luxury text-primary-foreground'
-                        : 'bg-card border border-border text-foreground/70'
+                        : 'bg-card border border-primary/30 text-foreground'
                     }`}
                   >
                     <SlidersHorizontal className="h-4 w-4" />
