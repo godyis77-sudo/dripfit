@@ -421,7 +421,7 @@ const TryOn = () => {
                     <CategoryProductGrid key={cat.key} category={cat.key} title={cat.label} collapsed={true} maxItems={100} gender={effectiveGender} brand={s.selectedBrands.length > 0 ? undefined : (s.selectedBrand || undefined)} brands={s.selectedBrands.length > 0 ? s.selectedBrands : undefined} genre={s.selectedGenre as any} retailer={s.selectedRetailers.length > 0 ? undefined : (s.selectedRetailer || undefined)} retailers={s.selectedRetailers.length > 0 ? s.selectedRetailers : undefined} fitProfile={s.selectedFit || undefined} onSelectProduct={s.handleSelectProduct} />
                   ))
                 ) : (
-                  <CategoryProductGrid category={s.category} title={`Shop ${CATEGORIES.find(c => c.key === s.category)?.label || s.category}`} collapsed={false} maxItems={100} gender={effectiveGender} brand={s.selectedBrand || undefined} genre={s.selectedGenre as any} retailer={s.selectedRetailer || undefined} fitProfile={s.selectedFit || undefined} onSelectProduct={s.handleSelectProduct} />
+                  <CategoryProductGrid category={s.category} title={`Shop ${CATEGORIES.find(c => c.key === s.category)?.label || s.category}`} collapsed={false} maxItems={100} gender={effectiveGender} brand={s.selectedBrands.length > 0 ? undefined : (s.selectedBrand || undefined)} brands={s.selectedBrands.length > 0 ? s.selectedBrands : undefined} genre={s.selectedGenre as any} retailer={s.selectedRetailers.length > 0 ? undefined : (s.selectedRetailer || undefined)} retailers={s.selectedRetailers.length > 0 ? s.selectedRetailers : undefined} fitProfile={s.selectedFit || undefined} onSelectProduct={s.handleSelectProduct} />
                 )}
               </div>
             )}
