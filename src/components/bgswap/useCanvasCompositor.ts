@@ -15,7 +15,10 @@ interface CompositeOptions {
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.crossOrigin = 'anonymous';
+    // Only set crossOrigin for http(s) URLs — blob: and data: URLs fail with CORS
+    if (src.startsWith('http')) {
+      img.crossOrigin = 'anonymous';
+    }
     img.onload = () => resolve(img);
     img.onerror = reject;
     img.src = src;
