@@ -569,7 +569,7 @@ const TryOnResultSection = ({
                           {/* Category */}
                           <div>
                             <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Category</p>
-                            <div className="flex flex-wrap gap-1.5 max-h-[140px] overflow-y-auto">
+                            <div className="flex flex-wrap gap-1.5">
                               <button
                                 onClick={() => { setAccessoryCategory(null); setShowAllCategories(true); }}
                                 className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
@@ -581,43 +581,43 @@ const TryOnResultSection = ({
                                 All
                               </button>
                               {[
-                                { key: 'tops', label: 'Tops' },
-                                { key: 't-shirts', label: 'T-Shirts' },
-                                { key: 'shirts', label: 'Shirts' },
-                                { key: 'polos', label: 'Polos' },
-                                { key: 'sweaters', label: 'Sweaters' },
-                                { key: 'hoodies', label: 'Hoodies' },
+                                { key: 'accessories', label: 'Accessories' },
+                                { key: 'activewear', label: 'Activewear' },
+                                { key: 'bags', label: 'Bags' },
+                                { key: 'belts', label: 'Belts' },
+                                { key: 'blazers', label: 'Blazers' },
+                                { key: 'boots', label: 'Boots' },
                                 { key: 'bottom', label: 'Bottoms' },
-                                { key: 'pants', label: 'Pants' },
+                                { key: 'coats', label: 'Coats' },
+                                { key: 'dresses', label: 'Dresses' },
+                                { key: 'hats', label: 'Hats' },
+                                { key: 'heels', label: 'Heels' },
+                                { key: 'hoodies', label: 'Hoodies' },
+                                { key: 'jackets', label: 'Jackets' },
                                 { key: 'jeans', label: 'Jeans' },
+                                { key: 'jewelry', label: 'Jewelry' },
+                                { key: 'jumpsuits', label: 'Jumpsuits' },
+                                { key: 'leggings', label: 'Leggings' },
+                                { key: 'loafers', label: 'Loafers' },
+                                { key: 'loungewear', label: 'Loungewear' },
+                                { key: 'outerwear', label: 'Outerwear' },
+                                { key: 'pants', label: 'Pants' },
+                                { key: 'polos', label: 'Polos' },
+                                { key: 'sandals', label: 'Sandals' },
+                                { key: 'scarves', label: 'Scarves' },
+                                { key: 'shirts', label: 'Shirts' },
+                                { key: 'shoes', label: 'Shoes' },
                                 { key: 'shorts', label: 'Shorts' },
                                 { key: 'skirts', label: 'Skirts' },
-                                { key: 'leggings', label: 'Leggings' },
-                                { key: 'dresses', label: 'Dresses' },
-                                { key: 'jumpsuits', label: 'Jumpsuits' },
-                                { key: 'outerwear', label: 'Outerwear' },
-                                { key: 'jackets', label: 'Jackets' },
-                                { key: 'coats', label: 'Coats' },
-                                { key: 'blazers', label: 'Blazers' },
-                                { key: 'vests', label: 'Vests' },
-                                { key: 'shoes', label: 'Shoes' },
                                 { key: 'sneakers', label: 'Sneakers' },
-                                { key: 'boots', label: 'Boots' },
-                                { key: 'sandals', label: 'Sandals' },
-                                { key: 'loafers', label: 'Loafers' },
-                                { key: 'heels', label: 'Heels' },
-                                { key: 'activewear', label: 'Activewear' },
-                                { key: 'swimwear', label: 'Swimwear' },
-                                { key: 'loungewear', label: 'Loungewear' },
-                                { key: 'underwear', label: 'Underwear' },
-                                { key: 'accessories', label: 'Accessories' },
-                                { key: 'bags', label: 'Bags' },
-                                { key: 'hats', label: 'Hats' },
-                                { key: 'jewelry', label: 'Jewelry' },
-                                { key: 'watches', label: 'Watches' },
                                 { key: 'sunglasses', label: 'Sunglasses' },
-                                { key: 'belts', label: 'Belts' },
-                                { key: 'scarves', label: 'Scarves' },
+                                { key: 'sweaters', label: 'Sweaters' },
+                                { key: 'swimwear', label: 'Swimwear' },
+                                { key: 't-shirts', label: 'T-Shirts' },
+                                { key: 'tops', label: 'Tops' },
+                                { key: 'underwear', label: 'Underwear' },
+                                { key: 'vests', label: 'Vests' },
+                                { key: 'watches', label: 'Watches' },
                               ].filter(cat => isCategoryVisibleForGender(cat.key, accGender)).map(cat => (
                                 <button
                                   key={cat.key}
