@@ -254,6 +254,20 @@ export function useTryOnState() {
     persistState({ savedToItems });
   }, [savedToItems, persistState]);
 
+  // Check if current clothing is already saved to wardrobe on mount/product change
+  useEffect(() => {
+    if (!user || !productLink || savedToItems) return;
+    supabase
+      .from('clothing_wardrobe')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('product_link', productLink)
+      .limit(1)
+      .then(({ data }) => {
+        if (data && data.length > 0) setSavedToItems(true);
+      });
+  }, [user, productLink]);
+
   const [hasSavedProfile, setHasSavedProfile] = useState(() => {
     try { return JSON.parse(localStorage.getItem('dripcheck_scans') || '[]').length > 0; } catch { return false; }
   });
