@@ -100,7 +100,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
 
   const displayed = expanded ? visibleProducts.slice(0, Math.min(visibleCount, maxItems)) : visibleProducts.slice(0, 4);
   const totalAvailable = expanded ? Math.min(visibleProducts.length, maxItems) : visibleProducts.length;
-  const hasMore = expanded && displayed.length < totalAvailable;
+  const hasMore = displayed.length < totalAvailable;
 
   return (
     <div ref={ref}>
@@ -176,14 +176,21 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
         ))}
       </div>
 
-      {/* Load More */}
+      {/* Load More / View More */}
       {hasMore && (
         <div className="flex justify-center mt-3">
           <Button
             className="rounded-lg btn-luxury text-primary-foreground h-10 px-6 text-xs font-bold"
-            onClick={() => setVisibleCount(prev => prev + PAGE_SIZE)}
+            onClick={() => {
+              if (!expanded) {
+                setExpanded(true);
+                setVisibleCount(PAGE_SIZE);
+                return;
+              }
+              setVisibleCount(prev => prev + PAGE_SIZE);
+            }}
           >
-            Load More
+            {expanded ? 'Load More' : 'View More'}
           </Button>
         </div>
       )}
