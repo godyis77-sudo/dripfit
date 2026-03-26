@@ -111,7 +111,7 @@ async function fetchCatalogProducts(filters: CatalogFilters): Promise<CatalogPro
   }
 
   // Swimwear-specific overrides
-  const swimCategories = ['swimwear', 'underwear', 'lingerie'];
+  const swimCategories = ['swimwear'];
   const isSwim = swimCategories.includes(category?.toLowerCase() ?? '');
 
   const params: Record<string, unknown> = {

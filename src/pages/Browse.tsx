@@ -301,7 +301,7 @@ const Browse = () => {
                     { key: 'swimwear', label: 'Swimwear' },
                     { key: 't-shirts', label: 'T-Shirts' },
                     { key: 'tops', label: 'Tops' },
-                    { key: 'underwear', label: 'Underwear' },
+                    
                     { key: 'vests', label: 'Vests' },
                     { key: 'watches', label: 'Watches' },
                   ].filter(cat => cat.key === 'all' || isCategoryVisibleForGender(cat.key, genderFilter)).map(cat => (
