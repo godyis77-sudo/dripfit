@@ -709,7 +709,8 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
           )}
         </div>
       </div>
-    </motion.div>
+    </motion.div>,
+    document.body
   );
 };
 
