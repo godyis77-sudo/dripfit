@@ -248,6 +248,12 @@ const Profile = () => {
           ))}
         </div>
 
+        {/* Milestone Badges */}
+        <MilestoneBadges />
+
+        {/* Invite Friends */}
+        <InviteFriendsCard />
+
         <AnimatePresence mode="wait">
           {activeTab === 'tryons' ? (
             <motion.div key="tryons" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}>
