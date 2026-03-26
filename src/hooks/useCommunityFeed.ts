@@ -82,7 +82,7 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     if (data.length > 0) setCursor(data[data.length - 1].created_at);
   };
 
-  // ── NEW / TRENDING feed ──
+  // ── NEW feed ──
   const fetchPosts = useCallback(async (): Promise<Post[]> => {
     resetPagination();
     const { data, error } = await supabase.from('tryon_posts').select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_urls').eq('is_public', true).order('created_at', { ascending: false }).limit(PAGE_SIZE);
@@ -92,7 +92,6 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
       if (seeds && seeds.length > 0) {
         const validSeeds = (seeds as SeedPost[]).filter(s => isValidImageUrl(s.image_url));
         const seedPosts = validSeeds.map(seedToPost);
-        if (filter === 'trending') seedPosts.sort((a, b) => (b.rating_count || 0) - (a.rating_count || 0));
         setHasMore(false);
         return seedPosts;
       }
@@ -100,8 +99,24 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
       return [];
     }
     processBatch(data);
-    return enrichPosts(data, filter);
-  }, [filter]);
+    return enrichPosts(data);
+  }, []);
+
+  // ── TRENDING feed (engagement-weighted) ──
+  const fetchTrendingPosts = useCallback(async (): Promise<Post[]> => {
+    resetPagination();
+    const { data, error } = await supabase.rpc('get_trending_posts', {
+      p_limit: PAGE_SIZE,
+      p_offset: 0,
+      p_hours_window: 336, // 2 weeks
+    } as any);
+    if (error) { console.error('Trending RPC error:', error); return fetchPosts(); }
+    const rows = (data as any[]) || [];
+    if (rows.length === 0) return fetchPosts(); // fall back to newest
+    if (rows.length < PAGE_SIZE) setHasMore(false);
+    if (rows.length > 0) setCursor(rows[rows.length - 1].created_at);
+    return enrichPosts(rows);
+  }, [fetchPosts]);
 
   const loadMorePosts = useCallback(async () => {
     if (!cursor || !hasMore || loadingMore) return;
