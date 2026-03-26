@@ -199,7 +199,7 @@ const TryOn = () => {
                                 className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                   sort === opt.key
                                     ? 'btn-luxury text-primary-foreground'
-                                    : 'bg-background border border-border text-foreground/70'
+                                    : 'bg-card border border-primary/30 text-foreground'
                                 }`}
                               >
                                 {opt.label}
@@ -217,7 +217,7 @@ const TryOn = () => {
                               className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                 s.category === 'all'
                                   ? 'btn-luxury text-primary-foreground'
-                                  : 'bg-background border border-border text-foreground/70'
+                                  : 'bg-card border border-primary/30 text-foreground'
                               }`}
                             >
                               <ShoppingBag className="h-3 w-3 inline mr-0.5" /> All
@@ -229,7 +229,7 @@ const TryOn = () => {
                                 className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                   s.category === c.key
                                     ? 'btn-luxury text-primary-foreground'
-                                    : 'bg-background border border-border text-foreground/70'
+                                    : 'bg-card border border-primary/30 text-foreground'
                                 }`}
                               >
                                 {c.label}
@@ -273,7 +273,7 @@ const TryOn = () => {
                                     className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                       !s.selectedRetailer
                                         ? 'btn-luxury text-primary-foreground'
-                                        : 'bg-background border border-border text-foreground/70'
+                                        : 'bg-card border border-primary/30 text-foreground'
                                     }`}
                                   >
                                     All
@@ -285,7 +285,7 @@ const TryOn = () => {
                                       className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                                         s.selectedRetailer === retailer
                                           ? 'btn-luxury text-primary-foreground'
-                                          : 'bg-background border border-border text-foreground/70'
+                                          : 'bg-card border border-primary/30 text-foreground'
                                       }`}
                                     >
                                       {retailer}
@@ -322,7 +322,7 @@ const TryOn = () => {
                                     className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                       !s.selectedGenre
                                         ? 'btn-luxury text-primary-foreground'
-                                        : 'bg-background border border-border text-foreground/70'
+                                        : 'bg-card border border-primary/30 text-foreground'
                                     }`}
                                   >
                                     All
@@ -334,7 +334,7 @@ const TryOn = () => {
                                       className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                         s.selectedGenre === genre
                                           ? 'btn-luxury text-primary-foreground'
-                                          : 'bg-background border border-border text-foreground/70'
+                                          : 'bg-card border border-primary/30 text-foreground'
                                       }`}
                                     >
                                       {genre}
@@ -374,7 +374,7 @@ const TryOn = () => {
                                         className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                                           s.selectedFit === fit
                                             ? 'btn-luxury text-primary-foreground'
-                                            : 'bg-background border border-border text-foreground/70'
+                                            : 'bg-card border border-primary/30 text-foreground'
                                         }`}
                                       >
                                         {fit}
