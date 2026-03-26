@@ -79,6 +79,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   const [offsetX, setOffsetX] = useState(0); // -1 to 1
   const [offsetY, setOffsetY] = useState(0); // -1 to 1
   const dragRef = useRef<{ startX: number; startY: number; startOX: number; startOY: number } | null>(null);
+  const pinchRef = useRef<{ initialDist: number; initialScale: number } | null>(null);
   const gridPanelRef = useRef<HTMLDivElement>(null);
 
   // Search state
