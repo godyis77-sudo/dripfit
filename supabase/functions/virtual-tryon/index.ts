@@ -616,7 +616,7 @@ Professional retail catalog quality. No text/watermark.`
           const fbOuterwear = ["jacket","coat","blazer","vest","parka","outerwear"].some(t => hasContextTerm(fbContext, t));
           const fbFullBody = ["dress","dresses","jumpsuit","jumpsuits","romper","overalls","full"].some(t => hasContextTerm(fbContext, t));
           const scopeHint = fbFullBody
-            ? "REPLACE ALL clothing — remove pants, jeans, tops, shirts, everything. The person should wear ONLY the dress/jumpsuit/romper from Image B. No old clothing should be visible."
+            ? "Put the dress/jumpsuit/romper from Image B onto the person. Remove any pants/jeans/trousers visible so they don't show beneath the new garment. Keep existing footwear."
             : fbBottom
             ? "Replace ONLY the lower-body clothing (pants/jeans/shorts/skirt). Keep the existing top, shirt, and shoes from Image A UNCHANGED."
             : fbOuterwear
