@@ -791,7 +791,7 @@ export function useTryOnState() {
         'top', 'tops', 'bottom', 'bottoms', 'shoes', 'sneakers', 'boots', 'heels', 'loafers', 'sandals',
         'jeans', 'pants', 'shorts', 'skirts', 'skirt', 'dress', 'dresses', 'jacket', 'jackets', 'coat',
         'coats', 'blazer', 'blazers', 'outerwear', 'sweaters', 'hoodies', 'shirts', 'swimwear', 'swimsuit', 'swimware',
-        'bikini', 'bikini-top', 'bikini-bottom', 'one-piece', 'one piece',
+        'bikini', 'bikini-top', 'bikini-bottom', 'one-piece', 'one piece', 'lingerie', 'bralette', 'bra', 'sports bra',
         'loungewear', 'loungeware', 'activewear', 'polos', 't-shirts', 'vests', 'jumpsuits', 'leggings',
       ];
       const normalizedAccCat = (resolvedCategory || '').toLowerCase();
