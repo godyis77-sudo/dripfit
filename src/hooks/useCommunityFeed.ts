@@ -269,8 +269,9 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     if (filter === 'shop') { fetchRetailers(); return []; }
     if (filter === 'following') return fetchFollowingFeed();
     if (filter === 'similar') return fetchSimilarFitPosts();
+    if (filter === 'trending') return fetchTrendingPosts();
     return fetchPosts();
-  }, [filter, fetchPosts, fetchFollowingFeed, fetchSimilarFitPosts, fetchRetailers]);
+  }, [filter, fetchPosts, fetchTrendingPosts, fetchFollowingFeed, fetchSimilarFitPosts, fetchRetailers]);
 
   const feedQuery = useQuery({
     queryKey: ['community-feed', filter, shopGender, userId, followingIdsKey],
