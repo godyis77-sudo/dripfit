@@ -42,6 +42,13 @@ export function useSwipeNavigation() {
     const isValidSwipe = Math.abs(dx) >= SWIPE_THRESHOLD || velocity >= SWIPE_VELOCITY;
     if (!isValidSwipe) return;
 
+    // Special case: swiping right on /browse/* goes back to /home
+    if (dx > 0 && location.pathname.startsWith('/browse')) {
+      hapticFeedback('light');
+      navigate('/home');
+      return;
+    }
+
     if (dx < 0 && currentIndex < TAB_PATHS.length - 1) {
       hapticFeedback('light');
       navigate(TAB_PATHS[currentIndex + 1]);
