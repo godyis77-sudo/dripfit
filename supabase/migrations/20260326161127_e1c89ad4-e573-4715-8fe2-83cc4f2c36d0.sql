@@ -1,0 +1,1 @@
+UPDATE backgrounds SET is_active = false WHERE source IN ('pexels', 'unsplash');
