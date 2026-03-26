@@ -459,7 +459,9 @@ Deno.serve(async (req) => {
       : isSetGarment
         ? "Image B shows a MATCHING SET (top + bottom). Replace ALL clothing from Image A with BOTH pieces from Image B. Show ONLY what is visible in Image B — do NOT add leggings, pants, shorts, or any garment not shown in Image B."
         : isTopOnlyGarment
-          ? "Image B shows a TOP-only garment. Replace the upper body clothing from Image A with the top from Image B. Keep the person's EXISTING lower-body clothing from Image A unchanged — do NOT replace bottoms."
+          ? (isCropTopOrSportsBra
+            ? "Image B shows a CROP TOP / SPORTS BRA — a SHORT top that ends ABOVE the waist or at the midriff. Replace ONLY the upper-body clothing from Image A with this cropped top. The top must remain SHORT and cropped — do NOT extend it into a full-length shirt or tank top. Keep the person's EXISTING lower-body clothing (pants, jeans, shorts, skirt, leggings) from Image A EXACTLY as they are — do NOT replace, remove, or change the bottoms in any way."
+            : "Image B shows a TOP-only garment. Replace the upper body clothing from Image A with the top from Image B. Keep the person's EXISTING lower-body clothing from Image A unchanged — do NOT replace bottoms.")
           : isBottomOnlyIntimate
             ? "Image B shows a BOTTOM-only garment. Replace only the lower-body clothing from Image A with the bottom from Image B. Keep the person's EXISTING upper-body clothing from Image A unchanged — do NOT add leggings, pants, or extra garments."
           : "Replace the outfit in Image A with ONLY the COMPLETE garment from Image B — show every part of it (all straps, panels, cups, ties, etc). Show ONLY clothing visible in Image B. Do NOT add leggings, pants, or any extra garment not present in Image B.";
