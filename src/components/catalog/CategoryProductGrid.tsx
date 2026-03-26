@@ -19,8 +19,10 @@ interface CategoryProductGridProps {
   priceFilter?: { min: number; max: number } | null;
   gender?: string;
   brand?: string;
+  brands?: string[];
   genre?: BrandGenre | null;
   retailer?: string;
+  retailers?: string[];
   fitProfile?: string;
 }
 
