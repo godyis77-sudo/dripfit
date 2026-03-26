@@ -187,15 +187,17 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
     }
   }, [resultImageUrl, safeResultUrl, removeBackground, toast]);
 
-  // Remove background on mount (wait for safeResultUrl to be ready)
+  // Remove background on mount (wait for safeResultUrl to be ready, or use cache)
   const hasStartedRemoval = useRef(false);
   useEffect(() => {
     if (hasStartedRemoval.current) return;
-    // Wait until we have a data URL or it's already a data URL
-    if (!safeResultUrl.startsWith('data:') && !safeResultUrl.startsWith('blob:')) return;
+    // If there's a cached subject, start immediately
+    const hasCached = !!getCachedSubject(resultImageUrl);
+    const urlReady = safeResultUrl.startsWith('data:') || safeResultUrl.startsWith('blob:') || safeResultUrl.startsWith('http');
+    if (!hasCached && !urlReady) return;
     hasStartedRemoval.current = true;
     attemptRemoval();
-  }, [safeResultUrl, attemptRemoval]);
+  }, [safeResultUrl, attemptRemoval, resultImageUrl]);
 
   // Update preview when subject, background, scale, or position changes
   useEffect(() => {
