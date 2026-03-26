@@ -146,29 +146,57 @@ const TryOnResultSection = ({
   const [sharingDripCard, setSharingDripCard] = useState(false);
   const [shareFallbackOpen, setShareFallbackOpen] = useState(false);
   const [shareImageUrl, setShareImageUrl] = useState<string | null>(null);
+  const [shareCardImageUrl, setShareCardImageUrl] = useState<string | null>(null);
   const dripCardRef = useRef<HTMLDivElement>(null);
   const [itemPreview, setItemPreview] = useState<ProductPreviewData | null>(null);
   const { pendingClickout, beginClickout, confirmClickout, cancelClickout } = useAffiliateClickout({ extraProps: { source: 'tryon_item_preview' } });
+
+  const dataUrlToFile = (dataUrl: string, fileName: string) => {
+    const [meta, base64] = dataUrl.split(',');
+    if (!meta || !base64) throw new Error('Invalid share image data');
+    const mimeMatch = meta.match(/data:(.*?);base64/);
+    const mime = mimeMatch?.[1] || 'image/png';
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+    return new File([bytes], fileName, { type: mime });
+  };
+
+  const waitForImages = async (root: HTMLElement) => {
+    const images = Array.from(root.querySelectorAll('img'));
+    await Promise.all(images.map((img) => {
+      if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+      return new Promise<void>((resolve) => {
+        const done = () => resolve();
+        img.addEventListener('load', done, { once: true });
+        img.addEventListener('error', done, { once: true });
+      });
+    }));
+  };
 
   const handleShareDripCard = async () => {
     setSharingDripCard(true);
     trackEvent('tryon_drip_card_share_start');
     try {
       const { toPng } = await import('html-to-image');
-      // Allow DripCard to mount
-      await new Promise(r => setTimeout(r, 300));
+
+      const shareReadyImage = (resultImage.startsWith('http://') || resultImage.startsWith('https://'))
+        ? await imageUrlToBase64(resultImage).catch(() => resultImage)
+        : resultImage;
+
+      setShareCardImageUrl(shareReadyImage);
+      await new Promise(r => setTimeout(r, 380));
       if (!dripCardRef.current) throw new Error('DripCard not mounted');
+
+      await waitForImages(dripCardRef.current);
       const dataUrl = await toPng(dripCardRef.current, { width: 1080, height: 1920, pixelRatio: 1 });
-      const res = await fetch(dataUrl);
-      const blob = await res.blob();
-      const file = new File([blob], 'drip-fit-tryon.png', { type: 'image/png' });
+      const file = dataUrlToFile(dataUrl, 'drip-fit-tryon.png');
       trackEvent('tryon_drip_card_generated');
 
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({ text: 'Check out my fit — verified by DRIPFIT ✔', url: 'https://dripfitcheck.lovable.app', files: [file] });
       } else {
-        const url = URL.createObjectURL(blob);
-        setShareImageUrl(url);
+        setShareImageUrl(dataUrl);
         setShareFallbackOpen(true);
       }
     } catch (err: any) {
@@ -178,6 +206,7 @@ const TryOnResultSection = ({
       }
     } finally {
       setSharingDripCard(false);
+      setShareCardImageUrl(null);
     }
   };
 
@@ -1025,14 +1054,14 @@ const TryOnResultSection = ({
           measurements={{}}
           heightCm={0}
           recommendedSize={selectedQuickPick?.name ? 'TRY-ON' : '—'}
-          tryOnImageUrl={resultImage}
+          tryOnImageUrl={shareCardImageUrl || resultImage}
           brandMatch={selectedQuickPick ? { brand: selectedQuickPick.brand, size: selectedQuickPick.name, confidence: 0.92 } : null}
           displayName={authUser?.user_metadata?.display_name || null}
         />
       )}
 
       {/* Share fallback dialog */}
-      <Dialog open={shareFallbackOpen} onOpenChange={(open) => { if (!open) { setShareFallbackOpen(false); if (shareImageUrl) { URL.revokeObjectURL(shareImageUrl); setShareImageUrl(null); } } }}>
+      <Dialog open={shareFallbackOpen} onOpenChange={(open) => { if (!open) { setShareFallbackOpen(false); if (shareImageUrl?.startsWith('blob:')) URL.revokeObjectURL(shareImageUrl); setShareImageUrl(null); } }}>
         <DialogContent className="max-w-[320px] bg-card border-border p-4 rounded-2xl">
           <DialogTitle className="text-foreground text-sm font-bold mb-3 text-center">
             Share Your Fit
