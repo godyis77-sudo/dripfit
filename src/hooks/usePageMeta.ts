@@ -8,6 +8,7 @@ interface PageMeta {
   title?: string;
   description?: string;
   path?: string;
+  ogImage?: string;
 }
 
 function setMeta(name: string, content: string, attr: 'name' | 'property' = 'name') {
