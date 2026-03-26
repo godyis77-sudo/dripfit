@@ -608,6 +608,7 @@ REMOVE current footwear from Image A and REPLACE with the exact shoes from Image
 Image A = person. Image B = target accessory reference.${productHint}
 ${fullBodyImageHint}
 Place the target accessory from Image B onto the person in Image A at realistic scale and lighting.
+${itemLower.includes('belt') ? 'BELT: Must be clearly visible around the waist OVER clothing. Show full belt with buckle/chain details.' : ''}
 Match target item exactly. Keep face/body from Image A. ${bgFallbackHint} No text/watermark.`
       : isIntimateGarment
         ? `Professional catalog photo edit. Image A = fitness model. Image B = athletic garment from retailer.
