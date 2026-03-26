@@ -45,6 +45,21 @@ interface SearchPhoto {
 
 const BG_SUBJECT_CACHE_KEY = 'dripcheck_bg_subject';
 
+const TRYON_CATEGORY_ALLOWED = new Set(['tops', 'bottoms', 'outerwear', 'dress', 'jumpsuit', 'other'] as const);
+
+function normalizeTryOnCategory(value?: string): 'tops' | 'bottoms' | 'outerwear' | 'dress' | 'jumpsuit' | 'other' {
+  const raw = (value || '').trim().toLowerCase();
+  if (!raw) return 'other';
+  if (TRYON_CATEGORY_ALLOWED.has(raw as any)) return raw as 'tops' | 'bottoms' | 'outerwear' | 'dress' | 'jumpsuit' | 'other';
+
+  if (['top', 'shirt', 'shirts', 't-shirt', 't-shirts', 'tee', 'tees', 'blouse', 'hoodie', 'hoodies', 'sweater', 'sweaters', 'polo', 'polos'].includes(raw)) return 'tops';
+  if (['bottom', 'bottoms', 'pant', 'pants', 'jean', 'jeans', 'short', 'shorts', 'skirt', 'skirts', 'legging', 'leggings'].includes(raw)) return 'bottoms';
+  if (['outerwear', 'jacket', 'jackets', 'coat', 'coats', 'blazer', 'blazers', 'vest', 'vests'].includes(raw)) return 'outerwear';
+  if (['dress', 'dresses'].includes(raw)) return 'dress';
+  if (['jumpsuit', 'jumpsuits', 'romper', 'rompers'].includes(raw)) return 'jumpsuit';
+  return 'other';
+}
+
 async function blobToDataUrl(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -320,7 +335,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
           user_photo_url: safeUserPhotoUrl,
           clothing_photo_url: safeClothingPhotoUrl,
           result_photo_url: compositePublicUrl,
-          clothing_category: clothingCategory || 'clothing',
+          clothing_category: normalizeTryOnCategory(clothingCategory),
           is_public: false,
         })
         .select('id, result_photo_url, clothing_photo_url, caption, is_public, created_at, product_urls')
