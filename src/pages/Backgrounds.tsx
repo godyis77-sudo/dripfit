@@ -42,6 +42,23 @@ const Backgrounds = () => {
     window.scrollTo(0, 0);
   }, []);
   const navigate = useNavigate();
+
+  // Swipe-right to go back to try-on page
+  const swipeStart = useRef<{ x: number; y: number; t: number } | null>(null);
+  const handleSwipeStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length > 1) { swipeStart.current = null; return; }
+    const t = e.touches[0];
+    swipeStart.current = { x: t.clientX, y: t.clientY, t: Date.now() };
+  }, []);
+  const handleSwipeEnd = useCallback((e: React.TouchEvent) => {
+    if (!swipeStart.current) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - swipeStart.current.x;
+    const dy = Math.abs(t.clientY - swipeStart.current.y);
+    swipeStart.current = null;
+    if (dy > 40) return;
+    if (dx > 100) navigate('/tryon');
+  }, [navigate]);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -170,7 +187,7 @@ const Backgrounds = () => {
   const isLoading = categoriesLoading || backgroundsLoading;
 
   return (
-    <div className="min-h-screen bg-background pb-safe-tab">
+    <div className="min-h-screen bg-background pb-safe-tab" onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
       <PageHeader title="Backgrounds" />
 
       {/* Large preview area */}
