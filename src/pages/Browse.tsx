@@ -329,7 +329,7 @@ const Browse = () => {
                   className="flex items-center justify-between w-full"
                 >
                   <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
-                    Retailer {retailerFilter ? `· ${retailerFilter}` : ''}
+                    Retailer {retailerFilters.length > 0 ? `· ${retailerFilters.length} selected` : retailerFilter ? `· ${retailerFilter}` : ''}
                   </p>
                   <ChevronDown className={`h-3.5 w-3.5 text-foreground/50 transition-transform ${retailerOpen ? 'rotate-180' : ''}`} />
                 </button>
