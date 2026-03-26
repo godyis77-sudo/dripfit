@@ -61,7 +61,7 @@ interface TryOnResultSectionProps {
   onShare: () => void;
   onTryAnother: () => void;
   onSaveToItems: () => void;
-  onAddAccessory: (photo: string, category: string | null) => void;
+  onAddAccessory: (photo: string, category: string | null, product?: CatalogProduct | null) => void;
   onSetLookItems: (fn: (prev: LookItem[]) => LookItem[]) => void;
   onToast: (opts: any) => void;
 }
@@ -102,6 +102,7 @@ const TryOnResultSection = ({
   const [showAccessorySection, setShowAccessorySection] = useState(false);
   const [accessoryPhoto, setAccessoryPhoto] = useState<string | null>(null);
   const [accessoryCategory, setAccessoryCategory] = useState<string | null>(null);
+  const [selectedAccessoryProduct, setSelectedAccessoryProduct] = useState<CatalogProduct | null>(null);
   const [showAllCategories, setShowAllCategories] = useState(true);
   const [showShopPicker, setShowShopPicker] = useState(false);
   const [accFiltersOpen, setAccFiltersOpen] = useState(false);
@@ -248,6 +249,7 @@ const TryOnResultSection = ({
     const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = '';
+    setSelectedAccessoryProduct(null);
     try {
       const compressed = await compressImage(file);
       setter(compressed);
@@ -272,10 +274,15 @@ const TryOnResultSection = ({
 
   // Show the LATEST item details (last in the list), not the first
   const latestItem = displayItems.length > 0 ? displayItems[displayItems.length - 1] : null;
-  const shopUrl = latestItem?.url || productLink || selectedQuickPick?.product_url;
-  const productName = selectedQuickPick?.name || latestItem?.name;
-  const productBrand = selectedQuickPick?.brand || latestItem?.brand;
-  const productPrice = selectedQuickPick?.price_cents || latestItem?.price_cents;
+  const latestMatchesQuickPick = !!(
+    latestItem?.url &&
+    selectedQuickPick?.product_url &&
+    latestItem.url === selectedQuickPick.product_url
+  );
+  const shopUrl = latestItem?.url || selectedQuickPick?.product_url || productLink;
+  const productName = latestItem?.name || selectedQuickPick?.name;
+  const productBrand = latestItem?.brand || selectedQuickPick?.brand;
+  const productPrice = latestItem?.price_cents ?? selectedQuickPick?.price_cents;
   const isPostSelected = !shared && showPostUI && isPublic;
 
   return (
@@ -336,26 +343,26 @@ const TryOnResultSection = ({
           <button
             type="button"
             onClick={() => {
-              const imgUrl = selectedQuickPick?.image_url || latestItem?.image_url || clothingPhoto || '';
+              const imgUrl = latestItem?.image_url || selectedQuickPick?.image_url || clothingPhoto || '';
               if (imgUrl) {
                 setItemPreview({
-                  id: selectedQuickPick?.id,
+                  id: latestMatchesQuickPick ? selectedQuickPick?.id : undefined,
                   image_url: imgUrl,
                   name: productName || 'Product',
                   brand: productBrand || '',
                   price_cents: productPrice,
                   product_url: shopUrl || null,
                   category: category || undefined,
-                  fit_profile: selectedQuickPick?.fit_profile,
-                  fabric_composition: selectedQuickPick?.fabric_composition,
-                  style_genre: selectedQuickPick?.style_genre,
+                  fit_profile: latestMatchesQuickPick ? selectedQuickPick?.fit_profile : undefined,
+                  fabric_composition: latestMatchesQuickPick ? selectedQuickPick?.fabric_composition : undefined,
+                  style_genre: latestMatchesQuickPick ? selectedQuickPick?.style_genre : undefined,
                 });
               }
             }}
             className="w-full flex items-center gap-3 bg-card border border-border rounded-xl px-3 py-2.5 mb-3 active:scale-[0.98] transition-transform text-left"
           >
-            {(selectedQuickPick?.image_url || latestItem?.image_url || clothingPhoto) && (
-              <img src={selectedQuickPick?.image_url || latestItem?.image_url || clothingPhoto!} alt="" className="w-10 h-10 rounded-lg object-cover border border-border shrink-0" />
+            {(latestItem?.image_url || selectedQuickPick?.image_url || clothingPhoto) && (
+              <img src={latestItem?.image_url || selectedQuickPick?.image_url || clothingPhoto!} alt="" className="w-10 h-10 rounded-lg object-cover border border-border shrink-0" />
             )}
             <div className="flex-1 min-w-0">
               {productBrand && <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{productBrand}</p>}
@@ -778,19 +785,19 @@ const TryOnResultSection = ({
                       <div className="flex-1 space-y-1.5">
                         <p className="text-[10px] text-primary font-medium flex items-center gap-1"><Check className="h-3 w-3" /> {accessoryCategory || 'Accessory'} ready</p>
                         <div className="flex gap-1.5">
-                          <button onClick={() => { setAccessoryPhoto(null); setAccessoryCategory(null); }} className="text-[11px] text-primary underline font-medium">Browse</button>
+                          <button onClick={() => { setAccessoryPhoto(null); setAccessoryCategory(null); setSelectedAccessoryProduct(null); }} className="text-[11px] text-primary underline font-medium">Browse</button>
                           <button onClick={() => accessoryPhotoRef.current?.click()} className="text-[11px] text-muted-foreground underline">Gallery</button>
-                          <button onClick={() => { setAccessoryPhoto(null); setAccessoryCategory(null); }} className="text-[11px] text-destructive underline">Remove</button>
+                          <button onClick={() => { setAccessoryPhoto(null); setAccessoryCategory(null); setSelectedAccessoryProduct(null); }} className="text-[11px] text-destructive underline">Remove</button>
                         </div>
                       </div>
                     </div>
                   ) : (
                     <>
                       <div className="flex gap-1.5 mb-2">
-                        <button onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryCameraRef.current?.click(); }} className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg bg-card border border-border text-foreground/70 active:scale-95 transition-transform">
+                        <button onClick={() => { setSelectedAccessoryProduct(null); if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryCameraRef.current?.click(); }} className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg bg-card border border-border text-foreground/70 active:scale-95 transition-transform">
                           <Camera className="h-3 w-3" /><span className="text-[10px] font-semibold">Camera</span>
                         </button>
-                        <button onClick={() => { if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryPhotoRef.current?.click(); }} className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg bg-card border border-border text-foreground/70 active:scale-95 transition-transform">
+                        <button onClick={() => { setSelectedAccessoryProduct(null); if (!accessoryCategory) setAccessoryCategory('shoes'); accessoryPhotoRef.current?.click(); }} className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg bg-card border border-border text-foreground/70 active:scale-95 transition-transform">
                           <ImageIcon className="h-3 w-3" /><span className="text-[10px] font-semibold">Gallery</span>
                         </button>
                       </div>
@@ -804,7 +811,16 @@ const TryOnResultSection = ({
                               retailer={accRetailerFilter ?? undefined}
                               fitProfile={accFitFilter ?? undefined}
                               onSelectProduct={async (product) => {
-                                if (product.product_url) onSetLookItems(prev => [...prev, { brand: product.brand, name: product.name, url: product.product_url!, price_cents: product.price_cents, image_url: product.image_url }]);
+                                const resolvedCategory = product.category || cat.key;
+                                setAccessoryCategory(resolvedCategory);
+                                setSelectedAccessoryProduct(product);
+                                onSetLookItems(prev => [...prev, {
+                                  brand: product.brand,
+                                  name: product.name,
+                                  url: product.product_url || '',
+                                  price_cents: product.price_cents,
+                                  image_url: product.image_url,
+                                }]);
                                 trackEvent('catalog_product_clicked', { brand: product.brand, category: cat.key });
                                 try { setAccessoryPhoto(await imageUrlToBase64(product.image_url)); } catch { setAccessoryPhoto(product.image_url); }
                               }}
@@ -821,7 +837,15 @@ const TryOnResultSection = ({
                             retailer={accRetailerFilter ?? undefined}
                             fitProfile={accFitFilter ?? undefined}
                             onSelectProduct={async (product) => {
-                              if (product.product_url) onSetLookItems(prev => [...prev, { brand: product.brand, name: product.name, url: product.product_url!, price_cents: product.price_cents, image_url: product.image_url }]);
+                                setAccessoryCategory(product.category || accessoryCategory);
+                                setSelectedAccessoryProduct(product);
+                                onSetLookItems(prev => [...prev, {
+                                  brand: product.brand,
+                                  name: product.name,
+                                  url: product.product_url || '',
+                                  price_cents: product.price_cents,
+                                  image_url: product.image_url,
+                                }]);
                               trackEvent('catalog_product_clicked', { brand: product.brand, category: accessoryCategory });
                               try { setAccessoryPhoto(await imageUrlToBase64(product.image_url)); } catch { setAccessoryPhoto(product.image_url); }
                             }}
@@ -832,7 +856,7 @@ const TryOnResultSection = ({
                   )}
 
                   {!addingAccessory && (
-                    <Button className="w-full h-10 rounded-lg text-[13px] font-bold tracking-wide btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30" onClick={() => { onAddAccessory(accessoryPhoto!, accessoryCategory); setAccessoryPhoto(null); setAccessoryCategory(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }} disabled={!accessoryPhoto}>
+                    <Button className="w-full h-10 rounded-lg text-[13px] font-bold tracking-wide btn-luxury text-primary-foreground active:scale-[0.97] transition-transform disabled:opacity-30" onClick={() => { onAddAccessory(accessoryPhoto!, accessoryCategory, selectedAccessoryProduct); setAccessoryPhoto(null); setAccessoryCategory(null); setSelectedAccessoryProduct(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }} disabled={!accessoryPhoto}>
                       <Sparkles className="mr-1.5 h-3.5 w-3.5" /> Add {accessoryCategory ? accessoryCategory.charAt(0).toUpperCase() + accessoryCategory.slice(1) : 'Accessory'}
                     </Button>
                   )}
