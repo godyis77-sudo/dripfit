@@ -375,7 +375,7 @@ export function useCanvasCompositor() {
 
     const lighting = bgImg
       ? analyzeBackgroundLighting(ctx, width, height)
-      : (() => { const c = hexToRgb(backgroundColor); const br = 0.299 * c.r + 0.587 * c.g + 0.114 * c.b; return { ...c, brightness: br, leftR: c.r, leftG: c.g, leftB: c.b, leftBright: br, rightR: c.r, rightG: c.g, rightB: c.b, rightBright: br, topBright: br, bottomBright: br, warmth: 0, saturation: 0 } as LightingProfile; })();
+      : (() => { const c = hexToRgb(backgroundColor); const br = 0.299 * c.r + 0.587 * c.g + 0.114 * c.b; return { ...c, brightness: br, leftR: c.r, leftG: c.g, leftB: c.b, leftBright: br, rightR: c.r, rightG: c.g, rightB: c.b, rightBright: br, topBright: br, bottomBright: br, warmth: 0, saturation: 0, floorR: c.r, floorG: c.g, floorB: c.b, floorBright: br } as LightingProfile; })();
 
     const subjectImg = await loadImage(subjectUrl);
     const scale = (height * finalScale) / subjectImg.height;
