@@ -50,7 +50,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
   useEffect(() => {
     setFailedImageIds(new Set());
     setVisibleCount(PAGE_SIZE);
-  }, [category, products.length]);
+  }, [category]);
 
   // Scroll lock handled by ProductPreviewModal
 
@@ -98,9 +98,11 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
     return null;
   }
 
-  const displayed = expanded ? visibleProducts.slice(0, Math.min(visibleCount, maxItems)) : visibleProducts.slice(0, 4);
-  const totalAvailable = expanded ? Math.min(visibleProducts.length, maxItems) : visibleProducts.length;
-  const hasMore = displayed.length < totalAvailable;
+  const COLLAPSED_COUNT = 4;
+  const displayed = expanded ? visibleProducts.slice(0, Math.min(visibleCount, maxItems)) : visibleProducts.slice(0, COLLAPSED_COUNT);
+  const hasMore = expanded
+    ? displayed.length < Math.min(visibleProducts.length, maxItems)
+    : visibleProducts.length > COLLAPSED_COUNT;
 
   return (
     <div ref={ref}>
