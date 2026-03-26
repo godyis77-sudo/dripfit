@@ -363,6 +363,11 @@ export function useTryOnState() {
     return allUrls;
   };
 
+  const getSaveImageSource = () => {
+    const latestLookImage = [...lookItems].reverse().find(i => !!i.image_url)?.image_url || null;
+    return clothingPhoto || latestLookImage || selectedQuickPick?.image_url || resultImage || null;
+  };
+
   const saveClothingToWardrobe = async () => {
     if (!user || !clothingPhoto || clothingSaved) return;
     try {
@@ -564,7 +569,14 @@ export function useTryOnState() {
       toast({ title: isPublic ? 'Already posted' : 'Already saved', description: 'This look has already been submitted.' });
       return;
     }
+
+    const prevShared = shared;
+    const prevShowPostUI = showPostUI;
+
+    setShared(true);
+    setShowPostUI(false);
     setSharing(true);
+
     try {
       const allUrls = getAllUrls();
       let targetPostId = activePostId;
@@ -613,11 +625,11 @@ export function useTryOnState() {
 
       setActivePostId(targetPostId);
       persistState({ activePostId: targetPostId });
-      setShared(true);
-      setShowPostUI(false);
       trackEvent('tryon_posted', { isPublic });
       toast({ title: isPublic ? 'Posted to Style Check!' : 'Saved!', description: isPublic ? 'Your look is live — get feedback from the community.' : 'Caption updated.' });
     } catch (err: unknown) {
+      setShared(prevShared);
+      setShowPostUI(prevShowPostUI);
       toast({ title: 'Share failed', description: (err as Error).message, variant: 'destructive' });
     } finally {
       setSharing(false);
@@ -760,11 +772,21 @@ export function useTryOnState() {
   };
 
   const handleSaveToItems = async () => {
-    if (!user || !clothingPhoto) return;
+    if (!user) return;
     if (savedToItems) {
       toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
       return;
     }
+
+    const imageSource = getSaveImageSource();
+    if (!imageSource) {
+      toast({ title: 'Could not save', description: 'No item image found yet. Try again in a moment.', variant: 'destructive' });
+      return;
+    }
+
+    const prevSavedToItems = savedToItems;
+    setSavedToItems(true);
+
     try {
       if (productLink) {
         const { data: existing, error: existingError } = await supabase
@@ -775,13 +797,12 @@ export function useTryOnState() {
           .limit(1);
         if (existingError) throw existingError;
         if (existing && existing.length > 0) {
-          setSavedToItems(true);
           toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
           return;
         }
       }
 
-      const imageUrl = await uploadBase64ToStorage(clothingPhoto, 'wardrobe');
+      const imageUrl = await uploadBase64ToStorage(imageSource, 'wardrobe');
       const detected = productLink ? detectBrandFromUrl(productLink) : null;
       const { error: insertError } = await supabase.from('clothing_wardrobe').insert({
         user_id: user.id,
@@ -794,20 +815,19 @@ export function useTryOnState() {
 
       if (insertError) {
         if ((insertError as { code?: string }).code === '23505') {
-          setSavedToItems(true);
           toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
           return;
         }
         throw insertError;
       }
 
-      setSavedToItems(true);
       trackEvent('saved_item_added', { source: 'tryon_wardrobe', category });
       toast({
         title: '✓ Saved to Wardrobe', description: 'View in your wardrobe anytime.',
         action: <button onClick={() => navigate('/profile', { state: { tab: 'wardrobe' } })} className="text-[11px] font-bold text-primary underline" aria-label="View your wardrobe">View Wardrobe</button>,
       });
     } catch (err: unknown) {
+      setSavedToItems(prevSavedToItems);
       toast({ title: 'Could not save', description: (err as Error).message, variant: 'destructive' });
     }
   };
