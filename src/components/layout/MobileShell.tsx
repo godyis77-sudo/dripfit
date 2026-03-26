@@ -20,7 +20,7 @@ export const MobileShell = ({ children, className }: { children: React.ReactNode
     >
       <div
         className={cn(
-          "w-full min-h-[100dvh]",
+          "w-full min-h-[100dvh] overflow-x-hidden",
           "lg:max-w-[390px] lg:min-h-screen lg:bg-background lg:border-x lg:border-border lg:shadow-2xl"
         )}
       >
