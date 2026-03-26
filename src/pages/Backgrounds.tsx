@@ -38,28 +38,39 @@ interface SearchPhoto {
 const Backgrounds = () => {
   usePageMeta({ title: 'Backgrounds' });
 
+  const pageRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    // Delay to ensure content is rendered before scrolling
-    requestAnimationFrame(() => window.scrollTo(0, 0));
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+      pageRef.current?.scrollTo({ top: 0, behavior: 'auto' });
+    });
   }, []);
+
   const navigate = useNavigate();
 
   // Swipe-right to go back to try-on page
   const swipeStart = useRef<{ x: number; y: number; t: number } | null>(null);
   const handleSwipeStart = useCallback((e: React.TouchEvent) => {
-    if (e.touches.length > 1) { swipeStart.current = null; return; }
+    if (e.touches.length > 1) {
+      swipeStart.current = null;
+      return;
+    }
     const t = e.touches[0];
     swipeStart.current = { x: t.clientX, y: t.clientY, t: Date.now() };
   }, []);
+
   const handleSwipeEnd = useCallback((e: React.TouchEvent) => {
     if (!swipeStart.current) return;
     const t = e.changedTouches[0];
     const dx = t.clientX - swipeStart.current.x;
     const dy = Math.abs(t.clientY - swipeStart.current.y);
     swipeStart.current = null;
-    if (dy > 40) return;
-    if (dx > 100) navigate('/tryon');
+
+    // Keep vertical scrolling natural and only handle intentional right-swipe backs
+    if (dy > 48) return;
+    if (dx > 120) navigate('/tryon');
   }, [navigate]);
+
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -188,7 +199,7 @@ const Backgrounds = () => {
   const isLoading = categoriesLoading || backgroundsLoading;
 
   return (
-    <div className="min-h-screen bg-background pb-safe-tab overflow-y-auto" onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
+    <div ref={pageRef} className="h-[100dvh] overflow-y-auto overscroll-y-contain bg-background pb-safe-tab" onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
       <PageHeader title="Backgrounds" />
 
       {/* Large preview area */}
