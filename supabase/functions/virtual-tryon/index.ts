@@ -165,6 +165,7 @@ Deno.serve(async (req) => {
       productCategory.toLowerCase(),
       typeof raw.productUrl === "string" ? raw.productUrl.toLowerCase() : "",
     ].join(" "));
+    const isBelt = /\bbelt(s)?\b/.test(normalizedProductContext) || /\bbelt(s)?\b/.test(normalizedItemContext);
     const isSwimwear = SWIM_TYPES.some(t => hasContextTerm(normalizedProductContext, t));
     const isUnderwear = UNDERWEAR_TYPES.some(t => hasContextTerm(normalizedProductContext, t));
     const isIntimate = INTIMATE_TYPES.some(t => hasContextTerm(normalizedItemContext, t) || hasContextTerm(normalizedProductContext, t)) || isSwimwear || isUnderwear;
@@ -727,6 +728,8 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
     const typeLabel = isFootwear ? "footwear" : isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const footwearFastPrompt = `Fast shoe swap. Image A is the person, Image B is the exact shoe.${productHint} Replace only footwear in Image A with Image B. Keep all other clothing, pose, and framing unchanged. ${bgFallbackHint} No text/watermark.`;
     const footwearRetryPrompt = `Photorealistic shoe replacement.${productHint} Replace only the shoes from Image A with the shoes from Image B. Keep body, outfit, orientation, and lighting natural. ${bgFallbackHint} No text/watermark.`;
+    const beltFastPrompt = `Fast belt swap. Image A = person, Image B = target belt.${productHint} Place ONLY the belt from Image B around the waist in Image A, visibly over clothing. Keep all existing clothing unchanged. Match buckle/chain details exactly. ${bgFallbackHint} No text/watermark.`;
+    const beltRetryPrompt = `Photorealistic belt replacement.${productHint} Use ONLY the belt from Image B and place it around the waist over clothing in Image A. Belt must be clearly visible with accurate buckle/chain detail, scale, shadows, and lighting. Keep face/body/outfit from Image A unchanged. ${bgFallbackHint} No text/watermark.`;
     // Only bypass primary when we already have a clean flat-lay; otherwise keep one primary attempt.
     const shouldBypassPrimaryForIntimate = isIntimateGarment && preExtractedGarment && (isUnderwear || isExplicitIntimate || isBottomOnlyIntimate);
     const attemptPlan: Array<{ model: string; prompt: string; label: string; timeoutMs: number }> = isIntimateGarment
@@ -743,10 +746,22 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
             { model: "google/gemini-2.5-flash-image", prompt: footwearFastPrompt, label: `${typeLabel}-nano-primary`, timeoutMs: 14_000 },
             { model: "google/gemini-3.1-flash-image-preview", prompt: footwearRetryPrompt, label: `${typeLabel}-flash-retry`, timeoutMs: 16_000 },
           ]
-        : [
-            { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary`, timeoutMs: 38_000 },
-            { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-retry`, timeoutMs: 30_000 },
-          ];
+        : (isAccessory || isLayering)
+          ? (
+              isBelt
+                ? [
+                    { model: "google/gemini-2.5-flash-image", prompt: beltFastPrompt, label: `${typeLabel}-belt-fast`, timeoutMs: 18_000 },
+                    { model: "google/gemini-3.1-flash-image-preview", prompt: beltRetryPrompt, label: `${typeLabel}-belt-retry`, timeoutMs: 24_000 },
+                  ]
+                : [
+                    { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary`, timeoutMs: 30_000 },
+                    { model: "google/gemini-2.5-flash-image", prompt: fallbackPrompt, label: `${typeLabel}-flash-retry`, timeoutMs: 20_000 },
+                  ]
+            )
+          : [
+              { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary`, timeoutMs: 32_000 },
+              { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-retry`, timeoutMs: 24_000 },
+            ];
 
     if (shouldBypassPrimaryForIntimate) {
       console.log("Intimate routing: bypassing product-image primary attempt and starting with text-bridge.");
