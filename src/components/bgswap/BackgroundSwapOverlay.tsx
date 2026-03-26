@@ -403,7 +403,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
 
       {/* Preview area — drag to reposition, pinch to scale */}
       <div
-        className="relative flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing group touch-none"
+        className="shrink-0 relative flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing group touch-none"
         style={{ height: 'min(55dvh, 420px)' }}
         onPointerDown={e => {
           if (!transparentSubject) return;
