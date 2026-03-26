@@ -61,7 +61,7 @@ function loadPersistedTryOnState(): PersistedTryOnState {
       userPhoto: savedUserPhoto || parsed.userPhoto || null,
       clothingPhoto: parsed.clothingPhoto || null,
       productLink: parsed.productLink || '',
-      category: parsed.category || 'top',
+      category: parsed.category || 'all',
       resultImage: savedResultUrl || parsed.resultImage || null,
       activePostId: parsed.activePostId || null,
       lookItems: parsed.lookItems || [],
@@ -72,7 +72,7 @@ function loadPersistedTryOnState(): PersistedTryOnState {
       selectedQuickPick: parsed.selectedQuickPick || null,
     };
   } catch { /* ignore */ }
-  return { userPhoto: null, clothingPhoto: null, productLink: '', category: 'top', resultImage: null, activePostId: null, lookItems: [], caption: '', autoSaved: false, shared: false, savedToItems: false, selectedQuickPick: null };
+  return { userPhoto: null, clothingPhoto: null, productLink: '', category: 'all', resultImage: null, activePostId: null, lookItems: [], caption: '', autoSaved: false, shared: false, savedToItems: false, selectedQuickPick: null };
 }
 
 export function useTryOnState() {
@@ -584,7 +584,7 @@ export function useTryOnState() {
 
   const handleTryAnother = () => {
     // Keep user photo — only reset clothing, result, and session state
-    setClothingPhoto(null); setResultImage(null); setDescription(null); setCategory('top');
+    setClothingPhoto(null); setResultImage(null); setDescription(null); setCategory('all');
     setCaption(''); setIsPublic(getDefaultSharePreference()); setShared(false); setAutoSaved(false);
     setProductLink(''); setLookItems([]); setClothingSaved(false); setSavedToItems(false);
     setShowPostUI(false); setShowLookItems(false); setLayerHistory([]);
