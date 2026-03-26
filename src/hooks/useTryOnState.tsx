@@ -61,7 +61,7 @@ function loadPersistedTryOnState(): PersistedTryOnState {
       userPhoto: savedUserPhoto || parsed.userPhoto || null,
       clothingPhoto: parsed.clothingPhoto || null,
       productLink: parsed.productLink || '',
-      category: parsed.category || 'top',
+      category: parsed.category || 'all',
       resultImage: savedResultUrl || parsed.resultImage || null,
       activePostId: parsed.activePostId || null,
       lookItems: parsed.lookItems || [],
