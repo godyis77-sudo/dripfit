@@ -1075,7 +1075,13 @@ TASK: Add the belt from Image B onto the person in Image A at the natural waistl
       
       if ((textDesc && textDesc.length > 15) || hasCleanFlatLay) {
         const descForPrompt = isUnderwearSafeMode
-          ? "commercially appropriate fully-covered athletic styling (no nudity, no exposed base-layer areas). Create an athletic outfit inspired by the brand/colors (e.g., cropped athletic top + high-waisted athletic shorts)."
+          ? (
+              // Keep it fully covered, but preserve ITEM-SPECIFIC cues (color/pattern/waistband/logo/brand) via textDesc.
+              `${(textDesc || "").trim()}\nCommercially appropriate fully-covered athletic styling (no nudity, no exposed base-layer areas). Preserve the exact colorway/pattern and any visible branded waistband/logo cues.`
+                .replace(/\s+/g, " ")
+                .trim() ||
+              "Commercially appropriate fully-covered athletic styling (no nudity, no exposed base-layer areas). Preserve the exact colorway/pattern and any visible branded waistband/logo cues."
+            )
           : (textDesc || "athletic fitted garment matching the reference image");
         console.log(`Layer 3 text-bridge: hasCleanFlatLay=${hasCleanFlatLay}, textDesc=${!!textDesc} (${textDesc?.length || 0} chars)`);
         const textBridgePrompt = makeTextBridgePrompt(descForPrompt, hasCleanFlatLay);
