@@ -171,7 +171,7 @@ const Browse = () => {
     return FIT_OPTIONS.filter(f => fits.has(f));
   }, [products]);
 
-  const activeFilterCount = (retailerFilter ? 1 : 0) + (genreFilter ? 1 : 0) + (fitFilter ? 1 : 0) + (categoryFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0) + (brandFilter ? 1 : 0);
+  const activeFilterCount = (retailerFilters.length || (retailerFilter ? 1 : 0)) + (genreFilter ? 1 : 0) + (fitFilter ? 1 : 0) + (categoryFilter ? 1 : 0) + (sort !== 'default' ? 1 : 0) + (genderFilter !== 'all' ? 1 : 0) + (brandFilters.length || (brandFilter ? 1 : 0));
 
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
