@@ -107,12 +107,13 @@ const TryOnResultSection = ({
   const [accFiltersOpen, setAccFiltersOpen] = useState(false);
   const [accBrandFilter, setAccBrandFilter] = useState<string | null>(null);
   const [accRetailerFilter, setAccRetailerFilter] = useState<string | null>(null);
-  const [accSort, setAccSort] = useState<'default' | 'price_asc' | 'price_desc' | 'brand_az' | 'genre'>('default');
+  const [accSort, setAccSort] = useState<'default' | 'price_asc' | 'price_desc' | 'brand_az'>('default');
   const [accGenderOverride, setAccGenderOverride] = useState<'all' | 'mens' | 'womens' | null>(null);
   const [accGenreFilter, setAccGenreFilter] = useState<BrandGenre | null>(null);
   const [accFitFilter, setAccFitFilter] = useState<string | null>(null);
   const [accGenreOpen, setAccGenreOpen] = useState(false);
   const [accFitOpen, setAccFitOpen] = useState(false);
+  const [accRetailerOpen, setAccRetailerOpen] = useState(false);
   const defaultAccGender = userGender === 'male' ? 'mens' as const : userGender === 'female' ? 'womens' as const : 'all' as const;
   const accGender = accGenderOverride ?? defaultAccGender;
   const accEffectiveGender = accGender === 'all' ? undefined : accGender;
