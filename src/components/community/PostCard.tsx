@@ -142,7 +142,7 @@ const PostCard = ({
             alt={post.caption || "Try-on look"}
             loading="lazy"
             decoding="async"
-            className="absolute inset-0 h-full w-full object-cover object-top rounded-lg"
+            className={`absolute inset-0 h-full w-full rounded-lg ${/\/tryon-composites\//i.test(post.result_photo_url) ? 'object-contain bg-background' : 'object-cover object-top'}`}
             onError={() => onImageError(post.id)}
           />
           {hasPostedCaption && (

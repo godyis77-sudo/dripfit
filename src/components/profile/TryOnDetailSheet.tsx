@@ -374,17 +374,23 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
             variant="outline"
             className={`w-full h-11 rounded-xl text-[12px] font-bold gap-1.5 ${post.is_public ? 'border-primary/40 bg-primary/10' : ''}`}
             onClick={() => {
-              if (!post.is_public && !showCaptionForPost) {
+              if (post.is_public) {
+                // Already public → remove from community
+                handleToggleCommunity();
+              } else if (!showCaptionForPost) {
+                // First tap → show caption editor, don't post yet
                 setShowCaptionForPost(true);
                 setCaptionDraft(post.caption || '');
                 setEditingCaption(true);
+              } else {
+                // Second tap → caption step done, now post
+                handleToggleCommunity();
               }
-              handleToggleCommunity();
             }}
             disabled={posting}
           >
             <MessageSquare className="h-4 w-4" />
-            {posting ? (post.is_public ? 'Removing…' : 'Posting…') : post.is_public ? 'Shared in Style Check ✓' : showCaptionForPost ? 'Post Style Check' : 'Post Style Check'}
+            {posting ? (post.is_public ? 'Removing…' : 'Posting…') : post.is_public ? 'Shared in Style Check ✓' : showCaptionForPost ? 'Post to Style Check' : 'Add Caption & Post'}
           </Button>
 
           {/* Delete */}
