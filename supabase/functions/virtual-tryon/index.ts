@@ -573,14 +573,15 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
 
 IMAGES PROVIDED:
 - Image A (first image below): A person wearing some outfit. This is the MODEL — keep face, body, hair, skin, and pose.
-- Image B (second image below): The target garment — replicate this EXACT garment.
+- Image B (second image below): The target garment reference.
 
 TARGET GARMENT:
 - The garment shown in Image B.${productHint}
+- IMPORTANT: If Image B shows a full-body photo of another person wearing multiple clothing items, use the product name/description above to identify the SPECIFIC item to try on. Extract ONLY that one item and ignore every other piece of clothing in Image B.
 
 TASK — CLOTHING SWAP:
 ${swapInstruction}
-- Match Image B exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
+- Match the target item from Image B exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
 - Keep Image A person identity (face, body, hair, skin tone, pose). ${bgInstruction}
 - Keep garment fit realistic with natural wrinkles and shadows.
 - CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate or turn the model to match Image B's pose/angle. Copy only the garment from Image B, never its pose.
