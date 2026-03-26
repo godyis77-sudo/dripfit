@@ -71,7 +71,7 @@ const CATEGORY_MAP: Record<string, string[]> = {
   'one-piece': ['swimwear'],
   activewear: ['activewear'],
   loungewear: ['loungewear'],
-  underwear: ['underwear'],
+  
   accessories: ['accessories', 'bags', 'hats', 'jewelry', 'watches', 'sunglasses', 'belts', 'scarves'],
   other: ['other'],
   full: ['tops', 'top', 't-shirts', 'shirts', 'hoodies', 'dresses', 'dress', 'outerwear', 'jackets', 'coats'],
