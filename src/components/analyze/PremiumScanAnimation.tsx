@@ -412,7 +412,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               }}
               initial={{ opacity: 0, scale: 0.94 }}
               animate={{ opacity: [0, 1, 0.5, 1], scale: [0.94, 1.03, 0.98, 1] }}
-              transition={{ duration: 2.2, ease: 'easeOut' }}
+              transition={{ duration: 1.1, ease: 'easeOut' }}
             />
 
             {/* Radial rays */}
