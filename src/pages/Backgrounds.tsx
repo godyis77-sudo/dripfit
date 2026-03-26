@@ -187,7 +187,7 @@ const Backgrounds = () => {
   const isLoading = categoriesLoading || backgroundsLoading;
 
   return (
-    <div className="min-h-screen bg-background pb-safe-tab">
+    <div className="min-h-screen bg-background pb-safe-tab" onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
       <PageHeader title="Backgrounds" />
 
       {/* Large preview area */}
