@@ -72,7 +72,7 @@ function loadPersistedTryOnState(): PersistedTryOnState {
       selectedQuickPick: parsed.selectedQuickPick || null,
     };
   } catch { /* ignore */ }
-  return { userPhoto: null, clothingPhoto: null, productLink: '', category: 'top', resultImage: null, activePostId: null, lookItems: [], caption: '', autoSaved: false, shared: false, savedToItems: false, selectedQuickPick: null };
+  return { userPhoto: null, clothingPhoto: null, productLink: '', category: 'all', resultImage: null, activePostId: null, lookItems: [], caption: '', autoSaved: false, shared: false, savedToItems: false, selectedQuickPick: null };
 }
 
 export function useTryOnState() {
