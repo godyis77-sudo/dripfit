@@ -504,9 +504,11 @@ const Browse = () => {
               collapsed={true}
               maxItems={100}
               gender={effectiveGender}
-              brand={brandFilter || undefined}
+              brand={brandFilters.length > 0 ? undefined : (brandFilter || undefined)}
+              brands={brandFilters.length > 0 ? brandFilters : undefined}
               genre={genreFilter}
-              retailer={retailerFilter || undefined}
+              retailer={retailerFilters.length > 0 ? undefined : (retailerFilter || undefined)}
+              retailers={retailerFilters.length > 0 ? retailerFilters : undefined}
               fitProfile={fitFilter || undefined}
               onSelectProduct={(product) => {
                 trackEvent('browse_product_preview', { brand: product.brand, category: product.category });
