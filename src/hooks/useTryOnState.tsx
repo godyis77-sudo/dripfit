@@ -893,6 +893,7 @@ export function useTryOnState() {
       }
 
       trackEvent('saved_item_added', { source: 'tryon_wardrobe', category });
+      queryClient.invalidateQueries({ queryKey: ['wardrobe', user.id] });
       toast({
         title: '✓ Saved to Wardrobe', description: 'View in your wardrobe anytime.',
         action: <button onClick={() => navigate('/profile', { state: { tab: 'wardrobe' } })} className="text-[11px] font-bold text-primary underline" aria-label="View your wardrobe">View Wardrobe</button>,
