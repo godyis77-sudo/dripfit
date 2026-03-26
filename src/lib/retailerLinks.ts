@@ -73,6 +73,19 @@ export function buildRetailerSearchUrl(retailerName: string, baseUrl: string, qu
       affiliate_provider: result.provider,
       retailer_used: result.retailerUsed,
     });
+    // Persist attribution
+    supabase.auth.getUser().then(({ data }) => {
+      supabase.from("affiliate_clicks").insert({
+        user_id: data?.user?.id ?? null,
+        session_id: data?.user?.id ? null : (localStorage.getItem("dripcheck_guest_uuid") || null),
+        retailer: retailerName,
+        destination_url: result.finalUrl,
+        monetization_mode: result.monetizationMode,
+        affiliate_provider: result.provider,
+        retailer_used: result.retailerUsed,
+        source: 'retailer_search',
+      } as any).then(() => {});
+    });
   } catch { /* never break navigation */ }
 
   return result.finalUrl;
