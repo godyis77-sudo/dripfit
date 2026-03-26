@@ -557,8 +557,10 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
 3. Keep the person's EXISTING inner clothing (shirt, top, sweater) from Image A visible underneath where appropriate.
 4. Keep the person's EXISTING lower-body clothing and footwear from Image A completely UNCHANGED.`;
       } else if (isFullBodyGarment) {
-        swapInstruction = `1. REPLACE ALL clothing from Image A with the full-body garment from Image B.
-2. The person should wear ONLY the garment from Image B. Remove all previous clothing.`;
+        swapInstruction = `1. REPLACE ALL clothing from Image A with the full-body garment (dress, jumpsuit, romper, etc.) from Image B.
+2. REMOVE all previous clothing — including pants, jeans, trousers, shorts, skirts, tops, shirts, and any layered items. The person should wear ONLY the garment from Image B.
+3. No part of the old outfit should be visible underneath or alongside the new garment.
+4. Keep the person's EXISTING footwear from Image A UNCHANGED unless the garment from Image B includes footwear.`;
       } else if (isTopGarment) {
         swapInstruction = `1. Replace ONLY the upper-body clothing (shirt, top, sweater, etc.) from Image A with the garment from Image B.
 2. Keep the person's EXISTING lower-body clothing (pants, jeans, skirt, etc.) from Image A completely UNCHANGED.
@@ -613,7 +615,10 @@ Professional retail catalog quality. No text/watermark.`
           const fbBottom = ["jeans","pants","trousers","shorts","skirt","leggings","joggers","chinos","bottom","bottoms"].some(t => hasContextTerm(fbContext, t));
           const fbTop = ["top","shirt","blouse","t-shirt","sweater","hoodie","polo","tank","cardigan","pullover","tee"].some(t => hasContextTerm(fbContext, t)) && !fbBottom;
           const fbOuterwear = ["jacket","coat","blazer","vest","parka","outerwear"].some(t => hasContextTerm(fbContext, t));
-          const scopeHint = fbBottom
+          const fbFullBody = ["dress","dresses","jumpsuit","jumpsuits","romper","overalls","full"].some(t => hasContextTerm(fbContext, t));
+          const scopeHint = fbFullBody
+            ? "REPLACE ALL clothing — remove pants, jeans, tops, shirts, everything. The person should wear ONLY the dress/jumpsuit/romper from Image B. No old clothing should be visible."
+            : fbBottom
             ? "Replace ONLY the lower-body clothing (pants/jeans/shorts/skirt). Keep the existing top, shirt, and shoes from Image A UNCHANGED."
             : fbOuterwear
               ? "REPLACE any existing outerwear (jacket/coat/blazer) with this garment. Keep inner layers and lower body from Image A UNCHANGED."
