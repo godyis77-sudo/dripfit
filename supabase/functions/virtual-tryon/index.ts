@@ -165,6 +165,7 @@ Deno.serve(async (req) => {
       productCategory.toLowerCase(),
       typeof raw.productUrl === "string" ? raw.productUrl.toLowerCase() : "",
     ].join(" "));
+    const isBelt = /\bbelt(s)?\b/.test(normalizedProductContext) || /\bbelt(s)?\b/.test(normalizedItemContext);
     const isSwimwear = SWIM_TYPES.some(t => hasContextTerm(normalizedProductContext, t));
     const isUnderwear = UNDERWEAR_TYPES.some(t => hasContextTerm(normalizedProductContext, t));
     const isIntimate = INTIMATE_TYPES.some(t => hasContextTerm(normalizedItemContext, t) || hasContextTerm(normalizedProductContext, t)) || isSwimwear || isUnderwear;
