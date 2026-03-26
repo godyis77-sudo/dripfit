@@ -78,7 +78,9 @@ const Browse = () => {
   // search state removed — brand filter handled by BrandFilter component
   const [sort, setSort] = useState<SortKey>('default');
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
+  const [brandFilters, setBrandFilters] = useState<string[]>([]);
   const [retailerFilter, setRetailerFilter] = useState<string | null>(null);
+  const [retailerFilters, setRetailerFilters] = useState<string[]>([]);
   const [genreFilter, setGenreFilter] = useState<BrandGenre | null>(null);
   const [fitFilter, setFitFilter] = useState<string | null>(null);
 
