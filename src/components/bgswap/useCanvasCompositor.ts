@@ -223,6 +223,32 @@ function applyLightingMatch(
     ctx.fillRect(subX, subY, subW, subH);
   }
 
+  // 7. Floor-level color blending — match subject's lower 25% to background ground color
+  const floorColor = `rgb(${Math.round(lighting.floorR)}, ${Math.round(lighting.floorG)}, ${Math.round(lighting.floorB)})`;
+  const floorBlendStart = subY + subH * 0.70; // start blending at 70% down
+  const floorGrad = ctx.createLinearGradient(subX, floorBlendStart, subX, subY + subH);
+  floorGrad.addColorStop(0, 'rgba(0,0,0,0)');
+  floorGrad.addColorStop(1, floorColor);
+  ctx.globalAlpha = 0.18 + lighting.saturation * 0.10; // 0.18–0.28
+  ctx.fillStyle = floorGrad;
+  ctx.fillRect(subX, floorBlendStart, subW, subH * 0.30);
+
+  // 8. Floor brightness match — darken or lighten feet area to match ground luminance
+  const subjectBottomBright = lighting.brightness; // approximate
+  const floorBrightDiff = lighting.floorBright - subjectBottomBright;
+  if (Math.abs(floorBrightDiff) > 15) {
+    const fbGrad = ctx.createLinearGradient(subX, floorBlendStart, subX, subY + subH);
+    fbGrad.addColorStop(0, 'rgba(0,0,0,0)');
+    if (floorBrightDiff < 0) {
+      fbGrad.addColorStop(1, 'rgb(0,0,0)');
+    } else {
+      fbGrad.addColorStop(1, 'rgb(255,255,255)');
+    }
+    ctx.globalAlpha = Math.min(0.20, Math.abs(floorBrightDiff) / 400);
+    ctx.fillStyle = fbGrad;
+    ctx.fillRect(subX, floorBlendStart, subW, subH * 0.30);
+  }
+
   ctx.restore();
 }
 
