@@ -292,33 +292,8 @@ export function useTryOnState() {
     }
   }, [location.state]);
 
-  // Clear stale result when returning to /tryon without fresh nav state
-  // (e.g. tapping the tab bar). User photo is preserved intentionally.
-  useEffect(() => {
-    const state = location.state as { clothingUrl?: string; clothingImageUrl?: string; productUrl?: string } | null;
-    const hasFreshNav = !!(state?.clothingUrl || state?.clothingImageUrl || state?.productUrl);
-    if (!hasFreshNav && !loading) {
-      // Clear old result so user sees a fresh try-on form
-      setResultImageRaw(null);
-      setClothingPhotoRaw(null);
-      setActivePostId(null);
-      setAutoSaved(false);
-      setShared(false);
-      setSavedToItems(false);
-      setSelectedQuickPickRaw(null);
-      setLookItemsRaw([]);
-      setCaptionRaw('');
-      setProductLinkRaw('');
-      setCategoryRaw('top');
-      setLayerHistory([]);
-      try {
-        sessionStorage.removeItem(TRYON_STATE_KEY);
-        localStorage.removeItem(TRYON_RESULT_KEY);
-      } catch { /* ignore */ }
-    }
-  // Run only on mount
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+
 
   // Fetch wardrobe
   useEffect(() => {
