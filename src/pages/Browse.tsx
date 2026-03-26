@@ -8,6 +8,8 @@ import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
 import { AnimatePresence } from 'framer-motion';
 import BottomTabBar from '@/components/BottomTabBar';
+import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
+import { ALL_PRODUCT_CATEGORIES } from '@/components/tryon/tryon-constants';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { useAuth } from '@/hooks/useAuth';
 import BrandFilter from '@/components/tryon/BrandFilter';
