@@ -37,6 +37,8 @@ interface LightingProfile {
   warmth: number;
   // Saturation intensity of the scene
   saturation: number;
+  // Floor-level color (bottom 15% of image)
+  floorR: number; floorG: number; floorB: number; floorBright: number;
 }
 
 /** Deep-analyze background lighting: directional, color temp, saturation. */
@@ -50,6 +52,7 @@ function analyzeBackgroundLighting(
     leftR: 128, leftG: 128, leftB: 128, leftBright: 128,
     rightR: 128, rightG: 128, rightB: 128, rightBright: 128,
     topBright: 128, bottomBright: 128, warmth: 0, saturation: 0.3,
+    floorR: 128, floorG: 128, floorB: 128, floorBright: 128,
   };
   try {
     const data = ctx.getImageData(0, 0, width, height).data;
@@ -61,6 +64,8 @@ function analyzeBackgroundLighting(
     let lR = 0, lG = 0, lB = 0, lCnt = 0;
     let rR = 0, rG = 0, rB = 0, rCnt = 0;
     let topB = 0, topCnt = 0, botB = 0, botCnt = 0;
+    let fR = 0, fG = 0, fB = 0, fCnt = 0;
+    const floorThreshold = height * 0.85; // bottom 15%
 
     for (let i = 0; i < data.length; i += step) {
       const px = (i / 4) % width;
@@ -73,6 +78,7 @@ function analyzeBackgroundLighting(
       else { rR += r; rG += g; rB += b; rCnt++; }
       if (py < halfH) { topB += br; topCnt++; }
       else { botB += br; botCnt++; }
+      if (py >= floorThreshold) { fR += r; fG += g; fB += b; fCnt++; }
     }
 
     const avg = (v: number, c: number) => v / Math.max(1, c);
@@ -89,12 +95,16 @@ function analyzeBackgroundLighting(
     const lBr = 0.299 * avg(lR, lCnt) + 0.587 * avg(lG, lCnt) + 0.114 * avg(lB, lCnt);
     const rBr = 0.299 * avg(rR, rCnt) + 0.587 * avg(rG, rCnt) + 0.114 * avg(rB, rCnt);
 
+    const flrR = avg(fR, fCnt), flrG = avg(fG, fCnt), flrB = avg(fB, fCnt);
+    const flrBr = 0.299 * flrR + 0.587 * flrG + 0.114 * flrB;
+
     return {
       r: gR, g: gG, b: gB, brightness: gBr,
       leftR: avg(lR, lCnt), leftG: avg(lG, lCnt), leftB: avg(lB, lCnt), leftBright: lBr,
       rightR: avg(rR, rCnt), rightG: avg(rG, rCnt), rightB: avg(rB, rCnt), rightBright: rBr,
       topBright: avg(topB, topCnt), bottomBright: avg(botB, botCnt),
       warmth, saturation,
+      floorR: flrR, floorG: flrG, floorB: flrB, floorBright: flrBr,
     };
   } catch {
     return neutral;
@@ -211,6 +221,32 @@ function applyLightingMatch(
     ctx.globalAlpha = Math.min(0.18, (brightnessFactor - 1) * 0.22);
     ctx.fillStyle = 'rgb(255, 255, 255)';
     ctx.fillRect(subX, subY, subW, subH);
+  }
+
+  // 7. Floor-level color blending — match subject's lower 25% to background ground color
+  const floorColor = `rgb(${Math.round(lighting.floorR)}, ${Math.round(lighting.floorG)}, ${Math.round(lighting.floorB)})`;
+  const floorBlendStart = subY + subH * 0.70; // start blending at 70% down
+  const floorGrad = ctx.createLinearGradient(subX, floorBlendStart, subX, subY + subH);
+  floorGrad.addColorStop(0, 'rgba(0,0,0,0)');
+  floorGrad.addColorStop(1, floorColor);
+  ctx.globalAlpha = 0.18 + lighting.saturation * 0.10; // 0.18–0.28
+  ctx.fillStyle = floorGrad;
+  ctx.fillRect(subX, floorBlendStart, subW, subH * 0.30);
+
+  // 8. Floor brightness match — darken or lighten feet area to match ground luminance
+  const subjectBottomBright = lighting.brightness; // approximate
+  const floorBrightDiff = lighting.floorBright - subjectBottomBright;
+  if (Math.abs(floorBrightDiff) > 15) {
+    const fbGrad = ctx.createLinearGradient(subX, floorBlendStart, subX, subY + subH);
+    fbGrad.addColorStop(0, 'rgba(0,0,0,0)');
+    if (floorBrightDiff < 0) {
+      fbGrad.addColorStop(1, 'rgb(0,0,0)');
+    } else {
+      fbGrad.addColorStop(1, 'rgb(255,255,255)');
+    }
+    ctx.globalAlpha = Math.min(0.20, Math.abs(floorBrightDiff) / 400);
+    ctx.fillStyle = fbGrad;
+    ctx.fillRect(subX, floorBlendStart, subW, subH * 0.30);
   }
 
   ctx.restore();
@@ -339,7 +375,7 @@ export function useCanvasCompositor() {
 
     const lighting = bgImg
       ? analyzeBackgroundLighting(ctx, width, height)
-      : (() => { const c = hexToRgb(backgroundColor); const br = 0.299 * c.r + 0.587 * c.g + 0.114 * c.b; return { ...c, brightness: br, leftR: c.r, leftG: c.g, leftB: c.b, leftBright: br, rightR: c.r, rightG: c.g, rightB: c.b, rightBright: br, topBright: br, bottomBright: br, warmth: 0, saturation: 0 } as LightingProfile; })();
+      : (() => { const c = hexToRgb(backgroundColor); const br = 0.299 * c.r + 0.587 * c.g + 0.114 * c.b; return { ...c, brightness: br, leftR: c.r, leftG: c.g, leftB: c.b, leftBright: br, rightR: c.r, rightG: c.g, rightB: c.b, rightBright: br, topBright: br, bottomBright: br, warmth: 0, saturation: 0, floorR: c.r, floorG: c.g, floorB: c.b, floorBright: br } as LightingProfile; })();
 
     const subjectImg = await loadImage(subjectUrl);
     const scale = (height * finalScale) / subjectImg.height;
@@ -426,7 +462,7 @@ export function useCanvasCompositor() {
 
     const lighting = bgImg
       ? analyzeBackgroundLighting(ctx, width, height)
-      : (() => { const c = hexToRgb(backgroundColor); const br = 0.299 * c.r + 0.587 * c.g + 0.114 * c.b; return { ...c, brightness: br, leftR: c.r, leftG: c.g, leftB: c.b, leftBright: br, rightR: c.r, rightG: c.g, rightB: c.b, rightBright: br, topBright: br, bottomBright: br, warmth: 0, saturation: 0 } as LightingProfile; })();
+      : (() => { const c = hexToRgb(backgroundColor); const br = 0.299 * c.r + 0.587 * c.g + 0.114 * c.b; return { ...c, brightness: br, leftR: c.r, leftG: c.g, leftB: c.b, leftBright: br, rightR: c.r, rightG: c.g, rightB: c.b, rightBright: br, topBright: br, bottomBright: br, warmth: 0, saturation: 0, floorR: c.r, floorG: c.g, floorB: c.b, floorBright: br } as LightingProfile; })();
 
     try {
       const subjectImg = await loadImage(subjectUrl);
