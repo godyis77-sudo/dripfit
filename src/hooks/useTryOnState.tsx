@@ -976,7 +976,7 @@ export function useTryOnState() {
     caption, setCaption, isPublic, setIsPublic, shared, showPostUI, setShowPostUI,
     // Product
     productLink, setProductLink, lookItems, setLookItems, category, setCategory,
-    selectedQuickPick, selectedBrand, setSelectedBrand, selectedGenre, setSelectedGenre, selectedRetailer, setSelectedRetailer, selectedFit, setSelectedFit,
+    selectedQuickPick, selectedBrand, setSelectedBrand, selectedBrands, setSelectedBrands, selectedGenre, setSelectedGenre, selectedRetailer, setSelectedRetailer, selectedRetailers, setSelectedRetailers, selectedFit, setSelectedFit,
     // Wardrobe
     clothingSaved, wardrobeItems, showWardrobe, setShowWardrobe,
     // Background source
