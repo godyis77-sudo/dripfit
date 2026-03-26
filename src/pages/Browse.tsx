@@ -131,11 +131,15 @@ const Browse = () => {
   const displayed = useMemo(() => {
     let result = [...products];
 
-    if (brandFilter) {
+    if (brandFilters.length > 0) {
+      result = result.filter(p => brandFilters.includes(p.brand));
+    } else if (brandFilter) {
       result = result.filter(p => p.brand === brandFilter);
     }
 
-    if (retailerFilter) {
+    if (retailerFilters.length > 0) {
+      result = result.filter(p => retailerFilters.includes(p.retailer));
+    } else if (retailerFilter) {
       result = result.filter(p => p.retailer === retailerFilter);
     }
 
