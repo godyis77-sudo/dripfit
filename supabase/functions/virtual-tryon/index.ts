@@ -144,9 +144,10 @@ Deno.serve(async (req) => {
 
     const ACCESSORY_TYPES = ["accessory", "jewelry", "necklace", "bracelet", "earrings", "ring", "watch", "hat", "hats", "cap", "sunglasses", "glasses", "bag", "bags", "purse", "handbag", "belt", "belts", "scarf", "scarves", "shoes", "sneakers", "boots", "heels", "loafers", "sandals"];
     const FOOTWEAR_TYPES = ["shoes", "sneakers", "boots", "heels", "loafers", "sandals", "trainers", "pumps", "mules", "slides", "flats", "oxfords", "derby", "espadrilles"];
-    const INTIMATE_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece", "bra", "bralette", "sports bra", "underwear", "underware", "panties", "briefs", "boxers", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise", "lounge", "loungewear", "sleepwear", "pajamas", "robe"];
+    const INTIMATE_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece", "bra", "bralette", "sports bra", "underwear", "underware", "panties", "briefs", "boxers", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise"];
     const UNDERWEAR_TYPES = ["underwear", "underware", "panties", "briefs", "boxers", "bra", "bralette", "sports bra", "lingerie", "bodysuit", "corset", "bustier", "teddy", "chemise"];
     const SWIM_TYPES = ["swimsuit", "swimwear", "bikini", "one-piece"];
+    const COMFORTWEAR_TYPES = ["loungewear", "loungewear", "sleepwear", "pajamas", "pyjamas", "robe", "robes"];
     const EXPLICIT_TERMS = ["open cup", "open-cup", "sheer", "see-through", "transparent", "thong", "g-string", "pasties", "nude", "exposed"];
 
     const normalizeMatchText = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
@@ -168,7 +169,8 @@ Deno.serve(async (req) => {
     const isBelt = /\bbelt(s)?\b/.test(normalizedProductContext) || /\bbelt(s)?\b/.test(normalizedItemContext);
     const isSwimwear = SWIM_TYPES.some(t => hasContextTerm(normalizedProductContext, t));
     const isUnderwear = UNDERWEAR_TYPES.some(t => hasContextTerm(normalizedProductContext, t));
-    const isIntimate = INTIMATE_TYPES.some(t => hasContextTerm(normalizedItemContext, t) || hasContextTerm(normalizedProductContext, t)) || isSwimwear || isUnderwear;
+    const isComfortwear = COMFORTWEAR_TYPES.some(t => hasContextTerm(normalizedItemContext, t) || hasContextTerm(normalizedProductContext, t));
+    const isIntimate = !isComfortwear && (INTIMATE_TYPES.some(t => hasContextTerm(normalizedItemContext, t) || hasContextTerm(normalizedProductContext, t)) || isSwimwear || isUnderwear);
     const isExplicitIntimate = EXPLICIT_TERMS.some(t => hasContextTerm(normalizedProductContext, t));
     const isLayering = raw.isLayering === true;
 
