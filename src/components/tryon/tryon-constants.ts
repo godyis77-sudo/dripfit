@@ -69,20 +69,20 @@ export const ACCESSORY_CATEGORIES = [
 ] as const;
 
 export const ALL_PRODUCT_CATEGORIES = [
-  { key: 'tops', label: 'Tops' },
+  { key: 'activewear', label: 'Activewear' },
+  { key: 'bags', label: 'Bags' },
+  { key: 'belts', label: 'Belts' },
   { key: 'bottoms', label: 'Bottoms' },
   { key: 'dresses', label: 'Dresses' },
-  { key: 'outerwear', label: 'Outerwear' },
-  { key: 'activewear', label: 'Activewear' },
-  { key: 'shoes', label: 'Shoes' },
-  { key: 'bags', label: 'Bags' },
   { key: 'hats', label: 'Hats' },
   { key: 'jewelry', label: 'Jewelry' },
+  { key: 'loungewear', label: 'Loungewear' },
+  { key: 'outerwear', label: 'Outerwear' },
+  { key: 'scarves', label: 'Scarves' },
+  { key: 'shoes', label: 'Shoes' },
   { key: 'sunglasses', label: 'Sunglasses' },
   { key: 'swimwear', label: 'Swimwear' },
-  { key: 'loungewear', label: 'Loungewear' },
-  { key: 'belts', label: 'Belts' },
-  { key: 'scarves', label: 'Scarves' },
+  { key: 'tops', label: 'Tops' },
   { key: 'underwear', label: 'Underwear' },
 ] as const;
 
