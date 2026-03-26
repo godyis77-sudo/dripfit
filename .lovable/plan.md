@@ -32,8 +32,10 @@
 - "For Your Fit" body-match recommendations (`get_fit_recommended_products` RPC)
 - ForYourFit horizontal scroll on home
 
-## Phase 3: Attribution & Premium ✅
-- `affiliate_clicks` table — server-side clickout attribution tracking
-- `useAffiliateClickout` + `retailerLinks` persists every clickout to DB
-- OG share image edge function (`og-share-image`) for social previews
-- Tiered try-on limits enforced server-side (guest=3, free=10/day, premium=unlimited)
+## Phase 4: Social & Viral Features ✅
+- Deep link sharing — copy-link + share buttons on PostDetailSheet & StyleCheckDetail
+- Dynamic OG meta tags — `usePageMeta` now supports `ogImage` for social previews
+- Invite Friends flow — `InviteFriendsCard` with SMS/WhatsApp/copy link + reward messaging
+- Post-generation share nudge — inline share options in success overlay
+- Milestone badges — `MilestoneBadges` component on profile (First Post, 5/10/25 Try-Ons, etc)
+- Copy-link button on every post detail sheet
