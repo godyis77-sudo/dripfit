@@ -65,7 +65,12 @@ const Browse = () => {
   const navigate = useNavigate();
   const { userGender } = useAuth();
   const defaultGender: GenderKey = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : 'all';
-  const [genderOverride, setGenderOverride] = useState<GenderKey | null>(null);
+  const [genderOverride, setGenderOverrideRaw] = useState<GenderKey | null>(() => {
+    const saved = localStorage.getItem('drip_gender_filter');
+    if (saved === 'mens' || saved === 'womens' || saved === 'all') return saved;
+    return null;
+  });
+  const setGenderOverride = (v: GenderKey) => { setGenderOverrideRaw(v); localStorage.setItem('drip_gender_filter', v); };
 
   // Use override if user manually selected, otherwise default to profile preference
   const genderFilter: GenderKey = genderOverride ?? defaultGender;

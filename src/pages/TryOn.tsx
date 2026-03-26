@@ -53,9 +53,12 @@ const TryOn = () => {
   const [retailerOpen, setRetailerOpen] = useState(false);
   const [fitOpen, setFitOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [genderFilter, setGenderFilter] = useState<'all' | 'mens' | 'womens'>(
-    s.userGender === 'mens' ? 'mens' : s.userGender === 'womens' ? 'womens' : 'all'
-  );
+  const [genderFilter, setGenderFilterRaw] = useState<'all' | 'mens' | 'womens'>(() => {
+    const saved = localStorage.getItem('drip_gender_filter');
+    if (saved === 'mens' || saved === 'womens' || saved === 'all') return saved;
+    return s.userGender === 'mens' ? 'mens' : s.userGender === 'womens' ? 'womens' : 'all';
+  });
+  const setGenderFilter = (v: 'all' | 'mens' | 'womens') => { setGenderFilterRaw(v); localStorage.setItem('drip_gender_filter', v); };
 
   // Effective gender for catalog filtering — manual toggle overrides profile
   const effectiveGender = genderFilter === 'all' ? undefined : genderFilter;
