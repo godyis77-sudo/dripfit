@@ -64,6 +64,8 @@ function analyzeBackgroundLighting(
     let lR = 0, lG = 0, lB = 0, lCnt = 0;
     let rR = 0, rG = 0, rB = 0, rCnt = 0;
     let topB = 0, topCnt = 0, botB = 0, botCnt = 0;
+    let fR = 0, fG = 0, fB = 0, fCnt = 0;
+    const floorThreshold = height * 0.85; // bottom 15%
 
     for (let i = 0; i < data.length; i += step) {
       const px = (i / 4) % width;
@@ -76,6 +78,7 @@ function analyzeBackgroundLighting(
       else { rR += r; rG += g; rB += b; rCnt++; }
       if (py < halfH) { topB += br; topCnt++; }
       else { botB += br; botCnt++; }
+      if (py >= floorThreshold) { fR += r; fG += g; fB += b; fCnt++; }
     }
 
     const avg = (v: number, c: number) => v / Math.max(1, c);
