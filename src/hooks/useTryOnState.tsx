@@ -109,13 +109,15 @@ export function useTryOnState() {
   // NOTE: Only persist URLs — never large base64 strings
   const persistState = useCallback((updates: Partial<PersistedTryOnState>) => {
     try {
-      const current = (() => { try { return JSON.parse(sessionStorage.getItem(TRYON_STATE_KEY) || '{}'); } catch { return {}; } })();
+      const current = (() => { try { return JSON.parse(localStorage.getItem(TRYON_STATE_KEY) || '{}'); } catch { return {}; } })();
       const merged = { ...current, ...updates };
       // Skip persisting any value that looks like a large base64 string
       for (const key of ['userPhoto', 'clothingPhoto', 'resultImage'] as const) {
         if (typeof merged[key] === 'string' && merged[key].startsWith('data:')) delete merged[key];
       }
-      sessionStorage.setItem(TRYON_STATE_KEY, JSON.stringify(merged));
+      const serialized = JSON.stringify(merged);
+      localStorage.setItem(TRYON_STATE_KEY, serialized);
+      sessionStorage.setItem(TRYON_STATE_KEY, serialized);
     } catch { /* quota exceeded — silently skip */ }
   }, []);
 
