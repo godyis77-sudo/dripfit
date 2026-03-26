@@ -31,9 +31,9 @@ const SORT_OPTIONS = [
 export type SortKey = typeof SORT_OPTIONS[number]['key'];
 
 const FIT_OPTIONS = [
-  'oversized', 'boxy', 'relaxed fit', 'slim fit', 'regular fit',
-  'cropped', 'tapered', 'drop shoulder', 'heavyweight', 'lightweight',
-  'athletic fit', 'classic fit', 'skinny fit', 'loose fit',
+  'athletic fit', 'boxy', 'classic fit', 'cropped', 'drop shoulder',
+  'heavyweight', 'lightweight', 'loose fit', 'oversized', 'regular fit',
+  'relaxed fit', 'skinny fit', 'slim fit', 'tapered',
 ] as const;
 
 interface ShopFiltersPanelProps {
