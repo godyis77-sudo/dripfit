@@ -44,6 +44,12 @@ const FitFeedbackSheet = ({ retailer, recommendedSize, onComplete }: FitFeedback
       setSubmitted(true);
       trackEvent('fit_feedback_submitted', { retailer, outcome });
       toast({ title: 'Thanks for your feedback!', description: 'This helps us improve future recommendations.' });
+
+      // Fire-and-forget: process feedback for size engine improvement
+      supabase.functions.invoke('process-fit-feedback', {
+        body: { retailer },
+      }).catch(() => {});
+
       onComplete?.();
     } catch {
       toast({ title: 'Could not save feedback', variant: 'destructive' });
