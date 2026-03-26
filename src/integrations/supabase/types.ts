@@ -1573,6 +1573,52 @@ export type Database = {
         Args: { p_creator_id: string; p_month_key: string }
         Returns: number
       }
+      get_filtered_catalog: {
+        Args: {
+          p_brand?: string
+          p_categories?: string[]
+          p_fit_profile?: string
+          p_gender?: string
+          p_genre?: string
+          p_limit?: number
+          p_min_confidence?: number
+          p_offset?: number
+          p_presentation?: string
+          p_price_max_cents?: number
+          p_price_min_cents?: number
+          p_retailer?: string
+        }
+        Returns: {
+          brand: string
+          category: string
+          created_at: string
+          currency: string | null
+          fabric_composition: string[] | null
+          fit_profile: string[] | null
+          gender: string | null
+          id: string
+          image_confidence: number | null
+          image_url: string
+          is_active: boolean
+          name: string
+          presentation: string | null
+          price_cents: number | null
+          product_url: string | null
+          retailer: string
+          scrape_source: string | null
+          scraped_at: string | null
+          style_genre: string | null
+          tags: string[] | null
+          tryon_ready: boolean | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "product_catalog"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_public_profile_by_name: {
         Args: { p_display_name: string }
         Returns: {

@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -23,7 +24,6 @@ export interface CatalogProduct {
 
 // Map app-facing category keys to actual DB category values
 const CATEGORY_MAP: Record<string, string[]> = {
-  // Broad categories map to all sub-categories
   tops: ['tops', 'top', 't-shirts', 'shirts', 'hoodies', 'polos', 'sweaters'],
   top: ['tops', 'top', 't-shirts', 'shirts', 'hoodies', 'polos', 'sweaters'],
   't-shirts': ['t-shirts'],
@@ -89,6 +89,64 @@ function seededShuffle<T>(arr: T[], seed: number): T[] {
   return copy;
 }
 
+interface CatalogFilters {
+  category?: string;
+  brand?: string;
+  gender?: string;
+  genre?: string;
+  fitProfile?: string;
+  retailer?: string;
+  priceMin?: number;
+  priceMax?: number;
+}
+
+async function fetchCatalogProducts(filters: CatalogFilters): Promise<CatalogProduct[]> {
+  const { category, brand, gender, genre, fitProfile, retailer, priceMin, priceMax } = filters;
+
+  // Resolve categories
+  let categories: string[] | null = null;
+  if (category && category !== 'all') {
+    const mapped = CATEGORY_MAP[category];
+    categories = mapped && mapped.length > 0 ? mapped : [category];
+  }
+
+  // Swimwear-specific overrides
+  const swimCategories = ['swimwear', 'underwear', 'lingerie'];
+  const isSwim = swimCategories.includes(category?.toLowerCase() ?? '');
+
+  const params: Record<string, unknown> = {
+    p_categories: categories,
+    p_brand: brand || null,
+    p_gender: gender && gender !== 'all' ? gender : null,
+    p_genre: genre || null,
+    p_fit_profile: fitProfile || null,
+    p_retailer: retailer || null,
+    p_price_min_cents: priceMin != null ? Math.round(priceMin * 100) : null,
+    p_price_max_cents: priceMax != null ? Math.round(priceMax * 100) : null,
+    p_min_confidence: isSwim ? 0.15 : 0.05,
+    p_presentation: isSwim ? 'model_shot' : null,
+    p_limit: 500,
+    p_offset: 0,
+  };
+
+  const { data, error } = await supabase.rpc('get_filtered_catalog', params as any);
+
+  if (error) {
+    console.error('Catalog RPC error:', error);
+    return [];
+  }
+
+  // Deduplicate by image_url (still needed for edge cases)
+  const seen = new Set<string>();
+  return ((data as unknown as CatalogProduct[]) ?? []).filter(p => {
+    if (!p.image_url) return false;
+    const key = p.image_url.trim().toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 export function useProductCatalog(
   category?: string,
   brand?: string,
@@ -97,102 +155,31 @@ export function useProductCatalog(
   genre?: string,
   fitProfile?: string,
 ) {
-  const [products, setProducts] = useState<CatalogProduct[]>([]);
-  const [loading, setLoading] = useState(false);
-  // Stable random seed — generated once per hook instance to prevent flickering on re-fetch
+  // Stable random seed — generated once per hook instance
   const stableSeedRef = useRef(seed ?? Math.floor(Math.random() * 100000));
-  const fetchRequestIdRef = useRef(0);
 
-  const fetchProducts = useCallback(async () => {
-    const requestId = ++fetchRequestIdRef.current;
-    setLoading(true);
+  const filters: CatalogFilters = {
+    category,
+    brand,
+    gender,
+    genre,
+    fitProfile,
+  };
 
-    try {
-      let query = supabase
-        .from('product_catalog')
-        .select('id, brand, retailer, category, name, image_url, product_url, price_cents, currency, tags, presentation, image_confidence, gender, fit_profile, fabric_composition, style_genre')
-        .eq('is_active', true)
-        .not('image_url', 'is', null)
-        .gte('image_confidence', 0.05)
-        .order('image_confidence', { ascending: false })
-        .order('id', { ascending: true })
-        .limit(500);
+  const queryKey = ['product-catalog', category ?? 'all', brand ?? '', gender ?? '', genre ?? '', fitProfile ?? ''];
 
-      if (category && category !== 'all') {
-        const mapped = CATEGORY_MAP[category];
-        if (mapped && mapped.length > 0) {
-          query = query.in('category', mapped);
-        } else {
-          query = query.eq('category', category);
-        }
-      }
-      if (brand) query = query.eq('brand', brand);
-      if (gender && gender !== 'all') {
-        query = query.in('gender', [gender, 'unisex']);
-      }
-      if (genre) {
-        query = query.eq('style_genre', genre);
-      }
-      if (fitProfile) {
-        query = query.contains('fit_profile', [fitProfile]);
-      }
+  const { data, isLoading, refetch } = useQuery({
+    queryKey,
+    queryFn: () => fetchCatalogProducts(filters),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    refetchOnWindowFocus: false,
+  });
 
-      // For swimwear, only show model shots (forward-facing body photos)
-      const swimCategories = ['swimwear', 'underwear', 'lingerie'];
-      const effectiveCategory = category?.toLowerCase() ?? '';
-      if (swimCategories.includes(effectiveCategory)) {
-        query = query.eq('presentation', 'model_shot').gte('image_confidence', 0.15);
-      }
+  // Apply deterministic shuffle
+  const shuffleSeed = seed ?? stableSeedRef.current;
+  const products = data ? seededShuffle(data, shuffleSeed) : [];
 
-      const { data } = await query;
-
-      if (requestId !== fetchRequestIdRef.current) return;
-
-      if (data) {
-        // Filter out junk URLs and deduplicate
-        const JUNK_PATTERNS = [
-          'down_for_maintenance', 'navigation', 'imagesother', 'chip/goods',
-          'topper', 'courtesypage', 'navi/image', 'lineup/', 'width=36',
-          'new-stores', 'miffy', 'placeholder', 'dress_toppers', 'dress-topper',
-          'share-image', 'flags/', 'entrance/assets', '/icons/', 'swatch',
-          'pixel', 'spacer', 'badge', 'app-store', 'download-on',
-          '.gif', '1x1', 'tracking', 'promo',
-          'paymentmethods', 'asos-finance', 'klarna',
-          'visa.png', 'mastercard.png', 'paypal.png', 'amex.png',
-          'afterpay', 'discover.png', 'dinersclub', 'apple-pay',
-          '/navi/', 'pm_',
-          'doubleclick.net', 'ad.doubleclick', 'googlesyndication', 'googleadservices',
-          'facebook.com/tr', 'criteo', 'taboola',
-          'static.zara.net',
-          '/risk/challenge', 'captcha_type',
-        ];
-        const seen = new Set<string>();
-        const cleaned = (data as unknown as CatalogProduct[]).filter(p => {
-          if (!p.image_url || p.image_url.trim() === '') return false;
-          const normalizedUrl = p.image_url.trim().toLowerCase();
-          if (JUNK_PATTERNS.some(pat => normalizedUrl.includes(pat))) return false;
-          if (seen.has(normalizedUrl)) return false;
-          seen.add(normalizedUrl);
-          return true;
-        });
-
-        const shuffleSeed = seed ?? stableSeedRef.current;
-        setProducts(seededShuffle(cleaned, shuffleSeed));
-      } else {
-        setProducts([]);
-      }
-    } finally {
-      if (requestId === fetchRequestIdRef.current) {
-        setLoading(false);
-      }
-    }
-  }, [category, brand, seed, gender, genre, fitProfile]);
-
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
-
-  return { products, loading, refetch: fetchProducts };
+  return { products, loading: isLoading, refetch };
 }
 
 export function usePreferredBrands() {
