@@ -42,19 +42,39 @@ interface SearchPhoto {
 
 const BG_SUBJECT_CACHE_KEY = 'dripcheck_bg_subject';
 
+async function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function toDataUrl(imageUrl: string): Promise<string> {
+  if (imageUrl.startsWith('data:')) return imageUrl;
+  const resp = await fetch(imageUrl, { cache: 'no-store' });
+  if (!resp.ok) throw new Error(`Image fetch failed (${resp.status})`);
+  return blobToDataUrl(await resp.blob());
+}
+
 function getCachedSubject(sourceUrl: string): string | null {
   try {
     const raw = sessionStorage.getItem(BG_SUBJECT_CACHE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    if (parsed.sourceUrl === sourceUrl && parsed.blobUrl) return parsed.blobUrl;
+    if (parsed.sourceUrl !== sourceUrl) return null;
+    const cachedDataUrl = typeof parsed.dataUrl === 'string' ? parsed.dataUrl : typeof parsed.blobUrl === 'string' ? parsed.blobUrl : null;
+    if (!cachedDataUrl?.startsWith('data:')) return null; // ignore legacy blob: URLs (invalid after refresh)
+    return cachedDataUrl;
   } catch { /* ignore */ }
   return null;
 }
 
-function setCachedSubject(sourceUrl: string, blobUrl: string) {
+function setCachedSubject(sourceUrl: string, dataUrl: string) {
+  if (!dataUrl.startsWith('data:')) return;
   try {
-    sessionStorage.setItem(BG_SUBJECT_CACHE_KEY, JSON.stringify({ sourceUrl, blobUrl }));
+    sessionStorage.setItem(BG_SUBJECT_CACHE_KEY, JSON.stringify({ sourceUrl, dataUrl }));
   } catch { /* quota */ }
 }
 
@@ -70,7 +90,6 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   const [selectedBgUrl, setSelectedBgUrl] = useState<string | null>(null);
   const [selectedBgColor, setSelectedBgColor] = useState('#0A0A0A');
   const [activeCategory, setActiveCategory] = useState<string>('street-urban');
-  const [usingCache, setUsingCache] = useState(false);
   const [showOriginal, setShowOriginal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
@@ -150,31 +169,28 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
     const cached = getCachedSubject(resultImageUrl);
     if (cached) {
       setTransparentSubject(cached);
-      setUsingCache(true);
       return;
     }
 
     try {
       trackEvent('bg_swap_opened');
-      // Convert to data URL first to avoid CORS issues with canvas
-      let imgSrc = resultImageUrl;
-      if (!resultImageUrl.startsWith('data:') && !resultImageUrl.startsWith('blob:')) {
-        try {
-          const resp = await fetch(resultImageUrl);
-          const blob = await resp.blob();
-          imgSrc = await new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          });
-        } catch { /* use original URL as fallback */ }
-      }
+      // Convert source to data URL to avoid CORS/lifecycle issues on canvas and refresh
+      const imgSrc = await toDataUrl(resultImageUrl);
       const url = await removeBackground(imgSrc);
-      setTransparentSubject(url);
-      setCachedSubject(resultImageUrl, url);
-      // Auto-scroll to background grid after removal
-      setTimeout(() => gridPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 300);
+
+      let stableUrl = url;
+      try {
+        stableUrl = await toDataUrl(url);
+      } catch {
+        // Keep blob URL fallback for this session if conversion fails
+      }
+
+      if (url.startsWith('blob:') && stableUrl !== url) {
+        URL.revokeObjectURL(url);
+      }
+
+      setTransparentSubject(stableUrl);
+      setCachedSubject(resultImageUrl, stableUrl);
     } catch (err) {
       console.error('BG removal failed:', err);
       setRemovalError(true);
@@ -310,7 +326,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] bg-[hsl(var(--background))] flex flex-col overflow-hidden"
+      className="fixed inset-0 z-[100] bg-[hsl(var(--background))] flex flex-col overflow-y-auto"
     >
       {/* Close button */}
       <button
@@ -323,48 +339,24 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       </button>
 
       {/* Fullscreen removal progress portal */}
-      {(removing || removalError) && createPortal(
+      {removalError && createPortal(
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[220] bg-background flex flex-col items-center justify-center"
         >
-          {removing ? (
-            <div className="flex flex-col items-center gap-5 px-8">
-              <div className="relative h-24 w-24">
-                <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping" />
-                <div className="absolute inset-2 rounded-full border-[3px] border-primary border-t-transparent animate-spin" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-lg font-bold text-primary">{progress}%</span>
-                </div>
-              </div>
-              <div className="text-center space-y-2">
-                <p className="text-base font-bold text-foreground">Removing background…</p>
-                <p className="text-xs text-muted-foreground">This may take a moment on mobile devices</p>
-              </div>
-              <div className="w-56 h-2 bg-muted rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-primary rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.3, ease: 'easeOut' }}
-                />
-              </div>
+          <div className="flex flex-col items-center gap-4 px-8 text-center">
+            <div className="h-16 w-16 rounded-full bg-destructive/10 flex items-center justify-center">
+              <X className="h-8 w-8 text-destructive" />
             </div>
-          ) : (
-            <div className="flex flex-col items-center gap-4 px-8 text-center">
-              <div className="h-16 w-16 rounded-full bg-destructive/10 flex items-center justify-center">
-                <X className="h-8 w-8 text-destructive" />
-              </div>
-              <p className="text-base font-bold text-foreground">Background removal failed</p>
-              <p className="text-sm text-muted-foreground">This can happen on devices with limited memory.</p>
-              <div className="flex gap-3 mt-2">
-                <button onClick={onClose} className="px-6 py-2.5 rounded-xl border border-border text-sm font-medium text-muted-foreground">Close</button>
-                <button onClick={attemptRemoval} className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold">Retry</button>
-              </div>
+            <p className="text-base font-bold text-foreground">Background removal failed</p>
+            <p className="text-sm text-muted-foreground">This can happen on devices with limited memory.</p>
+            <div className="flex gap-3 mt-2">
+              <button onClick={onClose} className="px-6 py-2.5 rounded-xl border border-border text-sm font-medium text-muted-foreground">Close</button>
+              <button onClick={attemptRemoval} className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold">Retry</button>
             </div>
-          )}
+            </div>
         </motion.div>,
         document.body
       )}
@@ -403,8 +395,8 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
 
       {/* Preview area — drag to reposition, pinch to scale */}
       <div
-        className="shrink-0 relative flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing group touch-none"
-        style={{ height: 'min(55dvh, 420px)' }}
+        className="shrink-0 relative flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing group"
+        style={{ height: 'min(55dvh, 420px)', touchAction: transparentSubject ? 'none' : 'pan-y' }}
         onPointerDown={e => {
           if (!transparentSubject) return;
           e.preventDefault();
@@ -477,6 +469,30 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
               <Maximize2 className="h-4 w-4 text-white" />
             </div>
           </>
+        )}
+
+        {removing && (
+          <div className="absolute inset-0 bg-background/65 backdrop-blur-[2px] flex flex-col items-center justify-center gap-4 pointer-events-none">
+            <div className="relative h-20 w-20">
+              <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping" />
+              <div className="absolute inset-1.5 rounded-full border-[3px] border-primary border-t-transparent animate-spin" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-sm font-bold text-primary">{progress}%</span>
+              </div>
+            </div>
+            <div className="text-center space-y-1 px-6">
+              <p className="text-sm font-bold text-foreground">Removing background…</p>
+              <p className="text-[11px] text-muted-foreground">This may take a moment on mobile devices</p>
+            </div>
+            <div className="w-44 h-1.5 bg-muted rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-primary rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+              />
+            </div>
+          </div>
         )}
       </div>
 
