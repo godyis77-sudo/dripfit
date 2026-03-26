@@ -6,6 +6,7 @@ import FeatureIcon, { featureIcons } from '@/components/ui/FeatureIcon';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
+import { ALL_PRODUCT_CATEGORIES } from '@/components/tryon/tryon-constants';
 import { useProfileInfo, useLatestScan, useTrendingFits } from '@/hooks/useProfileData';
 import TrendingFitsGrid from '@/components/home/TrendingFitsGrid';
 import HomeFAB from '@/components/home/HomeFAB';
