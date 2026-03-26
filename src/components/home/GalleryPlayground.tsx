@@ -112,7 +112,7 @@ const GalleryPlayground = () => {
 
         <button
           onClick={() => navigate('/browse/all')}
-          className="w-full mb-3 py-2 rounded-xl border border-primary/20 bg-card text-[11px] font-bold text-primary active:scale-[0.97] transition-transform flex items-center justify-center gap-1"
+          className="w-full mb-3 py-2 rounded-xl btn-luxury text-primary-foreground text-[11px] font-bold active:scale-[0.97] transition-transform flex items-center justify-center gap-1"
         >
           <ShoppingBag className="h-3.5 w-3.5" /> Browse All →
         </button>
