@@ -39,7 +39,7 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
             <p className="section-label mb-0">Tap a Fit</p>
           </div>
           <button
-            onClick={() => navigate('/browse/tops')}
+            onClick={() => navigate('/browse/all')}
             className="text-[10px] text-primary font-semibold min-h-[44px] flex items-center"
           >
             Browse all →
