@@ -12,6 +12,9 @@ import { useCanvasCompositor } from './useCanvasCompositor';
 
 interface BackgroundSwapOverlayProps {
   resultImageUrl: string;
+  userPhotoUrl?: string;
+  clothingPhotoUrl?: string;
+  clothingCategory?: string;
   onClose: () => void;
 }
 
