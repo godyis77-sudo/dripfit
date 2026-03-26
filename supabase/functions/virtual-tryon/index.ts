@@ -483,10 +483,11 @@ Deno.serve(async (req) => {
 
 IMAGES PROVIDED:
 - Image A (first image below): A person wearing an outfit — preserve their face, body, pose, and ALL clothing EXACTLY.
-- Image B (second image below): The target footwear — replicate this EXACT shoe/sneaker.
+- Image B (second image below): The target footwear reference.
 
 TARGET FOOTWEAR:
 - The shoes shown in Image B.${productHint}
+- IMPORTANT: If Image B shows a full-body photo of a person, use the product name above to identify ONLY the footwear and ignore all other clothing.
 
 TASK — FOOTWEAR SWAP:
 1. REMOVE whatever shoes/footwear the person in Image A is currently wearing.
