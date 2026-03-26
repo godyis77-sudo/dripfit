@@ -140,17 +140,6 @@ const Browse = () => {
       case 'brand_az':
         result.sort((a, b) => a.brand.localeCompare(b.brand));
         break;
-      case 'genre': {
-        const genreOrder = new Map(BRAND_GENRES.map((g, i) => [g, i]));
-        result.sort((a, b) => {
-          const ga = getBrandGenre(a.brand);
-          const gb = getBrandGenre(b.brand);
-          const diff = (genreOrder.get(ga) ?? 99) - (genreOrder.get(gb) ?? 99);
-          if (diff !== 0) return diff;
-          return a.brand.localeCompare(b.brand);
-        });
-        break;
-      }
     }
 
     if (categoryFilter) {
