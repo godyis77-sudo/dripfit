@@ -1041,6 +1041,9 @@ const TryOnResultSection = ({
           }>
             <BackgroundSwapOverlay
               resultImageUrl={resultImage}
+              userPhotoUrl={userPhoto || undefined}
+              clothingPhotoUrl={clothingPhoto || undefined}
+              clothingCategory={category || undefined}
               onClose={() => setShowBgSwap(false)}
             />
           </ErrorBoundary>
