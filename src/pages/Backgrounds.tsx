@@ -37,6 +37,10 @@ interface SearchPhoto {
 
 const Backgrounds = () => {
   usePageMeta({ title: 'Backgrounds' });
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
