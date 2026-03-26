@@ -282,28 +282,47 @@ export function useCommunityFeed({ userId, filter, shopGender }: UseCommunityFee
     return nextPosts;
   }, [feedQuery]);
 
-  // Realtime: prepend new public posts as they arrive
+  // Realtime: keep feed in sync when posts are created or toggled public/private
   useEffect(() => {
+    const upsertPublicPost = async (row: any) => {
+      if (!row?.is_public) return;
+      const profileMap = await fetchPublicProfiles([row.user_id]);
+      const profile = profileMap.get(row.user_id) || { display_name: 'Anonymous' };
+      const post: Post = { ...row, profile, rating_count: 0 };
+
+      setPosts(prev => {
+        const exists = prev.some(p => p.id === post.id);
+        const next = exists
+          ? prev.map(p => (p.id === post.id ? { ...p, ...post } : p))
+          : [post, ...prev];
+
+        return [...next].sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+      });
+    };
+
     const channel = supabase
       .channel('community-posts')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'tryon_posts' },
-        async (payload) => {
-          const newRow = payload.new as any;
-          if (!newRow.is_public) return;
-          const profileMap = await fetchPublicProfiles([newRow.user_id]);
-          const profile = profileMap.get(newRow.user_id) || { display_name: 'Anonymous' };
-          const post: Post = { ...newRow, profile, rating_count: 0 };
-          setPosts(prev => {
-            if (prev.some(p => p.id === post.id)) return prev;
-            return [post, ...prev];
-          });
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'tryon_posts' }, async (payload) => {
+        await upsertPublicPost(payload.new as any);
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tryon_posts' }, async (payload) => {
+        const nextRow = payload.new as any;
+        const prevRow = payload.old as any;
+
+        if (prevRow?.is_public && !nextRow?.is_public) {
+          setPosts(prev => prev.filter(p => p.id !== nextRow.id));
+          return;
         }
-      )
+
+        await upsertPublicPost(nextRow);
+      })
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   // Load vote counts
