@@ -331,7 +331,7 @@ const TryOn = () => {
                                       <button
                                       key={genre}
                                       onClick={() => s.setSelectedGenre(genre === s.selectedGenre ? null : genre)}
-                                      className={`px-2.5 py-1.5 min-h-[44px] rounded-lg text-[10px] font-semibold transition-colors ${
+                                      className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                         s.selectedGenre === genre
                                           ? 'btn-luxury text-primary-foreground'
                                           : 'bg-background border border-border text-foreground/70'
