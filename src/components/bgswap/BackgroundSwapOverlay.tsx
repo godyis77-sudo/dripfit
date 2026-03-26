@@ -280,7 +280,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
 
   const handleSave = useCallback(async () => {
     if (!transparentSubject || !user) {
-      toast({ title: 'Sign in to save', description: 'Create an account to save your composites.' });
+      toast({ title: 'Sign in to save', description: 'Create an account to save to your try-ons.' });
       return;
     }
     setSaving(true);
@@ -300,35 +300,64 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
       const { error: upErr } = await supabase.storage.from('tryon-composites').upload(path, blob, { contentType: 'image/jpeg' });
       if (upErr) throw upErr;
 
-      await supabase.from('saved_composites').insert({
+      const { error: compositeErr } = await supabase.from('saved_composites').insert({
         user_id: user.id,
         background_id: selectedBgId,
         background_source: selectedBgUrl ? 'search' : 'solid',
         storage_path: path,
       });
+      if (compositeErr) throw compositeErr;
 
       // Also auto-save to tryon_posts so it appears in Profile → Try-Ons
       const compositePublicUrl = supabase.storage.from('tryon-composites').getPublicUrl(path).data.publicUrl;
-      const fallbackPhoto = resultImageUrl.startsWith('data:') ? resultImageUrl : compositePublicUrl;
-      await supabase.from('tryon_posts').insert({
-        user_id: user.id,
-        user_photo_url: userPhotoUrl || fallbackPhoto,
-        clothing_photo_url: clothingPhotoUrl || fallbackPhoto,
-        result_photo_url: compositePublicUrl,
-        clothing_category: clothingCategory || 'clothing',
-        is_public: false,
-      });
+      const safeUserPhotoUrl = userPhotoUrl?.startsWith('http') ? userPhotoUrl : compositePublicUrl;
+      const safeClothingPhotoUrl = clothingPhotoUrl?.startsWith('http') ? clothingPhotoUrl : compositePublicUrl;
+
+      const { data: insertedPost, error: tryOnErr } = await supabase
+        .from('tryon_posts')
+        .insert({
+          user_id: user.id,
+          user_photo_url: safeUserPhotoUrl,
+          clothing_photo_url: safeClothingPhotoUrl,
+          result_photo_url: compositePublicUrl,
+          clothing_category: clothingCategory || 'clothing',
+          is_public: false,
+        })
+        .select('id, result_photo_url, clothing_photo_url, caption, is_public, created_at, product_urls')
+        .single();
+
+      if (tryOnErr) throw tryOnErr;
+
+      queryClient.setQueryData(['tryon-posts', user.id], (prev: any) => [
+        insertedPost,
+        ...((prev ?? []).filter((p: any) => p.id !== insertedPost.id)),
+      ]);
       queryClient.invalidateQueries({ queryKey: ['tryon-posts', user.id] });
 
       trackEvent('bg_composite_saved');
-      toast({ title: 'Saved!', description: 'Composite saved to your gallery & try-ons.' });
-    } catch (err) {
+      toast({ title: 'Saved to Try-Ons!', description: 'Background try-on saved successfully.' });
+    } catch (err: any) {
       console.error('Save failed:', err);
-      toast({ title: 'Save failed', variant: 'destructive' });
+      toast({ title: 'Save failed', description: err?.message || 'Could not save to try-ons.', variant: 'destructive' });
     } finally {
       setSaving(false);
     }
-  }, [transparentSubject, user, selectedBgUrl, selectedBgColor, selectedBgId, composite, toast]);
+  }, [
+    transparentSubject,
+    user,
+    selectedBgUrl,
+    selectedBgColor,
+    selectedBgId,
+    composite,
+    subjectScale,
+    offsetX,
+    offsetY,
+    userPhotoUrl,
+    clothingPhotoUrl,
+    clothingCategory,
+    queryClient,
+    toast,
+  ]);
 
   // Lock body scroll — prevent background page from scrolling
   useEffect(() => {
