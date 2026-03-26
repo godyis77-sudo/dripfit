@@ -388,7 +388,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               style={{ background: 'hsl(45 90% 75%)' }}
               initial={{ opacity: 0 }}
               animate={{ opacity: [0, 0.95, 0] }}
-              transition={{ duration: 0.7, ease: 'easeOut' }}
+              transition={{ duration: 0.35, ease: 'easeOut' }}
             />
 
             {/* Sustained gold illumination */}
