@@ -56,14 +56,18 @@ export const CATEGORIES = [
 
 export const ACCESSORY_CATEGORIES = [
   { key: 'bags', label: 'Bags' },
+  { key: 'bikini-bottom', label: 'Bikini Bottom' },
+  { key: 'bikini-top', label: 'Bikini Top' },
   { key: 'bottom', label: 'Bottoms' },
   { key: 'bracelet', label: 'Bracelet' },
   { key: 'earrings', label: 'Earrings' },
   { key: 'hats', label: 'Hats' },
   { key: 'jewelry', label: 'Jewelry' },
   { key: 'necklace', label: 'Necklace' },
+  { key: 'one-piece', label: 'One-Piece' },
   { key: 'shoes', label: 'Shoes' },
   { key: 'sunglasses', label: 'Sunglasses' },
+  { key: 'swimwear', label: 'Swimwear' },
   { key: 'top', label: 'Tops' },
   { key: 'watch', label: 'Watch' },
 ] as const;
