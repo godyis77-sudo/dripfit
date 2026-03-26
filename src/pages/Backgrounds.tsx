@@ -199,7 +199,7 @@ const Backgrounds = () => {
   const isLoading = categoriesLoading || backgroundsLoading;
 
   return (
-    <div className="min-h-screen bg-background pb-safe-tab overflow-y-auto" onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
+    <div ref={pageRef} className="h-[100dvh] overflow-y-auto overscroll-y-contain bg-background pb-safe-tab" onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
       <PageHeader title="Backgrounds" />
 
       {/* Large preview area */}
