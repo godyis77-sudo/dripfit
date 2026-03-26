@@ -52,6 +52,7 @@ function analyzeBackgroundLighting(
     leftR: 128, leftG: 128, leftB: 128, leftBright: 128,
     rightR: 128, rightG: 128, rightB: 128, rightBright: 128,
     topBright: 128, bottomBright: 128, warmth: 0, saturation: 0.3,
+    floorR: 128, floorG: 128, floorB: 128, floorBright: 128,
   };
   try {
     const data = ctx.getImageData(0, 0, width, height).data;
