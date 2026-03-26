@@ -25,6 +25,7 @@ const HomeFAB = forwardRef<HTMLDivElement>((_, ref) => {
     { icon: <FeatureIcon name="tryon" size={22} />, label: 'New Try-On', action: () => navigate('/tryon') },
     { icon: <FeatureIcon name="sizeguide" size={22} />, label: 'Size Guide', action: () => navigate('/size-guide') },
     { icon: <FeatureIcon name="stylecheck" size={22} />, label: 'Style Check', action: () => navigate('/style-check') },
+    { icon: <FeatureIcon name="home" size={22} />, label: 'Style Assistant', action: () => navigate('/style-assistant') },
   ];
 
   return createPortal(
