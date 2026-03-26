@@ -90,6 +90,11 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
       is_public: isPublic,
       clothing_category: clothingCategory,
     };
+
+    if (isPublic && !selectedPost.is_public) {
+      // Bump publish time so newly shared looks appear in the first feed page
+      updatePayload.created_at = new Date().toISOString();
+    }
     if (productUrl.length > 5) {
       updatePayload.product_urls = [productUrl];
     }
