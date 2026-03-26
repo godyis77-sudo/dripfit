@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -78,6 +79,7 @@ function loadPersistedTryOnState(): PersistedTryOnState {
 }
 
 export function useTryOnState() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isSubscribed, userGender: authGender } = useAuth();
@@ -437,30 +439,56 @@ export function useTryOnState() {
   };
 
   const autoSaveToProfile = async (resultBase64: string, capturedUserPhoto?: string, capturedClothingPhoto?: string) => {
+    if (!user) return;
     const uPhoto = capturedUserPhoto || userPhoto;
     const cPhoto = capturedClothingPhoto || clothingPhoto;
     if (!uPhoto || !cPhoto) { console.warn('autoSaveToProfile: missing photos'); return; }
-    try {
-      const [userUrl, clothingUrl, resultUrl] = await Promise.all([
-        uploadBase64ToStorage(uPhoto, 'user'),
-        uploadBase64ToStorage(cPhoto, 'clothing'),
-        uploadBase64ToStorage(resultBase64, 'result'),
-      ]);
-      const { data: insertedPost, error } = await supabase
-        .from('tryon_posts')
-        .insert({ user_id: user!.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false, product_urls: getAllUrls() })
-        .select('id')
-        .single();
-      if (error) throw error;
-      setAutoSaved(true);
-      setActivePostId(insertedPost.id);
-      // Persist the uploaded URL (small string) so result survives navigation & tab close
-      setResultImage(resultUrl);
-      persistState({ autoSaved: true, resultImage: resultUrl, userPhoto: userUrl, clothingPhoto: clothingUrl, activePostId: insertedPost.id });
-      try { localStorage.setItem(TRYON_RESULT_KEY, resultUrl); } catch { /* ignore */ }
-      trackEvent('tryon_saved');
-      toast({ title: 'Saved to Profile', description: 'Your Try-On is saved privately.' });
-    } catch (err: unknown) { console.error('Auto-save failed:', err); }
+    let lastError: unknown = null;
+
+    for (let attempt = 1; attempt <= 2; attempt += 1) {
+      try {
+        const [userUrl, clothingUrl, resultUrl] = await Promise.all([
+          uploadBase64ToStorage(uPhoto, 'user'),
+          uploadBase64ToStorage(cPhoto, 'clothing'),
+          uploadBase64ToStorage(resultBase64, 'result'),
+        ]);
+
+        const { data: insertedPost, error } = await supabase
+          .from('tryon_posts')
+          .insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: null, is_public: false, product_urls: getAllUrls() })
+          .select('id, result_photo_url, clothing_photo_url, caption, is_public, created_at, product_urls')
+          .single();
+        if (error) throw error;
+
+        setAutoSaved(true);
+        setActivePostId(insertedPost.id);
+        // Persist the uploaded URL (small string) so result survives navigation & tab close
+        setResultImage(resultUrl);
+        persistState({ autoSaved: true, resultImage: resultUrl, userPhoto: userUrl, clothingPhoto: clothingUrl, activePostId: insertedPost.id });
+        try { localStorage.setItem(TRYON_RESULT_KEY, resultUrl); } catch { /* ignore */ }
+
+        queryClient.setQueryData(
+          ['tryon-posts', user.id],
+          (prev: Array<{ id: string }> | undefined) => [
+            insertedPost,
+            ...(prev ?? []).filter((post) => post.id !== insertedPost.id),
+          ],
+        );
+        queryClient.invalidateQueries({ queryKey: ['tryon-posts', user.id] });
+
+        trackEvent('tryon_saved');
+        toast({ title: 'Saved to Profile', description: 'Your Try-On is saved privately.' });
+        return;
+      } catch (err: unknown) {
+        lastError = err;
+        if (attempt < 2) {
+          await new Promise((resolve) => setTimeout(resolve, 400));
+        }
+      }
+    }
+
+    console.error('Auto-save failed:', lastError);
+    toast({ title: 'Auto-save failed', description: 'Try-on could not be saved to profile. Please try again.', variant: 'destructive' });
   };
 
   const [showAuthWall, setShowAuthWall] = useState(false);
