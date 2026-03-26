@@ -270,10 +270,12 @@ const TryOnResultSection = ({
         }]
       : [];
 
-  const shopUrl = displayItems[0]?.url || productLink || selectedQuickPick?.product_url;
-  const productName = selectedQuickPick?.name || displayItems[0]?.name;
-  const productBrand = selectedQuickPick?.brand || displayItems[0]?.brand;
-  const productPrice = selectedQuickPick?.price_cents || displayItems[0]?.price_cents;
+  // Show the LATEST item details (last in the list), not the first
+  const latestItem = displayItems.length > 0 ? displayItems[displayItems.length - 1] : null;
+  const shopUrl = latestItem?.url || productLink || selectedQuickPick?.product_url;
+  const productName = selectedQuickPick?.name || latestItem?.name;
+  const productBrand = selectedQuickPick?.brand || latestItem?.brand;
+  const productPrice = selectedQuickPick?.price_cents || latestItem?.price_cents;
   const isPostSelected = !shared && showPostUI && isPublic;
 
   return (
