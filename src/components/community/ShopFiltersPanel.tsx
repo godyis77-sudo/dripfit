@@ -71,9 +71,7 @@ const ShopFiltersPanel = ({
       <div className="mb-3">
         <button
           onClick={() => setOpen(!open)}
-          className={`relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold btn-luxury text-primary-foreground ${
-            activeCount > 0 ? '' : 'opacity-80'
-          }`}
+          className="relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold btn-luxury text-primary-foreground"
         >
           <SlidersHorizontal className="h-4 w-4" />
           {activeCount > 0 ? `Filters (${activeCount})` : 'Filters'}
