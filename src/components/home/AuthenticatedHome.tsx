@@ -102,6 +102,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               subtitle: 'Get rated',
             },
           ].map((action) => (
+          ].map((action) => (
             <button
               key={action.title}
               onClick={action.onClick}
