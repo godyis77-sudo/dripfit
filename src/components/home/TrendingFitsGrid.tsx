@@ -69,12 +69,9 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
                 decoding="async"
                 className="absolute inset-0 w-full h-full object-cover object-center rounded-xl"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-1.5">
-                <p className="text-[9px] font-extrabold text-white uppercase tracking-wide truncate drop-shadow-sm">{fit.brand}</p>
-                {fit.price_cents != null && (
-                  <p className="text-[11px] font-extrabold text-white">${(fit.price_cents / 100).toFixed(0)}</p>
-                )}
+              {/* Brand badge — bottom right of image */}
+              <div className="absolute bottom-1.5 right-1.5">
+                <span className="brand-label">{fit.brand}</span>
               </div>
             </button>
           ))}
