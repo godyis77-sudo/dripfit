@@ -336,7 +336,7 @@ const TryOnResultSection = ({
           <button
             type="button"
             onClick={() => {
-              const imgUrl = selectedQuickPick?.image_url || clothingPhoto || '';
+              const imgUrl = selectedQuickPick?.image_url || latestItem?.image_url || clothingPhoto || '';
               if (imgUrl) {
                 setItemPreview({
                   id: selectedQuickPick?.id,
@@ -354,8 +354,8 @@ const TryOnResultSection = ({
             }}
             className="w-full flex items-center gap-3 bg-card border border-border rounded-xl px-3 py-2.5 mb-3 active:scale-[0.98] transition-transform text-left"
           >
-            {(selectedQuickPick?.image_url || clothingPhoto) && (
-              <img src={selectedQuickPick?.image_url || clothingPhoto!} alt="" className="w-10 h-10 rounded-lg object-cover border border-border shrink-0" />
+            {(selectedQuickPick?.image_url || latestItem?.image_url || clothingPhoto) && (
+              <img src={selectedQuickPick?.image_url || latestItem?.image_url || clothingPhoto!} alt="" className="w-10 h-10 rounded-lg object-cover border border-border shrink-0" />
             )}
             <div className="flex-1 min-w-0">
               {productBrand && <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{productBrand}</p>}
