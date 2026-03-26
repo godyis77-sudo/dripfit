@@ -84,7 +84,17 @@ export const PostDetailSheet = ({
   const [editingQuestion, setEditingQuestion] = useState(false);
   const [questionText, setQuestionText] = useState('');
   const [savingCaption, setSavingCaption] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleCopyPostLink = async () => {
+    if (!post) return;
+    const url = `${window.location.origin}/style-check/${post.id}`;
+    await navigator.clipboard.writeText(url);
+    setLinkCopied(true);
+    trackEvent('share_post_link_copied', { postId: post.id });
+    setTimeout(() => setLinkCopied(false), 2000);
+  };
 
   // Fetch comments when sheet opens
   useEffect(() => {
