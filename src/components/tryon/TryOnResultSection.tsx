@@ -270,10 +270,12 @@ const TryOnResultSection = ({
         }]
       : [];
 
-  const shopUrl = displayItems[0]?.url || productLink || selectedQuickPick?.product_url;
-  const productName = selectedQuickPick?.name || displayItems[0]?.name;
-  const productBrand = selectedQuickPick?.brand || displayItems[0]?.brand;
-  const productPrice = selectedQuickPick?.price_cents || displayItems[0]?.price_cents;
+  // Show the LATEST item details (last in the list), not the first
+  const latestItem = displayItems.length > 0 ? displayItems[displayItems.length - 1] : null;
+  const shopUrl = latestItem?.url || productLink || selectedQuickPick?.product_url;
+  const productName = selectedQuickPick?.name || latestItem?.name;
+  const productBrand = selectedQuickPick?.brand || latestItem?.brand;
+  const productPrice = selectedQuickPick?.price_cents || latestItem?.price_cents;
   const isPostSelected = !shared && showPostUI && isPublic;
 
   return (
@@ -334,7 +336,7 @@ const TryOnResultSection = ({
           <button
             type="button"
             onClick={() => {
-              const imgUrl = selectedQuickPick?.image_url || clothingPhoto || '';
+              const imgUrl = selectedQuickPick?.image_url || latestItem?.image_url || clothingPhoto || '';
               if (imgUrl) {
                 setItemPreview({
                   id: selectedQuickPick?.id,
@@ -352,8 +354,8 @@ const TryOnResultSection = ({
             }}
             className="w-full flex items-center gap-3 bg-card border border-border rounded-xl px-3 py-2.5 mb-3 active:scale-[0.98] transition-transform text-left"
           >
-            {(selectedQuickPick?.image_url || clothingPhoto) && (
-              <img src={selectedQuickPick?.image_url || clothingPhoto!} alt="" className="w-10 h-10 rounded-lg object-cover border border-border shrink-0" />
+            {(selectedQuickPick?.image_url || latestItem?.image_url || clothingPhoto) && (
+              <img src={selectedQuickPick?.image_url || latestItem?.image_url || clothingPhoto!} alt="" className="w-10 h-10 rounded-lg object-cover border border-border shrink-0" />
             )}
             <div className="flex-1 min-w-0">
               {productBrand && <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{productBrand}</p>}
