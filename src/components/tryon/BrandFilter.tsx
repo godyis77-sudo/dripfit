@@ -89,15 +89,36 @@ const BrandFilter = ({ gender, selectedBrand, onBrandChange, selectedBrands = []
     : allBrands;
 
   const handleSelect = (brand: string) => {
-    onBrandChange(brand);
-    setSearch('');
-    setShowDropdown(false);
+    if (multiSelect && onBrandsChange) {
+      if (selectedBrands.includes(brand)) {
+        onBrandsChange(selectedBrands.filter(b => b !== brand));
+      } else {
+        onBrandsChange([...selectedBrands, brand]);
+      }
+      setSearch('');
+    } else {
+      onBrandChange(brand);
+      setSearch('');
+      setShowDropdown(false);
+    }
   };
 
   const handleClear = () => {
-    onBrandChange(null);
+    if (multiSelect && onBrandsChange) {
+      onBrandsChange([]);
+    } else {
+      onBrandChange(null);
+    }
     setSearch('');
   };
+
+  const handleRemoveBrand = (brand: string) => {
+    if (multiSelect && onBrandsChange) {
+      onBrandsChange(selectedBrands.filter(b => b !== brand));
+    }
+  };
+
+  const hasSelection = multiSelect ? selectedBrands.length > 0 : !!selectedBrand;
 
   return (
     <div className="mb-3" ref={wrapperRef}>
