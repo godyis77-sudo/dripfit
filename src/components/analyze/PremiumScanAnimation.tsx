@@ -266,7 +266,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               ],
             }}
             transition={{
-              duration: 1.6,
+              duration: 0.8,
               ease: [0.16, 1, 0.3, 1],
               times: [0, 0.2, 0.7, 1],
             }}
