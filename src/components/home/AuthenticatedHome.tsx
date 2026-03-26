@@ -213,21 +213,13 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             ))}
           </div>
 
-          {genderLoaded && [
-            { category: 'tops', title: 'Tops' },
-            { category: 'bottom', title: 'Bottoms' },
-            ...(mappedGender !== 'mens' ? [{ category: 'dress', title: 'Dresses' }] : []),
-            { category: 'outerwear', title: 'Outerwear' },
-            { category: 'shoes', title: 'Shoes' },
-            { category: 'accessories', title: 'Trending Accessories' },
-          ].map((section, idx) => (
-            <div key={section.category} className={idx > 0 ? 'mt-3' : ''}>
+          {genderLoaded && ALL_PRODUCT_CATEGORIES.map((cat, idx) => (
+            <div key={cat.key} className={idx > 0 ? 'mt-3' : ''}>
               <CategoryProductGrid
-                category={section.category}
-                title={idx > 0 ? section.title : undefined}
-                collapsed={idx > 0}
-                maxItems={8}
-                
+                category={cat.key}
+                title={cat.label}
+                collapsed={true}
+                maxItems={100}
                 showViewAll={true}
                 priceFilter={priceFilter}
                 gender={mappedGender}
