@@ -18,6 +18,7 @@ import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import { useCommunityFeed } from '@/hooks/useCommunityFeed';
 import { useCart } from '@/hooks/useCart';
 import { useProductCatalog } from '@/hooks/useProductCatalog';
+import { ALL_PRODUCT_CATEGORIES } from '@/components/tryon/tryon-constants';
 import { isValidImageUrl } from '@/components/community/community-types';
 import type { Post, FilterType, TrendingSort, GenderKey } from '@/components/community/community-types';
 import type { BrandGenre } from '@/lib/brandGenres';
