@@ -237,8 +237,10 @@ export function useTryOnState() {
   }, [persistState]);
   const [layerHistory, setLayerHistory] = useState<string[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [selectedRetailer, setSelectedRetailer] = useState<string | null>(null);
+  const [selectedRetailers, setSelectedRetailers] = useState<string[]>([]);
   const [selectedFit, setSelectedFit] = useState<string | null>(null);
   const [tryOnError, setTryOnError] = useState<string | null>(null);
   const [addingAccessory, setAddingAccessory] = useState(false);
