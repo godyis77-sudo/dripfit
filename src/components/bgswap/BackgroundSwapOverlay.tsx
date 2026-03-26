@@ -387,7 +387,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         document.body
       )}
 
-      {/* Preview area — drag to reposition subject */}
+      {/* Preview area — drag to reposition, pinch to scale */}
       <div
         className="relative flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing group touch-none"
         style={{ height: 'min(55dvh, 420px)' }}
@@ -408,6 +408,29 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
         onPointerUp={() => { dragRef.current = null; }}
         onPointerCancel={() => { dragRef.current = null; }}
         onDoubleClick={() => transparentSubject && setFullscreenPreview(true)}
+        onTouchStart={e => {
+          if (e.touches.length === 2 && transparentSubject) {
+            e.preventDefault();
+            const dist = Math.hypot(
+              e.touches[0].clientX - e.touches[1].clientX,
+              e.touches[0].clientY - e.touches[1].clientY
+            );
+            pinchRef.current = { initialDist: dist, initialScale: subjectScale ?? 0.80 };
+          }
+        }}
+        onTouchMove={e => {
+          if (e.touches.length === 2 && pinchRef.current) {
+            e.preventDefault();
+            const dist = Math.hypot(
+              e.touches[0].clientX - e.touches[1].clientX,
+              e.touches[0].clientY - e.touches[1].clientY
+            );
+            const ratio = dist / pinchRef.current.initialDist;
+            const newScale = Math.max(0.30, Math.min(1.0, pinchRef.current.initialScale * ratio));
+            setSubjectScale(newScale);
+          }
+        }}
+        onTouchEnd={() => { pinchRef.current = null; }}
       >
         {showOriginal ? (
           <img
@@ -428,7 +451,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
           <>
             <div className="absolute top-2 left-2 h-7 px-2 rounded-lg bg-black/50 backdrop-blur-sm flex items-center gap-1.5 pointer-events-none">
               <Move className="h-3 w-3 text-white/70" />
-              <span className="text-[9px] text-white/70 font-medium">Drag to move</span>
+              <span className="text-[9px] text-white/70 font-medium">Drag · Pinch to resize</span>
             </div>
             <div className="absolute top-2 right-2 h-8 w-8 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
               <Maximize2 className="h-4 w-4 text-white" />
