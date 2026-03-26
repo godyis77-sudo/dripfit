@@ -61,6 +61,7 @@ const LinkHub = lazy(() => import("./pages/LinkHub"));
 const Backgrounds = lazy(() => import("./pages/Backgrounds"));
 const SizeComparison = lazy(() => import("./pages/SizeComparison"));
 const OutfitBuilder = lazy(() => import("./pages/OutfitBuilder"));
+const StyleAssistant = lazy(() => import("./pages/StyleAssistant"));
 
 // ── Suspense fallback (minimal, matches app background) ───────────────
 const RouteFallback = () => (
