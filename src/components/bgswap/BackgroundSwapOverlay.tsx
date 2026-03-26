@@ -142,25 +142,6 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   });
 
   const [removalError, setRemovalError] = useState(false);
-  // Convert resultImageUrl to a reliable data URL on mount
-  const [safeResultUrl, setSafeResultUrl] = useState<string>(resultImageUrl);
-  useEffect(() => {
-    // If already a data URL, skip
-    if (resultImageUrl.startsWith('data:')) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const resp = await fetch(resultImageUrl);
-        const blob = await resp.blob();
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          if (!cancelled && reader.result) setSafeResultUrl(reader.result as string);
-        };
-        reader.readAsDataURL(blob);
-      } catch { /* keep original */ }
-    })();
-    return () => { cancelled = true; };
-  }, [resultImageUrl]);
 
   const attemptRemoval = useCallback(async () => {
     setRemovalError(false);
@@ -175,7 +156,21 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
 
     try {
       trackEvent('bg_swap_opened');
-      const url = await removeBackground(safeResultUrl);
+      // Convert to data URL first to avoid CORS issues with canvas
+      let imgSrc = resultImageUrl;
+      if (!resultImageUrl.startsWith('data:') && !resultImageUrl.startsWith('blob:')) {
+        try {
+          const resp = await fetch(resultImageUrl);
+          const blob = await resp.blob();
+          imgSrc = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        } catch { /* use original URL as fallback */ }
+      }
+      const url = await removeBackground(imgSrc);
       setTransparentSubject(url);
       setCachedSubject(resultImageUrl, url);
       // Auto-scroll to background grid after removal
@@ -185,19 +180,12 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       setRemovalError(true);
       toast({ title: 'Background removal failed', description: 'Tap Retry to try again.', variant: 'destructive' });
     }
-  }, [resultImageUrl, safeResultUrl, removeBackground, toast]);
+  }, [resultImageUrl, removeBackground, toast]);
 
-  // Remove background on mount (wait for safeResultUrl to be ready, or use cache)
-  const hasStartedRemoval = useRef(false);
+  // Remove background on mount
   useEffect(() => {
-    if (hasStartedRemoval.current) return;
-    // If there's a cached subject, start immediately
-    const hasCached = !!getCachedSubject(resultImageUrl);
-    const urlReady = safeResultUrl.startsWith('data:') || safeResultUrl.startsWith('blob:') || safeResultUrl.startsWith('http');
-    if (!hasCached && !urlReady) return;
-    hasStartedRemoval.current = true;
     attemptRemoval();
-  }, [safeResultUrl, attemptRemoval, resultImageUrl]);
+  }, []);
 
   // Update preview when subject, background, scale, or position changes
   useEffect(() => {
