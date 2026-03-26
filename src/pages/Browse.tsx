@@ -208,10 +208,8 @@ const Browse = () => {
       <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border px-4 py-2">
         <button
           onClick={() => setFiltersOpen(!filtersOpen)}
-          className={`relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold ${
-            activeFilterCount > 0
-              ? 'btn-luxury text-primary-foreground'
-              : 'bg-card border border-border text-foreground/70'
+          className={`relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold btn-luxury text-primary-foreground ${
+            activeFilterCount > 0 ? '' : 'opacity-80'
           }`}
         >
           <SlidersHorizontal className="h-4 w-4" />
