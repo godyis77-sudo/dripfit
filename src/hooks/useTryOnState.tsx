@@ -278,6 +278,46 @@ export function useTryOnState() {
     getServerTryOnCount(supabase, user.id).then(setServerCount);
   }, [user, hasUnlimitedTryOns]);
 
+  // Hydrate latest result from DB if localStorage has nothing (e.g. after refresh before auto-save finished)
+  useEffect(() => {
+    if (!user) return;
+    // If we already have a valid result URL, skip the DB lookup
+    if (resultImage && (resultImage.startsWith('http://') || resultImage.startsWith('https://'))) return;
+    // If we have a base64 result in memory (generation just happened), skip too
+    if (resultImage && resultImage.startsWith('data:')) return;
+
+    supabase
+      .from('tryon_posts')
+      .select('id, result_photo_url, clothing_photo_url, user_photo_url, caption, is_public, product_urls')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          const latest = data[0];
+          setResultImageRaw(latest.result_photo_url);
+          setActivePostId(latest.id);
+          setAutoSaved(true);
+          if (!userPhoto && latest.user_photo_url) {
+            setUserPhotoRaw(latest.user_photo_url);
+            try { localStorage.setItem(TRYON_USER_PHOTO_KEY, latest.user_photo_url); } catch { /* ignore */ }
+          }
+          if (!clothingPhoto && latest.clothing_photo_url) {
+            setClothingPhotoRaw(latest.clothing_photo_url);
+          }
+          // Persist so subsequent refreshes are instant
+          try { localStorage.setItem(TRYON_RESULT_KEY, latest.result_photo_url); } catch { /* ignore */ }
+          persistState({
+            resultImage: latest.result_photo_url,
+            activePostId: latest.id,
+            autoSaved: true,
+            userPhoto: latest.user_photo_url,
+            clothingPhoto: latest.clothing_photo_url,
+          });
+        }
+      });
+  }, [user]);
+
   // Loading step progression
   useEffect(() => {
     if (!loading) { setLoadingStepIndex(0); return; }
