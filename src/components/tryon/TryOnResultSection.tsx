@@ -325,13 +325,16 @@ const TryOnResultSection = ({
 
   return (
     <>
-      {/* Success Overlay */}
+      {/* Success Overlay with Share Nudge */}
       <AnimatePresence>
         {showSuccessOverlay && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="fixed inset-0 z-[200] bg-background flex flex-col items-center justify-center">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="fixed inset-0 z-[200] bg-background flex flex-col items-center justify-center px-6">
             <AnimatedCheckmark />
             <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-[28px] font-bold text-foreground mt-4">Looking good.</motion.p>
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-[14px] text-muted-foreground mt-1">Saved to your profile</motion.p>
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className="w-full max-w-xs mt-4">
+              <ShareNudgeInline resultImage={resultImage} caption={caption} onShareStory={handleShareDripCard} />
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
