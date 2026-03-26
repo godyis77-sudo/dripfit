@@ -45,7 +45,7 @@ const Community = () => {
   const [filter, setFilter] = useState<FilterType>('new');
   const [shopGender, setShopGender] = useState<GenderKey>('all');
   const [shopBrand, setShopBrand] = useState<string | null>(null);
-  const [shopCategory, setShopCategory] = useState('tops');
+  const [shopCategory, setShopCategory] = useState('all');
   const [shopGenre, setShopGenre] = useState<BrandGenre | null>(null);
   const [shopRetailer, setShopRetailer] = useState<string | null>(null);
   const [shopSort, setShopSort] = useState<SortKey>('default');
@@ -187,7 +187,7 @@ const Community = () => {
               onGenreChange={setShopGenre}
               onRetailerChange={setShopRetailer}
               onSortChange={setShopSort}
-              onClearAll={() => { setShopBrand(null); setShopGenre(null); setShopRetailer(null); setShopGender('all'); setShopCategory('tops'); setShopSort('default'); }}
+              onClearAll={() => { setShopBrand(null); setShopGenre(null); setShopRetailer(null); setShopGender('all'); setShopCategory('all'); setShopSort('default'); }}
             />
             <CategoryProductGrid
               category={shopCategory}
