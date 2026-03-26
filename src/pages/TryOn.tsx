@@ -37,9 +37,9 @@ type SortKey = typeof SORT_OPTIONS[number]['key'];
 const FIT_OPTIONS = [
   'athletic fit', 'baggy', 'bootcut', 'boxy', 'classic fit', 'cropped',
   'drop shoulder', 'fitted', 'flare', 'heavyweight', 'high rise',
-  'athletic fit', 'classic fit', 'skinny fit', 'loose fit',
-  'straight fit', 'muscle fit', 'wide leg', 'fitted', 'tailored fit',
-  'bootcut', 'flare', 'baggy', 'longline', 'high rise', 'mid rise', 'low rise',
+  'lightweight', 'longline', 'loose fit', 'low rise', 'mid rise',
+  'muscle fit', 'oversized', 'regular fit', 'relaxed fit', 'skinny fit',
+  'slim fit', 'straight fit', 'tailored fit', 'tapered', 'wide leg',
 ] as const;
 
 const TryOn = () => {
