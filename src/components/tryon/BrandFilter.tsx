@@ -13,7 +13,7 @@ interface BrandFilterProps {
   multiSelect?: boolean;
 }
 
-const BrandFilter = ({ gender, selectedBrand, onBrandChange }: BrandFilterProps) => {
+const BrandFilter = ({ gender, selectedBrand, onBrandChange, selectedBrands = [], onBrandsChange, multiSelect = false }: BrandFilterProps) => {
   const [search, setSearch] = useState('');
   const [allBrands, setAllBrands] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
