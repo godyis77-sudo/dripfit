@@ -158,6 +158,8 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       const url = await removeBackground(resultImageUrl);
       setTransparentSubject(url);
       setCachedSubject(resultImageUrl, url);
+      // Auto-scroll to background grid after removal
+      setTimeout(() => gridPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 300);
     } catch (err) {
       console.error('BG removal failed:', err);
       setRemovalError(true);
