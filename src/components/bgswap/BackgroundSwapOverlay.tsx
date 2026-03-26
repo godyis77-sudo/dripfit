@@ -142,6 +142,25 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
   });
 
   const [removalError, setRemovalError] = useState(false);
+  // Convert resultImageUrl to a reliable data URL on mount
+  const [safeResultUrl, setSafeResultUrl] = useState<string>(resultImageUrl);
+  useEffect(() => {
+    // If already a data URL, skip
+    if (resultImageUrl.startsWith('data:')) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const resp = await fetch(resultImageUrl);
+        const blob = await resp.blob();
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (!cancelled && reader.result) setSafeResultUrl(reader.result as string);
+        };
+        reader.readAsDataURL(blob);
+      } catch { /* keep original */ }
+    })();
+    return () => { cancelled = true; };
+  }, [resultImageUrl]);
 
   const attemptRemoval = useCallback(async () => {
     setRemovalError(false);
@@ -156,7 +175,7 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
 
     try {
       trackEvent('bg_swap_opened');
-      const url = await removeBackground(resultImageUrl);
+      const url = await removeBackground(safeResultUrl);
       setTransparentSubject(url);
       setCachedSubject(resultImageUrl, url);
       // Auto-scroll to background grid after removal
@@ -166,12 +185,17 @@ const BackgroundSwapOverlay = ({ resultImageUrl, onClose }: BackgroundSwapOverla
       setRemovalError(true);
       toast({ title: 'Background removal failed', description: 'Tap Retry to try again.', variant: 'destructive' });
     }
-  }, [resultImageUrl, removeBackground, toast]);
+  }, [resultImageUrl, safeResultUrl, removeBackground, toast]);
 
-  // Remove background on mount
+  // Remove background on mount (wait for safeResultUrl to be ready)
+  const hasStartedRemoval = useRef(false);
   useEffect(() => {
+    if (hasStartedRemoval.current) return;
+    // Wait until we have a data URL or it's already a data URL
+    if (!safeResultUrl.startsWith('data:') && !safeResultUrl.startsWith('blob:')) return;
+    hasStartedRemoval.current = true;
     attemptRemoval();
-  }, []);
+  }, [safeResultUrl, attemptRemoval]);
 
   // Update preview when subject, background, scale, or position changes
   useEffect(() => {
