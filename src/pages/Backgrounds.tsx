@@ -39,7 +39,8 @@ const Backgrounds = () => {
   usePageMeta({ title: 'Backgrounds' });
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Delay to ensure content is rendered before scrolling
+    requestAnimationFrame(() => window.scrollTo(0, 0));
   }, []);
   const navigate = useNavigate();
 
@@ -187,7 +188,7 @@ const Backgrounds = () => {
   const isLoading = categoriesLoading || backgroundsLoading;
 
   return (
-    <div className="min-h-screen bg-background pb-safe-tab" onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
+    <div className="min-h-screen bg-background pb-safe-tab overflow-y-auto" onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
       <PageHeader title="Backgrounds" />
 
       {/* Large preview area */}
