@@ -52,9 +52,11 @@ type PersistedTryOnState = {
 
 function loadPersistedTryOnState(): PersistedTryOnState {
   try {
-    const raw = sessionStorage.getItem(TRYON_STATE_KEY);
-    const parsed = raw ? JSON.parse(raw) : {};
-    // Prefer localStorage result URL (small string, survives tab close)
+    // Try localStorage first (survives tab close), then sessionStorage as fallback
+    const lsRaw = localStorage.getItem(TRYON_STATE_KEY);
+    const ssRaw = sessionStorage.getItem(TRYON_STATE_KEY);
+    const parsed = { ...(lsRaw ? JSON.parse(lsRaw) : {}), ...(ssRaw ? JSON.parse(ssRaw) : {}) };
+    // Prefer dedicated localStorage keys for result/user photo
     const savedResultUrl = localStorage.getItem(TRYON_RESULT_KEY);
     const savedUserPhoto = localStorage.getItem(TRYON_USER_PHOTO_KEY);
     return {
@@ -107,13 +109,15 @@ export function useTryOnState() {
   // NOTE: Only persist URLs — never large base64 strings
   const persistState = useCallback((updates: Partial<PersistedTryOnState>) => {
     try {
-      const current = (() => { try { return JSON.parse(sessionStorage.getItem(TRYON_STATE_KEY) || '{}'); } catch { return {}; } })();
+      const current = (() => { try { return JSON.parse(localStorage.getItem(TRYON_STATE_KEY) || '{}'); } catch { return {}; } })();
       const merged = { ...current, ...updates };
       // Skip persisting any value that looks like a large base64 string
       for (const key of ['userPhoto', 'clothingPhoto', 'resultImage'] as const) {
         if (typeof merged[key] === 'string' && merged[key].startsWith('data:')) delete merged[key];
       }
-      sessionStorage.setItem(TRYON_STATE_KEY, JSON.stringify(merged));
+      const serialized = JSON.stringify(merged);
+      localStorage.setItem(TRYON_STATE_KEY, serialized);
+      sessionStorage.setItem(TRYON_STATE_KEY, serialized);
     } catch { /* quota exceeded — silently skip */ }
   }, []);
 
@@ -589,7 +593,7 @@ export function useTryOnState() {
     setProductLink(''); setLookItems([]); setClothingSaved(false); setSavedToItems(false);
     setShowPostUI(false); setShowLookItems(false); setLayerHistory([]);
     setSelectedQuickPick(null); setActivePostId(null);
-    try { sessionStorage.removeItem(TRYON_STATE_KEY); localStorage.removeItem(TRYON_RESULT_KEY); } catch { /* ignore */ }
+    try { sessionStorage.removeItem(TRYON_STATE_KEY); localStorage.removeItem(TRYON_STATE_KEY); localStorage.removeItem(TRYON_RESULT_KEY); } catch { /* ignore */ }
     // userPhoto persists in localStorage (TRYON_USER_PHOTO_KEY) automatically
   };
 
