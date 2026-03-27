@@ -1,6 +1,9 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { successResponse, errorResponse, getCorsHeaders } from "../_shared/validation.ts";
 
+// Default HTTP User-Agent for Shopify and direct requests
+const HTTP_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
+
 // ─────────────────────────────────────────────────────────────────────────────
 // TYPES
 // ─────────────────────────────────────────────────────────────────────────────
@@ -947,6 +950,19 @@ const SHOPIFY_STORES: Record<string, { domain: string; collections?: Record<stri
   // ── Luxury Streetwear (Shopify-based) ──
   'golden goose':       { domain: 'https://www.goldengoose.com', collections: { shoes: ['sneakers'], tops: ['t-shirts'], outerwear: ['jackets'], bottoms: ['jeans'] } },
   'coperni':            { domain: 'https://coperni.com', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outerwear'], dresses: ['dresses'], accessories: ['bags'] } },
+  'amiri':              { domain: 'https://www.amiri.com', collections: { tops: ['t-shirts', 'shirts'], bottoms: ['jeans', 'trousers'], outerwear: ['jackets', 'hoodies-sweatshirts'], shoes: ['sneakers', 'boots'], accessories: ['hats', 'bags'] } },
+  'palm angels':        { domain: 'https://www.palmangels.com', collections: { tops: ['t-shirts', 'sweatshirts'], bottoms: ['trousers', 'jeans'], outerwear: ['jackets', 'coats'], shoes: ['sneakers'], accessories: ['hats', 'bags'] } },
+  'fear of god':        { domain: 'https://fearofgod.com', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outerwear'], shoes: ['footwear'], accessories: ['accessories'] } },
+  'off-white':          { domain: 'https://www.off---white.com', collections: { tops: ['t-shirts'], bottoms: ['pants'], outerwear: ['jackets'], shoes: ['sneakers'], accessories: ['bags', 'hats'] } },
+  'vetements':          { domain: 'https://vetementswebsite.com', collections: { tops: ['t-shirts', 'hoodies'], bottoms: ['pants'], outerwear: ['jackets'] } },
+  'sacai':              { domain: 'https://www.sacai.jp', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outerwear'], dresses: ['dresses'] } },
+  'undercover':         { domain: 'https://undercoverism.com', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outerwear'] } },
+  'jacquemus':          { domain: 'https://www.jacquemus.com', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outerwear'], dresses: ['dresses'], accessories: ['bags', 'hats'] } },
+  'ami paris':          { domain: 'https://www.amiparis.com', collections: { tops: ['t-shirts', 'shirts'], bottoms: ['trousers', 'jeans'], outerwear: ['jackets', 'coats', 'knitwear'], shoes: ['shoes'], accessories: ['bags', 'hats'] } },
+  'balmain':            { domain: 'https://www.balmain.com', collections: { tops: ['t-shirts'], bottoms: ['jeans', 'trousers'], outerwear: ['jackets', 'coats'], shoes: ['sneakers'], accessories: ['bags'] } },
+  'dsquared2':          { domain: 'https://www.dsquared2.com', collections: { tops: ['t-shirts', 'shirts'], bottoms: ['jeans', 'trousers'], outerwear: ['jackets'], shoes: ['sneakers'], accessories: ['hats'] } },
+  'corteiz':            { domain: 'https://www.crfrules.com', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outerwear'], shorts: ['shorts'], accessories: ['headwear'] } },
+  'trapstar':           { domain: 'https://trapstarlondon.com', collections: { tops: ['tops', 't-shirts'], bottoms: ['bottoms'], outerwear: ['jackets', 'tracksuits'], shorts: ['shorts'], accessories: ['hats'] } },
   // ── Menswear ──
   'true classic':       { domain: 'https://trueclassictees.com', collections: { tops: ['mens-crew-neck-t-shirts', 'mens-v-neck-t-shirts', 'mens-polos'], bottoms: ['mens-pants-joggers'], outerwear: ['mens-hoodies-jackets'], shorts: ['mens-shorts'], activewear: ['mens-activewear'] } },
   'todd snyder':        { domain: 'https://www.toddsnyder.com', collections: { tops: ['t-shirts', 'shirts', 'polos'], bottoms: ['pants', 'jeans'], outerwear: ['jackets-coats', 'sweaters'], shorts: ['shorts'], suits: ['suits'] } },
@@ -2142,6 +2158,7 @@ async function scrapeProducts(
 
   return searchResults;
 }
+
 
 
 // ─────────────────────────────────────────────────────────────────────────────
