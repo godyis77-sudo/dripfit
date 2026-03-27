@@ -497,18 +497,19 @@ export function useTryOnState() {
     const cPhoto = capturedClothingPhoto || clothingPhoto || selectedQuickPick?.image_url || resultBase64;
     if (!uPhoto || !cPhoto) { console.warn('autoSaveToProfile: missing photos'); return; }
     let lastError: unknown = null;
+    const MAX_ATTEMPTS = 3;
 
-    for (let attempt = 1; attempt <= 2; attempt += 1) {
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
       try {
         const { post: insertedPost, urls } = await persistTryOnPost({
           userInput: uPhoto,
           clothingInput: cPhoto,
           resultInput: resultBase64,
+          clothingCategory: category || selectedQuickPick?.category || 'other',
         });
 
         setAutoSaved(true);
         setActivePostId(insertedPost.id);
-        // Persist the uploaded URL (small string) so result survives navigation & tab close
         setResultImage(urls.resultUrl);
         persistState({ autoSaved: true, resultImage: urls.resultUrl, userPhoto: urls.userUrl, clothingPhoto: urls.clothingUrl, activePostId: insertedPost.id });
         try { localStorage.setItem(TRYON_RESULT_KEY, urls.resultUrl); } catch { /* ignore */ }
@@ -527,14 +528,15 @@ export function useTryOnState() {
         return;
       } catch (err: unknown) {
         lastError = err;
-        if (attempt < 2) {
-          await new Promise((resolve) => setTimeout(resolve, 400));
+        console.error(`[autoSave] attempt ${attempt}/${MAX_ATTEMPTS} failed:`, (err as Error)?.message || err);
+        if (attempt < MAX_ATTEMPTS) {
+          await new Promise((resolve) => setTimeout(resolve, 600 * attempt));
         }
       }
     }
 
-    console.error('Auto-save failed:', lastError);
-    toast({ title: 'Auto-save failed', description: 'Try-on could not be saved to profile. Please try again.', variant: 'destructive' });
+    console.error('[autoSave] All attempts failed:', lastError);
+    toast({ title: 'Auto-save failed', description: `Could not save to profile: ${(lastError as Error)?.message || 'Unknown error'}. Please tap Save & Post manually.`, variant: 'destructive' });
   };
 
   const [showAuthWall, setShowAuthWall] = useState(false);
