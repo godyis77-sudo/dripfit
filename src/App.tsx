@@ -62,6 +62,7 @@ const Backgrounds = lazy(() => import("./pages/Backgrounds"));
 const SizeComparison = lazy(() => import("./pages/SizeComparison"));
 const OutfitBuilder = lazy(() => import("./pages/OutfitBuilder"));
 const StyleAssistant = lazy(() => import("./pages/StyleAssistant"));
+const Closet = lazy(() => import("./pages/Closet"));
 
 // ── Suspense fallback (minimal, matches app background) ───────────────
 const RouteFallback = () => (
@@ -165,6 +166,7 @@ const AnimatedRoutes = () => {
           <Route path="/my-sizes" element={<ProtectedRoute><PageTransition><SizeComparison /></PageTransition></ProtectedRoute>} />
           <Route path="/outfits" element={<ProtectedRoute><PageTransition><OutfitBuilder /></PageTransition></ProtectedRoute>} />
           <Route path="/style-assistant" element={<PageTransition><StyleAssistant /></PageTransition>} />
+          <Route path="/closet" element={<PageTransition><Closet /></PageTransition>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </AnimatePresence>

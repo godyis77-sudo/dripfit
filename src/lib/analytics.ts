@@ -197,7 +197,9 @@ type FunnelEvent =
   | 'invite_sms'
   | 'invite_whatsapp'
   | 'share_story_generated'
-  | 'share_post_link_copied';
+  | 'share_post_link_copied'
+  | 'closet_cop'
+  | 'closet_drop';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
