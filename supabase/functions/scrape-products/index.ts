@@ -1464,6 +1464,20 @@ const CANONICAL_NAMES: Record<string, string> = {
   'palace skateboards': 'Palace Skateboards', 'fear of god': 'Fear of God',
   'kith': 'Kith', 'essentials': 'Essentials', 'corteiz': 'Corteiz',
   'trapstar': 'Trapstar',
+  // New luxury/streetwear
+  'balmain': 'Balmain', 'tom ford': 'Tom Ford', 'dsquared2': 'Dsquared2',
+  'dolce & gabbana': 'Dolce & Gabbana', 'amiri': 'AMIRI', 'palm angels': 'Palm Angels',
+  'golden goose': 'Golden Goose', 'chrome hearts': 'Chrome Hearts',
+  'jw anderson': 'JW Anderson', 'thom browne': 'Thom Browne',
+  'brunello cucinelli': 'Brunello Cucinelli', 'issey miyake': 'Issey Miyake',
+  'coperni': 'Coperni', 'alaia': 'Alaïa',
+  'represent': 'Represent', 'eric emanuel': 'Eric Emanuel',
+  'gallery dept': 'Gallery Dept', 'rhude': 'Rhude', 'human made': 'HUMAN MADE',
+  'undercover': 'UNDERCOVER', 'neighborhood': 'NEIGHBORHOOD', 'needles': 'Needles',
+  'comme des garcons': 'Comme des Garçons', 'vetements': 'Vetements', 'sacai': 'Sacai',
+  'daily paper': 'Daily Paper', 'missing since thursday': 'Missing Since Thursday',
+  // Multi-brand retailers
+  'ssense': 'SSENSE', 'end clothing': 'END. Clothing', 'mr porter': 'MR PORTER',
   // Athletic
   'nike': 'Nike', 'adidas': 'Adidas', 'puma': 'Puma', 'lululemon': 'Lululemon',
   'gymshark': 'Gymshark', 'under armour': 'Under Armour', 'new balance': 'New Balance',
