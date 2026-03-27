@@ -848,6 +848,14 @@ const SHOPIFY_STORES: Record<string, { domain: string; collections?: Record<stri
   // ── Streetwear & Hype ──
   "stüssy":             { domain: 'https://www.stussy.com', collections: { tops: ['tops'], bottoms: ['bottoms'], shorts: ['shorts'], outerwear: ['outerwear'], accessories: ['accessories', 'headwear'] } },
   palace:               { domain: 'https://www.palaceskateboards.com', collections: { tops: ['tops'], outerwear: ['jackets'], bottoms: ['bottoms'], accessories: ['hats', 'accessories'] } },
+  represent:            { domain: 'https://representclo.com', collections: { tops: ['t-shirts', 'hoodies-sweatshirts'], bottoms: ['trousers', 'jeans'], shorts: ['shorts'], outerwear: ['jackets-coats'], shoes: ['footwear'], accessories: ['headwear'] } },
+  'eric emanuel':       { domain: 'https://www.ericemanuel.com', collections: { shorts: ['shorts'], tops: ['t-shirts', 'hoodies'], accessories: ['headwear'] } },
+  'gallery dept':       { domain: 'https://gallerydept.com', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outerwear'], accessories: ['hats'] } },
+  'daily paper':        { domain: 'https://www.dailypaperclothing.com', collections: { tops: ['t-shirts', 'hoodies-sweaters'], bottoms: ['pants'], shorts: ['shorts'], outerwear: ['jackets-coats'], accessories: ['hats', 'bags'] } },
+  'missing since thursday': { domain: 'https://missingsincethursday.com', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['jackets'], shorts: ['shorts'], accessories: ['headwear'] } },
+  'human made':         { domain: 'https://humanmade.jp', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outer'], shorts: ['shorts'], accessories: ['accessories', 'headwear'] } },
+  rhude:                { domain: 'https://www.rhude.com', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outerwear'], shorts: ['shorts'], accessories: ['accessories'] } },
+  'needles':            { domain: 'https://www.needles.jp', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outerwear'], shorts: ['shorts'] } },
   // ── Athletic & Active ──
   gymshark:             { domain: 'https://www.gymshark.com', collections: { tops: ['t-shirts-tops'], bottoms: ['joggers', 'leggings'], shorts: ['shorts'], outerwear: ['hoodies-jackets'], accessories: ['accessories'] } },
   'gore wear':          { domain: 'https://www.gorewear.com', collections: { tops: ['mens-jerseys', 'womens-jerseys'], bottoms: ['mens-tights', 'womens-tights'], outerwear: ['mens-jackets', 'womens-jackets'], shorts: ['mens-shorts', 'womens-shorts'], accessories: ['accessories'] } },
@@ -856,6 +864,9 @@ const SHOPIFY_STORES: Record<string, { domain: string; collections?: Record<stri
   'colourpop':          { domain: 'https://www.colourpop.com', collections: { accessories: ['face', 'lips', 'eyes'] } },
   "rothy's":            { domain: 'https://www.rothys.com', collections: { shoes: ['womens-flats', 'womens-sneakers', 'mens-shoes'], accessories: ['bags'] } },
   'oliver peoples':     { domain: 'https://www.oliverpeoples.com', collections: { accessories: ['sunglasses', 'eyeglasses'] } },
+  // ── Luxury Streetwear (Shopify-based) ──
+  'golden goose':       { domain: 'https://www.goldengoose.com', collections: { shoes: ['sneakers'], tops: ['t-shirts'], outerwear: ['jackets'], bottoms: ['jeans'] } },
+  'coperni':            { domain: 'https://coperni.com', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outerwear'], dresses: ['dresses'], accessories: ['bags'] } },
   // ── Menswear ──
   'true classic':       { domain: 'https://trueclassictees.com', collections: { tops: ['mens-crew-neck-t-shirts', 'mens-v-neck-t-shirts', 'mens-polos'], bottoms: ['mens-pants-joggers'], outerwear: ['mens-hoodies-jackets'], shorts: ['mens-shorts'], activewear: ['mens-activewear'] } },
   'todd snyder':        { domain: 'https://www.toddsnyder.com', collections: { tops: ['t-shirts', 'shirts', 'polos'], bottoms: ['pants', 'jeans'], outerwear: ['jackets-coats', 'sweaters'], shorts: ['shorts'], suits: ['suits'] } },
