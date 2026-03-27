@@ -62,6 +62,7 @@ const Backgrounds = lazy(() => import("./pages/Backgrounds"));
 const SizeComparison = lazy(() => import("./pages/SizeComparison"));
 const OutfitBuilder = lazy(() => import("./pages/OutfitBuilder"));
 const StyleAssistant = lazy(() => import("./pages/StyleAssistant"));
+const Closet = lazy(() => import("./pages/Closet"));
 
 // ── Suspense fallback (minimal, matches app background) ───────────────
 const RouteFallback = () => (
