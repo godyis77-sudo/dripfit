@@ -1,0 +1,1 @@
+DELETE FROM size_recommendations_cache WHERE brand_slug = 'adidas' AND fit_preference = 'slim';
