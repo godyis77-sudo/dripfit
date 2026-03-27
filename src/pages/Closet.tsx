@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import { X, Flame, Heart, ShoppingBag, SlidersHorizontal } from 'lucide-react';
@@ -162,9 +162,9 @@ export default function Closet() {
   const [showFilters, setShowFilters] = useState(false);
 
   // Sync profile gender on load
-  useState(() => {
+  useEffect(() => {
     if (profileGender) setGenderFilter(profileGender);
-  });
+  }, [profileGender]);
 
   const activeGender = genderFilter === 'all' ? undefined : genderFilter;
 
