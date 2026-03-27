@@ -816,6 +816,7 @@ export function useTryOnState() {
           productBrand: resolvedProductBrand,
           productCategory: resolvedCategory || '',
           productUrl: resolvedProductUrl,
+          guestUuid: getGuestUuid(),
         },
       });
       if (error) throw new Error(error.message);
