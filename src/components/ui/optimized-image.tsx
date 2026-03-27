@@ -21,6 +21,7 @@ export const OptimizedImage = ({
   className,
   normalize = true,
   skeleton = true,
+  loadingStrategy = 'lazy',
   alt,
   onLoad,
   ...props
