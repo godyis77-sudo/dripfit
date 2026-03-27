@@ -1,7 +1,7 @@
 import { forwardRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Camera, ShoppingBag, X, Sparkles } from 'lucide-react';
+import { Camera, ShoppingBag, X, Sparkles, Flame } from 'lucide-react';
 import FeatureIcon, { featureIcons } from '@/components/ui/FeatureIcon';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
