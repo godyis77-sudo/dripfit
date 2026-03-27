@@ -36,8 +36,9 @@ export const OptimizedImage = ({
       <img
         {...props}
         alt={alt || "Image"}
-        loading="lazy"
-        decoding="async"
+        loading={loadingStrategy}
+        decoding={loadingStrategy === 'eager' ? 'sync' : 'async'}
+        fetchPriority={loadingStrategy === 'eager' ? 'high' : undefined}
         onLoad={(e) => {
           setLoaded(true);
           onLoad?.(e);
