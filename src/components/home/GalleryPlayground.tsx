@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Sparkles, ShoppingBag, Flame } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Sparkles, ShoppingBag } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
 import { type CatalogProduct } from '@/hooks/useProductCatalog';
