@@ -651,7 +651,7 @@ Output: A single photorealistic FULL-BODY image. No text/watermarks/split views.
 Image A = person wearing an outfit. Image B = target footwear reference.${productHint}
 ${fullBodyImageHint}
 REMOVE current footwear from Image A and REPLACE with the exact shoes from Image B. Keep ALL other clothing unchanged. Match target item exactly (color, shape, material, branding, sole). Keep face/body/pose from Image A. ${bgFallbackHint} Show full body head to feet. No text/watermark.`
-      : (isAccessory || isLayering)
+      : (isAccessory || isLayering) && !isIntimateGarment
       ? `Create ONE photorealistic output image.
 Image A = person. Image B = target accessory reference.${productHint}
 ${fullBodyImageHint}
