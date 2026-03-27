@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Share2, Save, Loader2, Search, Crown, Maximize2, ZoomIn, ZoomOut, Move, Check } from 'lucide-react';
+import { X, Share2, Save, Loader2, Search, Crown, Maximize2, ZoomIn, ZoomOut, Move, Check, Upload, Trash2 } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -180,6 +180,92 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
     enabled: debouncedQuery.length >= 2,
     staleTime: 5 * 60 * 1000,
   });
+
+  // User uploaded backgrounds
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const { data: userBackgrounds = [], refetch: refetchUserBgs } = useQuery({
+    queryKey: ['user-backgrounds', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data } = await supabase
+        .from('user_backgrounds')
+        .select('id, name, storage_path, thumbnail_path')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      return (data || []).map(bg => ({
+        ...bg,
+        publicUrl: bg.storage_path.startsWith('http')
+          ? bg.storage_path
+          : supabase.storage.from('backgrounds-user').getPublicUrl(bg.storage_path).data.publicUrl,
+      }));
+    },
+    enabled: !!user,
+    staleTime: 30 * 1000,
+  });
+
+  const handleUploadBackground = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: 'File too large', description: 'Max 5MB for custom backgrounds.', variant: 'destructive' });
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      toast({ title: 'Invalid file', description: 'Please upload an image file.', variant: 'destructive' });
+      return;
+    }
+    setUploading(true);
+    try {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const path = `${user.id}/${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from('backgrounds-user').upload(path, file, { contentType: file.type });
+      if (upErr) throw upErr;
+
+      const { data: urlData } = supabase.storage.from('backgrounds-user').getPublicUrl(path);
+      
+      const { error: dbErr } = await supabase.from('user_backgrounds').insert({
+        user_id: user.id,
+        storage_path: path,
+        thumbnail_path: path,
+        name: file.name.replace(/\.[^/.]+$/, '').slice(0, 40),
+      });
+      if (dbErr) throw dbErr;
+
+      await refetchUserBgs();
+      setActiveCategory('__my-uploads__');
+      trackEvent('bg_user_upload', { file_size: file.size });
+      toast({ title: 'Background uploaded!' });
+    } catch (err: any) {
+      console.error('Upload failed:', err);
+      toast({ title: 'Upload failed', description: err?.message || 'Could not upload background.', variant: 'destructive' });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  }, [user, toast, refetchUserBgs]);
+
+  const handleDeleteUserBg = useCallback(async (bgId: string, storagePath: string) => {
+    if (!user) return;
+    try {
+      await supabase.from('user_backgrounds').delete().eq('id', bgId).eq('user_id', user.id);
+      await supabase.storage.from('backgrounds-user').remove([storagePath]);
+      refetchUserBgs();
+      toast({ title: 'Background removed' });
+    } catch {
+      toast({ title: 'Delete failed', variant: 'destructive' });
+    }
+  }, [user, refetchUserBgs, toast]);
+
+  const handleSelectUserBackground = useCallback((bg: { id: string; publicUrl: string }) => {
+    setSelectedBgId(bg.id);
+    setSelectedBgUrl(bg.publicUrl);
+    setSelectedBgColor('#0A0A0A');
+    setShowOriginal(false);
+    setShowSearch(false);
+    trackEvent('bg_user_bg_selected', { bg_id: bg.id });
+  }, []);
 
   const [removalError, setRemovalError] = useState(false);
 
@@ -658,6 +744,44 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
             </div>
           ) : (
             <div className="flex-1 flex gap-1 overflow-x-auto scrollbar-hide" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
+              {/* Upload button */}
+              <button
+                onClick={() => {
+                  if (!user) {
+                    toast({ title: 'Sign in required', description: 'Create an account to upload custom backgrounds.' });
+                    return;
+                  }
+                  fileInputRef.current?.click();
+                }}
+                disabled={uploading}
+                className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors border ${
+                  uploading ? 'bg-primary/10 text-primary border-primary/30' : 'text-muted-foreground border-dashed border-border hover:border-primary/40 hover:text-primary'
+                }`}
+              >
+                {uploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
+                <span className="whitespace-nowrap">{uploading ? 'Uploading…' : 'Upload'}</span>
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleUploadBackground}
+                className="hidden"
+              />
+              {/* My Uploads tab (only if user has uploads) */}
+              {user && userBackgrounds.length > 0 && (
+                <button
+                  onClick={() => setActiveCategory('__my-uploads__')}
+                  className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors ${
+                    activeCategory === '__my-uploads__'
+                      ? 'bg-primary/20 text-primary border border-primary/30'
+                      : 'text-muted-foreground border border-border hover:border-foreground/20'
+                  }`}
+                >
+                  <span className="text-sm">📁</span>
+                  <span className="whitespace-nowrap">My Uploads</span>
+                </button>
+              )}
               {categories.map(cat => (
                 <button
                   key={cat.slug}
@@ -721,6 +845,39 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="aspect-square w-full rounded-lg bg-muted animate-pulse" />
               ))}
+            </div>
+          ) : activeCategory === '__my-uploads__' ? (
+            // User uploaded backgrounds
+            <div className="grid grid-cols-4 gap-1.5">
+              {/* Upload new tile */}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="aspect-square w-full rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center gap-1 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors"
+              >
+                <Upload className="h-5 w-5" />
+                <span className="text-[8px] font-bold">Add New</span>
+              </button>
+              {userBackgrounds.map(bg => {
+                const selected = selectedBgId === bg.id;
+                return (
+                  <div key={bg.id} className="relative group">
+                    <button
+                      onClick={() => handleSelectUserBackground(bg)}
+                      className={`aspect-square w-full rounded-lg overflow-hidden transition-all ${
+                        selected ? 'ring-2 ring-primary ring-offset-1 ring-offset-card' : 'ring-1 ring-border'
+                      }`}
+                    >
+                      <img src={bg.publicUrl} alt={bg.name || 'Custom'} className="w-full h-full object-cover" loading="lazy" />
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDeleteUserBg(bg.id, bg.storage_path); }}
+                      className="absolute top-0.5 right-0.5 h-5 w-5 rounded-full bg-black/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Trash2 className="h-3 w-3 text-white" />
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           ) : (
             // Category backgrounds
