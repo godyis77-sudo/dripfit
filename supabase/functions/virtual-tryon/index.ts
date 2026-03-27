@@ -777,7 +777,7 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       return content;
     };
 
-    const typeLabel = isFootwear ? "footwear" : isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
+    const typeLabel = isFootwear ? "footwear" : (isAccessory || isLayering) && !isIntimateGarment ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const footwearFastPrompt = `Fast shoe swap. Image A is the person, Image B is the exact shoe.${productHint} Replace only footwear in Image A with Image B. Keep all other clothing, pose, and framing unchanged. ${bgFallbackHint} No text/watermark.`;
     const footwearRetryPrompt = `Photorealistic shoe replacement.${productHint} Replace only the shoes from Image A with the shoes from Image B. Keep body, outfit, orientation, and lighting natural. ${bgFallbackHint} No text/watermark.`;
     const beltDescHint = sanitizedProductDesc ? `\nThe belt to use is: "${sanitizedProductDesc}". If Image B shows a full-body model, identify ONLY the belt described above and ignore all other clothing.` : "";
