@@ -846,6 +846,39 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
                 <div key={i} className="aspect-square w-full rounded-lg bg-muted animate-pulse" />
               ))}
             </div>
+          ) : activeCategory === '__my-uploads__' ? (
+            // User uploaded backgrounds
+            <div className="grid grid-cols-4 gap-1.5">
+              {/* Upload new tile */}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="aspect-square w-full rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center gap-1 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors"
+              >
+                <Upload className="h-5 w-5" />
+                <span className="text-[8px] font-bold">Add New</span>
+              </button>
+              {userBackgrounds.map(bg => {
+                const selected = selectedBgId === bg.id;
+                return (
+                  <div key={bg.id} className="relative group">
+                    <button
+                      onClick={() => handleSelectUserBackground(bg)}
+                      className={`aspect-square w-full rounded-lg overflow-hidden transition-all ${
+                        selected ? 'ring-2 ring-primary ring-offset-1 ring-offset-card' : 'ring-1 ring-border'
+                      }`}
+                    >
+                      <img src={bg.publicUrl} alt={bg.name || 'Custom'} className="w-full h-full object-cover" loading="lazy" />
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDeleteUserBg(bg.id, bg.storage_path); }}
+                      className="absolute top-0.5 right-0.5 h-5 w-5 rounded-full bg-black/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Trash2 className="h-3 w-3 text-white" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
           ) : (
             // Category backgrounds
             <>
