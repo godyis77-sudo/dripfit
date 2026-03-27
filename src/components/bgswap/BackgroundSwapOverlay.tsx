@@ -181,6 +181,92 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
     staleTime: 5 * 60 * 1000,
   });
 
+  // User uploaded backgrounds
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const { data: userBackgrounds = [], refetch: refetchUserBgs } = useQuery({
+    queryKey: ['user-backgrounds', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data } = await supabase
+        .from('user_backgrounds')
+        .select('id, name, storage_path, thumbnail_path')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      return (data || []).map(bg => ({
+        ...bg,
+        publicUrl: bg.storage_path.startsWith('http')
+          ? bg.storage_path
+          : supabase.storage.from('backgrounds-user').getPublicUrl(bg.storage_path).data.publicUrl,
+      }));
+    },
+    enabled: !!user,
+    staleTime: 30 * 1000,
+  });
+
+  const handleUploadBackground = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: 'File too large', description: 'Max 5MB for custom backgrounds.', variant: 'destructive' });
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      toast({ title: 'Invalid file', description: 'Please upload an image file.', variant: 'destructive' });
+      return;
+    }
+    setUploading(true);
+    try {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const path = `${user.id}/${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from('backgrounds-user').upload(path, file, { contentType: file.type });
+      if (upErr) throw upErr;
+
+      const { data: urlData } = supabase.storage.from('backgrounds-user').getPublicUrl(path);
+      
+      const { error: dbErr } = await supabase.from('user_backgrounds').insert({
+        user_id: user.id,
+        storage_path: path,
+        thumbnail_path: path,
+        name: file.name.replace(/\.[^/.]+$/, '').slice(0, 40),
+      });
+      if (dbErr) throw dbErr;
+
+      await refetchUserBgs();
+      setActiveCategory('__my-uploads__');
+      trackEvent('bg_user_upload', { file_size: file.size });
+      toast({ title: 'Background uploaded!' });
+    } catch (err: any) {
+      console.error('Upload failed:', err);
+      toast({ title: 'Upload failed', description: err?.message || 'Could not upload background.', variant: 'destructive' });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  }, [user, toast, refetchUserBgs]);
+
+  const handleDeleteUserBg = useCallback(async (bgId: string, storagePath: string) => {
+    if (!user) return;
+    try {
+      await supabase.from('user_backgrounds').delete().eq('id', bgId).eq('user_id', user.id);
+      await supabase.storage.from('backgrounds-user').remove([storagePath]);
+      refetchUserBgs();
+      toast({ title: 'Background removed' });
+    } catch {
+      toast({ title: 'Delete failed', variant: 'destructive' });
+    }
+  }, [user, refetchUserBgs, toast]);
+
+  const handleSelectUserBackground = useCallback((bg: { id: string; publicUrl: string }) => {
+    setSelectedBgId(bg.id);
+    setSelectedBgUrl(bg.publicUrl);
+    setSelectedBgColor('#0A0A0A');
+    setShowOriginal(false);
+    setShowSearch(false);
+    trackEvent('bg_user_bg_selected', { bg_id: bg.id });
+  }, []);
+
   const [removalError, setRemovalError] = useState(false);
 
   const attemptRemoval = useCallback(async () => {
