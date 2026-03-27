@@ -112,7 +112,7 @@ Deno.serve(async (req) => {
       return errorResponse("user_id, brand_slug, and category are required.", "VALIDATION_ERROR", 400, corsHeaders);
     }
 
-    if (user_id !== claimsData.claims.sub) {
+    if (user_id !== userData.user.id) {
       return errorResponse("Cannot access another user's data", "AUTH_ERROR", 403, corsHeaders);
     }
 
