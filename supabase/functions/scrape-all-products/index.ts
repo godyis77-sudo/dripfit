@@ -124,6 +124,37 @@ const BRAND_CATEGORIES: Record<string, string[]> = {
   'rick owens':    ['t-shirts', 'hoodies', 'jackets', 'coats', 'pants', 'shorts', 'sneakers', 'boots', 'bags'],
   'maison margiela': ['t-shirts', 'sweaters', 'jackets', 'pants', 'sneakers', 'boots', 'bags', 'jewelry'],
 
+  // ── New Luxury ──
+  'tom ford':       ['t-shirts', 'shirts', 'jackets', 'blazers', 'pants', 'sneakers', 'loafers', 'bags', 'belts', 'sunglasses'],
+  'balmain':        ['t-shirts', 'hoodies', 'jackets', 'blazers', 'jeans', 'pants', 'sneakers', 'boots', 'bags', 'belts'],
+  'dsquared2':      ['t-shirts', 'hoodies', 'jackets', 'jeans', 'pants', 'sneakers', 'boots', 'hats', 'belts'],
+  'dolce & gabbana': ['t-shirts', 'shirts', 'jackets', 'blazers', 'pants', 'sneakers', 'loafers', 'bags', 'belts', 'sunglasses'],
+  'amiri':          ['t-shirts', 'hoodies', 'jackets', 'jeans', 'pants', 'sneakers', 'boots', 'bags', 'hats'],
+  'palm angels':    ['t-shirts', 'hoodies', 'jackets', 'pants', 'sneakers', 'bags', 'hats', 'sunglasses'],
+  'golden goose':   ['sneakers', 't-shirts', 'hoodies', 'jackets', 'jeans', 'bags'],
+  'chrome hearts':  ['t-shirts', 'hoodies', 'jackets', 'jeans', 'jewelry', 'hats', 'belts', 'sunglasses'],
+  'jw anderson':    ['t-shirts', 'sweaters', 'jackets', 'pants', 'bags', 'scarves'],
+  'thom browne':    ['shirts', 'sweaters', 'blazers', 'pants', 'shorts', 'jackets', 'coats', 'sneakers', 'bags'],
+  'brunello cucinelli': ['t-shirts', 'shirts', 'sweaters', 'pants', 'jackets', 'coats', 'blazers', 'loafers', 'bags', 'belts'],
+  'issey miyake':   ['t-shirts', 'sweaters', 'pants', 'jackets', 'bags'],
+  'coperni':        ['t-shirts', 'sweaters', 'dresses', 'jackets', 'pants', 'bags'],
+  'alaia':          ['dresses', 'jackets', 'pants', 'heels', 'boots', 'bags', 'belts'],
+
+  // ── New Streetwear ──
+  'represent':      ['t-shirts', 'hoodies', 'sweaters', 'jackets', 'jeans', 'pants', 'shorts', 'sneakers', 'hats'],
+  'eric emanuel':   ['shorts', 't-shirts', 'hoodies', 'hats'],
+  'gallery dept':   ['t-shirts', 'hoodies', 'jackets', 'jeans', 'pants', 'shorts', 'hats'],
+  'rhude':          ['t-shirts', 'hoodies', 'jackets', 'pants', 'shorts', 'sneakers', 'hats', 'sunglasses'],
+  'human made':     ['t-shirts', 'hoodies', 'sweaters', 'jackets', 'pants', 'shorts', 'hats', 'bags'],
+  'undercover':     ['t-shirts', 'hoodies', 'jackets', 'pants', 'sneakers', 'bags'],
+  'neighborhood':   ['t-shirts', 'hoodies', 'jackets', 'pants', 'boots', 'hats', 'bags'],
+  'needles':        ['t-shirts', 'shirts', 'sweaters', 'jackets', 'pants', 'shorts', 'hats'],
+  'comme des garcons': ['t-shirts', 'shirts', 'sweaters', 'jackets', 'pants', 'sneakers', 'bags'],
+  'vetements':      ['t-shirts', 'hoodies', 'jackets', 'jeans', 'pants', 'sneakers', 'boots', 'hats'],
+  'sacai':          ['t-shirts', 'sweaters', 'jackets', 'coats', 'pants', 'sneakers', 'bags'],
+  'daily paper':    ['t-shirts', 'hoodies', 'sweaters', 'jackets', 'pants', 'shorts', 'hats', 'bags'],
+  'missing since thursday': ['t-shirts', 'hoodies', 'pants', 'shorts', 'jackets', 'hats'],
+
   // ── Mens-Only Retailers ──
   bonobos:        ['t-shirts', 'shirts', 'polos', 'sweaters', 'pants', 'jeans', 'shorts', 'jackets', 'blazers', 'coats', 'sneakers', 'loafers', 'belts', 'swimwear'],
   'buck mason':   ['t-shirts', 'shirts', 'sweaters', 'jeans', 'pants', 'shorts', 'jackets', 'coats', 'boots'],
