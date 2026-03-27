@@ -6,6 +6,8 @@ interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> 
   normalize?: boolean;
   /** Show skeleton while loading */
   skeleton?: boolean;
+  /** Override lazy loading (use "eager" for above-the-fold images) */
+  loadingStrategy?: 'lazy' | 'eager';
 }
 
 /**
@@ -19,6 +21,7 @@ export const OptimizedImage = ({
   className,
   normalize = true,
   skeleton = true,
+  loadingStrategy = 'lazy',
   alt,
   onLoad,
   ...props
@@ -33,8 +36,9 @@ export const OptimizedImage = ({
       <img
         {...props}
         alt={alt || "Image"}
-        loading="lazy"
-        decoding="async"
+        loading={loadingStrategy}
+        decoding={loadingStrategy === 'eager' ? 'sync' : 'async'}
+        fetchPriority={loadingStrategy === 'eager' ? 'high' : undefined}
         onLoad={(e) => {
           setLoaded(true);
           onLoad?.(e);

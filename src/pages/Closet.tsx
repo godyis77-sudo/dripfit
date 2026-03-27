@@ -70,6 +70,7 @@ function SwipeCard({
         src={product.image_url}
         alt={product.name}
         className="w-full h-full"
+        loadingStrategy={isTop ? 'eager' : 'lazy'}
       />
 
       {/* Dark gradient overlay at bottom */}
@@ -184,6 +185,17 @@ export default function Closet() {
 
   const currentProduct = products[currentIndex];
   const nextProduct = products[currentIndex + 1];
+
+  // Prefetch the next 3 images after the visible stack
+  useEffect(() => {
+    for (let i = 2; i <= 4; i++) {
+      const p = products[currentIndex + i];
+      if (p?.image_url) {
+        const img = new Image();
+        img.src = p.image_url;
+      }
+    }
+  }, [currentIndex, products]);
 
   const saveToWardrobe = useCallback(async (product: CatalogProduct) => {
     if (!user) {
