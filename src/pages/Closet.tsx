@@ -132,21 +132,55 @@ function SwipeCard({
   );
 }
 
+const CLOSET_CATEGORIES = [
+  { key: 'all', label: 'All' },
+  { key: 'tops', label: 'Tops' },
+  { key: 'bottoms', label: 'Bottoms' },
+  { key: 'dresses', label: 'Dresses' },
+  { key: 'outerwear', label: 'Outerwear' },
+  { key: 'shoes', label: 'Shoes' },
+  { key: 'accessories', label: 'Accessories' },
+  { key: 'activewear', label: 'Activewear' },
+  { key: 'swimwear', label: 'Swimwear' },
+] as const;
+
+const GENDER_OPTIONS = [
+  { key: 'all', label: 'Both' },
+  { key: 'mens', label: "Men's" },
+  { key: 'womens', label: "Women's" },
+] as const;
+
 export default function Closet() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { gender } = useUserGender();
+  const { gender: profileGender } = useUserGender();
+  const [genderFilter, setGenderFilter] = useState<string>(profileGender ?? 'all');
+  const [category, setCategory] = useState<string>('all');
   const [genre, setGenre] = useState<BrandGenre | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [exitDir, setExitDir] = useState<'left' | 'right'>('right');
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Sync profile gender on load
+  useState(() => {
+    if (profileGender) setGenderFilter(profileGender);
+  });
+
+  const activeGender = genderFilter === 'all' ? undefined : genderFilter;
 
   const { products, loading } = useProductCatalog(
-    'all',
+    category === 'all' ? undefined : category,
     undefined,
     undefined,
-    gender ?? undefined,
+    activeGender,
     genre ?? undefined,
   );
+
+  // Filter out gender-inappropriate categories from visible list
+  const visibleCategories = CLOSET_CATEGORIES.filter(c => {
+    if (genderFilter === 'mens' && ['dresses', 'swimwear'].includes(c.key)) return false;
+    return true;
+  });
 
   const currentProduct = products[currentIndex];
   const nextProduct = products[currentIndex + 1];
@@ -194,21 +228,89 @@ export default function Closet() {
     });
   }, [currentProduct, navigate]);
 
-  // Reset index when filters change
+  const resetIndex = () => setCurrentIndex(0);
+
   const handleGenreChange = (g: BrandGenre | null) => {
     setGenre(g);
-    setCurrentIndex(0);
+    resetIndex();
+  };
+
+  const handleGenderChange = (g: string) => {
+    setGenderFilter(g);
+    // Reset category if it's hidden for new gender
+    if (g === 'mens' && ['dresses', 'swimwear'].includes(category)) {
+      setCategory('all');
+    }
+    resetIndex();
+  };
+
+  const handleCategoryChange = (c: string) => {
+    setCategory(c);
+    resetIndex();
   };
 
   const isEmpty = !loading && currentIndex >= products.length;
+  const hasActiveFilters = genderFilter !== 'all' || category !== 'all' || genre !== null;
 
   return (
     <div className="min-h-screen bg-background pb-24">
       <PageHeader title="The Closet" backTo="/home" />
 
-      <div className="px-4 pt-2">
-        <GenreFilter selectedGenre={genre} onGenreChange={handleGenreChange} />
+      {/* Gender toggle */}
+      <div className="px-4 pt-2 flex items-center gap-2">
+        <div className="flex gap-1 flex-1">
+          {GENDER_OPTIONS.map(opt => (
+            <button
+              key={opt.key}
+              onClick={() => handleGenderChange(opt.key)}
+              className={cn(
+                'pill flex-1 text-center',
+                genderFilter === opt.key && 'pill-active'
+              )}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className={cn(
+            'h-8 w-8 rounded-xl flex items-center justify-center transition-colors',
+            hasActiveFilters ? 'badge-gold-3d' : 'bg-muted'
+          )}
+        >
+          <SlidersHorizontal className={cn('h-3.5 w-3.5', hasActiveFilters ? 'text-primary-foreground' : 'text-muted-foreground')} />
+        </button>
       </div>
+
+      {/* Category pills */}
+      <div className="px-4 pt-2">
+        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
+          {visibleCategories.map(cat => (
+            <button
+              key={cat.key}
+              onClick={() => handleCategoryChange(cat.key)}
+              className={cn('shrink-0 pill', category === cat.key && 'pill-active')}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Collapsible genre filter */}
+      <AnimatePresence>
+        {showFilters && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden px-4"
+          >
+            <GenreFilter selectedGenre={genre} onGenreChange={handleGenreChange} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Card stack */}
       <div className="relative mx-auto w-[calc(100%-2rem)] max-w-[360px] aspect-[3/4] mt-3">
