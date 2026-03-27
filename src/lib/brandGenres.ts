@@ -71,7 +71,6 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'SSENSE': 'Luxury',
   'Net-a-Porter': 'Luxury',
   'Revolve': 'Luxury',
-  'Tom Ford': 'Luxury',
   'Balmain': 'Luxury',
   'Dsquared2': 'Luxury',
   'Dolce & Gabbana': 'Luxury',
