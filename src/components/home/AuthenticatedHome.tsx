@@ -1,7 +1,7 @@
 import { forwardRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Camera, ShoppingBag, X, Sparkles } from 'lucide-react';
+import { Camera, ShoppingBag, X, Sparkles, Flame } from 'lucide-react';
 import FeatureIcon, { featureIcons } from '@/components/ui/FeatureIcon';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
@@ -116,6 +116,23 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             </button>
           ))}
         </motion.div>
+
+        {/* The Closet CTA */}
+        <motion.button
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          onClick={() => navigate('/closet')}
+          className="w-full mb-4 bg-card border border-border rounded-2xl px-5 py-3.5 flex items-center gap-3 active:scale-[0.97] transition-transform"
+        >
+          <div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+            <Flame className="h-5 w-5 text-primary" />
+          </div>
+          <div className="text-left flex-1">
+            <p className="text-[14px] font-extrabold tracking-tight text-foreground">The Closet</p>
+            <p className="text-[11px] text-muted-foreground">Swipe to cop or drop · discover your style</p>
+          </div>
+        </motion.button>
 
         {/* Trending Fits */}
         <TrendingFitsGrid fits={trendingFits} />
