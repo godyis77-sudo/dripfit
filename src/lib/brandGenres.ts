@@ -71,6 +71,17 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'SSENSE': 'Luxury',
   'Net-a-Porter': 'Luxury',
   'Revolve': 'Luxury',
+  'Tom Ford': 'Luxury',
+  'Balmain': 'Luxury',
+  'Dsquared2': 'Luxury',
+  'Dolce & Gabbana': 'Luxury',
+  'Golden Goose': 'Luxury',
+  'JW Anderson': 'Luxury',
+  'Thom Browne': 'Luxury',
+  'Brunello Cucinelli': 'Luxury',
+  'Issey Miyake': 'Luxury',
+  'Coperni': 'Luxury',
+  'Alaia': 'Luxury',
 
   // ── Streetwear ──────────────────────────────────────
   'Supreme': 'Streetwear',
