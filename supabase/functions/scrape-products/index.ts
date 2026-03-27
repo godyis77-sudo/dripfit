@@ -2316,6 +2316,13 @@ const LUXURY_SEARCH_BRANDS = new Set([
   'burberry', 'off-white', 'fear of god', 'essentials', 'a bathing ape',
   'kith', 'supreme', 'palace', 'corteiz', 'trapstar',
   'cartier', 'tiffany & co', 'pandora', 'swarovski',
+  // New luxury/streetwear brands
+  'balmain', 'tom ford', 'dsquared2', 'dolce & gabbana', 'amiri',
+  'palm angels', 'golden goose', 'chrome hearts', 'jw anderson',
+  'thom browne', 'brunello cucinelli', 'issey miyake', 'coperni', 'alaia',
+  'represent', 'eric emanuel', 'gallery dept', 'rhude', 'human made',
+  'undercover', 'neighborhood', 'needles', 'comme des garcons',
+  'vetements', 'sacai', 'daily paper', 'missing since thursday',
 ]);
 
 // Expanded site lists for better coverage
