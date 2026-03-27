@@ -162,9 +162,9 @@ export default function Closet() {
   const [showFilters, setShowFilters] = useState(false);
 
   // Sync profile gender on load
-  useState(() => {
+  useEffect(() => {
     if (profileGender) setGenderFilter(profileGender);
-  });
+  }, [profileGender]);
 
   const activeGender = genderFilter === 'all' ? undefined : genderFilter;
 
