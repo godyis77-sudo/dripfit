@@ -720,6 +720,69 @@ const CATEGORY_MAP: Record<string, Record<string, CategoryUrl[]>> = {
     shoes:      toUrlConfig(['https://www.ctshirts.com/us/mens-shoes/SHO/'], { waitFor: 3000 }),
     accessories:toUrlConfig(['https://www.ctshirts.com/us/mens-ties/TIE/', 'https://www.ctshirts.com/us/mens-belts/BEL/'], { waitFor: 3000 }),
   },
+  // ── Multi-Brand Retailers (scrape luxury/streetwear from aggregators) ──
+  ssense: {
+    tops:       toUrlConfig(['https://www.ssense.com/en-us/men/t-shirts', 'https://www.ssense.com/en-us/women/t-shirts'], { waitFor: 5000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://www.ssense.com/en-us/men/pants', 'https://www.ssense.com/en-us/women/pants'], { waitFor: 5000 }),
+    outerwear:  toUrlConfig(['https://www.ssense.com/en-us/men/jackets-coats', 'https://www.ssense.com/en-us/women/jackets-coats'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://www.ssense.com/en-us/men/sneakers', 'https://www.ssense.com/en-us/women/sneakers', 'https://www.ssense.com/en-us/men/boots', 'https://www.ssense.com/en-us/women/boots'], { waitFor: 5000 }),
+    accessories:toUrlConfig(['https://www.ssense.com/en-us/men/bags', 'https://www.ssense.com/en-us/women/bags', 'https://www.ssense.com/en-us/women/jewelry'], { waitFor: 5000 }),
+    shorts:     toUrlConfig(['https://www.ssense.com/en-us/men/shorts'], { waitFor: 5000 }),
+    dresses:    toUrlConfig(['https://www.ssense.com/en-us/women/dresses'], { waitFor: 5000 }),
+  },
+  'end clothing': {
+    tops:       toUrlConfig(['https://www.endclothing.com/us/clothing/t-shirts', 'https://www.endclothing.com/us/clothing/sweatshirts'], { waitFor: 4000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://www.endclothing.com/us/clothing/pants', 'https://www.endclothing.com/us/clothing/jeans'], { waitFor: 4000 }),
+    outerwear:  toUrlConfig(['https://www.endclothing.com/us/clothing/jackets-coats'], { waitFor: 4000 }),
+    shoes:      toUrlConfig(['https://www.endclothing.com/us/footwear/sneakers', 'https://www.endclothing.com/us/footwear/boots'], { waitFor: 4000 }),
+    accessories:toUrlConfig(['https://www.endclothing.com/us/accessories/bags', 'https://www.endclothing.com/us/accessories/hats-caps'], { waitFor: 4000 }),
+    shorts:     toUrlConfig(['https://www.endclothing.com/us/clothing/shorts'], { waitFor: 4000 }),
+  },
+  'mr porter': {
+    tops:       toUrlConfig(['https://www.mrporter.com/en-us/mens/clothing/t-shirts', 'https://www.mrporter.com/en-us/mens/clothing/sweatshirts'], { waitFor: 4000 }),
+    bottoms:    toUrlConfig(['https://www.mrporter.com/en-us/mens/clothing/trousers', 'https://www.mrporter.com/en-us/mens/clothing/jeans'], { waitFor: 4000 }),
+    outerwear:  toUrlConfig(['https://www.mrporter.com/en-us/mens/clothing/coats-and-jackets'], { waitFor: 4000 }),
+    shoes:      toUrlConfig(['https://www.mrporter.com/en-us/mens/shoes/sneakers', 'https://www.mrporter.com/en-us/mens/shoes/boots'], { waitFor: 4000 }),
+    accessories:toUrlConfig(['https://www.mrporter.com/en-us/mens/accessories/bags'], { waitFor: 4000 }),
+    shorts:     toUrlConfig(['https://www.mrporter.com/en-us/mens/clothing/shorts'], { waitFor: 4000 }),
+  },
+  // ── New Luxury Brand URLs ──
+  balmain: {
+    tops:       toUrlConfig(['https://www.balmain.com/us/en/men/ready-to-wear/t-shirts', 'https://www.balmain.com/us/en/women/ready-to-wear/tops'], { waitFor: 5000 }),
+    outerwear:  toUrlConfig(['https://www.balmain.com/us/en/men/ready-to-wear/coats-jackets', 'https://www.balmain.com/us/en/women/ready-to-wear/coats-jackets'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://www.balmain.com/us/en/men/shoes', 'https://www.balmain.com/us/en/women/shoes'], { waitFor: 5000 }),
+    accessories:toUrlConfig(['https://www.balmain.com/us/en/women/bags'], { waitFor: 5000 }),
+    bottoms:    toUrlConfig(['https://www.balmain.com/us/en/men/ready-to-wear/pants-jeans'], { waitFor: 5000 }),
+  },
+  'tom ford': {
+    tops:       toUrlConfig(['https://www.tomford.com/men/ready-to-wear/t-shirts-polos/'], { waitFor: 5000 }),
+    outerwear:  toUrlConfig(['https://www.tomford.com/men/ready-to-wear/outerwear/'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://www.tomford.com/men/shoes/', 'https://www.tomford.com/women/shoes/'], { waitFor: 5000 }),
+    accessories:toUrlConfig(['https://www.tomford.com/women/handbags/', 'https://www.tomford.com/men/accessories/'], { waitFor: 5000 }),
+  },
+  'palm angels': {
+    tops:       toUrlConfig(['https://www.palmangels.com/en-us/men/clothing/t-shirts', 'https://www.palmangels.com/en-us/women/clothing/t-shirts'], { waitFor: 5000 }),
+    outerwear:  toUrlConfig(['https://www.palmangels.com/en-us/men/clothing/jackets-coats'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://www.palmangels.com/en-us/men/shoes', 'https://www.palmangels.com/en-us/women/shoes'], { waitFor: 5000 }),
+    accessories:toUrlConfig(['https://www.palmangels.com/en-us/men/accessories', 'https://www.palmangels.com/en-us/women/bags'], { waitFor: 5000 }),
+  },
+  amiri: {
+    tops:       toUrlConfig(['https://amiri.com/collections/mens-tees', 'https://amiri.com/collections/mens-hoodies-sweaters'], { waitFor: 5000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://amiri.com/collections/mens-denim', 'https://amiri.com/collections/mens-pants'], { waitFor: 5000 }),
+    outerwear:  toUrlConfig(['https://amiri.com/collections/mens-outerwear'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://amiri.com/collections/mens-footwear'], { waitFor: 5000 }),
+    accessories:toUrlConfig(['https://amiri.com/collections/mens-accessories'], { waitFor: 5000 }),
+  },
+  'chrome hearts': {
+    accessories:toUrlConfig(['https://www.chromeheartsusa.com/collections/jewelry', 'https://www.chromeheartsusa.com/collections/eyewear'], { waitFor: 5000 }),
+  },
+  'thom browne': {
+    tops:       toUrlConfig(['https://www.thombrowne.com/us/shopping/man-t-shirts-1', 'https://www.thombrowne.com/us/shopping/man-shirts-1'], { waitFor: 5000 }),
+    outerwear:  toUrlConfig(['https://www.thombrowne.com/us/shopping/man-coats-1', 'https://www.thombrowne.com/us/shopping/man-jackets-1'], { waitFor: 5000 }),
+    bottoms:    toUrlConfig(['https://www.thombrowne.com/us/shopping/man-trousers-shorts-1'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://www.thombrowne.com/us/shopping/man-shoes-1'], { waitFor: 5000 }),
+    accessories:toUrlConfig(['https://www.thombrowne.com/us/shopping/man-bags-1'], { waitFor: 5000 }),
+  },
 };
 
 // Brands that block direct scraping — use search fallback
@@ -833,6 +896,23 @@ const BRAND_DOMAINS: Record<string, string> = {
   'oh polly': 'https://www.ohpolly.com', 'cider': 'https://www.shopcider.com',
   'cuts': 'https://www.cutsclothing.com', 'good american': 'https://www.goodamerican.com',
   'torrid': 'https://www.torrid.com', 'eloquii': 'https://www.eloquii.com',
+  // ── New luxury/streetwear brands ──
+  ssense: 'https://www.ssense.com', 'end clothing': 'https://www.endclothing.com',
+  'mr porter': 'https://www.mrporter.com', 'net-a-porter': 'https://www.net-a-porter.com',
+  balmain: 'https://www.balmain.com', 'tom ford': 'https://www.tomford.com',
+  'palm angels': 'https://www.palmangels.com', amiri: 'https://amiri.com',
+  'chrome hearts': 'https://www.chromeheartsusa.com', 'thom browne': 'https://www.thombrowne.com',
+  represent: 'https://representclo.com', 'eric emanuel': 'https://www.ericemanuel.com',
+  'gallery dept': 'https://gallerydept.com', rhude: 'https://www.rhude.com',
+  'daily paper': 'https://www.dailypaperclothing.com', 'golden goose': 'https://www.goldengoose.com',
+  'dsquared2': 'https://www.dsquared2.com', 'dolce & gabbana': 'https://www.dolcegabbana.com',
+  'jw anderson': 'https://www.jwanderson.com', 'brunello cucinelli': 'https://www.brunellocucinelli.com',
+  'issey miyake': 'https://www.isseymiyake.com', coperni: 'https://coperni.com',
+  alaia: 'https://mafrfrancemaison-alaia.com', 'human made': 'https://humanmade.jp',
+  undercover: 'https://www.undercoverism.com', neighborhood: 'https://www.neighborhood.jp',
+  needles: 'https://www.needles.jp', 'comme des garcons': 'https://www.commedesgarcons.com',
+  vetements: 'https://vetementswebsite.com', sacai: 'https://www.sacai.jp',
+  'missing since thursday': 'https://missingsincethursday.com',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -848,6 +928,14 @@ const SHOPIFY_STORES: Record<string, { domain: string; collections?: Record<stri
   // ── Streetwear & Hype ──
   "stüssy":             { domain: 'https://www.stussy.com', collections: { tops: ['tops'], bottoms: ['bottoms'], shorts: ['shorts'], outerwear: ['outerwear'], accessories: ['accessories', 'headwear'] } },
   palace:               { domain: 'https://www.palaceskateboards.com', collections: { tops: ['tops'], outerwear: ['jackets'], bottoms: ['bottoms'], accessories: ['hats', 'accessories'] } },
+  represent:            { domain: 'https://representclo.com', collections: { tops: ['t-shirts', 'hoodies-sweatshirts'], bottoms: ['trousers', 'jeans'], shorts: ['shorts'], outerwear: ['jackets-coats'], shoes: ['footwear'], accessories: ['headwear'] } },
+  'eric emanuel':       { domain: 'https://www.ericemanuel.com', collections: { shorts: ['shorts'], tops: ['t-shirts', 'hoodies'], accessories: ['headwear'] } },
+  'gallery dept':       { domain: 'https://gallerydept.com', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outerwear'], accessories: ['hats'] } },
+  'daily paper':        { domain: 'https://www.dailypaperclothing.com', collections: { tops: ['t-shirts', 'hoodies-sweaters'], bottoms: ['pants'], shorts: ['shorts'], outerwear: ['jackets-coats'], accessories: ['hats', 'bags'] } },
+  'missing since thursday': { domain: 'https://missingsincethursday.com', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['jackets'], shorts: ['shorts'], accessories: ['headwear'] } },
+  'human made':         { domain: 'https://humanmade.jp', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outer'], shorts: ['shorts'], accessories: ['accessories', 'headwear'] } },
+  rhude:                { domain: 'https://www.rhude.com', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outerwear'], shorts: ['shorts'], accessories: ['accessories'] } },
+  'needles':            { domain: 'https://www.needles.jp', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outerwear'], shorts: ['shorts'] } },
   // ── Athletic & Active ──
   gymshark:             { domain: 'https://www.gymshark.com', collections: { tops: ['t-shirts-tops'], bottoms: ['joggers', 'leggings'], shorts: ['shorts'], outerwear: ['hoodies-jackets'], accessories: ['accessories'] } },
   'gore wear':          { domain: 'https://www.gorewear.com', collections: { tops: ['mens-jerseys', 'womens-jerseys'], bottoms: ['mens-tights', 'womens-tights'], outerwear: ['mens-jackets', 'womens-jackets'], shorts: ['mens-shorts', 'womens-shorts'], accessories: ['accessories'] } },
@@ -856,6 +944,9 @@ const SHOPIFY_STORES: Record<string, { domain: string; collections?: Record<stri
   'colourpop':          { domain: 'https://www.colourpop.com', collections: { accessories: ['face', 'lips', 'eyes'] } },
   "rothy's":            { domain: 'https://www.rothys.com', collections: { shoes: ['womens-flats', 'womens-sneakers', 'mens-shoes'], accessories: ['bags'] } },
   'oliver peoples':     { domain: 'https://www.oliverpeoples.com', collections: { accessories: ['sunglasses', 'eyeglasses'] } },
+  // ── Luxury Streetwear (Shopify-based) ──
+  'golden goose':       { domain: 'https://www.goldengoose.com', collections: { shoes: ['sneakers'], tops: ['t-shirts'], outerwear: ['jackets'], bottoms: ['jeans'] } },
+  'coperni':            { domain: 'https://coperni.com', collections: { tops: ['tops'], bottoms: ['bottoms'], outerwear: ['outerwear'], dresses: ['dresses'], accessories: ['bags'] } },
   // ── Menswear ──
   'true classic':       { domain: 'https://trueclassictees.com', collections: { tops: ['mens-crew-neck-t-shirts', 'mens-v-neck-t-shirts', 'mens-polos'], bottoms: ['mens-pants-joggers'], outerwear: ['mens-hoodies-jackets'], shorts: ['mens-shorts'], activewear: ['mens-activewear'] } },
   'todd snyder':        { domain: 'https://www.toddsnyder.com', collections: { tops: ['t-shirts', 'shirts', 'polos'], bottoms: ['pants', 'jeans'], outerwear: ['jackets-coats', 'sweaters'], shorts: ['shorts'], suits: ['suits'] } },
@@ -1373,6 +1464,20 @@ const CANONICAL_NAMES: Record<string, string> = {
   'palace skateboards': 'Palace Skateboards', 'fear of god': 'Fear of God',
   'kith': 'Kith', 'essentials': 'Essentials', 'corteiz': 'Corteiz',
   'trapstar': 'Trapstar',
+  // New luxury/streetwear
+  'balmain': 'Balmain', 'tom ford': 'Tom Ford', 'dsquared2': 'Dsquared2',
+  'dolce & gabbana': 'Dolce & Gabbana', 'amiri': 'AMIRI', 'palm angels': 'Palm Angels',
+  'golden goose': 'Golden Goose', 'chrome hearts': 'Chrome Hearts',
+  'jw anderson': 'JW Anderson', 'thom browne': 'Thom Browne',
+  'brunello cucinelli': 'Brunello Cucinelli', 'issey miyake': 'Issey Miyake',
+  'coperni': 'Coperni', 'alaia': 'Alaïa',
+  'represent': 'Represent', 'eric emanuel': 'Eric Emanuel',
+  'gallery dept': 'Gallery Dept', 'rhude': 'Rhude', 'human made': 'HUMAN MADE',
+  'undercover': 'UNDERCOVER', 'neighborhood': 'NEIGHBORHOOD', 'needles': 'Needles',
+  'comme des garcons': 'Comme des Garçons', 'vetements': 'Vetements', 'sacai': 'Sacai',
+  'daily paper': 'Daily Paper', 'missing since thursday': 'Missing Since Thursday',
+  // Multi-brand retailers
+  'ssense': 'SSENSE', 'end clothing': 'END. Clothing', 'mr porter': 'MR PORTER',
   // Athletic
   'nike': 'Nike', 'adidas': 'Adidas', 'puma': 'Puma', 'lululemon': 'Lululemon',
   'gymshark': 'Gymshark', 'under armour': 'Under Armour', 'new balance': 'New Balance',
@@ -2225,6 +2330,13 @@ const LUXURY_SEARCH_BRANDS = new Set([
   'burberry', 'off-white', 'fear of god', 'essentials', 'a bathing ape',
   'kith', 'supreme', 'palace', 'corteiz', 'trapstar',
   'cartier', 'tiffany & co', 'pandora', 'swarovski',
+  // New luxury/streetwear brands
+  'balmain', 'tom ford', 'dsquared2', 'dolce & gabbana', 'amiri',
+  'palm angels', 'golden goose', 'chrome hearts', 'jw anderson',
+  'thom browne', 'brunello cucinelli', 'issey miyake', 'coperni', 'alaia',
+  'represent', 'eric emanuel', 'gallery dept', 'rhude', 'human made',
+  'undercover', 'neighborhood', 'needles', 'comme des garcons',
+  'vetements', 'sacai', 'daily paper', 'missing since thursday',
 ]);
 
 // Expanded site lists for better coverage
@@ -2295,6 +2407,41 @@ const BRAND_SITE_OVERRIDES: Record<string, string> = {
   'reformation': 'site:thereformation.com OR site:nordstrom.com OR site:revolve.com',
   'kith': 'site:kith.com OR site:ssense.com OR site:endclothing.com',
   'fear of god': 'site:fearofgod.com OR site:ssense.com OR site:nordstrom.com',
+  // ── New luxury/streetwear brands ──
+  'balmain': 'site:balmain.com OR site:ssense.com OR site:farfetch.com OR site:nordstrom.com',
+  'tom ford': 'site:tomford.com OR site:nordstrom.com OR site:ssense.com',
+  'dsquared2': 'site:dsquared2.com OR site:ssense.com OR site:farfetch.com',
+  'dolce & gabbana': 'site:dolcegabbana.com OR site:ssense.com OR site:farfetch.com OR site:nordstrom.com',
+  'amiri': 'site:amiri.com OR site:ssense.com OR site:farfetch.com OR site:nordstrom.com',
+  'palm angels': 'site:palmangels.com OR site:ssense.com OR site:farfetch.com OR site:endclothing.com',
+  'golden goose': 'site:goldengoose.com OR site:ssense.com OR site:nordstrom.com',
+  'chrome hearts': 'site:chromeheartsusa.com OR site:ssense.com',
+  'jw anderson': 'site:jwanderson.com OR site:ssense.com OR site:farfetch.com',
+  'thom browne': 'site:thombrowne.com OR site:ssense.com OR site:farfetch.com OR site:nordstrom.com',
+  'brunello cucinelli': 'site:brunellocucinelli.com OR site:nordstrom.com OR site:farfetch.com',
+  'issey miyake': 'site:isseymiyake.com OR site:ssense.com OR site:farfetch.com',
+  'coperni': 'site:coperni.com OR site:ssense.com OR site:farfetch.com',
+  'alaia': 'site:maison-alaia.com OR site:ssense.com OR site:farfetch.com OR site:net-a-porter.com',
+  'represent': 'site:representclo.com OR site:ssense.com OR site:endclothing.com',
+  'eric emanuel': 'site:ericemanuel.com OR site:ssense.com',
+  'gallery dept': 'site:gallerydept.com OR site:ssense.com OR site:farfetch.com',
+  'rhude': 'site:rhude.com OR site:ssense.com OR site:farfetch.com OR site:nordstrom.com',
+  'human made': 'site:humanmade.jp OR site:ssense.com OR site:endclothing.com',
+  'undercover': 'site:undercoverism.com OR site:ssense.com OR site:endclothing.com',
+  'neighborhood': 'site:neighborhood.jp OR site:ssense.com OR site:endclothing.com',
+  'needles': 'site:needles.jp OR site:ssense.com OR site:endclothing.com',
+  'comme des garcons': 'site:commedesgarcons.com OR site:ssense.com OR site:endclothing.com OR site:doverstreetmarket.com',
+  'vetements': 'site:vetementswebsite.com OR site:ssense.com OR site:farfetch.com',
+  'sacai': 'site:sacai.jp OR site:ssense.com OR site:endclothing.com',
+  'daily paper': 'site:dailypaperclothing.com OR site:ssense.com OR site:endclothing.com',
+  'missing since thursday': 'site:missingsincethursday.com OR site:endclothing.com',
+  'moncler': 'site:moncler.com OR site:ssense.com OR site:farfetch.com OR site:nordstrom.com',
+  'stone island': 'site:stoneisland.com OR site:ssense.com OR site:endclothing.com OR site:farfetch.com',
+  'acne studios': 'site:acnestudios.com OR site:ssense.com OR site:nordstrom.com',
+  'ami paris': 'site:amiparis.com OR site:ssense.com OR site:farfetch.com OR site:nordstrom.com',
+  'jacquemus': 'site:jacquemus.com OR site:ssense.com OR site:farfetch.com OR site:nordstrom.com',
+  'rick owens': 'site:rickowens.eu OR site:ssense.com OR site:farfetch.com',
+  'maison margiela': 'site:maisonmargiela.com OR site:ssense.com OR site:farfetch.com OR site:nordstrom.com',
 };
 
 const FIRECRAWL_SEARCH_WITH_MARKDOWN = Deno.env.get('FIRECRAWL_SEARCH_WITH_MARKDOWN') === 'true';
@@ -3215,13 +3362,9 @@ Deno.serve(async (req) => {
 
     const keyDirect = Deno.env.get('FIRECRAWL_API_KEY');
     const keyConnector = Deno.env.get('FIRECRAWL_API_KEY_1');
-    const FIRECRAWL_API_KEY = keyDirect || keyConnector;
+    const FIRECRAWL_API_KEY = keyDirect || keyConnector || '';
     console.log(`[auth] Using key: ${FIRECRAWL_API_KEY ? FIRECRAWL_API_KEY.substring(0, 8) + '...' : 'NONE'} (direct=${!!keyDirect}, connector=${!!keyConnector})`);
-    if (!FIRECRAWL_API_KEY) {
-      return new Response(JSON.stringify({ error: 'FIRECRAWL_API_KEY not set' }), {
-        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+    // Allow scraping without Firecrawl — Shopify, direct HTTP, and Google Search still work
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
