@@ -6,6 +6,8 @@ interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> 
   normalize?: boolean;
   /** Show skeleton while loading */
   skeleton?: boolean;
+  /** Override lazy loading (use "eager" for above-the-fold images) */
+  loadingStrategy?: 'lazy' | 'eager';
 }
 
 /**
