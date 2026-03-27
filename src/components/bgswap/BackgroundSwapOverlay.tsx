@@ -744,6 +744,44 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
             </div>
           ) : (
             <div className="flex-1 flex gap-1 overflow-x-auto scrollbar-hide" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
+              {/* Upload button */}
+              <button
+                onClick={() => {
+                  if (!user) {
+                    toast({ title: 'Sign in required', description: 'Create an account to upload custom backgrounds.' });
+                    return;
+                  }
+                  fileInputRef.current?.click();
+                }}
+                disabled={uploading}
+                className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors border ${
+                  uploading ? 'bg-primary/10 text-primary border-primary/30' : 'text-muted-foreground border-dashed border-border hover:border-primary/40 hover:text-primary'
+                }`}
+              >
+                {uploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
+                <span className="whitespace-nowrap">{uploading ? 'Uploading…' : 'Upload'}</span>
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleUploadBackground}
+                className="hidden"
+              />
+              {/* My Uploads tab (only if user has uploads) */}
+              {user && userBackgrounds.length > 0 && (
+                <button
+                  onClick={() => setActiveCategory('__my-uploads__')}
+                  className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors ${
+                    activeCategory === '__my-uploads__'
+                      ? 'bg-primary/20 text-primary border border-primary/30'
+                      : 'text-muted-foreground border border-border hover:border-foreground/20'
+                  }`}
+                >
+                  <span className="text-sm">📁</span>
+                  <span className="whitespace-nowrap">My Uploads</span>
+                </button>
+              )}
               {categories.map(cat => (
                 <button
                   key={cat.slug}
