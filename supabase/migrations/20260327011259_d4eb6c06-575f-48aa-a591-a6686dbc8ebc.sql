@@ -1,0 +1,2 @@
+ALTER TABLE public.tryon_posts DROP CONSTRAINT tryon_posts_clothing_category_check;
+ALTER TABLE public.tryon_posts ADD CONSTRAINT tryon_posts_clothing_category_check CHECK (clothing_category = ANY (ARRAY['tops'::text, 'bottoms'::text, 'outerwear'::text, 'dress'::text, 'jumpsuit'::text, 'other'::text, 'swimwear'::text, 'lingerie'::text, 'loungewear'::text, 'accessories'::text, 'shoes'::text, 'bags'::text, 'hats'::text, 'jewelry'::text, 'coats'::text, 'jeans'::text, 'matching-set'::text]));
