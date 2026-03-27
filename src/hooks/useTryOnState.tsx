@@ -630,9 +630,8 @@ export function useTryOnState() {
         productUrl: selectedQuickPick?.product_url || productLink || '',
         backgroundSource,
       };
-      if (!user) {
-        body.guestUuid = getGuestUuid();
-      }
+      // Always send guestUuid as fallback in case JWT is expired/invalid
+      body.guestUuid = getGuestUuid();
 
       const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', { body });
 
