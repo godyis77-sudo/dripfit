@@ -115,10 +115,6 @@ const BRAND_GENRE_MAP: Record<string, BrandGenre> = {
   'Sacai': 'Streetwear',
   'Daily Paper': 'Streetwear',
   'Missing Since Thursday': 'Streetwear',
-  'New Era': 'Streetwear',
-  'AllSaints': 'Streetwear',
-  'Urban Outfitters': 'Streetwear',
-  'Mark Bodē': 'Streetwear',
 
   // ── Athletic ────────────────────────────────────────
   'Nike': 'Athletic',
