@@ -535,7 +535,7 @@ TASK — FOOTWEAR SWAP:
 7. Correct scale — shoes must match the person's foot size realistically. Natural shadows and lighting.
 
 Output: A single photorealistic FULL-BODY image showing the person head to feet. No text/watermarks/split views.`;
-    } else if (isAccessory || isLayering) {
+    } else if ((isAccessory || isLayering) && !isIntimateGarment) {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
 IMAGES PROVIDED:
@@ -651,7 +651,7 @@ Output: A single photorealistic FULL-BODY image. No text/watermarks/split views.
 Image A = person wearing an outfit. Image B = target footwear reference.${productHint}
 ${fullBodyImageHint}
 REMOVE current footwear from Image A and REPLACE with the exact shoes from Image B. Keep ALL other clothing unchanged. Match target item exactly (color, shape, material, branding, sole). Keep face/body/pose from Image A. ${bgFallbackHint} Show full body head to feet. No text/watermark.`
-      : (isAccessory || isLayering)
+      : (isAccessory || isLayering) && !isIntimateGarment
       ? `Create ONE photorealistic output image.
 Image A = person. Image B = target accessory reference.${productHint}
 ${fullBodyImageHint}
@@ -777,7 +777,7 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       return content;
     };
 
-    const typeLabel = isFootwear ? "footwear" : isAccessory || isLayering ? "accessory" : isIntimateGarment ? "intimate" : "standard";
+    const typeLabel = isFootwear ? "footwear" : (isAccessory || isLayering) && !isIntimateGarment ? "accessory" : isIntimateGarment ? "intimate" : "standard";
     const footwearFastPrompt = `Fast shoe swap. Image A is the person, Image B is the exact shoe.${productHint} Replace only footwear in Image A with Image B. Keep all other clothing, pose, and framing unchanged. ${bgFallbackHint} No text/watermark.`;
     const footwearRetryPrompt = `Photorealistic shoe replacement.${productHint} Replace only the shoes from Image A with the shoes from Image B. Keep body, outfit, orientation, and lighting natural. ${bgFallbackHint} No text/watermark.`;
     const beltDescHint = sanitizedProductDesc ? `\nThe belt to use is: "${sanitizedProductDesc}". If Image B shows a full-body model, identify ONLY the belt described above and ignore all other clothing.` : "";
