@@ -535,7 +535,7 @@ TASK — FOOTWEAR SWAP:
 7. Correct scale — shoes must match the person's foot size realistically. Natural shadows and lighting.
 
 Output: A single photorealistic FULL-BODY image showing the person head to feet. No text/watermarks/split views.`;
-    } else if (isAccessory || isLayering) {
+    } else if ((isAccessory || isLayering) && !isIntimateGarment) {
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
 IMAGES PROVIDED:
