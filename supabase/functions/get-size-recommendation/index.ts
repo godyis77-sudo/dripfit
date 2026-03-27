@@ -384,8 +384,8 @@ Deno.serve(async (req) => {
         fitNotes = `Your measurements fall outside ${brandName}'s standard ${category} range${offsetNote}. Check their extended sizing.`;
     }
 
-    // allSizes uses RAW scores for honest display
-    const allSizes = rawScored.map((s) => ({
+    // allSizes uses FIT-ADJUSTED scores so breakdown matches the recommendation
+    const allSizes = fitScored.map((s) => ({
       label: s.label,
       score: Number(s.score.toFixed(2)),
       fit_status: s.score >= 0.90 ? "true_to_size" : s.score >= 0.75 ? "good_fit" : s.score >= 0.60 ? "between_sizes" : "out_of_range",
