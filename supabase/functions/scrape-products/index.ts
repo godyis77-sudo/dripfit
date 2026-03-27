@@ -896,6 +896,23 @@ const BRAND_DOMAINS: Record<string, string> = {
   'oh polly': 'https://www.ohpolly.com', 'cider': 'https://www.shopcider.com',
   'cuts': 'https://www.cutsclothing.com', 'good american': 'https://www.goodamerican.com',
   'torrid': 'https://www.torrid.com', 'eloquii': 'https://www.eloquii.com',
+  // ── New luxury/streetwear brands ──
+  ssense: 'https://www.ssense.com', 'end clothing': 'https://www.endclothing.com',
+  'mr porter': 'https://www.mrporter.com', 'net-a-porter': 'https://www.net-a-porter.com',
+  balmain: 'https://www.balmain.com', 'tom ford': 'https://www.tomford.com',
+  'palm angels': 'https://www.palmangels.com', amiri: 'https://amiri.com',
+  'chrome hearts': 'https://www.chromeheartsusa.com', 'thom browne': 'https://www.thombrowne.com',
+  represent: 'https://representclo.com', 'eric emanuel': 'https://www.ericemanuel.com',
+  'gallery dept': 'https://gallerydept.com', rhude: 'https://www.rhude.com',
+  'daily paper': 'https://www.dailypaperclothing.com', 'golden goose': 'https://www.goldengoose.com',
+  'dsquared2': 'https://www.dsquared2.com', 'dolce & gabbana': 'https://www.dolcegabbana.com',
+  'jw anderson': 'https://www.jwanderson.com', 'brunello cucinelli': 'https://www.brunellocucinelli.com',
+  'issey miyake': 'https://www.isseymiyake.com', coperni: 'https://coperni.com',
+  alaia: 'https://mafrfrancemaison-alaia.com', 'human made': 'https://humanmade.jp',
+  undercover: 'https://www.undercoverism.com', neighborhood: 'https://www.neighborhood.jp',
+  needles: 'https://www.needles.jp', 'comme des garcons': 'https://www.commedesgarcons.com',
+  vetements: 'https://vetementswebsite.com', sacai: 'https://www.sacai.jp',
+  'missing since thursday': 'https://missingsincethursday.com',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
