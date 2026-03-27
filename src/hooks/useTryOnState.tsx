@@ -504,6 +504,7 @@ export function useTryOnState() {
           userInput: uPhoto,
           clothingInput: cPhoto,
           resultInput: resultBase64,
+          clothingCategory: category || selectedQuickPick?.category || 'other',
         });
 
         setAutoSaved(true);
