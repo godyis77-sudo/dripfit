@@ -166,6 +166,7 @@ const AnimatedRoutes = () => {
           <Route path="/my-sizes" element={<ProtectedRoute><PageTransition><SizeComparison /></PageTransition></ProtectedRoute>} />
           <Route path="/outfits" element={<ProtectedRoute><PageTransition><OutfitBuilder /></PageTransition></ProtectedRoute>} />
           <Route path="/style-assistant" element={<PageTransition><StyleAssistant /></PageTransition>} />
+          <Route path="/closet" element={<PageTransition><Closet /></PageTransition>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </AnimatePresence>

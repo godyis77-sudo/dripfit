@@ -108,11 +108,11 @@ function SwipeCard({
       {/* COP overlay */}
       {isTop && (
         <motion.div
-          className="absolute inset-0 bg-green-500/20 flex items-center justify-center pointer-events-none"
+          className="absolute inset-0 bg-primary/20 flex items-center justify-center pointer-events-none"
           style={{ opacity: copOpacity }}
         >
-          <div className="border-4 border-green-400 rounded-xl px-6 py-2 rotate-[-15deg]">
-            <span className="text-green-400 font-display text-4xl font-black tracking-wider">COP</span>
+          <div className="border-4 border-primary rounded-xl px-6 py-2 rotate-[-15deg]">
+            <span className="text-primary font-display text-4xl font-black tracking-wider">COP</span>
           </div>
         </motion.div>
       )}
@@ -120,11 +120,11 @@ function SwipeCard({
       {/* DROP overlay */}
       {isTop && (
         <motion.div
-          className="absolute inset-0 bg-red-500/20 flex items-center justify-center pointer-events-none"
+          className="absolute inset-0 bg-destructive/20 flex items-center justify-center pointer-events-none"
           style={{ opacity: dropOpacity }}
         >
-          <div className="border-4 border-red-400 rounded-xl px-6 py-2 rotate-[15deg]">
-            <span className="text-red-400 font-display text-4xl font-black tracking-wider">DROP</span>
+          <div className="border-4 border-destructive rounded-xl px-6 py-2 rotate-[15deg]">
+            <span className="text-destructive font-display text-4xl font-black tracking-wider">DROP</span>
           </div>
         </motion.div>
       )}
