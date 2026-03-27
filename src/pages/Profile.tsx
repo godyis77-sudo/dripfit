@@ -224,6 +224,12 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* Milestone Badges */}
+        <MilestoneBadges />
+
+        {/* Invite Friends */}
+        <InviteFriendsCard />
+
         {/* Tab switcher */}
         <div className="flex gap-1 bg-card/60 backdrop-blur-sm rounded-xl p-1 mb-4 border border-border/30">
           {[
@@ -247,12 +253,6 @@ const Profile = () => {
             </button>
           ))}
         </div>
-
-        {/* Milestone Badges */}
-        <MilestoneBadges />
-
-        {/* Invite Friends */}
-        <InviteFriendsCard />
 
         <AnimatePresence mode="wait">
           {activeTab === 'tryons' ? (
