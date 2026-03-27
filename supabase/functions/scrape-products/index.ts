@@ -720,6 +720,69 @@ const CATEGORY_MAP: Record<string, Record<string, CategoryUrl[]>> = {
     shoes:      toUrlConfig(['https://www.ctshirts.com/us/mens-shoes/SHO/'], { waitFor: 3000 }),
     accessories:toUrlConfig(['https://www.ctshirts.com/us/mens-ties/TIE/', 'https://www.ctshirts.com/us/mens-belts/BEL/'], { waitFor: 3000 }),
   },
+  // ── Multi-Brand Retailers (scrape luxury/streetwear from aggregators) ──
+  ssense: {
+    tops:       toUrlConfig(['https://www.ssense.com/en-us/men/t-shirts', 'https://www.ssense.com/en-us/women/t-shirts'], { waitFor: 5000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://www.ssense.com/en-us/men/pants', 'https://www.ssense.com/en-us/women/pants'], { waitFor: 5000 }),
+    outerwear:  toUrlConfig(['https://www.ssense.com/en-us/men/jackets-coats', 'https://www.ssense.com/en-us/women/jackets-coats'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://www.ssense.com/en-us/men/sneakers', 'https://www.ssense.com/en-us/women/sneakers', 'https://www.ssense.com/en-us/men/boots', 'https://www.ssense.com/en-us/women/boots'], { waitFor: 5000 }),
+    accessories:toUrlConfig(['https://www.ssense.com/en-us/men/bags', 'https://www.ssense.com/en-us/women/bags', 'https://www.ssense.com/en-us/women/jewelry'], { waitFor: 5000 }),
+    shorts:     toUrlConfig(['https://www.ssense.com/en-us/men/shorts'], { waitFor: 5000 }),
+    dresses:    toUrlConfig(['https://www.ssense.com/en-us/women/dresses'], { waitFor: 5000 }),
+  },
+  'end clothing': {
+    tops:       toUrlConfig(['https://www.endclothing.com/us/clothing/t-shirts', 'https://www.endclothing.com/us/clothing/sweatshirts'], { waitFor: 4000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://www.endclothing.com/us/clothing/pants', 'https://www.endclothing.com/us/clothing/jeans'], { waitFor: 4000 }),
+    outerwear:  toUrlConfig(['https://www.endclothing.com/us/clothing/jackets-coats'], { waitFor: 4000 }),
+    shoes:      toUrlConfig(['https://www.endclothing.com/us/footwear/sneakers', 'https://www.endclothing.com/us/footwear/boots'], { waitFor: 4000 }),
+    accessories:toUrlConfig(['https://www.endclothing.com/us/accessories/bags', 'https://www.endclothing.com/us/accessories/hats-caps'], { waitFor: 4000 }),
+    shorts:     toUrlConfig(['https://www.endclothing.com/us/clothing/shorts'], { waitFor: 4000 }),
+  },
+  'mr porter': {
+    tops:       toUrlConfig(['https://www.mrporter.com/en-us/mens/clothing/t-shirts', 'https://www.mrporter.com/en-us/mens/clothing/sweatshirts'], { waitFor: 4000 }),
+    bottoms:    toUrlConfig(['https://www.mrporter.com/en-us/mens/clothing/trousers', 'https://www.mrporter.com/en-us/mens/clothing/jeans'], { waitFor: 4000 }),
+    outerwear:  toUrlConfig(['https://www.mrporter.com/en-us/mens/clothing/coats-and-jackets'], { waitFor: 4000 }),
+    shoes:      toUrlConfig(['https://www.mrporter.com/en-us/mens/shoes/sneakers', 'https://www.mrporter.com/en-us/mens/shoes/boots'], { waitFor: 4000 }),
+    accessories:toUrlConfig(['https://www.mrporter.com/en-us/mens/accessories/bags'], { waitFor: 4000 }),
+    shorts:     toUrlConfig(['https://www.mrporter.com/en-us/mens/clothing/shorts'], { waitFor: 4000 }),
+  },
+  // ── New Luxury Brand URLs ──
+  balmain: {
+    tops:       toUrlConfig(['https://www.balmain.com/us/en/men/ready-to-wear/t-shirts', 'https://www.balmain.com/us/en/women/ready-to-wear/tops'], { waitFor: 5000 }),
+    outerwear:  toUrlConfig(['https://www.balmain.com/us/en/men/ready-to-wear/coats-jackets', 'https://www.balmain.com/us/en/women/ready-to-wear/coats-jackets'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://www.balmain.com/us/en/men/shoes', 'https://www.balmain.com/us/en/women/shoes'], { waitFor: 5000 }),
+    accessories:toUrlConfig(['https://www.balmain.com/us/en/women/bags'], { waitFor: 5000 }),
+    bottoms:    toUrlConfig(['https://www.balmain.com/us/en/men/ready-to-wear/pants-jeans'], { waitFor: 5000 }),
+  },
+  'tom ford': {
+    tops:       toUrlConfig(['https://www.tomford.com/men/ready-to-wear/t-shirts-polos/'], { waitFor: 5000 }),
+    outerwear:  toUrlConfig(['https://www.tomford.com/men/ready-to-wear/outerwear/'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://www.tomford.com/men/shoes/', 'https://www.tomford.com/women/shoes/'], { waitFor: 5000 }),
+    accessories:toUrlConfig(['https://www.tomford.com/women/handbags/', 'https://www.tomford.com/men/accessories/'], { waitFor: 5000 }),
+  },
+  'palm angels': {
+    tops:       toUrlConfig(['https://www.palmangels.com/en-us/men/clothing/t-shirts', 'https://www.palmangels.com/en-us/women/clothing/t-shirts'], { waitFor: 5000 }),
+    outerwear:  toUrlConfig(['https://www.palmangels.com/en-us/men/clothing/jackets-coats'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://www.palmangels.com/en-us/men/shoes', 'https://www.palmangels.com/en-us/women/shoes'], { waitFor: 5000 }),
+    accessories:toUrlConfig(['https://www.palmangels.com/en-us/men/accessories', 'https://www.palmangels.com/en-us/women/bags'], { waitFor: 5000 }),
+  },
+  amiri: {
+    tops:       toUrlConfig(['https://amiri.com/collections/mens-tees', 'https://amiri.com/collections/mens-hoodies-sweaters'], { waitFor: 5000, actions: SCROLL_TO_LOAD }),
+    bottoms:    toUrlConfig(['https://amiri.com/collections/mens-denim', 'https://amiri.com/collections/mens-pants'], { waitFor: 5000 }),
+    outerwear:  toUrlConfig(['https://amiri.com/collections/mens-outerwear'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://amiri.com/collections/mens-footwear'], { waitFor: 5000 }),
+    accessories:toUrlConfig(['https://amiri.com/collections/mens-accessories'], { waitFor: 5000 }),
+  },
+  'chrome hearts': {
+    accessories:toUrlConfig(['https://www.chromeheartsusa.com/collections/jewelry', 'https://www.chromeheartsusa.com/collections/eyewear'], { waitFor: 5000 }),
+  },
+  'thom browne': {
+    tops:       toUrlConfig(['https://www.thombrowne.com/us/shopping/man-t-shirts-1', 'https://www.thombrowne.com/us/shopping/man-shirts-1'], { waitFor: 5000 }),
+    outerwear:  toUrlConfig(['https://www.thombrowne.com/us/shopping/man-coats-1', 'https://www.thombrowne.com/us/shopping/man-jackets-1'], { waitFor: 5000 }),
+    bottoms:    toUrlConfig(['https://www.thombrowne.com/us/shopping/man-trousers-shorts-1'], { waitFor: 5000 }),
+    shoes:      toUrlConfig(['https://www.thombrowne.com/us/shopping/man-shoes-1'], { waitFor: 5000 }),
+    accessories:toUrlConfig(['https://www.thombrowne.com/us/shopping/man-bags-1'], { waitFor: 5000 }),
+  },
 };
 
 // Brands that block direct scraping — use search fallback
