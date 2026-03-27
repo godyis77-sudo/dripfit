@@ -70,6 +70,7 @@ function SwipeCard({
         src={product.image_url}
         alt={product.name}
         className="w-full h-full"
+        loadingStrategy={isTop ? 'eager' : 'lazy'}
       />
 
       {/* Dark gradient overlay at bottom */}
