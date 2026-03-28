@@ -166,14 +166,14 @@ const ProfileBody = () => {
             {/* Size Guide Tool */}
             <button
               onClick={() => navigate('/size-guide')}
-              className="w-full flex items-center gap-3 rounded-xl border border-border bg-card p-3 active:scale-[0.98] transition-transform"
+              className="w-full flex items-center gap-4 rounded-xl border-2 border-primary/40 p-4 active:scale-[0.98] transition-transform btn-luxury"
             >
-              <div className="h-9 w-9 rounded-lg badge-gold-3d flex items-center justify-center shrink-0">
-                <span className="text-sm">📏</span>
+              <div className="h-12 w-12 rounded-xl badge-gold-3d flex items-center justify-center shrink-0">
+                <Ruler className="h-6 w-6 text-primary-foreground" />
               </div>
-              <div className="text-left">
-                <p className="text-[12px] font-bold text-foreground">Size Guide Tool</p>
-                <p className="text-[10px] text-muted-foreground">Check your size for any brand</p>
+              <div className="text-left flex-1">
+                <p className="text-[14px] font-extrabold text-primary-foreground">Size Guide Tool</p>
+                <p className="text-[11px] text-primary-foreground/70">Check your size for any brand instantly</p>
               </div>
             </button>
 
@@ -181,18 +181,17 @@ const ProfileBody = () => {
             <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
             <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} fitPreference={fitPref} />
 
-            {/* Shop This Size + My Size Everywhere */}
-            <ShopThisSize
-              recommendedSize={adjustedSize}
-              confidence={confidence}
-            />
+            {/* My Size Everywhere + Shop This Size */}
             <Button
-              variant="outline"
-              className="w-full h-10 rounded-lg text-sm font-bold"
+              className="w-full h-11 rounded-xl btn-luxury text-primary-foreground text-sm font-extrabold"
               onClick={() => navigate('/my-sizes')}
             >
               <LayoutGrid className="mr-1.5 h-4 w-4" /> My Size at Every Brand
             </Button>
+            <ShopThisSize
+              recommendedSize={adjustedSize}
+              confidence={confidence}
+            />
 
             {/* Return Risk warning */}
             {(confidence === 'low' || confidence === 'medium') && (
