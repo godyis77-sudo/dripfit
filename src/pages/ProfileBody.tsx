@@ -111,18 +111,15 @@ const ProfileBody = () => {
     trackEvent('measurement_adjusted', { key });
   }, []);
 
-  const handleSave = () => {
+  // Auto-save on load
+  useEffect(() => {
+    if (!scan || saved) return;
     const history = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]');
-    if (scan) history.unshift(scan);
+    history.unshift(scan);
     localStorage.setItem('dripcheck_scans', JSON.stringify(history));
     setSaved(true);
     trackEvent('results_saved');
-  };
-
-  const handleCalibrate = () => {
-    setConfidence('medium');
-    toast({ title: 'Confidence improved', description: 'Your size recommendation is now more accurate.' });
-  };
+  }, [scan, saved]);
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
