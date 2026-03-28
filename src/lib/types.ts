@@ -45,11 +45,10 @@ export interface PhotoSet {
 
 export type CaptureStep = 'front' | 'side';
 
-export type ReferenceObject = 'credit_card' | 'a4_paper' | 'phone' | 'none';
+export type ReferenceObject = 'credit_card' | 'phone' | 'none';
 
 export const REFERENCE_OBJECTS: Record<ReferenceObject, { label: string; description: string }> = {
-  credit_card: { label: 'Credit Card', description: '85.6 × 53.98 mm' },
-  a4_paper: { label: 'A4 Paper', description: '210 × 297 mm' },
+  credit_card: { label: 'Points/Rewards Card', description: '85.6 × 53.98 mm' },
   phone: { label: 'Phone', description: 'Standard smartphone ~15 cm' },
   none: { label: 'None', description: 'Skip reference object' },
 };
