@@ -582,7 +582,7 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
     } else {
       // Detect if garment is top-only or bottom-only to preserve existing clothing
       const BOTTOM_TYPES = ["jeans", "pants", "trousers", "shorts", "skirt", "skirts", "leggings", "chinos", "joggers", "sweatpants", "cargo", "culottes", "bottom", "bottoms"];
-      const TOP_TYPES = ["top", "tops", "shirt", "shirts", "blouse", "t-shirt", "t-shirts", "tee", "sweater", "sweaters", "hoodie", "hoodies", "polo", "polos", "tank", "tank top", "crop top", "cardigan", "pullover", "henley", "jersey"];
+      const TOP_TYPES = ["top", "tops", "shirt", "shirts", "blouse", "t-shirt", "t-shirts", "tee", "sweater", "sweaters", "hoodie", "hoodies", "polo", "polos", "tank", "tank top", "crop top", "sports bra", "bra", "bralette", "cardigan", "pullover", "henley", "jersey"];
       const FULL_BODY_TYPES = ["dress", "dresses", "jumpsuit", "jumpsuits", "romper", "overalls", "full"];
       const OUTERWEAR_TYPES = ["jacket", "jackets", "coat", "coats", "blazer", "blazers", "vest", "vests", "parka", "windbreaker", "outerwear"];
       const SET_TYPES = ["set", "matching set", "two piece", "2 piece", "2-piece", "co-ord", "co ord", "coord", "pajama set", "pj set", "lounge set", "sleep set", "tracksuit", "sweatsuit", "matching"];
