@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 
-const TOTAL_SPOTS = 50;
+const TOTAL_SPOTS = 100;
 const FALLBACK_CLAIMED = 12;
 
 const PERKS = [
