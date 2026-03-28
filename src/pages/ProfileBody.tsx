@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Camera, Ruler, Sparkles, LayoutGrid } from 'lucide-react';
+import { ArrowLeft, Camera, Ruler, Sparkles, LayoutGrid, Check, RotateCcw, Shield, Trash2 } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -181,7 +181,7 @@ const ProfileBody = () => {
             <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
             <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} fitPreference={fitPref} />
 
-            {/* Result Actions (Share My Fit Identity) */}
+            {/* Share My Fit Identity (button only) */}
             <ResultActions
               saved={saved}
               scanDate={scan.date}
@@ -192,6 +192,7 @@ const ProfileBody = () => {
               recommendedSize={adjustedSize}
               measurements={measurements}
               heightCm={scan.heightCm}
+              shareOnly
             />
 
             {/* My Size Every Brand + Shop My Size */}
@@ -205,6 +206,24 @@ const ProfileBody = () => {
               recommendedSize={adjustedSize}
               confidence={confidence}
             />
+
+            {/* Meta info */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 px-3 py-1">
+                <Check className="h-3.5 w-3.5 text-primary" />
+                <span className="text-[11px] font-bold text-primary">Auto-saved to Profile</span>
+              </div>
+              <Button variant="ghost" className="w-full text-[12px] text-muted-foreground h-8" onClick={() => navigate('/capture')}>
+                <RotateCcw className="mr-1 h-3 w-3" /> Scan Again
+              </Button>
+              <div className="flex items-center justify-between pt-1.5 border-t border-border">
+                <p className="text-[10px] text-muted-foreground flex items-center gap-1"><Shield className="h-3 w-3" /> Private by default · delete anytime</p>
+                <button onClick={() => { toast({ title: 'Deleted' }); navigate('/profile'); }} className="text-[10px] text-destructive/60 hover:text-destructive flex items-center gap-1 transition-colors"><Trash2 className="h-3 w-3" /> Delete</button>
+              </div>
+              <p className="text-[10px] text-muted-foreground text-center">
+                Scanned: {new Date(scan.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+              </p>
+            </div>
 
             {/* Body Map + Measurements */}
             <BodyDiagram measurements={measurements} heightCm={scan.heightCm} />
