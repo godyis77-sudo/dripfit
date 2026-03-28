@@ -129,6 +129,8 @@ export function useTryOnState() {
   const [category, setCategoryRaw] = useState<string>(persisted.category);
   const [clothingSaved, setClothingSaved] = useState(false);
   const [backgroundSource, setBackgroundSource] = useState<'user' | 'clothing'>('user');
+  const userPhotoRef = useRef<string | null>(persisted.userPhoto);
+  const clothingPhotoRef = useRef<string | null>(persisted.clothingPhoto);
 
   // Persist critical state to survive refresh/navigation while avoiding localStorage quota issues
   const persistState = useCallback((updates: Partial<PersistedTryOnState>) => {
@@ -181,6 +183,7 @@ export function useTryOnState() {
   }, [user]);
 
   const setUserPhoto = useCallback((v: string | null) => {
+    userPhotoRef.current = v;
     setUserPhotoRaw(v);
     if (v && v.startsWith('data:')) {
       // Immediately clear stale persisted URL so it can't override the new photo on remount
@@ -188,6 +191,7 @@ export function useTryOnState() {
       // Upload in background, swap to URL when done
       eagerUpload(v, 'user-staged').then(url => {
         if (url) {
+          userPhotoRef.current = url;
           setUserPhotoRaw(url);
           persistState({ userPhoto: url });
           try { localStorage.setItem(TRYON_USER_PHOTO_KEY, url); } catch { /* ignore */ }
@@ -203,10 +207,12 @@ export function useTryOnState() {
   }, [persistState, eagerUpload]);
 
   const setClothingPhoto = useCallback((v: string | null) => {
+    clothingPhotoRef.current = v;
     setClothingPhotoRaw(v);
     if (v && v.startsWith('data:')) {
       eagerUpload(v, 'clothing-staged').then(url => {
         if (url) {
+          clothingPhotoRef.current = url;
           setClothingPhotoRaw(url);
           persistState({ clothingPhoto: url });
         }
@@ -322,14 +328,18 @@ export function useTryOnState() {
       .then(({ data }) => {
         if (data && data.length > 0) {
           const latest = data[0];
+          const hasUserPhoto = !!userPhotoRef.current;
+          const hasClothingPhoto = !!clothingPhotoRef.current;
           setResultImageRaw(latest.result_photo_url);
           setActivePostId(latest.id);
           setAutoSaved(true);
-          if (!userPhoto && latest.user_photo_url) {
+          if (!hasUserPhoto && latest.user_photo_url) {
+            userPhotoRef.current = latest.user_photo_url;
             setUserPhotoRaw(latest.user_photo_url);
             try { localStorage.setItem(TRYON_USER_PHOTO_KEY, latest.user_photo_url); } catch { /* ignore */ }
           }
-          if (!clothingPhoto && latest.clothing_photo_url) {
+          if (!hasClothingPhoto && latest.clothing_photo_url) {
+            clothingPhotoRef.current = latest.clothing_photo_url;
             setClothingPhotoRaw(latest.clothing_photo_url);
           }
           // Persist so subsequent refreshes are instant
@@ -338,8 +348,8 @@ export function useTryOnState() {
             resultImage: latest.result_photo_url,
             activePostId: latest.id,
             autoSaved: true,
-            userPhoto: latest.user_photo_url,
-            clothingPhoto: latest.clothing_photo_url,
+            ...(!hasUserPhoto && latest.user_photo_url ? { userPhoto: latest.user_photo_url } : {}),
+            ...(!hasClothingPhoto && latest.clothing_photo_url ? { clothingPhoto: latest.clothing_photo_url } : {}),
           });
         }
       });
