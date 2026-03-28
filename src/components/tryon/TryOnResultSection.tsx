@@ -955,25 +955,11 @@ const TryOnResultSection = ({
               <X className="h-5 w-5 text-white" />
             </button>
 
-            {/* Image — maximized */}
-            <div className="flex-1 flex items-center justify-center p-2 min-h-0 overflow-hidden" onPointerDown={(e) => e.stopPropagation()}>
-              <div className="relative h-full w-full rounded-2xl overflow-hidden bg-muted">
-                {productBrand && (
-                  <span className="absolute top-3 left-3 z-20 px-2.5 py-1 rounded-lg bg-black/70 border border-white/25 backdrop-blur-sm text-[10px] font-bold text-white uppercase tracking-wider">
-                    {productBrand}
-                  </span>
-                )}
-                <motion.img
-                  initial={{ scale: 0.96, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.2 }}
-                  src={resultImage}
-                  alt="Try-on result full screen"
-                  className="absolute inset-0 h-full w-full object-cover rounded-2xl block"
-                  draggable={false}
-                />
-              </div>
-            </div>
+            {/* Image — maximized with pinch-to-zoom */}
+            <ZoomableResultImage
+              src={resultImage}
+              brandLabel={productBrand}
+            />
 
             {/* Info + Actions — pinned to bottom */}
             <div className="shrink-0 px-5 pb-6 pt-3 space-y-3" onPointerDown={(e) => e.stopPropagation()}>
