@@ -72,7 +72,7 @@ const OneTapPlayground = () => {
     const seen = new Set<string>();
     const result: CatalogProduct[] = [];
     for (const p of shuffled) {
-      if (result.length >= 8) break;
+      if (result.length >= 16) break;
       const key = `${p.brand}-${p.category}`;
       if (seen.has(key)) continue;
       seen.add(key);
