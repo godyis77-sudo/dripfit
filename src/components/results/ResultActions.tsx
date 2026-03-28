@@ -117,23 +117,27 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
         </>
       )}
 
-      {/* Saved indicator (auto-saved) */}
-      <div className="flex items-center gap-2 px-3 py-1">
-        <Check className="h-3.5 w-3.5 text-primary" />
-        <span className="text-[11px] font-bold text-primary">Auto-saved to Profile</span>
-      </div>
+      {!shareOnly && (
+        <>
+          {/* Saved indicator (auto-saved) */}
+          <div className="flex items-center gap-2 px-3 py-1">
+            <Check className="h-3.5 w-3.5 text-primary" />
+            <span className="text-[11px] font-bold text-primary">Auto-saved to Profile</span>
+          </div>
 
-      <Button variant="ghost" className="w-full text-[12px] text-muted-foreground h-8" onClick={onNewScan}>
-        <RotateCcw className="mr-1 h-3 w-3" /> Scan Again
-      </Button>
+          <Button variant="ghost" className="w-full text-[12px] text-muted-foreground h-8" onClick={onNewScan}>
+            <RotateCcw className="mr-1 h-3 w-3" /> Scan Again
+          </Button>
 
-      <div className="flex items-center justify-between pt-1.5 border-t border-border">
-        <p className="text-[10px] text-muted-foreground flex items-center gap-1"><Shield className="h-3 w-3" /> Private by default · delete anytime</p>
-        <button onClick={onDelete} className="text-[10px] text-destructive/60 hover:text-destructive flex items-center gap-1 transition-colors"><Trash2 className="h-3 w-3" /> Delete</button>
-      </div>
-      <p className="text-[10px] text-muted-foreground text-center">
-        Scanned: {new Date(scanDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-      </p>
+          <div className="flex items-center justify-between pt-1.5 border-t border-border">
+            <p className="text-[10px] text-muted-foreground flex items-center gap-1"><Shield className="h-3 w-3" /> Private by default · delete anytime</p>
+            <button onClick={onDelete} className="text-[10px] text-destructive/60 hover:text-destructive flex items-center gap-1 transition-colors"><Trash2 className="h-3 w-3" /> Delete</button>
+          </div>
+          <p className="text-[10px] text-muted-foreground text-center">
+            Scanned: {new Date(scanDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+          </p>
+        </>
+      )}
     </div>
   );
 };
