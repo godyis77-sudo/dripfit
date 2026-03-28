@@ -83,8 +83,12 @@ function loadPersistedTryOnState(): PersistedTryOnState {
     const parsed = { ...(lsRaw ? JSON.parse(lsRaw) : {}), ...(ssRaw ? JSON.parse(ssRaw) : {}) };
     const savedResultUrl = localStorage.getItem(TRYON_RESULT_KEY);
     const savedUserPhoto = localStorage.getItem(TRYON_USER_PHOTO_KEY);
+    const hasParsedUserPhoto = Object.prototype.hasOwnProperty.call(parsed, 'userPhoto');
+    const resolvedUserPhoto = hasParsedUserPhoto
+      ? (parsed.userPhoto ?? null)
+      : (savedUserPhoto || null);
     return {
-      userPhoto: savedUserPhoto || parsed.userPhoto || null,
+      userPhoto: resolvedUserPhoto,
       clothingPhoto: parsed.clothingPhoto || null,
       productLink: parsed.productLink || '',
       category: parsed.category || 'all',
