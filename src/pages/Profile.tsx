@@ -24,7 +24,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { InviteFriendsCard } from '@/components/profile/InviteFriendsCard';
 import MilestoneBadges from '@/components/profile/MilestoneBadges';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
-import { ChevronDown } from 'lucide-react';
+
 
 const Profile = () => {
   const navigate = useNavigate();
