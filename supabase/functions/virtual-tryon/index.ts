@@ -699,7 +699,7 @@ ${fullBodyImageHint}
 ${scopeHint}
 Preserve face, body shape, skin tone, pose, camera angle, and facing direction from Image A — do NOT rotate the model. ${bgFallbackHint}
 Match the target item exactly (color, pattern, cut, neckline, sleeve/hem length, logos). Full body head to feet. No text/watermark.`;
-        })()
+        })();
 
     const intimateReferenceForFallback = `Image B = athletic garment product photo. Apply garment from Image B onto model in Image A, ignoring any person shown in Image B.`;
 
