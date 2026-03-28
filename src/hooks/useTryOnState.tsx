@@ -803,7 +803,7 @@ export function useTryOnState() {
     trackEvent('tryon_accessory_started', { category: accessoryCategory });
     try {
       const [preparedResultImage, preparedAccessoryPhoto] = await Promise.all([
-        prepareTryOnImage(resultImage),
+        prepareTryOnImage(resultImage, true),
         prepareTryOnImage(accessoryPhoto),
       ]);
 
