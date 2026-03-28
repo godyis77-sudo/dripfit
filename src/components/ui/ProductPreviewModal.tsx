@@ -120,28 +120,8 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
         <X className="h-5 w-5 text-white" />
       </button>
 
-      {/* Image — maximized */}
-      <div className="flex-1 flex items-center justify-center p-2 min-h-0 overflow-hidden" onClick={(e) => e.stopPropagation()}>
-        <div className="relative h-full w-full rounded-2xl overflow-hidden bg-muted">
-          {/* Brand badge */}
-          {product.brand && (
-            <span className="absolute top-3 left-3 z-20 brand-label-lg">
-              {product.brand}
-            </span>
-          )}
-          <img
-            src={product.image_url}
-            alt={product.name}
-            className="absolute inset-0 h-full w-full object-cover rounded-2xl block"
-            draggable={false}
-          />
-          {caption && (
-            <div className="absolute bottom-0 inset-x-0 z-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-b-2xl px-4 py-3">
-              <p className="text-[13px] text-white font-medium leading-snug text-center">"{caption}"</p>
-            </div>
-          )}
-        </div>
-      </div>
+      {/* Image — maximized with zoom */}
+      <ZoomableProductImage src={product.image_url} alt={product.name} brand={product.brand} caption={caption} />
 
       {/* Info + Actions — pinned to bottom */}
       <div
