@@ -59,8 +59,16 @@ const OneTapPlayground = () => {
     staleTime: 5 * 60 * 1000,
   });
 
+  // Stable shuffle seed — only changes when the underlying data changes, not on re-render
+  const [shuffleSeed] = useState(() => Math.random());
   const curated = useMemo(() => {
-    const shuffled = [...allModelShots].sort(() => Math.random() - 0.5);
+    // Deterministic shuffle using a seed so items don't reshuffle on re-renders
+    const seededSort = (a: CatalogProduct, b: CatalogProduct) => {
+      const hashA = (a.id.charCodeAt(0) + a.id.charCodeAt(1) + shuffleSeed) % 1;
+      const hashB = (b.id.charCodeAt(0) + b.id.charCodeAt(1) + shuffleSeed) % 1;
+      return hashA - hashB;
+    };
+    const shuffled = [...allModelShots].sort(seededSort);
     const seen = new Set<string>();
     const result: CatalogProduct[] = [];
     for (const p of shuffled) {
@@ -71,7 +79,7 @@ const OneTapPlayground = () => {
       result.push(p);
     }
     return result;
-  }, [allModelShots]);
+  }, [allModelShots, shuffleSeed]);
 
   const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
