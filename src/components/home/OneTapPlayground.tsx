@@ -11,6 +11,8 @@ import { compressImage } from '@/components/tryon/tryon-constants';
 import { isNativePlatform, takeNativePhoto } from '@/lib/nativeCamera';
 import ProductPreviewModal, { type ProductPreviewData } from '@/components/ui/ProductPreviewModal';
 
+const TRYON_NAV_USER_PHOTO_KEY = 'dripcheck_tryon_nav_user_photo';
+
 /**
  * One-Tap Playground: split-screen camera + trending garment carousel.
  * Users tap a garment → get sent to try-on with both photos pre-loaded.
@@ -264,6 +266,10 @@ const OneTapPlayground = () => {
         onClose={() => setPreviewProduct(null)}
         onTryOn={(p) => {
           setPreviewProduct(null);
+          try {
+            if (userPhoto) sessionStorage.setItem(TRYON_NAV_USER_PHOTO_KEY, userPhoto);
+            else sessionStorage.removeItem(TRYON_NAV_USER_PHOTO_KEY);
+          } catch { /* ignore */ }
           navigate('/tryon', {
             state: {
               userPhoto: userPhoto || undefined,

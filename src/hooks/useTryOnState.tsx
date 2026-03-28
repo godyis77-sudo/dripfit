@@ -47,6 +47,7 @@ export type WardrobeItem = { id: string; image_url: string; category: string; pr
 const TRYON_STATE_KEY = 'dripcheck_tryon_state';
 const TRYON_RESULT_KEY = 'dripcheck_tryon_result'; // localStorage — survives tab close
 const TRYON_USER_PHOTO_KEY = 'dripcheck_tryon_user_photo'; // localStorage — persists until user changes
+const TRYON_NAV_USER_PHOTO_KEY = 'dripcheck_tryon_nav_user_photo'; // sessionStorage — one-tap handoff fallback
 
 type PersistedQuickPick = {
   id: string;
@@ -382,7 +383,20 @@ export function useTryOnState() {
       userPhoto?: string; freshSession?: boolean;
       quickPick?: CatalogProduct | null;
     } | null;
-    if (!state) return;
+
+    const stagedNavUserPhoto = (() => {
+      try { return sessionStorage.getItem(TRYON_NAV_USER_PHOTO_KEY); } catch { return null; }
+    })();
+
+    if (!state) {
+      if (stagedNavUserPhoto) {
+        setUserPhoto(stagedNavUserPhoto);
+      }
+      if (stagedNavUserPhoto) {
+        try { sessionStorage.removeItem(TRYON_NAV_USER_PHOTO_KEY); } catch { /* ignore */ }
+      }
+      return;
+    }
 
     // Prevent double-application if React re-fires the effect
     const stateKey = `${state.clothingUrl || state.clothingImageUrl || ''}_${state.productUrl || ''}`;
@@ -392,17 +406,21 @@ export function useTryOnState() {
 
     // Apply user photo from navigation state FIRST (e.g. from OneTapPlayground)
     // This must happen before any clothing logic so the photo is ready for generation
-    if (state.userPhoto) {
+    const navUserPhoto = (typeof state.userPhoto === 'string' && state.userPhoto) || stagedNavUserPhoto;
+    if (navUserPhoto) {
       // Immediately update the raw state to avoid stale persisted photo winning
-      setUserPhotoRaw(state.userPhoto);
+      setUserPhotoRaw(navUserPhoto);
       // Then trigger the full setter which handles upload + persistence
-      setUserPhoto(state.userPhoto);
+      setUserPhoto(navUserPhoto);
+    }
+    if (stagedNavUserPhoto) {
+      try { sessionStorage.removeItem(TRYON_NAV_USER_PHOTO_KEY); } catch { /* ignore */ }
     }
 
     if (clothingUrl) {
       navigationAppliedRef.current = true;
-      // If userPhoto is also provided or freshSession flag is set, treat as a brand-new try-on
-      const isFreshSession = !!state.userPhoto || !!state.freshSession;
+      // If a nav user photo is provided or freshSession flag is set, treat as a brand-new try-on
+      const isFreshSession = !!navUserPhoto || !!state.freshSession;
 
       const loadAndApply = async () => {
         let photo: string;
@@ -674,6 +692,10 @@ export function useTryOnState() {
     if (!canGenerate) return;
     if (!(await checkUsageLimit())) return;
 
+    const currentUserPhoto = userPhotoRef.current || userPhoto;
+    const currentClothingPhoto = clothingPhotoRef.current || clothingPhoto;
+    if (!currentUserPhoto || !currentClothingPhoto) return;
+
     const previousState = {
       resultImage,
       activePostId,
@@ -708,8 +730,8 @@ export function useTryOnState() {
     try {
       setTryOnError(null);
       const [preparedUserPhoto, preparedClothingPhoto] = await Promise.all([
-        prepareTryOnImage(userPhoto!),
-        prepareTryOnImage(clothingPhoto!),
+        prepareTryOnImage(currentUserPhoto),
+        prepareTryOnImage(currentClothingPhoto),
       ]);
 
       const body: Record<string, unknown> = {
