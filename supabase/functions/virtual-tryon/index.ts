@@ -589,10 +589,10 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
     } else {
       // Detect if garment is top-only or bottom-only to preserve existing clothing
       const BOTTOM_TYPES = ["jeans", "pants", "pant", "trousers", "shorts", "skirt", "skirts", "leggings", "chinos", "joggers", "sweatpants", "cargo", "culottes", "bottom", "bottoms"];
-      const TOP_TYPES = ["top", "tops", "shirt", "shirts", "blouse", "t-shirt", "t-shirts", "tee", "sweater", "sweaters", "hoodie", "hoodies", "polo", "polos", "tank", "tank top", "crop top", "sports bra", "bra", "bralette", "cardigan", "pullover", "henley", "jersey", "vest", "vests"];
+      const TOP_TYPES = ["top", "tops", "shirt", "shirts", "blouse", "t-shirt", "t-shirts", "tee", "sweater", "sweaters", "hoodie", "hoodies", "polo", "polos", "tank", "tank top", "crop top", "sports bra", "bra", "bralette", "cardigan", "pullover", "henley", "jersey"];
       const FULL_BODY_TYPES = ["dress", "dresses", "jumpsuit", "jumpsuits", "romper", "overalls", "full"];
-      const OUTERWEAR_TYPES = ["jacket", "jackets", "coat", "coats", "blazer", "blazers", "parka", "windbreaker", "outerwear"];
-      const OUTERWEAR_VEST_HINT = /\b(puffer\s*vest|down\s*vest|quilted\s*vest|fleece\s*vest|insulated\s*vest|gilet)\b/;
+      const OUTERWEAR_TYPES = ["jacket", "jackets", "coat", "coats", "blazer", "blazers", "parka", "windbreaker", "outerwear", "gilet"];
+      const OUTERWEAR_VEST_HINT = /\b(puffer\s*vest|down\s*vest|quilted\s*vest|fleece\s*vest|insulated\s*vest|gilet|vest|vests|puffer\s*gilet)\b/;
       const SET_TYPES = ["set", "matching set", "two piece", "2 piece", "2-piece", "co-ord", "co ord", "coord", "pajama set", "pj set", "lounge set", "sleep set", "tracksuit", "sweatsuit", "matching", "outfit", "combo", "bundle", "pair"];
       const COMFORTWEAR_STD_TYPES = ["loungewear", "loungeware", "sleepwear", "pajamas", "pyjamas", "robe", "robes", "lounge"];
 
@@ -629,10 +629,12 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
 2. Keep the person's EXISTING upper-body clothing (shirt, top, jacket, etc.) from Image A completely UNCHANGED.
 3. Keep the person's EXISTING footwear from Image A completely UNCHANGED.`;
       } else if (isOuterwearGarment) {
-        swapInstruction = `1. REPLACE any existing outerwear (jacket, coat, blazer, vest, etc.) from Image A with the outerwear garment from Image B.
-2. If the person in Image A is wearing a jacket/coat/blazer, REMOVE it and put the new one from Image B instead.
-3. Keep the person's EXISTING inner clothing (shirt, top, sweater) from Image A visible underneath where appropriate.
-4. Keep the person's EXISTING lower-body clothing and footwear from Image A completely UNCHANGED.`;
+        swapInstruction = `1. LAYER the outerwear garment from Image B ON TOP of the person's EXISTING clothing in Image A. This is an OUTER LAYER — it goes OVER the shirt/top, NOT instead of it.
+2. If the person in Image A is already wearing a different jacket/coat/blazer, REMOVE only that outer layer and replace it with the garment from Image B. The inner layers (shirt, t-shirt, top, sweater) MUST remain visible underneath.
+3. CRITICAL — PRESERVE INNER CLOTHING: The person's shirt, t-shirt, top, or sweater from Image A MUST remain fully visible under the new outerwear. Do NOT remove, replace, or hide the inner layer. The collar, sleeves, and hem of the inner garment should peek out naturally.
+4. Keep the person's EXISTING lower-body clothing and footwear from Image A completely UNCHANGED.
+5. CRITICAL PRODUCT FIDELITY: Reproduce the EXACT silhouette and construction of the garment from Image B. If Image B shows a SLEEVELESS vest/gilet (no sleeves), the output garment MUST also be sleeveless — do NOT add sleeves. If Image B shows a sleeved jacket, keep the sleeves. Match the exact sleeve length (or lack thereof), collar style, zipper/button placement, quilting pattern, pockets, logos, and all construction details from Image B precisely.
+6. If the outerwear from Image B is an OPEN-FRONT garment (unzipped, unbuttoned, or naturally worn open), show it OPEN in the output so the inner shirt/top is clearly visible through the opening.`;
       } else if (isFullBodyGarment) {
         swapInstruction = `1. Put the dress/jumpsuit/romper from Image B onto the person in Image A.
 2. REMOVE ALL existing clothing layers from Image A that conflict with full-body garments: outerwear (jackets/coats/blazers/vests), tops, and bottoms.
