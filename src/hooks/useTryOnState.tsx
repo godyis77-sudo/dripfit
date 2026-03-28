@@ -18,6 +18,29 @@ import {
 } from '@/lib/guestSession';
 import { compressPhoto } from '@/lib/imageUtils';
 
+/** Map any catalog category to the 17 values allowed by tryon_posts check constraint */
+const CATEGORY_MAP: Record<string, string> = {
+  't-shirts': 'tops', shirts: 'tops', polos: 'tops', sweaters: 'tops',
+  hoodies: 'tops', blazers: 'tops', vests: 'tops',
+  pants: 'bottoms', shorts: 'bottoms', skirts: 'bottoms', leggings: 'bottoms',
+  jackets: 'outerwear', 'jackets & coats': 'outerwear',
+  dresses: 'dress', jumpsuits: 'jumpsuit',
+  sneakers: 'shoes', boots: 'shoes', heels: 'shoes', sandals: 'shoes', loafers: 'shoes',
+  activewear: 'tops', underwear: 'lingerie',
+  belts: 'accessories', scarves: 'accessories', sunglasses: 'accessories', watches: 'accessories',
+};
+const ALLOWED_CATEGORIES = new Set([
+  'tops','bottoms','outerwear','dress','jumpsuit','other','swimwear',
+  'lingerie','loungewear','accessories','shoes','bags','hats','jewelry',
+  'coats','jeans','matching-set',
+]);
+const normCategory = (cat?: string | null): string => {
+  if (!cat) return 'other';
+  const lower = cat.toLowerCase().trim();
+  if (ALLOWED_CATEGORIES.has(lower)) return lower;
+  return CATEGORY_MAP[lower] || 'other';
+};
+
 export type LookItem = { brand: string; name: string; url: string; price_cents?: number | null; image_url?: string | null };
 export type WardrobeItem = { id: string; image_url: string; category: string; product_link: string | null };
 
@@ -445,7 +468,7 @@ export function useTryOnState() {
         caption: null,
         is_public: false,
         product_urls: getAllUrls(),
-        clothing_category: clothingCategory || 'other',
+        clothing_category: normCategory(clothingCategory),
       })
       .select('id, result_photo_url, clothing_photo_url, caption, is_public, created_at, product_urls')
       .single();
@@ -729,7 +752,7 @@ export function useTryOnState() {
         ]);
         const { data: insertedPost, error: insertError } = await supabase
           .from('tryon_posts')
-          .insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic, product_urls: allUrls, clothing_category: category || 'other' })
+          .insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic, product_urls: allUrls, clothing_category: normCategory(category) })
           .select('id')
           .single();
         if (insertError) throw insertError;
