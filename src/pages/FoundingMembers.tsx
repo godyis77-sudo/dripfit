@@ -69,7 +69,7 @@ const FoundingMembers = () => {
             transition={{ duration: 0.5 }}
           >
             <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[3px] text-primary bg-primary/10 px-3 py-1.5 rounded-full mb-5">
-              <InlineCrown size={12} /> Founding 50
+              <InlineCrown size={12} /> Founding 100
             </span>
 
             <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight leading-[1.15] mb-3">
