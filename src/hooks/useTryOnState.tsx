@@ -366,9 +366,18 @@ export function useTryOnState() {
 
   // Pre-populate clothing from catalog product selection
   useEffect(() => {
-    const state = location.state as { clothingUrl?: string; clothingImageUrl?: string; productUrl?: string } | null;
+    const state = location.state as { clothingUrl?: string; clothingImageUrl?: string; productUrl?: string; userPhoto?: string; freshSession?: boolean } | null;
     const clothingUrl = state?.clothingUrl || state?.clothingImageUrl;
+
+    // Apply user photo from navigation state (e.g. from OneTapPlayground)
+    if (state?.userPhoto) {
+      setUserPhoto(state.userPhoto);
+    }
+
     if (clothingUrl) {
+      // If userPhoto is also provided or freshSession flag is set, treat as a brand-new try-on
+      const isFreshSession = !!state?.userPhoto || !!state?.freshSession;
+
       const loadAndApply = async () => {
         let photo: string;
         try {
@@ -377,17 +386,27 @@ export function useTryOnState() {
           photo = clothingUrl;
         }
 
-        // If a result already exists, layer the new item as an accessory
-        if (resultImage) {
+        // If a result already exists AND this isn't a fresh session from home, layer as accessory
+        if (resultImage && !isFreshSession) {
           if (state?.productUrl) {
             setProductLink(state.productUrl);
             const detected = detectBrandFromUrl(state.productUrl);
             setLookItems(prev => [...prev, { brand: detected?.brand || '', name: '', url: state.productUrl!, image_url: clothingUrl }]);
           }
-          // Trigger accessory generation on the existing result
           handleAddAccessory(photo, detectCategoryFromUrl(state?.productUrl || '') || null);
         } else {
-          // No result yet — set as primary clothing
+          // Fresh try-on — clear old result and start clean
+          if (isFreshSession) {
+            setResultImageRaw(null);
+            setActivePostId(null);
+            setAutoSaved(false);
+            setShared(false);
+            setSavedToItems(false);
+            setLookItemsRaw([]);
+            setLayerHistory([]);
+            try { localStorage.removeItem(TRYON_RESULT_KEY); } catch { /* ignore */ }
+            persistState({ resultImage: null, activePostId: null, autoSaved: false, shared: false, savedToItems: false, lookItems: [] });
+          }
           setClothingPhoto(photo);
           if (state?.productUrl) setProductLink(state.productUrl);
           trackEvent('tryon_clothing_uploaded');
