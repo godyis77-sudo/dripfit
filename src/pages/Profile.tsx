@@ -209,10 +209,10 @@ const Profile = () => {
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => navigate('/profile/body')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg btn-gold-3d active:scale-95 transition-transform shadow-sm"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl btn-gold-3d active:scale-95 transition-transform shadow-md"
             >
-              <User className="h-3.5 w-3.5 text-primary-foreground" />
-              <span className="text-[11px] text-primary-foreground font-bold">Body</span>
+              <User className="h-4 w-4 text-primary-foreground" />
+              <span className="text-[13px] text-primary-foreground font-bold">Size Match Card</span>
             </button>
             <Button
               variant="ghost"
