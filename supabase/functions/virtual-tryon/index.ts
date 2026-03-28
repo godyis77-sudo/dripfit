@@ -474,7 +474,7 @@ Deno.serve(async (req) => {
       ? "This is a SWIM TOP / BIKINI TOP. Style the model in a complete swimwear look: apply the swim top reference and add a simple matching swim bottom in the same color family. REMOVE ALL existing streetwear clothing (pants, jeans, skirts, shorts, blazers, shirts, t-shirts, jackets, coats) AND shoes — the model should ONLY be wearing the swimwear, barefoot."
       : "REMOVE ALL existing clothing AND shoes from Image A (tops, pants, jeans, skirts, jackets, shirts, t-shirts, shoes, sneakers, boots, sandals — everything). Replace with ONLY the swimwear/swimsuit from Image B. The model should be wearing NOTHING except the swimwear garment. Do NOT keep any streetwear or footwear from Image A. The model should be barefoot.";
 
-    const isSetGarment = /\b(set|two piece|2 piece|2-piece|pajama set|pj set|lounge set|sleep set|matching)\b/.test(normalizedProductContext);
+    const isSetGarment = /\b(set|two piece|2 piece|2-piece|pajama set|pj set|lounge set|sleep set|matching|outfit|combo|bundle|pair|coord|co-ord|co ord)\b/.test(normalizedProductContext);
     const isBottomOnlyIntimate =
       isIntimateGarment &&
       !isSwimwear &&
