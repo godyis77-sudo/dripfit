@@ -389,7 +389,7 @@ export function useTryOnState() {
     })();
 
     if (!state) {
-      if (stagedNavUserPhoto && !userPhotoRef.current) {
+      if (stagedNavUserPhoto) {
         setUserPhoto(stagedNavUserPhoto);
       }
       if (stagedNavUserPhoto) {
