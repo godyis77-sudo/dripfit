@@ -181,18 +181,6 @@ const ProfileBody = () => {
             <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
             <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} fitPreference={fitPref} />
 
-            {/* My Size Every Brand + Shop My Size */}
-            <Button
-              className="w-full h-11 rounded-xl btn-luxury text-primary-foreground text-sm font-extrabold"
-              onClick={() => navigate('/my-sizes')}
-            >
-              <LayoutGrid className="mr-1.5 h-4 w-4" /> My Size Every Brand
-            </Button>
-            <ShopThisSize
-              recommendedSize={adjustedSize}
-              confidence={confidence}
-            />
-
             {/* Result Actions (Share My Fit Identity) */}
             <ResultActions
               saved={saved}
@@ -204,6 +192,18 @@ const ProfileBody = () => {
               recommendedSize={adjustedSize}
               measurements={measurements}
               heightCm={scan.heightCm}
+            />
+
+            {/* My Size Every Brand + Shop My Size */}
+            <Button
+              className="w-full h-11 rounded-xl btn-luxury text-primary-foreground text-sm font-extrabold"
+              onClick={() => navigate('/my-sizes')}
+            >
+              <LayoutGrid className="mr-1.5 h-4 w-4" /> My Size Every Brand
+            </Button>
+            <ShopThisSize
+              recommendedSize={adjustedSize}
+              confidence={confidence}
             />
 
             {/* Body Map + Measurements */}
