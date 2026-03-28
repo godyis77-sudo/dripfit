@@ -568,6 +568,13 @@ const SizeGuide = () => {
             )}</AnimatePresence>
           </TabsContent>
         </Tabs>
+
+        <Button
+          className="w-full h-11 rounded-xl btn-luxury text-primary-foreground text-sm font-extrabold mt-4"
+          onClick={() => navigate('/my-sizes')}
+        >
+          <LayoutGrid className="mr-1.5 h-4 w-4" /> My Size Every Brand
+        </Button>
       </div>
       <BottomTabBar />
     </div>
