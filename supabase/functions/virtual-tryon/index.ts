@@ -598,7 +598,9 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       const isFullBodyGarment = FULL_BODY_TYPES.some(t => hasContextTerm(stdContext, t));
       // Only classify as outerwear if it's a jacket/coat/blazer OR explicitly an insulated vest (puffer vest, gilet)
       const isOuterwearGarment = (OUTERWEAR_TYPES.some(t => hasContextTerm(stdContext, t)) || OUTERWEAR_VEST_HINT.test(stdContext)) && !isTopGarment;
-      const isSetGarmentStd = SET_TYPES.some(t => hasContextTerm(stdContext, t)) || COMFORTWEAR_STD_TYPES.some(t => hasContextTerm(stdContext, t));
+      // Only classify as a set/comfortwear if it's NOT clearly a single bottom or single top item.
+      // "Lounge Sweatpant" should route as bottom, not as a loungewear set.
+      const isSetGarmentStd = !isBottomGarment && !isTopGarment && (SET_TYPES.some(t => hasContextTerm(stdContext, t)) || COMFORTWEAR_STD_TYPES.some(t => hasContextTerm(stdContext, t)));
 
       let swapInstruction: string;
       if (isSetGarmentStd) {
