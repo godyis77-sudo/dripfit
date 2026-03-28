@@ -616,9 +616,9 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
 
       let swapInstruction: string;
       if (isSetGarmentStd) {
-        swapInstruction = `1. Image B shows a COMPLETE SET with BOTH a top AND a bottom. You MUST replace ALL clothing from Image A with the ENTIRE outfit shown in Image B — apply BOTH the top piece AND the bottom piece.
-2. CRITICAL: Do NOT apply only one piece. Both the top AND bottom from Image B must appear on the model. If the image shows a shirt/top paired with pants/shorts/skirt, BOTH must be swapped onto the model.
-3. Match every detail from Image B: color, pattern, print, fabric texture, fit, and styling of BOTH the top and bottom pieces precisely.
+        swapInstruction = `1. Image B shows a COMPLETE SET / MULTI-PIECE OUTFIT. You MUST replace ALL clothing from Image A with the ENTIRE outfit shown in Image B — apply EVERY piece (top, bottom, and any layering piece like a robe/jacket/cardigan).
+2. CRITICAL: Do NOT apply only one piece. ALL pieces visible in Image B must appear on the model. If the set includes 3 pieces (e.g., bralette + pants + robe), ALL THREE must be worn.
+3. Match every detail from Image B: color, pattern, print, fabric texture, fit, and styling of ALL pieces precisely.
 4. Keep the person's EXISTING footwear from Image A UNCHANGED unless the set from Image B includes footwear. For loungewear/sleepwear sets, remove footwear — the model should be barefoot.`;
       } else if (isBottomGarment) {
         swapInstruction = `1. Replace ONLY the lower-body clothing (pants, jeans, shorts, skirt, etc.) from Image A with the garment from Image B.
