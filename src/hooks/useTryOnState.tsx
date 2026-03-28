@@ -810,7 +810,7 @@ export function useTryOnState() {
       const resolvedProductBrand = accessoryProduct?.brand || selectedQuickPick?.brand || '';
       const resolvedProductUrl = accessoryProduct?.product_url || selectedQuickPick?.product_url || productLink || '';
 
-      // Clothing categories (top, bottom, shoes, swimwear, etc.) should REPLACE, not layer
+      // Clothing categories should REPLACE, accessories should LAYER
       const REPLACE_CATEGORIES = [
         'top', 'tops', 'bottom', 'bottoms', 'shoes', 'sneakers', 'boots', 'heels', 'loafers', 'sandals',
         'jeans', 'pants', 'shorts', 'skirts', 'skirt', 'dress', 'dresses', 'jacket', 'jackets', 'coat',
@@ -819,7 +819,10 @@ export function useTryOnState() {
         'loungewear', 'loungeware', 'activewear', 'polos', 't-shirts', 'vests', 'jumpsuits', 'leggings',
       ];
       const normalizedAccCat = (resolvedCategory || '').toLowerCase();
-      const shouldReplace = REPLACE_CATEGORIES.includes(normalizedAccCat);
+      const replaceContext = `${normalizedAccCat} ${resolvedProductName.toLowerCase()} ${resolvedProductBrand.toLowerCase()} ${resolvedProductUrl.toLowerCase()}`;
+      const CLOTHING_PATTERN = /\b(top|shirt|tee|t-shirt|blouse|sweater|hoodie|polo|tank|crop|bra|bralette|sports\s*bra|vest|jacket|coat|blazer|dress|jumpsuit|romper|bottom|pants|jeans|shorts|skirt|leggings|sweatpants|swim|bikini|one-piece|one piece|lingerie|underwear|loungewear|activewear|shoes|sneakers|boots|heels|sandals|loafers)\b/;
+      const ACCESSORY_ONLY_PATTERN = /\b(accessory|jewelry|jewelery|necklace|bracelet|earring|ring|watch|hat|cap|sunglasses|glasses|bag|purse|handbag|crossbody|tote|wallet|belt|scarf)\b/;
+      const shouldReplace = REPLACE_CATEGORIES.includes(normalizedAccCat) || (CLOTHING_PATTERN.test(replaceContext) && !ACCESSORY_ONLY_PATTERN.test(normalizedAccCat));
 
       // Use the latest try-on result as base for replace-categories so users can build on the current look.
       // Only fall back to original photo for sensitive garments that are more likely to be blocked.
