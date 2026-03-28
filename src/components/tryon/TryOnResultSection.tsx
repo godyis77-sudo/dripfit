@@ -94,19 +94,16 @@ function ZoomableResultImage({ src, brandLabel }: { src: string; brandLabel?: st
           <button
             type="button"
             onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}
-            className="absolute top-3 right-3 z-20 px-2.5 py-1 rounded-lg bg-black/70 border border-white/25 backdrop-blur-sm text-[10px] font-bold text-white active:scale-95 transition-transform"
+            className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 px-3 py-1.5 rounded-full bg-black/70 border border-white/25 backdrop-blur-sm text-[11px] font-bold text-white active:scale-95 transition-transform"
           >
             Reset Zoom
           </button>
         )}
-        <motion.img
-          initial={{ scale: 0.96, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.2 }}
+        <img
           src={src}
           alt="Try-on result full screen"
-          className="absolute inset-0 h-full w-full object-cover rounded-2xl block transition-transform duration-100"
-          style={{ transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)` }}
+          className="absolute inset-0 h-full w-full object-cover rounded-2xl block"
+          style={{ transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)`, transition: isPanning ? 'none' : 'transform 0.15s ease-out' }}
           draggable={false}
         />
       </div>
