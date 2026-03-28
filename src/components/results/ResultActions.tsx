@@ -43,12 +43,24 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
         throw new Error('Export card not ready');
       }
 
-      const dataUrl = await toPng(exportRef.current, {
+      // Temporarily make visible for capture
+      const el = exportRef.current;
+      el.style.opacity = '1';
+      el.style.position = 'fixed';
+      el.style.left = '0';
+      el.style.top = '0';
+      await new Promise(r => setTimeout(r, 100));
+
+      const dataUrl = await toPng(el, {
         width: 1080,
         height: 1920,
         pixelRatio: 1,
         cacheBust: true,
       });
+
+      // Hide again
+      el.style.opacity = '0';
+      el.style.position = 'absolute';
 
       const res = await fetch(dataUrl);
       const blob = await res.blob();
