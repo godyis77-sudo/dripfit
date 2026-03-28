@@ -170,8 +170,10 @@ Deno.serve(async (req) => {
     const isSwimwear = SWIM_TYPES.some(t => hasContextTerm(normalizedProductContext, t));
     const isUnderwear = UNDERWEAR_TYPES.some(t => hasContextTerm(normalizedProductContext, t));
     const isComfortwear = COMFORTWEAR_TYPES.some(t => hasContextTerm(normalizedItemContext, t) || hasContextTerm(normalizedProductContext, t));
-    const isIntimate = !isComfortwear && (INTIMATE_TYPES.some(t => hasContextTerm(normalizedItemContext, t) || hasContextTerm(normalizedProductContext, t)) || isSwimwear || isUnderwear);
-    const isExplicitIntimate = EXPLICIT_TERMS.some(t => hasContextTerm(normalizedProductContext, t));
+    // Sports bras and crop tops are athletic tops — NOT intimate items. Route them through the standard garment path.
+    const isSportsBraOrCropTop = /\b(sports?\s*bra|crop\s*top)\b/.test(normalizedProductContext);
+    const isIntimate = !isComfortwear && !isSportsBraOrCropTop && (INTIMATE_TYPES.some(t => hasContextTerm(normalizedItemContext, t) || hasContextTerm(normalizedProductContext, t)) || isSwimwear || isUnderwear);
+    const isExplicitIntimate = !isSportsBraOrCropTop && EXPLICIT_TERMS.some(t => hasContextTerm(normalizedProductContext, t));
     const isLayering = raw.isLayering === true;
 
     // Underwear is frequently blocked by the image model safety filter.
