@@ -646,12 +646,38 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       }
 
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
-...
-      const buildTryOnContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
-...
-      const fallbackPrompt = isFootwear && !isLayering
+
+IMAGES PROVIDED:
+- Image A (first image below): A person wearing an outfit — this is the MODEL. Keep their face, body, pose EXACTLY.
+- Image B (second image below): The target garment reference.
+
+TARGET GARMENT:
+- The clothing shown in Image B.${productHint}
+- IMPORTANT: If Image B shows a full-body photo of a person, use the product name above to identify ONLY the target garment and ignore all other clothing on that person.
+
+TASK — CLOTHING SWAP:
+${swapInstruction}
+
+RULES:
+- CRITICAL COLOR ACCURACY: The output garment MUST be the EXACT same color as shown in Image B. Match the precise hue, saturation, and tone.
+- CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate, flip, or turn the model. Only copy the GARMENT from Image B, never its pose or camera angle.
+- IDENTITY: The person in the output MUST be the SAME person from Image A — same face, same hair, same body, same skin tone. Do NOT use the model from Image B. Image B is ONLY a garment reference.
+- Match garment details exactly: color, pattern, fabric texture, neckline, sleeve length, hemline, logos, prints, buttons, zippers.
+- ${bgInstruction}
+- IMAGE QUALITY: Maintain or improve the resolution and sharpness of Image A. Do NOT reduce image quality, introduce blur, compression artifacts, or soften details.
+
+Output: A single photorealistic FULL-BODY image showing the person head to feet. No text/watermarks/split views.`;
+    }
+
+    const fullBodyImageHint = "Show the person FULL BODY from head to feet — never crop at the waist, torso, or mid-thigh.";
+    const bgFallbackHint = bgInstruction;
+
+    const fallbackPrompt = isFootwear && !isLayering
       ? `Create ONE photorealistic FULL-BODY output image.
-...
+Image A = person. Image B = target footwear.${productHint}
+Replace ONLY the footwear from Image A with the exact shoes from Image B. Keep ALL other clothing unchanged.
+Preserve face, body, pose, and orientation from Image A. ${bgFallbackHint}
+Match shoe details exactly (color, material, branding, sole). Full body head to feet. No text/watermark.`
         : (() => {
           const fbContext = normalizeMatchText([itemLower, productName.toLowerCase(), productCategory.toLowerCase()].join(" "));
           const fbBottom = ["jeans","pants","trousers","shorts","skirt","leggings","joggers","chinos","bottom","bottoms"].some(t => hasContextTerm(fbContext, t));
