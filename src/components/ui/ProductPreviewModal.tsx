@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Sparkles, ExternalLink, ShoppingCart, ChevronDown, ShoppingBag } from 'lucide-react';
 import { PriceWatchButton } from '@/components/pricing/PriceWatchUI';
@@ -43,6 +43,95 @@ interface ProductPreviewModalProps {
   lookItems?: LookItemData[];
   onLookItemTryOn?: (item: LookItemData) => void;
   onLookItemShop?: (item: LookItemData) => void;
+}
+
+/** Zoomable product image with pinch + double-tap */
+function ZoomableProductImage({ src, alt, brand, caption }: { src: string; alt: string; brand?: string; caption?: string | null }) {
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const lastTouch = useRef<{ x: number; y: number } | null>(null);
+  const lastDist = useRef<number | null>(null);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      lastDist.current = Math.hypot(dx, dy);
+    } else if (e.touches.length === 1 && zoom > 1) {
+      lastTouch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      setIsPanning(true);
+    }
+  }, [zoom]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2 && lastDist.current !== null) {
+      e.preventDefault();
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.hypot(dx, dy);
+      const scale = dist / lastDist.current;
+      setZoom(prev => Math.min(4, Math.max(1, prev * scale)));
+      lastDist.current = dist;
+    } else if (e.touches.length === 1 && isPanning && lastTouch.current && zoom > 1) {
+      const dx = e.touches[0].clientX - lastTouch.current.x;
+      const dy = e.touches[0].clientY - lastTouch.current.y;
+      setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+      lastTouch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  }, [isPanning, zoom]);
+
+  const handleTouchEnd = useCallback(() => {
+    lastDist.current = null;
+    lastTouch.current = null;
+    setIsPanning(false);
+    if (zoom <= 1) setPan({ x: 0, y: 0 });
+  }, [zoom]);
+
+  const handleDoubleClick = useCallback(() => {
+    if (zoom > 1) { setZoom(1); setPan({ x: 0, y: 0 }); } else { setZoom(2.5); }
+  }, [zoom]);
+
+  return (
+    <div
+      className="flex-1 flex items-center justify-center p-2 min-h-0 overflow-hidden touch-none"
+      onClick={(e) => e.stopPropagation()}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onDoubleClick={handleDoubleClick}
+    >
+      <div className="relative h-full w-full rounded-2xl overflow-hidden bg-muted">
+        {brand && (
+          <span className="absolute top-3 left-3 z-20 brand-label-lg">{brand}</span>
+        )}
+        {zoom > 1 && (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setZoom(1); setPan({ x: 0, y: 0 }); }}
+            className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 px-3 py-1.5 rounded-full bg-black/70 border border-white/25 backdrop-blur-sm text-[11px] font-bold text-white active:scale-95 transition-transform"
+          >
+            Reset Zoom
+          </button>
+        )}
+        <img
+          src={src}
+          alt={alt}
+          className="absolute inset-0 h-full w-full object-cover rounded-2xl block"
+          style={{
+            transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)`,
+            transition: isPanning ? 'none' : 'transform 0.15s ease-out',
+          }}
+          draggable={false}
+        />
+        {caption && zoom <= 1 && (
+          <div className="absolute bottom-0 inset-x-0 z-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-b-2xl px-4 py-3">
+            <p className="text-[13px] text-white font-medium leading-snug text-center">"{caption}"</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 /**
@@ -120,28 +209,8 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
         <X className="h-5 w-5 text-white" />
       </button>
 
-      {/* Image — maximized */}
-      <div className="flex-1 flex items-center justify-center p-2 min-h-0 overflow-hidden" onClick={(e) => e.stopPropagation()}>
-        <div className="relative h-full w-full rounded-2xl overflow-hidden bg-muted">
-          {/* Brand badge */}
-          {product.brand && (
-            <span className="absolute top-3 left-3 z-20 brand-label-lg">
-              {product.brand}
-            </span>
-          )}
-          <img
-            src={product.image_url}
-            alt={product.name}
-            className="absolute inset-0 h-full w-full object-cover rounded-2xl block"
-            draggable={false}
-          />
-          {caption && (
-            <div className="absolute bottom-0 inset-x-0 z-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-b-2xl px-4 py-3">
-              <p className="text-[13px] text-white font-medium leading-snug text-center">"{caption}"</p>
-            </div>
-          )}
-        </div>
-      </div>
+      {/* Image — maximized with zoom */}
+      <ZoomableProductImage src={product.image_url} alt={product.name} brand={product.brand} caption={caption} />
 
       {/* Info + Actions — pinned to bottom */}
       <div
