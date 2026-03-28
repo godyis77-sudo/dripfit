@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Camera, Ruler, Sparkles } from 'lucide-react';
+import { ArrowLeft, Camera, Ruler, Sparkles, LayoutGrid } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -111,18 +111,15 @@ const ProfileBody = () => {
     trackEvent('measurement_adjusted', { key });
   }, []);
 
-  const handleSave = () => {
+  // Auto-save on load
+  useEffect(() => {
+    if (!scan || saved) return;
     const history = JSON.parse(localStorage.getItem('dripcheck_scans') || '[]');
-    if (scan) history.unshift(scan);
+    history.unshift(scan);
     localStorage.setItem('dripcheck_scans', JSON.stringify(history));
     setSaved(true);
     trackEvent('results_saved');
-  };
-
-  const handleCalibrate = () => {
-    setConfidence('medium');
-    toast({ title: 'Confidence improved', description: 'Your size recommendation is now more accurate.' });
-  };
+  }, [scan, saved]);
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
@@ -184,11 +181,18 @@ const ProfileBody = () => {
             <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
             <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} fitPreference={fitPref} />
 
-            {/* Shop This Size */}
+            {/* Shop This Size + My Size Everywhere */}
             <ShopThisSize
               recommendedSize={adjustedSize}
               confidence={confidence}
             />
+            <Button
+              variant="outline"
+              className="w-full h-10 rounded-lg text-sm font-bold"
+              onClick={() => navigate('/my-sizes')}
+            >
+              <LayoutGrid className="mr-1.5 h-4 w-4" /> My Size at Every Brand
+            </Button>
 
             {/* Return Risk warning */}
             {(confidence === 'low' || confidence === 'medium') && (
@@ -215,14 +219,17 @@ const ProfileBody = () => {
               onAdjust={handleMeasurementAdjust}
             />
 
-            {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
+            {confidence === 'low' && <LowConfidenceRescue onCalibrate={() => {
+              setConfidence('medium');
+              toast({ title: 'Confidence improved', description: 'Your size recommendation is now more accurate.' });
+            }} />}
 
             {/* Result Actions */}
             <ResultActions
               saved={saved}
               scanDate={scan.date}
-              onSave={handleSave}
-              onTryOn={() => { trackEvent('results_tryon_click'); navigate('/tryon', { state: { bodyProfile: scan } }); }}
+              onSave={() => {}}
+              onTryOn={() => {}}
               onNewScan={() => navigate('/capture')}
               onDelete={() => { toast({ title: 'Deleted' }); navigate('/profile'); }}
               recommendedSize={adjustedSize}

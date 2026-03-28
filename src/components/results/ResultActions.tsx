@@ -103,44 +103,11 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
         </>
       )}
 
-      {/* Secondary: Try-On */}
-      <Button
-        variant={saved ? 'default' : 'outline'}
-        className={`w-full h-10 rounded-lg text-sm font-bold ${saved ? 'btn-luxury text-primary-foreground' : ''}`}
-        onClick={onTryOn}
-      >
-        <Shirt className="mr-1.5 h-4 w-4" /> Try-On This Item
-      </Button>
-
-      {/* My Size Everywhere */}
-      <Button
-        variant="outline"
-        className="w-full h-10 rounded-lg text-sm font-bold"
-        onClick={() => navigate('/my-sizes')}
-      >
-        <LayoutGrid className="mr-1.5 h-4 w-4" /> My Size at Every Brand
-      </Button>
-
-      {/* Tertiary: Ask Fit Check */}
-      <Button
-        variant="outline"
-        className="w-full h-9 rounded-lg text-[12px] font-bold"
-        onClick={() => navigate('/style-check')}
-      >
-        <MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Ask Style Check
-      </Button>
-
-      {/* Save / Saved */}
-      {!saved ? (
-        <Button variant="outline" className="w-full h-9 rounded-lg text-[11px] font-bold" onClick={onSave}>
-          <Save className="mr-1.5 h-3.5 w-3.5" /> Save to Profile
-        </Button>
-      ) : (
-        <div className="flex items-center gap-2 px-3 py-2">
-          <Check className="h-3.5 w-3.5 text-primary" />
-          <span className="text-[11px] font-bold text-primary">Saved to Profile</span>
-        </div>
-      )}
+      {/* Saved indicator (auto-saved) */}
+      <div className="flex items-center gap-2 px-3 py-1">
+        <Check className="h-3.5 w-3.5 text-primary" />
+        <span className="text-[11px] font-bold text-primary">Auto-saved to Profile</span>
+      </div>
 
       <Button variant="ghost" className="w-full text-[12px] text-muted-foreground h-8" onClick={onNewScan}>
         <RotateCcw className="mr-1 h-3 w-3" /> Scan Again
