@@ -181,18 +181,17 @@ const ProfileBody = () => {
             <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
             <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} fitPreference={fitPref} />
 
-            {/* Shop This Size + My Size Everywhere */}
-            <ShopThisSize
-              recommendedSize={adjustedSize}
-              confidence={confidence}
-            />
+            {/* My Size Everywhere + Shop This Size */}
             <Button
-              variant="outline"
-              className="w-full h-10 rounded-lg text-sm font-bold"
+              className="w-full h-11 rounded-xl btn-luxury text-primary-foreground text-sm font-extrabold"
               onClick={() => navigate('/my-sizes')}
             >
               <LayoutGrid className="mr-1.5 h-4 w-4" /> My Size at Every Brand
             </Button>
+            <ShopThisSize
+              recommendedSize={adjustedSize}
+              confidence={confidence}
+            />
 
             {/* Return Risk warning */}
             {(confidence === 'low' || confidence === 'medium') && (
