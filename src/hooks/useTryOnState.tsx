@@ -366,7 +366,11 @@ export function useTryOnState() {
 
   // Pre-populate clothing from catalog product selection
   useEffect(() => {
-    const state = location.state as { clothingUrl?: string; clothingImageUrl?: string; productUrl?: string; userPhoto?: string; freshSession?: boolean } | null;
+    const state = location.state as {
+      clothingUrl?: string; clothingImageUrl?: string; productUrl?: string;
+      userPhoto?: string; freshSession?: boolean;
+      quickPick?: CatalogProduct | null;
+    } | null;
     const clothingUrl = state?.clothingUrl || state?.clothingImageUrl;
 
     // Apply user photo from navigation state (e.g. from OneTapPlayground)
@@ -393,7 +397,12 @@ export function useTryOnState() {
             const detected = detectBrandFromUrl(state.productUrl);
             setLookItems(prev => [...prev, { brand: detected?.brand || '', name: '', url: state.productUrl!, image_url: clothingUrl }]);
           }
-          handleAddAccessory(photo, detectCategoryFromUrl(state?.productUrl || '') || null);
+          // Hydrate selectedQuickPick for accessory flow too
+          if (state?.quickPick) {
+            setSelectedQuickPick(state.quickPick as CatalogProduct);
+            if (state.quickPick.category) setCategory(state.quickPick.category);
+          }
+          handleAddAccessory(photo, state?.quickPick?.category || detectCategoryFromUrl(state?.productUrl || '') || null);
         } else {
           // Fresh try-on — clear old result and start clean
           if (isFreshSession) {
@@ -404,11 +413,24 @@ export function useTryOnState() {
             setSavedToItems(false);
             setLookItemsRaw([]);
             setLayerHistory([]);
+            setSelectedQuickPickRaw(null); // Clear stale quickPick
             try { localStorage.removeItem(TRYON_RESULT_KEY); } catch { /* ignore */ }
-            persistState({ resultImage: null, activePostId: null, autoSaved: false, shared: false, savedToItems: false, lookItems: [] });
+            persistState({ resultImage: null, activePostId: null, autoSaved: false, shared: false, savedToItems: false, lookItems: [], selectedQuickPick: null });
           }
           setClothingPhoto(photo);
           if (state?.productUrl) setProductLink(state.productUrl);
+          // Hydrate selectedQuickPick from navigation state so product info bar is correct
+          if (state?.quickPick) {
+            setSelectedQuickPick(state.quickPick as CatalogProduct);
+            if (state.quickPick.category) setCategory(state.quickPick.category);
+            setLookItems([{
+              brand: state.quickPick.brand || '',
+              name: state.quickPick.name || '',
+              url: state.quickPick.product_url || state?.productUrl || '',
+              price_cents: state.quickPick.price_cents,
+              image_url: state.quickPick.image_url,
+            }]);
+          }
           trackEvent('tryon_clothing_uploaded');
         }
       };
