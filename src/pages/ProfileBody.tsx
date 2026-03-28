@@ -199,7 +199,7 @@ const ProfileBody = () => {
               className="w-full h-11 rounded-xl btn-luxury text-primary-foreground text-sm font-extrabold"
               onClick={() => navigate('/my-sizes')}
             >
-              <LayoutGrid className="mr-1.5 h-4 w-4" /> My Size at Every Brand
+              <LayoutGrid className="mr-1.5 h-4 w-4" /> My Size Every Brand
             </Button>
             <ShopThisSize
               recommendedSize={adjustedSize}

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Camera, Image, Loader2, CheckCircle2, AlertTriangle, ChevronDown, ChevronUp, Ruler, LogIn, Search, Store, Users, ArrowUpDown } from 'lucide-react';
+import { ArrowLeft, Camera, Image, Loader2, CheckCircle2, AlertTriangle, ChevronDown, ChevronUp, Ruler, LogIn, Search, Store, Users, ArrowUpDown, LayoutGrid } from 'lucide-react';
 import { getMeasurements } from '@/lib/storage';
 import { MeasurementResult, MEASUREMENT_LABELS } from '@/lib/types';
 import { supabase } from '@/integrations/supabase/client';
@@ -568,6 +568,13 @@ const SizeGuide = () => {
             )}</AnimatePresence>
           </TabsContent>
         </Tabs>
+
+        <Button
+          className="w-full h-11 rounded-xl btn-luxury text-primary-foreground text-sm font-extrabold mt-4"
+          onClick={() => navigate('/my-sizes')}
+        >
+          <LayoutGrid className="mr-1.5 h-4 w-4" /> My Size Every Brand
+        </Button>
       </div>
       <BottomTabBar />
     </div>
