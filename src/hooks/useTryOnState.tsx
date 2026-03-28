@@ -428,10 +428,8 @@ export function useTryOnState() {
             setSelectedQuickPickRaw(null); // Clear stale quickPick
             try {
               localStorage.removeItem(TRYON_RESULT_KEY);
-              // Clear persisted user photo so stale URL doesn't override the new photo on remount
-              if (state.userPhoto) {
-                localStorage.setItem(TRYON_USER_PHOTO_KEY, state.userPhoto.startsWith('data:') ? '' : state.userPhoto);
-              }
+              // Always clear persisted user photo on fresh Tap a Fit session so old image cannot win.
+              localStorage.removeItem(TRYON_USER_PHOTO_KEY);
             } catch { /* ignore */ }
             persistState({ resultImage: null, activePostId: null, autoSaved: false, shared: false, savedToItems: false, lookItems: [], selectedQuickPick: null });
           }
