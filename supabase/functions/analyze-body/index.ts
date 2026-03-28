@@ -4,8 +4,8 @@ import { AnalyzeBodySchema, parseOrError, successResponse, errorResponse, getCor
 
 
 const REFERENCE_SIZES: Record<string, string> = {
-  credit_card: "a standard credit card (85.6 × 53.98 mm)",
-  a4_paper: "an A4 sheet of paper (210 × 297 mm)",
+  credit_card: "a standard credit/rewards card (85.6 × 53.98 mm)",
+  water_bottle: "a standard 500 ml water bottle (~210 mm tall)",
   phone: "a standard smartphone (~150 mm tall)",
   none: "no reference object",
 };
