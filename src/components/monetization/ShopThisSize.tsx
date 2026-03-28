@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,6 +32,20 @@ const RETAILER_URLS: Record<string, string> = {
   Simons: 'https://simons.ca',
 };
 
+// Map retailer display names to brand_slug values used in size_recommendations_cache
+const RETAILER_SLUG_MAP: Record<string, string> = {
+  SHEIN: 'shein',
+  Zara: 'zara',
+  'H&M': 'hm',
+  Gap: 'gap',
+  Nordstrom: 'nordstrom',
+  Lululemon: 'lululemon',
+  Macys: 'macys',
+  JCPenney: 'jcpenney',
+  Aritzia: 'aritzia',
+  Simons: 'simons',
+};
+
 function extractRetailer(url: string): string | null {
   try {
     const hostname = new URL(url).hostname.toLowerCase();
@@ -40,6 +54,12 @@ function extractRetailer(url: string): string | null {
     }
   } catch { /* ignore */ }
   return null;
+}
+
+interface BrandSizeRec {
+  brand_slug: string;
+  recommended_size: string;
+  confidence: number;
 }
 
 const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopThisSizeProps) => {
@@ -51,6 +71,34 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
   const [showRetailers, setShowRetailers] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showSavedConfirmation, setShowSavedConfirmation] = useState(false);
+  const [brandSizes, setBrandSizes] = useState<Record<string, BrandSizeRec>>({});
+
+  // Fetch per-brand size recommendations
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('size_recommendations_cache')
+      .select('brand_slug, recommended_size, confidence')
+      .eq('user_id', user.id)
+      .gt('expires_at', new Date().toISOString())
+      .then(({ data }) => {
+        if (!data) return;
+        const map: Record<string, BrandSizeRec> = {};
+        for (const r of data) {
+          // Keep highest confidence per brand
+          if (!map[r.brand_slug] || r.confidence > map[r.brand_slug].confidence) {
+            map[r.brand_slug] = r as BrandSizeRec;
+          }
+        }
+        setBrandSizes(map);
+      });
+  }, [user]);
+
+  const getBrandSize = (retailerName: string): string | null => {
+    const slug = RETAILER_SLUG_MAP[retailerName];
+    if (!slug) return null;
+    return brandSizes[slug]?.recommended_size || null;
+  };
 
   const extraProps = useMemo(() => ({
     size: recommendedSize,
@@ -103,14 +151,14 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
           className="w-full h-11 rounded-lg btn-luxury text-primary-foreground text-sm font-bold"
           onClick={() => beginClickout(matchedRetailer, productLink)}
         >
-          <ShoppingBag className="mr-2 h-4 w-4" /> Shop This Size — {recommendedSize}
+          <ShoppingBag className="mr-2 h-4 w-4" /> Shop My Size
         </Button>
       ) : (
         <Button
           className="w-full h-11 rounded-lg btn-luxury text-primary-foreground text-sm font-bold"
           onClick={() => setShowRetailers(!showRetailers)}
         >
-          <ShoppingBag className="mr-2 h-4 w-4" /> Shop This Size — {recommendedSize}
+          <ShoppingBag className="mr-2 h-4 w-4" /> Shop My Size
         </Button>
       )}
 
@@ -119,16 +167,24 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
         <div className="bg-card border border-border rounded-xl p-3">
           <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Choose retailer</p>
           <div className="grid grid-cols-2 gap-1.5">
-            {SUPPORTED_RETAILERS.map(r => (
-              <button
-                key={r}
-                onClick={() => beginClickout(r, RETAILER_URLS[r] || '#')}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-background hover:border-primary/30 active:scale-[0.97] transition-all text-left"
-              >
-                <ExternalLink className="h-3 w-3 text-muted-foreground shrink-0" />
-                <span className="text-[11px] font-medium text-foreground">{r}</span>
-              </button>
-            ))}
+            {SUPPORTED_RETAILERS.map(r => {
+              const brandSize = getBrandSize(r);
+              return (
+                <button
+                  key={r}
+                  onClick={() => beginClickout(r, RETAILER_URLS[r] || '#')}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-background hover:border-primary/30 active:scale-[0.97] transition-all text-left"
+                >
+                  <ExternalLink className="h-3 w-3 text-muted-foreground shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-[11px] font-medium text-foreground block truncate">{r}</span>
+                    {brandSize && (
+                      <span className="text-[10px] font-bold text-primary">Size {brandSize}</span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
@@ -154,7 +210,9 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
           <div className="flex items-center gap-2 bg-primary/10 rounded-lg px-3 py-2">
             <ShoppingBag className="h-4 w-4 text-primary shrink-0" />
             <div>
-              <p className="text-[12px] font-bold text-primary">Recommended size: {recommendedSize}</p>
+              <p className="text-[12px] font-bold text-primary">
+                Recommended size: {getBrandSize(pendingClickout.retailer) || recommendedSize}
+              </p>
               <p className="text-[10px] text-muted-foreground capitalize">{confidence} confidence · {category || 'general'}</p>
             </div>
           </div>
