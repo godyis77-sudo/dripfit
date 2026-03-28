@@ -555,7 +555,7 @@ TASK: Add the accessory from Image B onto the person in Image A. Match the targe
 ${itemLower.includes('belt') ? 'BELT-SPECIFIC: The belt MUST be clearly visible around the waist, worn OVER the existing clothing. Show the full belt including buckle/chain details. Do NOT hide it under clothing layers.' : ''}
 ${bgInstruction} Correct scale, lighting, shadows. No text/watermarks.
 
-IMAGE QUALITY: Maintain or improve the resolution and sharpness of Image A. Do NOT reduce image quality, introduce blur, compression artifacts, or soften details. The output must be at least as sharp and detailed as Image A.`;
+IMAGE QUALITY: Maintain or improve the resolution and sharpness of Image A. Do NOT reduce image quality, introduce blur, compression artifacts, or soften details. The output must be at least as sharp and detailed as Image A.
 ${noResizeInstruction}`;
     } else if (isIntimateGarment) {
       const intimateReferenceLine = `IMAGE B: An activewear/athletic product listing photo from an online retailer.${intimateTextReference ? `\nHint: ${intimateTextReference}` : ""}`;
