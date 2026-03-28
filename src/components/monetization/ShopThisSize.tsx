@@ -97,28 +97,6 @@ const ShopThisSize = ({ recommendedSize, confidence, retailer, category }: ShopT
 
   return (
     <div className="space-y-3 mt-4">
-      {/* Product link input */}
-      <div>
-        <div className="flex items-center gap-1.5 mb-1">
-          <Link2 className="h-3 w-3 text-muted-foreground" />
-          <p className="text-[11px] text-muted-foreground font-medium">Paste product link</p>
-        </div>
-        <Input
-          placeholder="https://zara.com/product/..."
-          value={productLink}
-          onChange={e => handleLinkPaste(e.target.value)}
-          className="rounded-lg h-9 text-[12px]"
-        />
-        {matchedRetailer && (
-          <div className="flex items-center gap-1.5 mt-1.5">
-            <span className="text-[10px] px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-primary font-bold flex items-center gap-1">
-              <Store className="h-3 w-3" /> Matched: {matchedRetailer}
-            </span>
-            <span className="text-[11px] text-muted-foreground">We'll recommend the best size for this item.</span>
-          </div>
-        )}
-      </div>
-
       {/* Primary CTA */}
       {productLink && matchedRetailer ? (
         <Button

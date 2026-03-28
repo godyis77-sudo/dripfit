@@ -275,6 +275,18 @@ const SizeGuide = () => {
           <div className="w-8" />
         </div>
 
+        {/* Paste product link */}
+        <div className="mb-4">
+          <div className="flex items-center gap-1.5 mb-1">
+            <Store className="h-3 w-3 text-muted-foreground" />
+            <p className="text-[11px] text-muted-foreground font-medium">Paste product link</p>
+          </div>
+          <Input
+            placeholder="https://zara.com/product/..."
+            className="rounded-lg h-9 text-[12px]"
+          />
+        </div>
+
         <Tabs defaultValue="brand" className="mb-4">
           <TabsList className="w-full grid grid-cols-2 mb-3">
             <TabsTrigger value="brand" className="text-[12px]"><Store className="h-3.5 w-3.5 mr-1" />Pick a Brand</TabsTrigger>
