@@ -584,7 +584,7 @@ ${intimateFramingInstruction}
 Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, or collages.`;
     } else {
       // Detect if garment is top-only or bottom-only to preserve existing clothing
-      const BOTTOM_TYPES = ["jeans", "pants", "trousers", "shorts", "skirt", "skirts", "leggings", "chinos", "joggers", "sweatpants", "cargo", "culottes", "bottom", "bottoms"];
+      const BOTTOM_TYPES = ["jeans", "pants", "pant", "trousers", "shorts", "skirt", "skirts", "leggings", "chinos", "joggers", "sweatpants", "cargo", "culottes", "bottom", "bottoms"];
       const TOP_TYPES = ["top", "tops", "shirt", "shirts", "blouse", "t-shirt", "t-shirts", "tee", "sweater", "sweaters", "hoodie", "hoodies", "polo", "polos", "tank", "tank top", "crop top", "sports bra", "bra", "bralette", "cardigan", "pullover", "henley", "jersey", "vest", "vests"];
       const FULL_BODY_TYPES = ["dress", "dresses", "jumpsuit", "jumpsuits", "romper", "overalls", "full"];
       const OUTERWEAR_TYPES = ["jacket", "jackets", "coat", "coats", "blazer", "blazers", "parka", "windbreaker", "outerwear"];
@@ -593,25 +593,32 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       const COMFORTWEAR_STD_TYPES = ["loungewear", "loungeware", "sleepwear", "pajamas", "pyjamas", "robe", "robes", "lounge"];
 
       const stdContext = normalizeMatchText([itemLower, productName.toLowerCase(), productCategory.toLowerCase()].join(" "));
-      const isBottomGarment = BOTTOM_TYPES.some(t => hasContextTerm(stdContext, t));
-      const isTopGarment = TOP_TYPES.some(t => hasContextTerm(stdContext, t)) && !isBottomGarment;
-      const isFullBodyGarment = FULL_BODY_TYPES.some(t => hasContextTerm(stdContext, t));
-      // Only classify as outerwear if it's a jacket/coat/blazer OR explicitly an insulated vest (puffer vest, gilet)
-      const isOuterwearGarment = (OUTERWEAR_TYPES.some(t => hasContextTerm(stdContext, t)) || OUTERWEAR_VEST_HINT.test(stdContext)) && !isTopGarment;
+
+      // PRIORITY 1: Explicit "set" keyword in product name/category overrides single-piece classification.
+      // E.g. "satin bralette, pant and robe pajama set" must route as a set, not as a top.
+      const hasExplicitSetKeyword = SET_TYPES.some(t => hasContextTerm(stdContext, t)) || COMFORTWEAR_STD_TYPES.some(t => hasContextTerm(stdContext, t));
       // Detect if context mentions BOTH a top AND a bottom — this implies a set even without "set" keyword
       const hasBothTopAndBottom = TOP_TYPES.some(t => hasContextTerm(stdContext, t)) && BOTTOM_TYPES.some(t => hasContextTerm(stdContext, t));
-      // Only classify as a set/comfortwear if it's NOT clearly a single bottom or single top item.
-      // "Lounge Sweatpant" should route as bottom, not as a loungewear set.
-      const isSetGarmentStd = !isBottomGarment && !isTopGarment && (
-        SET_TYPES.some(t => hasContextTerm(stdContext, t)) || 
-        COMFORTWEAR_STD_TYPES.some(t => hasContextTerm(stdContext, t))
-      ) || hasBothTopAndBottom;
+      // Also detect 3+ piece descriptions like "bralette, pant and robe"
+      const hasMultiplePieceSignals = [
+        TOP_TYPES.some(t => hasContextTerm(stdContext, t)),
+        BOTTOM_TYPES.some(t => hasContextTerm(stdContext, t)),
+        /\b(robe|robes|jacket|coat|blazer|cardigan|hoodie)\b/.test(stdContext),
+      ].filter(Boolean).length >= 2;
+
+      const isSetGarmentStd = hasExplicitSetKeyword || hasBothTopAndBottom || hasMultiplePieceSignals;
+
+      const isBottomGarment = !isSetGarmentStd && BOTTOM_TYPES.some(t => hasContextTerm(stdContext, t));
+      const isTopGarment = !isSetGarmentStd && TOP_TYPES.some(t => hasContextTerm(stdContext, t)) && !isBottomGarment;
+      const isFullBodyGarment = !isSetGarmentStd && FULL_BODY_TYPES.some(t => hasContextTerm(stdContext, t));
+      // Only classify as outerwear if it's a jacket/coat/blazer OR explicitly an insulated vest (puffer vest, gilet)
+      const isOuterwearGarment = !isSetGarmentStd && (OUTERWEAR_TYPES.some(t => hasContextTerm(stdContext, t)) || OUTERWEAR_VEST_HINT.test(stdContext)) && !isTopGarment;
 
       let swapInstruction: string;
       if (isSetGarmentStd) {
-        swapInstruction = `1. Image B shows a COMPLETE SET with BOTH a top AND a bottom. You MUST replace ALL clothing from Image A with the ENTIRE outfit shown in Image B — apply BOTH the top piece AND the bottom piece.
-2. CRITICAL: Do NOT apply only one piece. Both the top AND bottom from Image B must appear on the model. If the image shows a shirt/top paired with pants/shorts/skirt, BOTH must be swapped onto the model.
-3. Match every detail from Image B: color, pattern, print, fabric texture, fit, and styling of BOTH the top and bottom pieces precisely.
+        swapInstruction = `1. Image B shows a COMPLETE SET / MULTI-PIECE OUTFIT. You MUST replace ALL clothing from Image A with the ENTIRE outfit shown in Image B — apply EVERY piece (top, bottom, and any layering piece like a robe/jacket/cardigan).
+2. CRITICAL: Do NOT apply only one piece. ALL pieces visible in Image B must appear on the model. If the set includes 3 pieces (e.g., bralette + pants + robe), ALL THREE must be worn.
+3. Match every detail from Image B: color, pattern, print, fabric texture, fit, and styling of ALL pieces precisely.
 4. Keep the person's EXISTING footwear from Image A UNCHANGED unless the set from Image B includes footwear. For loungewear/sleepwear sets, remove footwear — the model should be barefoot.`;
       } else if (isBottomGarment) {
         swapInstruction = `1. Replace ONLY the lower-body clothing (pants, jeans, shorts, skirt, etc.) from Image A with the garment from Image B.
