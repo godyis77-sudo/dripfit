@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo, forwardRef } from 'react';
+import { useState, useRef, useEffect, useMemo, forwardRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -28,7 +28,93 @@ import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
 import { Share2, Link2, MessageCircle } from 'lucide-react';
 import { useToast as useToastHook } from '@/hooks/use-toast';
 
-/** Inline share nudge shown in the success overlay */
+/** Zoomable image for fullscreen result view (pinch + double-tap) */
+function ZoomableResultImage({ src, brandLabel }: { src: string; brandLabel?: string | null }) {
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const lastTouch = useRef<{ x: number; y: number } | null>(null);
+  const lastDist = useRef<number | null>(null);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      lastDist.current = Math.hypot(dx, dy);
+    } else if (e.touches.length === 1 && zoom > 1) {
+      lastTouch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      setIsPanning(true);
+    }
+  }, [zoom]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2 && lastDist.current !== null) {
+      e.preventDefault();
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.hypot(dx, dy);
+      const scale = dist / lastDist.current;
+      setZoom(prev => Math.min(4, Math.max(1, prev * scale)));
+      lastDist.current = dist;
+    } else if (e.touches.length === 1 && isPanning && lastTouch.current && zoom > 1) {
+      const dx = e.touches[0].clientX - lastTouch.current.x;
+      const dy = e.touches[0].clientY - lastTouch.current.y;
+      setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+      lastTouch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  }, [isPanning, zoom]);
+
+  const handleTouchEnd = useCallback(() => {
+    lastDist.current = null;
+    lastTouch.current = null;
+    setIsPanning(false);
+    if (zoom <= 1) setPan({ x: 0, y: 0 });
+  }, [zoom]);
+
+  const handleDoubleClick = useCallback(() => {
+    if (zoom > 1) { setZoom(1); setPan({ x: 0, y: 0 }); } else { setZoom(2.5); }
+  }, [zoom]);
+
+  return (
+    <div
+      className="flex-1 flex items-center justify-center p-2 min-h-0 overflow-hidden touch-none"
+      onPointerDown={(e) => e.stopPropagation()}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onDoubleClick={handleDoubleClick}
+    >
+      <div className="relative h-full w-full rounded-2xl overflow-hidden bg-muted">
+        {brandLabel && zoom <= 1 && (
+          <span className="absolute top-3 left-3 z-20 px-2.5 py-1 rounded-lg bg-black/70 border border-white/25 backdrop-blur-sm text-[10px] font-bold text-white uppercase tracking-wider">
+            {brandLabel}
+          </span>
+        )}
+        {zoom > 1 && (
+          <button
+            type="button"
+            onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}
+            className="absolute top-3 right-3 z-20 px-2.5 py-1 rounded-lg bg-black/70 border border-white/25 backdrop-blur-sm text-[10px] font-bold text-white active:scale-95 transition-transform"
+          >
+            Reset Zoom
+          </button>
+        )}
+        <motion.img
+          initial={{ scale: 0.96, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.2 }}
+          src={src}
+          alt="Try-on result full screen"
+          className="absolute inset-0 h-full w-full object-cover rounded-2xl block transition-transform duration-100"
+          style={{ transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)` }}
+          draggable={false}
+        />
+      </div>
+    </div>
+  );
+}
+
+
 function ShareNudgeInline({ resultImage, caption, onShareStory }: { resultImage: string; caption: string; onShareStory: () => void }) {
   const { toast } = useToastHook();
   const shareUrl = `${window.location.origin}/style-check`;
@@ -955,25 +1041,11 @@ const TryOnResultSection = ({
               <X className="h-5 w-5 text-white" />
             </button>
 
-            {/* Image — maximized */}
-            <div className="flex-1 flex items-center justify-center p-2 min-h-0 overflow-hidden" onPointerDown={(e) => e.stopPropagation()}>
-              <div className="relative h-full w-full rounded-2xl overflow-hidden bg-muted">
-                {productBrand && (
-                  <span className="absolute top-3 left-3 z-20 px-2.5 py-1 rounded-lg bg-black/70 border border-white/25 backdrop-blur-sm text-[10px] font-bold text-white uppercase tracking-wider">
-                    {productBrand}
-                  </span>
-                )}
-                <motion.img
-                  initial={{ scale: 0.96, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.2 }}
-                  src={resultImage}
-                  alt="Try-on result full screen"
-                  className="absolute inset-0 h-full w-full object-cover rounded-2xl block"
-                  draggable={false}
-                />
-              </div>
-            </div>
+            {/* Image — maximized with pinch-to-zoom */}
+            <ZoomableResultImage
+              src={resultImage}
+              brandLabel={productBrand}
+            />
 
             {/* Info + Actions — pinned to bottom */}
             <div className="shrink-0 px-5 pb-6 pt-3 space-y-3" onPointerDown={(e) => e.stopPropagation()}>
