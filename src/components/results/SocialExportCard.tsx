@@ -22,14 +22,17 @@ const SocialExportCard = forwardRef<HTMLDivElement, SocialExportCardProps>(
     return (
       <div
         ref={ref}
+        aria-hidden="true"
         style={{
           width: 1080,
           height: 1920,
-          position: 'fixed',
-          left: -9999,
+          position: 'absolute',
+          left: 0,
           top: 0,
           zIndex: -1,
           overflow: 'hidden',
+          opacity: 0,
+          pointerEvents: 'none',
           background: 'linear-gradient(180deg, #0A0A0A 0%, #111111 40%, #0D0D0D 100%)',
           fontFamily: "'Inter', sans-serif",
           color: '#FAFAFA',
