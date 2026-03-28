@@ -169,8 +169,8 @@ Deno.serve(async (req) => {
     const isBelt = /\bbelt(s)?\b/.test(normalizedProductContext) || /\bbelt(s)?\b/.test(normalizedItemContext);
     const isSwimwear = SWIM_TYPES.some(t => hasContextTerm(normalizedProductContext, t));
     const isComfortwear = COMFORTWEAR_TYPES.some(t => hasContextTerm(normalizedItemContext, t) || hasContextTerm(normalizedProductContext, t));
-    // Sports bras and crop tops are athletic tops — NOT intimate items. Route them through the standard garment path.
-    const isSportsBraOrCropTop = /\b(sports?\s*bra|crop\s*top)\b/.test(normalizedProductContext);
+    // Athletic tops (sports bras / bralettes / crop tops) should use standard top-swap routing, not intimate routing.
+    const isSportsBraOrCropTop = /\b(sports?\s*bra|crop\s*top|bralette|support\s*top|seamless\s*bra)\b/.test(normalizedProductContext);
     const isUnderwearRaw = UNDERWEAR_TYPES.some(t => hasContextTerm(normalizedProductContext, t));
     const isUnderwear = isUnderwearRaw && !isSportsBraOrCropTop;
     const isIntimate = !isComfortwear && !isSportsBraOrCropTop && (INTIMATE_TYPES.some(t => hasContextTerm(normalizedItemContext, t) || hasContextTerm(normalizedProductContext, t)) || isSwimwear || isUnderwear);
