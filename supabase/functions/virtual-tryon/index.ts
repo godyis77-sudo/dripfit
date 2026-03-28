@@ -618,9 +618,11 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
         const isCropped = /\b(sports?\s*bra|crop\s*top|bralette|bra)\b/.test(stdContext);
         swapInstruction = isCropped
           ? `1. Replace ONLY the upper-body clothing from Image A with the CROPPED TOP / SPORTS BRA from Image B.
-2. The top must remain SHORT and cropped — ending ABOVE the waist or at the midriff. Do NOT extend it into a full-length shirt or tank top. Do NOT add any extra fabric below the natural hemline of the garment.
-3. Keep the person's EXISTING lower-body clothing (pants, jeans, shorts, skirt, leggings) from Image A EXACTLY as they are — do NOT replace, remove, add, or change the bottoms in any way.
-4. Keep the person's EXISTING footwear from Image A completely UNCHANGED.`
+2. CRITICAL COLOR ACCURACY: The output garment MUST be the EXACT same color as shown in Image B. If Image B shows a purple/mauve garment, the output MUST be purple/mauve — NOT blue, NOT white, NOT any other color. Match the precise hue, saturation, and tone pixel-for-pixel.
+3. The top must remain SHORT and cropped — ending ABOVE the waist or at the midriff. Do NOT extend it into a full-length shirt or tank top. Do NOT add any extra fabric below the natural hemline of the garment.
+4. Keep the person's EXISTING lower-body clothing (pants, jeans, shorts, skirt, leggings) from Image A EXACTLY as they are — do NOT replace, remove, add, or change the bottoms in any way.
+5. Keep the person's EXISTING footwear from Image A completely UNCHANGED.
+6. IDENTITY: The person in the output MUST be the SAME person from Image A — same face, same hair, same body, same skin tone. Do NOT use the model from Image B. Image B is ONLY a garment reference.`
           : `1. Replace ONLY the upper-body clothing (shirt, top, sweater, etc.) from Image A with the garment from Image B.
 2. Keep the person's EXISTING lower-body clothing (pants, jeans, skirt, etc.) from Image A completely UNCHANGED.
 3. Keep the person's EXISTING footwear from Image A completely UNCHANGED.`;
@@ -641,7 +643,9 @@ TARGET GARMENT:
 
 TASK — CLOTHING SWAP:
 ${swapInstruction}
+- CRITICAL COLOR MATCH: The garment in the output MUST be the EXACT same color as in Image B. Do NOT shift, lighten, darken, or change the hue in any way. Purple must stay purple, not become blue. Match color precisely.
 - Match the target item from Image B exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
+- IDENTITY: The output person MUST be the SAME person from Image A — same face, hair, body, skin tone. Do NOT substitute with the model from Image B.
 - Keep Image A person identity (face, body, hair, skin tone, pose). ${bgInstruction}
 - Keep garment fit realistic with natural wrinkles and shadows.
 - CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate or turn the model to match Image B's pose/angle. Copy only the garment from Image B, never its pose.
