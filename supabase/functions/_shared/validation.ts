@@ -7,7 +7,7 @@ export const AnalyzeBodySchema = z.object({
   frontPhoto: base64Image,
   sidePhoto: base64Image,
   heightCm: z.number().min(120).max(230),
-  referenceObject: z.enum(["credit_card", "a4_paper", "phone", "none"]).optional().default("none"),
+  referenceObject: z.enum(["credit_card", "water_bottle", "phone", "none"]).optional().default("none"),
   fitPreference: z.enum(["fitted", "regular", "relaxed"]).optional().default("regular"),
 });
 

@@ -114,7 +114,7 @@ const CaptureHeightStep = ({
             <p className="text-[11px] text-muted-foreground mb-2">
               Place a known-size object near you for better calibration.
             </p>
-            <div className="grid grid-cols-2 gap-1.5 pb-2">
+            <div className="grid grid-cols-3 gap-1.5 pb-2">
               {(Object.entries(REFERENCE_OBJECTS) as [ReferenceObject, { label: string; description: string }][])
                 .filter(([key]) => key !== 'none')
                 .map(([key, val]) => (
