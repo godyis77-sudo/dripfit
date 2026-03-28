@@ -752,7 +752,7 @@ export function useTryOnState() {
         ]);
         const { data: insertedPost, error: insertError } = await supabase
           .from('tryon_posts')
-          .insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic, product_urls: allUrls, clothing_category: category || 'other' })
+          .insert({ user_id: user.id, user_photo_url: userUrl, clothing_photo_url: clothingUrl, result_photo_url: resultUrl, caption: caption || null, is_public: isPublic, product_urls: allUrls, clothing_category: normCategory(category) })
           .select('id')
           .single();
         if (insertError) throw insertError;
