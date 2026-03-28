@@ -209,10 +209,6 @@ const ProfileBody = () => {
 
             {/* Meta info */}
             <div className="space-y-2">
-              <div className="flex items-center gap-2 px-3 py-1">
-                <Check className="h-3.5 w-3.5 text-primary" />
-                <span className="text-[11px] font-bold text-primary">Auto-saved to Profile</span>
-              </div>
               <Button variant="ghost" className="w-full text-[12px] text-muted-foreground h-8" onClick={() => navigate('/capture')}>
                 <RotateCcw className="mr-1 h-3 w-3" /> Scan Again
               </Button>
