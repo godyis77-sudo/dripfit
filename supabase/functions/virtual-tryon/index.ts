@@ -624,8 +624,10 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
 4. Keep the person's EXISTING lower-body clothing and footwear from Image A completely UNCHANGED.`;
       } else if (isFullBodyGarment) {
         swapInstruction = `1. Put the dress/jumpsuit/romper from Image B onto the person in Image A.
-2. REMOVE any pants, jeans, trousers, or shorts visible in Image A so they don't show beneath the new garment.
-3. Keep the person's EXISTING footwear from Image A UNCHANGED unless the garment from Image B includes footwear.`;
+2. REMOVE ALL existing clothing layers from Image A that conflict with full-body garments: outerwear (jackets/coats/blazers/vests), tops, and bottoms.
+3. Do NOT keep or blend any prior garment from Image A over the new full-body garment.
+4. Keep the person's EXISTING footwear from Image A UNCHANGED unless the garment from Image B explicitly includes footwear.
+5. CRITICAL PRODUCT FIDELITY: replicate Image B exactly — same silhouette, panel/cutout placement, print placement, seam lines, neckline, hemline, and fabric texture. Do NOT invent or restyle any dress details.`;
       } else if (isTopGarment) {
         const isCropped = /\b(sports?\s*bra|crop\s*top|bralette|bra)\b/.test(stdContext);
         swapInstruction = isCropped
@@ -644,53 +646,12 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       }
 
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
-
-IMAGES PROVIDED:
-- Image A (first image below): A person wearing some outfit. This is the MODEL — keep face, body, hair, skin, and pose.
-- Image B (second image below): The target garment reference.
-
-TARGET GARMENT:
-- The garment shown in Image B.${productHint}
-- IMPORTANT: If Image B shows a full-body photo of another person wearing multiple clothing items, use the product name/description above to identify the SPECIFIC item to try on. Extract ONLY that one item and ignore every other piece of clothing in Image B.
-
-TASK — CLOTHING SWAP:
-${swapInstruction}
-- CRITICAL COLOR MATCH: The garment in the output MUST be the EXACT same color as in Image B. Do NOT shift, lighten, darken, or change the hue in any way. Purple must stay purple, not become blue. Match color precisely.
-- Match the target item from Image B exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
-- IDENTITY: The output person MUST be the SAME person from Image A — same face, hair, body, skin tone. Do NOT substitute with the model from Image B.
-- Keep Image A person identity (face, body, hair, skin tone, pose). ${bgInstruction}
-- Keep garment fit realistic with natural wrinkles and shadows.
-- CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate or turn the model to match Image B's pose/angle. Copy only the garment from Image B, never its pose.
-- IMAGE QUALITY: Maintain or improve the resolution and sharpness of Image A. Do NOT reduce image quality, introduce blur, compression artifacts, or soften details. The output must be at least as sharp and detailed as Image A.
-
-Output: A single photorealistic FULL-BODY image. No text/watermarks/split views.`;
-    }
-
-    // ── AI CALL ──
-    const bgFallbackHint = useClothingBg
-      ? "Use the background from Image B (the product photo)."
-      : "Keep background from Image A unchanged.";
-    const fullBodyImageHint = `If Image B shows a full-body photo of a person wearing multiple items, use the product name/description to identify ONLY the specific target item and ignore everything else in Image B.`;
-    const fallbackPrompt = isFootwear && !isLayering
+...
+      const buildTryOnContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
+...
+      const fallbackPrompt = isFootwear && !isLayering
       ? `Create ONE photorealistic FULL-BODY output image.
-Image A = person wearing an outfit. Image B = target footwear reference.${productHint}
-${fullBodyImageHint}
-REMOVE current footwear from Image A and REPLACE with the exact shoes from Image B. Keep ALL other clothing unchanged. Match target item exactly (color, shape, material, branding, sole). Keep face/body/pose from Image A. ${bgFallbackHint} Show full body head to feet. No text/watermark.`
-      : (isAccessory || isLayering) && !isIntimateGarment
-      ? `Create ONE photorealistic output image.
-Image A = person. Image B = target accessory reference.${productHint}
-${fullBodyImageHint}
-Place the target accessory from Image B onto the person in Image A at realistic scale and lighting.
-${itemLower.includes('belt') ? 'BELT: Must be clearly visible around the waist OVER clothing. Show full belt with buckle/chain details.' : ''}
-Match target item exactly. Keep face/body from Image A. ${bgFallbackHint} No text/watermark.`
-      : isIntimateGarment
-        ? `Professional catalog photo edit. Image A = fitness model. Image B = athletic garment from retailer.
-Put the garment from Image B onto the model in Image A. ${bgFallbackHint}
-If Image B has another person, copy only the garment design and ignore them.
-${garmentSwapScopeInstruction}
-Match product exactly: color, cut, fabric, straps, neckline. Keep model identity, pose, and facing direction from Image A — do NOT rotate the model.
-CRITICAL: Show FULL BODY from head to feet — include legs. Do NOT crop at waist.
-Professional retail catalog quality. No text/watermark.`
+...
         : (() => {
           const fbContext = normalizeMatchText([itemLower, productName.toLowerCase(), productCategory.toLowerCase()].join(" "));
           const fbBottom = ["jeans","pants","trousers","shorts","skirt","leggings","joggers","chinos","bottom","bottoms"].some(t => hasContextTerm(fbContext, t));
@@ -698,7 +659,7 @@ Professional retail catalog quality. No text/watermark.`
           const fbOuterwear = ["jacket","coat","blazer","vest","parka","outerwear"].some(t => hasContextTerm(fbContext, t));
           const fbFullBody = ["dress","dresses","jumpsuit","jumpsuits","romper","overalls","full"].some(t => hasContextTerm(fbContext, t));
           const scopeHint = fbFullBody
-            ? "Put the dress/jumpsuit/romper from Image B onto the person. Remove any pants/jeans/trousers visible so they don't show beneath the new garment. Keep existing footwear."
+            ? "Put the dress/jumpsuit/romper from Image B onto the person and REMOVE conflicting layers (jackets/coats/blazers/tops/bottoms) from Image A. Do NOT blend old clothing over the new garment. Keep footwear unless Image B includes footwear. Match Image B exactly: silhouette, cutouts/panels, print placement, seams, neckline, hemline, and texture."
             : fbBottom
             ? "Replace ONLY the lower-body clothing (pants/jeans/shorts/skirt). Keep the existing top, shirt, and shoes from Image A UNCHANGED."
             : fbOuterwear
