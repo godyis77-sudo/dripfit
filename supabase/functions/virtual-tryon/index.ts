@@ -584,7 +584,7 @@ ${intimateFramingInstruction}
 Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, or collages.`;
     } else {
       // Detect if garment is top-only or bottom-only to preserve existing clothing
-      const BOTTOM_TYPES = ["jeans", "pants", "trousers", "shorts", "skirt", "skirts", "leggings", "chinos", "joggers", "sweatpants", "cargo", "culottes", "bottom", "bottoms"];
+      const BOTTOM_TYPES = ["jeans", "pants", "pant", "trousers", "shorts", "skirt", "skirts", "leggings", "chinos", "joggers", "sweatpants", "cargo", "culottes", "bottom", "bottoms"];
       const TOP_TYPES = ["top", "tops", "shirt", "shirts", "blouse", "t-shirt", "t-shirts", "tee", "sweater", "sweaters", "hoodie", "hoodies", "polo", "polos", "tank", "tank top", "crop top", "sports bra", "bra", "bralette", "cardigan", "pullover", "henley", "jersey", "vest", "vests"];
       const FULL_BODY_TYPES = ["dress", "dresses", "jumpsuit", "jumpsuits", "romper", "overalls", "full"];
       const OUTERWEAR_TYPES = ["jacket", "jackets", "coat", "coats", "blazer", "blazers", "parka", "windbreaker", "outerwear"];
@@ -593,19 +593,26 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       const COMFORTWEAR_STD_TYPES = ["loungewear", "loungeware", "sleepwear", "pajamas", "pyjamas", "robe", "robes", "lounge"];
 
       const stdContext = normalizeMatchText([itemLower, productName.toLowerCase(), productCategory.toLowerCase()].join(" "));
-      const isBottomGarment = BOTTOM_TYPES.some(t => hasContextTerm(stdContext, t));
-      const isTopGarment = TOP_TYPES.some(t => hasContextTerm(stdContext, t)) && !isBottomGarment;
-      const isFullBodyGarment = FULL_BODY_TYPES.some(t => hasContextTerm(stdContext, t));
-      // Only classify as outerwear if it's a jacket/coat/blazer OR explicitly an insulated vest (puffer vest, gilet)
-      const isOuterwearGarment = (OUTERWEAR_TYPES.some(t => hasContextTerm(stdContext, t)) || OUTERWEAR_VEST_HINT.test(stdContext)) && !isTopGarment;
+
+      // PRIORITY 1: Explicit "set" keyword in product name/category overrides single-piece classification.
+      // E.g. "satin bralette, pant and robe pajama set" must route as a set, not as a top.
+      const hasExplicitSetKeyword = SET_TYPES.some(t => hasContextTerm(stdContext, t)) || COMFORTWEAR_STD_TYPES.some(t => hasContextTerm(stdContext, t));
       // Detect if context mentions BOTH a top AND a bottom — this implies a set even without "set" keyword
       const hasBothTopAndBottom = TOP_TYPES.some(t => hasContextTerm(stdContext, t)) && BOTTOM_TYPES.some(t => hasContextTerm(stdContext, t));
-      // Only classify as a set/comfortwear if it's NOT clearly a single bottom or single top item.
-      // "Lounge Sweatpant" should route as bottom, not as a loungewear set.
-      const isSetGarmentStd = !isBottomGarment && !isTopGarment && (
-        SET_TYPES.some(t => hasContextTerm(stdContext, t)) || 
-        COMFORTWEAR_STD_TYPES.some(t => hasContextTerm(stdContext, t))
-      ) || hasBothTopAndBottom;
+      // Also detect 3+ piece descriptions like "bralette, pant and robe"
+      const hasMultiplePieceSignals = [
+        TOP_TYPES.some(t => hasContextTerm(stdContext, t)),
+        BOTTOM_TYPES.some(t => hasContextTerm(stdContext, t)),
+        /\b(robe|robes|jacket|coat|blazer|cardigan|hoodie)\b/.test(stdContext),
+      ].filter(Boolean).length >= 2;
+
+      const isSetGarmentStd = hasExplicitSetKeyword || hasBothTopAndBottom || hasMultiplePieceSignals;
+
+      const isBottomGarment = !isSetGarmentStd && BOTTOM_TYPES.some(t => hasContextTerm(stdContext, t));
+      const isTopGarment = !isSetGarmentStd && TOP_TYPES.some(t => hasContextTerm(stdContext, t)) && !isBottomGarment;
+      const isFullBodyGarment = !isSetGarmentStd && FULL_BODY_TYPES.some(t => hasContextTerm(stdContext, t));
+      // Only classify as outerwear if it's a jacket/coat/blazer OR explicitly an insulated vest (puffer vest, gilet)
+      const isOuterwearGarment = !isSetGarmentStd && (OUTERWEAR_TYPES.some(t => hasContextTerm(stdContext, t)) || OUTERWEAR_VEST_HINT.test(stdContext)) && !isTopGarment;
 
       let swapInstruction: string;
       if (isSetGarmentStd) {
