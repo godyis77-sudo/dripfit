@@ -181,49 +181,7 @@ const ProfileBody = () => {
             <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
             <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} fitPreference={fitPref} />
 
-            {/* My Size Everywhere + Shop This Size */}
-            <Button
-              className="w-full h-11 rounded-xl btn-luxury text-primary-foreground text-sm font-extrabold"
-              onClick={() => navigate('/my-sizes')}
-            >
-              <LayoutGrid className="mr-1.5 h-4 w-4" /> My Size at Every Brand
-            </Button>
-            <ShopThisSize
-              recommendedSize={adjustedSize}
-              confidence={confidence}
-            />
-
-            {/* Return Risk warning */}
-            {(confidence === 'low' || confidence === 'medium') && (
-              <div className={`rounded-xl border px-3 py-2.5 ${confidence === 'low' ? 'bg-destructive/10 border-destructive/30' : 'bg-primary/5 border-primary/20'}`}>
-                <div className="flex items-center gap-2 mb-1">
-                  <Sparkles className={`h-4 w-4 ${confidence === 'low' ? 'text-destructive' : 'text-primary'}`} />
-                  <p className="text-[12px] font-bold text-foreground">
-                    {confidence === 'low' ? '⚠️ Higher Return Risk' : '📏 Between Sizes'}
-                  </p>
-                </div>
-                <p className="text-[10px] text-muted-foreground leading-relaxed">
-                  {confidence === 'low'
-                    ? `We recommend trying ${shiftSize(adjustedSize, 1)} as a safer alternative.`
-                    : `You're close to the boundary. ${adjustedSize} is our best pick, but ${shiftSize(adjustedSize, 1)} could also work.`}
-                </p>
-              </div>
-            )}
-
-            {/* Trust Panel with measurement sliders */}
-            <TrustPanel
-              confidence={confidence}
-              recommendedSize={adjustedSize}
-              measurements={measurements}
-              onAdjust={handleMeasurementAdjust}
-            />
-
-            {confidence === 'low' && <LowConfidenceRescue onCalibrate={() => {
-              setConfidence('medium');
-              toast({ title: 'Confidence improved', description: 'Your size recommendation is now more accurate.' });
-            }} />}
-
-            {/* Result Actions */}
+            {/* Result Actions (Share My Fit Identity) */}
             <ResultActions
               saved={saved}
               scanDate={scan.date}
@@ -234,6 +192,18 @@ const ProfileBody = () => {
               recommendedSize={adjustedSize}
               measurements={measurements}
               heightCm={scan.heightCm}
+            />
+
+            {/* My Size Everywhere + Shop My Size */}
+            <Button
+              className="w-full h-11 rounded-xl btn-luxury text-primary-foreground text-sm font-extrabold"
+              onClick={() => navigate('/my-sizes')}
+            >
+              <LayoutGrid className="mr-1.5 h-4 w-4" /> My Size at Every Brand
+            </Button>
+            <ShopThisSize
+              recommendedSize={adjustedSize}
+              confidence={confidence}
             />
 
             {/* Body Map + Measurements */}
