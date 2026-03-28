@@ -18,6 +18,29 @@ import {
 } from '@/lib/guestSession';
 import { compressPhoto } from '@/lib/imageUtils';
 
+/** Map any catalog category to the 17 values allowed by tryon_posts check constraint */
+const CATEGORY_MAP: Record<string, string> = {
+  't-shirts': 'tops', shirts: 'tops', polos: 'tops', sweaters: 'tops',
+  hoodies: 'tops', blazers: 'tops', vests: 'tops',
+  pants: 'bottoms', shorts: 'bottoms', skirts: 'bottoms', leggings: 'bottoms',
+  jackets: 'outerwear', 'jackets & coats': 'outerwear',
+  dresses: 'dress', jumpsuits: 'jumpsuit',
+  sneakers: 'shoes', boots: 'shoes', heels: 'shoes', sandals: 'shoes', loafers: 'shoes',
+  activewear: 'tops', underwear: 'lingerie',
+  belts: 'accessories', scarves: 'accessories', sunglasses: 'accessories', watches: 'accessories',
+};
+const ALLOWED_CATEGORIES = new Set([
+  'tops','bottoms','outerwear','dress','jumpsuit','other','swimwear',
+  'lingerie','loungewear','accessories','shoes','bags','hats','jewelry',
+  'coats','jeans','matching-set',
+]);
+const normCategory = (cat?: string | null): string => {
+  if (!cat) return 'other';
+  const lower = cat.toLowerCase().trim();
+  if (ALLOWED_CATEGORIES.has(lower)) return lower;
+  return CATEGORY_MAP[lower] || 'other';
+};
+
 export type LookItem = { brand: string; name: string; url: string; price_cents?: number | null; image_url?: string | null };
 export type WardrobeItem = { id: string; image_url: string; category: string; product_link: string | null };
 
