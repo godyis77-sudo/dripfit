@@ -847,6 +847,8 @@ export function useTryOnState() {
       const payload = resp?.data ?? resp;
       await incrementUsage();
       if (payload.resultImage) {
+        // Capture the previous result BEFORE overwriting — this is the "before" for the saved post
+        const previousResultForHistory = resultImage;
         setLayerHistory(prev => [...prev, resultImage!]);
         setResultImage(payload.resultImage);
         setSavedToItems(false);
@@ -855,8 +857,13 @@ export function useTryOnState() {
         toast({ title: `${accessoryCategory || 'Accessory'} added!`, description: 'Keep adding items or finish your look.' });
         if (user) {
           try {
+            // For replace-category items, save the previous try-on result as user_photo_url
+            // so the "before" in the detail view shows the last look, not the raw original
+            const beforePhoto = shouldReplace && previousResultForHistory
+              ? previousResultForHistory
+              : (userPhoto || previousResultForHistory || payload.resultImage);
             const { post: newPost, urls } = await persistTryOnPost({
-              userInput: userPhoto || resultImage || payload.resultImage,
+              userInput: beforePhoto,
               clothingInput: accessoryPhoto,
               resultInput: payload.resultImage,
               clothingCategory: accessoryCategory || null,
