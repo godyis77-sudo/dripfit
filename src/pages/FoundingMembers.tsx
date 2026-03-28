@@ -36,7 +36,7 @@ const TESTIMONIALS = [
 const DISCORD_INVITE = 'https://discord.gg/YOUR_INVITE_LINK';
 
 const FoundingMembers = () => {
-  usePageMeta({ title: 'Founding Members', description: 'Join the Founding 50 — exclusive early access, direct input on features, and lifetime perks.', path: '/founding-members' });
+  usePageMeta({ title: 'Founding Members', description: 'Join the Founding 100 — exclusive early access, direct input on features, and lifetime perks.', path: '/founding-members' });
   const [spotsClaimed, setSpotsClaimed] = useState(FALLBACK_CLAIMED);
 
   useEffect(() => {
