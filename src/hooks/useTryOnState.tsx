@@ -592,10 +592,12 @@ export function useTryOnState() {
     }
   };
 
-  const prepareTryOnImage = useCallback(async (input: string): Promise<string> => {
+  const prepareTryOnImage = useCallback(async (input: string, isBaseResult = false): Promise<string> => {
     if (!input?.startsWith('data:')) return input;
     try {
-      return await compressPhoto(input, 1280, 0.82);
+      // Use higher quality/resolution for base result images (previous try-on outputs)
+      // to prevent progressive degradation across multi-item sessions
+      return await compressPhoto(input, isBaseResult ? 1536 : 1280, isBaseResult ? 0.92 : 0.82);
     } catch {
       return input;
     }
@@ -801,7 +803,7 @@ export function useTryOnState() {
     trackEvent('tryon_accessory_started', { category: accessoryCategory });
     try {
       const [preparedResultImage, preparedAccessoryPhoto] = await Promise.all([
-        prepareTryOnImage(resultImage),
+        prepareTryOnImage(resultImage, true),
         prepareTryOnImage(accessoryPhoto),
       ]);
 
