@@ -643,7 +643,9 @@ TARGET GARMENT:
 
 TASK — CLOTHING SWAP:
 ${swapInstruction}
+- CRITICAL COLOR MATCH: The garment in the output MUST be the EXACT same color as in Image B. Do NOT shift, lighten, darken, or change the hue in any way. Purple must stay purple, not become blue. Match color precisely.
 - Match the target item from Image B exactly: same color, pattern, print, neckline, sleeve length, hemline, cut, texture, and logos.
+- IDENTITY: The output person MUST be the SAME person from Image A — same face, hair, body, skin tone. Do NOT substitute with the model from Image B.
 - Keep Image A person identity (face, body, hair, skin tone, pose). ${bgInstruction}
 - Keep garment fit realistic with natural wrinkles and shadows.
 - CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate or turn the model to match Image B's pose/angle. Copy only the garment from Image B, never its pose.
