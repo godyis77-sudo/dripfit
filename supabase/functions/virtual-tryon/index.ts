@@ -654,6 +654,7 @@ ${swapInstruction}
 - Keep Image A person identity (face, body, hair, skin tone, pose). ${bgInstruction}
 - Keep garment fit realistic with natural wrinkles and shadows.
 - CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate or turn the model to match Image B's pose/angle. Copy only the garment from Image B, never its pose.
+- IMAGE QUALITY: Maintain or improve the resolution and sharpness of Image A. Do NOT reduce image quality, introduce blur, compression artifacts, or soften details. The output must be at least as sharp and detailed as Image A.
 
 Output: A single photorealistic FULL-BODY image. No text/watermarks/split views.`;
     }
