@@ -102,26 +102,15 @@ const SizeComparison = () => {
         heightCm: Number(scan.height_cm),
       };
 
-      // 2. Get all size charts for selected category
+      // 2. Get all brand size charts for selected category group
+      const categoryGroup = CATEGORY_MAPPING[selectedCategory] || [selectedCategory];
       const { data: charts } = await supabase
-        .from('size_charts')
-        .select('id, retailer, brand, gender, category')
-        .eq('category', selectedCategory);
+        .from('brand_size_charts')
+        .select('id, brand_name, brand_slug, gender, category, size_data')
+        .in('category', categoryGroup)
+        .eq('is_active', true);
 
       if (!charts || charts.length === 0) {
-        setBrandSizes([]);
-        setLoading(false);
-        return;
-      }
-
-      // 3. Get all chart rows
-      const chartIds = charts.map(c => c.id);
-      const { data: allRows } = await supabase
-        .from('size_chart_rows')
-        .select('*')
-        .in('chart_id', chartIds);
-
-      if (!allRows) {
         setBrandSizes([]);
         setLoading(false);
         return;
