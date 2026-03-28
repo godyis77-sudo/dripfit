@@ -47,7 +47,7 @@ const OneTapPlayground = () => {
         .gte('image_confidence', 0.5)
         .not('image_url', 'is', null)
         .order('image_confidence', { ascending: false })
-        .limit(30);
+        .limit(48);
 
       if (mappedGender) {
         query = query.in('gender', [mappedGender, 'unisex']);
@@ -72,7 +72,7 @@ const OneTapPlayground = () => {
     const seen = new Set<string>();
     const result: CatalogProduct[] = [];
     for (const p of shuffled) {
-      if (result.length >= 8) break;
+      if (result.length >= 16) break;
       const key = `${p.brand}-${p.category}`;
       if (seen.has(key)) continue;
       seen.add(key);
@@ -214,7 +214,7 @@ const OneTapPlayground = () => {
           </div>
 
           <div
-            className="grid grid-cols-2 auto-rows-[120px] gap-2 px-2 pb-2 overflow-y-auto max-h-[320px]"
+            className="grid grid-cols-2 auto-rows-[120px] gap-2 px-2 pb-2 overflow-y-auto max-h-[520px]"
             onTouchStart={e => e.stopPropagation()}
           >
             {loading && !curated.length
