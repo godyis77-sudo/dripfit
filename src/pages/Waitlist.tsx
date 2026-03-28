@@ -264,7 +264,7 @@ const Waitlist = () => {
         {/* Subheadline */}
         <FadeUp delay={0.1} className="relative z-10 max-w-md mx-auto mb-10">
           <p className="text-foreground/70 text-[15px] sm:text-base leading-relaxed">
-            The intelligent way to shop. <span className="text-foreground font-semibold">Join the Founding 50.</span>
+            The intelligent way to shop. <span className="text-foreground font-semibold">Join the Founding 100.</span>
           </p>
         </FadeUp>
 

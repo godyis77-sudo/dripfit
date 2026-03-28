@@ -66,20 +66,20 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
 
       const res = await fetch(dataUrl);
       const blob = await res.blob();
-      const file = new File([blob], 'dripfit-founding50.png', { type: 'image/png' });
+      const file = new File([blob], 'dripfit-founding100.png', { type: 'image/png' });
 
-      trackEvent('founding50_share_generated' as any, { method: navigator.share ? 'native' : 'download' });
+      trackEvent('founding100_share_generated' as any, { method: navigator.share ? 'native' : 'download' });
 
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({
-          text: "I just got my exact measurements with DRIPFIT ✔ — Founding 50 Member. Try it free: dripfitcheck.lovable.app",
+          text: "I just got my exact measurements with DRIPFIT ✔ — Founding 100 Member. Try it free: dripfitcheck.lovable.app",
           files: [file],
         });
       } else {
         // Desktop fallback: direct download
         const a = document.createElement('a');
         a.href = dataUrl;
-        a.download = 'dripfit-founding50.png';
+        a.download = 'dripfit-founding100.png';
         a.click();
         toast({ title: 'Image saved!', description: 'Share it on your Stories.' });
       }
@@ -95,7 +95,7 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
 
   return (
     <div className="space-y-2 mt-3">
-      {/* Primary: Share Founding 50 Card */}
+      {/* Primary: Share Founding 100 Card */}
       {measurements && heightCm && recommendedSize && (
         <>
           <Button

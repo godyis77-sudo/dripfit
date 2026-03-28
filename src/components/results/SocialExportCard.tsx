@@ -189,7 +189,7 @@ const SocialExportCard = forwardRef<HTMLDivElement, SocialExportCardProps>(
               paddingTop: 12,
             }}
           >
-            FOUNDING 50
+            FOUNDING 100
           </div>
           <div
             style={{

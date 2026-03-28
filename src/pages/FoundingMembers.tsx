@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 
-const TOTAL_SPOTS = 50;
+const TOTAL_SPOTS = 100;
 const FALLBACK_CLAIMED = 12;
 
 const PERKS = [
@@ -36,7 +36,7 @@ const TESTIMONIALS = [
 const DISCORD_INVITE = 'https://discord.gg/YOUR_INVITE_LINK';
 
 const FoundingMembers = () => {
-  usePageMeta({ title: 'Founding Members', description: 'Join the Founding 50 — exclusive early access, direct input on features, and lifetime perks.', path: '/founding-members' });
+  usePageMeta({ title: 'Founding Members', description: 'Join the Founding 100 — exclusive early access, direct input on features, and lifetime perks.', path: '/founding-members' });
   const [spotsClaimed, setSpotsClaimed] = useState(FALLBACK_CLAIMED);
 
   useEffect(() => {
@@ -69,7 +69,7 @@ const FoundingMembers = () => {
             transition={{ duration: 0.5 }}
           >
             <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[3px] text-primary bg-primary/10 px-3 py-1.5 rounded-full mb-5">
-              <InlineCrown size={12} /> Founding 50
+              <InlineCrown size={12} /> Founding 100
             </span>
 
             <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight leading-[1.15] mb-3">
@@ -78,7 +78,7 @@ const FoundingMembers = () => {
             </h1>
 
             <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mx-auto">
-              We're recruiting 50 founding members to shape DripFit Check — 
+              We're recruiting 100 founding members to shape DripFit Check — 
               get lifetime perks, early access, and a direct line to the team.
             </p>
           </motion.div>
