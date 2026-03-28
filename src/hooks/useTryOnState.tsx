@@ -83,8 +83,12 @@ function loadPersistedTryOnState(): PersistedTryOnState {
     const parsed = { ...(lsRaw ? JSON.parse(lsRaw) : {}), ...(ssRaw ? JSON.parse(ssRaw) : {}) };
     const savedResultUrl = localStorage.getItem(TRYON_RESULT_KEY);
     const savedUserPhoto = localStorage.getItem(TRYON_USER_PHOTO_KEY);
+    const hasParsedUserPhoto = Object.prototype.hasOwnProperty.call(parsed, 'userPhoto');
+    const resolvedUserPhoto = hasParsedUserPhoto
+      ? (parsed.userPhoto ?? null)
+      : (savedUserPhoto || null);
     return {
-      userPhoto: savedUserPhoto || parsed.userPhoto || null,
+      userPhoto: resolvedUserPhoto,
       clothingPhoto: parsed.clothingPhoto || null,
       productLink: parsed.productLink || '',
       category: parsed.category || 'all',
@@ -187,6 +191,8 @@ export function useTryOnState() {
     userPhotoRef.current = v;
     setUserPhotoRaw(v);
     if (v && v.startsWith('data:')) {
+      // Clear stale persisted user photo immediately while background upload runs.
+      persistState({ userPhoto: null });
       // Immediately clear stale persisted URL so it can't override the new photo on remount
       try { localStorage.removeItem(TRYON_USER_PHOTO_KEY); } catch { /* ignore */ }
       // Upload in background, swap to URL when done
@@ -601,7 +607,8 @@ export function useTryOnState() {
 
   const autoSaveToProfile = async (resultBase64: string, capturedUserPhoto?: string, capturedClothingPhoto?: string) => {
     if (!user) return;
-    const uPhoto = capturedUserPhoto || userPhoto || resultBase64;
+    const currentUserPhoto = userPhotoRef.current || userPhoto;
+    const uPhoto = capturedUserPhoto || currentUserPhoto || resultBase64;
     const cPhoto = capturedClothingPhoto || clothingPhoto || selectedQuickPick?.image_url || resultBase64;
     if (!uPhoto || !cPhoto) { console.warn('autoSaveToProfile: missing photos'); return; }
     let lastError: unknown = null;
@@ -919,10 +926,11 @@ export function useTryOnState() {
       // Only fall back to original photo for sensitive garments that are more likely to be blocked.
       const sensitiveReplacePattern = /\b(lingerie|underwear|underware|panties|briefs|boxers|swimwear|swimsuit|bikini|one-piece|one piece)\b/;
       const sensitiveContext = `${normalizedAccCat} ${resolvedProductName.toLowerCase()} ${resolvedProductBrand.toLowerCase()}`;
-      const useOriginalPhoto = shouldReplace && !!userPhoto && sensitiveReplacePattern.test(sensitiveContext);
+      const currentUserPhoto = userPhotoRef.current || userPhoto;
+      const useOriginalPhoto = shouldReplace && !!currentUserPhoto && sensitiveReplacePattern.test(sensitiveContext);
       let basePhoto = preparedResultImage;
       if (useOriginalPhoto) {
-        basePhoto = await prepareTryOnImage(userPhoto);
+        basePhoto = await prepareTryOnImage(currentUserPhoto!);
       }
 
       const { data: resp, error } = await supabase.functions.invoke('virtual-tryon', {
@@ -957,7 +965,7 @@ export function useTryOnState() {
             // so the "before" in the detail view shows the last look, not the raw original
             const beforePhoto = shouldReplace && previousResultForHistory
               ? previousResultForHistory
-              : (userPhoto || previousResultForHistory || payload.resultImage);
+              : (currentUserPhoto || previousResultForHistory || payload.resultImage);
             const { post: newPost, urls } = await persistTryOnPost({
               userInput: beforePhoto,
               clothingInput: accessoryPhoto,
