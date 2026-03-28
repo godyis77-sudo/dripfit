@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ExternalLink, Sparkles, Plus } from 'lucide-react';
@@ -12,6 +12,93 @@ interface FullscreenImageProps {
   onShop?: () => void;
   onTryOn?: () => void;
   onAddToWardrobe?: () => void;
+}
+
+/** Internal zoomable image with pinch + double-tap */
+function ZoomableFullscreenImg({ src, alt }: { src: string; alt: string }) {
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const lastTouch = useRef<{ x: number; y: number } | null>(null);
+  const lastDist = useRef<number | null>(null);
+
+  // Reset when src changes
+  const prevSrc = useRef(src);
+  if (prevSrc.current !== src) {
+    prevSrc.current = src;
+    if (zoom !== 1) setZoom(1);
+    if (pan.x !== 0 || pan.y !== 0) setPan({ x: 0, y: 0 });
+  }
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      lastDist.current = Math.hypot(dx, dy);
+    } else if (e.touches.length === 1 && zoom > 1) {
+      lastTouch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      setIsPanning(true);
+    }
+  }, [zoom]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2 && lastDist.current !== null) {
+      e.preventDefault();
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.hypot(dx, dy);
+      const scale = dist / lastDist.current;
+      setZoom(prev => Math.min(4, Math.max(1, prev * scale)));
+      lastDist.current = dist;
+    } else if (e.touches.length === 1 && isPanning && lastTouch.current && zoom > 1) {
+      const dx = e.touches[0].clientX - lastTouch.current.x;
+      const dy = e.touches[0].clientY - lastTouch.current.y;
+      setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+      lastTouch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  }, [isPanning, zoom]);
+
+  const handleTouchEnd = useCallback(() => {
+    lastDist.current = null;
+    lastTouch.current = null;
+    setIsPanning(false);
+    if (zoom <= 1) setPan({ x: 0, y: 0 });
+  }, [zoom]);
+
+  const handleDoubleClick = useCallback(() => {
+    if (zoom > 1) { setZoom(1); setPan({ x: 0, y: 0 }); } else { setZoom(2.5); }
+  }, [zoom]);
+
+  return (
+    <div
+      className="relative touch-none"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onDoubleClick={handleDoubleClick}
+      onClick={(e) => e.stopPropagation()}
+    >
+      {zoom > 1 && (
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); setZoom(1); setPan({ x: 0, y: 0 }); }}
+          className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 px-3 py-1.5 rounded-full bg-black/70 border border-white/25 backdrop-blur-sm text-[11px] font-bold text-white active:scale-95 transition-transform"
+        >
+          Reset Zoom
+        </button>
+      )}
+      <img
+        src={src}
+        alt={alt}
+        className="max-w-[calc(100%-2rem)] max-h-[72dvh] w-auto h-auto rounded-2xl"
+        style={{
+          transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)`,
+          transition: isPanning ? 'none' : 'transform 0.15s ease-out',
+        }}
+        draggable={false}
+      />
+    </div>
+  );
 }
 
 export const FullscreenImage = ({ src, alt = '', className = '', children, onShop, onTryOn, onAddToWardrobe }: FullscreenImageProps) => {
@@ -73,16 +160,8 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
             >
               <X className="h-5 w-5 text-white" />
             </button>
-            <motion.img
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              src={src}
-              alt={alt}
-              className="max-w-[calc(100%-2rem)] max-h-[72dvh] w-auto h-auto rounded-2xl"
-              onClick={(e) => e.stopPropagation()}
-            />
+
+            <ZoomableFullscreenImg src={src} alt={alt} />
 
             {hasActions && (
               <motion.div
