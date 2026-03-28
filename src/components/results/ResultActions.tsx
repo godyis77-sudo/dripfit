@@ -18,6 +18,8 @@ interface ResultActionsProps {
   recommendedSize?: string;
   measurements?: Record<string, MeasurementRange>;
   heightCm?: number;
+  /** When true, only render the Share button (no meta text). Use metaOnly for the rest. */
+  shareOnly?: boolean;
 }
 
 const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, recommendedSize, measurements, heightCm }: ResultActionsProps) => {
