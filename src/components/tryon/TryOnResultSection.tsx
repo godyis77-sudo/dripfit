@@ -346,6 +346,8 @@ const TryOnResultSection = ({
   const productBrand = latestItem?.brand || selectedQuickPick?.brand;
   const productPrice = latestItem?.price_cents ?? selectedQuickPick?.price_cents;
   const isPostSelected = !shared && showPostUI && isPublic;
+  const compareBeforeImage = layerHistory.length > 0 ? layerHistory[layerHistory.length - 1] : userPhoto;
+  const hasCompareBeforeImage = !!compareBeforeImage;
 
   return (
     <>
@@ -374,10 +376,10 @@ const TryOnResultSection = ({
             aria-label="Open try-on result full screen"
           >
             <AnimatePresence mode="wait">
-              {showBeforeAfter && userPhoto ? (
+              {showBeforeAfter && hasCompareBeforeImage ? (
                 <motion.div key="before-after" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-2 gap-0">
                   <div className="relative">
-                    <img src={userPhoto} alt="Your photo" className="w-full aspect-[3/4] object-cover rounded-l-xl" />
+                    <img src={compareBeforeImage!} alt="Before look" className="w-full aspect-[3/4] object-cover rounded-l-xl" />
                     <span className="absolute top-2 left-2 text-[9px] font-bold uppercase tracking-wider bg-black/60 text-white px-2 py-0.5 rounded-md">Before</span>
                   </div>
                   <div className="relative">
@@ -392,7 +394,7 @@ const TryOnResultSection = ({
           </button>
 
           {/* Before/After toggle */}
-          {userPhoto && (
+          {hasCompareBeforeImage && (
             <button
               onClick={(e) => { e.stopPropagation(); setShowBeforeAfter(v => !v); }}
               className="absolute bottom-3 left-3 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold active:scale-95 transition-transform"
