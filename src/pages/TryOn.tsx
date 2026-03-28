@@ -470,11 +470,6 @@ const TryOn = () => {
               </p>
             )}
 
-            <div className="flex items-start gap-1.5 bg-card border border-border rounded-lg px-3 py-2 mt-2 mb-3">
-              <Info className="h-3.5 w-3.5 text-muted-foreground/60 shrink-0 mt-0.5" />
-              <p className="text-[12px] text-muted-foreground leading-relaxed">AI preview — actual fit, drape, and texture may vary. Use your Scan profile for the most accurate sizing.</p>
-            </div>
-
             {/* Generate CTA — only show when both photos are ready and no result */}
             {s.canGenerate && !s.loading && !s.resultImage && (
               <div className="sticky bottom-[calc(5rem+env(safe-area-inset-bottom))] z-30 -mx-4 px-4 py-3 bg-gradient-to-t from-background via-background to-background/0">
@@ -483,6 +478,12 @@ const TryOn = () => {
                 </Button>
               </div>
             )}
+
+            <div className="flex items-start gap-1.5 bg-card border border-border rounded-lg px-3 py-2 mt-2 mb-3">
+              <Info className="h-3.5 w-3.5 text-muted-foreground/60 shrink-0 mt-0.5" />
+              <p className="text-[12px] text-muted-foreground leading-relaxed">AI preview — actual fit, drape, and texture may vary. Use your Scan profile for the most accurate sizing.</p>
+            </div>
+
             {(s.userPhoto || s.clothingPhoto) && s.loading && !s.resultImage && createPortal(
               <div className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-[120] px-4 animate-in slide-in-from-bottom-8 duration-300">
                 <div className="mx-auto w-full max-w-[390px]">
