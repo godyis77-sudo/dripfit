@@ -827,8 +827,8 @@ export function useTryOnState() {
       // Use the latest try-on result as base for replace-categories so users can build on the current look.
       // Only fall back to original photo for sensitive garments that are more likely to be blocked.
       const sensitiveReplacePattern = /\b(lingerie|underwear|underware|panties|briefs|boxers|swimwear|swimsuit|bikini|one-piece|one piece)\b/;
-      const replaceContext = `${normalizedAccCat} ${resolvedProductName.toLowerCase()} ${resolvedProductBrand.toLowerCase()}`;
-      const useOriginalPhoto = shouldReplace && !!userPhoto && sensitiveReplacePattern.test(replaceContext);
+      const sensitiveContext = `${normalizedAccCat} ${resolvedProductName.toLowerCase()} ${resolvedProductBrand.toLowerCase()}`;
+      const useOriginalPhoto = shouldReplace && !!userPhoto && sensitiveReplacePattern.test(sensitiveContext);
       let basePhoto = preparedResultImage;
       if (useOriginalPhoto) {
         basePhoto = await prepareTryOnImage(userPhoto);
