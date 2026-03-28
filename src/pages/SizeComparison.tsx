@@ -38,7 +38,19 @@ const CATEGORY_PILLS = [
   { label: 'Bottoms', value: 'bottoms' },
   { label: 'Dresses', value: 'dresses' },
   { label: 'Outerwear', value: 'outerwear' },
+  { label: 'Activewear', value: 'activewear' },
+  { label: 'Swimwear', value: 'swimwear' },
 ];
+
+/** Map a pill value to all matching brand_size_charts categories */
+const CATEGORY_MAPPING: Record<string, string[]> = {
+  tops: ['tops', 'hoodies', 'fleece', 'knitwear'],
+  bottoms: ['bottoms', 'jeans', 'shorts'],
+  dresses: ['dresses', 'jumpsuits'],
+  outerwear: ['outerwear', 'blazers', 'suits'],
+  activewear: ['activewear', 'sports-bras'],
+  swimwear: ['swimwear'],
+};
 
 const SizeComparison = () => {
   usePageMeta({
