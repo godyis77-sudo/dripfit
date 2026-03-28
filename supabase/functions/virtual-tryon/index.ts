@@ -170,8 +170,10 @@ Deno.serve(async (req) => {
     const isSwimwear = SWIM_TYPES.some(t => hasContextTerm(normalizedProductContext, t));
     const isUnderwear = UNDERWEAR_TYPES.some(t => hasContextTerm(normalizedProductContext, t));
     const isComfortwear = COMFORTWEAR_TYPES.some(t => hasContextTerm(normalizedItemContext, t) || hasContextTerm(normalizedProductContext, t));
-    const isIntimate = !isComfortwear && (INTIMATE_TYPES.some(t => hasContextTerm(normalizedItemContext, t) || hasContextTerm(normalizedProductContext, t)) || isSwimwear || isUnderwear);
-    const isExplicitIntimate = EXPLICIT_TERMS.some(t => hasContextTerm(normalizedProductContext, t));
+    // Sports bras and crop tops are athletic tops — NOT intimate items. Route them through the standard garment path.
+    const isSportsBraOrCropTop = /\b(sports?\s*bra|crop\s*top)\b/.test(normalizedProductContext);
+    const isIntimate = !isComfortwear && !isSportsBraOrCropTop && (INTIMATE_TYPES.some(t => hasContextTerm(normalizedItemContext, t) || hasContextTerm(normalizedProductContext, t)) || isSwimwear || isUnderwear);
+    const isExplicitIntimate = !isSportsBraOrCropTop && EXPLICIT_TERMS.some(t => hasContextTerm(normalizedProductContext, t));
     const isLayering = raw.isLayering === true;
 
     // Underwear is frequently blocked by the image model safety filter.
@@ -580,7 +582,7 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
     } else {
       // Detect if garment is top-only or bottom-only to preserve existing clothing
       const BOTTOM_TYPES = ["jeans", "pants", "trousers", "shorts", "skirt", "skirts", "leggings", "chinos", "joggers", "sweatpants", "cargo", "culottes", "bottom", "bottoms"];
-      const TOP_TYPES = ["top", "tops", "shirt", "shirts", "blouse", "t-shirt", "t-shirts", "tee", "sweater", "sweaters", "hoodie", "hoodies", "polo", "polos", "tank", "tank top", "crop top", "cardigan", "pullover", "henley", "jersey"];
+      const TOP_TYPES = ["top", "tops", "shirt", "shirts", "blouse", "t-shirt", "t-shirts", "tee", "sweater", "sweaters", "hoodie", "hoodies", "polo", "polos", "tank", "tank top", "crop top", "sports bra", "bra", "bralette", "cardigan", "pullover", "henley", "jersey"];
       const FULL_BODY_TYPES = ["dress", "dresses", "jumpsuit", "jumpsuits", "romper", "overalls", "full"];
       const OUTERWEAR_TYPES = ["jacket", "jackets", "coat", "coats", "blazer", "blazers", "vest", "vests", "parka", "windbreaker", "outerwear"];
       const SET_TYPES = ["set", "matching set", "two piece", "2 piece", "2-piece", "co-ord", "co ord", "coord", "pajama set", "pj set", "lounge set", "sleep set", "tracksuit", "sweatsuit", "matching"];
@@ -613,7 +615,13 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
 2. REMOVE any pants, jeans, trousers, or shorts visible in Image A so they don't show beneath the new garment.
 3. Keep the person's EXISTING footwear from Image A UNCHANGED unless the garment from Image B includes footwear.`;
       } else if (isTopGarment) {
-        swapInstruction = `1. Replace ONLY the upper-body clothing (shirt, top, sweater, etc.) from Image A with the garment from Image B.
+        const isCropped = /\b(sports?\s*bra|crop\s*top|bralette|bra)\b/.test(stdContext);
+        swapInstruction = isCropped
+          ? `1. Replace ONLY the upper-body clothing from Image A with the CROPPED TOP / SPORTS BRA from Image B.
+2. The top must remain SHORT and cropped — ending ABOVE the waist or at the midriff. Do NOT extend it into a full-length shirt or tank top. Do NOT add any extra fabric below the natural hemline of the garment.
+3. Keep the person's EXISTING lower-body clothing (pants, jeans, shorts, skirt, leggings) from Image A EXACTLY as they are — do NOT replace, remove, add, or change the bottoms in any way.
+4. Keep the person's EXISTING footwear from Image A completely UNCHANGED.`
+          : `1. Replace ONLY the upper-body clothing (shirt, top, sweater, etc.) from Image A with the garment from Image B.
 2. Keep the person's EXISTING lower-body clothing (pants, jeans, skirt, etc.) from Image A completely UNCHANGED.
 3. Keep the person's EXISTING footwear from Image A completely UNCHANGED.`;
       } else {
