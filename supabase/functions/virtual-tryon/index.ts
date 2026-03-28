@@ -583,9 +583,10 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
     } else {
       // Detect if garment is top-only or bottom-only to preserve existing clothing
       const BOTTOM_TYPES = ["jeans", "pants", "trousers", "shorts", "skirt", "skirts", "leggings", "chinos", "joggers", "sweatpants", "cargo", "culottes", "bottom", "bottoms"];
-      const TOP_TYPES = ["top", "tops", "shirt", "shirts", "blouse", "t-shirt", "t-shirts", "tee", "sweater", "sweaters", "hoodie", "hoodies", "polo", "polos", "tank", "tank top", "crop top", "sports bra", "bra", "bralette", "cardigan", "pullover", "henley", "jersey"];
+      const TOP_TYPES = ["top", "tops", "shirt", "shirts", "blouse", "t-shirt", "t-shirts", "tee", "sweater", "sweaters", "hoodie", "hoodies", "polo", "polos", "tank", "tank top", "crop top", "sports bra", "bra", "bralette", "cardigan", "pullover", "henley", "jersey", "vest", "vests"];
       const FULL_BODY_TYPES = ["dress", "dresses", "jumpsuit", "jumpsuits", "romper", "overalls", "full"];
-      const OUTERWEAR_TYPES = ["jacket", "jackets", "coat", "coats", "blazer", "blazers", "vest", "vests", "parka", "windbreaker", "outerwear"];
+      const OUTERWEAR_TYPES = ["jacket", "jackets", "coat", "coats", "blazer", "blazers", "parka", "windbreaker", "outerwear"];
+      const OUTERWEAR_VEST_HINT = /\b(puffer\s*vest|down\s*vest|quilted\s*vest|fleece\s*vest|insulated\s*vest|gilet)\b/;
       const SET_TYPES = ["set", "matching set", "two piece", "2 piece", "2-piece", "co-ord", "co ord", "coord", "pajama set", "pj set", "lounge set", "sleep set", "tracksuit", "sweatsuit", "matching"];
       const COMFORTWEAR_STD_TYPES = ["loungewear", "loungeware", "sleepwear", "pajamas", "pyjamas", "robe", "robes", "lounge"];
 
@@ -593,7 +594,8 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       const isBottomGarment = BOTTOM_TYPES.some(t => hasContextTerm(stdContext, t));
       const isTopGarment = TOP_TYPES.some(t => hasContextTerm(stdContext, t)) && !isBottomGarment;
       const isFullBodyGarment = FULL_BODY_TYPES.some(t => hasContextTerm(stdContext, t));
-      const isOuterwearGarment = OUTERWEAR_TYPES.some(t => hasContextTerm(stdContext, t));
+      // Only classify as outerwear if it's a jacket/coat/blazer OR explicitly an insulated vest (puffer vest, gilet)
+      const isOuterwearGarment = (OUTERWEAR_TYPES.some(t => hasContextTerm(stdContext, t)) || OUTERWEAR_VEST_HINT.test(stdContext)) && !isTopGarment;
       const isSetGarmentStd = SET_TYPES.some(t => hasContextTerm(stdContext, t)) || COMFORTWEAR_STD_TYPES.some(t => hasContextTerm(stdContext, t));
 
       let swapInstruction: string;
