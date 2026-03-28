@@ -589,7 +589,7 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       const FULL_BODY_TYPES = ["dress", "dresses", "jumpsuit", "jumpsuits", "romper", "overalls", "full"];
       const OUTERWEAR_TYPES = ["jacket", "jackets", "coat", "coats", "blazer", "blazers", "parka", "windbreaker", "outerwear"];
       const OUTERWEAR_VEST_HINT = /\b(puffer\s*vest|down\s*vest|quilted\s*vest|fleece\s*vest|insulated\s*vest|gilet)\b/;
-      const SET_TYPES = ["set", "matching set", "two piece", "2 piece", "2-piece", "co-ord", "co ord", "coord", "pajama set", "pj set", "lounge set", "sleep set", "tracksuit", "sweatsuit", "matching"];
+      const SET_TYPES = ["set", "matching set", "two piece", "2 piece", "2-piece", "co-ord", "co ord", "coord", "pajama set", "pj set", "lounge set", "sleep set", "tracksuit", "sweatsuit", "matching", "outfit", "combo", "bundle", "pair"];
       const COMFORTWEAR_STD_TYPES = ["loungewear", "loungeware", "sleepwear", "pajamas", "pyjamas", "robe", "robes", "lounge"];
 
       const stdContext = normalizeMatchText([itemLower, productName.toLowerCase(), productCategory.toLowerCase()].join(" "));
@@ -598,16 +598,21 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       const isFullBodyGarment = FULL_BODY_TYPES.some(t => hasContextTerm(stdContext, t));
       // Only classify as outerwear if it's a jacket/coat/blazer OR explicitly an insulated vest (puffer vest, gilet)
       const isOuterwearGarment = (OUTERWEAR_TYPES.some(t => hasContextTerm(stdContext, t)) || OUTERWEAR_VEST_HINT.test(stdContext)) && !isTopGarment;
+      // Detect if context mentions BOTH a top AND a bottom — this implies a set even without "set" keyword
+      const hasBothTopAndBottom = TOP_TYPES.some(t => hasContextTerm(stdContext, t)) && BOTTOM_TYPES.some(t => hasContextTerm(stdContext, t));
       // Only classify as a set/comfortwear if it's NOT clearly a single bottom or single top item.
       // "Lounge Sweatpant" should route as bottom, not as a loungewear set.
-      const isSetGarmentStd = !isBottomGarment && !isTopGarment && (SET_TYPES.some(t => hasContextTerm(stdContext, t)) || COMFORTWEAR_STD_TYPES.some(t => hasContextTerm(stdContext, t)));
+      const isSetGarmentStd = !isBottomGarment && !isTopGarment && (
+        SET_TYPES.some(t => hasContextTerm(stdContext, t)) || 
+        COMFORTWEAR_STD_TYPES.some(t => hasContextTerm(stdContext, t))
+      ) || hasBothTopAndBottom;
 
       let swapInstruction: string;
       if (isSetGarmentStd) {
-        swapInstruction = `1. Image B shows a COMPLETE MATCHING SET or loungewear/sleepwear outfit (typically a top AND bottom together). Replace ALL clothing from Image A with the ENTIRE outfit shown in Image B — BOTH the top AND bottom pieces.
-2. Do NOT apply only part of the set. If Image B shows a person wearing a matching top and matching bottom, the output MUST show BOTH pieces on the model.
-3. REMOVE all footwear/shoes from Image A — the model should be BAREFOOT. Loungewear and sleepwear are worn without shoes.
-4. Match every detail from Image B: color, pattern, print, fabric texture, fit, and styling of BOTH pieces.`;
+        swapInstruction = `1. Image B shows a COMPLETE SET with BOTH a top AND a bottom. You MUST replace ALL clothing from Image A with the ENTIRE outfit shown in Image B — apply BOTH the top piece AND the bottom piece.
+2. CRITICAL: Do NOT apply only one piece. Both the top AND bottom from Image B must appear on the model. If the image shows a shirt/top paired with pants/shorts/skirt, BOTH must be swapped onto the model.
+3. Match every detail from Image B: color, pattern, print, fabric texture, fit, and styling of BOTH the top and bottom pieces precisely.
+4. Keep the person's EXISTING footwear from Image A UNCHANGED unless the set from Image B includes footwear. For loungewear/sleepwear sets, remove footwear — the model should be barefoot.`;
       } else if (isBottomGarment) {
         swapInstruction = `1. Replace ONLY the lower-body clothing (pants, jeans, shorts, skirt, etc.) from Image A with the garment from Image B.
 2. Keep the person's EXISTING upper-body clothing (shirt, top, jacket, etc.) from Image A completely UNCHANGED.
