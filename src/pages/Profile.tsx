@@ -3,7 +3,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Shirt, Camera, Settings, ShoppingBag, ShoppingCart, User, Globe, X } from 'lucide-react';
+import { LogOut, Shirt, Camera, Settings, ShoppingBag, ShoppingCart, User, Globe, X, Gift, ChevronDown } from 'lucide-react';
 import InlineCrown from '@/components/ui/InlineCrown';
 import { useAuth } from '@/hooks/useAuth';
 import PremiumBadge from '@/components/monetization/PremiumBadge';
@@ -23,6 +23,8 @@ import { useProfileInfo, useTryOnPosts, useLatestScan, useWardrobe, useFavoriteR
 import { useQueryClient } from '@tanstack/react-query';
 import { InviteFriendsCard } from '@/components/profile/InviteFriendsCard';
 import MilestoneBadges from '@/components/profile/MilestoneBadges';
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
+
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -224,11 +226,27 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Milestone Badges */}
-        <MilestoneBadges />
+        {/* Milestone Badges — collapsed by default */}
+        <Collapsible defaultOpen={false} className="mb-2">
+          <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-xl bg-card/60 border border-border/30 text-[12px] font-bold text-foreground active:scale-[0.98] transition-transform">
+            <span className="flex items-center gap-1.5">🏅 Milestones</span>
+            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pt-2">
+            <MilestoneBadges />
+          </CollapsibleContent>
+        </Collapsible>
 
-        {/* Invite Friends */}
-        <InviteFriendsCard />
+        {/* Invite Friends — collapsed by default */}
+        <Collapsible defaultOpen={false} className="mb-3">
+          <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-xl bg-card/60 border border-border/30 text-[12px] font-bold text-foreground active:scale-[0.98] transition-transform">
+            <span className="flex items-center gap-1.5"><Gift className="h-3.5 w-3.5 text-primary" /> Invite Friends</span>
+            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pt-2">
+            <InviteFriendsCard />
+          </CollapsibleContent>
+        </Collapsible>
 
         {/* Tab switcher */}
         <div className="flex gap-1 bg-card/60 backdrop-blur-sm rounded-xl p-1 mb-4 border border-border/30">
