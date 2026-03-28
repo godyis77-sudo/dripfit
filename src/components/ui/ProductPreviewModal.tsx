@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Sparkles, ExternalLink, ShoppingCart, ChevronDown, ShoppingBag } from 'lucide-react';
 import { PriceWatchButton } from '@/components/pricing/PriceWatchUI';
