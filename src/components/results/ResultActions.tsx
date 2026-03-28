@@ -79,7 +79,7 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
         // Desktop fallback: direct download
         const a = document.createElement('a');
         a.href = dataUrl;
-        a.download = 'dripfit-founding50.png';
+        a.download = 'dripfit-founding100.png';
         a.click();
         toast({ title: 'Image saved!', description: 'Share it on your Stories.' });
       }
