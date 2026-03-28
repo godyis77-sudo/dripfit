@@ -264,6 +264,19 @@ const OneTapPlayground = () => {
               clothingUrl: p.image_url,
               productUrl: p.product_url,
               freshSession: true,
+              quickPick: {
+                id: p.id || '',
+                brand: p.brand,
+                name: p.name,
+                image_url: p.image_url,
+                product_url: p.product_url || null,
+                price_cents: p.price_cents ?? null,
+                category: p.category || 'other',
+                retailer: p.brand,
+                fit_profile: p.fit_profile || null,
+                fabric_composition: p.fabric_composition || null,
+                style_genre: p.style_genre || null,
+              },
             },
           });
         }}
