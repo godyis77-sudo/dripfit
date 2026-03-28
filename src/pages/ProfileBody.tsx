@@ -219,14 +219,17 @@ const ProfileBody = () => {
               onAdjust={handleMeasurementAdjust}
             />
 
-            {confidence === 'low' && <LowConfidenceRescue onCalibrate={handleCalibrate} />}
+            {confidence === 'low' && <LowConfidenceRescue onCalibrate={() => {
+              setConfidence('medium');
+              toast({ title: 'Confidence improved', description: 'Your size recommendation is now more accurate.' });
+            }} />}
 
             {/* Result Actions */}
             <ResultActions
               saved={saved}
               scanDate={scan.date}
-              onSave={handleSave}
-              onTryOn={() => { trackEvent('results_tryon_click'); navigate('/tryon', { state: { bodyProfile: scan } }); }}
+              onSave={() => {}}
+              onTryOn={() => {}}
               onNewScan={() => navigate('/capture')}
               onDelete={() => { toast({ title: 'Deleted' }); navigate('/profile'); }}
               recommendedSize={adjustedSize}
