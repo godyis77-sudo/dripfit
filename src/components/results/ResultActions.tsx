@@ -95,7 +95,7 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
 
   return (
     <div className="space-y-2 mt-3">
-      {/* Primary: Share Founding 50 Card */}
+      {/* Primary: Share Founding 100 Card */}
       {measurements && heightCm && recommendedSize && (
         <>
           <Button

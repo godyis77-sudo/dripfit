@@ -83,7 +83,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
             p_email: email.toLowerCase().trim(),
           });
           if (claimed) {
-            toast({ title: '🏆 Founder Access Granted!', description: 'Welcome to the Founding 50. You have unlimited scans.', className: 'border-primary bg-primary/10' });
+            toast({ title: '🏆 Founder Access Granted!', description: 'Welcome to the Founding 100. You have unlimited scans.', className: 'border-primary bg-primary/10' });
           } else {
             toast({ title: 'Invalid code', description: 'This code is invalid or has already been claimed.', variant: 'destructive' });
           }

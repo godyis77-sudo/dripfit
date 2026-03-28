@@ -320,7 +320,7 @@ const MediaKit = () => {
             {[
               { label: 'Live App', href: 'https://dripfitcheck.lovable.app', desc: 'Try DripFit Check' },
               { label: 'Partnership Deck', href: '/partnership', desc: 'Retailer integration overview' },
-              { label: 'Founding Members', href: '/founding-members', desc: 'Join the Founding 50' },
+              { label: 'Founding Members', href: '/founding-members', desc: 'Join the Founding 100' },
               { label: 'Privacy Policy', href: '/privacy', desc: 'Data handling & privacy' },
             ].map((link) => (
               <a

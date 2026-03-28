@@ -9,7 +9,7 @@ const links = [
     style: 'primary' as const,
   },
   {
-    label: 'Apply: Founding 50 Discord',
+    label: 'Apply: Founding 100 Discord',
     href: '/founding-members',
     style: 'outline' as const,
   },

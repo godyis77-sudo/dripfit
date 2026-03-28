@@ -78,7 +78,7 @@ const FoundingMembers = () => {
             </h1>
 
             <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mx-auto">
-              We're recruiting 50 founding members to shape DripFit Check — 
+              We're recruiting 100 founding members to shape DripFit Check — 
               get lifetime perks, early access, and a direct line to the team.
             </p>
           </motion.div>
