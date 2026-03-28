@@ -38,7 +38,19 @@ const CATEGORY_PILLS = [
   { label: 'Bottoms', value: 'bottoms' },
   { label: 'Dresses', value: 'dresses' },
   { label: 'Outerwear', value: 'outerwear' },
+  { label: 'Activewear', value: 'activewear' },
+  { label: 'Swimwear', value: 'swimwear' },
 ];
+
+/** Map a pill value to all matching brand_size_charts categories */
+const CATEGORY_MAPPING: Record<string, string[]> = {
+  tops: ['tops', 'hoodies', 'fleece', 'knitwear'],
+  bottoms: ['bottoms', 'jeans', 'shorts'],
+  dresses: ['dresses', 'jumpsuits'],
+  outerwear: ['outerwear', 'blazers', 'suits'],
+  activewear: ['activewear', 'sports-bras'],
+  swimwear: ['swimwear'],
+};
 
 const SizeComparison = () => {
   usePageMeta({
@@ -90,11 +102,13 @@ const SizeComparison = () => {
         heightCm: Number(scan.height_cm),
       };
 
-      // 2. Get all size charts for selected category
+      // 2. Get all brand size charts for selected category group
+      const categoryGroup = CATEGORY_MAPPING[selectedCategory] || [selectedCategory];
       const { data: charts } = await supabase
-        .from('size_charts')
-        .select('id, retailer, brand, gender, category')
-        .eq('category', selectedCategory);
+        .from('brand_size_charts')
+        .select('id, brand_name, brand_slug, gender, category, size_data')
+        .in('category', categoryGroup)
+        .eq('is_active', true);
 
       if (!charts || charts.length === 0) {
         setBrandSizes([]);
@@ -102,41 +116,46 @@ const SizeComparison = () => {
         return;
       }
 
-      // 3. Get all chart rows
-      const chartIds = charts.map(c => c.id);
-      const { data: allRows } = await supabase
-        .from('size_chart_rows')
-        .select('*')
-        .in('chart_id', chartIds);
-
-      if (!allRows) {
-        setBrandSizes([]);
-        setLoading(false);
-        return;
-      }
-
       const fit = getFitPreference() as FitPreference || 'regular';
 
-      // 4. Score each brand
+      // 4. Score each brand using inline size_data
       const results: BrandSize[] = [];
       for (const chart of charts) {
-        const rows = allRows.filter(r => r.chart_id === chart.id);
-        if (rows.length === 0) continue;
+        const sizeData = chart.size_data as any[];
+        if (!sizeData || sizeData.length === 0) continue;
 
-        const scored = rows.map(r => ({
-          label: r.size_label,
-          score: scoreSizeRow(r as any, measurements, fit, selectedCategory),
+        const scored = sizeData.map((r: any) => ({
+          label: r.label || r.size_label || '?',
+          score: scoreSizeRow({
+            size_label: r.label || r.size_label || '',
+            chest_min: r.chest_min ?? null,
+            chest_max: r.chest_max ?? null,
+            waist_min: r.waist_min ?? null,
+            waist_max: r.waist_max ?? null,
+            hip_min: r.hip_min ?? null,
+            hip_max: r.hip_max ?? null,
+            shoulder_min: r.shoulder_min ?? null,
+            shoulder_max: r.shoulder_max ?? null,
+            inseam_min: r.inseam_min ?? null,
+            inseam_max: r.inseam_max ?? null,
+            sleeve_min: r.sleeve_min ?? null,
+            sleeve_max: r.sleeve_max ?? null,
+            bust_min: r.bust_min ?? null,
+            bust_max: r.bust_max ?? null,
+            height_min: r.height_min ?? null,
+            height_max: r.height_max ?? null,
+          } as any, measurements, fit, selectedCategory),
         })).sort((a, b) => b.score - a.score);
 
         if (scored[0].score > 0.3) {
           results.push({
-            brandName: chart.brand,
-            brandSlug: chart.brand.toLowerCase().replace(/\s+/g, '-'),
+            brandName: chart.brand_name,
+            brandSlug: chart.brand_slug,
             category: chart.category,
             gender: chart.gender,
             size: scored[0].label,
             confidence: scored[0].score,
-            genre: getBrandGenre(chart.brand) || 'Casual',
+            genre: getBrandGenre(chart.brand_name) || 'Casual',
           });
         }
       }
