@@ -47,7 +47,7 @@ const OneTapPlayground = () => {
         .gte('image_confidence', 0.5)
         .not('image_url', 'is', null)
         .order('image_confidence', { ascending: false })
-        .limit(30);
+        .limit(48);
 
       if (mappedGender) {
         query = query.in('gender', [mappedGender, 'unisex']);
