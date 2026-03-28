@@ -22,7 +22,7 @@ interface ResultActionsProps {
   shareOnly?: boolean;
 }
 
-const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, recommendedSize, measurements, heightCm }: ResultActionsProps) => {
+const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, recommendedSize, measurements, heightCm, shareOnly }: ResultActionsProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [sharing, setSharing] = useState(false);
