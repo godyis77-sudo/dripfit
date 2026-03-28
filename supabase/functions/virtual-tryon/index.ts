@@ -697,14 +697,14 @@ Match shoe details exactly (color, material, branding, sole). ${noResizeInstruct
           const fbContext = normalizeMatchText([itemLower, productName.toLowerCase(), productCategory.toLowerCase()].join(" "));
           const fbBottom = ["jeans","pants","trousers","shorts","skirt","leggings","joggers","chinos","bottom","bottoms"].some(t => hasContextTerm(fbContext, t));
           const fbTop = ["top","shirt","blouse","t-shirt","sweater","hoodie","polo","tank","cardigan","pullover","tee"].some(t => hasContextTerm(fbContext, t)) && !fbBottom;
-          const fbOuterwear = ["jacket","coat","blazer","vest","parka","outerwear"].some(t => hasContextTerm(fbContext, t));
+          const fbOuterwear = ["jacket","coat","blazer","vest","vests","gilet","parka","outerwear"].some(t => hasContextTerm(fbContext, t));
           const fbFullBody = ["dress","dresses","jumpsuit","jumpsuits","romper","overalls","full"].some(t => hasContextTerm(fbContext, t));
           const scopeHint = fbFullBody
             ? "Put the dress/jumpsuit/romper from Image B onto the person and REMOVE conflicting layers (jackets/coats/blazers/tops/bottoms) from Image A. Do NOT blend old clothing over the new garment. Keep footwear unless Image B includes footwear. Match Image B exactly: silhouette, cutouts/panels, print placement, seams, neckline, hemline, and texture."
             : fbBottom
             ? "Replace ONLY the lower-body clothing (pants/jeans/shorts/skirt). Keep the existing top, shirt, and shoes from Image A UNCHANGED."
             : fbOuterwear
-              ? "REPLACE any existing outerwear (jacket/coat/blazer) with this garment. Keep inner layers and lower body from Image A UNCHANGED."
+              ? "LAYER this outerwear garment ON TOP of the person's existing shirt/top from Image A. Keep the inner shirt/top visible underneath. If the garment is sleeveless (vest/gilet), do NOT add sleeves. Match the exact silhouette from Image B. Keep lower body from Image A UNCHANGED."
               : fbTop
                 ? "Replace ONLY the upper-body clothing (shirt/top/sweater). Keep existing pants/jeans/shoes from Image A UNCHANGED."
                 : "Replace the clothing with the garment from Image B.";
