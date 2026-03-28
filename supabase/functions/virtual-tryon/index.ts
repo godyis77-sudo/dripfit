@@ -514,6 +514,7 @@ Deno.serve(async (req) => {
     const safetyNote = isExplicitIntimate
       ? "Render sheer/transparent sections as opaque while preserving design details."
       : "Keep output commercially appropriate for retail catalog standards.";
+    const noResizeInstruction = "CRITICAL DIMENSIONS: Preserve Image A exactly. Output must keep the SAME aspect ratio, width, and height as Image A. Do NOT resize, crop, zoom, expand the canvas, or reframe.";
 
     let prompt: string;
 
@@ -536,6 +537,7 @@ TASK — FOOTWEAR SWAP:
 5. CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A.
 6. ${bgInstruction}
 7. Correct scale — shoes must match the person's foot size realistically. Natural shadows and lighting.
+8. ${noResizeInstruction}
 
 Output: A single photorealistic FULL-BODY image showing the person head to feet. No text/watermarks/split views.`;
     } else if ((isAccessory || isLayering) && !isIntimateGarment) {
@@ -554,6 +556,7 @@ ${itemLower.includes('belt') ? 'BELT-SPECIFIC: The belt MUST be clearly visible 
 ${bgInstruction} Correct scale, lighting, shadows. No text/watermarks.
 
 IMAGE QUALITY: Maintain or improve the resolution and sharpness of Image A. Do NOT reduce image quality, introduce blur, compression artifacts, or soften details. The output must be at least as sharp and detailed as Image A.`;
+${noResizeInstruction}`;
     } else if (isIntimateGarment) {
       const intimateReferenceLine = `IMAGE B: An activewear/athletic product listing photo from an online retailer.${intimateTextReference ? `\nHint: ${intimateTextReference}` : ""}`;
 
@@ -580,6 +583,7 @@ ${intimateFramingInstruction}
 - Do NOT add extra clothing items not shown in the garment reference.
  - Professional retail catalog quality — clean, commercially appropriate.${underwearSafetyInstruction}
 - CRITICAL: Show the model's FULL BODY from head to feet in the output image. Include legs and feet — do NOT crop at the waist or torso.
+- ${noResizeInstruction}
 
 Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, or collages.`;
     } else {
@@ -673,6 +677,7 @@ RULES:
 - Match garment details exactly: color, pattern, fabric texture, neckline, sleeve length, hemline, logos, prints, buttons, zippers.
 - ${bgInstruction}
 - IMAGE QUALITY: Maintain or improve the resolution and sharpness of Image A. Do NOT reduce image quality, introduce blur, compression artifacts, or soften details.
+- ${noResizeInstruction}
 
 Output: A single photorealistic FULL-BODY image showing the person head to feet. No text/watermarks/split views.`;
     }
@@ -685,7 +690,7 @@ Output: A single photorealistic FULL-BODY image showing the person head to feet.
 Image A = person. Image B = target footwear.${productHint}
 Replace ONLY the footwear from Image A with the exact shoes from Image B. Keep ALL other clothing unchanged.
 Preserve face, body, pose, and orientation from Image A. ${bgFallbackHint}
-Match shoe details exactly (color, material, branding, sole). Full body head to feet. No text/watermark.`
+Match shoe details exactly (color, material, branding, sole). ${noResizeInstruction} Full body head to feet. No text/watermark.`
         : (() => {
           const fbContext = normalizeMatchText([itemLower, productName.toLowerCase(), productCategory.toLowerCase()].join(" "));
           const fbBottom = ["jeans","pants","trousers","shorts","skirt","leggings","joggers","chinos","bottom","bottoms"].some(t => hasContextTerm(fbContext, t));
@@ -706,7 +711,7 @@ Image A = person. Image B = target garment reference.${productHint}
 ${fullBodyImageHint}
 ${scopeHint}
 Preserve face, body shape, skin tone, pose, camera angle, and facing direction from Image A — do NOT rotate the model. ${bgFallbackHint}
-Match the target item exactly (color, pattern, cut, neckline, sleeve/hem length, logos). Full body head to feet. No text/watermark.`;
+Match the target item exactly (color, pattern, cut, neckline, sleeve/hem length, logos). ${noResizeInstruction} Full body head to feet. No text/watermark.`;
         })();
 
     const intimateReferenceForFallback = `Image B = athletic garment product photo. Apply garment from Image B onto model in Image A, ignoring any person shown in Image B.`;
@@ -714,13 +719,13 @@ Match the target item exactly (color, pattern, cut, neckline, sleeve/hem length,
     const fastIntimatePrompt = `Professional athletic catalog photo.
 Image A = model. ${intimateReferenceForFallback}
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
-${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Match product details exactly. CRITICAL: Show FULL BODY from head to feet — include legs. Professional catalog quality. No text/watermark.`;
+${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Match product details exactly. ${noResizeInstruction} CRITICAL: Show FULL BODY from head to feet — include legs. Professional catalog quality. No text/watermark.`;
 
     const complianceIntimatePrompt = `Retail activewear catalog photo edit.
 Use Image A as the model and Image B as the garment reference product photo.
 Apply only the garment to the model with accurate color, pattern, straps, neckline, seams and logos.
 ${garmentSwapScopeInstruction} ${bgFallbackHint}
-${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. CRITICAL: Show FULL BODY from head to feet — include legs. Keep result clean and professionally styled. No text/watermark.`;
+${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. ${noResizeInstruction} CRITICAL: Show FULL BODY from head to feet — include legs. Keep result clean and professionally styled. No text/watermark.`;
 
     const buildTryOnContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
       const userImageLabel = isIntimateGarment
@@ -774,6 +779,7 @@ TASK: Create a product catalog photo showing the model wearing the athletic garm
 - Reproduce garment faithfully: match color, cut, fabric texture, straps, neckline, hemline, logos.
 - Keep the model facing the SAME DIRECTION as in the reference image.
 - Show FULL BODY from head to feet — include legs. Do NOT crop at waist.
+- ${noResizeInstruction}
 - ${bgInstruction}
 - Professional retail catalog quality.
 
@@ -798,13 +804,13 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
     };
 
     const typeLabel = isFootwear ? "footwear" : (isAccessory || isLayering) && !isIntimateGarment ? "accessory" : isIntimateGarment ? "intimate" : "standard";
-    const footwearFastPrompt = `Fast shoe swap. Image A is the person, Image B is the exact shoe.${productHint} Replace only footwear in Image A with Image B. Keep all other clothing, pose, and framing unchanged. ${bgFallbackHint} No text/watermark.`;
-    const footwearRetryPrompt = `Photorealistic shoe replacement.${productHint} Replace only the shoes from Image A with the shoes from Image B. Keep body, outfit, orientation, and lighting natural. ${bgFallbackHint} No text/watermark.`;
+    const footwearFastPrompt = `Fast shoe swap. Image A is the person, Image B is the exact shoe.${productHint} Replace only footwear in Image A with Image B. Keep all other clothing, pose, and framing unchanged. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
+    const footwearRetryPrompt = `Photorealistic shoe replacement.${productHint} Replace only the shoes from Image A with the shoes from Image B. Keep body, outfit, orientation, and lighting natural. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
     const beltDescHint = sanitizedProductDesc ? `\nThe belt to use is: "${sanitizedProductDesc}". If Image B shows a full-body model, identify ONLY the belt described above and ignore all other clothing.` : "";
     const beltFastPrompt = `Belt try-on. Image A = person wearing an outfit. Image B = belt reference.${beltDescHint}${productHint}
-TASK: Place the belt from Image B around the waist of the person in Image A. The belt MUST be clearly visible sitting on top of existing clothing at the waistline. Match the exact buckle style, chain/link pattern, material, color, and width from Image B. Keep all other clothing, face, pose, and background from Image A completely unchanged. ${bgFallbackHint} No text/watermark.`;
+TASK: Place the belt from Image B around the waist of the person in Image A. The belt MUST be clearly visible sitting on top of existing clothing at the waistline. Match the exact buckle style, chain/link pattern, material, color, and width from Image B. Keep all other clothing, face, pose, and background from Image A completely unchanged. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
     const beltRetryPrompt = `Photorealistic belt placement. Image A = person. Image B = belt reference.${beltDescHint}${productHint}
-TASK: Add the belt from Image B onto the person in Image A at the natural waistline. The belt must be prominently visible over their clothing with accurate buckle/chain detail, correct scale, realistic shadows and lighting. Do NOT remove or change any existing clothing. Keep face, body, pose from Image A. ${bgFallbackHint} No text/watermark.`;
+TASK: Add the belt from Image B onto the person in Image A at the natural waistline. The belt must be prominently visible over their clothing with accurate buckle/chain detail, correct scale, realistic shadows and lighting. Do NOT remove or change any existing clothing. Keep face, body, pose from Image A. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
     // Only bypass primary when we already have a clean flat-lay; otherwise keep one primary attempt.
     // Underwear-like items: bypass primary entirely and go straight to the safe-mode text-bridge path.
     const shouldBypassPrimaryForIntimate =
