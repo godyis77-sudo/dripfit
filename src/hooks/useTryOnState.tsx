@@ -365,22 +365,34 @@ export function useTryOnState() {
   }, [user]);
 
   // Pre-populate clothing from catalog product selection
+  const navigationAppliedRef = useRef(false);
   useEffect(() => {
     const state = location.state as {
       clothingUrl?: string; clothingImageUrl?: string; productUrl?: string;
       userPhoto?: string; freshSession?: boolean;
       quickPick?: CatalogProduct | null;
     } | null;
-    const clothingUrl = state?.clothingUrl || state?.clothingImageUrl;
+    if (!state) return;
 
-    // Apply user photo from navigation state (e.g. from OneTapPlayground)
-    if (state?.userPhoto) {
+    // Prevent double-application if React re-fires the effect
+    const stateKey = `${state.clothingUrl || state.clothingImageUrl || ''}_${state.productUrl || ''}`;
+    if (navigationAppliedRef.current) return;
+
+    const clothingUrl = state.clothingUrl || state.clothingImageUrl;
+
+    // Apply user photo from navigation state FIRST (e.g. from OneTapPlayground)
+    // This must happen before any clothing logic so the photo is ready for generation
+    if (state.userPhoto) {
+      // Immediately update the raw state to avoid stale persisted photo winning
+      setUserPhotoRaw(state.userPhoto);
+      // Then trigger the full setter which handles upload + persistence
       setUserPhoto(state.userPhoto);
     }
 
     if (clothingUrl) {
+      navigationAppliedRef.current = true;
       // If userPhoto is also provided or freshSession flag is set, treat as a brand-new try-on
-      const isFreshSession = !!state?.userPhoto || !!state?.freshSession;
+      const isFreshSession = !!state.userPhoto || !!state.freshSession;
 
       const loadAndApply = async () => {
         let photo: string;
@@ -392,17 +404,17 @@ export function useTryOnState() {
 
         // If a result already exists AND this isn't a fresh session from home, layer as accessory
         if (resultImage && !isFreshSession) {
-          if (state?.productUrl) {
+          if (state.productUrl) {
             setProductLink(state.productUrl);
             const detected = detectBrandFromUrl(state.productUrl);
             setLookItems(prev => [...prev, { brand: detected?.brand || '', name: '', url: state.productUrl!, image_url: clothingUrl }]);
           }
           // Hydrate selectedQuickPick for accessory flow too
-          if (state?.quickPick) {
+          if (state.quickPick) {
             setSelectedQuickPick(state.quickPick as CatalogProduct);
             if (state.quickPick.category) setCategory(state.quickPick.category);
           }
-          handleAddAccessory(photo, state?.quickPick?.category || detectCategoryFromUrl(state?.productUrl || '') || null);
+          handleAddAccessory(photo, state.quickPick?.category || detectCategoryFromUrl(state.productUrl || '') || null);
         } else {
           // Fresh try-on — clear old result and start clean
           if (isFreshSession) {
@@ -414,19 +426,25 @@ export function useTryOnState() {
             setLookItemsRaw([]);
             setLayerHistory([]);
             setSelectedQuickPickRaw(null); // Clear stale quickPick
-            try { localStorage.removeItem(TRYON_RESULT_KEY); } catch { /* ignore */ }
+            try {
+              localStorage.removeItem(TRYON_RESULT_KEY);
+              // Clear persisted user photo so stale URL doesn't override the new photo on remount
+              if (state.userPhoto) {
+                localStorage.setItem(TRYON_USER_PHOTO_KEY, state.userPhoto.startsWith('data:') ? '' : state.userPhoto);
+              }
+            } catch { /* ignore */ }
             persistState({ resultImage: null, activePostId: null, autoSaved: false, shared: false, savedToItems: false, lookItems: [], selectedQuickPick: null });
           }
           setClothingPhoto(photo);
-          if (state?.productUrl) setProductLink(state.productUrl);
+          if (state.productUrl) setProductLink(state.productUrl);
           // Hydrate selectedQuickPick from navigation state so product info bar is correct
-          if (state?.quickPick) {
+          if (state.quickPick) {
             setSelectedQuickPick(state.quickPick as CatalogProduct);
             if (state.quickPick.category) setCategory(state.quickPick.category);
             setLookItems([{
               brand: state.quickPick.brand || '',
               name: state.quickPick.name || '',
-              url: state.quickPick.product_url || state?.productUrl || '',
+              url: state.quickPick.product_url || state.productUrl || '',
               price_cents: state.quickPick.price_cents,
               image_url: state.quickPick.image_url,
             }]);
