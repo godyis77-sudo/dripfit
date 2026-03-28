@@ -86,6 +86,8 @@ const OneTapPlayground = () => {
     if (!file) return;
     e.target.value = '';
     setUploading(true);
+    // Clear previous photo immediately so stale image can’t be used
+    setUserPhoto(null);
     try {
       const compressed = await compressImage(file);
       setUserPhoto(compressed);
@@ -97,6 +99,8 @@ const OneTapPlayground = () => {
   const handleNativeCapture = useCallback(async (source: 'camera' | 'gallery') => {
     try {
       setUploading(true);
+      // Clear previous photo immediately so stale image can’t be used
+      setUserPhoto(null);
       const result = await takeNativePhoto(source);
       const blob = await fetch(result.dataUrl).then(r => r.blob());
       const compressed = await compressImage(new File([blob], 'capture.jpg', { type: blob.type }));
@@ -107,6 +111,8 @@ const OneTapPlayground = () => {
   }, []);
 
   const handleTapItem = useCallback((product: CatalogProduct) => {
+    // Prevent selecting an item while a new photo is still processing
+    if (uploading) return;
     trackEvent('onetap_garment_tapped', { brand: product.brand, category: product.category });
     setPreviewProduct({
       id: product.id,
@@ -120,7 +126,7 @@ const OneTapPlayground = () => {
       fabric_composition: product.fabric_composition,
       style_genre: product.style_genre,
     });
-  }, []);
+  }, [uploading]);
 
   return (
     <>
