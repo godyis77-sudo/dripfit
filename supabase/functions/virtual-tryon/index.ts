@@ -638,14 +638,15 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       } else if (isTopGarment) {
         const isCropped = /\b(sports?\s*bra|crop\s*top|bralette|bra)\b/.test(stdContext);
         swapInstruction = isCropped
-          ? `1. Replace ONLY the upper-body clothing from Image A with the CROPPED TOP / SPORTS BRA from Image B.
-2. CRITICAL COLOR ACCURACY: The output garment MUST be the EXACT same color as shown in Image B. If Image B shows a purple/mauve garment, the output MUST be purple/mauve — NOT blue, NOT white, NOT any other color. Match the precise hue, saturation, and tone pixel-for-pixel.
-3. The top must remain SHORT and cropped — ending ABOVE the waist or at the midriff. Do NOT extend it into a full-length shirt or tank top. Do NOT add any extra fabric below the natural hemline of the garment.
-4. Keep the person's EXISTING lower-body clothing (pants, jeans, shorts, skirt, leggings) from Image A EXACTLY as they are — do NOT replace, remove, add, or change the bottoms in any way.
+          ? `1. Replace ONLY the upper-body clothing from Image A with the CROPPED TOP / SPORTS BRA from Image B. This is a SINGLE ITEM — NOT a set or outfit.
+2. CRITICAL COLOR ACCURACY: The output garment MUST be the EXACT same color as shown in Image B. Match the precise hue, saturation, and tone pixel-for-pixel.
+3. The top must remain SHORT and cropped — ending ABOVE the waist or at the midriff. Do NOT extend it into a full-length shirt, tank top, or bodysuit. Do NOT add any extra fabric below the natural hemline of the garment.
+4. CRITICAL — PRESERVE EXISTING BOTTOMS: The person's lower-body clothing from Image A (pants, jeans, shorts, skirt, leggings, pajama bottoms) MUST remain EXACTLY as they are — same color, same pattern, same fabric. Do NOT change the bottom color to match the new top. Do NOT replace patterned/colored bottoms with plain black. The bottoms must be a PIXEL-PERFECT copy of what is in Image A.
 5. Keep the person's EXISTING footwear from Image A completely UNCHANGED.
-6. IDENTITY: The person in the output MUST be the SAME person from Image A — same face, same hair, same body, same skin tone. Do NOT use the model from Image B. Image B is ONLY a garment reference.`
-          : `1. Replace ONLY the upper-body clothing (shirt, top, sweater, etc.) from Image A with the garment from Image B.
-2. Keep the person's EXISTING lower-body clothing (pants, jeans, skirt, etc.) from Image A completely UNCHANGED.
+6. IDENTITY: The person in the output MUST be the SAME person from Image A — same face, same hair, same body, same skin tone. Do NOT use the model from Image B. Image B is ONLY a garment reference.
+7. Do NOT create a matching outfit or bodysuit. The top from Image B and the bottoms from Image A should look like MISMATCHED separate pieces if they are different colors/patterns.`
+          : `1. Replace ONLY the upper-body clothing (shirt, top, sweater, etc.) from Image A with the garment from Image B. This is a SINGLE ITEM — NOT a set or outfit.
+2. CRITICAL — PRESERVE EXISTING BOTTOMS: The person's lower-body clothing from Image A MUST remain EXACTLY as they are — same color, same pattern, same fabric. Do NOT change the bottom color to match the new top. The bottoms must be a PIXEL-PERFECT copy of Image A.
 3. Keep the person's EXISTING footwear from Image A completely UNCHANGED.`;
       } else {
         swapInstruction = `1. Replace the clothing from Image A with the garment from Image B. If Image B shows a complete outfit (top + bottom), apply the ENTIRE outfit — do NOT apply only one piece.
