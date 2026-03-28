@@ -255,6 +255,7 @@ const OneTapPlayground = () => {
               userPhoto: userPhoto || undefined,
               clothingUrl: p.image_url,
               productUrl: p.product_url,
+              freshSession: true,
             },
           });
         }}
