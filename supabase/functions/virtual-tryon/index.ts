@@ -484,7 +484,7 @@ Deno.serve(async (req) => {
     const intimateScopeInstruction = isSwimwear
       ? swimwearScopeInstruction
       : isSetGarment
-        ? "Image B shows a MATCHING SET (top + bottom). Replace ALL clothing from Image A with BOTH pieces from Image B. Show ONLY what is visible in Image B — do NOT add leggings, pants, shorts, or any garment not shown in Image B."
+        ? "Image B shows a MATCHING SET with BOTH a top AND a bottom. Replace ALL clothing from Image A with BOTH pieces from Image B — the top piece AND the bottom piece must BOTH appear on the model. Do NOT apply only one piece. Show ONLY what is visible in Image B — do NOT add leggings, pants, shorts, or any garment not shown in Image B."
         : isTopOnlyGarment
           ? (isCropTopOrSportsBra
             ? "Image B shows a CROP TOP / SPORTS BRA — a SHORT top that ends ABOVE the waist or at the midriff. Replace ONLY the upper-body clothing from Image A with this cropped top. The top must remain SHORT and cropped — do NOT extend it into a full-length shirt or tank top. Keep the person's EXISTING lower-body clothing (pants, jeans, shorts, skirt, leggings) from Image A EXACTLY as they are — do NOT replace, remove, or change the bottoms in any way."
