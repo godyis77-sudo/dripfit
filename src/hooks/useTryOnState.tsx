@@ -468,7 +468,7 @@ export function useTryOnState() {
         caption: null,
         is_public: false,
         product_urls: getAllUrls(),
-        clothing_category: clothingCategory || 'other',
+        clothing_category: normCategory(clothingCategory),
       })
       .select('id, result_photo_url, clothing_photo_url, caption, is_public, created_at, product_urls')
       .single();
