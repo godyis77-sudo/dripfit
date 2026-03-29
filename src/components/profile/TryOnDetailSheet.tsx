@@ -130,7 +130,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
         is_liked: true,
         source_post_id: post.id,
       }, { onConflict: 'user_id,image_url' });
-      toast({ title: '❤️ Liked & saved to wardrobe' });
+      toast({ title: '❤️ Liked & saved to closet' });
     } else {
       // Remove liked flag (update, don't delete — they may have saved it too)
       await supabase.from('clothing_wardrobe')
