@@ -1082,7 +1082,7 @@ export function useTryOnState() {
 
       if (insertError) {
         if ((insertError as { code?: string }).code === '23505') {
-          toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
+          toast({ title: 'Already saved', description: 'This item is already in your closet.' });
           return;
         }
         throw insertError;
