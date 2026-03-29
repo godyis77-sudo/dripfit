@@ -86,7 +86,7 @@ const GalleryPlayground = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.07 }}
           onClick={() => { trackEvent('gallery_hero_tryon'); navigate('/tryon'); }}
-          className="w-full mb-4 btn-luxury text-primary-foreground rounded-2xl px-5 py-4 flex items-center gap-3 active:scale-[0.97] transition-transform shimmer-sweep"
+          className="w-full mb-4 btn-luxury text-primary-foreground rounded-2xl px-5 py-3 flex items-center gap-3 active:scale-[0.97] transition-transform shimmer-sweep"
         >
           <div className="h-12 w-12 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
             <FeatureIcon name="tryon" size={40} />
