@@ -1041,7 +1041,7 @@ export function useTryOnState() {
   const handleSaveToItems = async () => {
     if (!user) return;
     if (savedToItems) {
-      toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
+      toast({ title: 'Already saved', description: 'This item is already in your closet.' });
       return;
     }
 
