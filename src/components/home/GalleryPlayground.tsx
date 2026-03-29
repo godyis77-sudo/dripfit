@@ -73,7 +73,10 @@ const GalleryPlayground = () => {
             className="btn-luxury text-primary-foreground rounded-2xl px-6 py-3.5 flex items-center gap-3 active:scale-[0.97] transition-transform shimmer-sweep"
           >
             <Flame className="h-5 w-5 text-primary-foreground shrink-0" />
-            <span className="text-[15px] font-extrabold tracking-tight text-primary-foreground drop-shadow-[0_1px_2px_hsl(var(--foreground)/0.25)]">The Closet</span>
+            <div className="text-left">
+              <span className="block text-[15px] font-extrabold tracking-tight text-primary-foreground drop-shadow-[0_1px_2px_hsl(var(--foreground)/0.25)]">The Closet</span>
+              <span className="block text-[11px] font-semibold text-primary-foreground/90">Add some fresh drip to wardrobe</span>
+            </div>
           </motion.button>
         </div>
 
