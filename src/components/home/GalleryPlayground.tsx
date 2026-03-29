@@ -70,11 +70,13 @@ const GalleryPlayground = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.04 }}
             onClick={() => navigate('/capture')}
-            className="btn-luxury text-primary-foreground rounded-2xl px-3 py-3 flex flex-col items-center gap-1.5 active:scale-[0.97] transition-transform shimmer-sweep text-center"
+            className="btn-luxury text-primary-foreground rounded-2xl px-3 py-3 flex items-center gap-2 active:scale-[0.97] transition-transform shimmer-sweep"
           >
             <Ruler className="h-5 w-5 text-primary-foreground shrink-0" />
-            <span className="text-[12px] font-extrabold tracking-tight text-primary-foreground drop-shadow-[0_1px_2px_hsl(var(--foreground)/0.25)] leading-tight">Custom Body Size Guide</span>
-            <span className="text-[10px] font-semibold text-primary-foreground/90 leading-tight">Get your perfect fit</span>
+            <div className="text-left">
+              <span className="block text-[11px] font-extrabold tracking-tight text-primary-foreground drop-shadow-[0_1px_2px_hsl(var(--foreground)/0.25)] leading-tight">Custom Body Size Guide</span>
+              <span className="block text-[9px] font-semibold text-primary-foreground/90 leading-tight mt-0.5">Get your perfect fit</span>
+            </div>
           </motion.button>
 
           <motion.button
@@ -82,11 +84,13 @@ const GalleryPlayground = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
             onClick={() => navigate('/closet')}
-            className="btn-luxury text-primary-foreground rounded-2xl px-3 py-3 flex flex-col items-center gap-1.5 active:scale-[0.97] transition-transform shimmer-sweep text-center"
+            className="btn-luxury text-primary-foreground rounded-2xl px-3 py-3 flex items-center gap-2 active:scale-[0.97] transition-transform shimmer-sweep"
           >
             <Flame className="h-5 w-5 text-primary-foreground shrink-0" />
-            <span className="text-[12px] font-extrabold tracking-tight text-primary-foreground drop-shadow-[0_1px_2px_hsl(var(--foreground)/0.25)] leading-tight">Explore the Drip Drawer</span>
-            <span className="text-[10px] font-semibold text-primary-foreground/90 leading-tight">Swipe to fill your drip drawer</span>
+            <div className="text-left">
+              <span className="block text-[11px] font-extrabold tracking-tight text-primary-foreground drop-shadow-[0_1px_2px_hsl(var(--foreground)/0.25)] leading-tight">Explore the Drip Drawer</span>
+              <span className="block text-[9px] font-semibold text-primary-foreground/90 leading-tight mt-0.5">Swipe to fill your drip drawer</span>
+            </div>
           </motion.button>
         </div>
 
