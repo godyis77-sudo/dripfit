@@ -187,12 +187,12 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
     }, { onConflict: 'user_id,image_url' });
     setAddingToWardrobe(false);
     if (error) {
-      toast({ title: 'Error', description: 'Could not add to wardrobe.', variant: 'destructive' });
+      toast({ title: 'Error', description: 'Could not add to closet.', variant: 'destructive' });
       return;
     }
     setAddedToWardrobe(true);
     trackEvent('wardrobe_added_from_tryon', { post_id: post.id });
-    toast({ title: '👕 Saved to Wardrobe!', description: 'You can find it in your Wardrobe tab.' });
+    toast({ title: '👕 Saved to Closet!', description: 'You can find it in your Closet tab.' });
     queryClient.invalidateQueries({ queryKey: ['wardrobe'] });
   };
 
