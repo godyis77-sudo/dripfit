@@ -328,7 +328,7 @@ const TryOnResultSection = ({
 
   const handleAddToWardrobe = async (item: WhatsLookItem) => {
     if (!authUser) {
-      onToast({ title: 'Sign in to save', description: 'Create a free account to build your wardrobe.', variant: 'destructive' });
+      onToast({ title: 'Sign in to save', description: 'Create a free account to build your closet.', variant: 'destructive' });
       navigate('/auth');
       return;
     }
