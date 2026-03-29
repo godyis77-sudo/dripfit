@@ -74,8 +74,8 @@ const GalleryPlayground = () => {
           >
             <Flame className="h-5 w-5 text-primary-foreground shrink-0" />
             <div className="text-left">
-              <span className="block text-[15px] font-extrabold tracking-tight text-primary-foreground drop-shadow-[0_1px_2px_hsl(var(--foreground)/0.25)]">Drip Rack</span>
-              <span className="block text-[11px] font-semibold text-primary-foreground/90">Add fresh drip to your trap closet</span>
+              <span className="block text-[15px] font-extrabold tracking-tight text-primary-foreground drop-shadow-[0_1px_2px_hsl(var(--foreground)/0.25)]">Drip Drawer</span>
+              <span className="block text-[11px] font-semibold text-primary-foreground/90">Swipe to fill your drip drawer</span>
             </div>
           </motion.button>
         </div>
