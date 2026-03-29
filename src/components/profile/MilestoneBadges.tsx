@@ -41,7 +41,7 @@ export default function MilestoneBadges() {
         { key: 'try_on_5', label: '5 Try-Ons', emoji: '👕', earned: totalTryOns >= 5 },
         { key: 'try_on_10', label: '10 Try-Ons', emoji: '🔥', earned: totalTryOns >= 10 },
         { key: 'try_on_25', label: '25 Try-Ons', emoji: '💎', earned: totalTryOns >= 25 },
-        { key: 'wardrobe_10', label: 'Wardrobe Pro', emoji: '👗', earned: wardrobeItems >= 10 },
+        { key: 'wardrobe_10', label: 'Closet Pro', emoji: '👗', earned: wardrobeItems >= 10 },
         { key: 'style_influencer', label: 'Style Influencer', emoji: '⭐', earned: publicPosts >= 10 && followers >= 5 },
         { key: 'community_star', label: 'Community Star', emoji: '🌟', earned: followers >= 10 },
       ];

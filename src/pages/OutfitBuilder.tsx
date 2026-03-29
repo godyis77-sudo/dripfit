@@ -170,7 +170,7 @@ const OutfitBuilder = () => {
         <div className="text-center">
           <Layers className="h-10 w-10 text-primary/40 mx-auto mb-3" />
           <h2 className="text-lg font-bold text-foreground mb-1">Sign in to build outfits</h2>
-          <p className="text-sm text-muted-foreground mb-4">Create outfits from your wardrobe items.</p>
+          <p className="text-sm text-muted-foreground mb-4">Create outfits from your closet items.</p>
           <Button className="btn-luxury" onClick={() => navigate('/auth?returnTo=/outfits')}>Sign In</Button>
         </div>
       </div>

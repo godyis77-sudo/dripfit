@@ -183,7 +183,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
     }
     setAddedToWardrobe(true);
     trackEvent('wardrobe_added_from_tryon', { brand: product.brand });
-    toast({ title: '👕 Added to Wardrobe!', description: 'You can find it in your Wardrobe tab.' });
+    toast({ title: '👕 Added to Closet!', description: 'You can find it in your Closet tab.' });
   };
 
   if (!product) return null;

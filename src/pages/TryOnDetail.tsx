@@ -120,7 +120,7 @@ const TryOnDetail = () => {
               disabled={addingToWardrobe || addedToWardrobe}
             >
               <ShoppingBag className="h-3.5 w-3.5" />
-              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added ✓' : 'Add to Wardrobe'}
+              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added ✓' : 'Add to Closet'}
             </Button>
           </div>
         </div>
