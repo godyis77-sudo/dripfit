@@ -252,7 +252,7 @@ const Profile = () => {
         <div className="flex gap-1 bg-card/60 backdrop-blur-sm rounded-xl p-1 mb-4 border border-border/30">
           {[
             { key: 'tryons' as const, icon: Shirt, label: 'Try-Ons' },
-            { key: 'wardrobe' as const, icon: ShoppingBag, label: 'Wardrobe' },
+            { key: 'wardrobe' as const, icon: ShoppingBag, label: 'Closet' },
             { key: 'cart' as const, icon: ShoppingCart, label: 'Cart' },
           ].map(t => (
             <button
