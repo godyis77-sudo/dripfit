@@ -482,7 +482,7 @@ const SettingsTab = ({
         </span>
       </SectionHeader>
       <div className="bg-card border border-border rounded-xl p-3 mb-1">
-        <p className="text-[10px] text-muted-foreground mb-2">Pick your go-to stores. These will appear on wardrobe items without a retailer.</p>
+        <p className="text-[10px] text-muted-foreground mb-2">Pick your go-to stores. These will appear on closet items without a retailer.</p>
         <FavoriteRetailers userId={user.id} favorites={favoriteRetailers} onFavoritesChange={onFavoriteRetailersChange} />
       </div>
 
