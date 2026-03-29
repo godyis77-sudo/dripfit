@@ -256,7 +256,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
               disabled={addingToWardrobe || addedToWardrobe}
             >
               <ShoppingBag className="h-4 w-4" />
-              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Saved ✓' : '+ Wardrobe'}
+              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Saved ✓' : '+ Closet'}
             </Button>
             {product.id && (
               <Button
