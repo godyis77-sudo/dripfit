@@ -28,7 +28,7 @@ export interface WardrobeItem {
 }
 
 const OutfitBuilder = () => {
-  usePageMeta({ title: 'Outfit Builder', description: 'Build outfits from your wardrobe items.', path: '/outfits' });
+  usePageMeta({ title: 'Outfit Builder', description: 'Build outfits from your closet items.', path: '/outfits' });
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
