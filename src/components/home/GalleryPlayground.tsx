@@ -63,7 +63,24 @@ const GalleryPlayground = () => {
           )}
         </motion.div>
 
-        {/* The Closet CTA — gold theme, inline width */}
+        {/* Create Your Custom Body Size Guide */}
+        <div className="flex justify-center mb-4">
+          <motion.button
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.04 }}
+            onClick={() => navigate('/capture')}
+            className="btn-luxury text-primary-foreground rounded-2xl px-6 py-3.5 flex items-center gap-3 active:scale-[0.97] transition-transform shimmer-sweep"
+          >
+            <Ruler className="h-5 w-5 text-primary-foreground shrink-0" />
+            <div className="text-left">
+              <span className="block text-[15px] font-extrabold tracking-tight text-primary-foreground drop-shadow-[0_1px_2px_hsl(var(--foreground)/0.25)]">Create Your Custom Body Size Guide</span>
+              <span className="block text-[11px] font-semibold text-primary-foreground/90">Get your perfect fit across every brand</span>
+            </div>
+          </motion.button>
+        </div>
+
+        {/* Explore the Drip Drawer */}
         <div className="flex justify-center mb-4">
           <motion.button
             initial={{ opacity: 0, y: 8 }}
