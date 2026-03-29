@@ -175,9 +175,9 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
     if (error) {
       if (error.code === '23505') {
         setAddedToWardrobe(true);
-        toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
+        toast({ title: 'Already saved', description: 'This item is already in your closet.' });
       } else {
-        toast({ title: 'Error', description: 'Could not add to wardrobe.', variant: 'destructive' });
+        toast({ title: 'Error', description: 'Could not add to closet.', variant: 'destructive' });
       }
       return;
     }
