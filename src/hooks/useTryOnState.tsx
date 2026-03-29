@@ -589,7 +589,7 @@ export function useTryOnState() {
       });
       setClothingSaved(true);
       trackEvent('saved_item_added', { source: 'tryon_wardrobe', category });
-      toast({ title: 'Saved to Wardrobe', description: 'Clothing saved as a potential buy outfit.' });
+      toast({ title: 'Saved to Closet', description: 'Clothing saved as a potential buy outfit.' });
     } catch (err: unknown) {
       toast({ title: 'Save failed', description: (err as Error).message, variant: 'destructive' });
     }
@@ -1041,7 +1041,7 @@ export function useTryOnState() {
   const handleSaveToItems = async () => {
     if (!user) return;
     if (savedToItems) {
-      toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
+      toast({ title: 'Already saved', description: 'This item is already in your closet.' });
       return;
     }
 
@@ -1064,7 +1064,7 @@ export function useTryOnState() {
           .limit(1);
         if (existingError) throw existingError;
         if (existing && existing.length > 0) {
-          toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
+          toast({ title: 'Already saved', description: 'This item is already in your closet.' });
           return;
         }
       }
@@ -1082,7 +1082,7 @@ export function useTryOnState() {
 
       if (insertError) {
         if ((insertError as { code?: string }).code === '23505') {
-          toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
+          toast({ title: 'Already saved', description: 'This item is already in your closet.' });
           return;
         }
         throw insertError;
@@ -1091,8 +1091,8 @@ export function useTryOnState() {
       trackEvent('saved_item_added', { source: 'tryon_wardrobe', category });
       queryClient.invalidateQueries({ queryKey: ['wardrobe', user.id] });
       toast({
-        title: '✓ Saved to Wardrobe', description: 'View in your wardrobe anytime.',
-        action: <button onClick={() => navigate('/profile', { state: { tab: 'wardrobe' } })} className="text-[11px] font-bold text-primary underline" aria-label="View your wardrobe">View Wardrobe</button>,
+        title: '✓ Saved to Closet', description: 'View in your closet anytime.',
+        action: <button onClick={() => navigate('/profile', { state: { tab: 'wardrobe' } })} className="text-[11px] font-bold text-primary underline" aria-label="View your closet">View Closet</button>,
       });
     } catch (err: unknown) {
       setSavedToItems(prevSavedToItems);

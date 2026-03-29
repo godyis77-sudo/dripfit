@@ -13,7 +13,7 @@ const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/style-assist
 
 const QUICK_PROMPTS = [
   "What should I wear to a wedding?",
-  "Help me build a capsule wardrobe",
+  "Help me build a capsule closet",
   "What's my best size at Zara?",
   "Date night outfit ideas",
 ];

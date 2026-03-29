@@ -328,7 +328,7 @@ const TryOnResultSection = ({
 
   const handleAddToWardrobe = async (item: WhatsLookItem) => {
     if (!authUser) {
-      onToast({ title: 'Sign in to save', description: 'Create a free account to build your wardrobe.', variant: 'destructive' });
+      onToast({ title: 'Sign in to save', description: 'Create a free account to build your closet.', variant: 'destructive' });
       navigate('/auth');
       return;
     }
@@ -356,7 +356,7 @@ const TryOnResultSection = ({
         retailer: item.brand || null,
       });
       trackEvent('wardrobe_add_from_look', { brand: item.brand, source: 'tryon_look' });
-      onToast({ title: 'Added to Wardrobe!', description: `${item.name} saved.` });
+      onToast({ title: 'Added to Closet!', description: `${item.name} saved.` });
     } catch (err: unknown) {
       onToast({ title: 'Save failed', description: (err as Error).message, variant: 'destructive' });
     }

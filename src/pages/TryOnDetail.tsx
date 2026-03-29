@@ -33,15 +33,15 @@ const TryOnDetail = () => {
     if (error) {
       if (error.code === '23505') {
         setAddedToWardrobe(true);
-        toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
+        toast({ title: 'Already saved', description: 'This item is already in your closet.' });
       } else {
-        toast({ title: 'Error', description: 'Could not add to wardrobe.', variant: 'destructive' });
+        toast({ title: 'Error', description: 'Could not add to closet.', variant: 'destructive' });
       }
       return;
     }
     setAddedToWardrobe(true);
     trackEvent('wardrobe_added_from_tryon', { post_id: post.id });
-    toast({ title: '👕 Added to Wardrobe!', description: 'You can find it in your Wardrobe tab.' });
+    toast({ title: '👕 Added to Closet!', description: 'You can find it in your Closet tab.' });
   };
 
   useEffect(() => {
@@ -120,7 +120,7 @@ const TryOnDetail = () => {
               disabled={addingToWardrobe || addedToWardrobe}
             >
               <ShoppingBag className="h-3.5 w-3.5" />
-              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added ✓' : 'Add to Wardrobe'}
+              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added ✓' : 'Add to Closet'}
             </Button>
           </div>
         </div>

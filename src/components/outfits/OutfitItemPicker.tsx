@@ -44,7 +44,7 @@ export default function OutfitItemPicker({ slot, wardrobeItems, mapCategoryToSlo
       </div>
       <div className="p-3 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 56px)' }}>
         {filtered.length === 0 ? (
-          <p className="text-center text-sm text-muted-foreground py-12">No items in your wardrobe yet.</p>
+          <p className="text-center text-sm text-muted-foreground py-12">No items in your closet yet.</p>
         ) : (
           <div className="grid grid-cols-3 gap-2">
             {filtered.map(item => (

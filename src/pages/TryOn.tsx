@@ -522,7 +522,7 @@ const TryOn = () => {
                   ✕
                 </button>
                 <p className="text-sm font-bold text-foreground mb-1">Like what you see?</p>
-                <p className="text-[12px] text-muted-foreground mb-3">Sign up to save this try-on, build your wardrobe, and get unlimited access.</p>
+                <p className="text-[12px] text-muted-foreground mb-3">Sign up to save this try-on, build your closet, and get unlimited access.</p>
                 <div className="flex gap-2">
                   <Button size="sm" className="btn-luxury text-[12px]" onClick={() => navigate('/auth')}>
                     Sign Up Free

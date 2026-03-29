@@ -137,7 +137,7 @@ const WhatsInThisLook = ({
       >
         <ShoppingCart className="h-3 w-3 shrink-0" />
         <span className="text-[10px] font-bold uppercase whitespace-nowrap text-primary-foreground">
-          {onAddToWardrobe ? 'Shop / +Wardrobe' : 'Shop / Try-On'}
+          {onAddToWardrobe ? 'Shop / +Closet' : 'Shop / Try-On'}
         </span>
         <ShoppingBag className="h-3 w-3 shrink-0" />
         <span className="h-5 w-5 badge-gold-3d rounded-md shrink-0 transition-transform duration-200 flex items-center justify-center" style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>
@@ -229,7 +229,7 @@ const WhatsInThisLook = ({
                           }}
                           className="text-[10px] font-bold text-primary-foreground btn-gold-3d px-2 py-1 rounded-md active:scale-95 transition-transform"
                         >
-                          +Wardrobe
+                          +Closet
                         </button>
                       )}
                     </div>

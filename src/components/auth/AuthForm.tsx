@@ -169,7 +169,7 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
           </CardTitle>
           <CardDescription className="text-[13px] text-muted-foreground">
             {isLogin
-              ? 'Sign in to access your sizes, try-ons, and wardrobe'
+              ? 'Sign in to access your sizes, try-ons, and closet'
               : 'Free forever — save your measurements and try-ons across devices'}
           </CardDescription>
         </CardHeader>

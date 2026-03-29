@@ -59,7 +59,7 @@ const Profile = () => {
       return;
     }
     queryClient.invalidateQueries({ queryKey: ['wardrobe', user.id] });
-    toast({ title: 'Removed', description: 'Item removed from wardrobe.' });
+    toast({ title: 'Removed', description: 'Item removed from closet.' });
   };
 
   const handleFitChange = (newFit: FitPreference) => { setFit(newFit); setFitPreference(newFit); toast({ title: 'Updated', description: `Default fit set to ${newFit}.` }); };

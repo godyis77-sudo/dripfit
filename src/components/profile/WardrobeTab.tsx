@@ -93,7 +93,7 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
           </div>
           <div className="text-left">
             <p className="text-[12px] font-bold text-foreground">Outfit Builder</p>
-            <p className="text-[10px] text-muted-foreground">Mix & match your wardrobe pieces</p>
+            <p className="text-[10px] text-muted-foreground">Mix & match your closet pieces</p>
           </div>
         </button>
       )}
@@ -104,10 +104,10 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
             {filter === 'liked' ? <Heart className="h-6 w-6 text-primary/60" /> : filter === 'saved' ? <Bookmark className="h-6 w-6 text-primary/60" /> : <Shirt className="h-6 w-6 text-primary/60" />}
           </div>
           <h2 className="text-[18px] font-bold text-foreground mb-1">
-            {filter === 'all' ? 'Your wardrobe is empty' : filter === 'liked' ? 'No liked items yet' : 'No saved items yet'}
+            {filter === 'all' ? 'Your closet is empty' : filter === 'liked' ? 'No liked items yet' : 'No saved items yet'}
           </h2>
           <p className="text-[14px] text-muted-foreground max-w-[260px] mb-5">
-            {filter === 'all' ? 'Save clothing items to try-on and track your fits.' : 'Like or save items from try-ons and the community feed.'}
+            {filter === 'all' ? 'Save clothing items to try on and track your fits.' : 'Like or save items from try-ons and the community feed.'}
           </p>
           {filter === 'all' && (
             <Button className="rounded-full btn-luxury text-primary-foreground text-sm h-11 px-6 font-bold" onClick={() => navigate('/home')}>
