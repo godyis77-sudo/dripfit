@@ -93,7 +93,7 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
           </div>
           <div className="text-left">
             <p className="text-[12px] font-bold text-foreground">Outfit Builder</p>
-            <p className="text-[10px] text-muted-foreground">Mix & match your wardrobe pieces</p>
+            <p className="text-[10px] text-muted-foreground">Mix & match your closet pieces</p>
           </div>
         </button>
       )}
