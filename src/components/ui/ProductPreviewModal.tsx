@@ -246,7 +246,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
           )}
         </div>
 
-        {/* Add to Wardrobe + Add to Cart */}
+        {/* Add to Closet + Add to Cart */}
         {user && (
           <div className="max-w-sm mx-auto w-full flex gap-2">
             <Button
