@@ -307,7 +307,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               disabled={addingToWardrobe || addedToWardrobe}
             >
               <ShoppingBag className="h-4 w-4" />
-              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added ✓' : 'Wardrobe'}
+              {addingToWardrobe ? 'Adding…' : addedToWardrobe ? 'Added ✓' : 'Closet'}
             </Button>
 
             <Button

@@ -107,7 +107,7 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
             {filter === 'all' ? 'Your closet is empty' : filter === 'liked' ? 'No liked items yet' : 'No saved items yet'}
           </h2>
           <p className="text-[14px] text-muted-foreground max-w-[260px] mb-5">
-            {filter === 'all' ? 'Save clothing items to try-on and track your fits.' : 'Like or save items from try-ons and the community feed.'}
+            {filter === 'all' ? 'Save clothing items to try on and track your fits.' : 'Like or save items from try-ons and the community feed.'}
           </p>
           {filter === 'all' && (
             <Button className="rounded-full btn-luxury text-primary-foreground text-sm h-11 px-6 font-bold" onClick={() => navigate('/home')}>

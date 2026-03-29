@@ -16,7 +16,7 @@ const SaveBanner = ({
   onDismiss,
   navigateTo = '/profile',
   label = 'Saved successfully',
-  subtext = 'View in Profile > Wardrobe',
+  subtext = 'View in Profile > Closet',
 }: SaveBannerProps) => {
   const navigate = useNavigate();
 

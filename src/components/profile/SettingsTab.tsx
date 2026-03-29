@@ -547,7 +547,7 @@ const SettingsTab = ({
             <AlertDialogHeader>
               <AlertDialogTitle className="text-foreground text-sm">Delete your account?</AlertDialogTitle>
               <AlertDialogDescription className="text-muted-foreground text-xs">
-                This will permanently delete your account, all body scans, wardrobe items, try-on posts, and saved data. This action cannot be undone.
+                This will permanently delete your account, all body scans, closet items, try-on posts, and saved data. This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

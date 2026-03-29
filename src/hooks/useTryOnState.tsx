@@ -589,7 +589,7 @@ export function useTryOnState() {
       });
       setClothingSaved(true);
       trackEvent('saved_item_added', { source: 'tryon_wardrobe', category });
-      toast({ title: 'Saved to Wardrobe', description: 'Clothing saved as a potential buy outfit.' });
+      toast({ title: 'Saved to Closet', description: 'Clothing saved as a potential buy outfit.' });
     } catch (err: unknown) {
       toast({ title: 'Save failed', description: (err as Error).message, variant: 'destructive' });
     }

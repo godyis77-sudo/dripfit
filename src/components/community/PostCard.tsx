@@ -218,7 +218,7 @@ const PostCard = ({
           if (!user) { toast({ title: 'Sign in first', variant: 'destructive' }); return; }
           const imgUrl = item.image_url || post.clothing_photo_url || '';
           await supabase.from('clothing_wardrobe').insert({ user_id: user.id, image_url: imgUrl, category: 'top', brand: item.brand !== 'Shop' ? item.brand : null, product_link: item.url || null });
-          toast({ title: 'Added', description: 'Saved to your wardrobe.' });
+          toast({ title: 'Added', description: 'Saved to your closet.' });
           trackEvent('wardrobe_add_from_look', { brand: item.brand });
         }}
       />

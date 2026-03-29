@@ -229,7 +229,7 @@ const WhatsInThisLook = ({
                           }}
                           className="text-[10px] font-bold text-primary-foreground btn-gold-3d px-2 py-1 rounded-md active:scale-95 transition-transform"
                         >
-                          +Wardrobe
+                          +Closet
                         </button>
                       )}
                     </div>
