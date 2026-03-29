@@ -92,7 +92,7 @@ const GalleryPlayground = () => {
             <FeatureIcon name="tryon" size={40} />
           </div>
           <div className="text-left flex-1">
-            <p className="text-[16px] font-extrabold tracking-tight text-primary-foreground drop-shadow-[0_1px_2px_hsl(var(--foreground)/0.25)]">Virtual Try-On</p>
+            <p className="text-[16px] font-extrabold tracking-tight text-primary-foreground drop-shadow-[0_1px_2px_hsl(var(--foreground)/0.25)]">Enter the Change Room—Try On</p>
             <p className="text-[12px] font-semibold text-primary-foreground/95 drop-shadow-[0_1px_1px_hsl(var(--foreground)/0.2)]">Upload your photo + pick any item below</p>
           </div>
         </motion.button>
