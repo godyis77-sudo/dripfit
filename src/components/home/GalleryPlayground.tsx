@@ -63,11 +63,28 @@ const GalleryPlayground = () => {
           )}
         </motion.div>
 
-        {/* Hero Try-On CTA */}
+        {/* The Closet CTA — gold theme, above try-on */}
         <motion.button
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
+          onClick={() => navigate('/closet')}
+          className="w-full mb-4 btn-luxury text-primary-foreground rounded-2xl px-5 py-4 flex items-center justify-center gap-3 active:scale-[0.97] transition-transform shimmer-sweep"
+        >
+          <div className="h-12 w-12 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+            <Flame className="h-6 w-6 text-primary-foreground" />
+          </div>
+          <div className="text-center flex-1">
+            <p className="text-[16px] font-extrabold tracking-tight text-primary-foreground drop-shadow-[0_1px_2px_hsl(var(--foreground)/0.25)]">The Closet</p>
+            <p className="text-[12px] font-semibold text-primary-foreground/95 drop-shadow-[0_1px_1px_hsl(var(--foreground)/0.2)]">Swipe to cop or drop · discover your style</p>
+          </div>
+        </motion.button>
+
+        {/* Hero Try-On CTA */}
+        <motion.button
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.07 }}
           onClick={() => { trackEvent('gallery_hero_tryon'); navigate('/tryon'); }}
           className="w-full mb-4 btn-luxury text-primary-foreground rounded-2xl px-5 py-4 flex items-center gap-3 active:scale-[0.97] transition-transform shimmer-sweep"
         >
@@ -77,23 +94,6 @@ const GalleryPlayground = () => {
           <div className="text-left flex-1">
             <p className="text-[16px] font-extrabold tracking-tight text-primary-foreground drop-shadow-[0_1px_2px_hsl(var(--foreground)/0.25)]">Virtual Try-On</p>
             <p className="text-[12px] font-semibold text-primary-foreground/95 drop-shadow-[0_1px_1px_hsl(var(--foreground)/0.2)]">Upload your photo + pick any item below</p>
-          </div>
-        </motion.button>
-
-        {/* The Closet CTA */}
-        <motion.button
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.07 }}
-          onClick={() => navigate('/closet')}
-          className="w-full mb-4 bg-card border border-border rounded-2xl px-5 py-3.5 flex items-center gap-3 active:scale-[0.97] transition-transform"
-        >
-          <div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
-            <Flame className="h-5 w-5 text-primary" />
-          </div>
-          <div className="text-left flex-1">
-            <p className="text-[14px] font-extrabold tracking-tight text-foreground">The Closet</p>
-            <p className="text-[11px] text-muted-foreground">Swipe to cop or drop · discover your style</p>
           </div>
         </motion.button>
 
