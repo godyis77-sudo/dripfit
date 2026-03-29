@@ -1064,7 +1064,7 @@ export function useTryOnState() {
           .limit(1);
         if (existingError) throw existingError;
         if (existing && existing.length > 0) {
-          toast({ title: 'Already saved', description: 'This item is already in your wardrobe.' });
+          toast({ title: 'Already saved', description: 'This item is already in your closet.' });
           return;
         }
       }
