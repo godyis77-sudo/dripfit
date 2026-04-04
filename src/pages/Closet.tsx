@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import { X, Flame, Heart, ShoppingBag, SlidersHorizontal } from 'lucide-react';
@@ -34,8 +34,12 @@ function SwipeCard({
   const rotate = useTransform(x, [-300, 0, 300], [-18, 0, 18]);
   const copOpacity = useTransform(x, [0, SWIPE_THRESHOLD], [0, 1]);
   const dropOpacity = useTransform(x, [-SWIPE_THRESHOLD, 0], [1, 0]);
+  const isDragging = useRef(false);
 
+  const handleDragStart = () => { isDragging.current = true; };
   const handleDragEnd = (_: any, info: PanInfo) => {
+    // Delay clearing drag flag so click events fired during drag release are suppressed
+    setTimeout(() => { isDragging.current = false; }, 100);
     if (info.offset.x > SWIPE_THRESHOLD) {
       onSwipe('right');
     } else if (info.offset.x < -SWIPE_THRESHOLD) {
@@ -57,6 +61,7 @@ function SwipeCard({
       drag={isTop ? 'x' : false}
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.9}
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       initial={{ scale: isTop ? 1 : 0.95, opacity: isTop ? 1 : 0.6 }}
       animate={{ scale: isTop ? 1 : 0.95, opacity: isTop ? 1 : 0.6 }}
@@ -100,7 +105,7 @@ function SwipeCard({
 
       {/* Try-On button */}
       <button
-        onClick={(e) => { e.stopPropagation(); onTryOn(); }}
+        onClick={(e) => { e.stopPropagation(); if (!isDragging.current) onTryOn(); }}
         className="absolute top-3 right-3 h-9 w-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center ring-1 ring-white/20 hover:ring-primary/60 transition-all"
       >
         <ShoppingBag className="h-4 w-4 text-white" />
