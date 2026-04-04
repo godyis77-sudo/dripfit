@@ -697,7 +697,7 @@ function buildUserPrompt(category: string, brandName: string, html: string, size
     : '';
   return `Extract the ${category} size chart from this HTML for ${brandName} (US sizing).${sizeTypeHint}
 Return a JSON array where each element is one size:
-[{ "label": string, "chest_min": number|null, "chest_max": number|null, "waist_min": number|null, "waist_max": number|null, "hips_min": number|null, "hips_max": number|null, "inseam_min": number|null, "inseam_max": number|null, "shoulder_min": number|null, "shoulder_max": number|null, "shoe_length_min": number|null, "shoe_length_max": number|null, "unit": "cm" }]
+[{ "label": string, "chest_min": number|null, "chest_max": number|null, "bust_min": number|null, "bust_max": number|null, "waist_min": number|null, "waist_max": number|null, "hips_min": number|null, "hips_max": number|null, "inseam_min": number|null, "inseam_max": number|null, "shoulder_min": number|null, "shoulder_max": number|null, "sleeve_min": number|null, "sleeve_max": number|null, "height_min": number|null, "height_max": number|null, "shoe_length_min": number|null, "shoe_length_max": number|null, "unit": "cm" }]
 If no size chart found for this category in the HTML, return [].
 HTML: ${html.slice(0, 50000)}`;
 }
