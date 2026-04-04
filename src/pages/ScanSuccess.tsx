@@ -1,109 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Check, ChevronRight } from 'lucide-react';
 import BottomTabBar from '@/components/BottomTabBar';
-import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
-import type { BodyScanResult, MeasurementRange } from '@/lib/types';
+import BodyDiagram from '@/components/results/BodyDiagram';
+import MeasurementGrid from '@/components/results/MeasurementGrid';
+import type { BodyScanResult } from '@/lib/types';
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from '@/hooks/useAuth';
-
-const CM_TO_IN = 0.3937;
-
-const fmtIn = (r: MeasurementRange) =>
-  `${(r.min * CM_TO_IN).toFixed(1)}–${(r.max * CM_TO_IN).toFixed(1)} in`;
-const fmtCm = (r: MeasurementRange) =>
-  `${r.min.toFixed(0)}–${r.max.toFixed(0)} cm`;
-const fmtHeightFtIn = (cm: number) => {
-  const totalIn = Math.round(cm * CM_TO_IN);
-  return `${Math.floor(totalIn / 12)}' ${totalIn % 12}"`;
-};
-
-interface MeasurementOverlay {
-  key: string;
-  label: string;
-  side: 'left' | 'right';
-  valTop: string;  // position for the value overlay (covers old baked-in numbers)
-  offset?: number;
-  delay: number;
-  getValue: (r: BodyScanResult) => { line1: string; line2: string } | null;
-}
-
-const OVERLAYS: MeasurementOverlay[] = [
-  {
-    key: 'height',
-    label: 'HEIGHT',
-    side: 'left',
-    valTop: '10%',
-    offset: 0,
-    delay: 0,
-    getValue: (r) => ({ line1: fmtHeightFtIn(r.heightCm), line2: `${r.heightCm} cm` }),
-  },
-  {
-    key: 'shoulder',
-    label: 'SHOULDER',
-    side: 'right',
-    valTop: '21%',
-    offset: 0,
-    delay: 0.15,
-    getValue: (r) => ({ line1: fmtIn(r.shoulder), line2: fmtCm(r.shoulder) }),
-  },
-  {
-    key: 'chest',
-    label: 'CHEST',
-    side: 'left',
-    valTop: '26.5%',
-    offset: 0,
-    delay: 0.25,
-    getValue: (r) => ({ line1: fmtIn(r.chest), line2: fmtCm(r.chest) }),
-  },
-  {
-    key: 'bust',
-    label: 'BUST',
-    side: 'right',
-    valTop: '28.5%',
-    offset: 0,
-    delay: 0.35,
-    getValue: (r) => (r.bust ? { line1: fmtIn(r.bust), line2: fmtCm(r.bust) } : null),
-  },
-  {
-    key: 'sleeve',
-    label: 'SLEEVE',
-    side: 'left',
-    valTop: '36%',
-    offset: 0,
-    delay: 0.45,
-    getValue: (r) => (r.sleeve ? { line1: fmtIn(r.sleeve), line2: fmtCm(r.sleeve) } : null),
-  },
-  {
-    key: 'waist',
-    label: 'WAIST',
-    side: 'right',
-    valTop: '40.5%',
-    offset: 0,
-    delay: 0.55,
-    getValue: (r) => ({ line1: fmtIn(r.waist), line2: fmtCm(r.waist) }),
-  },
-  {
-    key: 'hips',
-    label: 'HIPS',
-    side: 'right',
-    valTop: '48.5%',
-    offset: 0,
-    delay: 0.65,
-    getValue: (r) => ({ line1: fmtIn(r.hips), line2: fmtCm(r.hips) }),
-  },
-  {
-    key: 'inseam',
-    label: 'INSEAM',
-    side: 'left',
-    valTop: '65%',
-    offset: 0,
-    delay: 0.75,
-    getValue: (r) => ({ line1: fmtIn(r.inseam), line2: fmtCm(r.inseam) }),
-  },
-];
 
 const ScanSuccess = () => {
   const location = useLocation();
