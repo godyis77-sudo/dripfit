@@ -29,6 +29,14 @@ const GalleryPlayground = () => {
   const mappedGender = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : undefined;
 
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [hasScan, setHasScan] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('body_scans').select('id').eq('user_id', user.id).limit(1).then(({ data }) => {
+      if (data && data.length > 0) setHasScan(true);
+    });
+  }, [user]);
 
   // Filter out dresses for men
   const visibleCategories = useMemo(() =>
