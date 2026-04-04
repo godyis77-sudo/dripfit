@@ -1,109 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Check, ChevronRight } from 'lucide-react';
 import BottomTabBar from '@/components/BottomTabBar';
-import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
-import type { BodyScanResult, MeasurementRange } from '@/lib/types';
+import BodyDiagram from '@/components/results/BodyDiagram';
+import MeasurementGrid from '@/components/results/MeasurementGrid';
+import type { BodyScanResult } from '@/lib/types';
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from '@/hooks/useAuth';
-
-const CM_TO_IN = 0.3937;
-
-const fmtIn = (r: MeasurementRange) =>
-  `${(r.min * CM_TO_IN).toFixed(1)}–${(r.max * CM_TO_IN).toFixed(1)} in`;
-const fmtCm = (r: MeasurementRange) =>
-  `${r.min.toFixed(0)}–${r.max.toFixed(0)} cm`;
-const fmtHeightFtIn = (cm: number) => {
-  const totalIn = Math.round(cm * CM_TO_IN);
-  return `${Math.floor(totalIn / 12)}' ${totalIn % 12}"`;
-};
-
-interface MeasurementOverlay {
-  key: string;
-  label: string;
-  side: 'left' | 'right';
-  valTop: string;  // position for the value overlay (covers old baked-in numbers)
-  offset?: number;
-  delay: number;
-  getValue: (r: BodyScanResult) => { line1: string; line2: string } | null;
-}
-
-const OVERLAYS: MeasurementOverlay[] = [
-  {
-    key: 'height',
-    label: 'HEIGHT',
-    side: 'left',
-    valTop: '10%',
-    offset: 0,
-    delay: 0,
-    getValue: (r) => ({ line1: fmtHeightFtIn(r.heightCm), line2: `${r.heightCm} cm` }),
-  },
-  {
-    key: 'shoulder',
-    label: 'SHOULDER',
-    side: 'right',
-    valTop: '21%',
-    offset: 0,
-    delay: 0.15,
-    getValue: (r) => ({ line1: fmtIn(r.shoulder), line2: fmtCm(r.shoulder) }),
-  },
-  {
-    key: 'chest',
-    label: 'CHEST',
-    side: 'left',
-    valTop: '26.5%',
-    offset: 0,
-    delay: 0.25,
-    getValue: (r) => ({ line1: fmtIn(r.chest), line2: fmtCm(r.chest) }),
-  },
-  {
-    key: 'bust',
-    label: 'BUST',
-    side: 'right',
-    valTop: '28.5%',
-    offset: 0,
-    delay: 0.35,
-    getValue: (r) => (r.bust ? { line1: fmtIn(r.bust), line2: fmtCm(r.bust) } : null),
-  },
-  {
-    key: 'sleeve',
-    label: 'SLEEVE',
-    side: 'left',
-    valTop: '36%',
-    offset: 0,
-    delay: 0.45,
-    getValue: (r) => (r.sleeve ? { line1: fmtIn(r.sleeve), line2: fmtCm(r.sleeve) } : null),
-  },
-  {
-    key: 'waist',
-    label: 'WAIST',
-    side: 'right',
-    valTop: '40.5%',
-    offset: 0,
-    delay: 0.55,
-    getValue: (r) => ({ line1: fmtIn(r.waist), line2: fmtCm(r.waist) }),
-  },
-  {
-    key: 'hips',
-    label: 'HIPS',
-    side: 'right',
-    valTop: '48.5%',
-    offset: 0,
-    delay: 0.65,
-    getValue: (r) => ({ line1: fmtIn(r.hips), line2: fmtCm(r.hips) }),
-  },
-  {
-    key: 'inseam',
-    label: 'INSEAM',
-    side: 'left',
-    valTop: '65%',
-    offset: 0,
-    delay: 0.75,
-    getValue: (r) => ({ line1: fmtIn(r.inseam), line2: fmtCm(r.inseam) }),
-  },
-];
 
 const ScanSuccess = () => {
   const location = useLocation();
@@ -138,6 +43,16 @@ const ScanSuccess = () => {
 
   if (!result) return null;
 
+  // Build measurements map — same pattern as BodyTab
+  const measurements: Record<string, { min: number; max: number }> = {};
+  if (result.shoulder) measurements.shoulder = result.shoulder;
+  if (result.chest) measurements.chest = result.chest;
+  if (result.bust) measurements.bust = result.bust;
+  if (result.waist) measurements.waist = result.waist;
+  if (result.hips) measurements.hips = result.hips;
+  if (result.inseam) measurements.inseam = result.inseam;
+  if (result.sleeve) measurements.sleeve = result.sleeve;
+
   const resultsPath = user ? '/profile/body' : '/results';
   const handleNavigate = (path: string) => {
     navigate(path, { replace: true, state: path === '/results' ? { result } : undefined });
@@ -153,50 +68,15 @@ const ScanSuccess = () => {
         Skip →
       </button>
 
-      {/* Scan results image with measurement overlays */}
+      {/* Body diagram — same layout as Profile Body tab */}
       <motion.div
-        className="relative w-full max-w-[400px] mx-auto mt-2 px-2 flex justify-center"
+        className="w-full max-w-[400px] mx-auto mt-2 px-4"
         initial={{ opacity: 0, scale: 0.92 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="relative" style={{ width: 420 * 0.75, height: 420 }}>
-          <DecorativeSilhouette height={420} />
-
-          {/* Dynamic measurement values */}
-          {OVERLAYS.map((overlay) => {
-            const val = overlay.getValue(result);
-            if (!val) return null;
-
-            return (
-              <motion.div
-                key={overlay.key}
-                className="absolute z-20 pointer-events-none"
-                style={{
-                  top: overlay.valTop,
-                  ...(overlay.side === 'left'
-                    ? { left: '4%' }
-                    : { right: '4%' }),
-                }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: overlay.delay + 0.4, duration: 0.35, ease: 'easeOut' }}
-              >
-                <div
-                  className="bg-background/80 backdrop-blur-sm rounded px-1.5 py-0.5 border border-primary/30"
-                  style={{ textAlign: overlay.side === 'left' ? 'left' : 'right' }}
-                >
-                  <p className="text-[10px] font-black leading-tight text-primary">
-                    {val.line1}
-                  </p>
-                  <p className="text-[9px] font-bold leading-tight text-muted-foreground">
-                    {val.line2}
-                  </p>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+        <BodyDiagram measurements={measurements} heightCm={result.heightCm} />
+        <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
       </motion.div>
 
       {/* Bottom section */}
