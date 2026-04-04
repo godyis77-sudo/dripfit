@@ -118,13 +118,32 @@ const SizeComparison = () => {
 
       const fit = getFitPreference() as FitPreference || 'regular';
 
-      // 4. Score each brand using inline size_data
+      // 4. Score each brand using inline size_data with adjacent-size range inference
       const results: BrandSize[] = [];
+      const KEYS = ['chest', 'waist', 'hip', 'shoulder', 'inseam', 'sleeve', 'bust', 'height'];
+
       for (const chart of charts) {
         const sizeData = chart.size_data as any[];
         if (!sizeData || sizeData.length === 0) continue;
 
-        const scored = sizeData.map((r: any) => ({
+        // Pre-process: infer _max from adjacent sizes' _min when missing
+        const enriched = sizeData.map((r: any, idx: number) => {
+          const row = { ...r };
+          for (const k of KEYS) {
+            const minKey = `${k}_min`;
+            const maxKey = `${k}_max`;
+            if (row[minKey] != null && row[maxKey] == null) {
+              // Use next size's min as this size's max, or add default spread
+              const next = sizeData[idx + 1];
+              if (next && next[minKey] != null) {
+                row[maxKey] = next[minKey];
+              }
+            }
+          }
+          return row;
+        });
+
+        const scored = enriched.map((r: any) => ({
           label: r.label || r.size_label || '?',
           score: scoreSizeRow({
             size_label: r.label || r.size_label || '',
@@ -147,7 +166,7 @@ const SizeComparison = () => {
           } as any, measurements, fit, selectedCategory),
         })).sort((a, b) => b.score - a.score);
 
-        if (scored[0].score > 0.3) {
+        if (scored[0].score > 0.2) {
           results.push({
             brandName: chart.brand_name,
             brandSlug: chart.brand_slug,
