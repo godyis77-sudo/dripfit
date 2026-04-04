@@ -165,14 +165,14 @@ const SizeComparison = () => {
   }, [brandSizes, selectedGenre]);
 
   const confidenceColor = (c: number) => {
-    if (c >= 0.8) return 'text-green-400';
-    if (c >= 0.6) return 'text-amber-400';
+    if (c >= 0.72) return 'text-green-400';
+    if (c >= 0.55) return 'text-amber-400';
     return 'text-red-400';
   };
 
   const confidenceDot = (c: number) => {
-    if (c >= 0.8) return 'bg-green-400';
-    if (c >= 0.6) return 'bg-amber-400';
+    if (c >= 0.72) return 'bg-green-400';
+    if (c >= 0.55) return 'bg-amber-400';
     return 'bg-red-400';
   };
 

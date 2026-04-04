@@ -116,8 +116,10 @@ Deno.serve(async (req) => {
       return errorResponse("Cannot access another user's data", "AUTH_ERROR", 403, corsHeaders);
     }
 
-    const validFits = ["slim", "regular", "relaxed"];
-    const fit = validFits.includes(fit_preference) ? fit_preference : "regular";
+    const validFits = ["slim", "fitted", "regular", "relaxed"];
+    const fitRaw = validFits.includes(fit_preference) ? fit_preference : "regular";
+    // Normalize "fitted" → "slim" for engine consistency
+    const fit = fitRaw === "fitted" ? "slim" : fitRaw;
 
     const CATEGORY_ALIASES: Record<string, string> = {
       "t-shirts": "tops", "tees": "tops", "shirts": "tops", "blouses": "tops",
@@ -294,6 +296,12 @@ Deno.serve(async (req) => {
         let totalWeight = 0;
         const breakdown: { key: string; user_value: number; chart_min: number; chart_max: number; score: number; status: string }[] = [];
 
+        // Default spread (cm) when only a single measurement point exists — matches client sizeEngine.ts
+        const DEFAULT_SPREAD: Record<string, number> = {
+          chest: 4, waist: 4, hip: 4, hips: 4, shoulder: 2,
+          inseam: 3, sleeve: 2, height: 5, shoe_length: 0.5,
+        };
+
         for (const [measurement, weight] of Object.entries(weights)) {
           if (weight === 0) continue;
           const userVal = userMeasurements[measurement];
@@ -301,9 +309,14 @@ Deno.serve(async (req) => {
 
           const minKey = `${measurement}_min` as keyof SizeEntry;
           const maxKey = `${measurement}_max` as keyof SizeEntry;
-          const sMin = size[minKey] as number | undefined;
-          const sMax = size[maxKey] as number | undefined;
-          if (sMin == null || sMax == null) continue;
+          let sMin = size[minKey] as number | undefined;
+          let sMax = size[maxKey] as number | undefined;
+
+          // Handle single-point data with default spread (parity with client)
+          if (sMin == null && sMax == null) continue;
+          const spread = DEFAULT_SPREAD[measurement] ?? 3;
+          if (sMin != null && sMax == null) sMax = sMin + spread;
+          if (sMin == null && sMax != null) sMin = sMax - spread;
 
           let adjusted = userVal;
           if (FIT_ADJUSTABLE.has(measurement) && offset !== 0) {
@@ -341,9 +354,9 @@ Deno.serve(async (req) => {
 
     // fitStatus based on fit-adjusted confidence
     let fitStatus: string;
-    if (confidence >= 0.90) fitStatus = "true_to_size";
-    else if (confidence >= 0.75) fitStatus = "good_fit";
-    else if (confidence >= 0.50) fitStatus = "between_sizes";
+    if (confidence >= 0.82) fitStatus = "true_to_size";
+    else if (confidence >= 0.65) fitStatus = "good_fit";
+    else if (confidence >= 0.45) fitStatus = "between_sizes";
     else fitStatus = "out_of_range";
 
     // Determine second option from fit-adjusted scores
@@ -388,7 +401,7 @@ Deno.serve(async (req) => {
     const allSizes = fitScored.map((s) => ({
       label: s.label,
       score: Number(s.score.toFixed(2)),
-      fit_status: s.score >= 0.90 ? "true_to_size" : s.score >= 0.75 ? "good_fit" : s.score >= 0.60 ? "between_sizes" : "out_of_range",
+      fit_status: s.score >= 0.82 ? "true_to_size" : s.score >= 0.65 ? "good_fit" : s.score >= 0.45 ? "between_sizes" : "out_of_range",
     }));
 
     // STEP 7 — Cache

@@ -848,8 +848,9 @@ TASK: Add the belt from Image B onto the person in Image A at the natural waistl
                   ]
             )
           : [
-              { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary`, timeoutMs: 32_000 },
-              { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-retry`, timeoutMs: 24_000 },
+              { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary`, timeoutMs: 30_000 },
+              { model: "google/gemini-3.1-flash-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-flash-retry`, timeoutMs: 22_000 },
+              { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-retry`, timeoutMs: 20_000 },
             ];
 
     if (shouldBypassPrimaryForIntimate) {
