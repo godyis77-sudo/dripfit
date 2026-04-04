@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, ShoppingBag, Flame, Ruler } from 'lucide-react';
 import { motion } from 'framer-motion';
