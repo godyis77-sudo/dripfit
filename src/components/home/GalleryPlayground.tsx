@@ -83,7 +83,7 @@ const GalleryPlayground = () => {
           >
             <Ruler className="h-5 w-5 text-primary-foreground shrink-0" />
             <div className="text-left">
-              <span className="block text-[15px] font-extrabold tracking-tight text-primary-foreground drop-shadow-[0_1px_2px_hsl(var(--foreground)/0.25)] leading-tight">Size Guide</span>
+              <span className="block text-[16px] font-extrabold tracking-tight text-primary-foreground drop-shadow-[0_1px_2px_hsl(var(--foreground)/0.25)] leading-tight">Size Guide</span>
               <span className="block text-[9px] font-semibold text-primary-foreground/90 leading-tight mt-0.5">Get your perfect fit</span>
             </div>
           </motion.button>
