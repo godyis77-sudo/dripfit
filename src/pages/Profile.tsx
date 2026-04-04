@@ -212,7 +212,7 @@ const Profile = () => {
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl btn-gold-3d active:scale-95 transition-transform shadow-md"
             >
               <User className="h-4 w-4 text-primary-foreground" />
-              <span className="text-[13px] text-primary-foreground font-bold">Size Match Card</span>
+              <span className="text-[15px] text-primary-foreground font-bold">Size Guide</span>
             </button>
             <Button
               variant="ghost"
