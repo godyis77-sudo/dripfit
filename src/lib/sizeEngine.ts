@@ -23,6 +23,33 @@ interface SizeChartRow {
   shoe_max?: number | null;
 }
 
+interface InlineSizeChartRow {
+  label?: string;
+  size_label?: string;
+  chest_min?: number | null;
+  chest_max?: number | null;
+  bust_min?: number | null;
+  bust_max?: number | null;
+  waist_min?: number | null;
+  waist_max?: number | null;
+  hip_min?: number | null;
+  hip_max?: number | null;
+  hips_min?: number | null;
+  hips_max?: number | null;
+  inseam_min?: number | null;
+  inseam_max?: number | null;
+  shoulder_min?: number | null;
+  shoulder_max?: number | null;
+  sleeve_min?: number | null;
+  sleeve_max?: number | null;
+  height_min?: number | null;
+  height_max?: number | null;
+  shoe_min?: number | null;
+  shoe_max?: number | null;
+  shoe_length_min?: number | null;
+  shoe_length_max?: number | null;
+}
+
 export interface UserMeasurements {
   shoulder: MeasurementRange;
   chest: MeasurementRange;
@@ -35,11 +62,11 @@ export interface UserMeasurements {
 
 // ── Fit offset only applies to circumference measurements ──
 // Shoulder, inseam, sleeve, shoe_length are structural/anatomical — never adjusted.
-const FIT_OFFSETS: Record<string, number> = {
-  fitted: -1.5,
-  slim: -1.5,
+const FIT_FRACTION: Record<FitPreference, number> = {
+  fitted: -0.6,
+  slim: -0.6,
   regular: 0,
-  relaxed: 2,
+  relaxed: 0.6,
 };
 
 // Measurements that should receive fit-preference offset (circumference only)
@@ -59,6 +86,44 @@ export const CATEGORY_WEIGHTS: Record<string, Record<string, number>> = {
   footwear:   { shoe_length: 1.00 },
 };
 
+const CATEGORY_ALIASES: Record<string, string> = {
+  't-shirts': 'tops',
+  tees: 'tops',
+  shirts: 'tops',
+  blouses: 'tops',
+  sweaters: 'tops',
+  hoodies: 'tops',
+  fleece: 'tops',
+  knitwear: 'tops',
+  'tank-tops': 'tops',
+  polos: 'tops',
+  jeans: 'bottoms',
+  shorts: 'bottoms',
+  skirts: 'bottoms',
+  trousers: 'pants',
+  leggings: 'activewear',
+  joggers: 'activewear',
+  sweatpants: 'activewear',
+  jackets: 'outerwear',
+  coats: 'outerwear',
+  parkas: 'outerwear',
+  vests: 'outerwear',
+  blazer: 'blazers',
+  blazers: 'blazers',
+  suit: 'suits',
+  suits: 'suits',
+  'sports-bras': 'activewear',
+  dress: 'dresses',
+  gowns: 'dresses_full',
+  'maxi-dresses': 'dresses_full',
+  rompers: 'dresses',
+  jumpsuits: 'dresses',
+  sneakers: 'footwear',
+  shoes: 'footwear',
+  boots: 'footwear',
+  sandals: 'footwear',
+};
+
 const DEFAULT_WEIGHTS: Record<string, number> = {
   chest: 0.30, waist: 0.30, hip: 0.20, shoulder: 0.10, inseam: 0.10,
 };
@@ -70,16 +135,18 @@ const DEFAULT_WEIGHTS: Record<string, number> = {
  */
 export function scoreMeasurement(userVal: number, chartMin: number, chartMax: number): number {
   const mid = (chartMin + chartMax) / 2;
-  const rangeHalf = (chartMax - chartMin) / 2 || 1;
+  const sigma = (chartMax - chartMin) / 2 || 1;
+  const distance = Math.abs(userVal - mid);
+  const base = Math.exp(-0.5 * (distance / sigma) ** 2);
+  const position = (userVal - chartMin) / (chartMax - chartMin || 1);
+  const easeBias = position <= 0.5 ? 0.02 : -0.02 * ((position - 0.5) / 0.5);
+  return Math.max(0, Math.min(1, base + easeBias));
+}
 
-  if (userVal >= chartMin && userVal <= chartMax) {
-    // Inside range: 0.8–1.0 depending on proximity to midpoint
-    return 1.0 - (Math.abs(userVal - mid) / rangeHalf) * 0.2;
-  }
-  if (userVal < chartMin) {
-    return Math.max(0, 1.0 - ((chartMin - userVal) / rangeHalf) * 0.8);
-  }
-  return Math.max(0, 1.0 - ((userVal - chartMax) / rangeHalf) * 0.8);
+export function normalizeCategory(rawCategory?: string): string {
+  const normalized = rawCategory?.toLowerCase().trim() ?? '';
+  if (normalized in CATEGORY_WEIGHTS) return normalized;
+  return CATEGORY_ALIASES[normalized] || 'tops';
 }
 
 /**
@@ -111,6 +178,110 @@ const DEFAULT_SPREAD: Record<string, number> = {
   chest: 4, waist: 4, hip: 4, hips: 4, shoulder: 2,
   inseam: 3, sleeve: 2, height: 5, shoe_length: 0.5,
 };
+
+function normalizeInlineRow(row: InlineSizeChartRow): SizeChartRow {
+  return {
+    size_label: row.size_label ?? row.label ?? '',
+    chest_min: row.chest_min ?? row.bust_min ?? null,
+    chest_max: row.chest_max ?? row.bust_max ?? null,
+    bust_min: row.bust_min ?? null,
+    bust_max: row.bust_max ?? null,
+    waist_min: row.waist_min ?? null,
+    waist_max: row.waist_max ?? null,
+    hip_min: row.hip_min ?? row.hips_min ?? null,
+    hip_max: row.hip_max ?? row.hips_max ?? null,
+    inseam_min: row.inseam_min ?? null,
+    inseam_max: row.inseam_max ?? null,
+    shoulder_min: row.shoulder_min ?? null,
+    shoulder_max: row.shoulder_max ?? null,
+    sleeve_min: row.sleeve_min ?? null,
+    sleeve_max: row.sleeve_max ?? null,
+    height_min: row.height_min ?? null,
+    height_max: row.height_max ?? null,
+    shoe_min: row.shoe_min ?? row.shoe_length_min ?? null,
+    shoe_max: row.shoe_max ?? row.shoe_length_max ?? null,
+  };
+}
+
+function calcGradeSteps(rows: SizeChartRow[], measurementKeys: string[]): Record<string, number> {
+  const steps: Record<string, number> = {};
+
+  for (const key of measurementKeys) {
+    const midpoints = rows
+      .map((row) => {
+        const range = getChartRange(row, key);
+        return range ? (range[0] + range[1]) / 2 : null;
+      })
+      .filter((value): value is number => value != null);
+
+    if (midpoints.length < 2) continue;
+
+    let totalGap = 0;
+    for (let i = 1; i < midpoints.length; i++) {
+      totalGap += Math.abs(midpoints[i] - midpoints[i - 1]);
+    }
+
+    steps[key] = totalGap / (midpoints.length - 1);
+  }
+
+  return steps;
+}
+
+function scoreChartRows(
+  rows: SizeChartRow[],
+  user: UserMeasurements,
+  fit: FitPreference,
+  rawCategory?: string,
+  preferredShoeSize?: string,
+): { label: string; score: number }[] {
+  const category = normalizeCategory(rawCategory);
+
+  if (category === 'footwear') {
+    if (!preferredShoeSize) return rows.map((row) => ({ label: row.size_label, score: 0 }));
+    return rows
+      .map((row) => ({
+        label: row.size_label,
+        score: row.size_label.toLowerCase() === preferredShoeSize.toLowerCase() ? 1 : 0,
+      }))
+      .sort((a, b) => b.score - a.score);
+  }
+
+  const weights = CATEGORY_WEIGHTS[category] || DEFAULT_WEIGHTS;
+  const adjustableKeys = Object.keys(weights).filter((key) => FIT_ADJUSTABLE.has(key));
+  const gradeSteps = calcGradeSteps(rows, adjustableKeys);
+  const fitFraction = FIT_FRACTION[fit] ?? 0;
+
+  return rows
+    .map((row) => {
+      let totalScore = 0;
+      let totalWeight = 0;
+
+      for (const [measurementKey, weight] of Object.entries(weights)) {
+        if (weight === 0) continue;
+
+        const userMid = getUserMid(user, measurementKey);
+        if (userMid == null) continue;
+
+        const chartRange = getChartRange(row, measurementKey);
+        if (!chartRange) continue;
+
+        let adjusted = userMid;
+        if (FIT_ADJUSTABLE.has(measurementKey) && fitFraction !== 0) {
+          adjusted = userMid + fitFraction * (gradeSteps[measurementKey] ?? 0);
+        }
+
+        const mScore = scoreMeasurement(adjusted, chartRange[0], chartRange[1]);
+        totalScore += mScore * weight;
+        totalWeight += weight;
+      }
+
+      return {
+        label: row.size_label,
+        score: totalWeight > 0 ? Number((totalScore / totalWeight).toFixed(4)) : 0,
+      };
+    })
+    .sort((a, b) => b.score - a.score);
+}
 
 export function getChartRange(row: SizeChartRow, key: string): [number, number] | null {
   const pairs: Record<string, [number | null | undefined, number | null | undefined]> = {
@@ -147,36 +318,29 @@ export function scoreSizeRow(
   category?: string,
   preferredShoeSize?: string,
 ): number {
-  // Footwear guard: skip Gaussian scoring, do direct string match
-  if (category === 'footwear') {
-    if (!preferredShoeSize) return 0;
-    return row.size_label.toLowerCase() === preferredShoeSize.toLowerCase() ? 1.0 : 0;
-  }
+  return scoreChartRows([row], user, fit, category, preferredShoeSize)[0]?.score ?? 0;
+}
 
-  const fitOffset = FIT_OFFSETS[fit] ?? 0;
-  const weights = (category && CATEGORY_WEIGHTS[category]) || DEFAULT_WEIGHTS;
+export function recommendInlineChartSize(
+  rawRows: InlineSizeChartRow[],
+  user: UserMeasurements,
+  fit: FitPreference,
+  rawCategory?: string,
+  preferredShoeSize?: string,
+): { size: string; confidence: number } | null {
+  const rows = rawRows
+    .map(normalizeInlineRow)
+    .filter((row) => row.size_label);
 
-  let totalScore = 0;
-  let totalWeight = 0;
+  if (rows.length === 0) return null;
 
-  for (const [measurementKey, weight] of Object.entries(weights)) {
-    if (weight === 0) continue;
+  const scored = scoreChartRows(rows, user, fit, rawCategory, preferredShoeSize);
+  if (scored.length === 0) return null;
 
-    const userMid = getUserMid(user, measurementKey);
-    if (userMid == null) continue;
-
-    const chartRange = getChartRange(row, measurementKey);
-    if (!chartRange) continue;
-
-    // Only apply fit offset to circumference measurements
-    const adjusted = FIT_ADJUSTABLE.has(measurementKey) ? userMid + fitOffset : userMid;
-    const mScore = scoreMeasurement(adjusted, chartRange[0], chartRange[1]);
-
-    totalScore += mScore * weight;
-    totalWeight += weight;
-  }
-
-  return totalWeight > 0 ? totalScore / totalWeight : 0;
+  return {
+    size: scored[0].label,
+    confidence: scored[0].score,
+  };
 }
 
 export interface SizeRecommendation {
@@ -210,10 +374,7 @@ export async function recommendSize(
 
   if (!rows || rows.length === 0) return null;
 
-  const scored = rows.map(r => ({
-    label: r.size_label,
-    score: scoreSizeRow(r as SizeChartRow, user, fit, category),
-  })).sort((a, b) => b.score - a.score);
+  const scored = scoreChartRows(rows as SizeChartRow[], user, fit, category);
 
   if (scored.length === 0) return null;
 

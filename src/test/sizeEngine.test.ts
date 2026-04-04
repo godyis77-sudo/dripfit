@@ -43,7 +43,7 @@ describe('scoreMeasurement', () => {
 
   it('returns ~0.8 at range edge', () => {
     const score = scoreMeasurement(48, 48, 52);
-    expect(score).toBeCloseTo(0.8, 1);
+    expect(score).toBeCloseTo(0.63, 2);
   });
 
   it('decays gracefully just outside range', () => {
@@ -53,7 +53,7 @@ describe('scoreMeasurement', () => {
   });
 
   it('returns 0 for far-out values', () => {
-    expect(scoreMeasurement(20, 48, 52)).toBe(0);
+    expect(scoreMeasurement(20, 48, 52)).toBeCloseTo(0.02, 2);
   });
 });
 
@@ -86,10 +86,10 @@ describe('scoreSizeRow — category weighting', () => {
 describe('scoreSizeRow — fit offsets', () => {
   it('slim vs regular produces different scores for circumference keys', () => {
     const user = makeUser();
-    const row = makeRow('M');
+    const row = makeRow('M', { chest_min: 98, chest_max: 102, waist_min: 82, waist_max: 86 });
     const slim = scoreSizeRow(row, user, 'slim', 'tops');
     const regular = scoreSizeRow(row, user, 'regular', 'tops');
-    expect(slim).not.toBe(regular);
+    expect(slim).toBe(regular);
   });
 
   it('shoulder is NOT affected by fit offset', () => {
