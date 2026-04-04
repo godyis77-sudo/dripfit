@@ -163,6 +163,42 @@ serve(async (req) => {
 
     const measurements = JSON.parse(jsonMatch[0]);
 
+    // ── Post-AI sanity checks ──
+    const mid = (r: { min: number; max: number }) => (r.min + r.max) / 2;
+    const clampRange = (r: { min: number; max: number }, lo: number, hi: number) => ({
+      min: Math.max(lo, Math.min(hi, r.min)),
+      max: Math.max(lo, Math.min(hi, r.max)),
+    });
+
+    if (measurements.shoulder && measurements.chest) {
+      const shoulderMid = mid(measurements.shoulder);
+      const chestMid = mid(measurements.chest);
+      // Shoulder width should be less than chest circumference
+      if (shoulderMid >= chestMid) {
+        measurements.shoulder = clampRange(measurements.shoulder, measurements.shoulder.min * 0.85, chestMid * 0.95);
+        console.warn("Sanity fix: shoulder >= chest, adjusted shoulder down");
+      }
+    }
+
+    if (measurements.waist && measurements.chest) {
+      const waistMid = mid(measurements.waist);
+      const chestMid = mid(measurements.chest);
+      // Waist should be less than chest for most body types
+      if (waistMid > chestMid * 1.05) {
+        measurements.waist = clampRange(measurements.waist, measurements.waist.min * 0.9, chestMid * 1.02);
+        console.warn("Sanity fix: waist > chest, adjusted waist down");
+      }
+    }
+
+    if (measurements.inseam && heightCm) {
+      const inseamMid = mid(measurements.inseam);
+      const maxInseam = heightCm * 0.55;
+      if (inseamMid > maxInseam) {
+        measurements.inseam = clampRange(measurements.inseam, measurements.inseam.min * 0.85, maxInseam);
+        console.warn(`Sanity fix: inseam (${inseamMid}) > 55% of height (${maxInseam}), adjusted`);
+      }
+    }
+
     return successResponse(measurements, 200, corsHeaders);
   } catch (e) {
     console.error("analyze-body error:", e);

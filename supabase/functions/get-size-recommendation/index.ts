@@ -401,7 +401,7 @@ Deno.serve(async (req) => {
     const allSizes = fitScored.map((s) => ({
       label: s.label,
       score: Number(s.score.toFixed(2)),
-      fit_status: s.score >= 0.90 ? "true_to_size" : s.score >= 0.75 ? "good_fit" : s.score >= 0.60 ? "between_sizes" : "out_of_range",
+      fit_status: s.score >= 0.82 ? "true_to_size" : s.score >= 0.65 ? "good_fit" : s.score >= 0.45 ? "between_sizes" : "out_of_range",
     }));
 
     // STEP 7 — Cache

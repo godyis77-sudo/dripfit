@@ -958,7 +958,7 @@ Deno.serve(async (req) => {
             scraped_at: new Date().toISOString(),
             is_active: true,
             size_system: "alpha",
-            confidence: 0.8,
+            confidence: dynamicConfidence,
             source_url: item.config.url,
           },
           { onConflict: "brand_slug,category,region,gender,size_type" }
