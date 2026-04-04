@@ -43,6 +43,16 @@ const ScanSuccess = () => {
 
   if (!result) return null;
 
+  // Build measurements map — same pattern as BodyTab
+  const measurements: Record<string, { min: number; max: number }> = {};
+  if (result.shoulder) measurements.shoulder = result.shoulder;
+  if (result.chest) measurements.chest = result.chest;
+  if (result.bust) measurements.bust = result.bust;
+  if (result.waist) measurements.waist = result.waist;
+  if (result.hips) measurements.hips = result.hips;
+  if (result.inseam) measurements.inseam = result.inseam;
+  if (result.sleeve) measurements.sleeve = result.sleeve;
+
   const resultsPath = user ? '/profile/body' : '/results';
   const handleNavigate = (path: string) => {
     navigate(path, { replace: true, state: path === '/results' ? { result } : undefined });
