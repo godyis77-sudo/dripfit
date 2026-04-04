@@ -78,7 +78,7 @@ const GalleryPlayground = () => {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.04 }}
-            onClick={() => navigate('/capture')}
+            onClick={() => navigate(user && hasScan ? '/profile/body' : '/capture')}
             className="btn-luxury text-primary-foreground rounded-2xl px-3 py-3 flex items-center gap-2 active:scale-[0.97] transition-transform shimmer-sweep"
           >
             <Ruler className="h-5 w-5 text-primary-foreground shrink-0" />
