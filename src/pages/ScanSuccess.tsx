@@ -160,10 +160,10 @@ const ScanSuccess = () => {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="relative">
+        <div className="relative" style={{ width: 420 * 0.75, height: 420 }}>
           <DecorativeSilhouette height={420} />
 
-          {/* Cover old baked-in values and show dynamic ones */}
+          {/* Dynamic measurement values */}
           {OVERLAYS.map((overlay) => {
             const val = overlay.getValue(result);
             if (!val) return null;
@@ -171,35 +171,28 @@ const ScanSuccess = () => {
             return (
               <motion.div
                 key={overlay.key}
-                className="absolute"
+                className="absolute z-20 pointer-events-none"
                 style={{
                   top: overlay.valTop,
-                   ...(overlay.side === 'left'
-                      ? { left: '3.5%' }
-                      : { right: '3.5%' }),
+                  ...(overlay.side === 'left'
+                    ? { left: '4%' }
+                    : { right: '4%' }),
                 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: overlay.delay + 0.4, duration: 0.35, ease: 'easeOut' }}
               >
-                 <div
-                   style={{
-                     textAlign: overlay.side === 'left' ? 'left' : 'right',
-                   }}
-                  >
-                   <p
-                      className="text-[11px] font-black leading-tight"
-                      style={{ color: '#000' }}
-                    >
-                      {val.line1}
-                    </p>
-                    <p
-                      className="text-[11px] font-black leading-tight"
-                      style={{ color: '#000' }}
-                    >
-                      {val.line2}
-                    </p>
-                 </div>
+                <div
+                  className="bg-background/80 backdrop-blur-sm rounded px-1.5 py-0.5 border border-primary/30"
+                  style={{ textAlign: overlay.side === 'left' ? 'left' : 'right' }}
+                >
+                  <p className="text-[10px] font-black leading-tight text-primary">
+                    {val.line1}
+                  </p>
+                  <p className="text-[9px] font-bold leading-tight text-muted-foreground">
+                    {val.line2}
+                  </p>
+                </div>
               </motion.div>
             );
           })}
