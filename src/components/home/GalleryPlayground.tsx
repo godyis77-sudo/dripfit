@@ -4,6 +4,7 @@ import { Sparkles, ShoppingBag, Flame, Ruler } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
+import { supabase } from '@/integrations/supabase/client';
 import { type CatalogProduct } from '@/hooks/useProductCatalog';
 import BrandLogo from '@/components/ui/BrandLogo';
 import FeatureIcon from '@/components/ui/FeatureIcon';
