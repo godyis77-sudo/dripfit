@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { scoreSizeRow, type UserMeasurements } from '@/lib/sizeEngine';
+import { recommendInlineChartSize, type UserMeasurements } from '@/lib/sizeEngine';
 import type { FitPreference, MeasurementRange } from '@/lib/types';
 import { getFitPreference } from '@/lib/session';
 import BottomTabBar from '@/components/BottomTabBar';
@@ -118,62 +118,22 @@ const SizeComparison = () => {
 
       const fit = getFitPreference() as FitPreference || 'regular';
 
-      // 4. Score each brand using inline size_data with adjacent-size range inference
+      // 4. Score each brand using the same chart-aware logic as the main recommendation engine
       const results: BrandSize[] = [];
-      const KEYS = ['chest', 'waist', 'hip', 'shoulder', 'inseam', 'sleeve', 'bust', 'height'];
 
       for (const chart of charts) {
         const sizeData = chart.size_data as any[];
         if (!sizeData || sizeData.length === 0) continue;
 
-        // Pre-process: infer _max from adjacent sizes' _min when missing
-        const enriched = sizeData.map((r: any, idx: number) => {
-          const row = { ...r };
-          for (const k of KEYS) {
-            const minKey = `${k}_min`;
-            const maxKey = `${k}_max`;
-            if (row[minKey] != null && row[maxKey] == null) {
-              // Use next size's min as this size's max, or add default spread
-              const next = sizeData[idx + 1];
-              if (next && next[minKey] != null) {
-                row[maxKey] = next[minKey];
-              }
-            }
-          }
-          return row;
-        });
-
-        const scored = enriched.map((r: any) => ({
-          label: r.label || r.size_label || '?',
-          score: scoreSizeRow({
-            size_label: r.label || r.size_label || '',
-            chest_min: r.chest_min ?? null,
-            chest_max: r.chest_max ?? null,
-            waist_min: r.waist_min ?? null,
-            waist_max: r.waist_max ?? null,
-            hip_min: r.hip_min ?? null,
-            hip_max: r.hip_max ?? null,
-            shoulder_min: r.shoulder_min ?? null,
-            shoulder_max: r.shoulder_max ?? null,
-            inseam_min: r.inseam_min ?? null,
-            inseam_max: r.inseam_max ?? null,
-            sleeve_min: r.sleeve_min ?? null,
-            sleeve_max: r.sleeve_max ?? null,
-            bust_min: r.bust_min ?? null,
-            bust_max: r.bust_max ?? null,
-            height_min: r.height_min ?? null,
-            height_max: r.height_max ?? null,
-          } as any, measurements, fit, selectedCategory),
-        })).sort((a, b) => b.score - a.score);
-
-        if (scored[0].score > 0.2) {
+        const recommendation = recommendInlineChartSize(sizeData, measurements, fit, chart.category);
+        if (recommendation && recommendation.confidence > 0.2) {
           results.push({
             brandName: chart.brand_name,
             brandSlug: chart.brand_slug,
             category: chart.category,
             gender: chart.gender,
-            size: scored[0].label,
-            confidence: scored[0].score,
+            size: recommendation.size,
+            confidence: recommendation.confidence,
             genre: getBrandGenre(chart.brand_name) || 'Casual',
           });
         }
