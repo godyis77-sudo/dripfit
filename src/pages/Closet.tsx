@@ -105,7 +105,7 @@ function SwipeCard({
 
       {/* Try-On button */}
       <button
-        onClick={(e) => { e.stopPropagation(); onTryOn(); }}
+        onClick={(e) => { e.stopPropagation(); if (!isDragging.current) onTryOn(); }}
         className="absolute top-3 right-3 h-9 w-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center ring-1 ring-white/20 hover:ring-primary/60 transition-all"
       >
         <ShoppingBag className="h-4 w-4 text-white" />
