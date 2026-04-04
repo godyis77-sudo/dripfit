@@ -61,6 +61,7 @@ function SwipeCard({
       drag={isTop ? 'x' : false}
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.9}
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       initial={{ scale: isTop ? 1 : 0.95, opacity: isTop ? 1 : 0.6 }}
       animate={{ scale: isTop ? 1 : 0.95, opacity: isTop ? 1 : 0.6 }}
