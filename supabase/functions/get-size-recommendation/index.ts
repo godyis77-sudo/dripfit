@@ -116,8 +116,10 @@ Deno.serve(async (req) => {
       return errorResponse("Cannot access another user's data", "AUTH_ERROR", 403, corsHeaders);
     }
 
-    const validFits = ["slim", "regular", "relaxed"];
-    const fit = validFits.includes(fit_preference) ? fit_preference : "regular";
+    const validFits = ["slim", "fitted", "regular", "relaxed"];
+    const fitRaw = validFits.includes(fit_preference) ? fit_preference : "regular";
+    // Normalize "fitted" → "slim" for engine consistency
+    const fit = fitRaw === "fitted" ? "slim" : fitRaw;
 
     const CATEGORY_ALIASES: Record<string, string> = {
       "t-shirts": "tops", "tees": "tops", "shirts": "tops", "blouses": "tops",
