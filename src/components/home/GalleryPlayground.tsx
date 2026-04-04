@@ -1,9 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, ShoppingBag, Flame, Ruler } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
+import { supabase } from '@/integrations/supabase/client';
 import { type CatalogProduct } from '@/hooks/useProductCatalog';
 import BrandLogo from '@/components/ui/BrandLogo';
 import FeatureIcon from '@/components/ui/FeatureIcon';
@@ -28,6 +29,14 @@ const GalleryPlayground = () => {
   const mappedGender = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : undefined;
 
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [hasScan, setHasScan] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('body_scans').select('id').eq('user_id', user.id).limit(1).then(({ data }) => {
+      if (data && data.length > 0) setHasScan(true);
+    });
+  }, [user]);
 
   // Filter out dresses for men
   const visibleCategories = useMemo(() =>
@@ -69,7 +78,7 @@ const GalleryPlayground = () => {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.04 }}
-            onClick={() => navigate('/capture')}
+            onClick={() => navigate(user && hasScan ? '/profile/body' : '/capture')}
             className="btn-luxury text-primary-foreground rounded-2xl px-3 py-3 flex items-center gap-2 active:scale-[0.97] transition-transform shimmer-sweep"
           >
             <Ruler className="h-5 w-5 text-primary-foreground shrink-0" />
