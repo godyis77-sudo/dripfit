@@ -896,22 +896,52 @@ Deno.serve(async (req) => {
           continue;
         }
 
+        // Unit sanity check: if any circumference value < 30, assume inches and convert to cm
+        const maybeConvert = (val: number | null | undefined): number | null => {
+          if (val == null) return null;
+          return val > 0 && val < 30 ? Math.round(val * 2.54 * 10) / 10 : val;
+        };
+        // Structural measurements (shoulder, inseam, sleeve, height) use different thresholds
+        const maybeConvertStructural = (val: number | null | undefined): number | null => {
+          if (val == null) return null;
+          return val > 0 && val < 20 ? Math.round(val * 2.54 * 10) / 10 : val;
+        };
+
         // Normalize size_data keys
         const normalizedData = parsed.map((entry: any) => ({
           label: entry.label,
-          chest_min: entry.chest_min ?? null,
-          chest_max: entry.chest_max ?? null,
-          waist_min: entry.waist_min ?? null,
-          waist_max: entry.waist_max ?? null,
-          hip_min: entry.hips_min ?? entry.hip_min ?? null,
-          hip_max: entry.hips_max ?? entry.hip_max ?? null,
-          inseam_min: entry.inseam_min ?? null,
-          inseam_max: entry.inseam_max ?? null,
-          shoulder_min: entry.shoulder_min ?? null,
-          shoulder_max: entry.shoulder_max ?? null,
+          chest_min: maybeConvert(entry.chest_min ?? null),
+          chest_max: maybeConvert(entry.chest_max ?? null),
+          bust_min: maybeConvert(entry.bust_min ?? null),
+          bust_max: maybeConvert(entry.bust_max ?? null),
+          waist_min: maybeConvert(entry.waist_min ?? null),
+          waist_max: maybeConvert(entry.waist_max ?? null),
+          hip_min: maybeConvert(entry.hips_min ?? entry.hip_min ?? null),
+          hip_max: maybeConvert(entry.hips_max ?? entry.hip_max ?? null),
+          inseam_min: maybeConvertStructural(entry.inseam_min ?? null),
+          inseam_max: maybeConvertStructural(entry.inseam_max ?? null),
+          shoulder_min: maybeConvertStructural(entry.shoulder_min ?? null),
+          shoulder_max: maybeConvertStructural(entry.shoulder_max ?? null),
+          sleeve_min: maybeConvertStructural(entry.sleeve_min ?? null),
+          sleeve_max: maybeConvertStructural(entry.sleeve_max ?? null),
+          height_min: entry.height_min ?? null,
+          height_max: entry.height_max ?? null,
           shoe_length_min: entry.shoe_length_min ?? null,
           shoe_length_max: entry.shoe_length_max ?? null,
         }));
+
+        // Dynamic confidence based on field population rate
+        const measurementFields = ['chest_min', 'waist_min', 'hip_min', 'inseam_min', 'shoulder_min', 'sleeve_min', 'bust_min', 'height_min'];
+        let totalPopulated = 0;
+        let totalChecked = 0;
+        for (const entry of normalizedData) {
+          for (const field of measurementFields) {
+            totalChecked++;
+            if ((entry as any)[field] != null) totalPopulated++;
+          }
+        }
+        const populationRate = totalChecked > 0 ? totalPopulated / totalChecked : 0;
+        const dynamicConfidence = Math.round(Math.max(0.4, Math.min(0.95, 0.5 + populationRate * 0.5)) * 100) / 100;
 
         // Upsert
         const gender = item.config.gender || "unisex";
