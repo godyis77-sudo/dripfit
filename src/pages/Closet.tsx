@@ -34,8 +34,12 @@ function SwipeCard({
   const rotate = useTransform(x, [-300, 0, 300], [-18, 0, 18]);
   const copOpacity = useTransform(x, [0, SWIPE_THRESHOLD], [0, 1]);
   const dropOpacity = useTransform(x, [-SWIPE_THRESHOLD, 0], [1, 0]);
+  const isDragging = useRef(false);
 
+  const handleDragStart = () => { isDragging.current = true; };
   const handleDragEnd = (_: any, info: PanInfo) => {
+    // Delay clearing drag flag so click events fired during drag release are suppressed
+    setTimeout(() => { isDragging.current = false; }, 100);
     if (info.offset.x > SWIPE_THRESHOLD) {
       onSwipe('right');
     } else if (info.offset.x < -SWIPE_THRESHOLD) {
