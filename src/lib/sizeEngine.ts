@@ -106,6 +106,12 @@ export function getUserMid(user: UserMeasurements, key: string): number | null {
 /**
  * Resolves chart min/max for a given measurement key from a SizeChartRow.
  */
+// Default spread (cm) when only a single measurement point exists
+const DEFAULT_SPREAD: Record<string, number> = {
+  chest: 4, waist: 4, hip: 4, hips: 4, shoulder: 2,
+  inseam: 3, sleeve: 2, height: 5, shoe_length: 0.5,
+};
+
 export function getChartRange(row: SizeChartRow, key: string): [number, number] | null {
   const pairs: Record<string, [number | null | undefined, number | null | undefined]> = {
     chest: [row.chest_min ?? row.bust_min, row.chest_max ?? row.bust_max],
@@ -119,8 +125,19 @@ export function getChartRange(row: SizeChartRow, key: string): [number, number] 
     shoe_length: [row.shoe_min, row.shoe_max],
   };
   const pair = pairs[key];
-  if (!pair || pair[0] == null || pair[1] == null) return null;
-  return [pair[0], pair[1]];
+  if (!pair) return null;
+
+  const [lo, hi] = pair;
+
+  // Both values present — use as-is
+  if (lo != null && hi != null) return [lo, hi];
+
+  // Single-point data: infer a range using default spread
+  const spread = DEFAULT_SPREAD[key] ?? 3;
+  if (lo != null && hi == null) return [lo, lo + spread];
+  if (lo == null && hi != null) return [hi - spread, hi];
+
+  return null;
 }
 
 export function scoreSizeRow(
