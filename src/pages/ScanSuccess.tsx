@@ -58,50 +58,15 @@ const ScanSuccess = () => {
         Skip →
       </button>
 
-      {/* Scan results image with measurement overlays */}
+      {/* Body diagram — same layout as Profile Body tab */}
       <motion.div
-        className="relative w-full max-w-[400px] mx-auto mt-2 px-2 flex justify-center"
+        className="w-full max-w-[400px] mx-auto mt-2 px-4"
         initial={{ opacity: 0, scale: 0.92 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="relative" style={{ width: 420 * 0.75, height: 420 }}>
-          <DecorativeSilhouette height={420} />
-
-          {/* Dynamic measurement values */}
-          {OVERLAYS.map((overlay) => {
-            const val = overlay.getValue(result);
-            if (!val) return null;
-
-            return (
-              <motion.div
-                key={overlay.key}
-                className="absolute z-20 pointer-events-none"
-                style={{
-                  top: overlay.valTop,
-                  ...(overlay.side === 'left'
-                    ? { left: '4%' }
-                    : { right: '4%' }),
-                }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: overlay.delay + 0.4, duration: 0.35, ease: 'easeOut' }}
-              >
-                <div
-                  className="bg-background/80 backdrop-blur-sm rounded px-1.5 py-0.5 border border-primary/30"
-                  style={{ textAlign: overlay.side === 'left' ? 'left' : 'right' }}
-                >
-                  <p className="text-[10px] font-black leading-tight text-primary">
-                    {val.line1}
-                  </p>
-                  <p className="text-[9px] font-bold leading-tight text-muted-foreground">
-                    {val.line2}
-                  </p>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+        <BodyDiagram measurements={measurements} heightCm={result.heightCm} />
+        <MeasurementGrid measurements={measurements} heightCm={result.heightCm} />
       </motion.div>
 
       {/* Bottom section */}
