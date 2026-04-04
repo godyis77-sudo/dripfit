@@ -354,9 +354,9 @@ Deno.serve(async (req) => {
 
     // fitStatus based on fit-adjusted confidence
     let fitStatus: string;
-    if (confidence >= 0.90) fitStatus = "true_to_size";
-    else if (confidence >= 0.75) fitStatus = "good_fit";
-    else if (confidence >= 0.50) fitStatus = "between_sizes";
+    if (confidence >= 0.82) fitStatus = "true_to_size";
+    else if (confidence >= 0.65) fitStatus = "good_fit";
+    else if (confidence >= 0.45) fitStatus = "between_sizes";
     else fitStatus = "out_of_range";
 
     // Determine second option from fit-adjusted scores
