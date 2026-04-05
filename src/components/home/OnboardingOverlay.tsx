@@ -46,7 +46,6 @@ export default function OnboardingOverlay() {
       };
     });
   }, []);
-  const touchStartX = useRef(0);
 
   // Re-check localStorage when navigating back (e.g. from /onboarding reset)
   useEffect(() => {
