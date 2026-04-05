@@ -1,51 +1,39 @@
 
 
-# Multi-Image Product Scraping Enhancement
+# Smart Catalog Limit Strategy
 
-## What We're Building
+## The Problem
+The "Browse All" view fetches only 500 products from ~8,900 total, so brands like Essentials (121 products) only show ~29 items proportionally.
 
-Currently, the scraper collects multiple images per product internally (`image_urls` array) but only stores the single "best" image in the database (`image_url` column). This plan adds an `additional_images` column to store up to 5 extra photos per product, and prioritizes products with multiple images during scraping.
+## Performance Analysis
+- **4,000 products** in a single RPC call is technically possible but wasteful — it transfers ~2-4MB of JSON over the wire, most of which the user never scrolls to see (the grid only shows 30 at a time via pagination).
+- The real issue: when **no filters are active** ("All" category, no brand), you get a random slice. When filters ARE active (specific brand or category), 500 is usually plenty.
+
+## Recommended Approach: Dynamic Limit
+
+Instead of a blanket increase, use a **smart dynamic limit** based on filter state:
+
+1. **When filters are applied** (brand, category, retailer, genre) → keep `p_limit` at 500 (filtered results are small)
+2. **When "All" with no filters** → increase to **2,000** (good balance of variety vs. payload size)
+3. **When a specific brand is selected** → set limit to **1,000** to ensure full brand coverage
+
+This avoids downloading 4,000+ products when the user is just browsing casually, while ensuring filtered views show complete results.
 
 ## Technical Details
 
-### 1. Database Migration — Add `additional_images` column
+### File: `src/hooks/useProductCatalog.ts`
+- In `fetchCatalogProducts()`, compute `p_limit` dynamically:
+  - If `brand` is set → 1000
+  - If `category` is set and not "all" → 500
+  - Otherwise ("All" browsing) → 2000
+- No database changes needed — the RPC already accepts `p_limit` as a parameter
 
-Add a `text[]` column to `product_catalog`:
-```sql
-ALTER TABLE public.product_catalog 
-  ADD COLUMN IF NOT EXISTS additional_images text[] DEFAULT '{}';
-```
+### Single Change Location
+Only the `params` object construction (~line 125) needs updating — replace the hardcoded `p_limit: 500` with the dynamic value.
 
-Update the `get_filtered_catalog` RPC to return this new column (it already uses `SELECT *`, so no function change needed).
-
-### 2. Scraper Update — Store additional images on insert
-
-**File:** `supabase/functions/scrape-products/index.ts`
-
-- In the `selectBestImage` function (~line 2947): return the remaining image URLs alongside the best one. Add an `additional_image_urls` field to `ClassifiedProduct`.
-- In the DB insert block (~line 3491): include `additional_images` in the row, populated from the classified product's extra URLs (up to 5, filtered for junk).
-- Apply the same junk-URL filtering and validation to additional images.
-
-### 3. Scraper Update — Prioritize multi-image products
-
-- In the Shopify parser (~line 1155): already captures up to 8 images — no change needed.
-- In search/Firecrawl parsers (~lines 1780-2010): most only capture 1 image. Enhance the Firecrawl HTML parser to extract multiple `<img>` tags per product card when available.
-- In the deduplication/sorting stage: add a confidence boost (+2 score) for products with 3+ images, so multi-image products rank higher and are preferred during dedup.
-
-### 4. Frontend — Surface additional images
-
-**File:** `src/components/ui/ProductPreviewModal.tsx`
-
-- Add a simple image carousel/dots when `additional_images` exists and has entries.
-- Users can swipe through product photos in the preview modal.
-
-**File:** `src/hooks/useProductCatalog.ts`
-
-- Add `additional_images?: string[]` to the `CatalogProduct` interface.
-
-### Files Changed
-- **Migration SQL** — new `additional_images` column
-- `supabase/functions/scrape-products/index.ts` — store extra images, boost multi-image products
-- `src/hooks/useProductCatalog.ts` — add type
-- `src/components/ui/ProductPreviewModal.tsx` — image carousel
+### Why Not 4,000+
+- Each product row is ~500 bytes → 4,000 = ~2MB payload
+- The frontend only renders 30 items at a time (paginated)
+- Supabase has a default 1,000-row limit per query (the RPC bypasses this with explicit LIMIT, but large payloads still impact mobile performance)
+- 2,000 for "All" gives 4x more variety while staying under ~1MB
 
