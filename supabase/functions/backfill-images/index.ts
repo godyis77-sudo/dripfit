@@ -21,7 +21,7 @@ function isJunkUrl(url: string): boolean {
 
 async function fetchShopifyProducts(domain: string): Promise<Map<string, string[]>> {
   const productImages = new Map<string, string[]>();
-  const maxPages = 4;
+  const maxPages = 2;
 
   for (let page = 1; page <= maxPages; page++) {
     try {
