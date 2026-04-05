@@ -89,9 +89,9 @@ export default function OnboardingOverlay() {
       </button>
 
       {/* Brand logo — always visible at top */}
-      <div className="text-center mb-10">
+      <div className="text-center mb-10" key={slide} style={{ animation: 'fadeIn 0.25s ease-out' }}>
         {/* Slide-specific icon */}
-        <div className="mb-4 flex items-center justify-center">
+        <div className="mb-4 flex items-center justify-center" style={{ minHeight: 80 }}>
           <FeatureIcon name={SLIDES[slide].icon} size={80} />
         </div>
         {SLIDES[slide].tag && <p className="text-[11px] font-bold tracking-[0.2em] text-primary uppercase mb-1">{SLIDES[slide].tag}</p>}
