@@ -157,7 +157,7 @@ function ZoomableProductImage({ src, alt, brand, caption, additionalImages }: { 
       onClick={(e) => e.stopPropagation()}
       onTouchStart={(e) => { e.stopPropagation(); handleTouchStart(e); }}
       onTouchMove={(e) => { e.stopPropagation(); handleTouchMove(e); }}
-      onTouchEnd={(e) => { e.stopPropagation(); handleTouchEnd(e); }}
+      onTouchEnd={(e) => { e.stopPropagation(); handleTouchEnd(); }}
       onDoubleClick={handleDoubleClick}
     >
       <div className="relative h-full w-full rounded-2xl overflow-hidden bg-muted" onClick={handleTapZone}>
