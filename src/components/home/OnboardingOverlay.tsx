@@ -30,6 +30,22 @@ export default function OnboardingOverlay() {
   const location = useLocation();
   const [visible, setVisible] = useState(() => !localStorage.getItem(STORAGE_KEY));
   const [slide, setSlide] = useState(0);
+  const [iconReady, setIconReady] = useState(false);
+  const touchStartX = useRef(0);
+
+  // Preload all slide icons on mount so transitions are instant
+  useEffect(() => {
+    const srcs = SLIDES.map(s => featureIcons[s.icon]);
+    let loaded = 0;
+    srcs.forEach(src => {
+      const img = new Image();
+      img.src = src;
+      img.onload = img.onerror = () => {
+        loaded++;
+        if (loaded >= srcs.length) setIconReady(true);
+      };
+    });
+  }, []);
   const touchStartX = useRef(0);
 
   // Re-check localStorage when navigating back (e.g. from /onboarding reset)
