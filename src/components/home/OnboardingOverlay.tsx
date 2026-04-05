@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import BrandLogo from '@/components/ui/BrandLogo';
-import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
+import FeatureIcon, { featureIcons, type FeatureIconName } from '@/components/ui/FeatureIcon';
 
 const SLIDES: { icon: FeatureIconName; headline: string; sub: string; tag?: string }[] = [
   {
