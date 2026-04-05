@@ -126,7 +126,7 @@ async function fetchCatalogProducts(filters: CatalogFilters): Promise<CatalogPro
     p_price_max_cents: priceMax != null ? Math.round(priceMax * 100) : null,
     p_min_confidence: isSwim ? 0.15 : 0.05,
     p_presentation: isSwim ? 'model_shot' : null,
-    p_limit: 500,
+    p_limit: brand ? 1000 : (category && category !== 'all' ? 500 : 2000),
     p_offset: 0,
   };
 
