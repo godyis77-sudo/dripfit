@@ -28,7 +28,7 @@ async function fetchShopifyProducts(domain: string): Promise<Map<string, string[
       const url = `${domain}/products.json?limit=250&page=${page}`;
       console.log(`[backfill] Fetching ${url}`);
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 12000);
+      const timeout = setTimeout(() => controller.abort(), 10000);
       const resp = await fetch(url, {
         headers: { 'User-Agent': HTTP_UA, 'Accept': 'application/json' },
         signal: controller.signal,
@@ -60,13 +60,12 @@ async function fetchShopifyProducts(domain: string): Promise<Map<string, string[
         }
 
         if (images.length > 1) {
-          // Store all images except the first (which is likely already the main image)
           productImages.set(productUrl.toLowerCase(), images);
         }
       }
 
       if (items.length < 250) break;
-      await new Promise(r => setTimeout(r, 350));
+      await new Promise(r => setTimeout(r, 300));
     } catch (err) {
       console.warn(`[backfill] Error fetching from ${domain}:`, (err as Error).message);
       break;
@@ -86,95 +85,80 @@ Deno.serve(async (req) => {
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, serviceKey);
 
-    // Get domains to backfill — optionally filter by domain
     const body = await req.json().catch(() => ({}));
     const targetDomain: string | null = body.domain || null;
-    const dryRun: boolean = body.dry_run || false;
+    const batchLimit: number = body.limit || 200;
 
-    // Get unique Shopify domains from existing products
+    if (!targetDomain) {
+      return new Response(JSON.stringify({ error: 'domain is required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Fetch products needing backfill for this domain
     const { data: products, error: fetchErr } = await supabase
       .from('product_catalog')
       .select('id, product_url, image_url')
       .eq('is_active', true)
       .not('product_url', 'is', null)
-      .like('product_url', '%/products/%')
+      .ilike('product_url', `%${targetDomain}%`)
       .or('additional_images.is.null,additional_images.eq.{}')
-      .limit(1000);
+      .limit(batchLimit);
 
     if (fetchErr) throw fetchErr;
     if (!products || products.length === 0) {
-      return new Response(JSON.stringify({ message: 'No products need backfill', updated: 0 }), {
+      return new Response(JSON.stringify({ message: 'No products need backfill for this domain', updated: 0 }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Group by domain
-    const byDomain = new Map<string, typeof products>();
-    for (const p of products) {
-      const match = p.product_url?.match(/^(https?:\/\/[^/]+)/);
-      if (!match) continue;
-      const domain = match[1];
-      if (targetDomain && !domain.includes(targetDomain)) continue;
-      if (!byDomain.has(domain)) byDomain.set(domain, []);
-      byDomain.get(domain)!.push(p);
-    }
+    // Extract domain
+    const domainMatch = products[0].product_url?.match(/^(https?:\/\/[^/]+)/);
+    if (!domainMatch) throw new Error('Could not extract domain');
+    const domain = domainMatch[1];
 
-    console.log(`[backfill] Processing ${byDomain.size} domains, ${products.length} products`);
+    console.log(`[backfill] ${domain}: ${products.length} products to process`);
 
-    let totalUpdated = 0;
-    const domainResults: Record<string, number> = {};
+    // Fetch Shopify data
+    const shopifyImages = await fetchShopifyProducts(domain);
+    console.log(`[backfill] Shopify returned ${shopifyImages.size} products with multiple images`);
 
-    for (const [domain, domainProducts] of byDomain) {
-      try {
-        const shopifyImages = await fetchShopifyProducts(domain);
-        let domainUpdated = 0;
+    // Match and update
+    let updated = 0;
+    for (const product of products) {
+      const key = product.product_url?.toLowerCase();
+      if (!key) continue;
 
-        for (const product of domainProducts) {
-          const key = product.product_url?.toLowerCase();
-          if (!key) continue;
+      const allImages = shopifyImages.get(key);
+      if (!allImages || allImages.length <= 1) continue;
 
-          const allImages = shopifyImages.get(key);
-          if (!allImages || allImages.length <= 1) continue;
+      const mainUrl = product.image_url?.toLowerCase() || '';
+      const additional = allImages
+        .filter((u: string) => u.toLowerCase() !== mainUrl)
+        .slice(0, 5);
 
-          // Find the main image and get the rest as additional
-          const mainUrl = product.image_url?.toLowerCase() || '';
-          const additional = allImages
-            .filter(u => u.toLowerCase() !== mainUrl)
-            .slice(0, 5);
+      if (additional.length === 0) continue;
 
-          if (additional.length === 0) continue;
+      const { error: updateErr } = await supabase
+        .from('product_catalog')
+        .update({ additional_images: additional })
+        .eq('id', product.id);
 
-          if (!dryRun) {
-            const { error: updateErr } = await supabase
-              .from('product_catalog')
-              .update({ additional_images: additional })
-              .eq('id', product.id);
-
-            if (updateErr) {
-              console.warn(`[backfill] Update error for ${product.id}:`, updateErr.message);
-              continue;
-            }
-          }
-
-          domainUpdated++;
-        }
-
-        totalUpdated += domainUpdated;
-        domainResults[domain] = domainUpdated;
-        console.log(`[backfill] ${domain}: updated ${domainUpdated}/${domainProducts.length}`);
-
-        // Rate limit between domains
-        await new Promise(r => setTimeout(r, 500));
-      } catch (err) {
-        console.warn(`[backfill] Skipping ${domain}:`, (err as Error).message);
-        domainResults[domain] = -1;
+      if (updateErr) {
+        console.warn(`[backfill] Update error for ${product.id}:`, updateErr.message);
+        continue;
       }
+      updated++;
     }
+
+    console.log(`[backfill] ${domain}: updated ${updated}/${products.length}`);
 
     return new Response(JSON.stringify({
-      message: dryRun ? 'Dry run complete' : 'Backfill complete',
-      total_updated: totalUpdated,
-      domains: domainResults,
+      domain,
+      total_products: products.length,
+      shopify_multi_image: shopifyImages.size,
+      updated,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
