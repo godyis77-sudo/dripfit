@@ -72,6 +72,8 @@ function ZoomableProductImage({ src, alt, brand, caption, additionalImages }: { 
     navHintTimer.current = setTimeout(() => setNavHint(null), 400);
   }, []);
 
+  const swipeCommitted = useRef(false);
+
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if (e.touches.length === 2) {
       const dx = e.touches[0].clientX - e.touches[1].clientX;
@@ -83,6 +85,7 @@ function ZoomableProductImage({ src, alt, brand, caption, additionalImages }: { 
         setIsPanning(true);
       } else if (hasMultiple) {
         swipeStart.current = { x: e.touches[0].clientX, time: Date.now() };
+        swipeCommitted.current = false;
       }
     }
   }, [zoom, hasMultiple]);
@@ -101,32 +104,29 @@ function ZoomableProductImage({ src, alt, brand, caption, additionalImages }: { 
       const dy = e.touches[0].clientY - lastTouch.current.y;
       setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }));
       lastTouch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    } else if (e.touches.length === 1 && swipeStart.current && !swipeCommitted.current && zoom <= 1 && hasMultiple) {
+      const dx = e.touches[0].clientX - swipeStart.current.x;
+      if (Math.abs(dx) > 30) {
+        swipeCommitted.current = true;
+        if (dx < 0 && currentIdx < allImages.length - 1) {
+          setCurrentIdx(i => i + 1);
+          showNavHint('right');
+        } else if (dx > 0 && currentIdx > 0) {
+          setCurrentIdx(i => i - 1);
+          showNavHint('left');
+        }
+      }
     }
-  }, [isPanning, zoom]);
+  }, [isPanning, zoom, hasMultiple, currentIdx, allImages.length, showNavHint]);
 
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+  const handleTouchEnd = useCallback(() => {
     lastDist.current = null;
     lastTouch.current = null;
     setIsPanning(false);
-    if (zoom <= 1) {
-      setPan({ x: 0, y: 0 });
-      if (swipeStart.current && hasMultiple) {
-        const endX = e.changedTouches?.[0]?.clientX ?? swipeStart.current.x;
-        const dx = endX - swipeStart.current.x;
-        const dt = Date.now() - swipeStart.current.time;
-        if (Math.abs(dx) > 30 && dt < 600) {
-          if (dx < 0 && currentIdx < allImages.length - 1) {
-            setCurrentIdx(i => i + 1);
-            showNavHint('right');
-          } else if (dx > 0 && currentIdx > 0) {
-            setCurrentIdx(i => i - 1);
-            showNavHint('left');
-          }
-        }
-        swipeStart.current = null;
-      }
-    }
-  }, [zoom, hasMultiple, currentIdx, allImages.length, showNavHint]);
+    swipeStart.current = null;
+    swipeCommitted.current = false;
+    if (zoom <= 1) setPan({ x: 0, y: 0 });
+  }, [zoom]);
 
   const handleDoubleClick = useCallback(() => {
     if (zoom > 1) { setZoom(1); setPan({ x: 0, y: 0 }); } else { setZoom(2.5); }
@@ -157,7 +157,7 @@ function ZoomableProductImage({ src, alt, brand, caption, additionalImages }: { 
       onClick={(e) => e.stopPropagation()}
       onTouchStart={(e) => { e.stopPropagation(); handleTouchStart(e); }}
       onTouchMove={(e) => { e.stopPropagation(); handleTouchMove(e); }}
-      onTouchEnd={(e) => { e.stopPropagation(); handleTouchEnd(e); }}
+      onTouchEnd={(e) => { e.stopPropagation(); handleTouchEnd(); }}
       onDoubleClick={handleDoubleClick}
     >
       <div className="relative h-full w-full rounded-2xl overflow-hidden bg-muted" onClick={handleTapZone}>
