@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import BrandLogo from '@/components/ui/BrandLogo';
-import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
+import FeatureIcon, { featureIcons, type FeatureIconName } from '@/components/ui/FeatureIcon';
 
 const SLIDES: { icon: FeatureIconName; headline: string; sub: string; tag?: string }[] = [
   {
@@ -30,7 +30,22 @@ export default function OnboardingOverlay() {
   const location = useLocation();
   const [visible, setVisible] = useState(() => !localStorage.getItem(STORAGE_KEY));
   const [slide, setSlide] = useState(0);
+  const [iconReady, setIconReady] = useState(false);
   const touchStartX = useRef(0);
+
+  // Preload all slide icons on mount so transitions are instant
+  useEffect(() => {
+    const srcs = SLIDES.map(s => featureIcons[s.icon]);
+    let loaded = 0;
+    srcs.forEach(src => {
+      const img = new Image();
+      img.src = src;
+      img.onload = img.onerror = () => {
+        loaded++;
+        if (loaded >= srcs.length) setIconReady(true);
+      };
+    });
+  }, []);
 
   // Re-check localStorage when navigating back (e.g. from /onboarding reset)
   useEffect(() => {
@@ -74,9 +89,9 @@ export default function OnboardingOverlay() {
       </button>
 
       {/* Brand logo — always visible at top */}
-      <div className="text-center mb-10">
+      <div className="text-center mb-10" key={slide} style={{ animation: 'fadeIn 0.25s ease-out' }}>
         {/* Slide-specific icon */}
-        <div className="mb-4 flex items-center justify-center">
+        <div className="mb-4 flex items-center justify-center" style={{ minHeight: 80 }}>
           <FeatureIcon name={SLIDES[slide].icon} size={80} />
         </div>
         {SLIDES[slide].tag && <p className="text-[11px] font-bold tracking-[0.2em] text-primary uppercase mb-1">{SLIDES[slide].tag}</p>}
