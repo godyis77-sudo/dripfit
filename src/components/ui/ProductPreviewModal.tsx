@@ -22,6 +22,7 @@ export interface ProductPreviewData {
   fit_profile?: string[] | null;
   fabric_composition?: string[] | null;
   style_genre?: string | null;
+  additional_images?: string[] | null;
 }
 
 export interface LookItemData {
@@ -45,24 +46,35 @@ interface ProductPreviewModalProps {
   onLookItemShop?: (item: LookItemData) => void;
 }
 
-/** Zoomable product image with pinch + double-tap */
-function ZoomableProductImage({ src, alt, brand, caption }: { src: string; alt: string; brand?: string; caption?: string | null }) {
+/** Zoomable product image with pinch + double-tap + multi-image carousel */
+function ZoomableProductImage({ src, alt, brand, caption, additionalImages }: { src: string; alt: string; brand?: string; caption?: string | null; additionalImages?: string[] | null }) {
+  const allImages = [src, ...(additionalImages?.filter(Boolean) ?? [])];
+  const hasMultiple = allImages.length > 1;
+  const [currentIdx, setCurrentIdx] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const lastTouch = useRef<{ x: number; y: number } | null>(null);
   const lastDist = useRef<number | null>(null);
+  const swipeStart = useRef<{ x: number; time: number } | null>(null);
+
+  // Reset index when src changes
+  useEffect(() => { setCurrentIdx(0); setZoom(1); setPan({ x: 0, y: 0 }); }, [src]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if (e.touches.length === 2) {
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
       lastDist.current = Math.hypot(dx, dy);
-    } else if (e.touches.length === 1 && zoom > 1) {
-      lastTouch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      setIsPanning(true);
+    } else if (e.touches.length === 1) {
+      if (zoom > 1) {
+        lastTouch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        setIsPanning(true);
+      } else if (hasMultiple) {
+        swipeStart.current = { x: e.touches[0].clientX, time: Date.now() };
+      }
     }
-  }, [zoom]);
+  }, [zoom, hasMultiple]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (e.touches.length === 2 && lastDist.current !== null) {
@@ -81,16 +93,31 @@ function ZoomableProductImage({ src, alt, brand, caption }: { src: string; alt: 
     }
   }, [isPanning, zoom]);
 
-  const handleTouchEnd = useCallback(() => {
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     lastDist.current = null;
     lastTouch.current = null;
     setIsPanning(false);
-    if (zoom <= 1) setPan({ x: 0, y: 0 });
-  }, [zoom]);
+    if (zoom <= 1) {
+      setPan({ x: 0, y: 0 });
+      // Handle swipe for carousel
+      if (swipeStart.current && hasMultiple) {
+        const endX = e.changedTouches?.[0]?.clientX ?? swipeStart.current.x;
+        const dx = endX - swipeStart.current.x;
+        const dt = Date.now() - swipeStart.current.time;
+        if (Math.abs(dx) > 50 && dt < 400) {
+          if (dx < 0 && currentIdx < allImages.length - 1) setCurrentIdx(i => i + 1);
+          else if (dx > 0 && currentIdx > 0) setCurrentIdx(i => i - 1);
+        }
+        swipeStart.current = null;
+      }
+    }
+  }, [zoom, hasMultiple, currentIdx, allImages.length]);
 
   const handleDoubleClick = useCallback(() => {
     if (zoom > 1) { setZoom(1); setPan({ x: 0, y: 0 }); } else { setZoom(2.5); }
   }, [zoom]);
+
+  const activeSrc = allImages[currentIdx] || src;
 
   return (
     <div
@@ -105,6 +132,19 @@ function ZoomableProductImage({ src, alt, brand, caption }: { src: string; alt: 
         {brand && (
           <span className="absolute top-3 left-3 z-20 brand-label-lg">{brand}</span>
         )}
+        {/* Dot indicators */}
+        {hasMultiple && zoom <= 1 && (
+          <div className="absolute top-3 right-3 z-20 flex gap-1.5">
+            {allImages.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setCurrentIdx(i); }}
+                className={`h-2 w-2 rounded-full transition-all ${i === currentIdx ? 'bg-white scale-125' : 'bg-white/40'}`}
+              />
+            ))}
+          </div>
+        )}
         {zoom > 1 && (
           <button
             type="button"
@@ -115,7 +155,7 @@ function ZoomableProductImage({ src, alt, brand, caption }: { src: string; alt: 
           </button>
         )}
         <img
-          src={src}
+          src={activeSrc}
           alt={alt}
           className="absolute inset-0 h-full w-full object-cover rounded-2xl block"
           style={{
@@ -210,7 +250,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
       </button>
 
       {/* Image — maximized with zoom */}
-      <ZoomableProductImage src={product.image_url} alt={product.name} brand={product.brand} caption={caption} />
+      <ZoomableProductImage src={product.image_url} alt={product.name} brand={product.brand} caption={caption} additionalImages={product.additional_images} />
 
       {/* Info + Actions — pinned to bottom */}
       <div
