@@ -24,6 +24,7 @@ interface RawProduct {
 
 interface ClassifiedProduct extends RawProduct {
   image_url: string;
+  additional_images: string[];
   presentation: 'ghost_mannequin' | 'flat_lay' | 'model_shot';
   confidence: number;
 }
@@ -3013,11 +3014,18 @@ function selectBestImage(product: RawProduct): ClassifiedProduct | null {
     bestScore = 1;
   }
 
+  // Collect additional images (up to 5, excluding best and rejected URLs)
+  const REJECT_PATTERN = /-detail|-close|-texture|-zoom|thumb|_swatch|collage|runway|editorial|banner|logo|icon|sprite/i;
+  const additionalImages = product.image_urls
+    .filter(u => u !== bestUrl && !REJECT_PATTERN.test(u.toLowerCase()))
+    .slice(0, 5);
+
   return {
     ...product,
     image_url: bestUrl,
+    additional_images: additionalImages,
     presentation: bestPresentation,
-    confidence: Math.min(bestScore / 15, 1.0),
+    confidence: Math.min((bestScore + (additionalImages.length >= 3 ? 2 : 0)) / 15, 1.0),
   };
 }
 
