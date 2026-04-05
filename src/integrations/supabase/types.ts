@@ -811,6 +811,7 @@ export type Database = {
       }
       product_catalog: {
         Row: {
+          additional_images: string[] | null
           brand: string
           category: string
           created_at: string
@@ -835,6 +836,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          additional_images?: string[] | null
           brand: string
           category: string
           created_at?: string
@@ -859,6 +861,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          additional_images?: string[] | null
           brand?: string
           category?: string
           created_at?: string
@@ -1628,6 +1631,7 @@ export type Database = {
           p_retailer?: string
         }
         Returns: {
+          additional_images: string[] | null
           brand: string
           category: string
           created_at: string
