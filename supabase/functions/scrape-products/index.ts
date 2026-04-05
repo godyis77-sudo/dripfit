@@ -3502,6 +3502,7 @@ Deno.serve(async (req) => {
           retailer: canonicalName(p.brand),
           product_url: normaliseUrl(p.product_url),
           image_url: normaliseUrl(p.image_url),
+          additional_images: (p.additional_images || []).map(u => normaliseUrl(u)),
           price_cents: p.price_cents,
           currency: p.currency ?? 'USD',
           category: normaliseCategory(p.category_raw),
