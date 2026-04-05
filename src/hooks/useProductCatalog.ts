@@ -20,6 +20,7 @@ export interface CatalogProduct {
   fit_profile?: string[] | null;
   fabric_composition?: string[] | null;
   style_genre?: string | null;
+  additional_images?: string[] | null;
 }
 
 // Map app-facing category keys to actual DB category values

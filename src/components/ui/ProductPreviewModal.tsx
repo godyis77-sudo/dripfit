@@ -22,6 +22,7 @@ export interface ProductPreviewData {
   fit_profile?: string[] | null;
   fabric_composition?: string[] | null;
   style_genre?: string | null;
+  additional_images?: string[] | null;
 }
 
 export interface LookItemData {
