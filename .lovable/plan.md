@@ -1,39 +1,42 @@
 
 
-# Smart Catalog Limit Strategy
+# Fix Multi-Image Dots Visibility and Add Tap Navigation
 
-## The Problem
-The "Browse All" view fetches only 500 products from ~8,900 total, so brands like Essentials (121 products) only show ~29 items proportionally.
+## Problem
+1. Dot indicators on product images are white on white backgrounds — invisible
+2. Swiping between images doesn't work reliably (swipe gesture conflicts with zoom touch handling)
+3. No tap-to-navigate option for cycling through photos
 
-## Performance Analysis
-- **4,000 products** in a single RPC call is technically possible but wasteful — it transfers ~2-4MB of JSON over the wire, most of which the user never scrolls to see (the grid only shows 30 at a time via pagination).
-- The real issue: when **no filters are active** ("All" category, no brand), you get a random slice. When filters ARE active (specific brand or category), 500 is usually plenty.
+## Changes
 
-## Recommended Approach: Dynamic Limit
+### File: `src/components/ui/ProductPreviewModal.tsx`
 
-Instead of a blanket increase, use a **smart dynamic limit** based on filter state:
+**1. Dot indicators — add dark outline for visibility on any background**
+- Replace plain white dots with dots that have a dark border/shadow ring so they're visible on both light and dark product images
+- Active dot: solid white with dark shadow ring
+- Inactive dot: semi-transparent with dark outline
+- Move dots to bottom of image (above caption) for better visibility
 
-1. **When filters are applied** (brand, category, retailer, genre) → keep `p_limit` at 500 (filtered results are small)
-2. **When "All" with no filters** → increase to **2,000** (good balance of variety vs. payload size)
-3. **When a specific brand is selected** → set limit to **1,000** to ensure full brand coverage
+**2. Add left/right tap zones for navigation**
+- Split the image into left-third and right-third invisible tap zones
+- Tapping right side → next image; tapping left side → previous image
+- Only active when zoom is 1x and multiple images exist
+- Add subtle chevron arrows that appear briefly on tap
 
-This avoids downloading 4,000+ products when the user is just browsing casually, while ensuring filtered views show complete results.
+**3. Improve swipe reliability**
+- Lower the swipe threshold from 50px to 30px and increase time window from 400ms to 600ms for easier swiping
 
-## Technical Details
+### Dot styling (before → after)
+```
+Before: bg-white / bg-white/40
+After:  bg-white shadow-[0_0_0_1.5px_rgba(0,0,0,0.4)] / bg-white/50 shadow-[0_0_0_1.5px_rgba(0,0,0,0.3)]
+```
 
-### File: `src/hooks/useProductCatalog.ts`
-- In `fetchCatalogProducts()`, compute `p_limit` dynamically:
-  - If `brand` is set → 1000
-  - If `category` is set and not "all" → 500
-  - Otherwise ("All" browsing) → 2000
-- No database changes needed — the RPC already accepts `p_limit` as a parameter
-
-### Single Change Location
-Only the `params` object construction (~line 125) needs updating — replace the hardcoded `p_limit: 500` with the dynamic value.
-
-### Why Not 4,000+
-- Each product row is ~500 bytes → 4,000 = ~2MB payload
-- The frontend only renders 30 items at a time (paginated)
-- Supabase has a default 1,000-row limit per query (the RPC bypasses this with explicit LIMIT, but large payloads still impact mobile performance)
-- 2,000 for "All" gives 4x more variety while staying under ~1MB
+### Tap zone logic (new)
+```
+onClick → if zoom === 1 && hasMultiple:
+  - click in left 33% → prev image
+  - click in right 33% → next image
+  - click in center → no action (allows double-tap zoom)
+```
 
