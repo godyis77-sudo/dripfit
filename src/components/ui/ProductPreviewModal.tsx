@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { X, Sparkles, ExternalLink, ShoppingCart, ChevronDown, ShoppingBag } from 'lucide-react';
 import { PriceWatchButton } from '@/components/pricing/PriceWatchUI';
 import { supabase } from '@/integrations/supabase/client';
@@ -54,12 +55,22 @@ function ZoomableProductImage({ src, alt, brand, caption, additionalImages }: { 
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
+  const [navHint, setNavHint] = useState<'left' | 'right' | null>(null);
   const lastTouch = useRef<{ x: number; y: number } | null>(null);
   const lastDist = useRef<number | null>(null);
   const swipeStart = useRef<{ x: number; time: number } | null>(null);
+  const navHintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Reset index when src changes
   useEffect(() => { setCurrentIdx(0); setZoom(1); setPan({ x: 0, y: 0 }); }, [src]);
+
+  // Clear nav hint timer on unmount
+  useEffect(() => () => { if (navHintTimer.current) clearTimeout(navHintTimer.current); }, []);
+
+  const showNavHint = useCallback((dir: 'left' | 'right') => {
+    setNavHint(dir);
+    if (navHintTimer.current) clearTimeout(navHintTimer.current);
+    navHintTimer.current = setTimeout(() => setNavHint(null), 400);
+  }, []);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if (e.touches.length === 2) {
@@ -99,23 +110,44 @@ function ZoomableProductImage({ src, alt, brand, caption, additionalImages }: { 
     setIsPanning(false);
     if (zoom <= 1) {
       setPan({ x: 0, y: 0 });
-      // Handle swipe for carousel
       if (swipeStart.current && hasMultiple) {
         const endX = e.changedTouches?.[0]?.clientX ?? swipeStart.current.x;
         const dx = endX - swipeStart.current.x;
         const dt = Date.now() - swipeStart.current.time;
-        if (Math.abs(dx) > 50 && dt < 400) {
-          if (dx < 0 && currentIdx < allImages.length - 1) setCurrentIdx(i => i + 1);
-          else if (dx > 0 && currentIdx > 0) setCurrentIdx(i => i - 1);
+        if (Math.abs(dx) > 30 && dt < 600) {
+          if (dx < 0 && currentIdx < allImages.length - 1) {
+            setCurrentIdx(i => i + 1);
+            showNavHint('right');
+          } else if (dx > 0 && currentIdx > 0) {
+            setCurrentIdx(i => i - 1);
+            showNavHint('left');
+          }
         }
         swipeStart.current = null;
       }
     }
-  }, [zoom, hasMultiple, currentIdx, allImages.length]);
+  }, [zoom, hasMultiple, currentIdx, allImages.length, showNavHint]);
 
   const handleDoubleClick = useCallback(() => {
     if (zoom > 1) { setZoom(1); setPan({ x: 0, y: 0 }); } else { setZoom(2.5); }
   }, [zoom]);
+
+  // Tap zones for left/right navigation
+  const handleTapZone = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (zoom !== 1 || !hasMultiple) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const third = rect.width / 3;
+    if (clickX < third && currentIdx > 0) {
+      e.stopPropagation();
+      setCurrentIdx(i => i - 1);
+      showNavHint('left');
+    } else if (clickX > third * 2 && currentIdx < allImages.length - 1) {
+      e.stopPropagation();
+      setCurrentIdx(i => i + 1);
+      showNavHint('right');
+    }
+  }, [zoom, hasMultiple, currentIdx, allImages.length, showNavHint]);
 
   const activeSrc = allImages[currentIdx] || src;
 
@@ -128,21 +160,36 @@ function ZoomableProductImage({ src, alt, brand, caption, additionalImages }: { 
       onTouchEnd={handleTouchEnd}
       onDoubleClick={handleDoubleClick}
     >
-      <div className="relative h-full w-full rounded-2xl overflow-hidden bg-muted">
+      <div className="relative h-full w-full rounded-2xl overflow-hidden bg-muted" onClick={handleTapZone}>
         {brand && (
           <span className="absolute top-3 left-3 z-20 brand-label-lg">{brand}</span>
         )}
-        {/* Dot indicators */}
+        {/* Dot indicators — with dark outline for visibility on white backgrounds */}
         {hasMultiple && zoom <= 1 && (
-          <div className="absolute top-3 right-3 z-20 flex gap-1.5">
+          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 z-20 flex gap-2">
             {allImages.map((_, i) => (
               <button
                 key={i}
                 type="button"
                 onClick={(e) => { e.stopPropagation(); setCurrentIdx(i); }}
-                className={`h-2 w-2 rounded-full transition-all ${i === currentIdx ? 'bg-white scale-125' : 'bg-white/40'}`}
+                className={`h-2.5 w-2.5 rounded-full transition-all ${
+                  i === currentIdx
+                    ? 'bg-white shadow-[0_0_0_1.5px_rgba(0,0,0,0.5)] scale-125'
+                    : 'bg-white/50 shadow-[0_0_0_1.5px_rgba(0,0,0,0.3)]'
+                }`}
               />
             ))}
+          </div>
+        )}
+        {/* Nav hint chevrons */}
+        {navHint === 'left' && (
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 z-20 animate-pulse">
+            <ChevronLeft className="h-8 w-8 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" />
+          </div>
+        )}
+        {navHint === 'right' && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 z-20 animate-pulse">
+            <ChevronRight className="h-8 w-8 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" />
           </div>
         )}
         {zoom > 1 && (
