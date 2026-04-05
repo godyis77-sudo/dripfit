@@ -250,7 +250,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
       </button>
 
       {/* Image — maximized with zoom */}
-      <ZoomableProductImage src={product.image_url} alt={product.name} brand={product.brand} caption={caption} />
+      <ZoomableProductImage src={product.image_url} alt={product.name} brand={product.brand} caption={caption} additionalImages={product.additional_images} />
 
       {/* Info + Actions — pinned to bottom */}
       <div
