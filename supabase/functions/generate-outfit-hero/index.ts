@@ -16,6 +16,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 const AI_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const IMAGE_MODEL = "google/gemini-3.1-flash-image-preview";
 
+/* ── Occasion → Background ────────────────────────────────────── */
+
 const BACKGROUND_STYLES: Record<string, string> = {
   night_out: "a high-end rooftop lounge at night, dramatic cinematic lighting with warm amber and cool blue neon reflections on glass, city skyline bokeh, editorial Vogue-level atmosphere",
   beach_day: "a luxury Mediterranean beach club at golden hour, warm honeyed sunlight, turquoise water, white linen cabanas, Slim Aarons-inspired composition",
@@ -29,8 +31,10 @@ const BACKGROUND_STYLES: Record<string, string> = {
   wedding: "an elegant estate garden at golden hour, soft romantic backlight through old-growth trees, petal-strewn stone path, luxury fashion editorial",
 };
 
+/* ── Occasion → Styling notes ─────────────────────────────────── */
+
 const STYLING_NOTES: Record<string, string> = {
-  night_out: "Styled with intentional streetwear layering — an open jacket over a statement piece, accessories visible. Confident nightlife energy.",
+  night_out: "Styled with intentional streetwear layering — open jacket over a statement piece, accessories visible. Confident nightlife energy.",
   beach_day: "Relaxed luxury resort styling — effortless drape, rolled sleeves or untucked layers, premium casual silhouette.",
   lunch_date: "Polished elevated casual — clean proportions, thoughtful layering, mixing textures like knit over cotton.",
   date_night: "Sharp contemporary layering — structured outerwear over fitted pieces, monochromatic or tonal color story.",
@@ -39,12 +43,76 @@ const STYLING_NOTES: Record<string, string> = {
   gym: "Technical athleisure — clean performance pieces styled as a cohesive look, not gym-random.",
   festival: "Statement streetwear maximalism — bold layering, mixed prints/textures, festival-ready but high-fashion.",
   brunch: "Effortless luxury casual — soft textures, relaxed fits, earthy or pastel palette, approachable elegance.",
-  wedding: "Elevated formal with personality — tailored foundation with one unexpected streetwear or luxury accent piece.",
+  wedding: "Elevated formal with personality — tailored foundation with one unexpected luxury accent piece.",
 };
 
-function buildPrompt(items: Array<{ product_name: string; brand: string | null; category: string | null; image_url: string | null }>, occasion: string, bgStyle?: string): { text: string; imageUrls: string[] } {
+/* ── Occasion → Footwear guidance ─────────────────────────────── */
+
+const FOOTWEAR_GUIDE: Record<string, string> = {
+  night_out: "sleek pointed-toe boots or premium low-profile sneakers, polished finish",
+  beach_day: "premium slides, espadrilles, or clean low-cut canvas shoes — never heavy boots",
+  lunch_date: "clean minimalist leather loafers, ballet flats, or designer sneakers",
+  date_night: "heeled boots, pointed-toe shoes, or elevated dress sneakers",
+  weekend_casual: "fresh designer sneakers, lifestyle runners, or premium mules",
+  office: "monk-strap shoes, leather chelsea boots, structured flats, or clean minimal sneakers",
+  gym: "performance running shoes or cross-training sneakers",
+  festival: "chunky platform boots, bold designer sneakers, or statement sandals",
+  brunch: "clean white sneakers, espadrilles, mules, or strappy sandals",
+  wedding: "polished leather dress shoes, heeled sandals, or satin pumps",
+};
+
+/* ── Gender model descriptions ────────────────────────────────── */
+
+const GENDER_MODELS: Record<string, string> = {
+  mens: "a fit male model in his mid-20s with contemporary hairstyle, subtle stubble, strong jawline, naturally confident expression — think Vogue Homme or GQ editorial",
+  womens: "a stylish female model in her mid-20s with contemporary hairstyle, natural makeup, effortlessly chic expression — think Vogue or SSENSE editorial",
+};
+
+/* ── Color extraction helpers ─────────────────────────────────── */
+
+function extractColorHints(items: OutfitItem[]): string {
+  const names = items.map(i => `${i.product_name} ${i.brand || ""}`).join(" ").toLowerCase();
+
+  const colorKeywords = [
+    "black", "white", "cream", "ivory", "alabaster", "navy", "blue", "indigo",
+    "red", "burgundy", "maroon", "wine", "green", "olive", "sage", "khaki",
+    "grey", "gray", "charcoal", "slate", "beige", "tan", "camel", "sand",
+    "brown", "chocolate", "espresso", "pink", "blush", "rose", "coral",
+    "orange", "rust", "burnt", "yellow", "gold", "purple", "plum", "lavender",
+    "glacier", "washed", "faded", "vintage", "dune",
+  ];
+
+  const found = colorKeywords.filter(c => names.includes(c));
+  if (found.length === 0) return "";
+
+  const unique = [...new Set(found)];
+  return `\nDOMINANT COLOR PALETTE: The products feature these tones — ${unique.join(", ")}. Ensure the model's outfit reflects these exact colors cohesively. The overall color story should feel intentional and harmonious, not random.`;
+}
+
+/* ── Type ─────────────────────────────────────────────────────── */
+
+interface OutfitItem {
+  product_name: string;
+  brand: string | null;
+  category: string | null;
+  image_url: string | null;
+}
+
+/* ── Prompt builder ───────────────────────────────────────────── */
+
+function buildPrompt(
+  items: OutfitItem[],
+  occasion: string,
+  gender: string | null,
+  bgStyle?: string
+): { text: string; imageUrls: string[] } {
   const bg = bgStyle || BACKGROUND_STYLES[occasion] || "a premium minimalist studio with dramatic directional lighting, concrete walls, editorial fashion photography atmosphere";
   const styling = STYLING_NOTES[occasion] || "Intentional luxury streetwear layering — mixing high-end and contemporary brands with confident, editorial proportions.";
+  const footwear = FOOTWEAR_GUIDE[occasion] || "premium designer sneakers or clean leather shoes appropriate for the occasion";
+
+  // Gender-specific model
+  const genderKey = gender === "womens" ? "womens" : "mens";
+  const modelDesc = GENDER_MODELS[genderKey];
 
   const brands = items.map(i => i.brand).filter(Boolean);
   const uniqueBrands = [...new Set(brands)];
@@ -52,42 +120,72 @@ function buildPrompt(items: Array<{ product_name: string; brand: string | null; 
     ? `This is a curated ${uniqueBrands.join(" × ")} look.`
     : "This is a curated multi-brand look.";
 
+  // Check if outfit includes footwear
+  const hasFootwear = items.some(i => {
+    const cat = (i.category || "").toLowerCase();
+    const name = (i.product_name || "").toLowerCase();
+    return cat.includes("shoe") || cat.includes("footwear") || cat.includes("sneaker") || cat.includes("boot") || cat.includes("slipper") || cat.includes("sandal") ||
+      name.includes("shoe") || name.includes("sneaker") || name.includes("boot") || name.includes("slipper") || name.includes("sandal") || name.includes("loafer") || name.includes("heel") || name.includes("pump") || name.includes("ballerina") || name.includes("mule");
+  });
+
+  const footwearInstruction = hasFootwear
+    ? `The outfit includes specific footwear — the model MUST be wearing the exact shoes/sneakers listed above. Match the shoe design precisely from the reference images.`
+    : `No specific footwear is in this outfit — style the model with ${footwear} that complement the overall look and occasion.`;
+
   const itemDescriptions = items.map((item, i) => {
     const brand = item.brand ? ` by ${item.brand}` : "";
-    const cat = item.category ? ` (${item.category})` : "";
+    const cat = item.category ? ` [${item.category}]` : "";
     return `${i + 1}. ${item.product_name}${brand}${cat}`;
   }).join("\n");
+
+  const colorHints = extractColorHints(items);
 
   const imageUrls = items
     .map(i => i.image_url)
     .filter((url): url is string => !!url);
 
-  const text = `You are a world-class fashion photographer shooting a luxury streetwear editorial campaign. Generate a stunning full-body photograph of a model wearing this complete outfit.
+  const text = `You are a world-class fashion photographer shooting a luxury streetwear editorial campaign for a premium fashion platform. Generate a stunning full-body photograph.
+
+MODEL:
+${modelDesc}
 
 ${brandContext}
 
-OUTFIT PIECES:
+OUTFIT PIECES (every item MUST be worn):
 ${itemDescriptions}
 
 STYLING DIRECTION:
 ${styling}
 
+FOOTWEAR:
+${footwearInstruction}
+${colorHints}
+
+COLOR COORDINATION:
+- All pieces must look like they belong together as one intentionally styled outfit
+- Match the exact colors, patterns, textures, and silhouettes from the reference product images
+- If products share a color family (e.g. blacks, neutrals, earth tones), lean into a tonal color story
+- If products have contrasting colors, style them as deliberate accent pops — not clashing
+
 PHOTOGRAPHY REQUIREMENTS:
 - Full body shot, head to toe, portrait orientation (3:4 aspect ratio)
 - The model MUST be wearing ALL items listed above as one cohesive styled outfit
-- Match colors, patterns, textures, and silhouettes precisely to the reference product images
-- Dynamic natural pose — walking, mid-stride, or leaning casually — NOT stiff or mannequin-like
+- Dynamic natural pose appropriate for ${occasion.replace("_", " ")} — NOT stiff or mannequin-like
 - Model should look like a real person with natural skin, contemporary hairstyle, confident expression
-- LIGHTING: Professional editorial lighting — dramatic rim light, soft fill, cinematic color grading with depth
+- Gender-appropriate fit and drape — ${genderKey === "womens" ? "feminine silhouette, natural curves" : "masculine build, clean lines"}
+- LIGHTING: Professional editorial lighting — dramatic rim light, soft fill, cinematic color grading
 - BACKGROUND: ${bg}
 - Depth of field: subject sharp, background with beautiful natural bokeh
-- Color grade: rich, slightly warm, high-end fashion magazine aesthetic (think SSENSE or Mr Porter editorial)
-- NO text, NO watermarks, NO logos, NO brand names overlaid on the image
-- NO mannequins, NO flat-lay, NO product-only shots — this must be a styled ON-BODY editorial photo
-- The outfit should look intentionally layered and styled, not just "wearing clothes"`;
+- Color grade: rich, slightly warm, high-end fashion magazine aesthetic
+- Inspiration: Think ${genderKey === "womens" ? "Vogue, SSENSE, Net-a-Porter" : "GQ, Mr Porter, SSENSE, Highsnobiety"} editorial campaigns
+- NO text, NO watermarks, NO logos overlaid on image
+- NO mannequins, NO flat-lay, NO product-only shots — ONLY styled on-body editorial
+- The outfit should look intentionally layered and styled by a professional stylist`;
 
   return { text, imageUrls };
 }
+
+/* ── Image accessibility check ────────────────────────────────── */
 
 async function checkImageAccessible(url: string): Promise<boolean> {
   try {
@@ -98,11 +196,12 @@ async function checkImageAccessible(url: string): Promise<boolean> {
   }
 }
 
+/* ── AI image generation ──────────────────────────────────────── */
+
 async function generateHeroImage(
   prompt: { text: string; imageUrls: string[] },
   apiKey: string
 ): Promise<string | null> {
-  // Pre-filter images that are actually accessible
   const accessChecks = await Promise.all(
     prompt.imageUrls.slice(0, 6).map(async (url) => ({
       url,
@@ -145,6 +244,8 @@ async function generateHeroImage(
   return data.choices?.[0]?.message?.images?.[0]?.image_url?.url || null;
 }
 
+/* ── Storage upload ───────────────────────────────────────────── */
+
 async function uploadHero(
   sb: ReturnType<typeof createClient>,
   base64Data: string,
@@ -166,6 +267,8 @@ async function uploadHero(
   return sb.storage.from("backgrounds-curated").getPublicUrl(fileName).data.publicUrl;
 }
 
+/* ── Process single outfit ────────────────────────────────────── */
+
 async function processOutfit(
   sb: ReturnType<typeof createClient>,
   outfitId: string,
@@ -173,10 +276,9 @@ async function processOutfit(
   bgStyle?: string,
   regenerate = false
 ): Promise<{ success: boolean; outfit_id: string; hero_url?: string; error?: string; skipped?: boolean }> {
-  // Fetch outfit
   const { data: outfit, error: oErr } = await sb
     .from("weekly_outfits")
-    .select("id, occasion, title, hero_image_url")
+    .select("id, occasion, title, hero_image_url, gender")
     .eq("id", outfitId)
     .single();
 
@@ -184,12 +286,10 @@ async function processOutfit(
     return { success: false, outfit_id: outfitId, error: "Outfit not found" };
   }
 
-  // Skip if already has hero and not regenerating
   if (outfit.hero_image_url && !regenerate) {
     return { success: true, outfit_id: outfitId, hero_url: outfit.hero_image_url, skipped: true };
   }
 
-  // Fetch items
   const { data: items } = await sb
     .from("weekly_outfit_items")
     .select("product_name, brand, category, image_url")
@@ -200,9 +300,9 @@ async function processOutfit(
     return { success: false, outfit_id: outfitId, error: "No items in outfit" };
   }
 
-  console.log(`Generating hero for outfit "${outfit.title}" (${items.length} items)`);
+  console.log(`Generating hero for outfit "${outfit.title}" (${items.length} items, gender: ${outfit.gender || "unisex"})`);
 
-  const prompt = buildPrompt(items, outfit.occasion, bgStyle);
+  const prompt = buildPrompt(items, outfit.occasion, outfit.gender, bgStyle);
   const base64 = await generateHeroImage(prompt, apiKey);
 
   if (!base64) {
@@ -214,7 +314,6 @@ async function processOutfit(
     return { success: false, outfit_id: outfitId, error: "Upload failed" };
   }
 
-  // Update outfit with hero URL
   const { error: updateErr } = await sb
     .from("weekly_outfits")
     .update({ hero_image_url: publicUrl })
@@ -226,6 +325,8 @@ async function processOutfit(
 
   return { success: true, outfit_id: outfitId, hero_url: publicUrl };
 }
+
+/* ── HTTP handler ─────────────────────────────────────────────── */
 
 Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
@@ -281,14 +382,12 @@ Deno.serve(async (req) => {
       try {
         const result = await processOutfit(sb, o.id, apiKey, body.background_style, body.regenerate);
         results.push(result);
-        // Small delay between generations to avoid rate limits
         if (results.length < outfits.length) {
           await new Promise(r => setTimeout(r, 2000));
         }
       } catch (e) {
         results.push({ success: false, outfit_id: o.id, error: e instanceof Error ? e.message : "Unknown" });
         if (e instanceof Error && e.message === "RATE_LIMITED") {
-          // Wait longer on rate limit
           await new Promise(r => setTimeout(r, 10000));
         }
       }
