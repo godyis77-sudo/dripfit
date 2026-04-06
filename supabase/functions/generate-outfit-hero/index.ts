@@ -17,20 +17,40 @@ const AI_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const IMAGE_MODEL = "google/gemini-3.1-flash-image-preview";
 
 const BACKGROUND_STYLES: Record<string, string> = {
-  night_out: "a trendy rooftop bar at night with city lights in the background, moody warm lighting",
-  beach_day: "a beautiful tropical beach at golden hour, turquoise water and white sand",
-  lunch_date: "an elegant outdoor café terrace with soft afternoon sunlight",
-  date_night: "a sophisticated restaurant interior with warm candlelight and exposed brick",
-  weekend_casual: "a stylish urban sidewalk with modern architecture, natural daylight",
-  office: "a modern minimalist office lobby with natural light and clean lines",
-  gym: "a sleek modern gym interior with motivational atmosphere",
-  festival: "a vibrant outdoor music festival scene with colorful lights",
-  brunch: "a bright airy café with plants and natural wood, morning sunlight",
-  wedding: "an elegant garden venue with soft romantic lighting and flowers",
+  night_out: "a high-end rooftop lounge at night, dramatic cinematic lighting with warm amber and cool blue neon reflections on glass, city skyline bokeh, editorial Vogue-level atmosphere",
+  beach_day: "a luxury Mediterranean beach club at golden hour, warm honeyed sunlight, turquoise water, white linen cabanas, Slim Aarons-inspired composition",
+  lunch_date: "an upscale Parisian sidewalk café, dappled afternoon sunlight through plane trees, marble tabletops, champagne tones, effortlessly chic atmosphere",
+  date_night: "an intimate high-end cocktail bar, moody dramatic lighting with warm tungsten highlights, dark velvet textures, editorial GQ/Esquire mood",
+  weekend_casual: "a sun-drenched modernist concrete terrace overlooking a city, golden hour rim lighting, architectural shadows, clean luxury streetwear editorial vibe",
+  office: "a sleek glass-walled corner office with panoramic city views, soft directional window light, minimal furniture, power-dressing editorial atmosphere",
+  gym: "a premium private gym with floor-to-ceiling windows, dramatic side lighting, concrete and steel aesthetic, athletic editorial shoot",
+  festival: "a vibrant desert festival scene at dusk, warm stage glow mixed with purple-orange sunset, dust particles in backlight, high-fashion festival editorial",
+  brunch: "a sunlit greenhouse café with lush tropical plants, soft diffused morning light, brass and marble accents, lifestyle editorial mood",
+  wedding: "an elegant estate garden at golden hour, soft romantic backlight through old-growth trees, petal-strewn stone path, luxury fashion editorial",
+};
+
+const STYLING_NOTES: Record<string, string> = {
+  night_out: "Styled with intentional streetwear layering — an open jacket over a statement piece, accessories visible. Confident nightlife energy.",
+  beach_day: "Relaxed luxury resort styling — effortless drape, rolled sleeves or untucked layers, premium casual silhouette.",
+  lunch_date: "Polished elevated casual — clean proportions, thoughtful layering, mixing textures like knit over cotton.",
+  date_night: "Sharp contemporary layering — structured outerwear over fitted pieces, monochromatic or tonal color story.",
+  weekend_casual: "Premium streetwear layering — oversized over fitted, brand-mixing done intentionally, sneakers styled up.",
+  office: "Power-casual editorial — tailored pieces mixed with one streetwear element, confident silhouette.",
+  gym: "Technical athleisure — clean performance pieces styled as a cohesive look, not gym-random.",
+  festival: "Statement streetwear maximalism — bold layering, mixed prints/textures, festival-ready but high-fashion.",
+  brunch: "Effortless luxury casual — soft textures, relaxed fits, earthy or pastel palette, approachable elegance.",
+  wedding: "Elevated formal with personality — tailored foundation with one unexpected streetwear or luxury accent piece.",
 };
 
 function buildPrompt(items: Array<{ product_name: string; brand: string | null; category: string | null; image_url: string | null }>, occasion: string, bgStyle?: string): { text: string; imageUrls: string[] } {
-  const bg = bgStyle || BACKGROUND_STYLES[occasion] || "a stylish urban environment with beautiful lighting";
+  const bg = bgStyle || BACKGROUND_STYLES[occasion] || "a premium minimalist studio with dramatic directional lighting, concrete walls, editorial fashion photography atmosphere";
+  const styling = STYLING_NOTES[occasion] || "Intentional luxury streetwear layering — mixing high-end and contemporary brands with confident, editorial proportions.";
+
+  const brands = items.map(i => i.brand).filter(Boolean);
+  const uniqueBrands = [...new Set(brands)];
+  const brandContext = uniqueBrands.length > 0
+    ? `This is a curated ${uniqueBrands.join(" × ")} look.`
+    : "This is a curated multi-brand look.";
 
   const itemDescriptions = items.map((item, i) => {
     const brand = item.brand ? ` by ${item.brand}` : "";
@@ -42,20 +62,29 @@ function buildPrompt(items: Array<{ product_name: string; brand: string | null; 
     .map(i => i.image_url)
     .filter((url): url is string => !!url);
 
-  const text = `Generate a full-body fashion photo of a stylish model wearing this complete outfit. The model should be standing in a natural, confident pose.
+  const text = `You are a world-class fashion photographer shooting a luxury streetwear editorial campaign. Generate a stunning full-body photograph of a model wearing this complete outfit.
 
-OUTFIT ITEMS:
+${brandContext}
+
+OUTFIT PIECES:
 ${itemDescriptions}
 
-IMPORTANT INSTRUCTIONS:
-- The model should be wearing ALL the items listed above as a complete outfit
-- Match the style, colors, and details of each clothing item as closely as possible to the reference images provided
-- Full body shot showing head to toe, portrait/vertical orientation (3:4 aspect ratio)
-- The model should look like a real person, natural and editorial
-- Background: ${bg}
-- Professional fashion photography lighting
-- No text, no watermarks, no logos overlay
-- The outfit should look cohesive and styled together`;
+STYLING DIRECTION:
+${styling}
+
+PHOTOGRAPHY REQUIREMENTS:
+- Full body shot, head to toe, portrait orientation (3:4 aspect ratio)
+- The model MUST be wearing ALL items listed above as one cohesive styled outfit
+- Match colors, patterns, textures, and silhouettes precisely to the reference product images
+- Dynamic natural pose — walking, mid-stride, or leaning casually — NOT stiff or mannequin-like
+- Model should look like a real person with natural skin, contemporary hairstyle, confident expression
+- LIGHTING: Professional editorial lighting — dramatic rim light, soft fill, cinematic color grading with depth
+- BACKGROUND: ${bg}
+- Depth of field: subject sharp, background with beautiful natural bokeh
+- Color grade: rich, slightly warm, high-end fashion magazine aesthetic (think SSENSE or Mr Porter editorial)
+- NO text, NO watermarks, NO logos, NO brand names overlaid on the image
+- NO mannequins, NO flat-lay, NO product-only shots — this must be a styled ON-BODY editorial photo
+- The outfit should look intentionally layered and styled, not just "wearing clothes"`;
 
   return { text, imageUrls };
 }
