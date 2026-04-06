@@ -2819,7 +2819,6 @@ function parseSearchResults(results: any[], brand: string, category: string): Ra
       image_urls: imageUrls.slice(0, 8),
       category_raw: category,
       colour: null,
-      description: null,
       description,
     });
   }
