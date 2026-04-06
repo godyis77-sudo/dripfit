@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, ShoppingBag, Flame, Ruler } from 'lucide-react';
+import { lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
@@ -13,6 +14,7 @@ import DemoTryOnSection from '@/components/home/DemoTryOnSection';
 import OneTapPlayground from '@/components/home/OneTapPlayground';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import { ALL_PRODUCT_CATEGORIES } from '@/components/tryon/tryon-constants';
+const WeeklyOutfitsSection = lazy(() => import('@/components/home/WeeklyOutfitsSection'));
 
 const HERO_CATEGORIES = [
   { key: 'all', label: 'For You' },
@@ -125,6 +127,11 @@ const GalleryPlayground = () => {
 
         {/* One-Tap Playground — interactive split-screen */}
         <OneTapPlayground />
+
+        {/* Weekly Outfits Hero Section */}
+        <Suspense fallback={null}>
+          <WeeklyOutfitsSection />
+        </Suspense>
 
         {/* Category pills */}
         <motion.div
