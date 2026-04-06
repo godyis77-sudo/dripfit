@@ -1,10 +1,11 @@
 import { useState, useMemo, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Crown, ShoppingBag, Shirt } from 'lucide-react';
+import { ArrowLeft, ShoppingBag, Shirt } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { useWeeklyOutfits, type WeeklyOutfit, type WeeklyOutfitItem } from '@/hooks/useWeeklyOutfits';
 import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import BottomTabBar from '@/components/BottomTabBar';
 import InlineCrown from '@/components/ui/InlineCrown';
@@ -50,7 +51,6 @@ const OutfitsWeekly = () => {
 
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
-      {/* Header */}
       <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border/20 px-4 py-3 flex items-center gap-3">
         <button onClick={() => navigate(-1)} className="text-foreground"><ArrowLeft className="h-5 w-5" /></button>
         <h1 className="text-base font-bold text-foreground flex items-center gap-1.5">
@@ -59,7 +59,6 @@ const OutfitsWeekly = () => {
       </div>
 
       <div className="px-4 pt-3">
-        {/* Gender toggle */}
         <div className="flex gap-1.5 mb-3">
           {GENDER_OPTIONS.map(g => (
             <button
@@ -76,7 +75,6 @@ const OutfitsWeekly = () => {
           ))}
         </div>
 
-        {/* Occasion tabs */}
         {occasions.length > 0 && (
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mb-3">
             <PillBtn active={!activeOccasion} onClick={() => setActiveOccasion(null)} label="All" emoji="✨" />
@@ -86,7 +84,6 @@ const OutfitsWeekly = () => {
           </div>
         )}
 
-        {/* Grid */}
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="h-6 w-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
@@ -106,7 +103,6 @@ const OutfitsWeekly = () => {
         )}
       </div>
 
-      {/* Detail Sheet */}
       <Sheet open={!!selectedOutfit} onOpenChange={open => !open && setSelectedOutfit(null)}>
         <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-2xl bg-card border-border/30">
           {selectedOutfit && (
@@ -114,7 +110,9 @@ const OutfitsWeekly = () => {
               <SheetHeader className="mb-4">
                 <SheetTitle className="text-foreground text-lg">{selectedOutfit.title}</SheetTitle>
                 {selectedOutfit.description && (
-                  <p className="text-[12px] text-muted-foreground">{selectedOutfit.description}</p>
+                  <SheetDescription className="text-[12px] text-muted-foreground">
+                    {selectedOutfit.description}
+                  </SheetDescription>
                 )}
               </SheetHeader>
               <div className="space-y-3">
@@ -155,11 +153,10 @@ const OutfitsWeekly = () => {
         </SheetContent>
       </Sheet>
 
-      {/* Affiliate disclosure */}
-      {pendingClickout && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60" onClick={cancelClickout}>
-          <div className="bg-card rounded-xl p-5 mx-6 max-w-sm" onClick={e => e.stopPropagation()}>
-            <p className="text-sm text-foreground mb-1 font-semibold">Leaving DripCheck</p>
+      {pendingClickout && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/60 p-4" onClick={cancelClickout}>
+          <div className="w-full max-w-sm rounded-2xl border border-border/40 bg-card p-5 shadow-xl" onClick={e => e.stopPropagation()}>
+            <p className="text-sm font-semibold text-foreground mb-1">Leaving DripCheck</p>
             <p className="text-[11px] text-muted-foreground mb-4">
               You'll be redirected to <strong>{pendingClickout.retailer}</strong>. We may earn a commission at no extra cost to you.
             </p>
@@ -168,15 +165,14 @@ const OutfitsWeekly = () => {
               <Button size="sm" onClick={confirmClickout} className="flex-1 btn-luxury">Continue</Button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <BottomTabBar />
     </div>
   );
 };
-
-/* ── Sub-components ─────────────────── */
 
 function PillBtn({ active, onClick, label, emoji }: { active: boolean; onClick: () => void; label: string; emoji?: string | null }) {
   return (
