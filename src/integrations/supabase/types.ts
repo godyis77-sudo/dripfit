@@ -1669,6 +1669,7 @@ export type Database = {
           created_at: string | null
           description: string | null
           gender: string | null
+          hero_image_url: string | null
           id: string
           is_active: boolean | null
           occasion: string
@@ -1684,6 +1685,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           gender?: string | null
+          hero_image_url?: string | null
           id?: string
           is_active?: boolean | null
           occasion: string
@@ -1699,6 +1701,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           gender?: string | null
+          hero_image_url?: string | null
           id?: string
           is_active?: boolean | null
           occasion?: string
