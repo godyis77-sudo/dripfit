@@ -164,7 +164,7 @@ Deno.serve(async (req) => {
     } else {
       // Non-Shopify: try to extract description from product page via simple fetch
       let updated = 0;
-      for (const item of items.slice(0, 20)) { // limit non-Shopify to 20 per batch
+      for (const item of items.slice(0, 50)) { // limit non-Shopify to 50 per batch
         if (!item.product_url) continue;
         try {
           const resp = await fetch(item.product_url, {
