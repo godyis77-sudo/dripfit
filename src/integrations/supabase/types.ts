@@ -1604,6 +1604,114 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_outfit_items: {
+        Row: {
+          brand: string | null
+          category: string | null
+          created_at: string | null
+          currency: string | null
+          id: string
+          image_url: string | null
+          outfit_id: string
+          position: number | null
+          price_cents: number | null
+          product_id: string | null
+          product_name: string
+          product_url: string | null
+        }
+        Insert: {
+          brand?: string | null
+          category?: string | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          image_url?: string | null
+          outfit_id: string
+          position?: number | null
+          price_cents?: number | null
+          product_id?: string | null
+          product_name: string
+          product_url?: string | null
+        }
+        Update: {
+          brand?: string | null
+          category?: string | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          image_url?: string | null
+          outfit_id?: string
+          position?: number | null
+          price_cents?: number | null
+          product_id?: string | null
+          product_name?: string
+          product_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_outfit_items_outfit_id_fkey"
+            columns: ["outfit_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_outfits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "weekly_outfit_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "product_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      weekly_outfits: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          gender: string | null
+          id: string
+          is_active: boolean | null
+          occasion: string
+          occasion_emoji: string | null
+          occasion_label: string
+          season: string | null
+          sort_order: number | null
+          title: string
+          trend_signals: Json | null
+          week_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          gender?: string | null
+          id?: string
+          is_active?: boolean | null
+          occasion: string
+          occasion_emoji?: string | null
+          occasion_label: string
+          season?: string | null
+          sort_order?: number | null
+          title: string
+          trend_signals?: Json | null
+          week_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          gender?: string | null
+          id?: string
+          is_active?: boolean | null
+          occasion?: string
+          occasion_emoji?: string | null
+          occasion_label?: string
+          season?: string | null
+          sort_order?: number | null
+          title?: string
+          trend_signals?: Json | null
+          week_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
