@@ -100,11 +100,13 @@ const WeeklyOutfitsSection = () => {
 
               {selectedOutfit.hero_image_url && (
                 <FullscreenImage src={selectedOutfit.hero_image_url} alt={selectedOutfit.title}>
-                  <img
-                    src={selectedOutfit.hero_image_url}
-                    alt={selectedOutfit.title}
-                    className="w-full aspect-[3/4] object-cover rounded-xl mb-4"
-                  />
+                  <div className="w-full aspect-[3/4] overflow-hidden rounded-xl mb-4 bg-muted">
+                    <img
+                      src={selectedOutfit.hero_image_url}
+                      alt={selectedOutfit.title}
+                      className="w-full h-full object-cover object-top rounded-xl"
+                    />
+                  </div>
                 </FullscreenImage>
               )}
 
@@ -113,12 +115,14 @@ const WeeklyOutfitsSection = () => {
                   <div key={item.id} className="flex gap-3 items-center">
                     {item.image_url && (
                       <FullscreenImage src={item.image_url} alt={item.product_name}>
-                        <img
-                          src={item.image_url}
-                          alt={item.product_name}
-                          className="w-20 h-20 rounded-lg object-cover bg-muted shrink-0"
-                          loading="lazy"
-                        />
+                        <div className="w-20 h-20 rounded-xl overflow-hidden bg-muted shrink-0">
+                          <img
+                            src={item.image_url}
+                            alt={item.product_name}
+                            className="w-full h-full object-cover object-top rounded-xl"
+                            loading="lazy"
+                          />
+                        </div>
                       </FullscreenImage>
                     )}
                     <div className="flex-1 min-w-0">
@@ -214,14 +218,14 @@ function OutfitCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void
       whileTap={{ scale: 0.97 }}
     >
       {hasHero ? (
-        <div className="aspect-[3/4] overflow-hidden bg-muted">
-          <img src={outfit.hero_image_url!} alt={outfit.title} className="w-full h-full object-cover" loading="lazy" />
+        <div className="aspect-[3/4] overflow-hidden rounded-t-xl bg-muted">
+          <img src={outfit.hero_image_url!} alt={outfit.title} className="w-full h-full object-cover object-top rounded-t-xl" loading="lazy" />
         </div>
       ) : (
         <div className={`grid gap-0.5 p-1 ${images.length >= 4 ? 'grid-cols-2 grid-rows-2' : images.length >= 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
           {images.map((src, i) => (
-            <div key={i} className="aspect-square overflow-hidden rounded-lg bg-muted">
-              <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+            <div key={i} className="aspect-square overflow-hidden rounded-xl bg-muted">
+              <img src={src} alt="" className="w-full h-full object-cover object-top rounded-xl" loading="lazy" />
             </div>
           ))}
         </div>
