@@ -18,6 +18,7 @@ interface AffiliateClickoutOptions {
 
 export function useAffiliateClickout(options: AffiliateClickoutOptions = {}) {
   const [pendingClickout, setPendingClickout] = useState<PendingClickout | null>(null);
+  const preOpenedWindow = useRef<Window | null>(null);
 
   const beginClickout = useCallback(
     (retailer: string, destinationUrl: string) => {
@@ -29,6 +30,12 @@ export function useAffiliateClickout(options: AffiliateClickoutOptions = {}) {
         provider: result.provider,
         retailerUsed: result.retailerUsed,
       };
+
+      // Pre-open window on the direct user gesture so popup blocker doesn't fire
+      // on the confirm step. We'll navigate it to the final URL on confirm.
+      const win = window.open("about:blank", "_blank", "noopener");
+      preOpenedWindow.current = win;
+
       setPendingClickout(pending);
       trackEvent("retailer_clickout_opened", {
         retailer,
