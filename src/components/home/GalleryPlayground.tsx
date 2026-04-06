@@ -122,16 +122,16 @@ const GalleryPlayground = () => {
           </div>
         </motion.button>
 
+        {/* Weekly Outfits Hero Section */}
+        <Suspense fallback={null}>
+          <WeeklyOutfitsSection />
+        </Suspense>
+
         {/* Demo Try-On Results */}
         <DemoTryOnSection />
 
         {/* One-Tap Playground — interactive split-screen */}
         <OneTapPlayground />
-
-        {/* Weekly Outfits Hero Section */}
-        <Suspense fallback={null}>
-          <WeeklyOutfitsSection />
-        </Suspense>
 
         {/* Category pills */}
         <motion.div
