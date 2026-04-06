@@ -19,6 +19,7 @@ interface RawProduct {
   image_urls: string[];
   category_raw: string | null;
   colour: string | null;
+  description: string | null;
   _method?: ScrapeMethod;
 }
 
@@ -1188,6 +1189,13 @@ function parseShopifyProduct(
     }
   }
 
+  // Extract description from body_html
+  let description: string | null = null;
+  if (item.body_html && typeof item.body_html === 'string') {
+    const plain = item.body_html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (plain.length > 15) description = plain.slice(0, 500);
+  }
+
   return {
     name: title,
     brand: item.vendor || brand,
@@ -1197,6 +1205,7 @@ function parseShopifyProduct(
     image_urls: imageUrls,
     category_raw: categoryRaw,
     colour,
+    description,
   };
 }
 
@@ -1417,6 +1426,7 @@ async function crawlBrandCategory(
         image_urls: [...new Set(imageUrls)].slice(0, 8),
         category_raw: category,
         colour: null,
+      description: null,
       });
     }
 
@@ -1786,6 +1796,7 @@ function addProductFromStructuredData(item: any, products: RawProduct[], brand: 
     image_urls: image ? [image] : [],
     category_raw: category,
     colour: null,
+      description: null,
   });
 }
 
@@ -1864,6 +1875,7 @@ function extractProductsFromDataLayer(html: string, products: RawProduct[], bran
           image_urls: img && img.startsWith('http') ? [img] : [],
           category_raw: item.category || category,
           colour: null,
+      description: null,
         });
       }
     } catch { /* skip invalid JSON */ }
@@ -1916,6 +1928,7 @@ function extractProductsFromSsrTiles(html: string, products: RawProduct[], brand
       image_urls: img ? [img] : [],
       category_raw: category,
       colour: null,
+      description: null,
     });
   }
 
@@ -1945,6 +1958,7 @@ function extractProductsFromSsrTiles(html: string, products: RawProduct[], brand
         image_urls: img ? [img] : [],
         category_raw: category,
         colour: null,
+      description: null,
       });
     }
   }
@@ -1978,6 +1992,7 @@ function extractProductsFromSsrTiles(html: string, products: RawProduct[], brand
         image_urls: img ? [img] : [],
         category_raw: category,
         colour: null,
+      description: null,
       });
     }
   }
@@ -2013,6 +2028,7 @@ function extractProductsFromHtmlGrid(html: string, products: RawProduct[], brand
       image_urls: [imgSrc],
       category_raw: category,
       colour: null,
+      description: null,
     });
   }
 }
@@ -2266,6 +2282,7 @@ async function searchGoogleProducts(
           image_urls: imageUrls.slice(0, 8),
           category_raw: category,
           colour: null,
+      description: null,
         });
       }
 
@@ -2790,6 +2807,9 @@ function parseSearchResults(results: any[], brand: string, category: string): Ra
       continue;
     }
 
+    // Extract description from markdown
+    const description = extractDescription(markdown, productName);
+
     allProducts.push({
       name: productName,
       brand,
@@ -2799,6 +2819,7 @@ function parseSearchResults(results: any[], brand: string, category: string): Ra
       image_urls: imageUrls.slice(0, 8),
       category_raw: category,
       colour: null,
+      description,
     });
   }
 
@@ -3512,6 +3533,7 @@ Deno.serve(async (req) => {
           gender,
           fit_profile: fitProfile,
           fabric_composition: fabricComposition,
+          description: p.description || null,
           scrape_source: `${p._method || 'unknown'}:${runId}`,
           scraped_at: new Date().toISOString(),
           is_active: true,

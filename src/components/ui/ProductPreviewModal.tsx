@@ -24,6 +24,7 @@ export interface ProductPreviewData {
   fabric_composition?: string[] | null;
   style_genre?: string | null;
   additional_images?: string[] | null;
+  description?: string | null;
 }
 
 export interface LookItemData {
@@ -330,6 +331,11 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
                 </span>
               ))}
             </div>
+           )}
+          {product.description && (
+            <p className="text-[12px] text-white/70 leading-relaxed text-center line-clamp-3 px-2 mt-1">
+              {product.description}
+            </p>
           )}
         </div>
 

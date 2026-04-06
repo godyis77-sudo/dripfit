@@ -816,6 +816,7 @@ export type Database = {
           category: string
           created_at: string
           currency: string | null
+          description: string | null
           fabric_composition: string[] | null
           fit_profile: string[] | null
           gender: string | null
@@ -841,6 +842,7 @@ export type Database = {
           category: string
           created_at?: string
           currency?: string | null
+          description?: string | null
           fabric_composition?: string[] | null
           fit_profile?: string[] | null
           gender?: string | null
@@ -866,6 +868,7 @@ export type Database = {
           category?: string
           created_at?: string
           currency?: string | null
+          description?: string | null
           fabric_composition?: string[] | null
           fit_profile?: string[] | null
           gender?: string | null
@@ -1636,6 +1639,7 @@ export type Database = {
           category: string
           created_at: string
           currency: string | null
+          description: string | null
           fabric_composition: string[] | null
           fit_profile: string[] | null
           gender: string | null
