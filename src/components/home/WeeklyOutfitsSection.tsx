@@ -6,8 +6,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Crown, ShoppingBag, Shirt } from 'lucide-react';
+import { ShoppingBag, Shirt, X } from 'lucide-react';
 import InlineCrown from '@/components/ui/InlineCrown';
+import { FullscreenImage } from '@/components/ui/fullscreen-image';
 
 const WeeklyOutfitsSection = () => {
   const navigate = useNavigate();
@@ -98,16 +99,29 @@ const WeeklyOutfitsSection = () => {
                 )}
               </SheetHeader>
 
+              {/* Hero image fullscreen */}
+              {selectedOutfit.hero_image_url && (
+                <FullscreenImage src={selectedOutfit.hero_image_url} alt={selectedOutfit.title}>
+                  <img
+                    src={selectedOutfit.hero_image_url}
+                    alt={selectedOutfit.title}
+                    className="w-full aspect-[3/4] object-cover rounded-xl mb-4"
+                  />
+                </FullscreenImage>
+              )}
+
               <div className="space-y-3">
                 {selectedOutfit.items.map(item => (
                   <div key={item.id} className="flex gap-3 items-center">
                     {item.image_url && (
-                      <img
-                        src={item.image_url}
-                        alt={item.product_name}
-                        className="w-20 h-20 rounded-lg object-cover bg-muted shrink-0"
-                        loading="lazy"
-                      />
+                      <FullscreenImage src={item.image_url} alt={item.product_name}>
+                        <img
+                          src={item.image_url}
+                          alt={item.product_name}
+                          className="w-20 h-20 rounded-lg object-cover bg-muted shrink-0"
+                          loading="lazy"
+                        />
+                      </FullscreenImage>
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-foreground truncate">{item.product_name}</p>
