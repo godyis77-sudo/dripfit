@@ -1426,6 +1426,7 @@ async function crawlBrandCategory(
         image_urls: [...new Set(imageUrls)].slice(0, 8),
         category_raw: category,
         colour: null,
+      description: null,
       });
     }
 
@@ -1795,6 +1796,7 @@ function addProductFromStructuredData(item: any, products: RawProduct[], brand: 
     image_urls: image ? [image] : [],
     category_raw: category,
     colour: null,
+      description: null,
   });
 }
 
@@ -1873,6 +1875,7 @@ function extractProductsFromDataLayer(html: string, products: RawProduct[], bran
           image_urls: img && img.startsWith('http') ? [img] : [],
           category_raw: item.category || category,
           colour: null,
+      description: null,
         });
       }
     } catch { /* skip invalid JSON */ }
@@ -1925,6 +1928,7 @@ function extractProductsFromSsrTiles(html: string, products: RawProduct[], brand
       image_urls: img ? [img] : [],
       category_raw: category,
       colour: null,
+      description: null,
     });
   }
 
@@ -1954,6 +1958,7 @@ function extractProductsFromSsrTiles(html: string, products: RawProduct[], brand
         image_urls: img ? [img] : [],
         category_raw: category,
         colour: null,
+      description: null,
       });
     }
   }
@@ -1987,6 +1992,7 @@ function extractProductsFromSsrTiles(html: string, products: RawProduct[], brand
         image_urls: img ? [img] : [],
         category_raw: category,
         colour: null,
+      description: null,
       });
     }
   }
@@ -2022,6 +2028,7 @@ function extractProductsFromHtmlGrid(html: string, products: RawProduct[], brand
       image_urls: [imgSrc],
       category_raw: category,
       colour: null,
+      description: null,
     });
   }
 }
@@ -2275,6 +2282,7 @@ async function searchGoogleProducts(
           image_urls: imageUrls.slice(0, 8),
           category_raw: category,
           colour: null,
+      description: null,
         });
       }
 
@@ -2811,6 +2819,7 @@ function parseSearchResults(results: any[], brand: string, category: string): Ra
       image_urls: imageUrls.slice(0, 8),
       category_raw: category,
       colour: null,
+      description: null,
       description,
     });
   }
