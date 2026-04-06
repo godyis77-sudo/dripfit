@@ -23,6 +23,17 @@ export function useSwipeNavigation() {
   const onTouchStart = useCallback((e: React.TouchEvent) => {
     // Ignore multi-touch (pinch zoom) — only track single-finger swipes
     if (e.touches.length > 1) { touchStart.current = null; return; }
+
+    // Ignore swipes that start inside a horizontally scrollable container
+    let el = e.target as HTMLElement | null;
+    while (el) {
+      if (el.scrollWidth > el.clientWidth + 4 && getComputedStyle(el).overflowX !== 'hidden') {
+        touchStart.current = null;
+        return;
+      }
+      el = el.parentElement;
+    }
+
     const t = e.touches[0];
     touchStart.current = { x: t.clientX, y: t.clientY, t: Date.now() };
   }, []);
