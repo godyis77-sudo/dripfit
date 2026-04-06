@@ -26,6 +26,7 @@ export interface WeeklyOutfit {
   season: string | null;
   gender: string | null;
   sort_order: number;
+  hero_image_url: string | null;
   items: WeeklyOutfitItem[];
   total_price_cents: number;
 }
