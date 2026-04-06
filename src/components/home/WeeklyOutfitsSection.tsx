@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useWeeklyOutfits, type WeeklyOutfit, type WeeklyOutfitItem } from '@/hooks/useWeeklyOutfits';
@@ -6,7 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, Shirt, X } from 'lucide-react';
+import { ShoppingBag, Shirt } from 'lucide-react';
 import InlineCrown from '@/components/ui/InlineCrown';
 import { FullscreenImage } from '@/components/ui/fullscreen-image';
 
@@ -44,6 +45,7 @@ const WeeklyOutfitsSection = () => {
     navigate('/tryon', { state: { clothingUrl: item.image_url, productUrl: item.product_url, freshSession: true } });
   }, [navigate]);
 
+  // Early return AFTER all hooks
   if (isLoading || !outfits || outfits.length === 0) return null;
 
   return (
@@ -170,9 +172,9 @@ const WeeklyOutfitsSection = () => {
         </SheetContent>
       </Sheet>
 
-      {/* Affiliate disclosure modal */}
-      {pendingClickout && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60" onClick={cancelClickout}>
+      {/* Affiliate disclosure modal — portalled above everything */}
+      {pendingClickout && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60" onClick={cancelClickout}>
           <div className="bg-card rounded-xl p-5 mx-6 max-w-sm" onClick={e => e.stopPropagation()}>
             <p className="text-sm text-foreground mb-1 font-semibold">Leaving DripCheck</p>
             <p className="text-[11px] text-muted-foreground mb-4">
@@ -183,7 +185,8 @@ const WeeklyOutfitsSection = () => {
               <Button size="sm" onClick={confirmClickout} className="flex-1 btn-luxury">Continue</Button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
