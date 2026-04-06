@@ -74,18 +74,23 @@ export function useAffiliateClickout(options: AffiliateClickoutOptions = {}) {
       } as any).then(() => { /* fire and forget */ });
     });
 
-    // Open in new tab; if popup blocked, use a temporary <a> click instead of
-    // replacing location.href (which would destroy the SPA and cause a crash).
-    const win = window.open(pendingClickout.url, "_blank", "noopener");
-    if (!win) {
-      const a = document.createElement("a");
-      a.href = pendingClickout.url;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+    // Navigate the pre-opened window to the destination
+    if (preOpenedWindow.current && !preOpenedWindow.current.closed) {
+      preOpenedWindow.current.location.href = pendingClickout.url;
+    } else {
+      // Fallback: try window.open, then <a> click
+      const win = window.open(pendingClickout.url, "_blank", "noopener");
+      if (!win) {
+        const a = document.createElement("a");
+        a.href = pendingClickout.url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
     }
+    preOpenedWindow.current = null;
     setPendingClickout(null);
   }, [pendingClickout, options.extraProps]);
 
@@ -98,6 +103,11 @@ export function useAffiliateClickout(options: AffiliateClickoutOptions = {}) {
       destination_domain: safeDomain(pendingClickout.url),
       ...options.extraProps,
     });
+    // Close the pre-opened blank window
+    if (preOpenedWindow.current && !preOpenedWindow.current.closed) {
+      preOpenedWindow.current.close();
+    }
+    preOpenedWindow.current = null;
     setPendingClickout(null);
   }, [pendingClickout, options.extraProps]);
 
