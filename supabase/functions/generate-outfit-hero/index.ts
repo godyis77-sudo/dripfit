@@ -89,16 +89,34 @@ PHOTOGRAPHY REQUIREMENTS:
   return { text, imageUrls };
 }
 
+async function checkImageAccessible(url: string): Promise<boolean> {
+  try {
+    const res = await fetch(url, { method: "HEAD", redirect: "follow" });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 async function generateHeroImage(
   prompt: { text: string; imageUrls: string[] },
   apiKey: string
 ): Promise<string | null> {
+  // Pre-filter images that are actually accessible
+  const accessChecks = await Promise.all(
+    prompt.imageUrls.slice(0, 6).map(async (url) => ({
+      url,
+      ok: await checkImageAccessible(url),
+    }))
+  );
+  const accessibleUrls = accessChecks.filter((c) => c.ok).map((c) => c.url);
+  console.log(`Image accessibility: ${accessibleUrls.length}/${prompt.imageUrls.length} accessible`);
+
   const content: Array<{ type: string; text?: string; image_url?: { url: string } }> = [
     { type: "text", text: prompt.text },
   ];
 
-  // Attach product reference images
-  for (const url of prompt.imageUrls.slice(0, 6)) {
+  for (const url of accessibleUrls) {
     content.push({ type: "image_url", image_url: { url } });
   }
 
