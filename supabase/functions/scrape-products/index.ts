@@ -19,6 +19,7 @@ interface RawProduct {
   image_urls: string[];
   category_raw: string | null;
   colour: string | null;
+  description: string | null;
   _method?: ScrapeMethod;
 }
 
@@ -1188,6 +1189,13 @@ function parseShopifyProduct(
     }
   }
 
+  // Extract description from body_html
+  let description: string | null = null;
+  if (item.body_html && typeof item.body_html === 'string') {
+    const plain = item.body_html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (plain.length > 15) description = plain.slice(0, 500);
+  }
+
   return {
     name: title,
     brand: item.vendor || brand,
@@ -1197,6 +1205,7 @@ function parseShopifyProduct(
     image_urls: imageUrls,
     category_raw: categoryRaw,
     colour,
+    description,
   };
 }
 
@@ -2790,6 +2799,9 @@ function parseSearchResults(results: any[], brand: string, category: string): Ra
       continue;
     }
 
+    // Extract description from markdown
+    const description = extractDescription(markdown, productName);
+
     allProducts.push({
       name: productName,
       brand,
@@ -2799,6 +2811,7 @@ function parseSearchResults(results: any[], brand: string, category: string): Ra
       image_urls: imageUrls.slice(0, 8),
       category_raw: category,
       colour: null,
+      description,
     });
   }
 
@@ -3512,6 +3525,7 @@ Deno.serve(async (req) => {
           gender,
           fit_profile: fitProfile,
           fabric_composition: fabricComposition,
+          description: p.description || null,
           scrape_source: `${p._method || 'unknown'}:${runId}`,
           scraped_at: new Date().toISOString(),
           is_active: true,
