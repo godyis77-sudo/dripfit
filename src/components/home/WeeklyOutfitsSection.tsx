@@ -195,6 +195,7 @@ function OccasionPill({ active, onClick, label, emoji }: { active: boolean; onCl
 function OutfitCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }) {
   const images = outfit.items.slice(0, 4).map(i => i.image_url).filter(Boolean) as string[];
   const brands = [...new Set(outfit.items.map(i => i.brand).filter(Boolean))].slice(0, 3);
+  const hasHero = !!outfit.hero_image_url;
 
   return (
     <motion.button
@@ -202,14 +203,19 @@ function OutfitCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void
       className="snap-start shrink-0 w-[200px] bg-card rounded-xl border border-border/30 overflow-hidden text-left active:scale-[0.97] transition-transform"
       whileTap={{ scale: 0.97 }}
     >
-      {/* 2x2 grid */}
-      <div className={`grid gap-0.5 p-1 ${images.length >= 4 ? 'grid-cols-2 grid-rows-2' : images.length >= 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-        {images.map((src, i) => (
-          <div key={i} className="aspect-square overflow-hidden rounded-lg bg-muted">
-            <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
-          </div>
-        ))}
-      </div>
+      {hasHero ? (
+        <div className="aspect-[3/4] overflow-hidden bg-muted">
+          <img src={outfit.hero_image_url!} alt={outfit.title} className="w-full h-full object-cover" loading="lazy" />
+        </div>
+      ) : (
+        <div className={`grid gap-0.5 p-1 ${images.length >= 4 ? 'grid-cols-2 grid-rows-2' : images.length >= 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+          {images.map((src, i) => (
+            <div key={i} className="aspect-square overflow-hidden rounded-lg bg-muted">
+              <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="p-2.5 pt-1.5">
         <p className="text-sm font-bold text-foreground truncate">{outfit.title}</p>
