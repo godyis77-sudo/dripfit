@@ -12,11 +12,11 @@ const SHOPIFY_DOMAINS: Record<string, string> = {
   'Essentials': 'https://fearofgod.com',
   'Fear of God': 'https://fearofgod.com',
   'Gymshark': 'https://www.gymshark.com',
-  'True Classic': 'https://www.trueclassictees.com',
-  'Faherty': 'https://fahertybrand.com',
+  'True Classic': 'https://trueclassictees.com',
+  'Faherty': 'https://www.fahertybrand.com',
   'Taylor Stitch': 'https://www.taylorstitch.com',
   'Marine Layer': 'https://www.marinelayer.com',
-  'Grayers': 'https://www.grfrags.com',
+  'Grayers': 'https://www.grayers.com',
   'AMIRI': 'https://www.amiri.com',
   'Fresh Clean Threads': 'https://freshcleantees.com',
   'Fresh Clean Tees': 'https://freshcleantees.com',
@@ -39,6 +39,7 @@ const SHOPIFY_DOMAINS: Record<string, string> = {
   "Rothy's": 'https://rothys.com',
   'Radial': 'https://www.radialofficial.com',
   'Public Rec 2.0': 'https://www.publicrec.com',
+  'Dr. Martens': 'https://www.drmartens.com',
 };
 
 function stripHtml(html: string): string | null {
