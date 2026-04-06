@@ -33,7 +33,7 @@ export function useAffiliateClickout(options: AffiliateClickoutOptions = {}) {
 
       // Pre-open window on the direct user gesture so popup blocker doesn't fire
       // on the confirm step. We'll navigate it to the final URL on confirm.
-      const win = window.open("about:blank", "_blank", "noopener");
+      const win = window.open("about:blank", "_blank");
       preOpenedWindow.current = win;
 
       setPendingClickout(pending);
