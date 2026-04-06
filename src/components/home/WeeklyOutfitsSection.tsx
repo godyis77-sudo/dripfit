@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { useWeeklyOutfits, type WeeklyOutfit, type WeeklyOutfitItem } from '@/hooks/useWeeklyOutfits';
 import { useAuth } from '@/hooks/useAuth';
 import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { ShoppingBag, Shirt } from 'lucide-react';
 import InlineCrown from '@/components/ui/InlineCrown';
@@ -45,12 +45,10 @@ const WeeklyOutfitsSection = () => {
     navigate('/tryon', { state: { clothingUrl: item.image_url, productUrl: item.product_url, freshSession: true } });
   }, [navigate]);
 
-  // Early return AFTER all hooks
   if (isLoading || !outfits || outfits.length === 0) return null;
 
   return (
     <div className="px-4 mt-6 mb-4">
-      {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div>
           <h2 className="text-base font-bold text-foreground flex items-center gap-1.5">
@@ -66,7 +64,6 @@ const WeeklyOutfitsSection = () => {
         </button>
       </div>
 
-      {/* Occasion tabs */}
       {occasions.length > 1 && (
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mb-3">
           <OccasionPill active={!activeOccasion} onClick={() => setActiveOccasion(null)} label="All" emoji="✨" />
@@ -82,14 +79,12 @@ const WeeklyOutfitsSection = () => {
         </div>
       )}
 
-      {/* Cards row */}
       <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
         {filtered.map(outfit => (
           <OutfitCard key={outfit.id} outfit={outfit} onTap={() => setSelectedOutfit(outfit)} />
         ))}
       </div>
 
-      {/* Detail Sheet */}
       <Sheet open={!!selectedOutfit} onOpenChange={open => !open && setSelectedOutfit(null)}>
         <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-2xl bg-card border-border/30">
           {selectedOutfit && (
@@ -97,11 +92,12 @@ const WeeklyOutfitsSection = () => {
               <SheetHeader className="mb-4">
                 <SheetTitle className="text-foreground text-lg">{selectedOutfit.title}</SheetTitle>
                 {selectedOutfit.description && (
-                  <p className="text-[12px] text-muted-foreground">{selectedOutfit.description}</p>
+                  <SheetDescription className="text-[12px] text-muted-foreground">
+                    {selectedOutfit.description}
+                  </SheetDescription>
                 )}
               </SheetHeader>
 
-              {/* Hero image fullscreen */}
               {selectedOutfit.hero_image_url && (
                 <FullscreenImage src={selectedOutfit.hero_image_url} alt={selectedOutfit.title}>
                   <img
@@ -172,11 +168,10 @@ const WeeklyOutfitsSection = () => {
         </SheetContent>
       </Sheet>
 
-      {/* Affiliate disclosure modal — portalled above everything */}
       {pendingClickout && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60" onClick={cancelClickout}>
-          <div className="bg-card rounded-xl p-5 mx-6 max-w-sm" onClick={e => e.stopPropagation()}>
-            <p className="text-sm text-foreground mb-1 font-semibold">Leaving DripCheck</p>
+        <div className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/60 p-4" onClick={cancelClickout}>
+          <div className="w-full max-w-sm rounded-2xl border border-border/40 bg-card p-5 shadow-xl" onClick={e => e.stopPropagation()}>
+            <p className="text-sm font-semibold text-foreground mb-1">Leaving DripCheck</p>
             <p className="text-[11px] text-muted-foreground mb-4">
               You'll be redirected to <strong>{pendingClickout.retailer}</strong>. We may earn a commission at no extra cost to you.
             </p>
@@ -191,8 +186,6 @@ const WeeklyOutfitsSection = () => {
     </div>
   );
 };
-
-/* ── Sub-components ─────────────────────────── */
 
 function OccasionPill({ active, onClick, label, emoji }: { active: boolean; onClick: () => void; label: string; emoji?: string | null }) {
   return (
