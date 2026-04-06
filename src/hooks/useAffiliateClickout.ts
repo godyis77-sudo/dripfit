@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { resolveClickoutByName } from "@/lib/affiliateRouter";
 import { trackEvent } from "@/lib/analytics";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +18,7 @@ interface AffiliateClickoutOptions {
 
 export function useAffiliateClickout(options: AffiliateClickoutOptions = {}) {
   const [pendingClickout, setPendingClickout] = useState<PendingClickout | null>(null);
+  const preOpenedWindow = useRef<Window | null>(null);
 
   const beginClickout = useCallback(
     (retailer: string, destinationUrl: string) => {
@@ -29,6 +30,12 @@ export function useAffiliateClickout(options: AffiliateClickoutOptions = {}) {
         provider: result.provider,
         retailerUsed: result.retailerUsed,
       };
+
+      // Pre-open window on the direct user gesture so popup blocker doesn't fire
+      // on the confirm step. We'll navigate it to the final URL on confirm.
+      const win = window.open("about:blank", "_blank", "noopener");
+      preOpenedWindow.current = win;
+
       setPendingClickout(pending);
       trackEvent("retailer_clickout_opened", {
         retailer,
@@ -67,18 +74,23 @@ export function useAffiliateClickout(options: AffiliateClickoutOptions = {}) {
       } as any).then(() => { /* fire and forget */ });
     });
 
-    // Open in new tab; if popup blocked, use a temporary <a> click instead of
-    // replacing location.href (which would destroy the SPA and cause a crash).
-    const win = window.open(pendingClickout.url, "_blank", "noopener");
-    if (!win) {
-      const a = document.createElement("a");
-      a.href = pendingClickout.url;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+    // Navigate the pre-opened window to the destination
+    if (preOpenedWindow.current && !preOpenedWindow.current.closed) {
+      preOpenedWindow.current.location.href = pendingClickout.url;
+    } else {
+      // Fallback: try window.open, then <a> click
+      const win = window.open(pendingClickout.url, "_blank", "noopener");
+      if (!win) {
+        const a = document.createElement("a");
+        a.href = pendingClickout.url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
     }
+    preOpenedWindow.current = null;
     setPendingClickout(null);
   }, [pendingClickout, options.extraProps]);
 
@@ -91,6 +103,11 @@ export function useAffiliateClickout(options: AffiliateClickoutOptions = {}) {
       destination_domain: safeDomain(pendingClickout.url),
       ...options.extraProps,
     });
+    // Close the pre-opened blank window
+    if (preOpenedWindow.current && !preOpenedWindow.current.closed) {
+      preOpenedWindow.current.close();
+    }
+    preOpenedWindow.current = null;
     setPendingClickout(null);
   }, [pendingClickout, options.extraProps]);
 
