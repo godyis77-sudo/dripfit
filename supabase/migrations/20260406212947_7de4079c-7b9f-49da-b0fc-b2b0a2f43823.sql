@@ -1,0 +1,1 @@
+ALTER TABLE public.product_catalog ADD COLUMN IF NOT EXISTS description text;
