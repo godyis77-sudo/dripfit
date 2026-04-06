@@ -132,7 +132,14 @@ const OutfitsWeekly = () => {
                     </div>
                     <div className="flex flex-col gap-1.5 shrink-0">
                       {item.product_url && (
-                        <Button size="sm" className="h-7 text-[10px] px-2.5 btn-luxury" onClick={() => handleShop(item)}>
+                        <Button
+                          size="sm"
+                          className="h-7 text-[10px] px-2.5 btn-luxury"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleShop(item);
+                          }}
+                        >
                           <ShoppingBag className="h-3 w-3 mr-1" /> Shop
                         </Button>
                       )}
