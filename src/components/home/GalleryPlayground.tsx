@@ -10,7 +10,7 @@ import { type CatalogProduct } from '@/hooks/useProductCatalog';
 import BrandLogo from '@/components/ui/BrandLogo';
 import FeatureIcon from '@/components/ui/FeatureIcon';
 import HomeFAB from '@/components/home/HomeFAB';
-import DemoTryOnSection from '@/components/home/DemoTryOnSection';
+
 import OneTapPlayground from '@/components/home/OneTapPlayground';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import { ALL_PRODUCT_CATEGORIES } from '@/components/tryon/tryon-constants';
@@ -127,8 +127,6 @@ const GalleryPlayground = () => {
           <WeeklyOutfitsSection />
         </Suspense>
 
-        {/* Demo Try-On Results */}
-        <DemoTryOnSection />
 
         {/* One-Tap Playground — interactive split-screen */}
         <OneTapPlayground />
