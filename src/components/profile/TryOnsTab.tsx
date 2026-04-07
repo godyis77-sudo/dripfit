@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -49,6 +50,7 @@ type FilterMode = 'all' | 'public' | 'private';
 const isBackgroundComposite = (url: string) => /\/tryon-composites\//i.test(url);
 
 const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
+  const { revealRef } = useScrollReveal();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -213,12 +215,12 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
           <div className="grid grid-cols-2 gap-2">
             {tryOnPosts
               .filter(p => filterMode === 'all' ? true : filterMode === 'public' ? p.is_public : !p.is_public)
-              .map(post => {
+              .map((post, idx) => {
                 const postedCaption = getPostedCaption(post.caption);
                 const shouldContainImage = isBackgroundComposite(post.result_photo_url);
 
                 return (
-                  <motion.div key={post.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
+                  <motion.div key={post.id} ref={revealRef(idx)} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
                     <div className="w-full rounded-xl overflow-hidden border border-border bg-card text-left">
                       <button
                         onClick={() => setSelectedPost(post)}

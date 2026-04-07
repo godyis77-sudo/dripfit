@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import PostCard from './PostCard';
@@ -34,6 +35,7 @@ const CommunityFeedGrid = ({
   onVote, onFollowToggle, onDeletePost, onImageError, onOpenDetail, onCaptionUpdated,
   onPostLook, onLoadMore, shouldShowEmpty,
 }: CommunityFeedGridProps) => {
+  const { revealRef } = useScrollReveal();
   if (loading) {
     return (
       <div className="grid grid-cols-2 gap-2">
@@ -58,6 +60,7 @@ const CommunityFeedGrid = ({
     <>
       <div className="grid grid-cols-2 gap-2 pb-4">
         {posts.map((post, idx) => (
+          <div key={post.id} ref={revealRef(idx)}>
           <PostCard
             key={post.id}
             post={post}
@@ -74,6 +77,7 @@ const CommunityFeedGrid = ({
             onOpenDetail={onOpenDetail}
             onCaptionUpdated={onCaptionUpdated}
           />
+          </div>
         ))}
       </div>
       {hasMore && !loading && (

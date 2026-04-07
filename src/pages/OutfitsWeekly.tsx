@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ShoppingBag, Shirt } from 'lucide-react';
@@ -27,6 +28,7 @@ const OutfitsWeekly = () => {
   const { data: outfits, isLoading } = useWeeklyOutfits(genderFilter);
   const { pendingClickout, beginClickout, confirmClickout, cancelClickout } = useAffiliateClickout({ extraProps: { source: 'weekly_outfits_page' } });
   const [fullscreenSrc, setFullscreenSrc] = useState<string | null>(null);
+  const { revealRef } = useScrollReveal();
 
   const occasions = useMemo(() => {
     if (!outfits) return [];
@@ -105,8 +107,10 @@ const OutfitsWeekly = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3 pb-6">
-            {filtered.map(outfit => (
-              <GridCard key={outfit.id} outfit={outfit} onTap={() => setSelectedOutfit(outfit)} />
+            {filtered.map((outfit, idx) => (
+              <div key={outfit.id} ref={revealRef(idx)}>
+                <GridCard outfit={outfit} onTap={() => setSelectedOutfit(outfit)} />
+              </div>
             ))}
           </div>
         )}
