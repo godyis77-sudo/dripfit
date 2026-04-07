@@ -42,13 +42,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button";
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-      if (e.defaultPrevented || props.disabled) {
-        onClick?.(e);
-        return;
-      }
-
-      e.stopPropagation();
-
       // Ripple effect
       const button = e.currentTarget;
       const ripple = document.createElement('span');
