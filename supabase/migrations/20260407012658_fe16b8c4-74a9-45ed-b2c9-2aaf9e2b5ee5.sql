@@ -1,0 +1,1 @@
+UPDATE public.weekly_outfits SET is_active = false WHERE week_id = '2026-W14';

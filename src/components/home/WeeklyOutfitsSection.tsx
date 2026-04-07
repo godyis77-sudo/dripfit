@@ -177,14 +177,26 @@ const WeeklyOutfitsSection = () => {
 
       {pendingClickout && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/60 p-4" onClick={cancelClickout}>
-          <div className="w-full max-w-sm rounded-2xl border border-border/40 bg-card p-5 shadow-xl" onClick={e => e.stopPropagation()}>
+          <div className="w-full max-w-sm rounded-2xl border border-border/40 bg-card p-5 shadow-xl" onClick={e => { e.stopPropagation(); e.preventDefault(); }}>
             <p className="text-sm font-semibold text-foreground mb-1">Leaving DripCheck</p>
             <p className="text-[11px] text-muted-foreground mb-4">
               You'll be redirected to <strong>{pendingClickout.retailer}</strong>. We may earn a commission at no extra cost to you.
             </p>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={cancelClickout} className="flex-1">Cancel</Button>
-              <Button size="sm" onClick={confirmClickout} className="flex-1 btn-luxury">Continue</Button>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); e.preventDefault(); cancelClickout(); }}
+                className="flex-1 h-9 rounded-lg border border-border/60 bg-card/40 text-foreground text-sm font-semibold active:scale-[0.97] transition-transform"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); e.preventDefault(); confirmClickout(); }}
+                className="flex-1 h-9 rounded-lg btn-luxury text-primary-foreground text-sm font-semibold active:scale-[0.97] transition-transform"
+              >
+                Continue
+              </button>
             </div>
           </div>
         </div>,
