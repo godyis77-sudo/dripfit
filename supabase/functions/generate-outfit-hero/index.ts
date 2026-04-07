@@ -323,7 +323,7 @@ async function processOutfit(
 
   console.log(`Generating hero for outfit "${outfit.title}" (${items.length} items, gender: ${outfit.gender || "unisex"})`);
 
-  const prompt = buildPrompt(items, outfit.occasion, outfit.gender, bgStyle);
+  const prompt = buildPrompt(items, outfit.occasion, outfit.gender, bgStyle, poseIndex);
   const base64 = await generateHeroImage(prompt, apiKey);
 
   if (!base64) {
