@@ -189,7 +189,8 @@ COLOR COORDINATION:
 PHOTOGRAPHY REQUIREMENTS:
 - Full body shot, head to toe, portrait orientation (3:4 aspect ratio)
 - The model MUST be wearing ALL items listed above as one cohesive styled outfit
-- Dynamic natural pose appropriate for ${occasion.replace("_", " ")} — NOT stiff or mannequin-like
+- SPECIFIC POSE: ${pose}
+- Dynamic natural energy — NOT stiff or mannequin-like
 - Model should look like a real person with natural skin, contemporary hairstyle, confident expression
 - Gender-appropriate fit and drape — ${genderKey === "womens" ? "feminine silhouette, natural curves" : "masculine build, clean lines"}
 - LIGHTING: Professional editorial lighting — dramatic rim light, soft fill, cinematic color grading
