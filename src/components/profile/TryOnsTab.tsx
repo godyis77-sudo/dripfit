@@ -215,7 +215,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
           <div className="grid grid-cols-2 gap-2">
             {tryOnPosts
               .filter(p => filterMode === 'all' ? true : filterMode === 'public' ? p.is_public : !p.is_public)
-              .map(post => {
+              .map((post, idx) => {
                 const postedCaption = getPostedCaption(post.caption);
                 const shouldContainImage = isBackgroundComposite(post.result_photo_url);
 
