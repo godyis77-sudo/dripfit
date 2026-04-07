@@ -68,6 +68,23 @@ const GENDER_MODELS: Record<string, string> = {
   womens: "a stylish female model in her mid-20s with contemporary hairstyle, natural makeup, effortlessly chic expression — think Vogue or SSENSE editorial",
 };
 
+/* ── Pose / angle variety ─────────────────────────────────────── */
+
+const POSE_POOL = [
+  "walking mid-stride with one hand adjusting collar, slight 3/4 turn to camera",
+  "leaning against a wall with arms crossed, looking off-camera with a slight smirk",
+  "standing with weight on back foot, one hand in pocket, direct eye contact",
+  "caught mid-motion turning around, looking over shoulder at camera",
+  "sitting on a low ledge with legs extended, relaxed editorial energy",
+  "power stance with feet shoulder-width apart, hands at sides, strong eye contact",
+  "walking toward camera with confident stride, slight wind in clothing",
+  "perched on stairs, one knee up, arm resting casually, looking upward",
+  "standing profile view with head turned toward camera, dramatic silhouette",
+  "crouching low with elbows on knees, streetwear editorial energy",
+  "leaning forward slightly with hands in jacket pockets, intimate close-distance feel",
+  "standing tall with chin up, one arm raised adjusting sunglasses or hat",
+];
+
 /* ── Color extraction helpers ─────────────────────────────────── */
 
 function extractColorHints(items: OutfitItem[]): string {
@@ -104,8 +121,10 @@ function buildPrompt(
   items: OutfitItem[],
   occasion: string,
   gender: string | null,
-  bgStyle?: string
+  bgStyle?: string,
+  poseIndex?: number
 ): { text: string; imageUrls: string[] } {
+  const pose = POSE_POOL[poseIndex !== undefined ? poseIndex % POSE_POOL.length : Math.floor(Math.random() * POSE_POOL.length)];
   const bg = bgStyle || BACKGROUND_STYLES[occasion] || "a premium minimalist studio with dramatic directional lighting, concrete walls, editorial fashion photography atmosphere";
   const styling = STYLING_NOTES[occasion] || "Intentional luxury streetwear layering — mixing high-end and contemporary brands with confident, editorial proportions.";
   const footwear = FOOTWEAR_GUIDE[occasion] || "premium designer sneakers or clean leather shoes appropriate for the occasion";
@@ -170,7 +189,8 @@ COLOR COORDINATION:
 PHOTOGRAPHY REQUIREMENTS:
 - Full body shot, head to toe, portrait orientation (3:4 aspect ratio)
 - The model MUST be wearing ALL items listed above as one cohesive styled outfit
-- Dynamic natural pose appropriate for ${occasion.replace("_", " ")} — NOT stiff or mannequin-like
+- SPECIFIC POSE: ${pose}
+- Dynamic natural energy — NOT stiff or mannequin-like
 - Model should look like a real person with natural skin, contemporary hairstyle, confident expression
 - Gender-appropriate fit and drape — ${genderKey === "womens" ? "feminine silhouette, natural curves" : "masculine build, clean lines"}
 - LIGHTING: Professional editorial lighting — dramatic rim light, soft fill, cinematic color grading
@@ -274,7 +294,8 @@ async function processOutfit(
   outfitId: string,
   apiKey: string,
   bgStyle?: string,
-  regenerate = false
+  regenerate = false,
+  poseIndex?: number
 ): Promise<{ success: boolean; outfit_id: string; hero_url?: string; error?: string; skipped?: boolean }> {
   const { data: outfit, error: oErr } = await sb
     .from("weekly_outfits")
@@ -302,7 +323,7 @@ async function processOutfit(
 
   console.log(`Generating hero for outfit "${outfit.title}" (${items.length} items, gender: ${outfit.gender || "unisex"})`);
 
-  const prompt = buildPrompt(items, outfit.occasion, outfit.gender, bgStyle);
+  const prompt = buildPrompt(items, outfit.occasion, outfit.gender, bgStyle, poseIndex);
   const base64 = await generateHeroImage(prompt, apiKey);
 
   if (!base64) {
@@ -378,9 +399,10 @@ Deno.serve(async (req) => {
     }
 
     const results = [];
-    for (const o of outfits) {
+    for (let idx = 0; idx < outfits.length; idx++) {
+      const o = outfits[idx];
       try {
-        const result = await processOutfit(sb, o.id, apiKey, body.background_style, body.regenerate);
+        const result = await processOutfit(sb, o.id, apiKey, body.background_style, body.regenerate, idx);
         results.push(result);
         if (results.length < outfits.length) {
           await new Promise(r => setTimeout(r, 2000));
