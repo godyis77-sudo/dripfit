@@ -294,7 +294,8 @@ async function processOutfit(
   outfitId: string,
   apiKey: string,
   bgStyle?: string,
-  regenerate = false
+  regenerate = false,
+  poseIndex?: number
 ): Promise<{ success: boolean; outfit_id: string; hero_url?: string; error?: string; skipped?: boolean }> {
   const { data: outfit, error: oErr } = await sb
     .from("weekly_outfits")
