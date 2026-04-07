@@ -51,6 +51,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
   const [failedImageIds, setFailedImageIds] = useState<Set<string>>(new Set());
   const PAGE_SIZE = 30;
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const { revealRef } = useScrollReveal();
 
   useEffect(() => {
     setFailedImageIds(new Set());
@@ -140,9 +141,10 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
         </div>
       )}
       <div className="grid grid-cols-2 gap-3">
-        {displayed.map(product => (
+        {displayed.map((product, idx) => (
           <button
             key={product.id}
+            ref={revealRef(idx)}
             onClick={() => {
               trackEvent('catalog_product_preview', { brand: product.brand, category: product.category });
               setPreviewProduct(product);
