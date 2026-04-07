@@ -399,9 +399,10 @@ Deno.serve(async (req) => {
     }
 
     const results = [];
-    for (const o of outfits) {
+    for (let idx = 0; idx < outfits.length; idx++) {
+      const o = outfits[idx];
       try {
-        const result = await processOutfit(sb, o.id, apiKey, body.background_style, body.regenerate);
+        const result = await processOutfit(sb, o.id, apiKey, body.background_style, body.regenerate, idx);
         results.push(result);
         if (results.length < outfits.length) {
           await new Promise(r => setTimeout(r, 2000));
