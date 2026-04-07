@@ -50,6 +50,7 @@ type FilterMode = 'all' | 'public' | 'private';
 const isBackgroundComposite = (url: string) => /\/tryon-composites\//i.test(url);
 
 const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
+  const { revealRef } = useScrollReveal();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
