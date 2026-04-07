@@ -42,7 +42,13 @@ const OutfitsWeekly = () => {
 
   const handleShop = useCallback((item: WeeklyOutfitItem) => {
     if (!item.product_url) return;
-    beginClickout(item.brand || 'Unknown', item.product_url);
+
+    setSelectedOutfit(null);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        beginClickout(item.brand || 'Unknown', item.product_url!);
+      });
+    });
   }, [beginClickout]);
 
   const handleTryOn = useCallback((item: WeeklyOutfitItem) => {
