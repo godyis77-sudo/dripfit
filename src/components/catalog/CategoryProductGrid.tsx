@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useState } from 'react';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
