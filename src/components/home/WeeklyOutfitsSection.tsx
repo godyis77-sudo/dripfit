@@ -38,7 +38,13 @@ const WeeklyOutfitsSection = () => {
   const handleShop = useCallback((item: WeeklyOutfitItem) => {
     if (!item.product_url) return;
     const retailer = item.brand || 'Unknown';
-    beginClickout(retailer, item.product_url);
+
+    setSelectedOutfit(null);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        beginClickout(retailer, item.product_url!);
+      });
+    });
   }, [beginClickout]);
 
   const handleTryOn = useCallback((item: WeeklyOutfitItem) => {
