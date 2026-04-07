@@ -44,12 +44,14 @@ export function useAffiliateClickout(options: AffiliateClickoutOptions = {}) {
 
   const confirmClickout = useCallback(() => {
     if (!pendingClickout) return;
+    const destinationUrl = pendingClickout.url;
+
     trackEvent("shop_clickout", {
       retailer: pendingClickout.retailer,
       monetization_mode: pendingClickout.monetizationMode,
       affiliate_provider: pendingClickout.provider,
       retailer_used: pendingClickout.retailerUsed,
-      destination_domain: safeDomain(pendingClickout.url),
+      destination_domain: safeDomain(destinationUrl),
       ...options.extraProps,
     });
 
@@ -60,7 +62,7 @@ export function useAffiliateClickout(options: AffiliateClickoutOptions = {}) {
         user_id: userId,
         session_id: userId ? null : (localStorage.getItem("dripcheck_guest_uuid") || null),
         retailer: pendingClickout.retailer,
-        destination_url: pendingClickout.url,
+        destination_url: destinationUrl,
         monetization_mode: pendingClickout.monetizationMode,
         affiliate_provider: pendingClickout.provider,
         retailer_used: pendingClickout.retailerUsed,
@@ -68,19 +70,17 @@ export function useAffiliateClickout(options: AffiliateClickoutOptions = {}) {
       } as any).then(() => { /* fire and forget */ });
     });
 
-    // Open destination directly on the confirm gesture (user tap = allowed by popup blocker)
-    const win = window.open(pendingClickout.url, "_blank", "noopener");
-    if (!win) {
-      // Fallback for aggressive popup blockers: programmatic <a> click
-      const a = document.createElement("a");
-      a.href = pendingClickout.url;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    }
     setPendingClickout(null);
+
+    // Open destination directly on the confirm gesture.
+    // If the browser/app preview blocks opening a new tab, fall back to same-tab navigation.
+    const win = window.open(destinationUrl, "_blank", "noopener,noreferrer");
+    if (win) {
+      win.opener = null;
+      return;
+    }
+
+    window.location.assign(destinationUrl);
   }, [pendingClickout, options.extraProps]);
 
   const cancelClickout = useCallback(() => {
