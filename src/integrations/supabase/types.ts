@@ -1850,6 +1850,10 @@ export type Database = {
         Args: { p_month_key: string }
         Returns: undefined
       }
+      normalize_weekly_outfit_category: {
+        Args: { input_category: string }
+        Returns: string
+      }
       update_own_profile:
         | {
             Args: {
