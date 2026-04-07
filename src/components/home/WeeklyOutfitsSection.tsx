@@ -19,6 +19,7 @@ const WeeklyOutfitsSection = () => {
   const [activeOccasion, setActiveOccasion] = useState<string | null>(null);
   const [selectedOutfit, setSelectedOutfit] = useState<WeeklyOutfit | null>(null);
   const { pendingClickout, beginClickout, confirmClickout, cancelClickout } = useAffiliateClickout({ extraProps: { source: 'weekly_outfits' } });
+  const [fullscreenSrc, setFullscreenSrc] = useState<string | null>(null);
 
   const occasions = useMemo(() => {
     if (!outfits) return [];
@@ -105,31 +106,27 @@ const WeeklyOutfitsSection = () => {
               </SheetHeader>
 
               {selectedOutfit.hero_image_url && (
-                <FullscreenImage src={selectedOutfit.hero_image_url} alt={selectedOutfit.title}>
-                  <div className="w-full aspect-[3/4] overflow-hidden rounded-xl mb-4 bg-muted">
-                    <img
-                      src={selectedOutfit.hero_image_url}
-                      alt={selectedOutfit.title}
-                      className="w-full h-full object-cover object-top rounded-xl"
-                    />
-                  </div>
-                </FullscreenImage>
+                <div className="w-full aspect-[3/4] overflow-hidden rounded-xl mb-4 bg-muted cursor-pointer" onClick={() => setFullscreenSrc(selectedOutfit.hero_image_url!)}>
+                  <img
+                    src={selectedOutfit.hero_image_url}
+                    alt={selectedOutfit.title}
+                    className="w-full h-full object-cover object-top rounded-xl"
+                  />
+                </div>
               )}
 
               <div className="space-y-3">
                 {selectedOutfit.items.map(item => (
                   <div key={item.id} className="flex gap-3 items-center">
                     {item.image_url && (
-                      <FullscreenImage src={item.image_url} alt={item.product_name}>
-                        <div className="w-20 h-20 rounded-xl overflow-hidden bg-muted shrink-0">
-                          <img
-                            src={item.image_url}
-                            alt={item.product_name}
-                            className="w-full h-full object-cover object-top rounded-xl"
-                            loading="lazy"
-                          />
-                        </div>
-                      </FullscreenImage>
+                      <div className="w-20 h-20 rounded-xl overflow-hidden bg-muted shrink-0 cursor-pointer" onClick={() => setFullscreenSrc(item.image_url!)}>
+                        <img
+                          src={item.image_url}
+                          alt={item.product_name}
+                          className="w-full h-full object-cover object-top rounded-xl"
+                          loading="lazy"
+                        />
+                      </div>
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-foreground truncate">{item.product_name}</p>
@@ -180,6 +177,10 @@ const WeeklyOutfitsSection = () => {
           )}
         </SheetContent>
       </Sheet>
+
+      {fullscreenSrc && (
+        <FullscreenImage src={fullscreenSrc} alt="" externalOpen onExternalClose={() => setFullscreenSrc(null)} />
+      )}
 
       {pendingClickout && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/60 p-4" onClick={cancelClickout}>

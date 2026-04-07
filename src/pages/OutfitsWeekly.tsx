@@ -12,6 +12,7 @@ import InlineCrown from '@/components/ui/InlineCrown';
 import { FullscreenImage } from '@/components/ui/fullscreen-image';
 
 const GENDER_OPTIONS = [
+
   { key: 'all', label: 'All' },
   { key: 'mens', label: "Men's" },
   { key: 'womens', label: "Women's" },
@@ -25,6 +26,7 @@ const OutfitsWeekly = () => {
   const [selectedOutfit, setSelectedOutfit] = useState<WeeklyOutfit | null>(null);
   const { data: outfits, isLoading } = useWeeklyOutfits(genderFilter);
   const { pendingClickout, beginClickout, confirmClickout, cancelClickout } = useAffiliateClickout({ extraProps: { source: 'weekly_outfits_page' } });
+  const [fullscreenSrc, setFullscreenSrc] = useState<string | null>(null);
 
   const occasions = useMemo(() => {
     if (!outfits) return [];
@@ -126,11 +128,9 @@ const OutfitsWeekly = () => {
                 {selectedOutfit.items.map(item => (
                   <div key={item.id} className="flex gap-3 items-center">
                     {item.image_url && (
-                      <FullscreenImage src={item.image_url} alt={item.product_name}>
-                        <div className="w-20 h-20 rounded-xl overflow-hidden bg-muted shrink-0">
-                          <img src={item.image_url} alt={item.product_name} className="w-full h-full object-cover object-top rounded-xl" loading="lazy" />
-                        </div>
-                      </FullscreenImage>
+                      <div className="w-20 h-20 rounded-xl overflow-hidden bg-muted shrink-0 cursor-pointer" onClick={() => setFullscreenSrc(item.image_url!)}>
+                        <img src={item.image_url} alt={item.product_name} className="w-full h-full object-cover object-top rounded-xl" loading="lazy" />
+                      </div>
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-foreground truncate">{item.product_name}</p>
@@ -170,6 +170,10 @@ const OutfitsWeekly = () => {
           )}
         </SheetContent>
       </Sheet>
+
+      {fullscreenSrc && (
+        <FullscreenImage src={fullscreenSrc} alt="" externalOpen onExternalClose={() => setFullscreenSrc(null)} />
+      )}
 
       {pendingClickout && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/60 p-4" onClick={cancelClickout}>
