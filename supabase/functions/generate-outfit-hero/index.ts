@@ -273,11 +273,12 @@ async function uploadHero(
 ): Promise<string | null> {
   const base64Clean = base64Data.replace(/^data:image\/\w+;base64,/, "");
   const bytes = Uint8Array.from(atob(base64Clean), (c) => c.charCodeAt(0));
-  const fileName = `outfit-heroes/${outfitId}.png`;
+  const version = Date.now();
+  const fileName = `outfit-heroes/${outfitId}-${version}.png`;
 
   const { error } = await sb.storage
     .from("backgrounds-curated")
-    .upload(fileName, bytes, { contentType: "image/png", upsert: true });
+    .upload(fileName, bytes, { contentType: "image/png", upsert: false });
 
   if (error) {
     console.error("Storage upload error:", error);
