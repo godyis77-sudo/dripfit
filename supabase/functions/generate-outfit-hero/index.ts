@@ -124,6 +124,7 @@ function buildPrompt(
   bgStyle?: string,
   poseIndex?: number
 ): { text: string; imageUrls: string[] } {
+  const pose = POSE_POOL[poseIndex !== undefined ? poseIndex % POSE_POOL.length : Math.floor(Math.random() * POSE_POOL.length)];
   const bg = bgStyle || BACKGROUND_STYLES[occasion] || "a premium minimalist studio with dramatic directional lighting, concrete walls, editorial fashion photography atmosphere";
   const styling = STYLING_NOTES[occasion] || "Intentional luxury streetwear layering — mixing high-end and contemporary brands with confident, editorial proportions.";
   const footwear = FOOTWEAR_GUIDE[occasion] || "premium designer sneakers or clean leather shoes appropriate for the occasion";
