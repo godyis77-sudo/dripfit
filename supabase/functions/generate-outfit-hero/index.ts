@@ -121,7 +121,8 @@ function buildPrompt(
   items: OutfitItem[],
   occasion: string,
   gender: string | null,
-  bgStyle?: string
+  bgStyle?: string,
+  poseIndex?: number
 ): { text: string; imageUrls: string[] } {
   const bg = bgStyle || BACKGROUND_STYLES[occasion] || "a premium minimalist studio with dramatic directional lighting, concrete walls, editorial fashion photography atmosphere";
   const styling = STYLING_NOTES[occasion] || "Intentional luxury streetwear layering — mixing high-end and contemporary brands with confident, editorial proportions.";
