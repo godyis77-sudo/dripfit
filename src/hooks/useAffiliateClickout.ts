@@ -80,7 +80,19 @@ export function useAffiliateClickout(options: AffiliateClickoutOptions = {}) {
       return;
     }
 
-    window.location.assign(destinationUrl);
+    // Fallback: programmatic <a> click — works in sandboxed iframes and mobile webviews
+    const a = document.createElement("a");
+    a.href = destinationUrl;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    // If <a> click also fails (very aggressive sandbox), last resort: top-level navigation
+    setTimeout(() => {
+      document.body.removeChild(a);
+      try { window.top?.open(destinationUrl, "_blank"); } catch { /* sandboxed */ }
+    }, 300);
   }, [pendingClickout, options.extraProps]);
 
   const cancelClickout = useCallback(() => {
