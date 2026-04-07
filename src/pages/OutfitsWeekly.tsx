@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '
 import { Button } from '@/components/ui/button';
 import BottomTabBar from '@/components/BottomTabBar';
 import InlineCrown from '@/components/ui/InlineCrown';
+import { FullscreenImage } from '@/components/ui/fullscreen-image';
 
 const GENDER_OPTIONS = [
   { key: 'all', label: 'All' },
@@ -125,9 +126,11 @@ const OutfitsWeekly = () => {
                 {selectedOutfit.items.map(item => (
                   <div key={item.id} className="flex gap-3 items-center">
                     {item.image_url && (
-                      <div className="w-20 h-20 rounded-xl overflow-hidden bg-muted shrink-0">
-                        <img src={item.image_url} alt={item.product_name} className="w-full h-full object-cover object-top rounded-xl" loading="lazy" />
-                      </div>
+                      <FullscreenImage src={item.image_url} alt={item.product_name}>
+                        <div className="w-20 h-20 rounded-xl overflow-hidden bg-muted shrink-0">
+                          <img src={item.image_url} alt={item.product_name} className="w-full h-full object-cover object-top rounded-xl" loading="lazy" />
+                        </div>
+                      </FullscreenImage>
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-foreground truncate">{item.product_name}</p>
