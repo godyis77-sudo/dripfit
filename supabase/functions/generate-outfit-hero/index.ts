@@ -68,6 +68,23 @@ const GENDER_MODELS: Record<string, string> = {
   womens: "a stylish female model in her mid-20s with contemporary hairstyle, natural makeup, effortlessly chic expression — think Vogue or SSENSE editorial",
 };
 
+/* ── Pose / angle variety ─────────────────────────────────────── */
+
+const POSE_POOL = [
+  "walking mid-stride with one hand adjusting collar, slight 3/4 turn to camera",
+  "leaning against a wall with arms crossed, looking off-camera with a slight smirk",
+  "standing with weight on back foot, one hand in pocket, direct eye contact",
+  "caught mid-motion turning around, looking over shoulder at camera",
+  "sitting on a low ledge with legs extended, relaxed editorial energy",
+  "power stance with feet shoulder-width apart, hands at sides, strong eye contact",
+  "walking toward camera with confident stride, slight wind in clothing",
+  "perched on stairs, one knee up, arm resting casually, looking upward",
+  "standing profile view with head turned toward camera, dramatic silhouette",
+  "crouching low with elbows on knees, streetwear editorial energy",
+  "leaning forward slightly with hands in jacket pockets, intimate close-distance feel",
+  "standing tall with chin up, one arm raised adjusting sunglasses or hat",
+];
+
 /* ── Color extraction helpers ─────────────────────────────────── */
 
 function extractColorHints(items: OutfitItem[]): string {
