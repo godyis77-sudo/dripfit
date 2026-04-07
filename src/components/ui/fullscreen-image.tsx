@@ -12,6 +12,10 @@ interface FullscreenImageProps {
   onShop?: () => void;
   onTryOn?: () => void;
   onAddToWardrobe?: () => void;
+  /** When true, the overlay opens immediately without needing a child click trigger */
+  externalOpen?: boolean;
+  /** Called when the externally-opened overlay is closed */
+  onExternalClose?: () => void;
 }
 
 /** Internal zoomable image with pinch + double-tap */
@@ -101,8 +105,13 @@ function ZoomableFullscreenImg({ src, alt }: { src: string; alt: string }) {
   );
 }
 
-export const FullscreenImage = ({ src, alt = '', className = '', children, onShop, onTryOn, onAddToWardrobe }: FullscreenImageProps) => {
-  const [open, setOpen] = useState(false);
+export const FullscreenImage = ({ src, alt = '', className = '', children, onShop, onTryOn, onAddToWardrobe, externalOpen, onExternalClose }: FullscreenImageProps) => {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = externalOpen ?? internalOpen;
+  const setOpen = (v: boolean) => {
+    if (!v && externalOpen && onExternalClose) { onExternalClose(); return; }
+    setInternalOpen(v);
+  };
   const hasActions = !!(onShop || onTryOn || onAddToWardrobe);
   const portalTarget = typeof document !== 'undefined' ? document.body : null;
 
@@ -123,7 +132,7 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
 
   return (
     <>
-      <div
+      {!externalOpen && <div
         role="button"
         tabIndex={0}
         onClick={(e) => {
@@ -140,7 +149,7 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
         className="cursor-pointer"
       >
         {children || <img src={src} alt={alt} className={className} />}
-      </div>
+      </div>}
 
       <AnimatePresence>
         {open && portalTarget && createPortal(
