@@ -298,7 +298,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
               <CategoryProductGrid
                 category={cat.key}
                 title={cat.label}
-                collapsed={idx >= 2}
+                collapsed={true}
                 maxItems={100}
                 showViewAll={true}
                 priceFilter={priceFilter}
