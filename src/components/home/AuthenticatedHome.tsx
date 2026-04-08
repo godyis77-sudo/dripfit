@@ -62,7 +62,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <h1 className="headline-editorial text-xl text-primary">DRIPFIT ✔</h1>
             <p className="text-[11px] tracking-[0.2em] uppercase text-white/40 font-sans mt-1.5">
-              Shop. Try On. Get Rated. Buy.
+              Your personal fitting room
             </p>
           </motion.div>
         </div>

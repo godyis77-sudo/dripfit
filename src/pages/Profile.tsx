@@ -196,8 +196,8 @@ const Profile = () => {
               <h1 className="font-display text-lg font-bold text-white leading-tight">{displayName}</h1>
               <div className="flex items-center gap-1.5">
                 <p className="text-sm text-white/40">{user.email}</p>
-                <button onClick={handleSignOut} className="text-white/30 hover:text-destructive transition-colors p-0.5" aria-label="Sign out">
-                  <LogOut className="h-3 w-3" />
+                <button onClick={handleSignOut} className="text-white/30 hover:text-destructive transition-colors p-1 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Sign out">
+                  <LogOut className="h-4 w-4" />
                 </button>
               </div>
               <button
