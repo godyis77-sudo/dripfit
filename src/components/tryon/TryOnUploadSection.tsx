@@ -96,7 +96,7 @@ const TryOnUploadSection = forwardRef<HTMLDivElement, TryOnUploadSectionProps>((
               </div>
             </div>
           ) : (
-            <div className="rounded-xl border-2 border-dashed border-border bg-card overflow-hidden">
+            <div className="rounded-xl border-2 border-dashed border-white/10 glass-dark overflow-hidden">
               <div className="aspect-[3/4] flex flex-col items-center justify-center gap-1.5 p-2.5">
                 <div className="h-10 w-10 rounded-full border-2 border-dashed border-foreground/30 flex items-center justify-center">
                   <User className="h-5 w-5 text-foreground/50" />
@@ -163,7 +163,7 @@ const TryOnUploadSection = forwardRef<HTMLDivElement, TryOnUploadSectionProps>((
             </div>
           ) : (
             <>
-              <div className="rounded-xl border-2 border-dashed border-border bg-card overflow-hidden">
+              <div className="rounded-xl border-2 border-dashed border-white/10 glass-dark overflow-hidden">
                 <div className="aspect-[3/4] flex flex-col items-center justify-center gap-2 p-3">
                   <div className="h-12 w-12 rounded-full border-2 border-dashed border-foreground/30 flex items-center justify-center">
                     <Shirt className="h-6 w-6 text-foreground/50" />
@@ -193,7 +193,7 @@ const TryOnUploadSection = forwardRef<HTMLDivElement, TryOnUploadSectionProps>((
             </>
           )}
           {showWardrobe && wardrobeItems.length > 0 && (
-            <div className="mt-2 bg-card border border-border rounded-xl p-2 max-h-[200px] overflow-y-auto">
+            <div className="mt-2 glass-dark rounded-xl p-2 max-h-[200px] overflow-y-auto">
               <div className="grid grid-cols-3 gap-1.5">
                 {wardrobeItems.map(item => (
                   <button key={item.id} onClick={() => onSelectFromWardrobe(item)} className="rounded-lg overflow-hidden border border-border hover:border-primary/40 active:scale-95 transition-all">
