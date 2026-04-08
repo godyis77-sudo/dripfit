@@ -238,77 +238,81 @@ export default function OnboardingOverlay() {
         )}
       </AnimatePresence>
 
-      <button
-        onClick={(e) => { e.stopPropagation(); complete(); }}
-        className="absolute top-4 right-4 z-30 flex min-h-[44px] min-w-[44px] items-center justify-center pt-[env(safe-area-inset-top)] font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30"
-      >
-        Skip
-      </button>
+      {!logoPhase && (
+        <button
+          onClick={(e) => { e.stopPropagation(); complete(); }}
+          className="absolute top-4 right-4 z-30 flex min-h-[44px] min-w-[44px] items-center justify-center pt-[env(safe-area-inset-top)] font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30"
+        >
+          Skip
+        </button>
+      )}
 
-      <div
-        className="absolute bottom-0 left-0 right-0 z-10 flex flex-col items-center px-8"
-        style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}
-      >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={slide}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-8 text-center"
-          >
-            <h2 className="headline-editorial mx-auto max-w-[300px] text-2xl text-primary">
-              {SLIDES[slide].headline}
-            </h2>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.15, duration: 0.3 }}
-              className="mx-auto mt-2 max-w-[260px] font-sans text-sm text-white/60"
+      {!logoPhase && slide >= 0 && (
+        <div
+          className="absolute bottom-0 left-0 right-0 z-10 flex flex-col items-center px-8"
+          style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={slide}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="mb-8 text-center"
             >
-              {SLIDES[slide].sub}
-            </motion.p>
-          </motion.div>
-        </AnimatePresence>
+              <h2 className="headline-editorial mx-auto max-w-[300px] text-2xl text-primary">
+                {SLIDES[slide].headline}
+              </h2>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
+                className="mx-auto mt-2 max-w-[260px] font-sans text-sm text-white/60"
+              >
+                {SLIDES[slide].sub}
+              </motion.p>
+            </motion.div>
+          </AnimatePresence>
 
-        <div className="mb-6 flex gap-1.5">
-          {SLIDES.map((_, i) => (
-            <button
-              key={i}
-              onClick={(e) => { e.stopPropagation(); transitionToSlide(i); }}
-              className={`h-1 rounded-full transition-all duration-300 ${
-                i === slide ? 'w-5 bg-primary' : 'w-1.5 bg-white/20'
-              }`}
-              aria-label={`Go to slide ${i + 1}`}
-            />
-          ))}
-        </div>
-
-        {slide < SLIDES.length - 1 ? (
-          <button
-            onClick={(e) => { e.stopPropagation(); transitionToSlide(slide + 1); }}
-            className="btn-glass mb-4 h-12 w-full max-w-[280px] rounded-xl text-sm font-semibold text-white"
-          >
-            Next
-          </button>
-        ) : (
-          <div className="mb-4 w-full max-w-[280px] space-y-2">
-            <button
-              onClick={(e) => { e.stopPropagation(); complete('/capture'); }}
-              className="btn-luxury h-12 w-full rounded-xl text-sm font-bold text-primary-foreground"
-            >
-              Map Your Body
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); complete(); }}
-              className="btn-glass h-12 w-full rounded-xl text-sm font-semibold text-white"
-            >
-              Enter the Closet
-            </button>
+          <div className="mb-6 flex gap-1.5">
+            {SLIDES.map((_, i) => (
+              <button
+                key={i}
+                onClick={(e) => { e.stopPropagation(); transitionToSlide(i); }}
+                className={`h-1 rounded-full transition-all duration-500 ${
+                  i === slide ? 'w-5 bg-primary' : 'w-1.5 bg-white/20'
+                }`}
+                aria-label={`Go to slide ${i + 1}`}
+              />
+            ))}
           </div>
-        )}
-      </div>
+
+          {slide < SLIDES.length - 1 ? (
+            <button
+              onClick={(e) => { e.stopPropagation(); transitionToSlide(slide + 1); }}
+              className="btn-glass mb-4 h-12 w-full max-w-[280px] rounded-xl text-sm font-semibold text-white"
+            >
+              Next
+            </button>
+          ) : (
+            <div className="mb-4 w-full max-w-[280px] space-y-2">
+              <button
+                onClick={(e) => { e.stopPropagation(); complete('/capture'); }}
+                className="btn-luxury h-12 w-full rounded-xl text-sm font-bold text-primary-foreground"
+              >
+                Map Your Body
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); complete(); }}
+                className="btn-glass h-12 w-full rounded-xl text-sm font-semibold text-white"
+              >
+                Enter the Closet
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>,
     document.body
   );
