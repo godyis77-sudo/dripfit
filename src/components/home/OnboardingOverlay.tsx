@@ -62,8 +62,26 @@ export default function OnboardingOverlay() {
         }
       }}
     >
-      {/* Background — dark editorial gradient placeholder */}
-      <div className="absolute inset-0 bg-gradient-to-b from-zinc-800 via-zinc-900 to-background" />
+      {/* Background video per slide */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={`bg-${slide}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.6 }}
+          className="absolute inset-0"
+        >
+          <video
+            src={SLIDES[slide].video}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        </motion.div>
+      </AnimatePresence>
 
       {/* Editorial gradient overlay */}
       <div className="absolute inset-0 editorial-gradient" />
