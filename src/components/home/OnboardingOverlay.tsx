@@ -128,11 +128,11 @@ export default function OnboardingOverlay() {
     <div
       className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden"
       onClick={handleUserGesture}
-      onMouseEnter={allPlaying ? undefined : handleUserGesture}
-      onMouseMove={allPlaying ? undefined : handleUserGesture}
-      onPointerDown={allPlaying ? undefined : handleUserGesture}
+      onMouseEnter={handleUserGesture}
+      onMouseMove={handleUserGesture}
+      onPointerDown={handleUserGesture}
       onTouchStart={(e) => {
-        if (!allPlaying) handleUserGesture();
+        handleUserGesture();
         touchStartX.current = e.touches[0].clientX;
       }}
       onTouchEnd={(e) => {
