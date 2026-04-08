@@ -32,7 +32,6 @@ export default function OnboardingOverlay() {
   const location = useLocation();
   const [visible, setVisible] = useState(() => !localStorage.getItem(STORAGE_KEY));
   const [slide, setSlide] = useState(-1); // -1 = logo intro
-  const [prevSlide, setPrevSlide] = useState(-1);
   const [needsTap, setNeedsTap] = useState(false);
   const [allPlaying, setAllPlaying] = useState(false);
   const [logoPhase, setLogoPhase] = useState(true);
@@ -114,7 +113,6 @@ export default function OnboardingOverlay() {
 
   const transitionToSlide = useCallback((next: number) => {
     if (next < 0 || next >= SLIDES.length) return;
-    setPrevSlide(slide);
     setSlide(next);
     // Ensure target video is playing (within gesture context)
     const v = videoRefs.current[next];
@@ -123,7 +121,7 @@ export default function OnboardingOverlay() {
       const p = v.play();
       if (p) p.catch(() => {});
     }
-  }, [slide]);
+  }, []);
 
   const complete = useCallback((dest?: string) => {
     localStorage.setItem(STORAGE_KEY, 'true');
@@ -174,7 +172,7 @@ export default function OnboardingOverlay() {
           playsInline
           preload={i === 0 ? 'auto' : 'none'}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
-            i === slide ? 'opacity-100 z-[2]' : i === prevSlide ? 'opacity-100 z-[1]' : 'opacity-0 z-0'
+            i === slide ? 'opacity-100' : 'opacity-0'
           }`}
         />
       ))}
