@@ -171,7 +171,7 @@ const TryOn = () => {
                 <div className="mb-3">
                   <button
                     onClick={() => setFiltersOpen(!filtersOpen)}
-                    className="relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold btn-luxury text-primary-foreground"
+                    className="relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold glass-gold text-primary"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
                     {activeFilterCount > 0 ? `Filters (${activeFilterCount})` : 'Filters'}
