@@ -163,14 +163,23 @@ function buildPrompt(
     .map(i => i.image_url)
     .filter((url): url is string => !!url);
 
-  const text = `You are a world-class fashion photographer shooting a luxury streetwear editorial campaign for a premium fashion platform. Generate a stunning full-body photograph.
+  const text = `You are a world-class fashion photographer. Generate a stunning full-body editorial photograph of a model wearing a specific outfit.
+
+CRITICAL — PRODUCT FIDELITY IS THE #1 PRIORITY:
+You are provided reference product images. The model MUST be wearing items that are VISUALLY IDENTICAL to those reference images. This means:
+- EXACT same colors, prints, graphics, logos, and text as shown in the product photos
+- EXACT same silhouette, cut, and proportions
+- If a t-shirt has a specific graphic print, reproduce that EXACT graphic — do NOT invent a different one
+- If pants have specific panel colors or stripe patterns, match them EXACTLY
+- Brand logos and text on garments must match the reference photos precisely
+- Do NOT substitute, reinterpret, or "inspired by" — COPY the garments exactly as shown
 
 MODEL:
 ${modelDesc}
 
 ${brandContext}
 
-OUTFIT PIECES (every item MUST be worn):
+OUTFIT PIECES (every item MUST be worn — match each reference image EXACTLY):
 ${itemDescriptions}
 
 STYLING DIRECTION:
@@ -180,15 +189,9 @@ FOOTWEAR:
 ${footwearInstruction}
 ${colorHints}
 
-COLOR COORDINATION:
-- All pieces must look like they belong together as one intentionally styled outfit
-- Match the exact colors, patterns, textures, and silhouettes from the reference product images
-- If products share a color family (e.g. blacks, neutrals, earth tones), lean into a tonal color story
-- If products have contrasting colors, style them as deliberate accent pops — not clashing
-
 PHOTOGRAPHY REQUIREMENTS:
 - Full body shot, head to toe, portrait orientation (3:4 aspect ratio)
-- The model MUST be wearing ALL items listed above as one cohesive styled outfit
+- The model MUST be wearing ALL items listed above — each one must be recognizable as the exact product from its reference image
 - SPECIFIC POSE: ${pose}
 - Dynamic natural energy — NOT stiff or mannequin-like
 - Model should look like a real person with natural skin, contemporary hairstyle, confident expression
@@ -197,10 +200,11 @@ PHOTOGRAPHY REQUIREMENTS:
 - BACKGROUND: ${bg}
 - Depth of field: subject sharp, background with beautiful natural bokeh
 - Color grade: rich, slightly warm, high-end fashion magazine aesthetic
-- Inspiration: Think ${genderKey === "womens" ? "Vogue, SSENSE, Net-a-Porter" : "GQ, Mr Porter, SSENSE, Highsnobiety"} editorial campaigns
-- NO text, NO watermarks, NO logos overlaid on image
+- NO text, NO watermarks, NO logos overlaid on image (but product graphics/logos ON the garments must be preserved)
 - NO mannequins, NO flat-lay, NO product-only shots — ONLY styled on-body editorial
-- The outfit should look intentionally layered and styled by a professional stylist`;
+- The outfit should look intentionally layered and styled by a professional stylist
+
+FINAL CHECK: Before generating, verify each garment matches its reference image in color, pattern, graphic, and silhouette. If a product has text or a logo printed on it, that text/logo must appear correctly on the model's clothing.`;
 
   return { text, imageUrls };
 }
