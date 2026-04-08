@@ -293,7 +293,7 @@ export default function Closet() {
           onClick={() => setShowFilters(!showFilters)}
           className={cn(
             'h-8 w-8 rounded-xl flex items-center justify-center transition-colors',
-            hasActiveFilters ? 'badge-gold-3d' : 'bg-muted'
+            hasActiveFilters ? 'glass-gold' : 'glass'
           )}
         >
           <SlidersHorizontal className={cn('h-3.5 w-3.5', hasActiveFilters ? 'text-primary-foreground' : 'text-muted-foreground')} />

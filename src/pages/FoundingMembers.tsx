@@ -142,7 +142,7 @@ const FoundingMembers = () => {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.6 + i * 0.07, duration: 0.3 }}
-                className="flex items-center gap-2 bg-card border border-border rounded-full pl-1 pr-3 py-1"
+                className="flex items-center gap-2 glass-dark rounded-full pl-1 pr-3 py-1"
               >
                 <Avatar className="h-7 w-7">
                   <AvatarFallback className={`text-[10px] font-bold ${m.color}`}>
@@ -160,7 +160,7 @@ const FoundingMembers = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 1.0, duration: 0.3 }}
-              className="flex items-center gap-2 bg-muted/50 border border-dashed border-border rounded-full pl-1 pr-3 py-1"
+              className="flex items-center gap-2 glass rounded-full pl-1 pr-3 py-1 border-dashed"
             >
               <Avatar className="h-7 w-7">
                 <AvatarFallback className="text-[10px] text-muted-foreground bg-muted">?</AvatarFallback>

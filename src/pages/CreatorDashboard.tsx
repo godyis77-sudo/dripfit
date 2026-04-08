@@ -24,7 +24,7 @@ function StatCard({ icon: Icon, label, value, sub }: { icon: any; label: string;
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-xl border border-primary/20 bg-card p-4 flex flex-col gap-1"
+      className="rounded-xl glass-dark p-4 flex flex-col gap-1"
     >
       <div className="flex items-center gap-2 text-muted-foreground text-xs font-medium">
         <Icon className="w-3.5 h-3.5" />
