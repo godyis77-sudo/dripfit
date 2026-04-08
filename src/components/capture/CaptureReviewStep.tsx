@@ -16,12 +16,12 @@ const CaptureReviewStep = ({
 }: CaptureReviewStepProps) => (
   <motion.div key="review-final" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm">
     <h2 className="font-display text-lg text-white mb-1">Ready to Analyze</h2>
-    <p className="text-[12px] text-white/40 mb-4">Review your inputs before we estimate your measurements.</p>
+    <p className="text-[12px] text-white/40 mb-4">Confirm your inputs before we map your measurements.</p>
 
     <div className="space-y-2 mb-4">
       {checklist.map((c) => (
-        <div key={c.label} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 border transition-colors min-h-[44px] backdrop-blur-sm ${
-          c.done ? 'bg-primary/8 border-primary/20' : 'bg-white/5 border-white/10'
+        <div key={c.label} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors min-h-[44px] ${
+          c.done ? 'glass-gold' : 'glass'
         }`}>
           <div className={`h-5 w-5 rounded-full flex items-center justify-center shrink-0 ${
             c.done ? 'bg-primary/20' : 'border border-white/20'
@@ -37,7 +37,7 @@ const CaptureReviewStep = ({
       {(['front', 'side'] as const).map((key) => (
         <div key={key} className="relative">
           <p className="text-[10px] tracking-widest uppercase text-white/40 mb-1">{key} view</p>
-          <div className="aspect-[3/4] rounded-xl overflow-hidden border border-white/10 bg-black/40">
+          <div className="aspect-[3/4] rounded-xl overflow-hidden border border-white/10 glass-dark">
             {photos[key] ? (
               <img src={photos[key]!} alt={`${key} view`} className="w-full h-full object-cover img-normalize" />
             ) : (
@@ -56,14 +56,14 @@ const CaptureReviewStep = ({
       ))}
     </div>
 
-    <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md border border-white/8 rounded-xl px-3 py-2 mb-4 min-h-[44px]">
+    <div className="flex items-center gap-2 glass-dark rounded-xl px-3 py-2 mb-4 min-h-[44px]">
       <Ruler className="h-3.5 w-3.5 text-primary" />
       <span className="text-[12px] text-white font-medium">Height: <span className="font-display text-primary">{heightCm} cm</span></span>
       <button onClick={onEditHeight} className="ml-auto text-[10px] text-primary font-medium min-h-[44px] flex items-center">Edit</button>
     </div>
 
     {refObject !== 'none' && (
-      <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md border border-white/8 rounded-xl px-3 py-2 mb-4 min-h-[44px]">
+      <div className="flex items-center gap-2 glass-dark rounded-xl px-3 py-2 mb-4 min-h-[44px]">
         <Ruler className="h-3.5 w-3.5 text-primary" />
         <span className="text-[12px] text-white font-medium">Ref: {REFERENCE_OBJECTS[refObject].label}</span>
       </div>

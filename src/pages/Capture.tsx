@@ -566,16 +566,15 @@ const Capture = () => {
           {(flowStep === 'front' || flowStep === 'side') && !reviewing && (
             <motion.div key={flowStep} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm flex flex-col items-center">
               <h2 className="font-display text-lg text-white mb-0.5">{config.title}</h2>
-              <p className="text-sm text-white/50 text-center mb-3">{config.instruction}</p>
+              <p className="text-[12px] text-white/40 text-center mb-2">{config.instruction}</p>
 
               <CaptureViewfinder captureStep={captureStep} photo={photos[captureStep]} />
 
-              <p className="text-[11px] text-white/60 text-center bg-black/40 backdrop-blur-md border border-white/8 px-3 py-1.5 rounded-xl mb-2 flex items-center justify-center gap-1.5">
-                <span className="opacity-60 text-base shrink-0">💡</span>
+              <p className="text-[11px] text-white/50 text-center glass-dark px-3 py-1.5 rounded-xl mb-2 flex items-center justify-center gap-1.5">
+                <span className="text-primary/60 text-xs shrink-0">💡</span>
                 {config.tip}
               </p>
 
-              {/* Use existing photo link */}
               <button
                 onClick={async () => {
                   const key: keyof PhotoSet = flowStep === 'side' ? 'side' : 'front';
@@ -592,9 +591,9 @@ const Capture = () => {
                     galleryInputRef.current?.click();
                   }
                 }}
-                className="text-sm text-primary font-medium flex items-center gap-1 min-h-[44px]"
+                className="text-[12px] text-primary font-medium flex items-center gap-1 min-h-[44px]"
               >
-                <Upload className="h-3 w-3" /> Use existing photo
+                <Upload className="h-3 w-3" /> Upload from gallery
               </button>
             </motion.div>
           )}
@@ -602,14 +601,14 @@ const Capture = () => {
           {/* ─── PHOTO REVIEW ─── */}
           {(flowStep === 'front' || flowStep === 'side') && reviewing && photos[captureStep] && (
             <motion.div key={`review-${flowStep}`} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-sm flex flex-col items-center">
-              <h2 className="font-display text-base text-white mb-1">Review: {config.title}</h2>
-              <p className="text-[11px] text-white/50 mb-2">Full body visible and well-lit?</p>
+              <h2 className="font-display text-base text-white mb-1">Check Your {config.title}</h2>
+              <p className="text-[11px] text-white/40 mb-2">Head to toe visible · good lighting?</p>
               <div className="relative w-full aspect-[3/4] rounded-xl overflow-hidden border border-white/10 mb-3">
                 <img src={photos[captureStep]!} alt={config.title} className="w-full h-full object-cover img-normalize" />
               </div>
               <div className="w-full grid grid-cols-2 gap-1.5 mb-2">
-                {['Full body visible', 'Good lighting', 'Correct angle', 'Fitted clothing'].map((label, i) => (
-                  <div key={i} className="flex items-center gap-1 bg-primary/8 backdrop-blur-sm border border-primary/20 rounded-xl px-2 py-1.5">
+                {['Full body', 'Good light', 'Right angle', 'Fitted clothes'].map((label, i) => (
+                  <div key={i} className="flex items-center gap-1 glass-gold rounded-xl px-2 py-1.5">
                     <Check className="h-3 w-3 text-primary" />
                     <span className="text-[10px] font-medium text-white/70">{label}</span>
                   </div>
