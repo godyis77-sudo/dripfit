@@ -18,7 +18,6 @@ interface ResultActionsProps {
   recommendedSize?: string;
   measurements?: Record<string, MeasurementRange>;
   heightCm?: number;
-  /** When true, only render the Share button (no meta text). Use metaOnly for the rest. */
   shareOnly?: boolean;
 }
 
@@ -38,14 +37,12 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
     });
 
     try {
-      // Small delay so the export card renders
       await new Promise(r => setTimeout(r, 300));
 
       if (!exportRef.current) {
         throw new Error('Export card not ready');
       }
 
-      // Temporarily make visible for capture
       const el = exportRef.current;
       el.style.opacity = '1';
       el.style.position = 'fixed';
@@ -60,7 +57,6 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
         cacheBust: true,
       });
 
-      // Hide again
       el.style.opacity = '0';
       el.style.position = 'absolute';
 
@@ -76,7 +72,6 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
           files: [file],
         });
       } else {
-        // Desktop fallback: direct download
         const a = document.createElement('a');
         a.href = dataUrl;
         a.download = 'dripfit-founding100.png';
@@ -95,19 +90,18 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
 
   return (
     <div className="space-y-2 mt-3">
-      {/* Primary: Share Founding 100 Card */}
+      {/* Share — glass-gold */}
       {measurements && heightCm && recommendedSize && (
         <>
-          <Button
+          <button
             onClick={handleShare}
             disabled={sharing}
-            className="w-full h-11 rounded-xl btn-luxury text-primary-foreground font-bold text-sm"
+            className="w-full h-11 rounded-xl bg-primary/8 backdrop-blur-md border border-primary/20 text-primary font-semibold text-sm tracking-wide flex items-center justify-center gap-2 active:scale-[0.98] transition-transform disabled:opacity-50"
           >
-            <Share className="mr-2 h-4 w-4" />
+            <Share className="h-4 w-4 text-primary/70" />
             {sharing ? 'Generating…' : 'Share My Fit Identity'}
-          </Button>
+          </button>
 
-          {/* Hidden export card */}
           <SocialExportCard
             ref={exportRef}
             measurements={measurements}
@@ -119,21 +113,23 @@ const ResultActions = ({ saved, scanDate, onSave, onTryOn, onNewScan, onDelete, 
 
       {!shareOnly && (
         <>
-          {/* Saved indicator (auto-saved) */}
           <div className="flex items-center gap-2 px-3 py-1">
             <Check className="h-3.5 w-3.5 text-primary" />
             <span className="text-[11px] font-bold text-primary">Auto-saved to Profile</span>
           </div>
 
-          <Button variant="ghost" className="w-full text-[12px] text-muted-foreground h-8" onClick={onNewScan}>
-            <RotateCcw className="mr-1 h-3 w-3" /> Scan Again
-          </Button>
+          <button
+            className="w-full flex items-center justify-center gap-1 text-[12px] text-white/50 h-8 bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg hover:bg-white/8 transition-colors"
+            onClick={onNewScan}
+          >
+            <RotateCcw className="h-3 w-3" /> Scan Again
+          </button>
 
-          <div className="flex items-center justify-between pt-1.5 border-t border-border">
-            <p className="text-[10px] text-muted-foreground flex items-center gap-1"><Shield className="h-3 w-3" /> Private by default · delete anytime</p>
+          <div className="flex items-center justify-between pt-1.5 border-t border-white/5">
+            <p className="text-[10px] text-white/25 flex items-center gap-1"><Shield className="h-3 w-3" /> Private by default · delete anytime</p>
             <button onClick={onDelete} className="text-[10px] text-destructive/60 hover:text-destructive flex items-center gap-1 transition-colors"><Trash2 className="h-3 w-3" /> Delete</button>
           </div>
-          <p className="text-[10px] text-muted-foreground text-center">
+          <p className="text-[10px] text-white/20 text-center">
             Scanned: {new Date(scanDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
           </p>
         </>

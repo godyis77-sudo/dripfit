@@ -126,12 +126,12 @@ const ProfileBody = () => {
       <div>
         {/* Header */}
         <div className="flex items-center gap-2 mb-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/profile')} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back">
-            <ArrowLeft className="h-4 w-4" />
+          <Button variant="ghost" size="icon" onClick={() => navigate('/profile')} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px] bg-white/5 border border-white/10 backdrop-blur-sm" aria-label="Go back">
+            <ArrowLeft className="h-4 w-4 text-white/70" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-base font-bold text-foreground">Body & Fit Identity</h1>
-            <p className="text-[10px] text-muted-foreground">Your measurements and fit preferences</p>
+            <h1 className="font-display text-base text-white">Body & Fit Identity</h1>
+            <p className="text-[10px] text-white/30">Your measurements and fit preferences</p>
           </div>
           {scan && (
             <ShareResultsButton
@@ -146,15 +146,15 @@ const ProfileBody = () => {
 
         {loading ? (
           <div className="space-y-2">
-            {[1, 2, 3].map(i => <div key={i} className="h-16 bg-card border border-border rounded-xl animate-pulse" />)}
+            {[1, 2, 3].map(i => <div key={i} className="h-16 bg-black/30 border border-white/8 rounded-xl animate-pulse" />)}
           </div>
         ) : !scan ? (
           <div className="text-center py-14">
-            <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
-              <Ruler className="h-6 w-6 text-primary/50" />
+            <div className="h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-3">
+              <Ruler className="h-6 w-6 text-white/30" />
             </div>
-            <p className="text-[14px] font-bold text-foreground mb-1">No body profile yet</p>
-            <p className="text-[12px] text-muted-foreground max-w-[220px] mx-auto mb-4">
+            <p className="text-[14px] font-bold text-white mb-1">No body profile yet</p>
+            <p className="text-[12px] text-white/40 max-w-[220px] mx-auto mb-4">
               Complete a quick scan to get your measurements and fit identity.
             </p>
             <Button className="rounded-lg btn-luxury text-primary-foreground text-sm h-10 px-5 font-bold" onClick={() => navigate('/capture')}>
@@ -163,17 +163,17 @@ const ProfileBody = () => {
           </div>
         ) : (
           <div className="space-y-3">
-            {/* Size Guide Tool */}
+            {/* Size Guide Tool — glass-dark */}
             <button
               onClick={() => navigate('/size-guide')}
-              className="w-full flex items-center gap-4 rounded-xl border-2 border-primary/40 p-4 active:scale-[0.98] transition-transform btn-luxury"
+              className="w-full flex items-center gap-4 rounded-xl bg-black/30 backdrop-blur-md border border-white/8 p-4 active:scale-[0.98] transition-transform"
             >
-              <div className="h-12 w-12 rounded-xl badge-gold-3d flex items-center justify-center shrink-0">
-                <Ruler className="h-6 w-6 text-primary-foreground" />
+              <div className="h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                <Ruler className="h-6 w-6 text-white/50" />
               </div>
               <div className="text-left flex-1">
-                <p className="text-[14px] font-extrabold text-primary-foreground">Size Guide Tool</p>
-                <p className="text-[11px] text-primary-foreground/70">Check your size for any brand instantly</p>
+                <p className="text-[14px] font-semibold text-white">Size Guide Tool</p>
+                <p className="text-[11px] text-white/40">Check your size for any brand instantly</p>
               </div>
             </button>
 
@@ -181,7 +181,7 @@ const ProfileBody = () => {
             <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
             <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} fitPreference={fitPref} />
 
-            {/* Share My Fit Identity (button only) */}
+            {/* Share My Fit Identity — glass-gold */}
             <ResultActions
               saved={saved}
               scanDate={scan.date}
@@ -195,13 +195,15 @@ const ProfileBody = () => {
               shareOnly
             />
 
-            {/* My Size Every Brand + Shop My Size */}
-            <Button
-              className="w-full h-11 rounded-xl btn-luxury text-primary-foreground text-sm font-extrabold"
+            {/* My Size Every Brand — glass-gold secondary */}
+            <button
+              className="w-full h-11 rounded-xl bg-primary/8 backdrop-blur-md border border-primary/20 text-primary text-sm tracking-wide uppercase font-semibold flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
               onClick={() => navigate('/my-sizes')}
             >
-              <LayoutGrid className="mr-1.5 h-4 w-4" /> My Size Every Brand
-            </Button>
+              <LayoutGrid className="h-4 w-4" /> My Size Every Brand
+            </button>
+
+            {/* Shop My Size — KEEP btn-luxury */}
             <ShopThisSize
               recommendedSize={adjustedSize}
               confidence={confidence}
@@ -209,30 +211,32 @@ const ProfileBody = () => {
 
             {/* Meta info */}
             <div className="space-y-2">
-              <Button variant="ghost" className="w-full text-[12px] text-muted-foreground h-8" onClick={() => navigate('/capture')}>
-                <RotateCcw className="mr-1 h-3 w-3" /> Scan Again
-              </Button>
-              <div className="flex items-center justify-between pt-1.5 border-t border-border">
-                <p className="text-[10px] text-muted-foreground flex items-center gap-1"><Shield className="h-3 w-3" /> Private by default · delete anytime</p>
+              <button
+                className="w-full flex items-center justify-center gap-1 text-[12px] text-white/50 h-8 bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg hover:bg-white/8 transition-colors"
+                onClick={() => navigate('/capture')}
+              >
+                <RotateCcw className="h-3 w-3" /> Scan Again
+              </button>
+              <div className="flex items-center justify-between pt-1.5 border-t border-white/5">
+                <p className="text-[10px] text-white/25 flex items-center gap-1"><Shield className="h-3 w-3" /> Private by default · delete anytime</p>
                 <button onClick={() => { toast({ title: 'Deleted' }); navigate('/profile'); }} className="text-[10px] text-destructive/60 hover:text-destructive flex items-center gap-1 transition-colors"><Trash2 className="h-3 w-3" /> Delete</button>
               </div>
-              <p className="text-[10px] text-muted-foreground text-center">
+              <p className="text-[10px] text-white/20 text-center">
                 Scanned: {new Date(scan.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
 
-            {/* Body Map + Measurements */}
+            {/* Body Map + Measurements — DO NOT CHANGE BodyDiagram */}
             <BodyDiagram measurements={measurements} heightCm={scan.heightCm} />
             <MeasurementGrid measurements={measurements} heightCm={scan.heightCm} />
 
-            {/* New Scan button */}
-            <Button
-              variant="outline"
-              className="w-full h-9 rounded-lg text-[12px] font-bold"
+            {/* New Scan button — glass treatment */}
+            <button
+              className="w-full h-9 rounded-lg text-[12px] font-bold flex items-center justify-center gap-1.5 bg-white/5 border border-white/10 backdrop-blur-sm text-white/50 hover:bg-white/8 transition-colors"
               onClick={() => navigate('/capture')}
             >
-              <Camera className="mr-1.5 h-3.5 w-3.5" /> New Scan
-            </Button>
+              <Camera className="h-3.5 w-3.5" /> New Scan
+            </button>
           </div>
         )}
       </div>

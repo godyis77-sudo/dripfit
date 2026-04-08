@@ -42,7 +42,6 @@ const CATEGORY_PILLS = [
   { label: 'Swimwear', value: 'swimwear' },
 ];
 
-/** Map a pill value to all matching brand_size_charts categories */
 const CATEGORY_MAPPING: Record<string, string[]> = {
   tops: ['tops', 'hoodies', 'fleece', 'knitwear'],
   bottoms: ['bottoms', 'jeans', 'shorts'],
@@ -77,7 +76,6 @@ const SizeComparison = () => {
     setError(null);
 
     try {
-      // 1. Get latest scan
       const { data: scans } = await supabase
         .from('body_scans')
         .select('*')
@@ -102,7 +100,6 @@ const SizeComparison = () => {
         heightCm: Number(scan.height_cm),
       };
 
-      // 2. Get all brand size charts for selected category group
       const categoryGroup = CATEGORY_MAPPING[selectedCategory] || [selectedCategory];
       const { data: charts } = await supabase
         .from('brand_size_charts')
@@ -117,8 +114,6 @@ const SizeComparison = () => {
       }
 
       const fit = getFitPreference() as FitPreference || 'regular';
-
-      // 4. Score each brand using the same chart-aware logic as the main recommendation engine
       const results: BrandSize[] = [];
 
       for (const chart of charts) {
@@ -139,7 +134,6 @@ const SizeComparison = () => {
         }
       }
 
-      // Deduplicate by brand (keep highest confidence)
       const deduped = new Map<string, BrandSize>();
       for (const r of results) {
         const key = r.brandName.toLowerCase();
@@ -164,12 +158,6 @@ const SizeComparison = () => {
     return brandSizes.filter(b => b.genre === selectedGenre);
   }, [brandSizes, selectedGenre]);
 
-  const confidenceColor = (c: number) => {
-    if (c >= 0.72) return 'text-green-400';
-    if (c >= 0.55) return 'text-amber-400';
-    return 'text-red-400';
-  };
-
   const confidenceDot = (c: number) => {
     if (c >= 0.72) return 'bg-green-400';
     if (c >= 0.55) return 'bg-amber-400';
@@ -179,19 +167,19 @@ const SizeComparison = () => {
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/50 px-4 pt-3 pb-2">
+      <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-white/5 px-4 pt-3 pb-2">
         <div className="flex items-center gap-3 mb-3">
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]"
+            className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px] bg-white/5 border border-white/10 backdrop-blur-sm"
             onClick={() => navigate(-1)}
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-5 w-5 text-white/70" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-lg font-black tracking-tight text-foreground">MY SIZE EVERYWHERE</h1>
-            <p className="text-[11px] text-muted-foreground">Your size across every brand</p>
+            <h1 className="font-display text-lg text-white tracking-tight">My Size Everywhere</h1>
+            <p className="text-[11px] text-white/30">Your size across every brand</p>
           </div>
         </div>
 
@@ -202,10 +190,10 @@ const SizeComparison = () => {
               key={c.value}
               onClick={() => setSelectedCategory(c.value)}
               className={cn(
-                'px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all min-h-[32px]',
+                'px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all min-h-[32px] backdrop-blur-sm border',
                 selectedCategory === c.value
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground'
+                  ? 'bg-primary/10 border-primary/25 text-primary'
+                  : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/8'
               )}
             >
               {c.label}
@@ -220,10 +208,10 @@ const SizeComparison = () => {
               key={g.value}
               onClick={() => setSelectedGenre(g.value)}
               className={cn(
-                'px-2.5 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap transition-all border min-h-[28px]',
+                'px-2.5 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap transition-all border min-h-[28px] backdrop-blur-sm',
                 selectedGenre === g.value
-                  ? 'border-primary/60 bg-primary/10 text-primary'
-                  : 'border-border/50 text-muted-foreground'
+                  ? 'bg-primary/10 border-primary/25 text-primary'
+                  : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/8'
               )}
             >
               {g.label}
@@ -237,16 +225,18 @@ const SizeComparison = () => {
         {loading && (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground">Calculating your sizes…</p>
+            <p className="text-sm text-white/40">Calculating your sizes…</p>
           </div>
         )}
 
         {error === 'no_scan' && !loading && (
           <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
-            <Ruler className="h-12 w-12 text-muted-foreground/50" />
+            <div className="h-14 w-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+              <Ruler className="h-7 w-7 text-white/30" />
+            </div>
             <div>
-              <p className="text-base font-bold text-foreground mb-1">No body scan yet</p>
-              <p className="text-[12px] text-muted-foreground mb-4">
+              <p className="text-base font-bold text-white mb-1">No body scan yet</p>
+              <p className="text-[12px] text-white/40 mb-4">
                 Complete a body scan first to see your size across every brand.
               </p>
             </div>
@@ -261,8 +251,8 @@ const SizeComparison = () => {
 
         {!loading && !error && filtered.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
-            <AlertTriangle className="h-10 w-10 text-muted-foreground/40" />
-            <p className="text-sm text-muted-foreground">
+            <AlertTriangle className="h-10 w-10 text-white/20" />
+            <p className="text-sm text-white/40">
               No brands with size charts for this category yet.
             </p>
           </div>
@@ -270,7 +260,7 @@ const SizeComparison = () => {
 
         {!loading && !error && filtered.length > 0 && (
           <>
-            <p className="text-[11px] text-muted-foreground mb-3">
+            <p className="text-[11px] text-white/30 mb-3">
               {filtered.length} brand{filtered.length !== 1 ? 's' : ''} • {selectedCategory}
             </p>
 
@@ -283,23 +273,23 @@ const SizeComparison = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ delay: i * 0.02, duration: 0.2 }}
-                    className="relative bg-card rounded-xl border border-border/50 p-3 flex flex-col items-center gap-1.5"
+                    className="relative bg-black/30 backdrop-blur-sm rounded-xl border border-white/6 p-3 flex flex-col items-center gap-1.5"
                   >
                     {/* Confidence dot */}
                     <div className={cn('absolute top-2 right-2 h-1.5 w-1.5 rounded-full', confidenceDot(brand.confidence))} />
 
                     {/* Size */}
-                    <span className="text-2xl font-black text-foreground tracking-tight leading-none">
+                    <span className="font-display text-2xl text-white tracking-tight leading-none">
                       {brand.size}
                     </span>
 
                     {/* Brand name */}
-                    <span className="text-[11px] font-bold text-foreground/80 text-center leading-tight line-clamp-1">
+                    <span className="text-[11px] font-medium text-white/70 text-center leading-tight line-clamp-1">
                       {brand.brandName}
                     </span>
 
                     {/* Genre tag */}
-                    <span className="text-[9px] text-muted-foreground/60 font-medium uppercase tracking-wider">
+                    <span className="text-[9px] text-white/30 font-medium uppercase tracking-[0.15em]">
                       {brand.genre}
                     </span>
                   </motion.div>
@@ -311,15 +301,15 @@ const SizeComparison = () => {
             <div className="flex items-center justify-center gap-4 mt-6 mb-4">
               <div className="flex items-center gap-1.5">
                 <div className="h-2 w-2 rounded-full bg-green-400" />
-                <span className="text-[10px] text-muted-foreground">High match</span>
+                <span className="text-[10px] text-white/30">High match</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="h-2 w-2 rounded-full bg-amber-400" />
-                <span className="text-[10px] text-muted-foreground">Good match</span>
+                <span className="text-[10px] text-white/30">Good match</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="h-2 w-2 rounded-full bg-red-400" />
-                <span className="text-[10px] text-muted-foreground">Approximate</span>
+                <span className="text-[10px] text-white/30">Approximate</span>
               </div>
             </div>
           </>

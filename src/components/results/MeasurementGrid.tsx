@@ -29,10 +29,13 @@ const MeasurementGrid = ({ measurements, heightCm, visibleKeys }: MeasurementGri
   return (
     <div className="mb-4">
       <div className="flex items-center justify-between mb-1.5">
-        <p className="section-label">Estimated Measurements</p>
+        <p className="text-[10px] tracking-[0.2em] uppercase text-white/30">Estimated Measurements</p>
       </div>
 
-      <button onClick={() => setExpanded(!expanded)} className="w-full flex items-center justify-between text-[11px] py-1.5 mb-1.5 btn-gold-3d rounded-lg px-3">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center justify-between text-[11px] py-1.5 mb-1.5 bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg px-3 text-white/60 hover:bg-white/8 transition-colors"
+      >
         <span>{expanded ? 'Hide ranges' : 'Show ranges'}</span>
         {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
       </button>
@@ -40,23 +43,29 @@ const MeasurementGrid = ({ measurements, heightCm, visibleKeys }: MeasurementGri
       {expanded && (
         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="grid grid-cols-2 gap-1.5">
           {keys.map((key, i) => (
-            <motion.div key={key} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }} className="bg-card border border-border rounded-lg px-2.5 py-2">
-              <p className="text-[11px] font-semibold text-muted-foreground mb-0.5">{MEASUREMENT_LABELS[key] || key}</p>
-              <p className="text-[13px] font-bold text-foreground">{primaryFmt(measurements[key])}<span className="text-[11px] font-normal text-muted-foreground ml-0.5">{primaryUnit}</span></p>
-              <p className="text-[11px] text-muted-foreground">{secondaryFmt(measurements[key])}<span className="text-[11px] ml-0.5">{secondaryUnit}</span></p>
+            <motion.div
+              key={key}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.03 }}
+              className="bg-black/30 backdrop-blur-sm border border-white/6 rounded-lg px-2.5 py-2"
+            >
+              <p className="text-[10px] tracking-[0.2em] uppercase text-white/30 mb-0.5">{MEASUREMENT_LABELS[key] || key}</p>
+              <p className="font-display text-[13px] font-semibold text-white">{primaryFmt(measurements[key])}<span className="text-[11px] font-normal text-white/30 ml-0.5">{primaryUnit}</span></p>
+              <p className="text-[11px] text-white/30">{secondaryFmt(measurements[key])}<span className="text-[11px] ml-0.5">{secondaryUnit}</span></p>
             </motion.div>
           ))}
-          <div className="bg-card border border-border rounded-lg px-2.5 py-2">
-            <p className="text-[11px] font-semibold text-muted-foreground mb-0.5">Height</p>
+          <div className="bg-black/30 backdrop-blur-sm border border-white/6 rounded-lg px-2.5 py-2">
+            <p className="text-[10px] tracking-[0.2em] uppercase text-white/30 mb-0.5">Height</p>
             {useCm ? (
               <>
-                <p className="text-[13px] font-bold text-foreground">{heightCm.toFixed(0)}<span className="text-[11px] font-normal text-muted-foreground ml-0.5">cm</span></p>
-                <p className="text-[11px] text-muted-foreground">{fmtHeightFtIn(heightCm)}</p>
+                <p className="font-display text-[13px] font-semibold text-white">{heightCm.toFixed(0)}<span className="text-[11px] font-normal text-white/30 ml-0.5">cm</span></p>
+                <p className="text-[11px] text-white/30">{fmtHeightFtIn(heightCm)}</p>
               </>
             ) : (
               <>
-                <p className="text-[13px] font-bold text-foreground">{fmtHeightFtIn(heightCm)}</p>
-                <p className="text-[11px] text-muted-foreground">{heightCm.toFixed(0)}<span className="text-[11px] ml-0.5">cm</span></p>
+                <p className="font-display text-[13px] font-semibold text-white">{fmtHeightFtIn(heightCm)}</p>
+                <p className="text-[11px] text-white/30">{heightCm.toFixed(0)}<span className="text-[11px] ml-0.5">cm</span></p>
               </>
             )}
           </div>
