@@ -63,7 +63,6 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
   const longPressTimerRef = useRef<number | null>(null);
   const longPressTriggeredRef = useRef(false);
 
-  // Load vote counts for public posts
   useEffect(() => {
     const publicPosts = tryOnPosts.filter(p => p.is_public);
     if (publicPosts.length === 0) return;
@@ -165,47 +164,21 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
 
   return (
     <>
-      {/* Filter stats row */}
-      <div className="flex gap-1.5 mb-4 justify-center">
-        {([
-          { key: 'all' as FilterMode, label: 'Total', value: tryOnPosts.length },
-          { key: 'public' as FilterMode, label: 'Public', value: publicCount },
-          { key: 'private' as FilterMode, label: 'Private', value: tryOnPosts.length - publicCount },
-        ]).map(s => (
-          <button
-            key={s.key}
-            onClick={() => setFilterMode(s.key)}
-            className={`rounded-lg px-3 py-0.5 text-center transition-all active:scale-95 border ${
-              filterMode === s.key
-                ? 'btn-gold-3d border-transparent'
-                : 'bg-card border-border'
-            }`}
-          >
-            <p className={`text-[11px] font-bold ${filterMode === s.key ? 'text-primary-foreground' : 'text-foreground'}`}>{s.value}</p>
-            <p className={`text-[9px] uppercase tracking-wider ${filterMode === s.key ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>{s.label}</p>
-          </button>
-        ))}
-      </div>
-
       {loading ? (
         <div className="grid grid-cols-2 gap-2">
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="rounded-xl border border-border overflow-hidden">
+            <div key={i} className="rounded-xl border border-white/5 overflow-hidden">
               <div className="aspect-[3/4]" style={{ background: 'linear-gradient(110deg, #1A1A1A 30%, #272727 50%, #1A1A1A 70%)', backgroundSize: '200% 100%', animation: 'skeleton-shimmer 1.4s ease-in-out infinite' }} />
-              <div className="p-2 space-y-1">
-                <div className="h-2 rounded w-2/3" style={{ background: 'linear-gradient(110deg, #1A1A1A 30%, #272727 50%, #1A1A1A 70%)', backgroundSize: '200% 100%', animation: 'skeleton-shimmer 1.4s ease-in-out infinite' }} />
-                <div className="h-2 rounded w-1/3" style={{ background: 'linear-gradient(110deg, #1A1A1A 30%, #272727 50%, #1A1A1A 70%)', backgroundSize: '200% 100%', animation: 'skeleton-shimmer 1.4s ease-in-out infinite' }} />
-              </div>
             </div>
           ))}
         </div>
       ) : tryOnPosts.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-          <div className="h-12 w-12 rounded-2xl badge-gold-3d shimmer-sweep flex items-center justify-center mb-4">
-            <Sparkles className="h-6 w-6 text-primary-foreground" />
+          <div className="h-12 w-12 rounded-2xl glass flex items-center justify-center mb-4">
+            <Sparkles className="h-6 w-6 text-white/20" />
           </div>
-          <h2 className="text-[18px] font-bold text-foreground mb-1">No try-ons yet</h2>
-          <p className="text-[14px] text-muted-foreground max-w-[260px] mb-5">See any outfit on your body before you buy.</p>
+          <h2 className="font-display text-lg text-white/60 mb-1">No try-ons yet</h2>
+          <p className="text-sm text-white/30 max-w-[260px] mb-5">See any outfit on your body before you buy.</p>
           <Button className="rounded-full btn-luxury text-primary-foreground text-sm h-11 px-6 font-bold" onClick={() => navigate('/tryon')}>
             Start Your First Try-On
           </Button>
@@ -221,7 +194,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
 
                 return (
                   <motion.div key={post.id} ref={revealRef(idx)} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
-                    <div className="w-full rounded-xl overflow-hidden border border-border bg-card text-left">
+                    <div className="w-full rounded-xl overflow-hidden border border-white/5 bg-black/30 backdrop-blur-sm text-left hover:border-white/8 transition-colors">
                       <button
                         onClick={() => setSelectedPost(post)}
                         className="w-full active:scale-[0.97] transition-transform"
@@ -240,8 +213,6 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
                         </div>
                       </button>
 
-
-                      {/* What's In This Look */}
                       <WhatsInThisLook
                         productUrls={post.product_urls || undefined}
                         clothingPhotoUrl={post.clothing_photo_url}
@@ -261,10 +232,10 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
               })}
           </div>
           <div className="flex gap-2 mt-4">
-            <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px]" onClick={() => navigate('/tryon')}>
+            <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px] glass-gold text-primary border-primary/20 tracking-wide" onClick={() => navigate('/tryon')}>
               <Sparkles className="mr-1 h-3 w-3" /> New Try-On
             </Button>
-            <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px]" onClick={() => navigate('/style-check')}>
+            <Button variant="outline" className="flex-1 h-9 rounded-lg text-[11px] glass text-white/60 border-white/10" onClick={() => navigate('/style-check')}>
               <MessageSquare className="mr-1 h-3 w-3" /> Style Check Feed
             </Button>
           </div>
@@ -272,15 +243,15 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
       )}
 
       <AlertDialog open={!!confirmDeleteId} onOpenChange={(open) => !open && setConfirmDeleteId(null)}>
-        <AlertDialogContent className="max-w-[320px] rounded-2xl">
+        <AlertDialogContent className="max-w-[320px] rounded-2xl glass-dark border-white/10">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-[15px]">Delete try-on?</AlertDialogTitle>
-            <AlertDialogDescription className="text-[13px]">
+            <AlertDialogTitle className="text-[15px] text-white">Delete try-on?</AlertDialogTitle>
+            <AlertDialogDescription className="text-[13px] text-white/50">
               This will permanently remove it from your try-ons.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl text-[12px]">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-xl text-[12px] glass text-white/60">Cancel</AlertDialogCancel>
             <AlertDialogAction
               className="rounded-xl text-[12px] bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={() => {

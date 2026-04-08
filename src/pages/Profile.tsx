@@ -93,7 +93,6 @@ const Profile = () => {
   };
   const handleExport = async () => {
     try {
-      // Fetch all scans from DB for this user
       const { data: dbScans } = await supabase
         .from('body_scans')
         .select('*')
@@ -131,6 +130,9 @@ const Profile = () => {
     queryClient.invalidateQueries({ queryKey: ['tryon-posts', user.id] });
     queryClient.invalidateQueries({ queryKey: ['profile-info', user.id] });
   };
+
+  const publicCount = tryOnPosts.filter(p => p.is_public).length;
+  const privateCount = tryOnPosts.length - publicCount;
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
@@ -175,8 +177,8 @@ const Profile = () => {
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full gradient-drip flex items-center justify-center">
-                    <span className="text-lg font-bold text-primary-foreground">{displayName[0]?.toUpperCase() || 'U'}</span>
+                  <div className="w-full h-full bg-white/5 flex items-center justify-center">
+                    <span className="text-lg font-bold text-white/70">{displayName[0]?.toUpperCase() || 'U'}</span>
                   </div>
                 )}
               </div>
@@ -185,16 +187,16 @@ const Profile = () => {
                   <InlineCrown size={10} />
                 </div>
               ) : (
-                <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center border-2 border-background">
-                  <Camera className="h-2.5 w-2.5 text-primary-foreground" />
+                <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
+                  <Camera className="h-2.5 w-2.5 text-white/60" />
                 </div>
               )}
             </button>
             <div>
-              <h1 className="font-display text-[15px] font-bold text-foreground leading-tight">{displayName}</h1>
+              <h1 className="font-display text-lg font-bold text-white leading-tight">{displayName}</h1>
               <div className="flex items-center gap-1.5">
-                <p className="text-[11px] text-muted-foreground">{user.email}</p>
-                <button onClick={handleSignOut} className="text-muted-foreground/60 hover:text-destructive transition-colors p-0.5" aria-label="Sign out">
+                <p className="text-sm text-white/40">{user.email}</p>
+                <button onClick={handleSignOut} className="text-white/30 hover:text-destructive transition-colors p-0.5" aria-label="Sign out">
                   <LogOut className="h-3 w-3" />
                 </button>
               </div>
@@ -203,23 +205,23 @@ const Profile = () => {
                 className="flex items-center gap-1 mt-0.5 active:opacity-70 transition-opacity"
               >
                 <Globe className="h-2.5 w-2.5 text-primary" />
-                <span className="text-[10px] text-primary font-medium">View Public Profile</span>
+                <span className="text-[11px] text-primary font-medium tracking-wide">View Public Profile</span>
               </button>
             </div>
           </div>
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => navigate('/profile/body')}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl btn-gold-3d active:scale-95 transition-transform shadow-md"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass-gold active:scale-95 transition-transform"
             >
-              <User className="h-4 w-4 text-primary-foreground" />
-              <span className="text-[15px] text-primary-foreground font-bold">Size Guide</span>
+              <User className="h-4 w-4 text-primary" />
+              <span className="text-[13px] text-primary font-bold tracking-wide">Size Guide</span>
             </button>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => navigate('/profile/settings')}
-              className="text-muted-foreground h-8 w-8 min-h-[44px] min-w-[44px] rounded-lg"
+              className="text-white/30 h-8 w-8 min-h-[44px] min-w-[44px] rounded-lg"
               aria-label="Open settings"
             >
               <Settings className="h-4 w-4" />
@@ -227,25 +229,47 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* Stats row */}
+        <div className="flex items-center justify-center gap-0 mb-4 glass-dark rounded-xl py-2">
+          <div className="flex-1 text-center">
+            <p className="font-display text-lg text-white">{tryOnPosts.length}</p>
+            <p className="text-[9px] tracking-[0.2em] uppercase text-white/30">Total</p>
+          </div>
+          <div className="w-px h-8 bg-white/10" />
+          <div className="flex-1 text-center">
+            <p className="font-display text-lg text-white">{publicCount}</p>
+            <p className="text-[9px] tracking-[0.2em] uppercase text-white/30">Public</p>
+          </div>
+          <div className="w-px h-8 bg-white/10" />
+          <div className="flex-1 text-center">
+            <p className="font-display text-lg text-white">{privateCount}</p>
+            <p className="text-[9px] tracking-[0.2em] uppercase text-white/30">Private</p>
+          </div>
+        </div>
+
         {/* Milestone Badges — collapsed by default */}
         <Collapsible defaultOpen={false} className="mb-2">
-          <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-xl bg-card/60 border border-border/30 text-[12px] font-bold text-foreground active:scale-[0.98] transition-transform">
+          <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-xl glass text-[12px] font-bold text-white/70 active:scale-[0.98] transition-transform">
             <span className="flex items-center gap-1.5">🏅 Milestones</span>
-            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
+            <ChevronDown className="h-3.5 w-3.5 text-white/30 transition-transform [[data-state=open]>&]:rotate-180" />
           </CollapsibleTrigger>
           <CollapsibleContent className="pt-2">
-            <MilestoneBadges />
+            <div className="glass-dark rounded-xl p-3">
+              <MilestoneBadges />
+            </div>
           </CollapsibleContent>
         </Collapsible>
 
         {/* Invite Friends — collapsed by default */}
         <Collapsible defaultOpen={false} className="mb-3">
-          <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-xl bg-card/60 border border-border/30 text-[12px] font-bold text-foreground active:scale-[0.98] transition-transform">
+          <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-xl glass text-[12px] font-bold text-white/70 active:scale-[0.98] transition-transform">
             <span className="flex items-center gap-1.5"><Gift className="h-3.5 w-3.5 text-primary" /> Invite Friends</span>
-            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
+            <ChevronDown className="h-3.5 w-3.5 text-white/30 transition-transform [[data-state=open]>&]:rotate-180" />
           </CollapsibleTrigger>
           <CollapsibleContent className="pt-2">
-            <InviteFriendsCard />
+            <div className="glass-dark rounded-xl p-3">
+              <InviteFriendsCard />
+            </div>
           </CollapsibleContent>
         </Collapsible>
 

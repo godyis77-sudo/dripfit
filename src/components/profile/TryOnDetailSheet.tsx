@@ -15,6 +15,7 @@ import { generateTryOnShareCard } from '@/lib/shareImage';
 import { useCart } from '@/hooks/useCart';
 import { getPostedCaption } from '@/components/community/community-types';
 import { useQueryClient } from '@tanstack/react-query';
+
 interface TryOnPost {
   id: string;
   result_photo_url: string;
@@ -47,7 +48,7 @@ const ShopDropdown = ({ urls, onClickout }: { urls: string[]; onClickout: () => 
   return (
     <div className="col-span-2 relative">
       <Button
-        className="h-11 rounded-xl text-[12px] font-bold gap-1.5 btn-luxury text-primary-foreground w-full"
+        className="h-11 rounded-xl text-[12px] font-bold gap-1.5 glass-gold text-primary border border-primary/20 w-full tracking-wide uppercase"
         onClick={() => setOpen((v) => !v)}
       >
         <ShoppingBag className="h-4 w-4" />
@@ -55,17 +56,17 @@ const ShopDropdown = ({ urls, onClickout }: { urls: string[]; onClickout: () => 
         <ChevronDown className={`h-3.5 w-3.5 ml-auto transition-transform ${open ? 'rotate-180' : ''}`} />
       </Button>
       {open && (
-        <div className="mt-1.5 rounded-xl border border-border bg-card overflow-hidden shadow-lg">
+        <div className="mt-1.5 rounded-xl glass-dark border-white/10 overflow-hidden shadow-lg">
           {urls.map((url, i) => (
             <button
               key={i}
-              className="flex items-center gap-2 w-full px-4 py-3 text-[12px] font-medium text-foreground hover:bg-muted/50 active:bg-muted transition-colors border-b border-border last:border-b-0 min-h-[44px]"
+              className="flex items-center gap-2 w-full px-4 py-3 text-[12px] font-medium text-white/70 hover:bg-white/5 active:bg-white/10 transition-colors border-b border-white/5 last:border-b-0 min-h-[44px]"
               onClick={() => {
                 window.open(url, '_blank', 'noopener');
                 onClickout();
               }}
             >
-              <ExternalLink className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+              <ExternalLink className="h-3.5 w-3.5 text-primary shrink-0" />
               {extractLabel(url, i)}
             </button>
           ))}
@@ -119,9 +120,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
     const newLiked = !liked;
     setLiked(newLiked);
     trackEvent('tryon_liked', { post_id: post.id });
-
     if (newLiked) {
-      // Upsert into wardrobe with is_liked
       await supabase.from('clothing_wardrobe').upsert({
         user_id: user.id,
         image_url: post.clothing_photo_url || post.result_photo_url,
@@ -132,7 +131,6 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
       }, { onConflict: 'user_id,image_url' });
       toast({ title: '❤️ Liked & saved to closet' });
     } else {
-      // Remove liked flag (update, don't delete — they may have saved it too)
       await supabase.from('clothing_wardrobe')
         .update({ is_liked: false } as any)
         .eq('user_id', user.id)
@@ -149,7 +147,6 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
     const publishAt = new Date().toISOString();
     const updatePayload: { is_public: boolean; created_at?: string } = { is_public: newPublic };
     if (newPublic) updatePayload.created_at = publishAt;
-
     const { error } = await supabase
       .from('tryon_posts')
       .update(updatePayload)
@@ -160,7 +157,6 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
       toast({ title: 'Error', description: newPublic ? 'Could not post to community.' : 'Could not remove from community.', variant: 'destructive' });
       return;
     }
-
     const nextCreatedAt = newPublic ? publishAt : post.created_at;
     queryClient.setQueryData(['tryon-posts', user.id], (prev: TryOnPost[] | undefined) => {
       if (!prev) return prev;
@@ -198,38 +194,35 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="h-[95dvh] p-0 rounded-t-2xl bg-background border-t border-border flex flex-col overflow-hidden">
+      <SheetContent side="bottom" className="h-[95dvh] p-0 rounded-t-2xl glass-dark border-t border-white/10 flex flex-col overflow-hidden">
         {/* Close button */}
         <button
           onClick={() => onOpenChange(false)}
-          className="absolute top-3 right-3 z-50 h-8 w-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center"
+          className="absolute top-3 right-3 z-50 h-8 w-8 rounded-full bg-white/5 backdrop-blur border border-white/10 flex items-center justify-center"
           aria-label="Close"
         >
-          <X className="h-4 w-4 text-white" />
+          <X className="h-4 w-4 text-white/70" />
         </button>
 
         {/* Image */}
         <div className="relative w-full flex-1 min-h-0 flex items-center justify-center overflow-hidden px-2 pt-1">
           <div className="relative inline-flex rounded-2xl overflow-hidden bg-black max-w-full max-h-full">
-            {/* Date — top left overlay */}
             <div className="absolute top-3 left-3 z-10">
-              <p className="text-[11px] text-white/80 font-medium drop-shadow-sm">{new Date(post.created_at).toLocaleDateString()}</p>
+              <p className="text-[10px] text-white/25">{new Date(post.created_at).toLocaleDateString()}</p>
             </div>
             <img
               src={post.result_photo_url}
               alt={post.caption || 'Try-on result'}
               className="max-w-full max-h-[calc(95dvh-220px)] w-auto h-auto rounded-2xl object-contain"
             />
-            {/* Caption overlay on image */}
             {postedCaption && (
               <div className="absolute bottom-14 right-4 left-4 z-10">
                 <p className="text-[13px] text-white font-medium drop-shadow-sm text-center">{postedCaption}</p>
               </div>
             )}
-            {/* Fire — bottom left overlay on image */}
             <button
               onClick={(e) => { e.stopPropagation(); handleLike(); }}
-              className={`absolute bottom-3 left-3 z-10 h-10 w-10 rounded-full backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform ${liked ? 'bg-primary/30 border border-primary/50' : 'bg-black/40'}`}
+              className={`absolute bottom-3 left-3 z-10 h-10 w-10 rounded-full backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform ${liked ? 'bg-primary/20 border border-primary/40' : 'bg-white/5 border border-white/10'}`}
               aria-label={liked ? 'Unlike' : 'Like'}
             >
               <span className="text-[20px] leading-none">🔥</span>
@@ -237,7 +230,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
           </div>
         </div>
 
-        {/* Caption field — only shown when posting to community */}
+        {/* Caption field */}
         {showCaptionForPost && (
           <div className="px-4 pt-2">
             {editingCaption ? (
@@ -248,7 +241,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
                   onChange={(e) => setCaptionDraft(e.target.value)}
                   maxLength={200}
                   placeholder="Add a caption…"
-                  className="flex-1 h-10 rounded-xl border border-border bg-muted/50 px-3 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="flex-1 h-10 bg-transparent border-b border-white/15 px-1 text-[13px] text-white placeholder:text-white/25 focus:outline-none"
                   onKeyDown={(e) => { if (e.key === 'Enter') handleSaveCaption(); }}
                 />
                 <Button
@@ -263,7 +256,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
               </div>
             ) : (
               <button
-                className="flex items-center gap-1.5 text-[12px] text-muted-foreground hover:text-foreground transition-colors min-h-[44px]"
+                className="flex items-center gap-1.5 text-[12px] text-white/40 hover:text-white/60 transition-colors min-h-[44px]"
                 onClick={() => {
                   setCaptionDraft(post.caption || '');
                   setEditingCaption(true);
@@ -281,7 +274,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
 
           {post.product_urls && post.product_urls.length === 1 && (
             <Button
-              className="h-11 rounded-xl text-[12px] font-bold gap-1.5 btn-luxury text-primary-foreground w-full"
+              className="h-11 rounded-xl text-[12px] font-bold gap-1.5 glass-gold text-primary border border-primary/20 w-full tracking-wide uppercase"
               onClick={() => {
                 window.open(post.product_urls![0], '_blank', 'noopener');
                 trackEvent('shop_clickout', { post_id: post.id });
@@ -301,8 +294,8 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
 
           <div className="grid grid-cols-2 gap-2">
             <Button
-              variant={addedToWardrobe ? 'default' : 'outline'}
-              className={`h-11 rounded-xl text-[12px] font-bold gap-1.5 ${addedToWardrobe ? 'bg-primary/20 text-primary border-primary/30' : ''}`}
+              variant="outline"
+              className={`h-11 rounded-xl text-[12px] font-bold gap-1.5 ${addedToWardrobe ? 'glass-gold text-primary border-primary/30' : 'glass text-white/60 border-white/10'}`}
               onClick={handleAddToWardrobe}
               disabled={addingToWardrobe || addedToWardrobe}
             >
@@ -312,7 +305,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
 
             <Button
               variant="outline"
-              className={`h-11 rounded-xl text-[12px] font-bold gap-1.5 ${isInCart(post.id) ? 'border-primary/40 bg-primary/10' : ''}`}
+              className={`h-11 rounded-xl text-[12px] font-bold gap-1.5 ${isInCart(post.id) ? 'glass-gold text-primary border-primary/30' : 'glass text-white/60 border-white/10'}`}
               onClick={() => {
                 if (isInCart(post.id)) {
                   removeFromCart(post.id);
@@ -333,7 +326,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
 
             <Button
               variant="outline"
-              className="h-11 rounded-xl text-[12px] font-bold gap-1.5 col-span-2"
+              className="h-11 rounded-xl text-[12px] font-bold gap-1.5 col-span-2 glass text-white/60 border-white/10"
               onClick={async () => {
                 try {
                   const blob = await generateTryOnShareCard({
@@ -341,7 +334,6 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
                     caption: post.caption,
                   });
                   const file = new File([blob], 'drip-fit-tryon.png', { type: 'image/png' });
-
                   if (navigator.share && navigator.canShare?.({ files: [file] })) {
                     await navigator.share({
                       title: post.caption || 'Check my fit on DRIPFIT ✔!',
@@ -349,7 +341,6 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
                     });
                     trackEvent('tryon_shared_instagram', { post_id: post.id });
                   } else {
-                    // Fallback: download the branded image
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
@@ -359,7 +350,6 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
                     toast({ title: 'Image downloaded!', description: 'Share it to Instagram Stories.' });
                   }
                 } catch {
-                  // Fallback: copy URL
                   await navigator.clipboard.writeText(post.result_photo_url);
                   toast({ title: 'Link copied!', description: 'Paste it into Instagram Stories.' });
                 }
@@ -372,18 +362,15 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
 
           <Button
             variant="outline"
-            className={`w-full h-11 rounded-xl text-[12px] font-bold gap-1.5 ${post.is_public ? 'border-primary/40 bg-primary/10' : ''}`}
+            className={`w-full h-11 rounded-xl text-[12px] font-bold gap-1.5 ${post.is_public ? 'glass-gold text-primary border-primary/30' : 'glass text-white/60 border-white/10'}`}
             onClick={() => {
               if (post.is_public) {
-                // Already public → remove from community
                 handleToggleCommunity();
               } else if (!showCaptionForPost) {
-                // First tap → show caption editor, don't post yet
                 setShowCaptionForPost(true);
                 setCaptionDraft(post.caption || '');
                 setEditingCaption(true);
               } else {
-                // Second tap → caption step done, now post
                 handleToggleCommunity();
               }
             }}
@@ -398,20 +385,30 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
             <>
               <Button
                 variant="outline"
-                className="w-full h-9 rounded-xl text-[11px] text-destructive border-destructive/20 hover:bg-destructive/10 gap-1.5"
+                className="w-full h-9 rounded-xl text-[11px] bg-white/5 border border-white/10 text-destructive hover:bg-white/10 gap-1.5"
                 onClick={() => setConfirmDeleteId(post.id)}
               >
                 <Trash2 className="h-3.5 w-3.5" /> Delete Try-On
               </Button>
               <AlertDialog open={!!confirmDeleteId} onOpenChange={(open) => !open && setConfirmDeleteId(null)}>
-                <AlertDialogContent className="max-w-[320px] rounded-2xl">
+                <AlertDialogContent className="max-w-[320px] rounded-2xl glass-dark border-white/10">
                   <AlertDialogHeader>
-                    <AlertDialogTitle className="text-[15px]">Delete try-on?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-[13px]">This cannot be undone.</AlertDialogDescription>
+                    <AlertDialogTitle className="text-[15px] text-white">Delete try-on?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-[13px] text-white/50">This cannot be undone.</AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel className="rounded-xl text-[12px]">Cancel</AlertDialogCancel>
-                    <AlertDialogAction className="rounded-xl text-[12px] bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => { if (confirmDeleteId) onDelete(confirmDeleteId); setConfirmDeleteId(null); }}>Delete</AlertDialogAction>
+                    <AlertDialogCancel className="rounded-xl text-[12px] glass text-white/60">Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="rounded-xl text-[12px] bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      onClick={() => {
+                        if (!confirmDeleteId) return;
+                        void onDelete(confirmDeleteId);
+                        setConfirmDeleteId(null);
+                        onOpenChange(false);
+                      }}
+                    >
+                      Delete
+                    </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
