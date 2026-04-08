@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, forwardRef } from 'react';
 import { Search, ChevronDown, ChevronUp, X, Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,7 +14,7 @@ interface BrandFilterProps {
   multiSelect?: boolean;
 }
 
-const BrandFilter = ({ gender, selectedBrand, onBrandChange, selectedBrands = [], onBrandsChange, multiSelect = false }: BrandFilterProps) => {
+const BrandFilter = forwardRef<HTMLDivElement, BrandFilterProps>(({ gender, selectedBrand, onBrandChange, selectedBrands = [], onBrandsChange, multiSelect = false }, ref) => {
   const [search, setSearch] = useState('');
   const [allBrands, setAllBrands] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
