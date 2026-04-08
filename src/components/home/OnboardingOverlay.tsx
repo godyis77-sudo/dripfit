@@ -180,13 +180,13 @@ export default function OnboardingOverlay() {
 
       <div className="absolute inset-0 editorial-gradient" />
 
-      {/* DripFit logo intro — cross-fades out into slide 1 */}
+      {/* DripFit logo intro — cross-fades into slide 1 */}
       <AnimatePresence>
         {logoPhase && (
           <motion.div
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
             className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-background"
           >
             <motion.div
@@ -205,12 +205,6 @@ export default function OnboardingOverlay() {
                 Your Tailored Size & Style
               </motion.p>
             </motion.div>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 0.4, 0] }}
-              transition={{ delay: 0.8, duration: 2, repeat: Infinity }}
-              className="absolute w-72 h-72 rounded-full border border-primary/20"
-            />
           </motion.div>
         )}
       </AnimatePresence>
