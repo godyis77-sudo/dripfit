@@ -186,7 +186,7 @@ const FoundingMembers = () => {
                 initial={{ opacity: 0, x: i % 2 === 0 ? -12 : 12 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.8 + i * 0.12, duration: 0.35 }}
-                className="bg-card border border-border rounded-xl p-4 relative"
+                className="glass-dark rounded-xl p-4 relative"
               >
                 <Quote className="h-4 w-4 text-primary/30 absolute top-3 right-3" />
                 <p className="text-[12px] text-foreground leading-relaxed mb-2.5 pr-5">
@@ -213,7 +213,7 @@ const FoundingMembers = () => {
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6 + i * 0.1, duration: 0.35 }}
-              className="flex items-start gap-3 bg-card border border-border rounded-xl p-4"
+              className="flex items-start gap-3 glass-dark rounded-xl p-4"
             >
               <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                 <perk.icon className="h-4 w-4 text-primary" />
