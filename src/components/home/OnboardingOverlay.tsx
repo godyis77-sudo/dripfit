@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import BrandLogo from '@/components/ui/BrandLogo';
 
@@ -26,24 +26,25 @@ const SLIDES = [
 ] as const;
 
 const STORAGE_KEY = 'onboarding_complete';
+let introBooted = false;
 
 export default function OnboardingOverlay() {
   const navigate = useNavigate();
-  const location = useLocation();
   const [visible, setVisible] = useState(() => !localStorage.getItem(STORAGE_KEY));
-  const [slide, setSlide] = useState(-1); // -1 = logo intro
+  const [slide, setSlide] = useState(() => (introBooted ? 0 : -1)); // -1 = logo intro
   const [needsTap, setNeedsTap] = useState(false);
   const [allPlaying, setAllPlaying] = useState(false);
-  const [logoPhase, setLogoPhase] = useState(true);
+  const [logoPhase, setLogoPhase] = useState(() => !introBooted);
   const touchStartX = useRef(0);
   const touchStartTime = useRef(0);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([null, null, null]);
   const logoRan = useRef(false);
 
-  // Start video 1 early, then fade out logo — run only once
+  // Start video 1 early, then fade out logo — run only once per app load
   useEffect(() => {
     if (!visible || !logoPhase || logoRan.current) return;
     logoRan.current = true;
+    introBooted = true;
     const t1 = setTimeout(() => setSlide(0), 1000);
     const t2 = setTimeout(() => setLogoPhase(false), 2000);
     return () => { clearTimeout(t1); clearTimeout(t2); };
