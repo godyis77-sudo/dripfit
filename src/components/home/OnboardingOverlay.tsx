@@ -38,14 +38,13 @@ export default function OnboardingOverlay() {
   const touchStartX = useRef(0);
   const touchStartTime = useRef(0);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([null, null, null]);
+  const logoRan = useRef(false);
 
-
-  // Start video 1 early, then fade out logo
+  // Start video 1 early, then fade out logo — run only once
   useEffect(() => {
-    if (!visible || !logoPhase) return;
-    // Show video behind logo after 1s
+    if (!visible || !logoPhase || logoRan.current) return;
+    logoRan.current = true;
     const t1 = setTimeout(() => setSlide(0), 1000);
-    // Fade out logo after 2s
     const t2 = setTimeout(() => setLogoPhase(false), 2000);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [visible, logoPhase]);
