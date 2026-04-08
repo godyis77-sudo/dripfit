@@ -39,13 +39,6 @@ export default function OnboardingOverlay() {
   const touchStartTime = useRef(0);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([null, null, null]);
 
-  useEffect(() => {
-    if (!localStorage.getItem(STORAGE_KEY)) {
-      setVisible(true);
-      setSlide(-1);
-      setLogoPhase(true);
-    }
-  }, [location.key]);
 
   // Start video 1 early, then fade out logo
   useEffect(() => {
