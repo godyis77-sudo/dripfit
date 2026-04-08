@@ -144,6 +144,7 @@ export default function OnboardingOverlay() {
         touchStartX.current = e.touches[0].clientX;
       }}
       onTouchEnd={(e) => {
+        if (logoPhase) return;
         e.stopPropagation();
         const dx = e.changedTouches[0].clientX - touchStartX.current;
         if (Math.abs(dx) <= 50) return;
