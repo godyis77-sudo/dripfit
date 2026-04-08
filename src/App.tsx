@@ -16,6 +16,8 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import AffiliateProvider from "./components/AffiliateProvider";
 import Capture from "./pages/Capture";
 import GuestTimedNudge from "./components/guest/GuestTimedNudge";
+import Splash from "./pages/Splash";
+import Welcome from "./pages/Welcome";
 
 /** Clears onboarding flags and redirects to /home so the overlay re-appears */
 function OnboardingReset() {
@@ -25,9 +27,6 @@ function OnboardingReset() {
 }
 
 // ── Lazy-loaded pages (code-split per route) ──────────────────────────
-const Splash = lazy(() => import("./pages/Splash"));
-const Welcome = lazy(() => import("./pages/Welcome"));
-
 const Analyze = lazy(() => import("./pages/Analyze"));
 const Results = lazy(() => import("./pages/Results"));
 const ScanSuccess = lazy(() => import("./pages/ScanSuccess"));
@@ -67,11 +66,7 @@ const StyleAssistant = lazy(() => import("./pages/StyleAssistant"));
 const Closet = lazy(() => import("./pages/Closet"));
 
 // ── Suspense fallback (minimal, matches app background) ───────────────
-const RouteFallback = () => (
-  <div className="min-h-screen bg-background flex items-center justify-center">
-    <div className="h-6 w-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-  </div>
-);
+const RouteFallback = () => <div className="min-h-screen bg-background" />;
 
 const queryClient = new QueryClient({
   defaultOptions: {
