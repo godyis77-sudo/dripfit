@@ -40,6 +40,12 @@ const normCategory = (cat?: string | null): string => {
   if (ALLOWED_CATEGORIES.has(lower)) return lower;
   return CATEGORY_MAP[lower] || 'other';
 };
+const GENERIC_TRYON_CATEGORIES = new Set(['all', 'clothing', 'item', 'items', 'fashion', 'apparel']);
+const resolveTryOnCategory = (cat?: string | null, link?: string | null): string => {
+  const lower = cat?.toLowerCase().trim() || '';
+  if (lower && !GENERIC_TRYON_CATEGORIES.has(lower)) return lower;
+  return (link ? detectCategoryFromUrl(link) : null) || '';
+};
 
 export type LookItem = { brand: string; name: string; url: string; price_cents?: number | null; image_url?: string | null };
 export type WardrobeItem = { id: string; image_url: string; category: string; product_link: string | null };
@@ -583,7 +589,7 @@ export function useTryOnState() {
       const imageUrl = await uploadBase64ToStorage(clothingPhoto, 'wardrobe');
       const detected = productLink ? detectBrandFromUrl(productLink) : null;
       await supabase.from('clothing_wardrobe').insert({
-        user_id: user.id, image_url: imageUrl, category: category || (productLink ? detectCategoryFromUrl(productLink) : null) || 'top', product_link: productLink || null,
+        user_id: user.id, image_url: imageUrl, category: resolveTryOnCategory(category, productLink) || 'top', product_link: productLink || null,
         brand: detected?.brand && detected.brand !== detected.retailer ? detected.brand : null,
         retailer: detected?.retailer || null,
       });
@@ -596,8 +602,9 @@ export function useTryOnState() {
   };
 
   const selectFromWardrobe = async (item: { image_url: string; product_link: string | null; category: string }) => {
+    const resolvedCategory = resolveTryOnCategory(item.category, item.product_link);
     if (item.product_link) setProductLink(item.product_link);
-    setCategory(item.category);
+    if (resolvedCategory) setCategory(resolvedCategory);
     try {
       const base64 = await imageUrlToBase64(item.image_url);
       setClothingPhoto(base64);
@@ -746,13 +753,17 @@ export function useTryOnState() {
         prepareTryOnImage(currentClothingPhoto),
       ]);
 
+      const resolvedPrimaryCategory = resolveTryOnCategory(
+        selectedQuickPick?.category || category,
+        selectedQuickPick?.product_url || productLink,
+      );
       const body: Record<string, unknown> = {
         userPhoto: preparedUserPhoto,
         clothingPhoto: preparedClothingPhoto,
-        itemType: category || 'clothing',
+        itemType: resolvedPrimaryCategory || 'clothing',
         productName: selectedQuickPick?.name || '',
         productBrand: selectedQuickPick?.brand || '',
-        productCategory: selectedQuickPick?.category || category || '',
+        productCategory: resolvedPrimaryCategory || '',
         productUrl: selectedQuickPick?.product_url || productLink || '',
         backgroundSource,
       };
@@ -1079,7 +1090,7 @@ export function useTryOnState() {
       const { error: insertError } = await supabase.from('clothing_wardrobe').insert({
         user_id: user.id,
         image_url: imageUrl,
-        category: category || (productLink ? detectCategoryFromUrl(productLink) : null) || 'top',
+        category: resolveTryOnCategory(category || selectedQuickPick?.category, productLink || selectedQuickPick?.product_url) || 'top',
         product_link: productLink || null,
         brand: selectedQuickPick?.brand || (detected?.brand && detected.brand !== detected.retailer ? detected.brand : null),
         retailer: selectedQuickPick?.retailer || detected?.retailer || null,

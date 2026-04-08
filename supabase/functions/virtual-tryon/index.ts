@@ -157,15 +157,16 @@ Deno.serve(async (req) => {
       return ` ${normalizedContext} `.includes(` ${normalizedTerm} `);
     };
 
-    const isAccessory = ACCESSORY_TYPES.includes(itemLower);
-    const isFootwear = FOOTWEAR_TYPES.includes(itemLower) || FOOTWEAR_TYPES.some(t => hasContextTerm(normalizeMatchText([itemLower, productName.toLowerCase(), productCategory.toLowerCase()].join(" ")), t));
-    const normalizedItemContext = normalizeMatchText(itemLower);
-    const normalizedProductContext = normalizeMatchText([
+    const normalizedClassifierContext = normalizeMatchText([
       itemLower,
       productName.toLowerCase(),
       productCategory.toLowerCase(),
       typeof raw.productUrl === "string" ? raw.productUrl.toLowerCase() : "",
     ].join(" "));
+    const isAccessory = ACCESSORY_TYPES.includes(itemLower) || ACCESSORY_TYPES.some(t => hasContextTerm(normalizedClassifierContext, t));
+    const isFootwear = FOOTWEAR_TYPES.includes(itemLower) || FOOTWEAR_TYPES.some(t => hasContextTerm(normalizedClassifierContext, t));
+    const normalizedItemContext = normalizeMatchText(itemLower);
+    const normalizedProductContext = normalizedClassifierContext;
     const isBelt = /\bbelt(s)?\b/.test(normalizedProductContext) || /\bbelt(s)?\b/.test(normalizedItemContext);
     const isSwimwear = SWIM_TYPES.some(t => hasContextTerm(normalizedProductContext, t));
     const isComfortwear = COMFORTWEAR_TYPES.some(t => hasContextTerm(normalizedItemContext, t) || hasContextTerm(normalizedProductContext, t));
