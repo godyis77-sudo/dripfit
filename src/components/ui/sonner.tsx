@@ -17,7 +17,7 @@ const Toaster = forwardRef<HTMLDivElement, ToasterProps>((props, ref) => {
         toastOptions={{
           classNames: {
             toast:
-              "group toast group-[.toaster]:bg-[#1C1C1C] group-[.toaster]:text-foreground group-[.toaster]:border-[#2A2A2A] group-[.toaster]:shadow-lg group-[.toaster]:text-[14px]",
+              "group toast group-[.toaster]:glass-dark group-[.toaster]:text-white/80 group-[.toaster]:border-white/8 group-[.toaster]:shadow-lg group-[.toaster]:text-[14px]",
             description: "group-[.toast]:text-muted-foreground",
             actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
             cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",

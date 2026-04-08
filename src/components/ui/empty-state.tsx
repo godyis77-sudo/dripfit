@@ -26,12 +26,12 @@ export const EmptyState = ({ icon: Icon, title, description, actionLabel, onActi
     {customIcon ? (
       <div className="mb-5">{customIcon}</div>
     ) : (
-      <div className="h-14 w-14 rounded-2xl bg-primary/8 border border-primary/15 flex items-center justify-center mb-5">
-        <Icon className="h-6 w-6 text-primary/50" />
+      <div className="h-14 w-14 rounded-2xl bg-white/5 border border-white/8 flex items-center justify-center mb-5">
+        <Icon className="h-6 w-6 text-white/20" />
       </div>
     )}
-    <h2 className="font-display text-[20px] font-bold text-foreground mb-1.5">{title}</h2>
-    <p className="text-[13px] text-muted-foreground max-w-[260px] mb-6 leading-relaxed">{description}</p>
+    <h2 className="headline-editorial text-[20px] text-foreground mb-1.5">{title}</h2>
+    <p className="text-[13px] text-white/40 max-w-[260px] mb-6 leading-relaxed">{description}</p>
     {actionLabel && onAction && (
       <motion.div whileTap={{ scale: 0.97 }}>
         <Button
