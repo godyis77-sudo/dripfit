@@ -224,7 +224,7 @@ const OneTapPlayground = () => {
                     key={product.id}
                     whileTap={{ scale: 0.93 }}
                     onClick={() => handleTapItem(product)}
-                    className="relative rounded-2xl overflow-hidden border border-white/5 bg-card active:border-primary/30 transition-colors h-full"
+                    className="relative rounded-2xl overflow-hidden border border-white/5 glass-dark active:border-primary/30 transition-colors h-full"
                   >
                     <img
                       src={product.image_url}

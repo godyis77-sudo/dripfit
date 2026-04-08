@@ -19,7 +19,7 @@ const CommunityFilterTabs = ({ filter, onFilterChange }: CommunityFilterTabsProp
   const [similarFitTooltip, setSimilarFitTooltip] = useState(false);
 
   return (
-    <div className="flex gap-1.5 mb-4 overflow-x-auto no-scrollbar relative px-1" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
+    <div className="flex gap-1.5 mb-4 overflow-x-auto scrollbar-hide relative px-1" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
       {TABS.map(f => (
         <button
           key={f.key}

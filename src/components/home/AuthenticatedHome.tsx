@@ -62,7 +62,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <h1 className="headline-editorial text-xl text-primary">DRIPFIT ✔</h1>
             <p className="text-[11px] tracking-[0.2em] uppercase text-white/40 font-sans mt-1.5">
-              Shop. Try On. Get Rated. Buy.
+              Your personal fitting room
             </p>
           </motion.div>
         </div>
@@ -175,9 +175,9 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                     trackEvent('fit_rec_click', { category: rec.category });
                     if (rec.product_url) window.open(rec.product_url, '_blank', 'noopener');
                   }}
-                  className="shrink-0 w-[120px] rounded-xl overflow-hidden border border-border/50 bg-card active:scale-[0.97] transition-transform"
+                  className="shrink-0 w-[120px] rounded-xl overflow-hidden border border-white/5 glass-dark active:scale-[0.97] transition-transform"
                 >
-                  <div className="aspect-[3/4] bg-muted relative">
+                  <div className="aspect-[3/4] bg-black/30 relative">
                     <img
                       src={thumbnailUrl(rec.clothing_photo_url, 300)}
                       alt={rec.category || 'Recommended'}
@@ -234,7 +234,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.19 }} className="mb-3">
             <button
               onClick={() => navigate('/profile/settings')}
-              className="w-full bg-card border border-primary/20 rounded-xl px-3 py-2 flex items-center gap-2.5 active:scale-[0.98] transition-transform"
+              className="w-full glass-gold border border-primary/20 rounded-xl px-3 py-2 flex items-center gap-2.5 active:scale-[0.98] transition-transform"
             >
               <ShoppingBag className="h-3.5 w-3.5 text-primary shrink-0" />
               <p className="text-[11px] font-bold text-foreground flex-1 text-left">Personalize your picks</p>
@@ -248,7 +248,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-3">
             <button
               onClick={() => navigate('/capture')}
-              className="w-full bg-card border border-border rounded-xl px-3 py-2 flex items-center gap-2.5 active:scale-[0.98] transition-transform"
+              className="w-full glass-dark border border-white/10 rounded-xl px-3 py-2 flex items-center gap-2.5 active:scale-[0.98] transition-transform"
             >
               <Camera className="h-3.5 w-3.5 text-primary shrink-0" />
               <p className="text-[11px] font-bold text-foreground flex-1 text-left">60s body scan for perfect sizing</p>

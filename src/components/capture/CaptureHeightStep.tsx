@@ -31,7 +31,7 @@ const CaptureHeightStep = ({
 }: CaptureHeightStepProps) => (
   <motion.div key="height" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm pt-4">
     <h2 className="font-display text-xl text-white mb-1">What's your height?</h2>
-    <p className="text-sm text-white/40 mb-6">This improves accuracy by 23%</p>
+    <p className="text-[13px] text-white/40 mb-6">This improves accuracy by 23%</p>
 
     {/* Gender selector */}
     {genderLoaded && !genderSet && (
