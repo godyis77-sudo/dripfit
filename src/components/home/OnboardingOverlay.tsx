@@ -26,30 +26,20 @@ const SLIDES = [
 ] as const;
 
 const STORAGE_KEY = 'onboarding_complete';
-const INTRO_SESSION_KEY = 'onboarding_intro_started';
-
-function reserveIntroPlayback() {
-  if (typeof window === 'undefined') return true;
-  if (window.localStorage.getItem(STORAGE_KEY)) return false;
-  if (window.sessionStorage.getItem(INTRO_SESSION_KEY) === 'true') return false;
-  window.sessionStorage.setItem(INTRO_SESSION_KEY, 'true');
-  return true;
-}
 
 export default function OnboardingOverlay() {
   const navigate = useNavigate();
-  const shouldPlayIntro = useRef(reserveIntroPlayback()).current;
   const [visible, setVisible] = useState(() => !localStorage.getItem(STORAGE_KEY));
-  const [slide, setSlide] = useState(() => (shouldPlayIntro ? -1 : 0)); // -1 = logo intro
+  const [slide, setSlide] = useState(() => (localStorage.getItem(STORAGE_KEY) ? 0 : -1)); // -1 = logo intro
   const [needsTap, setNeedsTap] = useState(false);
   const [allPlaying, setAllPlaying] = useState(false);
-  const [logoPhase, setLogoPhase] = useState(() => shouldPlayIntro);
+  const [logoPhase, setLogoPhase] = useState(() => !localStorage.getItem(STORAGE_KEY));
   const touchStartX = useRef(0);
   const touchStartTime = useRef(0);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([null, null, null]);
   const logoRan = useRef(false);
 
-  // Start video 1 early, then fade out logo — run only once per visit
+  // Start video 1 early, then fade out logo
   useEffect(() => {
     if (!visible || !logoPhase || logoRan.current) return;
     logoRan.current = true;

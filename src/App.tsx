@@ -22,7 +22,6 @@ import Welcome from "./pages/Welcome";
 /** Clears onboarding flags and redirects to /home so the overlay re-appears */
 function OnboardingReset() {
   localStorage.removeItem('onboarding_complete');
-  sessionStorage.removeItem('onboarding_intro_started');
   return <Navigate to="/home" replace />;
 }
 
