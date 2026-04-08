@@ -41,9 +41,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
     ? Math.floor((Date.now() - new Date(scanData.createdAt).getTime()) / (1000 * 60 * 60 * 24))
     : null;
 
-  const displayName = profileData?.display_name || user?.email?.split('@')[0] || '';
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
   const dismissRescanNudge = useCallback(() => {
     const key = `rescan_nudge_dismissed_${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
