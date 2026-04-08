@@ -63,7 +63,7 @@ export default function OnboardingOverlay() {
       }}
     >
       {/* Background video per slide */}
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         <motion.div
           key={`bg-${slide}`}
           initial={{ opacity: 0 }}
