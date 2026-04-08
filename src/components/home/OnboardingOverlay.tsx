@@ -23,194 +23,109 @@ const SLIDES = [
 
 const STORAGE_KEY = 'onboarding_complete';
 
+/** Keep retrying .play() until it sticks — needed for restrictive autoplay policies */
+function forcePlay(video: HTMLVideoElement) {
+  video.muted = true;
+  video.defaultMuted = true;
+  video.setAttribute('muted', '');
+  video.setAttribute('playsinline', '');
+  video.setAttribute('webkit-playsinline', 'true');
+
+  const attempt = () => {
+    if (!video.paused) return;
+    const p = video.play();
+    if (p) p.catch(() => {});
+  };
+
+  attempt();
+
+  // Retry a few times in case the browser blocked the first call
+  const t1 = setTimeout(attempt, 200);
+  const t2 = setTimeout(attempt, 600);
+  const t3 = setTimeout(attempt, 1200);
+
+  return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+}
+
 export default function OnboardingOverlay() {
   const navigate = useNavigate();
   const location = useLocation();
   const [visible, setVisible] = useState(() => !localStorage.getItem(STORAGE_KEY));
   const [slide, setSlide] = useState(0);
-  const [videoVisible, setVideoVisible] = useState(false);
   const touchStartX = useRef(0);
-  const activeSlideRef = useRef(0);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const retryTimerRef = useRef<number | null>(null);
-  const readyHandlerRef = useRef<(() => void) | null>(null);
-
-  const clearRetryTimer = useCallback(() => {
-    if (retryTimerRef.current !== null) {
-      window.clearInterval(retryTimerRef.current);
-      retryTimerRef.current = null;
-    }
-  }, []);
-
-  const clearReadyHandler = useCallback(() => {
-    const video = videoRef.current;
-    if (video && readyHandlerRef.current) {
-      video.removeEventListener('canplay', readyHandlerRef.current);
-    }
-    readyHandlerRef.current = null;
-  }, []);
-
-  const configureVideo = useCallback((video: HTMLVideoElement) => {
-    video.muted = true;
-    video.defaultMuted = true;
-    video.autoplay = true;
-    video.loop = true;
-    video.playsInline = true;
-    video.preload = 'auto';
-    video.setAttribute('muted', '');
-    video.setAttribute('playsinline', '');
-    video.setAttribute('webkit-playsinline', 'true');
-  }, []);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([null, null, null]);
+  const cleanupRefs = useRef<(() => void)[]>([]);
 
   useEffect(() => {
     if (!localStorage.getItem(STORAGE_KEY)) {
       setVisible(true);
       setSlide(0);
-      setVideoVisible(false);
-      activeSlideRef.current = 0;
     }
   }, [location.key]);
 
-  const schedulePlaybackRetry = useCallback((index: number) => {
-    clearRetryTimer();
-
-    retryTimerRef.current = window.setInterval(() => {
-      const video = videoRef.current;
-      if (!video || activeSlideRef.current !== index) {
-        clearRetryTimer();
-        return;
-      }
-
-      configureVideo(video);
-
-      if (!video.paused) {
-        setVideoVisible(true);
-        clearRetryTimer();
-        return;
-      }
-
-      const playPromise = video.play();
-      if (playPromise && typeof playPromise.then === 'function') {
-        playPromise
-          .then(() => {
-            setVideoVisible(true);
-            clearRetryTimer();
-          })
-          .catch(() => {});
-      }
-    }, 350);
-  }, [clearRetryTimer, configureVideo]);
-
-  const playCurrentVideo = useCallback((index: number, options?: { fade?: boolean; restart?: boolean }) => {
-    const video = videoRef.current;
-    const src = SLIDES[index]?.video;
-    if (!video || !src) return;
-
-    activeSlideRef.current = index;
-    configureVideo(video);
-    clearRetryTimer();
-    clearReadyHandler();
-
-    const resolvedSrc = new URL(src, window.location.origin).href;
-    const currentSrc = video.currentSrc || video.src || '';
-    const shouldFade = options?.fade ?? true;
-    const shouldRestart = options?.restart ?? true;
-
-    const startPlayback = () => {
-      if (activeSlideRef.current !== index) return;
-
-      if (shouldRestart) {
-        try {
-          video.currentTime = 0;
-        } catch {
-          // Ignore currentTime failures on browsers that block seeks before metadata.
-        }
-      }
-
-      setVideoVisible(true);
-      const playPromise = video.play();
-
-      if (playPromise && typeof playPromise.then === 'function') {
-        playPromise
-          .then(() => {
-            setVideoVisible(true);
-            clearRetryTimer();
-          })
-          .catch(() => {
-            schedulePlaybackRetry(index);
-          });
-      }
-    };
-
-    if (currentSrc !== resolvedSrc) {
-      if (shouldFade) setVideoVisible(false);
-      video.pause();
-      readyHandlerRef.current = startPlayback;
-      video.addEventListener('canplay', startPlayback, { once: true });
-      video.src = src;
-      video.load();
-      schedulePlaybackRetry(index);
-      return;
-    }
-
-    if (video.readyState >= 2) {
-      startPlayback();
-      return;
-    }
-
-    readyHandlerRef.current = startPlayback;
-    video.addEventListener('canplay', startPlayback, { once: true });
-    video.load();
-    schedulePlaybackRetry(index);
-  }, [clearReadyHandler, clearRetryTimer, configureVideo, schedulePlaybackRetry]);
-
+  // Start all 3 videos as soon as the overlay mounts
   useEffect(() => {
     if (!visible) return;
 
-    const frame = window.requestAnimationFrame(() => {
-      playCurrentVideo(0, { fade: false, restart: false });
+    const cleanups: (() => void)[] = [];
+
+    // Small stagger so the browser isn't hit with 3 simultaneous decode requests
+    videoRefs.current.forEach((video, i) => {
+      if (!video) return;
+      const timer = setTimeout(() => {
+        const cleanup = forcePlay(video);
+        cleanups.push(cleanup);
+      }, i * 150);
+      cleanups.push(() => clearTimeout(timer));
     });
 
-    return () => window.cancelAnimationFrame(frame);
-  }, [location.key, playCurrentVideo, visible]);
+    cleanupRefs.current = cleanups;
 
-  const unlockPlayback = useCallback(() => {
-    playCurrentVideo(activeSlideRef.current, { fade: false, restart: false });
-  }, [playCurrentVideo]);
+    return () => {
+      cleanups.forEach((fn) => fn());
+    };
+  }, [visible]);
+
+  // Also try to play on any user interaction (unlocks autoplay)
+  const unlockAll = useCallback(() => {
+    videoRefs.current.forEach((video) => {
+      if (video && video.paused) {
+        const p = video.play();
+        if (p) p.catch(() => {});
+      }
+    });
+  }, []);
 
   const transitionToSlide = useCallback((next: number) => {
-    if (next < 0 || next >= SLIDES.length || next === activeSlideRef.current) return;
-    activeSlideRef.current = next;
+    if (next < 0 || next >= SLIDES.length) return;
     setSlide(next);
-    playCurrentVideo(next, { fade: true, restart: true });
-  }, [playCurrentVideo]);
+    unlockAll();
+  }, [unlockAll]);
 
   const complete = useCallback((dest?: string) => {
     localStorage.setItem(STORAGE_KEY, 'true');
-    clearRetryTimer();
-    clearReadyHandler();
-    videoRef.current?.pause();
+    videoRefs.current.forEach((v) => v?.pause());
+    cleanupRefs.current.forEach((fn) => fn());
     setVisible(false);
     if (dest) navigate(dest);
-  }, [clearReadyHandler, clearRetryTimer, navigate]);
+  }, [navigate]);
 
   useEffect(() => {
     return () => {
-      clearRetryTimer();
-      clearReadyHandler();
-      videoRef.current?.pause();
+      videoRefs.current.forEach((v) => v?.pause());
+      cleanupRefs.current.forEach((fn) => fn());
     };
-  }, [clearReadyHandler, clearRetryTimer]);
+  }, []);
 
   if (!visible) return null;
 
   return createPortal(
     <div
       className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden"
-      onPointerDownCapture={unlockPlayback}
+      onPointerDownCapture={unlockAll}
       onTouchStart={(e) => {
         e.stopPropagation();
-        unlockPlayback();
+        unlockAll();
         touchStartX.current = e.touches[0].clientX;
       }}
       onTouchEnd={(e) => {
@@ -220,20 +135,27 @@ export default function OnboardingOverlay() {
         if (dx < 0 && slide < SLIDES.length - 1) transitionToSlide(slide + 1);
         if (dx > 0 && slide > 0) transitionToSlide(slide - 1);
       }}
-      onClick={unlockPlayback}
+      onClick={unlockAll}
     >
+      {/* Black base so crossfade doesn't flash white */}
       <div className="absolute inset-0 bg-black" />
 
-      <video
-        ref={videoRef}
-        src={SLIDES[0].video}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-out ${videoVisible ? 'opacity-100' : 'opacity-0'}`}
-      />
+      {/* All 3 videos stacked — active one is opacity-100, others opacity-0 */}
+      {SLIDES.map((s, i) => (
+        <video
+          key={i}
+          ref={(el) => { videoRefs.current[i] = el; }}
+          src={s.video}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${
+            i === slide ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+      ))}
 
       <div className="absolute inset-0 editorial-gradient" />
 
@@ -244,7 +166,10 @@ export default function OnboardingOverlay() {
         Skip
       </button>
 
-      <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center px-8" style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}>
+      <div
+        className="absolute bottom-0 left-0 right-0 flex flex-col items-center px-8"
+        style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={slide}
@@ -273,7 +198,9 @@ export default function OnboardingOverlay() {
             <button
               key={i}
               onClick={() => transitionToSlide(i)}
-              className={`h-1 rounded-full transition-all duration-300 ${i === slide ? 'w-5 bg-primary' : 'w-1.5 bg-white/20'}`}
+              className={`h-1 rounded-full transition-all duration-300 ${
+                i === slide ? 'w-5 bg-primary' : 'w-1.5 bg-white/20'
+              }`}
               aria-label={`Go to slide ${i + 1}`}
             />
           ))}
