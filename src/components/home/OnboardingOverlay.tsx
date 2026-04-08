@@ -62,26 +62,24 @@ export default function OnboardingOverlay() {
         }
       }}
     >
-      {/* Background video per slide */}
-      <AnimatePresence>
-        <motion.div
-          key={`bg-${slide}`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.6 }}
-          className="absolute inset-0"
+      {/* All background videos rendered persistently — toggle opacity */}
+      {SLIDES.map((s, i) => (
+        <div
+          key={i}
+          className="absolute inset-0 transition-opacity duration-700 ease-in-out"
+          style={{ opacity: i === slide ? 1 : 0 }}
         >
           <video
-            src={SLIDES[slide].video}
+            src={s.video}
             autoPlay
             loop
             muted
             playsInline
+            preload="auto"
             className="absolute inset-0 w-full h-full object-cover"
           />
-        </motion.div>
-      </AnimatePresence>
+        </div>
+      ))}
 
       {/* Editorial gradient overlay */}
       <div className="absolute inset-0 editorial-gradient" />
