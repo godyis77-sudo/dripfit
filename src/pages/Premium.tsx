@@ -135,7 +135,7 @@ const Premium = () => {
           <Button variant="ghost" size="icon" onClick={handleBack} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back">
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <PremiumBadge label="DRIPFIT ✔ Premium" />
+          <PremiumBadge label="DRIPFIT ✔ Premium" className="glass-gold" />
         </div>
 
         {/* Hero */}
@@ -148,15 +148,15 @@ const Premium = () => {
           <BrandLogo size="xl" iconOnly className="mx-auto mb-3" />
           {isSubscribed ? (
             <>
-              <h1 className="text-xl font-bold text-foreground mb-1">You're Premium 👑</h1>
-              <p className="text-[12px] text-muted-foreground max-w-[260px] mx-auto">
+              <h1 className="headline-editorial text-2xl text-primary mb-1">You're Premium 👑</h1>
+              <p className="text-[12px] text-white/40 max-w-[260px] mx-auto">
                 {subscriptionEnd ? `Active until ${new Date(subscriptionEnd).toLocaleDateString()}` : 'Your premium subscription is active'}
               </p>
             </>
           ) : (
             <>
-              <h1 className="text-xl font-bold text-foreground mb-1">Unlock Your Full Potential</h1>
-              <p className="text-[12px] text-muted-foreground max-w-[260px] mx-auto">
+              <h1 className="headline-editorial text-2xl text-primary mb-1">Unlock Your Full Potential</h1>
+              <p className="text-[12px] text-white/40 max-w-[260px] mx-auto">
                 Unlimited try-ons, smarter sizing, zero ads — the ultimate fit experience.
               </p>
               {/* Member count badge */}
@@ -182,7 +182,7 @@ const Premium = () => {
         </motion.div>
 
         {isSubscribed ? (
-          <Button className="w-full h-12 rounded-xl text-sm font-bold mb-5" variant="outline" onClick={handleManage}>
+          <Button className="w-full h-12 rounded-xl text-sm font-bold mb-5 btn-glass text-white/80" variant="outline" onClick={handleManage}>
             Manage Subscription
           </Button>
         ) : (
@@ -209,7 +209,7 @@ const Premium = () => {
                   }`}
                 >
                   {p.badge && (
-                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full btn-gold-3d text-primary-foreground whitespace-nowrap">
+                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full glass-gold text-primary whitespace-nowrap">
                       {p.badge}
                     </span>
                   )}
