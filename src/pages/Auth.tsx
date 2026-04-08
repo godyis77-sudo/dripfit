@@ -29,19 +29,19 @@ const Auth = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5">
+    <div className="flex min-h-screen flex-col items-center justify-center px-5 relative overflow-hidden">
+      {/* Editorial dark background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-zinc-800 via-zinc-900 to-background" />
+      <div className="absolute inset-0 editorial-gradient" />
+
       {/* Back button */}
       <button
         onClick={handleBack}
-        className="fixed top-4 left-4 z-50 h-10 w-10 rounded-full glass-card flex items-center justify-center active:scale-95 transition-transform"
+        className="fixed top-4 left-4 z-50 h-10 w-10 rounded-full glass-dark flex items-center justify-center active:scale-95 transition-transform"
         aria-label="Go back"
       >
-        <ArrowLeft className="h-4 w-4 text-foreground" />
+        <ArrowLeft className="h-4 w-4 text-white/60" />
       </button>
-
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 h-[250px] w-[250px] rounded-full bg-primary/6 blur-[100px]" />
-      </div>
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 w-full max-w-[320px] flex flex-col items-center">
         <AuthForm onComplete={() => navigate(returnTo, { replace: true })} />

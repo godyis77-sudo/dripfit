@@ -233,7 +233,7 @@
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.25", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ=="],
 
-    "@lovable.dev/cloud-auth-js": ["@lovable.dev/cloud-auth-js@1.0.1", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@lovable.dev/cloud-auth-js/-/cloud-auth-js-1.0.1.tgz", {}, "sha512-0IDAudiTtHpwCzq4a57LvYRSQr92xMW9S+4Q8PmsZfSAkPThBYnOTWtQTAPTM4qarQhDa04HWogy1z0aKGcmrg=="],
+    "@lovable.dev/cloud-auth-js": ["@lovable.dev/cloud-auth-js@1.1.0", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@lovable.dev/cloud-auth-js/-/cloud-auth-js-1.1.0.tgz", {}, "sha512-T5R5n1KeL8U12EJYQMglC/mnNPsAY76dw9lbI4CPv1DZAjPM2Y0z+kVeo0VLDdo4wyWpgRt8MZaar7p4lRgnPQ=="],
 
     "@nodelib/fs.scandir": ["@nodelib/fs.scandir@2.1.5", "", { "dependencies": { "@nodelib/fs.stat": "2.0.5", "run-parallel": "^1.1.9" } }, "sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g=="],
 
@@ -265,9 +265,9 @@
 
     "@pkgjs/parseargs": ["@pkgjs/parseargs@0.11.0", "", {}, "sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg=="],
 
-    "@posthog/core": ["@posthog/core@1.24.6", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@posthog/core/-/core-1.24.6.tgz", {}, "sha512-9WkcRKqmXSWIJcca6m3VwA9YbFd4HiG2hKEtDq6FcwEHlvfDhQQUZ5/sJZ47Fw8OtyNMHQ6rW4+COttk4Bg5NQ=="],
+    "@posthog/core": ["@posthog/core@1.25.1", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@posthog/core/-/core-1.25.1.tgz", {}, "sha512-76enEGwLVtcCTbfAr1wJ6zi4tYzVkGsqJx+H9JiX0K8/VxuKdbOtVShsOJhTD9uvFfTeW3DX+PSCelcqWrRRkw=="],
 
-    "@posthog/types": ["@posthog/types@1.364.7", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@posthog/types/-/types-1.364.7.tgz", {}, "sha512-Rg6q4wSu8krrn8f3Nv44kGXjor4qh5iG0typt2sB7/SYQFRSbXYE2C46+qDMcBYGxmRMsWBitBcZ9x94DQCnfA=="],
+    "@posthog/types": ["@posthog/types@1.365.3", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@posthog/types/-/types-1.365.3.tgz", {}, "sha512-dI5EpyEcL58LAsZ6tzpJbRjRaS12ZlWDFwoDLc+BoUP0ROjQTAJGsdB9GPuaD79Pns0hybl6Z5cIdPZQ9xpRmg=="],
 
     "@protobufjs/aspromise": ["@protobufjs/aspromise@1.1.2", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@protobufjs/aspromise/-/aspromise-1.1.2.tgz", {}, "sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ=="],
 
@@ -1197,7 +1197,7 @@
 
     "postcss-value-parser": ["postcss-value-parser@4.2.0", "", {}, "sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ=="],
 
-    "posthog-js": ["posthog-js@1.364.7", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/posthog-js/-/posthog-js-1.364.7.tgz", { "dependencies": { "@opentelemetry/api": "^1.9.0", "@opentelemetry/api-logs": "^0.208.0", "@opentelemetry/exporter-logs-otlp-http": "^0.208.0", "@opentelemetry/resources": "^2.2.0", "@opentelemetry/sdk-logs": "^0.208.0", "@posthog/core": "1.24.6", "@posthog/types": "1.364.7", "core-js": "^3.38.1", "dompurify": "^3.3.2", "fflate": "^0.4.8", "preact": "^10.28.2", "query-selector-shadow-dom": "^1.0.1", "web-vitals": "^5.1.0" } }, "sha512-mjYUjim0PSNUjxbGR8MGl7hnbbJMCU+Dy4gRexMRGMRlZT9tskGzsgS4Q6Cvx+63lpkQg5kJrC4bHCuILnQ4/A=="],
+    "posthog-js": ["posthog-js@1.365.3", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/posthog-js/-/posthog-js-1.365.3.tgz", { "dependencies": { "@opentelemetry/api": "^1.9.0", "@opentelemetry/api-logs": "^0.208.0", "@opentelemetry/exporter-logs-otlp-http": "^0.208.0", "@opentelemetry/resources": "^2.2.0", "@opentelemetry/sdk-logs": "^0.208.0", "@posthog/core": "1.25.1", "@posthog/types": "1.365.3", "core-js": "^3.38.1", "dompurify": "^3.3.2", "fflate": "^0.4.8", "preact": "^10.28.2", "query-selector-shadow-dom": "^1.0.1", "web-vitals": "^5.1.0" } }, "sha512-cBYaGX40RcWAKWt+IkHalTuk83QIT/oHaARyF34bUGdL37odJPAr/RZ3DVvC83h1V7lHiPPTkc9kOnlI8gjkNA=="],
 
     "preact": ["preact@10.29.1", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/preact/-/preact-10.29.1.tgz", {}, "sha512-gQCLc/vWroE8lIpleXtdJhTFDogTdZG9AjMUpVkDf2iTCNwYNWA+u16dL41TqUDJO4gm2IgrcMv3uTpjd4Pwmg=="],
 
