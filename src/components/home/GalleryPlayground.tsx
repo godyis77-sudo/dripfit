@@ -52,41 +52,41 @@ const GalleryPlayground = () => {
   };
 
   return (
-    <div className="relative bg-background pb-safe-tab aurora-bg">
+    <div className="relative bg-background pb-safe-tab">
       <div className="relative z-10 px-4 pt-2">
-        {/* Header */}
+        {/* Header — transparent, editorial */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center justify-between mb-3"
         >
           <div>
-            <BrandLogo size="lg" />
-            <p className="text-[11px] text-muted-foreground mt-0.5">Join 500+ early testers · Tap any item to try it on</p>
+            <h1 className="font-display text-lg text-primary tracking-[0.15em]">DRIPFIT ✔</h1>
+            <p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5">Join 500+ early testers</p>
           </div>
           {!user && (
             <button
               onClick={() => navigate('/auth')}
-              className="text-[11px] font-semibold text-muted-foreground active:opacity-70 tracking-widest uppercase"
+              className="text-[11px] font-semibold text-white/40 active:opacity-70 tracking-widest uppercase"
             >
               Sign In
             </button>
           )}
         </motion.div>
 
-        {/* Size Guide + Drip Drawer side by side */}
+        {/* Size Guide + Drip Drawer — glass-dark panels */}
         <div className="grid grid-cols-2 gap-2 mb-4">
           <motion.button
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.04 }}
             onClick={() => navigate(user && hasScan ? '/profile/body' : '/capture')}
-            className="btn-luxury text-primary-foreground rounded-2xl px-3 py-3 flex items-center gap-2 active:scale-[0.97] transition-transform shimmer-sweep"
+            className="glass-dark rounded-2xl px-3 py-3 flex items-center gap-2 active:scale-[0.97] transition-transform"
           >
-            <Ruler className="h-5 w-5 text-primary-foreground shrink-0" />
+            <Ruler className="h-5 w-5 text-white/60 shrink-0" />
             <div className="text-left">
-              <span className="block text-[16px] font-extrabold tracking-tight text-primary-foreground drop-shadow-[0_1px_2px_hsl(var(--foreground)/0.25)] leading-tight">Size Guide</span>
-              <span className="block text-[9px] font-semibold text-primary-foreground/90 leading-tight mt-0.5">Get your perfect fit</span>
+              <span className="block text-sm font-semibold text-white leading-tight">Size Guide</span>
+              <span className="block text-[11px] text-white/40 leading-tight mt-0.5">Get your perfect fit</span>
             </div>
           </motion.button>
 
@@ -95,41 +95,39 @@ const GalleryPlayground = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
             onClick={() => navigate('/closet')}
-            className="btn-luxury text-primary-foreground rounded-2xl px-3 py-3 flex items-center gap-2 active:scale-[0.97] transition-transform shimmer-sweep"
+            className="glass-dark rounded-2xl px-3 py-3 flex items-center gap-2 active:scale-[0.97] transition-transform"
           >
-            <Flame className="h-5 w-5 text-primary-foreground shrink-0" />
+            <Flame className="h-5 w-5 text-white/60 shrink-0" />
             <div className="text-left">
-              <span className="block text-[16px] font-extrabold tracking-tight text-primary-foreground drop-shadow-[0_1px_2px_hsl(var(--foreground)/0.25)] leading-tight">Drip Drawer</span>
-              <span className="block text-[9px] font-semibold text-primary-foreground/90 leading-tight mt-0.5">Swipe to fill your drip drawer</span>
+              <span className="block text-sm font-semibold text-white leading-tight">Drip Drawer</span>
+              <span className="block text-[11px] text-white/40 leading-tight mt-0.5">Swipe to fill your drip drawer</span>
             </div>
           </motion.button>
         </div>
 
-        {/* Hero Try-On CTA */}
+        {/* Hero Try-On CTA — glass-gold elegance */}
         <motion.button
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.07 }}
           onClick={() => { trackEvent('gallery_hero_tryon'); navigate('/tryon'); }}
-          className="w-full mb-4 btn-luxury text-primary-foreground rounded-2xl px-5 py-3 flex items-center gap-3 active:scale-[0.97] transition-transform shimmer-sweep"
+          className="w-full mb-4 glass-gold rounded-2xl px-5 py-3 flex items-center gap-3 active:scale-[0.97] transition-transform"
         >
-          <div className="h-12 w-12 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+          <div className="h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0 opacity-70">
             <FeatureIcon name="tryon" size={40} />
           </div>
           <div className="text-left flex-1">
-            <p className="text-[16px] font-extrabold tracking-tight text-primary-foreground drop-shadow-[0_1px_2px_hsl(var(--foreground)/0.25)]">Enter the Change Room—Try On</p>
-            
+            <p className="font-display text-[15px] text-white">Enter the Change Room — Try On</p>
           </div>
         </motion.button>
 
         {/* Weekly Outfits Hero Section */}
         <WeeklyOutfitsSection />
 
-
         {/* One-Tap Playground — interactive split-screen */}
         <OneTapPlayground />
 
-        {/* Category pills */}
+        {/* Category pills — glass inactive, glass-gold active */}
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
@@ -142,10 +140,10 @@ const GalleryPlayground = () => {
             <button
               key={cat.key}
               onClick={() => setActiveCategory(cat.key)}
-              className={`shrink-0 px-3.5 py-1.5 rounded-xl text-[11px] font-bold transition-colors min-h-[36px] ${
+              className={`shrink-0 px-3.5 py-1.5 rounded-xl text-[11px] font-bold transition-colors min-h-[36px] backdrop-blur-md ${
                 activeCategory === cat.key
-                  ? 'btn-luxury text-primary-foreground'
-                  : 'bg-card border border-border text-foreground/70'
+                  ? 'bg-primary/8 border border-primary/20 text-primary'
+                  : 'bg-white/5 border border-white/10 text-white/50'
               }`}
             >
               {cat.label}
@@ -153,11 +151,12 @@ const GalleryPlayground = () => {
           ))}
         </motion.div>
 
+        {/* Browse All — glass-gold pill */}
         <button
           onClick={() => navigate('/browse/all')}
-          className="w-full mb-3 py-2 rounded-xl btn-luxury text-primary-foreground text-[11px] font-bold active:scale-[0.97] transition-transform flex items-center justify-center gap-1"
+          className="w-full mb-3 py-2 rounded-xl glass-gold text-primary text-sm tracking-wide uppercase font-sans font-bold active:scale-[0.97] transition-transform flex items-center justify-center gap-1"
         >
-          <ShoppingBag className="h-3.5 w-3.5" /> Browse All →
+          <ShoppingBag className="h-3.5 w-3.5" /> Browse All 7,000+ Pieces
         </button>
 
         {/* Product Grid — category-broken like try-on page */}
