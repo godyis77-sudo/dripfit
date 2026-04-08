@@ -13,7 +13,7 @@ const CaptureViewfinder = ({ captureStep, photo }: CaptureViewfinderProps) => {
   const maskUrl = captureStep === 'side' ? bodySilhouetteSideMask : bodySilhouetteFrontMask;
 
   return (
-    <div className="relative w-full aspect-[3/4] rounded-xl overflow-hidden bg-card border-2 border-dashed border-border mb-3">
+    <div className="relative w-full aspect-[3/4] rounded-xl overflow-hidden glass-dark border border-white/10 mb-2">
       {photo ? (
         <img src={photo} alt={STEP_CONFIG[captureStep].title} className="w-full h-full object-cover img-normalize" />
       ) : (
@@ -105,8 +105,8 @@ const CaptureViewfinder = ({ captureStep, photo }: CaptureViewfinderProps) => {
             transition={{ duration: 1.5, repeat: Infinity }}
             className="absolute bottom-10 text-center"
           >
-            <p className="text-[11px] font-semibold text-primary/70">
-              {captureStep === 'front' ? 'Align with silhouette · head to feet' : 'Turn 90° · align with silhouette'}
+            <p className="text-[11px] font-medium text-primary/70">
+              {captureStep === 'front' ? 'Align · head to feet' : 'Turn 90° · align with outline'}
             </p>
           </motion.div>
         </div>

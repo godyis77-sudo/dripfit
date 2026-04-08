@@ -56,14 +56,14 @@ export const REFERENCE_OBJECTS: Record<ReferenceObject, { label: string; descrip
 
 export const STEP_CONFIG: Record<CaptureStep, { title: string; instruction: string; tip: string }> = {
   front: {
-    title: 'Front View',
-    instruction: 'Stand facing the camera in fitted clothing',
-    tip: 'Keep feet shoulder-width apart, arms relaxed at sides',
+    title: 'Front',
+    instruction: 'Face the camera · fitted clothing · head to toe',
+    tip: 'Feet apart, arms relaxed',
   },
   side: {
-    title: 'Side View',
-    instruction: 'Turn 90° to the right, keep hands at your sides',
-    tip: "Stand naturally, don't suck in your stomach",
+    title: 'Side',
+    instruction: 'Turn 90° right · arms at sides · stand naturally',
+    tip: 'Relax your posture, breathe normally',
   },
 };
 
