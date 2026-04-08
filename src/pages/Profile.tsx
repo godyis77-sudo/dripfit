@@ -232,26 +232,16 @@ const Profile = () => {
 
 
 
-        {/* Milestone Badges — collapsed by default */}
-        <Collapsible defaultOpen={false} className="mb-2">
+        {/* Milestones & Invite — single collapsible */}
+        <Collapsible defaultOpen={false} className="mb-3">
           <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-xl glass text-[12px] font-bold text-white/70 active:scale-[0.98] transition-transform">
-            <span className="flex items-center gap-1.5">🏅 Milestones</span>
+            <span className="flex items-center gap-1.5">🏅 Milestones & <Gift className="h-3.5 w-3.5 text-primary" /> Invite</span>
             <ChevronDown className="h-3.5 w-3.5 text-white/30 transition-transform [[data-state=open]>&]:rotate-180" />
           </CollapsibleTrigger>
-          <CollapsibleContent className="pt-2">
+          <CollapsibleContent className="pt-2 space-y-3">
             <div className="glass-dark rounded-xl p-3">
               <MilestoneBadges />
             </div>
-          </CollapsibleContent>
-        </Collapsible>
-
-        {/* Invite Friends — collapsed by default */}
-        <Collapsible defaultOpen={false} className="mb-3">
-          <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-xl glass text-[12px] font-bold text-white/70 active:scale-[0.98] transition-transform">
-            <span className="flex items-center gap-1.5"><Gift className="h-3.5 w-3.5 text-primary" /> Invite Friends</span>
-            <ChevronDown className="h-3.5 w-3.5 text-white/30 transition-transform [[data-state=open]>&]:rotate-180" />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="pt-2">
             <div className="glass-dark rounded-xl p-3">
               <InviteFriendsCard />
             </div>
