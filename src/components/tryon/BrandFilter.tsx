@@ -153,7 +153,7 @@ const BrandFilter = forwardRef<HTMLDivElement, BrandFilterProps>(({ gender, sele
   );
 
   return (
-    <div className="mb-3" ref={wrapperRef}>
+    <div className="mb-3" ref={(node) => { wrapperRef.current = node; if (typeof ref === 'function') ref(node); else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node; }}>
       <p className="text-[12px] font-bold text-foreground/70 uppercase tracking-wider mb-1.5">
         {multiSelect ? 'Filter by Brand' : 'Sort by Brand'}
       </p>
