@@ -44,7 +44,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState<TryOnPost | null>(null);
   const [caption, setCaption] = useState('');
-  const [isPublic, setIsPublic] = useState(true); // defaults to ON/Public
+  const [isPublic, setIsPublic] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [productUrl, setProductUrl] = useState('');
   const [linkExpanded, setLinkExpanded] = useState(false);
@@ -92,7 +92,6 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
     };
 
     if (isPublic && !selectedPost.is_public) {
-      // Bump publish time so newly shared looks appear in the first feed page
       updatePayload.created_at = new Date().toISOString();
     }
     if (productUrl.length > 5) {
@@ -117,26 +116,26 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto px-4 pb-6">
+      <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto px-4 pb-6 bg-black/80 backdrop-blur-xl border-t border-white/10">
         <SheetHeader className="pb-2">
           <div className="flex items-center justify-between">
             {step > 0 ? (
-              <Button variant="ghost" size="icon" className="h-10 w-10 min-h-[44px] min-w-[44px]" onClick={() => setStep(s => s - 1)} aria-label="Go back">
+              <Button variant="ghost" size="icon" className="h-10 w-10 min-h-[44px] min-w-[44px] text-white" onClick={() => setStep(s => s - 1)} aria-label="Go back">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             ) : (
               <div className="w-8" />
             )}
-            <SheetTitle className="text-sm font-bold">{stepTitles[step]}</SheetTitle>
+            <SheetTitle className="text-sm font-display font-bold text-white">{stepTitles[step]}</SheetTitle>
             <div className="w-8" />
           </div>
-          {/* Step indicator */}
+          {/* Step indicator — glass pills */}
           <div className="flex gap-1 justify-center pt-1">
             {[0, 1, 2].map(i => (
               <div
                 key={i}
                 className={`h-1 rounded-full transition-all ${
-                  i === step ? 'w-6 bg-primary' : i < step ? 'w-4 bg-primary/40' : 'w-4 bg-muted'
+                  i === step ? 'w-6 bg-primary' : i < step ? 'w-4 bg-primary/40' : 'w-4 bg-white/10'
                 }`}
               />
             ))}
@@ -149,13 +148,13 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
             <motion.div key="step0" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="pt-3">
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                  <Loader2 className="h-5 w-5 animate-spin text-white/30" />
                 </div>
               ) : posts.length === 0 ? (
                 <div className="text-center py-10 space-y-2">
-                  <ImageIcon className="h-8 w-8 text-muted-foreground/40 mx-auto" />
-                  <p className="text-sm font-medium text-foreground">No try-ons yet</p>
-                  <p className="text-xs text-muted-foreground">Create a try-on first, then come back to post it.</p>
+                  <ImageIcon className="h-8 w-8 text-white/20 mx-auto" />
+                  <p className="text-sm font-medium text-white">No try-ons yet</p>
+                  <p className="text-xs text-white/40">Create a try-on first, then come back to post it.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-3 gap-1.5">
@@ -163,13 +162,13 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                     <button
                       key={post.id}
                       onClick={() => { setSelectedPost(post); setStep(1); }}
-                      className={`relative rounded-lg overflow-hidden border-2 transition-all active:scale-95 ${
-                        selectedPost?.id === post.id ? 'border-primary' : 'border-transparent'
+                      className={`relative rounded-xl overflow-hidden border-2 transition-all active:scale-95 ${
+                        selectedPost?.id === post.id ? 'border-primary' : 'border-white/5'
                       }`}
                     >
                       <img src={post.result_photo_url} alt="Try-on" className="w-full aspect-[3/4] object-cover rounded-xl" />
                       {post.is_public && (
-                        <div className="absolute top-1 right-1 bg-primary/80 rounded-full p-0.5">
+                        <div className="absolute top-1 right-1 bg-primary/60 rounded-full p-0.5">
                           <Globe className="h-2.5 w-2.5 text-primary-foreground" />
                         </div>
                       )}
@@ -184,26 +183,26 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
           {step === 1 && selectedPost && (
             <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="pt-3 space-y-3">
               <div className="flex gap-3">
-                <img src={selectedPost.result_photo_url} alt="Selected" className="w-20 h-28 rounded-lg object-cover border border-border" />
+                <img src={selectedPost.result_photo_url} alt="Selected" className="w-20 h-28 rounded-xl object-cover border border-white/10" />
                 <div className="flex-1 space-y-2">
                   <Textarea
                     placeholder="Ask the community something…"
                     value={caption}
                     onChange={e => setCaption(e.target.value)}
-                    className="rounded-lg resize-none text-sm"
+                    className="rounded-xl resize-none text-sm bg-white/5 border-white/10 text-white placeholder:text-white/25"
                     rows={3}
                   />
                 </div>
               </div>
               <div>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">Quick prompts</p>
+                <p className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-1.5">Quick prompts</p>
                 <div className="flex flex-wrap gap-1.5">
                   {PROMPT_SUGGESTIONS.map(p => (
                     <button
                       key={p}
                       onClick={() => setCaption(p)}
-                      className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${
-                        caption === p ? 'btn-gold-3d border-transparent text-primary-foreground' : 'border-border text-muted-foreground'
+                      className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium border backdrop-blur-sm transition-all active:scale-95 ${
+                        caption === p ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-white/5 border-white/10 text-white/50'
                       }`}
                     >
                       {p}
@@ -213,37 +212,37 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
               </div>
 
               {/* Product link collapsible */}
-              <div className="border border-border rounded-lg overflow-hidden">
+              <div className="border border-white/10 rounded-xl overflow-hidden">
                 <button
                   onClick={() => setLinkExpanded(!linkExpanded)}
-                  className="w-full flex items-center justify-between px-3 py-2.5 text-left btn-gold-3d rounded-lg"
+                  className="w-full flex items-center justify-between px-3 py-2.5 text-left bg-primary/8 backdrop-blur-sm border-b border-white/5 rounded-t-xl text-primary"
                 >
                   <div className="flex items-center gap-2">
                     <Link2 className="h-3.5 w-3.5" />
-                    <span className="text-[11px]">
+                    <span className="text-[11px] font-bold tracking-wide">
                       Add product link <span className="opacity-60">(optional)</span>
                       {!linkExpanded && <span className="opacity-60"> — earn commission on clicks</span>}
                     </span>
                   </div>
-                  {linkExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                  {linkExpanded ? <ChevronUp className="h-3.5 w-3.5 text-primary/60" /> : <ChevronDown className="h-3.5 w-3.5 text-primary/60" />}
                 </button>
                 {linkExpanded && (
-                  <div className="px-3 pb-3 space-y-2">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Product Link (optional)</p>
+                  <div className="px-3 pb-3 pt-2 space-y-2 bg-black/40">
+                    <p className="text-[10px] font-bold text-white/30 uppercase tracking-wider">Product Link (optional)</p>
                     <Input
                       placeholder="https://zara.com/product/..."
                       value={productUrl}
                       onChange={e => setProductUrl(e.target.value)}
-                      className="rounded-lg h-9 text-[12px]"
+                      className="rounded-lg h-9 text-[12px] bg-white/5 border-white/10 text-white placeholder:text-white/25"
                     />
                     {detectedRetailer && (
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] px-2 py-0.5 rounded-md pill pill-filled font-bold flex items-center gap-1">
+                        <span className="text-[10px] px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-primary font-bold flex items-center gap-1">
                           <Store className="h-3 w-3" /> {detectedRetailer}
                         </span>
                       </div>
                     )}
-                    <p className="text-[11px] text-muted-foreground/60 leading-relaxed">
+                    <p className="text-[11px] text-white/30 leading-relaxed">
                       We may earn a commission when your followers shop this look. It doesn't change their price.
                     </p>
                   </div>
@@ -251,28 +250,28 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
               </div>
 
               {/* Instagram post link */}
-              <div className="border border-border rounded-lg overflow-hidden">
+              <div className="border border-white/10 rounded-xl overflow-hidden">
                 <button
                   onClick={() => setIgExpanded(!igExpanded)}
-                  className="w-full flex items-center justify-between px-3 py-2.5 text-left btn-gold-3d rounded-lg"
+                  className="w-full flex items-center justify-between px-3 py-2.5 text-left bg-primary/8 backdrop-blur-sm border-b border-white/5 rounded-t-xl text-primary"
                 >
                   <div className="flex items-center gap-2">
                     <Instagram className="h-3.5 w-3.5" />
-                    <span className="text-[11px]">
+                    <span className="text-[11px] font-bold tracking-wide">
                       Link Instagram post <span className="opacity-60">(optional)</span>
                     </span>
                   </div>
-                  {igExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                  {igExpanded ? <ChevronUp className="h-3.5 w-3.5 text-primary/60" /> : <ChevronDown className="h-3.5 w-3.5 text-primary/60" />}
                 </button>
                 {igExpanded && (
-                  <div className="px-3 pb-3 space-y-2">
+                  <div className="px-3 pb-3 pt-2 space-y-2 bg-black/40">
                     <Input
                       placeholder="https://instagram.com/p/..."
                       value={igPostUrl}
                       onChange={e => setIgPostUrl(e.target.value)}
-                      className="rounded-lg h-9 text-[12px]"
+                      className="rounded-lg h-9 text-[12px] bg-white/5 border-white/10 text-white placeholder:text-white/25"
                     />
-                    <p className="text-[11px] text-muted-foreground/60 leading-relaxed">
+                    <p className="text-[11px] text-white/30 leading-relaxed">
                       Cross-post your fit — link your IG post so the community can find you there too.
                     </p>
                   </div>
@@ -281,7 +280,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
 
               {/* Clothing category selector */}
               <div>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">What type of clothing is this?</p>
+                <p className="text-[10px] font-bold text-white/30 uppercase tracking-wider mb-1.5">What type of clothing is this?</p>
                 <div className="flex flex-wrap gap-1.5">
                   {[
                     { key: 'tops', label: 'Tops' },
@@ -294,10 +293,10 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
                     <button
                       key={cat.key}
                       onClick={() => setClothingCategory(cat.key)}
-                      className={`px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all active:scale-95 ${
+                      className={`px-3 py-1.5 rounded-full text-[11px] font-bold border backdrop-blur-sm transition-all active:scale-95 ${
                         clothingCategory === cat.key
-                          ? 'btn-gold-3d border-transparent text-primary-foreground'
-                          : 'border-border text-muted-foreground'
+                          ? 'bg-primary/10 border-primary/20 text-primary'
+                          : 'bg-white/5 border-white/10 text-white/50'
                       }`}
                     >
                       {cat.label}
@@ -307,7 +306,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
               </div>
 
               <Button
-                className="w-full rounded-lg btn-luxury text-primary-foreground h-10 text-sm font-bold"
+                className="w-full rounded-xl btn-luxury text-primary-foreground h-10 text-sm font-bold"
                 onClick={() => setStep(2)}
               >
                 Next <ArrowRight className="ml-1 h-4 w-4" />
@@ -318,27 +317,27 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
           {/* Step 3: Review & post */}
           {step === 2 && selectedPost && (
             <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="pt-3 space-y-4">
-              <div className="bg-card border border-border rounded-xl overflow-hidden">
+              <div className="bg-black/40 backdrop-blur-md border border-white/8 rounded-xl overflow-hidden">
                 <img src={selectedPost.result_photo_url} alt="Preview" className="w-full aspect-[4/5] object-cover" />
                 {caption && (
-                  <p className="px-3 py-2 text-sm font-medium text-foreground">{caption}</p>
+                  <p className="px-3 py-2 text-sm font-medium text-white/80 italic">{caption}</p>
                 )}
               </div>
 
               {productUrl && detectedRetailer && (
-                <div className="flex items-center gap-2 bg-primary/5 border border-primary/20 rounded-lg px-3 py-2">
+                <div className="flex items-center gap-2 bg-primary/8 border border-primary/20 rounded-xl px-3 py-2">
                   <Link2 className="h-3.5 w-3.5 text-primary" />
                   <span className="text-[11px] font-medium text-primary">{detectedRetailer}</span>
-                  <span className="text-[11px] text-muted-foreground truncate flex-1">{productUrl}</span>
+                  <span className="text-[11px] text-white/40 truncate flex-1">{productUrl}</span>
                 </div>
               )}
 
-              <div className="flex items-center justify-between bg-card border border-border rounded-xl px-4 py-3">
+              <div className="flex items-center justify-between bg-black/40 backdrop-blur-md border border-white/8 rounded-xl px-4 py-3">
                 <div className="flex items-center gap-2">
-                  {isPublic ? <Globe className="h-4 w-4 text-primary" /> : <Lock className="h-4 w-4 text-muted-foreground" />}
+                  {isPublic ? <Globe className="h-4 w-4 text-primary" /> : <Lock className="h-4 w-4 text-white/40" />}
                   <div>
-                    <p className="text-sm font-semibold text-foreground">{isPublic ? 'Public' : 'Private'}</p>
-                    <p className="text-[10px] text-muted-foreground">
+                    <p className="text-sm font-semibold text-white">{isPublic ? 'Public' : 'Private'}</p>
+                    <p className="text-[10px] text-white/40">
                       {isPublic ? 'Everyone on Style Check can see & vote' : 'Only you can see this look'}
                     </p>
                   </div>
@@ -347,7 +346,7 @@ const PostLookFlow = ({ open, onOpenChange, onPosted }: PostLookFlowProps) => {
               </div>
 
               <Button
-                className="w-full rounded-lg btn-luxury text-primary-foreground h-11 text-sm font-bold"
+                className="w-full rounded-xl btn-luxury text-primary-foreground h-11 text-sm font-bold"
                 onClick={handlePost}
                 disabled={submitting}
               >

@@ -54,6 +54,11 @@ interface ShopFiltersPanelProps {
   onClearAll: () => void;
 }
 
+const pillClass = (active: boolean) =>
+  active
+    ? 'bg-primary/10 border-primary/20 text-primary'
+    : 'bg-white/5 border-white/10 text-white/60';
+
 const ShopFiltersPanel = ({
   shopCategory, shopBrand, shopGender, shopGenre, shopRetailer, shopSort,
   availableRetailers, availableFits,
@@ -71,7 +76,7 @@ const ShopFiltersPanel = ({
       <div className="mb-3">
         <button
           onClick={() => setOpen(!open)}
-          className="relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold btn-luxury text-primary-foreground"
+          className="relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold bg-white/5 backdrop-blur-md border border-white/10 text-white/70"
         >
           <SlidersHorizontal className="h-4 w-4" />
           {activeCount > 0 ? `Filters (${activeCount})` : 'Filters'}
@@ -84,50 +89,50 @@ const ShopFiltersPanel = ({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden border-b border-border bg-card mb-3"
+            className="overflow-hidden border-b border-white/5 bg-black/40 backdrop-blur-md mb-3"
           >
             <div className="px-4 py-3 space-y-3">
               {/* Sort */}
               <div>
-                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Sort by</p>
+                <p className="text-[11px] font-bold text-white/30 uppercase tracking-wider mb-1.5">Sort by</p>
                 <div className="flex flex-wrap gap-1.5">
                   {SORT_OPTIONS.map(opt => (
-                    <button key={opt.key} onClick={() => onSortChange(opt.key)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${shopSort === opt.key ? 'btn-luxury text-primary-foreground' : 'bg-card border border-primary/30 text-foreground'}`}>{opt.label}</button>
+                    <button key={opt.key} onClick={() => onSortChange(opt.key)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border backdrop-blur-sm transition-colors ${pillClass(shopSort === opt.key)}`}>{opt.label}</button>
                   ))}
                 </div>
               </div>
 
               {/* Category */}
               <div>
-                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Category</p>
+                <p className="text-[11px] font-bold text-white/30 uppercase tracking-wider mb-1.5">Category</p>
                 <div className="flex flex-wrap gap-1.5">
                   {SHOP_CATEGORIES.map(cat => (
-                    <button key={cat.key} onClick={() => onCategoryChange(cat.key)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${shopCategory === cat.key ? 'btn-luxury text-primary-foreground' : 'bg-card border border-primary/30 text-foreground'}`}>{cat.label}</button>
+                    <button key={cat.key} onClick={() => onCategoryChange(cat.key)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border backdrop-blur-sm transition-colors ${pillClass(shopCategory === cat.key)}`}>{cat.label}</button>
                   ))}
                 </div>
               </div>
 
               {/* Brand */}
               <div>
-                <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Brand</p>
+                <p className="text-[11px] font-bold text-white/30 uppercase tracking-wider mb-1.5">Brand</p>
                 <BrandFilter gender={shopGender === 'all' ? null : shopGender} selectedBrand={shopBrand} onBrandChange={onBrandChange} />
               </div>
 
               {/* Retailer — collapsible */}
               <div>
                 <button onClick={() => setRetailerOpen(!retailerOpen)} className="flex items-center justify-between w-full">
-                  <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
+                  <p className="text-[11px] font-bold text-white/30 uppercase tracking-wider">
                     Retailer {shopRetailer ? `· ${shopRetailer}` : ''}
                   </p>
-                  <ChevronDown className={`h-3.5 w-3.5 text-foreground/50 transition-transform ${retailerOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`h-3.5 w-3.5 text-primary/60 transition-transform ${retailerOpen ? 'rotate-180' : ''}`} />
                 </button>
                 <AnimatePresence>
                   {retailerOpen && (
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                       <div className="flex flex-wrap gap-1.5 mt-1.5">
-                        <button onClick={() => onRetailerChange(null)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${!shopRetailer ? 'btn-luxury text-primary-foreground' : 'bg-card border border-primary/30 text-foreground'}`}>All</button>
+                        <button onClick={() => onRetailerChange(null)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border backdrop-blur-sm transition-colors ${pillClass(!shopRetailer)}`}>All</button>
                         {availableRetailers.map(retailer => (
-                          <button key={retailer} onClick={() => onRetailerChange(retailer === shopRetailer ? null : retailer)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${shopRetailer === retailer ? 'btn-luxury text-primary-foreground' : 'bg-card border border-primary/30 text-foreground'}`}>{retailer}</button>
+                          <button key={retailer} onClick={() => onRetailerChange(retailer === shopRetailer ? null : retailer)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border backdrop-blur-sm transition-colors capitalize ${pillClass(shopRetailer === retailer)}`}>{retailer}</button>
                         ))}
                       </div>
                     </motion.div>
@@ -138,16 +143,16 @@ const ShopFiltersPanel = ({
               {/* Genre — collapsible */}
               <div>
                 <button onClick={() => setGenreOpen(!genreOpen)} className="flex items-center justify-between w-full">
-                  <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">Genre {shopGenre ? `· ${shopGenre}` : ''}</p>
-                  <ChevronDown className={`h-3.5 w-3.5 text-foreground/50 transition-transform ${genreOpen ? 'rotate-180' : ''}`} />
+                  <p className="text-[11px] font-bold text-white/30 uppercase tracking-wider">Genre {shopGenre ? `· ${shopGenre}` : ''}</p>
+                  <ChevronDown className={`h-3.5 w-3.5 text-primary/60 transition-transform ${genreOpen ? 'rotate-180' : ''}`} />
                 </button>
                 <AnimatePresence>
                   {genreOpen && (
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                       <div className="flex flex-wrap gap-1.5 mt-1.5">
-                        <button onClick={() => onGenreChange(null)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${!shopGenre ? 'btn-luxury text-primary-foreground' : 'bg-card border border-primary/30 text-foreground'}`}>All</button>
+                        <button onClick={() => onGenreChange(null)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border backdrop-blur-sm transition-colors ${pillClass(!shopGenre)}`}>All</button>
                         {BRAND_GENRES.map(genre => (
-                          <button key={genre} onClick={() => onGenreChange(genre === shopGenre ? null : genre)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${shopGenre === genre ? 'btn-luxury text-primary-foreground' : 'bg-card border border-primary/30 text-foreground'}`}>{genre}</button>
+                          <button key={genre} onClick={() => onGenreChange(genre === shopGenre ? null : genre)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border backdrop-blur-sm transition-colors ${pillClass(shopGenre === genre)}`}>{genre}</button>
                         ))}
                       </div>
                     </motion.div>
@@ -159,15 +164,15 @@ const ShopFiltersPanel = ({
               {availableFits.length > 0 && (
                 <div>
                   <button onClick={() => setFitOpen(!fitOpen)} className="flex items-center justify-between w-full">
-                    <p className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">Fit / Cut</p>
-                    <ChevronDown className={`h-3.5 w-3.5 text-foreground/50 transition-transform ${fitOpen ? 'rotate-180' : ''}`} />
+                    <p className="text-[11px] font-bold text-white/30 uppercase tracking-wider">Fit / Cut</p>
+                    <ChevronDown className={`h-3.5 w-3.5 text-primary/60 transition-transform ${fitOpen ? 'rotate-180' : ''}`} />
                   </button>
                   <AnimatePresence>
                     {fitOpen && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                         <div className="flex flex-wrap gap-1.5 mt-1.5">
                           {availableFits.map(fit => (
-                            <button key={fit} className="px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize bg-card border border-primary/30 text-foreground">{fit}</button>
+                            <button key={fit} className="px-2.5 py-1 rounded-lg text-[10px] font-semibold border backdrop-blur-sm transition-colors capitalize bg-white/5 border-white/10 text-white/60">{fit}</button>
                           ))}
                         </div>
                       </motion.div>

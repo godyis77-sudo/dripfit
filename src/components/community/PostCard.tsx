@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, User, UserPlus, UserCheck, Share2 } from 'lucide-react';
+import { Trash2, User, UserPlus, UserCheck, Share2, ShoppingCart, Bookmark } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -68,7 +68,7 @@ const PostCard = ({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.03 }}
-      className="bg-card border border-border rounded-xl overflow-hidden flex flex-col"
+      className="bg-black/30 backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden flex flex-col"
     >
       {/* Header */}
       <div className="flex items-center gap-1.5 px-2 pt-1.5 pb-1">
@@ -78,11 +78,11 @@ const PostCard = ({
               {post.profile?.avatar_url ? (
                 <img src={post.profile.avatar_url} alt="" className="h-4 w-4 rounded-full object-cover shrink-0" />
               ) : (
-                <div className="h-4 w-4 rounded-full badge-gold-3d flex items-center justify-center shrink-0">
-                  <span className="text-[7px] font-bold text-primary-foreground">{(post.profile?.display_name || 'A')[0].toUpperCase()}</span>
+                <div className="h-4 w-4 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                  <span className="text-[7px] font-bold text-white/70">{(post.profile?.display_name || 'A')[0].toUpperCase()}</span>
                 </div>
               )}
-              <p className="text-[11px] font-semibold text-foreground truncate">{post.profile?.display_name || 'Anon'}</p>
+              <p className="text-[11px] font-medium text-white truncate">{post.profile?.display_name || 'Anon'}</p>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="min-w-[140px]">
@@ -147,7 +147,7 @@ const PostCard = ({
           />
           {hasPostedCaption && (
             <div className="absolute bottom-6 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-2 pt-4 pb-1">
-              <p className="text-[11px] font-semibold text-white line-clamp-2 drop-shadow-sm">{postedCaption}</p>
+              <p className="text-[11px] font-semibold text-white/60 italic line-clamp-2 drop-shadow-sm">{postedCaption}</p>
             </div>
           )}
           {/* Vote buttons */}
@@ -163,11 +163,11 @@ const PostCard = ({
                   transition={{ duration: 0.2 }}
                   onClick={(e) => { e.stopPropagation(); onVote(post.id, v.key); }}
                   className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all flex items-center gap-1 backdrop-blur-sm ${
-                    active ? 'bg-primary/30 border-primary/50 text-white' : 'border-white/15 text-white/70'
+                    active ? 'bg-primary/20 border-primary/40 text-white' : 'border-white/15 text-white/70'
                   }`}
                 >
                   <span className="text-[13px] leading-none">{v.emoji}</span>
-                  <span className="text-[10px] font-semibold leading-none">{voteCounts[post.id]?.[v.key] ?? 0}</span>
+                  <span className="text-[10px] font-semibold leading-none font-display">{voteCounts[post.id]?.[v.key] ?? 0}</span>
                 </motion.button>
               );
             })}
@@ -175,7 +175,7 @@ const PostCard = ({
         </div>
         {filter === 'similar' && (post as any).match_score && (
           <div
-            className="absolute top-2 right-2 text-[10px] font-bold rounded-full px-1.5 py-0.5 pill-filled text-primary-foreground"
+            className="absolute top-2 right-2 text-[10px] font-bold rounded-full px-1.5 py-0.5 bg-black/50 backdrop-blur-sm border border-white/10 text-white/70"
           >
             {(post as any).match_score}% match
           </div>
@@ -201,7 +201,7 @@ const PostCard = ({
               trackEvent('style_check_share', { postId: post.id });
             } catch { /* user cancelled */ }
           }}
-          className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-primary transition-colors min-h-[32px]"
+          className="flex items-center gap-1 text-[10px] text-white/30 hover:text-primary transition-colors min-h-[32px]"
         >
           <Share2 className="h-3 w-3" />
           <span>Share</span>

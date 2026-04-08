@@ -40,9 +40,7 @@ interface ProductPreviewModalProps {
   onClose: () => void;
   onTryOn?: (product: ProductPreviewData) => void;
   onShop?: (product: ProductPreviewData) => void;
-  /** User-authored caption shown below the image */
   caption?: string | null;
-  /** Optional list of all items in the look — renders an expandable "TRY-ON - SHOP" section */
   lookItems?: LookItemData[];
   onLookItemTryOn?: (item: LookItemData) => void;
   onLookItemShop?: (item: LookItemData) => void;
@@ -63,8 +61,6 @@ function ZoomableProductImage({ src, alt, brand, caption, additionalImages }: { 
   const navHintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => { setCurrentIdx(0); setZoom(1); setPan({ x: 0, y: 0 }); }, [src]);
-
-  // Clear nav hint timer on unmount
   useEffect(() => () => { if (navHintTimer.current) clearTimeout(navHintTimer.current); }, []);
 
   const showNavHint = useCallback((dir: 'left' | 'right') => {
@@ -133,7 +129,6 @@ function ZoomableProductImage({ src, alt, brand, caption, additionalImages }: { 
     if (zoom > 1) { setZoom(1); setPan({ x: 0, y: 0 }); } else { setZoom(2.5); }
   }, [zoom]);
 
-  // Tap zones for left/right navigation
   const handleTapZone = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (zoom !== 1 || !hasMultiple) return;
     const rect = e.currentTarget.getBoundingClientRect();
@@ -163,9 +158,8 @@ function ZoomableProductImage({ src, alt, brand, caption, additionalImages }: { 
     >
       <div className="relative h-full w-full rounded-2xl overflow-hidden bg-muted" onClick={handleTapZone}>
         {brand && (
-          <span className="absolute top-3 left-3 z-20 brand-label-lg">{brand}</span>
+          <span className="absolute top-3 left-3 z-20 text-[10px] tracking-[0.2em] uppercase text-white/40 font-bold">{brand}</span>
         )}
-        {/* Dot indicators — with dark outline for visibility on white backgrounds */}
         {hasMultiple && zoom <= 1 && (
           <div className="absolute bottom-14 left-1/2 -translate-x-1/2 z-20 flex gap-2">
             {allImages.map((_, i) => (
@@ -182,7 +176,6 @@ function ZoomableProductImage({ src, alt, brand, caption, additionalImages }: { 
             ))}
           </div>
         )}
-        {/* Nav hint chevrons */}
         {navHint === 'left' && (
           <div className="absolute left-3 top-1/2 -translate-y-1/2 z-20 animate-pulse">
             <ChevronLeft className="h-8 w-8 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" />
@@ -222,10 +215,6 @@ function ZoomableProductImage({ src, alt, brand, caption, additionalImages }: { 
   );
 }
 
-/**
- * Unified fullscreen product preview modal.
- * Portaled to document.body, scroll-locked, maximized image.
- */
 const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookItems, onLookItemTryOn, onLookItemShop }: ProductPreviewModalProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -287,64 +276,63 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
       className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden overscroll-none bg-black/95 flex flex-col"
       onClick={onClose}
     >
-      {/* Close */}
+      {/* Close — glass circular */}
       <button
         onClick={onClose}
-        className="absolute right-4 z-[120] h-11 w-11 min-h-[44px] min-w-[44px] rounded-full bg-black/70 border border-white/25 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
+        className="absolute right-4 z-[120] h-11 w-11 min-h-[44px] min-w-[44px] rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center active:scale-90 transition-transform"
         style={{ top: 'max(1rem, env(safe-area-inset-top, 1rem))' }}
         aria-label="Close"
       >
         <X className="h-5 w-5 text-white" />
       </button>
 
-      {/* Image — maximized with zoom */}
+      {/* Image */}
       <ZoomableProductImage src={product.image_url} alt={product.name} brand={product.brand} caption={caption} additionalImages={product.additional_images} />
 
-      {/* Info + Actions — pinned to bottom */}
+      {/* Info + Actions */}
       <div
         className="shrink-0 px-5 pb-6 pt-3 space-y-3 max-h-[45dvh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="text-center">
-          <p className="text-[11px] text-white/50 uppercase tracking-wider font-bold shimmer-sweep">{product.brand}</p>
+          <p className="text-[10px] tracking-[0.2em] uppercase text-white/40 font-bold">{product.brand}</p>
           {product.price_cents != null && (
-            <p className="text-sm font-bold text-primary mt-1 shimmer-sweep">
+            <p className="font-display text-xl text-primary mt-1">
               ${(product.price_cents / 100).toFixed(0)}
             </p>
           )}
-          {/* Fit / Fabric / Genre pills */}
           {(hasFit || hasFabric || product.style_genre) && (
             <div className="flex flex-wrap justify-center gap-1.5 mt-2">
               {product.style_genre && (
-                <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold uppercase tracking-wider">
+                <span className="px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-wider">
                   {product.style_genre}
                 </span>
               )}
               {hasFit && fitItems.map((fit) => (
-                <span key={fit} className="px-2 py-0.5 rounded-full bg-white/10 text-white/80 text-[10px] font-semibold capitalize">
+                <span key={fit} className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-white/60 text-[10px] font-semibold capitalize">
                   {fit}
                 </span>
               ))}
               {hasFabric && fabricItems.map((fab) => (
-                <span key={fab} className="px-2 py-0.5 rounded-full bg-white/10 text-white/80 text-[10px] font-semibold capitalize">
+                <span key={fab} className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-white/60 text-[10px] font-semibold capitalize">
                   {fab}
                 </span>
               ))}
             </div>
            )}
           {product.description && (
-            <p className="text-[12px] text-white/70 leading-relaxed text-center line-clamp-3 px-2 mt-1">
+            <p className="text-[12px] text-white/50 leading-relaxed text-center line-clamp-3 px-2 mt-1">
               {product.description}
             </p>
           )}
         </div>
 
-        {/* Add to Closet + Add to Cart */}
+        {/* +Closet + +Cart — glass treatment */}
         {user && (
           <div className="max-w-sm mx-auto w-full flex gap-2">
             <Button
-              variant={addedToWardrobe ? 'default' : 'outline'}
-              className={`flex-1 h-11 rounded-xl text-[12px] font-bold gap-1.5 ${addedToWardrobe ? 'bg-primary/20 text-primary border-primary/30' : 'border-white/20 text-white hover:bg-white/10'}`}
+              variant="outline"
+              className={`flex-1 h-11 rounded-xl text-[12px] font-bold gap-1.5 backdrop-blur-sm ${addedToWardrobe ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'}`}
               onClick={handleAddToWardrobe}
               disabled={addingToWardrobe || addedToWardrobe}
             >
@@ -354,7 +342,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
             {product.id && (
               <Button
                 variant="outline"
-                className={`flex-1 h-11 rounded-xl text-[12px] font-bold gap-1.5 ${isInCart(product.id) ? 'border-primary/40 bg-primary/20 text-primary' : 'border-white/20 text-white hover:bg-white/10'}`}
+                className={`flex-1 h-11 rounded-xl text-[12px] font-bold gap-1.5 backdrop-blur-sm ${isInCart(product.id) ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'}`}
                 onClick={() => {
                   if (!product.id) return;
                   if (isInCart(product.id)) {
@@ -378,7 +366,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
           </div>
         )}
 
-        {/* Price Watch button */}
+        {/* Watch Price — glass pill */}
         {user && product.id && product.price_cents != null && (
           <div className="flex justify-center">
             <PriceWatchButton
@@ -395,7 +383,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
         <div className="flex gap-3 max-w-sm mx-auto w-full">
           {onTryOn && (
             <Button
-              className="flex-1 gap-2 h-12 rounded-xl font-bold btn-luxury text-primary-foreground shimmer-sweep"
+              className="flex-1 gap-2 h-12 rounded-xl font-bold bg-primary/8 backdrop-blur-md border border-primary/20 text-primary hover:bg-primary/15"
               onClick={() => onTryOn(product)}
             >
               <Sparkles className="h-4 w-4" />
@@ -404,7 +392,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
           )}
           {onShop && product.product_url && (
             <Button
-              className="flex-1 gap-2 h-12 rounded-xl font-bold btn-luxury text-primary-foreground shimmer-sweep"
+              className="flex-1 gap-2 h-12 rounded-xl font-bold btn-luxury text-primary-foreground"
               onClick={() => onShop(product)}
             >
               <ShoppingCart className="h-4 w-4" />
@@ -419,15 +407,15 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
             <button
               type="button"
               onClick={() => setLookOpen(!lookOpen)}
-              className="w-full flex items-center justify-center gap-2 btn-luxury text-primary-foreground shimmer-sweep active:scale-[0.98] transition-transform"
+              className="w-full flex items-center justify-center gap-2 bg-primary/8 backdrop-blur-md border border-primary/20 text-primary active:scale-[0.98] transition-transform"
               style={{ borderRadius: lookOpen ? '12px 12px 0 0' : '12px', padding: '12px 16px' }}
             >
               <ShoppingCart className="h-4 w-4" />
-              <span className="text-[13px] font-bold uppercase tracking-widest">
+              <span className="text-[11px] font-bold uppercase tracking-wide">
                 Shop Style / Try-On
               </span>
               <ChevronDown
-                className="h-4 w-4 transition-transform duration-200"
+                className="h-4 w-4 transition-transform duration-200 text-primary/60"
                 style={{ transform: lookOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
               />
             </button>
@@ -440,30 +428,25 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
                   transition={{ duration: 0.2, ease: 'easeOut' }}
                   className="overflow-hidden"
                 >
-                  <div className="px-3 py-2 space-y-2 bg-card border-x border-b border-border rounded-b-xl">
+                  <div className="px-3 py-2 space-y-2 bg-black/40 backdrop-blur-md border-x border-b border-white/8 rounded-b-xl">
                     {lookItems!.map((item, idx) => (
                       <div key={idx} className="flex items-center gap-2">
-                        {/* Thumbnail */}
                         {item.image_url ? (
-                          <div className="shrink-0 h-9 w-9 rounded-lg overflow-hidden bg-muted border border-border">
+                          <div className="shrink-0 h-9 w-9 rounded-lg overflow-hidden bg-muted border border-white/10">
                             <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
                           </div>
                         ) : (
-                          <div className="shrink-0 h-9 w-9 rounded-lg bg-muted border border-border flex items-center justify-center">
-                            <ShoppingBag className="h-3.5 w-3.5 text-muted-foreground/40" />
+                          <div className="shrink-0 h-9 w-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                            <ShoppingBag className="h-3.5 w-3.5 text-white/20" />
                           </div>
                         )}
-
-                        {/* Info */}
                         <div className="flex-1 min-w-0">
-                          <span className="text-[11px] uppercase tracking-wider font-bold text-muted-foreground block">{item.brand}</span>
-                          <p className="text-[10px] text-foreground truncate leading-tight">{item.name}</p>
+                          <span className="text-[9px] tracking-[0.15em] uppercase text-white/40 font-bold block">{item.brand}</span>
+                          <p className="text-[10px] text-white/70 truncate leading-tight">{item.name}</p>
                         </div>
-
-                        {/* Actions */}
                         <div className="flex items-center gap-1.5 shrink-0">
                           {item.price_cents != null && (
-                            <span className="text-[10px] font-bold text-primary">
+                            <span className="text-[10px] font-display font-bold text-primary">
                               ${(item.price_cents / 100).toFixed(0)}
                             </span>
                           )}
