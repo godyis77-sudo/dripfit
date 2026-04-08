@@ -36,6 +36,7 @@ export default function OnboardingOverlay() {
   const [allPlaying, setAllPlaying] = useState(false);
   const [logoPhase, setLogoPhase] = useState(true);
   const touchStartX = useRef(0);
+  const touchStartTime = useRef(0);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([null, null, null]);
 
   useEffect(() => {
