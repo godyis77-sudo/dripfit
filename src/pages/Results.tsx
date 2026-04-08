@@ -141,8 +141,6 @@ const Results = () => {
       if (payload?.fallback || payload?.error) {
         return null;
       }
-      if (resp?.error) throw new Error(resp.error.message || resp.error);
-      const payload = resp?.data ?? resp;
       return payload as {
         recommended_size: string;
         confidence: number;
