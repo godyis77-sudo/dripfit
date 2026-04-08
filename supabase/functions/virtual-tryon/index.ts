@@ -839,8 +839,8 @@ TASK: Add the belt from Image B onto the person in Image A at the natural waistl
           ? (
               isBelt
                 ? [
-                    { model: "google/gemini-3.1-flash-image-preview", prompt: beltFastPrompt, label: `${typeLabel}-belt-fast`, timeoutMs: 30_000 },
-                    { model: "google/gemini-2.5-flash-image", prompt: beltRetryPrompt, label: `${typeLabel}-belt-retry`, timeoutMs: 30_000 },
+                    { model: "google/gemini-2.5-flash-image", prompt: beltFastPrompt, label: `${typeLabel}-belt-fast`, timeoutMs: 22_000 },
+                    { model: "google/gemini-3.1-flash-image-preview", prompt: beltRetryPrompt, label: `${typeLabel}-belt-retry`, timeoutMs: 22_000 },
                   ]
                 : [
                     { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-primary`, timeoutMs: 30_000 },
