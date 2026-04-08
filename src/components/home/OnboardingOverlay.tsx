@@ -30,6 +30,7 @@ export default function OnboardingOverlay() {
   const [slide, setSlide] = useState(0);
   const touchStartX = useRef(0);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const hasInteracted = useRef(false);
 
   useEffect(() => {
     if (!localStorage.getItem(STORAGE_KEY)) {
@@ -38,45 +39,35 @@ export default function OnboardingOverlay() {
     }
   }, [location.key]);
 
-  const resumeCurrentVideo = useCallback(() => {
-    const activeVideo = videoRefs.current[slide];
-    if (!activeVideo) return;
-
-    activeVideo.muted = true;
-    activeVideo.playsInline = true;
-
-    const playPromise = activeVideo.play();
-    if (playPromise && typeof playPromise.catch === 'function') {
-      playPromise.catch(() => {
-        // Ignore autoplay failures until the next user gesture.
-      });
-    }
-  }, [slide]);
-
+  // Play only the active slide's video, pause all others
   useEffect(() => {
     if (!visible) return;
 
-    videoRefs.current.forEach((video, index) => {
+    videoRefs.current.forEach((video, i) => {
       if (!video) return;
-
-      if (index === slide) {
-        video.muted = true;
-        video.playsInline = true;
-        const playPromise = video.play();
-        if (playPromise && typeof playPromise.catch === 'function') {
-          playPromise.catch(() => {
-            // Some mobile browsers require an explicit gesture.
-          });
-        }
-        return;
+      if (i === slide) {
+        video.currentTime = 0;
+        video.play().catch(() => {});
+      } else {
+        video.pause();
       }
-
-      video.pause();
     });
   }, [slide, visible]);
 
+  // On first user touch, force-start the current video (mobile autoplay unlock)
+  const unlockPlayback = useCallback(() => {
+    if (hasInteracted.current) return;
+    hasInteracted.current = true;
+    const active = videoRefs.current[slide];
+    if (active) {
+      active.play().catch(() => {});
+    }
+  }, [slide]);
+
   const complete = useCallback((dest?: string) => {
     localStorage.setItem(STORAGE_KEY, 'true');
+    // Pause all videos on dismiss
+    videoRefs.current.forEach(v => v?.pause());
     setVisible(false);
     if (dest) navigate(dest);
   }, [navigate]);
@@ -86,15 +77,21 @@ export default function OnboardingOverlay() {
     setSlide(next);
   }, []);
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      videoRefs.current.forEach(v => v?.pause());
+    };
+  }, []);
+
   if (!visible) return null;
 
   return createPortal(
     <div
       className="fixed inset-0 z-[100] w-screen h-dvh overflow-hidden"
-      onPointerDownCapture={resumeCurrentVideo}
       onTouchStart={(e) => {
         e.stopPropagation();
-        resumeCurrentVideo();
+        unlockPlayback();
         touchStartX.current = e.touches[0].clientX;
       }}
       onTouchEnd={(e) => {
@@ -105,9 +102,12 @@ export default function OnboardingOverlay() {
           if (dx > 0 && slide > 0) goTo(slide - 1);
         }
       }}
+      onClick={unlockPlayback}
     >
+      {/* Solid black base */}
       <div className="absolute inset-0 bg-black" />
 
+      {/* One video per slide — only the active one plays */}
       {SLIDES.map((s, i) => (
         <div
           key={i}
@@ -115,30 +115,21 @@ export default function OnboardingOverlay() {
           style={{ opacity: i === slide ? 1 : 0 }}
         >
           <video
-            ref={(el) => {
-              videoRefs.current[i] = el;
-            }}
+            ref={(el) => { videoRefs.current[i] = el; }}
             src={s.video}
-            autoPlay={i === 0}
             loop
             muted
             playsInline
-            preload={Math.abs(i - slide) <= 1 ? 'auto' : 'metadata'}
-            onLoadedData={() => {
-              if (i === slide) {
-                const activeVideo = videoRefs.current[i];
-                activeVideo?.play().catch(() => {
-                  // Ignore until user interacts.
-                });
-              }
-            }}
+            preload="auto"
             className="absolute inset-0 h-full w-full object-cover"
           />
         </div>
       ))}
 
+      {/* Editorial gradient overlay */}
       <div className="absolute inset-0 editorial-gradient" />
 
+      {/* Skip */}
       <button
         onClick={() => complete()}
         className="absolute top-4 right-4 z-10 flex min-h-[44px] min-w-[44px] items-center justify-center pt-[env(safe-area-inset-top)] font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30"
@@ -146,6 +137,7 @@ export default function OnboardingOverlay() {
         Skip
       </button>
 
+      {/* Bottom content */}
       <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center px-8" style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}>
         <AnimatePresence mode="wait">
           <motion.div
@@ -170,6 +162,7 @@ export default function OnboardingOverlay() {
           </motion.div>
         </AnimatePresence>
 
+        {/* Dots */}
         <div className="mb-6 flex gap-1.5">
           {SLIDES.map((_, i) => (
             <button
@@ -181,6 +174,7 @@ export default function OnboardingOverlay() {
           ))}
         </div>
 
+        {/* CTAs */}
         {slide < SLIDES.length - 1 ? (
           <button
             onClick={() => goTo(slide + 1)}
