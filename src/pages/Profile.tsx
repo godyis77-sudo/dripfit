@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LogOut, Shirt, Camera, Settings, ShoppingBag, ShoppingCart, User, Globe, X, Gift, ChevronDown } from 'lucide-react';
 import InlineCrown from '@/components/ui/InlineCrown';
 import { useAuth } from '@/hooks/useAuth';
-import PremiumBadge from '@/components/monetization/PremiumBadge';
+import { useAuth } from '@/hooks/useAuth';
 const GuestProfileView = lazy(() => import('@/components/guest/GuestProfileView'));
 import { supabase } from '@/integrations/supabase/client';
 import { getFitPreference, setFitPreference, getPremiumBannerDismissed, dismissPremiumBanner } from '@/lib/session';
