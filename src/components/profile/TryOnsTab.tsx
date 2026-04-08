@@ -165,6 +165,28 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
 
   return (
     <>
+      {/* Filter stats row — inside Try-Ons tab */}
+      <div className="flex gap-1.5 mb-4 justify-center">
+        {([
+          { key: 'all' as FilterMode, label: 'Total', value: tryOnPosts.length },
+          { key: 'public' as FilterMode, label: 'Public', value: publicCount },
+          { key: 'private' as FilterMode, label: 'Private', value: privateCount },
+        ]).map(s => (
+          <button
+            key={s.key}
+            onClick={() => setFilterMode(s.key)}
+            className={`rounded-lg px-3 py-1 text-center transition-all active:scale-95 backdrop-blur-sm border ${
+              filterMode === s.key
+                ? 'bg-primary/10 border-primary/25 text-primary'
+                : 'bg-white/5 border-white/10 text-white/50'
+            }`}
+          >
+            <p className={`font-display text-sm font-bold ${filterMode === s.key ? 'text-primary' : 'text-white'}`}>{s.value}</p>
+            <p className={`text-[9px] uppercase tracking-[0.15em] ${filterMode === s.key ? 'text-primary/60' : 'text-white/30'}`}>{s.label}</p>
+          </button>
+        ))}
+      </div>
+
       {loading ? (
         <div className="grid grid-cols-2 gap-2">
           {[1, 2, 3, 4].map(i => (
