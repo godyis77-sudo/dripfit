@@ -62,7 +62,7 @@ const GalleryPlayground = () => {
         >
           <div>
             <h1 className="font-display text-lg text-primary tracking-[0.15em]">DRIPFIT ✔</h1>
-            <p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5">Join 500+ early testers</p>
+            <p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5">Your personal fitting room</p>
           </div>
           {!user && (
             <button
@@ -74,12 +74,29 @@ const GalleryPlayground = () => {
           )}
         </motion.div>
 
+        {/* Hero Try-On CTA — glass-gold, primary action first */}
+        <motion.button
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.04 }}
+          onClick={() => { trackEvent('gallery_hero_tryon'); navigate('/tryon'); }}
+          className="w-full mb-3 glass-gold rounded-2xl px-5 py-3 flex items-center gap-3 active:scale-[0.97] transition-transform"
+        >
+          <div className="h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0 opacity-70">
+            <FeatureIcon name="tryon" size={40} />
+          </div>
+          <div className="text-left flex-1">
+            <p className="font-display text-[15px] text-white">Enter the Change Room</p>
+            <p className="text-[11px] text-white/40">Virtual try-on · any piece · your body</p>
+          </div>
+        </motion.button>
+
         {/* Size Guide + Drip Drawer — glass-dark panels */}
-        <div className="grid grid-cols-2 gap-2 mb-4">
+        <div className="grid grid-cols-2 gap-2 mb-3">
           <motion.button
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.04 }}
+            transition={{ delay: 0.06 }}
             onClick={() => navigate(user && hasScan ? '/profile/body' : '/capture')}
             className="glass-dark rounded-2xl px-3 py-3 flex items-center gap-2 active:scale-[0.97] transition-transform"
           >
@@ -93,33 +110,17 @@ const GalleryPlayground = () => {
           <motion.button
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
+            transition={{ delay: 0.07 }}
             onClick={() => navigate('/closet')}
             className="glass-dark rounded-2xl px-3 py-3 flex items-center gap-2 active:scale-[0.97] transition-transform"
           >
             <Flame className="h-5 w-5 text-white/60 shrink-0" />
             <div className="text-left">
               <span className="block text-sm font-semibold text-white leading-tight">Drip Drawer</span>
-              <span className="block text-[11px] text-white/40 leading-tight mt-0.5">Swipe to fill your drip drawer</span>
+              <span className="block text-[11px] text-white/40 leading-tight mt-0.5">Swipe to cop or drop</span>
             </div>
           </motion.button>
         </div>
-
-        {/* Hero Try-On CTA — glass-gold elegance */}
-        <motion.button
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.07 }}
-          onClick={() => { trackEvent('gallery_hero_tryon'); navigate('/tryon'); }}
-          className="w-full mb-4 glass-gold rounded-2xl px-5 py-3 flex items-center gap-3 active:scale-[0.97] transition-transform"
-        >
-          <div className="h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0 opacity-70">
-            <FeatureIcon name="tryon" size={40} />
-          </div>
-          <div className="text-left flex-1">
-            <p className="font-display text-[15px] text-white">Enter the Change Room — Try On</p>
-          </div>
-        </motion.button>
 
         {/* Weekly Outfits Hero Section */}
         <WeeklyOutfitsSection />
