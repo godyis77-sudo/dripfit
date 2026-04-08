@@ -72,12 +72,12 @@ const FoundingMembers = () => {
               <InlineCrown size={12} /> Founding 100
             </span>
 
-            <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight leading-[1.15] mb-3">
+            <h1 className="headline-editorial text-3xl sm:text-4xl tracking-tight leading-[1.15] mb-3 text-primary">
               Help us build the future of{' '}
               <span className="text-primary">online sizing</span>
             </h1>
 
-            <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mx-auto">
+            <p className="text-white/60 text-sm leading-relaxed max-w-sm mx-auto">
               We're recruiting 100 founding members to shape DripFit Check — 
               get lifetime perks, early access, and a direct line to the team.
             </p>
@@ -88,13 +88,13 @@ const FoundingMembers = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.4 }}
-            className="mt-8 bg-card border border-border rounded-2xl p-5"
+            className="mt-8 glass-dark rounded-2xl p-5"
           >
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-muted-foreground">Spots claimed</span>
               <span className="text-xs font-bold text-foreground">{spotsClaimed} / {TOTAL_SPOTS}</span>
             </div>
-            <div className="h-3 bg-muted rounded-full overflow-hidden">
+            <div className="h-3 glass rounded-full overflow-hidden">
               <motion.div
                 className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
                 initial={{ width: 0 }}
@@ -103,7 +103,7 @@ const FoundingMembers = () => {
               />
             </div>
             <p className="mt-3 text-center">
-              <span className="font-display text-2xl font-bold text-primary">{spotsLeft}</span>
+              <span className="headline-editorial text-2xl text-primary">{spotsLeft}</span>
               <span className="text-xs text-muted-foreground ml-1.5">spots remaining</span>
             </p>
           </motion.div>
