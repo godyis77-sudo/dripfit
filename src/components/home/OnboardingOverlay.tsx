@@ -124,6 +124,7 @@ export default function OnboardingOverlay() {
 
   useEffect(() => {
     return () => {
+      if (retryTimerRef.current) window.clearInterval(retryTimerRef.current);
       videoRefs.current.forEach((video) => video?.pause());
     };
   }, []);
