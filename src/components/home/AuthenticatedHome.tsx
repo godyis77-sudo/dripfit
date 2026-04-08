@@ -2,7 +2,7 @@ import { forwardRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Camera, ShoppingBag, X, Sparkles, Flame } from 'lucide-react';
-import FeatureIcon, { featureIcons } from '@/components/ui/FeatureIcon';
+import { featureIcons } from '@/components/ui/FeatureIcon';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
@@ -10,7 +10,6 @@ import { ALL_PRODUCT_CATEGORIES } from '@/components/tryon/tryon-constants';
 import { useProfileInfo, useLatestScan, useTrendingFits } from '@/hooks/useProfileData';
 import TrendingFitsGrid from '@/components/home/TrendingFitsGrid';
 import HomeFAB from '@/components/home/HomeFAB';
-import BrandLogo from '@/components/ui/BrandLogo';
 import { useForYourFit } from '@/hooks/useForYourFit';
 
 /* ── Price filter config ── */
