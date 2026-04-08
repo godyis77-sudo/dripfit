@@ -29,36 +29,35 @@ export default function OnboardingOverlay() {
   const [visible, setVisible] = useState(() => !localStorage.getItem(STORAGE_KEY));
   const [slide, setSlide] = useState(0);
   const touchStartX = useRef(0);
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const hasInteracted = useRef(false);
+  const activeSlideRef = useRef(0);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   useEffect(() => {
     if (!localStorage.getItem(STORAGE_KEY)) {
       setVisible(true);
       setSlide(0);
+      activeSlideRef.current = 0;
     }
   }, [location.key]);
 
   const playSlideVideo = useCallback((index: number) => {
+    activeSlideRef.current = index;
+
     videoRefs.current.forEach((video, i) => {
       if (!video) return;
 
       video.muted = true;
       video.playsInline = true;
+      video.loop = true;
 
       if (i !== index) {
         video.pause();
-        if (video.currentTime > 0) {
-          try {
-            video.currentTime = 0;
-          } catch {
-            // Ignore browsers that block resetting currentTime while metadata is unavailable.
-          }
-        }
         return;
       }
 
       const startPlayback = () => {
+        if (activeSlideRef.current !== index) return;
         const playPromise = video.play();
         if (playPromise && typeof playPromise.catch === 'function') {
           playPromise.catch(() => {});
@@ -68,41 +67,41 @@ export default function OnboardingOverlay() {
       if (video.readyState >= 2) {
         startPlayback();
       } else {
-        const handleLoadedData = () => startPlayback();
-        video.addEventListener('loadeddata', handleLoadedData, { once: true });
         video.load();
+        video.addEventListener('loadeddata', startPlayback, { once: true });
       }
     });
   }, []);
 
   useEffect(() => {
     if (!visible) return;
-    playSlideVideo(slide);
+    const timer = window.setTimeout(() => playSlideVideo(slide), 0);
+    return () => window.clearTimeout(timer);
   }, [slide, visible, playSlideVideo]);
 
   const unlockPlayback = useCallback(() => {
-    if (hasInteracted.current) return;
     hasInteracted.current = true;
-    playSlideVideo(slide);
-  }, [playSlideVideo, slide]);
+    playSlideVideo(activeSlideRef.current);
+  }, [playSlideVideo]);
+
+  const transitionToSlide = useCallback((next: number, fromGesture = false) => {
+    if (next < 0 || next >= SLIDES.length) return;
+    if (fromGesture) hasInteracted.current = true;
+
+    setSlide(next);
+    playSlideVideo(next);
+  }, [playSlideVideo]);
 
   const complete = useCallback((dest?: string) => {
     localStorage.setItem(STORAGE_KEY, 'true');
-    // Pause all videos on dismiss
-    videoRefs.current.forEach(v => v?.pause());
+    videoRefs.current.forEach((video) => video?.pause());
     setVisible(false);
     if (dest) navigate(dest);
   }, [navigate]);
 
-  const goTo = useCallback((next: number) => {
-    if (next < 0 || next >= SLIDES.length) return;
-    setSlide(next);
-  }, []);
-
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      videoRefs.current.forEach(v => v?.pause());
+      videoRefs.current.forEach((video) => video?.pause());
     };
   }, []);
 
@@ -110,7 +109,8 @@ export default function OnboardingOverlay() {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] w-screen h-dvh overflow-hidden"
+      className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden"
+      onPointerDownCapture={unlockPlayback}
       onTouchStart={(e) => {
         e.stopPropagation();
         unlockPlayback();
@@ -119,17 +119,14 @@ export default function OnboardingOverlay() {
       onTouchEnd={(e) => {
         e.stopPropagation();
         const dx = e.changedTouches[0].clientX - touchStartX.current;
-        if (Math.abs(dx) > 50) {
-          if (dx < 0 && slide < SLIDES.length - 1) goTo(slide + 1);
-          if (dx > 0 && slide > 0) goTo(slide - 1);
-        }
+        if (Math.abs(dx) <= 50) return;
+        if (dx < 0 && slide < SLIDES.length - 1) transitionToSlide(slide + 1, true);
+        if (dx > 0 && slide > 0) transitionToSlide(slide - 1, true);
       }}
       onClick={unlockPlayback}
     >
-      {/* Solid black base */}
       <div className="absolute inset-0 bg-black" />
 
-      {/* One video per slide — only the active one plays */}
       {SLIDES.map((s, i) => (
         <div
           key={i}
@@ -137,22 +134,27 @@ export default function OnboardingOverlay() {
           style={{ opacity: i === slide ? 1 : 0 }}
         >
           <video
-            ref={(el) => { videoRefs.current[i] = el; }}
+            ref={(el) => {
+              videoRefs.current[i] = el;
+            }}
             src={s.video}
             autoPlay={i === 0}
-            loop
             muted
+            loop
             playsInline
             preload="auto"
+            onLoadedData={() => {
+              if (visible && activeSlideRef.current === i) {
+                playSlideVideo(i);
+              }
+            }}
             className="absolute inset-0 h-full w-full object-cover"
           />
         </div>
       ))}
 
-      {/* Editorial gradient overlay */}
       <div className="absolute inset-0 editorial-gradient" />
 
-      {/* Skip */}
       <button
         onClick={() => complete()}
         className="absolute top-4 right-4 z-10 flex min-h-[44px] min-w-[44px] items-center justify-center pt-[env(safe-area-inset-top)] font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30"
@@ -160,7 +162,6 @@ export default function OnboardingOverlay() {
         Skip
       </button>
 
-      {/* Bottom content */}
       <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center px-8" style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}>
         <AnimatePresence mode="wait">
           <motion.div
@@ -185,22 +186,20 @@ export default function OnboardingOverlay() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Dots */}
         <div className="mb-6 flex gap-1.5">
           {SLIDES.map((_, i) => (
             <button
               key={i}
-              onClick={() => goTo(i)}
+              onClick={() => transitionToSlide(i, true)}
               className={`h-1 rounded-full transition-all duration-300 ${i === slide ? 'w-5 bg-primary' : 'w-1.5 bg-white/20'}`}
               aria-label={`Go to slide ${i + 1}`}
             />
           ))}
         </div>
 
-        {/* CTAs */}
         {slide < SLIDES.length - 1 ? (
           <button
-            onClick={() => goTo(slide + 1)}
+            onClick={() => transitionToSlide(slide + 1, true)}
             className="btn-glass mb-4 h-12 w-full max-w-[280px] rounded-xl text-sm font-semibold text-white"
           >
             Next
