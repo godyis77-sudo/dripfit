@@ -184,7 +184,7 @@ const SizeComparison = () => {
         </div>
 
         {/* Category pills */}
-        <div className="flex gap-1.5 overflow-x-auto no-scrollbar mb-2">
+        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide mb-2">
           {CATEGORY_PILLS.map(c => (
             <button
               key={c.value}
@@ -202,7 +202,7 @@ const SizeComparison = () => {
         </div>
 
         {/* Genre filter */}
-        <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
+        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
           {GENRE_PILLS.map(g => (
             <button
               key={g.value}

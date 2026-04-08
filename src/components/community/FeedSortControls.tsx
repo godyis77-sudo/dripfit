@@ -61,7 +61,7 @@ const FeedSortControls = ({
         <AnimatePresence>
           {showSortOptions && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-              <div className="flex gap-1.5 mt-2 overflow-x-auto no-scrollbar" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
+              <div className="flex gap-1.5 mt-2 overflow-x-auto scrollbar-hide" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
                 {sorts.map(s => (
                   <button
                     key={s.key}
@@ -82,7 +82,7 @@ const FeedSortControls = ({
       </div>
 
       {showUserChips && (
-        <div className="flex gap-1.5 mb-3 overflow-x-auto no-scrollbar" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
+        <div className="flex gap-1.5 mb-3 overflow-x-auto scrollbar-hide" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
           <button onClick={() => onFilterUserIdChange(null)} aria-label="Show all users" className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all ${sortPill(!filterUserId)}`}>All</button>
           {[...new Map(posts.filter(p => p.profile?.display_name).map(p => [p.user_id, p.profile?.display_name])).entries()].map(([uid, name]) => (
             <button key={uid} onClick={() => onFilterUserIdChange(filterUserId === uid ? null : uid)} aria-label={`Filter by ${name}`} className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all ${sortPill(filterUserId === uid)}`}>{name}</button>
