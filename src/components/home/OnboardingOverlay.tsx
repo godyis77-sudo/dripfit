@@ -170,6 +170,7 @@ export default function OnboardingOverlay() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            onAnimationComplete={() => playSlideVideo(slide)}
             className="mb-8 text-center"
           >
             <h2 className="headline-editorial mx-auto max-w-[300px] text-2xl text-primary">
