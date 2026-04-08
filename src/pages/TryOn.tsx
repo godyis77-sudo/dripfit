@@ -152,8 +152,8 @@ const TryOn = () => {
                         onClick={() => setGenderFilter(g.key)}
                         className={`flex-1 px-2.5 py-2 min-h-[44px] rounded-xl text-[12px] font-bold transition-all active:scale-[0.97] ${
                           genderFilter === g.key
-                            ? 'btn-luxury text-primary-foreground'
-                            : 'bg-card border border-primary/30 text-foreground'
+                            ? 'glass-gold text-primary'
+                            : 'glass text-white/60'
                         }`}
                       >
                         {g.label}
@@ -171,7 +171,7 @@ const TryOn = () => {
                 <div className="mb-3">
                   <button
                     onClick={() => setFiltersOpen(!filtersOpen)}
-                    className="relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold btn-luxury text-primary-foreground"
+                    className="relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold glass-gold text-primary"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
                     {activeFilterCount > 0 ? `Filters (${activeFilterCount})` : 'Filters'}
@@ -184,7 +184,7 @@ const TryOn = () => {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden border border-border rounded-xl bg-card mb-3"
+                      className="overflow-hidden glass-dark rounded-xl mb-3"
                     >
                       <div className="px-4 py-3 space-y-3">
                         {/* Sort */}
@@ -197,8 +197,8 @@ const TryOn = () => {
                                 onClick={() => setSort(opt.key)}
                                 className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                   sort === opt.key
-                                    ? 'btn-luxury text-primary-foreground'
-                                    : 'bg-card border border-primary/30 text-foreground'
+                                    ? 'glass-gold text-primary'
+                                    : 'glass text-white/60'
                                 }`}
                               >
                                 {opt.label}
@@ -215,8 +215,8 @@ const TryOn = () => {
                               onClick={() => s.setCategory('all')}
                               className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                 s.category === 'all'
-                                  ? 'btn-luxury text-primary-foreground'
-                                  : 'bg-card border border-primary/30 text-foreground'
+                                  ? 'glass-gold text-primary'
+                                  : 'glass text-white/60'
                               }`}
                             >
                               <ShoppingBag className="h-3 w-3 inline mr-0.5" /> All
@@ -227,8 +227,8 @@ const TryOn = () => {
                                 onClick={() => s.setCategory(c.key)}
                                 className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                   s.category === c.key
-                                    ? 'btn-luxury text-primary-foreground'
-                                    : 'bg-card border border-primary/30 text-foreground'
+                                    ? 'glass-gold text-primary'
+                                    : 'glass text-white/60'
                                 }`}
                               >
                                 {c.label}
@@ -274,8 +274,8 @@ const TryOn = () => {
                                     onClick={() => { s.setSelectedRetailer(null); s.setSelectedRetailers([]); }}
                                     className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                       !s.selectedRetailer && s.selectedRetailers.length === 0
-                                        ? 'btn-luxury text-primary-foreground'
-                                        : 'bg-card border border-primary/30 text-foreground'
+                                        ? 'glass-gold text-primary'
+                                        : 'glass text-white/60'
                                     }`}
                                   >
                                     All
@@ -293,8 +293,8 @@ const TryOn = () => {
                                         }}
                                         className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                                           isSelected
-                                            ? 'btn-luxury text-primary-foreground'
-                                            : 'bg-card border border-primary/30 text-foreground'
+                                            ? 'glass-gold text-primary'
+                                            : 'glass text-white/60'
                                         }`}
                                       >
                                         {retailer}
@@ -331,8 +331,8 @@ const TryOn = () => {
                                     onClick={() => s.setSelectedGenre(null)}
                                     className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                       !s.selectedGenre
-                                        ? 'btn-luxury text-primary-foreground'
-                                        : 'bg-card border border-primary/30 text-foreground'
+                                        ? 'glass-gold text-primary'
+                                        : 'glass text-white/60'
                                     }`}
                                   >
                                     All
@@ -343,8 +343,8 @@ const TryOn = () => {
                                       onClick={() => s.setSelectedGenre(genre === s.selectedGenre ? null : genre)}
                                       className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                                         s.selectedGenre === genre
-                                          ? 'btn-luxury text-primary-foreground'
-                                          : 'bg-card border border-primary/30 text-foreground'
+                                          ? 'glass-gold text-primary'
+                                          : 'glass text-white/60'
                                       }`}
                                     >
                                       {genre}
@@ -383,8 +383,8 @@ const TryOn = () => {
                                         onClick={() => s.setSelectedFit(fit === s.selectedFit ? null : fit)}
                                         className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                                           s.selectedFit === fit
-                                            ? 'btn-luxury text-primary-foreground'
-                                            : 'bg-card border border-primary/30 text-foreground'
+                                            ? 'glass-gold text-primary'
+                                            : 'glass text-white/60'
                                         }`}
                                       >
                                         {fit}

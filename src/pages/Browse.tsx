@@ -175,19 +175,19 @@ const Browse = () => {
 
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
-      {/* Scrollable header block */}
+      {/* Header */}
       <div className="px-4 py-3">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/home')}
-            className="h-9 w-9 rounded-full bg-card border border-border flex items-center justify-center active:scale-90 transition-transform"
+            className="h-9 w-9 rounded-full glass flex items-center justify-center active:scale-90 transition-transform"
             aria-label="Go back"
           >
-            <ArrowLeft className="h-4 w-4 text-foreground" />
+            <ArrowLeft className="h-4 w-4 text-white/70" />
           </button>
           <div>
-            <h1 className="text-base font-bold text-foreground">{title}</h1>
-            <p className="text-[10px] text-muted-foreground">{displayed.length} items</p>
+            <h1 className="headline-editorial text-lg text-primary">{title}</h1>
+            <p className="text-[11px] tracking-[0.15em] uppercase text-white/40">{displayed.length} pieces</p>
           </div>
         </div>
       </div>
@@ -210,8 +210,8 @@ const Browse = () => {
             onClick={() => setGenderOverride(opt.key)}
             className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-colors ${
               genderFilter === opt.key
-                ? 'btn-luxury text-primary-foreground'
-                : 'bg-card border border-border text-foreground/70'
+                ? 'glass-gold text-primary'
+                : 'glass text-white/60'
             }`}
           >
             {opt.label}
@@ -221,10 +221,10 @@ const Browse = () => {
 
 
       {/* Sticky filter button only */}
-      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border px-4 py-2">
+      <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-white/5 px-4 py-2">
         <button
           onClick={() => setFiltersOpen(!filtersOpen)}
-          className="relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold btn-luxury text-primary-foreground"
+          className="relative w-full h-8 rounded-xl flex items-center justify-center gap-2 active:scale-[0.97] transition-all text-[13px] font-semibold glass-gold text-primary"
         >
           <SlidersHorizontal className="h-4 w-4" />
           {activeFilterCount > 0 ? `Filters (${activeFilterCount})` : 'Filters'}
@@ -238,7 +238,7 @@ const Browse = () => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden border-b border-border bg-card"
+            className="overflow-hidden border-b border-white/5 glass-dark"
           >
             <div className="px-4 py-3 space-y-3">
               {/* Sort */}
@@ -251,8 +251,8 @@ const Browse = () => {
                       onClick={() => setSort(opt.key)}
                       className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                         sort === opt.key
-                          ? 'btn-luxury text-primary-foreground'
-                          : 'bg-card border border-primary/30 text-foreground'
+                          ? 'glass-gold text-primary'
+                          : 'glass text-white/60'
                       }`}
                     >
                       {opt.label}
@@ -312,8 +312,8 @@ const Browse = () => {
                       }}
                       className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                         (category === cat.key || CATEGORY_LABELS[category] === cat.label)
-                          ? 'btn-luxury text-primary-foreground'
-                          : 'bg-card border border-primary/30 text-foreground'
+                          ? 'glass-gold text-primary'
+                          : 'glass text-white/60'
                       }`}
                     >
                       {cat.label}
@@ -346,8 +346,8 @@ const Browse = () => {
                           onClick={() => { setRetailerFilter(null); setRetailerFilters([]); }}
                           className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                             !retailerFilter && retailerFilters.length === 0
-                              ? 'btn-luxury text-primary-foreground'
-                              : 'bg-card border border-primary/30 text-foreground'
+                              ? 'glass-gold text-primary'
+                              : 'glass text-white/60'
                           }`}
                         >
                           All
@@ -365,8 +365,8 @@ const Browse = () => {
                               }}
                               className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                                 isSelected
-                                  ? 'btn-luxury text-primary-foreground'
-                                  : 'bg-card border border-primary/30 text-foreground'
+                                  ? 'glass-gold text-primary'
+                                  : 'glass text-white/60'
                               }`}
                             >
                               {retailer}
@@ -403,8 +403,8 @@ const Browse = () => {
                           onClick={() => setGenreFilter(null)}
                           className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                             !genreFilter
-                              ? 'btn-luxury text-primary-foreground'
-                              : 'bg-card border border-primary/30 text-foreground'
+                              ? 'glass-gold text-primary'
+                              : 'glass text-white/60'
                           }`}
                         >
                           All
@@ -415,8 +415,8 @@ const Browse = () => {
                             onClick={() => setGenreFilter(genre === genreFilter ? null : genre)}
                             className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                               genreFilter === genre
-                                ? 'btn-luxury text-primary-foreground'
-                                : 'bg-card border border-primary/30 text-foreground'
+                                ? 'glass-gold text-primary'
+                                : 'glass text-white/60'
                             }`}
                           >
                             {genre}
@@ -453,8 +453,8 @@ const Browse = () => {
                             onClick={() => setFitFilter(null)}
                             className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                               !fitFilter
-                                ? 'btn-luxury text-primary-foreground'
-                                : 'bg-card border border-primary/30 text-foreground'
+                                ? 'glass-gold text-primary'
+                                : 'glass text-white/60'
                             }`}
                           >
                             All
@@ -465,8 +465,8 @@ const Browse = () => {
                               onClick={() => setFitFilter(fit === fitFilter ? null : fit)}
                               className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                                 fitFilter === fit
-                                  ? 'btn-luxury text-primary-foreground'
-                                  : 'bg-card border border-primary/30 text-foreground'
+                                  ? 'glass-gold text-primary'
+                                  : 'glass text-white/60'
                               }`}
                             >
                               {fit}

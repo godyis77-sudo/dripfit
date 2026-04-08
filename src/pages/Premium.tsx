@@ -135,7 +135,7 @@ const Premium = () => {
           <Button variant="ghost" size="icon" onClick={handleBack} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back">
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <PremiumBadge label="DRIPFIT ✔ Premium" />
+          <PremiumBadge label="DRIPFIT ✔ Premium" className="glass-gold" />
         </div>
 
         {/* Hero */}
@@ -148,15 +148,15 @@ const Premium = () => {
           <BrandLogo size="xl" iconOnly className="mx-auto mb-3" />
           {isSubscribed ? (
             <>
-              <h1 className="text-xl font-bold text-foreground mb-1">You're Premium 👑</h1>
-              <p className="text-[12px] text-muted-foreground max-w-[260px] mx-auto">
+              <h1 className="headline-editorial text-2xl text-primary mb-1">You're Premium 👑</h1>
+              <p className="text-[12px] text-white/40 max-w-[260px] mx-auto">
                 {subscriptionEnd ? `Active until ${new Date(subscriptionEnd).toLocaleDateString()}` : 'Your premium subscription is active'}
               </p>
             </>
           ) : (
             <>
-              <h1 className="text-xl font-bold text-foreground mb-1">Unlock Your Full Potential</h1>
-              <p className="text-[12px] text-muted-foreground max-w-[260px] mx-auto">
+              <h1 className="headline-editorial text-2xl text-primary mb-1">Unlock Your Full Potential</h1>
+              <p className="text-[12px] text-white/40 max-w-[260px] mx-auto">
                 Unlimited try-ons, smarter sizing, zero ads — the ultimate fit experience.
               </p>
               {/* Member count badge */}
@@ -182,7 +182,7 @@ const Premium = () => {
         </motion.div>
 
         {isSubscribed ? (
-          <Button className="w-full h-12 rounded-xl text-sm font-bold mb-5" variant="outline" onClick={handleManage}>
+          <Button className="w-full h-12 rounded-xl text-sm font-bold mb-5 btn-glass text-white/80" variant="outline" onClick={handleManage}>
             Manage Subscription
           </Button>
         ) : (
@@ -209,7 +209,7 @@ const Premium = () => {
                   }`}
                 >
                   {p.badge && (
-                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full btn-gold-3d text-primary-foreground whitespace-nowrap">
+                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full glass-gold text-primary whitespace-nowrap">
                       {p.badge}
                     </span>
                   )}
@@ -251,10 +251,10 @@ const Premium = () => {
 
         {/* Feature comparison */}
         <div className="space-y-1.5">
-          <div className="flex items-center px-1 mb-1">
-            <p className="section-label flex-1">Feature</p>
-            <p className="section-label w-16 text-center">Free</p>
-            <p className="section-label w-16 text-center text-primary">Premium</p>
+          <div className="flex items-center px-1 mb-1 glass-gold rounded-lg py-1.5">
+            <p className="text-[10px] tracking-[0.15em] uppercase text-primary/80 flex-1 font-bold">Feature</p>
+            <p className="text-[10px] tracking-[0.15em] uppercase text-white/30 w-16 text-center font-bold">Free</p>
+            <p className="text-[10px] tracking-[0.15em] uppercase text-primary w-16 text-center font-bold">Premium</p>
           </div>
           {FEATURES.map((f, i) => (
             <motion.div
@@ -262,7 +262,7 @@ const Premium = () => {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.05 * i, duration: 0.3 }}
-              className="bg-card border border-border rounded-xl p-2.5 flex items-center gap-2"
+              className="glass-dark rounded-xl p-2.5 flex items-center gap-2"
             >
               <div className="h-7 w-7 badge-gold-3d shrink-0 flex items-center justify-center">
                 <f.icon className="h-3.5 w-3.5 text-primary-foreground" />
@@ -271,8 +271,8 @@ const Premium = () => {
                 <p className="text-[11px] font-bold text-foreground leading-tight">{f.title}</p>
                 <p className="text-[11px] text-muted-foreground">{f.description}</p>
               </div>
-              <span className="w-16 text-center text-[10px] text-muted-foreground shrink-0">{f.free}</span>
-              <span className="w-16 text-center text-[10px] font-bold text-primary shrink-0">{f.premium}</span>
+              <span className="w-16 text-center text-[10px] text-white/30 shrink-0">{f.free}</span>
+              <span className="w-16 text-center text-[10px] font-display font-bold text-primary shrink-0">{f.premium}</span>
             </motion.div>
           ))}
         </div>

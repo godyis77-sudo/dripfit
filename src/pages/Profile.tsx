@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LogOut, Shirt, Camera, Settings, ShoppingBag, ShoppingCart, User, Globe, X, Gift, ChevronDown } from 'lucide-react';
 import InlineCrown from '@/components/ui/InlineCrown';
 import { useAuth } from '@/hooks/useAuth';
-import PremiumBadge from '@/components/monetization/PremiumBadge';
 const GuestProfileView = lazy(() => import('@/components/guest/GuestProfileView'));
 import { supabase } from '@/integrations/supabase/client';
 import { getFitPreference, setFitPreference, getPremiumBannerDismissed, dismissPremiumBanner } from '@/lib/session';
@@ -140,14 +139,16 @@ const Profile = () => {
         {isSubscribed ? (
           <button
             onClick={() => navigate('/premium')}
-            className="w-full flex items-center gap-2 px-3 py-0 rounded-xl btn-gold-3d mb-3 active:scale-[0.98] transition-transform"
+            className="w-full flex items-center gap-2 px-3 py-0 rounded-xl glass-gold mb-3 active:scale-[0.98] transition-transform"
           >
             <InlineCrown size={48} />
-            <span className="text-[11px] font-bold text-primary-foreground flex-1 text-left">DRIPFIT ✔ PREMIUM</span>
-            <PremiumBadge label="Active" />
+            <span className="text-[11px] font-display font-bold text-primary flex-1 text-left">DRIPFIT ✔ PREMIUM</span>
+            <span className="glass text-[9px] font-bold text-green-400 px-2 py-0.5 rounded-full flex items-center gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-green-400 inline-block" /> ACTIVE
+            </span>
           </button>
         ) : !bannerDismissed ? (
-          <div className="relative w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-primary/20 bg-primary/5 mb-3">
+          <div className="relative w-full flex items-center gap-2 px-3 py-2 rounded-xl glass-gold mb-3">
             <button
               onClick={() => { trackEvent('premium_viewed', { source: 'profile_banner' }); navigate('/premium'); }}
               className="flex items-center gap-2 flex-1 active:scale-[0.98] transition-transform"
@@ -159,9 +160,9 @@ const Profile = () => {
             <button
               onClick={(e) => { e.stopPropagation(); dismissPremiumBanner(); setBannerDismissed(true); }}
               aria-label="Dismiss banner"
-              className="h-8 w-8 min-h-[44px] min-w-[44px] rounded-full flex items-center justify-center hover:bg-muted/50 transition-colors shrink-0"
+              className="h-8 w-8 min-h-[44px] min-w-[44px] rounded-full flex items-center justify-center hover:bg-white/5 transition-colors shrink-0"
             >
-              <X className="h-3 w-3 text-muted-foreground" />
+              <X className="h-3 w-3 text-white/40" />
             </button>
           </div>
         ) : null}
@@ -190,7 +191,7 @@ const Profile = () => {
               )}
             </button>
             <div>
-              <h1 className="text-[15px] font-bold text-foreground leading-tight">{displayName}</h1>
+              <h1 className="font-display text-[15px] font-bold text-foreground leading-tight">{displayName}</h1>
               <div className="flex items-center gap-1.5">
                 <p className="text-[11px] text-muted-foreground">{user.email}</p>
                 <button onClick={handleSignOut} className="text-muted-foreground/60 hover:text-destructive transition-colors p-0.5" aria-label="Sign out">
@@ -249,7 +250,7 @@ const Profile = () => {
         </Collapsible>
 
         {/* Tab switcher */}
-        <div className="flex gap-1 bg-card/60 backdrop-blur-sm rounded-xl p-1 mb-4 border border-border/30">
+        <div className="flex gap-1.5 rounded-xl p-1 mb-4">
           {[
             { key: 'tryons' as const, icon: Shirt, label: 'Try-Ons' },
             { key: 'wardrobe' as const, icon: ShoppingBag, label: 'Closet' },
@@ -258,10 +259,10 @@ const Profile = () => {
             <button
               key={t.key}
               onClick={() => setActiveTab(t.key)}
-              className={`relative flex-1 min-h-[44px] rounded-lg text-[11px] font-bold transition-all duration-200 ${
+              className={`relative flex-1 min-h-[44px] rounded-full text-[11px] font-bold transition-all duration-200 ${
                 activeTab === t.key
-                  ? 'btn-gold-3d text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'glass-gold text-primary'
+                  : 'glass text-white/50'
               }`}
             >
               <span className="flex items-center justify-center gap-1">

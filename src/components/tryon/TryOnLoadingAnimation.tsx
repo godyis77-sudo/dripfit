@@ -30,7 +30,7 @@ const TryOnLoadingAnimation = ({ stepIndex }: TryOnLoadingAnimationProps) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[250] flex flex-col items-center justify-center bg-background/95 backdrop-blur-md"
+      className="fixed inset-0 z-[250] flex flex-col items-center justify-center bg-[#0A0A0A]"
     >
       {/* Subtle radial glow behind orb */}
       <div
@@ -145,7 +145,7 @@ const TryOnLoadingAnimation = ({ stepIndex }: TryOnLoadingAnimationProps) => {
           key={stepIndex}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-base font-semibold text-foreground"
+          className="font-display text-lg text-white"
         >
           {STEPS[stepIndex] || STEPS[0]}
         </motion.p>

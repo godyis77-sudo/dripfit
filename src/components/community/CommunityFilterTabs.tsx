@@ -19,14 +19,14 @@ const CommunityFilterTabs = ({ filter, onFilterChange }: CommunityFilterTabsProp
   const [similarFitTooltip, setSimilarFitTooltip] = useState(false);
 
   return (
-    <div className="flex border-b border-border mb-4 overflow-x-auto no-scrollbar relative" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
+    <div className="flex gap-1.5 mb-4 overflow-x-auto no-scrollbar relative px-1" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
       {TABS.map(f => (
         <button
           key={f.key}
           onClick={() => onFilterChange(f.key)}
           aria-label={f.key === 'shop' ? 'Open filters' : 'Change sort order'}
-          className={`flex-1 py-1.5 min-h-[44px] text-[12px] font-bold transition-all relative whitespace-nowrap px-2 flex items-center justify-center gap-0.5 ${
-            filter === f.key ? 'btn-gold-3d text-primary-foreground rounded-lg' : 'text-muted-foreground hover:text-foreground'
+          className={`flex-1 py-1.5 min-h-[44px] text-[12px] font-bold transition-all relative whitespace-nowrap px-3 flex items-center justify-center gap-0.5 rounded-full ${
+            filter === f.key ? 'glass-gold text-primary' : 'glass text-white/50'
           }`}
         >
           {f.label}
