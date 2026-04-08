@@ -46,8 +46,10 @@ export default function OnboardingOverlay() {
     videoRefs.current.forEach((video, i) => {
       if (!video) return;
       if (i === slide) {
-        video.currentTime = 0;
-        video.play().catch(() => {});
+        // Small delay lets the browser settle before play()
+        setTimeout(() => {
+          video.play().catch(() => {});
+        }, 50);
       } else {
         video.pause();
       }
