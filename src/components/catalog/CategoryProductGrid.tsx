@@ -135,7 +135,12 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
     : visibleProducts.length > COLLAPSED_COUNT;
 
   return (
-    <div ref={ref}>
+    <div ref={(node) => {
+      // Forward both refs
+      if (typeof ref === 'function') ref(node);
+      else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      sentinelRef.current = node;
+    }}>
       {title && (
         <div className="flex items-center justify-between mb-2">
           <button
@@ -178,7 +183,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
                 </div>
               ) : (
                 <img
-                  src={product.image_url}
+                  src={thumbnailUrl(product.image_url, 400)}
                   alt={product.name}
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
