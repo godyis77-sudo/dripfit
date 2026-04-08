@@ -55,21 +55,41 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
   const priceFilter = activePriceIdx === 0 ? null : { min: PRICE_FILTERS[activePriceIdx].min, max: PRICE_FILTERS[activePriceIdx].max };
 
   return (
-    <div ref={ref} className="relative bg-background pb-safe-tab aurora-bg">
+    <div ref={ref} className="relative bg-background pb-safe-tab">
 
-      <div className="relative z-10 px-5 pt-2">
-        {/* Greeting */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
+      {/* Editorial Hero */}
+      <div className="relative h-[260px] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-zinc-800 via-zinc-900 to-background" />
+        <div className="absolute inset-0 editorial-gradient" />
+        <div className="absolute bottom-6 left-0 right-0 text-center px-8">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <h1 className="headline-editorial text-xl text-primary">DRIPFIT ✔</h1>
+            <p className="text-[11px] tracking-[0.2em] uppercase text-white/40 font-sans mt-1.5">
+              Shop. Try On. Get Rated. Buy.
+            </p>
+          </motion.div>
+        </div>
+      </div>
+
+      <div className="relative z-10 px-5 -mt-4">
+        {/* Virtual Try-On banner — glass-gold */}
+        <motion.button
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-3"
+          transition={{ delay: 0.08 }}
+          onClick={() => navigate('/tryon')}
+          className="w-full mb-4 glass-gold rounded-2xl px-5 py-3.5 flex items-center gap-3 active:scale-[0.97] transition-transform"
         >
-          <BrandLogo size="lg" />
-          <p className="text-muted-foreground/70 text-[12px] mt-1">{greeting}{displayName ? ',' : '!'}</p>
-          {displayName && <h1 className="font-display text-xl font-bold text-foreground mt-0.5">{displayName}</h1>}
-        </motion.div>
+          <div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+            <Sparkles className="h-5 w-5 text-primary" />
+          </div>
+          <div className="text-left flex-1">
+            <p className="font-display text-[14px] font-bold text-foreground">Enter the Change Room</p>
+            <p className="text-[11px] text-white/40">Virtual try-on · any piece · your body</p>
+          </div>
+        </motion.button>
 
-        {/* Quick Actions */}
+        {/* Quick Actions — glass style */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -105,32 +125,32 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             <button
               key={action.title}
               onClick={action.onClick}
-              className="flex flex-col items-center justify-center rounded-xl border-2 border-primary/40 bg-gradient-to-b from-primary/10 to-primary/5 backdrop-blur-sm p-1 active:scale-[0.96] active:shadow-3d-gold-pressed transition-all min-h-[44px] shadow-3d shimmer-sweep"
+              className="flex flex-col items-center justify-center rounded-xl glass p-1 active:scale-[0.96] transition-all min-h-[44px]"
             >
               <img
                 src={action.img}
                 alt={action.title}
                 className="w-full aspect-square object-contain drop-shadow-[0_2px_6px_hsl(var(--drip-gold)/0.4)]"
               />
-              <p className="text-[12px] font-extrabold font-display text-primary leading-none">{action.title}</p>
+              <p className="text-[11px] font-bold font-display text-primary leading-none">{action.title}</p>
             </button>
           ))}
         </motion.div>
 
-        {/* The Closet CTA */}
+        {/* The Closet CTA — glass-dark */}
         <motion.button
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
           onClick={() => navigate('/closet')}
-          className="w-full mb-4 bg-card border border-border rounded-2xl px-5 py-3.5 flex items-center gap-3 active:scale-[0.97] transition-transform"
+          className="w-full mb-4 glass-dark rounded-2xl px-5 py-3.5 flex items-center gap-3 active:scale-[0.97] transition-transform"
         >
           <div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
             <Flame className="h-5 w-5 text-primary" />
           </div>
           <div className="text-left flex-1">
-            <p className="text-[14px] font-extrabold tracking-tight text-foreground">The Closet</p>
-            <p className="text-[11px] text-muted-foreground">Swipe to cop or drop · discover your style</p>
+            <p className="font-display text-[14px] font-bold text-foreground">The Closet</p>
+            <p className="text-[11px] text-white/40">Swipe to cop or drop · discover your style</p>
           </div>
         </motion.button>
 
@@ -250,24 +270,26 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-1.5">
               <ShoppingBag className="h-3.5 w-3.5 text-primary" />
-              <p className="section-label mb-0">Recommended for you</p>
+              <p className="font-display text-sm font-bold text-foreground mb-0">Recommended for you</p>
             </div>
             <button
               onClick={() => navigate('/browse/all')}
-              className="text-[11px] font-bold min-h-[44px] flex items-center px-3 py-1 rounded-lg btn-luxury text-primary-foreground"
+              className="text-[10px] tracking-[0.1em] uppercase font-bold min-h-[44px] flex items-center px-3 py-1 rounded-lg btn-glass text-white/70"
             >
-              Browse All 7,000+ →
+              Browse All 7,000+
             </button>
           </div>
 
-          {/* Price / category filter chips — just above grids */}
+          {/* Price filter chips — glass pills */}
           <div className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-hide mb-1" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
             {PRICE_FILTERS.map((filter, idx) => (
               <button
                 key={filter.label}
                 onClick={() => setActivePriceIdx(idx)}
-                className={`shrink-0 pill shimmer-sweep ${
-                  activePriceIdx === idx ? 'pill-filled' : ''
+                className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all ${
+                  activePriceIdx === idx
+                    ? 'glass-gold text-primary border-primary/30'
+                    : 'glass text-white/60'
                 }`}
               >
                 {filter.label}
