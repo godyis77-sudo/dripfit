@@ -55,6 +55,7 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const publicCount = tryOnPosts.filter(p => p.is_public).length;
+  const privateCount = tryOnPosts.length - publicCount;
   const [selectedPost, setSelectedPost] = useState<TryOnPost | null>(null);
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
   const [votes, setVotes] = useState<Record<string, string[]>>({});
