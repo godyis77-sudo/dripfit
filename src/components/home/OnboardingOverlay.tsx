@@ -7,14 +7,17 @@ const SLIDES = [
   {
     headline: 'Your closet. Verified.',
     sub: '7,000 pieces. 130 brands. Every link real.',
+    video: '/videos/onboarding-bg-1.mp4',
   },
   {
     headline: 'See the drape. Before the bag drops.',
     sub: 'AI try-on. Your body. Any piece. Any background.',
+    video: '/videos/onboarding-bg-2.mp4',
   },
   {
     headline: 'They already voted.',
     sub: 'Your Body Twins COP or DROP every fit.',
+    video: '/videos/onboarding-bg-3.mp4',
   },
 ];
 
