@@ -32,6 +32,7 @@ export default function OnboardingOverlay() {
   const hasInteracted = useRef(false);
   const activeSlideRef = useRef(0);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const retryTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!localStorage.getItem(STORAGE_KEY)) {
@@ -44,9 +45,14 @@ export default function OnboardingOverlay() {
   const playSlideVideo = useCallback((index: number) => {
     activeSlideRef.current = index;
 
+    // Clear any existing retry loop
+    if (retryTimerRef.current) {
+      window.clearInterval(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
+
     videoRefs.current.forEach((video, i) => {
       if (!video) return;
-
       video.muted = true;
       video.playsInline = true;
       video.loop = true;
@@ -56,20 +62,37 @@ export default function OnboardingOverlay() {
         return;
       }
 
-      const startPlayback = () => {
-        if (activeSlideRef.current !== index) return;
-        const playPromise = video.play();
-        if (playPromise && typeof playPromise.catch === 'function') {
-          playPromise.catch(() => {});
+      const attemptPlay = () => {
+        if (activeSlideRef.current !== index) return false;
+        const p = video.play();
+        if (p && typeof p.catch === 'function') {
+          p.catch(() => {});
         }
+        return true;
       };
 
       if (video.readyState >= 2) {
-        startPlayback();
+        attemptPlay();
       } else {
         video.load();
-        video.addEventListener('loadeddata', startPlayback, { once: true });
+        video.addEventListener('loadeddata', () => attemptPlay(), { once: true });
       }
+
+      // Retry loop: keep trying every 300ms until the video is actually playing
+      retryTimerRef.current = window.setInterval(() => {
+        if (activeSlideRef.current !== index) {
+          if (retryTimerRef.current) window.clearInterval(retryTimerRef.current);
+          return;
+        }
+        if (video.paused && video.readyState >= 2) {
+          video.play().catch(() => {});
+        }
+        if (!video.paused) {
+          // Playing! Stop retrying.
+          if (retryTimerRef.current) window.clearInterval(retryTimerRef.current);
+          retryTimerRef.current = null;
+        }
+      }, 300);
     });
   }, []);
 
@@ -101,6 +124,7 @@ export default function OnboardingOverlay() {
 
   useEffect(() => {
     return () => {
+      if (retryTimerRef.current) window.clearInterval(retryTimerRef.current);
       videoRefs.current.forEach((video) => video?.pause());
     };
   }, []);
