@@ -187,6 +187,8 @@ const BrandFilter = forwardRef<HTMLDivElement, BrandFilterProps>(({ gender, sele
       )}
     </div>
   );
-};
+});
+
+BrandFilter.displayName = 'BrandFilter';
 
 export default BrandFilter;
