@@ -21,22 +21,21 @@ const NotFound = () => {
         animate={{ opacity: 1, y: 0 }}
         className="text-center max-w-[320px]"
       >
-        <BrandLogo size="xl" iconOnly className="mx-auto mb-5" />
-        <h1 className="text-5xl font-bold text-primary mb-2">404</h1>
-        <p className="text-[15px] font-semibold text-foreground mb-1">Page not found</p>
-        <p className="text-[12px] text-muted-foreground mb-6">
+        <h1 className="headline-editorial text-6xl text-white/10 mb-4">404</h1>
+        <p className="headline-editorial text-xl text-white/60 mb-1">Page not found</p>
+        <p className="text-[12px] text-white/30 mb-6 font-sans">
           The page you're looking for doesn't exist or has been moved.
         </p>
         <div className="space-y-2">
           <Button
-            className="w-full h-11 rounded-xl btn-luxury text-primary-foreground text-sm font-bold"
+            className="w-full h-11 rounded-xl btn-glass text-white text-sm font-semibold"
             onClick={() => navigate('/home')}
           >
             <Home className="mr-2 h-4 w-4" /> Back to Home
           </Button>
           <Button
             variant="ghost"
-            className="w-full text-xs text-muted-foreground"
+            className="w-full text-xs text-white/30"
             onClick={() => navigate(-1)}
           >
             <ArrowLeft className="mr-1.5 h-3.5 w-3.5" /> Go Back
