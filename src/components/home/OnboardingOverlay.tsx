@@ -29,6 +29,7 @@ export default function OnboardingOverlay() {
   const [visible, setVisible] = useState(() => !localStorage.getItem(STORAGE_KEY));
   const [slide, setSlide] = useState(0);
   const touchStartX = useRef(0);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   useEffect(() => {
     if (!localStorage.getItem(STORAGE_KEY)) {
@@ -36,6 +37,43 @@ export default function OnboardingOverlay() {
       setSlide(0);
     }
   }, [location.key]);
+
+  const resumeCurrentVideo = useCallback(() => {
+    const activeVideo = videoRefs.current[slide];
+    if (!activeVideo) return;
+
+    activeVideo.muted = true;
+    activeVideo.playsInline = true;
+
+    const playPromise = activeVideo.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch(() => {
+        // Ignore autoplay failures until the next user gesture.
+      });
+    }
+  }, [slide]);
+
+  useEffect(() => {
+    if (!visible) return;
+
+    videoRefs.current.forEach((video, index) => {
+      if (!video) return;
+
+      if (index === slide) {
+        video.muted = true;
+        video.playsInline = true;
+        const playPromise = video.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(() => {
+            // Some mobile browsers require an explicit gesture.
+          });
+        }
+        return;
+      }
+
+      video.pause();
+    });
+  }, [slide, visible]);
 
   const complete = useCallback((dest?: string) => {
     localStorage.setItem(STORAGE_KEY, 'true');
@@ -53,7 +91,12 @@ export default function OnboardingOverlay() {
   return createPortal(
     <div
       className="fixed inset-0 z-[100] w-screen h-dvh overflow-hidden"
-      onTouchStart={(e) => { e.stopPropagation(); touchStartX.current = e.touches[0].clientX; }}
+      onPointerDownCapture={resumeCurrentVideo}
+      onTouchStart={(e) => {
+        e.stopPropagation();
+        resumeCurrentVideo();
+        touchStartX.current = e.touches[0].clientX;
+      }}
       onTouchEnd={(e) => {
         e.stopPropagation();
         const dx = e.changedTouches[0].clientX - touchStartX.current;
@@ -63,10 +106,8 @@ export default function OnboardingOverlay() {
         }
       }}
     >
-      {/* Solid black base — prevents home screen bleed-through */}
       <div className="absolute inset-0 bg-black" />
 
-      {/* All background videos rendered persistently — toggle opacity */}
       {SLIDES.map((s, i) => (
         <div
           key={i}
@@ -74,31 +115,38 @@ export default function OnboardingOverlay() {
           style={{ opacity: i === slide ? 1 : 0 }}
         >
           <video
+            ref={(el) => {
+              videoRefs.current[i] = el;
+            }}
             src={s.video}
-            autoPlay
+            autoPlay={i === 0}
             loop
             muted
             playsInline
-            preload="auto"
-            className="absolute inset-0 w-full h-full object-cover"
+            preload={Math.abs(i - slide) <= 1 ? 'auto' : 'metadata'}
+            onLoadedData={() => {
+              if (i === slide) {
+                const activeVideo = videoRefs.current[i];
+                activeVideo?.play().catch(() => {
+                  // Ignore until user interacts.
+                });
+              }
+            }}
+            className="absolute inset-0 h-full w-full object-cover"
           />
         </div>
       ))}
 
-      {/* Editorial gradient overlay */}
       <div className="absolute inset-0 editorial-gradient" />
 
-      {/* Skip */}
       <button
         onClick={() => complete()}
-        className="absolute top-4 right-4 pt-[env(safe-area-inset-top)] z-10 text-[10px] font-sans font-semibold tracking-[0.2em] uppercase text-white/30 min-h-[44px] min-w-[44px] flex items-center justify-center"
+        className="absolute top-4 right-4 z-10 flex min-h-[44px] min-w-[44px] items-center justify-center pt-[env(safe-area-inset-top)] font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30"
       >
         Skip
       </button>
 
-      {/* Bottom content area */}
       <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center px-8" style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}>
-        {/* Animated text */}
         <AnimatePresence mode="wait">
           <motion.div
             key={slide}
@@ -106,24 +154,23 @@ export default function OnboardingOverlay() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center mb-8"
+            className="mb-8 text-center"
           >
-            <h2 className="headline-editorial text-2xl text-primary max-w-[300px] mx-auto">
+            <h2 className="headline-editorial mx-auto max-w-[300px] text-2xl text-primary">
               {SLIDES[slide].headline}
             </h2>
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.15, duration: 0.3 }}
-              className="text-sm text-white/60 max-w-[260px] mx-auto mt-2 font-sans"
+              className="mx-auto mt-2 max-w-[260px] font-sans text-sm text-white/60"
             >
               {SLIDES[slide].sub}
             </motion.p>
           </motion.div>
         </AnimatePresence>
 
-        {/* Dots */}
-        <div className="flex gap-1.5 mb-6">
+        <div className="mb-6 flex gap-1.5">
           {SLIDES.map((_, i) => (
             <button
               key={i}
@@ -134,25 +181,24 @@ export default function OnboardingOverlay() {
           ))}
         </div>
 
-        {/* CTAs */}
         {slide < SLIDES.length - 1 ? (
           <button
             onClick={() => goTo(slide + 1)}
-            className="w-full max-w-[280px] h-12 rounded-xl btn-glass text-white font-semibold text-sm mb-4"
+            className="btn-glass mb-4 h-12 w-full max-w-[280px] rounded-xl text-sm font-semibold text-white"
           >
             Next
           </button>
         ) : (
-          <div className="w-full max-w-[280px] space-y-2 mb-4">
+          <div className="mb-4 w-full max-w-[280px] space-y-2">
             <button
               onClick={() => complete('/capture')}
-              className="w-full h-12 rounded-xl btn-luxury text-primary-foreground text-sm font-bold"
+              className="btn-luxury h-12 w-full rounded-xl text-sm font-bold text-primary-foreground"
             >
               Map Your Body
             </button>
             <button
               onClick={() => complete()}
-              className="w-full h-12 rounded-xl btn-glass text-white font-semibold text-sm"
+              className="btn-glass h-12 w-full rounded-xl text-sm font-semibold text-white"
             >
               Enter the Closet
             </button>
