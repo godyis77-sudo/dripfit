@@ -204,18 +204,18 @@ const SizeGuide = () => {
         body: { user_id: user.id, brand_slug: selectedBrand.brand_slug, category: selectedCategory, fit_preference: fitPreference },
       });
       if (fnError) throw new Error(fnError.message);
-      if (resp?.error) {
-        const msg = resp.error.message || resp.error;
-        // Make technical 404 messages user-friendly
-        if (msg.includes('not available') || resp.error.code === 'NOT_FOUND') {
-          throw new Error(`We don't have ${selectedBrand.brand_name} ${selectedCategory} sizing data yet. Try a different category or upload a size chart instead.`);
-        }
+      const payload = resp?.data ?? resp;
+      // Handle graceful fallback from edge function
+      if (payload?.fallback || payload?.code === 'NOT_FOUND') {
+        throw new Error(`We don't have ${selectedBrand.brand_name} ${selectedCategory} sizing data yet. Try a different category or upload a size chart instead.`);
+      }
+      if (payload?.error) {
+        const msg = payload.error.message || payload.error;
         if (msg.includes('No body scan')) {
           throw new Error('Complete a body scan first to get size recommendations.');
         }
         throw new Error(msg);
       }
-      const payload = resp?.data ?? resp;
       setDbResult(payload as DbSizeResult);
     } catch (err: any) { setDbError(err.message || 'Something went wrong. Please try again.'); }
     finally { setDbLoading(false); }

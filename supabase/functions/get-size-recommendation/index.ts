@@ -222,12 +222,36 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (!chart) {
-      return errorResponse("Size chart not available for this brand and category yet.", "NOT_FOUND", 404, corsHeaders);
+      return successResponse({
+        error: "Size chart not available for this brand and category yet.",
+        code: "NOT_FOUND",
+        fallback: true,
+        recommended_size: null,
+        confidence: 0,
+        fit_status: "not_available",
+        fit_notes: `Size chart not available for this brand and category yet.`,
+        second_option: null,
+        brand_slug,
+        category,
+        all_sizes: [],
+      }, 200, corsHeaders);
     }
 
     const sizeData: SizeEntry[] = Array.isArray(chart.size_data) ? chart.size_data as SizeEntry[] : [];
     if (sizeData.length === 0) {
-      return errorResponse("Size chart has no size entries.", "NOT_FOUND", 404, corsHeaders);
+      return successResponse({
+        error: "Size chart has no size entries.",
+        code: "NOT_FOUND",
+        fallback: true,
+        recommended_size: null,
+        confidence: 0,
+        fit_status: "not_available",
+        fit_notes: `Size chart data is empty for this brand.`,
+        second_option: null,
+        brand_slug,
+        category,
+        all_sizes: [],
+      }, 200, corsHeaders);
     }
 
     // STEP 4 — Calculate brand-specific grade steps & fit offset
