@@ -79,33 +79,16 @@ export default function OnboardingOverlay() {
     return v1Success;
   }, []);
 
-  // Attempt autoplay on mount — start video 1 near end so it loops quickly
+  // Attempt autoplay on mount
   useEffect(() => {
     if (!visible) return;
 
-    const seekAndPlay = () => {
-      const v1 = videoRefs.current[0];
-      if (v1) {
-        // Jump to near the end so it plays the last frame then loops
-        const onLoaded = () => {
-          if (v1.duration && isFinite(v1.duration)) {
-            v1.currentTime = Math.max(0, v1.duration - 0.1);
-          }
-          v1.removeEventListener('loadedmetadata', onLoaded);
-        };
-        if (v1.duration && isFinite(v1.duration)) {
-          v1.currentTime = Math.max(0, v1.duration - 0.1);
-        } else {
-          v1.addEventListener('loadedmetadata', onLoaded);
-        }
-      }
-      playAll();
-    };
-
-    const t1 = setTimeout(seekAndPlay, 50);
+    // Try immediately
+    const t1 = setTimeout(() => playAll(), 50);
+    // Retry once more after a beat
     const t2 = setTimeout(() => {
       const v1 = videoRefs.current[0];
-      if (v1 && v1.paused) seekAndPlay();
+      if (v1 && v1.paused) playAll();
     }, 500);
 
     return () => { clearTimeout(t1); clearTimeout(t2); };
