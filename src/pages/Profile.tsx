@@ -131,8 +131,8 @@ const Profile = () => {
     queryClient.invalidateQueries({ queryKey: ['profile-info', user.id] });
   };
 
-  const publicCount = tryOnPosts.filter(p => p.is_public).length;
-  const privateCount = tryOnPosts.length - publicCount;
+
+
 
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
@@ -229,23 +229,8 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Stats row */}
-        <div className="flex items-center justify-center gap-0 mb-4 glass-dark rounded-xl py-2">
-          <div className="flex-1 text-center">
-            <p className="font-display text-lg text-white">{tryOnPosts.length}</p>
-            <p className="text-[9px] tracking-[0.2em] uppercase text-white/30">Total</p>
-          </div>
-          <div className="w-px h-8 bg-white/10" />
-          <div className="flex-1 text-center">
-            <p className="font-display text-lg text-white">{publicCount}</p>
-            <p className="text-[9px] tracking-[0.2em] uppercase text-white/30">Public</p>
-          </div>
-          <div className="w-px h-8 bg-white/10" />
-          <div className="flex-1 text-center">
-            <p className="font-display text-lg text-white">{privateCount}</p>
-            <p className="text-[9px] tracking-[0.2em] uppercase text-white/30">Private</p>
-          </div>
-        </div>
+
+
 
         {/* Milestone Badges — collapsed by default */}
         <Collapsible defaultOpen={false} className="mb-2">
