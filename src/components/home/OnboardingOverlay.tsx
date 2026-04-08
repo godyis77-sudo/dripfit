@@ -92,20 +92,18 @@ export default function OnboardingOverlay() {
     return v1Success;
   }, []);
 
-  // Attempt autoplay on mount
+  // Attempt autoplay when logo phase ends (slide becomes 0)
   useEffect(() => {
-    if (!visible) return;
+    if (!visible || slide < 0) return;
 
-    // Try immediately
     const t1 = setTimeout(() => playAll(), 50);
-    // Retry once more after a beat
     const t2 = setTimeout(() => {
       const v1 = videoRefs.current[0];
       if (v1 && v1.paused) playAll();
     }, 500);
 
     return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, [visible, playAll]);
+  }, [visible, slide >= 0, playAll]);
 
   // Handle user tap — this is a real gesture so play() will work
   const handleUserGesture = useCallback(() => {
