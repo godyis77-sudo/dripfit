@@ -202,10 +202,10 @@ const Premium = () => {
                 <button
                   key={p.key}
                   onClick={() => setSelectedPlan(p.key)}
-                  className={`flex-1 relative rounded-xl border-2 p-3 transition-all active:scale-[0.97] ${
+                  className={`flex-1 relative rounded-xl border p-3 transition-all active:scale-[0.97] ${
                     selectedPlan === p.key
-                      ? 'border-primary bg-primary/5'
-                      : 'border-border bg-card'
+                      ? 'glass-gold border-primary/30'
+                      : 'glass-dark border-white/5'
                   }`}
                 >
                   {p.badge && (
@@ -221,7 +221,7 @@ const Premium = () => {
             </div>
 
             {/* Plan terms */}
-            <div className="bg-card border border-border rounded-xl p-3 mb-4 space-y-1">
+            <div className="glass-dark rounded-xl p-3 mb-4 space-y-1">
               <div className="flex items-center gap-1.5">
                 <Check className="h-3 w-3 text-primary" />
                 <span className="text-[11px] text-foreground">{currentPlan.trial} included</span>
@@ -287,7 +287,7 @@ const Premium = () => {
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.05 * i + 0.4, duration: 0.3 }}
-                className="bg-card border border-border rounded-xl p-3 relative"
+                className="glass-dark rounded-xl p-3 relative"
               >
                 <Quote className="absolute top-2 left-2.5 h-5 w-5 text-primary/20" />
                 <p className="text-[11px] text-foreground italic pl-5 leading-relaxed">{t.quote_text}</p>

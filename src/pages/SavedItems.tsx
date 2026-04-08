@@ -87,9 +87,9 @@ const SavedItems = () => {
 
         {/* Price watches summary */}
         {watches.length > 0 && (
-          <button
+            <button
             onClick={() => setShowDropsFeed(true)}
-            className="w-full flex items-center gap-3 rounded-xl border border-border bg-card p-3 mb-3 active:scale-[0.98] transition-transform"
+            className="w-full flex items-center gap-3 rounded-xl glass-dark p-3 mb-3 active:scale-[0.98] transition-transform"
           >
             <div className="h-9 w-9 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
               <TrendingDown className="h-4 w-4 text-green-500" />
@@ -134,7 +134,7 @@ const SavedItems = () => {
               // Check if this item has an active price watch
               const watch = watches.find(w => w.product_url === item.product_link || w.product_name === item.brand);
               return (
-                <div key={item.id} className="bg-card border border-border rounded-xl p-3">
+                <div key={item.id} className="glass-dark rounded-xl p-3">
                   <div className="flex gap-3">
                     <img
                       src={item.product_image_url || '/placeholder.svg'}

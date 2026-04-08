@@ -73,7 +73,7 @@ const Cart = () => {
         ) : (
           <div className="space-y-2 pb-4">
             {items.map(item => (
-                <div key={item.id} className="bg-card border border-border rounded-xl p-2.5 flex gap-3">
+                <div key={item.id} className="glass-dark rounded-xl p-2.5 flex gap-3">
                   {/* Thumbnail */}
                   <button
                     onClick={() => navigate('/style-check')}

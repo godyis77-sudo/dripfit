@@ -339,7 +339,7 @@ const Results = () => {
 
         {/* Guest sign-up nudge */}
         {isGuestMode() && !user && !guestNudgeDismissed && (
-          <div className="mb-3 rounded-xl border border-primary/20 bg-primary/5 p-4 relative">
+          <div className="mb-3 rounded-xl glass-dark p-4 relative">
             <button
               onClick={() => {
                 setGuestNudgeDismissed(true);
