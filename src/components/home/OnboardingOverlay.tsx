@@ -53,8 +53,9 @@ export default function OnboardingOverlay() {
   return createPortal(
     <div
       className="fixed inset-0 z-[100] w-screen h-dvh overflow-hidden"
-      onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+      onTouchStart={(e) => { e.stopPropagation(); touchStartX.current = e.touches[0].clientX; }}
       onTouchEnd={(e) => {
+        e.stopPropagation();
         const dx = e.changedTouches[0].clientX - touchStartX.current;
         if (Math.abs(dx) > 50) {
           if (dx < 0 && slide < SLIDES.length - 1) goTo(slide + 1);
