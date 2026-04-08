@@ -8,6 +8,7 @@ import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
 import ProductPreviewModal from '@/components/ui/ProductPreviewModal';
 import { type BrandGenre } from '@/lib/brandGenres';
+import { thumbUrl } from '@/lib/imageOptim';
 
 interface CategoryProductGridProps {
   category: string;
