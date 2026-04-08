@@ -41,9 +41,20 @@ export default function OnboardingOverlay() {
   useEffect(() => {
     if (!localStorage.getItem(STORAGE_KEY)) {
       setVisible(true);
-      setSlide(0);
+      setSlide(-1);
+      setLogoPhase(true);
     }
   }, [location.key]);
+
+  // Logo intro → cross-fade to slide 0 after 2s
+  useEffect(() => {
+    if (!visible || !logoPhase) return;
+    const t = setTimeout(() => {
+      setLogoPhase(false);
+      setSlide(0);
+    }, 2000);
+    return () => clearTimeout(t);
+  }, [visible, logoPhase]);
 
   /** Play all 3 videos. Returns true if video 1 started successfully. */
   const playAll = useCallback(() => {
