@@ -8,43 +8,31 @@ const SLIDES = [
     headline: 'Your closet. Verified.',
     sub: '7,000 pieces. 130 brands. Every link real.',
     video: '/videos/onboarding-bg-1.mp4',
+    poster: '/videos/onboarding-poster-1.jpg',
   },
   {
     headline: 'See the drape. Before the bag drops.',
     sub: 'AI try-on. Your body. Any piece. Any background.',
     video: '/videos/onboarding-bg-2.mp4',
+    poster: '/videos/onboarding-poster-2.jpg',
   },
   {
     headline: 'They already voted.',
     sub: 'Your Body Twins COP or DROP every fit.',
     video: '/videos/onboarding-bg-3.mp4',
+    poster: '/videos/onboarding-poster-3.jpg',
   },
 ] as const;
 
 const STORAGE_KEY = 'onboarding_complete';
 
-/** Keep retrying .play() until it sticks — needed for restrictive autoplay policies */
-function forcePlay(video: HTMLVideoElement) {
+function tryPlay(video: HTMLVideoElement) {
   video.muted = true;
   video.defaultMuted = true;
   video.setAttribute('muted', '');
   video.setAttribute('playsinline', '');
-  video.setAttribute('webkit-playsinline', 'true');
-
-  const attempt = () => {
-    if (!video.paused) return;
-    const p = video.play();
-    if (p) p.catch(() => {});
-  };
-
-  attempt();
-
-  // Retry a few times in case the browser blocked the first call
-  const t1 = setTimeout(attempt, 200);
-  const t2 = setTimeout(attempt, 600);
-  const t3 = setTimeout(attempt, 1200);
-
-  return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  const p = video.play();
+  if (p) p.catch(() => {});
 }
 
 export default function OnboardingOverlay() {
@@ -54,7 +42,7 @@ export default function OnboardingOverlay() {
   const [slide, setSlide] = useState(0);
   const touchStartX = useRef(0);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([null, null, null]);
-  const cleanupRefs = useRef<(() => void)[]>([]);
+  const retryRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!localStorage.getItem(STORAGE_KEY)) {
@@ -63,71 +51,74 @@ export default function OnboardingOverlay() {
     }
   }, [location.key]);
 
-  // Start all 3 videos once the overlay is visible.
-  // Video 1 gets a slight head-start so it's playing by the time the user sees it.
+  // Phase 1: Eagerly play video 1. Once it's playing, load videos 2 & 3.
   useEffect(() => {
     if (!visible) return;
 
-    const cleanups: (() => void)[] = [];
-
-    videoRefs.current.forEach((video, i) => {
-      if (!video) return;
-      // First video starts immediately; others after a short stagger
-      const delay = i === 0 ? 0 : 300 + i * 200;
-      const timer = setTimeout(() => {
-        const cleanup = forcePlay(video);
-        cleanups.push(cleanup);
-      }, delay);
-      cleanups.push(() => clearTimeout(timer));
-    });
-
-    // Extra aggressive retry for video 1 specifically
     const v1 = videoRefs.current[0];
-    if (v1) {
-      const interval = setInterval(() => {
-        if (!v1.paused) { clearInterval(interval); return; }
-        v1.muted = true;
-        const p = v1.play();
-        if (p) p.catch(() => {});
-      }, 400);
-      cleanups.push(() => clearInterval(interval));
-    }
+    if (!v1) return;
 
-    cleanupRefs.current = cleanups;
+    // Priority: get video 1 playing ASAP
+    v1.preload = 'auto';
+    tryPlay(v1);
+
+    // Retry until video 1 plays, then preload the rest
+    let othersLoaded = false;
+    retryRef.current = window.setInterval(() => {
+      const v = videoRefs.current[0];
+      if (!v) return;
+
+      if (v.paused) {
+        tryPlay(v);
+      }
+
+      // Once v1 is playing (or has data), start loading v2 & v3
+      if (!othersLoaded && (v.readyState >= 2 || !v.paused)) {
+        othersLoaded = true;
+        [1, 2].forEach((i) => {
+          const vi = videoRefs.current[i];
+          if (vi) {
+            vi.preload = 'auto';
+            vi.load();
+            // Start playing so it's ready for crossfade
+            setTimeout(() => tryPlay(vi), i * 200);
+          }
+        });
+      }
+    }, 300);
 
     return () => {
-      cleanups.forEach((fn) => fn());
+      if (retryRef.current !== null) window.clearInterval(retryRef.current);
     };
   }, [visible]);
 
-  // Also try to play on any user interaction (unlocks autoplay)
+  // Unlock all on interaction
   const unlockAll = useCallback(() => {
     videoRefs.current.forEach((video) => {
-      if (video && video.paused) {
-        const p = video.play();
-        if (p) p.catch(() => {});
-      }
+      if (video && video.paused) tryPlay(video);
     });
   }, []);
 
   const transitionToSlide = useCallback((next: number) => {
     if (next < 0 || next >= SLIDES.length) return;
     setSlide(next);
-    unlockAll();
-  }, [unlockAll]);
+    // Ensure the target video is playing
+    const v = videoRefs.current[next];
+    if (v && v.paused) tryPlay(v);
+  }, []);
 
   const complete = useCallback((dest?: string) => {
     localStorage.setItem(STORAGE_KEY, 'true');
+    if (retryRef.current !== null) window.clearInterval(retryRef.current);
     videoRefs.current.forEach((v) => v?.pause());
-    cleanupRefs.current.forEach((fn) => fn());
     setVisible(false);
     if (dest) navigate(dest);
   }, [navigate]);
 
   useEffect(() => {
     return () => {
+      if (retryRef.current !== null) window.clearInterval(retryRef.current);
       videoRefs.current.forEach((v) => v?.pause());
-      cleanupRefs.current.forEach((fn) => fn());
     };
   }, []);
 
@@ -151,23 +142,30 @@ export default function OnboardingOverlay() {
       }}
       onClick={unlockAll}
     >
-      {/* Black base so crossfade doesn't flash white */}
       <div className="absolute inset-0 bg-black" />
 
-      {/* All 3 videos stacked — active one is opacity-100, others opacity-0 */}
       {SLIDES.map((s, i) => (
         <video
           key={i}
           ref={(el) => { videoRefs.current[i] = el; }}
-          src={s.video}
-          autoPlay
+          src={i === 0 ? s.video : undefined}
+          data-src={s.video}
+          poster={s.poster}
+          autoPlay={i === 0}
           muted
           loop
           playsInline
-          preload="auto"
+          preload={i === 0 ? 'auto' : 'none'}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${
             i === slide ? 'opacity-100' : 'opacity-0'
           }`}
+          onLoadStart={() => {
+            // Ensure src is set from data-src when load begins
+            const el = videoRefs.current[i];
+            if (el && !el.src && el.dataset.src) {
+              el.src = el.dataset.src;
+            }
+          }}
         />
       ))}
 
