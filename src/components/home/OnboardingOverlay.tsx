@@ -47,14 +47,14 @@ export default function OnboardingOverlay() {
     }
   }, [location.key]);
 
-  // Logo intro → cross-fade to slide 0 after 2s
+  // Start video 1 early, then fade out logo
   useEffect(() => {
     if (!visible || !logoPhase) return;
-    const t = setTimeout(() => {
-      setLogoPhase(false);
-      setSlide(0);
-    }, 2000);
-    return () => clearTimeout(t);
+    // Show video behind logo after 1s
+    const t1 = setTimeout(() => setSlide(0), 1000);
+    // Fade out logo after 2s
+    const t2 = setTimeout(() => setLogoPhase(false), 2000);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [visible, logoPhase]);
 
   /** Play all 3 videos. Returns true if video 1 started successfully. */
