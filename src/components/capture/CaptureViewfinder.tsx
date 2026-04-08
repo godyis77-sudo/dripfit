@@ -82,21 +82,21 @@ const CaptureViewfinder = ({ captureStep, photo }: CaptureViewfinderProps) => {
           </div>
 
           {/* Corner badges */}
-          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 bg-white/5 backdrop-blur-sm rounded-full px-3 py-1 border border-white/10">
-            <Eye className="h-3.5 w-3.5 text-white/70" />
-            <span className="text-[11px] text-white/70">Head visible</span>
+          <div className="absolute top-2.5 left-2.5 flex items-center gap-1 bg-white/5 backdrop-blur-sm rounded-full px-2 py-1 border border-white/10">
+            <Eye className="h-3 w-3 text-white/70" />
+            <span className="text-[10px] text-white/70">Head</span>
           </div>
-          <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 bg-white/5 backdrop-blur-sm rounded-full px-3 py-1 border border-white/10">
-            <Sun className="h-3.5 w-3.5 text-white/70" />
-            <span className="text-[11px] text-white/70">Even light</span>
+          <div className="absolute top-2.5 right-2.5 flex items-center gap-1 bg-white/5 backdrop-blur-sm rounded-full px-2 py-1 border border-white/10">
+            <Sun className="h-3 w-3 text-white/70" />
+            <span className="text-[10px] text-white/70">Light</span>
           </div>
-          <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 bg-white/5 backdrop-blur-sm rounded-full px-3 py-1 border border-white/10">
-            <Maximize className="h-3.5 w-3.5 text-white/70" />
-            <span className="text-[11px] text-white/70">Feet visible</span>
+          <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1 bg-white/5 backdrop-blur-sm rounded-full px-2 py-1 border border-white/10">
+            <Maximize className="h-3 w-3 text-white/70" />
+            <span className="text-[10px] text-white/70">Feet</span>
           </div>
-          <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1.5 bg-white/5 backdrop-blur-sm rounded-full px-3 py-1 border border-white/10">
-            <Ruler className="h-3.5 w-3.5 text-white/70" />
-            <span className="text-[11px] text-white/70">6-8 ft away</span>
+          <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1 bg-white/5 backdrop-blur-sm rounded-full px-2 py-1 border border-white/10">
+            <Ruler className="h-3 w-3 text-white/70" />
+            <span className="text-[10px] text-white/70">6-8 ft</span>
           </div>
 
           {/* Animated guide text */}
