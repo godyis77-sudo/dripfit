@@ -28,42 +28,128 @@ export default function OnboardingOverlay() {
   const location = useLocation();
   const [visible, setVisible] = useState(() => !localStorage.getItem(STORAGE_KEY));
   const [slide, setSlide] = useState(0);
+  const [videoVisible, setVideoVisible] = useState(false);
   const touchStartX = useRef(0);
   const activeSlideRef = useRef(0);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const retryTimerRef = useRef<number | null>(null);
+  const readyHandlerRef = useRef<(() => void) | null>(null);
+
+  const clearRetryTimer = useCallback(() => {
+    if (retryTimerRef.current !== null) {
+      window.clearInterval(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
+  }, []);
+
+  const clearReadyHandler = useCallback(() => {
+    const video = videoRef.current;
+    if (video && readyHandlerRef.current) {
+      video.removeEventListener('canplay', readyHandlerRef.current);
+    }
+    readyHandlerRef.current = null;
+  }, []);
+
+  const configureVideo = useCallback((video: HTMLVideoElement) => {
+    video.muted = true;
+    video.defaultMuted = true;
+    video.autoplay = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.preload = 'auto';
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', 'true');
+  }, []);
 
   useEffect(() => {
     if (!localStorage.getItem(STORAGE_KEY)) {
       setVisible(true);
       setSlide(0);
+      setVideoVisible(false);
       activeSlideRef.current = 0;
     }
   }, [location.key]);
 
-  const playCurrentVideo = useCallback((index: number) => {
+  const schedulePlaybackRetry = useCallback((index: number) => {
+    clearRetryTimer();
+
+    retryTimerRef.current = window.setInterval(() => {
+      const video = videoRef.current;
+      if (!video || activeSlideRef.current !== index) {
+        clearRetryTimer();
+        return;
+      }
+
+      configureVideo(video);
+
+      if (!video.paused) {
+        setVideoVisible(true);
+        clearRetryTimer();
+        return;
+      }
+
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.then === 'function') {
+        playPromise
+          .then(() => {
+            setVideoVisible(true);
+            clearRetryTimer();
+          })
+          .catch(() => {});
+      }
+    }, 350);
+  }, [clearRetryTimer, configureVideo]);
+
+  const playCurrentVideo = useCallback((index: number, options?: { fade?: boolean; restart?: boolean }) => {
     const video = videoRef.current;
     const src = SLIDES[index]?.video;
     if (!video || !src) return;
 
     activeSlideRef.current = index;
-    video.muted = true;
-    video.playsInline = true;
-    video.loop = true;
+    configureVideo(video);
+    clearRetryTimer();
+    clearReadyHandler();
+
+    const resolvedSrc = new URL(src, window.location.origin).href;
+    const currentSrc = video.currentSrc || video.src || '';
+    const shouldFade = options?.fade ?? true;
+    const shouldRestart = options?.restart ?? true;
 
     const startPlayback = () => {
       if (activeSlideRef.current !== index) return;
+
+      if (shouldRestart) {
+        try {
+          video.currentTime = 0;
+        } catch {
+          // Ignore currentTime failures on browsers that block seeks before metadata.
+        }
+      }
+
+      setVideoVisible(true);
       const playPromise = video.play();
-      if (playPromise && typeof playPromise.catch === 'function') {
-        playPromise.catch(() => {});
+
+      if (playPromise && typeof playPromise.then === 'function') {
+        playPromise
+          .then(() => {
+            setVideoVisible(true);
+            clearRetryTimer();
+          })
+          .catch(() => {
+            schedulePlaybackRetry(index);
+          });
       }
     };
 
-    const currentSrc = video.getAttribute('src');
-    if (currentSrc !== src) {
+    if (currentSrc !== resolvedSrc) {
+      if (shouldFade) setVideoVisible(false);
       video.pause();
-      video.setAttribute('src', src);
-      video.load();
+      readyHandlerRef.current = startPlayback;
       video.addEventListener('canplay', startPlayback, { once: true });
+      video.src = src;
+      video.load();
+      schedulePlaybackRetry(index);
       return;
     }
 
@@ -72,41 +158,49 @@ export default function OnboardingOverlay() {
       return;
     }
 
+    readyHandlerRef.current = startPlayback;
     video.addEventListener('canplay', startPlayback, { once: true });
     video.load();
-  }, []);
+    schedulePlaybackRetry(index);
+  }, [clearReadyHandler, clearRetryTimer, configureVideo, schedulePlaybackRetry]);
 
   useEffect(() => {
     if (!visible) return;
+
     const frame = window.requestAnimationFrame(() => {
-      playCurrentVideo(slide);
+      playCurrentVideo(0, { fade: false, restart: false });
     });
+
     return () => window.cancelAnimationFrame(frame);
-  }, [playCurrentVideo, slide, visible]);
+  }, [location.key, playCurrentVideo, visible]);
 
   const unlockPlayback = useCallback(() => {
-    playCurrentVideo(activeSlideRef.current);
+    playCurrentVideo(activeSlideRef.current, { fade: false, restart: false });
   }, [playCurrentVideo]);
 
   const transitionToSlide = useCallback((next: number) => {
-    if (next < 0 || next >= SLIDES.length) return;
+    if (next < 0 || next >= SLIDES.length || next === activeSlideRef.current) return;
     activeSlideRef.current = next;
-    playCurrentVideo(next);
     setSlide(next);
+    playCurrentVideo(next, { fade: true, restart: true });
   }, [playCurrentVideo]);
 
   const complete = useCallback((dest?: string) => {
     localStorage.setItem(STORAGE_KEY, 'true');
+    clearRetryTimer();
+    clearReadyHandler();
     videoRef.current?.pause();
     setVisible(false);
     if (dest) navigate(dest);
-  }, [navigate]);
+  }, [clearReadyHandler, clearRetryTimer, navigate]);
 
   useEffect(() => {
     return () => {
+      clearRetryTimer();
+      clearReadyHandler();
       videoRef.current?.pause();
     };
-  }, []);
+  }, [clearReadyHandler, clearRetryTimer]);
 
   if (!visible) return null;
 
@@ -138,7 +232,7 @@ export default function OnboardingOverlay() {
         loop
         playsInline
         preload="auto"
-        className="absolute inset-0 h-full w-full object-cover"
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-out ${videoVisible ? 'opacity-100' : 'opacity-0'}`}
       />
 
       <div className="absolute inset-0 editorial-gradient" />
@@ -158,7 +252,6 @@ export default function OnboardingOverlay() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            onAnimationComplete={() => playCurrentVideo(slide)}
             className="mb-8 text-center"
           >
             <h2 className="headline-editorial mx-auto max-w-[300px] text-2xl text-primary">
