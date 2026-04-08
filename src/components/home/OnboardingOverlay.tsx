@@ -19,7 +19,7 @@ const SLIDES = [
     sub: 'Your Body Twins COP or DROP every fit.',
     video: '/videos/onboarding-bg-3.mp4',
   },
-];
+] as const;
 
 const STORAGE_KEY = 'onboarding_complete';
 
@@ -29,10 +29,8 @@ export default function OnboardingOverlay() {
   const [visible, setVisible] = useState(() => !localStorage.getItem(STORAGE_KEY));
   const [slide, setSlide] = useState(0);
   const touchStartX = useRef(0);
-  const hasInteracted = useRef(false);
   const activeSlideRef = useRef(0);
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-  const retryTimerRef = useRef<number | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
     if (!localStorage.getItem(STORAGE_KEY)) {
@@ -42,90 +40,71 @@ export default function OnboardingOverlay() {
     }
   }, [location.key]);
 
-  const playSlideVideo = useCallback((index: number) => {
-    activeSlideRef.current = index;
+  const playCurrentVideo = useCallback((index: number) => {
+    const video = videoRef.current;
+    const src = SLIDES[index]?.video;
+    if (!video || !src) return;
 
-    // Clear any existing retry loop
-    if (retryTimerRef.current) {
-      window.clearInterval(retryTimerRef.current);
-      retryTimerRef.current = null;
+    activeSlideRef.current = index;
+    video.muted = true;
+    video.playsInline = true;
+    video.loop = true;
+
+    const startPlayback = () => {
+      if (activeSlideRef.current !== index) return;
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {});
+      }
+    };
+
+    const currentSrc = video.getAttribute('src');
+    if (currentSrc !== src) {
+      video.pause();
+      video.setAttribute('src', src);
+      video.load();
+      video.addEventListener('canplay', startPlayback, { once: true });
+      return;
     }
 
-    videoRefs.current.forEach((video, i) => {
-      if (!video) return;
-      video.muted = true;
-      video.playsInline = true;
-      video.loop = true;
+    if (video.readyState >= 2) {
+      startPlayback();
+      return;
+    }
 
-      if (i !== index) {
-        video.pause();
-        return;
-      }
-
-      const attemptPlay = () => {
-        if (activeSlideRef.current !== index) return false;
-        const p = video.play();
-        if (p && typeof p.catch === 'function') {
-          p.catch(() => {});
-        }
-        return true;
-      };
-
-      if (video.readyState >= 2) {
-        attemptPlay();
-      } else {
-        video.load();
-        video.addEventListener('loadeddata', () => attemptPlay(), { once: true });
-      }
-
-      // Retry loop: keep trying every 300ms until the video is actually playing
-      retryTimerRef.current = window.setInterval(() => {
-        if (activeSlideRef.current !== index) {
-          if (retryTimerRef.current) window.clearInterval(retryTimerRef.current);
-          return;
-        }
-        if (video.paused && video.readyState >= 2) {
-          video.play().catch(() => {});
-        }
-        if (!video.paused) {
-          // Playing! Stop retrying.
-          if (retryTimerRef.current) window.clearInterval(retryTimerRef.current);
-          retryTimerRef.current = null;
-        }
-      }, 300);
-    });
+    video.addEventListener('canplay', startPlayback, { once: true });
+    video.load();
   }, []);
 
   useEffect(() => {
     if (!visible) return;
-    const timer = window.setTimeout(() => playSlideVideo(slide), 0);
-    return () => window.clearTimeout(timer);
-  }, [slide, visible, playSlideVideo]);
+    const frame = window.requestAnimationFrame(() => {
+      playCurrentVideo(slide);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [playCurrentVideo, slide, visible]);
 
   const unlockPlayback = useCallback(() => {
-    hasInteracted.current = true;
-    playSlideVideo(activeSlideRef.current);
-  }, [playSlideVideo]);
+    playCurrentVideo(activeSlideRef.current);
+  }, [playCurrentVideo]);
 
-  const transitionToSlide = useCallback((next: number, fromGesture = false) => {
+  const transitionToSlide = useCallback((next: number) => {
     if (next < 0 || next >= SLIDES.length) return;
-    if (fromGesture) hasInteracted.current = true;
-
+    activeSlideRef.current = next;
+    playCurrentVideo(next);
     setSlide(next);
-    playSlideVideo(next);
-  }, [playSlideVideo]);
+  }, [playCurrentVideo]);
 
   const complete = useCallback((dest?: string) => {
     localStorage.setItem(STORAGE_KEY, 'true');
-    videoRefs.current.forEach((video) => video?.pause());
+    videoRef.current?.pause();
     setVisible(false);
     if (dest) navigate(dest);
   }, [navigate]);
 
   useEffect(() => {
     return () => {
-      if (retryTimerRef.current) window.clearInterval(retryTimerRef.current);
-      videoRefs.current.forEach((video) => video?.pause());
+      videoRef.current?.pause();
     };
   }, []);
 
@@ -144,38 +123,23 @@ export default function OnboardingOverlay() {
         e.stopPropagation();
         const dx = e.changedTouches[0].clientX - touchStartX.current;
         if (Math.abs(dx) <= 50) return;
-        if (dx < 0 && slide < SLIDES.length - 1) transitionToSlide(slide + 1, true);
-        if (dx > 0 && slide > 0) transitionToSlide(slide - 1, true);
+        if (dx < 0 && slide < SLIDES.length - 1) transitionToSlide(slide + 1);
+        if (dx > 0 && slide > 0) transitionToSlide(slide - 1);
       }}
       onClick={unlockPlayback}
     >
       <div className="absolute inset-0 bg-black" />
 
-      {SLIDES.map((s, i) => (
-        <div
-          key={i}
-          className="absolute inset-0 transition-opacity duration-700 ease-in-out"
-          style={{ opacity: i === slide ? 1 : 0 }}
-        >
-          <video
-            ref={(el) => {
-              videoRefs.current[i] = el;
-            }}
-            src={s.video}
-            autoPlay={i === 0}
-            muted
-            loop
-            playsInline
-            preload="auto"
-            onLoadedData={() => {
-              if (visible && activeSlideRef.current === i) {
-                playSlideVideo(i);
-              }
-            }}
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-        </div>
-      ))}
+      <video
+        ref={videoRef}
+        src={SLIDES[0].video}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
 
       <div className="absolute inset-0 editorial-gradient" />
 
@@ -194,7 +158,7 @@ export default function OnboardingOverlay() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            onAnimationComplete={() => playSlideVideo(slide)}
+            onAnimationComplete={() => playCurrentVideo(slide)}
             className="mb-8 text-center"
           >
             <h2 className="headline-editorial mx-auto max-w-[300px] text-2xl text-primary">
@@ -215,7 +179,7 @@ export default function OnboardingOverlay() {
           {SLIDES.map((_, i) => (
             <button
               key={i}
-              onClick={() => transitionToSlide(i, true)}
+              onClick={() => transitionToSlide(i)}
               className={`h-1 rounded-full transition-all duration-300 ${i === slide ? 'w-5 bg-primary' : 'w-1.5 bg-white/20'}`}
               aria-label={`Go to slide ${i + 1}`}
             />
@@ -224,7 +188,7 @@ export default function OnboardingOverlay() {
 
         {slide < SLIDES.length - 1 ? (
           <button
-            onClick={() => transitionToSlide(slide + 1, true)}
+            onClick={() => transitionToSlide(slide + 1)}
             className="btn-glass mb-4 h-12 w-full max-w-[280px] rounded-xl text-sm font-semibold text-white"
           >
             Next
