@@ -297,7 +297,7 @@ const Community = () => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed z-[9999] h-11 w-11 rounded-full bg-primary/50 text-primary-foreground flex items-center justify-center shadow-xl active:scale-90 transition-transform"
+          className="fixed z-[9999] h-11 w-11 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white/70 flex items-center justify-center shadow-xl active:scale-90 transition-transform"
           style={{ right: 16, bottom: 'calc(7rem + env(safe-area-inset-bottom, 0px))' }}
           aria-label="Scroll to top"
         >
