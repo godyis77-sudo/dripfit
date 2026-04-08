@@ -1,0 +1,1 @@
+UPDATE product_catalog SET is_active = false WHERE id IN ('3d5c9218-e39c-4834-9351-22772e9bf094', '546a1b0f-a87e-4326-8df5-e5a634b8ddec', 'e7090760-2c84-41fc-b88a-0f03cfd6bd16') AND (LOWER(name) LIKE '247 gym towel%' OR LOWER(name) LIKE '247 dna towel%' OR LOWER(name) LIKE 'g print towel%');
