@@ -39,32 +39,52 @@ export default function OnboardingOverlay() {
     }
   }, [location.key]);
 
-  // Play only the active slide's video, pause all others
-  useEffect(() => {
-    if (!visible) return;
-
+  const playSlideVideo = useCallback((index: number) => {
     videoRefs.current.forEach((video, i) => {
       if (!video) return;
-      if (i === slide) {
-        // Small delay lets the browser settle before play()
-        setTimeout(() => {
-          video.play().catch(() => {});
-        }, 50);
-      } else {
+
+      video.muted = true;
+      video.playsInline = true;
+
+      if (i !== index) {
         video.pause();
+        if (video.currentTime > 0) {
+          try {
+            video.currentTime = 0;
+          } catch {
+            // Ignore browsers that block resetting currentTime while metadata is unavailable.
+          }
+        }
+        return;
+      }
+
+      const startPlayback = () => {
+        const playPromise = video.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(() => {});
+        }
+      };
+
+      if (video.readyState >= 2) {
+        startPlayback();
+      } else {
+        const handleLoadedData = () => startPlayback();
+        video.addEventListener('loadeddata', handleLoadedData, { once: true });
+        video.load();
       }
     });
-  }, [slide, visible]);
+  }, []);
 
-  // On first user touch, force-start the current video (mobile autoplay unlock)
+  useEffect(() => {
+    if (!visible) return;
+    playSlideVideo(slide);
+  }, [slide, visible, playSlideVideo]);
+
   const unlockPlayback = useCallback(() => {
     if (hasInteracted.current) return;
     hasInteracted.current = true;
-    const active = videoRefs.current[slide];
-    if (active) {
-      active.play().catch(() => {});
-    }
-  }, [slide]);
+    playSlideVideo(slide);
+  }, [playSlideVideo, slide]);
 
   const complete = useCallback((dest?: string) => {
     localStorage.setItem(STORAGE_KEY, 'true');
@@ -119,6 +139,7 @@ export default function OnboardingOverlay() {
           <video
             ref={(el) => { videoRefs.current[i] = el; }}
             src={s.video}
+            autoPlay={i === 0}
             loop
             muted
             playsInline
