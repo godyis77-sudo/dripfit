@@ -8,6 +8,7 @@ import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
 import ProductPreviewModal from '@/components/ui/ProductPreviewModal';
 import { type BrandGenre } from '@/lib/brandGenres';
+import { thumbUrl } from '@/lib/imageOptim';
 
 interface CategoryProductGridProps {
   category: string;
@@ -45,8 +46,10 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
   fitProfile,
 }, ref) => {
   const navigate = useNavigate();
-  const { products, loading } = useProductCatalog(category, brand, seed, gender, genre ?? undefined, fitProfile);
   const [expanded, setExpanded] = useState(!collapsed);
+  // Only fetch data when expanded (or when not using collapsed mode)
+  const shouldFetch = expanded || !collapsed;
+  const { products, loading } = useProductCatalog(category, brand, seed, gender, genre ?? undefined, fitProfile, shouldFetch);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
   const [failedImageIds, setFailedImageIds] = useState<Set<string>>(new Set());
   const PAGE_SIZE = 30;
@@ -83,19 +86,47 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
     });
   }
 
+  // Not yet fetching (collapsed & lazy) — show just the title with expand button
+  if (!shouldFetch) {
+    return (
+      <div ref={ref}>
+        {title && (
+          <div className="flex items-center justify-between mb-2">
+            <button
+              onClick={() => setExpanded(true)}
+              className="flex items-center gap-1.5 min-h-[44px] glass-gold rounded-lg px-3 py-1.5"
+            >
+              <p className="text-[11px] capitalize font-display font-bold text-primary">{title}</p>
+              <ChevronDown className="h-3 w-3 text-primary" />
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   if (loading && visibleProducts.length === 0) {
     return (
-      <div className="grid grid-cols-2 gap-3">
-        {[1, 2, 3, 4].map(i => (
-          <div key={i} className="rounded-2xl border border-border/50 overflow-hidden">
-            <div className="aspect-[3/4] skeleton-gold" />
-            <div className="p-2.5 space-y-1.5">
-              <div className="h-2.5 w-3/4 rounded skeleton-gold" />
-              <div className="h-2 w-1/2 rounded skeleton-gold" />
-              <div className="h-3 w-1/3 rounded skeleton-gold mt-1" />
+      <div ref={ref}>
+        {title && (
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1.5 min-h-[44px] glass-gold rounded-lg px-3 py-1.5">
+              <p className="text-[11px] capitalize font-display font-bold text-primary">{title}</p>
             </div>
           </div>
-        ))}
+        )}
+        <div className="grid grid-cols-2 gap-3">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="rounded-2xl border border-border/50 overflow-hidden">
+              <div className="aspect-[3/4] skeleton-gold" />
+              <div className="p-2.5 space-y-1.5">
+                <div className="h-2.5 w-3/4 rounded skeleton-gold" />
+                <div className="h-2 w-1/2 rounded skeleton-gold" />
+                <div className="h-3 w-1/3 rounded skeleton-gold mt-1" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -161,7 +192,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
                 </div>
               ) : (
                 <img
-                  src={product.image_url}
+                  src={thumbUrl(product.image_url)}
                   alt={product.name}
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
