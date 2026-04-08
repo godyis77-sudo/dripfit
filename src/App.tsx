@@ -17,9 +17,10 @@ import AffiliateProvider from "./components/AffiliateProvider";
 import Capture from "./pages/Capture";
 import GuestTimedNudge from "./components/guest/GuestTimedNudge";
 
-/** Clears onboarding flag and redirects to /home so the overlay re-appears */
+/** Clears onboarding flags and redirects to /home so the overlay re-appears */
 function OnboardingReset() {
   localStorage.removeItem('onboarding_complete');
+  sessionStorage.removeItem('onboarding_intro_started');
   return <Navigate to="/home" replace />;
 }
 
