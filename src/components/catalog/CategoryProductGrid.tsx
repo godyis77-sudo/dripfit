@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useState } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp } from 'lucide-react';
@@ -8,6 +8,7 @@ import { trackEvent } from '@/lib/analytics';
 import { Button } from '@/components/ui/button';
 import ProductPreviewModal from '@/components/ui/ProductPreviewModal';
 import { type BrandGenre } from '@/lib/brandGenres';
+import { thumbnailUrl } from '@/lib/imageOptimize';
 
 interface CategoryProductGridProps {
   category: string;
@@ -45,7 +46,23 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
   fitProfile,
 }, ref) => {
   const navigate = useNavigate();
-  const { products, loading } = useProductCatalog(category, brand, seed, gender, genre ?? undefined, fitProfile);
+  
+  // Viewport-aware lazy loading: don't fetch until near viewport
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const [nearViewport, setNearViewport] = useState(false);
+  
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setNearViewport(true); observer.disconnect(); } },
+      { rootMargin: '400px' } // start fetching 400px before visible
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const { products, loading } = useProductCatalog(category, brand, seed, gender, genre ?? undefined, fitProfile, !nearViewport);
   const [expanded, setExpanded] = useState(!collapsed);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
   const [failedImageIds, setFailedImageIds] = useState<Set<string>>(new Set());
