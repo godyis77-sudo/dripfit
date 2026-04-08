@@ -62,6 +62,9 @@ export default function OnboardingOverlay() {
         }
       }}
     >
+      {/* Solid black base — prevents home screen bleed-through */}
+      <div className="absolute inset-0 bg-black" />
+
       {/* All background videos rendered persistently — toggle opacity */}
       {SLIDES.map((s, i) => (
         <div
