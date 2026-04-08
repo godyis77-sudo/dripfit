@@ -45,6 +45,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
   retailers,
   fitProfile,
 }, ref) => {
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(!collapsed);
   // Only fetch data when expanded (or when not using collapsed mode)
   const shouldFetch = expanded || !collapsed;
