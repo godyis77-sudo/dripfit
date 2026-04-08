@@ -14,7 +14,7 @@ import HomeFAB from '@/components/home/HomeFAB';
 import OneTapPlayground from '@/components/home/OneTapPlayground';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import { ALL_PRODUCT_CATEGORIES } from '@/components/tryon/tryon-constants';
-const WeeklyOutfitsSection = lazy(() => import('@/components/home/WeeklyOutfitsSection'));
+import WeeklyOutfitsSection from '@/components/home/WeeklyOutfitsSection';
 
 const HERO_CATEGORIES = [
   { key: 'all', label: 'For You' },
