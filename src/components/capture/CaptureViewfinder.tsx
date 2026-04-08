@@ -82,21 +82,21 @@ const CaptureViewfinder = ({ captureStep, photo }: CaptureViewfinderProps) => {
           </div>
 
           {/* Corner badges */}
-          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 bg-background/90 backdrop-blur-sm rounded-lg px-2.5 py-1.5 border border-primary/20">
-            <Eye className="h-3.5 w-3.5 text-primary" />
-            <span className="text-[10px] font-bold text-foreground">Head visible</span>
+          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 bg-white/5 backdrop-blur-sm rounded-full px-3 py-1 border border-white/10">
+            <Eye className="h-3.5 w-3.5 text-white/70" />
+            <span className="text-[11px] text-white/70">Head visible</span>
           </div>
-          <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 bg-background/90 backdrop-blur-sm rounded-lg px-2.5 py-1.5 border border-primary/20">
-            <Sun className="h-3.5 w-3.5 text-primary" />
-            <span className="text-[10px] font-bold text-foreground">Even light</span>
+          <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 bg-white/5 backdrop-blur-sm rounded-full px-3 py-1 border border-white/10">
+            <Sun className="h-3.5 w-3.5 text-white/70" />
+            <span className="text-[11px] text-white/70">Even light</span>
           </div>
-          <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 bg-background/90 backdrop-blur-sm rounded-lg px-2.5 py-1.5 border border-primary/20">
-            <Maximize className="h-3.5 w-3.5 text-primary" />
-            <span className="text-[10px] font-bold text-foreground">Feet visible</span>
+          <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 bg-white/5 backdrop-blur-sm rounded-full px-3 py-1 border border-white/10">
+            <Maximize className="h-3.5 w-3.5 text-white/70" />
+            <span className="text-[11px] text-white/70">Feet visible</span>
           </div>
-          <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1.5 bg-background/90 backdrop-blur-sm rounded-lg px-2.5 py-1.5 border border-primary/20">
-            <Ruler className="h-3.5 w-3.5 text-primary" />
-            <span className="text-[10px] font-bold text-foreground">6-8 ft away</span>
+          <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1.5 bg-white/5 backdrop-blur-sm rounded-full px-3 py-1 border border-white/10">
+            <Ruler className="h-3.5 w-3.5 text-white/70" />
+            <span className="text-[11px] text-white/70">6-8 ft away</span>
           </div>
 
           {/* Animated guide text */}
