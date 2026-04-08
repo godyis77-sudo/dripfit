@@ -26,15 +26,23 @@ const SLIDES = [
 
 const STORAGE_KEY = 'onboarding_complete';
 
+function tryPlay(video: HTMLVideoElement) {
+  video.muted = true;
+  video.defaultMuted = true;
+  video.setAttribute('muted', '');
+  video.setAttribute('playsinline', '');
+  const p = video.play();
+  if (p) p.catch(() => {});
+}
+
 export default function OnboardingOverlay() {
   const navigate = useNavigate();
   const location = useLocation();
   const [visible, setVisible] = useState(() => !localStorage.getItem(STORAGE_KEY));
   const [slide, setSlide] = useState(0);
-  const [needsTap, setNeedsTap] = useState(false);
-  const [allPlaying, setAllPlaying] = useState(false);
   const touchStartX = useRef(0);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([null, null, null]);
+  const retryRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!localStorage.getItem(STORAGE_KEY)) {
@@ -43,83 +51,75 @@ export default function OnboardingOverlay() {
     }
   }, [location.key]);
 
-  /** Play all 3 videos. Returns true if video 1 started successfully. */
-  const playAll = useCallback(() => {
-    let v1Success = false;
-
-    videoRefs.current.forEach((video, i) => {
-      if (!video) return;
-
-      video.muted = true;
-      video.defaultMuted = true;
-      video.setAttribute('muted', '');
-      video.setAttribute('playsinline', '');
-
-      // Ensure src is set (videos 2 & 3 start with data-src only)
-      if (!video.src || video.src === window.location.href) {
-        const dataSrc = SLIDES[i].video;
-        video.src = dataSrc;
-        video.load();
-      }
-
-      const p = video.play();
-      if (p) {
-        p.then(() => {
-          if (i === 0) {
-            v1Success = true;
-            setNeedsTap(false);
-            setAllPlaying(true);
-          }
-        }).catch(() => {
-          if (i === 0) setNeedsTap(true);
-        });
-      }
-    });
-
-    return v1Success;
-  }, []);
-
-  // Attempt autoplay on mount
+  // Phase 1: Eagerly play video 1. Once it's playing, load videos 2 & 3.
   useEffect(() => {
     if (!visible) return;
 
-    // Try immediately
-    const t1 = setTimeout(() => playAll(), 50);
-    // Retry once more after a beat
-    const t2 = setTimeout(() => {
-      const v1 = videoRefs.current[0];
-      if (v1 && v1.paused) playAll();
-    }, 500);
+    const v1 = videoRefs.current[0];
+    if (!v1) return;
 
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, [visible, playAll]);
+    // Priority: get video 1 playing ASAP
+    v1.preload = 'auto';
+    tryPlay(v1);
 
-  // Handle user tap — this is a real gesture so play() will work
-  const handleUserGesture = useCallback(() => {
-    playAll();
-  }, [playAll]);
+    // Retry until video 1 plays, then preload the rest
+    let othersLoaded = false;
+    retryRef.current = window.setInterval(() => {
+      const v = videoRefs.current[0];
+      if (!v) return;
+
+      if (v.paused) {
+        tryPlay(v);
+      }
+
+      // Once v1 is playing (or has data), start loading v2 & v3
+      if (!othersLoaded && (v.readyState >= 2 || !v.paused)) {
+        othersLoaded = true;
+        [1, 2].forEach((i) => {
+          const vi = videoRefs.current[i];
+          if (vi) {
+            vi.preload = 'auto';
+            vi.load();
+            // Start playing so it's ready for crossfade
+            setTimeout(() => tryPlay(vi), i * 200);
+          }
+        });
+      }
+    }, 300);
+
+    return () => {
+      if (retryRef.current !== null) window.clearInterval(retryRef.current);
+    };
+  }, [visible]);
+
+  // Unlock all on interaction
+  const unlockAll = useCallback(() => {
+    videoRefs.current.forEach((video) => {
+      if (video && video.paused) tryPlay(video);
+    });
+  }, []);
 
   const transitionToSlide = useCallback((next: number) => {
     if (next < 0 || next >= SLIDES.length) return;
     setSlide(next);
-    // Ensure target video is playing (within gesture context)
+    // Ensure the target video is playing
     const v = videoRefs.current[next];
-    if (v && v.paused) {
-      v.muted = true;
-      const p = v.play();
-      if (p) p.catch(() => {});
-    }
+    if (v && v.paused) tryPlay(v);
   }, []);
 
   const complete = useCallback((dest?: string) => {
     localStorage.setItem(STORAGE_KEY, 'true');
+    if (retryRef.current !== null) window.clearInterval(retryRef.current);
     videoRefs.current.forEach((v) => v?.pause());
     setVisible(false);
     if (dest) navigate(dest);
   }, [navigate]);
 
   useEffect(() => {
-    return () => { videoRefs.current.forEach((v) => v?.pause()); };
+    return () => {
+      if (retryRef.current !== null) window.clearInterval(retryRef.current);
+      videoRefs.current.forEach((v) => v?.pause());
+    };
   }, []);
 
   if (!visible) return null;
@@ -127,9 +127,10 @@ export default function OnboardingOverlay() {
   return createPortal(
     <div
       className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden"
-      onClick={handleUserGesture}
+      onPointerDownCapture={unlockAll}
       onTouchStart={(e) => {
-        handleUserGesture();
+        e.stopPropagation();
+        unlockAll();
         touchStartX.current = e.touches[0].clientX;
       }}
       onTouchEnd={(e) => {
@@ -139,6 +140,7 @@ export default function OnboardingOverlay() {
         if (dx < 0 && slide < SLIDES.length - 1) transitionToSlide(slide + 1);
         if (dx > 0 && slide > 0) transitionToSlide(slide - 1);
       }}
+      onClick={unlockAll}
     >
       <div className="absolute inset-0 bg-black" />
 
@@ -147,6 +149,7 @@ export default function OnboardingOverlay() {
           key={i}
           ref={(el) => { videoRefs.current[i] = el; }}
           src={i === 0 ? s.video : undefined}
+          data-src={s.video}
           poster={s.poster}
           autoPlay={i === 0}
           muted
@@ -156,50 +159,27 @@ export default function OnboardingOverlay() {
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${
             i === slide ? 'opacity-100' : 'opacity-0'
           }`}
+          onLoadStart={() => {
+            // Ensure src is set from data-src when load begins
+            const el = videoRefs.current[i];
+            if (el && !el.src && el.dataset.src) {
+              el.src = el.dataset.src;
+            }
+          }}
         />
       ))}
 
       <div className="absolute inset-0 editorial-gradient" />
 
-      {/* Tap-to-play prompt — only shows when autoplay is blocked */}
-      <AnimatePresence>
-        {needsTap && !allPlaying && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="absolute inset-0 z-20 flex items-center justify-center"
-            onClick={handleUserGesture}
-          >
-            <motion.div
-              initial={{ scale: 0.8 }}
-              animate={{ scale: [0.8, 1.05, 1] }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-              className="flex flex-col items-center gap-3"
-            >
-              <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-md">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="ml-1">
-                  <path d="M8 5v14l11-7L8 5z" fill="white" />
-                </svg>
-              </div>
-              <p className="font-sans text-xs font-medium tracking-widest uppercase text-white/50">
-                Tap to start
-              </p>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <button
-        onClick={(e) => { e.stopPropagation(); complete(); }}
-        className="absolute top-4 right-4 z-30 flex min-h-[44px] min-w-[44px] items-center justify-center pt-[env(safe-area-inset-top)] font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30"
+        onClick={() => complete()}
+        className="absolute top-4 right-4 z-10 flex min-h-[44px] min-w-[44px] items-center justify-center pt-[env(safe-area-inset-top)] font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30"
       >
         Skip
       </button>
 
       <div
-        className="absolute bottom-0 left-0 right-0 z-10 flex flex-col items-center px-8"
+        className="absolute bottom-0 left-0 right-0 flex flex-col items-center px-8"
         style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}
       >
         <AnimatePresence mode="wait">
@@ -229,7 +209,7 @@ export default function OnboardingOverlay() {
           {SLIDES.map((_, i) => (
             <button
               key={i}
-              onClick={(e) => { e.stopPropagation(); transitionToSlide(i); }}
+              onClick={() => transitionToSlide(i)}
               className={`h-1 rounded-full transition-all duration-300 ${
                 i === slide ? 'w-5 bg-primary' : 'w-1.5 bg-white/20'
               }`}
@@ -240,7 +220,7 @@ export default function OnboardingOverlay() {
 
         {slide < SLIDES.length - 1 ? (
           <button
-            onClick={(e) => { e.stopPropagation(); transitionToSlide(slide + 1); }}
+            onClick={() => transitionToSlide(slide + 1)}
             className="btn-glass mb-4 h-12 w-full max-w-[280px] rounded-xl text-sm font-semibold text-white"
           >
             Next
@@ -248,13 +228,13 @@ export default function OnboardingOverlay() {
         ) : (
           <div className="mb-4 w-full max-w-[280px] space-y-2">
             <button
-              onClick={(e) => { e.stopPropagation(); complete('/capture'); }}
+              onClick={() => complete('/capture')}
               className="btn-luxury h-12 w-full rounded-xl text-sm font-bold text-primary-foreground"
             >
               Map Your Body
             </button>
             <button
-              onClick={(e) => { e.stopPropagation(); complete(); }}
+              onClick={() => complete()}
               className="btn-glass h-12 w-full rounded-xl text-sm font-semibold text-white"
             >
               Enter the Closet
