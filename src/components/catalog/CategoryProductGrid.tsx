@@ -102,7 +102,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
 
   if (loading && visibleProducts.length === 0) {
     return (
-      <div className="grid grid-cols-2 gap-3">
+      <div ref={sentinelRef} className="grid grid-cols-2 gap-3">
         {[1, 2, 3, 4].map(i => (
           <div key={i} className="rounded-2xl border border-border/50 overflow-hidden">
             <div className="aspect-[3/4] skeleton-gold" />
@@ -115,6 +115,11 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
         ))}
       </div>
     );
+  }
+
+  // Not yet near viewport — render a lightweight sentinel so the observer can fire
+  if (!nearViewport && visibleProducts.length === 0) {
+    return <div ref={sentinelRef} className="h-1" />;
   }
 
   if (visibleProducts.length === 0) {
