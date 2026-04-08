@@ -184,7 +184,7 @@ const TryOn = () => {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden border border-border rounded-xl bg-card mb-3"
+                      className="overflow-hidden glass-dark rounded-xl mb-3"
                     >
                       <div className="px-4 py-3 space-y-3">
                         {/* Sort */}
