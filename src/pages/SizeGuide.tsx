@@ -22,7 +22,7 @@ interface DbSizeResult { recommended_size: string; confidence: number; fit_statu
 
 const fitColors: Record<string, string> = { tight: 'text-destructive', good: 'text-primary', loose: 'text-accent-foreground' };
 const fitLabels: Record<string, string> = { tight: 'Tight', good: 'Good', loose: 'Loose' };
-const fitStatusColors: Record<string, string> = { true_to_size: 'text-primary', good_fit: 'text-primary', between_sizes: 'text-muted-foreground', out_of_range: 'text-destructive' };
+const fitStatusColors: Record<string, string> = { true_to_size: 'text-primary', good_fit: 'text-primary', between_sizes: 'text-white/50', out_of_range: 'text-destructive' };
 const fitStatusLabels: Record<string, string> = { true_to_size: 'True to Size', good_fit: 'Good Fit', between_sizes: 'Between Sizes', out_of_range: 'Out of Range' };
 const CATEGORY_OPTIONS = ['tops', 'bottoms', 'dresses', 'outerwear', 'activewear', 'footwear'] as const;
 
@@ -205,7 +205,6 @@ const SizeGuide = () => {
       });
       if (fnError) throw new Error(fnError.message);
       const payload = resp?.data ?? resp;
-      // Handle graceful fallback from edge function
       if (payload?.fallback || payload?.code === 'NOT_FOUND') {
         throw new Error(`We don't have ${selectedBrand.brand_name} ${selectedCategory} sizing data yet. Try a different category or upload a size chart instead.`);
       }
@@ -223,40 +222,47 @@ const SizeGuide = () => {
 
   const MeasurementSelector = () => (
     <div className="mb-4">
-      <p className="section-label mb-1.5">Select measurements</p>
       {measurementsLoading ? (
-        <Card className="rounded-xl"><CardContent className="p-3 flex items-center justify-center gap-2">
-          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-          <p className="text-[13px] text-muted-foreground">Loading measurements…</p>
-        </CardContent></Card>
+        <div className="bg-black/30 backdrop-blur-sm border border-white/8 rounded-xl p-3 flex items-center justify-center gap-2">
+          <Loader2 className="h-4 w-4 animate-spin text-white/40" />
+          <p className="text-[13px] text-white/40">Loading measurements…</p>
+        </div>
       ) : measurements.length === 0 ? (
-        <Card className="rounded-xl"><CardContent className="p-3 text-center">
-          <Ruler className="h-6 w-6 text-muted-foreground/30 mx-auto mb-1.5" />
-          <p className="text-[13px] text-muted-foreground mb-2">No scan data yet</p>
+        <div className="bg-black/30 backdrop-blur-sm border border-white/8 rounded-xl p-3 text-center">
+          <Ruler className="h-6 w-6 text-white/20 mx-auto mb-1.5" />
+          <p className="text-[13px] text-white/40 mb-2">No scan data yet</p>
           {!user ? (
-            <Button size="sm" className="rounded-lg text-[12px] h-8" onClick={() => navigate('/auth')}>
+            <Button size="sm" className="rounded-lg text-[12px] h-8 bg-white/5 border border-white/10 text-white/70 hover:bg-white/10" onClick={() => navigate('/auth')}>
               <LogIn className="h-3 w-3 mr-1" /> Sign in to see your measurements
             </Button>
           ) : (
-            <Button size="sm" className="rounded-lg text-[12px] h-8" onClick={() => navigate('/capture')}>Start a Scan</Button>
+            <Button size="sm" className="rounded-lg text-[12px] h-8 btn-luxury" onClick={() => navigate('/capture')}>Start a Scan</Button>
           )}
-        </CardContent></Card>
+        </div>
       ) : (
         <>
-          <div className="rounded-xl cursor-pointer btn-gold-3d px-3 py-2.5 flex items-center justify-between" onClick={() => setShowPicker(!showPicker)}>
-              <div>
-                <p className="text-[13px] font-medium">{selectedMeasurement ? new Date(selectedMeasurement.date).toLocaleDateString() : 'Select'}</p>
-                {selectedMeasurement && <p className="text-[11px] opacity-70">Size {selectedMeasurement.sizeRecommendation} · Chest {selectedMeasurement.chest}"</p>}
-              </div>
-              {showPicker ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+          <div
+            className="rounded-xl cursor-pointer bg-primary/8 backdrop-blur-md border border-primary/20 px-3 py-2.5 flex items-center justify-between"
+            onClick={() => setShowPicker(!showPicker)}
+          >
+            <div>
+              <p className="text-sm text-white">{selectedMeasurement ? new Date(selectedMeasurement.date).toLocaleDateString() : 'Select'}</p>
+              {selectedMeasurement && <p className="text-[11px] text-white/50">Size {selectedMeasurement.sizeRecommendation} · Chest {selectedMeasurement.chest}"</p>}
+            </div>
+            {showPicker ? <ChevronUp className="h-3.5 w-3.5 text-primary/60" /> : <ChevronDown className="h-3.5 w-3.5 text-primary/60" />}
           </div>
           <AnimatePresence>{showPicker && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
               <div className="space-y-1.5 mt-1.5 max-h-40 overflow-y-auto">
                 {measurements.map(m => (
-                  <Card key={m.id} className={`rounded-lg cursor-pointer transition-colors ${selectedMeasurement?.id === m.id ? 'border-primary' : 'hover:border-primary/30'}`} onClick={() => { setSelectedMeasurement(m); setShowPicker(false); setRecommendation(null); setDbResult(null); }}>
-                    <CardContent className="p-2"><p className="text-[11px] font-medium text-foreground">{new Date(m.date).toLocaleDateString()}</p><p className="text-[10px] text-muted-foreground">Size {m.sizeRecommendation}</p></CardContent>
-                  </Card>
+                  <div
+                    key={m.id}
+                    className={`rounded-lg cursor-pointer transition-colors p-2 ${selectedMeasurement?.id === m.id ? 'bg-primary/10 border border-primary/25' : 'bg-black/30 border border-white/5 hover:bg-white/5'}`}
+                    onClick={() => { setSelectedMeasurement(m); setShowPicker(false); setRecommendation(null); setDbResult(null); }}
+                  >
+                    <p className="text-[11px] font-medium text-white">{new Date(m.date).toLocaleDateString()}</p>
+                    <p className="text-[10px] text-white/40">Size {m.sizeRecommendation}</p>
+                  </div>
                 ))}
               </div>
             </motion.div>
@@ -269,69 +275,75 @@ const SizeGuide = () => {
   return (
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
       <div>
+        {/* Header */}
         <div className="flex items-center justify-between mb-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back"><ArrowLeft className="h-5 w-5" /></Button>
-          <h1 className="text-base font-bold text-foreground">Size Guide Match</h1>
-          <div className="w-8" />
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px] bg-white/5 border border-white/10 backdrop-blur-sm" aria-label="Go back"><ArrowLeft className="h-5 w-5 text-white/70" /></Button>
+          <h1 className="font-display text-lg text-white">Size Guide</h1>
+          <div className="w-10" />
         </div>
 
         {/* Paste product link */}
         <div className="mb-4">
           <div className="flex items-center gap-1.5 mb-1">
-            <Store className="h-3 w-3 text-muted-foreground" />
-            <p className="text-[11px] text-muted-foreground font-medium">Paste product link</p>
+            <Store className="h-3 w-3 text-white/30" />
+            <p className="text-[11px] text-white/30 font-medium">Paste product link</p>
           </div>
-          <Input
+          <input
             placeholder="https://zara.com/product/..."
-            className="rounded-lg h-9 text-[12px]"
+            className="w-full bg-transparent border-b border-white/15 py-2 text-[12px] text-white placeholder:text-white/20 outline-none focus:border-primary/30 transition-colors"
           />
         </div>
 
+        {/* Tab pair */}
         <Tabs defaultValue="brand" className="mb-4">
-          <TabsList className="w-full grid grid-cols-2 mb-3">
-            <TabsTrigger value="brand" className="text-[12px]"><Store className="h-3.5 w-3.5 mr-1" />Pick a Brand</TabsTrigger>
-            <TabsTrigger value="upload" className="text-[12px]"><Camera className="h-3.5 w-3.5 mr-1" />Upload Chart</TabsTrigger>
+          <TabsList className="w-full grid grid-cols-2 mb-3 bg-white/5 border border-white/10 backdrop-blur-sm p-0.5 rounded-lg">
+            <TabsTrigger value="brand" className="text-[12px] data-[state=active]:bg-primary/10 data-[state=active]:border-primary/25 data-[state=active]:text-primary data-[state=inactive]:text-white/50 rounded-md border border-transparent transition-all"><Store className="h-3.5 w-3.5 mr-1" />Pick a Brand</TabsTrigger>
+            <TabsTrigger value="upload" className="text-[12px] data-[state=active]:bg-primary/10 data-[state=active]:border-primary/25 data-[state=active]:text-primary data-[state=inactive]:text-white/50 rounded-md border border-transparent transition-all"><Camera className="h-3.5 w-3.5 mr-1" />Upload Chart</TabsTrigger>
           </TabsList>
 
           {/* ─── BRAND PICKER TAB ─── */}
           <TabsContent value="brand">
             {!user ? (
-              <Card className="rounded-xl"><CardContent className="p-4 text-center">
-                <Store className="h-6 w-6 text-muted-foreground/30 mx-auto mb-1.5" />
-                <p className="text-[13px] text-muted-foreground mb-2">Sign in to get instant size recommendations</p>
-                <Button size="sm" className="rounded-lg text-[12px] h-8" onClick={() => navigate('/auth')}>
+              <div className="bg-black/30 backdrop-blur-sm border border-white/8 rounded-xl p-4 text-center">
+                <Store className="h-6 w-6 text-white/20 mx-auto mb-1.5" />
+                <p className="text-[13px] text-white/40 mb-2">Sign in to get instant size recommendations</p>
+                <Button size="sm" className="rounded-lg text-[12px] h-8 bg-white/5 border border-white/10 text-white/70 hover:bg-white/10" onClick={() => navigate('/auth')}>
                   <LogIn className="h-3 w-3 mr-1" /> Sign In
                 </Button>
-              </CardContent></Card>
+              </div>
             ) : (
               <>
                 {/* Filters */}
                 <div className="mb-3 space-y-2">
                   <div>
-                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1"><Users className="h-3 w-3" /> Gender</p>
+                    <p className="text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1 flex items-center gap-1"><Users className="h-3 w-3" /> Gender</p>
                     <div className="flex gap-1.5">
                       {(['all', 'men', 'women'] as const).map(g => (
-                        <Button
+                        <button
                           key={g}
-                          variant={genderFilter === g ? 'default' : 'outline'}
-                          size="sm"
-                          className="rounded-lg text-[11px] h-7 capitalize"
+                          className={`px-3 py-1.5 rounded-full text-[11px] font-semibold capitalize transition-all min-h-[32px] backdrop-blur-sm border ${
+                            genderFilter === g
+                              ? 'bg-primary/10 border-primary/25 text-primary'
+                              : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/8'
+                          }`}
                           onClick={() => { setGenderFilter(g); setSelectedBrand(null); setDbResult(null); }}
-                        >{g === 'all' ? 'All' : g}</Button>
+                        >{g === 'all' ? 'All' : g}</button>
                       ))}
                     </div>
                   </div>
                   <div>
-                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1"><ArrowUpDown className="h-3 w-3" /> Size Range</p>
+                    <p className="text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-1 flex items-center gap-1"><ArrowUpDown className="h-3 w-3" /> Size Range</p>
                     <div className="flex gap-1.5 flex-wrap">
                       {(['all', 'regular', 'tall', 'petite', 'plus'] as const).map(t => (
-                        <Button
+                        <button
                           key={t}
-                          variant={sizeTypeFilter === t ? 'default' : 'outline'}
-                          size="sm"
-                          className="rounded-lg text-[11px] h-7 capitalize"
+                          className={`px-3 py-1.5 rounded-full text-[11px] font-semibold capitalize transition-all min-h-[32px] backdrop-blur-sm border ${
+                            sizeTypeFilter === t
+                              ? 'bg-primary/10 border-primary/25 text-primary'
+                              : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/8'
+                          }`}
                           onClick={() => { setSizeTypeFilter(t); setSelectedBrand(null); setDbResult(null); }}
-                        >{t === 'all' ? 'All' : t}</Button>
+                        >{t === 'all' ? 'All' : t}</button>
                       ))}
                     </div>
                   </div>
@@ -339,36 +351,38 @@ const SizeGuide = () => {
 
                 {/* Brand search */}
                 <div className="mb-3">
-                  <p className="section-label mb-1.5">1. Choose a brand</p>
+                  <p className="text-[10px] tracking-[0.2em] uppercase text-white/30 mb-1.5">1. Choose a brand</p>
                   <div className="relative mb-2">
-                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                    <Input
+                    <Search className="absolute left-0 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/30" />
+                    <input
                       placeholder="Search brands…"
                       value={brandSearch}
                       onChange={e => { setBrandSearch(e.target.value); setSelectedBrand(null); setDbResult(null); }}
-                      className="pl-8 rounded-lg h-9 text-[13px]"
+                      className="w-full bg-transparent border-b border-white/15 pl-6 py-2 text-[13px] text-white placeholder:text-white/25 outline-none focus:border-primary/30 transition-colors"
                     />
                   </div>
                   {brandsLoading ? (
-                    <div className="flex justify-center py-3"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>
+                    <div className="flex justify-center py-3"><Loader2 className="h-4 w-4 animate-spin text-white/40" /></div>
                   ) : (
-                    <div className="max-h-36 overflow-y-auto space-y-1">
+                    <div className="max-h-36 overflow-y-auto space-y-0">
                       {filteredBrands.length === 0 ? (
-                        <p className="text-[12px] text-muted-foreground text-center py-2">No brands found. Try uploading a chart instead.</p>
+                        <p className="text-[12px] text-white/30 text-center py-2">No brands found. Try uploading a chart instead.</p>
                       ) : filteredBrands.map(b => (
-                        <Card
+                        <button
                           key={b.slug}
-                          className={`rounded-lg cursor-pointer transition-colors ${selectedBrand?.brand_slug === b.slug ? 'border-primary bg-primary/5' : 'hover:border-primary/30'}`}
+                          className={`w-full text-left px-3 py-2.5 flex items-center justify-between transition-colors border-b border-white/5 ${
+                            selectedBrand?.brand_slug === b.slug
+                              ? 'bg-primary/10 backdrop-blur-sm'
+                              : 'bg-black/30 backdrop-blur-sm hover:bg-white/5'
+                          }`}
                           onClick={() => { setSelectedBrand({ brand_name: b.name, brand_slug: b.slug, category: b.categories[0] }); setDbResult(null); setDbError(null); setSelectedCategory(b.categories[0]); }}
                         >
-                          <CardContent className="p-2 flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              {userBrandNames.has(b.name.toLowerCase()) && <span className="text-[10px]">⭐</span>}
-                              <p className="text-[13px] font-medium text-foreground">{b.name}</p>
-                            </div>
-                            <p className="text-[10px] text-muted-foreground">{b.categories.length} {b.categories.length === 1 ? 'category' : 'categories'}</p>
-                          </CardContent>
-                        </Card>
+                          <div className="flex items-center gap-1.5">
+                            {userBrandNames.has(b.name.toLowerCase()) && <span className="text-[10px]">⭐</span>}
+                            <p className="text-sm font-medium text-white">{b.name}</p>
+                          </div>
+                          <p className="text-[11px] text-white/30">{b.categories.length} {b.categories.length === 1 ? 'category' : 'categories'}</p>
+                        </button>
                       ))}
                     </div>
                   )}
@@ -377,19 +391,21 @@ const SizeGuide = () => {
                 {/* Category selector */}
                 {selectedBrand && (
                   <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mb-3">
-                    <p className="section-label mb-1.5">2. Category</p>
+                    <p className="text-[10px] tracking-[0.2em] uppercase text-white/30 mb-1.5">2. Category</p>
                     <div className="flex flex-wrap gap-1.5">
                       {CATEGORY_OPTIONS.filter(c => {
                         const b = uniqueBrands.find(x => x.slug === selectedBrand.brand_slug);
                         return b?.categories.includes(c);
                       }).map(c => (
-                        <Button
+                        <button
                           key={c}
-                          variant={selectedCategory === c ? 'default' : 'outline'}
-                          size="sm"
-                          className="rounded-lg text-[11px] h-7 capitalize"
+                          className={`px-3 py-1.5 rounded-full text-[11px] font-semibold capitalize transition-all min-h-[32px] backdrop-blur-sm border ${
+                            selectedCategory === c
+                              ? 'bg-primary/10 border-primary/25 text-primary'
+                              : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/8'
+                          }`}
                           onClick={() => { setSelectedCategory(c); setDbResult(null); }}
-                        >{c}</Button>
+                        >{c}</button>
                       ))}
                     </div>
                   </motion.div>
@@ -398,7 +414,7 @@ const SizeGuide = () => {
                 {/* Measurement selector */}
                 {selectedBrand && (
                   <div className="mb-3">
-                    <p className="section-label mb-1.5">3. Your measurements</p>
+                    <p className="text-[10px] tracking-[0.2em] uppercase text-white/30 mb-1.5">3. Your measurements</p>
                     <MeasurementSelector />
                   </div>
                 )}
@@ -406,14 +422,18 @@ const SizeGuide = () => {
                 {/* Fit preference */}
                 {selectedBrand && (
                   <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mb-3">
-                    <p className="section-label mb-1.5">4. Fit preference</p>
-                    <div className="flex rounded-lg border border-border overflow-hidden" role="radiogroup" aria-label="Fit preference">
+                    <p className="text-[10px] tracking-[0.2em] uppercase text-white/30 mb-1.5">4. Fit preference</p>
+                    <div className="flex rounded-lg bg-black/30 backdrop-blur-sm border border-white/8 overflow-hidden p-0.5 gap-0.5" role="radiogroup" aria-label="Fit preference">
                       {(['slim', 'regular', 'relaxed'] as const).map(fit => (
                         <button
                           key={fit}
                           role="radio"
                           aria-checked={fitPreference === fit}
-                          className={`flex-1 py-2 text-[12px] font-medium capitalize transition-colors min-h-[44px] ${fitPreference === fit ? 'bg-primary text-primary-foreground' : 'bg-background text-muted-foreground hover:bg-muted'}`}
+                          className={`flex-1 py-2 text-[12px] font-medium capitalize transition-all min-h-[44px] rounded-md ${
+                            fitPreference === fit
+                              ? 'bg-primary/10 border border-primary/25 text-primary'
+                              : 'text-white/50 hover:bg-white/5 border border-transparent'
+                          }`}
                           onClick={() => { setFitPreference(fit); setDbResult(null); }}
                         >{fit}</button>
                       ))}
@@ -421,7 +441,7 @@ const SizeGuide = () => {
                   </motion.div>
                 )}
 
-                {/* Analyze button */}
+                {/* Analyze button — ONLY solid gold element */}
                 {selectedBrand && (
                   <Button
                     className="w-full h-11 rounded-lg btn-luxury font-bold text-[14px] mb-4"
@@ -435,54 +455,60 @@ const SizeGuide = () => {
                 {/* DB Error */}
                 {dbError && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                    <Card className="rounded-xl border-destructive/30 mb-3"><CardContent className="p-3 flex items-start gap-2">
+                    <div className="rounded-xl bg-black/30 backdrop-blur-sm border border-destructive/20 mb-3 p-3 flex items-start gap-2">
                       <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
                       <p className="text-[13px] text-destructive">{dbError}</p>
-                    </CardContent></Card>
+                    </div>
                   </motion.div>
                 )}
 
                 {/* DB Result */}
                 <AnimatePresence>{dbResult && (
                   <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                    <Card className="rounded-xl mb-3 bg-primary/5 border-primary/20">
-                      <CardContent className="p-4 text-center">
-                        <CheckCircle2 className="h-7 w-7 text-primary mx-auto mb-1.5" />
-                        <p className="text-[11px] font-semibold text-muted-foreground mb-0.5">{selectedBrand?.brand_name} · {selectedCategory}</p>
-                        <p className="text-4xl font-bold text-primary mb-0.5">{dbResult.recommended_size}</p>
-                        <p className={`text-[11px] font-semibold capitalize ${fitStatusColors[dbResult.fit_status] || 'text-muted-foreground'}`}>
-                          {fitStatusLabels[dbResult.fit_status] || dbResult.fit_status} · {Math.round(dbResult.confidence * 100)}% match
-                        </p>
-                      </CardContent>
-                    </Card>
+                    {/* Size result card — glass-gold */}
+                    <div className="rounded-xl mb-3 bg-primary/8 backdrop-blur-md border border-primary/20 p-4 text-center">
+                      <CheckCircle2 className="h-7 w-7 text-primary mx-auto mb-1.5" />
+                      <p className="text-[11px] text-white/60 tracking-wide mb-0.5">{selectedBrand?.brand_name} · {selectedCategory}</p>
+                      <p className="font-display text-4xl text-primary mb-0.5">{dbResult.recommended_size}</p>
+                      <p className={`text-[11px] font-semibold capitalize ${fitStatusColors[dbResult.fit_status] || 'text-white/50'}`}>
+                        {fitStatusLabels[dbResult.fit_status] || dbResult.fit_status} · {Math.round(dbResult.confidence * 100)}% match
+                      </p>
+                    </div>
 
+                    {/* Fit notes — glass-dark */}
                     {dbResult.fit_notes && (
-                      <Card className="rounded-xl mb-3"><CardContent className="p-3">
-                        <p className="text-[13px] text-foreground/80">{dbResult.fit_notes}</p>
-                      </CardContent></Card>
+                      <div className="rounded-xl mb-3 bg-black/30 backdrop-blur-sm border border-white/8 p-3">
+                        <p className="text-[13px] text-white/70">{dbResult.fit_notes}</p>
+                      </div>
                     )}
 
+                    {/* Alternative */}
                     {dbResult.second_option && (
-                      <Card className="rounded-xl mb-3"><CardContent className="p-3">
-                        <p className="text-[10px] text-muted-foreground mb-0.5">Alternative</p>
-                        <p className="text-[13px] text-foreground"><span className="font-bold">{dbResult.second_option}</span> — also a good option</p>
-                      </CardContent></Card>
+                      <div className="rounded-xl mb-3 bg-black/30 backdrop-blur-sm border border-white/8 p-3">
+                        <p className="text-[10px] text-white/30 mb-0.5">Alternative</p>
+                        <p className="text-[13px] text-white"><span className="font-bold">{dbResult.second_option}</span> — also a good option</p>
+                      </div>
                     )}
 
+                    {/* All Sizes — glass-dark */}
                     {dbResult.all_sizes?.length > 0 && (
-                      <Card className="rounded-xl mb-3"><CardContent className="p-3">
-                        <p className="text-[10px] text-muted-foreground mb-1.5">All Sizes</p>
+                      <div className="rounded-xl mb-3 bg-black/30 backdrop-blur-sm border border-white/8 p-3">
+                        <p className="text-[10px] text-white/30 mb-1.5">All Sizes</p>
                         <div className="flex flex-wrap gap-1.5">
                           {dbResult.all_sizes.map(s => (
                             <span
                               key={s.label}
-                              className={`text-[11px] px-2 py-0.5 rounded-md border ${s.label === dbResult.recommended_size ? 'bg-primary/10 border-primary text-primary font-bold' : 'border-border text-muted-foreground'}`}
+                              className={`text-[11px] px-2 py-0.5 rounded-md border backdrop-blur-sm ${
+                                s.label === dbResult.recommended_size
+                                  ? 'bg-primary/10 border-primary/25 text-primary font-bold'
+                                  : 'bg-white/5 border-white/10 text-white/50'
+                              }`}
                             >
-                              {s.label} <span className="text-[11px]">{Math.round(s.score * 100)}%</span>
+                              {s.label} <span className="font-display">{Math.round(s.score * 100)}%</span>
                             </span>
                           ))}
                         </div>
-                      </CardContent></Card>
+                      </div>
                     )}
                   </motion.div>
                 )}</AnimatePresence>
@@ -493,27 +519,32 @@ const SizeGuide = () => {
           {/* ─── UPLOAD TAB ─── */}
           <TabsContent value="upload">
             <div className="mb-4">
-              <p className="section-label mb-1.5">1. Upload size chart</p>
-              <Input placeholder="Brand name (optional)" value={brandName} onChange={e => setBrandName(e.target.value)} className="mb-2 rounded-lg h-9 text-[13px]" />
+              <p className="text-[10px] tracking-[0.2em] uppercase text-white/30 mb-1.5">1. Upload size chart</p>
+              <input
+                placeholder="Brand name (optional)"
+                value={brandName}
+                onChange={e => setBrandName(e.target.value)}
+                className="w-full bg-transparent border-b border-white/15 py-2 mb-2 text-[13px] text-white placeholder:text-white/20 outline-none focus:border-primary/30 transition-colors"
+              />
               {sizeGuideImage ? (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative">
-                  <img src={sizeGuideImage} alt="Size guide" className="w-full rounded-xl border border-border" />
-                  <Button variant="secondary" size="sm" className="absolute top-1.5 right-1.5 rounded-lg h-7 text-[11px]" onClick={() => { setSizeGuideImage(null); setRecommendation(null); }}>Change</Button>
+                  <img src={sizeGuideImage} alt="Size guide" className="w-full rounded-xl border border-white/10" />
+                  <Button variant="secondary" size="sm" className="absolute top-1.5 right-1.5 rounded-lg h-7 text-[11px] bg-black/60 backdrop-blur-sm border border-white/10 text-white/70" onClick={() => { setSizeGuideImage(null); setRecommendation(null); }}>Change</Button>
                 </motion.div>
               ) : (
                 <div className="flex gap-2">
-                  <Button variant="outline" className="flex-1 h-20 rounded-xl flex-col gap-1.5" onClick={async () => {
+                  <button className="flex-1 h-20 rounded-xl flex flex-col items-center justify-center gap-1.5 bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/8 transition-colors" onClick={async () => {
                     if (isNativePlatform()) { try { const { dataUrl } = await takeNativePhoto('gallery'); setSizeGuideImage(dataUrl); setRecommendation(null); setError(null); } catch {} return; }
                     fileInputRef.current?.click();
                   }}>
-                    <Image className="h-4 w-4 text-muted-foreground" /><span className="text-[11px] text-muted-foreground">Gallery</span>
-                  </Button>
-                  <Button variant="outline" className="flex-1 h-20 rounded-xl flex-col gap-1.5" onClick={async () => {
+                    <Image className="h-4 w-4 text-white/40" /><span className="text-[11px] text-white/40">Gallery</span>
+                  </button>
+                  <button className="flex-1 h-20 rounded-xl flex flex-col items-center justify-center gap-1.5 bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/8 transition-colors" onClick={async () => {
                     if (isNativePlatform()) { try { const { dataUrl } = await takeNativePhoto('camera'); setSizeGuideImage(dataUrl); setRecommendation(null); setError(null); } catch {} return; }
                     cameraInputRef.current?.click();
                   }}>
-                    <Camera className="h-4 w-4 text-muted-foreground" /><span className="text-[11px] text-muted-foreground">Camera</span>
-                  </Button>
+                    <Camera className="h-4 w-4 text-white/40" /><span className="text-[11px] text-white/40">Camera</span>
+                  </button>
                 </div>
               )}
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageSelect} />
@@ -521,7 +552,7 @@ const SizeGuide = () => {
             </div>
 
             <div className="mb-4">
-              <p className="section-label mb-1.5">2. Select measurements</p>
+              <p className="text-[10px] tracking-[0.2em] uppercase text-white/30 mb-1.5">2. Select measurements</p>
               <MeasurementSelector />
             </div>
 
@@ -529,35 +560,55 @@ const SizeGuide = () => {
               {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing…</> : 'Get My Size'}
             </Button>
 
-            {error && (<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}><Card className="rounded-xl border-destructive/30 mb-3"><CardContent className="p-3 flex items-start gap-2"><AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" /><p className="text-[13px] text-destructive">{error}</p></CardContent></Card></motion.div>)}
+            {error && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <div className="rounded-xl bg-black/30 backdrop-blur-sm border border-destructive/20 mb-3 p-3 flex items-start gap-2">
+                  <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+                  <p className="text-[13px] text-destructive">{error}</p>
+                </div>
+              </motion.div>
+            )}
 
             <AnimatePresence>{recommendation && (
               <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                <Card className="rounded-xl mb-3 bg-primary/5 border-primary/20">
-                  <CardContent className="p-4 text-center">
-                    <CheckCircle2 className="h-7 w-7 text-primary mx-auto mb-1.5" />
-                    <p className="text-[11px] font-semibold text-muted-foreground mb-0.5">{brandName ? `${brandName} — ` : ''}Recommended</p>
-                    <p className="text-4xl font-bold text-primary mb-0.5">{recommendation.recommendedSize}</p>
-                    <p className="text-[11px] font-semibold text-muted-foreground capitalize">Confidence: {recommendation.confidence}</p>
-                  </CardContent>
-                </Card>
+                <div className="rounded-xl mb-3 bg-primary/8 backdrop-blur-md border border-primary/20 p-4 text-center">
+                  <CheckCircle2 className="h-7 w-7 text-primary mx-auto mb-1.5" />
+                  <p className="text-[11px] text-white/60 tracking-wide mb-0.5">{brandName ? `${brandName} — ` : ''}Recommended</p>
+                  <p className="font-display text-4xl text-primary mb-0.5">{recommendation.recommendedSize}</p>
+                  <p className="text-[11px] font-semibold text-white/50 capitalize">Confidence: {recommendation.confidence}</p>
+                </div>
 
-                {recommendation.notes && <Card className="rounded-xl mb-3"><CardContent className="p-3"><p className="text-[13px] text-foreground/80">{recommendation.notes}</p></CardContent></Card>}
-                {recommendation.alternativeSize && <Card className="rounded-xl mb-3"><CardContent className="p-3"><p className="text-[10px] text-muted-foreground mb-0.5">Alternative</p><p className="text-[13px] text-foreground"><span className="font-bold">{recommendation.alternativeSize}</span>{recommendation.alternativeReason && ` — ${recommendation.alternativeReason}`}</p></CardContent></Card>}
+                {recommendation.notes && (
+                  <div className="rounded-xl mb-3 bg-black/30 backdrop-blur-sm border border-white/8 p-3">
+                    <p className="text-[13px] text-white/70">{recommendation.notes}</p>
+                  </div>
+                )}
+                {recommendation.alternativeSize && (
+                  <div className="rounded-xl mb-3 bg-black/30 backdrop-blur-sm border border-white/8 p-3">
+                    <p className="text-[10px] text-white/30 mb-0.5">Alternative</p>
+                    <p className="text-[13px] text-white"><span className="font-bold">{recommendation.alternativeSize}</span>{recommendation.alternativeReason && ` — ${recommendation.alternativeReason}`}</p>
+                  </div>
+                )}
 
                 {recommendation.breakdown?.length > 0 && (
                   <>
-                    <Button variant="ghost" className="w-full mb-1.5 text-[12px] btn-gold-3d" onClick={() => setShowBreakdown(!showBreakdown)}>
-                      {showBreakdown ? 'Hide' : 'Show'} Breakdown {showBreakdown ? <ChevronUp className="ml-1 h-3.5 w-3.5" /> : <ChevronDown className="ml-1 h-3.5 w-3.5" />}
-                    </Button>
+                    <button
+                      className="w-full mb-1.5 text-[12px] flex items-center justify-center gap-1 py-2 bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg text-white/60 hover:bg-white/8 transition-colors"
+                      onClick={() => setShowBreakdown(!showBreakdown)}
+                    >
+                      {showBreakdown ? 'Hide' : 'Show'} Breakdown {showBreakdown ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                    </button>
                     <AnimatePresence>{showBreakdown && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                         <div className="space-y-1.5">
                           {recommendation.breakdown.map((b, i) => (
-                            <Card key={i} className="rounded-lg"><CardContent className="p-2.5 flex items-center justify-between">
-                              <div><p className="text-[12px] font-medium text-foreground">{b.measurement}</p><p className="text-[10px] text-muted-foreground">You: {b.userValue} · Chart: {b.chartRange}</p></div>
-                              <span className={`text-[11px] font-medium ${fitColors[b.fit] || 'text-muted-foreground'}`}>{fitLabels[b.fit] || b.fit}</span>
-                            </CardContent></Card>
+                            <div key={i} className="bg-black/30 backdrop-blur-sm border border-white/8 rounded-lg p-2.5 flex items-center justify-between">
+                              <div>
+                                <p className="text-[12px] font-medium text-white">{b.measurement}</p>
+                                <p className="text-[10px] text-white/40">You: {b.userValue} · Chart: {b.chartRange}</p>
+                              </div>
+                              <span className={`text-[11px] font-medium ${fitColors[b.fit] || 'text-white/50'}`}>{fitLabels[b.fit] || b.fit}</span>
+                            </div>
                           ))}
                         </div>
                       </motion.div>
@@ -569,12 +620,13 @@ const SizeGuide = () => {
           </TabsContent>
         </Tabs>
 
-        <Button
-          className="w-full h-11 rounded-xl btn-luxury text-primary-foreground text-sm font-extrabold mt-4"
+        {/* My Size Every Brand — glass-gold secondary */}
+        <button
+          className="w-full h-11 rounded-xl bg-primary/8 backdrop-blur-md border border-primary/20 text-primary text-sm tracking-wide uppercase font-semibold flex items-center justify-center gap-1.5 mt-4 active:scale-[0.98] transition-transform"
           onClick={() => navigate('/my-sizes')}
         >
-          <LayoutGrid className="mr-1.5 h-4 w-4" /> My Size Every Brand
-        </Button>
+          <LayoutGrid className="h-4 w-4" /> My Size Every Brand
+        </button>
       </div>
       <BottomTabBar />
     </div>
