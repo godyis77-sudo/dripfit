@@ -123,11 +123,11 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
         <div className="flex items-center justify-between mb-2">
           <button
             onClick={() => setExpanded(!expanded)}
-            className="flex items-center gap-1.5 min-h-[44px] btn-gold-3d rounded-lg px-3 py-1.5"
+            className="flex items-center gap-1.5 min-h-[44px] glass-gold rounded-lg px-3 py-1.5"
           >
-            <p className="text-[11px] capitalize">{title}</p>
+            <p className="text-[11px] capitalize font-display font-bold text-primary">{title}</p>
             {visibleProducts.length > 4 && (
-              expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
+              expanded ? <ChevronUp className="h-3 w-3 text-primary" /> : <ChevronDown className="h-3 w-3 text-primary" />
             )}
           </button>
           {showViewAll && visibleProducts.length > 0 && (
