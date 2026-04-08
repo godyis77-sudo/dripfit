@@ -598,8 +598,13 @@ export function useTryOnState() {
   const selectFromWardrobe = async (item: { image_url: string; product_link: string | null; category: string }) => {
     if (item.product_link) setProductLink(item.product_link);
     setCategory(item.category);
-    const base64 = await imageUrlToBase64(item.image_url);
-    setClothingPhoto(base64);
+    try {
+      const base64 = await imageUrlToBase64(item.image_url);
+      setClothingPhoto(base64);
+    } catch {
+      // If base64 conversion fails (CORS / expired URL), use the URL directly
+      setClothingPhoto(item.image_url);
+    }
     setShowWardrobe(false);
     setClothingSaved(true);
     trackEvent('tryon_clothing_uploaded');
