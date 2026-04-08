@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import ProductPreviewModal, { type ProductPreviewData } from '@/components/ui/ProductPreviewModal';
+import { thumbnailUrl } from '@/lib/imageOptimize';
 
 
 interface TrendingFit {
@@ -63,7 +64,7 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
               className="relative glass-card rounded-xl overflow-hidden aspect-[3/4] group active:scale-[0.97] active:translate-y-[1px] transition-all shadow-3d active:shadow-3d-pressed"
             >
               <img
-                src={fit.image_url}
+                src={thumbnailUrl(fit.image_url, 300)}
                 alt={fit.name}
                 loading="lazy"
                 decoding="async"

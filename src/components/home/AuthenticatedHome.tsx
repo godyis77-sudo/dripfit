@@ -11,6 +11,7 @@ import { useProfileInfo, useLatestScan, useTrendingFits } from '@/hooks/useProfi
 import TrendingFitsGrid from '@/components/home/TrendingFitsGrid';
 import HomeFAB from '@/components/home/HomeFAB';
 import { useForYourFit } from '@/hooks/useForYourFit';
+import { thumbnailUrl } from '@/lib/imageOptimize';
 
 /* ── Price filter config ── */
 const PRICE_FILTERS = [
@@ -178,7 +179,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                 >
                   <div className="aspect-[3/4] bg-muted relative">
                     <img
-                      src={rec.clothing_photo_url}
+                      src={thumbnailUrl(rec.clothing_photo_url, 300)}
                       alt={rec.category || 'Recommended'}
                       className="absolute inset-0 w-full h-full object-cover"
                       loading="lazy"
