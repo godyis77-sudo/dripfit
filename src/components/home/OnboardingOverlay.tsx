@@ -171,7 +171,7 @@ export default function OnboardingOverlay() {
           loop
           playsInline
           preload={i === 0 ? 'auto' : 'none'}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] ease-in-out ${
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
             i === slide ? 'opacity-100' : 'opacity-0'
           }`}
         />
