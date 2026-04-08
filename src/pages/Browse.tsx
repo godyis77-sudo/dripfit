@@ -251,8 +251,8 @@ const Browse = () => {
                       onClick={() => setSort(opt.key)}
                       className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                         sort === opt.key
-                          ? 'btn-luxury text-primary-foreground'
-                          : 'bg-card border border-primary/30 text-foreground'
+                          ? 'glass-gold text-primary'
+                          : 'glass text-white/60'
                       }`}
                     >
                       {opt.label}
@@ -312,8 +312,8 @@ const Browse = () => {
                       }}
                       className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                         (category === cat.key || CATEGORY_LABELS[category] === cat.label)
-                          ? 'btn-luxury text-primary-foreground'
-                          : 'bg-card border border-primary/30 text-foreground'
+                          ? 'glass-gold text-primary'
+                          : 'glass text-white/60'
                       }`}
                     >
                       {cat.label}
@@ -346,8 +346,8 @@ const Browse = () => {
                           onClick={() => { setRetailerFilter(null); setRetailerFilters([]); }}
                           className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                             !retailerFilter && retailerFilters.length === 0
-                              ? 'btn-luxury text-primary-foreground'
-                              : 'bg-card border border-primary/30 text-foreground'
+                              ? 'glass-gold text-primary'
+                              : 'glass text-white/60'
                           }`}
                         >
                           All
@@ -365,8 +365,8 @@ const Browse = () => {
                               }}
                               className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                                 isSelected
-                                  ? 'btn-luxury text-primary-foreground'
-                                  : 'bg-card border border-primary/30 text-foreground'
+                                  ? 'glass-gold text-primary'
+                                  : 'glass text-white/60'
                               }`}
                             >
                               {retailer}
@@ -403,8 +403,8 @@ const Browse = () => {
                           onClick={() => setGenreFilter(null)}
                           className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                             !genreFilter
-                              ? 'btn-luxury text-primary-foreground'
-                              : 'bg-card border border-primary/30 text-foreground'
+                              ? 'glass-gold text-primary'
+                              : 'glass text-white/60'
                           }`}
                         >
                           All
@@ -415,8 +415,8 @@ const Browse = () => {
                             onClick={() => setGenreFilter(genre === genreFilter ? null : genre)}
                             className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                               genreFilter === genre
-                                ? 'btn-luxury text-primary-foreground'
-                                : 'bg-card border border-primary/30 text-foreground'
+                                ? 'glass-gold text-primary'
+                                : 'glass text-white/60'
                             }`}
                           >
                             {genre}
@@ -453,8 +453,8 @@ const Browse = () => {
                             onClick={() => setFitFilter(null)}
                             className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors ${
                               !fitFilter
-                                ? 'btn-luxury text-primary-foreground'
-                                : 'bg-card border border-primary/30 text-foreground'
+                                ? 'glass-gold text-primary'
+                                : 'glass text-white/60'
                             }`}
                           >
                             All
@@ -465,8 +465,8 @@ const Browse = () => {
                               onClick={() => setFitFilter(fit === fitFilter ? null : fit)}
                               className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors capitalize ${
                                 fitFilter === fit
-                                  ? 'btn-luxury text-primary-foreground'
-                                  : 'bg-card border border-primary/30 text-foreground'
+                                  ? 'glass-gold text-primary'
+                                  : 'glass text-white/60'
                               }`}
                             >
                               {fit}
