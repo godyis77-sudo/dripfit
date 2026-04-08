@@ -506,30 +506,29 @@ const Capture = () => {
         <AnimatePresence mode="wait">
           {/* ─── STEP 1: INTRO ─── */}
           {flowStep === 'intro' && (
-            <motion.div key="intro" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm flex flex-col items-center text-center pt-4">
-              <DecorativeSilhouette height={300} />
+            <motion.div key="intro" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm flex flex-col items-center text-center pt-2">
+              <DecorativeSilhouette height={240} />
 
-              <h2 className="font-display text-xl text-white mt-6 mb-2">
-                Get your exact measurements in 60 seconds
+              <h2 className="font-display text-xl text-white mt-4 mb-1">
+                Map Your Body
               </h2>
+              <p className="text-[12px] text-white/40 mb-4">AI-powered measurements in under 60 seconds</p>
 
-              <div className="w-full space-y-2 mt-4 text-left">
+              <div className="w-full space-y-1.5 text-left">
                 {[
-                  { icon: Camera, text: 'Take 2 photos (front + side)' },
-                  { icon: Shirt, text: 'Wear form-fitting clothes' },
-                  { icon: LayoutGrid, text: 'Stand against a plain wall' },
+                  { icon: Camera, text: '2 photos — front & side' },
+                  { icon: Shirt, text: 'Wear fitted clothing' },
+                  { icon: LayoutGrid, text: 'Plain background, good light' },
                 ].map((item, i) => (
                   <motion.div
                     key={i}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.6 + i * 0.1 }}
-                    className="flex items-center gap-3 bg-black/40 backdrop-blur-md border border-white/8 rounded-xl px-4 py-3 min-h-[44px]"
+                    transition={{ delay: 0.4 + i * 0.08 }}
+                    className="flex items-center gap-3 glass-dark rounded-xl px-4 py-2.5 min-h-[44px]"
                   >
-                    <span className="opacity-60 text-base shrink-0">
-                      <item.icon className="h-4 w-4 text-white/70" />
-                    </span>
-                    <span className="text-sm text-white/80">{item.text}</span>
+                    <item.icon className="h-4 w-4 text-primary/60 shrink-0" />
+                    <span className="text-[13px] text-white/70">{item.text}</span>
                   </motion.div>
                 ))}
               </div>
@@ -538,14 +537,14 @@ const Capture = () => {
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 }}
-                className="w-full bg-black/40 backdrop-blur-md border border-white/8 border-l-2 border-l-primary/30 rounded-xl px-4 py-3 mt-5 flex items-start gap-3"
+                transition={{ delay: 0.7 }}
+                className="w-full glass-dark border-l-2 border-l-primary/30 rounded-xl px-4 py-2.5 mt-4 flex items-start gap-3"
               >
-                <Shield className="h-4 w-4 text-primary/70 shrink-0 mt-0.5" />
+                <Shield className="h-4 w-4 text-primary/60 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-[12px] font-semibold text-white leading-tight mb-0.5">Your privacy is protected</p>
-                  <p className="text-[12px] text-white/50 leading-relaxed">
-                    Photos are processed on-device. Nothing is stored without your consent.
+                  <p className="text-[12px] font-semibold text-white leading-tight mb-0.5">On-device processing</p>
+                  <p className="text-[11px] text-white/40 leading-relaxed">
+                    Photos never leave your device without permission.
                   </p>
                 </div>
               </motion.div>
