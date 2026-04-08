@@ -45,9 +45,10 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
   retailers,
   fitProfile,
 }, ref) => {
-  const navigate = useNavigate();
-  const { products, loading } = useProductCatalog(category, brand, seed, gender, genre ?? undefined, fitProfile);
   const [expanded, setExpanded] = useState(!collapsed);
+  // Only fetch data when expanded (or when not using collapsed mode)
+  const shouldFetch = expanded || !collapsed;
+  const { products, loading } = useProductCatalog(category, brand, seed, gender, genre ?? undefined, fitProfile, shouldFetch);
   const [previewProduct, setPreviewProduct] = useState<CatalogProduct | null>(null);
   const [failedImageIds, setFailedImageIds] = useState<Set<string>>(new Set());
   const PAGE_SIZE = 30;
