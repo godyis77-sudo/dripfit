@@ -86,19 +86,47 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
     });
   }
 
+  // Not yet fetching (collapsed & lazy) — show just the title with expand button
+  if (!shouldFetch) {
+    return (
+      <div ref={ref}>
+        {title && (
+          <div className="flex items-center justify-between mb-2">
+            <button
+              onClick={() => setExpanded(true)}
+              className="flex items-center gap-1.5 min-h-[44px] glass-gold rounded-lg px-3 py-1.5"
+            >
+              <p className="text-[11px] capitalize font-display font-bold text-primary">{title}</p>
+              <ChevronDown className="h-3 w-3 text-primary" />
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   if (loading && visibleProducts.length === 0) {
     return (
-      <div className="grid grid-cols-2 gap-3">
-        {[1, 2, 3, 4].map(i => (
-          <div key={i} className="rounded-2xl border border-border/50 overflow-hidden">
-            <div className="aspect-[3/4] skeleton-gold" />
-            <div className="p-2.5 space-y-1.5">
-              <div className="h-2.5 w-3/4 rounded skeleton-gold" />
-              <div className="h-2 w-1/2 rounded skeleton-gold" />
-              <div className="h-3 w-1/3 rounded skeleton-gold mt-1" />
+      <div ref={ref}>
+        {title && (
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1.5 min-h-[44px] glass-gold rounded-lg px-3 py-1.5">
+              <p className="text-[11px] capitalize font-display font-bold text-primary">{title}</p>
             </div>
           </div>
-        ))}
+        )}
+        <div className="grid grid-cols-2 gap-3">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="rounded-2xl border border-border/50 overflow-hidden">
+              <div className="aspect-[3/4] skeleton-gold" />
+              <div className="p-2.5 space-y-1.5">
+                <div className="h-2.5 w-3/4 rounded skeleton-gold" />
+                <div className="h-2 w-1/2 rounded skeleton-gold" />
+                <div className="h-3 w-1/3 rounded skeleton-gold mt-1" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
