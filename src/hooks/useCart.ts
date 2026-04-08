@@ -27,13 +27,13 @@ export function useCart() {
 
   const readCart = useCallback((): CartItem[] => {
     if (!storageKey) {
-      console.log('[cart] readCart: no storageKey (user not loaded)');
+      // no user yet
       return [];
     }
     try {
       const raw = localStorage.getItem(storageKey);
       const parsed = raw ? JSON.parse(raw) : [];
-      console.log('[cart] readCart:', storageKey, parsed.length, 'items');
+      // readCart silent
       return parsed;
     } catch {
       return [];
@@ -42,7 +42,7 @@ export function useCart() {
 
   const loadCart = useCallback(() => {
     const cartItems = readCart();
-    console.log('[cart] loadCart setting', cartItems.length, 'items');
+    // loadCart
     setItems(cartItems);
     setLoading(false);
   }, [readCart]);

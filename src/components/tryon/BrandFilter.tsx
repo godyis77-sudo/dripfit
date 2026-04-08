@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, forwardRef } from 'react';
 import { Search, ChevronDown, ChevronUp, X, Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,7 +14,7 @@ interface BrandFilterProps {
   multiSelect?: boolean;
 }
 
-const BrandFilter = ({ gender, selectedBrand, onBrandChange, selectedBrands = [], onBrandsChange, multiSelect = false }: BrandFilterProps) => {
+const BrandFilter = forwardRef<HTMLDivElement, BrandFilterProps>(({ gender, selectedBrand, onBrandChange, selectedBrands = [], onBrandsChange, multiSelect = false }, ref) => {
   const [search, setSearch] = useState('');
   const [allBrands, setAllBrands] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -153,7 +153,7 @@ const BrandFilter = ({ gender, selectedBrand, onBrandChange, selectedBrands = []
   );
 
   return (
-    <div className="mb-3" ref={wrapperRef}>
+    <div className="mb-3" ref={(node) => { wrapperRef.current = node; if (typeof ref === 'function') ref(node); else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node; }}>
       <p className="text-[12px] font-bold text-foreground/70 uppercase tracking-wider mb-1.5">
         {multiSelect ? 'Filter by Brand' : 'Sort by Brand'}
       </p>
@@ -187,6 +187,8 @@ const BrandFilter = ({ gender, selectedBrand, onBrandChange, selectedBrands = []
       )}
     </div>
   );
-};
+});
+
+BrandFilter.displayName = 'BrandFilter';
 
 export default BrandFilter;
