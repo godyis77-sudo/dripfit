@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, ShoppingBag, Flame, Ruler } from 'lucide-react';
-import { lazy, Suspense } from 'react';
+
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
