@@ -131,10 +131,10 @@ const Profile = () => {
     queryClient.invalidateQueries({ queryKey: ['profile-info', user.id] });
   };
 
-  const publicCount = tryOnPosts.filter(p => p.is_public).length;
-  const privateCount = tryOnPosts.length - publicCount;
-
-  return (
+  const refetchProfile = () => {
+    queryClient.invalidateQueries({ queryKey: ['tryon-posts', user.id] });
+    queryClient.invalidateQueries({ queryKey: ['profile-info', user.id] });
+  };
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
       <div>
         {/* Premium banner / status bar */}
