@@ -149,7 +149,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
               trackEvent('catalog_product_preview', { brand: product.brand, category: product.category });
               setPreviewProduct(product);
             }}
-            className="relative rounded-2xl overflow-hidden border border-border/50 bg-card product-card text-left group"
+            className="relative rounded-2xl overflow-hidden glass-dark product-card text-left group hover:border-white/10 transition-all"
           >
             {/* Image area — 3:4 aspect */}
             <div className="relative aspect-[3/4] bg-muted overflow-hidden rounded-t-2xl">
@@ -182,9 +182,9 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
             </div>
             {/* Info area */}
             <div className="p-2.5 flex flex-col">
-              <p className="text-[11px] text-muted-foreground/70 uppercase tracking-[0.15em] mb-0.5">{product.brand}</p>
-              <p className="text-[11px] font-bold text-foreground line-clamp-2 leading-tight h-[28px]">{product.name}</p>
-              <p className="text-[12px] font-bold text-primary mt-1 h-[18px]">
+              <p className="text-[10px] tracking-[0.15em] uppercase text-white/40 mb-0.5">{product.brand}</p>
+              <p className="text-[11px] font-medium text-white line-clamp-2 leading-tight h-[28px]">{product.name}</p>
+              <p className="text-[12px] font-display font-bold text-primary mt-1 h-[18px]">
                 {product.price_cents ? `$${(product.price_cents / 100).toFixed(0)}` : '\u00A0'}
               </p>
             </div>

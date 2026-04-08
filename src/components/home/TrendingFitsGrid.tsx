@@ -35,12 +35,12 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
       >
         <div className="flex items-center justify-between mb-2.5">
           <div className="flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5 text-primary shimmer-icon" />
-            <p className="section-label mb-0">Tap a Fit</p>
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            <p className="font-display text-sm font-bold text-foreground mb-0">Tap a Fit</p>
           </div>
           <button
             onClick={() => navigate('/browse/all')}
-            className="text-[10px] text-primary font-semibold min-h-[44px] flex items-center"
+            className="text-[10px] tracking-[0.1em] uppercase text-primary font-semibold min-h-[44px] flex items-center"
           >
             Browse all →
           </button>

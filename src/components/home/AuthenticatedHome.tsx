@@ -167,7 +167,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           >
             <div className="flex items-center gap-1.5 mb-2">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
-              <p className="section-label mb-0">For Your Fit</p>
+              <p className="font-display text-sm font-bold text-foreground mb-0">For Your Fit</p>
             </div>
             <p className="text-[10px] text-muted-foreground mb-2">Loved by people with similar measurements</p>
             <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
