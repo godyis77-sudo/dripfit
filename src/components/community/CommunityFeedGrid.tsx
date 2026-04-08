@@ -40,7 +40,7 @@ const CommunityFeedGrid = ({
     return (
       <div className="grid grid-cols-2 gap-2">
         {[1, 2, 3, 4].map(i => (
-          <div key={i} className="rounded-xl border border-border overflow-hidden">
+          <div key={i} className="rounded-xl border border-white/5 overflow-hidden bg-black/30">
             <div className="w-full aspect-[4/5] skeleton-gold" />
             <div className="p-2.5 space-y-1.5">
               <div className="h-3 w-3/4 rounded skeleton-gold" />
@@ -83,7 +83,7 @@ const CommunityFeedGrid = ({
       {hasMore && !loading && (
         <div className="flex justify-center pb-20 pt-2">
           <Button
-            className="rounded-lg btn-luxury text-primary-foreground h-10 px-6 text-xs font-bold"
+            className="rounded-lg bg-white/5 backdrop-blur-md border border-white/10 text-white/70 h-10 px-6 text-xs font-bold tracking-wide uppercase hover:bg-white/10"
             onClick={onLoadMore}
             disabled={loadingMore}
           >
@@ -99,21 +99,21 @@ const CommunityFeedGrid = ({
   );
 };
 
-/** End-of-feed CTA — replaces dead-end "You've seen it all" */
+/** End-of-feed CTA */
 const EndOfFeedCTA = ({ onPostLook }: { onPostLook: () => void }) => {
   const navigate = useNavigate();
   return (
     <div className="flex flex-col items-center pb-20 pt-4 text-center">
-      <p className="font-display text-sm text-white/30 mb-3">The feed is current.</p>
+      <p className="font-display italic text-sm text-white/20 mb-3">The feed is current.</p>
       <div className="flex gap-2">
         <Button
-          className="h-10 px-4 rounded-xl btn-glass text-white/80 text-[12px] font-bold"
+          className="h-10 px-4 rounded-xl bg-primary/8 backdrop-blur-md border border-primary/20 text-primary text-[12px] font-bold hover:bg-primary/15"
           onClick={onPostLook}
         >
-          <span className="text-primary mr-1">✦</span> Post a Look
+          <span className="mr-1">✦</span> Post a Look
         </Button>
         <Button
-          className="h-10 px-4 rounded-xl btn-glass text-white/60 text-[12px] font-semibold"
+          className="h-10 px-4 rounded-xl bg-white/5 border border-white/10 text-white/70 text-[12px] font-semibold hover:bg-white/10"
           onClick={() => navigate('/tryon')}
         >
           Try On Something New

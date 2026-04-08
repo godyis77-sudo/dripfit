@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { scrollIntoViewIfNeeded } from '@/lib/autoScroll';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ExternalLink, ShoppingBag, ShoppingCart } from 'lucide-react';
+import { ChevronDown, ExternalLink, ShoppingBag, ShoppingCart, Bookmark } from 'lucide-react';
 import ProductPreviewModal, { type ProductPreviewData } from '@/components/ui/ProductPreviewModal';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { trackEvent } from '@/lib/analytics';
@@ -18,19 +18,12 @@ export interface LookItem {
 }
 
 interface WhatsInThisLookProps {
-  /** Pre-built items (from TryOn page) */
   items?: LookItem[];
-  /** Raw product URLs (from Style Check posts) — items will be derived */
   productUrls?: string[];
-  /** Clothing photo URL (used as fallback thumbnail) */
   clothingPhotoUrl?: string | null;
-  /** Whether to start expanded */
   defaultOpen?: boolean;
-  /** Variant: 'card' for feed cards (compact), 'detail' for detail sheets */
   variant?: 'card' | 'detail';
-  /** Callback when user taps Try On from fullscreen */
   onTryOn?: (item: LookItem) => void;
-  /** Callback when user taps Add to Wardrobe from fullscreen */
   onAddToWardrobe?: (item: LookItem) => void;
 }
 
@@ -40,12 +33,11 @@ function deriveItemsFromUrls(urls: string[]): LookItem[] {
     let name = '';
     try {
       const u = new URL(url);
-      // Try to extract product name from path
       const segments = u.pathname.split('/').filter(Boolean);
       const last = segments[segments.length - 1] || '';
       name = last
         .replace(/[-_]/g, ' ')
-        .replace(/\.[^.]+$/, '') // remove extension
+        .replace(/\.[^.]+$/, '')
         .replace(/\b\w/g, c => c.toUpperCase())
         .slice(0, 40);
       if (!name || name.length < 3) name = u.hostname.replace('www.', '');
@@ -59,7 +51,6 @@ function deriveItemsFromUrls(urls: string[]): LookItem[] {
 const WhatsInThisLook = ({
   items: propItems,
   productUrls,
-  
   clothingPhotoUrl,
   defaultOpen = false,
   variant = 'detail',
@@ -72,12 +63,10 @@ const WhatsInThisLook = ({
   const contentRef = useRef<HTMLDivElement>(null);
   const { pendingClickout, beginClickout, confirmClickout, cancelClickout } = useAffiliateClickout({ extraProps: { source: 'whats_in_look' } });
 
-  // Auto-scroll to reveal expanded content
   const handleToggle = useCallback(() => {
     const willOpen = !open;
     setOpen(willOpen);
     if (willOpen) {
-      // Wait for framer-motion animation (200ms) + buffer before measuring
       setTimeout(() => {
         if (contentRef.current) {
           scrollIntoViewIfNeeded(contentRef.current);
@@ -86,14 +75,12 @@ const WhatsInThisLook = ({
     }
   }, [open]);
 
-  // Build items list
   let items: LookItem[] = propItems || [];
   if (items.length === 0) {
     const urls = productUrls?.length ? productUrls : [];
     items = deriveItemsFromUrls(urls);
   }
 
-  // Enrich items missing image_url by looking up product_catalog
   const urlsNeedingImages = items.filter(i => !i.image_url).map(i => i.url).filter(Boolean);
 
   useEffect(() => {
@@ -120,30 +107,40 @@ const WhatsInThisLook = ({
 
   return (
     <div className={isCompact ? 'mx-1.5 mb-1.5' : 'mb-3'}>
-      <div
-        role="button"
-        tabIndex={0}
-        onClick={handleToggle}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            handleToggle();
-          }
-        }}
-        className="w-full flex items-center justify-center gap-1 active:scale-[0.97] transition-transform btn-gold-3d shimmer-sweep h-7 rounded-xl px-2"
-        style={{
-          borderRadius: open ? '12px 12px 0 0' : '12px',
-        }}
-      >
-        <ShoppingCart className="h-3 w-3 shrink-0" />
-        <span className="text-[10px] font-bold uppercase whitespace-nowrap text-primary-foreground">
-          {onAddToWardrobe ? 'Shop / +Closet' : 'Shop / Try-On'}
-        </span>
-        <ShoppingBag className="h-3 w-3 shrink-0" />
-        <span className="h-5 w-5 badge-gold-3d rounded-md shrink-0 transition-transform duration-200 flex items-center justify-center" style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-          <ChevronDown className="h-2.5 w-2.5 text-primary-foreground" />
-        </span>
-      </div>
+      {/* Toggle — split into Shop pill + Closet icon */}
+      {onAddToWardrobe ? (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleToggle}
+            className="flex-1 flex items-center justify-center gap-1.5 active:scale-[0.97] transition-transform bg-primary/8 backdrop-blur-md border border-primary/20 h-7 px-3 text-primary"
+            style={{ borderRadius: open ? '12px 12px 0 0' : '12px' }}
+          >
+            <ShoppingCart className="h-3 w-3 shrink-0" />
+            <span className="text-[11px] font-bold tracking-wide uppercase">Shop</span>
+            <ChevronDown className="h-2.5 w-2.5 transition-transform duration-200 text-primary/60" style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (items.length > 0 && onAddToWardrobe) onAddToWardrobe(items[0]);
+            }}
+            className="shrink-0 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center active:scale-90 transition-transform"
+            aria-label="Add to closet"
+          >
+            <Bookmark className="h-3.5 w-3.5 text-white/60" />
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={handleToggle}
+          className="w-full flex items-center justify-center gap-1.5 active:scale-[0.97] transition-transform bg-primary/8 backdrop-blur-md border border-primary/20 h-7 px-3 text-primary"
+          style={{ borderRadius: open ? '12px 12px 0 0' : '12px' }}
+        >
+          <ShoppingCart className="h-3 w-3 shrink-0" />
+          <span className="text-[11px] font-bold tracking-wide uppercase">Shop / Try-On</span>
+          <ChevronDown className="h-2.5 w-2.5 transition-transform duration-200 text-primary/60" style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+        </button>
+      )}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -155,11 +152,10 @@ const WhatsInThisLook = ({
             ref={contentRef}
           >
             <div
-              className={`${isCompact ? 'px-3 py-2' : 'px-4 py-3'} space-y-2 bg-card border-x border-b border-border rounded-b-xl`}
+              className={`${isCompact ? 'px-3 py-2' : 'px-4 py-3'} space-y-2 bg-black/40 backdrop-blur-md border-x border-b border-white/8 rounded-b-xl`}
             >
               {items.map((item, idx) => (
                 <div key={idx} className="flex gap-2.5">
-                  {/* Thumbnail */}
                   {(() => {
                     const imgSrc = item.image_url || catalogImages[item.url] || (idx === 0 ? clothingPhotoUrl : null);
                     return imgSrc ? (
@@ -175,24 +171,23 @@ const WhatsInThisLook = ({
                             product_url: item.url,
                           });
                         }}
-                        className="shrink-0 h-14 w-14 rounded-lg overflow-hidden bg-muted border border-border cursor-pointer active:scale-95 transition-transform"
+                        className="shrink-0 h-14 w-14 rounded-lg overflow-hidden bg-muted border border-white/10 cursor-pointer active:scale-95 transition-transform"
                         aria-label={`Preview ${item.name}`}
                       >
                         <img src={imgSrc} alt={item.name} className="h-full w-full object-cover" />
                       </button>
                     ) : (
-                      <div className="shrink-0 h-14 w-14 rounded-lg bg-muted border border-border flex items-center justify-center">
-                        <ShoppingBag className="h-5 w-5 text-muted-foreground/40" />
+                      <div className="shrink-0 h-14 w-14 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                        <ShoppingBag className="h-5 w-5 text-white/20" />
                       </div>
                     );
                   })()}
 
-                  {/* Right side: brand + price on top, actions on bottom */}
                   <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-[9px] px-1.5 py-0.5 rounded btn-luxury text-primary-foreground font-bold uppercase tracking-wider shimmer-sweep">{item.brand}</span>
+                      <span className="text-[9px] tracking-[0.15em] uppercase text-white/50 font-bold">{item.brand}</span>
                       {item.price_cents && (
-                        <span className="text-[10px] font-bold text-primary ml-auto">
+                        <span className="text-[10px] font-display font-bold text-primary ml-auto">
                           ${(item.price_cents / 100).toFixed(0)}
                         </span>
                       )}
@@ -204,7 +199,7 @@ const WhatsInThisLook = ({
                           e.stopPropagation();
                           beginClickout(item.brand, item.url);
                         }}
-                        className="text-[10px] font-bold text-primary-foreground btn-gold-3d px-2 py-1 rounded-md flex items-center gap-0.5 active:scale-95 transition-transform"
+                        className="text-[10px] font-bold bg-primary/8 backdrop-blur-sm border border-primary/20 text-primary px-2 py-1 rounded-full flex items-center gap-0.5 active:scale-95 transition-transform"
                       >
                         Shop <ExternalLink className="h-2.5 w-2.5" />
                       </button>
@@ -215,7 +210,7 @@ const WhatsInThisLook = ({
                             e.stopPropagation();
                             onTryOn(item);
                           }}
-                          className="text-[10px] font-bold text-primary-foreground btn-gold-3d px-2 py-1 rounded-md active:scale-95 transition-transform"
+                          className="text-[10px] font-bold bg-primary/8 backdrop-blur-sm border border-primary/20 text-primary px-2 py-1 rounded-full active:scale-95 transition-transform"
                         >
                           Try-On
                         </button>
@@ -227,7 +222,7 @@ const WhatsInThisLook = ({
                             e.stopPropagation();
                             onAddToWardrobe(item);
                           }}
-                          className="text-[10px] font-bold text-primary-foreground btn-gold-3d px-2 py-1 rounded-md active:scale-95 transition-transform"
+                          className="text-[10px] font-bold bg-white/5 border border-white/10 text-white/60 px-2 py-1 rounded-full active:scale-95 transition-transform"
                         >
                           +Closet
                         </button>
@@ -247,7 +242,6 @@ const WhatsInThisLook = ({
         onShop={(product) => {
           if (!product.product_url) return;
           setPreviewProduct(null);
-          // Defer to next tick so portal click event finishes before disclosure renders
           setTimeout(() => beginClickout(product.brand, product.product_url!), 0);
         }}
         onTryOn={onTryOn ? (product) => {
@@ -263,7 +257,6 @@ const WhatsInThisLook = ({
         } : undefined}
       />
 
-      {/* Affiliate disclosure confirmation — portaled to body */}
       {pendingClickout && createPortal(
         <AnimatePresence>
           <motion.div
@@ -278,17 +271,17 @@ const WhatsInThisLook = ({
               animate={{ y: 0 }}
               exit={{ y: 80 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-sm bg-card border border-border rounded-t-2xl p-5 pb-8 space-y-3"
+              className="w-full max-w-sm bg-black/60 backdrop-blur-xl border border-white/10 rounded-t-2xl p-5 pb-8 space-y-3"
             >
-              <p className="text-[13px] font-semibold text-foreground">
+              <p className="text-[13px] font-semibold text-white">
                 You're leaving the app to visit {pendingClickout.retailer}.
               </p>
-              <p className="text-[11px] text-muted-foreground">Some links may earn us a commission.</p>
+              <p className="text-[11px] text-white/40">Some links may earn us a commission.</p>
               <div className="flex gap-2 pt-1">
                 <button onClick={confirmClickout} className="flex-1 h-10 rounded-xl btn-luxury text-primary-foreground text-[12px] font-bold">
                   Continue to Store
                 </button>
-                <button onClick={cancelClickout} className="flex-1 h-10 rounded-xl border border-border text-[12px] font-medium text-muted-foreground">
+                <button onClick={cancelClickout} className="flex-1 h-10 rounded-xl bg-white/5 border border-white/10 text-[12px] font-medium text-white/60">
                   Cancel
                 </button>
               </div>

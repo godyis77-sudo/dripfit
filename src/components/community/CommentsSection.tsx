@@ -46,7 +46,7 @@ const CommentsSection = ({ comments, onSendComment, currentUserId }: CommentsSec
       {/* Comments list */}
       {comments.length > 0 && (
         <div ref={commentsSectionRef}>
-          <div className="h-px bg-border" />
+          <div className="h-px bg-white/5" />
           <button
             onClick={() => {
               const next = !showComments;
@@ -59,7 +59,7 @@ const CommentsSection = ({ comments, onSendComment, currentUserId }: CommentsSec
                 }, 100);
               }
             }}
-            className="flex items-center gap-1.5 text-[11px] text-white/50 font-bold uppercase tracking-wider py-1"
+            className="flex items-center gap-1.5 text-[11px] text-white/40 font-bold uppercase tracking-wider py-1"
           >
             <MessageCircle className="h-3 w-3" />
             {comments.length} Comment{comments.length !== 1 ? 's' : ''} · {showComments ? 'Hide' : 'Show'}
@@ -90,23 +90,23 @@ const CommentsSection = ({ comments, onSendComment, currentUserId }: CommentsSec
         </div>
       )}
 
-      {/* Chat input */}
+      {/* Chat input — borderless editorial style */}
       <div className="flex items-center gap-2 pb-[env(safe-area-inset-bottom,16px)]">
         <input
           type="text"
           placeholder="Drop a comment…"
           value={commentText}
           onChange={(e) => setCommentText(e.target.value)}
-          className="flex-1 h-10 rounded-xl bg-white/10 border border-white/20 px-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 transition-colors"
+          className="flex-1 h-10 bg-transparent border-b border-white/10 px-1 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-white/30 transition-colors"
           maxLength={500}
           onKeyDown={(e) => { if (e.key === 'Enter') handleSend(); }}
         />
         <button
           onClick={handleSend}
           aria-label="Send comment"
-          className="shrink-0 h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center active:scale-90 transition-transform"
+          className="shrink-0 h-10 w-10 flex items-center justify-center active:scale-90 transition-transform"
         >
-          <Send className="h-4 w-4 text-white" />
+          <Send className="h-4 w-4 text-primary" />
         </button>
       </div>
     </>

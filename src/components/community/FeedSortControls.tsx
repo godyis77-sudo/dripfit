@@ -42,12 +42,17 @@ const FeedSortControls = ({
   const setSort = filter === 'trending' ? onTrendingSortChange : onFollowingSortChange;
   const showUserChips = activeSort === 'user';
 
+  const sortPill = (active: boolean) =>
+    active
+      ? 'bg-primary/10 backdrop-blur-sm border border-primary/20 text-primary'
+      : 'bg-white/5 backdrop-blur-sm border border-white/10 text-white/50';
+
   return (
     <>
       <div className="mb-3">
         <button
           onClick={() => setShowSortOptions(!showSortOptions)}
-          className="flex items-center gap-1.5 pill pill-active text-[11px]"
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold transition-all ${sortPill(true)}`}
           aria-label="Toggle sort options"
         >
           <SlidersHorizontal className="h-3 w-3" />
@@ -65,7 +70,7 @@ const FeedSortControls = ({
                       if (s.key !== 'user') onFilterUserIdChange(null);
                       setShowSortOptions(false);
                     }}
-                    className={`pill ${activeSort === s.key ? 'pill-active' : ''}`}
+                    className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all ${sortPill(activeSort === s.key)}`}
                   >
                     {s.label}
                   </button>
@@ -78,9 +83,9 @@ const FeedSortControls = ({
 
       {showUserChips && (
         <div className="flex gap-1.5 mb-3 overflow-x-auto no-scrollbar" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
-          <button onClick={() => onFilterUserIdChange(null)} aria-label="Show all users" className={`pill ${!filterUserId ? 'pill-active' : ''}`}>All</button>
+          <button onClick={() => onFilterUserIdChange(null)} aria-label="Show all users" className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all ${sortPill(!filterUserId)}`}>All</button>
           {[...new Map(posts.filter(p => p.profile?.display_name).map(p => [p.user_id, p.profile?.display_name])).entries()].map(([uid, name]) => (
-            <button key={uid} onClick={() => onFilterUserIdChange(filterUserId === uid ? null : uid)} aria-label={`Filter by ${name}`} className={`pill ${filterUserId === uid ? 'pill-active' : ''}`}>{name}</button>
+            <button key={uid} onClick={() => onFilterUserIdChange(filterUserId === uid ? null : uid)} aria-label={`Filter by ${name}`} className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all ${sortPill(filterUserId === uid)}`}>{name}</button>
           ))}
         </div>
       )}
