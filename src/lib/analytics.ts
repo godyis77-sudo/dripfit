@@ -2,7 +2,8 @@
 
 import type { PostHog } from 'posthog-js';
 
-const POSTHOG_KEY = (import.meta.env.VITE_POSTHOG_KEY as string | undefined) || 'phc_YCzbtL0TcOZ0YzB0aGv2kXIYoGuscc09iXqXHIfuoMZ';
+const _envKey = import.meta.env.VITE_POSTHOG_KEY as string | undefined;
+const POSTHOG_KEY = (_envKey && _envKey.startsWith('phc_')) ? _envKey : 'phc_YCzbtL0TcOZ0YzB0aGv2kXIYoGuscc09iXqXHIfuoMZ';
 const POSTHOG_HOST = (import.meta.env.VITE_POSTHOG_HOST as string) || 'https://us.i.posthog.com';
 
 let ph: PostHog | null = null;
