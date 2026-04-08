@@ -156,6 +156,7 @@ export function useProductCatalog(
   gender?: string,
   genre?: string,
   fitProfile?: string,
+  enabled: boolean = true,
 ) {
   // Stable random seed — generated once per hook instance
   const stableSeedRef = useRef(seed ?? Math.floor(Math.random() * 100000));
@@ -175,6 +176,7 @@ export function useProductCatalog(
     queryFn: () => fetchCatalogProducts(filters),
     staleTime: 2 * 60 * 1000, // 2 minutes
     refetchOnWindowFocus: false,
+    enabled,
   });
 
   // Apply deterministic shuffle
