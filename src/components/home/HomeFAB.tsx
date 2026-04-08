@@ -61,12 +61,12 @@ const HomeFAB = forwardRef<HTMLDivElement>((_, ref) => {
                 transition={{ delay: idx * 0.06, duration: 0.2 }}
                 className="flex items-center gap-2"
               >
-                <span className="text-[11px] font-semibold text-foreground bg-card border border-border rounded-lg px-3 py-1.5 shadow-lg whitespace-nowrap">
+                <span className="text-[11px] font-semibold text-white glass-dark rounded-lg px-3 py-1.5 shadow-lg whitespace-nowrap">
                   {item.label}
                 </span>
                 <button
                   onClick={() => { closeFab(); item.action(); }}
-                  className="h-11 w-11 rounded-full badge-gold-3d shimmer-sweep active:scale-90 transition-transform flex items-center justify-center"
+                  className="h-11 w-11 rounded-full glass-gold border-primary/30 active:scale-90 transition-transform flex items-center justify-center"
                 >
                   {item.icon}
                 </button>
@@ -83,20 +83,20 @@ const HomeFAB = forwardRef<HTMLDivElement>((_, ref) => {
               initial={{ opacity: 0, y: 4, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 4, scale: 0.9 }}
-              className="absolute -top-10 right-0 bg-card border border-primary/30 rounded-lg px-3 py-1.5 shadow-lg whitespace-nowrap z-50"
+              className="absolute -top-10 right-0 glass-dark border-primary/20 rounded-lg px-3 py-1.5 shadow-lg whitespace-nowrap z-50"
             >
               <span className="text-[11px] font-bold text-primary">Quick Try-On ✨</span>
-              <div className="absolute -bottom-1 right-4 w-2 h-2 bg-card border-b border-r border-primary/30 rotate-45" />
+              <div className="absolute -bottom-1 right-4 w-2 h-2 glass-dark border-b border-r border-primary/20 rotate-45" />
             </motion.div>
           )}
         </AnimatePresence>
         <motion.button
           whileTap={{ scale: 0.93 }}
           onClick={() => { setFabOpen(!fabOpen); setShowTooltip(false); }}
-          className="h-12 w-12 rounded-full badge-gold-3d shimmer-sweep glow-primary relative z-50 flex items-center justify-center"
+          className="h-12 w-12 rounded-full bg-primary/15 backdrop-blur-md border border-primary/30 relative z-50 flex items-center justify-center"
           aria-label={fabOpen ? 'Close menu' : 'Quick actions'}
         >
-          <Plus className={`h-5 w-5 text-primary-foreground transition-transform duration-200 ease-in-out ${fabOpen ? 'rotate-45' : ''}`} />
+          <Plus className={`h-5 w-5 text-primary transition-transform duration-200 ease-in-out ${fabOpen ? 'rotate-45' : ''}`} />
         </motion.button>
       </div>
     </div>,

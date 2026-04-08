@@ -55,17 +55,17 @@ const WeeklyOutfitsSection = () => {
   if (isLoading || !outfits || outfits.length === 0) return null;
 
   return (
-    <div className="px-4 mt-6 mb-4">
+    <div className="mt-2 mb-4">
       <div className="flex items-center justify-between mb-3">
         <div>
-          <h2 className="text-base font-bold text-foreground flex items-center gap-1.5">
-            <InlineCrown size={18} /> This Week's Drip
+          <h2 className="font-display text-lg text-white flex items-center gap-1.5">
+            <InlineCrown size={16} /> This Week's Drip
           </h2>
-          <p className="text-[11px] text-muted-foreground mt-0.5">AI-curated outfits for every occasion</p>
+          <p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5">AI-curated outfits for every occasion</p>
         </div>
         <button
           onClick={() => navigate('/outfits-weekly')}
-          className="text-[11px] font-semibold text-[hsl(var(--drip-gold))] active:opacity-70"
+          className="text-[11px] tracking-wide uppercase text-primary active:opacity-70"
         >
           See All {outfits.length} →
         </button>
@@ -93,13 +93,13 @@ const WeeklyOutfitsSection = () => {
       </div>
 
       <Sheet open={!!selectedOutfit} onOpenChange={open => !open && setSelectedOutfit(null)}>
-        <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-2xl bg-card border-border/30">
+        <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-2xl glass-dark border-white/10">
           {selectedOutfit && (
             <>
               <SheetHeader className="mb-4">
-                <SheetTitle className="text-foreground text-lg">{selectedOutfit.title}</SheetTitle>
+                <SheetTitle className="text-white text-lg font-display">{selectedOutfit.title}</SheetTitle>
                 {selectedOutfit.description && (
-                  <SheetDescription className="text-[12px] text-muted-foreground">
+                  <SheetDescription className="text-[12px] text-white/40">
                     {selectedOutfit.description}
                   </SheetDescription>
                 )}
@@ -129,10 +129,10 @@ const WeeklyOutfitsSection = () => {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{item.product_name}</p>
-                      {item.brand && <p className="text-[11px] text-muted-foreground">{item.brand}</p>}
+                      <p className="text-sm font-medium text-white truncate">{item.product_name}</p>
+                      {item.brand && <p className="text-[10px] tracking-[0.2em] uppercase text-white/40">{item.brand}</p>}
                       {item.price_cents != null && (
-                        <p className="text-[12px] font-semibold text-[hsl(var(--drip-gold))]">
+                        <p className="text-[12px] font-display font-bold text-primary">
                           ${(item.price_cents / 100).toFixed(0)}
                         </p>
                       )}
@@ -141,7 +141,7 @@ const WeeklyOutfitsSection = () => {
                       {item.product_url && (
                         <Button
                           size="sm"
-                          className="h-7 text-[10px] px-2.5 btn-luxury"
+                          className="h-7 text-[10px] px-2.5 glass-gold text-primary border-primary/20"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleShop(item);
@@ -154,7 +154,7 @@ const WeeklyOutfitsSection = () => {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="h-7 text-[10px] px-2.5 border-border/50"
+                          className="h-7 text-[10px] px-2.5 glass border-white/10 text-white/60"
                           onClick={() => handleTryOn(item)}
                         >
                           <Shirt className="h-3 w-3 mr-1" /> Try On
@@ -184,16 +184,16 @@ const WeeklyOutfitsSection = () => {
 
       {pendingClickout && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/60 p-4" onClick={cancelClickout}>
-          <div className="w-full max-w-sm rounded-2xl border border-border/40 bg-card p-5 shadow-xl" onClick={e => { e.stopPropagation(); e.preventDefault(); }}>
-            <p className="text-sm font-semibold text-foreground mb-1">Leaving DripCheck</p>
-            <p className="text-[11px] text-muted-foreground mb-4">
+          <div className="w-full max-w-sm rounded-2xl glass-dark border-white/10 p-5 shadow-xl" onClick={e => { e.stopPropagation(); e.preventDefault(); }}>
+            <p className="text-sm font-semibold text-white mb-1">Leaving DripCheck</p>
+            <p className="text-[11px] text-white/40 mb-4">
               You'll be redirected to <strong>{pendingClickout.retailer}</strong>. We may earn a commission at no extra cost to you.
             </p>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); e.preventDefault(); cancelClickout(); }}
-                className="flex-1 h-9 rounded-lg border border-border/60 bg-card/40 text-foreground text-sm font-semibold active:scale-[0.97] transition-transform"
+                className="flex-1 h-9 rounded-lg glass border-white/10 text-white text-sm font-semibold active:scale-[0.97] transition-transform"
               >
                 Cancel
               </button>
@@ -217,10 +217,10 @@ function OccasionPill({ active, onClick, label, emoji }: { active: boolean; onCl
   return (
     <button
       onClick={onClick}
-      className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium border transition-colors whitespace-nowrap ${
+      className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium border backdrop-blur-md transition-colors whitespace-nowrap ${
         active
-          ? 'border-[hsl(var(--drip-gold))] text-[hsl(var(--drip-gold))] bg-[hsl(var(--drip-gold)/0.1)]'
-          : 'border-border/40 text-muted-foreground'
+          ? 'bg-primary/8 border-primary/20 text-primary'
+          : 'bg-white/5 border-white/10 text-white/50'
       }`}
     >
       {emoji && <span className="mr-1">{emoji}</span>}{label}
@@ -236,7 +236,7 @@ function OutfitCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void
   return (
     <motion.button
       onClick={onTap}
-      className="snap-start shrink-0 w-[200px] bg-card rounded-xl border border-border/30 overflow-hidden text-left active:scale-[0.97] transition-transform"
+      className="snap-start shrink-0 w-[200px] rounded-xl border border-white/5 overflow-hidden text-left active:scale-[0.97] transition-transform bg-transparent"
       whileTap={{ scale: 0.97 }}
     >
       {hasHero ? (
@@ -253,17 +253,17 @@ function OutfitCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void
         </div>
       )}
 
-      <div className="p-2.5 pt-1.5">
-        <p className="text-sm font-bold text-foreground truncate">{outfit.title}</p>
+      <div className="p-2.5 pt-1.5 glass-dark rounded-b-xl">
+        <p className="text-sm font-semibold text-white truncate">{outfit.title}</p>
         {outfit.total_price_cents > 0 && (
-          <p className="text-[12px] font-semibold text-[hsl(var(--drip-gold))] mt-0.5">
+          <p className="text-[12px] font-display font-bold text-primary mt-0.5">
             ${(outfit.total_price_cents / 100).toFixed(0)}
           </p>
         )}
         {brands.length > 0 && (
           <div className="flex gap-1 mt-1 flex-wrap">
             {brands.map(b => (
-              <span key={b} className="text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-full">{b}</span>
+              <span key={b} className="text-[9px] tracking-widest uppercase text-white/30">{b}</span>
             ))}
           </div>
         )}

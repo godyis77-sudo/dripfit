@@ -29,7 +29,7 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
       initial={{ y: 80 }}
       animate={{ y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.3 }}
-      className="fixed bottom-0 left-0 right-0 z-50 lg:max-w-[390px] lg:left-1/2 lg:-translate-x-1/2 glass-dark border-t border-white/8 backdrop-blur-xl"
+      className="fixed bottom-0 left-0 right-0 z-50 lg:max-w-[390px] lg:left-1/2 lg:-translate-x-1/2 bg-black/40 backdrop-blur-xl border-t border-white/5"
     >
       <div className="flex items-center justify-around px-1 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {tabs.map((tab) => {
@@ -50,7 +50,7 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
                 'relative flex flex-col items-center gap-0 rounded-xl px-2 py-1 min-h-[44px] min-w-[44px] transition-all duration-300',
                 isActive
                   ? 'text-primary'
-                  : 'text-white/30 active:text-foreground'
+                  : 'text-white/25 active:text-foreground'
               )}
             >
               <div className={cn(
@@ -61,7 +61,7 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
               </div>
               <span className={cn(
                 "text-[9px] font-bold tracking-wider uppercase transition-all duration-300",
-                isActive ? 'text-primary' : 'text-white/30'
+                isActive ? 'text-primary' : 'text-white/25'
               )}>{tab.label}</span>
               {isActive && (
                 <motion.div
