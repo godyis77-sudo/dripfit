@@ -63,7 +63,7 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
               className="relative glass-card rounded-xl overflow-hidden aspect-[3/4] group active:scale-[0.97] active:translate-y-[1px] transition-all shadow-3d active:shadow-3d-pressed"
             >
               <img
-                src={fit.image_url}
+                src={thumbUrl(fit.image_url)}
                 alt={fit.name}
                 loading="lazy"
                 decoding="async"
