@@ -182,7 +182,7 @@ const Premium = () => {
         </motion.div>
 
         {isSubscribed ? (
-          <Button className="w-full h-12 rounded-xl text-sm font-bold mb-5 btn-glass text-white/80" variant="outline" onClick={handleManage}>
+          <Button className="w-full h-12 rounded-xl text-sm font-bold mb-5 glass text-white/80" variant="outline" onClick={handleManage}>
             Manage Subscription
           </Button>
         ) : (
