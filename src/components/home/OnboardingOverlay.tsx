@@ -32,6 +32,7 @@ export default function OnboardingOverlay() {
   const location = useLocation();
   const [visible, setVisible] = useState(() => !localStorage.getItem(STORAGE_KEY));
   const [slide, setSlide] = useState(-1); // -1 = logo intro
+  const [prevSlide, setPrevSlide] = useState(-1);
   const [needsTap, setNeedsTap] = useState(false);
   const [allPlaying, setAllPlaying] = useState(false);
   const [logoPhase, setLogoPhase] = useState(true);
