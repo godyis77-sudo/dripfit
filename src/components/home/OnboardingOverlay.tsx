@@ -128,6 +128,9 @@ export default function OnboardingOverlay() {
     <div
       className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden"
       onClick={handleUserGesture}
+      onMouseEnter={handleUserGesture}
+      onMouseMove={handleUserGesture}
+      onPointerDown={handleUserGesture}
       onTouchStart={(e) => {
         handleUserGesture();
         touchStartX.current = e.touches[0].clientX;
