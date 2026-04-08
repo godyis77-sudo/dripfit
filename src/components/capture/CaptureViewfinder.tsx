@@ -13,7 +13,7 @@ const CaptureViewfinder = ({ captureStep, photo }: CaptureViewfinderProps) => {
   const maskUrl = captureStep === 'side' ? bodySilhouetteSideMask : bodySilhouetteFrontMask;
 
   return (
-    <div className="relative w-full aspect-[3/4] rounded-xl overflow-hidden glass-dark border border-white/10 mb-2">
+    <div className="relative w-full aspect-[3/5] rounded-xl overflow-hidden glass-dark border border-white/10 mb-2">
       {photo ? (
         <img src={photo} alt={STEP_CONFIG[captureStep].title} className="w-full h-full object-cover img-normalize" />
       ) : (
