@@ -164,7 +164,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
                 </div>
               ) : (
                 <img
-                  src={product.image_url}
+                  src={thumbUrl(product.image_url)}
                   alt={product.name}
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
