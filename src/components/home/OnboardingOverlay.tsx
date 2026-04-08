@@ -143,12 +143,17 @@ export default function OnboardingOverlay() {
       onTouchStart={(e) => {
         handleUserGesture();
         touchStartX.current = e.touches[0].clientX;
+        touchStartTime.current = Date.now();
       }}
       onTouchEnd={(e) => {
         if (logoPhase) return;
         e.stopPropagation();
         const dx = e.changedTouches[0].clientX - touchStartX.current;
-        if (Math.abs(dx) <= 50) return;
+        const dt = Date.now() - touchStartTime.current;
+        const velocity = Math.abs(dx) / Math.max(dt, 1);
+        // Swipe triggers on either sufficient distance OR fast flick
+        const triggered = Math.abs(dx) > 40 && (Math.abs(dx) > 80 || velocity > 0.3);
+        if (!triggered) return;
         if (dx < 0 && slide < SLIDES.length - 1) transitionToSlide(slide + 1);
         if (dx > 0 && slide > 0) transitionToSlide(slide - 1);
       }}
