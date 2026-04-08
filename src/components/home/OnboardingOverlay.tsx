@@ -63,21 +63,35 @@ export default function OnboardingOverlay() {
     }
   }, [location.key]);
 
-  // Start all 3 videos as soon as the overlay mounts
+  // Start all 3 videos once the overlay is visible.
+  // Video 1 gets a slight head-start so it's playing by the time the user sees it.
   useEffect(() => {
     if (!visible) return;
 
     const cleanups: (() => void)[] = [];
 
-    // Small stagger so the browser isn't hit with 3 simultaneous decode requests
     videoRefs.current.forEach((video, i) => {
       if (!video) return;
+      // First video starts immediately; others after a short stagger
+      const delay = i === 0 ? 0 : 300 + i * 200;
       const timer = setTimeout(() => {
         const cleanup = forcePlay(video);
         cleanups.push(cleanup);
-      }, i * 150);
+      }, delay);
       cleanups.push(() => clearTimeout(timer));
     });
+
+    // Extra aggressive retry for video 1 specifically
+    const v1 = videoRefs.current[0];
+    if (v1) {
+      const interval = setInterval(() => {
+        if (!v1.paused) { clearInterval(interval); return; }
+        v1.muted = true;
+        const p = v1.play();
+        if (p) p.catch(() => {});
+      }, 400);
+      cleanups.push(() => clearInterval(interval));
+    }
 
     cleanupRefs.current = cleanups;
 
