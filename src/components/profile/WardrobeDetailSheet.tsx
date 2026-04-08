@@ -67,7 +67,6 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
 
   const displayRetailer = item.brand || (item.product_link ? detectBrandFromUrl(item.product_link).brand : null) || item.retailer;
 
-
   const handleShop = (retailerName: string) => {
     trackEvent('shop_clickout', { source: 'wardrobe_detail', retailer: retailerName });
     const url = buildRetailerSearchUrl(retailerName, '', searchQuery);
@@ -76,29 +75,30 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="h-[90dvh] p-0 rounded-t-2xl bg-background border-t border-border">
+      <SheetContent side="bottom" className="h-[90dvh] p-0 rounded-t-2xl glass-dark border-t border-white/10">
+        {/* Close */}
         <button
           onClick={() => onOpenChange(false)}
-          className="absolute top-3 right-3 z-50 h-8 w-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center"
+          className="absolute top-3 right-3 z-50 h-8 w-8 rounded-full bg-white/5 backdrop-blur border border-white/10 flex items-center justify-center"
           aria-label="Close"
         >
-          <X className="h-4 w-4 text-white" />
+          <X className="h-4 w-4 text-white/70" />
         </button>
 
-        {/* Date above image */}
+        {/* Date */}
         <div className="px-4 pt-3 pb-1.5">
-          <p className="text-[11px] text-muted-foreground font-medium">{new Date(item.created_at).toLocaleDateString()}</p>
+          <p className="text-[10px] text-white/25">{new Date(item.created_at).toLocaleDateString()}</p>
         </div>
 
-        {/* Image — maximized */}
+        {/* Image */}
         <div className="relative w-full h-[55dvh] overflow-hidden px-2 pt-1">
           <div className="relative w-full h-full rounded-xl overflow-hidden bg-black flex items-center justify-center">
-          <img src={item.image_url} alt={item.category} className="max-w-full max-h-full w-auto h-auto rounded-xl" />
-          {displayRetailer && (
-            <div className="absolute bottom-3 right-3 bg-primary rounded-lg px-3 py-1 shadow-lg border border-primary-foreground/20">
-              <p className="text-[11px] font-extrabold text-primary-foreground uppercase tracking-wide">{displayRetailer}</p>
-            </div>
-          )}
+            <img src={item.image_url} alt={item.category} className="max-w-full max-h-full w-auto h-auto rounded-xl" />
+            {displayRetailer && (
+              <div className="absolute bottom-3 right-3">
+                <span className="bg-black/50 backdrop-blur-sm border border-white/8 text-[9px] tracking-[0.15em] uppercase text-white/50 px-3 py-1 rounded-full font-bold">{displayRetailer}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -106,14 +106,14 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
         <div className="px-4 pt-4 pb-6 space-y-3 overflow-y-auto max-h-[40dvh]">
           {/* Info chips */}
           <div className="flex flex-wrap gap-1.5">
-            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-foreground bg-card border border-border rounded-md px-2 py-1 capitalize">
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-2.5 py-1 capitalize text-white/70">
               <Tag className="h-3 w-3 text-primary" /> {item.category}
             </span>
             {(() => {
               const detected = item.product_link ? detectBrandFromUrl(item.product_link) : null;
               const displayRetailer = detected?.retailer || item.retailer;
               return displayRetailer ? (
-                <span className="brand-label-lg">
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-2.5 py-1 text-white/70">
                   <Store className="h-3 w-3" /> {displayRetailer}
                 </span>
               ) : null;
@@ -121,13 +121,13 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
           </div>
 
           {item.notes && (
-            <p className="text-[12px] text-muted-foreground">{item.notes}</p>
+            <p className="text-[12px] text-white/50">{item.notes}</p>
           )}
 
           {/* Try-On + Buy Now row */}
           <div className="flex gap-2">
             <Button
-              className="flex-1 h-9 rounded-xl text-[11px] font-bold gap-1 btn-luxury text-primary-foreground"
+              className="flex-1 h-9 rounded-xl text-[11px] font-bold gap-1 glass-gold text-primary border border-primary/20 tracking-wide"
               onClick={() => {
                 trackEvent('tryon_from_wardrobe_detail', { item_id: item.id });
                 onOpenChange(false);
@@ -152,33 +152,31 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
           {/* Retailer accordion */}
           <Collapsible>
             <CollapsibleTrigger asChild>
-              <Button variant="outline" className="w-full h-9 rounded-xl text-[11px] font-bold gap-1 justify-center btn-gold-3d border-none">
+              <Button variant="outline" className="w-full h-9 rounded-xl text-[11px] font-bold gap-1 justify-center glass-gold text-primary border-primary/20 tracking-wide">
                 <ShoppingBag className="h-3.5 w-3.5" /> Shop Similar Style
                 <ChevronDown className="h-3.5 w-3.5 transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent className="pt-2 space-y-2">
-              {/* Search field */}
               <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/30" />
                 <Input
                   placeholder="Search retailers..."
                   value={retailerSearch}
                   onChange={(e) => setRetailerSearch(e.target.value)}
-                  className="h-8 pl-8 text-[11px] rounded-lg bg-card border-border"
+                  className="h-8 pl-8 text-[11px] rounded-lg bg-transparent border-b border-white/15 border-t-0 border-l-0 border-r-0 rounded-none placeholder:text-white/25"
                 />
               </div>
 
-              {/* Suggested retailers (max 4) */}
               <div className="grid grid-cols-2 gap-1.5">
                 {suggestions.map(name => (
                   <button
                     key={name}
                     onClick={() => handleShop(name)}
-                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-border bg-card hover:border-primary/40 active:scale-[0.97] transition-all text-left"
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg glass hover:border-primary/20 active:scale-[0.97] transition-all text-left"
                   >
                     <ExternalLink className="h-3 w-3 text-primary shrink-0" />
-                    <span className="text-[11px] font-bold text-foreground truncate">{name}</span>
+                    <span className="text-[11px] font-bold text-white/70 truncate">{name}</span>
                     {favoriteRetailers.includes(name) && (
                       <Star className="h-2.5 w-2.5 text-primary fill-primary ml-auto shrink-0" />
                     )}
@@ -186,17 +184,16 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
                 ))}
               </div>
 
-              {/* Search results */}
               {filteredRetailers.length > 0 && (
                 <div className="grid grid-cols-2 gap-1.5">
                   {filteredRetailers.map(name => (
                     <button
                       key={name}
                       onClick={() => handleShop(name)}
-                      className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-border bg-card hover:border-primary/40 active:scale-[0.97] transition-all text-left"
+                      className="flex items-center gap-2 px-3 py-2.5 rounded-lg glass hover:border-primary/20 active:scale-[0.97] transition-all text-left"
                     >
                       <ExternalLink className="h-3 w-3 text-primary shrink-0" />
-                      <span className="text-[11px] font-bold text-foreground truncate">{name}</span>
+                      <span className="text-[11px] font-bold text-white/70 truncate">{name}</span>
                     </button>
                   ))}
                 </div>
@@ -209,18 +206,18 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
             <AlertDialogTrigger asChild>
               <Button
                 variant="outline"
-                className="w-full h-9 rounded-xl text-[11px] text-destructive border-destructive/20 hover:bg-destructive/10 gap-1.5"
+                className="w-full h-9 rounded-xl text-[11px] bg-white/5 border border-white/10 text-destructive hover:bg-white/10 gap-1.5"
               >
                 <Trash2 className="h-3.5 w-3.5" /> Remove from Wardrobe
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="max-w-[320px] rounded-2xl">
+            <AlertDialogContent className="max-w-[320px] rounded-2xl glass-dark border-white/10">
               <AlertDialogHeader>
-                <AlertDialogTitle className="text-[15px]">Remove from wardrobe?</AlertDialogTitle>
-                <AlertDialogDescription className="text-[13px]">This item will be removed from your wardrobe. You can always add it back later.</AlertDialogDescription>
+                <AlertDialogTitle className="text-[15px] text-white">Remove from wardrobe?</AlertDialogTitle>
+                <AlertDialogDescription className="text-[13px] text-white/50">This item will be removed from your wardrobe. You can always add it back later.</AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel className="rounded-xl text-[12px]">Cancel</AlertDialogCancel>
+                <AlertDialogCancel className="rounded-xl text-[12px] glass text-white/60">Cancel</AlertDialogCancel>
                 <AlertDialogAction className="rounded-xl text-[12px] bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => { onDelete(item.id); onOpenChange(false); }}>Remove</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

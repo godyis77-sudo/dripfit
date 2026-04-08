@@ -44,7 +44,6 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
     if (longPressTimer.current) clearTimeout(longPressTimer.current);
   }, []);
 
-  // Dismiss long-press menu on outside tap
   useEffect(() => {
     if (!longPressId) return;
     const handler = () => setLongPressId(null);
@@ -70,10 +69,10 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
           <button
             key={tab.key}
             onClick={() => setFilter(tab.key)}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-bold transition-colors ${
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-bold transition-colors backdrop-blur-sm border ${
               filter === tab.key
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-muted text-muted-foreground'
+                ? 'bg-primary/10 border-primary/25 text-primary'
+                : 'bg-white/5 border-white/10 text-white/50'
             }`}
           >
             {tab.icon}
@@ -86,27 +85,27 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
       {wardrobeItems.length >= 2 && filter === 'all' && (
         <button
           onClick={() => navigate('/outfits')}
-          className="w-full flex items-center gap-3 rounded-xl border border-border bg-card p-3 mb-3 active:scale-[0.98] transition-transform"
+          className="w-full flex items-center gap-3 rounded-xl glass-dark p-3 mb-3 active:scale-[0.98] transition-transform"
         >
-          <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-            <span className="text-sm">👗</span>
+          <div className="h-9 w-9 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+            <span className="text-sm opacity-50">👗</span>
           </div>
           <div className="text-left">
-            <p className="text-[12px] font-bold text-foreground">Outfit Builder</p>
-            <p className="text-[10px] text-muted-foreground">Mix & match your closet pieces</p>
+            <p className="text-[12px] font-semibold text-white">Outfit Builder</p>
+            <p className="text-[10px] text-white/40">Mix & match your closet pieces</p>
           </div>
         </button>
       )}
       
       {filteredItems.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-          <div className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
-            {filter === 'liked' ? <Heart className="h-6 w-6 text-primary/60" /> : filter === 'saved' ? <Bookmark className="h-6 w-6 text-primary/60" /> : <Shirt className="h-6 w-6 text-primary/60" />}
+          <div className="h-12 w-12 rounded-2xl glass flex items-center justify-center mb-4">
+            {filter === 'liked' ? <Heart className="h-6 w-6 text-white/20" /> : filter === 'saved' ? <Bookmark className="h-6 w-6 text-white/20" /> : <Shirt className="h-6 w-6 text-white/20" />}
           </div>
-          <h2 className="text-[18px] font-bold text-foreground mb-1">
+          <h2 className="font-display text-lg text-white/60 mb-1">
             {filter === 'all' ? 'Your closet is empty' : filter === 'liked' ? 'No liked items yet' : 'No saved items yet'}
           </h2>
-          <p className="text-[14px] text-muted-foreground max-w-[260px] mb-5">
+          <p className="text-sm text-white/30 max-w-[260px] mb-5">
             {filter === 'all' ? 'Save clothing items to try on and track your fits.' : 'Like or save items from try-ons and the community feed.'}
           </p>
           {filter === 'all' && (
@@ -120,7 +119,7 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
           {filteredItems.map(item => (
             <motion.div key={item.id} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}>
               <div
-                className="relative w-full rounded-xl overflow-hidden border border-border bg-card text-left"
+                className="relative w-full rounded-xl overflow-hidden border border-white/5 bg-black/30 backdrop-blur-sm text-left"
                 onPointerDown={() => handlePointerDown(item.id)}
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerUp}
@@ -131,22 +130,22 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                 >
                   <div className="relative aspect-[3/4] px-1.5 pt-1.5">
                     <img src={item.image_url} alt={item.notes || item.category} className="w-full h-full object-cover object-top rounded-xl" />
-                    {/* Liked/Saved badges */}
+                    {/* Liked/Saved badges — glass circles */}
                     <div className="absolute top-3 left-3 flex gap-1">
-                      {item.is_liked && <span className="h-5 w-5 rounded-full bg-destructive/90 flex items-center justify-center"><Heart className="h-3 w-3 text-white fill-white" /></span>}
-                      {item.is_saved && <span className="h-5 w-5 rounded-full bg-primary/90 flex items-center justify-center"><Bookmark className="h-3 w-3 text-white fill-white" /></span>}
+                      {item.is_liked && <span className="h-6 w-6 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center"><Heart className="h-3 w-3 text-white fill-white" /></span>}
+                      {item.is_saved && <span className="h-6 w-6 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center"><Bookmark className="h-3 w-3 text-white fill-white" /></span>}
                     </div>
                     {(() => {
                       const displayBrand = item.brand || (item.product_link ? detectBrandFromUrl(item.product_link).brand : null) || item.retailer;
                       return displayBrand ? (
                         <div className="absolute bottom-1.5 right-1.5">
-                          <span className="brand-label">{displayBrand}</span>
+                          <span className="bg-black/50 backdrop-blur-sm border border-white/8 text-[9px] tracking-[0.15em] uppercase text-white/50 px-2 py-0.5 rounded-full">{displayBrand}</span>
                         </div>
                       ) : null;
                     })()}
                   </div>
                   <div className="p-2 space-y-0.5">
-                    <p className="text-[11px] font-bold text-foreground capitalize truncate">
+                    <p className="text-sm font-medium text-white capitalize truncate">
                       {item.notes || (item.category === 'top' && item.product_link ? detectCategoryFromUrl(item.product_link) || item.category : item.category)}
                     </p>
                     {(() => {
@@ -159,11 +158,11 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                       ) : null;
                     })()}
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</span>
+                      <span className="text-[10px] text-white/25">{new Date(item.created_at).toLocaleDateString()}</span>
                       {item.product_link && (
                         <button
                           onClick={(e) => { e.stopPropagation(); window.open(item.product_link!, '_blank'); }}
-                          className="text-[11px] text-primary font-bold active:opacity-70"
+                          className="text-[11px] text-primary font-bold tracking-wide active:opacity-70"
                         >
                           View →
                         </button>
@@ -180,24 +179,24 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
                       animate={{ y: 0, opacity: 1 }}
                       exit={{ y: 8, opacity: 0 }}
                       transition={{ duration: 0.2, ease: 'easeOut' }}
-                      className="absolute bottom-0 left-0 right-0 flex gap-1 p-1.5 bg-card/95 backdrop-blur-sm border-t border-border"
+                      className="absolute bottom-0 left-0 right-0 flex gap-1 p-1.5 glass-dark border-t border-white/10"
                       onPointerDown={(e) => e.stopPropagation()}
                     >
                       <button
                         onClick={() => { setLongPressId(null); navigate('/tryon'); }}
-                        className="flex-1 py-1.5 rounded-lg bg-background border border-border text-[11px] font-bold text-foreground active:scale-95 transition-transform"
+                        className="flex-1 py-1.5 rounded-lg glass text-[11px] font-bold text-white/60 active:scale-95 transition-transform"
                       >
                         Try-On
                       </button>
                       <button
                         onClick={() => { setLongPressId(null); }}
-                        className="flex-1 py-1.5 rounded-lg bg-background border border-border text-[11px] font-bold text-foreground active:scale-95 transition-transform"
+                        className="flex-1 py-1.5 rounded-lg glass text-[11px] font-bold text-white/60 active:scale-95 transition-transform"
                       >
                         Wishlist
                       </button>
                       <button
                         onClick={() => { setLongPressId(null); onDeleteItem(item.id); }}
-                        className="flex-1 py-1.5 rounded-lg bg-background border border-destructive/30 text-[11px] font-bold text-destructive active:scale-95 transition-transform"
+                        className="flex-1 py-1.5 rounded-lg bg-white/5 border border-destructive/20 text-[11px] font-bold text-destructive active:scale-95 transition-transform"
                       >
                         Remove
                       </button>

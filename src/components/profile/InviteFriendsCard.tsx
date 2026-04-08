@@ -5,7 +5,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { Share2, Copy, Check, Gift, MessageCircle, Link2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { motion } from 'framer-motion';
 import { trackEvent } from '@/lib/analytics';
 
 export function InviteFriendsCard() {
@@ -79,14 +78,10 @@ export function InviteFriendsCard() {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="rounded-xl p-4 mb-4 bg-card border border-primary/20"
-    >
+    <div>
       <div className="flex items-center gap-2 mb-1">
         <Gift className="w-4 h-4 text-primary" />
-        <span className="text-sm font-bold text-foreground">Invite Friends</span>
+        <span className="text-sm font-bold text-white/80">Invite Friends</span>
         {(referralCount ?? 0) > 0 && (
           <span className="ml-auto text-xs text-primary font-semibold">
             {referralCount} invited
@@ -94,7 +89,7 @@ export function InviteFriendsCard() {
         )}
       </div>
 
-      <p className="text-xs text-muted-foreground mb-2">
+      <p className="text-xs text-white/70 mb-2">
         You both get <span className="font-bold text-primary">3 bonus try-ons</span> when they sign up!
       </p>
 
@@ -106,31 +101,31 @@ export function InviteFriendsCard() {
       )}
 
       {/* Code display */}
-      <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg bg-background">
-        <span className="flex-1 text-sm font-mono font-bold text-primary tracking-widest">
+      <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg glass-gold">
+        <span className="flex-1 font-mono text-lg font-bold text-primary tracking-wider">
           {profile.referral_code}
         </span>
-        <button onClick={handleCopy} className="text-muted-foreground hover:text-primary transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Copy referral code">
+        <button onClick={handleCopy} className="text-primary/60 hover:text-primary transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Copy referral code">
           {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
         </button>
       </div>
 
       {/* Share options */}
       <div className="flex gap-2 mb-2">
-        <Button onClick={handleWhatsApp} variant="outline" size="sm" className="flex-1 h-10 rounded-lg text-[11px] font-semibold gap-1.5">
+        <Button onClick={handleWhatsApp} variant="outline" size="sm" className="flex-1 h-10 rounded-lg text-[11px] font-semibold gap-1.5 bg-white/5 border-white/10 text-white/60 hover:bg-white/10">
           <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
         </Button>
-        <Button onClick={handleSMS} variant="outline" size="sm" className="flex-1 h-10 rounded-lg text-[11px] font-semibold gap-1.5">
+        <Button onClick={handleSMS} variant="outline" size="sm" className="flex-1 h-10 rounded-lg text-[11px] font-semibold gap-1.5 bg-white/5 border-white/10 text-white/60 hover:bg-white/10">
           <MessageCircle className="h-3.5 w-3.5" /> SMS
         </Button>
-        <Button onClick={handleCopy} variant="outline" size="sm" className="flex-1 h-10 rounded-lg text-[11px] font-semibold gap-1.5">
+        <Button onClick={handleCopy} variant="outline" size="sm" className="flex-1 h-10 rounded-lg text-[11px] font-semibold gap-1.5 bg-white/5 border-white/10 text-white/60 hover:bg-white/10">
           <Link2 className="h-3.5 w-3.5" /> Link
         </Button>
       </div>
 
-      <Button onClick={handleNativeShare} className="w-full gap-2 h-10 rounded-lg btn-luxury text-primary-foreground font-bold text-[12px]" size="sm">
+      <Button onClick={handleNativeShare} className="w-full gap-2 h-10 rounded-lg glass-gold text-primary font-bold text-[12px] tracking-wide uppercase border border-primary/20" size="sm">
         <Share2 className="w-4 h-4" /> Share Invite Link
       </Button>
-    </motion.div>
+    </div>
   );
 }
