@@ -17,8 +17,8 @@ const CommunityHeader = ({ cartCount, onPostLook }: CommunityHeaderProps) => {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-base font-bold text-foreground">Style Check</h1>
-          <p className="text-[10px] text-muted-foreground">Get real opinions before you buy</p>
+          <h1 className="font-display text-lg font-bold text-primary">Style Check</h1>
+          <p className="text-[11px] tracking-[0.1em] uppercase text-white/40">Get real opinions before you buy</p>
         </div>
       </div>
       <div className="flex items-center gap-1.5">
@@ -34,8 +34,8 @@ const CommunityHeader = ({ cartCount, onPostLook }: CommunityHeaderProps) => {
             </span>
           )}
         </button>
-        <Button className="rounded-lg btn-luxury text-primary-foreground h-8 px-3 text-[11px] font-bold active:scale-95 transition-transform" onClick={onPostLook} aria-label="Create new post">
-          <Sparkles className="mr-1 h-3 w-3" /> Post a Look
+        <Button className="rounded-lg btn-glass text-white/80 h-8 px-3 text-[11px] font-bold active:scale-95 transition-transform" onClick={onPostLook} aria-label="Create new post">
+          <Sparkles className="mr-1 h-3 w-3 text-primary" /> Post a Look
         </Button>
       </div>
     </div>
