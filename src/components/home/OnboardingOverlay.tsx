@@ -114,6 +114,7 @@ export default function OnboardingOverlay() {
 
   const transitionToSlide = useCallback((next: number) => {
     if (next < 0 || next >= SLIDES.length) return;
+    setPrevSlide(slide);
     setSlide(next);
     // Ensure target video is playing (within gesture context)
     const v = videoRefs.current[next];
@@ -122,7 +123,7 @@ export default function OnboardingOverlay() {
       const p = v.play();
       if (p) p.catch(() => {});
     }
-  }, []);
+  }, [slide]);
 
   const complete = useCallback((dest?: string) => {
     localStorage.setItem(STORAGE_KEY, 'true');
