@@ -137,6 +137,10 @@ const Results = () => {
         body: { user_id: user!.id, brand_slug: brandSlug, category: categoryKey, fit_preference: fitQueryValue },
       });
       if (error) throw error;
+      const payload = resp?.data ?? resp;
+      if (payload?.fallback || payload?.error) {
+        return null;
+      }
       if (resp?.error) throw new Error(resp.error.message || resp.error);
       const payload = resp?.data ?? resp;
       return payload as {
