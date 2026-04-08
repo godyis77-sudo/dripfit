@@ -139,6 +139,7 @@ export default function OnboardingOverlay() {
           <video
             ref={(el) => { videoRefs.current[i] = el; }}
             src={s.video}
+            autoPlay={i === 0}
             loop
             muted
             playsInline
