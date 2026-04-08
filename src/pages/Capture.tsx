@@ -565,15 +565,16 @@ const Capture = () => {
           {/* ─── STEP 3 & 4: FRONT / SIDE CAPTURE ─── */}
           {(flowStep === 'front' || flowStep === 'side') && !reviewing && (
             <motion.div key={flowStep} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm flex flex-col items-center">
-              <h2 className="font-display text-lg text-white mb-0.5">{config.title}</h2>
-              <p className="text-[12px] text-white/40 text-center mb-2">{config.instruction}</p>
+              <p className="text-[12px] text-white/40 text-center mb-1.5">{config.instruction}</p>
 
               <CaptureViewfinder captureStep={captureStep} photo={photos[captureStep]} />
 
-              <p className="text-[11px] text-white/50 text-center glass-dark px-3 py-1.5 rounded-xl mb-2 flex items-center justify-center gap-1.5">
-                <span className="text-primary/60 text-xs shrink-0">💡</span>
-                {config.tip}
-              </p>
+              <div className="flex items-center gap-3 mb-1">
+                <p className="text-[11px] text-white/50 text-center glass-dark px-3 py-1.5 rounded-xl flex items-center justify-center gap-1.5">
+                  <span className="text-primary/60 text-xs shrink-0">💡</span>
+                  {config.tip}
+                </p>
+              </div>
 
               <button
                 onClick={async () => {
