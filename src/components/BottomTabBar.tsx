@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -16,6 +16,25 @@ const tabs: { icon: FeatureIconName; label: string; path: string }[] = [
 const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [hidden, setHidden] = useState(false);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY;
+      const atBottom = (window.innerHeight + y) >= (document.documentElement.scrollHeight - 40);
+      const scrollingDown = y > lastScrollY.current + 4;
+      lastScrollY.current = y;
+      setHidden(atBottom || (scrollingDown && y > 200));
+    };
+
+    // Reset when navigating
+    setHidden(false);
+    lastScrollY.current = 0;
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [location.pathname]);
 
   const handleTabPress = (path: string) => {
     hapticFeedback('light');
@@ -27,9 +46,9 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
       ref={ref}
       data-scroll-obstruction="bottom"
       initial={{ y: 80 }}
-      animate={{ y: 0 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.3 }}
-      className="fixed bottom-0 left-0 right-0 z-50 lg:max-w-[390px] lg:left-1/2 lg:-translate-x-1/2 bg-black/40 backdrop-blur-xl border-t border-white/5"
+      animate={{ y: hidden ? 100 : 0 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      className="fixed bottom-0 left-0 right-0 z-50 lg:max-w-[390px] lg:left-1/2 lg:-translate-x-1/2 bg-black/40 backdrop-blur-xl border-t border-white/5 will-change-transform"
     >
       <div className="flex items-center justify-around px-1 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {tabs.map((tab) => {
