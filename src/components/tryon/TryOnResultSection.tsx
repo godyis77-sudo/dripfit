@@ -471,8 +471,8 @@ const TryOnResultSection = ({
                   </div>
                 </motion.div>
               ) : (
-                <motion.div key="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="relative w-full aspect-[3/4] rounded-2xl overflow-hidden bg-muted">
-                  <img src={resultImage} alt="Try-on result" className="absolute inset-0 h-full w-full object-cover object-center" />
+                <motion.div key="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full rounded-2xl overflow-hidden bg-muted">
+                  <img src={resultImage} alt="Try-on result" className="block w-full h-auto" />
                 </motion.div>
               )}
             </AnimatePresence>
