@@ -230,27 +230,46 @@ function PillBtn({ active, onClick, label, emoji }: { active: boolean; onClick: 
 function GridCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }) {
   const images = outfit.items.slice(0, 4).map(i => i.image_url).filter(Boolean) as string[];
   const brands = [...new Set(outfit.items.map(i => i.brand).filter(Boolean))].slice(0, 3);
+  const mainImage = images[0];
+  const secondaryImages = images.slice(1, 3);
 
   return (
-    <button onClick={onTap} className="bg-card rounded-xl border border-border/30 overflow-hidden text-left active:scale-[0.97] transition-transform">
-      <div className={`grid gap-0.5 p-1 ${images.length >= 4 ? 'grid-cols-2 grid-rows-2' : images.length >= 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-        {images.map((src, i) => (
-          <div key={i} className="aspect-square overflow-hidden rounded-xl bg-muted">
-            <img src={src} alt="" className="w-full h-full object-cover object-top rounded-xl" loading="lazy" />
+    <button onClick={onTap} className="glass-dark rounded-2xl border border-white/5 overflow-hidden text-left active:scale-[0.97] transition-transform w-full">
+      {/* Flat-lay product grid */}
+      <div className="bg-zinc-900/80 p-1.5">
+        {mainImage && (
+          <div className="w-full aspect-[4/3] overflow-hidden rounded-xl bg-zinc-800/60 mb-1">
+            <img src={mainImage} alt="" className="w-full h-full object-contain p-2" loading="lazy" />
           </div>
-        ))}
-      </div>
-      <div className="p-2.5 pt-1.5">
-        <p className="text-sm font-bold text-foreground truncate">{outfit.title}</p>
-        {outfit.total_price_cents > 0 && (
-          <p className="text-[12px] font-semibold text-[hsl(var(--drip-gold))] mt-0.5">${(outfit.total_price_cents / 100).toFixed(0)}</p>
         )}
-        {brands.length > 0 && (
-          <div className="flex gap-1 mt-1 flex-wrap">
-            {brands.map(b => (
-              <span key={b} className="text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-full">{b}</span>
+        {secondaryImages.length > 0 && (
+          <div className="grid grid-cols-2 gap-1">
+            {secondaryImages.map((src, i) => (
+              <div key={i} className="aspect-square overflow-hidden rounded-lg bg-zinc-800/60">
+                <img src={src} alt="" className="w-full h-full object-contain p-1.5" loading="lazy" />
+              </div>
             ))}
           </div>
+        )}
+      </div>
+
+      {/* Metadata */}
+      <div className="p-2.5 pt-2 border-t border-white/5">
+        <p className="text-sm font-display font-bold text-foreground truncate">{outfit.title}</p>
+        {outfit.total_price_cents > 0 && (
+          <p className="text-[12px] font-display font-bold text-primary mt-0.5">
+            ${(outfit.total_price_cents / 100).toFixed(0)}
+          </p>
+        )}
+        {outfit.occasion_emoji && (
+          <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-[9px] font-medium glass-gold border border-primary/20 text-primary">
+            {outfit.occasion_emoji} {outfit.occasion_label}
+          </span>
+        )}
+        {brands.length > 0 && (
+          <p className="text-[9px] tracking-[0.2em] uppercase text-white/30 mt-1.5 truncate">
+            {brands.join(' · ')}
+          </p>
         )}
       </div>
     </button>
