@@ -826,10 +826,15 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
     const footwearFastPrompt = `Fast shoe swap. Image A is the person, Image B is the exact shoe.${productHint} Replace only footwear in Image A with Image B. Keep all other clothing, pose, and framing unchanged. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
     const footwearRetryPrompt = `Photorealistic shoe replacement.${productHint} Replace only the shoes from Image A with the shoes from Image B. Keep body, outfit, orientation, and lighting natural. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
     const beltDescHint = sanitizedProductDesc ? `\nThe belt to use is: "${sanitizedProductDesc}". If Image B shows a full-body model, identify ONLY the belt described above and ignore all other clothing.` : "";
+    const bagDescHint = /\b(bag|bags|purse|handbag)\b/.test(normalizedProductContext)
+      ? `\nThe accessory is a BAG. If Image B shows a model, duplicate product card, or white retail frame, isolate ONLY the bag and discard the person, white background card, layout borders, and any second figure.`
+      : "";
     const beltFastPrompt = `Belt try-on. Image A = person wearing an outfit. Image B = belt reference.${beltDescHint}${productHint}
 TASK: Place the belt from Image B around the waist of the person in Image A. The belt MUST be clearly visible sitting on top of existing clothing at the waistline. Match the exact buckle style, chain/link pattern, material, color, and width from Image B. Keep all other clothing, face, pose, and background from Image A completely unchanged. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
     const beltRetryPrompt = `Photorealistic belt placement. Image A = person. Image B = belt reference.${beltDescHint}${productHint}
 TASK: Add the belt from Image B onto the person in Image A at the natural waistline. The belt must be prominently visible over their clothing with accurate buckle/chain detail, correct scale, realistic shadows and lighting. Do NOT remove or change any existing clothing. Keep face, body, pose from Image A. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
+    const accessoryRetryPrompt = `Photorealistic accessory placement. Image A = the only allowed person and scene. Image B = accessory sample only.${bagDescHint}${productHint}
+TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the original single person, framing, pose, and background from Image A unchanged. Never copy any extra model, hand, mannequin, split layout, white banner, white card padding, or duplicate figure from Image B. Correct scale, natural shadows, realistic lighting. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
     // Only bypass primary when we already have a clean flat-lay; otherwise keep one primary attempt.
     // Underwear-like items: bypass primary entirely and go straight to the safe-mode text-bridge path.
     const shouldBypassPrimaryForIntimate =
