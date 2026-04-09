@@ -528,7 +528,7 @@ IMAGES PROVIDED:
 
 TARGET FOOTWEAR:
 - The shoes shown in Image B.${productHint}
-- IMPORTANT: If Image B shows a full-body photo of a person, use the product name above to identify ONLY the footwear and ignore all other clothing.
+- IMPORTANT: Image B is ONLY a product reference. If it shows one or multiple people, IGNORE them all — extract ONLY the footwear design. Output must show ONLY the single person from Image A.
 
 TASK — FOOTWEAR SWAP:
 1. REMOVE whatever shoes/footwear the person in Image A is currently wearing.
@@ -550,7 +550,7 @@ IMAGES PROVIDED:
 
 TARGET ACCESSORY:
 - The accessory shown in Image B.${productHint}
-- IMPORTANT: If Image B shows a full-body photo of a person, use the product name above to identify ONLY the specific accessory and ignore all other clothing.
+- IMPORTANT: Image B is ONLY a product reference. If it shows one or multiple people, IGNORE them all — extract ONLY the specific accessory. Output must show ONLY the single person from Image A.
 
 TASK: Add the accessory from Image B onto the person in Image A. Match the target item exactly (color, shape, material, branding).
 ${itemLower.includes('belt') ? 'BELT-SPECIFIC: The belt MUST be clearly visible around the waist, worn OVER the existing clothing. Show the full belt including buckle/chain details. Do NOT hide it under clothing layers.' : ''}
@@ -663,12 +663,12 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
 IMAGES PROVIDED:
-- Image A (first image below): A person wearing an outfit — this is the MODEL. Keep their face, body, pose EXACTLY.
-- Image B (second image below): The target garment reference.
+- Image A (first image below): A SINGLE person wearing an outfit — this is the MODEL. Keep their face, body, pose EXACTLY.
+- Image B (second image below): The target garment reference (may show one or MULTIPLE people wearing the same item — extract ONLY the garment design, ignore all people in Image B).
 
 TARGET GARMENT:
 - The clothing shown in Image B.${productHint}
-- IMPORTANT: If Image B shows a full-body photo of a person, use the product name above to identify ONLY the target garment and ignore all other clothing on that person.
+- IMPORTANT: Image B is ONLY a garment reference. If Image B shows one or multiple people, IGNORE all of them — extract ONLY the target garment's design (color, pattern, cut, fabric). The output must show ONLY the single person from Image A, NEVER multiple people. Do NOT reproduce the composition, number of people, or poses from Image B.
 
 TASK — CLOTHING SWAP:
 ${swapInstruction}
@@ -676,13 +676,14 @@ ${swapInstruction}
 RULES:
 - CRITICAL COLOR ACCURACY: The output garment MUST be the EXACT same color as shown in Image B. Match the precise hue, saturation, and tone.
 - CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate, flip, or turn the model. Only copy the GARMENT from Image B, never its pose or camera angle.
-- IDENTITY: The person in the output MUST be the SAME person from Image A — same face, same hair, same body, same skin tone. Do NOT use the model from Image B. Image B is ONLY a garment reference.
+- IDENTITY: The person in the output MUST be the SAME person from Image A — same face, same hair, same body, same skin tone. Do NOT use any model from Image B. Image B is ONLY a garment reference.
+- CRITICAL: The output must contain EXACTLY ONE person — the person from Image A. NEVER generate multiple people, group shots, or collages, even if Image B shows multiple models.
 - Match garment details exactly: color, pattern, fabric texture, neckline, sleeve length, hemline, logos, prints, buttons, zippers.
 - ${bgInstruction}
 - IMAGE QUALITY: Maintain or improve the resolution and sharpness of Image A. Do NOT reduce image quality, introduce blur, compression artifacts, or soften details.
 - ${noResizeInstruction}
 
-Output: A single photorealistic FULL-BODY image showing the person head to feet. No text/watermarks/split views.`;
+Output: A single photorealistic FULL-BODY image showing ONLY ONE person (from Image A) head to feet. No text/watermarks/split views/group shots.`;
     }
 
     const fullBodyImageHint = "Show the person FULL BODY from head to feet — never crop at the waist, torso, or mid-thigh.";
