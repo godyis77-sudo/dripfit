@@ -8,9 +8,10 @@ import InlineCrown from '@/components/ui/InlineCrown';
 
 const WeeklyOutfitsSection = () => {
   const navigate = useNavigate();
-  const { userGender } = useAuth();
+  const { userGender, genderLoaded, loading: authLoading } = useAuth();
   const mappedGender = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : undefined;
-  const { data: outfits, isLoading } = useWeeklyOutfits(mappedGender);
+  const ready = !authLoading && genderLoaded;
+  const { data: outfits, isLoading } = useWeeklyOutfits(ready ? mappedGender : '__wait__');
   const [activeOccasion, setActiveOccasion] = useState<string | null>(null);
 
   const occasions = useMemo(() => {
