@@ -80,9 +80,11 @@ async function fetchOutfits(weekId: string): Promise<WeeklyOutfit[]> {
 
 export function useWeeklyOutfits(gender?: string) {
   const weekId = getCurrentWeekId();
+  const waiting = gender === '__wait__';
 
   return useQuery({
-    queryKey: ['weekly-outfits', weekId, gender ?? 'all'],
+    queryKey: ['weekly-outfits', weekId, waiting ? '__wait__' : (gender ?? 'all')],
+    enabled: !waiting,
     queryFn: async () => {
       let results = await fetchOutfits(weekId);
       // Fallback to previous week
