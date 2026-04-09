@@ -663,12 +663,12 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
 IMAGES PROVIDED:
-- Image A (first image below): A person wearing an outfit — this is the MODEL. Keep their face, body, pose EXACTLY.
-- Image B (second image below): The target garment reference.
+- Image A (first image below): A SINGLE person wearing an outfit — this is the MODEL. Keep their face, body, pose EXACTLY.
+- Image B (second image below): The target garment reference (may show one or MULTIPLE people wearing the same item — extract ONLY the garment design, ignore all people in Image B).
 
 TARGET GARMENT:
 - The clothing shown in Image B.${productHint}
-- IMPORTANT: If Image B shows a full-body photo of a person, use the product name above to identify ONLY the target garment and ignore all other clothing on that person.
+- IMPORTANT: Image B is ONLY a garment reference. If Image B shows one or multiple people, IGNORE all of them — extract ONLY the target garment's design (color, pattern, cut, fabric). The output must show ONLY the single person from Image A, NEVER multiple people. Do NOT reproduce the composition, number of people, or poses from Image B.
 
 TASK — CLOTHING SWAP:
 ${swapInstruction}
