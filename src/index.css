@@ -159,6 +159,12 @@
   }
 }
 
+/* Landing page scan animation */
+@keyframes scanPulse {
+  0%, 100% { top: 8%; opacity: 0.6; }
+  50% { top: 88%; opacity: 1; }
+}
+
 @layer utilities {
   /* ── Gradients ── */
   .gradient-drip {
