@@ -180,7 +180,6 @@ const GalleryPlayground = () => {
                 maxItems={100}
                 gender={mappedGender}
                 onSelectProduct={handleSelectProduct}
-                paused={!catalogReady}
               />
             ))
           ) : (
@@ -191,7 +190,6 @@ const GalleryPlayground = () => {
               maxItems={100}
               gender={mappedGender}
               onSelectProduct={handleSelectProduct}
-              paused={!catalogReady}
             />
           )}
         </motion.div>
