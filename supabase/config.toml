@@ -50,3 +50,9 @@ verify_jwt = false
 
 [functions.og-share-image]
 verify_jwt = false
+
+[functions.curate-weekly-outfits]
+verify_jwt = false
+
+[functions.weekly-drip-pipeline]
+verify_jwt = false

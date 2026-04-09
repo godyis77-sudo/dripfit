@@ -1708,6 +1708,7 @@ export type Database = {
           hero_image_url: string | null
           id: string
           is_active: boolean | null
+          is_hero: boolean | null
           occasion: string
           occasion_emoji: string | null
           occasion_label: string
@@ -1724,6 +1725,7 @@ export type Database = {
           hero_image_url?: string | null
           id?: string
           is_active?: boolean | null
+          is_hero?: boolean | null
           occasion: string
           occasion_emoji?: string | null
           occasion_label: string
@@ -1740,6 +1742,7 @@ export type Database = {
           hero_image_url?: string | null
           id?: string
           is_active?: boolean | null
+          is_hero?: boolean | null
           occasion?: string
           occasion_emoji?: string | null
           occasion_label?: string

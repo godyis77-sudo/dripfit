@@ -1,0 +1,1 @@
+ALTER TABLE public.weekly_outfits ADD COLUMN IF NOT EXISTS is_hero boolean DEFAULT false;
