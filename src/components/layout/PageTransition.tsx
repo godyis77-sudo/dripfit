@@ -8,25 +8,24 @@ import { useLocation } from "react-router-dom";
 export const PageTransition = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const reduceMotion = useReducedMotion();
+  const disableEnterAnimation = reduceMotion || location.pathname === '/home';
+
+  if (disableEnterAnimation) {
+    return <div>{children}</div>;
+  }
 
   const pageVariants = {
     initial: {
       opacity: 0,
-      y: reduceMotion ? 0 : 12,
-      scale: reduceMotion ? 1 : 0.985,
-      filter: reduceMotion ? 'none' : 'blur(3px)',
+      y: 8,
     },
     animate: {
       opacity: 1,
       y: 0,
-      scale: 1,
-      filter: 'blur(0px)',
     },
     exit: {
       opacity: 0,
-      y: reduceMotion ? 0 : -8,
-      scale: reduceMotion ? 1 : 0.995,
-      filter: reduceMotion ? 'none' : 'blur(1px)',
+      y: -6,
     },
   };
 
@@ -38,9 +37,8 @@ export const PageTransition = ({ children }: { children: React.ReactNode }) => {
       animate="animate"
       exit="exit"
       transition={{
-        duration: reduceMotion ? 0 : 0.28,
+        duration: 0.18,
         ease: [0.16, 1, 0.3, 1],
-        filter: { duration: reduceMotion ? 0 : 0.2 },
       }}
       style={{ willChange: 'transform, opacity' }}
     >

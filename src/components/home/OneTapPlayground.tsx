@@ -122,12 +122,7 @@ const OneTapPlayground = () => {
 
   return (
     <>
-    <motion.section
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.05 }}
-      className="mb-4 rounded-2xl border border-white/5 glass-dark overflow-hidden"
-    >
+    <section className="mb-4 rounded-2xl border border-white/5 glass-dark overflow-hidden">
       {/* Hidden inputs */}
       <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileSelect} className="hidden" />
       <input ref={cameraRef} type="file" accept="image/jpeg,image/png,image/webp" capture="user" onChange={handleFileSelect} className="hidden" />
@@ -249,7 +244,7 @@ const OneTapPlayground = () => {
           </p>
         </div>
       )}
-    </motion.section>
+    </section>
 
       <ProductPreviewModal
         product={previewProduct}
