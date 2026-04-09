@@ -1,16 +1,11 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
-import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ShoppingBag, Shirt } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { useWeeklyOutfits, type WeeklyOutfit, type WeeklyOutfitItem } from '@/hooks/useWeeklyOutfits';
-import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
+import { useWeeklyOutfits, type WeeklyOutfit } from '@/hooks/useWeeklyOutfits';
 import BottomTabBar from '@/components/BottomTabBar';
 import InlineCrown from '@/components/ui/InlineCrown';
-import { FullscreenImage } from '@/components/ui/fullscreen-image';
 import { useAuth } from '@/hooks/useAuth';
 
 const GENDER_OPTIONS = [
@@ -27,10 +22,7 @@ const OutfitsWeekly = () => {
   const defaultGender = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : 'all';
   const [genderFilter, setGenderFilter] = useState(defaultGender);
   const [activeOccasion, setActiveOccasion] = useState<string | null>(null);
-  const [selectedOutfit, setSelectedOutfit] = useState<WeeklyOutfit | null>(null);
   const { data: outfits, isLoading } = useWeeklyOutfits(genderFilter);
-  const { pendingClickout, beginClickout, confirmClickout, cancelClickout } = useAffiliateClickout({ extraProps: { source: 'weekly_outfits_page' } });
-  const [fullscreenSrc, setFullscreenSrc] = useState<string | null>(null);
   const { revealRef } = useScrollReveal();
 
   const occasions = useMemo(() => {
@@ -47,21 +39,6 @@ const OutfitsWeekly = () => {
     if (!activeOccasion) return outfits;
     return outfits.filter(o => o.occasion === activeOccasion);
   }, [outfits, activeOccasion]);
-
-  const handleShop = useCallback((item: WeeklyOutfitItem) => {
-    if (!item.product_url) return;
-
-    setSelectedOutfit(null);
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        beginClickout(item.brand || 'Unknown', item.product_url!);
-      });
-    });
-  }, [beginClickout]);
-
-  const handleTryOn = useCallback((item: WeeklyOutfitItem) => {
-    navigate('/tryon', { state: { clothingUrl: item.image_url, productUrl: item.product_url, freshSession: true } });
-  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
@@ -112,103 +89,12 @@ const OutfitsWeekly = () => {
           <div className="grid grid-cols-2 gap-3 pb-6">
             {filtered.map((outfit, idx) => (
               <div key={outfit.id} ref={revealRef(idx)}>
-                <GridCard outfit={outfit} onTap={() => setSelectedOutfit(outfit)} />
+                <GridCard outfit={outfit} onTap={() => navigate(`/outfit/${outfit.id}`)} />
               </div>
             ))}
           </div>
         )}
       </div>
-
-      <Sheet open={!!selectedOutfit} onOpenChange={open => !open && setSelectedOutfit(null)}>
-        <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-2xl bg-card border-border/30">
-          {selectedOutfit && (
-            <>
-              <SheetHeader className="mb-4">
-                <SheetTitle className="text-foreground text-lg">{selectedOutfit.title}</SheetTitle>
-                {selectedOutfit.description && (
-                  <SheetDescription className="text-[12px] text-muted-foreground">
-                    {selectedOutfit.description}
-                  </SheetDescription>
-                )}
-              </SheetHeader>
-              <div className="space-y-3">
-                {selectedOutfit.items.map(item => (
-                  <div key={item.id} className="flex gap-3 items-center">
-                    {item.image_url && (
-                      <div className="w-20 h-20 rounded-xl overflow-hidden bg-muted shrink-0 cursor-pointer" onClick={() => setFullscreenSrc(item.image_url!)}>
-                        <img src={item.image_url} alt={item.product_name} className="w-full h-full object-cover object-top rounded-xl" loading="lazy" />
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{item.product_name}</p>
-                      {item.brand && <p className="text-[11px] text-muted-foreground">{item.brand}</p>}
-                      {item.price_cents != null && (
-                        <p className="text-[12px] font-semibold text-[hsl(var(--drip-gold))]">${(item.price_cents / 100).toFixed(0)}</p>
-                      )}
-                    </div>
-                    <div className="flex flex-col gap-1.5 shrink-0">
-                      {item.product_url && (
-                        <Button
-                          size="sm"
-                          className="h-7 text-[10px] px-2.5 btn-luxury"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleShop(item);
-                          }}
-                        >
-                          <ShoppingBag className="h-3 w-3 mr-1" /> Shop
-                        </Button>
-                      )}
-                      {item.image_url && (
-                        <Button size="sm" variant="outline" className="h-7 text-[10px] px-2.5 border-border/50" onClick={() => handleTryOn(item)}>
-                          <Shirt className="h-3 w-3 mr-1" /> Try On
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {selectedOutfit.items.length > 0 && selectedOutfit.items[0].image_url && (
-                <Button className="w-full mt-4 btn-luxury font-bold" onClick={() => handleTryOn(selectedOutfit.items[0])}>
-                  <Shirt className="h-4 w-4 mr-2" /> Try Full Outfit
-                </Button>
-              )}
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
-
-      {fullscreenSrc && (
-        <FullscreenImage src={fullscreenSrc} alt="" externalOpen onExternalClose={() => setFullscreenSrc(null)} />
-      )}
-
-      {pendingClickout && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/60 p-4" onClick={cancelClickout}>
-          <div className="w-full max-w-sm rounded-2xl border border-border/40 bg-card p-5 shadow-xl" onClick={e => { e.stopPropagation(); e.preventDefault(); }}>
-            <p className="text-sm font-semibold text-foreground mb-1">Leaving DripCheck</p>
-            <p className="text-[11px] text-muted-foreground mb-4">
-              You'll be redirected to <strong>{pendingClickout.retailer}</strong>. We may earn a commission at no extra cost to you.
-            </p>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); e.preventDefault(); cancelClickout(); }}
-                className="flex-1 h-9 rounded-lg border border-border/60 bg-card/40 text-foreground text-sm font-semibold active:scale-[0.97] transition-transform"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); e.preventDefault(); confirmClickout(); }}
-                className="flex-1 h-9 rounded-lg btn-luxury text-primary-foreground text-sm font-semibold active:scale-[0.97] transition-transform"
-              >
-                Continue
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
 
       <BottomTabBar />
     </div>
