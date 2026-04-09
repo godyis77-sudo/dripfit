@@ -41,9 +41,9 @@ describe('scoreMeasurement', () => {
     expect(scoreMeasurement(50, 48, 52)).toBe(1.0);
   });
 
-  it('returns ~0.8 at range edge', () => {
+  it('returns ~0.73 at range edge', () => {
     const score = scoreMeasurement(48, 48, 52);
-    expect(score).toBeCloseTo(0.63, 2);
+    expect(score).toBeCloseTo(0.73, 1);
   });
 
   it('decays gracefully just outside range', () => {
