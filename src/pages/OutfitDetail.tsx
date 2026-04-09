@@ -1,0 +1,211 @@
+import { useState, useCallback } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { createPortal } from 'react-dom';
+import { ArrowLeft, ShoppingBag, Shirt, Share2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useWeeklyOutfits, type WeeklyOutfitItem } from '@/hooks/useWeeklyOutfits';
+import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
+import { Button } from '@/components/ui/button';
+import { FullscreenImage } from '@/components/ui/fullscreen-image';
+import InlineCrown from '@/components/ui/InlineCrown';
+
+const OutfitDetail = () => {
+  const { outfitId } = useParams<{ outfitId: string }>();
+  const navigate = useNavigate();
+  const { data: outfits, isLoading } = useWeeklyOutfits();
+  const { pendingClickout, beginClickout, confirmClickout, cancelClickout } = useAffiliateClickout({ extraProps: { source: 'outfit_detail' } });
+  const [fullscreenSrc, setFullscreenSrc] = useState<string | null>(null);
+
+  const outfit = outfits?.find(o => o.id === outfitId);
+
+  const handleShop = useCallback((item: WeeklyOutfitItem) => {
+    if (!item.product_url) return;
+    beginClickout(item.brand || 'Unknown', item.product_url);
+  }, [beginClickout]);
+
+  const handleTryOn = useCallback((item: WeeklyOutfitItem) => {
+    navigate('/tryon', { state: { clothingUrl: item.image_url, productUrl: item.product_url, freshSession: true } });
+  }, [navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="h-6 w-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  if (!outfit) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-3 px-4">
+        <p className="text-sm text-muted-foreground">Outfit not found</p>
+        <Button variant="outline" size="sm" onClick={() => navigate(-1)}>Go Back</Button>
+      </div>
+    );
+  }
+
+  const brands = [...new Set(outfit.items.map(i => i.brand).filter(Boolean))];
+  const heroImage = outfit.hero_image_url || outfit.items[0]?.image_url;
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Hero image — full width, tappable for fullscreen */}
+      <div className="relative w-full aspect-[3/4] max-h-[65vh] overflow-hidden bg-muted">
+        {heroImage && (
+          <img
+            src={heroImage}
+            alt={outfit.title}
+            className="w-full h-full object-cover object-top cursor-pointer"
+            onClick={() => setFullscreenSrc(heroImage)}
+          />
+        )}
+
+        {/* Gradient overlay at top for nav */}
+        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/60 to-transparent" />
+
+        {/* Back button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="absolute top-4 left-4 z-10 w-9 h-9 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white active:scale-95 transition-transform"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </button>
+
+        {/* Bottom gradient overlay for title */}
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent" />
+
+        {/* Title overlay at bottom of hero */}
+        <div className="absolute bottom-0 inset-x-0 px-4 pb-4 z-10">
+          <h1 className="text-2xl font-display font-bold text-foreground leading-tight">{outfit.title}</h1>
+          <div className="flex items-center gap-2 mt-1.5">
+            {outfit.total_price_cents > 0 && (
+              <span className="text-base font-display font-bold text-primary">
+                ${(outfit.total_price_cents / 100).toFixed(0)}
+              </span>
+            )}
+            {outfit.occasion_emoji && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium glass-gold border border-primary/20 text-primary">
+                {outfit.occasion_emoji} {outfit.occasion_label}
+              </span>
+            )}
+          </div>
+          {brands.length > 0 && (
+            <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground mt-1.5">
+              {brands.join(' · ')}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Description */}
+      {outfit.description && (
+        <p className="px-4 pt-2 pb-3 text-[12px] text-muted-foreground leading-relaxed">
+          {outfit.description}
+        </p>
+      )}
+
+      {/* Product cards */}
+      <div className="px-4 pb-32">
+        <h3 className="text-[11px] tracking-widest uppercase text-muted-foreground mb-3 flex items-center gap-1.5">
+          <InlineCrown size={12} /> Items in this look
+        </h3>
+
+        <div className="space-y-3">
+          {outfit.items.map((item, idx) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.05, duration: 0.3 }}
+              className="flex gap-3 p-3 rounded-2xl glass-dark border border-white/5"
+            >
+              {item.image_url && (
+                <div
+                  className="w-24 h-24 rounded-xl overflow-hidden bg-muted shrink-0 cursor-pointer"
+                  onClick={() => setFullscreenSrc(item.image_url!)}
+                >
+                  <img
+                    src={item.image_url}
+                    alt={item.product_name}
+                    className="w-full h-full object-cover object-top"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+              <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                <div>
+                  <p className="text-sm font-medium text-foreground leading-tight line-clamp-2">{item.product_name}</p>
+                  {item.brand && (
+                    <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mt-0.5">{item.brand}</p>
+                  )}
+                </div>
+                <div className="flex items-center justify-between mt-1.5">
+                  {item.price_cents != null && (
+                    <p className="text-sm font-display font-bold text-primary">
+                      ${(item.price_cents / 100).toFixed(0)}
+                    </p>
+                  )}
+                  <div className="flex gap-1.5">
+                    {item.product_url && (
+                      <Button
+                        size="sm"
+                        className="h-7 text-[10px] px-2.5 btn-luxury"
+                        onClick={() => handleShop(item)}
+                      >
+                        <ShoppingBag className="h-3 w-3 mr-1" /> Shop
+                      </Button>
+                    )}
+                    {item.image_url && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 text-[10px] px-2.5 border-border/50"
+                        onClick={() => handleTryOn(item)}
+                      >
+                        <Shirt className="h-3 w-3 mr-1" /> Try
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Fixed bottom CTA */}
+      {outfit.items.length > 0 && outfit.items[0].image_url && (
+        <div className="fixed bottom-0 inset-x-0 z-30 p-4 pb-safe bg-gradient-to-t from-background via-background to-transparent">
+          <Button
+            className="w-full h-12 btn-luxury font-bold text-sm rounded-xl"
+            onClick={() => handleTryOn(outfit.items[0])}
+          >
+            <Shirt className="h-4 w-4 mr-2" /> Try This Look On
+          </Button>
+        </div>
+      )}
+
+      {fullscreenSrc && (
+        <FullscreenImage src={fullscreenSrc} alt="" externalOpen onExternalClose={() => setFullscreenSrc(null)} />
+      )}
+
+      {pendingClickout && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/60 p-4" onClick={cancelClickout}>
+          <div className="w-full max-w-sm rounded-2xl border border-border/40 bg-card p-5 shadow-xl" onClick={e => { e.stopPropagation(); e.preventDefault(); }}>
+            <p className="text-sm font-semibold text-foreground mb-1">Leaving DripCheck</p>
+            <p className="text-[11px] text-muted-foreground mb-4">
+              You'll be redirected to <strong>{pendingClickout.retailer}</strong>. We may earn a commission at no extra cost to you.
+            </p>
+            <div className="flex gap-2">
+              <button type="button" onClick={(e) => { e.stopPropagation(); cancelClickout(); }} className="flex-1 h-9 rounded-lg border border-border/60 bg-card/40 text-foreground text-sm font-semibold active:scale-[0.97] transition-transform">Cancel</button>
+              <button type="button" onClick={(e) => { e.stopPropagation(); confirmClickout(); }} className="flex-1 h-9 rounded-lg btn-luxury text-primary-foreground text-sm font-semibold active:scale-[0.97] transition-transform">Continue</button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </div>
+  );
+};
+
+export default OutfitDetail;
