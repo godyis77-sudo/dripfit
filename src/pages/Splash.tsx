@@ -9,12 +9,17 @@ const Splash = () => {
   const navigate = useNavigate();
   const [fading, setFading] = useState(false);
 
-  // If onboarding hasn't been completed, skip splash entirely —
-  // the OnboardingOverlay on /home has its own logo intro.
-  const onboardingPending = !localStorage.getItem('onboarding_complete');
+  const onboardingDone = !!localStorage.getItem('onboarding_complete');
 
   useEffect(() => {
-    if (onboardingPending) {
+    // Returning users who finished onboarding → skip splash, go straight to home
+    if (onboardingDone) {
+      navigate('/home', { replace: true });
+      return;
+    }
+
+    // First-time users also skip splash (OnboardingOverlay on /home handles intro)
+    if (!onboardingDone) {
       navigate('/home', { replace: true });
       return;
     }
@@ -22,10 +27,10 @@ const Splash = () => {
     const fadeTimer = setTimeout(() => setFading(true), SPLASH_DURATION - 600);
     const navTimer = setTimeout(() => navigate('/home', { replace: true }), SPLASH_DURATION);
     return () => { clearTimeout(fadeTimer); clearTimeout(navTimer); };
-  }, [navigate, onboardingPending]);
+  }, [navigate, onboardingDone]);
 
-  // Don't render splash UI if we're skipping to onboarding
-  if (onboardingPending) return null;
+  // Always skip — splash is no longer needed
+  return null;
 
   return (
     <motion.div
