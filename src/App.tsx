@@ -167,6 +167,7 @@ const AnimatedRoutes = () => {
           <Route path="/outfit/:outfitId" element={<PageTransition><OutfitDetail /></PageTransition>} />
           <Route path="/style-assistant" element={<PageTransition><StyleAssistant /></PageTransition>} />
           <Route path="/closet" element={<PageTransition><Closet /></PageTransition>} />
+          <Route path="/landing" element={<PageTransition><Landing /></PageTransition>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </AnimatePresence>
