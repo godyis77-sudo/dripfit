@@ -3,6 +3,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.49.1";
 
 /**
  * generate-outfit-hero v3 — Campaign-referenced editorial image generation.
+ * Uses waitUntil pattern to avoid edge function timeouts.
  *
  * POST body:
  *   outfit_id: string           — single outfit
@@ -317,7 +318,6 @@ async function generateHeroImage(
   const accessibleUrls = accessChecks.filter(c => c.ok).map(c => c.url);
   console.log(`Image accessibility: ${accessibleUrls.length}/${prompt.imageUrls.length} accessible`);
 
-  // Try with images first, then without if Google can't fetch them
   for (const useImages of [true, false]) {
     const content: Array<{ type: string; text?: string; image_url?: { url: string } }> = [
       { type: "text", text: prompt.text },
@@ -327,7 +327,7 @@ async function generateHeroImage(
         content.push({ type: "image_url", image_url: { url } });
       }
     } else if (useImages) {
-      continue; // no images to try, skip to text-only
+      continue;
     }
 
     if (!useImages) {
@@ -352,7 +352,6 @@ async function generateHeroImage(
       console.error(`AI gateway error ${res.status}:`, errText);
       if (res.status === 429) throw new Error("RATE_LIMITED");
       if (res.status === 402) throw new Error("PAYMENT_REQUIRED");
-      // On 400 (image fetch failed), retry without images
       if (res.status === 400 && useImages) {
         console.log("Got 400 with images, will retry text-only...");
         continue;
@@ -450,6 +449,44 @@ async function processOutfit(
   return { success: true, outfit_id: outfitId, hero_url: publicUrl };
 }
 
+/* ── Background processing for batch jobs ─────────────────────── */
+
+async function processBatchInBackground(
+  outfitIds: string[],
+  apiKey: string,
+  regenerate: boolean
+) {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const sb = createClient(supabaseUrl, supabaseKey);
+
+  for (let idx = 0; idx < outfitIds.length; idx++) {
+    const outfitId = outfitIds[idx];
+    try {
+      const result = await processOutfit(sb, outfitId, apiKey, regenerate, idx);
+      console.log(`[${idx + 1}/${outfitIds.length}] ${result.success ? "✅" : "❌"} ${outfitId}: ${result.hero_url || result.error || "skipped"}`);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Unknown";
+      console.error(`[${idx + 1}/${outfitIds.length}] ❌ ${outfitId}: ${msg}`);
+      if (msg === "RATE_LIMITED") {
+        console.log("Rate limited, waiting 60s...");
+        await new Promise(r => setTimeout(r, 60000));
+        // Retry this one
+        try {
+          await processOutfit(sb, outfitId, apiKey, regenerate, idx);
+        } catch (e2) {
+          console.error(`Retry failed for ${outfitId}: ${e2 instanceof Error ? e2.message : "Unknown"}`);
+        }
+      }
+    }
+    // Wait between generations to avoid rate limits
+    if (idx < outfitIds.length - 1) {
+      await new Promise(r => setTimeout(r, 15000));
+    }
+  }
+  console.log(`[Background] Batch complete: ${outfitIds.length} outfits processed`);
+}
+
 /* ── HTTP handler ─────────────────────────────────────────────── */
 
 Deno.serve(async (req) => {
@@ -470,24 +507,39 @@ Deno.serve(async (req) => {
   const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const sb = createClient(supabaseUrl, supabaseKey);
 
-  // Single outfit
+  // Single outfit — process in background to avoid timeout
   if (body.outfit_id) {
-    try {
-      const result = await processOutfit(sb, body.outfit_id, apiKey, body.regenerate);
-      return new Response(JSON.stringify(result), {
-        status: result.success ? 200 : 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "Unknown error";
-      const status = msg === "RATE_LIMITED" ? 429 : msg === "PAYMENT_REQUIRED" ? 402 : 500;
-      return new Response(JSON.stringify({ error: msg }), {
-        status, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    const outfitId = body.outfit_id;
+    const regen = body.regenerate ?? false;
+
+    const bgTask = async () => {
+      const bgSb = createClient(supabaseUrl, supabaseKey);
+      try {
+        const result = await processOutfit(bgSb, outfitId, apiKey, regen);
+        console.log(`[Single] ${result.success ? "✅" : "❌"} ${outfitId}: ${result.hero_url || result.error}`);
+      } catch (e) {
+        console.error(`[Single] ❌ ${outfitId}: ${e instanceof Error ? e.message : "Unknown"}`);
+      }
+    };
+
+    // @ts-ignore: EdgeRuntime.waitUntil
+    if (typeof EdgeRuntime !== "undefined" && EdgeRuntime.waitUntil) {
+      EdgeRuntime.waitUntil(bgTask());
+    } else {
+      bgTask();
     }
+
+    return new Response(JSON.stringify({
+      status: "processing",
+      message: `Started generating hero for outfit ${outfitId} in background`,
+      outfit_id: outfitId,
+    }), {
+      status: 202,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 
-  // Batch by week
+  // Batch by week — use waitUntil to process in background
   if (body.week_id) {
     let query = sb
       .from("weekly_outfits")
@@ -507,36 +559,31 @@ Deno.serve(async (req) => {
       });
     }
 
-    const results = [];
-    for (let idx = 0; idx < outfits.length; idx++) {
-      const o = outfits[idx];
-      try {
-        const result = await processOutfit(sb, o.id, apiKey, body.regenerate, idx);
-        results.push(result);
-        if (idx < outfits.length - 1) {
-          await new Promise(r => setTimeout(r, 5000));
-        }
-      } catch (e) {
-        results.push({ success: false, outfit_id: o.id, error: e instanceof Error ? e.message : "Unknown" });
-        if (e instanceof Error && e.message === "RATE_LIMITED") {
-          console.log(`Rate limited on outfit ${o.id}, backing off 30s…`);
-          await new Promise(r => setTimeout(r, 30000));
-        }
-      }
+    const outfitIds = outfits.map(o => o.id);
+
+    // Fire and forget — process in background
+    // @ts-ignore: EdgeRuntime.waitUntil is available in Supabase edge runtime
+    if (typeof EdgeRuntime !== "undefined" && EdgeRuntime.waitUntil) {
+      EdgeRuntime.waitUntil(processBatchInBackground(outfitIds, apiKey, body.regenerate ?? false));
+    } else {
+      // Fallback: just start the promise (it'll run until the runtime kills it)
+      processBatchInBackground(outfitIds, apiKey, body.regenerate ?? false);
     }
 
+    // Return immediately with 202
     return new Response(JSON.stringify({
+      status: "processing",
+      message: `Started generating heroes for ${outfitIds.length} outfits in background`,
       week_id: body.week_id,
-      total: outfits.length,
-      generated: results.filter(r => r.success && !r.skipped).length,
-      skipped: results.filter(r => r.skipped).length,
-      failed: results.filter(r => !r.success).length,
-      results,
-    }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      outfit_count: outfitIds.length,
+    }), {
+      status: 202,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 
   return new Response(JSON.stringify({
-    version: "v3-editorial",
+    version: "v3-editorial-async",
     usage: "POST with { outfit_id: 'uuid' } or { week_id: '2026-W15' }",
     options: { regenerate: true, heroes_only: true },
   }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
