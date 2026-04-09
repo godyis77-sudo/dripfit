@@ -64,6 +64,7 @@ const OutfitsWeekly = lazy(() => import("./pages/OutfitsWeekly"));
 const StyleAssistant = lazy(() => import("./pages/StyleAssistant"));
 const Closet = lazy(() => import("./pages/Closet"));
 const OutfitDetail = lazy(() => import("./pages/OutfitDetail"));
+const Landing = lazy(() => import("./pages/Landing"));
 
 // ── Suspense fallback (minimal, matches app background) ───────────────
 const RouteFallback = () => <div className="min-h-screen bg-background" />;
