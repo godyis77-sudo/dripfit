@@ -1,0 +1,1 @@
+ALTER TABLE public.weekly_outfits DROP CONSTRAINT IF EXISTS weekly_outfits_week_id_occasion_gender_key;
