@@ -661,25 +661,29 @@ Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, o
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
 IMAGES PROVIDED:
-- Image A (first image below): A person wearing an outfit — preserve their face, body, pose EXACTLY.
-- Image B (second image below): The target garment reference.
+- Image A (first image below): A person wearing an outfit — preserve their face, body, pose EXACTLY. Image A defines the ONLY person, pose, framing, and scene allowed in the output.
+- Image B (second image below): The target garment reference only.
 
 TARGET GARMENT:
 - The clothing shown in Image B.${productHint}
+- Treat Image B as a GARMENT SAMPLE ONLY. Ignore any people, faces, heads, hands, legs, mannequins, styling props, extra garments, layout, and background in Image B.
+- Mentally isolate the garment from Image B as if it were shown alone on an invisible mannequin, then place THAT garment onto the person in Image A.
 
 TASK — CLOTHING SWAP:
 ${swapInstruction}
 
 RULES:
 - CRITICAL COLOR ACCURACY: The output garment MUST be the EXACT same color as shown in Image B. Match the precise hue, saturation, and tone.
-- CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate, flip, or turn the model. Only copy the GARMENT from Image B, never its pose or camera angle.
-- IDENTITY: The person in the output MUST be the SAME person from Image A — same face, same hair, same body, same skin tone. Do NOT use the model from Image B.
+- CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate, flip, duplicate, or re-stage the model to match Image B.
+- IDENTITY: The person in the output MUST be the SAME person from Image A — same face, same hair, same body, same skin tone. Do NOT use any body part, pose, or person from Image B.
+- PERSON COUNT: Output ONE person only — the person already present in Image A. Never add a second or third person, reflections, clones, side-by-side figures, or a collage.
+- COMPOSITION LOCK: Keep the composition from Image A only. Do NOT copy camera framing, spacing, lineup, or multi-model arrangement from Image B.
 - Match garment details exactly: color, pattern, fabric texture, neckline, sleeve length, hemline, logos, prints, buttons, zippers.
 - ${bgInstruction}
 - IMAGE QUALITY: Maintain or improve the resolution and sharpness of Image A. Do NOT reduce image quality, introduce blur, compression artifacts, or soften details.
 - ${noResizeInstruction}
 
-Output: A single photorealistic FULL-BODY image showing the person head to feet. No text/watermarks/split views.`;
+Output: A single photorealistic FULL-BODY image showing only the person from Image A head to feet. No text, watermarks, split views, duplicates, or extra people.`;
     }
 
     const fullBodyImageHint = "Show the person FULL BODY from head to feet — never crop at the waist, torso, or mid-thigh.";
@@ -707,11 +711,13 @@ Match shoe details exactly (color, material, branding, sole). ${noResizeInstruct
                 ? "Replace ONLY the upper-body clothing (shirt/top/sweater). Keep existing pants/jeans/shoes from Image A UNCHANGED."
                 : "Replace the clothing with the garment from Image B.";
           return `Create ONE photorealistic clothing-swap image.
-Image A = the person. Image B = target garment reference.${productHint}
+Image A = the original person and the ONLY allowed person in the final image. Image B = garment sample only.${productHint}
 ${fullBodyImageHint}
 ${scopeHint}
+Ignore all people, body parts, mannequins, props, and background in Image B. Extract only the garment design from Image B and apply it to the person in Image A.
 Preserve face, body shape, skin tone, pose, camera angle, and facing direction from Image A — do NOT rotate the model. ${bgFallbackHint}
-Match the target item exactly (color, pattern, cut, neckline, sleeve/hem length, logos). ${noResizeInstruction} Full body head to feet. No text/watermark.`;
+Do NOT copy any multi-model arrangement, duplicated figure, side-by-side composition, or extra person from Image B.
+Match the target item exactly (color, pattern, cut, neckline, sleeve/hem length, logos). ${noResizeInstruction} Full body head to feet. No text, watermark, collage, or extra people.`;
         })();
 
     const intimateReferenceForFallback = `Image B = athletic garment product photo. Apply garment from Image B onto model in Image A, ignoring any person shown in Image B.`;
@@ -730,14 +736,17 @@ ${identityInstruction} Keep model facing the same direction as Image A — never
     const buildTryOnContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
       const userImageLabel = isIntimateGarment
         ? "\n\n========== IMAGE A — BODY/POSE REFERENCE (do NOT preserve exact face identity) =========="
-        : "\n\n========== IMAGE A — THE PERSON (keep this person's face/body) ==========";
+        : "\n\n========== IMAGE A — THE ONLY PERSON ALLOWED IN THE OUTPUT (keep this person's face/body/pose exactly) ==========";
+      const garmentImageLabel = isIntimateGarment
+        ? "\n\n========== IMAGE B — THE TARGET GARMENT (replicate this garment exactly) =========="
+        : "\n\n========== IMAGE B — GARMENT SAMPLE ONLY (replicate garment exactly; ignore any people, body parts, mannequin, props, or background in this image) ==========";
       const content: Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> = [
         { type: "text", text: promptText },
         { type: "text", text: userImageLabel },
         { type: "image_url", image_url: { url: userImageInput } },
       ];
 
-      content.push({ type: "text", text: "\n\n========== IMAGE B — THE TARGET GARMENT (replicate this garment exactly) ==========" });
+      content.push({ type: "text", text: garmentImageLabel });
       content.push({ type: "image_url", image_url: { url: garmentOnlyImage } });
 
       return content;
