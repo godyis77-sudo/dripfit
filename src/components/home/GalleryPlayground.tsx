@@ -27,8 +27,11 @@ const HERO_CATEGORIES = [
 
 const GalleryPlayground = () => {
   const navigate = useNavigate();
-  const { user, userGender, genderLoaded } = useAuth();
+  const { user, userGender, genderLoaded, loading: authLoading } = useAuth();
   const mappedGender = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : undefined;
+
+  // Don't render product grids until auth + gender are resolved to avoid fetching with wrong gender
+  const catalogReady = !authLoading && (!user || genderLoaded);
 
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [hasScan, setHasScan] = useState(false);
@@ -177,6 +180,7 @@ const GalleryPlayground = () => {
                 maxItems={100}
                 gender={mappedGender}
                 onSelectProduct={handleSelectProduct}
+                paused={!catalogReady}
               />
             ))
           ) : (
@@ -187,6 +191,7 @@ const GalleryPlayground = () => {
               maxItems={100}
               gender={mappedGender}
               onSelectProduct={handleSelectProduct}
+              paused={!catalogReady}
             />
           )}
         </motion.div>
