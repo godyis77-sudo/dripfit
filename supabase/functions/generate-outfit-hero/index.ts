@@ -507,21 +507,36 @@ Deno.serve(async (req) => {
   const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const sb = createClient(supabaseUrl, supabaseKey);
 
-  // Single outfit — process synchronously (usually fast enough for one)
+  // Single outfit — process in background to avoid timeout
   if (body.outfit_id) {
-    try {
-      const result = await processOutfit(sb, body.outfit_id, apiKey, body.regenerate);
-      return new Response(JSON.stringify(result), {
-        status: result.success ? 200 : 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "Unknown error";
-      const status = msg === "RATE_LIMITED" ? 429 : msg === "PAYMENT_REQUIRED" ? 402 : 500;
-      return new Response(JSON.stringify({ error: msg }), {
-        status, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    const outfitId = body.outfit_id;
+    const regen = body.regenerate ?? false;
+
+    const bgTask = async () => {
+      const bgSb = createClient(supabaseUrl, supabaseKey);
+      try {
+        const result = await processOutfit(bgSb, outfitId, apiKey, regen);
+        console.log(`[Single] ${result.success ? "✅" : "❌"} ${outfitId}: ${result.hero_url || result.error}`);
+      } catch (e) {
+        console.error(`[Single] ❌ ${outfitId}: ${e instanceof Error ? e.message : "Unknown"}`);
+      }
+    };
+
+    // @ts-ignore: EdgeRuntime.waitUntil
+    if (typeof EdgeRuntime !== "undefined" && EdgeRuntime.waitUntil) {
+      EdgeRuntime.waitUntil(bgTask());
+    } else {
+      bgTask();
     }
+
+    return new Response(JSON.stringify({
+      status: "processing",
+      message: `Started generating hero for outfit ${outfitId} in background`,
+      outfit_id: outfitId,
+    }), {
+      status: 202,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 
   // Batch by week — use waitUntil to process in background
