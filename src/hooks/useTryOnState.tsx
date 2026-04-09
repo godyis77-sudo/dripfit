@@ -801,13 +801,11 @@ export function useTryOnState() {
         setTimeout(() => setShowSuccessOverlay(false), 1500);
         if (user) autoSaveToProfile(payload.resultImage, preparedUserPhoto, preparedClothingPhoto);
       } else {
-        restorePreviousState();
         const fallbackMsg = payload.description || 'The AI could not generate this try-on. Try different photos — well-lit, full body shots work best.';
         setTryOnError(fallbackMsg);
         toast({ title: 'Try-On couldn\'t generate', description: fallbackMsg, variant: 'destructive' });
       }
     } catch (err: unknown) {
-      restorePreviousState();
       const msg = (err as Error).message || 'Generation failed. Please try again.';
       setTryOnError(msg);
       toast({ title: 'Try-On failed', description: msg, variant: 'destructive' });
