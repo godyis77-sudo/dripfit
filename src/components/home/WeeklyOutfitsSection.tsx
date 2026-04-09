@@ -13,36 +13,38 @@ const WeeklyOutfitsSection = () => {
   const { data: outfits, isLoading } = useWeeklyOutfits(ready ? mappedGender : '__wait__');
   const [activeOccasion, setActiveOccasion] = useState<string | null>(null);
 
-  const occasions = useMemo(() => {
+  const readyOutfits = useMemo(() => {
     if (!outfits) return [];
+    return outfits.filter(o => Boolean(o.hero_image_url) && o.items.length > 0);
+  }, [outfits]);
+
+  const occasions = useMemo(() => {
     const seen = new Map<string, { label: string; emoji: string | null }>();
-    outfits.forEach(o => {
+    readyOutfits.forEach(o => {
       if (!seen.has(o.occasion)) seen.set(o.occasion, { label: o.occasion_label, emoji: o.occasion_emoji });
     });
     return Array.from(seen.entries()).map(([key, val]) => ({ key, ...val }));
-  }, [outfits]);
+  }, [readyOutfits]);
 
   const filtered = useMemo(() => {
-    if (!outfits) return [];
-    if (!activeOccasion) return outfits;
-    return outfits.filter(o => o.occasion === activeOccasion);
-  }, [outfits, activeOccasion]);
+    if (!activeOccasion) return readyOutfits;
+    return readyOutfits.filter(o => o.occasion === activeOccasion);
+  }, [readyOutfits, activeOccasion]);
 
-  if (!outfits || outfits.length === 0) {
-    if (isLoading) {
-      return (
-        <div className="mt-2 mb-4">
-          <div className="h-5 w-40 rounded bg-white/5 animate-pulse mb-3" />
-          <div className="flex gap-3 overflow-hidden">
-            {[1, 2].map(i => (
-              <div key={i} className="shrink-0 w-[280px] aspect-[3/4] rounded-2xl bg-white/5 animate-pulse" />
-            ))}
-          </div>
+  if (isLoading && readyOutfits.length === 0) {
+    return (
+      <div className="mt-2 mb-4">
+        <div className="h-5 w-40 rounded bg-white/5 animate-pulse mb-3" />
+        <div className="flex gap-3 overflow-hidden">
+          {[1, 2].map(i => (
+            <div key={i} className="shrink-0 w-[280px] aspect-[3/4] rounded-2xl bg-white/5 animate-pulse" />
+          ))}
         </div>
-      );
-    }
-    return null;
+      </div>
+    );
   }
+
+  if (readyOutfits.length === 0) return null;
 
   return (
     <div className="mt-2 mb-4">
