@@ -164,7 +164,7 @@ const GalleryPlayground = () => {
         </button>
 
         {/* Product Grid — category-broken like try-on page */}
-        <motion.div
+        {catalogReady ? <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
@@ -192,7 +192,13 @@ const GalleryPlayground = () => {
               onSelectProduct={handleSelectProduct}
             />
           )}
-        </motion.div>
+        </motion.div> : (
+          <div className="mb-6 space-y-3">
+            {[1,2,3].map(i => (
+              <div key={i} className="h-32 rounded-xl bg-white/5 animate-pulse" />
+            ))}
+          </div>
+        )}
       </div>
 
       {user && <HomeFAB />}
