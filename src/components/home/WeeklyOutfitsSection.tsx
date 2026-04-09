@@ -1,9 +1,8 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useWeeklyOutfits, type WeeklyOutfit, type WeeklyOutfitItem } from '@/hooks/useWeeklyOutfits';
+import { useWeeklyOutfits, type WeeklyOutfit } from '@/hooks/useWeeklyOutfits';
 import { useAuth } from '@/hooks/useAuth';
-import { useState } from 'react';
 import InlineCrown from '@/components/ui/InlineCrown';
 
 const WeeklyOutfitsSection = () => {
@@ -31,13 +30,12 @@ const WeeklyOutfitsSection = () => {
 
   if (!outfits || outfits.length === 0) {
     if (isLoading) {
-      // Reserve space to prevent layout shift
       return (
         <div className="mt-2 mb-4">
           <div className="h-5 w-40 rounded bg-white/5 animate-pulse mb-3" />
           <div className="flex gap-3 overflow-hidden">
             {[1, 2].map(i => (
-              <div key={i} className="shrink-0 w-[200px] h-[320px] rounded-2xl bg-white/5 animate-pulse" />
+              <div key={i} className="shrink-0 w-[280px] aspect-[3/4] rounded-2xl bg-white/5 animate-pulse" />
             ))}
           </div>
         </div>
@@ -53,13 +51,13 @@ const WeeklyOutfitsSection = () => {
           <h2 className="font-display text-lg text-white flex items-center gap-1.5">
             <InlineCrown size={16} /> This Week's Drip
           </h2>
-          <p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5">AI-curated outfits for every occasion</p>
+          <p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5">AI-curated looks for every occasion</p>
         </div>
         <button
           onClick={() => navigate('/outfits-weekly')}
           className="text-[11px] tracking-wide uppercase text-primary active:opacity-70"
         >
-          See All {outfits.length} →
+          See All →
         </button>
       </div>
 
@@ -80,7 +78,7 @@ const WeeklyOutfitsSection = () => {
 
       <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
         {filtered.map(outfit => (
-          <OutfitCard key={outfit.id} outfit={outfit} onTap={() => navigate(`/outfit/${outfit.id}`)} />
+          <HeroCard key={outfit.id} outfit={outfit} onTap={() => navigate(`/outfit/${outfit.id}`)} />
         ))}
       </div>
     </div>
@@ -102,63 +100,78 @@ function OccasionPill({ active, onClick, label, emoji }: { active: boolean; onCl
   );
 }
 
-function OutfitCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }) {
-  const images = outfit.items.slice(0, 4).map(i => i.image_url).filter(Boolean) as string[];
+function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }) {
+  const heroImage = outfit.hero_image_url;
   const brands = [...new Set(outfit.items.map(i => i.brand).filter(Boolean))].slice(0, 3);
-  const hasHero = !!outfit.hero_image_url;
-  const mainImage = images[0];
-  const secondaryImages = images.slice(1, 3);
 
+  // Full-bleed editorial hero card
+  if (heroImage) {
+    return (
+      <motion.button
+        onClick={onTap}
+        className="snap-start shrink-0 w-[280px] aspect-[3/4] rounded-2xl overflow-hidden relative text-left active:scale-[0.97] transition-transform"
+        whileTap={{ scale: 0.97 }}
+      >
+        <img
+          src={heroImage}
+          alt={outfit.title}
+          className="absolute inset-0 w-full h-full object-cover object-top"
+          loading="lazy"
+        />
+        {/* Bottom gradient overlay */}
+        <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+
+        {/* Text at bottom */}
+        <div className="absolute bottom-0 inset-x-0 p-3.5 z-10">
+          <p className="text-base font-display font-bold text-white leading-tight truncate">{outfit.title}</p>
+          <div className="flex items-center gap-2 mt-1">
+            {outfit.total_price_cents > 0 && (
+              <span className="text-sm font-display font-bold text-primary">
+                ${(outfit.total_price_cents / 100).toFixed(0)}
+              </span>
+            )}
+            {outfit.occasion_emoji && (
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-medium glass-gold border border-primary/20 text-primary">
+                {outfit.occasion_emoji} {outfit.occasion_label}
+              </span>
+            )}
+          </div>
+          {brands.length > 0 && (
+            <p className="text-[9px] tracking-[0.2em] uppercase text-white/40 mt-1.5 truncate">
+              {brands.join(' · ')}
+            </p>
+          )}
+        </div>
+      </motion.button>
+    );
+  }
+
+  // Fallback: text-only glass card (no flat-lay product grid)
   return (
     <motion.button
       onClick={onTap}
-      className="snap-start shrink-0 w-[200px] rounded-2xl border border-white/5 overflow-hidden text-left active:scale-[0.97] transition-transform glass-dark"
+      className="snap-start shrink-0 w-[280px] aspect-[3/4] rounded-2xl overflow-hidden text-left active:scale-[0.97] transition-transform glass-dark border border-white/5 flex flex-col justify-end p-3.5"
       whileTap={{ scale: 0.97 }}
     >
-      {hasHero ? (
-        <div className="aspect-[3/4] overflow-hidden bg-muted">
-          <img src={outfit.hero_image_url!} alt={outfit.title} className="w-full h-full object-cover object-top" loading="lazy" />
-        </div>
-      ) : (
-        <div className="bg-zinc-900/80 p-1.5">
-          {/* Main piece — full width */}
-          {mainImage && (
-            <div className="w-full aspect-[4/3] overflow-hidden rounded-xl bg-zinc-800/60 mb-1">
-              <img src={mainImage} alt="" className="w-full h-full object-contain p-2" loading="lazy" />
-            </div>
-          )}
-          {/* Secondary pieces — two columns */}
-          {secondaryImages.length > 0 && (
-            <div className="grid grid-cols-2 gap-1">
-              {secondaryImages.map((src, i) => (
-                <div key={i} className="aspect-square overflow-hidden rounded-lg bg-zinc-800/60">
-                  <img src={src} alt="" className="w-full h-full object-contain p-1.5" loading="lazy" />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Metadata overlay */}
-      <div className="p-2.5 pt-2 border-t border-white/5">
-        <p className="text-sm font-display font-semibold text-white truncate">{outfit.title}</p>
+      <p className="text-base font-display font-bold text-white leading-tight truncate">{outfit.title}</p>
+      <div className="flex items-center gap-2 mt-1">
         {outfit.total_price_cents > 0 && (
-          <p className="text-[12px] font-display font-bold text-primary mt-0.5">
+          <span className="text-sm font-display font-bold text-primary">
             ${(outfit.total_price_cents / 100).toFixed(0)}
-          </p>
+          </span>
         )}
         {outfit.occasion_emoji && (
-          <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-[9px] font-medium glass-gold border border-primary/20 text-primary">
+          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-medium glass-gold border border-primary/20 text-primary">
             {outfit.occasion_emoji} {outfit.occasion_label}
           </span>
         )}
-        {brands.length > 0 && (
-          <p className="text-[9px] tracking-[0.2em] uppercase text-white/30 mt-1.5 truncate">
-            {brands.join(' · ')}
-          </p>
-        )}
       </div>
+      {brands.length > 0 && (
+        <p className="text-[9px] tracking-[0.2em] uppercase text-white/30 mt-1.5 truncate">
+          {brands.join(' · ')}
+        </p>
+      )}
+      <p className="text-[10px] italic text-white/20 mt-2">Editorial image generating…</p>
     </motion.button>
   );
 }

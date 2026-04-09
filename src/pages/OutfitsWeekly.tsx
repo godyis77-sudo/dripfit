@@ -9,7 +9,6 @@ import InlineCrown from '@/components/ui/InlineCrown';
 import { useAuth } from '@/hooks/useAuth';
 
 const GENDER_OPTIONS = [
-
   { key: 'all', label: 'All' },
   { key: 'mens', label: "Men's" },
   { key: 'womens', label: "Women's" },
@@ -86,10 +85,10 @@ const OutfitsWeekly = () => {
             <p className="text-[11px] text-muted-foreground mt-1">Check back Monday.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3 pb-6">
+          <div className="space-y-4 pb-6">
             {filtered.map((outfit, idx) => (
               <div key={outfit.id} ref={revealRef(idx)}>
-                <GridCard outfit={outfit} onTap={() => navigate(`/outfit/${outfit.id}`)} />
+                <FullWidthHeroCard outfit={outfit} onTap={() => navigate(`/outfit/${outfit.id}`)} />
               </div>
             ))}
           </div>
@@ -116,51 +115,62 @@ function PillBtn({ active, onClick, label, emoji }: { active: boolean; onClick: 
   );
 }
 
-function GridCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }) {
-  const images = outfit.items.slice(0, 4).map(i => i.image_url).filter(Boolean) as string[];
+function FullWidthHeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }) {
+  const heroImage = outfit.hero_image_url;
   const brands = [...new Set(outfit.items.map(i => i.brand).filter(Boolean))].slice(0, 3);
-  const mainImage = images[0];
-  const secondaryImages = images.slice(1, 3);
 
+  if (heroImage) {
+    return (
+      <button onClick={onTap} className="w-full aspect-[3/4] rounded-2xl overflow-hidden relative text-left active:scale-[0.98] transition-transform">
+        <img src={heroImage} alt={outfit.title} className="absolute inset-0 w-full h-full object-cover object-top" loading="lazy" />
+        <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+        <div className="absolute bottom-0 inset-x-0 p-4 z-10">
+          <p className="text-lg font-display font-bold text-white leading-tight">{outfit.title}</p>
+          <div className="flex items-center gap-2 mt-1">
+            {outfit.total_price_cents > 0 && (
+              <span className="text-sm font-display font-bold text-primary">
+                ${(outfit.total_price_cents / 100).toFixed(0)}
+              </span>
+            )}
+            {outfit.occasion_emoji && (
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-medium glass-gold border border-primary/20 text-primary">
+                {outfit.occasion_emoji} {outfit.occasion_label}
+              </span>
+            )}
+          </div>
+          {brands.length > 0 && (
+            <p className="text-[9px] tracking-[0.2em] uppercase text-white/40 mt-1.5">
+              {brands.join(' · ')}
+            </p>
+          )}
+          <p className="text-[10px] text-white/30 mt-1">Tap to shop each piece →</p>
+        </div>
+      </button>
+    );
+  }
+
+  // Fallback: glass card with text only
   return (
-    <button onClick={onTap} className="glass-dark rounded-2xl border border-white/5 overflow-hidden text-left active:scale-[0.97] transition-transform w-full">
-      {/* Flat-lay product grid */}
-      <div className="bg-zinc-900/80 p-1.5">
-        {mainImage && (
-          <div className="w-full aspect-[4/3] overflow-hidden rounded-xl bg-zinc-800/60 mb-1">
-            <img src={mainImage} alt="" className="w-full h-full object-contain p-2" loading="lazy" />
-          </div>
-        )}
-        {secondaryImages.length > 0 && (
-          <div className="grid grid-cols-2 gap-1">
-            {secondaryImages.map((src, i) => (
-              <div key={i} className="aspect-square overflow-hidden rounded-lg bg-zinc-800/60">
-                <img src={src} alt="" className="w-full h-full object-contain p-1.5" loading="lazy" />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Metadata */}
-      <div className="p-2.5 pt-2 border-t border-white/5">
-        <p className="text-sm font-display font-bold text-foreground truncate">{outfit.title}</p>
+    <button onClick={onTap} className="w-full aspect-[3/4] rounded-2xl overflow-hidden text-left active:scale-[0.98] transition-transform glass-dark border border-white/5 flex flex-col justify-end p-4">
+      <p className="text-lg font-display font-bold text-foreground leading-tight">{outfit.title}</p>
+      <div className="flex items-center gap-2 mt-1">
         {outfit.total_price_cents > 0 && (
-          <p className="text-[12px] font-display font-bold text-primary mt-0.5">
+          <span className="text-sm font-display font-bold text-primary">
             ${(outfit.total_price_cents / 100).toFixed(0)}
-          </p>
+          </span>
         )}
         {outfit.occasion_emoji && (
-          <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-[9px] font-medium glass-gold border border-primary/20 text-primary">
+          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-medium glass-gold border border-primary/20 text-primary">
             {outfit.occasion_emoji} {outfit.occasion_label}
           </span>
         )}
-        {brands.length > 0 && (
-          <p className="text-[9px] tracking-[0.2em] uppercase text-white/30 mt-1.5 truncate">
-            {brands.join(' · ')}
-          </p>
-        )}
       </div>
+      {brands.length > 0 && (
+        <p className="text-[9px] tracking-[0.2em] uppercase text-white/30 mt-1.5">
+          {brands.join(' · ')}
+        </p>
+      )}
+      <p className="text-[10px] italic text-white/20 mt-2">Editorial image generating…</p>
     </button>
   );
 }
