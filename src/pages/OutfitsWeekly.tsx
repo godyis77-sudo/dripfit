@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import BottomTabBar from '@/components/BottomTabBar';
 import InlineCrown from '@/components/ui/InlineCrown';
 import { FullscreenImage } from '@/components/ui/fullscreen-image';
+import { useAuth } from '@/hooks/useAuth';
 
 const GENDER_OPTIONS = [
 
@@ -22,7 +23,9 @@ const GENDER_OPTIONS = [
 const OutfitsWeekly = () => {
   usePageMeta({ path: '/outfits-weekly', title: "This Week's Drip", description: 'AI-curated outfits for every occasion' });
   const navigate = useNavigate();
-  const [genderFilter, setGenderFilter] = useState('all');
+  const { userGender } = useAuth();
+  const defaultGender = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : 'all';
+  const [genderFilter, setGenderFilter] = useState(defaultGender);
   const [activeOccasion, setActiveOccasion] = useState<string | null>(null);
   const [selectedOutfit, setSelectedOutfit] = useState<WeeklyOutfit | null>(null);
   const { data: outfits, isLoading } = useWeeklyOutfits(genderFilter);
