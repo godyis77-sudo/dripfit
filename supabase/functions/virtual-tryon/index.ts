@@ -710,11 +710,12 @@ Match shoe details exactly (color, material, branding, sole). ${noResizeInstruct
               : fbTop
                 ? "Replace ONLY the upper-body clothing (shirt/top/sweater). Keep existing pants/jeans/shoes from Image A UNCHANGED."
                 : "Replace the clothing with the garment from Image B.";
-          return `Create ONE photorealistic clothing-swap image.
-Image A = person. Image B = target garment reference.${productHint}
+          return `Create ONE photorealistic clothing-swap image showing EXACTLY ONE person.
+Image A = the SINGLE person (MODEL). Image B = target garment reference ONLY (ignore ALL people in Image B — extract ONLY the garment design).${productHint}
 ${fullBodyImageHint}
 ${scopeHint}
 Preserve face, body shape, skin tone, pose, camera angle, and facing direction from Image A — do NOT rotate the model. ${bgFallbackHint}
+CRITICAL: Output must contain EXACTLY ONE person — the person from Image A. NEVER generate multiple people, group shots, or collages even if Image B shows multiple models.
 Match the target item exactly (color, pattern, cut, neckline, sleeve/hem length, logos). ${noResizeInstruction} Full body head to feet. No text/watermark.`;
         })();
 
