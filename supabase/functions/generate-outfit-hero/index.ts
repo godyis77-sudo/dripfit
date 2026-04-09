@@ -2,63 +2,145 @@ import { getCorsHeaders } from "../_shared/validation.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 /**
- * Generate an AI model image wearing all items in a weekly outfit.
+ * generate-outfit-hero v3 — Campaign-referenced editorial image generation.
  *
  * POST body:
- *   outfit_id: string (uuid)          — which outfit to generate for
- *   background_style?: string         — optional background description
- *   regenerate?: boolean              — overwrite existing hero image
- *
- * Or generate for ALL outfits in a week:
- *   week_id: string (e.g. "2026-W15") — generate heroes for all outfits in this week
+ *   outfit_id: string           — single outfit
+ *   week_id?: string            — batch all outfits in a week
+ *   regenerate?: boolean        — overwrite existing hero images
+ *   heroes_only?: boolean       — only generate for is_hero=true outfits
  */
 
 const AI_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const IMAGE_MODEL = "google/gemini-3.1-flash-image-preview";
 
-/* ── Occasion → Background ────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════
+   CAMPAIGN REFERENCES — Top fashion house editorial anchors
+   ══════════════════════════════════════════════════════════════════ */
 
-const BACKGROUND_STYLES: Record<string, string> = {
-  night_out: "a high-end rooftop lounge at night, dramatic cinematic lighting with warm amber and cool blue neon reflections on glass, city skyline bokeh, editorial Vogue-level atmosphere",
-  beach_day: "a luxury Mediterranean beach club at golden hour, warm honeyed sunlight, turquoise water, white linen cabanas, Slim Aarons-inspired composition",
-  lunch_date: "an upscale Parisian sidewalk café, dappled afternoon sunlight through plane trees, marble tabletops, champagne tones, effortlessly chic atmosphere",
-  date_night: "an intimate high-end cocktail bar, moody dramatic lighting with warm tungsten highlights, dark velvet textures, editorial GQ/Esquire mood",
-  weekend_casual: "a sun-drenched modernist concrete terrace overlooking a city, golden hour rim lighting, architectural shadows, clean luxury streetwear editorial vibe",
-  office: "a sleek glass-walled corner office with panoramic city views, soft directional window light, minimal furniture, power-dressing editorial atmosphere",
-  gym: "a premium private gym with floor-to-ceiling windows, dramatic side lighting, concrete and steel aesthetic, athletic editorial shoot",
-  festival: "a vibrant desert festival scene at dusk, warm stage glow mixed with purple-orange sunset, dust particles in backlight, high-fashion festival editorial",
-  brunch: "a sunlit greenhouse café with lush tropical plants, soft diffused morning light, brass and marble accents, lifestyle editorial mood",
-  wedding: "an elegant estate garden at golden hour, soft romantic backlight through old-growth trees, petal-strewn stone path, luxury fashion editorial",
-};
+interface CampaignRef {
+  reference: string;
+  location: string;
+  architecture: string;
+  camera: string;
+  lighting: string;
+  colorGrade: string;
+  negative: string;
+  styling: string;
+  footwearGuide: string;
+}
 
-/* ── Occasion → Styling notes ─────────────────────────────────── */
-
-const STYLING_NOTES: Record<string, string> = {
-  night_out: "Styled with intentional streetwear layering — open jacket over a statement piece, accessories visible. Confident nightlife energy.",
-  beach_day: "Relaxed luxury resort styling — effortless drape, rolled sleeves or untucked layers, premium casual silhouette.",
-  lunch_date: "Polished elevated casual — clean proportions, thoughtful layering, mixing textures like knit over cotton.",
-  date_night: "Sharp contemporary layering — structured outerwear over fitted pieces, monochromatic or tonal color story.",
-  weekend_casual: "Premium streetwear layering — oversized over fitted, brand-mixing done intentionally, sneakers styled up.",
-  office: "Power-casual editorial — tailored pieces mixed with one streetwear element, confident silhouette.",
-  gym: "Technical athleisure — clean performance pieces styled as a cohesive look, not gym-random.",
-  festival: "Statement streetwear maximalism — bold layering, mixed prints/textures, festival-ready but high-fashion.",
-  brunch: "Effortless luxury casual — soft textures, relaxed fits, earthy or pastel palette, approachable elegance.",
-  wedding: "Elevated formal with personality — tailored foundation with one unexpected luxury accent piece.",
-};
-
-/* ── Occasion → Footwear guidance ─────────────────────────────── */
-
-const FOOTWEAR_GUIDE: Record<string, string> = {
-  night_out: "sleek pointed-toe boots or premium low-profile sneakers, polished finish",
-  beach_day: "premium slides, espadrilles, or clean low-cut canvas shoes — never heavy boots",
-  lunch_date: "clean minimalist leather loafers, ballet flats, or designer sneakers",
-  date_night: "heeled boots, pointed-toe shoes, or elevated dress sneakers",
-  weekend_casual: "fresh designer sneakers, lifestyle runners, or premium mules",
-  office: "monk-strap shoes, leather chelsea boots, structured flats, or clean minimal sneakers",
-  gym: "performance running shoes or cross-training sneakers",
-  festival: "chunky platform boots, bold designer sneakers, or statement sandals",
-  brunch: "clean white sneakers, espadrilles, mules, or strappy sandals",
-  wedding: "polished leather dress shoes, heeled sandals, or satin pumps",
+const CAMPAIGNS: Record<string, CampaignRef> = {
+  night_out: {
+    reference: "Tom Ford Noir meets Bottega Veneta evening editorial",
+    location: "Grand European hotel lobby entrance at night. Polished black marble floors reflecting warm amber light. Tall art deco doors with brass handles ajar. Rain-wet cobblestones visible through entrance.",
+    architecture: "Art deco meets Milanese palazzo. Travertine columns, fluted pilasters, geometric brass inlays in the marble floor.",
+    camera: "Shot on Leica M11 with Noctilux 50mm f/0.95 wide open. Medium-wide shot. Camera at hip height angled 5° upward for subtle power framing. Extremely shallow depth of field.",
+    lighting: "Warm practical chandelier as key light from above-right (3200K amber). Cool blue-grey fill from rain-wet exterior (6500K). Strong rim light from behind-left catching shoulder and hair edge.",
+    colorGrade: "Rich amber-gold highlights, deep espresso shadows. Lifted blacks to 8%. Skin tones warm and luminous. Background 10% teal shift. 35mm film grain at 12%. Overall: Tom Ford Noir meets Wong Kar-Wai.",
+    negative: "No neon. No club lighting. No harsh flash. No visible logos overlaid. No selfie angle. No smiling at camera. No casual posture.",
+    styling: "Intentional nightlife layering — open jacket over a statement piece, accessories catching warm light. Confident, unhurried energy.",
+    footwearGuide: "sleek pointed-toe boots or premium low-profile sneakers with polished finish",
+  },
+  beach_day: {
+    reference: "Jacquemus La Riviera meets Loro Piana Summer Walk",
+    location: "Whitewashed Mediterranean terrace overlooking turquoise sea at golden hour. Bougainvillea cascading over weathered stone walls. Warm honeyed sunlight.",
+    architecture: "Greek island minimalism. Rough lime-washed walls, hand-cut limestone steps, terracotta accents. Natural materials only.",
+    camera: "Shot on Hasselblad X2D with XCD 65mm f/2.8. Full-body environmental portrait. Camera at eye level, slight upward tilt. Subject fills 60% of frame with sea horizon visible.",
+    lighting: "Golden hour sun as key from camera-right (3800K warm). Bounced fill from white walls. Soft rim light from behind catching fabric texture and hair.",
+    colorGrade: "Sun-bleached warmth. Highlights pushed to cream-gold. Shadows in soft terracotta. Lifted midtones. Grain at 8%. Overall: Slim Aarons meets Jacquemus campaign.",
+    negative: "No harsh midday sun. No sunglasses on head. No pool party energy. No cluttered background. No printed towels or umbrellas.",
+    styling: "Relaxed luxury resort — effortless drape, rolled sleeves or untucked layers, premium casual silhouette. Everything looks lived-in but expensive.",
+    footwearGuide: "premium slides, espadrilles, or clean low-cut canvas shoes — never heavy boots",
+  },
+  lunch_date: {
+    reference: "The Row SS26 meets COS Atelier editorial",
+    location: "Upscale Parisian sidewalk café. Dappled afternoon sunlight filtering through plane trees. Marble-top bistro table with espresso. Haussmann building facade behind.",
+    architecture: "Classic Parisian. Wrought-iron balconies, cream limestone facade, dark green café awning. Zinc countertop visible inside. Newspapers on the table.",
+    camera: "Shot on Fujifilm GFX100S with GF 80mm f/1.7. Medium shot with environmental context. Subject at slight 3/4 angle. Shallow DOF with beautiful bokeh on café interior.",
+    lighting: "Dappled natural sunlight through tree canopy as key (5500K). Soft bounced fill from cream building facade. Hair light from sun patches.",
+    colorGrade: "Warm neutral palette. Champagne highlights, soft sage shadows. Skin luminous and natural. Subtle film emulation — Portra 400. Grain at 6%.",
+    negative: "No harsh shadows. No tourist crowd. No bright colors. No fast-food setting. No over-styled hair. No over-accessorized.",
+    styling: "Polished elevated casual — clean proportions, thoughtful layering, mixing textures like knit over cotton. Effortless but intentional.",
+    footwearGuide: "clean minimalist leather loafers, ballet flats, or designer sneakers",
+  },
+  weekend_casual: {
+    reference: "Fear of God Essentials meets Aritzia Super World",
+    location: "Sun-drenched modernist concrete terrace overlooking a coastal city at late afternoon. Clean architectural lines. Warm golden light.",
+    architecture: "Brutalist-meets-California modern. Poured concrete, floor-to-ceiling glass, steel railings. Succulent garden in background.",
+    camera: "Shot on Sony A7RV with 35mm f/1.4 GM. Medium-wide environmental shot. Camera at natural eye level. Subject walking through frame with urban backdrop.",
+    lighting: "Low afternoon sun as strong key from camera-left (4200K warm). Soft fill bounced from concrete surfaces. Strong backlight creating clothing edge definition.",
+    colorGrade: "Warm concrete tones. Highlights in soft gold. Shadows in cool grey-blue. Lifted blacks. Clean and modern. Grain at 5%. Overall: Aritzia campaign meets architectural photography.",
+    negative: "No gym clothes. No loungewear energy. No bedroom. No couch. No messy background. No logo-heavy styling.",
+    styling: "Premium streetwear layering — oversized over fitted, brand-mixing done intentionally, sneakers styled up. Everything looks casual but costs serious money.",
+    footwearGuide: "fresh designer sneakers, lifestyle runners, or premium mules",
+  },
+  office: {
+    reference: "Prada FW26 meets Hugo Boss Modern Tailoring",
+    location: "Sleek glass-walled corner office with panoramic city skyline view at dusk. Soft directional window light. Minimal furniture — a Mies van der Rohe chair, single orchid.",
+    architecture: "International style corporate. Floor-to-ceiling curtain wall glass, polished concrete floor, brass drawer handles. Power architecture.",
+    camera: "Shot on Phase One XF IQ4 with Schneider 80mm f/2.8. Full-body power portrait. Camera at waist height angled upward 3° for authority framing. Tack sharp subject, city bokeh behind.",
+    lighting: "Large window as soft key light from camera-right (5000K neutral). Warm desk lamp as accent from below-left (2800K). Subtle rim light from secondary window behind.",
+    colorGrade: "Cool power palette. Steel-blue highlights, warm shadows. High contrast. Skin tones neutral and refined. Minimal grain. Overall: Prada campaign meets architectural digest.",
+    negative: "No fluorescent lighting. No cubicle. No casual Friday. No wrinkled clothing. No backpack. No messy desk.",
+    styling: "Power-casual editorial — tailored pieces mixed with one streetwear element, confident silhouette. Looks like a CEO who skateboards.",
+    footwearGuide: "monk-strap shoes, leather chelsea boots, or clean minimal sneakers",
+  },
+  festival: {
+    reference: "Balenciaga SS26 meets Palace Skateboards editorial",
+    location: "Vibrant desert festival at dusk. Warm stage glow mixed with purple-orange sunset. Dust particles catching golden backlight. Art installations visible in background.",
+    architecture: "Festival industrial. Steel stage scaffolding, LED light rigs, fabric canopy structures. Burning Man meets Coachella VIP.",
+    camera: "Shot on Canon R5 with RF 50mm f/1.2. Dynamic action shot. Camera low and wide. Subject mid-stride with festival energy. Dramatic lens flare from sunset.",
+    lighting: "Sunset rim light from behind (3200K amber-pink). Cool LED fill from stage left (4500K cyan). Dust particles in backlight creating atmosphere.",
+    colorGrade: "Saturated warm palette. Orange-magenta highlights, deep purple shadows. Boosted contrast. Skin warm and glowing. Film grain at 15%. Overall: Balenciaga meets Burning Man editorial.",
+    negative: "No corporate fashion. No clean background. No studio lighting. No formal posture. No pristine clothing. No overhead noon sun.",
+    styling: "Statement streetwear maximalism — bold layering, mixed textures, festival-ready but high-fashion. Clothes that make people stop and ask 'what are you wearing?'",
+    footwearGuide: "chunky platform boots, bold designer sneakers, or statement sandals",
+  },
+  brunch: {
+    reference: "Totême Spring meets Aesop store aesthetic",
+    location: "Sunlit greenhouse café with lush tropical plants. Soft diffused morning light through glass ceiling. Brass plant stands, terrazzo floor, marble counter visible.",
+    architecture: "Scandinavian greenhouse. Steel-frame glass structure, whitewashed brick base, hanging ferns, fiddle-leaf figs. Clean organic luxury.",
+    camera: "Shot on Nikon Z9 with 58mm f/0.95 Noct. Environmental portrait in natural setting. Camera at eye level. Subject relaxed with plant foliage framing. Creamy bokeh.",
+    lighting: "Diffused greenhouse sunlight as key (5500K soft). Green-filtered fill from plants. Warm accent from brass fixtures. Overall: even, flattering, botanical.",
+    colorGrade: "Soft botanical palette. Cream-green highlights, warm earth shadows. Lifted midtones. Skin luminous and dewy. Grain at 4%. Overall: Cereal Magazine meets Kinfolk.",
+    negative: "No harsh light. No crowded restaurant. No food in frame. No over-saturated colors. No stark white background. No posed smile.",
+    styling: "Effortless luxury casual — soft textures, relaxed fits, earthy or pastel palette. Looks like they woke up looking this good.",
+    footwearGuide: "clean white sneakers, espadrilles, mules, or strappy sandals",
+  },
+  gym: {
+    reference: "Nike × Jacquemus collab meets Arc'teryx System_A",
+    location: "Premium private gym with floor-to-ceiling windows overlooking a city at dawn. Concrete walls, steel equipment, rubber flooring. Light streaming in.",
+    architecture: "Athletic industrial. Exposed ductwork, polished concrete, steel cable machines. Clean and minimal — no clutter, no mirrors with fingerprints.",
+    camera: "Shot on Sony A1 with 24mm f/1.4 GM. Dynamic wide shot. Camera low for power perspective. Subject mid-movement or post-workout stance. Sharp throughout.",
+    lighting: "Dawn window light as key from camera-right (5800K cool-warm). Hard overhead gym light creating dramatic shadow (4000K). Rim light from secondary window.",
+    colorGrade: "Clean athletic palette. Cool highlights, warm skin tones. High contrast. Desaturated background, saturated clothing. Minimal grain. Overall: Nike campaign meets architectural photography.",
+    negative: "No sweaty mess. No dirty gym. No mirror selfie. No fluorescent green. No baggy everything. No headband. No towel around neck.",
+    styling: "Technical athleisure — clean performance pieces styled as a cohesive look, not gym-random. Every piece is intentional.",
+    footwearGuide: "performance running shoes or cross-training sneakers",
+  },
+  date_night: {
+    reference: "Saint Laurent by Night meets The Row evening editorial",
+    location: "Intimate high-end cocktail bar. Moody dramatic lighting with warm tungsten highlights. Dark velvet banquettes, smoked mirror wall, single candle on marble bar.",
+    architecture: "Art deco speakeasy. Fluted glass panels, oxidized brass bar rail, dark walnut paneling, geometric floor tile. Intimate and luxurious.",
+    camera: "Shot on Leica SL3 with Summilux 50mm f/1.4. Tight environmental portrait. Camera at chest height. Shallow DOF with bar interior melting into warm bokeh.",
+    lighting: "Single candle as practical key (2700K warm amber). Cool mirror reflection as fill from behind. Overhead spot creating hair light and shoulder definition.",
+    colorGrade: "Moody warm palette. Amber highlights, deep black shadows. Crushed blacks at 5%. Rich skin tones. Heavy grain at 18%. Overall: Wong Kar-Wai meets Tom Ford.",
+    negative: "No bright lights. No sports bar. No beer. No casual dining. No loud colors. No group shot. No phone visible.",
+    styling: "Sharp contemporary layering — structured outerwear over fitted pieces, monochromatic or tonal color story. Dressed to impress one person.",
+    footwearGuide: "heeled boots, pointed-toe shoes, or elevated dress sneakers",
+  },
+  wedding: {
+    reference: "Brunello Cucinelli meets Ralph Lauren Purple Label",
+    location: "Elegant estate garden at golden hour. Soft romantic backlight through old-growth trees. Stone balustrade, manicured hedges, petal-strewn gravel path.",
+    architecture: "English country estate. Cotswold stone, climbing roses, wrought-iron gates, weathered sundial. Timeless and romantic.",
+    camera: "Shot on Hasselblad 907X with XCD 90mm f/2.5. Three-quarter portrait. Camera at eye level with gentle upward angle. Subject framed between garden elements. Gorgeous bokeh.",
+    lighting: "Golden hour backlight (3500K amber). Soft reflector fill from below-right. Rim light catching fabric drape and hair wisps. Overall: romantic, warm, cinematic.",
+    colorGrade: "Romantic warm palette. Golden highlights, soft rose shadows. Lifted midtones. Skin glowing and warm. Fine grain at 6%. Overall: Vogue Weddings meets Brunello Cucinelli.",
+    negative: "No flash photography. No reception hall. No group photo. No corsage. No dated styling. No stiff posture.",
+    styling: "Elevated formal with personality — tailored foundation with one unexpected luxury accent piece. Stands out without trying.",
+    footwearGuide: "polished leather dress shoes, heeled sandals, or satin pumps",
+  },
 };
 
 /* ── Gender model descriptions ────────────────────────────────── */
@@ -68,7 +150,7 @@ const GENDER_MODELS: Record<string, string> = {
   womens: "a stylish female model in her mid-20s with contemporary hairstyle, natural makeup, effortlessly chic expression — think Vogue or SSENSE editorial",
 };
 
-/* ── Pose / angle variety ─────────────────────────────────────── */
+/* ── Pose pool ────────────────────────────────────────────────── */
 
 const POSE_POOL = [
   "walking mid-stride with one hand adjusting collar, slight 3/4 turn to camera",
@@ -85,126 +167,119 @@ const POSE_POOL = [
   "standing tall with chin up, one arm raised adjusting sunglasses or hat",
 ];
 
-/* ── Color extraction helpers ─────────────────────────────────── */
+/* ── Color extraction ─────────────────────────────────────────── */
 
 function extractColorHints(items: OutfitItem[]): string {
   const names = items.map(i => `${i.product_name} ${i.brand || ""}`).join(" ").toLowerCase();
-
   const colorKeywords = [
-    "black", "white", "cream", "ivory", "alabaster", "navy", "blue", "indigo",
-    "red", "burgundy", "maroon", "wine", "green", "olive", "sage", "khaki",
-    "grey", "gray", "charcoal", "slate", "beige", "tan", "camel", "sand",
-    "brown", "chocolate", "espresso", "pink", "blush", "rose", "coral",
-    "orange", "rust", "burnt", "yellow", "gold", "purple", "plum", "lavender",
-    "glacier", "washed", "faded", "vintage", "dune",
+    "black", "white", "cream", "ivory", "navy", "blue", "indigo",
+    "red", "burgundy", "maroon", "green", "olive", "sage", "khaki",
+    "grey", "gray", "charcoal", "beige", "tan", "camel",
+    "brown", "chocolate", "pink", "blush", "coral",
+    "orange", "rust", "yellow", "gold", "purple", "lavender",
   ];
-
-  const found = colorKeywords.filter(c => names.includes(c));
+  const found = [...new Set(colorKeywords.filter(c => names.includes(c)))];
   if (found.length === 0) return "";
-
-  const unique = [...new Set(found)];
-  return `\nDOMINANT COLOR PALETTE: The products feature these tones — ${unique.join(", ")}. Ensure the model's outfit reflects these exact colors cohesively. The overall color story should feel intentional and harmonious, not random.`;
+  return `\nDOMINANT COLOR PALETTE: ${found.join(", ")}. Ensure the outfit reflects these exact tones cohesively.`;
 }
 
-/* ── Type ─────────────────────────────────────────────────────── */
+/* ── Types ─────────────────────────────────────────────────────── */
 
 interface OutfitItem {
   product_name: string;
   brand: string | null;
   category: string | null;
   image_url: string | null;
+  price_cents: number | null;
 }
 
-/* ── Prompt builder ───────────────────────────────────────────── */
+/* ── v3 Prompt builder — 8-layer editorial system ─────────────── */
 
 function buildPrompt(
   items: OutfitItem[],
   occasion: string,
   gender: string | null,
-  bgStyle?: string,
   poseIndex?: number
 ): { text: string; imageUrls: string[] } {
-  const pose = POSE_POOL[poseIndex !== undefined ? poseIndex % POSE_POOL.length : Math.floor(Math.random() * POSE_POOL.length)];
-  const bg = bgStyle || BACKGROUND_STYLES[occasion] || "a premium minimalist studio with dramatic directional lighting, concrete walls, editorial fashion photography atmosphere";
-  const styling = STYLING_NOTES[occasion] || "Intentional luxury streetwear layering — mixing high-end and contemporary brands with confident, editorial proportions.";
-  const footwear = FOOTWEAR_GUIDE[occasion] || "premium designer sneakers or clean leather shoes appropriate for the occasion";
-
-  // Gender-specific model
+  const campaign = CAMPAIGNS[occasion] || CAMPAIGNS.weekend_casual;
   const genderKey = gender === "womens" ? "womens" : "mens";
   const modelDesc = GENDER_MODELS[genderKey];
+  const pose = POSE_POOL[(poseIndex ?? Math.floor(Math.random() * POSE_POOL.length)) % POSE_POOL.length];
 
-  const brands = items.map(i => i.brand).filter(Boolean);
-  const uniqueBrands = [...new Set(brands)];
-  const brandContext = uniqueBrands.length > 0
-    ? `This is a curated ${uniqueBrands.join(" × ")} look.`
+  const brands = [...new Set(items.map(i => i.brand).filter(Boolean))];
+  const brandContext = brands.length > 0
+    ? `This is a curated ${brands.join(" × ")} look.`
     : "This is a curated multi-brand look.";
 
-  // Check if outfit includes footwear
+  // Detect footwear in items
   const hasFootwear = items.some(i => {
-    const cat = (i.category || "").toLowerCase();
-    const name = (i.product_name || "").toLowerCase();
-    return cat.includes("shoe") || cat.includes("footwear") || cat.includes("sneaker") || cat.includes("boot") || cat.includes("slipper") || cat.includes("sandal") ||
-      name.includes("shoe") || name.includes("sneaker") || name.includes("boot") || name.includes("slipper") || name.includes("sandal") || name.includes("loafer") || name.includes("heel") || name.includes("pump") || name.includes("ballerina") || name.includes("mule");
+    const c = `${i.category || ""} ${i.product_name || ""}`.toLowerCase();
+    return /shoe|sneaker|boot|slipper|sandal|loafer|heel|pump|mule|flat|espadrille/.test(c);
   });
 
-  const footwearInstruction = hasFootwear
-    ? `The outfit includes specific footwear — the model MUST be wearing the exact shoes/sneakers listed above. Match the shoe design precisely from the reference images.`
-    : `No specific footwear is in this outfit — style the model with ${footwear} that complement the overall look and occasion.`;
-
-  const itemDescriptions = items.map((item, i) => {
+  // Build wardrobe layer with layering context
+  const ROLE_ORDER = ["outerwear", "top", "bottom", "footwear", "accessory"];
+  const wardrobeLines = items.map((item, i) => {
     const brand = item.brand ? ` by ${item.brand}` : "";
+    const price = item.price_cents ? ` $${(item.price_cents / 100).toFixed(0)}` : "";
     const cat = item.category ? ` [${item.category}]` : "";
-    return `${i + 1}. ${item.product_name}${brand}${cat}`;
+    return `  ${i + 1}. ${item.product_name}${brand}${price}${cat}`;
   }).join("\n");
 
   const colorHints = extractColorHints(items);
+
+  const footwearInstruction = hasFootwear
+    ? "The outfit includes specific footwear — the model MUST wear the exact shoes listed. Match design precisely from reference images."
+    : `No footwear specified — style with ${campaign.footwearGuide} that complement the look.`;
 
   const imageUrls = items
     .map(i => i.image_url)
     .filter((url): url is string => !!url);
 
-  const text = `You are a world-class fashion photographer. Generate a stunning full-body editorial photograph of a model wearing a specific outfit.
+  const text = `You are a world-class fashion photographer shooting for ${campaign.reference}.
 
-CRITICAL — PRODUCT FIDELITY IS THE #1 PRIORITY:
-You are provided reference product images. The model MUST be wearing items that are VISUALLY IDENTICAL to those reference images. This means:
-- EXACT same colors, prints, graphics, logos, and text as shown in the product photos
+═══ LAYER 1: PRODUCT FIDELITY (ABSOLUTE PRIORITY) ═══
+Reference product images are attached. The model MUST wear items VISUALLY IDENTICAL to those references:
+- EXACT same colors, prints, graphics, logos, and text
 - EXACT same silhouette, cut, and proportions
-- If a t-shirt has a specific graphic print, reproduce that EXACT graphic — do NOT invent a different one
-- If pants have specific panel colors or stripe patterns, match them EXACTLY
-- Brand logos and text on garments must match the reference photos precisely
-- Do NOT substitute, reinterpret, or "inspired by" — COPY the garments exactly as shown
+- Brand logos/text ON garments must match reference photos precisely
+- Do NOT substitute, reinterpret, or create "inspired by" versions — COPY exactly
 
-MODEL:
-${modelDesc}
-
+═══ LAYER 2: WARDROBE ═══
 ${brandContext}
 
-OUTFIT PIECES (every item MUST be worn — match each reference image EXACTLY):
-${itemDescriptions}
+OUTFIT PIECES (every item must be worn and recognizable):
+${wardrobeLines}
 
-STYLING DIRECTION:
-${styling}
-
-FOOTWEAR:
-${footwearInstruction}
+STYLING: ${campaign.styling}
+FOOTWEAR: ${footwearInstruction}
 ${colorHints}
 
-PHOTOGRAPHY REQUIREMENTS:
-- Full body shot, head to toe, portrait orientation (3:4 aspect ratio)
-- The model MUST be wearing ALL items listed above — each one must be recognizable as the exact product from its reference image
-- SPECIFIC POSE: ${pose}
-- Dynamic natural energy — NOT stiff or mannequin-like
-- Model should look like a real person with natural skin, contemporary hairstyle, confident expression
-- Gender-appropriate fit and drape — ${genderKey === "womens" ? "feminine silhouette, natural curves" : "masculine build, clean lines"}
-- LIGHTING: Professional editorial lighting — dramatic rim light, soft fill, cinematic color grading
-- BACKGROUND: ${bg}
-- Depth of field: subject sharp, background with beautiful natural bokeh
-- Color grade: rich, slightly warm, high-end fashion magazine aesthetic
-- NO text, NO watermarks, NO logos overlaid on image (but product graphics/logos ON the garments must be preserved)
-- NO mannequins, NO flat-lay, NO product-only shots — ONLY styled on-body editorial
-- The outfit should look intentionally layered and styled by a professional stylist
+═══ LAYER 3: MODEL ═══
+${modelDesc}
+POSE: ${pose}
+Dynamic natural energy — NOT stiff or mannequin-like. ${genderKey === "womens" ? "Feminine silhouette, natural curves." : "Masculine build, clean lines."}
 
-FINAL CHECK: Before generating, verify each garment matches its reference image in color, pattern, graphic, and silhouette. If a product has text or a logo printed on it, that text/logo must appear correctly on the model's clothing.`;
+═══ LAYER 4: LOCATION + ARCHITECTURE ═══
+${campaign.location}
+${campaign.architecture}
+
+═══ LAYER 5: CAMERA ═══
+${campaign.camera}
+
+═══ LAYER 6: LIGHTING ═══
+${campaign.lighting}
+
+═══ LAYER 7: COLOR GRADE ═══
+${campaign.colorGrade}
+
+═══ LAYER 8: NEGATIVE DIRECTION ═══
+${campaign.negative}
+No text overlays. No watermarks. No mannequins. No flat-lay. No product-only shots. Only styled on-body editorial.
+
+═══ FINAL CHECK ═══
+Full body shot, head to toe, portrait orientation (3:4 aspect ratio).
+Verify each garment matches its reference image in color, pattern, graphic, and silhouette before generating.`;
 
   return { text, imageUrls };
 }
@@ -226,11 +301,9 @@ async function generateHeroImage(
   prompt: { text: string; imageUrls: string[] },
   apiKey: string
 ): Promise<string | null> {
-  // Sanitize URLs: encode special characters that break the AI gateway
   const sanitizedUrls = prompt.imageUrls.slice(0, 6).map(url => {
     try {
       const u = new URL(url);
-      // Re-encode pathname to handle special chars like apostrophes in PUMA URLs
       u.pathname = u.pathname.split('/').map(seg => encodeURIComponent(decodeURIComponent(seg))).join('/');
       return u.toString();
     } catch {
@@ -239,18 +312,14 @@ async function generateHeroImage(
   });
 
   const accessChecks = await Promise.all(
-    sanitizedUrls.map(async (url) => ({
-      url,
-      ok: await checkImageAccessible(url),
-    }))
+    sanitizedUrls.map(async (url) => ({ url, ok: await checkImageAccessible(url) }))
   );
-  const accessibleUrls = accessChecks.filter((c) => c.ok).map((c) => c.url);
+  const accessibleUrls = accessChecks.filter(c => c.ok).map(c => c.url);
   console.log(`Image accessibility: ${accessibleUrls.length}/${prompt.imageUrls.length} accessible`);
 
   const content: Array<{ type: string; text?: string; image_url?: { url: string } }> = [
     { type: "text", text: prompt.text },
   ];
-
   for (const url of accessibleUrls) {
     content.push({ type: "image_url", image_url: { url } });
   }
@@ -310,7 +379,6 @@ async function processOutfit(
   sb: ReturnType<typeof createClient>,
   outfitId: string,
   apiKey: string,
-  bgStyle?: string,
   regenerate = false,
   poseIndex?: number
 ): Promise<{ success: boolean; outfit_id: string; hero_url?: string; error?: string; skipped?: boolean }> {
@@ -330,7 +398,7 @@ async function processOutfit(
 
   const { data: items } = await sb
     .from("weekly_outfit_items")
-    .select("product_name, brand, category, image_url")
+    .select("product_name, brand, category, image_url, price_cents")
     .eq("outfit_id", outfitId)
     .order("position", { ascending: true });
 
@@ -338,9 +406,9 @@ async function processOutfit(
     return { success: false, outfit_id: outfitId, error: "No items in outfit" };
   }
 
-  console.log(`Generating hero for outfit "${outfit.title}" (${items.length} items, gender: ${outfit.gender || "unisex"})`);
+  console.log(`Generating v3 hero for "${outfit.title}" (${items.length} items, ${outfit.gender || "unisex"}, occasion: ${outfit.occasion})`);
 
-  const prompt = buildPrompt(items, outfit.occasion, outfit.gender, bgStyle, poseIndex);
+  const prompt = buildPrompt(items, outfit.occasion, outfit.gender, poseIndex);
   const base64 = await generateHeroImage(prompt, apiKey);
 
   if (!base64) {
@@ -377,7 +445,7 @@ Deno.serve(async (req) => {
     });
   }
 
-  let body: { outfit_id?: string; week_id?: string; background_style?: string; regenerate?: boolean } = {};
+  let body: { outfit_id?: string; week_id?: string; regenerate?: boolean; heroes_only?: boolean } = {};
   try { body = await req.json(); } catch { /* defaults */ }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -387,7 +455,7 @@ Deno.serve(async (req) => {
   // Single outfit
   if (body.outfit_id) {
     try {
-      const result = await processOutfit(sb, body.outfit_id, apiKey, body.background_style, body.regenerate);
+      const result = await processOutfit(sb, body.outfit_id, apiKey, body.regenerate);
       return new Response(JSON.stringify(result), {
         status: result.success ? 200 : 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -403,14 +471,20 @@ Deno.serve(async (req) => {
 
   // Batch by week
   if (body.week_id) {
-    const { data: outfits } = await sb
+    let query = sb
       .from("weekly_outfits")
       .select("id")
       .eq("week_id", body.week_id)
       .eq("is_active", true);
 
+    if (body.heroes_only) {
+      query = query.eq("is_hero", true);
+    }
+
+    const { data: outfits } = await query;
+
     if (!outfits || outfits.length === 0) {
-      return new Response(JSON.stringify({ error: "No outfits found for week", week_id: body.week_id }), {
+      return new Response(JSON.stringify({ error: "No outfits found", week_id: body.week_id }), {
         status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -419,9 +493,9 @@ Deno.serve(async (req) => {
     for (let idx = 0; idx < outfits.length; idx++) {
       const o = outfits[idx];
       try {
-        const result = await processOutfit(sb, o.id, apiKey, body.background_style, body.regenerate, idx);
+        const result = await processOutfit(sb, o.id, apiKey, body.regenerate, idx);
         results.push(result);
-        if (results.length < outfits.length) {
+        if (idx < outfits.length - 1) {
           await new Promise(r => setTimeout(r, 5000));
         }
       } catch (e) {
@@ -444,7 +518,8 @@ Deno.serve(async (req) => {
   }
 
   return new Response(JSON.stringify({
+    version: "v3-editorial",
     usage: "POST with { outfit_id: 'uuid' } or { week_id: '2026-W15' }",
-    options: { background_style: "custom background description", regenerate: true },
+    options: { regenerate: true, heroes_only: true },
   }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
 });
