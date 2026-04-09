@@ -676,13 +676,14 @@ ${swapInstruction}
 RULES:
 - CRITICAL COLOR ACCURACY: The output garment MUST be the EXACT same color as shown in Image B. Match the precise hue, saturation, and tone.
 - CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate, flip, or turn the model. Only copy the GARMENT from Image B, never its pose or camera angle.
-- IDENTITY: The person in the output MUST be the SAME person from Image A — same face, same hair, same body, same skin tone. Do NOT use the model from Image B. Image B is ONLY a garment reference.
+- IDENTITY: The person in the output MUST be the SAME person from Image A — same face, same hair, same body, same skin tone. Do NOT use any model from Image B. Image B is ONLY a garment reference.
+- CRITICAL: The output must contain EXACTLY ONE person — the person from Image A. NEVER generate multiple people, group shots, or collages, even if Image B shows multiple models.
 - Match garment details exactly: color, pattern, fabric texture, neckline, sleeve length, hemline, logos, prints, buttons, zippers.
 - ${bgInstruction}
 - IMAGE QUALITY: Maintain or improve the resolution and sharpness of Image A. Do NOT reduce image quality, introduce blur, compression artifacts, or soften details.
 - ${noResizeInstruction}
 
-Output: A single photorealistic FULL-BODY image showing the person head to feet. No text/watermarks/split views.`;
+Output: A single photorealistic FULL-BODY image showing ONLY ONE person (from Image A) head to feet. No text/watermarks/split views/group shots.`;
     }
 
     const fullBodyImageHint = "Show the person FULL BODY from head to feet — never crop at the waist, torso, or mid-thigh.";
