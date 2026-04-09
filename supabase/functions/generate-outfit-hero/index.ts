@@ -279,6 +279,7 @@ No text overlays. No watermarks. No mannequins. No flat-lay. No product-only sho
 
 ═══ FINAL CHECK ═══
 Full body shot, head to toe, portrait orientation (3:4 aspect ratio).
+${hasFootwear ? "CRITICAL: The model's FEET and SHOES must be FULLY VISIBLE in the frame — do NOT crop at the ankles or calves. Show the complete shoe from toe to heel. The footwear is a key product in this outfit." : ""}
 Verify each garment matches its reference image in color, pattern, graphic, and silhouette before generating.`;
 
   return { text, imageUrls };
