@@ -29,7 +29,22 @@ const WeeklyOutfitsSection = () => {
     return outfits.filter(o => o.occasion === activeOccasion);
   }, [outfits, activeOccasion]);
 
-  if (isLoading || !outfits || outfits.length === 0) return null;
+  if (!outfits || outfits.length === 0) {
+    if (isLoading) {
+      // Reserve space to prevent layout shift
+      return (
+        <div className="mt-2 mb-4">
+          <div className="h-5 w-40 rounded bg-white/5 animate-pulse mb-3" />
+          <div className="flex gap-3 overflow-hidden">
+            {[1, 2].map(i => (
+              <div key={i} className="shrink-0 w-[200px] h-[320px] rounded-2xl bg-white/5 animate-pulse" />
+            ))}
+          </div>
+        </div>
+      );
+    }
+    return null;
+  }
 
   return (
     <div className="mt-2 mb-4">
