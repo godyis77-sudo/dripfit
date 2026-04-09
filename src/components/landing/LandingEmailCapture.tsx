@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { CheckCircle2, Mail, ArrowRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -9,7 +10,7 @@ interface Props {
   buttonText?: string;
 }
 
-export default function LandingEmailCapture({ id, buttonText = 'Get the Cheat Code' }: Props) {
+export default function LandingEmailCapture({ id, buttonText = 'Request Access' }: Props) {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -43,24 +44,27 @@ export default function LandingEmailCapture({ id, buttonText = 'Get the Cheat Co
 
   if (submitted) {
     return (
-      <div className="flex items-center gap-3 justify-center py-4 px-5 rounded-2xl border"
-        style={{ background: 'rgba(212,175,55,0.08)', borderColor: 'rgba(212,175,55,0.2)' }}>
-        <div className="h-8 w-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(212,175,55,0.15)' }}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="flex items-center gap-3 justify-center py-4 px-5 rounded-full bg-primary/10 border border-primary/20"
+      >
+        <div className="h-8 w-8 rounded-full bg-primary/15 flex items-center justify-center">
           <CheckCircle2 className="h-4 w-4 text-primary" />
         </div>
         <div className="text-left">
-          <p className="text-sm font-bold text-foreground">You're on the list!</p>
-          <p className="text-[12px] text-foreground/70">We'll notify you when DripFit launches.</p>
+          <p className="text-sm font-medium text-foreground">You're on the list.</p>
+          <p className="text-xs text-muted-foreground">We'll notify you at launch.</p>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-md">
-      <div className="flex flex-col sm:flex-row gap-2.5">
+      <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input
             type="email"
             required
@@ -68,29 +72,23 @@ export default function LandingEmailCapture({ id, buttonText = 'Get the Cheat Co
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={loading}
-            className="h-12 pl-10 bg-secondary border-border text-foreground placeholder:text-muted-foreground rounded-xl"
+            className="h-13 pl-11 bg-secondary/80 backdrop-blur-sm border-border text-foreground placeholder:text-muted-foreground rounded-full focus-visible:ring-foreground/20 focus-visible:border-foreground/20"
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="h-12 px-7 rounded-md font-bold text-[13px] tracking-[0.08em] uppercase whitespace-nowrap shrink-0 transition-all duration-300 hover:-translate-y-px disabled:opacity-50"
-          style={{
-            background: 'hsl(var(--primary))',
-            color: 'hsl(var(--primary-foreground))',
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.boxShadow = '0 8px 32px rgba(212,175,55,0.3)')}
-          onMouseLeave={(e) => (e.currentTarget.style.boxShadow = 'none')}
+          className="h-13 px-8 rounded-full bg-foreground text-background font-medium text-sm whitespace-nowrap shrink-0 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_8px_32px_hsl(var(--foreground)/0.15)] active:scale-[0.98] disabled:opacity-50"
         >
           {loading ? (
-            <span className="h-4 w-4 border-2 border-current/30 border-t-current rounded-full animate-spin inline-block" />
+            <span className="h-4 w-4 border-2 border-background/30 border-t-background rounded-full animate-spin inline-block" />
           ) : (
-            <span className="flex items-center gap-1.5">{buttonText} <ArrowRight className="h-3.5 w-3.5" /></span>
+            <span className="flex items-center gap-2">{buttonText} <ArrowRight className="h-4 w-4" /></span>
           )}
         </button>
       </div>
-      <p className="text-[11px] text-center mt-3 tracking-wide" style={{ color: 'rgba(255,255,255,0.35)' }}>
-        No spam. Just sizing tips + launch updates.
+      <p className="text-[11px] text-muted-foreground text-center mt-3 tracking-wide">
+        No spam. Just sizing intel + launch updates.
       </p>
     </form>
   );
