@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, ShoppingBag, Flame, Ruler } from 'lucide-react';
 
-import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
@@ -58,11 +57,7 @@ const GalleryPlayground = () => {
     <div className="relative bg-background pb-safe-tab">
       <div className="relative z-10 px-4 pt-2">
         {/* Header — transparent, editorial */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between mb-3"
-        >
+        <div className="flex items-center justify-between mb-3">
           <div>
             <h1 className="font-display text-lg text-primary tracking-[0.15em]">DRIPFIT ✔</h1>
             <p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5">Your personal fitting room</p>
@@ -75,13 +70,10 @@ const GalleryPlayground = () => {
               Sign In
             </button>
           )}
-        </motion.div>
+        </div>
 
         {/* Hero Try-On CTA — glass-gold, primary action first */}
-        <motion.button
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.04 }}
+        <button
           onClick={() => { trackEvent('gallery_hero_tryon'); navigate('/tryon'); }}
           className="w-full mb-3 glass-gold rounded-2xl px-5 py-3 flex items-center gap-3 active:scale-[0.97] transition-transform"
         >
@@ -92,14 +84,11 @@ const GalleryPlayground = () => {
             <p className="font-display text-[15px] text-white">Enter the Change Room</p>
             <p className="text-[11px] text-white/40">Virtual try-on · any piece · your body</p>
           </div>
-        </motion.button>
+        </button>
 
         {/* Size Guide + Drip Drawer — glass-dark panels */}
         <div className="grid grid-cols-2 gap-2 mb-3">
-          <motion.button
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.06 }}
+          <button
             onClick={() => navigate(user && hasScan ? '/profile/body' : '/capture')}
             className="glass-dark rounded-2xl px-3 py-3 flex items-center gap-2 active:scale-[0.97] transition-transform"
           >
@@ -108,12 +97,9 @@ const GalleryPlayground = () => {
               <span className="block text-sm font-semibold text-white leading-tight">Size Guide</span>
               <span className="block text-[11px] text-white/40 leading-tight mt-0.5">Get your perfect fit</span>
             </div>
-          </motion.button>
+          </button>
 
-          <motion.button
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.07 }}
+          <button
             onClick={() => navigate('/closet')}
             className="glass-dark rounded-2xl px-3 py-3 flex items-center gap-2 active:scale-[0.97] transition-transform"
           >
@@ -122,7 +108,7 @@ const GalleryPlayground = () => {
               <span className="block text-sm font-semibold text-white leading-tight">Drip Drawer</span>
               <span className="block text-[11px] text-white/40 leading-tight mt-0.5">Swipe to cop or drop</span>
             </div>
-          </motion.button>
+          </button>
         </div>
 
         {/* Weekly Outfits Hero Section */}
@@ -132,10 +118,7 @@ const GalleryPlayground = () => {
         <OneTapPlayground />
 
         {/* Category pills — glass inactive, glass-gold active */}
-        <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
+        <div
           className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-hide mb-2"
           onTouchStart={e => e.stopPropagation()}
           onTouchEnd={e => e.stopPropagation()}
@@ -153,7 +136,7 @@ const GalleryPlayground = () => {
               {cat.label}
             </button>
           ))}
-        </motion.div>
+        </div>
 
         {/* Browse All — glass-gold pill */}
         <button
@@ -164,12 +147,7 @@ const GalleryPlayground = () => {
         </button>
 
         {/* Product Grid — category-broken like try-on page */}
-        {catalogReady ? <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="mb-6 space-y-2"
-        >
+        {catalogReady ? <div className="mb-6 space-y-2">
           {activeCategory === 'all' ? (
             ALL_PRODUCT_CATEGORIES.map(cat => (
               <CategoryProductGrid
@@ -192,7 +170,7 @@ const GalleryPlayground = () => {
               onSelectProduct={handleSelectProduct}
             />
           )}
-        </motion.div> : (
+        </div> : (
           <div className="mb-6 space-y-3">
             {[1,2,3].map(i => (
               <div key={i} className="h-32 rounded-xl bg-white/5 animate-pulse" />
