@@ -72,12 +72,12 @@ function calcGradeSteps(sizeData: SizeEntry[], measurementKeys: string[]): Recor
 
 function scoreMeasurement(userVal: number, min: number, max: number): number {
   const mid = (min + max) / 2;
-  const sigma = (max - min) / 2 || 1;
+  const range = max - min || 1;
+  // Use 1.2× half-range as sigma so users within the range still score high
+  const sigma = (range / 2) * 1.2;
   const distance = Math.abs(userVal - mid);
   const base = Math.exp(-0.5 * (distance / sigma) ** 2);
-  // Ease bias: slight bonus when user sits in the lower half of the range
-  // (more room = more comfortable). Penalty when squeezed at the top.
-  const position = (userVal - min) / (max - min || 1); // 0=at min, 1=at max
+  const position = (userVal - min) / (range || 1);
   const easeBias = position <= 0.5 ? 0.02 : -0.02 * ((position - 0.5) / 0.5);
   return Math.max(0, Math.min(1, base + easeBias));
 }
@@ -322,8 +322,8 @@ Deno.serve(async (req) => {
 
         // Default spread (cm) when only a single measurement point exists — matches client sizeEngine.ts
         const DEFAULT_SPREAD: Record<string, number> = {
-          chest: 4, waist: 4, hip: 4, hips: 4, shoulder: 2,
-          inseam: 3, sleeve: 2, height: 5, shoe_length: 0.5,
+          chest: 6, waist: 6, hip: 7, hips: 7, shoulder: 3,
+          inseam: 4, sleeve: 3, height: 6, shoe_length: 0.5,
         };
 
         for (const [measurement, weight] of Object.entries(weights)) {
