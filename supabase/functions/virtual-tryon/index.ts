@@ -541,18 +541,28 @@ TASK — FOOTWEAR SWAP:
 
 Output: A single photorealistic FULL-BODY image showing the person head to feet. No text/watermarks/split views.`;
     } else if ((isAccessory || isLayering) && !isIntimateGarment) {
+      const accessoryLayoutGuard = isBelt
+        ? 'BELT-SPECIFIC: The belt MUST be clearly visible around the waist, worn OVER the existing clothing. Show the full belt including buckle/chain details. Do NOT hide it under clothing layers.'
+        : 'ACCESSORY-SPECIFIC: Image B may be a retail product card, collage, or multi-model photo. Extract ONLY the accessory item itself and DISCARD any person, body, pose, white frame, banner, padding, studio card layout, duplicate figure, or side-by-side composition from Image B. The final image must keep the original single-person framing from Image A only.';
+      const accessoryBagGuard = /\b(bag|bags|purse|handbag)\b/.test(normalizedProductContext)
+        ? 'BAG-SPECIFIC: Place exactly ONE bag on the person from Image A at a natural shoulder/hand/crossbody position. Never duplicate the person. Never create a second copy of the model to display the bag. Never include white margins, product-card borders, split panels, or showroom banners from Image B.'
+        : '';
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
 IMAGES PROVIDED:
-- Image A (first image below): A person — preserve their face, body, pose EXACTLY.
-- Image B (second image below): The target accessory reference.
+- Image A (first image below): The ONLY person allowed in the final image — preserve this person's face, body, pose, framing, and background EXACTLY.
+- Image B (second image below): The target accessory reference only.
 
 TARGET ACCESSORY:
 - The accessory shown in Image B.${productHint}
 
 TASK: Add the accessory from Image B onto the person in Image A. Match the target item exactly (color, shape, material, branding).
-${itemLower.includes('belt') ? 'BELT-SPECIFIC: The belt MUST be clearly visible around the waist, worn OVER the existing clothing. Show the full belt including buckle/chain details. Do NOT hide it under clothing layers.' : ''}
-${bgInstruction} Correct scale, lighting, shadows. No text/watermarks.
+- PERSON COUNT: Output ONE person only — the person already present in Image A.
+- COMPOSITION LOCK: Keep the camera framing, crop, spacing, and background from Image A only.
+- Never copy any model, mannequin, hand, torso, duplicate figure, side-by-side layout, white padding, card frame, or banner from Image B.
+- ${accessoryLayoutGuard}
+${accessoryBagGuard ? `- ${accessoryBagGuard}\n` : ''}- ${bgInstruction}
+- Correct scale, lighting, shadows. No text/watermarks.
 
 IMAGE QUALITY: Maintain or improve the resolution and sharpness of Image A. Do NOT reduce image quality, introduce blur, compression artifacts, or soften details. The output must be at least as sharp and detailed as Image A.
 ${noResizeInstruction}`;
