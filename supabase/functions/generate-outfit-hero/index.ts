@@ -317,36 +317,54 @@ async function generateHeroImage(
   const accessibleUrls = accessChecks.filter(c => c.ok).map(c => c.url);
   console.log(`Image accessibility: ${accessibleUrls.length}/${prompt.imageUrls.length} accessible`);
 
-  const content: Array<{ type: string; text?: string; image_url?: { url: string } }> = [
-    { type: "text", text: prompt.text },
-  ];
-  for (const url of accessibleUrls) {
-    content.push({ type: "image_url", image_url: { url } });
+  // Try with images first, then without if Google can't fetch them
+  for (const useImages of [true, false]) {
+    const content: Array<{ type: string; text?: string; image_url?: { url: string } }> = [
+      { type: "text", text: prompt.text },
+    ];
+    if (useImages && accessibleUrls.length > 0) {
+      for (const url of accessibleUrls) {
+        content.push({ type: "image_url", image_url: { url } });
+      }
+    } else if (useImages) {
+      continue; // no images to try, skip to text-only
+    }
+
+    if (!useImages) {
+      console.log("Retrying without image URLs (text-only prompt)");
+    }
+
+    const res = await fetch(AI_GATEWAY, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: IMAGE_MODEL,
+        messages: [{ role: "user", content }],
+        modalities: ["image", "text"],
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error(`AI gateway error ${res.status}:`, errText);
+      if (res.status === 429) throw new Error("RATE_LIMITED");
+      if (res.status === 402) throw new Error("PAYMENT_REQUIRED");
+      // On 400 (image fetch failed), retry without images
+      if (res.status === 400 && useImages) {
+        console.log("Got 400 with images, will retry text-only...");
+        continue;
+      }
+      return null;
+    }
+
+    const data = await res.json();
+    return data.choices?.[0]?.message?.images?.[0]?.image_url?.url || null;
   }
 
-  const res = await fetch(AI_GATEWAY, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: IMAGE_MODEL,
-      messages: [{ role: "user", content }],
-      modalities: ["image", "text"],
-    }),
-  });
-
-  if (!res.ok) {
-    const errText = await res.text();
-    console.error(`AI gateway error ${res.status}:`, errText);
-    if (res.status === 429) throw new Error("RATE_LIMITED");
-    if (res.status === 402) throw new Error("PAYMENT_REQUIRED");
-    return null;
-  }
-
-  const data = await res.json();
-  return data.choices?.[0]?.message?.images?.[0]?.image_url?.url || null;
+  return null;
 }
 
 /* ── Storage upload ───────────────────────────────────────────── */
