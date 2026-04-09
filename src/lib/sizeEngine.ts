@@ -135,10 +135,13 @@ const DEFAULT_WEIGHTS: Record<string, number> = {
  */
 export function scoreMeasurement(userVal: number, chartMin: number, chartMax: number): number {
   const mid = (chartMin + chartMax) / 2;
-  const sigma = (chartMax - chartMin) / 2 || 1;
+  const range = chartMax - chartMin || 1;
+  // Use 1.2× half-range as sigma so users within the range still score high
+  // (old sigma = range/2 was too tight — 1cm outside range already tanked scores)
+  const sigma = (range / 2) * 1.2;
   const distance = Math.abs(userVal - mid);
   const base = Math.exp(-0.5 * (distance / sigma) ** 2);
-  const position = (userVal - chartMin) / (chartMax - chartMin || 1);
+  const position = (userVal - chartMin) / (range || 1);
   const easeBias = position <= 0.5 ? 0.02 : -0.02 * ((position - 0.5) / 0.5);
   return Math.max(0, Math.min(1, base + easeBias));
 }
@@ -175,8 +178,8 @@ export function getUserMid(user: UserMeasurements, key: string): number | null {
  */
 // Default spread (cm) when only a single measurement point exists
 const DEFAULT_SPREAD: Record<string, number> = {
-  chest: 4, waist: 4, hip: 4, hips: 4, shoulder: 2,
-  inseam: 3, sleeve: 2, height: 5, shoe_length: 0.5,
+  chest: 6, waist: 6, hip: 7, hips: 7, shoulder: 3,
+  inseam: 4, sleeve: 3, height: 6, shoe_length: 0.5,
 };
 
 function normalizeInlineRow(row: InlineSizeChartRow): SizeChartRow {
@@ -227,6 +230,46 @@ function calcGradeSteps(rows: SizeChartRow[], measurementKeys: string[]): Record
   return steps;
 }
 
+/**
+ * Pre-processes rows to infer missing max values from adjacent sizes.
+ * E.g. if size S has hip_min=91 and size M has hip_min=98, then S gets hip_max=98.
+ */
+function inferAdjacentRanges(rows: SizeChartRow[]): SizeChartRow[] {
+  const keys = ['chest', 'waist', 'hip', 'inseam', 'shoulder', 'sleeve', 'height'] as const;
+  const result = rows.map(r => ({ ...r }));
+
+  for (const key of keys) {
+    const minK = `${key}_min` as keyof SizeChartRow;
+    const maxK = `${key}_max` as keyof SizeChartRow;
+
+    for (let i = 0; i < result.length; i++) {
+      const row = result[i];
+      const lo = row[minK] as number | null;
+      const hi = row[maxK] as number | null;
+
+      if (lo != null && hi == null) {
+        // Try to use next size's min as this size's max
+        if (i + 1 < result.length) {
+          const nextMin = result[i + 1][minK] as number | null;
+          if (nextMin != null && nextMin > lo) {
+            (row as any)[maxK] = nextMin;
+            continue;
+          }
+        }
+        // Fallback: use previous size gap or default spread
+        if (i > 0) {
+          const prevMin = result[i - 1][minK] as number | null;
+          if (prevMin != null) {
+            (row as any)[maxK] = lo + (lo - prevMin);
+            continue;
+          }
+        }
+      }
+    }
+  }
+  return result;
+}
+
 function scoreChartRows(
   rows: SizeChartRow[],
   user: UserMeasurements,
@@ -246,12 +289,13 @@ function scoreChartRows(
       .sort((a, b) => b.score - a.score);
   }
 
+  const processed = inferAdjacentRanges(rows);
   const weights = CATEGORY_WEIGHTS[category] || DEFAULT_WEIGHTS;
   const adjustableKeys = Object.keys(weights).filter((key) => FIT_ADJUSTABLE.has(key));
-  const gradeSteps = calcGradeSteps(rows, adjustableKeys);
+  const gradeSteps = calcGradeSteps(processed, adjustableKeys);
   const fitFraction = FIT_FRACTION[fit] ?? 0;
 
-  return rows
+  return processed
     .map((row) => {
       let totalScore = 0;
       let totalWeight = 0;
