@@ -528,7 +528,7 @@ IMAGES PROVIDED:
 
 TARGET FOOTWEAR:
 - The shoes shown in Image B.${productHint}
-- IMPORTANT: If Image B shows a full-body photo of a person, use the product name above to identify ONLY the footwear and ignore all other clothing.
+- IMPORTANT: Image B is ONLY a product reference. If it shows one or multiple people, IGNORE them all — extract ONLY the footwear design. Output must show ONLY the single person from Image A.
 
 TASK — FOOTWEAR SWAP:
 1. REMOVE whatever shoes/footwear the person in Image A is currently wearing.
@@ -550,7 +550,7 @@ IMAGES PROVIDED:
 
 TARGET ACCESSORY:
 - The accessory shown in Image B.${productHint}
-- IMPORTANT: If Image B shows a full-body photo of a person, use the product name above to identify ONLY the specific accessory and ignore all other clothing.
+- IMPORTANT: Image B is ONLY a product reference. If it shows one or multiple people, IGNORE them all — extract ONLY the specific accessory. Output must show ONLY the single person from Image A.
 
 TASK: Add the accessory from Image B onto the person in Image A. Match the target item exactly (color, shape, material, branding).
 ${itemLower.includes('belt') ? 'BELT-SPECIFIC: The belt MUST be clearly visible around the waist, worn OVER the existing clothing. Show the full belt including buckle/chain details. Do NOT hide it under clothing layers.' : ''}
