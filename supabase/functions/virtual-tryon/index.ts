@@ -866,8 +866,8 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
                   ]
                 : [
                     { model: "google/gemini-3.1-flash-image-preview", prompt, label: `${typeLabel}-flash-primary`, timeoutMs: 28_000 },
-                    { model: "google/gemini-2.5-flash-image", prompt: fallbackPrompt, label: `${typeLabel}-nano-retry`, timeoutMs: 20_000 },
-                    { model: "google/gemini-3-pro-image-preview", prompt: fallbackPrompt, label: `${typeLabel}-pro-retry`, timeoutMs: 18_000 },
+                    { model: "google/gemini-2.5-flash-image", prompt: accessoryRetryPrompt, label: `${typeLabel}-nano-retry`, timeoutMs: 20_000 },
+                    { model: "google/gemini-3-pro-image-preview", prompt: accessoryRetryPrompt, label: `${typeLabel}-pro-retry`, timeoutMs: 18_000 },
                   ]
             )
           : [
