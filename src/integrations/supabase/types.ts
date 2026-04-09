@@ -548,6 +548,42 @@ export type Database = {
         }
         Relationships: []
       }
+      outfit_editorial_templates: {
+        Row: {
+          background_prompt: string
+          color_grade: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          model_prompt: string
+          mood: string | null
+          occasion: string
+          season: string | null
+        }
+        Insert: {
+          background_prompt: string
+          color_grade?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          model_prompt: string
+          mood?: string | null
+          occasion: string
+          season?: string | null
+        }
+        Update: {
+          background_prompt?: string
+          color_grade?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          model_prompt?: string
+          mood?: string | null
+          occasion?: string
+          season?: string | null
+        }
+        Relationships: []
+      }
       outfit_items: {
         Row: {
           created_at: string
