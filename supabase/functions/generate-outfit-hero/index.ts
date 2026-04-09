@@ -226,8 +226,20 @@ async function generateHeroImage(
   prompt: { text: string; imageUrls: string[] },
   apiKey: string
 ): Promise<string | null> {
+  // Sanitize URLs: encode special characters that break the AI gateway
+  const sanitizedUrls = prompt.imageUrls.slice(0, 6).map(url => {
+    try {
+      const u = new URL(url);
+      // Re-encode pathname to handle special chars like apostrophes in PUMA URLs
+      u.pathname = u.pathname.split('/').map(seg => encodeURIComponent(decodeURIComponent(seg))).join('/');
+      return u.toString();
+    } catch {
+      return url;
+    }
+  });
+
   const accessChecks = await Promise.all(
-    prompt.imageUrls.slice(0, 6).map(async (url) => ({
+    sanitizedUrls.map(async (url) => ({
       url,
       ok: await checkImageAccessible(url),
     }))
@@ -410,12 +422,13 @@ Deno.serve(async (req) => {
         const result = await processOutfit(sb, o.id, apiKey, body.background_style, body.regenerate, idx);
         results.push(result);
         if (results.length < outfits.length) {
-          await new Promise(r => setTimeout(r, 2000));
+          await new Promise(r => setTimeout(r, 5000));
         }
       } catch (e) {
         results.push({ success: false, outfit_id: o.id, error: e instanceof Error ? e.message : "Unknown" });
         if (e instanceof Error && e.message === "RATE_LIMITED") {
-          await new Promise(r => setTimeout(r, 10000));
+          console.log(`Rate limited on outfit ${o.id}, backing off 30s…`);
+          await new Promise(r => setTimeout(r, 30000));
         }
       }
     }
