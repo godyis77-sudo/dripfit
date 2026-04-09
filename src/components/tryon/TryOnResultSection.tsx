@@ -249,6 +249,7 @@ const TryOnResultSection = ({
   const [accessoryStepIndex, setAccessoryStepIndex] = useState(0);
   const [showResultFullscreen, setShowResultFullscreen] = useState(false);
   const [showBeforeAfter, setShowBeforeAfter] = useState(false);
+  const [resultImageIsLandscape, setResultImageIsLandscape] = useState(false);
   const [showBgSwap, setShowBgSwap] = useState(false);
   const [sharingDripCard, setSharingDripCard] = useState(false);
   const [shareFallbackOpen, setShareFallbackOpen] = useState(false);
@@ -432,6 +433,31 @@ const TryOnResultSection = ({
   const compareBeforeImage = layerHistory.length > 0 ? layerHistory[layerHistory.length - 1] : userPhoto;
   const hasCompareBeforeImage = !!compareBeforeImage;
 
+  useEffect(() => {
+    if (!resultImage) {
+      setResultImageIsLandscape(false);
+      return;
+    }
+
+    let cancelled = false;
+    const probe = new window.Image();
+
+    probe.onload = () => {
+      if (cancelled) return;
+      setResultImageIsLandscape(probe.naturalWidth > probe.naturalHeight);
+    };
+
+    probe.onerror = () => {
+      if (!cancelled) setResultImageIsLandscape(false);
+    };
+
+    probe.src = resultImage;
+
+    return () => {
+      cancelled = true;
+    };
+  }, [resultImage]);
+
   return (
     <>
       {/* Success Overlay with Share Nudge */}
@@ -471,8 +497,18 @@ const TryOnResultSection = ({
                   </div>
                 </motion.div>
               ) : (
-                <motion.div key="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full rounded-2xl overflow-hidden bg-muted">
-                  <img src={resultImage} alt="Try-on result" className="block w-full h-auto" />
+                <motion.div
+                  key="result"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className={resultImageIsLandscape ? 'relative w-full aspect-[3/4] rounded-2xl overflow-hidden bg-muted' : 'w-full rounded-2xl overflow-hidden bg-muted'}
+                >
+                  <img
+                    src={resultImage}
+                    alt="Try-on result"
+                    className={resultImageIsLandscape ? 'absolute inset-0 h-full w-full object-cover object-center' : 'block w-full h-auto'}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
