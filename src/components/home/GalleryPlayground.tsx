@@ -59,8 +59,8 @@ const GalleryPlayground = () => {
         {/* Header — transparent, editorial */}
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h1 className="font-sans text-2xl font-bold text-white tracking-tight">DRIPFIT <span className="text-primary">✔</span></h1>
-            <p className="text-xs tracking-[0.2em] uppercase <p className="text-xs tracking-[0.2em] uppercase text-foreground/70 mt-0.5 mb-3">Your Body. Mapped.</p> mt-0.5 mb-3">Your Body. Mapped.</p>
+            <h1 className="font-sans text-2xl font-bold text-foreground tracking-tight">DRIPFIT <span className="text-primary">✔</span></h1>
+            <p className="text-xs tracking-[0.2em] uppercase text-foreground/70 mt-0.5 mb-3">Your Body. Mapped.</p>
           </div>
           {!user && (
             <button
