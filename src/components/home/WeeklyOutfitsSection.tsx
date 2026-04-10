@@ -1,9 +1,24 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Share2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useWeeklyOutfits, type WeeklyOutfit } from '@/hooks/useWeeklyOutfits';
 import { useAuth } from '@/hooks/useAuth';
 import InlineCrown from '@/components/ui/InlineCrown';
+
+const APP_URL = 'https://dripfitcheck.lovable.app';
+
+function handleShare(title: string, e: React.MouseEvent) {
+  e.stopPropagation();
+  const url = `${APP_URL}/outfits-weekly`;
+  const text = `Check out "${title}" on DRIPFIT`;
+  if (navigator.share) {
+    navigator.share({ title, text, url }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(`${text} ${url}`).then(() => toast.success('Link copied!')).catch(() => toast.error('Could not copy link'));
+  }
+}
 
 const WeeklyOutfitsSection = () => {
   const navigate = useNavigate();
