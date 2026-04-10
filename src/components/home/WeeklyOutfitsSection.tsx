@@ -135,6 +135,15 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
           className="absolute inset-0 w-full h-full object-cover object-top"
           loading="lazy"
         />
+        {/* Share button */}
+        <button
+          onClick={(e) => handleShare(outfit.title, e)}
+          className="absolute top-3 right-3 z-20 h-8 w-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white/60 hover:text-white transition-colors"
+          aria-label="Share"
+        >
+          <Share2 size={16} />
+        </button>
+
         {/* Bottom gradient overlay */}
         <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
 
@@ -170,6 +179,13 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
       className="snap-start shrink-0 w-[280px] aspect-[3/4] rounded-2xl overflow-hidden text-left active:scale-[0.97] transition-transform glass-dark border border-white/5 flex flex-col justify-end p-3.5"
       whileTap={{ scale: 0.97 }}
     >
+      <button
+        onClick={(e) => handleShare(outfit.title, e)}
+        className="absolute top-3 right-3 z-20 h-8 w-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white/60 hover:text-white transition-colors"
+        aria-label="Share"
+      >
+        <Share2 size={16} />
+      </button>
       <p className="text-base font-display font-bold text-white leading-tight truncate">{outfit.title}</p>
       <div className="flex items-center gap-2 mt-1">
         {outfit.total_price_cents > 0 && (
