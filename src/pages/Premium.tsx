@@ -3,7 +3,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import BottomTabBar from '@/components/BottomTabBar';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Check, Sparkles, Ruler, Shirt, MessageSquare, Store, Shield, Zap, BarChart3, Eye, Star, Ban, Loader2, Quote } from 'lucide-react';
+import { ArrowLeft, Check, Sparkles, Ruler, Shirt, MessageSquare, Store, Shield, Zap, BarChart3, Eye, Star, Ban, Loader2, Quote, RotateCcw } from 'lucide-react';
 import InlineCrown from '@/components/ui/InlineCrown';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { trackEvent } from '@/lib/analytics';
@@ -13,6 +13,7 @@ import { motion } from 'framer-motion';
 import { useAuth, STRIPE_TIERS } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { isNativeIOS } from '@/lib/platform';
 
 const PLANS = [
   { key: 'annual' as const, label: 'Annual', price: '$4.17', period: '/mo', badge: 'Best Value', total: 'Billed $49.99/year (save 48%)', trial: '7-day free trial' },
