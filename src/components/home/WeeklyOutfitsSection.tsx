@@ -65,10 +65,10 @@ const WeeklyOutfitsSection = () => {
     <div className="mt-2 mb-4">
       <div className="flex items-center justify-between mb-3">
         <div>
-          <h2 className="font-display text-lg text-white">
+          <h2 className="font-display text-[22px] font-semibold text-foreground tracking-tight">
             This Week's Drip
           </h2>
-          <p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5"><p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5">Verified fits · curated weekly</p></p>
+          <p className="font-sans text-[13px] font-medium tracking-[0.15em] uppercase text-foreground/70 mt-0.5">Verified fits · curated weekly</p>
         </div>
         <button
           onClick={() => navigate('/outfits-weekly')}

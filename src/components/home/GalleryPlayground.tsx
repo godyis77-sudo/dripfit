@@ -59,8 +59,8 @@ const GalleryPlayground = () => {
         {/* Header — transparent, editorial */}
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h1 className="font-sans text-2xl font-bold text-foreground tracking-tight">DRIPFIT <span className="text-primary">✔</span></h1>
-            <p className="text-xs tracking-[0.2em] uppercase text-foreground/70 mt-0.5 mb-3">Your Body. Mapped.</p>
+            <h1 className="font-display text-[28px] font-extrabold text-foreground uppercase tracking-tight">DRIPFIT <span className="text-primary text-[22px]">✔</span></h1>
+            <p className="font-sans text-[13px] font-medium tracking-[0.15em] uppercase text-foreground/70 mt-1 mb-3">Your Body. Mapped.</p>
           </div>
           {!user && (
             <button
@@ -74,7 +74,7 @@ const GalleryPlayground = () => {
 
         {/* Stats bar */}
         <p
-          className="text-center text-[10px] tracking-wider uppercase text-muted-foreground/60 mb-4"
+          className="text-[10px] tracking-[0.12em] uppercase text-muted-foreground mb-4"
           style={{ fontFamily: '"DM Mono", monospace' }}
         >
           7,000+ pieces · 130 brands · 69 retailers
@@ -83,14 +83,14 @@ const GalleryPlayground = () => {
         {/* Hero Try-On CTA — glass-gold, primary action first */}
         <div
           onClick={() => { trackEvent('gallery_hero_tryon'); navigate(hasScan ? '/tryon' : '/capture'); }}
-          className={`w-full mb-3 glass-gold rounded-2xl px-5 flex items-center gap-3 active:scale-[0.97] transition-transform cursor-pointer ${!hasScan && user ? 'py-5' : 'py-3'}`}
+          className={`w-full mb-3 bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-5 flex items-center gap-3 active:scale-[0.97] transition-all cursor-pointer hover:bg-white/[0.05] ${!hasScan && user ? 'py-5' : 'py-4'}`}
         >
-          <div className="h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0 opacity-70">
+          <div className="h-12 w-12 rounded-xl bg-white/[0.06] flex items-center justify-center shrink-0">
             <FeatureIcon name="tryon" size={40} />
           </div>
           <div className="text-left flex-1">
-            <p className="font-display text-[15px] text-white">The Infinite Closet</p>
-            <p className="text-[11px] text-white/40">7,000 pieces. Your exact silhouette.</p>
+            <p className="font-display text-[22px] font-semibold text-foreground leading-tight tracking-tight">The Infinite Closet</p>
+            <p className="font-sans text-[14px] text-muted-foreground mt-1">7,000 pieces. Your exact silhouette.</p>
             {!hasScan && user && (
               <button
                 onClick={(e) => { e.stopPropagation(); navigate('/capture'); }}
@@ -103,26 +103,26 @@ const GalleryPlayground = () => {
         </div>
 
         {/* Size Guide + Drip Drawer — glass-dark panels */}
-        <div className="grid grid-cols-2 gap-2 mb-3">
+        <div className="grid grid-cols-2 gap-3 mb-3">
           <button
             onClick={() => navigate(user && hasScan ? '/profile/body' : '/capture')}
-            className="glass-dark rounded-2xl px-3 py-3 flex items-center gap-2 active:scale-[0.97] transition-transform"
+            className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 py-4 flex items-center gap-2.5 active:scale-[0.97] transition-all hover:bg-white/[0.05]"
           >
-            <Ruler className="h-5 w-5 text-white/60 shrink-0" />
+            <Ruler className="h-5 w-5 text-muted-foreground shrink-0" />
             <div className="text-left">
-              <span className="block text-sm font-semibold text-white leading-tight">Your Verified Size</span>
-              <span className="block text-[11px] text-white/40 leading-tight mt-0.5">Mapped across 130 brands</span>
+              <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">Your Verified Size</span>
+              <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Mapped across 130 brands</span>
             </div>
           </button>
 
           <button
             onClick={() => navigate('/closet')}
-            className="glass-dark rounded-2xl px-3 py-3 flex items-center gap-2 active:scale-[0.97] transition-transform"
+            className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 py-4 flex items-center gap-2.5 active:scale-[0.97] transition-all hover:bg-white/[0.05]"
           >
-            <Flame className="h-5 w-5 text-white/60 shrink-0" />
+            <Flame className="h-5 w-5 text-muted-foreground shrink-0" />
             <div className="text-left">
-              <span className="block text-sm font-semibold text-white leading-tight">COP / DROP</span>
-              <span className="block text-[11px] text-white/40 leading-tight mt-0.5"><span className="block text-[11px] text-white/40 leading-tight mt-0.5">Your Body Twins weigh in.</span></span>
+              <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">COP / DROP</span>
+              <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Your Body Twins weigh in.</span>
             </div>
           </button>
         </div>

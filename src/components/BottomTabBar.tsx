@@ -73,14 +73,14 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
               )}
             >
               <div className={cn(
-                'h-11 w-11 flex items-center justify-center rounded-xl transition-all duration-300',
+                'h-8 w-8 flex items-center justify-center rounded-lg transition-all duration-300',
                 isActive && 'scale-110 shadow-gold-glow shimmer-sweep ring-1 ring-primary/40'
               )}>
-                <FeatureIcon name={tab.icon} size={44} />
+                <FeatureIcon name={tab.icon} size={20} />
               </div>
               <span className={cn(
-                "text-[9px] font-bold tracking-wider uppercase transition-all duration-300",
-                isActive ? 'text-primary' : 'text-white/25'
+                "text-[10px] font-semibold tracking-[0.1em] uppercase transition-all duration-300 mt-0.5",
+                isActive ? 'text-primary' : 'text-muted-foreground'
               )}>{tab.label}</span>
               {isActive && (
                 <motion.div
