@@ -200,7 +200,9 @@ type FunnelEvent =
   | 'share_story_generated'
   | 'share_post_link_copied'
   | 'closet_cop'
-  | 'closet_drop';
+  | 'closet_drop'
+  | 'premium_started_ios_iap'
+  | 'premium_restore_ios';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
