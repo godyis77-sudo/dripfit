@@ -9,7 +9,7 @@ import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import { ALL_PRODUCT_CATEGORIES } from '@/components/tryon/tryon-constants';
 import { useProfileInfo, useLatestScan, useTrendingFits } from '@/hooks/useProfileData';
 import TrendingFitsGrid from '@/components/home/TrendingFitsGrid';
-import HomeFAB from '@/components/home/HomeFAB';
+
 import { useForYourFit } from '@/hooks/useForYourFit';
 import { thumbnailUrl } from '@/lib/imageOptimize';
 
@@ -343,7 +343,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
         </motion.div>
       </div>
 
-      <HomeFAB />
+      
     </div>
   );
 });
