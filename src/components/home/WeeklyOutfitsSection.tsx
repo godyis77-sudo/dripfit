@@ -72,7 +72,6 @@ const WeeklyOutfitsSection = () => {
               active={activeOccasion === oc.key}
               onClick={() => setActiveOccasion(oc.key)}
               label={oc.label}
-              emoji={oc.emoji}
             />
           ))}
         </div>
