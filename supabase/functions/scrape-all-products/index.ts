@@ -1,4 +1,5 @@
 import { successResponse, errorResponse, getCorsHeaders } from "../_shared/validation.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // All brand/category combos — using granular, website-standard category terms
 const BRAND_CATEGORIES: Record<string, string[]> = {
