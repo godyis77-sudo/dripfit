@@ -59,8 +59,8 @@ const GalleryPlayground = () => {
         {/* Header — transparent, editorial */}
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h1 className="font-display text-lg text-primary tracking-[0.15em]">DripFit <span className="text-primary">✔</span></h1>
-            <p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5">Your Body. Mapped.</p>
+            <h1 className="font-sans text-2xl font-bold text-foreground tracking-tight">DRIPFIT <span className="text-primary">✔</span></h1>
+            <p className="text-xs tracking-[0.2em] uppercase text-foreground/70 mt-0.5 mb-3">Your Body. Mapped.</p>
           </div>
           {!user && (
             <button
@@ -74,7 +74,7 @@ const GalleryPlayground = () => {
 
         {/* Stats bar */}
         <p
-          className="text-center text-[10px] tracking-widest uppercase text-muted-foreground/60 mb-3"
+          className="text-center text-[10px] tracking-wider uppercase text-muted-foreground/60 mb-4"
           style={{ fontFamily: '"DM Mono", monospace' }}
         >
           7,000+ pieces · 130 brands · 69 retailers
@@ -122,7 +122,7 @@ const GalleryPlayground = () => {
             <Flame className="h-5 w-5 text-white/60 shrink-0" />
             <div className="text-left">
               <span className="block text-sm font-semibold text-white leading-tight">COP / DROP</span>
-              <span className="block text-[11px] text-white/40 leading-tight mt-0.5">Your Body Twins weigh in</span>
+              <span className="block text-[11px] text-white/40 leading-tight mt-0.5"><span className="block text-[11px] text-white/40 leading-tight mt-0.5">Your Body Twins weigh in.</span></span>
             </div>
           </button>
         </div>

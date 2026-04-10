@@ -68,7 +68,7 @@ const WeeklyOutfitsSection = () => {
           <h2 className="font-display text-lg text-white">
             This Week's Drip
           </h2>
-          <p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5">Verified fits · styled for your week</p>
+          <p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5"><p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5">Verified fits · curated weekly</p></p>
         </div>
         <button
           onClick={() => navigate('/outfits-weekly')}
