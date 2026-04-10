@@ -17,8 +17,8 @@ const CommunityHeader = ({ cartCount, onPostLook }: CommunityHeaderProps) => {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="font-display text-lg font-bold text-primary">Style Check</h1>
-          <p className="text-[11px] tracking-[0.1em] uppercase text-white/40">Get real opinions before you buy</p>
+          <h1 className="type-headline text-lg text-primary">Style Check</h1>
+          <p className="type-tagline" style={{ fontSize: 11 }}>Get real opinions before you buy</p>
         </div>
       </div>
       <div className="flex items-center gap-1.5">

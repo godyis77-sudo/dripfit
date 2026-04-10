@@ -21,19 +21,19 @@ export default function LandingHero() {
           <FadeIn>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-8 rounded-full border border-border bg-secondary/60">
               <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-              <span className="font-mono text-[10px] tracking-[.2em] uppercase text-muted-foreground">Technical Infrastructure for Fashion Culture</span>
+              <span className="type-data">Technical Infrastructure for Fashion Culture</span>
             </div>
           </FadeIn>
 
           <FadeIn delay={0.08}>
-            <h1 className="font-display text-5xl md:text-7xl font-extrabold leading-[1.05] tracking-tight mb-7">
+            <h1 className="type-brand text-5xl md:text-7xl leading-[1.05] mb-7" style={{ letterSpacing: '-0.02em' }}>
               Stop Praying<br />
               <span className="text-primary">It Fits.</span>
             </h1>
           </FadeIn>
 
           <FadeIn delay={0.16}>
-            <p className="text-muted-foreground text-lg md:text-xl leading-relaxed max-w-md mb-10 font-light">
+            <p className="type-body text-lg md:text-xl leading-relaxed max-w-md mb-10 font-light">
               AI biometric scanner maps your exact body to 7,000 pieces across 130 brands. Perfect drape. Verified before checkout.
             </p>
           </FadeIn>
@@ -46,8 +46,8 @@ export default function LandingHero() {
             <div className="flex gap-10 mt-14 pt-8 border-t border-border/30">
               {STATS.map((s) => (
                 <div key={s.l} className="text-center">
-                  <div className="font-display text-3xl font-bold text-primary">{s.v}</div>
-                  <div className="font-mono text-[10px] tracking-[.15em] uppercase text-muted-foreground/60 mt-1">{s.l}</div>
+                  <div className="type-headline text-3xl text-primary">{s.v}</div>
+                  <div className="type-data mt-1">{s.l}</div>
                 </div>
               ))}
             </div>
