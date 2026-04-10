@@ -1,46 +1,41 @@
 
 
-## Plan: Add Smooth Scroll Animations to Product Grids
+## Review Summary & Action Plan
 
-### What This Does
-Adds a staggered fade-in + slide-up animation to product cards as they scroll into view, giving all product grids a polished, app-like feel. Cards will appear smoothly as you scroll rather than popping in all at once.
+### What's Already Solved
 
-### Approach
-Use the Intersection Observer API via a lightweight custom hook (`useScrollReveal`) to detect when cards enter the viewport, then apply a CSS transition for fade + translate. This avoids heavy JS animation libraries and keeps scrolling at 60fps.
+The reviewer raised three landing page concerns. Two are already addressed in the current V2 build:
 
-### Files to Create/Edit
+1. **Email capture above the fold** — Already done. `LandingEmailCapture` is in the hero section (line 42 of `LandingHero.tsx`).
+2. **Competing CTAs removed** — The "Watch It Work" outline button was eliminated in the V2 rebuild. Only "Map Your Body" remains.
+3. **Hero CTA destination** — Currently submits to `waitlist_signups`. Once the app is live on stores, this should link to the app store listing. No change needed yet.
 
-1. **Create `src/hooks/useScrollReveal.ts`**
-   - Custom hook using `IntersectionObserver` with a small `rootMargin` threshold
-   - Returns a `ref` callback that registers each card element
-   - Marks elements as "revealed" with a data attribute or class when they enter the viewport
-   - Supports stagger delay based on index
+### What Needs Fixing: Scraper Queue Architecture
 
-2. **Create `src/components/ui/ScrollRevealGrid.tsx`**
-   - A wrapper component that replaces raw `div className="grid grid-cols-2 gap-..."` grids
-   - Accepts `children` and applies the reveal hook to each child via `React.Children.map` + `cloneElement`
-   - Alternatively, a simpler `ScrollRevealCard` wrapper for individual items
-   - CSS: starts `opacity-0 translate-y-4`, transitions to `opacity-100 translate-y-0` with a staggered delay per card
+The reviewer correctly identified a real risk. The `scrape-all-products` function uses `setTimeout` (line 290) to fire post-processing tasks after individual scrapes complete. In Deno Deploy, the worker can be killed after the response is sent, meaning `setTimeout` callbacks may never execute.
 
-3. **Edit `src/components/catalog/CategoryProductGrid.tsx`**
-   - Wrap each product card with the reveal animation (either via the wrapper or by applying the hook's ref)
+Your project already uses `pg_cron` + `pg_net` for scheduled tasks (per your automation memory). The fix is to move the post-processing chain into that same pattern instead of relying on in-function timeouts.
 
-4. **Edit `src/components/community/CommunityFeedGrid.tsx`**
-   - Apply the same scroll-reveal to community post cards
+### Plan
 
-5. **Edit `src/pages/OutfitsWeekly.tsx`**
-   - Apply scroll-reveal to the weekly outfit grid cards
+**Task 1: Replace setTimeout post-processing with pg_cron jobs**
 
-6. **Edit `src/components/profile/TryOnsTab.tsx`**
-   - Apply scroll-reveal to the try-on history grid
+In `scrape-all-products/index.ts`:
+- Remove the `setTimeout` block (lines 289-316) that fires categorize, gender backfill, audit, and cleanup
+- Instead, after dispatching scrape jobs, insert a row into a new `scrape_runs` table with `status = 'scraping'` and a `post_process_at` timestamp (e.g., now + estimated delay)
+- Create a `scrape_runs` table via migration: `id`, `batch_number`, `status` (scraping/post_processing/done), `post_process_at`, `created_at`
+- Add a pg_cron job (every 2 minutes) that checks for rows where `status = 'scraping' AND post_process_at <= now()`, then fires the 4 post-processing functions via `pg_net.http_post`, and updates status to `post_processing`
 
-7. **Edit `src/index.css`** (if needed)
-   - Add the transition utility classes for the reveal animation
+This guarantees execution regardless of edge function lifecycle.
+
+**Task 2: Landing page — minor CTA refinement**
+
+The "Map Your Body" button currently submits to the waitlist. Once app store links are live, we swap the hero CTA to link directly to the store listing. For now, no change needed — the waitlist flow is correct for pre-launch.
 
 ### Technical Details
-- Intersection Observer with `threshold: 0.1` and `rootMargin: '0px 0px 50px 0px'` to trigger slightly before cards are fully visible
-- Each card gets a stagger delay of `index * 50ms` (capped at ~300ms) for a cascade effect
-- Uses CSS `transition` (not JS animation) for GPU-accelerated smoothness
-- `once: true` — cards stay visible after reveal, observer disconnects
-- No impact on existing scroll behavior or autoScroll utility
+
+- **Migration**: New `scrape_runs` table with RLS disabled (internal use only, accessed via service role)
+- **pg_cron job**: Uses existing `pg_net` extension to POST to the 4 cleanup functions
+- **Edge function edit**: ~30 lines removed (setTimeout block), ~10 lines added (insert into scrape_runs)
+- **No UI changes required**
 
