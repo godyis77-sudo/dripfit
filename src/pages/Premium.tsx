@@ -78,9 +78,18 @@ const Premium = () => {
     else navigate('/home');
   };
 
+  const onIOS = isNativeIOS();
+
   const handleStart = async () => {
     if (!user) {
       navigate('/auth');
+      return;
+    }
+
+    if (onIOS) {
+      // Apple IAP flow — stub for now; will be wired to @capacitor-community/in-app-purchases
+      trackEvent('premium_started_ios_iap', { plan: selectedPlan });
+      toast({ title: 'Coming soon', description: 'In-app purchase will be available shortly.', variant: 'default' });
       return;
     }
 
@@ -102,6 +111,20 @@ const Premium = () => {
     } finally {
       setCheckoutLoading(false);
     }
+  };
+
+  const handleRestore = async () => {
+    if (onIOS) {
+      // Apple IAP restore stub
+      trackEvent('premium_restore_ios');
+      toast({ title: 'Restore', description: 'Checking previous purchases…' });
+      // TODO: wire to IAP plugin restorePurchases()
+      await checkSubscription();
+      return;
+    }
+    // Web/Android: just re-check Stripe
+    await checkSubscription();
+    toast({ title: 'Subscription refreshed', description: isSubscribed ? 'Premium is active!' : 'No active subscription found.' });
   };
 
   const handleManage = () => {
