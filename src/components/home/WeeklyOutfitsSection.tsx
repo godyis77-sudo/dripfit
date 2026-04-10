@@ -5,7 +5,7 @@ import { Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useWeeklyOutfits, type WeeklyOutfit } from '@/hooks/useWeeklyOutfits';
 import { useAuth } from '@/hooks/useAuth';
-import InlineCrown from '@/components/ui/InlineCrown';
+
 
 const APP_URL = 'https://dripfitcheck.lovable.app';
 
@@ -65,16 +65,16 @@ const WeeklyOutfitsSection = () => {
     <div className="mt-2 mb-4">
       <div className="flex items-center justify-between mb-3">
         <div>
-          <h2 className="font-display text-lg text-white flex items-center gap-1.5">
-            <InlineCrown size={16} /> This Week's Drip
+          <h2 className="font-display text-lg text-white">
+            This Week's Drip
           </h2>
-          <p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5">AI-curated looks for every occasion</p>
+          <p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5">Verified fits · styled for your week</p>
         </div>
         <button
           onClick={() => navigate('/outfits-weekly')}
           className="text-[11px] tracking-wide uppercase text-primary active:opacity-70"
         >
-          See All →
+          Browse the Closet →
         </button>
       </div>
 

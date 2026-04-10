@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { type CatalogProduct } from '@/hooks/useProductCatalog';
 import BrandLogo from '@/components/ui/BrandLogo';
 import FeatureIcon from '@/components/ui/FeatureIcon';
-import HomeFAB from '@/components/home/HomeFAB';
+
 
 import OneTapPlayground from '@/components/home/OneTapPlayground';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
@@ -59,8 +59,8 @@ const GalleryPlayground = () => {
         {/* Header — transparent, editorial */}
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h1 className="font-display text-lg text-primary tracking-[0.15em]">DRIPFIT ✔</h1>
-            <p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5">Your personal fitting room</p>
+            <h1 className="font-display text-lg text-primary tracking-[0.15em]">DripFit <span className="text-primary">✔</span></h1>
+            <p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5">Your Body. Mapped.</p>
           </div>
           {!user && (
             <button
@@ -81,8 +81,8 @@ const GalleryPlayground = () => {
             <FeatureIcon name="tryon" size={40} />
           </div>
           <div className="text-left flex-1">
-            <p className="font-display text-[15px] text-white">Enter the Change Room</p>
-            <p className="text-[11px] text-white/40">Virtual try-on · any piece · your body</p>
+            <p className="font-display text-[15px] text-white">The Infinite Closet</p>
+            <p className="text-[11px] text-white/40">7,000 pieces. Your exact silhouette.</p>
           </div>
         </button>
 
@@ -94,8 +94,8 @@ const GalleryPlayground = () => {
           >
             <Ruler className="h-5 w-5 text-white/60 shrink-0" />
             <div className="text-left">
-              <span className="block text-sm font-semibold text-white leading-tight">Size Guide</span>
-              <span className="block text-[11px] text-white/40 leading-tight mt-0.5">Get your perfect fit</span>
+              <span className="block text-sm font-semibold text-white leading-tight">Your Verified Size</span>
+              <span className="block text-[11px] text-white/40 leading-tight mt-0.5">Mapped across 130 brands</span>
             </div>
           </button>
 
@@ -105,8 +105,8 @@ const GalleryPlayground = () => {
           >
             <Flame className="h-5 w-5 text-white/60 shrink-0" />
             <div className="text-left">
-              <span className="block text-sm font-semibold text-white leading-tight">Drip Drawer</span>
-              <span className="block text-[11px] text-white/40 leading-tight mt-0.5">Swipe to cop or drop</span>
+              <span className="block text-sm font-semibold text-white leading-tight">COP / DROP</span>
+              <span className="block text-[11px] text-white/40 leading-tight mt-0.5">Your Body Twins weigh in</span>
             </div>
           </button>
         </div>
@@ -179,7 +179,7 @@ const GalleryPlayground = () => {
         )}
       </div>
 
-      {user && <HomeFAB />}
+      {/* HomeFAB removed — actions already in quick-action grid */}
     </div>
   );
 };
