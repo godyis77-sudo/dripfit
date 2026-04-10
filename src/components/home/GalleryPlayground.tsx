@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ShoppingBag, Flame, Ruler } from 'lucide-react';
+import { Sparkles, ShoppingBag, Flame, Ruler, ArrowRight } from 'lucide-react';
 
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
