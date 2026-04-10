@@ -149,7 +149,7 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
 
         {/* Text at bottom */}
         <div className="absolute bottom-0 inset-x-0 p-3.5 z-10">
-          <p className="text-base font-display font-bold text-white leading-tight truncate">{outfit.title}</p>
+          <p className="font-display text-[22px] font-semibold text-foreground leading-tight truncate tracking-tight">{outfit.title}</p>
           <div className="flex items-center gap-2 mt-1">
             {outfit.total_price_cents > 0 && (
               <span className="text-sm font-display font-bold text-primary">
@@ -186,7 +186,7 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
       >
         <Share2 size={16} />
       </button>
-      <p className="text-base font-display font-bold text-white leading-tight truncate">{outfit.title}</p>
+      <p className="font-display text-[22px] font-semibold text-foreground leading-tight truncate tracking-tight">{outfit.title}</p>
       <div className="flex items-center gap-2 mt-1">
         {outfit.total_price_cents > 0 && (
           <span className="text-sm font-display font-bold text-primary">
