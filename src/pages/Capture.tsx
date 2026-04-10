@@ -485,8 +485,8 @@ const Capture = () => {
                     {completed ? <Check className="h-3.5 w-3.5 text-primary" /> : i + 1}
                   </div>
                   <span
-                    className={`text-[10px] mt-1 tracking-wider uppercase ${
-                      completed || active ? 'text-white' : 'text-white/30'
+                    className={`type-label mt-1 ${
+                      completed || active ? 'text-foreground' : 'text-muted-foreground'
                     }`}
                   >
                     {s.label}
@@ -509,10 +509,10 @@ const Capture = () => {
             <motion.div key="intro" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm flex flex-col items-center text-center pt-2">
               <DecorativeSilhouette height={240} />
 
-              <h2 className="font-display text-xl text-white mt-4 mb-1">
+              <h2 className="type-headline mt-4 mb-1">
                 Map Your Body
               </h2>
-              <p className="text-[12px] text-white/40 mb-4">AI-powered measurements in under 60 seconds</p>
+              <p className="type-body mb-4">AI-powered measurements in under 60 seconds</p>
 
               <div className="w-full space-y-1.5 text-left">
                 {[
