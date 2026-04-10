@@ -1142,6 +1142,36 @@ export type Database = {
         }
         Relationships: []
       }
+      scrape_runs: {
+        Row: {
+          batch_number: number
+          completed_at: string | null
+          created_at: string
+          id: string
+          post_process_at: string
+          status: string
+          total_jobs: number
+        }
+        Insert: {
+          batch_number?: number
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          post_process_at?: string
+          status?: string
+          total_jobs?: number
+        }
+        Update: {
+          batch_number?: number
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          post_process_at?: string
+          status?: string
+          total_jobs?: number
+        }
+        Relationships: []
+      }
       seed_posts: {
         Row: {
           caption: string | null
