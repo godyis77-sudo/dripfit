@@ -1,6 +1,7 @@
 // PostHog analytics — deferred initialization to reduce main-thread blocking
 
 import type { PostHog } from 'posthog-js';
+import { isNativeIOS } from '@/lib/platform';
 
 const _envKey = import.meta.env.VITE_POSTHOG_KEY as string | undefined;
 const POSTHOG_KEY = (_envKey && _envKey.startsWith('phc_')) ? _envKey : 'phc_YCzbtL0TcOZ0YzB0aGv2kXIYoGuscc09iXqXHIfuoMZ';
@@ -17,11 +18,22 @@ function getPostHog(): Promise<PostHog | null> {
 
   initPromise = import('posthog-js').then((mod) => {
     const posthog = mod.default;
+
+    // On native iOS, disable device_id to avoid requiring ATT prompt.
+    // PostHog will still track events but won't use a cross-app identifier.
+    const oniOS = isNativeIOS();
+
     posthog.init(POSTHOG_KEY, {
       api_host: POSTHOG_HOST,
       autocapture: false,
       capture_pageview: true,
-      persistence: 'localStorage+cookie',
+      persistence: oniOS ? 'localStorage' : 'localStorage+cookie',
+      // Disable cross-app tracking properties on iOS to avoid ATT requirement
+      ...(oniOS && {
+        disable_cookie: true,
+        ip: false,
+        property_denylist: ['$device_id'],
+      }),
     });
     ph = posthog;
     return posthog;
