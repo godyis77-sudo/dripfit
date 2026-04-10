@@ -602,8 +602,8 @@ const Capture = () => {
           {/* ─── PHOTO REVIEW ─── */}
           {(flowStep === 'front' || flowStep === 'side') && reviewing && photos[captureStep] && (
             <motion.div key={`review-${flowStep}`} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-sm flex flex-col items-center">
-              <h2 className="font-display text-base text-white mb-1">Check Your {config.title}</h2>
-              <p className="text-[11px] text-white/40 mb-2">Head to toe visible · good lighting?</p>
+              <h2 className="type-headline text-base mb-1">Check Your {config.title}</h2>
+              <p className="type-body mb-2" style={{ fontSize: 11 }}>Head to toe visible · good lighting?</p>
               <div className="relative w-full aspect-[3/4] rounded-xl overflow-hidden border border-white/10 mb-3">
                 <img src={photos[captureStep]!} alt={config.title} className="w-full h-full object-cover img-normalize" />
               </div>
@@ -638,8 +638,8 @@ const Capture = () => {
           scanGated ? (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2 w-full">
               <div className="bg-primary/8 backdrop-blur-md border border-primary/20 rounded-xl p-4 text-center">
-                <p className="text-sm font-semibold text-primary mb-1">Scan limit reached</p>
-                <p className="text-[12px] text-white/50">Free accounts get 1 body scan. Upgrade to Premium or enter a Founder Access Code for unlimited scans.</p>
+                <p className="type-headline text-sm text-primary mb-1" style={{ fontSize: 14 }}>Scan limit reached</p>
+                <p className="type-body" style={{ fontSize: 12 }}>Free accounts get 1 body scan. Upgrade to Premium or enter a Founder Access Code for unlimited scans.</p>
               </div>
               <Button className="w-full h-12 rounded-xl text-sm font-semibold btn-luxury" onClick={() => navigate('/premium')}>
                 Upgrade to Premium
@@ -720,7 +720,7 @@ const Capture = () => {
           </motion.div>
         )}
 
-        <p className="text-[10px] text-white/30 tracking-wide text-center flex items-center justify-center gap-1">
+        <p className="type-data text-center flex items-center justify-center gap-1">
           <Shield className="h-3 w-3" /> Private by default · delete anytime
         </p>
       </div>
