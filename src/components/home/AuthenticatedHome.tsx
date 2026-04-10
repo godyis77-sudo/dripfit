@@ -1,7 +1,7 @@
 import { forwardRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Camera, ShoppingBag, X, Sparkles, Flame } from 'lucide-react';
+import { Camera, ShoppingBag, X, Sparkles, Flame, ArrowRight } from 'lucide-react';
 import { featureIcons } from '@/components/ui/FeatureIcon';
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
@@ -62,29 +62,41 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <h1 className="headline-editorial text-xl text-primary">DRIPFIT ✔</h1>
             <p className="text-[11px] tracking-[0.2em] uppercase text-white/40 font-sans mt-1.5">
-              Your personal fitting room
+              {hasScan
+                ? `${profileData?.display_name?.split(' ')[0] || 'Your'}'s Fitting Room`
+                : 'Map Your Body'}
             </p>
           </motion.div>
         </div>
       </div>
 
       <div className="relative z-10 px-5 -mt-4">
-        {/* Virtual Try-On banner — glass-gold */}
-        <motion.button
+        {/* Try-On banner — glass-gold, dominant for first-time users */}
+        <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
-          onClick={() => navigate('/tryon')}
-          className="w-full mb-4 glass-gold rounded-2xl px-5 py-3.5 flex items-center gap-3 active:scale-[0.97] transition-transform"
+          onClick={() => navigate(hasScan === false ? '/capture' : '/tryon')}
+          className={`w-full mb-4 glass-gold rounded-2xl px-5 flex items-center gap-3 active:scale-[0.97] transition-transform cursor-pointer ${
+            hasScan === false ? 'py-6' : 'py-3.5'
+          }`}
         >
           <div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
             <Sparkles className="h-5 w-5 text-primary" />
           </div>
           <div className="text-left flex-1">
-            <p className="font-display text-[14px] font-bold text-foreground">Enter the Change Room</p>
-            <p className="text-[11px] text-white/40">Virtual try-on · any piece · your body</p>
+            <p className="font-display text-[14px] font-bold text-foreground">Try On Any Piece</p>
+            <p className="text-[11px] text-white/40">See it on your body before you buy</p>
+            {hasScan === false && (
+              <button
+                onClick={(e) => { e.stopPropagation(); navigate('/capture'); }}
+                className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-b from-primary/90 to-primary text-primary-foreground text-[12px] font-bold shadow-3d-gold active:shadow-3d-gold-pressed active:translate-y-[1px] transition-all"
+              >
+                Start Your Scan <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            )}
           </div>
-        </motion.button>
+        </motion.div>
 
         {/* Quick Actions — glass style */}
         <motion.div
@@ -109,14 +121,14 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             {
               onClick: () => { trackEvent('home_quick_sizeguide'); navigate('/size-guide'); },
               img: featureIcons.sizeguide,
-              title: 'Size Guide',
-              subtitle: 'Perfect fit',
+              title: 'Your Verified Size',
+              subtitle: '130 brands',
             },
             {
               onClick: () => { trackEvent('home_quick_stylecheck'); navigate('/community'); },
               img: featureIcons.stylecheck,
-              title: 'Style Check',
-              subtitle: 'Get rated',
+              title: 'COP or DROP',
+              subtitle: 'Body twins',
             },
           ].map((action) => (
             <button
@@ -134,7 +146,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           ))}
         </motion.div>
 
-        {/* The Closet CTA — glass-dark */}
+        {/* Drip Drawer CTA — glass-dark */}
         <motion.button
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -146,8 +158,8 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             <Flame className="h-5 w-5 text-primary" />
           </div>
           <div className="text-left flex-1">
-            <p className="font-display text-[14px] font-bold text-foreground">The Closet</p>
-            <p className="text-[11px] text-white/40">Swipe to cop or drop · discover your style</p>
+            <p className="font-display text-[14px] font-bold text-foreground">COP or DROP</p>
+            <p className="text-[11px] text-white/40">Your Body Twins weigh in</p>
           </div>
         </motion.button>
 
