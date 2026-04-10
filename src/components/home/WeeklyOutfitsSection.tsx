@@ -65,14 +65,13 @@ const WeeklyOutfitsSection = () => {
 
       {occasions.length > 1 && (
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mb-3">
-          <OccasionPill active={!activeOccasion} onClick={() => setActiveOccasion(null)} label="All" emoji="✨" />
+          <OccasionPill active={!activeOccasion} onClick={() => setActiveOccasion(null)} label="All" />
           {occasions.map(oc => (
             <OccasionPill
               key={oc.key}
               active={activeOccasion === oc.key}
               onClick={() => setActiveOccasion(oc.key)}
               label={oc.label}
-              emoji={oc.emoji}
             />
           ))}
         </div>
@@ -87,17 +86,18 @@ const WeeklyOutfitsSection = () => {
   );
 };
 
-function OccasionPill({ active, onClick, label, emoji }: { active: boolean; onClick: () => void; label: string; emoji?: string | null }) {
+function OccasionPill({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
   return (
     <button
       onClick={onClick}
-      className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium border backdrop-blur-md transition-colors whitespace-nowrap ${
+      className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium border backdrop-blur-md transition-colors whitespace-nowrap flex items-center gap-1.5 ${
         active
           ? 'bg-primary/8 border-primary/20 text-primary'
           : 'bg-white/5 border-white/10 text-white/50'
       }`}
     >
-      {emoji && <span className="mr-1">{emoji}</span>}{label}
+      <span className={`inline-block w-[5px] h-[5px] rounded-full shrink-0 ${active ? 'bg-primary' : 'bg-white/20'}`} />
+      {label}
     </button>
   );
 }
