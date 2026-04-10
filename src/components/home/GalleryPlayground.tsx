@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ShoppingBag, Flame, Ruler } from 'lucide-react';
+import { Sparkles, ShoppingBag, Flame, Ruler, ArrowRight } from 'lucide-react';
 
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
@@ -72,10 +72,18 @@ const GalleryPlayground = () => {
           )}
         </div>
 
+        {/* Stats bar */}
+        <p
+          className="text-center text-[10px] tracking-widest uppercase text-muted-foreground/60 mb-3"
+          style={{ fontFamily: '"DM Mono", monospace' }}
+        >
+          7,000+ pieces · 130 brands · 69 retailers
+        </p>
+
         {/* Hero Try-On CTA — glass-gold, primary action first */}
-        <button
-          onClick={() => { trackEvent('gallery_hero_tryon'); navigate('/tryon'); }}
-          className="w-full mb-3 glass-gold rounded-2xl px-5 py-3 flex items-center gap-3 active:scale-[0.97] transition-transform"
+        <div
+          onClick={() => { trackEvent('gallery_hero_tryon'); navigate(hasScan ? '/tryon' : '/capture'); }}
+          className={`w-full mb-3 glass-gold rounded-2xl px-5 flex items-center gap-3 active:scale-[0.97] transition-transform cursor-pointer ${!hasScan && user ? 'py-5' : 'py-3'}`}
         >
           <div className="h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0 opacity-70">
             <FeatureIcon name="tryon" size={40} />
@@ -83,8 +91,16 @@ const GalleryPlayground = () => {
           <div className="text-left flex-1">
             <p className="font-display text-[15px] text-white">The Infinite Closet</p>
             <p className="text-[11px] text-white/40">7,000 pieces. Your exact silhouette.</p>
+            {!hasScan && user && (
+              <button
+                onClick={(e) => { e.stopPropagation(); navigate('/capture'); }}
+                className="mt-2.5 inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-primary text-primary-foreground text-[12px] font-bold tracking-wide hover:scale-[1.02] active:scale-[0.98] transition-transform"
+              >
+                Start Your Scan <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            )}
           </div>
-        </button>
+        </div>
 
         {/* Size Guide + Drip Drawer — glass-dark panels */}
         <div className="grid grid-cols-2 gap-2 mb-3">
