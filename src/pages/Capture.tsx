@@ -528,7 +528,7 @@ const Capture = () => {
                     className="flex items-center gap-3 glass-dark rounded-xl px-4 py-2.5 min-h-[44px]"
                   >
                     <item.icon className="h-4 w-4 text-primary/60 shrink-0" />
-                    <span className="text-[13px] text-white/70">{item.text}</span>
+                    <span className="type-body">{item.text}</span>
                   </motion.div>
                 ))}
               </div>
@@ -542,8 +542,8 @@ const Capture = () => {
               >
                 <Shield className="h-4 w-4 text-primary/60 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-[12px] font-semibold text-white leading-tight mb-0.5">On-device processing</p>
-                  <p className="text-[11px] text-white/40 leading-relaxed">
+                  <p className="type-body font-semibold text-foreground leading-tight mb-0.5" style={{ fontSize: 12 }}>On-device processing</p>
+                  <p className="type-body leading-relaxed" style={{ fontSize: 11 }}>
                     Photos never leave your device without permission.
                   </p>
                 </div>
@@ -565,7 +565,7 @@ const Capture = () => {
           {/* ─── STEP 3 & 4: FRONT / SIDE CAPTURE ─── */}
           {(flowStep === 'front' || flowStep === 'side') && !reviewing && (
             <motion.div key={flowStep} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm flex flex-col items-center">
-              <p className="text-[12px] text-white/40 text-center mb-1.5">{config.instruction}</p>
+              <p className="type-body text-center mb-1.5" style={{ fontSize: 12 }}>{config.instruction}</p>
 
               <CaptureViewfinder captureStep={captureStep} photo={photos[captureStep]} />
 
