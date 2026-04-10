@@ -20,8 +20,8 @@ export default function LandingHowItWorks() {
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
         <div>
           <FadeIn>
-            <span className="font-mono text-[10px] tracking-[.22em] uppercase block mb-5 text-primary/70">How It Works</span>
-            <h2 className="font-display text-4xl md:text-5xl font-bold leading-tight mb-12">
+            <span className="type-data block mb-5 text-primary/70">How It Works</span>
+            <h2 className="type-headline text-4xl md:text-5xl leading-tight mb-12" style={{ letterSpacing: '-0.01em' }}>
               Scan. Try. <span className="text-primary">Cop.</span>
             </h2>
           </FadeIn>
@@ -33,8 +33,8 @@ export default function LandingHowItWorks() {
                     {s.n}
                   </div>
                   <div>
-                    <h4 className="text-base font-bold mb-1.5">{s.title}</h4>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
+                    <h4 className="type-headline text-base mb-1.5">{s.title}</h4>
+                    <p className="type-body leading-relaxed" style={{ fontSize: 14 }}>{s.desc}</p>
                   </div>
                 </div>
               </FadeIn>
@@ -44,7 +44,7 @@ export default function LandingHowItWorks() {
 
         <FadeIn delay={0.15}>
           <div className="bg-[hsl(var(--surface-glass)/0.03)] backdrop-blur-xl border border-border/40 rounded-2xl p-8 sticky top-24">
-            <span className="font-mono text-[9px] tracking-[.2em] uppercase text-primary/70 block mb-6">Live Community Verdict</span>
+            <span className="type-data text-primary/70 block mb-6" style={{ fontSize: 9 }}>Live Community Verdict</span>
             <div className="space-y-5">
               {COP_DROP_DATA.map((d) => (
                 <div key={d.label}>
