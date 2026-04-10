@@ -267,9 +267,19 @@ const Premium = () => {
               disabled={checkoutLoading}
             >
               {checkoutLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-              {checkoutLoading ? 'Opening checkout…' : 'Start 7-Day Free Trial'}
+              {checkoutLoading ? 'Opening checkout…' : onIOS ? 'Subscribe with Apple' : 'Start 7-Day Free Trial'}
             </Button>
-            <p className="text-[11px] text-muted-foreground text-center mb-5">No charge until trial ends · Cancel anytime</p>
+            <p className="text-[11px] text-muted-foreground text-center mb-2">No charge until trial ends · Cancel anytime</p>
+
+            {/* Restore Purchases — required by Apple */}
+            <Button
+              variant="ghost"
+              className="w-full h-9 rounded-xl text-[11px] text-muted-foreground mb-5"
+              onClick={handleRestore}
+            >
+              <RotateCcw className="mr-1.5 h-3 w-3" />
+              Restore Purchases
+            </Button>
           </>
         )}
 
