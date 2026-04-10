@@ -71,6 +71,16 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
       </div>
 
       <div className="relative z-10 px-5 -mt-4">
+        {/* Stats bar */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.05 }}
+          className="text-center text-xs tracking-widest uppercase text-muted-foreground/60 mb-3"
+          style={{ fontFamily: '"DM Mono", monospace' }}
+        >
+          7,000+ pieces · 130 brands · 69 retailers
+        </motion.p>
         {/* Try-On banner — glass-gold, dominant for first-time users */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
