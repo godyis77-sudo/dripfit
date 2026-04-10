@@ -144,7 +144,7 @@ const Profile = () => {
             className="w-full flex items-center gap-2 px-3 py-0 rounded-xl glass-gold mb-3 active:scale-[0.98] transition-transform"
           >
             <InlineCrown size={48} />
-            <span className="text-[11px] font-display font-bold text-primary flex-1 text-left">DRIPFIT ✔ PREMIUM</span>
+            <span className="type-label text-primary flex-1 text-left">DRIPFIT ✔ PREMIUM</span>
             <span className="glass text-[9px] font-bold text-green-400 px-2 py-0.5 rounded-full flex items-center gap-1">
               <span className="h-1.5 w-1.5 rounded-full bg-green-400 inline-block" /> ACTIVE
             </span>
@@ -193,9 +193,9 @@ const Profile = () => {
               )}
             </button>
             <div>
-              <h1 className="font-display text-lg font-bold text-white leading-tight">{displayName}</h1>
+              <h1 className="type-headline text-lg leading-tight">{displayName}</h1>
               <div className="flex items-center gap-1.5">
-                <p className="text-sm text-white/40">{user.email}</p>
+                <p className="type-body text-sm">{user.email}</p>
                 <button onClick={handleSignOut} className="text-white/30 hover:text-destructive transition-colors p-1 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Sign out">
                   <LogOut className="h-4 w-4" />
                 </button>

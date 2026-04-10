@@ -18,8 +18,8 @@ export default function LandingFeatures() {
       <div className="max-w-6xl mx-auto px-6">
         <FadeIn>
           <div className="text-center mb-16">
-            <span className="font-mono text-[10px] tracking-[.22em] uppercase block mb-5 text-primary/70">The Ecosystem</span>
-            <h2 className="font-display text-4xl md:text-5xl font-bold leading-tight">
+            <span className="type-data block mb-5 text-primary/70">The Ecosystem</span>
+            <h2 className="type-headline text-4xl md:text-5xl leading-tight" style={{ letterSpacing: '-0.01em' }}>
               Your Body. Mapped.<br />Your Closet. <span className="text-primary">Infinite.</span>
             </h2>
           </div>
@@ -31,8 +31,8 @@ export default function LandingFeatures() {
                 <div className="w-11 h-11 rounded-full flex items-center justify-center mb-6 border border-primary/20 bg-primary/[0.08]">
                   <f.icon className="w-5 h-5 text-primary" />
                 </div>
-                <h3 className="font-display text-xl font-semibold mb-3">{f.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+                <h3 className="type-headline text-xl mb-3">{f.title}</h3>
+                <p className="type-body leading-relaxed" style={{ fontSize: 14 }}>{f.desc}</p>
               </div>
             </FadeIn>
           ))}

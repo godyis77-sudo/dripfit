@@ -24,8 +24,8 @@ const BrandLogo = ({ size = 'sm', className, iconOnly = false }: BrandLogoProps)
     <div className={cn('flex items-center', s.gap, className)}>
       <img src={iconCrown} alt="DripFit crown" className="object-contain drop-shadow-[0_2px_6px_hsl(var(--drip-gold)/0.4)] shrink-0" style={{ width: s.icon, height: s.icon }} />
       {!iconOnly && (
-        <span className={cn('font-display font-bold tracking-[3px] brand-logo-text', s.text)}>
-          DRIPFIT <span className="brand-logo-check text-[1.3em]">✔</span>
+        <span className={cn('font-display font-extrabold tracking-tight uppercase brand-logo-text', s.text)}>
+          DRIPFIT <span className="brand-logo-check text-primary" style={{ fontSize: '80%' }}>✔</span>
         </span>
       )}
     </div>

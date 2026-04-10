@@ -17,7 +17,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
   return (
     <div onClick={() => setOpen(!open)} className="py-6 cursor-pointer">
       <div className="flex justify-between items-center gap-4">
-        <h4 className="text-base font-semibold">{q}</h4>
+        <h4 className="type-headline text-base">{q}</h4>
         <ChevronDown className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
       </div>
       <motion.div
@@ -26,7 +26,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         className="overflow-hidden"
       >
-        <p className="text-sm text-muted-foreground leading-relaxed mt-3">{a}</p>
+        <p className="type-body leading-relaxed mt-3">{a}</p>
       </motion.div>
     </div>
   );
@@ -37,7 +37,7 @@ export default function LandingFAQ() {
     <section className="py-28 md:py-36">
       <div className="max-w-2xl mx-auto px-6">
         <FadeIn>
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-center mb-14">Everything You Need to Know</h2>
+          <h2 className="type-headline text-3xl md:text-4xl text-center mb-14">Everything You Need to Know</h2>
         </FadeIn>
         <FadeIn delay={0.08}>
           <div className="divide-y divide-border/30">
