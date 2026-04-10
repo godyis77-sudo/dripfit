@@ -3,7 +3,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import BottomTabBar from '@/components/BottomTabBar';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Check, Sparkles, Ruler, Shirt, MessageSquare, Store, Shield, Zap, BarChart3, Eye, Star, Ban, Loader2, Quote } from 'lucide-react';
+import { ArrowLeft, Check, Sparkles, Ruler, Shirt, MessageSquare, Store, Shield, Zap, BarChart3, Eye, Star, Ban, Loader2, Quote, RotateCcw } from 'lucide-react';
 import InlineCrown from '@/components/ui/InlineCrown';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { trackEvent } from '@/lib/analytics';
@@ -13,6 +13,7 @@ import { motion } from 'framer-motion';
 import { useAuth, STRIPE_TIERS } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { isNativeIOS } from '@/lib/platform';
 
 const PLANS = [
   { key: 'annual' as const, label: 'Annual', price: '$4.17', period: '/mo', badge: 'Best Value', total: 'Billed $49.99/year (save 48%)', trial: '7-day free trial' },
@@ -77,9 +78,18 @@ const Premium = () => {
     else navigate('/home');
   };
 
+  const onIOS = isNativeIOS();
+
   const handleStart = async () => {
     if (!user) {
       navigate('/auth');
+      return;
+    }
+
+    if (onIOS) {
+      // Apple IAP flow — stub for now; will be wired to @capacitor-community/in-app-purchases
+      trackEvent('premium_started_ios_iap', { plan: selectedPlan });
+      toast({ title: 'Coming soon', description: 'In-app purchase will be available shortly.', variant: 'default' });
       return;
     }
 
@@ -101,6 +111,20 @@ const Premium = () => {
     } finally {
       setCheckoutLoading(false);
     }
+  };
+
+  const handleRestore = async () => {
+    if (onIOS) {
+      // Apple IAP restore stub
+      trackEvent('premium_restore_ios');
+      toast({ title: 'Restore', description: 'Checking previous purchases…' });
+      // TODO: wire to IAP plugin restorePurchases()
+      await checkSubscription();
+      return;
+    }
+    // Web/Android: just re-check Stripe
+    await checkSubscription();
+    toast({ title: 'Subscription refreshed', description: isSubscribed ? 'Premium is active!' : 'No active subscription found.' });
   };
 
   const handleManage = () => {
@@ -243,9 +267,19 @@ const Premium = () => {
               disabled={checkoutLoading}
             >
               {checkoutLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-              {checkoutLoading ? 'Opening checkout…' : 'Start 7-Day Free Trial'}
+              {checkoutLoading ? 'Opening checkout…' : onIOS ? 'Subscribe with Apple' : 'Start 7-Day Free Trial'}
             </Button>
-            <p className="text-[11px] text-muted-foreground text-center mb-5">No charge until trial ends · Cancel anytime</p>
+            <p className="text-[11px] text-muted-foreground text-center mb-2">No charge until trial ends · Cancel anytime</p>
+
+            {/* Restore Purchases — required by Apple */}
+            <Button
+              variant="ghost"
+              className="w-full h-9 rounded-xl text-[11px] text-muted-foreground mb-5"
+              onClick={handleRestore}
+            >
+              <RotateCcw className="mr-1.5 h-3 w-3" />
+              Restore Purchases
+            </Button>
           </>
         )}
 
