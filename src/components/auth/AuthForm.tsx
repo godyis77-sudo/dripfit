@@ -164,10 +164,10 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
 
       <Card className="rounded-xl border-border/40">
         <CardHeader className="text-center pb-1.5 pt-4 px-4">
-          <CardTitle className="font-display text-xl">
+          <CardTitle className="type-headline text-xl">
             {isLogin ? 'Welcome Back' : 'Create Your Account'}
           </CardTitle>
-          <CardDescription className="text-[13px] text-muted-foreground">
+          <CardDescription className="type-body" style={{ fontSize: 13 }}>
             {isLogin
               ? 'Sign in to access your sizes, try-ons, and closet'
               : 'Free forever — save your measurements and try-ons across devices'}

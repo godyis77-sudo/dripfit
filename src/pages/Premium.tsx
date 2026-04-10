@@ -172,15 +172,15 @@ const Premium = () => {
           <BrandLogo size="xl" iconOnly className="mx-auto mb-3" />
           {isSubscribed ? (
             <>
-              <h1 className="headline-editorial text-2xl text-primary mb-1">You're Premium 👑</h1>
-              <p className="text-[12px] text-white/40 max-w-[260px] mx-auto">
+              <h1 className="type-headline text-2xl text-primary mb-1">You're Premium 👑</h1>
+              <p className="type-body max-w-[260px] mx-auto" style={{ fontSize: 12 }}>
                 {subscriptionEnd ? `Active until ${new Date(subscriptionEnd).toLocaleDateString()}` : 'Your premium subscription is active'}
               </p>
             </>
           ) : (
             <>
-              <h1 className="headline-editorial text-2xl text-primary mb-1">Unlock Your Full Potential</h1>
-              <p className="text-[12px] text-white/40 max-w-[260px] mx-auto">
+              <h1 className="type-headline text-2xl text-primary mb-1">Unlock Your Full Potential</h1>
+              <p className="type-body max-w-[260px] mx-auto" style={{ fontSize: 12 }}>
                 Unlimited try-ons, smarter sizing, zero ads — the ultimate fit experience.
               </p>
               {/* Member count badge */}
