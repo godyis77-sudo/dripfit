@@ -65,10 +65,10 @@ const WeeklyOutfitsSection = () => {
     <div className="mt-2 mb-4">
       <div className="flex items-center justify-between mb-3">
         <div>
-          <h2 className="font-display text-lg text-white">
+          <h2 className="font-display text-[22px] font-semibold text-foreground tracking-tight">
             This Week's Drip
           </h2>
-          <p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5"><p className="text-[11px] tracking-widest uppercase text-white/30 mt-0.5">Verified fits · curated weekly</p></p>
+          <p className="font-sans text-[13px] font-medium tracking-[0.15em] uppercase text-foreground/70 mt-0.5">Verified fits · curated weekly</p>
         </div>
         <button
           onClick={() => navigate('/outfits-weekly')}
@@ -149,7 +149,7 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
 
         {/* Text at bottom */}
         <div className="absolute bottom-0 inset-x-0 p-3.5 z-10">
-          <p className="text-base font-display font-bold text-white leading-tight truncate">{outfit.title}</p>
+          <p className="font-display text-[22px] font-semibold text-foreground leading-tight truncate tracking-tight">{outfit.title}</p>
           <div className="flex items-center gap-2 mt-1">
             {outfit.total_price_cents > 0 && (
               <span className="text-sm font-display font-bold text-primary">
@@ -186,7 +186,7 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
       >
         <Share2 size={16} />
       </button>
-      <p className="text-base font-display font-bold text-white leading-tight truncate">{outfit.title}</p>
+      <p className="font-display text-[22px] font-semibold text-foreground leading-tight truncate tracking-tight">{outfit.title}</p>
       <div className="flex items-center gap-2 mt-1">
         {outfit.total_price_cents > 0 && (
           <span className="text-sm font-display font-bold text-primary">
