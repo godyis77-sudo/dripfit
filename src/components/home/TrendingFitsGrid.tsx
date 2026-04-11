@@ -36,7 +36,6 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
       >
         <div className="flex items-center justify-between mb-2.5">
           <div className="flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5 text-primary" />
             <p className="font-display text-sm font-bold text-foreground mb-0">Tap a Fit</p>
           </div>
           <button
