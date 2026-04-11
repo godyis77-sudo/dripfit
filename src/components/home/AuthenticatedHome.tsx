@@ -9,9 +9,9 @@ import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import { ALL_PRODUCT_CATEGORIES } from '@/components/tryon/tryon-constants';
 import { useProfileInfo, useLatestScan, useTrendingFits } from '@/hooks/useProfileData';
 import TrendingFitsGrid from '@/components/home/TrendingFitsGrid';
-
 import { useForYourFit } from '@/hooks/useForYourFit';
 import { thumbnailUrl } from '@/lib/imageOptimize';
+import { TYPE, CARD, BUTTON, SPACING } from '@/lib/design-tokens';
 
 /* ── Price filter config ── */
 const PRICE_FILTERS = [
@@ -42,7 +42,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
     ? Math.floor((Date.now() - new Date(scanData.createdAt).getTime()) / (1000 * 60 * 60 * 24))
     : null;
 
-
   const dismissRescanNudge = useCallback(() => {
     const key = `rescan_nudge_dismissed_${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
     localStorage.setItem(key, 'true');
@@ -60,8 +59,8 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
         <div className="absolute inset-0 editorial-gradient" />
         <div className="absolute bottom-6 left-0 right-0 text-center px-8">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <h1 className="headline-editorial text-xl text-primary">DRIPFIT ✔</h1>
-            <p className="text-[11px] tracking-[0.2em] uppercase text-white/40 font-sans mt-1.5">
+            <h1 className={`${TYPE.brandMark} text-xl text-primary`}>DRIPFIT ✔</h1>
+            <p className={TYPE.tagline + ' mt-1.5'}>
               {hasScan
                 ? `${profileData?.display_name?.split(' ')[0] || 'Your'}'s Fitting Room`
                 : 'Map Your Body'}
@@ -70,24 +69,24 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
         </div>
       </div>
 
-      <div className="relative z-10 px-5 -mt-4">
+      <div className={`relative z-10 ${SPACING.pagePx} -mt-4`}>
         {/* Stats bar */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.05 }}
-          className="text-center text-xs tracking-widest uppercase text-muted-foreground/60 mb-3"
-          style={{ fontFamily: '"DM Mono", monospace' }}
+          className={`text-center ${TYPE.data} mb-3`}
         >
           7,000+ pieces · 130 brands · 69 retailers
         </motion.p>
-        {/* Try-On banner — glass-gold, dominant for first-time users */}
+
+        {/* Try-On banner — glass-gold */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
           onClick={() => navigate(hasScan === false ? '/capture' : '/tryon')}
-          className={`w-full mb-4 glass-gold rounded-2xl px-5 flex items-center gap-3 active:scale-[0.97] transition-transform cursor-pointer ${
+          className={`w-full mb-4 ${CARD.glass} border-primary/20 px-5 flex items-center gap-3 active:scale-[0.97] transition-transform cursor-pointer ${
             hasScan === false ? 'py-6' : 'py-3.5'
           }`}
         >
@@ -95,12 +94,12 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             <Sparkles className="h-5 w-5 text-primary" />
           </div>
           <div className="text-left flex-1">
-            <p className="font-display text-[14px] font-bold text-foreground">Try On Any Piece</p>
-            <p className="text-[11px] text-white/40">See it on your body before you buy</p>
+            <p className={TYPE.headlineSm + ' text-[14px]'}>Try On Any Piece</p>
+            <p className={TYPE.body + ' text-[11px]'}>See it on your body before you buy</p>
             {hasScan === false && (
               <button
                 onClick={(e) => { e.stopPropagation(); navigate('/capture'); }}
-                className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-b from-primary/90 to-primary text-primary-foreground text-[12px] font-bold shadow-3d-gold active:shadow-3d-gold-pressed active:translate-y-[1px] transition-all"
+                className={`mt-3 inline-flex items-center gap-1.5 ${BUTTON.primary} h-auto py-2 px-4 text-[12px]`}
               >
                 Start Your Scan <ArrowRight className="h-3.5 w-3.5" />
               </button>
@@ -144,14 +143,14 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             <button
               key={action.title}
               onClick={action.onClick}
-              className="flex flex-col items-center justify-center rounded-xl glass p-1 active:scale-[0.96] transition-all min-h-[44px]"
+              className={`flex flex-col items-center justify-center rounded-xl ${CARD.glass} p-1 active:scale-[0.96] transition-all min-h-[44px]`}
             >
               <img
                 src={action.img}
                 alt={action.title}
                 className="w-full aspect-square object-contain drop-shadow-[0_2px_6px_hsl(var(--drip-gold)/0.4)]"
               />
-              <p className="text-[11px] font-bold font-display text-primary leading-none">{action.title}</p>
+              <p className={TYPE.labelActive + ' text-[11px] font-bold leading-none'}>{action.title}</p>
             </button>
           ))}
         </motion.div>
@@ -162,14 +161,14 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
           onClick={() => navigate('/closet')}
-          className="w-full mb-4 glass-dark rounded-2xl px-5 py-3.5 flex items-center gap-3 active:scale-[0.97] transition-transform"
+          className={`w-full mb-4 ${CARD.glass} px-5 py-3.5 flex items-center gap-3 active:scale-[0.97] transition-transform`}
         >
           <div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
             <Flame className="h-5 w-5 text-primary" />
           </div>
           <div className="text-left flex-1">
-            <p className="font-display text-[14px] font-bold text-foreground">COP or DROP</p>
-            <p className="text-[11px] text-white/40">Your Body Twins weigh in</p>
+            <p className={TYPE.headlineSm + ' text-[14px]'}>COP or DROP</p>
+            <p className={TYPE.body + ' text-[11px]'}>Your Body Twins weigh in</p>
           </div>
         </motion.button>
 
@@ -186,9 +185,9 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           >
             <div className="flex items-center gap-1.5 mb-2">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
-              <p className="font-display text-sm font-bold text-foreground mb-0">For Your Fit</p>
+              <p className={TYPE.headlineSm + ' text-sm mb-0'}>For Your Fit</p>
             </div>
-            <p className="text-[10px] text-muted-foreground mb-2">Loved by people with similar measurements</p>
+            <p className={TYPE.data + ' mb-2'}>Loved by people with similar measurements</p>
             <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
               {fitRecs.map((rec, i) => (
                 <button
@@ -197,7 +196,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                     trackEvent('fit_rec_click', { category: rec.category });
                     if (rec.product_url) window.open(rec.product_url, '_blank', 'noopener');
                   }}
-                  className="shrink-0 w-[120px] rounded-xl overflow-hidden border border-white/5 glass-dark active:scale-[0.97] transition-transform"
+                  className={`shrink-0 w-[120px] rounded-xl overflow-hidden ${CARD.glass} active:scale-[0.97] transition-transform`}
                 >
                   <div className="aspect-[3/4] bg-black/30 relative">
                     <img
@@ -211,7 +210,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                     </div>
                   </div>
                   <div className="p-1.5">
-                    <p className="text-[10px] font-bold text-foreground capitalize truncate">{rec.category || 'Item'}</p>
+                    <p className={TYPE.productTitle + ' text-[10px] capitalize truncate'}>{rec.category || 'Item'}</p>
                   </div>
                 </button>
               ))}
@@ -219,23 +218,23 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           </motion.div>
         )}
 
-        {/* Re-scan nudge banner — above product grid for visibility */}
+        {/* Re-scan nudge banner */}
         {hasScan && daysSinceLastScan !== null && daysSinceLastScan >= 30 && !rescanDismissed && (
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.19 }}
-            className="mb-3 bg-primary/10 border border-primary/20 rounded-xl p-3"
+            className={`mb-3 ${CARD.glass} border-primary/20 p-3`}
           >
             <div className="flex items-start gap-3">
               <Camera className="h-4 w-4 text-primary shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
-                <p className="text-[12px] text-foreground leading-snug">
+                <p className={TYPE.body + ' text-[12px] text-foreground leading-snug'}>
                   Your last scan was {daysSinceLastScan} days ago — re-scan to keep your fit accurate
                 </p>
                 <button
                   onClick={() => navigate('/capture')}
-                  className="mt-2 px-3 py-1.5 rounded-lg bg-gradient-to-b from-primary/90 to-primary text-primary-foreground text-[11px] font-bold shadow-3d-gold active:shadow-3d-gold-pressed active:translate-y-[1px] transition-all"
+                  className={`mt-2 ${BUTTON.primary} h-auto py-1.5 px-3 text-[11px]`}
                 >
                   Re-Scan Now
                 </button>
@@ -256,11 +255,11 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.19 }} className="mb-3">
             <button
               onClick={() => navigate('/profile/settings')}
-              className="w-full glass-gold border border-primary/20 rounded-xl px-3 py-2 flex items-center gap-2.5 active:scale-[0.98] transition-transform"
+              className={`w-full ${CARD.glass} border-primary/20 rounded-xl px-3 py-2 flex items-center gap-2.5 active:scale-[0.98] transition-transform`}
             >
               <ShoppingBag className="h-3.5 w-3.5 text-primary shrink-0" />
-              <p className="text-[11px] font-bold text-foreground flex-1 text-left">Personalize your picks</p>
-              <span className="text-[10px] font-bold text-primary shrink-0">Set →</span>
+              <p className={TYPE.labelActive + ' flex-1 text-left text-[11px]'}>Personalize your picks</p>
+              <span className={TYPE.labelActive + ' shrink-0 text-[10px]'}>Set →</span>
             </button>
           </motion.div>
         )}
@@ -270,11 +269,11 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-3">
             <button
               onClick={() => navigate('/capture')}
-              className="w-full glass-dark border border-white/10 rounded-xl px-3 py-2 flex items-center gap-2.5 active:scale-[0.98] transition-transform"
+              className={`w-full ${CARD.glass} rounded-xl px-3 py-2 flex items-center gap-2.5 active:scale-[0.98] transition-transform`}
             >
               <Camera className="h-3.5 w-3.5 text-primary shrink-0" />
-              <p className="text-[11px] font-bold text-foreground flex-1 text-left">60s body scan for perfect sizing</p>
-              <span className="text-[10px] font-bold text-primary shrink-0">Scan →</span>
+              <p className={TYPE.label + ' flex-1 text-left text-[11px] text-foreground font-bold'}>60s body scan for perfect sizing</p>
+              <span className={TYPE.labelActive + ' shrink-0 text-[10px]'}>Scan →</span>
             </button>
           </motion.div>
         )}
@@ -289,26 +288,24 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-1.5">
               <ShoppingBag className="h-3.5 w-3.5 text-primary" />
-              <p className="font-display text-sm font-bold text-foreground mb-0">Recommended for you</p>
+              <p className={TYPE.headlineSm + ' text-sm mb-0'}>Recommended for you</p>
             </div>
             <button
               onClick={() => navigate('/browse/all')}
-              className="text-[10px] tracking-[0.1em] uppercase font-bold min-h-[44px] flex items-center px-3 py-1 rounded-lg btn-glass text-white/70"
+              className={BUTTON.ghost + ' min-h-[44px] px-3 py-1'}
             >
               Browse All 7,000+
             </button>
           </div>
 
-          {/* Price filter chips — glass pills */}
+          {/* Price filter chips */}
           <div className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-hide mb-1" onTouchStart={e => e.stopPropagation()} onTouchMove={e => e.stopPropagation()}>
             {PRICE_FILTERS.map((filter, idx) => (
               <button
                 key={filter.label}
                 onClick={() => setActivePriceIdx(idx)}
-                className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all ${
-                  activePriceIdx === idx
-                    ? 'glass-gold text-primary border-primary/30'
-                    : 'glass text-white/60'
+                className={`shrink-0 ${BUTTON.chip} ${
+                  activePriceIdx === idx ? BUTTON.chipActive : BUTTON.chipInactive
                 }`}
               >
                 {filter.label}
@@ -342,8 +339,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           )}
         </motion.div>
       </div>
-
-      
     </div>
   );
 });
