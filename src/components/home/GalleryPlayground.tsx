@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ShoppingBag, Flame, Ruler, ArrowRight } from 'lucide-react';
+import { Sparkles, ShoppingBag, Flame, Ruler, ArrowRight, ChevronRight } from 'lucide-react';
 
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
@@ -123,7 +123,7 @@ const GalleryPlayground = () => {
             {/* Hero card — The Infinite Closet */}
             <div
               onClick={() => { trackEvent('gallery_hero_tryon'); navigate('/tryon'); }}
-              className="relative w-full mb-3 bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-5 py-6 active:scale-[0.97] transition-all cursor-pointer hover:bg-white/[0.05]"
+              className="relative w-full mb-3 bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-5 py-5 active:scale-[0.97] transition-all cursor-pointer hover:bg-white/[0.05]"
             >
               <p className="font-display text-[22px] font-semibold text-foreground leading-tight tracking-tight">The Infinite Closet</p>
               <p className="font-sans text-[14px] text-muted-foreground mt-1">9,000+ pieces. Your exact silhouette.</p>
@@ -138,21 +138,23 @@ const GalleryPlayground = () => {
             </div>
 
             {/* Secondary cards — side by side */}
-            <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="grid grid-cols-2 gap-3 mb-8">
               <button
                 onClick={() => navigate('/profile/body')}
-                className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 py-4 text-left active:scale-[0.97] transition-all hover:bg-white/[0.05]"
+                className="relative bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 pr-8 py-4 text-left active:scale-[0.97] transition-all hover:bg-white/[0.05]"
               >
                 <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">Your Verified Size</span>
                 <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Mapped across 186 brands</span>
+                <ChevronRight className="w-4 h-4 text-zinc-600 absolute right-4 top-1/2 -translate-y-1/2" />
               </button>
 
               <button
                 onClick={() => navigate('/closet')}
-                className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 py-4 text-left active:scale-[0.97] transition-all hover:bg-white/[0.05]"
+                className="relative bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 pr-8 py-4 text-left active:scale-[0.97] transition-all hover:bg-white/[0.05]"
               >
                 <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">COP / DROP</span>
                 <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Your Body Twins weigh in.</span>
+                <ChevronRight className="w-4 h-4 text-zinc-600 absolute right-4 top-1/2 -translate-y-1/2" />
               </button>
             </div>
           </>
