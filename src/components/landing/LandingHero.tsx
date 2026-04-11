@@ -4,9 +4,9 @@ import { FadeIn } from './LandingAnimations';
 import LandingEmailCapture from './LandingEmailCapture';
 
 const STATS = [
-  { v: '7K+', l: 'Products' },
-  { v: '130', l: 'Brands' },
-  { v: '69', l: 'Retailers' },
+  { v: '9K+', l: 'Products' },
+  { v: '186', l: 'Brands' },
+  { v: '389', l: 'Size Charts' },
 ];
 
 export default function LandingHero() {
@@ -34,7 +34,7 @@ export default function LandingHero() {
 
           <FadeIn delay={0.16}>
             <p className="type-body text-lg md:text-xl leading-relaxed max-w-md mb-10 font-light">
-              AI biometric scanner maps your exact body to 7,000 pieces across 130 brands. Perfect drape. Verified before checkout.
+              AI biometric scanner maps your exact body to 9,000+ pieces across 186 brands. Perfect drape. Verified before checkout.
             </p>
           </FadeIn>
 
