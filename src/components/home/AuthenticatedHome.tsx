@@ -86,7 +86,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
           onClick={() => navigate(hasScan === false ? '/capture' : '/tryon')}
-          className={`w-full mb-4 ${CARD.glass} border-primary/20 px-5 flex items-center gap-3 active:scale-[0.97] transition-transform cursor-pointer ${
+          className={`w-full mb-4 ${CARD.glass} px-5 flex items-center gap-3 active:scale-[0.97] transition-transform cursor-pointer ${
             hasScan === false ? 'py-6' : 'py-3.5'
           }`}
         >
