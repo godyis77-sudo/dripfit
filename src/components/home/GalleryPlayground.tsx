@@ -1,14 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ShoppingBag, Flame, Ruler, ArrowRight } from 'lucide-react';
+import { ShoppingBag, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
 import { supabase } from '@/integrations/supabase/client';
 import { type CatalogProduct } from '@/hooks/useProductCatalog';
-import BrandLogo from '@/components/ui/BrandLogo';
-import FeatureIcon from '@/components/ui/FeatureIcon';
-
+import FeatureIcon, { featureIcons } from '@/components/ui/FeatureIcon';
 
 import OneTapPlayground from '@/components/home/OneTapPlayground';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
@@ -28,8 +27,6 @@ const GalleryPlayground = () => {
   const navigate = useNavigate();
   const { user, userGender, genderLoaded, loading: authLoading } = useAuth();
   const mappedGender = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : undefined;
-
-  // Don't render product grids until auth + gender are resolved to avoid fetching with wrong gender
   const catalogReady = !authLoading && (!user || genderLoaded);
 
   const [activeCategory, setActiveCategory] = useState<string>('all');
@@ -42,7 +39,6 @@ const GalleryPlayground = () => {
     });
   }, [user]);
 
-  // Filter out dresses for men
   const visibleCategories = useMemo(() =>
     HERO_CATEGORIES.filter(c => !(c.key === 'dress' && userGender === 'male')),
     [userGender]
@@ -55,87 +51,118 @@ const GalleryPlayground = () => {
 
   return (
     <div className="relative bg-background pb-safe-tab">
-      <div className="relative z-10 px-4 pt-2">
-        {/* Header — transparent, editorial */}
-        <div className="flex items-center justify-between mb-3">
+      <div className="relative z-10 px-5 pt-[env(safe-area-inset-top)]">
+
+        {/* ── Branded Header ── */}
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex items-center justify-between pt-5 pb-3"
+        >
           <div>
-            <h1 className="font-display text-[28px] font-extrabold text-foreground uppercase tracking-tight">DRIPFIT <span className="text-primary text-[22px]">✔</span></h1>
-            <p className="font-sans text-[13px] font-medium tracking-[0.15em] uppercase text-foreground/70 mt-1 mb-3">Your Body. Mapped.</p>
+            <h1 className="font-display text-[28px] font-extrabold text-foreground uppercase tracking-tight leading-none">
+              DRIPFIT <span className="text-primary text-[22px]">✔</span>
+            </h1>
+            <p className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground/50 font-sans mt-1">
+              Your Body. Mapped.
+            </p>
           </div>
           {!user && (
             <button
               onClick={() => navigate('/auth')}
-              className="text-[11px] font-semibold text-white/40 active:opacity-70 tracking-widest uppercase"
+              className="text-[11px] font-semibold text-muted-foreground/40 active:opacity-70 tracking-widest uppercase"
             >
               Sign In
             </button>
           )}
-        </div>
+        </motion.div>
 
         {/* Stats bar */}
-        <p
-          className="text-[10px] tracking-[0.12em] uppercase text-muted-foreground mb-4"
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.05 }}
+          className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground/40 mb-5"
           style={{ fontFamily: '"DM Mono", monospace' }}
         >
           7,000+ pieces · 130 brands · 69 retailers
-        </p>
+        </motion.p>
 
-        {/* Hero Try-On CTA — glass-gold, primary action first */}
-        <div
-          onClick={() => { trackEvent('gallery_hero_tryon'); navigate(hasScan ? '/tryon' : '/capture'); }}
-          className={`w-full mb-3 bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-5 flex items-center gap-3 active:scale-[0.97] transition-all cursor-pointer hover:bg-white/[0.05] ${!hasScan && user ? 'py-5' : 'py-4'}`}
+        {/* ── Primary Action Cards — 2-column ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+          className="grid grid-cols-2 gap-3 mb-4"
         >
-          <div className="h-12 w-12 rounded-xl bg-white/[0.06] flex items-center justify-center shrink-0">
-            <FeatureIcon name="tryon" size={40} />
-          </div>
-          <div className="text-left flex-1">
-            <p className="font-display text-[22px] font-semibold text-foreground leading-tight tracking-tight">The Infinite Closet</p>
-            <p className="font-sans text-[14px] text-muted-foreground mt-1">7,000 pieces. Your exact silhouette.</p>
+          {/* Infinite Closet */}
+          <button
+            onClick={() => { trackEvent('gallery_hero_tryon'); navigate(hasScan ? '/tryon' : '/capture'); }}
+            className="relative rounded-2xl p-4 text-left border border-border/30 bg-secondary/20 hover:border-primary/15 active:scale-[0.97] transition-all duration-300 overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 w-[60%] h-full opacity-[0.04] bg-gradient-to-bl from-primary to-transparent" />
+            <div className="h-11 w-11 rounded-xl bg-primary/[0.06] flex items-center justify-center mb-3">
+              <FeatureIcon name="tryon" size={32} />
+            </div>
+            <p className="font-display text-[13px] font-bold text-foreground leading-tight">The Infinite Closet</p>
+            <p className="text-[10px] text-muted-foreground/50 mt-1 leading-snug">7,000 pieces. Your silhouette.</p>
             {!hasScan && user && (
-              <button
-                onClick={(e) => { e.stopPropagation(); navigate('/capture'); }}
-                className="mt-2.5 inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-primary text-primary-foreground text-[12px] font-bold tracking-wide hover:scale-[1.02] active:scale-[0.98] transition-transform"
-              >
-                Start Your Scan <ArrowRight className="h-3.5 w-3.5" />
-              </button>
+              <span className="mt-2.5 inline-flex items-center gap-1 text-[10px] font-bold text-primary">
+                Start Scan <ArrowRight className="h-3 w-3" />
+              </span>
             )}
-          </div>
-        </div>
+          </button>
 
-        {/* Size Guide + Drip Drawer — glass-dark panels */}
-        <div className="grid grid-cols-2 gap-3 mb-3">
+          {/* Verified Size */}
           <button
             onClick={() => navigate(user && hasScan ? '/profile/body' : '/capture')}
-            className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 py-4 flex items-center gap-2.5 active:scale-[0.97] transition-all hover:bg-white/[0.05]"
+            className="relative rounded-2xl p-4 text-left border border-border/30 bg-secondary/20 hover:border-primary/15 active:scale-[0.97] transition-all duration-300 overflow-hidden"
           >
-            <Ruler className="h-5 w-5 text-muted-foreground shrink-0" />
-            <div className="text-left">
-              <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">Your Verified Size</span>
-              <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Mapped across 130 brands</span>
+            <div className="absolute top-0 right-0 w-[60%] h-full opacity-[0.04] bg-gradient-to-bl from-primary to-transparent" />
+            <div className="h-11 w-11 rounded-xl bg-primary/[0.06] flex items-center justify-center mb-3">
+              <img src={featureIcons.sizeguide} alt="" className="w-7 h-7 object-contain" />
             </div>
+            <p className="font-display text-[13px] font-bold text-foreground leading-tight">Your Verified Size</p>
+            <p className="text-[10px] text-muted-foreground/50 mt-1 leading-snug">Mapped across 130 brands.</p>
           </button>
+        </motion.div>
 
-          <button
-            onClick={() => navigate('/closet')}
-            className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 py-4 flex items-center gap-2.5 active:scale-[0.97] transition-all hover:bg-white/[0.05]"
-          >
-            <Flame className="h-5 w-5 text-muted-foreground shrink-0" />
-            <div className="text-left">
-              <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">COP / DROP</span>
-              <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Your Body Twins weigh in.</span>
-            </div>
-          </button>
-        </div>
+        {/* ── Secondary Actions — horizontal ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="flex gap-2 mb-6"
+        >
+          {[
+            { onClick: () => { trackEvent('home_quick_scan'); navigate('/capture'); }, icon: featureIcons.post, label: hasScan ? 'Re-Scan' : 'Body Scan' },
+            { onClick: () => { trackEvent('home_quick_stylecheck'); navigate('/community'); }, icon: featureIcons.stylecheck, label: 'COP / DROP' },
+            { onClick: () => navigate('/closet'), icon: featureIcons.tryon, label: 'My Closet' },
+          ].map((action) => (
+            <button
+              key={action.label}
+              onClick={action.onClick}
+              className="flex-1 flex flex-col items-center justify-center rounded-xl border border-border/20 bg-secondary/10 py-3 active:scale-[0.96] transition-all min-h-[44px]"
+            >
+              <img src={action.icon} alt="" className="w-7 h-7 object-contain mb-1.5 opacity-70" />
+              <p className="text-[10px] font-semibold text-muted-foreground/50">{action.label}</p>
+            </button>
+          ))}
+        </motion.div>
 
-        {/* Weekly Outfits Hero Section */}
+        {/* ── Weekly Outfits ── */}
         <WeeklyOutfitsSection />
 
-        {/* One-Tap Playground — interactive split-screen */}
+        {/* ── One-Tap Playground ── */}
         <OneTapPlayground />
 
-        {/* Category pills — glass inactive, glass-gold active */}
+        {/* ── Divider ── */}
+        <div className="h-px bg-border/15 my-2 mb-5" />
+
+        {/* ── Category pills ── */}
         <div
-          className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-hide mb-2"
+          className="flex gap-1.5 overflow-x-auto pb-3 scrollbar-hide mb-2"
           onTouchStart={e => e.stopPropagation()}
           onTouchEnd={e => e.stopPropagation()}
         >
@@ -143,10 +170,10 @@ const GalleryPlayground = () => {
             <button
               key={cat.key}
               onClick={() => setActiveCategory(cat.key)}
-              className={`shrink-0 px-3.5 py-1.5 rounded-xl text-[11px] font-bold transition-colors min-h-[36px] backdrop-blur-md ${
+              className={`shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-medium transition-all border min-h-[36px] ${
                 activeCategory === cat.key
-                  ? 'bg-primary/8 border border-primary/20 text-primary'
-                  : 'bg-white/5 border border-white/10 text-white/50'
+                  ? 'border-primary/30 bg-primary/[0.08] text-primary'
+                  : 'border-border/20 bg-secondary/10 text-muted-foreground/50'
               }`}
             >
               {cat.label}
@@ -154,48 +181,48 @@ const GalleryPlayground = () => {
           ))}
         </div>
 
-        {/* Browse All — glass-gold pill */}
+        {/* Browse All */}
         <button
           onClick={() => navigate('/browse/all')}
-          className="w-full mb-3 py-2 rounded-xl glass-gold text-primary text-sm tracking-wide uppercase font-sans font-bold active:scale-[0.97] transition-transform flex items-center justify-center gap-1"
+          className="w-full mb-4 py-2.5 rounded-xl border border-primary/20 bg-primary/[0.04] text-primary text-[12px] tracking-[0.1em] uppercase font-bold active:scale-[0.97] transition-transform flex items-center justify-center gap-1.5"
         >
           <ShoppingBag className="h-3.5 w-3.5" /> Browse All 7,000+ Pieces
         </button>
 
-        {/* Product Grid — category-broken like try-on page */}
-        {catalogReady ? <div className="mb-6 space-y-2">
-          {activeCategory === 'all' ? (
-            ALL_PRODUCT_CATEGORIES.map(cat => (
+        {/* Product Grid */}
+        {catalogReady ? (
+          <div className="mb-6 space-y-4">
+            {activeCategory === 'all' ? (
+              ALL_PRODUCT_CATEGORIES.map(cat => (
+                <CategoryProductGrid
+                  key={cat.key}
+                  category={cat.key}
+                  title={cat.label}
+                  collapsed={true}
+                  maxItems={100}
+                  gender={mappedGender}
+                  onSelectProduct={handleSelectProduct}
+                />
+              ))
+            ) : (
               <CategoryProductGrid
-                key={cat.key}
-                category={cat.key}
-                title={cat.label}
-                collapsed={true}
+                category={activeCategory}
+                title={HERO_CATEGORIES.find(c => c.key === activeCategory)?.label || activeCategory}
+                collapsed={false}
                 maxItems={100}
                 gender={mappedGender}
                 onSelectProduct={handleSelectProduct}
               />
-            ))
-          ) : (
-            <CategoryProductGrid
-              category={activeCategory}
-              title={HERO_CATEGORIES.find(c => c.key === activeCategory)?.label || activeCategory}
-              collapsed={false}
-              maxItems={100}
-              gender={mappedGender}
-              onSelectProduct={handleSelectProduct}
-            />
-          )}
-        </div> : (
-          <div className="mb-6 space-y-3">
-            {[1,2,3].map(i => (
-              <div key={i} className="h-32 rounded-xl bg-white/5 animate-pulse" />
+            )}
+          </div>
+        ) : (
+          <div className="mb-6 grid grid-cols-2 gap-3">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="rounded-xl bg-secondary/20 aspect-[3/4] animate-pulse" />
             ))}
           </div>
         )}
       </div>
-
-      {/* HomeFAB removed — actions already in quick-action grid */}
     </div>
   );
 };
