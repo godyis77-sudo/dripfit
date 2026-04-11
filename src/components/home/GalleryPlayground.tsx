@@ -130,9 +130,9 @@ const GalleryPlayground = () => {
               <div className="flex justify-end mt-3">
                 <button
                   onClick={(e) => { e.stopPropagation(); navigate('/tryon'); }}
-                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-primary text-primary-foreground text-[12px] font-bold tracking-wide hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/[0.15] text-white text-[12px] font-bold tracking-wide hover:scale-[1.02] active:scale-[0.98] transition-transform"
                 >
-                  Try On <ArrowRight className="h-3.5 w-3.5" />
+                  Browse Closet <ArrowRight className="h-3.5 w-3.5" />
                 </button>
               </div>
             </div>
@@ -145,7 +145,7 @@ const GalleryPlayground = () => {
               >
                 <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">Your Verified Size</span>
                 <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Mapped across 186 brands</span>
-                <ChevronRight className="w-4 h-4 text-zinc-600 absolute right-4 top-1/2 -translate-y-1/2" />
+<ChevronRight className="w-4 h-4 text-zinc-400 absolute right-4 top-1/2 -translate-y-1/2" strokeWidth={2} />
               </button>
 
               <button
@@ -154,7 +154,7 @@ const GalleryPlayground = () => {
               >
                 <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">COP / DROP</span>
                 <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Your Body Twins weigh in.</span>
-                <ChevronRight className="w-4 h-4 text-zinc-600 absolute right-4 top-1/2 -translate-y-1/2" />
+                <ChevronRight className="w-4 h-4 text-zinc-400 absolute right-4 top-1/2 -translate-y-1/2" strokeWidth={2} />
               </button>
             </div>
           </>

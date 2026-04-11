@@ -63,7 +63,7 @@ const WeeklyOutfitsSection = () => {
 
   return (
     <div className="mt-2 mb-4">
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-start justify-between mb-3">
         <div>
           <h2 className="font-display text-[22px] font-semibold text-foreground tracking-tight">
             This Week's Drip
