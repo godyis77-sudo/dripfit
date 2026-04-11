@@ -83,9 +83,9 @@ const OutfitDetail = () => {
                 ${(outfit.total_price_cents / 100).toFixed(0)}
               </span>
             )}
-            {outfit.occasion_emoji && (
+            {outfit.occasion_label && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium glass-gold border border-primary/20 text-primary">
-                {outfit.occasion_emoji} {outfit.occasion_label}
+                {outfit.occasion_label}
               </span>
             )}
           </div>

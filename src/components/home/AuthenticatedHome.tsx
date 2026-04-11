@@ -206,7 +206,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
                       loading="lazy"
                     />
                     <div className="absolute bottom-1 right-1 bg-primary/90 text-primary-foreground text-[9px] font-bold px-1.5 py-0.5 rounded-full">
-                      {rec.engagement_count}🔥
+                      {rec.engagement_count}
                     </div>
                   </div>
                   <div className="p-1.5">
