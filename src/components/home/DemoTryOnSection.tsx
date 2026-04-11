@@ -53,11 +53,11 @@ const DemoTryOnSection = () => {
             onClick={handleTryThis}
             className="shrink-0 w-[130px] rounded-xl overflow-hidden border border-primary/20 bg-card active:scale-[0.96] transition-transform group"
           >
-            <div className="aspect-[3/4] relative overflow-hidden bg-secondary flex items-center justify-center">
+            <div className="aspect-[3/4] relative overflow-hidden bg-secondary">
               <img
                 src={demo.image}
                 alt={demo.label}
-                className="w-full h-full object-contain p-2"
+                className="w-full h-full object-cover"
                 loading="lazy"
               />
               {/* Brand badge */}
