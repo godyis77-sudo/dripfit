@@ -79,7 +79,7 @@ const GalleryPlayground = () => {
           <>
             {/* Hero scan card */}
             <div
-              onClick={() => { trackEvent('gallery_hero_scan'); navigate('/capture'); }}
+              onClick={() => { trackEvent('home_start_scan_click'); navigate('/capture'); }}
               className="w-full mb-3 rounded-2xl overflow-hidden cursor-pointer active:scale-[0.97] transition-all relative"
             >
               {/* Gradient background */}
