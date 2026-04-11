@@ -67,7 +67,7 @@ const OutfitsWeekly = () => {
 
         {occasions.length > 0 && (
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mb-3">
-            <PillBtn active={!activeOccasion} onClick={() => setActiveOccasion(null)} label="All" emoji="✨" />
+            <PillBtn active={!activeOccasion} onClick={() => setActiveOccasion(null)} label="All" emoji={null} />
             {occasions.map(oc => (
               <PillBtn key={oc.key} active={activeOccasion === oc.key} onClick={() => setActiveOccasion(oc.key)} label={oc.label} emoji={oc.emoji} />
             ))}
@@ -132,9 +132,9 @@ function FullWidthHeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () 
                 ${(outfit.total_price_cents / 100).toFixed(0)}
               </span>
             )}
-            {outfit.occasion_emoji && (
+            {outfit.occasion_label && (
               <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-medium glass-gold border border-primary/20 text-primary">
-                {outfit.occasion_emoji} {outfit.occasion_label}
+                {outfit.occasion_label}
               </span>
             )}
           </div>
@@ -159,9 +159,9 @@ function FullWidthHeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () 
             ${(outfit.total_price_cents / 100).toFixed(0)}
           </span>
         )}
-        {outfit.occasion_emoji && (
+        {outfit.occasion_label && (
           <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-medium glass-gold border border-primary/20 text-primary">
-            {outfit.occasion_emoji} {outfit.occasion_label}
+            {outfit.occasion_label}
           </span>
         )}
       </div>
