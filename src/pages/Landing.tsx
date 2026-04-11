@@ -115,14 +115,14 @@ export default function Landing() {
       <LandingFinalCTA />
 
       {/* FOOTER */}
-      <footer className="border-t border-border/30 py-10">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <BrandLogo size="sm" className="opacity-50" />
-          <span className="text-xs text-muted-foreground/50">Discover styles. Verify size. Drip checked. © 2026</span>
-          <div className="flex gap-6">
-            <Link to="/privacy" className="text-xs text-muted-foreground/50 hover:text-foreground transition-colors">Privacy</Link>
-            <Link to="/terms" className="text-xs text-muted-foreground/50 hover:text-foreground transition-colors">Terms</Link>
-            <a href="mailto:hello@dripfit.app" className="text-xs text-muted-foreground/50 hover:text-foreground transition-colors">Contact</a>
+      <footer className="border-t border-border/20 py-12">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+          <BrandLogo size="sm" className="opacity-40" />
+          <span className="text-[11px] text-muted-foreground/40 tracking-wide">© 2026 DripFit. All rights reserved.</span>
+          <div className="flex gap-8">
+            <Link to="/privacy" className="text-[11px] text-muted-foreground/40 hover:text-foreground/70 transition-colors">Privacy</Link>
+            <Link to="/terms" className="text-[11px] text-muted-foreground/40 hover:text-foreground/70 transition-colors">Terms</Link>
+            <a href="mailto:hello@dripfit.app" className="text-[11px] text-muted-foreground/40 hover:text-foreground/70 transition-colors">Contact</a>
           </div>
         </div>
       </footer>
