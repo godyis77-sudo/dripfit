@@ -219,13 +219,13 @@ const OneTapPlayground = () => {
                     key={product.id}
                     whileTap={{ scale: 0.93 }}
                     onClick={() => handleTapItem(product)}
-                    className="relative rounded-2xl overflow-hidden border border-white/5 glass-dark active:border-primary/30 transition-colors h-full"
+                    className="relative rounded-2xl overflow-hidden border border-white/5 glass-dark active:border-primary/30 transition-colors h-full bg-secondary flex items-center justify-center"
                   >
                     <img
                       src={product.image_url}
                       alt={product.name}
                       loading="lazy"
-                      className="absolute inset-0 w-full h-full object-cover object-top"
+                      className="w-full h-full object-contain p-2"
                     />
                     <div className="absolute bottom-1.5 right-1.5">
                       <span className="bg-black/60 backdrop-blur-sm text-[9px] tracking-widest uppercase text-white/60 px-1.5 py-0.5 rounded-full">{product.brand}</span>
