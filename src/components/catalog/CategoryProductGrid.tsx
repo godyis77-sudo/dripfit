@@ -179,9 +179,9 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
             className="relative rounded-2xl overflow-hidden glass-dark product-card text-left group hover:border-white/10 transition-all"
           >
             {/* Image area — 3:4 aspect */}
-            <div className="relative aspect-[3/4] bg-muted overflow-hidden rounded-t-2xl">
+            <div className="relative aspect-[3/4] bg-secondary rounded-t-2xl overflow-hidden flex items-center justify-center">
               {failedImageIds.has(product.id) ? (
-                <div className="w-full h-full flex items-center justify-center p-2 bg-muted text-center">
+                <div className="w-full h-full flex items-center justify-center p-2 text-center">
                   <span className="text-[10px] font-semibold text-muted-foreground line-clamp-2 uppercase tracking-wide">
                     {product.brand}
                   </span>
@@ -190,7 +190,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
                 <img
                   src={thumbnailUrl(product.image_url, 400)}
                   alt={product.name}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="w-full h-full object-contain p-3"
                   loading="lazy"
                   onError={() => {
                     setFailedImageIds(prev => {

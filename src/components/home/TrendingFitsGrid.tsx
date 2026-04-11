@@ -61,14 +61,14 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
                   category: fit.category,
                 })
               }
-              className="relative glass-card rounded-xl overflow-hidden aspect-[3/4] group active:scale-[0.97] active:translate-y-[1px] transition-all shadow-3d active:shadow-3d-pressed"
+              className="relative glass-card rounded-xl overflow-hidden aspect-[3/4] group active:scale-[0.97] active:translate-y-[1px] transition-all shadow-3d active:shadow-3d-pressed bg-secondary"
             >
               <img
                 src={thumbnailUrl(fit.image_url, 300)}
                 alt={fit.name}
                 loading="lazy"
                 decoding="async"
-                className="absolute inset-0 w-full h-full object-cover object-center rounded-xl"
+                className="w-full h-full object-contain p-2"
               />
               {/* Brand badge — bottom right of image */}
               <div className="absolute bottom-1.5 right-1.5">
