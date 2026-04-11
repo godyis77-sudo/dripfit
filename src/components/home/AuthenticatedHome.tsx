@@ -137,7 +137,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           {[
             { onClick: () => { trackEvent('home_quick_scan'); navigate('/capture'); }, icon: featureIcons.post, label: hasScan ? 'Re-Scan' : 'Body Scan' },
             { onClick: () => { trackEvent('home_quick_stylecheck'); navigate('/community'); }, icon: featureIcons.stylecheck, label: 'COP / DROP' },
-            { onClick: () => { trackEvent('home_quick_closet'); navigate('/closet'); }, icon: featureIcons.tryon, label: 'My Closet' },
+            { onClick: () => { trackEvent('home_quick_tryon'); navigate('/closet'); }, icon: featureIcons.tryon, label: 'My Closet' },
           ].map((action) => (
             <button
               key={action.label}
