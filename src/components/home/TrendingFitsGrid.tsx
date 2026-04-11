@@ -61,7 +61,7 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
                   category: fit.category,
                 })
               }
-              className="relative rounded-xl overflow-hidden aspect-[3/4] group active:scale-[0.97] active:translate-y-[1px] transition-all bg-secondary text-left"
+              className="relative rounded-xl overflow-hidden group active:scale-[0.97] active:translate-y-[1px] transition-all bg-secondary text-left h-full flex flex-col"
             >
               <div className="aspect-[3/4] overflow-hidden">
                 <img

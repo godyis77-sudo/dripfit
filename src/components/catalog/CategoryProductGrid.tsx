@@ -176,7 +176,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
               trackEvent('catalog_product_preview', { brand: product.brand, category: product.category });
               setPreviewProduct(product);
             }}
-            className="relative rounded-2xl overflow-hidden glass-dark product-card text-left group hover:border-white/10 transition-all"
+            className="relative rounded-2xl overflow-hidden glass-dark product-card text-left group hover:border-white/10 transition-all h-full flex flex-col"
           >
             {/* Image area — 3:4 aspect */}
             <div className="relative aspect-[3/4] bg-secondary rounded-t-2xl overflow-hidden">
