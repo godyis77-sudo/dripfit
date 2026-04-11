@@ -182,16 +182,18 @@ export default function OnboardingOverlay() {
               initial={{ scale: 0.7, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.15 }}
-              className="flex flex-col items-center gap-6"
+              className="flex flex-col items-center gap-0"
             >
-              <BrandLogo size="xxl" className="flex-col" />
+              <h1 className="font-display text-5xl font-extrabold tracking-tight text-foreground uppercase">
+                DRIPFIT <span className="text-primary" style={{ fontSize: '80%' }}>✔</span>
+              </h1>
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6, duration: 0.4 }}
-                className="text-sm font-semibold tracking-[4px] uppercase text-muted-foreground"
+                className="font-sans text-xs font-medium tracking-[0.2em] uppercase text-muted-foreground mt-3"
               >
-                Your Tailored Size & Style
+                YOUR BODY. MAPPED.
               </motion.p>
             </motion.div>
           </motion.div>
