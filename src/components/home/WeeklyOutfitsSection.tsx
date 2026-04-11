@@ -148,7 +148,7 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
         <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
 
         {/* Text at bottom */}
-        <div className="absolute bottom-0 inset-x-0 p-3.5 z-10">
+        <div className="absolute bottom-0 inset-x-0 px-3.5 pb-6 z-10">
           <p className="font-display text-[22px] font-semibold text-foreground leading-tight truncate tracking-tight">{outfit.title}</p>
           <div className="flex items-center gap-2 mt-1">
             {outfit.total_price_cents > 0 && (
@@ -157,7 +157,7 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
               </span>
             )}
             {outfit.occasion_label && (
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-medium glass-gold border border-primary/20 text-primary">
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium tracking-wider uppercase bg-white/[0.1] backdrop-blur-sm border border-white/[0.1] text-white">
                 {outfit.occasion_label}
               </span>
             )}
@@ -176,7 +176,7 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
   return (
     <motion.button
       onClick={onTap}
-      className="snap-start shrink-0 w-[280px] aspect-[3/4] rounded-2xl overflow-hidden text-left active:scale-[0.97] transition-transform glass-dark border border-white/5 flex flex-col justify-end p-3.5"
+      className="snap-start shrink-0 w-[280px] aspect-[3/4] rounded-2xl overflow-hidden text-left active:scale-[0.97] transition-transform glass-dark border border-white/5 flex flex-col justify-end px-3.5 pb-6"
       whileTap={{ scale: 0.97 }}
     >
       <button
@@ -194,7 +194,7 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
           </span>
         )}
         {outfit.occasion_label && (
-          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-medium glass-gold border border-primary/20 text-primary">
+          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium tracking-wider uppercase bg-white/[0.1] backdrop-blur-sm border border-white/[0.1] text-white">
             {outfit.occasion_label}
           </span>
         )}
