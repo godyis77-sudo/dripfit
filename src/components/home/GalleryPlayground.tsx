@@ -157,7 +157,7 @@ const GalleryPlayground = () => {
         {/* Browse All — glass-gold pill */}
         <button
           onClick={() => navigate('/browse/all')}
-          className="w-full mb-3 py-2 rounded-xl glass-gold text-primary text-sm tracking-wide uppercase font-sans font-bold active:scale-[0.97] transition-transform flex items-center justify-center gap-1"
+          className="w-full mb-3 h-12 rounded-2xl bg-white/[0.04] backdrop-blur-md border border-white/[0.06] text-primary font-sans text-xs tracking-widest uppercase font-semibold active:scale-[0.97] transition-transform flex items-center justify-center gap-2"
         >
           <ShoppingBag className="h-3.5 w-3.5" /> Browse All 7,000+ Pieces
         </button>
