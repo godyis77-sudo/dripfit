@@ -195,7 +195,6 @@ const OneTapPlayground = () => {
         <div className="flex flex-col min-h-0">
           <div className="flex items-center justify-between px-3 pt-2.5 pb-1 shrink-0">
             <div className="flex items-center gap-1">
-              <Sparkles className="h-3 w-3 text-primary opacity-70" />
               <span className="text-[11px] font-display font-bold text-white">Tap a Fit</span>
             </div>
             <button
