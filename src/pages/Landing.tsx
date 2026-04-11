@@ -25,7 +25,7 @@ export default function Landing() {
 
   usePageMeta({
     title: 'DripFit — Know Your Fit',
-    description: 'AI-powered body mapping, virtual try-on, and verified sizing across 130+ brands. End the cycle of returns.',
+    description: 'AI-powered body mapping, virtual try-on, and verified sizing across 186 brands. End the cycle of returns.',
     path: '/landing',
   });
 
