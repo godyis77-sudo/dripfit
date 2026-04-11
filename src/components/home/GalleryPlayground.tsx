@@ -60,7 +60,9 @@ const GalleryPlayground = () => {
         <div className="flex items-center justify-between mb-3">
           <div>
             <h1 className="font-display text-[28px] font-extrabold text-foreground uppercase tracking-tight">DRIPFIT <span className="text-primary text-[22px]">✔</span></h1>
-            <p className="font-sans text-[13px] font-medium tracking-[0.15em] uppercase text-foreground/70 mt-1 mb-3">Your Body. Mapped.</p>
+            <p className="font-sans text-[13px] font-medium tracking-[0.15em] uppercase text-foreground/70 mt-1 mb-3">
+              {hasScan ? 'Your Body. Mapped.' : 'Your fitting room is ready.'}
+            </p>
           </div>
           {!user && (
             <button
@@ -72,60 +74,98 @@ const GalleryPlayground = () => {
           )}
         </div>
 
-        {/* Stats bar */}
-        <p
-          className="text-[10px] tracking-[0.12em] uppercase text-muted-foreground mb-4"
-          style={{ fontFamily: '"DM Mono", monospace' }}
-        >
-          7,000+ pieces · 130 brands · 69 retailers
-        </p>
+        {/* ═══ STATE A: New user (no scan) ═══ */}
+        {!hasScan && (
+          <>
+            {/* Hero scan card */}
+            <div
+              onClick={() => { trackEvent('gallery_hero_scan'); navigate('/capture'); }}
+              className="w-full mb-3 rounded-2xl overflow-hidden cursor-pointer active:scale-[0.97] transition-all relative"
+            >
+              {/* Gradient background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-800/80 to-primary/10" />
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,hsl(var(--primary)/0.12),transparent_60%)]" />
+              <div className="relative px-6 py-10">
+                <h2 className="font-serif text-2xl text-foreground font-semibold mb-2">Map Your Body</h2>
+                <p className="text-sm text-zinc-400 max-w-[260px] leading-relaxed">
+                  2 photos. 60 seconds. Your size across 130 brands — locked.
+                </p>
+                <button
+                  onClick={(e) => { e.stopPropagation(); navigate('/capture'); }}
+                  className="mt-5 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground text-sm font-bold tracking-wide hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                >
+                  Start Your Scan <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
 
-        {/* Hero Try-On CTA — glass-gold, primary action first */}
-        <div
-          onClick={() => { trackEvent('gallery_hero_tryon'); navigate(hasScan ? '/tryon' : '/capture'); }}
-          className={`w-full mb-3 bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-5 flex items-center gap-3 active:scale-[0.97] transition-all cursor-pointer hover:bg-white/[0.05] ${!hasScan && user ? 'py-5' : 'py-4'}`}
-        >
-          <div className="h-12 w-12 rounded-xl bg-white/[0.06] flex items-center justify-center shrink-0">
-            <FeatureIcon name="tryon" size={40} />
-          </div>
-          <div className="text-left flex-1">
-            <p className="font-display text-[22px] font-semibold text-foreground leading-tight tracking-tight">The Infinite Closet</p>
-            <p className="font-sans text-[14px] text-muted-foreground mt-1">7,000 pieces. Your exact silhouette.</p>
-            {!hasScan && user && (
+            {/* Skip link */}
+            <button
+              onClick={() => navigate('/browse/all')}
+              className="w-full text-center text-xs text-zinc-500 mb-4 active:opacity-70 transition-opacity"
+            >
+              Skip for now — browse the closet →
+            </button>
+          </>
+        )}
+
+        {/* ═══ STATE B: Returning user (scan completed) ═══ */}
+        {hasScan && (
+          <>
+            {/* Stats bar */}
+            <p
+              className="text-[10px] tracking-[0.12em] uppercase text-muted-foreground mb-4"
+              style={{ fontFamily: '"DM Mono", monospace' }}
+            >
+              7,000+ pieces · 130 brands · 69 retailers
+            </p>
+
+            {/* Hero card — The Infinite Closet */}
+            <div
+              onClick={() => { trackEvent('gallery_hero_tryon'); navigate('/tryon'); }}
+              className="w-full mb-3 bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-5 py-5 flex items-center gap-3 active:scale-[0.97] transition-all cursor-pointer hover:bg-white/[0.05]"
+            >
+              <div className="h-12 w-12 rounded-xl bg-white/[0.06] flex items-center justify-center shrink-0">
+                <FeatureIcon name="tryon" size={40} />
+              </div>
+              <div className="text-left flex-1">
+                <p className="font-display text-[22px] font-semibold text-foreground leading-tight tracking-tight">The Infinite Closet</p>
+                <p className="font-sans text-[14px] text-muted-foreground mt-1">7,000 pieces. Your exact silhouette.</p>
+                <button
+                  onClick={(e) => { e.stopPropagation(); navigate('/tryon'); }}
+                  className="mt-2.5 inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-primary text-primary-foreground text-[12px] font-bold tracking-wide hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                >
+                  Try On <ArrowRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Secondary cards — side by side */}
+            <div className="grid grid-cols-2 gap-3 mb-3">
               <button
-                onClick={(e) => { e.stopPropagation(); navigate('/capture'); }}
-                className="mt-2.5 inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-primary text-primary-foreground text-[12px] font-bold tracking-wide hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                onClick={() => navigate('/profile/body')}
+                className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 py-4 flex items-center gap-2.5 active:scale-[0.97] transition-all hover:bg-white/[0.05]"
               >
-                Start Your Scan <ArrowRight className="h-3.5 w-3.5" />
+                <Ruler className="h-5 w-5 text-muted-foreground shrink-0" />
+                <div className="text-left">
+                  <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">Your Verified Size</span>
+                  <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Mapped across 130 brands</span>
+                </div>
               </button>
-            )}
-          </div>
-        </div>
 
-        {/* Size Guide + Drip Drawer — glass-dark panels */}
-        <div className="grid grid-cols-2 gap-3 mb-3">
-          <button
-            onClick={() => navigate(user && hasScan ? '/profile/body' : '/capture')}
-            className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 py-4 flex items-center gap-2.5 active:scale-[0.97] transition-all hover:bg-white/[0.05]"
-          >
-            <Ruler className="h-5 w-5 text-muted-foreground shrink-0" />
-            <div className="text-left">
-              <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">Your Verified Size</span>
-              <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Mapped across 130 brands</span>
+              <button
+                onClick={() => navigate('/closet')}
+                className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 py-4 flex items-center gap-2.5 active:scale-[0.97] transition-all hover:bg-white/[0.05]"
+              >
+                <Flame className="h-5 w-5 text-muted-foreground shrink-0" />
+                <div className="text-left">
+                  <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">COP / DROP</span>
+                  <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Your Body Twins weigh in.</span>
+                </div>
+              </button>
             </div>
-          </button>
-
-          <button
-            onClick={() => navigate('/closet')}
-            className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 py-4 flex items-center gap-2.5 active:scale-[0.97] transition-all hover:bg-white/[0.05]"
-          >
-            <Flame className="h-5 w-5 text-muted-foreground shrink-0" />
-            <div className="text-left">
-              <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">COP / DROP</span>
-              <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Your Body Twins weigh in.</span>
-            </div>
-          </button>
-        </div>
+          </>
+        )}
 
         {/* Weekly Outfits Hero Section */}
         <WeeklyOutfitsSection />
