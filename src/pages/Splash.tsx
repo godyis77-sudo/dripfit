@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import BrandLogo from '@/components/ui/BrandLogo';
 
 const SPLASH_DURATION = 2800;
 
@@ -12,13 +11,11 @@ const Splash = () => {
   const onboardingDone = !!localStorage.getItem('onboarding_complete');
 
   useEffect(() => {
-    // Returning users who finished onboarding → skip splash, go straight to home
     if (onboardingDone) {
       navigate('/home', { replace: true });
       return;
     }
 
-    // First-time users also skip splash (OnboardingOverlay on /home handles intro)
     if (!onboardingDone) {
       navigate('/home', { replace: true });
       return;
@@ -43,16 +40,18 @@ const Splash = () => {
         initial={{ scale: 0.7, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.15 }}
-        className="flex flex-col items-center gap-6"
+        className="flex flex-col items-center gap-0"
       >
-        <BrandLogo size="xxl" className="flex-col" />
+        <h1 className="font-display text-5xl md:text-6xl font-extrabold tracking-tight text-foreground uppercase">
+          DRIPFIT <span className="text-4xl text-primary">✔</span>
+        </h1>
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.4 }}
-          className="text-sm font-semibold tracking-[4px] uppercase text-muted-foreground"
+          className="font-sans text-xs font-medium tracking-[0.2em] uppercase text-muted-foreground mt-3"
         >
-          Your Tailored Size & Style
+          YOUR BODY. MAPPED.
         </motion.p>
       </motion.div>
     </motion.div>
