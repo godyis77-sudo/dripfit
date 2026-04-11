@@ -48,7 +48,7 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
       initial={{ y: 80 }}
       animate={{ y: hidden ? 100 : 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className="fixed bottom-0 left-0 right-0 z-50 lg:max-w-[390px] lg:left-1/2 lg:-translate-x-1/2 bg-black/40 backdrop-blur-xl border-t border-white/5 will-change-transform"
+      className="fixed bottom-0 left-0 right-0 z-50 lg:max-w-[390px] lg:left-1/2 lg:-translate-x-1/2 bg-background/90 backdrop-blur-xl border-t border-white/[0.04] will-change-transform"
     >
       <div className="flex items-center justify-around px-1 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {tabs.map((tab) => {
@@ -66,26 +66,23 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
               aria-label={tab.label}
               aria-current={isActive ? 'page' : undefined}
               className={cn(
-                'relative flex flex-col items-center gap-0 rounded-xl px-2 py-1 min-h-[44px] min-w-[44px] transition-all duration-300',
+                'relative flex flex-col items-center gap-0 rounded-xl px-2 py-1 min-h-[44px] min-w-[44px] transition-colors duration-300',
                 isActive
                   ? 'text-primary'
-                  : 'text-white/25 active:text-foreground'
+                  : 'text-muted-foreground/50 active:text-foreground'
               )}
             >
-              <div className={cn(
-                'h-8 w-8 flex items-center justify-center rounded-lg transition-all duration-300',
-                isActive && 'scale-110 shadow-gold-glow shimmer-sweep ring-1 ring-primary/40'
-              )}>
+              <div className="h-8 w-8 flex items-center justify-center">
                 <FeatureIcon name={tab.icon} size={20} />
               </div>
               <span className={cn(
-                "text-[10px] font-semibold tracking-[0.1em] uppercase transition-all duration-300 mt-0.5",
-                isActive ? 'text-primary' : 'text-muted-foreground'
+                "text-[10px] font-semibold tracking-[0.1em] uppercase transition-colors duration-300 mt-0.5",
+                isActive ? 'text-primary' : 'text-muted-foreground/50'
               )}>{tab.label}</span>
               {isActive && (
                 <motion.div
                   layoutId="tab-indicator"
-                  className="absolute -top-1 left-1/2 -translate-x-1/2 h-0.5 w-8 rounded-full gradient-drip"
+                  className="w-1 h-1 rounded-full bg-primary mt-0.5"
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
