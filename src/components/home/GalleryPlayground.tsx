@@ -123,17 +123,14 @@ const GalleryPlayground = () => {
             {/* Hero card — The Infinite Closet */}
             <div
               onClick={() => { trackEvent('gallery_hero_tryon'); navigate('/tryon'); }}
-              className="w-full mb-3 bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-5 py-5 flex items-center gap-3 active:scale-[0.97] transition-all cursor-pointer hover:bg-white/[0.05]"
+              className="relative w-full mb-3 bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-5 py-6 active:scale-[0.97] transition-all cursor-pointer hover:bg-white/[0.05]"
             >
-              <div className="h-12 w-12 rounded-xl bg-white/[0.06] flex items-center justify-center shrink-0">
-                <FeatureIcon name="tryon" size={40} />
-              </div>
-              <div className="text-left flex-1">
-                <p className="font-display text-[22px] font-semibold text-foreground leading-tight tracking-tight">The Infinite Closet</p>
-                <p className="font-sans text-[14px] text-muted-foreground mt-1">9,000+ pieces. Your exact silhouette.</p>
+              <p className="font-display text-[22px] font-semibold text-foreground leading-tight tracking-tight">The Infinite Closet</p>
+              <p className="font-sans text-[14px] text-muted-foreground mt-1">9,000+ pieces. Your exact silhouette.</p>
+              <div className="flex justify-end mt-3">
                 <button
                   onClick={(e) => { e.stopPropagation(); navigate('/tryon'); }}
-                  className="mt-2.5 inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-primary text-primary-foreground text-[12px] font-bold tracking-wide hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-primary text-primary-foreground text-[12px] font-bold tracking-wide hover:scale-[1.02] active:scale-[0.98] transition-transform"
                 >
                   Try On <ArrowRight className="h-3.5 w-3.5" />
                 </button>
@@ -144,24 +141,18 @@ const GalleryPlayground = () => {
             <div className="grid grid-cols-2 gap-3 mb-3">
               <button
                 onClick={() => navigate('/profile/body')}
-                className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 py-4 flex items-center gap-2.5 active:scale-[0.97] transition-all hover:bg-white/[0.05]"
+                className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 py-4 text-left active:scale-[0.97] transition-all hover:bg-white/[0.05]"
               >
-                <Ruler className="h-5 w-5 text-muted-foreground shrink-0" />
-                <div className="text-left">
-                  <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">Your Verified Size</span>
-                  <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Mapped across 186 brands</span>
-                </div>
+                <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">Your Verified Size</span>
+                <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Mapped across 186 brands</span>
               </button>
 
               <button
                 onClick={() => navigate('/closet')}
-                className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 py-4 flex items-center gap-2.5 active:scale-[0.97] transition-all hover:bg-white/[0.05]"
+                className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 py-4 text-left active:scale-[0.97] transition-all hover:bg-white/[0.05]"
               >
-                <Flame className="h-5 w-5 text-muted-foreground shrink-0" />
-                <div className="text-left">
-                  <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">COP / DROP</span>
-                  <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Your Body Twins weigh in.</span>
-                </div>
+                <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">COP / DROP</span>
+                <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Your Body Twins weigh in.</span>
               </button>
             </div>
           </>
