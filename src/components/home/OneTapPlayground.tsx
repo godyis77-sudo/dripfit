@@ -227,9 +227,9 @@ const OneTapPlayground = () => {
                       loading="lazy"
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute bottom-1.5 right-1.5">
-                      <span className="bg-black/60 backdrop-blur-sm text-[9px] tracking-widest uppercase text-white/60 px-1.5 py-0.5 rounded-full">{product.brand}</span>
-                    </div>
+                     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1">
+                       <p className="font-mono text-[8px] tracking-widest uppercase text-zinc-400 truncate">{product.brand}</p>
+                     </div>
                   </motion.button>
                 ))}
           </div>

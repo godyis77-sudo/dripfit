@@ -61,18 +61,23 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
                   category: fit.category,
                 })
               }
-              className="relative glass-card rounded-xl overflow-hidden aspect-[3/4] group active:scale-[0.97] active:translate-y-[1px] transition-all shadow-3d active:shadow-3d-pressed bg-secondary"
+              className="relative rounded-xl overflow-hidden aspect-[3/4] group active:scale-[0.97] active:translate-y-[1px] transition-all bg-secondary text-left"
             >
-              <img
-                src={thumbnailUrl(fit.image_url, 300)}
-                alt={fit.name}
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover"
-              />
-              {/* Brand badge — bottom right of image */}
-              <div className="absolute bottom-1.5 right-1.5">
-                <span className="brand-label">{fit.brand}</span>
+              <div className="aspect-[3/4] overflow-hidden">
+                <img
+                  src={thumbnailUrl(fit.image_url, 300)}
+                  alt={fit.name}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-2">
+                <p className="font-mono text-[10px] tracking-widest uppercase text-zinc-500">{fit.brand}</p>
+                <p className="font-sans text-sm text-zinc-200 line-clamp-1 leading-tight">{fit.name}</p>
+                {fit.price_cents != null && (
+                  <p className="font-mono text-sm text-white font-medium mt-0.5">${(fit.price_cents / 100).toFixed(0)}</p>
+                )}
               </div>
             </button>
           ))}
