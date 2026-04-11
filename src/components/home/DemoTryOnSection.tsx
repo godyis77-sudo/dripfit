@@ -60,18 +60,14 @@ const DemoTryOnSection = () => {
                 className="w-full h-full object-cover"
                 loading="lazy"
               />
-              {/* Brand badge */}
-              <span className="absolute top-1.5 left-1.5 inline-flex items-center px-1.5 py-0.5 rounded-md bg-black/70 backdrop-blur-sm text-white text-[9px] font-extrabold uppercase tracking-wider drop-shadow-sm">
-                {demo.brand}
-              </span>
               {/* Hover CTA */}
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent pt-6 pb-2 px-2 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity">
                 <span className="text-[10px] font-bold text-white">Try This Look →</span>
               </div>
             </div>
             <div className="px-2 py-1.5">
-              <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{demo.brand}</p>
-              <p className="text-[11px] font-semibold text-foreground truncate leading-tight">{demo.label}</p>
+              <p className="font-mono text-[9px] tracking-widest uppercase text-zinc-500">{demo.brand}</p>
+              <p className="font-sans text-[11px] text-zinc-200 truncate leading-tight">{demo.label}</p>
             </div>
           </button>
         ))}
