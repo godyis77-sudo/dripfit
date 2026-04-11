@@ -383,7 +383,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
         <div className="flex gap-3 max-w-sm mx-auto w-full">
           {onTryOn && (
             <Button
-              className="flex-1 gap-2 h-12 rounded-full font-semibold text-sm bg-primary text-primary-foreground hover:opacity-90"
+              className="flex-1 gap-2 h-12 rounded-full font-semibold text-sm bg-[#C9A84C] text-zinc-950 hover:opacity-90 shadow-none"
               onClick={() => onTryOn(product)}
             >
               <Sparkles className="h-4 w-4" />
@@ -392,7 +392,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
           )}
           {onShop && product.product_url && (
             <Button
-              className="flex-1 gap-2 h-12 rounded-full font-semibold text-sm bg-primary text-primary-foreground hover:opacity-90"
+              className="flex-1 gap-2 h-12 rounded-full font-semibold text-sm bg-[#C9A84C] text-zinc-950 hover:opacity-90 shadow-none"
               onClick={() => onShop(product)}
             >
               <ShoppingCart className="h-4 w-4" />

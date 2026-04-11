@@ -158,8 +158,7 @@ const OutfitDetail = () => {
                     {item.image_url && (
                       <Button
                         size="sm"
-                        variant="outline"
-                        className="h-7 text-[10px] px-2.5 border-border/50"
+                        className="h-7 text-[10px] px-2.5 rounded-full bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/10 shadow-none"
                         onClick={() => handleTryOn(item)}
                       >
                         <Shirt className="h-3 w-3 mr-1" /> Try
