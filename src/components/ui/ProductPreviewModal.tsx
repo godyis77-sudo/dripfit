@@ -149,7 +149,7 @@ function ZoomableProductImage({ src, alt, brand, caption, additionalImages }: { 
 
   return (
     <div
-      className="flex-1 flex items-center justify-center p-2 min-h-0 overflow-hidden touch-none"
+      className="flex-1 flex items-center justify-center p-2 min-h-0 max-h-[50vh] overflow-hidden touch-none"
       onClick={(e) => e.stopPropagation()}
       onTouchStart={(e) => { e.stopPropagation(); handleTouchStart(e); }}
       onTouchMove={(e) => { e.stopPropagation(); handleTouchMove(e); }}
@@ -332,7 +332,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
           <div className="max-w-sm mx-auto w-full flex gap-2">
             <Button
               variant="outline"
-              className={`flex-1 h-11 rounded-xl text-[12px] font-bold gap-1.5 backdrop-blur-sm ${addedToWardrobe ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'}`}
+              className={`flex-1 h-11 rounded-full text-[12px] font-bold gap-1.5 backdrop-blur-sm ${addedToWardrobe ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-white/[0.06] border-white/[0.1] text-white hover:bg-white/10'}`}
               onClick={handleAddToWardrobe}
               disabled={addingToWardrobe || addedToWardrobe}
             >
@@ -342,7 +342,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
             {product.id && (
               <Button
                 variant="outline"
-                className={`flex-1 h-11 rounded-xl text-[12px] font-bold gap-1.5 backdrop-blur-sm ${isInCart(product.id) ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'}`}
+                className={`flex-1 h-11 rounded-full text-[12px] font-bold gap-1.5 backdrop-blur-sm ${isInCart(product.id) ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-white/[0.06] border-white/[0.1] text-white hover:bg-white/10'}`}
                 onClick={() => {
                   if (!product.id) return;
                   if (isInCart(product.id)) {
@@ -383,7 +383,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
         <div className="flex gap-3 max-w-sm mx-auto w-full">
           {onTryOn && (
             <Button
-              className="flex-1 gap-2 h-12 rounded-xl font-bold bg-primary/8 backdrop-blur-md border border-primary/20 text-primary hover:bg-primary/15"
+              className="flex-1 gap-2 h-12 rounded-full font-semibold text-sm bg-primary text-primary-foreground hover:opacity-90"
               onClick={() => onTryOn(product)}
             >
               <Sparkles className="h-4 w-4" />
@@ -392,7 +392,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
           )}
           {onShop && product.product_url && (
             <Button
-              className="flex-1 gap-2 h-12 rounded-xl font-bold btn-luxury text-primary-foreground"
+              className="flex-1 gap-2 h-12 rounded-full font-semibold text-sm bg-primary text-primary-foreground hover:opacity-90"
               onClick={() => onShop(product)}
             >
               <ShoppingCart className="h-4 w-4" />

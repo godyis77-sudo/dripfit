@@ -223,7 +223,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
       {hasMore && (
         <div className="flex justify-center mt-3">
           <Button
-            className="rounded-lg glass-gold text-primary border-primary/20 h-10 px-6 text-xs tracking-wide uppercase font-bold"
+            className="rounded-full bg-white/[0.06] backdrop-blur-md border border-white/[0.1] text-white h-10 px-6 text-xs tracking-wide uppercase font-bold hover:bg-white/10"
             onClick={() => {
               if (!expanded) {
                 setExpanded(true);
