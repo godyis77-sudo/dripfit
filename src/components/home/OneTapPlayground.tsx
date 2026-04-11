@@ -130,7 +130,7 @@ const OneTapPlayground = () => {
       {/* Split screen layout */}
       <div className="grid grid-cols-[1fr_1.5fr]">
         {/* Left: User photo / camera prompt */}
-        <div className="relative border-r border-white/5 flex flex-col items-center justify-center p-3 glass-dark">
+        <div className="relative border-r border-white/5 flex flex-col items-center justify-center p-3 border-dashed border-white/[0.08] rounded-2xl m-2">
           <AnimatePresence mode="wait">
             {userPhoto ? (
               <motion.div
@@ -157,11 +157,11 @@ const OneTapPlayground = () => {
                 animate={{ opacity: 1 }}
                 className="flex flex-col items-center gap-2 text-center"
               >
-                <div className="h-14 w-14 rounded-2xl glass-gold flex items-center justify-center">
-                  <Camera className="h-6 w-6 text-primary opacity-70" />
+                <div className="h-14 w-14 rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
+                  <Camera className="h-6 w-6 text-white/30" />
                 </div>
-                <p className="text-[12px] font-bold text-white">Your Photo</p>
-                <p className="text-[10px] text-white/40 leading-tight">Add your photo first, then tap any item</p>
+                <p className="text-[12px] font-bold text-white/70">Your Photo</p>
+                <p className="text-[10px] text-white/30 leading-tight">Snap or upload a photo. Tap any piece to try on.</p>
                 <div className="flex gap-1.5 w-full max-w-[140px]">
                   <button
                     onClick={() => {
@@ -239,8 +239,8 @@ const OneTapPlayground = () => {
       {/* Bottom prompt when no photo */}
       {!userPhoto && (
         <div className="px-3 py-2 border-t border-white/5">
-          <p className="text-[10px] text-center text-white/40">
-            <span className="font-bold text-primary">Skip the photo?</span> Tap any item to try it on with your camera later
+          <p className="text-[10px] text-center text-white/30">
+            No photo? Tap any piece to try on later.
           </p>
         </div>
       )}
