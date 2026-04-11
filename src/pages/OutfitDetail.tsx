@@ -121,13 +121,13 @@ const OutfitDetail = () => {
             >
               {item.image_url && (
                 <div
-                  className="w-24 h-24 rounded-xl overflow-hidden bg-secondary shrink-0 cursor-pointer flex items-center justify-center"
+                  className="w-24 h-24 rounded-xl overflow-hidden bg-secondary shrink-0 cursor-pointer"
                   onClick={() => setFullscreenSrc(item.image_url!)}
                 >
                   <img
                     src={item.image_url}
                     alt={item.product_name}
-                    className="w-full h-full object-contain p-2"
+                    className="w-full h-full object-cover"
                     loading="lazy"
                   />
                 </div>

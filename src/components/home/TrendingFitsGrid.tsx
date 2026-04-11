@@ -68,7 +68,7 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
                 alt={fit.name}
                 loading="lazy"
                 decoding="async"
-                className="w-full h-full object-contain p-2"
+                className="w-full h-full object-cover"
               />
               {/* Brand badge — bottom right of image */}
               <div className="absolute bottom-1.5 right-1.5">
