@@ -62,34 +62,37 @@ export default function Landing() {
       <LandingHero />
 
       {/* SOCIAL PROOF BAR */}
-      <div className="border-y border-border/30 py-5">
-        <div className="max-w-6xl mx-auto px-6 flex items-center justify-center gap-8 md:gap-14 flex-wrap">
-          {PROOF_TAGS.map((t) => (
-            <span key={t} className="text-[11px] tracking-[.18em] uppercase text-muted-foreground/40 font-semibold">{t}</span>
+      <div className="border-y border-border/20 py-5">
+        <div className="max-w-6xl mx-auto px-6 flex items-center justify-center gap-6 md:gap-12 flex-wrap">
+          {PROOF_TAGS.map((t, i) => (
+            <span key={t} className="text-[10px] tracking-[.2em] uppercase text-muted-foreground/60 font-medium flex items-center gap-3">
+              {i > 0 && <span className="w-1 h-1 rounded-full bg-primary/30" />}
+              {t}
+            </span>
           ))}
         </div>
       </div>
 
       {/* PROBLEM */}
-      <section className="py-28 md:py-36">
+      <section className="py-24 md:py-36">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <FadeIn>
-            <span className="font-mono text-[10px] tracking-[.22em] uppercase text-muted-foreground/60 block mb-5">The Problem</span>
-            <h2 className="font-display text-4xl md:text-5xl font-bold leading-tight mb-6">
+            <span className="type-data block mb-4 text-primary/60 tracking-[.25em]">The Problem</span>
+            <h2 className="type-headline text-3xl md:text-5xl leading-tight mb-6 tracking-[-0.02em]">
               Ordering Three Sizes.<br />
-              <span className="text-muted-foreground/40">Returning Two.</span>
+              <span className="text-muted-foreground/30">Returning Two.</span>
             </h2>
-            <p className="text-muted-foreground text-base leading-relaxed max-w-lg mx-auto">
-              The grail piece drops. You cop three sizes because every brand fits different. Two go back. Money locked. Drip delayed. Dead returns piling up.
+            <p className="text-muted-foreground/70 text-base leading-[1.7] max-w-lg mx-auto">
+              The grail piece drops. You cop three sizes because every brand fits different. Two go back. Money locked. Drip delayed.
             </p>
           </FadeIn>
         </div>
-        <div className="max-w-5xl mx-auto px-6 mt-16 grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="max-w-5xl mx-auto px-6 mt-16 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {STATS.map((d, i) => (
             <FadeIn key={d.label} delay={i * 0.08}>
-              <div className="bg-[hsl(var(--surface-glass)/0.03)] backdrop-blur-xl border border-border/40 rounded-2xl p-8 text-center">
-                <div className="font-display text-3xl font-bold text-primary mb-2">{d.stat}</div>
-                <div className="text-sm text-muted-foreground">{d.label}</div>
+              <div className="rounded-2xl p-8 text-center border border-border/30 bg-secondary/20 hover:border-primary/15 transition-all duration-500">
+                <div className="type-headline text-3xl text-primary mb-2 tracking-tight">{d.stat}</div>
+                <div className="text-[13px] text-muted-foreground/60">{d.label}</div>
               </div>
             </FadeIn>
           ))}
@@ -112,14 +115,14 @@ export default function Landing() {
       <LandingFinalCTA />
 
       {/* FOOTER */}
-      <footer className="border-t border-border/30 py-10">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <BrandLogo size="sm" className="opacity-50" />
-          <span className="text-xs text-muted-foreground/50">Discover styles. Verify size. Drip checked. © 2026</span>
-          <div className="flex gap-6">
-            <Link to="/privacy" className="text-xs text-muted-foreground/50 hover:text-foreground transition-colors">Privacy</Link>
-            <Link to="/terms" className="text-xs text-muted-foreground/50 hover:text-foreground transition-colors">Terms</Link>
-            <a href="mailto:hello@dripfit.app" className="text-xs text-muted-foreground/50 hover:text-foreground transition-colors">Contact</a>
+      <footer className="border-t border-border/20 py-12">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+          <BrandLogo size="sm" className="opacity-40" />
+          <span className="text-[11px] text-muted-foreground/40 tracking-wide">© 2026 DripFit. All rights reserved.</span>
+          <div className="flex gap-8">
+            <Link to="/privacy" className="text-[11px] text-muted-foreground/40 hover:text-foreground/70 transition-colors">Privacy</Link>
+            <Link to="/terms" className="text-[11px] text-muted-foreground/40 hover:text-foreground/70 transition-colors">Terms</Link>
+            <a href="mailto:hello@dripfit.app" className="text-[11px] text-muted-foreground/40 hover:text-foreground/70 transition-colors">Contact</a>
           </div>
         </div>
       </footer>
