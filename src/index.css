@@ -1108,3 +1108,80 @@
   opacity: 1;
   transform: translateY(0);
 }
+
+/* ━━━ DRIPFIT DESIGN SYSTEM — Global Utilities ━━━ */
+:root {
+  --df-gold: hsl(var(--primary));
+  --df-gold-hover: hsl(var(--primary) / 0.85);
+  --df-gold-10: hsl(var(--primary) / 0.10);
+  --df-bg: hsl(var(--background));
+  --df-surface: rgba(255, 255, 255, 0.03);
+  --df-border: rgba(255, 255, 255, 0.06);
+}
+
+/* Glass surface utility */
+.df-glass {
+  background: var(--df-surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--df-border);
+}
+
+/* Product image dark container */
+.df-product-img {
+  background: hsl(var(--secondary));
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+.df-product-img img {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+
+/* Primary CTA — flat gold, no gradient */
+.df-btn-primary {
+  background: hsl(var(--primary));
+  background-image: none;
+  box-shadow: none;
+  color: hsl(var(--primary-foreground));
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  height: 48px;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+.df-btn-primary:hover {
+  background: hsl(var(--primary) / 0.85);
+}
+
+/* Secondary button — glass */
+.df-btn-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: hsl(var(--foreground));
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 14px;
+  height: 48px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+.df-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}

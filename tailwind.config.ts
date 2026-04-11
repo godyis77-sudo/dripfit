@@ -17,6 +17,7 @@ export default {
         display: ["'Playfair Display'", "Georgia", "'Times New Roman'", "serif"],
         body: ["'DM Sans'", "system-ui", "-apple-system", "sans-serif"],
         sans: ["'DM Sans'", "system-ui", "-apple-system", "sans-serif"],
+        mono: ["'DM Mono'", "Menlo", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",
