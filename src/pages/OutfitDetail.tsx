@@ -149,7 +149,7 @@ const OutfitDetail = () => {
                     {item.product_url && (
                       <Button
                         size="sm"
-                        className="h-7 text-[10px] px-2.5 btn-luxury"
+                        className="h-7 text-[10px] px-2.5 rounded-full bg-white/[0.06] backdrop-blur-md border border-white/[0.1] text-white hover:bg-white/10"
                         onClick={() => handleShop(item)}
                       >
                         <ShoppingBag className="h-3 w-3 mr-1" /> Shop
@@ -177,7 +177,7 @@ const OutfitDetail = () => {
       {outfit.items.length > 0 && outfit.items[0].image_url && (
         <div className="fixed bottom-0 inset-x-0 z-30 p-4 pb-safe bg-gradient-to-t from-background via-background to-transparent">
           <Button
-            className="w-full h-12 btn-luxury font-bold text-sm rounded-xl"
+            className="w-full h-12 bg-primary text-primary-foreground font-semibold text-sm rounded-full hover:opacity-90"
             onClick={() => handleTryOn(outfit.items[0])}
           >
             <Shirt className="h-4 w-4 mr-2" /> Try This Look On
