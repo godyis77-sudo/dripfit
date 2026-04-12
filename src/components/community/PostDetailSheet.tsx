@@ -242,9 +242,25 @@ export const PostDetailSheet = ({
             <ImageViewer
               src={post.result_photo_url}
               alt={post.caption || 'Try-on look'}
-              retailers={retailers}
-              retailerUrlMap={retailerUrlMap}
+              retailers={[]}
+              retailerUrlMap={new Map()}
             />
+
+            {/* Retailer badges — horizontal scroll below image (C09) */}
+            {retailers.length > 0 && (
+              <div className="px-4 pt-1.5 flex gap-2 overflow-x-auto scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }} onClick={e => e.stopPropagation()}>
+                {retailers.map(r => (
+                  <button
+                    key={r}
+                    onClick={() => window.open(retailerUrlMap.get(r), '_blank', 'noopener')}
+                    className="shrink-0 brand-label flex items-center gap-1.5 active:scale-95 transition-transform"
+                  >
+                    {r}
+                    <ExternalLink className="h-3 w-3" />
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Caption section */}
             {isOwnPost ? (

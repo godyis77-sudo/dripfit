@@ -633,7 +633,7 @@ const Capture = () => {
       </div>
 
       {/* Bottom actions */}
-      <div className="sticky bottom-0 bg-black/60 backdrop-blur-xl border-t border-white/5 px-4 pb-4 pt-3 space-y-2 w-full">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black via-black/90 to-transparent px-4 pb-4 pt-3 space-y-2" style={{ paddingBottom: 'calc(16px + env(safe-area-inset-bottom))' }}>
         {flowStep === 'intro' && (
           scanGated ? (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2 w-full">
