@@ -37,6 +37,10 @@ const GalleryPlayground = () => {
   const [scanCount, setScanCount] = useState(0);
 
   useEffect(() => {
+    // Fetch total scan count for social proof (all users)
+    supabase.from('body_scans').select('id', { count: 'exact', head: true }).then(({ count }) => {
+      if (count && count > 0) setScanCount(count);
+    });
     if (!user) return;
     supabase.from('body_scans').select('id').eq('user_id', user.id).limit(1).then(({ data }) => {
       if (data && data.length > 0) setHasScan(true);
