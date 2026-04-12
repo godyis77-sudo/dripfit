@@ -84,7 +84,7 @@ const TryOnUploadSection = forwardRef<HTMLDivElement, TryOnUploadSectionProps>((
 
         {/* Your Photo */}
         <div>
-          <p className="text-[12px] font-bold text-foreground uppercase tracking-wider mb-1">Your Photo <span className="text-destructive">*</span></p>
+          <p className="text-[12px] font-bold text-foreground uppercase tracking-wider mb-1">Your Photo</p>
           {userPhoto ? (
             <div className="relative">
               <button onClick={() => userPhotoRef.current?.click()} className="w-full rounded-xl overflow-hidden border-2 border-primary/40 bg-card active:scale-[0.97] transition-all">
@@ -144,7 +144,7 @@ const TryOnUploadSection = forwardRef<HTMLDivElement, TryOnUploadSectionProps>((
 
         {/* Clothing Item */}
         <div>
-          <p className="text-[12px] font-bold text-foreground uppercase tracking-wider mb-1">Clothing <span className="text-destructive">*</span></p>
+          <p className="text-[12px] font-bold text-foreground uppercase tracking-wider mb-1">Clothing</p>
           {clothingPhoto ? (
             <div className="relative">
               <button onClick={() => clothingPhotoRef.current?.click()} className="w-full rounded-xl overflow-hidden border-2 border-primary/40 bg-card active:scale-[0.97] transition-all">

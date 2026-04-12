@@ -3,7 +3,7 @@ import { useCart } from '@/hooks/useCart';
 const VOTE_OPTIONS = [
   { key: 'buy_yes', label: 'COP', emoji: '🔥' },
   { key: 'buy_no', label: 'DROP', emoji: '👎' },
-  { key: 'keep_shopping', label: 'Add to Cart', emoji: '🛒' },
+  { key: 'keep_shopping', label: 'Shop It', emoji: '🛒' },
 ] as const;
 
 interface VotePanelProps {

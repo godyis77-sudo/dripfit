@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, UserPlus, UserCheck, Trash2, Link2, Share2, Check } from 'lucide-react';
+import { X, UserPlus, UserCheck, Trash2, Link2, Share2, Check, ExternalLink } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -218,8 +218,8 @@ export const PostDetailSheet = ({
                   {linkCopied ? <Check className="h-3.5 w-3.5 text-green-400" /> : <Link2 className="h-3.5 w-3.5 text-white" />}
                 </button>
                 {isOwnPost && !isPlaceholder && onDelete && (
-                  <button onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(post.id); }} aria-label="Remove post" className="h-8 px-3 rounded-full bg-destructive/20 text-destructive text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95">
-                    <Trash2 className="h-3 w-3" /> Remove
+                  <button onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(post.id); }} aria-label="Remove post" className="h-8 px-3 rounded-full bg-transparent border border-destructive/25 text-destructive/60 hover:text-destructive text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95">
+                    <Trash2 className="h-3.5 w-3.5" /> Remove
                   </button>
                 )}
                 {!isOwnPost && !isPlaceholder && (
@@ -242,9 +242,25 @@ export const PostDetailSheet = ({
             <ImageViewer
               src={post.result_photo_url}
               alt={post.caption || 'Try-on look'}
-              retailers={retailers}
-              retailerUrlMap={retailerUrlMap}
+              retailers={[]}
+              retailerUrlMap={new Map()}
             />
+
+            {/* Retailer badges — horizontal scroll below image (C09) */}
+            {retailers.length > 0 && (
+              <div className="px-4 pt-1.5 flex gap-2 overflow-x-auto scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }} onClick={e => e.stopPropagation()}>
+                {retailers.map(r => (
+                  <button
+                    key={r}
+                    onClick={() => window.open(retailerUrlMap.get(r), '_blank', 'noopener')}
+                    className="shrink-0 brand-label flex items-center gap-1.5 active:scale-95 transition-transform"
+                  >
+                    {r}
+                    <ExternalLink className="h-3 w-3" />
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Caption section */}
             {isOwnPost ? (

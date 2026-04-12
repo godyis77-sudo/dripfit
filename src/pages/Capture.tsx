@@ -502,15 +502,15 @@ const Capture = () => {
       <input ref={galleryInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
 
       {/* Content */}
-      <div className="flex-1 flex flex-col items-center px-4 pt-1 overflow-y-auto pb-4">
+      <div className="flex-1 flex flex-col items-center px-4 pt-1 overflow-y-auto pb-28">
         <AnimatePresence mode="wait">
           {/* ─── STEP 1: INTRO ─── */}
           {flowStep === 'intro' && (
             <motion.div key="intro" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm flex flex-col items-center text-center pt-2">
               <DecorativeSilhouette height={240} />
 
-              <h2 className="type-headline mt-4 mb-1">
-                Map Your Body
+              <h2 className="type-headline mt-4 mb-1 uppercase">
+                Your Body. Mapped.
               </h2>
               <p className="type-body mb-4">AI-powered measurements in under 60 seconds</p>
 
@@ -633,7 +633,7 @@ const Capture = () => {
       </div>
 
       {/* Bottom actions */}
-      <div className="sticky bottom-0 bg-black/60 backdrop-blur-xl border-t border-white/5 px-4 pb-4 pt-3 space-y-2 w-full">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black via-black/90 to-transparent px-4 pb-4 pt-3 space-y-2" style={{ paddingBottom: 'calc(16px + env(safe-area-inset-bottom))' }}>
         {flowStep === 'intro' && (
           scanGated ? (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2 w-full">

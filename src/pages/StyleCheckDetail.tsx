@@ -160,7 +160,7 @@ const StyleCheckDetail = () => {
                 }}
               >
                 <ShoppingCart className="mr-1 h-3 w-3" />
-                {isInCart(post.id) ? 'In Cart ✓' : 'Add to Cart'}
+                {isInCart(post.id) ? 'In Cart ✓' : 'Shop It'}
               </Button>
             </div>
           </div>
