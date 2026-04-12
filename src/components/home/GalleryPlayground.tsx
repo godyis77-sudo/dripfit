@@ -72,7 +72,7 @@ const GalleryPlayground = () => {
           {!user && (
             <button
               onClick={() => navigate('/auth')}
-              className="text-[12px] font-semibold text-white tracking-[0.08em] uppercase active:opacity-70 border border-white/[0.35] rounded-full px-3.5 py-1 hover:border-primary/60 hover:text-primary transition-colors"
+              className="text-[12px] font-semibold text-white tracking-[0.08em] uppercase active:opacity-70 border border-white/[0.35] rounded-full px-3.5 py-1 bg-transparent hover:border-primary/60 hover:text-primary transition-colors"
             >
               Sign In
             </button>
@@ -138,7 +138,7 @@ const GalleryPlayground = () => {
               <div className="flex justify-end mt-3">
                 <button
                   onClick={(e) => { e.stopPropagation(); navigate('/tryon'); }}
-                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/[0.15] text-white text-[12px] font-bold tracking-wide hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-primary/[0.10] backdrop-blur-md border border-primary/30 text-primary text-[12px] font-bold tracking-wide hover:scale-[1.02] active:scale-[0.98] transition-transform"
                 >
                   Browse Closet <ArrowRight className="h-3.5 w-3.5" />
                 </button>

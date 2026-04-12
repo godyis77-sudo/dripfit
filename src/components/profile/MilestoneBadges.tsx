@@ -1,13 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { Award } from 'lucide-react';
+import { Award, Shirt, Flame, Gem, ShoppingBag, Star, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
+import type { LucideIcon } from 'lucide-react';
 
 interface Badge {
   key: string;
   label: string;
-  emoji: string;
+  icon: LucideIcon;
   earned: boolean;
   premium?: boolean;
 }
@@ -33,13 +34,13 @@ export default function MilestoneBadges() {
       const followers = followersRes.count ?? 0;
 
       return [
-        { key: 'first_post', label: 'First Post', emoji: '🎉', earned: publicPosts >= 1 },
-        { key: 'try_on_5', label: '5 Try-Ons', emoji: '👕', earned: totalTryOns >= 5 },
-        { key: 'try_on_10', label: '10 Try-Ons', emoji: '🔥', earned: totalTryOns >= 10 },
-        { key: 'try_on_25', label: '25 Try-Ons', emoji: '💎', earned: totalTryOns >= 25 },
-        { key: 'wardrobe_10', label: 'Closet Pro', emoji: '👗', earned: wardrobeItems >= 10, premium: true },
-        { key: 'style_influencer', label: 'Style Influencer', emoji: '⭐', earned: publicPosts >= 10 && followers >= 5 },
-        { key: 'community_star', label: 'Community Star', emoji: '🌟', earned: followers >= 10 },
+        { key: 'first_post', label: 'First Post', icon: Sparkles, earned: publicPosts >= 1 },
+        { key: 'try_on_5', label: '5 Try-Ons', icon: Shirt, earned: totalTryOns >= 5 },
+        { key: 'try_on_10', label: '10 Try-Ons', icon: Flame, earned: totalTryOns >= 10 },
+        { key: 'try_on_25', label: '25 Try-Ons', icon: Gem, earned: totalTryOns >= 25 },
+        { key: 'wardrobe_10', label: 'Closet Pro', icon: ShoppingBag, earned: wardrobeItems >= 10, premium: true },
+        { key: 'style_influencer', label: 'Style Influencer', icon: Star, earned: publicPosts >= 10 && followers >= 5 },
+        { key: 'community_star', label: 'Community Star', icon: Award, earned: followers >= 10 },
       ];
     },
     enabled: !!user,
@@ -68,7 +69,7 @@ export default function MilestoneBadges() {
                 : 'bg-white/5 border-white/10'
             }`}
           >
-            <span className="text-[13px]">{badge.emoji}</span>
+            <badge.icon className="h-3.5 w-3.5 text-primary" />
             <span className="text-[11px] font-bold text-white/70">{badge.label}</span>
           </motion.div>
         ))}

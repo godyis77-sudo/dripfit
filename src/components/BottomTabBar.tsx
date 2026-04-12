@@ -85,11 +85,11 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
                   : 'text-muted-foreground/50 active:text-foreground'
               )}
             >
-              <div className={cn("flex items-center justify-center relative", isScan ? 'h-9 w-9' : 'h-8 w-8')}>
+              <div className={cn("flex items-center justify-center relative", 'h-8 w-8')}>
                 {showPulse && (
-                  <span className="absolute inset-0 rounded-full border-2 border-primary/40 animate-ping" style={{ animationDuration: '2s' }} />
+                  <span className="absolute -inset-1 rounded-full border border-primary/30 animate-ping pointer-events-none" style={{ animationDuration: '2.5s' }} />
                 )}
-                <FeatureIcon name={tab.icon} size={isScan ? 24 : 20} />
+                <FeatureIcon name={tab.icon} size={isScan ? 22 : 20} />
               </div>
               <span className={cn(
                 "text-[10px] tracking-[0.1em] uppercase transition-colors duration-300 mt-0.5",

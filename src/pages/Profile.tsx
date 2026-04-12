@@ -3,7 +3,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Shirt, Camera, Settings, ShoppingBag, ShoppingCart, User, Globe, X, Gift, ChevronDown } from 'lucide-react';
+import { LogOut, Shirt, Camera, Settings, ShoppingBag, ShoppingCart, User, Globe, X, Gift, ChevronDown, Award } from 'lucide-react';
 import InlineCrown from '@/components/ui/InlineCrown';
 import { useAuth } from '@/hooks/useAuth';
 const GuestProfileView = lazy(() => import('@/components/guest/GuestProfileView'));
@@ -141,12 +141,12 @@ const Profile = () => {
         {isSubscribed ? (
           <button
             onClick={() => navigate('/premium')}
-            className="w-full flex items-center gap-2 px-3 py-0 rounded-xl glass-gold mb-3 active:scale-[0.98] transition-transform"
+            className="w-full flex items-center gap-2 px-3 py-0 rounded-xl bg-white/[0.03] backdrop-blur-md border border-primary/20 mb-3 active:scale-[0.98] transition-transform"
           >
             <InlineCrown size={48} />
             <span className="type-label text-primary flex-1 text-left">DRIPFIT ✔ PREMIUM</span>
-            <span className="glass text-[9px] font-bold text-green-400 px-2 py-0.5 rounded-full flex items-center gap-1">
-              <span className="h-1.5 w-1.5 rounded-full bg-green-400 inline-block" /> ACTIVE
+            <span className="bg-primary/10 border border-primary/20 text-[9px] font-bold text-primary px-2 py-0.5 rounded-full flex items-center gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary inline-block" /> ACTIVE
             </span>
           </button>
         ) : !bannerDismissed ? (
@@ -235,7 +235,7 @@ const Profile = () => {
         {/* Milestones & Invite — single collapsible */}
         <Collapsible defaultOpen={false} className="mb-3">
           <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-xl glass text-[12px] font-bold text-white/70 active:scale-[0.98] transition-transform">
-            <span className="flex items-center gap-1.5">🏅 Milestones & <Gift className="h-3.5 w-3.5 text-primary" /> Invite</span>
+            <span className="flex items-center gap-1.5"><Award className="h-3.5 w-3.5 text-primary" /> Milestones & <Gift className="h-3.5 w-3.5 text-primary" /> Invite</span>
             <ChevronDown className="h-3.5 w-3.5 text-white/30 transition-transform [[data-state=open]>&]:rotate-180" />
           </CollapsibleTrigger>
           <CollapsibleContent className="pt-2 space-y-3">
@@ -253,7 +253,7 @@ const Profile = () => {
           {[
             { key: 'tryons' as const, icon: Shirt, label: 'Try-Ons' },
             { key: 'wardrobe' as const, icon: ShoppingBag, label: 'Closet' },
-            { key: 'cart' as const, icon: ShoppingCart, label: 'Cart' },
+            { key: 'cart' as const, icon: ShoppingCart, label: 'Shop' },
           ].map(t => (
             <button
               key={t.key}
@@ -261,7 +261,9 @@ const Profile = () => {
               className={`relative flex-1 min-h-[44px] rounded-full text-[11px] font-bold transition-all duration-200 ${
                 activeTab === t.key
                   ? 'glass-gold text-primary'
-                  : 'glass text-white/50'
+                  : t.key === 'cart'
+                    ? 'glass border-primary/20 text-primary/60'
+                    : 'glass text-white/50'
               }`}
             >
               <span className="flex items-center justify-center gap-1">
