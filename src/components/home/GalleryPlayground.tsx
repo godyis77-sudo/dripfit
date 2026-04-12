@@ -61,13 +61,13 @@ const GalleryPlayground = () => {
           <div>
             <h1 className="font-display text-[28px] font-extrabold text-foreground uppercase tracking-tight">DRIPFIT <span className="text-primary text-[22px]">✔</span></h1>
             <p className="font-sans text-[13px] font-medium tracking-[0.15em] uppercase text-foreground/70 mt-1 mb-3">
-              {hasScan ? 'Your Body. Mapped.' : 'Your fitting room is ready.'}
+              {hasScan ? 'Your Body. Mapped.' : 'Scan to unlock your fitting room.'}
             </p>
           </div>
           {!user && (
             <button
               onClick={() => navigate('/auth')}
-              className="text-[11px] font-semibold text-white/40 active:opacity-70 tracking-widest uppercase"
+              className="text-[12px] font-semibold text-white tracking-[0.08em] uppercase active:opacity-70 border border-white/[0.35] rounded-full px-3.5 py-1 hover:border-primary/60 hover:text-primary transition-colors"
             >
               Sign In
             </button>
@@ -83,18 +83,21 @@ const GalleryPlayground = () => {
               className="w-full mb-3 rounded-2xl overflow-hidden cursor-pointer active:scale-[0.97] transition-all relative"
             >
               {/* Gradient background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-800/80 to-primary/10" />
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,hsl(var(--primary)/0.12),transparent_60%)]" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A] via-[#141414] to-[rgba(212,175,55,0.06)]" />
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(212,175,55,0.08),transparent_70%)]" />
               <div className="relative px-6 py-10">
-                <h2 className="font-serif text-2xl text-foreground font-semibold mb-2">Map Your Body</h2>
+                <h2 className="font-serif text-2xl text-foreground font-semibold mb-2 uppercase tracking-wide">Your Body. Mapped.</h2>
                 <p className="text-sm text-zinc-400 max-w-[260px] leading-relaxed">
                   2 photos. 60 seconds. Your size across 186 brands — locked.
                 </p>
+                <p className="text-[12px] text-white/50 mt-2 mb-4">
+                  {scanCount > 0 ? `${scanCount.toLocaleString()}+ bodies mapped across 186 brands` : '186 brands mapped and counting'}
+                </p>
                 <button
                   onClick={(e) => { e.stopPropagation(); navigate('/capture'); }}
-                  className="mt-5 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground text-sm font-bold tracking-wide hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground text-sm font-bold tracking-wide hover:scale-[1.02] active:scale-[0.98] transition-transform"
                 >
-                  Start Your Scan <ArrowRight className="h-4 w-4" />
+                  Start the Scan <ArrowRight className="h-4 w-4" />
                 </button>
               </div>
             </div>
