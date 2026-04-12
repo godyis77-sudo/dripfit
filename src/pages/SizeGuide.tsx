@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import BottomTabBar from '@/components/BottomTabBar';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 import { isNativePlatform, takeNativePhoto } from '@/lib/nativeCamera';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
