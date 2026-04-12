@@ -207,7 +207,6 @@ const ProfileBody = () => {
               measurements={measurements}
               heightCm={scan.heightCm}
               shareOnly
-              className="border-white/12 text-white/55 [&_svg]:text-white/40"
             />
 
             {/* 4. Scan Again — inline text link */}
