@@ -236,13 +236,6 @@ const ProfileBody = () => {
             <BodyDiagram measurements={measurements} heightCm={scan.heightCm} />
             <MeasurementGrid measurements={measurements} heightCm={scan.heightCm} />
 
-            {/* New Scan button — glass treatment */}
-            <button
-              className="w-full h-9 rounded-lg text-[12px] font-bold flex items-center justify-center gap-1.5 bg-white/5 border border-white/10 backdrop-blur-sm text-white/50 hover:bg-white/8 transition-colors"
-              onClick={() => navigate('/capture')}
-            >
-              <Camera className="h-3.5 w-3.5" /> New Scan
-            </button>
           </div>
         )}
       </div>
