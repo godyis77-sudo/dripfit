@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import BottomTabBar from '@/components/BottomTabBar';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 import { isNativePlatform, takeNativePhoto } from '@/lib/nativeCamera';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
@@ -282,8 +283,9 @@ const SizeGuide = () => {
           <div className="w-10" />
         </div>
 
-        {/* Paste product link */}
+        {/* PASTE A LINK section */}
         <div className="mb-4">
+          <p className="text-[10px] tracking-[0.15em] uppercase text-white/30 font-medium mb-1.5">Paste a Link</p>
           <div className="flex items-center gap-1.5 mb-1">
             <Store className="h-3 w-3 text-white/30" />
             <p className="text-[11px] text-white/30 font-medium">Paste product link</p>
@@ -294,11 +296,19 @@ const SizeGuide = () => {
           />
         </div>
 
-        {/* Tab pair */}
+        {/* OR separator */}
+        <div className="flex items-center gap-3 my-4">
+          <div className="flex-1 border-t border-white/10" />
+          <span className="text-[11px] text-white/30 tracking-[0.15em] uppercase px-1">Or</span>
+          <div className="flex-1 border-t border-white/10" />
+        </div>
+
+        {/* BROWSE BY BRAND section */}
+        <p className="text-[10px] tracking-[0.15em] uppercase text-white/30 font-medium mb-2">Browse by Brand</p>
         <Tabs defaultValue="brand" className="mb-4">
           <TabsList className="w-full grid grid-cols-2 mb-3 bg-white/5 border border-white/10 backdrop-blur-sm p-0.5 rounded-lg">
-            <TabsTrigger value="brand" className="text-[12px] data-[state=active]:bg-primary/10 data-[state=active]:border-primary/25 data-[state=active]:text-primary data-[state=inactive]:text-white/50 rounded-md border border-transparent transition-all"><Store className="h-3.5 w-3.5 mr-1" />Pick a Brand</TabsTrigger>
-            <TabsTrigger value="upload" className="text-[12px] data-[state=active]:bg-primary/10 data-[state=active]:border-primary/25 data-[state=active]:text-primary data-[state=inactive]:text-white/50 rounded-md border border-transparent transition-all"><Camera className="h-3.5 w-3.5 mr-1" />Upload Chart</TabsTrigger>
+            <TabsTrigger value="brand" className="text-[12px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:text-white/40 rounded-md border border-transparent transition-all"><Store className="h-3.5 w-3.5 mr-1" />Pick a Brand</TabsTrigger>
+            <TabsTrigger value="upload" className="text-[12px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:text-white/40 rounded-md border border-transparent transition-all opacity-50 data-[state=inactive]:opacity-40"><Camera className="h-3.5 w-3.5 mr-1" />Upload Chart</TabsTrigger>
           </TabsList>
 
           {/* ─── BRAND PICKER TAB ─── */}
@@ -351,7 +361,23 @@ const SizeGuide = () => {
 
                 {/* Brand search */}
                 <div className="mb-3">
-                  <p className="text-[10px] tracking-[0.2em] uppercase text-white/30 mb-1.5">1. Choose a brand</p>
+                  {/* Progress indicator */}
+                  <div className="flex items-center gap-2 mb-3">
+                    {[
+                      { n: 1, label: 'Brand', active: true },
+                      { n: 2, label: 'Category', active: !!selectedBrand },
+                      { n: 3, label: 'Your Size', active: !!dbResult },
+                    ].map((step, i) => (
+                      <div key={step.n} className="flex items-center gap-1.5">
+                        {i > 0 && <div className={cn('w-4 h-px', step.active ? 'bg-primary/40' : 'bg-white/10')} />}
+                        <div className={cn(
+                          'h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-bold',
+                          step.active ? 'bg-primary text-primary-foreground' : 'bg-white/10 text-white/30'
+                        )}>{step.n}</div>
+                        <span className={cn('text-[10px] font-medium', step.active ? 'text-primary' : 'text-white/30')}>{step.label}</span>
+                      </div>
+                    ))}
+                  </div>
                   <div className="relative mb-2">
                     <Search className="absolute left-0 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/30" />
                     <input

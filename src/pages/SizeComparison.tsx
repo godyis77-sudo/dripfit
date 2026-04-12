@@ -65,6 +65,7 @@ const SizeComparison = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedGenre, setSelectedGenre] = useState<BrandGenre | 'all'>('all');
   const [selectedCategory, setSelectedCategory] = useState('tops');
+  const [showGenreFilter, setShowGenreFilter] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -201,23 +202,51 @@ const SizeComparison = () => {
           ))}
         </div>
 
-        {/* Genre filter */}
-        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
-          {GENRE_PILLS.map(g => (
-            <button
-              key={g.value}
-              onClick={() => setSelectedGenre(g.value)}
-              className={cn(
-                'px-2.5 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap transition-all border min-h-[28px] backdrop-blur-sm',
-                selectedGenre === g.value
-                  ? 'bg-primary/10 border-primary/25 text-primary'
-                  : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/8'
-              )}
-            >
-              {g.label}
-            </button>
-          ))}
+        {/* Genre filter toggle */}
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => setShowGenreFilter(prev => !prev)}
+            className={cn(
+              'px-3 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap transition-all border min-h-[28px] backdrop-blur-sm flex items-center gap-1',
+              selectedGenre !== 'all'
+                ? 'bg-primary/10 border-primary/25 text-primary'
+                : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/8'
+            )}
+          >
+            <Filter className="h-3 w-3" />
+            {selectedGenre !== 'all' ? GENRE_PILLS.find(g => g.value === selectedGenre)?.label : 'Filter'}
+            {selectedGenre !== 'all' && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}
+          </button>
         </div>
+
+        {/* Genre pills — collapsible */}
+        <AnimatePresence>
+          {showGenreFilter && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pt-1.5">
+                {GENRE_PILLS.map(g => (
+                  <button
+                    key={g.value}
+                    onClick={() => setSelectedGenre(g.value)}
+                    className={cn(
+                      'px-2.5 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap transition-all border min-h-[28px] backdrop-blur-sm',
+                      selectedGenre === g.value
+                        ? 'bg-primary/10 border-primary/25 text-primary'
+                        : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/8'
+                    )}
+                  >
+                    {g.label}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Content */}
@@ -278,8 +307,13 @@ const SizeComparison = () => {
                     {/* Confidence dot */}
                     <div className={cn('absolute top-2 right-2 h-1.5 w-1.5 rounded-full', confidenceDot(brand.confidence))} />
 
-                    {/* Size */}
-                    <span className="font-display text-2xl text-white tracking-tight leading-none">
+                    {/* YOUR SIZE label */}
+                    <span className="text-[10px] font-semibold tracking-[0.1em] uppercase text-primary/60 mb-0.5">
+                      Your Size
+                    </span>
+
+                    {/* Size — GOLD */}
+                    <span className="font-display text-2xl text-primary tracking-tight leading-none">
                       {brand.size}
                     </span>
 
@@ -291,6 +325,14 @@ const SizeComparison = () => {
                     {/* Genre tag */}
                     <span className="text-[9px] text-white/30 font-medium uppercase tracking-[0.15em]">
                       {brand.genre}
+                    </span>
+
+                    {/* Confidence text */}
+                    <span className={cn('text-[10px]', 
+                      brand.confidence >= 0.72 ? 'text-green-400/70' : 
+                      brand.confidence >= 0.55 ? 'text-amber-400/70' : 'text-red-400/70'
+                    )}>
+                      {brand.confidence >= 0.72 ? 'High match' : brand.confidence >= 0.55 ? 'Good match' : 'Approximate'}
                     </span>
                   </motion.div>
                 ))}

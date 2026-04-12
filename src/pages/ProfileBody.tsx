@@ -126,8 +126,8 @@ const ProfileBody = () => {
       <div>
         {/* Header */}
         <div className="flex items-center gap-2 mb-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/profile')} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px] bg-white/5 border border-white/10 backdrop-blur-sm" aria-label="Go back">
-            <ArrowLeft className="h-4 w-4 text-white/70" />
+          <Button variant="ghost" size="icon" onClick={() => navigate('/profile')} className="h-8 w-8 p-0 min-h-0 min-w-0" aria-label="Go back">
+            <ArrowLeft className="h-5 w-5 text-white/50" />
           </Button>
           <div className="flex-1">
             <h1 className="font-display text-base text-white">Body & Fit Identity</h1>
@@ -169,7 +169,7 @@ const ProfileBody = () => {
               className="w-full flex items-center gap-4 rounded-xl bg-black/30 backdrop-blur-md border border-white/8 p-4 active:scale-[0.98] transition-transform"
             >
               <div className="h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                <Ruler className="h-6 w-6 text-white/50" />
+                <Ruler className="h-5 w-5 text-primary" />
               </div>
               <div className="text-left flex-1">
                 <p className="text-[14px] font-semibold text-white">Size Guide Tool</p>
@@ -181,7 +181,21 @@ const ProfileBody = () => {
             <FitPreferenceToggle value={fitPref} onChange={setFitPref} />
             <AlternativeSizes sizeDown={alternatives.sizeDown} sizeUp={alternatives.sizeUp} best={adjustedSize} fitPreference={fitPref} />
 
-            {/* Share My Fit Identity — glass-gold */}
+            {/* 1. Shop My Size — PRIMARY gold CTA */}
+            <ShopThisSize
+              recommendedSize={adjustedSize}
+              confidence={confidence}
+            />
+
+            {/* 2. My Size Every Brand — gold ghost */}
+            <button
+              className="w-full h-11 rounded-xl bg-transparent backdrop-blur-md border border-primary/45 text-primary text-sm tracking-wide uppercase font-semibold flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
+              onClick={() => navigate('/my-sizes')}
+            >
+              <LayoutGrid className="h-4 w-4" /> My Size Every Brand
+            </button>
+
+            {/* 3. Share My Fit Identity — muted tertiary */}
             <ResultActions
               saved={saved}
               scanDate={scan.date}
@@ -195,31 +209,23 @@ const ProfileBody = () => {
               shareOnly
             />
 
-            {/* My Size Every Brand — glass-gold secondary */}
+            {/* 4. Scan Again — inline text link */}
             <button
-              className="w-full h-11 rounded-xl bg-primary/8 backdrop-blur-md border border-primary/20 text-primary text-sm tracking-wide uppercase font-semibold flex items-center justify-center gap-1.5 active:scale-[0.98] transition-transform"
-              onClick={() => navigate('/my-sizes')}
+              className="w-full flex items-center justify-center gap-1 text-[12px] text-white/50 py-2 hover:text-white/70 transition-colors"
+              onClick={() => navigate('/capture')}
             >
-              <LayoutGrid className="h-4 w-4" /> My Size Every Brand
+              <RotateCcw className="h-3 w-3" /> Not right? Scan again →
             </button>
 
-            {/* Shop My Size — KEEP btn-luxury */}
-            <ShopThisSize
-              recommendedSize={adjustedSize}
-              confidence={confidence}
-            />
-
-            {/* Meta info */}
-            <div className="space-y-2">
-              <button
-                className="w-full flex items-center justify-center gap-1 text-[12px] text-white/50 h-8 bg-white/5 border border-white/10 backdrop-blur-sm rounded-lg hover:bg-white/8 transition-colors"
-                onClick={() => navigate('/capture')}
-              >
-                <RotateCcw className="h-3 w-3" /> Scan Again
-              </button>
-              <div className="flex items-center justify-between pt-1.5 border-t border-white/5">
-                <p className="text-[10px] text-white/25 flex items-center gap-1"><Shield className="h-3 w-3" /> Private by default · delete anytime</p>
-                <button onClick={() => { toast({ title: 'Deleted' }); navigate('/profile'); }} className="text-[10px] text-destructive/60 hover:text-destructive flex items-center gap-1 transition-colors"><Trash2 className="h-3 w-3" /> Delete</button>
+            {/* Privacy + Delete — separated */}
+            <div className="space-y-3 pt-2">
+              <p className="text-[11px] text-white/35 text-center flex items-center justify-center gap-1">
+                <Shield className="h-3 w-3" /> Private by default · delete anytime
+              </p>
+              <div className="flex justify-center">
+                <button onClick={() => { toast({ title: 'Deleted' }); navigate('/profile'); }} className="text-[10px] text-destructive/60 hover:text-destructive flex items-center gap-1 transition-colors">
+                  <Trash2 className="h-3 w-3" /> Delete
+                </button>
               </div>
               <p className="text-[10px] text-white/20 text-center">
                 Scanned: {new Date(scan.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
@@ -230,13 +236,6 @@ const ProfileBody = () => {
             <BodyDiagram measurements={measurements} heightCm={scan.heightCm} />
             <MeasurementGrid measurements={measurements} heightCm={scan.heightCm} />
 
-            {/* New Scan button — glass treatment */}
-            <button
-              className="w-full h-9 rounded-lg text-[12px] font-bold flex items-center justify-center gap-1.5 bg-white/5 border border-white/10 backdrop-blur-sm text-white/50 hover:bg-white/8 transition-colors"
-              onClick={() => navigate('/capture')}
-            >
-              <Camera className="h-3.5 w-3.5" /> New Scan
-            </button>
           </div>
         )}
       </div>
