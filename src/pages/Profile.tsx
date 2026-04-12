@@ -253,7 +253,7 @@ const Profile = () => {
           {[
             { key: 'tryons' as const, icon: Shirt, label: 'Try-Ons' },
             { key: 'wardrobe' as const, icon: ShoppingBag, label: 'Closet' },
-            { key: 'cart' as const, icon: ShoppingCart, label: 'Cart' },
+            { key: 'cart' as const, icon: ShoppingCart, label: 'Shop' },
           ].map(t => (
             <button
               key={t.key}
@@ -261,7 +261,9 @@ const Profile = () => {
               className={`relative flex-1 min-h-[44px] rounded-full text-[11px] font-bold transition-all duration-200 ${
                 activeTab === t.key
                   ? 'glass-gold text-primary'
-                  : 'glass text-white/50'
+                  : t.key === 'cart'
+                    ? 'glass border-primary/20 text-primary/60'
+                    : 'glass text-white/50'
               }`}
             >
               <span className="flex items-center justify-center gap-1">
