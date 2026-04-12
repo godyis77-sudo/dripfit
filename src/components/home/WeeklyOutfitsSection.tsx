@@ -72,7 +72,7 @@ const WeeklyOutfitsSection = () => {
         </div>
         <button
           onClick={() => navigate('/outfits-weekly')}
-          className="text-[11px] tracking-wide uppercase text-primary active:opacity-70"
+          className="text-[11px] tracking-wide uppercase text-primary active:opacity-70 font-normal"
         >
           Browse the Closet →
         </button>
