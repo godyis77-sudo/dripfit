@@ -4,6 +4,8 @@ import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { hapticFeedback } from '@/lib/haptics';
 import FeatureIcon, { type FeatureIconName } from '@/components/ui/FeatureIcon';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 const tabs: { icon: FeatureIconName; label: string; path: string }[] = [
   { icon: 'home', label: 'Home', path: '/home' },
@@ -16,8 +18,17 @@ const tabs: { icon: FeatureIconName; label: string; path: string }[] = [
 const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const [hidden, setHidden] = useState(false);
+  const [hasScan, setHasScan] = useState(true); // default true to avoid flash
   const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    if (!user) { setHasScan(false); return; }
+    supabase.from('body_scans').select('id').eq('user_id', user.id).limit(1).then(({ data }) => {
+      setHasScan(!!(data && data.length > 0));
+    });
+  }, [user]);
 
   useEffect(() => {
     const onScroll = () => {
@@ -52,11 +63,13 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
     >
       <div className="flex items-center justify-around px-1 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {tabs.map((tab) => {
+          const isScan = tab.label === 'Scan';
           const isActive = tab.path === '/home'
             ? location.pathname === '/home'
             : tab.path === '/capture'
               ? ['/capture', '/analyze', '/scan-success', '/results'].some(p => location.pathname.startsWith(p))
               : location.pathname.startsWith(tab.path);
+          const showPulse = isScan && !hasScan && !isActive;
           return (
             <motion.button
               key={tab.path}
@@ -72,11 +85,15 @@ const BottomTabBar = forwardRef<HTMLElement>((_, ref) => {
                   : 'text-muted-foreground/50 active:text-foreground'
               )}
             >
-              <div className="h-8 w-8 flex items-center justify-center">
-                <FeatureIcon name={tab.icon} size={20} />
+              <div className={cn("flex items-center justify-center relative", isScan ? 'h-9 w-9' : 'h-8 w-8')}>
+                {showPulse && (
+                  <span className="absolute inset-0 rounded-full border-2 border-primary/40 animate-ping" style={{ animationDuration: '2s' }} />
+                )}
+                <FeatureIcon name={tab.icon} size={isScan ? 24 : 20} />
               </div>
               <span className={cn(
-                "text-[10px] font-semibold tracking-[0.1em] uppercase transition-colors duration-300 mt-0.5",
+                "text-[10px] tracking-[0.1em] uppercase transition-colors duration-300 mt-0.5",
+                isScan ? 'font-bold' : 'font-semibold',
                 isActive ? 'text-primary' : 'text-muted-foreground/50'
               )}>{tab.label}</span>
               {isActive && (

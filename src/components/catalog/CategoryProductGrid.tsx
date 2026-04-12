@@ -179,7 +179,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
             className="relative rounded-2xl overflow-hidden glass-dark product-card text-left group hover:border-white/10 transition-all h-full flex flex-col"
           >
             {/* Image area — 3:4 aspect */}
-            <div className="relative aspect-[3/4] bg-secondary rounded-t-2xl overflow-hidden">
+            <div className="relative aspect-[3/4] bg-[hsl(0_0%_8%)] rounded-t-2xl overflow-hidden">
               {failedImageIds.has(product.id) ? (
                 <div className="w-full h-full flex items-center justify-center p-2 text-center">
                   <span className="text-[10px] font-semibold text-muted-foreground line-clamp-2 uppercase tracking-wide">
@@ -187,20 +187,24 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
                   </span>
                 </div>
               ) : (
-                <img
-                  src={thumbnailUrl(product.image_url, 400)}
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                  onError={() => {
-                    setFailedImageIds(prev => {
-                      if (prev.has(product.id)) return prev;
-                      const next = new Set(prev);
-                      next.add(product.id);
-                      return next;
-                    });
-                  }}
-                />
+                <>
+                  <img
+                    src={thumbnailUrl(product.image_url, 400)}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    onError={() => {
+                      setFailedImageIds(prev => {
+                        if (prev.has(product.id)) return prev;
+                        const next = new Set(prev);
+                        next.add(product.id);
+                        return next;
+                      });
+                    }}
+                  />
+                  {/* Dark gradient overlay for luxury consistency */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 pointer-events-none" />
+                </>
               )}
             </div>
             {/* Info area */}

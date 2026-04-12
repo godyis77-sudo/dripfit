@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Camera, ImageIcon, ChevronRight } from 'lucide-react';
+import { Sparkles, Camera, ImageIcon, ChevronRight, ChevronDown } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
 import { type CatalogProduct } from '@/hooks/useProductCatalog';
 import { useQuery } from '@tanstack/react-query';
@@ -238,8 +238,9 @@ const OneTapPlayground = () => {
       {/* Bottom prompt when no photo */}
       {!userPhoto && (
         <div className="px-3 py-2 border-t border-white/5">
-          <p className="text-[10px] text-center text-white/30">
-            No photo? Tap any piece to try on later.
+          <p className="text-[10px] text-center text-white/70 flex items-center justify-center gap-1">
+            Tap any piece. Try it on your body.
+            <ChevronDown className="h-3 w-3 text-primary inline-block" />
           </p>
         </div>
       )}
