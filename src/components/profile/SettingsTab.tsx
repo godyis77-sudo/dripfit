@@ -5,8 +5,7 @@ import { Input } from '@/components/ui/input';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Switch } from '@/components/ui/switch';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Trash2, Shield, Download, Ruler, Camera, ChevronRight, Bookmark, Pencil, Check, X, Star, Instagram, Globe, Sun, Moon } from 'lucide-react';
-import InlineCrown from '@/components/ui/InlineCrown';
+import { Trash2, Shield, Download, Ruler, Camera, ChevronRight, Bookmark, Pencil, Check, X, Star, Crown, Gift, Instagram, Globe, Sun, Moon } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import type { FitPreference, BodyScanResult } from '@/lib/types';
 import { SUPPORTED_RETAILERS } from '@/lib/types';
@@ -201,7 +200,7 @@ const SettingsTab = ({
         )}
         {/* Gender / shopping section */}
         <div className="px-3 py-2.5">
-          <span className="text-[12px] text-foreground font-medium block mb-1.5">I shop in the…</span>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground block mb-1.5">Shopping Section</span>
           <div className="flex gap-1.5">
             {[
               { value: 'male', label: "Men's" },
@@ -381,13 +380,13 @@ const SettingsTab = ({
       {/* Saved Items */}
       <SectionHeader>Saved Items</SectionHeader>
       <div className="bg-card border border-border rounded-xl mb-1">
-        <button onClick={() => navigate('/profile/saved')} className="w-full flex items-center gap-2 px-3 py-2.5 btn-gold-3d rounded-xl">
-          <Bookmark className="h-3.5 w-3.5" />
-          <span className="text-[12px]">View Saved for Later</span>
+        <button onClick={() => navigate('/profile/saved')} className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] active:bg-white/[0.08] transition-colors">
+          <Bookmark className="h-3.5 w-3.5 text-white/60" />
+          <span className="text-[12px] text-foreground">View Saved for Later</span>
           {savedItemCount > 0 && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-background/20 font-bold">{savedItemCount}</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/15 font-bold text-primary">{savedItemCount}</span>
           )}
-          <ChevronRight className="h-3.5 w-3.5 ml-auto" />
+          <ChevronRight className="h-3.5 w-3.5 ml-auto text-white/40" />
         </button>
       </div>
 
@@ -401,7 +400,7 @@ const SettingsTab = ({
                 {[
                   { l: 'Size', v: savedProfile.recommendedSize },
                   { l: 'Confidence', v: savedProfile.confidence },
-                  { l: 'Height', v: `${savedProfile.heightCm} cm` },
+              { l: 'Height', v: `${savedProfile.heightCm} cm` },
                 ].map(d => (
                   <div key={d.l} className="bg-background rounded-lg py-1.5 text-center">
                     <p className="text-[11px] text-muted-foreground uppercase tracking-wider">{d.l}</p>
@@ -424,7 +423,7 @@ const SettingsTab = ({
         {isSubscribed ? (
           <div className="px-3 py-2.5">
             <div className="flex items-center gap-2">
-              <InlineCrown size={14} />
+              <Crown className="h-3.5 w-3.5 text-primary" />
               <span className="text-[12px] text-foreground font-medium">Premium: Active ✓</span>
             </div>
             <p className="text-[10px] text-muted-foreground mt-0.5 ml-5.5">
@@ -441,7 +440,7 @@ const SettingsTab = ({
         ) : (
           <button onClick={() => { trackEvent('premium_viewed'); navigate('/premium'); }} className="w-full px-3 py-2.5 active:bg-primary/5 transition-colors text-left">
             <div className="flex items-center gap-2">
-              <InlineCrown size={14} />
+              <Crown className="h-3.5 w-3.5 text-primary" />
               <span className="text-[12px] text-foreground font-medium">Premium: Free plan</span>
             </div>
             <p className="text-[10px] text-muted-foreground mt-0.5 ml-5.5">Tap to see what you're missing</p>
@@ -489,7 +488,7 @@ const SettingsTab = ({
       {/* Preferred Brands */}
       <SectionHeader>
         <span className="flex items-center gap-1">
-          <InlineCrown size={12} /> Preferred Brands
+          <Crown className="h-3 w-3 text-primary" /> Preferred Brands
         </span>
       </SectionHeader>
       <div className="bg-card border border-border rounded-xl p-3 mb-1">
@@ -500,10 +499,10 @@ const SettingsTab = ({
       {/* Privacy & Data */}
       <SectionHeader>Privacy & Data</SectionHeader>
       <div className="bg-card border border-border rounded-xl divide-y divide-border mb-2">
-        <button onClick={onExport} className="w-full flex items-center gap-2 px-3 py-2.5 btn-gold-3d rounded-xl">
-          <Download className="h-3.5 w-3.5" />
-          <span className="text-[12px]">Export my data</span>
-          <ChevronRight className="h-3.5 w-3.5 ml-auto" />
+        <button onClick={onExport} className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.10] active:bg-white/[0.08] transition-colors">
+          <Download className="h-3.5 w-3.5 text-white/50" />
+          <span className="text-[12px] text-white/75">Export my data</span>
+          <ChevronRight className="h-3.5 w-3.5 ml-auto text-white/40" />
         </button>
       </div>
 
@@ -535,7 +534,7 @@ const SettingsTab = ({
 
       {/* Danger Zone */}
       <div className="mt-4 pt-3 border-t border-destructive/20">
-        <p className="text-[11px] font-bold text-destructive uppercase tracking-wider mb-2 px-1">Danger Zone</p>
+        <p className="text-[11px] font-bold text-destructive uppercase tracking-wider mb-2 px-1">Delete Data</p>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <button className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl border border-destructive/30 bg-destructive/5 active:bg-destructive/10 transition-colors">

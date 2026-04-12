@@ -45,7 +45,7 @@ const PreferredBrands = () => {
           </span>
         ))}
         {brands.length === 0 && !showSearch && (
-          <p className="text-[10px] text-muted-foreground">No preferred brands yet</p>
+          <p className="text-[10px] text-muted-foreground">Add your grail brands. We'll track your size there first.</p>
         )}
       </div>
 
