@@ -33,7 +33,8 @@ const GalleryPlayground = () => {
   const catalogReady = !authLoading && (!user || genderLoaded);
 
   const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [hasScan, setHasScan] = useState(false);
+  const [hasScan, setHasScan] = false);
+  const [scanCount, setScanCount] = useState(0);
 
   useEffect(() => {
     if (!user) return;
