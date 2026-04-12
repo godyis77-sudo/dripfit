@@ -30,8 +30,8 @@ const CaptureHeightStep = ({
   onRefObjectChange, onGenderSelect,
 }: CaptureHeightStepProps) => (
   <motion.div key="height" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm pt-4">
-    <h2 className="font-display text-xl text-white mb-1">What's your height?</h2>
-    <p className="text-[13px] text-white/40 mb-6">This improves accuracy by 23%</p>
+    <h2 className="font-display text-xl text-white mb-1 uppercase tracking-wider">Height.</h2>
+    <p className="text-[13px] text-white/40 mb-6">Improves mapping accuracy by 23%.</p>
 
     {/* Gender selector */}
     {genderLoaded && !genderSet && (
@@ -80,13 +80,13 @@ const CaptureHeightStep = ({
     ) : (
       <div className="flex gap-2">
         <Input
-          type="number" placeholder="ft" value={heightFt}
+          type="number" placeholder="5" value={heightFt}
           onChange={e => onHeightFtChange(e.target.value)}
           className={`rounded-xl flex-1 h-14 text-2xl text-center font-display bg-white/5 backdrop-blur-sm border-white/10 text-white placeholder:text-white/30 ${heightTouched && !heightValid ? 'field-error' : ''}`}
           min={4} max={7}
         />
         <Input
-          type="number" placeholder="in" value={heightIn}
+          type="number" placeholder="10" value={heightIn}
           onChange={e => onHeightInChange(e.target.value)}
           className={`rounded-xl flex-1 h-14 text-2xl text-center font-display bg-white/5 backdrop-blur-sm border-white/10 text-white placeholder:text-white/30 ${heightTouched && !heightValid ? 'field-error' : ''}`}
           min={0} max={11}

@@ -94,8 +94,8 @@ const TryOn = () => {
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
       <div>
         <PageHeader
-          title="Try-On"
-          subtitle="See how it looks before you buy"
+          title="THE INFINITE CLOSET"
+          subtitle="Try the drape before you cop."
           actions={s.resultImage ? (
             <Button variant="outline" size="sm" onClick={s.handleTryAnother} className="h-8 rounded-lg text-[11px] font-bold gap-1.5">
               <RotateCcw className="h-3.5 w-3.5" /> New

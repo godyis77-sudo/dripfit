@@ -84,20 +84,7 @@ const ImageViewer = ({ src, alt, retailers, retailerUrlMap }: ImageViewerProps) 
           style={{ transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)` }}
           draggable={false}
         />
-        {retailers.length > 0 && zoom <= 1 && (
-          <div className="absolute bottom-3 right-4 flex flex-col gap-1 items-end">
-            {retailers.map((r) => (
-              <button
-                key={r}
-                onClick={() => window.open(retailerUrlMap.get(r), '_blank', 'noopener')}
-                className="brand-label flex items-center gap-1.5 active:scale-95 transition-transform"
-              >
-                {r}
-                <ExternalLink className="h-3 w-3" />
-              </button>
-            ))}
-          </div>
-        )}
+        {/* Retailer badges moved below image — see PostDetailSheet */}
       </div>
     </motion.div>
   );

@@ -509,8 +509,8 @@ const Capture = () => {
             <motion.div key="intro" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm flex flex-col items-center text-center pt-2">
               <DecorativeSilhouette height={240} />
 
-              <h2 className="type-headline mt-4 mb-1">
-                Map Your Body
+              <h2 className="type-headline mt-4 mb-1 uppercase">
+                Your Body. Mapped.
               </h2>
               <p className="type-body mb-4">AI-powered measurements in under 60 seconds</p>
 

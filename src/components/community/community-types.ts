@@ -39,7 +39,7 @@ export interface Retailer {
 export const VOTE_OPTIONS = [
   { key: 'buy_yes', label: 'Buy it', emoji: '🔥' },
   { key: 'buy_no', label: 'Pass', emoji: '👎' },
-  { key: 'keep_shopping', label: 'Add to Cart', emoji: '🛒' },
+  { key: 'keep_shopping', label: 'Shop It', emoji: '🛒' },
 ] as const;
 
 export const FIT_OPTIONS = [
