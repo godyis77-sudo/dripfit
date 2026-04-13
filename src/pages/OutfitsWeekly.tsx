@@ -108,7 +108,7 @@ function PillBtn({ active, onClick, label, emoji }: { active: boolean; onClick: 
           : 'border-border/40 text-muted-foreground'
       }`}
     >
-      {emoji && <span className="mr-1">{emoji}</span>}{label}
+      {label}
     </button>
   );
 }
