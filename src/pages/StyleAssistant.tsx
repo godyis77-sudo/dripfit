@@ -12,10 +12,10 @@ type Msg = { role: 'user' | 'assistant'; content: string };
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/style-assistant`;
 
 const QUICK_PROMPTS = [
-  "What should I wear to a wedding?",
+  "What drops should I cop this week?",
   "Help me build a capsule closet",
   "What's my best size at Zara?",
-  "Date night outfit ideas",
+  "Which brands drape best on my measurements?",
 ];
 
 async function streamChat({
@@ -136,7 +136,7 @@ const StyleAssistant = () => {
             <Sparkles className="h-4 w-4 text-primary" />
           </div>
           <div>
-            <p className="text-sm font-bold text-foreground">Style Assistant</p>
+            <p className="text-sm font-bold text-foreground uppercase">The Style Assistant</p>
             <p className="text-[10px] text-muted-foreground">Powered by AI • Personalized to your body</p>
           </div>
         </div>
