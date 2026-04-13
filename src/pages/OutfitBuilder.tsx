@@ -36,7 +36,7 @@ const OutfitBuilder = () => {
 
   const [mode, setMode] = useState<'list' | 'build'>('list');
   const [editingOutfitId, setEditingOutfitId] = useState<string | null>(null);
-  const [outfitName, setOutfitName] = useState('Untitled Outfit');
+  const [outfitName, setOutfitName] = useState('');
   const [selectedItems, setSelectedItems] = useState<Record<Slot, WardrobeItem | null>>({
     top: null, bottom: null, outerwear: null, shoes: null, accessories: null,
   });
@@ -90,10 +90,10 @@ const OutfitBuilder = () => {
       let outfitId = editingOutfitId;
 
       if (outfitId) {
-        await supabase.from('outfits').update({ name: outfitName, updated_at: new Date().toISOString() }).eq('id', outfitId);
+        await supabase.from('outfits').update({ name: outfitName || `Fit ${new Date().toLocaleDateString()}`, updated_at: new Date().toISOString() }).eq('id', outfitId);
         await supabase.from('outfit_items').delete().eq('outfit_id', outfitId);
       } else {
-        const { data, error } = await supabase.from('outfits').insert({ user_id: user!.id, name: outfitName }).select('id').single();
+        const { data, error } = await supabase.from('outfits').insert({ user_id: user!.id, name: outfitName || `Fit ${new Date().toLocaleDateString()}` }).select('id').single();
         if (error) throw error;
         outfitId = data.id;
       }
@@ -133,7 +133,7 @@ const OutfitBuilder = () => {
   const resetBuilder = useCallback(() => {
     setMode('list');
     setEditingOutfitId(null);
-    setOutfitName('Untitled Outfit');
+    setOutfitName('');
     setSelectedItems({ top: null, bottom: null, outerwear: null, shoes: null, accessories: null });
   }, []);
 
@@ -220,8 +220,8 @@ const OutfitBuilder = () => {
           <input
             value={outfitName}
             onChange={(e) => setOutfitName(e.target.value)}
-            placeholder="Name your outfit..."
-            className="w-full bg-card border border-border rounded-xl px-3 py-2.5 text-sm font-medium text-foreground placeholder:text-muted-foreground mb-3 focus:outline-none focus:ring-1 focus:ring-primary/30"
+            placeholder="Name this fit..."
+            className="w-full bg-card border border-border rounded-xl px-3 py-2.5 text-sm font-medium text-foreground placeholder:italic placeholder:text-[rgba(255,255,255,0.3)] mb-3 focus:outline-none focus:ring-1 focus:ring-primary/30"
           />
 
           {/* Visual canvas */}
