@@ -86,10 +86,8 @@ const OutfitsWeekly = () => {
           </div>
         ) : (
           <div className="space-y-4 pb-6">
-            {filtered.map((outfit, idx) => (
-              <div key={outfit.id} ref={revealRef(idx)}>
-                <FullWidthHeroCard outfit={outfit} onTap={() => navigate(`/outfit/${outfit.id}`)} />
-              </div>
+            {filtered.map((outfit) => (
+              <FullWidthHeroCard key={outfit.id} outfit={outfit} onTap={() => navigate(`/outfit/${outfit.id}`)} />
             ))}
           </div>
         )}
