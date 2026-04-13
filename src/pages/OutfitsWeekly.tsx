@@ -147,28 +147,32 @@ function FullWidthHeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () 
     );
   }
 
-  // Fallback: glass card with text only
+  // Fallback: styled gradient card with outfit name as hero text
   return (
-    <button onClick={onTap} className="w-full aspect-[3/4] rounded-2xl overflow-hidden text-left active:scale-[0.98] transition-transform glass-dark border border-white/5 flex flex-col justify-end p-4">
-      <p className="text-lg font-display font-bold text-foreground leading-tight">{outfit.title}</p>
-      <div className="flex items-center gap-2 mt-1">
-        {outfit.total_price_cents > 0 && (
-          <span className="text-sm font-display font-bold text-primary">
-            ${(outfit.total_price_cents / 100).toFixed(0)}
-          </span>
-        )}
+    <button onClick={onTap} className="w-full aspect-[3/4] rounded-2xl overflow-hidden text-left active:scale-[0.98] transition-transform relative border border-white/5">
+      {/* Dark gradient background with shimmer */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A] to-[#0D0D0D]" />
+      <div className="absolute inset-0 skeleton-gold opacity-30" />
+
+      {/* Content */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center z-10">
+        <p className="text-2xl font-display font-bold text-foreground leading-tight mb-3">{outfit.title}</p>
         {outfit.occasion_label && (
-          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-medium glass-gold border border-primary/20 text-primary">
+          <span className="inline-flex items-center gap-0.5 px-2 py-1 rounded-full text-[10px] font-medium glass-gold border border-primary/20 text-primary">
             {outfit.occasion_label}
           </span>
         )}
+        {brands.length > 0 && (
+          <p className="text-[9px] tracking-[0.2em] uppercase text-white/30 mt-3">
+            {brands.join(' · ')}
+          </p>
+        )}
       </div>
-      {brands.length > 0 && (
-        <p className="text-[9px] tracking-[0.2em] uppercase text-white/30 mt-1.5">
-          {brands.join(' · ')}
-        </p>
-      )}
-      <p className="text-[10px] italic text-white/20 mt-2">Editorial image generating…</p>
+
+      {/* Bottom gradient for tap hint */}
+      <div className="absolute inset-x-0 bottom-0 p-4 z-10">
+        <p className="text-[10px] text-white/30 text-center">Tap to shop each piece →</p>
+      </div>
     </button>
   );
 }

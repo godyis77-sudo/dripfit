@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import ProductPreviewModal from '@/components/ui/ProductPreviewModal';
 import { type BrandGenre } from '@/lib/brandGenres';
 import { thumbnailUrl } from '@/lib/imageOptimize';
+import { decodeHtmlEntities } from '@/lib/utils';
 
 interface CategoryProductGridProps {
   category: string;
