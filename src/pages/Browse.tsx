@@ -186,7 +186,7 @@ const Browse = () => {
             <ArrowLeft className="h-4 w-4 text-white/70" />
           </button>
           <div>
-            <h1 className="headline-editorial text-lg text-primary">{title}</h1>
+            <h1 className="headline-editorial text-lg text-primary uppercase">{category === 'all' ? 'The Infinite Closet' : title}</h1>
             <p className="text-[11px] tracking-[0.15em] uppercase text-white/40">{displayed.length} pieces</p>
           </div>
         </div>
