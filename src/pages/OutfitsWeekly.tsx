@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useScrollReveal } from '@/hooks/useScrollReveal';
+
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
