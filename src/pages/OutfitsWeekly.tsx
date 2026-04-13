@@ -22,7 +22,7 @@ const OutfitsWeekly = () => {
   const [genderFilter, setGenderFilter] = useState(defaultGender);
   const [activeOccasion, setActiveOccasion] = useState<string | null>(null);
   const { data: outfits, isLoading } = useWeeklyOutfits(genderFilter);
-  const { revealRef } = useScrollReveal();
+  
 
   const occasions = useMemo(() => {
     if (!outfits) return [];
