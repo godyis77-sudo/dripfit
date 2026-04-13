@@ -205,6 +205,29 @@ export default function Closet() {
     return true;
   });
 
+  // Fetch user's size recommendations (keyed by brand_slug)
+  const { data: sizeMap } = useQuery({
+    queryKey: ['size-recs-map', user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('size_recommendations_cache')
+        .select('brand_slug, recommended_size')
+        .eq('user_id', user!.id);
+      if (!data?.length) return {} as Record<string, string>;
+      const map: Record<string, string> = {};
+      data.forEach(r => { map[r.brand_slug] = r.recommended_size; });
+      return map;
+    },
+    enabled: !!user?.id,
+    staleTime: 5 * 60_000,
+  });
+
+  const getSizeForProduct = useCallback((product: CatalogProduct) => {
+    if (!sizeMap) return null;
+    const slug = product.brand?.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    return slug ? sizeMap[slug] ?? null : null;
+  }, [sizeMap]);
+
   const currentProduct = products[currentIndex];
   const nextProduct = products[currentIndex + 1];
 
@@ -366,6 +389,7 @@ export default function Closet() {
                 isTop={false}
                 onSwipe={() => {}}
                 onTryOn={() => {}}
+                sizeLabel={getSizeForProduct(nextProduct)}
               />
             )}
             {currentProduct && (
@@ -375,6 +399,7 @@ export default function Closet() {
                 isTop
                 onSwipe={handleSwipe}
                 onTryOn={handleTryOn}
+                sizeLabel={getSizeForProduct(currentProduct)}
               />
             )}
           </AnimatePresence>
