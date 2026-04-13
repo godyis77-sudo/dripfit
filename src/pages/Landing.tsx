@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import { Link } from 'react-router-dom';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
@@ -22,6 +23,7 @@ const STATS = [
 ];
 
 export default function Landing() {
+  const { user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
 
   usePageMeta({
@@ -51,10 +53,10 @@ export default function Landing() {
             ))}
           </div>
           <Link
-            to="/auth"
+            to={user ? "/home" : "/auth"}
             className="px-5 py-2 text-xs font-semibold tracking-wider uppercase rounded-full bg-primary text-primary-foreground hover:scale-105 transition-transform duration-300"
           >
-            Get the Cheat Code
+            {user ? 'Enter App' : 'Get the Cheat Code'}
           </Link>
         </div>
       </nav>
