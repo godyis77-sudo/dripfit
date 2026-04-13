@@ -38,9 +38,9 @@ const ADJUSTABLE = [
 
 const confIcon: Record<Confidence, typeof Shield> = { high: ShieldCheck, medium: Shield, low: ShieldAlert };
 const confColor: Record<Confidence, string> = {
-  high: 'text-green-500',
-  medium: 'text-primary',
-  low: 'text-orange-500',
+  high: 'text-primary',
+  medium: 'text-primary/60',
+  low: 'text-muted-foreground',
 };
 
 const TrustPanel = ({ confidence, recommendedSize, measurements, onAdjust, retailer }: TrustPanelProps) => {

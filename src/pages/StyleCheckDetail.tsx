@@ -106,9 +106,9 @@ const StyleCheckDetail = () => {
           <Button variant="ghost" size="icon" onClick={() => navigate('/style-check')} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back">
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-base font-bold text-foreground flex-1">Style Check</h1>
+          <h1 className="text-base font-bold text-foreground flex-1 uppercase">Style Check</h1>
           <Button variant="ghost" size="icon" onClick={handleCopyLink} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Copy link">
-            {copied ? <Check className="h-4 w-4 text-green-500" /> : <Link2 className="h-4 w-4" />}
+            {copied ? <Check className="h-4 w-4 text-primary" /> : <Link2 className="h-4 w-4" />}
           </Button>
           <Button variant="ghost" size="icon" onClick={handleShare} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Share">
             <Share2 className="h-4 w-4" />

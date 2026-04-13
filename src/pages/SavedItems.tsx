@@ -91,8 +91,8 @@ const SavedItems = () => {
             onClick={() => setShowDropsFeed(true)}
             className="w-full flex items-center gap-3 rounded-xl glass-dark p-3 mb-3 active:scale-[0.98] transition-transform"
           >
-            <div className="h-9 w-9 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
-              <TrendingDown className="h-4 w-4 text-green-500" />
+            <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <TrendingDown className="h-4 w-4 text-primary" />
             </div>
             <div className="text-left flex-1">
               <p className="text-[12px] font-bold text-foreground">Price Alerts</p>
@@ -102,7 +102,7 @@ const SavedItems = () => {
               </p>
             </div>
             {unreadCount > 0 && (
-              <span className="h-5 min-w-[20px] px-1 rounded-full bg-green-500 text-[10px] font-bold text-white flex items-center justify-center">
+              <span className="h-5 min-w-[20px] px-1 rounded-full bg-primary text-[10px] font-bold text-primary-foreground flex items-center justify-center">
                 {unreadCount}
               </span>
             )}
