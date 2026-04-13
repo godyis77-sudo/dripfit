@@ -1,8 +1,8 @@
 import './BrandMarquee.css';
 
 const ROW1 = ['ZARA', 'ASOS', 'SHEIN', 'H&M', 'COS', 'NIKE', 'MANGO'];
-const ROW2 = ['OFF-WHITE', 'NIKE', 'STÜSSY', 'SHEIN', 'FEAR OF GOD', 'ASOS', 'AMIRI', 'COS'];
-const ROW3 = ['BALENCIAGA', 'MANGO', 'STONE ISLAND', 'H&M', 'BAPE', 'ZARA', 'PALM ANGELS', 'SHEIN'];
+const ROW2 = ['OFF-WHITE', 'STÜSSY', 'FEAR OF GOD', 'AMIRI', 'BALENCIAGA', 'STONE ISLAND', 'PALM ANGELS'];
+const ROW3 = ['BAPE', 'UNIQLO', 'CARHARTT', 'NEW BALANCE', 'ADIDAS', 'TOMMY HILFIGER', 'RALPH LAUREN'];
 
 function MarqueeRow({ brands, reverse, depth }: { brands: string[]; reverse?: boolean; depth: 'front' | 'mid' | 'back' }) {
   return (

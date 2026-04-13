@@ -1,10 +1,10 @@
-import { TrendingDown, Users, ShoppingBag, Scan, Shirt, BarChart3, ArrowRight, Mail, CheckCircle2, ExternalLink } from 'lucide-react';
+import { TrendingDown, Users, ShoppingBag, Scan, Shirt, BarChart3, ArrowRight, ChevronDown, Mail, CheckCircle2, ExternalLink } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
 
 const STATS = [
-  { value: '130+', label: 'Brands Indexed' },
-  { value: '7,000+', label: 'Products Cataloged' },
+  { value: '186+', label: 'Brands Indexed' },
+  { value: '9,000+', label: 'Products Cataloged' },
   { value: '30-40%', label: 'Return Reduction' },
   { value: '<60s', label: 'Body Scan Time' },
 ];
@@ -58,6 +58,9 @@ const Partnership = () => {
             <div key={s.label} className="text-center">
               <p className="font-display text-2xl sm:text-3xl font-bold text-primary">{s.value}</p>
               <p className="text-[11px] sm:text-xs text-muted-foreground uppercase tracking-widest mt-1">{s.label}</p>
+              {s.label === 'Return Reduction' && (
+                <p className="text-[10px] mt-1" style={{ color: 'rgba(255,255,255,0.35)' }}>Projected from verified sizing accuracy data</p>
+              )}
             </div>
           ))}
         </div>
@@ -143,9 +146,25 @@ const Partnership = () => {
         <div className="max-w-3xl mx-auto px-6 py-14">
           <h2 className="font-display text-2xl font-bold text-center mb-8">The User Journey</h2>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
-            {['Scan Body', 'See Exact Size', 'Browse Your Products', 'Buy With Confidence', 'Keep What They Buy'].map((step, i) => (
+          {['Scan Body', 'See Exact Size', 'Browse Your Products', 'Buy With Confidence', 'Zero Returns'].map((step, i) => (
               <div key={step} className="flex items-center gap-2 sm:gap-4">
-                <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-3 text-center min-w-[120px]">
+                {i > 0 && <ChevronDown className="h-4 w-4 shrink-0 sm:hidden" style={{ color: 'rgba(212,175,55,0.4)' }} />}
+                <div
+                  className={`rounded-xl px-4 py-3 text-center min-w-[120px] ${
+                    i === 4
+                      ? 'border'
+                      : i === 3
+                        ? 'border'
+                        : 'bg-primary/10 border border-primary/20'
+                  }`}
+                  style={
+                    i === 4
+                      ? { background: 'rgba(212,175,55,0.12)', borderColor: 'rgba(212,175,55,0.4)' }
+                      : i === 3
+                        ? { background: 'hsl(var(--primary) / 0.1)', borderColor: 'rgba(212,175,55,0.2)' }
+                        : undefined
+                  }
+                >
                   <p className="text-[10px] text-primary font-bold uppercase tracking-widest mb-0.5">{i + 1}</p>
                   <p className="text-xs font-semibold text-foreground whitespace-nowrap">{step}</p>
                 </div>
@@ -162,7 +181,7 @@ const Partnership = () => {
           <Users className="h-10 w-10 text-primary mx-auto mb-4" />
           <h2 className="font-display text-2xl sm:text-3xl font-bold mb-2">Let's Reduce Returns Together</h2>
           <p className="text-muted-foreground text-sm max-w-md mx-auto mb-6">
-            We'd love to explore a partnership. Reach out and we'll have you onboarded in days, not weeks.
+            Ready to reduce returns? Reach out. Onboarded in days, not weeks.
           </p>
           <a
             href="mailto:partnerships@dripfitcheck.com"
