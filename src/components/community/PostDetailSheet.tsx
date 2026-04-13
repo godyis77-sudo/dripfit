@@ -215,7 +215,7 @@ export const PostDetailSheet = ({
               </button>
               <div className="flex items-center gap-2">
                 <button onClick={(e) => { e.stopPropagation(); handleCopyPostLink(); }} aria-label="Copy link" className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center active:scale-90 transition-transform">
-                  {linkCopied ? <Check className="h-3.5 w-3.5 text-green-400" /> : <Link2 className="h-3.5 w-3.5 text-white" />}
+                  {linkCopied ? <Check className="h-3.5 w-3.5 text-primary" /> : <Link2 className="h-3.5 w-3.5 text-white" />}
                 </button>
                 {isOwnPost && !isPlaceholder && onDelete && (
                   <button onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(post.id); }} aria-label="Remove post" className="h-8 px-3 rounded-full bg-transparent border border-destructive/25 text-destructive/60 hover:text-destructive text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95">

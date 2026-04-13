@@ -26,9 +26,9 @@ const Cart = () => {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-base font-bold text-foreground flex items-center gap-1.5">
-              <ShoppingCart className="h-4 w-4 text-primary" /> My Cart
-            </h1>
+             <h1 className="text-base font-bold text-foreground flex items-center gap-1.5 uppercase">
+               <ShoppingCart className="h-4 w-4 text-primary" /> My Cart
+             </h1>
             <p className="text-[10px] text-muted-foreground">{items.length} item{items.length !== 1 ? 's' : ''}</p>
           </div>
           {items.length > 0 && (

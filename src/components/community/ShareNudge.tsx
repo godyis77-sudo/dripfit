@@ -71,7 +71,7 @@ export default function ShareNudge({ postId, resultImage, caption, onDismiss, on
           onClick={handleCopyLink}
           className="flex-1 h-9 rounded-lg text-[11px] font-semibold gap-1.5"
         >
-          {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Link2 className="h-3.5 w-3.5" />}
+          {copied ? <Check className="h-3.5 w-3.5 text-primary" /> : <Link2 className="h-3.5 w-3.5" />}
           {copied ? 'Copied!' : 'Copy Link'}
         </Button>
         <Button

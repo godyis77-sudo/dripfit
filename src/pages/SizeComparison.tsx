@@ -160,9 +160,9 @@ const SizeComparison = () => {
   }, [brandSizes, selectedGenre]);
 
   const confidenceDot = (c: number) => {
-    if (c >= 0.72) return 'bg-green-400';
+    if (c >= 0.72) return 'bg-primary';
     if (c >= 0.55) return 'bg-amber-400';
-    return 'bg-red-400';
+    return 'bg-muted-foreground/40';
   };
 
   return (
@@ -329,8 +329,8 @@ const SizeComparison = () => {
 
                     {/* Confidence text */}
                     <span className={cn('text-[10px]', 
-                      brand.confidence >= 0.72 ? 'text-green-400/70' : 
-                      brand.confidence >= 0.55 ? 'text-amber-400/70' : 'text-red-400/70'
+                      brand.confidence >= 0.72 ? 'text-primary/70' : 
+                      brand.confidence >= 0.55 ? 'text-amber-400/70' : 'text-muted-foreground/50'
                     )}>
                       {brand.confidence >= 0.72 ? 'High match' : brand.confidence >= 0.55 ? 'Good match' : 'Approximate'}
                     </span>
@@ -342,7 +342,7 @@ const SizeComparison = () => {
             {/* Legend */}
             <div className="flex items-center justify-center gap-4 mt-6 mb-4">
               <div className="flex items-center gap-1.5">
-                <div className="h-2 w-2 rounded-full bg-green-400" />
+                <div className="h-2 w-2 rounded-full bg-primary" />
                 <span className="text-[10px] text-white/30">High match</span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -350,7 +350,7 @@ const SizeComparison = () => {
                 <span className="text-[10px] text-white/30">Good match</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="h-2 w-2 rounded-full bg-red-400" />
+                <div className="h-2 w-2 rounded-full bg-muted-foreground/40" />
                 <span className="text-[10px] text-white/30">Approximate</span>
               </div>
             </div>

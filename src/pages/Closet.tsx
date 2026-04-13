@@ -420,7 +420,7 @@ export default function Closet() {
           <motion.button
             whileTap={{ scale: 0.85 }}
             onClick={() => handleSwipe('right')}
-            className="h-16 w-16 rounded-full border-2 border-primary/60 flex items-center justify-center bg-primary/15 hover:bg-primary/25 transition-colors shadow-gold-glow"
+            className="h-16 w-16 rounded-full border-2 border-primary/60 flex items-center justify-center bg-primary/15 hover:bg-primary/25 transition-colors "
           >
             <Flame className="h-7 w-7 text-primary" />
           </motion.button>

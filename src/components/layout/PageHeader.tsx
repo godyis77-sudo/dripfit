@@ -34,7 +34,7 @@ const PageHeader = ({ title, subtitle, backTo = -1, actions, className = '' }: P
         <ArrowLeft className="h-5 w-5" />
       </Button>
       <div className="flex-1 min-w-0">
-        <h1 className="type-headline text-base truncate">{title}</h1>
+        <h1 className="type-headline text-base truncate uppercase">{title}</h1>
         {subtitle && (
           <p className="type-body truncate" style={{ fontSize: 12 }}>{subtitle}</p>
         )}

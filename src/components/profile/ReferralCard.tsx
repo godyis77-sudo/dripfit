@@ -86,7 +86,7 @@ export function ReferralCard() {
           {profile.referral_code}
         </span>
         <button onClick={handleCopy} className="text-muted-foreground hover:text-primary transition-colors">
-          {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+          {copied ? <Check className="w-4 h-4 text-primary" /> : <Copy className="w-4 h-4" />}
         </button>
       </div>
       <Button onClick={handleShare} className="w-full gap-2" size="sm">

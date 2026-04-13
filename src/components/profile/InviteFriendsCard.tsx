@@ -106,7 +106,7 @@ export function InviteFriendsCard() {
           {profile.referral_code}
         </span>
         <button onClick={handleCopy} className="text-primary/60 hover:text-primary transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Copy referral code">
-          {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+          {copied ? <Check className="w-4 h-4 text-primary" /> : <Copy className="w-4 h-4" />}
         </button>
       </div>
 

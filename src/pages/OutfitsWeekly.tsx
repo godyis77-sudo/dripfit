@@ -43,7 +43,7 @@ const OutfitsWeekly = () => {
     <div className="min-h-screen bg-background pb-safe-tab">
       <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border/20 px-4 py-3 flex items-center gap-3">
         <button onClick={() => navigate(-1)} className="text-foreground"><ArrowLeft className="h-5 w-5" /></button>
-        <h1 className="text-base font-bold text-foreground flex items-center gap-1.5">
+        <h1 className="text-base font-bold text-foreground flex items-center gap-1.5 uppercase">
           This Week's Drip <InlineCrown size={18} />
         </h1>
       </div>

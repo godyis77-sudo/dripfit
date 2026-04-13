@@ -185,7 +185,7 @@ const OutfitBuilder = () => {
           <Button variant="ghost" size="icon" onClick={() => mode === 'build' ? resetBuilder() : navigate(-1)} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]">
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-lg font-bold text-foreground">
+          <h1 className="text-lg font-bold text-foreground uppercase">
             {mode === 'build' ? (editingOutfitId ? 'Edit Outfit' : 'New Outfit') : 'Outfits'}
           </h1>
         </div>

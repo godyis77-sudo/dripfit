@@ -119,7 +119,7 @@ export default function PromoCodesSection({ userId }: PromoCodesSectionProps) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-mono font-bold text-foreground">{p.code}</span>
-                  <Badge variant="outline" className={`text-[10px] ${p.is_active ? "text-emerald-400 border-emerald-500/30" : "text-muted-foreground"}`}>
+                  <Badge variant="outline" className={`text-[10px] ${p.is_active ? "text-primary border-primary/30" : "text-muted-foreground"}`}>
                     {p.is_active ? "Active" : "Paused"}
                   </Badge>
                 </div>
@@ -128,7 +128,7 @@ export default function PromoCodesSection({ userId }: PromoCodesSectionProps) {
                 </span>
               </div>
               <button onClick={() => toggleActive.mutate({ id: p.id, is_active: p.is_active })} className="text-muted-foreground hover:text-foreground">
-                {p.is_active ? <ToggleRight className="w-5 h-5 text-emerald-400" /> : <ToggleLeft className="w-5 h-5" />}
+                {p.is_active ? <ToggleRight className="w-5 h-5 text-primary" /> : <ToggleLeft className="w-5 h-5" />}
               </button>
               <button onClick={() => deletePromo.mutate(p.id)} className="text-muted-foreground hover:text-destructive">
                 <Trash2 className="w-4 h-4" />

@@ -29,9 +29,9 @@ const LABELS: Record<string, string> = {
 };
 
 const statusConfig = {
-  match: { icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', label: 'Match' },
+  match: { icon: CheckCircle2, color: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/20', label: 'Match' },
   close: { icon: AlertTriangle, color: 'text-amber-500', bg: 'bg-amber-500/10', border: 'border-amber-500/20', label: 'Close' },
-  too_small: { icon: ArrowDown, color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/20', label: 'Below range' },
+  too_small: { icon: ArrowDown, color: 'text-muted-foreground', bg: 'bg-white/5', border: 'border-white/10', label: 'Below range' },
   too_large: { icon: ArrowUp, color: 'text-red-500', bg: 'bg-red-500/10', border: 'border-red-500/20', label: 'Above range' },
   out_of_range: { icon: XCircle, color: 'text-destructive', bg: 'bg-destructive/10', border: 'border-destructive/20', label: 'Out of range' },
 };
