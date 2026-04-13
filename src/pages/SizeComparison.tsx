@@ -53,7 +53,7 @@ const CATEGORY_MAPPING: Record<string, string[]> = {
 
 const SizeComparison = () => {
   usePageMeta({
-    title: 'My Size Everywhere',
+    title: 'Your Verified Sizes',
     description: 'See your exact size across 100+ brands at a glance. Never guess your size again.',
     path: '/my-sizes',
   });
@@ -179,8 +179,8 @@ const SizeComparison = () => {
             <ArrowLeft className="h-5 w-5 text-white/70" />
           </Button>
           <div className="flex-1">
-            <h1 className="font-display text-lg text-white tracking-tight">My Size Everywhere</h1>
-            <p className="text-[11px] text-white/30">Your size across every brand</p>
+            <h1 className="font-display text-lg text-white tracking-tight uppercase">Your Verified Sizes</h1>
+            <p className="text-[11px] text-white/30">Every brand. Locked.</p>
           </div>
         </div>
 
