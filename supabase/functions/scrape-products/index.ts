@@ -3450,14 +3450,18 @@ Deno.serve(async (req) => {
       await delay(jitterMs);
     }
 
-    // ── CHECK FIRECRAWL CREDITS ────────────────────────────────────
+    // ── CHECK FIRECRAWL CREDITS & THIN-CATEGORY GATE ─────────────
     let useFirecrawl = true;
     const credits = await checkFirecrawlCredits(FIRECRAWL_API_KEY);
     if (credits !== null && credits <= 0) {
       console.log(`[run:${runId}] Firecrawl credits exhausted (${credits}), using direct HTTP only`);
       useFirecrawl = false;
+    } else if (!isThinCategory(category)) {
+      // Well-stocked categories: skip Firecrawl to save credits
+      console.log(`[run:${runId}] Category "${category}" is well-stocked, skipping Firecrawl (credits: ${credits ?? 'unknown'})`);
+      useFirecrawl = false;
     } else {
-      console.log(`[run:${runId}] Firecrawl credits: ${credits ?? 'unknown'}`);
+      console.log(`[run:${runId}] Thin category "${category}" — Firecrawl enabled (credits: ${credits ?? 'unknown'})`);
     }
 
     // ── STAGES 1+2: Direct HTTP + optional Firecrawl scraping ────────
