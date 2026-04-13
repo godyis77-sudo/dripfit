@@ -192,10 +192,21 @@ const Profile = () => {
                 </div>
               )}
             </button>
-            <div>
-              <h1 className="type-headline text-lg leading-tight">{displayName}</h1>
+            <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <p className="type-body text-sm">{user.email}</p>
+                <h1 className="type-headline text-lg leading-tight">{displayName}</h1>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate('/profile/settings')}
+                  className="text-white/50 h-8 w-8 min-h-[44px] min-w-[44px] rounded-lg shrink-0"
+                  aria-label="Open settings"
+                >
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <p className="type-body text-sm truncate">{user.email}</p>
                 <button onClick={handleSignOut} className="text-white/30 hover:text-destructive transition-colors p-1 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Sign out">
                   <LogOut className="h-4 w-4" />
                 </button>
@@ -224,15 +235,6 @@ const Profile = () => {
               <User className="h-4 w-4 text-primary" />
               <span className="text-[13px] text-primary font-bold tracking-wide">Sizes</span>
             </button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/profile/settings')}
-              className="text-white/50 h-10 w-10 min-h-[44px] min-w-[44px] rounded-lg"
-              aria-label="Open settings"
-            >
-              <Settings className="h-4 w-4" />
-            </Button>
           </div>
         </div>
 
