@@ -147,7 +147,7 @@ const SettingsTab = ({
       {/* Account */}
       <SectionHeader>Account</SectionHeader>
       <div className="bg-card border border-border rounded-xl divide-y divide-border mb-1">
-        <button onClick={onAvatarTap} className="w-full flex items-center justify-between px-3 py-2.5 btn-gold-3d rounded-t-xl rounded-b-none">
+        <button onClick={onAvatarTap} className="w-full flex items-center justify-between px-3 py-2.5 rounded-t-xl rounded-b-none" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
           <span className="text-[12px]">Profile Photo</span>
           <div className="flex items-center gap-2">
             {avatarUrl ? (

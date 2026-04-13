@@ -180,7 +180,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
             className="relative rounded-2xl overflow-hidden glass-dark product-card text-left group hover:border-white/10 transition-all h-full flex flex-col"
           >
             {/* Image area — 3:4 aspect */}
-            <div className="relative aspect-[3/4] bg-[hsl(0_0%_8%)] rounded-t-2xl overflow-hidden">
+            <div className="relative aspect-[3/4] rounded-t-2xl overflow-hidden" style={{ backgroundColor: '#1A1A1A' }}>
               {failedImageIds.has(product.id) ? (
                 <div className="w-full h-full flex items-center justify-center p-2 text-center">
                   <span className="text-[10px] font-semibold text-muted-foreground line-clamp-2 uppercase tracking-wide">

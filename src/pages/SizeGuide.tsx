@@ -277,10 +277,13 @@ const SizeGuide = () => {
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
       <div>
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px] bg-white/5 border border-white/10 backdrop-blur-sm" aria-label="Go back"><ArrowLeft className="h-5 w-5 text-white/70" /></Button>
-          <h1 className="font-display text-lg text-white">Size Guide</h1>
-          <div className="w-10" />
+        <div className="flex flex-col items-center mb-4">
+          <div className="flex items-center justify-between w-full mb-1">
+            <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px] bg-white/5 border border-white/10 backdrop-blur-sm" aria-label="Go back"><ArrowLeft className="h-5 w-5 text-white/70" /></Button>
+            <h1 className="font-display text-lg text-white uppercase">Your Verified Size</h1>
+            <div className="w-10" />
+          </div>
+          <p className="text-[11px] text-white/30">Your exact size. Every brand. Instant.</p>
         </div>
 
         {/* PASTE A LINK section */}
