@@ -115,7 +115,7 @@ const AnimatedRoutes = () => {
     <Suspense fallback={<RouteFallback />}>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<Navigate to="/home" replace />} />
+          <Route path="/" element={<Navigate to="/landing" replace />} />
           <Route path="/home" element={<PageTransition><Welcome /></PageTransition>} />
           <Route path="/onboarding" element={<OnboardingReset />} />
           <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
