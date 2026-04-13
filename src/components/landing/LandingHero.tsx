@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { FadeIn } from './LandingAnimations';
-import LandingEmailCapture from './LandingEmailCapture';
+import { useAuth } from '@/hooks/useAuth';
+import { setGuestMode } from '@/lib/session';
 import heroPhoneMockup from '@/assets/hero-phone-mockup.jpg';
 
 const STATS = [
@@ -11,6 +13,14 @@ const STATS = [
 ];
 
 export default function LandingHero() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleGuestMode = () => {
+    setGuestMode();
+    navigate('/home');
+  };
+
   return (
     <section className="relative min-h-screen flex items-center">
       {/* Ambient glows */}
@@ -40,7 +50,29 @@ export default function LandingHero() {
           </FadeIn>
 
           <FadeIn delay={0.24}>
-            <LandingEmailCapture id="hero" buttonText="Start the Scan" />
+            {user ? (
+              <Link
+                to="/home"
+                className="inline-flex items-center gap-2 h-13 px-8 rounded-full bg-foreground text-background font-medium text-sm transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                Enter App <ArrowRight className="h-4 w-4" />
+              </Link>
+            ) : (
+              <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+                <Link
+                  to="/auth"
+                  className="inline-flex items-center justify-center gap-2 h-13 px-8 rounded-full bg-foreground text-background font-medium text-sm transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  Sign Up Free <ArrowRight className="h-4 w-4" />
+                </Link>
+                <button
+                  onClick={handleGuestMode}
+                  className="h-13 px-8 rounded-full border border-border bg-secondary/60 text-foreground font-medium text-sm transition-all duration-300 hover:bg-secondary active:scale-[0.98]"
+                >
+                  Try as Guest
+                </button>
+              </div>
+            )}
           </FadeIn>
 
           <FadeIn delay={0.32}>

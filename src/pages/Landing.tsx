@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { setGuestMode } from '@/lib/session';
 import BrandLogo from '@/components/ui/BrandLogo';
 import LandingHero from '@/components/landing/LandingHero';
 import LandingCommunityVerdict from '@/components/landing/LandingCommunityVerdict';
@@ -24,7 +25,13 @@ const STATS = [
 
 export default function Landing() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
+
+  const handleGuestMode = () => {
+    setGuestMode();
+    navigate('/home');
+  };
 
   usePageMeta({
     title: 'DripFit — Know Your Fit',
@@ -52,12 +59,29 @@ export default function Landing() {
               </a>
             ))}
           </div>
-          <Link
-            to={user ? "/home" : "/auth"}
-            className="px-5 py-2 text-xs font-semibold tracking-wider uppercase rounded-full bg-primary text-primary-foreground hover:scale-105 transition-transform duration-300"
-          >
-            {user ? 'Enter App' : 'Get the Cheat Code'}
-          </Link>
+          {user ? (
+            <Link
+              to="/home"
+              className="px-5 py-2 text-xs font-semibold tracking-wider uppercase rounded-full bg-primary text-primary-foreground hover:scale-105 transition-transform duration-300"
+            >
+              Enter App
+            </Link>
+          ) : (
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleGuestMode}
+                className="px-4 py-2 text-xs font-semibold tracking-wider uppercase text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Try Free
+              </button>
+              <Link
+                to="/auth"
+                className="px-5 py-2 text-xs font-semibold tracking-wider uppercase rounded-full bg-primary text-primary-foreground hover:scale-105 transition-transform duration-300"
+              >
+                Sign In
+              </Link>
+            </div>
+          )}
         </div>
       </nav>
 

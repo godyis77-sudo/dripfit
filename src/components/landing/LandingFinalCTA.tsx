@@ -1,7 +1,18 @@
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import { FadeIn } from './LandingAnimations';
-import LandingEmailCapture from './LandingEmailCapture';
+import { useAuth } from '@/hooks/useAuth';
+import { setGuestMode } from '@/lib/session';
 
 export default function LandingFinalCTA() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleGuestMode = () => {
+    setGuestMode();
+    navigate('/home');
+  };
+
   return (
     <section className="py-28 md:py-36 relative overflow-hidden border-t border-border/30">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none bg-primary/[0.04] blur-[120px]" />
@@ -17,8 +28,30 @@ export default function LandingFinalCTA() {
           </p>
         </FadeIn>
         <FadeIn delay={0.1}>
-          <div className="flex justify-center">
-            <LandingEmailCapture id="footer-cta" buttonText="Start the Scan" />
+          <div className="flex justify-center gap-3 flex-wrap">
+            {user ? (
+              <Link
+                to="/home"
+                className="inline-flex items-center gap-2 h-13 px-8 rounded-full bg-foreground text-background font-medium text-sm transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                Enter App <ArrowRight className="h-4 w-4" />
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/auth"
+                  className="inline-flex items-center gap-2 h-13 px-8 rounded-full bg-foreground text-background font-medium text-sm transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  Sign Up Free <ArrowRight className="h-4 w-4" />
+                </Link>
+                <button
+                  onClick={handleGuestMode}
+                  className="h-13 px-8 rounded-full border border-border bg-secondary/60 text-foreground font-medium text-sm transition-all duration-300 hover:bg-secondary active:scale-[0.98]"
+                >
+                  Try as Guest
+                </button>
+              </>
+            )}
           </div>
         </FadeIn>
       </div>
