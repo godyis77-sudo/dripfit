@@ -7,7 +7,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const apiKey = Deno.env.get('FIRECRAWL_API_KEY');
+    const apiKey = Deno.env.get('FIRECRAWL_API_KEY_1') || Deno.env.get('FIRECRAWL_API_KEY');
     if (!apiKey) {
       return new Response(JSON.stringify({ success: false, error: 'No FIRECRAWL_API_KEY' }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
