@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useScrollReveal } from '@/hooks/useScrollReveal';
+
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -22,7 +22,7 @@ const OutfitsWeekly = () => {
   const [genderFilter, setGenderFilter] = useState(defaultGender);
   const [activeOccasion, setActiveOccasion] = useState<string | null>(null);
   const { data: outfits, isLoading } = useWeeklyOutfits(genderFilter);
-  const { revealRef } = useScrollReveal();
+  
 
   const occasions = useMemo(() => {
     if (!outfits) return [];
@@ -86,10 +86,8 @@ const OutfitsWeekly = () => {
           </div>
         ) : (
           <div className="space-y-4 pb-6">
-            {filtered.map((outfit, idx) => (
-              <div key={outfit.id} ref={revealRef(idx)}>
-                <FullWidthHeroCard outfit={outfit} onTap={() => navigate(`/outfit/${outfit.id}`)} />
-              </div>
+            {filtered.map((outfit) => (
+              <FullWidthHeroCard key={outfit.id} outfit={outfit} onTap={() => navigate(`/outfit/${outfit.id}`)} />
             ))}
           </div>
         )}
