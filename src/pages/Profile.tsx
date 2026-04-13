@@ -145,8 +145,8 @@ const Profile = () => {
           >
             <InlineCrown size={48} />
             <span className="type-label text-primary flex-1 text-left">DRIPFIT ✔ PREMIUM</span>
-            <span className="bg-primary/10 border border-primary/20 text-[9px] font-bold text-primary px-2 py-0.5 rounded-full flex items-center gap-1">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary inline-block" /> ACTIVE
+            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: 'rgba(212,175,55,0.12)', border: '1px solid rgba(212,175,55,0.45)', color: '#D4AF37' }}>
+              <span className="h-1.5 w-1.5 rounded-full inline-block" style={{ background: '#D4AF37' }} /> ACTIVE
             </span>
           </button>
         ) : !bannerDismissed ? (
@@ -172,12 +172,12 @@ const Profile = () => {
         {/* Header */}
         <div className="flex flex-col items-center mb-4">
           <button onClick={() => setShowAvatarSheet(true)} aria-label="Change profile photo" className="relative group mb-2">
-            <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-primary/30 bg-card">
+            <div className="h-14 w-14 rounded-full overflow-hidden bg-card" style={{ border: '2px solid rgba(212,175,55,0.4)' }}>
               {avatarUrl ? (
                 <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full bg-white/5 flex items-center justify-center">
-                  <span className="text-lg font-bold text-white/70">{displayName[0]?.toUpperCase() || 'U'}</span>
+                  <div className="w-full h-full flex items-center justify-center" style={{ background: '#2D2D2D' }}>
+                    <span className="text-lg font-bold text-white">{displayName[0]?.toUpperCase() || 'U'}</span>
                 </div>
               )}
             </div>
@@ -214,7 +214,7 @@ const Profile = () => {
             className="flex items-center gap-1 mt-0.5 active:opacity-70 transition-opacity"
           >
             <Globe className="h-2.5 w-2.5 text-primary" />
-            <span className="text-[11px] text-primary font-medium tracking-wide">View Public Profile</span>
+            <span className="text-[11px] text-primary font-medium tracking-wide">Public Profile →</span>
           </button>
           <div className="flex items-center gap-1.5 mt-3">
             <button
@@ -240,7 +240,7 @@ const Profile = () => {
         {/* Milestones & Invite — single collapsible */}
         <Collapsible defaultOpen={false} className="mb-3">
           <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-xl glass text-[12px] font-bold text-white/70 active:scale-[0.98] transition-transform">
-            <span className="flex items-center gap-1.5"><Award className="h-3.5 w-3.5 text-primary" /> Milestones & <Gift className="h-3.5 w-3.5 text-primary" /> Invite</span>
+            <span className="flex items-center gap-1.5"><Award className="h-3.5 w-3.5 text-primary" /> Milestones & <Gift className="h-3.5 w-3.5 text-primary" /> Referrals</span>
             <ChevronDown className="h-3.5 w-3.5 text-white/30 transition-transform [[data-state=open]>&]:rotate-180" />
           </CollapsibleTrigger>
           <CollapsibleContent className="pt-2 space-y-3">
