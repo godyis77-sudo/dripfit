@@ -1,3 +1,4 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -81,30 +82,30 @@ const LinkHub = () => {
         {/* ── Button Stack ────────────────────── */}
         <div className="w-full space-y-3">
           {links.map((link, i) => (
-            <motion.a
-              key={link.label}
-              href={link.href}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 + i * 0.08, duration: 0.4 }}
-              className={`
-                block w-full text-center rounded-xl py-3.5 text-[13px] font-bold tracking-wide transition-all active:scale-[0.97]
-                ${link.style === 'primary'
-                  ? 'btn-luxury text-primary-foreground shadow-[0_4px_20px_hsl(42_76%_42%/0.3)]'
-                  : link.style === 'outline'
-                    ? 'bg-transparent border-2 border-primary/50 text-primary hover:bg-primary/10'
-                    : 'bg-secondary text-foreground hover:bg-secondary/80 border border-border'
-                }
-              `}
-            >
-              {link.label}
-            </motion.a>
-            {link.supportingText && (
-              <p className="text-[11px] text-center mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                {link.supportingText}
-              </p>
-            )}
-          </React.Fragment>
+            <React.Fragment key={link.label}>
+              <motion.a
+                href={link.href}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 + i * 0.08, duration: 0.4 }}
+                className={`
+                  block w-full text-center rounded-xl py-3.5 text-[13px] font-bold tracking-wide transition-all active:scale-[0.97]
+                  ${link.style === 'primary'
+                    ? 'btn-luxury text-primary-foreground shadow-[0_4px_20px_hsl(42_76%_42%/0.3)]'
+                    : link.style === 'outline'
+                      ? 'bg-transparent border-2 border-primary/50 text-primary hover:bg-primary/10'
+                      : 'bg-secondary text-foreground hover:bg-secondary/80 border border-border'
+                  }
+                `}
+              >
+                {link.label}
+              </motion.a>
+              {'supportingText' in link && link.supportingText && (
+                <p className="text-[11px] text-center mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                  {link.supportingText}
+                </p>
+              )}
+            </React.Fragment>
           ))}
         </div>
 
