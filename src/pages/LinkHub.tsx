@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { supabase } from '@/integrations/supabase/client';
 
 const links = [
   {
@@ -62,6 +63,14 @@ const socials = [
 const LinkHub = () => {
   usePageMeta({ title: 'Links', description: 'All DripFit links in one place — waitlist, Discord, Instagram, and more.', path: '/links' });
 
+  const [scanCount, setScanCount] = useState('1,200+');
+  useEffect(() => {
+    supabase.from('app_config').select('value').eq('key', 'total_scan_count').single()
+      .then(({ data }) => {
+        if (data?.value) setScanCount(Number(data.value).toLocaleString() + '+');
+      });
+  }, []);
+
   return (
     <div className="min-h-[100dvh] bg-background flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-md flex flex-col items-center">
@@ -71,13 +80,18 @@ const LinkHub = () => {
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex flex-col items-center mb-10"
+          className="flex flex-col items-center mb-4"
         >
           <BrandLogo size="xl" />
           <p className="text-[13px] text-muted-foreground mt-3 tracking-wide">
             Stop praying it fits.
           </p>
         </motion.div>
+
+        {/* ── Social Proof ───────────────────── */}
+        <p className="text-[13px] text-center mb-2" style={{ color: 'rgba(255,255,255,0.45)' }}>
+          Join {scanCount} who've already verified their drip.
+        </p>
 
         {/* ── Button Stack ────────────────────── */}
         <div className="w-full space-y-3">
