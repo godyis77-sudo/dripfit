@@ -211,7 +211,7 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
             {/* Info area */}
             <div className="p-2.5 flex flex-col">
               <p className="font-mono text-[10px] tracking-widest uppercase text-zinc-500 mb-0.5">{product.brand}</p>
-              <p className="font-sans text-sm text-zinc-200 line-clamp-1 leading-tight">{product.name}</p>
+              <p className="font-sans text-sm text-zinc-200 line-clamp-1 leading-tight">{decodeHtmlEntities(product.name)}</p>
               <p className="font-mono text-sm text-white font-medium mt-1 h-[18px]">
                 {product.price_cents ? `$${(product.price_cents / 100).toFixed(0)}` : '\u00A0'}
               </p>
