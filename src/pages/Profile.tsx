@@ -211,11 +211,18 @@ const Profile = () => {
           </div>
           <div className="flex items-center gap-1.5">
             <button
+              onClick={() => navigate('/style-assistant')}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass-gold active:scale-95 transition-transform"
+            >
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="text-[13px] text-primary font-bold tracking-wide">Style AI</span>
+            </button>
+            <button
               onClick={() => navigate('/profile/body')}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass-gold active:scale-95 transition-transform"
             >
               <User className="h-4 w-4 text-primary" />
-              <span className="text-[13px] text-primary font-bold tracking-wide">Size Guide</span>
+              <span className="text-[13px] text-primary font-bold tracking-wide">Sizes</span>
             </button>
             <Button
               variant="ghost"
