@@ -772,7 +772,8 @@ Deno.serve(async (req) => {
     let skipped = 0;
     const failed: string[] = [];
 
-    const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY") || Deno.env.get("FIRECRAWL_API_KEY_1");
+    // Firecrawl DISABLED — use direct fetch only
+    const firecrawlKey: string | undefined = undefined;
 
     // Fetch HTML via Firecrawl (handles JS + anti-bot), fallback to raw fetch
     async function fetchPageHtml(url: string): Promise<string | null> {

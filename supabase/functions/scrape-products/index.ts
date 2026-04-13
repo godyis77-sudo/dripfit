@@ -3421,10 +3421,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    const keyDirect = Deno.env.get('FIRECRAWL_API_KEY');
-    const keyConnector = Deno.env.get('FIRECRAWL_API_KEY_1');
-    const FIRECRAWL_API_KEY = keyDirect || keyConnector || '';
-    console.log(`[auth] Using key: ${FIRECRAWL_API_KEY ? FIRECRAWL_API_KEY.substring(0, 8) + '...' : 'NONE'} (direct=${!!keyDirect}, connector=${!!keyConnector})`);
+    // ── FIRECRAWL DISABLED ──────────────────────────────────────────
+    const FIRECRAWL_API_KEY = '';
+    console.log(`[auth] Firecrawl DISABLED — using free methods only (Shopify, Direct HTTP, Google)`);
     // Allow scraping without Firecrawl — Shopify, direct HTTP, and Google Search still work
 
     const supabase = createClient(
