@@ -308,7 +308,7 @@ const Backgrounds = () => {
                     : 'text-muted-foreground border border-border hover:border-foreground/20'
                 }`}
               >
-                {cat.icon && <span className="text-sm">{cat.icon}</span>}
+                
                 <span className="whitespace-nowrap">{cat.name}</span>
               </button>
             ))}
