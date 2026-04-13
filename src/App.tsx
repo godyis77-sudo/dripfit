@@ -25,6 +25,13 @@ function OnboardingReset() {
   return <Navigate to="/home" replace />;
 }
 
+/** Smart root redirect: authenticated → /home, guest → /landing */
+function RootRedirect() {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="min-h-screen bg-background" />;
+  return <Navigate to={user ? '/home' : '/landing'} replace />;
+}
+
 // ── Lazy-loaded pages (code-split per route) ──────────────────────────
 const Analyze = lazy(() => import("./pages/Analyze"));
 const Results = lazy(() => import("./pages/Results"));
