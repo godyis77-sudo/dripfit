@@ -85,7 +85,7 @@ const History = () => {
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back">
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-base font-bold text-foreground">Scan History</h1>
+          <h1 className="text-base font-bold text-foreground uppercase">Scan History</h1>
         </div>
 
         {loading ? (
@@ -95,7 +95,7 @@ const History = () => {
         ) : scans.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-14 text-center">
             <Ruler className="h-8 w-8 text-muted-foreground/25 mb-3" />
-            <p className="text-[13px] font-semibold text-muted-foreground mb-3">No scans yet</p>
+            <p className="text-[13px] font-semibold text-muted-foreground mb-3">No scans yet. Let's fix that.</p>
             <Button className="rounded-lg btn-luxury text-primary-foreground text-sm h-10 px-5" onClick={() => navigate('/capture')}>Start Your First Scan</Button>
           </div>
         ) : (

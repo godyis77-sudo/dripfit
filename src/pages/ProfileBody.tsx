@@ -130,7 +130,7 @@ const ProfileBody = () => {
             <ArrowLeft className="h-5 w-5 text-white/50" />
           </Button>
           <div className="flex-1">
-            <h1 className="font-display text-base text-white">Body & Fit Identity</h1>
+            <h1 className="font-display text-base text-white uppercase">Body & Fit Identity</h1>
             <p className="text-[10px] text-white/30">Your measurements and fit preferences</p>
           </div>
           {scan && (

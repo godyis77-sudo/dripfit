@@ -122,7 +122,7 @@ const ProfileSettings = () => {
           <Button variant="ghost" size="icon" onClick={() => navigate('/profile')} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px] text-muted-foreground" aria-label="Go back">
             <ChevronLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-[15px] font-bold text-foreground">Settings</h1>
+          <h1 className="text-[15px] font-bold text-foreground uppercase">Settings</h1>
         </div>
         <SettingsTab
           user={user}

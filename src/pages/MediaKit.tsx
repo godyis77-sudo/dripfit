@@ -247,8 +247,8 @@ const MediaKit = () => {
             <div>
               <p className="text-[11px] font-bold uppercase tracking-wider text-primary mb-2">Taglines</p>
               <div className="space-y-2">
-                <p className="font-display text-lg font-bold">"Your Tailored Size & Style. Verified Culture, Certified Drip."</p>
-                <p className="font-display text-base font-bold text-muted-foreground">"Scan Tailored. Infinite Style. Culture Certified Drip."</p>
+                <p className="font-display text-lg font-bold">"Stop Praying It Fits."</p>
+                <p className="font-display text-base font-bold text-muted-foreground">"Your exact size. Every brand. Instant."</p>
               </div>
             </div>
             <div>

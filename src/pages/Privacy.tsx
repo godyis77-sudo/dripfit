@@ -16,7 +16,7 @@ const Privacy = () => {
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px] text-muted-foreground" aria-label="Go back">
             <ChevronLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-[15px] font-bold text-foreground">Privacy Policy</h1>
+          <h1 className="text-[15px] font-bold text-foreground uppercase">Privacy Policy</h1>
         </div>
 
         <p className="text-xs text-muted-foreground mb-4">Last updated: March 6, 2026</p>

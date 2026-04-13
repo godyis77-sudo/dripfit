@@ -70,8 +70,8 @@ const SavedItems = () => {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-base font-bold text-foreground flex items-center gap-1.5">
-              <Bookmark className="h-4 w-4 text-primary" /> Saved for Later
+            <h1 className="text-base font-bold text-foreground flex items-center gap-1.5 uppercase">
+              <Bookmark className="h-4 w-4 text-primary" /> Saved
             </h1>
             <p className="text-[10px] text-muted-foreground">{items.length} item{items.length !== 1 ? 's' : ''}</p>
           </div>
