@@ -12,10 +12,10 @@ const TOTAL_SPOTS = 100;
 const FALLBACK_CLAIMED = 12;
 
 const PERKS = [
-  { icon: Zap, title: 'Early Access', desc: 'Be the first to test new features like virtual try-on and AI style check before anyone else.' },
-  { icon: MessageSquare, title: 'Direct Input', desc: 'Tell us which brands to add, what features to build, and shape the product roadmap.' },
-  { icon: Crown, title: 'Free Premium', desc: 'Founding members get free access to premium features for life — no strings attached.' },
-  { icon: TrendingUp, title: 'Sizing Intel', desc: 'Get insider sizing notes on 130+ brands from our community of fit-obsessed shoppers.' },
+  { icon: Zap, title: 'Early Access', desc: 'You test it first. Virtual try-on, AI sizing, new drops — before the public sees them.' },
+  { icon: MessageSquare, title: 'Direct Input', desc: 'Your brands. Your features. Founding members shape what gets built next.' },
+  { icon: Crown, title: 'Free Premium', desc: 'Premium. For life. Zero strings. The cheat code — locked in at founding tier.' },
+  { icon: TrendingUp, title: 'Sizing Intel', desc: '186 brands. Insider sizing data from Body Twins who actually wear the pieces.' },
 ];
 
 const EARLY_MEMBERS = [
@@ -28,9 +28,9 @@ const EARLY_MEMBERS = [
 ];
 
 const TESTIMONIALS = [
-  { quote: "Finally stopped buying 3 sizes of everything and returning 2. This saved me so much money already.", name: 'Jordan T.', detail: 'MFA regular' },
-  { quote: "The sizing is eerily accurate. Got my Zara size right on the first try — that never happens.", name: 'Sofia R.', detail: 'FFA member' },
-  { quote: "Love that I can actually influence what brands get added next. Feels like I'm building this with the team.", name: 'Marcus L.', detail: 'Beta tester since day 1' },
+  { quote: "Finally stopped buying 3 sizes of everything and returning 2. This saved me so much money already.", name: 'Jordan T.', detail: 'Founding Member' },
+  { quote: "The sizing is eerily accurate. Got my Zara size right on the first try — that never happens.", name: 'Sofia R.', detail: 'Beta Member' },
+  { quote: "Love that I can actually influence what brands get added next. Feels like I'm building this with the team.", name: 'Marcus L.', detail: 'Day-one beta' },
 ];
 
 const DISCORD_INVITE = 'https://discord.gg/YOUR_INVITE_LINK';
@@ -178,7 +178,7 @@ const FoundingMembers = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.4 }}
         >
-          <h2 className="font-display text-lg font-bold text-center mb-4">What Members Are Saying</h2>
+          <h2 className="font-display text-lg font-bold text-left mb-4 uppercase">The Verdict.</h2>
           <div className="space-y-3">
             {TESTIMONIALS.map((t, i) => (
               <motion.div
