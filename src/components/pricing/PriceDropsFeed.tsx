@@ -30,10 +30,10 @@ export default function PriceDropsFeed({ onClose }: PriceDropsFeedProps) {
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
         <div className="flex items-center gap-2">
-          <TrendingDown className="h-4 w-4 text-green-500" />
+          <TrendingDown className="h-4 w-4 text-primary" />
           <h2 className="text-sm font-bold text-foreground">Price Drops</h2>
           {drops.length > 0 && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/10 text-green-600 font-bold">
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold">
               {drops.length}
             </span>
           )}
@@ -65,7 +65,7 @@ export default function PriceDropsFeed({ onClose }: PriceDropsFeedProps) {
             {enriched.map(notif => (
               <div
                 key={notif.id}
-                className="rounded-xl border border-green-500/20 bg-green-500/5 p-3"
+                className="rounded-xl border border-primary/20 bg-primary/5 p-3"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
@@ -79,10 +79,10 @@ export default function PriceDropsFeed({ onClose }: PriceDropsFeedProps) {
                       <span className="text-[11px] text-muted-foreground line-through">
                         {formatPrice(notif.old_price_cents)}
                       </span>
-                      <span className="text-[12px] font-bold text-green-600 dark:text-green-400">
+                      <span className="text-[12px] font-bold text-primary dark:text-primary">
                         {formatPrice(notif.new_price_cents)}
                       </span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-600 font-bold">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/20 text-primary font-bold">
                         -{notif.drop_percent}%
                       </span>
                     </div>

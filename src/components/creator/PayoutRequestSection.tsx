@@ -64,7 +64,7 @@ export default function PayoutRequestSection({ userId, pendingCents }: PayoutReq
   const statusColor: Record<string, string> = {
     pending: "bg-amber-500/15 text-amber-400 border-amber-500/30",
     processing: "bg-blue-500/15 text-blue-400 border-blue-500/30",
-    completed: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+    completed: "bg-primary/15 text-primary border-primary/30",
     rejected: "bg-destructive/15 text-destructive border-destructive/30",
   };
 

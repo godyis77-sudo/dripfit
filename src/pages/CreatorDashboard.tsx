@@ -171,7 +171,7 @@ export default function CreatorDashboard() {
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background">
             <span className="flex-1 text-xs font-mono text-muted-foreground truncate">{referralUrl}</span>
             <button onClick={handleCopy} className="text-muted-foreground hover:text-primary transition-colors shrink-0">
-              {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+              {copied ? <Check className="w-4 h-4 text-primary" /> : <Copy className="w-4 h-4" />}
             </button>
           </div>
           <Button onClick={handleShare} className="w-full gap-2" size="sm">

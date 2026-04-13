@@ -73,10 +73,10 @@ export function PriceDropBadge({ originalPriceCents, currentPriceCents, currency
     <motion.div
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      className="flex items-center gap-1 px-2 py-1 rounded-lg bg-green-500/10 border border-green-500/20"
+      className="flex items-center gap-1 px-2 py-1 rounded-lg bg-primary/10 border border-primary/20"
     >
-      <TrendingDown className="h-3 w-3 text-green-500" />
-      <span className="text-[10px] font-bold text-green-600 dark:text-green-400">
+      <TrendingDown className="h-3 w-3 text-primary" />
+      <span className="text-[10px] font-bold text-primary dark:text-primary">
         {dropPercent}% off · Now {formatPrice(currentPriceCents, currency)}
       </span>
     </motion.div>
@@ -89,8 +89,8 @@ export function PriceDropNotificationsBell() {
 
   return (
     <div className="relative">
-      <TrendingDown className="h-4 w-4 text-green-500" />
-      <span className="absolute -top-1 -right-1 h-3.5 min-w-[14px] rounded-full bg-green-500 text-[8px] font-bold text-white flex items-center justify-center px-0.5">
+      <TrendingDown className="h-4 w-4 text-primary" />
+      <span className="absolute -top-1 -right-1 h-3.5 min-w-[14px] rounded-full bg-primary text-[8px] font-bold text-white flex items-center justify-center px-0.5">
         {unreadCount}
       </span>
     </div>
