@@ -170,7 +170,7 @@ const Profile = () => {
         ) : null}
 
         {/* Header */}
-        <div className="flex items-start justify-between gap-2 mb-4">
+        <div className="flex items-center justify-between gap-2 mb-4">
           <div className="flex items-center gap-3">
             <button onClick={() => setShowAvatarSheet(true)} aria-label="Change profile photo" className="relative group">
               <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-primary/30 bg-card">
