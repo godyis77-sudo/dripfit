@@ -222,15 +222,25 @@ Deno.serve(async (req) => {
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
     const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
 
+    // Categories with <150 products that need priority growth
+    const THIN_CATEGORIES = new Set([
+      'loungewear', 'bottoms', 'heels', 'jumpsuits', 'skirts', 'activewear',
+      'outerwear', 'accessories', 'watches', 'underwear', 'scarves',
+      'loafers', 'vests', 'leggings', 'coats', 'boots', 'shoes', 'tops',
+      'blazers',
+    ]);
+
     // Support batch params to process a slice of jobs (0-indexed batch number)
     let batchNumber = 0;
     let batchTotal = 1;
     let dispatchDelayMs = 900;
+    let thinOnly = false;
     try {
       const body = await req.json();
       batchNumber = Number(body.batch ?? 0);
       batchTotal = Number(body.totalBatches ?? 1);
       dispatchDelayMs = Number(body.dispatchDelayMs ?? 900);
+      thinOnly = body.thinOnly === true;
     } catch { /* no body = run all */ }
 
     batchTotal = Number.isFinite(batchTotal) && batchTotal > 0 ? Math.floor(batchTotal) : 1;
@@ -239,12 +249,17 @@ Deno.serve(async (req) => {
       ? Math.max(250, Math.min(3000, Math.floor(dispatchDelayMs)))
       : 900;
 
-    // Build all jobs
+    // Build all jobs (optionally filtered to thin categories only)
     const allJobs: { brand: string; category: string }[] = [];
     for (const [brand, categories] of Object.entries(BRAND_CATEGORIES)) {
       for (const category of categories) {
+        if (thinOnly && !THIN_CATEGORIES.has(category)) continue;
         allJobs.push({ brand, category });
       }
+    }
+
+    if (thinOnly) {
+      console.log(`[scrape-all] thinOnly=true: filtered to ${allJobs.length} thin-category jobs`);
     }
 
     // Slice for this batch
