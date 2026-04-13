@@ -88,7 +88,7 @@ export default function LandingEmailCapture({ id, buttonText = 'Request Access' 
         </button>
       </div>
       <p className="text-[11px] text-muted-foreground text-center mt-3 tracking-wide">
-        No spam. Just sizing intel + launch updates.
+        Sizing intel dropped weekly. Unsubscribe anytime.
       </p>
     </form>
   );
