@@ -170,57 +170,53 @@ const Profile = () => {
         ) : null}
 
         {/* Header */}
-        <div className="flex items-center justify-between gap-2 mb-4">
-          <div className="flex items-center gap-3">
-            <button onClick={() => setShowAvatarSheet(true)} aria-label="Change profile photo" className="relative group">
-              <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-primary/30 bg-card">
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full bg-white/5 flex items-center justify-center">
-                    <span className="text-lg font-bold text-white/70">{displayName[0]?.toUpperCase() || 'U'}</span>
-                  </div>
-                )}
-              </div>
-              {isSubscribed ? (
-                <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-primary/80 flex items-center justify-center border-2 border-background">
-                  <InlineCrown size={10} />
-                </div>
+        <div className="flex flex-col items-center mb-4">
+          <button onClick={() => setShowAvatarSheet(true)} aria-label="Change profile photo" className="relative group mb-2">
+            <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-primary/30 bg-card">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
-                <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
-                  <Camera className="h-2.5 w-2.5 text-white/60" />
+                <div className="w-full h-full bg-white/5 flex items-center justify-center">
+                  <span className="text-lg font-bold text-white/70">{displayName[0]?.toUpperCase() || 'U'}</span>
                 </div>
               )}
-            </button>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5">
-                <h1 className="type-headline text-lg leading-tight">{displayName}</h1>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => navigate('/profile/settings')}
-                  className="text-white/50 h-8 w-8 min-h-[44px] min-w-[44px] rounded-lg shrink-0"
-                  aria-label="Open settings"
-                >
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <p className="type-body text-sm truncate">{user.email}</p>
-                <button onClick={handleSignOut} className="text-white/30 hover:text-destructive transition-colors p-1 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Sign out">
-                  <LogOut className="h-4 w-4" />
-                </button>
-              </div>
-              <button
-                onClick={() => navigate(`/profile/${encodeURIComponent(displayName)}`)}
-                className="flex items-center gap-1 mt-0.5 active:opacity-70 transition-opacity"
-              >
-                <Globe className="h-2.5 w-2.5 text-primary" />
-                <span className="text-[11px] text-primary font-medium tracking-wide">View Public Profile</span>
-              </button>
             </div>
+            {isSubscribed ? (
+              <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-primary/80 flex items-center justify-center border-2 border-background">
+                <InlineCrown size={10} />
+              </div>
+            ) : (
+              <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
+                <Camera className="h-2.5 w-2.5 text-white/60" />
+              </div>
+            )}
+          </button>
+          <div className="flex items-center gap-1.5">
+            <h1 className="type-headline text-lg leading-tight">{displayName}</h1>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/profile/settings')}
+              className="text-white/50 h-8 w-8 min-h-[44px] min-w-[44px] rounded-lg shrink-0"
+              aria-label="Open settings"
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
           </div>
-          <div className="flex items-center gap-1.5 flex-wrap justify-end shrink-0">
+          <div className="flex items-center gap-1.5">
+            <p className="type-body text-sm truncate">{user.email}</p>
+            <button onClick={handleSignOut} className="text-white/30 hover:text-destructive transition-colors p-1 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Sign out">
+              <LogOut className="h-4 w-4" />
+            </button>
+          </div>
+          <button
+            onClick={() => navigate(`/profile/${encodeURIComponent(displayName)}`)}
+            className="flex items-center gap-1 mt-0.5 active:opacity-70 transition-opacity"
+          >
+            <Globe className="h-2.5 w-2.5 text-primary" />
+            <span className="text-[11px] text-primary font-medium tracking-wide">View Public Profile</span>
+          </button>
+          <div className="flex items-center gap-1.5 mt-3">
             <button
               onClick={() => navigate('/style-assistant')}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass-gold active:scale-95 transition-transform"
