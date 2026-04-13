@@ -1,7 +1,8 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import { X, Flame, Heart, ShoppingBag, SlidersHorizontal } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 import { useUserGender } from '@/hooks/useUserGender';
 import { useAuth } from '@/hooks/useAuth';
@@ -24,11 +25,13 @@ function SwipeCard({
   isTop,
   onSwipe,
   onTryOn,
+  sizeLabel,
 }: {
   product: CatalogProduct;
   isTop: boolean;
   onSwipe: (dir: 'left' | 'right') => void;
   onTryOn: () => void;
+  sizeLabel?: string | null;
 }) {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-300, 0, 300], [-18, 0, 18]);
@@ -102,6 +105,20 @@ function SwipeCard({
           )}
         </div>
       </div>
+
+      {/* YOUR SIZE badge */}
+      {sizeLabel && (
+        <div
+          className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide"
+          style={{
+            background: 'rgba(212,175,55,0.15)',
+            border: '1px solid rgba(212,175,55,0.4)',
+            color: '#D4AF37',
+          }}
+        >
+          YOUR SIZE: {sizeLabel}
+        </div>
+      )}
 
       {/* Try-On button */}
       <button
@@ -187,6 +204,29 @@ export default function Closet() {
     if (genderFilter === 'mens' && ['dresses', 'swimwear'].includes(c.key)) return false;
     return true;
   });
+
+  // Fetch user's size recommendations (keyed by brand_slug)
+  const { data: sizeMap } = useQuery({
+    queryKey: ['size-recs-map', user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('size_recommendations_cache')
+        .select('brand_slug, recommended_size')
+        .eq('user_id', user!.id);
+      if (!data?.length) return {} as Record<string, string>;
+      const map: Record<string, string> = {};
+      data.forEach(r => { map[r.brand_slug] = r.recommended_size; });
+      return map;
+    },
+    enabled: !!user?.id,
+    staleTime: 5 * 60_000,
+  });
+
+  const getSizeForProduct = useCallback((product: CatalogProduct) => {
+    if (!sizeMap) return null;
+    const slug = product.brand?.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    return slug ? sizeMap[slug] ?? null : null;
+  }, [sizeMap]);
 
   const currentProduct = products[currentIndex];
   const nextProduct = products[currentIndex + 1];
@@ -349,6 +389,7 @@ export default function Closet() {
                 isTop={false}
                 onSwipe={() => {}}
                 onTryOn={() => {}}
+                sizeLabel={getSizeForProduct(nextProduct)}
               />
             )}
             {currentProduct && (
@@ -358,6 +399,7 @@ export default function Closet() {
                 isTop
                 onSwipe={handleSwipe}
                 onTryOn={handleTryOn}
+                sizeLabel={getSizeForProduct(currentProduct)}
               />
             )}
           </AnimatePresence>
