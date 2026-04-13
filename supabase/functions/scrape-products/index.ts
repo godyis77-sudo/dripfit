@@ -3360,6 +3360,19 @@ async function enrichProductImages(products: RawProduct[]): Promise<RawProduct[]
 // PRE-SCRAPE CHECK — skip brand/category if recently scraped with good results
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Categories with <150 products that need priority Firecrawl access
+const THIN_CATEGORIES = new Set([
+  'loungewear', 'bottoms', 'heels', 'jumpsuits', 'skirts', 'activewear',
+  'outerwear', 'accessories', 'watches', 'underwear', 'scarves',
+  'loafers', 'vests', 'leggings', 'coats', 'boots', 'shoes', 'tops',
+  'blazers',
+]);
+
+function isThinCategory(category: string): boolean {
+  const normCat = normaliseCategory(category);
+  return THIN_CATEGORIES.has(normCat);
+}
+
 async function hasRecentProducts(
   brand: string,
   category: string,
@@ -3383,8 +3396,10 @@ async function hasRecentProducts(
   }
   
   const c = count ?? 0;
-  // Skip if we already have 5+ recent products for this combo
-  return { skip: c >= 5, count: c };
+  // Thin categories: skip only if 3+ recent (we need growth)
+  // Well-stocked categories: skip if 2+ recent (save credits)
+  const threshold = isThinCategory(category) ? 3 : 2;
+  return { skip: c >= threshold, count: c };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
