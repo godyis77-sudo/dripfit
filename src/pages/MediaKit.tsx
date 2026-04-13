@@ -34,10 +34,10 @@ const FALLBACK: DbStats = {
 /* ── Brand Colors (from index.css :root) ─────────────── */
 const COLORS = [
   { name: 'Background',        hsl: '220 15% 3%',   hex: '#070809', token: '--background' },
-  { name: 'DripFit Gold',      hsl: '42 76% 42%',   hex: '#BC9325', token: '--primary' },
+  { name: 'DripFit Gold',      hsl: '43 74% 52%',   hex: '#D4AF37', token: '--primary' },
   { name: 'Warm Ivory',        hsl: '40 20% 95%',   hex: '#F5F2ED', token: '--foreground' },
   { name: 'Surface / Card',    hsl: '220 12% 7%',   hex: '#101215', token: '--card' },
-  { name: 'Accent Gold',       hsl: '42 60% 38%',   hex: '#9B7B26', token: '--accent' },
+  { name: 'Accent Gold',       hsl: '43 74% 40%',   hex: '#B2912B', token: '--accent' },
   { name: 'Muted Text',        hsl: '40 8% 58%',    hex: '#999490', token: '--muted-foreground' },
 ];
 
@@ -65,16 +65,16 @@ const ASSETS = [
 /* ── Messaging ───────────────────────────────────────── */
 const PILLARS = [
   { pillar: 'Precision',      line: '"Know your exact size at any brand, every time."' },
-  { pillar: 'Confidence',     line: '"Shop without the guesswork — buy once, keep it."' },
-  { pillar: 'Sustainability', line: '"Fewer returns, less waste, better fashion."' },
+  { pillar: 'Confidence',     line: '"Stop praying it fits. One size. One purchase. Zero returns."' },
+  { pillar: 'Culture',        line: '"The verification layer for fashion culture. Body Twins. COP/DROP. Technical infrastructure for how people actually dress."' },
   { pillar: 'Community',      line: '"Real style feedback from real people."' },
 ];
 
 const VALUE_PROPS = [
   '60-second AI body scan — no tape measure needed',
-  'Accurate size matching across 130+ brands',
+  'Accurate size matching across 186+ brands',
   'Virtual try-on to visualize fit before purchase',
-  '30–40 % reduction in size-related returns',
+  '30–40% reduction in size-related returns',
   'Community-powered style feedback via The Drop',
 ];
 
