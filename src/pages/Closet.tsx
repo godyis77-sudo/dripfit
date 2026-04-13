@@ -1,7 +1,8 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import { X, Flame, Heart, ShoppingBag, SlidersHorizontal } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 import { useUserGender } from '@/hooks/useUserGender';
 import { useAuth } from '@/hooks/useAuth';
@@ -24,11 +25,13 @@ function SwipeCard({
   isTop,
   onSwipe,
   onTryOn,
+  sizeLabel,
 }: {
   product: CatalogProduct;
   isTop: boolean;
   onSwipe: (dir: 'left' | 'right') => void;
   onTryOn: () => void;
+  sizeLabel?: string | null;
 }) {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-300, 0, 300], [-18, 0, 18]);
@@ -102,6 +105,20 @@ function SwipeCard({
           )}
         </div>
       </div>
+
+      {/* YOUR SIZE badge */}
+      {sizeLabel && (
+        <div
+          className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide"
+          style={{
+            background: 'rgba(212,175,55,0.15)',
+            border: '1px solid rgba(212,175,55,0.4)',
+            color: '#D4AF37',
+          }}
+        >
+          YOUR SIZE: {sizeLabel}
+        </div>
+      )}
 
       {/* Try-On button */}
       <button
