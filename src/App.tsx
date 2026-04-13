@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigationType, useParams } from "react-router-dom";
 import { AnimatePresence, MotionConfig } from "framer-motion";
-import { AuthProvider } from "@/hooks/useAuth";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import { MobileShell } from "@/components/layout/MobileShell";
 import { PageTransition } from "@/components/layout/PageTransition";
@@ -122,7 +122,7 @@ const AnimatedRoutes = () => {
     <Suspense fallback={<RouteFallback />}>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<Navigate to="/landing" replace />} />
+          <Route path="/" element={<RootRedirect />} />
           <Route path="/home" element={<PageTransition><Welcome /></PageTransition>} />
           <Route path="/onboarding" element={<OnboardingReset />} />
           <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
