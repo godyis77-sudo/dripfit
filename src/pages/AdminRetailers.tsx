@@ -125,7 +125,7 @@ export default function AdminRetailers() {
           { key: "active" as const, label: "Active", count: counts.active, color: "bg-emerald-500/20 text-emerald-400" },
           { key: "manual_review" as const, label: "Review", count: counts.manual_review, color: "bg-amber-500/20 text-amber-400" },
           { key: "inactive" as const, label: "Inactive", count: counts.inactive, color: "bg-muted text-muted-foreground" },
-          { key: "no_override" as const, label: "No Config", count: counts.no_override, color: "bg-blue-500/20 text-blue-400" },
+          { key: "no_override" as const, label: "No Config", count: counts.no_override, color: "bg-white/10 text-muted-foreground" },
         ]).map((s) => (
           <button
             key={s.key}
@@ -177,7 +177,7 @@ export default function AdminRetailers() {
                     </Badge>
                   )}
                   {!r.hasOverride && (
-                    <Badge variant="outline" className="text-[10px] border-blue-500/40 text-blue-400">
+                    <Badge variant="outline" className="text-[10px] border-white/20 text-muted-foreground">
                       Aggregator Only
                     </Badge>
                   )}
