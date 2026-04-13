@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Users, MessageCircle, Shirt, BarChart3, Sparkles, ArrowRight, Quote } from 'lucide-react';
+import { Users, MessageSquare, Crown, TrendingUp, Zap, ArrowRight, Quote } from 'lucide-react';
 import InlineCrown from '@/components/ui/InlineCrown';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
@@ -12,10 +12,10 @@ const TOTAL_SPOTS = 100;
 const FALLBACK_CLAIMED = 12;
 
 const PERKS = [
-  { icon: Sparkles, title: 'Early Access', desc: 'Be the first to test new features like virtual try-on and AI style check before anyone else.' },
-  { icon: MessageCircle, title: 'Direct Input', desc: 'Tell us which brands to add, what features to build, and shape the product roadmap.' },
-  { icon: Shirt, title: 'Free Premium', desc: 'Founding members get free access to premium features for life — no strings attached.' },
-  { icon: BarChart3, title: 'Sizing Intel', desc: 'Get insider sizing notes on 130+ brands from our community of fit-obsessed shoppers.' },
+  { icon: Zap, title: 'Early Access', desc: 'Be the first to test new features like virtual try-on and AI style check before anyone else.' },
+  { icon: MessageSquare, title: 'Direct Input', desc: 'Tell us which brands to add, what features to build, and shape the product roadmap.' },
+  { icon: Crown, title: 'Free Premium', desc: 'Founding members get free access to premium features for life — no strings attached.' },
+  { icon: TrendingUp, title: 'Sizing Intel', desc: 'Get insider sizing notes on 130+ brands from our community of fit-obsessed shoppers.' },
 ];
 
 const EARLY_MEMBERS = [
