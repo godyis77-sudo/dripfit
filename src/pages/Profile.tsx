@@ -170,7 +170,7 @@ const Profile = () => {
         ) : null}
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-start justify-between gap-2 mb-4">
           <div className="flex items-center gap-3">
             <button onClick={() => setShowAvatarSheet(true)} aria-label="Change profile photo" className="relative group">
               <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-primary/30 bg-card">
@@ -209,7 +209,7 @@ const Profile = () => {
               </button>
             </div>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap justify-end shrink-0">
             <button
               onClick={() => navigate('/style-assistant')}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass-gold active:scale-95 transition-transform"
@@ -228,7 +228,7 @@ const Profile = () => {
               variant="ghost"
               size="icon"
               onClick={() => navigate('/profile/settings')}
-              className="text-white/30 h-8 w-8 min-h-[44px] min-w-[44px] rounded-lg"
+              className="text-white/50 h-10 w-10 min-h-[44px] min-w-[44px] rounded-lg"
               aria-label="Open settings"
             >
               <Settings className="h-4 w-4" />
