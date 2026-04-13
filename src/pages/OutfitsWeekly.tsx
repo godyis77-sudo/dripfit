@@ -147,31 +147,58 @@ function FullWidthHeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () 
     );
   }
 
-  // Fallback: styled gradient card with outfit name as hero text
+  // Fallback: item thumbnail collage
+  const thumbs = outfit.items.map(i => i.image_url).filter(Boolean).slice(0, 4);
+
   return (
     <button onClick={onTap} className="w-full aspect-[3/4] rounded-2xl overflow-hidden text-left active:scale-[0.98] transition-transform relative border border-white/5">
-      {/* Dark gradient background with shimmer */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A] to-[#0D0D0D]" />
-      <div className="absolute inset-0 skeleton-gold opacity-30" />
+      {/* Background: item thumbnails grid or gradient */}
+      {thumbs.length >= 2 ? (
+        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
+          {thumbs.map((url, i) => (
+            <div key={i} className="relative overflow-hidden">
+              <img src={url!} alt="" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+            </div>
+          ))}
+          {thumbs.length === 2 && (
+            <>
+              <div className="bg-[#1A1A1A]" />
+              <div className="bg-[#151515]" />
+            </>
+          )}
+          {thumbs.length === 3 && <div className="bg-[#1A1A1A]" />}
+        </div>
+      ) : (
+        <>
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A] to-[#0D0D0D]" />
+          <div className="absolute inset-0 skeleton-gold opacity-30" />
+        </>
+      )}
+
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20" />
 
       {/* Content */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center z-10">
-        <p className="text-2xl font-display font-bold text-foreground leading-tight mb-3">{outfit.title}</p>
-        {outfit.occasion_label && (
-          <span className="inline-flex items-center gap-0.5 px-2 py-1 rounded-full text-[10px] font-medium glass-gold border border-primary/20 text-primary">
-            {outfit.occasion_label}
-          </span>
-        )}
+      <div className="absolute inset-x-0 bottom-0 p-4 z-10">
+        <p className="text-lg font-display font-bold text-white leading-tight">{outfit.title}</p>
+        <div className="flex items-center gap-2 mt-1">
+          {outfit.total_price_cents > 0 && (
+            <span className="text-sm font-display font-bold text-primary">
+              ${(outfit.total_price_cents / 100).toFixed(0)}
+            </span>
+          )}
+          {outfit.occasion_label && (
+            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-medium glass-gold border border-primary/20 text-primary">
+              {outfit.occasion_label}
+            </span>
+          )}
+        </div>
         {brands.length > 0 && (
-          <p className="text-[9px] tracking-[0.2em] uppercase text-white/30 mt-3">
+          <p className="text-[9px] tracking-[0.2em] uppercase text-white/40 mt-1.5">
             {brands.join(' · ')}
           </p>
         )}
-      </div>
-
-      {/* Bottom gradient for tap hint */}
-      <div className="absolute inset-x-0 bottom-0 p-4 z-10">
-        <p className="text-[10px] text-white/30 text-center">Tap to shop each piece →</p>
+        <p className="text-[10px] text-white/30 mt-1">Tap to shop each piece →</p>
       </div>
     </button>
   );
