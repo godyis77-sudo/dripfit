@@ -4,13 +4,13 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 
 const links = [
   {
-    label: 'Join the Waitlist (Free Early Access)',
-    href: '/waitlist',
+    label: 'Apply: Founding 100 Discord',
+    href: '/founding-members',
     style: 'primary' as const,
   },
   {
-    label: 'Apply: Founding 100 Discord',
-    href: '/founding-members',
+    label: 'Join the Waitlist (Free Early Access)',
+    href: '/waitlist',
     style: 'outline' as const,
   },
   {
