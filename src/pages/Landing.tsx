@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
 import LandingHero from '@/components/landing/LandingHero';
+import LandingCommunityVerdict from '@/components/landing/LandingCommunityVerdict';
 import LandingFeatures from '@/components/landing/LandingFeatures';
 import LandingHowItWorks from '@/components/landing/LandingHowItWorks';
 import LandingCommunity from '@/components/landing/LandingCommunity';
@@ -70,8 +71,11 @@ export default function Landing() {
         </div>
       </div>
 
+      {/* LIVE COMMUNITY VERDICT — moved up per L02 */}
+      <LandingCommunityVerdict />
+
       {/* PROBLEM */}
-      <section className="py-28 md:py-36">
+      <section className="py-20 md:py-28">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <FadeIn>
             <span className="font-mono text-[10px] tracking-[.22em] uppercase text-muted-foreground/60 block mb-5">The Problem</span>
@@ -94,6 +98,11 @@ export default function Landing() {
             </FadeIn>
           ))}
         </div>
+        <FadeIn delay={0.3}>
+          <p className="text-[11px] text-muted-foreground/30 text-right max-w-5xl mx-auto px-6 mt-3">
+            ¹ National Retail Federation, 2023 Returns Report
+          </p>
+        </FadeIn>
       </section>
 
       {/* FEATURES */}

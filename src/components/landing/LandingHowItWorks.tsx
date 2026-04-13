@@ -1,10 +1,10 @@
 import { FadeIn } from './LandingAnimations';
 
 const STEPS = [
-  { n: '01', title: 'Map Your Body', desc: 'Stand in front of your phone. Two photos. Our AI extracts 20+ biometric data points in 60 seconds. Your geometry — locked.' },
-  { n: '02', title: 'Enter the Infinite Closet', desc: 'Browse 7,000+ pieces from 130 brands. AR try-on renders every garment on your exact silhouette. See the real drape.' },
-  { n: '03', title: 'Verify With Your Twins', desc: 'Your Body Twins — same proportions — have already tried it. See their COP/DROP verdict and fit photos.' },
-  { n: '04', title: 'Cop With Confidence', desc: 'Verified sizing. Perfect drape confirmation. Zero guessing. One size. One purchase. Zero returns.' },
+  { n: '01', title: 'Map Your Body', desc: 'Stand in front of your phone. Two photos. 60 seconds. 20+ biometric data points extracted. Your geometry — locked.' },
+  { n: '02', title: 'Enter the Infinite Closet', desc: 'Browse 9,000+ pieces from 186 brands. AR try-on renders every garment on your exact silhouette. See the real drape.' },
+  { n: '03', title: 'Verified By Your Twins', desc: 'Your Body Twins — same proportions — have already tried it. See the verdict. See the drape.' },
+  { n: '04', title: 'Cop. Verified.', desc: 'Verified. Mapped. Perfect drape confirmed. One size. One purchase. Zero returns.' },
 ];
 
 const COP_DROP_DATA = [
