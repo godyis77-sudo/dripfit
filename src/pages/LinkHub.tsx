@@ -9,9 +9,10 @@ const links = [
     style: 'primary' as const,
   },
   {
-    label: 'Join the Waitlist (Free Early Access)',
+    label: 'Join the Waitlist →',
     href: '/waitlist',
     style: 'outline' as const,
+    supportingText: 'Free early access. No spam.',
   },
   {
     label: 'Creator Affiliate Program',
@@ -73,7 +74,7 @@ const LinkHub = () => {
         >
           <BrandLogo size="xl" />
           <p className="text-[13px] text-muted-foreground mt-3 tracking-wide">
-            The smarter way to shop fashion.
+            Stop praying it fits.
           </p>
         </motion.div>
 
@@ -98,6 +99,12 @@ const LinkHub = () => {
             >
               {link.label}
             </motion.a>
+            {link.supportingText && (
+              <p className="text-[11px] text-center mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                {link.supportingText}
+              </p>
+            )}
+          </React.Fragment>
           ))}
         </div>
 
