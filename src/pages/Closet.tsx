@@ -15,7 +15,7 @@ import type { BrandGenre } from '@/lib/brandGenres';
 import BottomTabBar from '@/components/BottomTabBar';
 import PageHeader from '@/components/layout/PageHeader';
 import { OptimizedImage } from '@/components/ui/optimized-image';
-import { cn } from '@/lib/utils';
+import { cn, decodeHtmlEntities } from '@/lib/utils';
 
 const SWIPE_THRESHOLD = 100;
 
@@ -87,7 +87,7 @@ function SwipeCard({
           {product.brand}
         </p>
         <h3 className="font-display text-lg font-semibold leading-tight line-clamp-2 mb-1">
-          {product.name}
+          {decodeHtmlEntities(product.name)}
         </h3>
         <div className="flex items-center gap-2">
           {price && (

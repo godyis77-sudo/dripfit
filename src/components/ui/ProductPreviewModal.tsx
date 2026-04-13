@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
+import { decodeHtmlEntities } from '@/lib/utils';
 import { useCart } from '@/hooks/useCart';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -287,7 +288,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
       </button>
 
       {/* Image */}
-      <ZoomableProductImage src={product.image_url} alt={product.name} brand={product.brand} caption={caption} additionalImages={product.additional_images} />
+      <ZoomableProductImage src={product.image_url} alt={decodeHtmlEntities(product.name)} brand={product.brand} caption={caption} additionalImages={product.additional_images} />
 
       {/* Info + Actions */}
       <div
@@ -442,7 +443,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
                         )}
                         <div className="flex-1 min-w-0">
                           <span className="text-[9px] tracking-[0.15em] uppercase text-white/40 font-bold block">{item.brand}</span>
-                          <p className="text-[10px] text-white/70 truncate leading-tight">{item.name}</p>
+                          <p className="text-[10px] text-white/70 truncate leading-tight">{decodeHtmlEntities(item.name)}</p>
                         </div>
                         <div className="flex items-center gap-1.5 shrink-0">
                           {item.price_cents != null && (

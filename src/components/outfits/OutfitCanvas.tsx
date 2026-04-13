@@ -1,16 +1,17 @@
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Shirt, AlignJustify, Layers, Footprints, ShoppingBag } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { WardrobeItem } from '@/pages/OutfitBuilder';
+import type { LucideIcon } from 'lucide-react';
 
 const SLOTS = ['top', 'bottom', 'outerwear', 'shoes', 'accessories'] as const;
 type Slot = typeof SLOTS[number];
 
-const SLOT_LABELS: Record<Slot, { label: string; icon: string }> = {
-  top: { label: 'Top', icon: '👕' },
-  bottom: { label: 'Bottom', icon: '👖' },
-  outerwear: { label: 'Layer', icon: '🧥' },
-  shoes: { label: 'Shoes', icon: '👟' },
-  accessories: { label: 'Acc.', icon: '🎒' },
+const SLOT_LABELS: Record<Slot, { label: string; icon: LucideIcon }> = {
+  top: { label: 'Top', icon: Shirt },
+  bottom: { label: 'Bottom', icon: AlignJustify },
+  outerwear: { label: 'Layer', icon: Layers },
+  shoes: { label: 'Shoes', icon: Footprints },
+  accessories: { label: 'Acc.', icon: ShoppingBag },
 };
 
 interface OutfitCanvasProps {
@@ -72,12 +73,13 @@ function SlotCard({ slot, item, onTap, onRemove, small }: {
     );
   }
 
+  const SlotIcon = meta.icon;
   return (
     <button
       onClick={onTap}
-      className={`rounded-xl border-2 border-dashed border-border bg-card/50 flex flex-col items-center justify-center gap-1 active:scale-[0.97] transition-transform ${small ? 'aspect-square' : 'aspect-[3/4]'}`}
+      className={`rounded-xl border-2 border-dashed border-[hsl(var(--drip-gold)/0.2)] bg-card/50 flex flex-col items-center justify-center gap-1 active:scale-[0.97] transition-transform ${small ? 'aspect-square' : 'aspect-[3/4]'}`}
     >
-      <span className="text-lg">{meta.icon}</span>
+      <SlotIcon className="h-6 w-6 text-[hsl(var(--drip-gold)/0.5)]" />
       <span className="text-[10px] font-medium text-muted-foreground">{meta.label}</span>
       <Plus className="h-3.5 w-3.5 text-muted-foreground/50" />
     </button>

@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createPortal } from 'react-dom';
-import { ArrowLeft, ShoppingBag, Shirt, Share2 } from 'lucide-react';
+import { ArrowLeft, ShoppingBag, Shirt, Share2, Layers } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useWeeklyOutfits, type WeeklyOutfitItem } from '@/hooks/useWeeklyOutfits';
 import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
@@ -37,9 +37,16 @@ const OutfitDetail = () => {
 
   if (!outfit) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-3 px-4">
-        <p className="text-sm text-muted-foreground">Outfit not found</p>
-        <Button variant="outline" size="sm" onClick={() => navigate(-1)}>Go Back</Button>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 px-6 text-center">
+        <Layers className="h-10 w-10 text-primary opacity-60" />
+        <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">FIT NOT FOUND.</h1>
+        <p className="text-sm text-muted-foreground max-w-[280px]">This outfit may have been removed or the link has expired.</p>
+        <Button className="btn-luxury h-11 rounded-full px-8 text-sm font-semibold" onClick={() => navigate('/outfits-weekly')}>
+          Browse This Week's Drip
+        </Button>
+        <button onClick={() => navigate(-1)} className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors">
+          Go back
+        </button>
       </div>
     );
   }
