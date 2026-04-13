@@ -21,7 +21,7 @@ const FEATURES = [
   {
     icon: Scan,
     title: 'AI Body Scan',
-    desc: 'Two photos. 60 seconds. Your exact measurements mapped to 300+ size charts.',
+    desc: 'Two photos. 60 seconds. Your exact measurements mapped to 389 size charts.',
     detail: 'No tape measure needed — just your phone camera.',
     badge: '',
     image: '',
@@ -55,7 +55,7 @@ const FEATURES = [
 ];
 
 const CHECKLIST = [
-  { text: 'Your exact measurements for 70+ brands including Zara, Nike, H&M, ASOS, and more.', icon: Sparkles },
+  { text: 'Your exact measurements for 186 brands including Zara, Nike, H&M, ASOS, and more.', icon: Sparkles },
   { text: 'The 3-question checklist before every online order.', icon: Shield },
   { text: 'How to never pay return shipping again.', icon: Zap },
 ];
@@ -63,7 +63,7 @@ const CHECKLIST = [
 const STATS = [
   { stat: '73%', label: 'Sizing returns' },
   { stat: '$550', label: 'Wasted yearly' },
-  { stat: '300+', label: 'Size charts' },
+  { stat: '389', label: 'Size charts' },
 ];
 
 /* ─── Animation helpers ─── */
@@ -255,8 +255,8 @@ const Waitlist = () => {
 
         {/* Headline */}
         <FadeUp delay={0.05} className="relative z-10 max-w-2xl mx-auto">
-          <h1 className="font-display text-[36px] sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.06] text-foreground mb-5">
-            Your Tailored Size &amp; Style.<br />
+          <h1 className="font-display text-[36px] sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.06] text-foreground mb-5 uppercase">
+            Stop Praying It Fits.<br />
             <span className="gradient-drip-text">Verified Culture, Certified Drip.</span>
           </h1>
         </FadeUp>
@@ -264,7 +264,7 @@ const Waitlist = () => {
         {/* Subheadline */}
         <FadeUp delay={0.1} className="relative z-10 max-w-md mx-auto mb-10">
           <p className="text-foreground/70 text-[15px] sm:text-base leading-relaxed">
-            The intelligent way to shop. <span className="text-foreground font-semibold">Join the Founding 100.</span>
+            Join the Founding 100 — <span className="text-foreground font-semibold">before it fills.</span>
           </p>
         </FadeUp>
 
