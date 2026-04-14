@@ -78,7 +78,7 @@ export default function LandingHero() {
         <FadeIn delay={0.15}>
         <div className="relative mx-auto w-full max-w-[272px]">
             <div className="absolute inset-0 rounded-full blur-[80px] opacity-15 bg-primary" />
-            <div className="relative rounded-[2rem] border-[3px] border-[#8B7A2E] shadow-2xl overflow-hidden">
+            <div className="relative rounded-[2rem] border-[10px] border-[#8B7A2E] shadow-[0_0_30px_rgba(212,175,55,0.4)] overflow-hidden">
               <img
                 src={heroPhoneMockup}
                 alt="DripFit My Sizes screen showing verified size cards for multiple brands"
