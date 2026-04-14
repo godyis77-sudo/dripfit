@@ -274,46 +274,46 @@ const SizeComparison = () => {
           </Button>
         </div>
 
-        {/* Category pills */}
-        <ScrollFadeRow className="mb-1.5">
-          {categoryPills.map(c => (
+        {/* Category pills + Style filter */}
+        <div className="flex items-center gap-2 mb-1.5">
+          <ScrollFadeRow className="flex-1">
+            {categoryPills.map(c => (
+              <button
+                key={c.value}
+                onClick={() => setSelectedCategory(c.value)}
+                className={cn(
+                  'px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all min-h-[32px] backdrop-blur-sm border',
+                  selectedCategory === c.value
+                    ? 'bg-primary/10 border-primary/25 text-primary'
+                    : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/8'
+                )}
+              >
+                {c.label}
+              </button>
+            ))}
+          </ScrollFadeRow>
+          <div className="flex-shrink-0 flex items-center gap-1">
             <button
-              key={c.value}
-              onClick={() => setSelectedCategory(c.value)}
+              onClick={() => setShowGenreFilter(v => !v)}
               className={cn(
-                'px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all min-h-[32px] backdrop-blur-sm border',
-                selectedCategory === c.value
+                'flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all min-h-[28px] backdrop-blur-sm',
+                showGenreFilter || selectedGenre !== 'all'
                   ? 'bg-primary/10 border-primary/25 text-primary'
-                  : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/8'
+                  : 'bg-white/5 border-white/10 text-white/40'
               )}
             >
-              {c.label}
+              <Filter className="h-3 w-3" />
+              {selectedGenre !== 'all' ? selectedGenre : 'Style'}
             </button>
-          ))}
-        </ScrollFadeRow>
-
-        {/* Genre toggle */}
-        <div className="flex items-center mt-1">
-          <button
-            onClick={() => setShowGenreFilter(v => !v)}
-            className={cn(
-              'flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all min-h-[28px] backdrop-blur-sm',
-              showGenreFilter || selectedGenre !== 'all'
-                ? 'bg-primary/10 border-primary/25 text-primary'
-                : 'bg-white/5 border-white/10 text-white/40'
+            {selectedGenre !== 'all' && (
+              <button
+                onClick={() => { setSelectedGenre('all'); setShowGenreFilter(false); }}
+                className="text-[10px] text-white/40 underline"
+              >
+                Clear
+              </button>
             )}
-          >
-            <Filter className="h-3 w-3" />
-            {selectedGenre !== 'all' ? selectedGenre : 'Style'}
-          </button>
-          {selectedGenre !== 'all' && (
-            <button
-              onClick={() => { setSelectedGenre('all'); setShowGenreFilter(false); }}
-              className="ml-1.5 text-[10px] text-white/40 underline"
-            >
-              Clear
-            </button>
-          )}
+          </div>
         </div>
         <AnimatePresence>
           {showGenreFilter && (
