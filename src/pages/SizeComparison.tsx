@@ -592,24 +592,10 @@ const SizeComparison = () => {
                     {/* Subtle gold glow */}
                     <div className="absolute top-0 right-0 w-full h-full pointer-events-none" style={{ background: 'radial-gradient(ellipse at top right, rgba(212,174,42,0.04) 0%, transparent 65%)' }} />
 
-                    {/* Top row */}
-                    <div className="flex items-start justify-between relative z-10">
-                      <span
-                        className="rounded-full"
-                        style={{
-                          fontFamily: "'DM Mono', monospace",
-                          fontSize: 11,
-                          fontWeight: 400,
-                          color: '#D4AE2A',
-                          backgroundColor: 'rgba(212,174,42,0.1)',
-                          border: '1px solid rgba(212,174,42,0.25)',
-                          padding: '2px 7px',
-                        }}
-                      >
-                        {getTierPercentage(brand.confidence, brand.brandName)}%
-                      </span>
-                      <div className={cn('h-1.5 w-1.5 rounded-full mt-1', confidenceDot(brand.confidence))} />
-                    </div>
+                     {/* Gold dot indicator */}
+                     <div className="flex justify-end relative z-10">
+                       <div className={cn('h-1.5 w-1.5 rounded-full mt-1', confidenceDot(brand.confidence))} />
+                     </div>
 
                     {/* Size section */}
                     <div className="relative z-10 flex flex-col items-center">
@@ -663,15 +649,16 @@ const SizeComparison = () => {
                         {brand.category}
                       </span>
 
-                      {/* Match quality */}
-                      <span style={{
-                        fontFamily: 'DM Sans',
-                        fontWeight: 500,
-                        fontSize: 11,
-                        color: brand.confidence >= 0.72 ? '#D4AE2A' : brand.confidence >= 0.55 ? '#F59E0B' : '#888888',
-                      }}>
-                        {brand.confidence >= 0.72 ? 'High match' : brand.confidence >= 0.55 ? 'Good match' : 'Near match'}
-                      </span>
+                       {/* Match quality + percentage */}
+                       <span style={{ textAlign: 'center', fontSize: 11, fontWeight: 500 }}>
+                         <span style={{ fontFamily: 'DM Sans', color: brand.confidence >= 0.72 ? '#D4AE2A' : brand.confidence >= 0.55 ? '#F59E0B' : '#888888' }}>
+                           {brand.confidence >= 0.72 ? 'High match' : brand.confidence >= 0.55 ? 'Good match' : 'Near match'}
+                         </span>
+                         <span style={{ color: '#444444', fontFamily: 'DM Sans' }}> · </span>
+                         <span style={{ fontFamily: "'DM Mono', monospace", fontWeight: 400, color: brand.confidence >= 0.72 ? '#D4AE2A' : brand.confidence >= 0.55 ? '#F59E0B' : '#888888' }}>
+                           {getTierPercentage(brand.confidence, brand.brandName)}%
+                         </span>
+                       </span>
                     </div>
                   </motion.div>
                 ))}
