@@ -68,17 +68,17 @@ export default function Landing() {
             </Link>
           ) : (
             <div className="flex items-center gap-3">
-              <button
-                onClick={handleGuestMode}
+              <Link
+                to="/auth?mode=signin"
                 className="px-4 py-2 text-xs font-semibold tracking-wider uppercase text-muted-foreground hover:text-foreground transition-colors"
               >
-                Try Free
-              </button>
+                Sign In
+              </Link>
               <Link
                 to="/auth"
                 className="px-5 py-2 text-xs font-semibold tracking-wider uppercase rounded-full bg-primary text-primary-foreground hover:scale-105 transition-transform duration-300"
               >
-                Sign In
+                Sign Up Free
               </Link>
             </div>
           )}
