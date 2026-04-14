@@ -77,16 +77,14 @@ export default function LandingHero() {
         {/* Phone mockup with My Sizes screenshot */}
         <FadeIn delay={0.15}>
           <div className="relative mx-auto w-full max-w-[272px]">
-            <div className="absolute -inset-4 rounded-[2rem] blur-[60px] opacity-20 bg-primary" />
-            <div className="relative rounded-[1.25rem] border border-primary/30 p-[3px] bg-gradient-to-b from-primary/20 via-transparent to-primary/10 shadow-[0_0_40px_-10px_hsl(var(--primary)/0.35)]">
-              <img
-                src={heroPhoneMockup}
-                alt="DripFit My Sizes screen showing verified size cards for multiple brands"
-                className="w-full rounded-[1rem]"
-                loading="eager"
-                fetchPriority="high"
-              />
-            </div>
+            <div className="absolute inset-0 rounded-full blur-[80px] opacity-15 bg-primary" />
+            <img
+              src={heroPhoneMockup}
+              alt="DripFit My Sizes screen showing verified size cards for multiple brands"
+              className="relative w-full rounded-2xl shadow-2xl"
+              loading="eager"
+              fetchPriority="high"
+            />
           </div>
         </FadeIn>
       </div>
