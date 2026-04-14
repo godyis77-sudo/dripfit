@@ -437,6 +437,7 @@ const SizeComparison = () => {
                 ))}
               </AnimatePresence>
             </div>
+            )}
 
             {!isSubscribed && (
               <div
