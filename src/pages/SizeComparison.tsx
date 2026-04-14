@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Ruler, Share2, Loader2, AlertTriangle, Filter } from 'lucide-react';
+import { ArrowLeft, Ruler, Share2, Loader2, AlertTriangle, Filter, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { useAuth } from '@/hooks/useAuth';
@@ -90,6 +90,7 @@ const SizeComparison = () => {
   const [selectedGenre, setSelectedGenre] = useState<BrandGenre | 'all'>('all');
   const [selectedCategory, setSelectedCategory] = useState('tops');
   const [showGenreFilter, setShowGenreFilter] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (!user) return;
@@ -185,9 +186,14 @@ const SizeComparison = () => {
   };
 
   const filtered = useMemo(() => {
-    if (selectedGenre === 'all') return brandSizes;
-    return brandSizes.filter(b => b.genre === selectedGenre);
-  }, [brandSizes, selectedGenre]);
+    let result = brandSizes;
+    if (selectedGenre !== 'all') result = result.filter(b => b.genre === selectedGenre);
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter(b => b.brandName.toLowerCase().includes(q));
+    }
+    return result;
+  }, [brandSizes, selectedGenre, searchQuery]);
 
   const confidenceDot = (c: number) => {
     if (c >= 0.72) return 'bg-primary';
@@ -311,11 +317,20 @@ const SizeComparison = () => {
           </div>
         )}
 
-        {!loading && !error && filtered.length > 0 && (
+        {!loading && !error && brandSizes.length > 0 && (
           <>
             <p className="text-[11px] mb-1">
-              <span className="text-white">{filtered.length}</span>
-              <span style={{ color: '#666666' }}> of 186 brands verified</span>
+              {searchQuery.trim() ? (
+                <>
+                  <span className="text-white">{filtered.length}</span>
+                  <span style={{ color: '#666666' }}> of {brandSizes.length} brands</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-white">{filtered.length}</span>
+                  <span style={{ color: '#666666' }}> of 186 brands verified</span>
+                </>
+              )}
               <span style={{ color: '#666666' }}> • {selectedCategory}</span>
             </p>
 
@@ -325,6 +340,40 @@ const SizeComparison = () => {
               <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: '#333333', border: '1px solid #555555' }} /> Near Match</span>
             </div>
 
+            {/* Search bar */}
+            <div className="relative mb-3">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#666666' }} />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Search brands..."
+                className="w-full h-[44px] rounded-full pl-10 pr-10 text-[14px] text-white outline-none transition-colors"
+                style={{
+                  background: '#1A1A1A',
+                  border: '1px solid #2D2D2D',
+                  fontFamily: 'DM Sans',
+                }}
+                onFocus={e => (e.target.style.borderColor = '#D4AE2A')}
+                onBlur={e => (e.target.style.borderColor = '#2D2D2D')}
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center rounded-full bg-white/10"
+                >
+                  <X className="h-3 w-3 text-white/60" />
+                </button>
+              )}
+            </div>
+
+            {filtered.length === 0 ? (
+              <div className="flex items-center justify-center py-16">
+                <p className="text-[14px]" style={{ color: '#666666', fontFamily: 'DM Sans' }}>
+                  No verified sizes found for &lsquo;{searchQuery}&rsquo;
+                </p>
+              </div>
+            ) : (
             <div className="grid grid-cols-2 gap-2.5">
               <AnimatePresence mode="popLayout">
                 {filtered.map((brand, i) => (
@@ -388,6 +437,7 @@ const SizeComparison = () => {
                 ))}
               </AnimatePresence>
             </div>
+            )}
 
             {!isSubscribed && (
               <div
