@@ -600,12 +600,12 @@ const SizeComparison = () => {
                     {/* Size section */}
                     <div className="relative z-10 flex flex-col items-center">
                       <span style={{ fontFamily: 'DM Sans', fontWeight: 500, fontSize: 9, letterSpacing: '0.12em', color: '#C49A00', marginTop: 10, textTransform: 'uppercase' }}>
-                        Your Size
+                        Verified Size
                       </span>
                       {(() => {
                         const parenMatch = brand.size.match(/^([^(]+)\((.+)\)$/);
                         const slashMatch = !parenMatch && brand.size.match(/^(\d+)\/(.+)$/);
-                        const sizeStyle: React.CSSProperties = { fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontStyle: 'italic', fontSize: 52, color: '#D4AF37', lineHeight: 1, margin: '2px 0 8px 0' };
+                        const sizeStyle: React.CSSProperties = { fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontStyle: 'italic', fontSize: 52, color: '#D4AF37', lineHeight: 1, margin: '2px 0 6px 0' };
                         if (parenMatch) {
                           return (
                             <div className="flex flex-col items-center">
@@ -626,7 +626,7 @@ const SizeComparison = () => {
                       })()}
 
                       {/* Brand name */}
-                      <span className="line-clamp-1 text-center" style={{ fontFamily: 'DM Sans', fontWeight: 600, fontSize: 14, color: '#FFFFFF', marginBottom: 4 }}>
+                      <span className="line-clamp-1 text-center" style={{ fontFamily: 'DM Sans', fontWeight: 500, fontSize: 14, color: '#FFFFFF', marginBottom: 4 }}>
                         {brand.brandName}
                       </span>
 
