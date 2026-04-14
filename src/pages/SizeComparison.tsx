@@ -355,17 +355,28 @@ const SizeComparison = () => {
             className="h-10 w-10 rounded-full min-h-[44px] min-w-[44px] bg-white/[0.06] border border-white/10 backdrop-blur-sm"
             aria-label="Share my size chart"
             onClick={async () => {
-              const shareData = {
-                title: 'My Verified Sizes — DripFit',
-                text: 'Your body. Mapped. Every brand. Locked. — dripfitcheck.com',
-                url: window.location.href,
-              };
-              if (navigator.share) {
-                try { await navigator.share(shareData); } catch {}
+              const { toast } = await import('sonner');
+              if (filtered.length === 0) {
+                toast('No sizes to share yet');
+                return;
+              }
+              toast('Generating share image…');
+              const blob = await generateShareImage();
+              if (!blob) { toast('Failed to generate image'); return; }
+
+              const file = new File([blob], 'my-verified-sizes.png', { type: 'image/png' });
+
+              if (navigator.share && navigator.canShare?.({ files: [file] })) {
+                try {
+                  await navigator.share({ files: [file], title: 'My Verified Sizes — DripFit' });
+                } catch {}
               } else {
-                await navigator.clipboard.writeText(window.location.href);
-                const { toast } = await import('sonner');
-                toast('Link copied');
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = 'my-verified-sizes.png';
+                a.click();
+                URL.revokeObjectURL(url);
+                toast('Image downloaded');
               }
             }}
           >
