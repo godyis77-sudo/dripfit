@@ -106,7 +106,7 @@ function ScrollFadeRow({ children, className = '' }: { children: React.ReactNode
         {children}
       </div>
       {showFade && (
-        <div className="absolute right-0 top-0 bottom-0 w-12 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent, #0A0A0A)' }} />
+        <div className="absolute right-0 top-0 bottom-0 w-12 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent, #060503)' }} />
       )}
     </div>
   );
@@ -345,7 +345,7 @@ const SizeComparison = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-safe-tab">
+    <div className="min-h-screen pb-safe-tab" style={{ background: '#060503' }}>
       {/* Header */}
       <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-white/5 px-4 pt-3 pb-2">
         <div className="flex items-center gap-3 mb-2">
@@ -580,86 +580,94 @@ const SizeComparison = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ delay: i * 0.02, duration: 0.2 }}
-                    className="relative overflow-hidden"
-                    style={{
-                      background: '#111111',
-                      border: '1px solid #252525',
-                      borderTop: '2px solid #D4AF37',
-                      borderRadius: 14,
-                      padding: '12px 14px',
-                    }}
-                  >
-                    {/* Subtle gold glow */}
-                    <div className="absolute top-0 right-0 w-full h-full pointer-events-none" style={{ background: 'radial-gradient(ellipse at top right, rgba(212,174,42,0.04) 0%, transparent 65%)' }} />
+                     className="relative overflow-hidden"
+                     style={{
+                       background: 'radial-gradient(ellipse at 50% -5%, rgba(212,174,42,0.18) 0%, rgba(18,14,8,1) 52%), linear-gradient(180deg, #161208 0%, #0A0806 100%)',
+                       boxShadow: '0 0 0 1px rgba(212,174,42,0.28), 0 8px 28px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,240,140,0.08), inset 0 -1px 0 rgba(0,0,0,0.5)',
+                       borderRadius: 14,
+                       border: 'none',
+                       padding: '12px 14px',
+                     }}
+                   >
+                     {/* Top shimmer line */}
+                     <div className="absolute top-0 left-0 right-0 z-[1] pointer-events-none" style={{ height: 2, background: 'linear-gradient(90deg, transparent 0%, rgba(212,174,42,0.5) 15%, rgba(245,232,120,0.95) 50%, rgba(212,174,42,0.5) 85%, transparent 100%)', borderRadius: '14px 14px 0 0' }} />
 
-                     {/* Gold dot indicator */}
-                     <div className="flex justify-end relative z-10">
-                       <div className={cn('h-1.5 w-1.5 rounded-full mt-1', confidenceDot(brand.confidence))} />
-                     </div>
+                      {/* Match quality dot */}
+                      <div className="flex justify-end relative z-10">
+                        {(() => {
+                          const dotStyle: React.CSSProperties = { width: 7, height: 7, borderRadius: '50%' };
+                          if (brand.confidence >= 0.72) return <div style={{ ...dotStyle, background: '#C49A00', boxShadow: '0 0 6px rgba(196,154,0,0.65)' }} />;
+                          if (brand.confidence >= 0.55) return <div style={{ ...dotStyle, background: '#F59E0B', boxShadow: '0 0 5px rgba(245,158,11,0.4)' }} />;
+                          return <div style={{ ...dotStyle, background: '#333333', border: '1px solid #444444' }} />;
+                        })()}
+                      </div>
 
-                    {/* Size section */}
-                    <div className="relative z-10 flex flex-col items-center">
-                      <span style={{ fontFamily: 'DM Sans', fontWeight: 500, fontSize: 9, letterSpacing: '0.12em', color: '#C49A00', marginTop: 10, textTransform: 'uppercase' }}>
-                        Verified Size
-                      </span>
-                      {(() => {
-                        const parenMatch = brand.size.match(/^([^(]+)\((.+)\)$/);
-                        const slashMatch = !parenMatch && brand.size.match(/^(\d+)\/(.+)$/);
-                        const sizeStyle: React.CSSProperties = { fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontStyle: 'italic', fontSize: 52, color: '#D4AF37', lineHeight: 1, margin: '2px 0 6px 0' };
-                        if (parenMatch) {
-                          return (
-                            <div className="flex flex-col items-center">
-                              <span style={sizeStyle}>{parenMatch[1].trim()}</span>
-                              <span style={{ fontFamily: 'DM Sans', fontSize: 11, color: '#888888', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: -6 }}>{parenMatch[2].trim()}</span>
-                            </div>
-                          );
-                        }
-                        if (slashMatch) {
-                          return (
-                            <div className="flex flex-col items-center">
-                              <span style={sizeStyle}>{slashMatch[1]}</span>
-                              <span style={{ fontFamily: 'DM Sans', fontSize: 11, color: '#888888', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: -6 }}>/{slashMatch[2]}</span>
-                            </div>
-                          );
-                        }
-                        return <span style={sizeStyle}>{brand.size}</span>;
-                      })()}
-
-                      {/* Brand name */}
-                      <span className="line-clamp-1 text-center" style={{ fontFamily: 'DM Sans', fontWeight: 500, fontSize: 14, color: '#FFFFFF', marginBottom: 4 }}>
-                        {brand.brandName}
-                      </span>
-
-                      {/* Category pill */}
-                      <span
-                        className="inline-flex rounded-full"
-                        style={{
-                          backgroundColor: 'rgba(255,255,255,0.05)',
-                          border: '1px solid #2D2D2D',
-                          padding: '2px 8px',
-                          fontFamily: 'DM Sans',
-                          fontWeight: 500,
-                          fontSize: 9,
-                          letterSpacing: '0.1em',
-                          color: '#666666',
-                          textTransform: 'uppercase',
-                          marginBottom: 6,
-                        }}
-                      >
-                        {brand.genre}
-                      </span>
-
-                       {/* Match quality + percentage */}
-                       <span style={{ textAlign: 'center', fontSize: 11, fontWeight: 500 }}>
-                         <span style={{ fontFamily: 'DM Sans', color: brand.confidence >= 0.72 ? '#D4AE2A' : brand.confidence >= 0.55 ? '#F59E0B' : '#888888' }}>
-                           {brand.confidence >= 0.72 ? 'High match' : brand.confidence >= 0.55 ? 'Good match' : 'Near match'}
-                         </span>
-                         <span style={{ color: '#444444', fontFamily: 'DM Sans' }}> · </span>
-                         <span style={{ fontFamily: "'DM Mono', monospace", fontWeight: 400, color: brand.confidence >= 0.72 ? '#D4AE2A' : brand.confidence >= 0.55 ? '#F59E0B' : '#888888' }}>
-                           {getTierPercentage(brand.confidence, brand.brandName)}%
-                         </span>
+                     {/* Size section */}
+                     <div className="relative z-10 flex flex-col items-center">
+                       {/* Verified Size label with check icon */}
+                       <span style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 10 }}>
+                         <svg width="9" height="9" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4.5" stroke="rgba(196,154,0,0.6)" strokeWidth="0.8" fill="none"/><polyline points="2.5,5 4,6.5 7.5,3.5" stroke="#C49A00" strokeWidth="1.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                         <span style={{ fontFamily: 'DM Sans', fontWeight: 500, fontSize: 9, letterSpacing: '0.14em', color: 'rgba(196,154,0,0.85)', textTransform: 'uppercase' }}>Verified Size</span>
                        </span>
-                    </div>
+                       {(() => {
+                         const parenMatch = brand.size.match(/^([^(]+)\((.+)\)$/);
+                         const slashMatch = !parenMatch && brand.size.match(/^(\d+)\/(.+)$/);
+                         const sizeStyle: React.CSSProperties = { fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontStyle: 'italic', fontSize: 52, lineHeight: 1, margin: '2px 0 6px 0', background: 'linear-gradient(175deg, #F5E87A 0%, #D4AF37 42%, #9A7420 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: 'drop-shadow(0 0 14px rgba(212,174,42,0.22))' };
+                         if (parenMatch) {
+                           return (
+                             <div className="flex flex-col items-center">
+                               <span style={sizeStyle}>{parenMatch[1].trim()}</span>
+                               <span style={{ fontFamily: 'DM Sans', fontSize: 11, color: '#888888', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: -6 }}>{parenMatch[2].trim()}</span>
+                             </div>
+                           );
+                         }
+                         if (slashMatch) {
+                           return (
+                             <div className="flex flex-col items-center">
+                               <span style={sizeStyle}>{slashMatch[1]}</span>
+                               <span style={{ fontFamily: 'DM Sans', fontSize: 11, color: '#888888', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: -6 }}>/{slashMatch[2]}</span>
+                             </div>
+                           );
+                         }
+                         return <span style={sizeStyle}>{brand.size}</span>;
+                       })()}
+
+                       {/* Brand name */}
+                       <span className="line-clamp-1 text-center" style={{ fontFamily: 'DM Sans', fontWeight: 500, fontSize: 14, color: '#FFFFFF', marginBottom: 4 }}>
+                         {brand.brandName}
+                       </span>
+
+                       {/* Category pill */}
+                       <span
+                         className="inline-flex"
+                         style={{
+                           background: 'rgba(255,255,255,0.05)',
+                           border: '1px solid rgba(255,255,255,0.07)',
+                           borderRadius: 99,
+                           padding: '3px 10px',
+                           fontFamily: 'DM Sans',
+                           fontWeight: 500,
+                           fontSize: 9,
+                           letterSpacing: '0.1em',
+                           color: '#555555',
+                           textTransform: 'uppercase',
+                           marginBottom: 6,
+                         }}
+                       >
+                         {brand.genre}
+                       </span>
+
+                        {/* Match quality + percentage */}
+                        <span style={{ textAlign: 'center', fontSize: 10, fontWeight: 500 }}>
+                          <span style={{ fontFamily: "'DM Mono', monospace", color: brand.confidence >= 0.72 ? '#D4AE2A' : brand.confidence >= 0.55 ? '#F59E0B' : '#555555' }}>
+                            {brand.confidence >= 0.72 ? 'High match' : brand.confidence >= 0.55 ? 'Good match' : 'Near match'}
+                          </span>
+                          <span style={{ color: '#2A2A2A', fontFamily: "'DM Mono', monospace" }}> · </span>
+                          <span style={{ fontFamily: "'DM Mono', monospace", fontWeight: 400, color: brand.confidence >= 0.72 ? '#D4AE2A' : brand.confidence >= 0.55 ? '#F59E0B' : '#555555' }}>
+                            {getTierPercentage(brand.confidence, brand.brandName)}%
+                          </span>
+                        </span>
+                     </div>
                   </motion.div>
                 ))}
               </AnimatePresence>
