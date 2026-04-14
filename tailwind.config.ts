@@ -135,6 +135,10 @@ export default {
           "0%, 100%": { opacity: "0.4" },
           "50%": { opacity: "0.8" },
         },
+        ticker: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -148,6 +152,7 @@ export default {
         "slide-up": "slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
         shimmer: "shimmer 2s ease-in-out infinite",
         breathe: "breathe 3s ease-in-out infinite",
+        ticker: "ticker 40s linear infinite",
       },
     },
   },
