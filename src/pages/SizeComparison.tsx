@@ -182,6 +182,28 @@ const SizeComparison = () => {
             <h1 className="font-display text-lg text-white tracking-tight uppercase">Your Verified Sizes</h1>
             <p className="text-[11px] text-white/30">Every brand. Locked.</p>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px] bg-white/5 border border-white/10 backdrop-blur-sm"
+            aria-label="Share my size chart"
+            onClick={async () => {
+              const shareData = {
+                title: 'My Verified Sizes — DripFit',
+                text: 'Your body. Mapped. Every brand. Locked. — dripfitcheck.com',
+                url: window.location.href,
+              };
+              if (navigator.share) {
+                try { await navigator.share(shareData); } catch {}
+              } else {
+                await navigator.clipboard.writeText(window.location.href);
+                const { toast } = await import('sonner');
+                toast('Link copied');
+              }
+            }}
+          >
+            <Share2 className="h-5 w-5" style={{ color: '#D4AE2A' }} />
+          </Button>
         </div>
 
         {/* Category pills */}
