@@ -313,8 +313,10 @@ const SizeComparison = () => {
 
         {!loading && !error && filtered.length > 0 && (
           <>
-            <p className="text-[11px] text-white/30 mb-3">
-              {filtered.length} brand{filtered.length !== 1 ? 's' : ''} • {selectedCategory}
+            <p className="text-[11px] mb-3">
+              <span className="text-white">{filtered.length}</span>
+              <span style={{ color: '#666666' }}> of 186 brands verified</span>
+              <span style={{ color: '#666666' }}> • {selectedCategory}</span>
             </p>
 
             <div className="flex gap-4 items-center py-1 pb-3" style={{ fontSize: 11, fontFamily: 'DM Sans', color: '#888888', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
