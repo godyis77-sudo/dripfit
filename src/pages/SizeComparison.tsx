@@ -91,6 +91,7 @@ const SizeComparison = () => {
   const [selectedCategory, setSelectedCategory] = useState('tops');
   const [showGenreFilter, setShowGenreFilter] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<'brand' | 'size'>('brand');
 
   useEffect(() => {
     if (!user) return;
@@ -319,20 +320,39 @@ const SizeComparison = () => {
 
         {!loading && !error && brandSizes.length > 0 && (
           <>
-            <p className="text-[11px] mb-1">
-              {searchQuery.trim() ? (
-                <>
-                  <span className="text-white">{filtered.length}</span>
-                  <span style={{ color: '#666666' }}> of {brandSizes.length} brands</span>
-                </>
-              ) : (
-                <>
-                  <span className="text-white">{filtered.length}</span>
-                  <span style={{ color: '#666666' }}> of 186 brands verified</span>
-                </>
-              )}
-              <span style={{ color: '#666666' }}> • {selectedCategory}</span>
-            </p>
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-[11px]">
+                {searchQuery.trim() ? (
+                  <>
+                    <span className="text-white">{filtered.length}</span>
+                    <span style={{ color: '#666666' }}> of {brandSizes.length} brands</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-white">{filtered.length}</span>
+                    <span style={{ color: '#666666' }}> of 186 brands verified</span>
+                  </>
+                )}
+                <span style={{ color: '#666666' }}> • {selectedCategory}</span>
+              </p>
+
+              {/* View toggle */}
+              <div className="flex gap-1">
+                {(['brand', 'size'] as const).map(mode => (
+                  <button
+                    key={mode}
+                    onClick={() => setViewMode(mode)}
+                    className="rounded-full px-3 py-1 text-[12px] font-bold capitalize transition-all"
+                    style={viewMode === mode
+                      ? { backgroundColor: '#C49A00', color: '#000' }
+                      : { backgroundColor: 'transparent', color: '#888888', border: '1px solid #2D2D2D' }
+                    }
+                  >
+                    {mode === 'brand' ? 'Brand' : 'Size'}
+                  </button>
+                ))}
+              </div>
+            </div>
 
             <div className="flex gap-4 items-center pb-2" style={{ fontSize: 11, fontFamily: 'DM Sans', color: '#888888', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
               <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-primary inline-block" /> High Match</span>
