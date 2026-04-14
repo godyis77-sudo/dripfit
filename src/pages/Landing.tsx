@@ -7,6 +7,7 @@ import BrandLogo from '@/components/ui/BrandLogo';
 import LandingHero from '@/components/landing/LandingHero';
 import LandingCommunityVerdict from '@/components/landing/LandingCommunityVerdict';
 import LandingFeatures from '@/components/landing/LandingFeatures';
+import LandingRootCause from '@/components/landing/LandingRootCause';
 import LandingHowItWorks from '@/components/landing/LandingHowItWorks';
 import LandingCommunity from '@/components/landing/LandingCommunity';
 import LandingFAQ from '@/components/landing/LandingFAQ';
@@ -172,6 +173,9 @@ export default function Landing() {
           </p>
         </div>
       </section>
+
+      {/* ROOT CAUSE */}
+      <LandingRootCause />
 
       {/* FEATURES */}
       <LandingFeatures />
