@@ -13,6 +13,7 @@ import LandingMarket from '@/components/landing/LandingMarket';
 import LandingCommunity from '@/components/landing/LandingCommunity';
 import LandingFAQ from '@/components/landing/LandingFAQ';
 import LandingPricing from '@/components/landing/LandingPricing';
+import LandingTestimonials from '@/components/landing/LandingTestimonials';
 import LandingFinalCTA from '@/components/landing/LandingFinalCTA';
 import { FadeIn } from '@/components/landing/LandingAnimations';
 
@@ -152,6 +153,9 @@ export default function Landing() {
 
       {/* HOW IT WORKS */}
       <LandingHowItWorks />
+
+      {/* TESTIMONIALS */}
+      <LandingTestimonials />
 
       {/* COMMUNITY */}
       <LandingCommunity />
