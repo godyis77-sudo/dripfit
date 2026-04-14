@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Ruler, Share2, Loader2, AlertTriangle, Filter } from 'lucide-react';
@@ -50,6 +50,30 @@ const CATEGORY_MAPPING: Record<string, string[]> = {
   activewear: ['activewear', 'sports-bras'],
   swimwear: ['swimwear'],
 };
+
+function ScrollFadeRow({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [showFade, setShowFade] = useState(false);
+
+  const check = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    setShowFade(el.scrollWidth - el.scrollLeft - el.clientWidth > 2);
+  }, []);
+
+  useEffect(() => { check(); }, [check, children]);
+
+  return (
+    <div className={cn('relative overflow-hidden', className)}>
+      <div ref={ref} onScroll={check} className="flex gap-1.5 overflow-x-auto scrollbar-hide">
+        {children}
+      </div>
+      {showFade && (
+        <div className="absolute right-0 top-0 bottom-0 w-12 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent, #0A0A0A)' }} />
+      )}
+    </div>
+  );
+}
 
 const SizeComparison = () => {
   usePageMeta({
@@ -207,7 +231,7 @@ const SizeComparison = () => {
         </div>
 
         {/* Category pills */}
-        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide mb-2">
+        <ScrollFadeRow className="mb-2">
           {CATEGORY_PILLS.map(c => (
             <button
               key={c.value}
@@ -222,10 +246,10 @@ const SizeComparison = () => {
               {c.label}
             </button>
           ))}
-        </div>
+        </ScrollFadeRow>
 
         {/* Genre style chips */}
-        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
+        <ScrollFadeRow>
           {GENRE_PILLS.map(g => (
             <button
               key={g.value}
@@ -240,7 +264,7 @@ const SizeComparison = () => {
               {g.label}
             </button>
           ))}
-        </div>
+        </ScrollFadeRow>
       </div>
 
       {/* Content */}
