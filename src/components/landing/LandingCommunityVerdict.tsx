@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { FadeIn } from './LandingAnimations';
 import LandingEmailCapture from './LandingEmailCapture';
 
@@ -35,12 +36,12 @@ export default function LandingCommunityVerdict() {
               Verdicts from Body Twins within your measurement range
             </p>
             <div className="mt-6 flex justify-center">
-              <button
-                onClick={() => document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' })}
-                className="text-xs font-semibold tracking-wider uppercase text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5"
+              <Link
+                to="/auth"
+                className="bg-[#C49A00] text-[#0A0A0A] font-bold rounded-full py-3 px-8 text-sm tracking-wider uppercase inline-flex items-center gap-2 hover:bg-[#D4AF37] transition-colors duration-200"
               >
-                Get your size verified →
-              </button>
+                Get Your Size Verified →
+              </Link>
             </div>
           </div>
         </FadeIn>

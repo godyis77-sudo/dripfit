@@ -149,7 +149,7 @@ export default function Landing() {
       <section className="pt-20 md:pt-28 pb-20">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <FadeIn>
-            <span className="font-mono text-xs tracking-[.18em] uppercase text-muted-foreground/70 block mb-5">The Problem</span>
+            <span className="font-mono text-xs tracking-[.18em] uppercase text-[#AAAAAA] block mb-5">The Problem</span>
             <h2 className="font-display font-bold leading-tight mb-6" style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}>
               Ordering Three Sizes.<br />
               <span className="text-muted-foreground/40">Returning Two.</span>
@@ -178,7 +178,7 @@ export default function Landing() {
         {/* HORIZONTAL BAR CHART */}
         <div className="max-w-5xl mx-auto px-6 mt-14">
           <FadeIn delay={0.1}>
-            <span className="font-mono text-xs tracking-[.18em] uppercase text-muted-foreground/70 block mb-6">Apparel Leads Every Category</span>
+            <span className="font-mono text-xs tracking-[.18em] uppercase text-[#AAAAAA] block mb-6">Apparel Leads Every Category</span>
           </FadeIn>
           <div className="space-y-4">
             {RETURN_BARS.map((bar, i) => (

@@ -21,7 +21,7 @@ export default function LandingRootCause() {
         {/* Header */}
         <div className="text-center mb-14">
           <FadeIn>
-            <span className="font-mono text-xs tracking-[.18em] uppercase text-muted-foreground/70 block mb-5">
+            <span className="font-mono text-xs tracking-[.18em] uppercase text-[#AAAAAA] block mb-5">
               The Root Cause
             </span>
             <h2
