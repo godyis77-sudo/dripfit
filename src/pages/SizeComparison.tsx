@@ -385,17 +385,21 @@ const SizeComparison = () => {
 
         {!loading && !error && brandSizes.length > 0 && (
           <>
-            {/* View toggle */}
-            <div className="flex items-center justify-end mb-2">
-              <div className="flex gap-1">
+            {/* Count + View toggle */}
+            <div className="flex items-center justify-between my-2">
+              <span className="text-[13px]" style={{ fontFamily: 'DM Sans', color: '#888888' }}>
+                <strong className="text-white font-semibold">{filtered.length}</strong>
+                {' '}of 186 brands verified • {selectedCategory}
+              </span>
+              <div className="flex gap-0 rounded-full p-[3px]" style={{ backgroundColor: '#1A1A1A', border: '1px solid #2D2D2D' }}>
                 {(['brand', 'size'] as const).map(mode => (
                   <button
                     key={mode}
                     onClick={() => setViewMode(mode)}
-                    className="rounded-full px-3 py-1 text-[12px] font-bold capitalize transition-all"
+                    className="rounded-full px-4 py-1 text-[13px] font-bold capitalize transition-all border-none cursor-pointer"
                     style={viewMode === mode
-                      ? { backgroundColor: '#C49A00', color: '#000' }
-                      : { backgroundColor: 'transparent', color: '#888888', border: '1px solid #2D2D2D' }
+                      ? { backgroundColor: '#C49A00', color: '#000', fontFamily: 'DM Sans' }
+                      : { backgroundColor: 'transparent', color: '#888888', fontFamily: 'DM Sans' }
                     }
                   >
                     {mode === 'brand' ? 'Brand' : 'Size'}
