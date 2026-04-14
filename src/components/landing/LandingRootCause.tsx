@@ -10,7 +10,7 @@ const DONUT_DATA = [
 
 const INSIGHT_STATS = [
   { stat: '$21–$46', label: 'Cost per returned item to retailer' },
-  { stat: '1 in 4', label: 'Orders includes at least one bracketed size' },
+  { stat: '1 in 4', label: 'Orders include at least one bracketed size' },
   { stat: '47%', label: 'Of shoppers avoid online fashion due to fit uncertainty' },
 ];
 
