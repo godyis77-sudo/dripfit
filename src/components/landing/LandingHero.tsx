@@ -1,9 +1,7 @@
-import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FadeIn } from './LandingAnimations';
 import { useAuth } from '@/hooks/useAuth';
-import { setGuestMode } from '@/lib/session';
 import heroPhoneMockup from '@/assets/hero-phone-mockup.jpg';
 
 const STATS = [

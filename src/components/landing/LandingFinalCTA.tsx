@@ -1,8 +1,7 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { FadeIn } from './LandingAnimations';
 import { useAuth } from '@/hooks/useAuth';
-import { setGuestMode } from '@/lib/session';
 
 export default function LandingFinalCTA() {
   const { user } = useAuth();
