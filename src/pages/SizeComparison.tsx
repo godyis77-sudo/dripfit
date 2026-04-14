@@ -288,7 +288,7 @@ const SizeComparison = () => {
       ctx.fill();
 
       // Match %
-      const pct = `${Math.round(brand.confidence * 100)}%`;
+      const pct = `${getTierPercentage(brand.confidence, brand.brandName)}%`;
       ctx.fillStyle = 'rgba(212,174,42,0.1)';
       ctx.beginPath();
       ctx.roundRect(x + 14, y + 16, 48, 22, 11);
@@ -594,7 +594,7 @@ const SizeComparison = () => {
                           padding: '2px 7px',
                         }}
                       >
-                        {Math.round(brand.confidence * 100)}%
+                        {getTierPercentage(brand.confidence, brand.brandName)}%
                       </span>
                       <div className={cn('h-1.5 w-1.5 rounded-full mt-1', confidenceDot(brand.confidence))} />
                     </div>
