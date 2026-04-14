@@ -1,17 +1,10 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { FadeIn } from './LandingAnimations';
 import { useAuth } from '@/hooks/useAuth';
-import { setGuestMode } from '@/lib/session';
 
 export default function LandingFinalCTA() {
   const { user } = useAuth();
-  const navigate = useNavigate();
-
-  const handleGuestMode = () => {
-    setGuestMode();
-    navigate('/home');
-  };
 
   return (
     <section className="py-20 md:py-24 relative overflow-hidden border-t border-border/30">
@@ -37,20 +30,12 @@ export default function LandingFinalCTA() {
                 Enter App <ArrowRight className="h-4 w-4" />
               </Link>
             ) : (
-              <div className="flex flex-col items-center gap-2">
-                <Link
-                  to="/auth"
-                  className="inline-flex items-center gap-2 h-13 px-8 rounded-full bg-foreground text-background font-medium text-sm transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  Sign Up Free <ArrowRight className="h-4 w-4" />
-                </Link>
-                <button
-                  onClick={handleGuestMode}
-                  className="text-xs text-muted-foreground/70 hover:text-muted-foreground transition-colors"
-                >
-                  or try as guest →
-                </button>
-              </div>
+              <Link
+                to="/auth"
+                className="bg-[#C49A00] text-[#0A0A0A] font-bold rounded-full py-4 px-8 text-base tracking-wide inline-flex items-center justify-center gap-2 hover:bg-[#D4AF37] transition-colors duration-200"
+              >
+                Sign Up Free <ArrowRight className="h-4 w-4" />
+              </Link>
             )}
           </div>
         </FadeIn>
