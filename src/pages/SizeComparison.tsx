@@ -179,7 +179,7 @@ const SizeComparison = () => {
             <ArrowLeft className="h-5 w-5 text-white/70" />
           </Button>
           <div className="flex-1">
-            <h1 className="font-display text-lg text-white tracking-tight uppercase">Your Verified Sizes</h1>
+            <h1 className="text-white uppercase" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: '1.8rem', letterSpacing: '-0.02em' }}>Your Verified Sizes</h1>
             <p className="text-[11px] text-white/30">Every brand. Locked.</p>
           </div>
           <Button
