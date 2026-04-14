@@ -76,7 +76,7 @@ export default function LandingHero() {
 
         {/* Phone mockup with My Sizes screenshot */}
         <FadeIn delay={0.15}>
-        <div className="relative mx-auto w-full max-w-[272px]">
+        <div className="relative mx-auto w-full max-w-[326px]">
             <div className="absolute inset-0 rounded-full blur-[80px] opacity-15 bg-primary" />
             <div className="relative rounded-[2rem] border-[10px] border-primary shadow-[0_0_30px_rgba(212,175,55,0.4)] overflow-hidden">
               <img
