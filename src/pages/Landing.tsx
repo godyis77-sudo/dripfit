@@ -102,6 +102,7 @@ export default function Landing() {
       {/* PROOF TICKER */}
       <div
         className="relative overflow-hidden select-none pointer-events-none"
+        aria-hidden="true"
         style={{
           height: 42,
           background: 'rgba(212,175,55,0.08)',
@@ -115,7 +116,7 @@ export default function Landing() {
               {[
                 'APPAREL RETURN RATE: 25–40%',
                 '70% OF RETURNS ARE FIT-RELATED',
-                '47% OF SHOPPERS AVOID ONLINE FASHION DUE TO FIT ANXIETY',
+                '47% OF SHOPPERS AVOID ONLINE FASHION DUE TO FIT UNCERTAINTY',
                 '$849.9B IN RETURNS PROCESSED IN 2025',
                 '$46 AVERAGE COST PER RETURNED ITEM',
                 '1 IN 4 ORDERS INCLUDES A BRACKETED SIZE',
@@ -132,6 +133,7 @@ export default function Landing() {
           ))}
         </div>
       </div>
+      <p className="sr-only">Apparel return rate: 25–40%. 70% of returns are fit-related. 47% of shoppers avoid online fashion due to fit uncertainty. $849.9B in returns processed in 2025. $46 average cost per returned item. 1 in 4 orders includes a bracketed size.</p>
 
       {/* SOCIAL PROOF BAR */}
       <div className="border-y border-border/30 py-5">
