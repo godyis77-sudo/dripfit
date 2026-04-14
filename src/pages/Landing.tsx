@@ -97,11 +97,11 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* LIVE COMMUNITY VERDICT — moved up per L02 */}
+      {/* LIVE COMMUNITY VERDICT */}
       <LandingCommunityVerdict />
 
       {/* PROBLEM */}
-      <section className="py-20 md:py-28">
+      <section className="pt-20 md:pt-28 pb-20">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <FadeIn>
             <span className="font-mono text-[10px] tracking-[.22em] uppercase text-muted-foreground/60 block mb-5">The Problem</span>
