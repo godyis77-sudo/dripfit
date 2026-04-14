@@ -458,39 +458,99 @@ const SizeComparison = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ delay: i * 0.02, duration: 0.2 }}
-                    className="relative bg-black/30 backdrop-blur-sm rounded-xl border border-white/6 p-3 flex flex-col items-center gap-0.5"
+                    className="relative overflow-hidden"
+                    style={{
+                      background: '#111111',
+                      border: '1px solid #252525',
+                      borderTop: '2px solid #D4AF37',
+                      borderRadius: 14,
+                      padding: '12px 14px',
+                    }}
                   >
-                    <div className={cn('absolute top-2 right-2 h-1.5 w-1.5 rounded-full', confidenceDot(brand.confidence))} />
-                    <span className="text-[9px] font-semibold tracking-[0.1em] uppercase text-primary/60">Your Size</span>
-                    {(() => {
-                      const parenMatch = brand.size.match(/^([^(]+)\((.+)\)$/);
-                      const slashMatch = !parenMatch && brand.size.match(/^(\d+)\/(.+)$/);
-                      if (parenMatch) {
-                        return (
-                          <div className="flex flex-col items-center">
-                            <span className="font-display text-primary tracking-tight leading-none" style={{ fontSize: '2.5rem' }}>{parenMatch[1].trim()}</span>
-                            <span className="text-[11px] uppercase tracking-[0.06em]" style={{ fontFamily: 'DM Sans', color: '#888888' }}>{parenMatch[2].trim()}</span>
-                          </div>
-                        );
-                      }
-                      if (slashMatch) {
-                        return (
-                          <div className="flex flex-col items-center">
-                            <span className="font-display text-primary tracking-tight leading-none" style={{ fontSize: '2.5rem' }}>{slashMatch[1]}</span>
-                            <span className="text-[11px] uppercase tracking-[0.06em]" style={{ fontFamily: 'DM Sans', color: '#888888' }}>/{slashMatch[2]}</span>
-                          </div>
-                        );
-                      }
-                      return <span className="font-display text-primary tracking-tight leading-none" style={{ fontSize: '2.5rem' }}>{brand.size}</span>;
-                    })()}
-                    <span className="text-[11px] font-medium text-white/70 text-center leading-tight line-clamp-1 mt-0.5">{brand.brandName}</span>
-                    <span className="text-[9px] text-white/30 font-medium uppercase tracking-[0.15em] leading-none">{brand.genre}</span>
-                    <span className={cn('text-[9px] leading-none', 
-                      brand.confidence >= 0.72 ? 'text-primary/70' : 
-                      brand.confidence >= 0.55 ? 'text-amber-400/70' : 'text-muted-foreground/50'
-                    )}>
-                      {brand.confidence >= 0.72 ? 'High match' : brand.confidence >= 0.55 ? 'Good match' : 'Near Match'}
-                    </span>
+                    {/* Subtle gold glow */}
+                    <div className="absolute top-0 right-0 w-full h-full pointer-events-none" style={{ background: 'radial-gradient(ellipse at top right, rgba(212,174,42,0.04) 0%, transparent 65%)' }} />
+
+                    {/* Top row */}
+                    <div className="flex items-start justify-between relative z-10">
+                      <span
+                        className="rounded-full"
+                        style={{
+                          fontFamily: "'DM Mono', monospace",
+                          fontSize: 11,
+                          fontWeight: 400,
+                          color: '#D4AE2A',
+                          backgroundColor: 'rgba(212,174,42,0.1)',
+                          border: '1px solid rgba(212,174,42,0.25)',
+                          padding: '2px 7px',
+                        }}
+                      >
+                        {Math.round(brand.confidence * 100)}%
+                      </span>
+                      <div className={cn('h-1.5 w-1.5 rounded-full mt-1', confidenceDot(brand.confidence))} />
+                    </div>
+
+                    {/* Size section */}
+                    <div className="relative z-10 flex flex-col items-center">
+                      <span style={{ fontFamily: 'DM Sans', fontWeight: 500, fontSize: 9, letterSpacing: '0.12em', color: '#C49A00', marginTop: 10, textTransform: 'uppercase' }}>
+                        Your Size
+                      </span>
+                      {(() => {
+                        const parenMatch = brand.size.match(/^([^(]+)\((.+)\)$/);
+                        const slashMatch = !parenMatch && brand.size.match(/^(\d+)\/(.+)$/);
+                        const sizeStyle: React.CSSProperties = { fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontStyle: 'italic', fontSize: 52, color: '#D4AF37', lineHeight: 1, margin: '2px 0 8px 0' };
+                        if (parenMatch) {
+                          return (
+                            <div className="flex flex-col items-center">
+                              <span style={sizeStyle}>{parenMatch[1].trim()}</span>
+                              <span style={{ fontFamily: 'DM Sans', fontSize: 11, color: '#888888', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: -6 }}>{parenMatch[2].trim()}</span>
+                            </div>
+                          );
+                        }
+                        if (slashMatch) {
+                          return (
+                            <div className="flex flex-col items-center">
+                              <span style={sizeStyle}>{slashMatch[1]}</span>
+                              <span style={{ fontFamily: 'DM Sans', fontSize: 11, color: '#888888', letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: -6 }}>/{slashMatch[2]}</span>
+                            </div>
+                          );
+                        }
+                        return <span style={sizeStyle}>{brand.size}</span>;
+                      })()}
+
+                      {/* Brand name */}
+                      <span className="line-clamp-1 text-center" style={{ fontFamily: 'DM Sans', fontWeight: 600, fontSize: 14, color: '#FFFFFF', marginBottom: 4 }}>
+                        {brand.brandName}
+                      </span>
+
+                      {/* Category pill */}
+                      <span
+                        className="inline-flex rounded-full"
+                        style={{
+                          backgroundColor: 'rgba(255,255,255,0.05)',
+                          border: '1px solid #2D2D2D',
+                          padding: '2px 8px',
+                          fontFamily: 'DM Sans',
+                          fontWeight: 500,
+                          fontSize: 9,
+                          letterSpacing: '0.1em',
+                          color: '#666666',
+                          textTransform: 'uppercase',
+                          marginBottom: 6,
+                        }}
+                      >
+                        {brand.category}
+                      </span>
+
+                      {/* Match quality */}
+                      <span style={{
+                        fontFamily: 'DM Sans',
+                        fontWeight: 500,
+                        fontSize: 11,
+                        color: brand.confidence >= 0.72 ? '#D4AE2A' : brand.confidence >= 0.55 ? '#F59E0B' : '#888888',
+                      }}>
+                        {brand.confidence >= 0.72 ? 'High match' : brand.confidence >= 0.55 ? 'Good match' : 'Near match'}
+                      </span>
+                    </div>
                   </motion.div>
                 ))}
               </AnimatePresence>
