@@ -203,10 +203,10 @@ const SizeComparison = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px] bg-white/5 border border-white/10 backdrop-blur-sm"
+            className="h-10 w-10 rounded-full min-h-[44px] min-w-[44px] bg-white/[0.06] border border-white/10 backdrop-blur-sm"
             onClick={() => navigate(-1)}
           >
-            <ArrowLeft className="h-5 w-5 text-white/70" />
+            <ArrowLeft className="h-5 w-5 text-white" />
           </Button>
           <div className="flex-1">
             <h1 className="text-white uppercase" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: '1.8rem', letterSpacing: '-0.02em' }}>Your Verified Sizes</h1>
@@ -215,7 +215,7 @@ const SizeComparison = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px] bg-white/5 border border-white/10 backdrop-blur-sm"
+            className="h-10 w-10 rounded-full min-h-[44px] min-w-[44px] bg-white/[0.06] border border-white/10 backdrop-blur-sm"
             aria-label="Share my size chart"
             onClick={async () => {
               const shareData = {
