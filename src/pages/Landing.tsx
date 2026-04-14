@@ -108,7 +108,7 @@ export default function Landing() {
           borderBottom: '0.5px solid rgba(212,175,55,0.3)',
         }}
       >
-        <div className="flex items-center h-full animate-[ticker_40s_linear_infinite] whitespace-nowrap">
+        <div className="flex items-center h-full animate-ticker whitespace-nowrap">
           {[0, 1].map((dup) => (
             <span key={dup} className="flex items-center gap-0 shrink-0">
               {[
