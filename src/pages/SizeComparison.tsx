@@ -385,23 +385,8 @@ const SizeComparison = () => {
 
         {!loading && !error && brandSizes.length > 0 && (
           <>
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-[11px]">
-                {searchQuery.trim() ? (
-                  <>
-                    <span className="text-white">{filtered.length}</span>
-                    <span style={{ color: '#666666' }}> of {brandSizes.length} brands</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="text-white">{filtered.length}</span>
-                    <span style={{ color: '#666666' }}> of 186 brands verified</span>
-                  </>
-                )}
-                <span style={{ color: '#666666' }}> • {selectedCategory}</span>
-              </p>
-
-              {/* View toggle */}
+            {/* View toggle */}
+            <div className="flex items-center justify-end mb-2">
               <div className="flex gap-1">
                 {(['brand', 'size'] as const).map(mode => (
                   <button
@@ -419,14 +404,8 @@ const SizeComparison = () => {
               </div>
             </div>
 
-            <div className="flex gap-4 items-center pb-2" style={{ fontSize: 11, fontFamily: 'DM Sans', color: '#888888', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
-              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-primary inline-block" /> High Match</span>
-              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: '#666666' }} /> Good Match</span>
-              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: '#333333', border: '1px solid #555555' }} /> Near Match</span>
-            </div>
-
             {/* Search bar */}
-            <div className="relative mb-3">
+            <div className="relative mb-2">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#666666' }} />
               <input
                 type="text"
@@ -450,6 +429,13 @@ const SizeComparison = () => {
                   <X className="h-3 w-3 text-white/60" />
                 </button>
               )}
+            </div>
+
+            {/* Legend */}
+            <div className="flex gap-4 items-center pb-2" style={{ fontSize: 11, fontFamily: 'DM Sans', color: '#888888', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-primary inline-block" /> High Match</span>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: '#666666' }} /> Good Match</span>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: '#333333', border: '1px solid #555555' }} /> Near Match</span>
             </div>
 
             {filtered.length === 0 ? (
