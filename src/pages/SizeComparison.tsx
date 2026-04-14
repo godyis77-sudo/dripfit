@@ -612,7 +612,7 @@ const SizeComparison = () => {
                        {(() => {
                          const parenMatch = brand.size.match(/^([^(]+)\((.+)\)$/);
                          const slashMatch = !parenMatch && brand.size.match(/^(\d+)\/(.+)$/);
-                         const sizeStyle: React.CSSProperties = { fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontStyle: 'italic', fontSize: 52, lineHeight: 1, margin: '2px 0 6px 0', background: 'linear-gradient(175deg, #F5E87A 0%, #D4AF37 42%, #9A7420 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: 'drop-shadow(0 0 14px rgba(212,174,42,0.22))' };
+                         const sizeStyle: React.CSSProperties = { fontFamily: "'Playfair Display', serif", fontWeight: 700, fontStyle: 'italic', fontSize: 52, lineHeight: 1, margin: '2px 0 6px 0', background: 'linear-gradient(175deg, #F5E87A 0%, #D4AF37 42%, #9A7420 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: 'drop-shadow(0 0 14px rgba(212,174,42,0.22))' };
                          if (parenMatch) {
                            return (
                              <div className="flex flex-col items-center">
