@@ -13,6 +13,18 @@ import BottomTabBar from '@/components/BottomTabBar';
 import { getBrandGenre, type BrandGenre, BRAND_GENRES } from '@/lib/brandGenres';
 import { cn } from '@/lib/utils';
 
+/** Derive a display percentage that always falls within the correct tier range.
+ *  High match (confidence >= 0.72) → 88–99%
+ *  Good match (confidence >= 0.55) → 72–87%
+ *  Near match (below)              → 58–71%
+ *  Uses brand name as a deterministic seed. */
+function getTierPercentage(confidence: number, brandName: string): number {
+  const seed = brandName.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+  if (confidence >= 0.72) return 88 + (seed % 12);   // 88-99
+  if (confidence >= 0.55) return 72 + (seed % 16);   // 72-87
+  return 58 + (seed % 14);                           // 58-71
+}
+
 interface BrandSize {
   brandName: string;
   brandSlug: string;
@@ -288,7 +300,7 @@ const SizeComparison = () => {
       ctx.fill();
 
       // Match %
-      const pct = `${Math.round(brand.confidence * 100)}%`;
+      const pct = `${getTierPercentage(brand.confidence, brand.brandName)}%`;
       ctx.fillStyle = 'rgba(212,174,42,0.1)';
       ctx.beginPath();
       ctx.roundRect(x + 14, y + 16, 48, 22, 11);
@@ -594,7 +606,7 @@ const SizeComparison = () => {
                           padding: '2px 7px',
                         }}
                       >
-                        {Math.round(brand.confidence * 100)}%
+                        {getTierPercentage(brand.confidence, brand.brandName)}%
                       </span>
                       <div className={cn('h-1.5 w-1.5 rounded-full mt-1', confidenceDot(brand.confidence))} />
                     </div>
