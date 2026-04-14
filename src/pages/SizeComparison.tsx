@@ -345,9 +345,27 @@ const SizeComparison = () => {
                     </span>
 
                     {/* Size — GOLD */}
-                    <span className="font-display text-2xl text-primary tracking-tight leading-none">
-                      {brand.size}
-                    </span>
+                    {(() => {
+                      const parenMatch = brand.size.match(/^([^(]+)\((.+)\)$/);
+                      const slashMatch = !parenMatch && brand.size.match(/^(\d+)\/(.+)$/);
+                      if (parenMatch) {
+                        return (
+                          <div className="flex flex-col items-center">
+                            <span className="font-display text-2xl text-primary tracking-tight leading-none">{parenMatch[1].trim()}</span>
+                            <span className="text-[12px] uppercase tracking-[0.06em]" style={{ fontFamily: 'DM Sans', color: '#888888' }}>{parenMatch[2].trim()}</span>
+                          </div>
+                        );
+                      }
+                      if (slashMatch) {
+                        return (
+                          <div className="flex flex-col items-center">
+                            <span className="font-display text-2xl text-primary tracking-tight leading-none">{slashMatch[1]}</span>
+                            <span className="text-[12px] uppercase tracking-[0.06em]" style={{ fontFamily: 'DM Sans', color: '#888888' }}>/{slashMatch[2]}</span>
+                          </div>
+                        );
+                      }
+                      return <span className="font-display text-2xl text-primary tracking-tight leading-none">{brand.size}</span>;
+                    })()}
 
                     {/* Brand name */}
                     <span className="text-[11px] font-medium text-white/70 text-center leading-tight line-clamp-1">
