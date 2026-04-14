@@ -82,11 +82,9 @@ export default function LandingHero() {
               <img
                 src={heroPhoneMockup}
                 alt="DripFit My Sizes screen showing verified size cards for Arc'teryx, Nike, Zara, Stone Island, The Row, and Abercrombie"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-top"
                 loading="eager"
                 fetchPriority="high"
-                width={512}
-                height={1024}
               />
             </div>
           </div>
