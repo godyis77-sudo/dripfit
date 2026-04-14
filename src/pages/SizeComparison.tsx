@@ -199,7 +199,7 @@ const SizeComparison = () => {
     <div className="min-h-screen bg-background pb-safe-tab">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-white/5 px-4 pt-3 pb-2">
-        <div className="flex items-center gap-3 mb-3">
+        <div className="flex items-center gap-3 mb-2">
           <Button
             variant="ghost"
             size="icon"
@@ -237,7 +237,7 @@ const SizeComparison = () => {
         </div>
 
         {/* Category pills */}
-        <ScrollFadeRow className="mb-2">
+        <ScrollFadeRow className="mb-1.5">
           {CATEGORY_PILLS.map(c => (
             <button
               key={c.value}
@@ -274,7 +274,7 @@ const SizeComparison = () => {
       </div>
 
       {/* Content */}
-      <div className="px-4 pt-4">
+      <div className="px-4 pt-3">
         {loading && (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -313,13 +313,13 @@ const SizeComparison = () => {
 
         {!loading && !error && filtered.length > 0 && (
           <>
-            <p className="text-[11px] mb-3">
+            <p className="text-[11px] mb-1">
               <span className="text-white">{filtered.length}</span>
               <span style={{ color: '#666666' }}> of 186 brands verified</span>
               <span style={{ color: '#666666' }}> • {selectedCategory}</span>
             </p>
 
-            <div className="flex gap-4 items-center py-1 pb-3" style={{ fontSize: 11, fontFamily: 'DM Sans', color: '#888888', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
+            <div className="flex gap-4 items-center pb-2" style={{ fontSize: 11, fontFamily: 'DM Sans', color: '#888888', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
               <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-primary inline-block" /> High Match</span>
               <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: '#666666' }} /> Good Match</span>
               <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: '#333333', border: '1px solid #555555' }} /> Near Match</span>
