@@ -12,7 +12,7 @@ export default function LandingCommunity() {
       <div className="max-w-5xl mx-auto px-6">
         <FadeIn>
           <div className="text-center mb-14 max-w-lg mx-auto">
-            <span className="type-data block mb-5 text-primary/70">Community</span>
+            <span className="type-data block mb-5 text-primary/70">The Community</span>
             <h2 className="type-headline leading-tight mb-5" style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}>
               Your Taste. <span className="text-primary">Verified.</span>
             </h2>

@@ -37,7 +37,13 @@ export default function LandingHowItWorks() {
         </div>
 
         <FadeIn delay={0.15}>
-          <div className="flex items-center justify-center sticky top-24 min-h-[300px]">
+          <div className="flex flex-col items-center justify-center sticky top-24 min-h-[300px] gap-8">
+            {/* Verified badge */}
+            <div className="flex flex-col items-center justify-center w-20 h-20 rounded-full border-[1.5px] border-primary animate-[pulse-ring_2s_ease-in-out_infinite]">
+              <span className="text-primary text-4xl leading-none" style={{ fontFamily: 'monospace' }}>✓</span>
+              <span className="text-primary font-mono text-[8px] tracking-[.2em] uppercase -mt-1">Verified</span>
+            </div>
+
             <Link
               to="/auth"
               className="text-sm font-semibold tracking-wider uppercase text-primary hover:text-primary/80 transition-colors flex items-center gap-2"
