@@ -98,6 +98,40 @@ export default function Landing() {
       {/* HERO */}
       <LandingHero />
 
+      {/* PROOF TICKER */}
+      <div
+        className="relative overflow-hidden select-none pointer-events-none"
+        style={{
+          height: 42,
+          background: 'rgba(212,175,55,0.08)',
+          borderTop: '0.5px solid rgba(212,175,55,0.3)',
+          borderBottom: '0.5px solid rgba(212,175,55,0.3)',
+        }}
+      >
+        <div className="flex items-center h-full animate-ticker whitespace-nowrap">
+          {[0, 1].map((dup) => (
+            <span key={dup} className="flex items-center gap-0 shrink-0">
+              {[
+                'APPAREL RETURN RATE: 25–40%',
+                '70% OF RETURNS ARE FIT-RELATED',
+                '47% OF SHOPPERS AVOID ONLINE FASHION DUE TO FIT ANXIETY',
+                '$849.9B IN RETURNS PROCESSED IN 2025',
+                '$46 AVERAGE COST PER RETURNED ITEM',
+                '1 IN 4 ORDERS INCLUDES A BRACKETED SIZE',
+              ].map((t) => (
+                <span key={t} className="font-mono text-[11px] tracking-[.14em] uppercase px-6" style={{ color: '#D4AF37' }}>
+                  {t}<span className="ml-6 opacity-50">·</span>
+                </span>
+              ))}
+              <span className="font-mono text-[11px] tracking-[.14em] uppercase font-bold px-6" style={{ color: '#D4AF37' }}>
+                DRIPFIT ELIMINATES ALL OF THE ABOVE <span style={{ color: '#D4AF37', fontWeight: 800 }}>✓</span>
+                <span className="ml-6 opacity-50">·</span>
+              </span>
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* SOCIAL PROOF BAR */}
       <div className="border-y border-border/30 py-5">
         <div className="max-w-6xl mx-auto px-6 flex items-center justify-center gap-8 md:gap-14 flex-wrap">
