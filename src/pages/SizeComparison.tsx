@@ -106,7 +106,7 @@ function ScrollFadeRow({ children, className = '' }: { children: React.ReactNode
         {children}
       </div>
       {showFade && (
-        <div className="absolute right-0 top-0 bottom-0 w-12 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent, #0A0A0A)' }} />
+        <div className="absolute right-0 top-0 bottom-0 w-12 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent, #060503)' }} />
       )}
     </div>
   );
