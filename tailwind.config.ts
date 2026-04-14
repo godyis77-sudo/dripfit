@@ -135,6 +135,10 @@ export default {
           "0%, 100%": { opacity: "0.4" },
           "50%": { opacity: "0.8" },
         },
+        "pulse-ring": {
+          "0%, 100%": { borderColor: "hsl(42 76% 52% / 1)" },
+          "50%": { borderColor: "hsl(42 76% 52% / 0.4)" },
+        },
         ticker: {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(-50%)" },
