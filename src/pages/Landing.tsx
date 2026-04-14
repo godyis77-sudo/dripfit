@@ -109,7 +109,7 @@ export default function Landing() {
               Ordering Three Sizes.<br />
               <span className="text-muted-foreground/40">Returning Two.</span>
             </h2>
-            <p className="text-muted-foreground text-base leading-relaxed max-w-lg mx-auto">
+            <p className="text-muted-foreground/80 text-base leading-relaxed max-w-lg mx-auto">
               The grail piece drops. You cop three sizes because every brand fits different. Two go back. Money locked. Drip delayed. Dead returns piling up.
             </p>
           </FadeIn>

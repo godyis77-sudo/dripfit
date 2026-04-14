@@ -46,7 +46,7 @@ export default function LandingFinalCTA() {
                 </Link>
                 <button
                   onClick={handleGuestMode}
-                  className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                  className="text-xs text-muted-foreground/70 hover:text-muted-foreground transition-colors"
                 >
                   or try as guest →
                 </button>
