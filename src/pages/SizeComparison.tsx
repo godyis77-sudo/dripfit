@@ -292,23 +292,57 @@ const SizeComparison = () => {
           ))}
         </ScrollFadeRow>
 
-        {/* Genre style chips */}
-        <ScrollFadeRow>
-          {GENRE_PILLS.map(g => (
+        {/* Genre toggle */}
+        <div className="flex items-center mt-1">
+          <button
+            onClick={() => setShowGenreFilter(v => !v)}
+            className={cn(
+              'flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all min-h-[28px] backdrop-blur-sm',
+              showGenreFilter || selectedGenre !== 'all'
+                ? 'bg-primary/10 border-primary/25 text-primary'
+                : 'bg-white/5 border-white/10 text-white/40'
+            )}
+          >
+            <Filter className="h-3 w-3" />
+            {selectedGenre !== 'all' ? selectedGenre : 'Style'}
+          </button>
+          {selectedGenre !== 'all' && (
             <button
-              key={g.value}
-              onClick={() => setSelectedGenre(g.value)}
-              className={cn(
-                'px-2.5 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap transition-all border min-h-[28px] backdrop-blur-sm',
-                selectedGenre === g.value
-                  ? 'bg-primary/10 border-primary/25 text-primary'
-                  : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/8'
-              )}
+              onClick={() => { setSelectedGenre('all'); setShowGenreFilter(false); }}
+              className="ml-1.5 text-[10px] text-white/40 underline"
             >
-              {g.label}
+              Clear
             </button>
-          ))}
-        </ScrollFadeRow>
+          )}
+        </div>
+        <AnimatePresence>
+          {showGenreFilter && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <ScrollFadeRow className="mt-1.5">
+                {GENRE_PILLS.map(g => (
+                  <button
+                    key={g.value}
+                    onClick={() => { setSelectedGenre(g.value); setShowGenreFilter(false); }}
+                    className={cn(
+                      'px-2.5 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap transition-all border min-h-[28px] backdrop-blur-sm',
+                      selectedGenre === g.value
+                        ? 'bg-primary/10 border-primary/25 text-primary'
+                        : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/8'
+                    )}
+                  >
+                    {g.label}
+                  </button>
+                ))}
+              </ScrollFadeRow>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Content */}
