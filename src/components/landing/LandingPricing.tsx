@@ -26,7 +26,7 @@ export default function LandingPricing() {
     <section id="pricing" className="py-20 md:py-24">
       <div className="max-w-5xl mx-auto px-6">
         <FadeIn>
-          <span className="font-mono text-xs tracking-[.18em] uppercase text-muted-foreground/70 block mb-5 text-center">Pricing</span>
+          <span className="font-mono text-xs tracking-[.18em] uppercase text-[#AAAAAA] block mb-5 text-center">Pricing</span>
           <h2
             className="font-display font-bold leading-tight mb-14 text-center"
             style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}
