@@ -54,7 +54,7 @@ export default function Landing() {
           <BrandLogo size="sm" />
           <div className="hidden md:flex items-center gap-8">
             {['Features', 'How It Works', 'Community'].map((t) => (
-              <a key={t} href={`#${t.toLowerCase().replace(/ /g, '-')}`} className="text-muted-foreground hover:text-foreground transition-colors text-xs tracking-[.15em] uppercase font-medium">
+              <a key={t} href={`#${t.toLowerCase().replace(/ /g, '-')}`} className="text-muted-foreground hover:text-foreground transition-colors text-xs tracking-[.15em] uppercase font-medium whitespace-nowrap">
                 {t}
               </a>
             ))}
@@ -147,14 +147,14 @@ export default function Landing() {
       <LandingFinalCTA />
 
       {/* FOOTER */}
-      <footer className="border-t border-border/30 py-10">
+      <footer className="border-t border-border/30 py-8">
         <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <BrandLogo size="sm" className="opacity-50" />
-          <span className="text-xs text-muted-foreground/50">Discover styles. Verify size. Drip checked. © 2026</span>
+          <span className="text-xs text-muted-foreground/50 text-center">Discover styles. Verify size. Drip checked. © 2026</span>
           <div className="flex gap-6">
-            <Link to="/privacy" className="text-xs text-muted-foreground/50 hover:text-foreground transition-colors">Privacy</Link>
-            <Link to="/terms" className="text-xs text-muted-foreground/50 hover:text-foreground transition-colors">Terms</Link>
-            <a href="mailto:hello@dripfit.app" className="text-xs text-muted-foreground/50 hover:text-foreground transition-colors">Contact</a>
+            <Link to="/privacy" className="text-xs text-muted-foreground/50 hover:text-foreground transition-colors whitespace-nowrap">Privacy</Link>
+            <Link to="/terms" className="text-xs text-muted-foreground/50 hover:text-foreground transition-colors whitespace-nowrap">Terms</Link>
+            <a href="mailto:hello@dripfit.app" className="text-xs text-muted-foreground/50 hover:text-foreground transition-colors whitespace-nowrap">Contact</a>
           </div>
         </div>
       </footer>

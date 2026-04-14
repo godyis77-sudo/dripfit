@@ -37,7 +37,7 @@ export default function LandingHero() {
           </FadeIn>
 
           <FadeIn delay={0.08}>
-            <h1 className="type-brand text-5xl md:text-7xl leading-[1.05] mb-7" style={{ letterSpacing: '-0.02em' }}>
+            <h1 className="type-brand leading-[1.05] mb-7" style={{ letterSpacing: '-0.02em', fontSize: 'clamp(40px, 6vw, 72px)' }}>
               Stop Praying<br />
               <span className="text-primary">It Fits.</span>
             </h1>
