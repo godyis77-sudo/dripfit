@@ -7,7 +7,7 @@ import { setGuestMode } from '@/lib/session';
 import heroPhoneMockup from '@/assets/hero-phone-mockup.jpg';
 
 const STATS = [
-  { v: '9K+', l: 'Products' },
+  { v: '9,000+', l: 'Products' },
   { v: '186', l: 'Brands' },
   { v: '389', l: 'Size Charts' },
 ];
@@ -45,7 +45,7 @@ export default function LandingHero() {
 
           <FadeIn delay={0.16}>
             <p className="type-body text-lg md:text-xl leading-relaxed max-w-md mb-10 font-light">
-              Your body. Mapped. 9,000+ pieces. 186 brands. Perfect drape — verified before checkout.
+              Your body. Mapped. 9,000+ pieces. 186 brands. Perfect drape. Verified before checkout.
             </p>
           </FadeIn>
 
