@@ -12,6 +12,7 @@ import LandingHowItWorks from '@/components/landing/LandingHowItWorks';
 import LandingMarket from '@/components/landing/LandingMarket';
 import LandingCommunity from '@/components/landing/LandingCommunity';
 import LandingFAQ from '@/components/landing/LandingFAQ';
+import LandingPricing from '@/components/landing/LandingPricing';
 import LandingFinalCTA from '@/components/landing/LandingFinalCTA';
 import { FadeIn } from '@/components/landing/LandingAnimations';
 
