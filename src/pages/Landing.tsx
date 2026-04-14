@@ -224,6 +224,9 @@ export default function Landing() {
       {/* MARKET */}
       <LandingMarket />
 
+      {/* PRICING */}
+      <LandingPricing />
+
       {/* FAQ */}
       <LandingFAQ />
 

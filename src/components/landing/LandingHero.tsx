@@ -1,5 +1,5 @@
 import { ArrowRight } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FadeIn } from './LandingAnimations';
 import { useAuth } from '@/hooks/useAuth';
 import heroPhoneMockup from '@/assets/hero-phone-mockup.jpg';
@@ -12,12 +12,6 @@ const STATS = [
 
 export default function LandingHero() {
   const { user } = useAuth();
-  const navigate = useNavigate();
-
-  const handleGuestMode = () => {
-    setGuestMode();
-    navigate('/home');
-  };
 
   return (
     <section className="relative min-h-screen flex items-center">

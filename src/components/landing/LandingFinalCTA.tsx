@@ -5,12 +5,6 @@ import { useAuth } from '@/hooks/useAuth';
 
 export default function LandingFinalCTA() {
   const { user } = useAuth();
-  const navigate = useNavigate();
-
-  const handleGuestMode = () => {
-    setGuestMode();
-    navigate('/home');
-  };
 
   return (
     <section className="py-20 md:py-24 relative overflow-hidden border-t border-border/30">
