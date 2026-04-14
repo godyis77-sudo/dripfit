@@ -154,6 +154,9 @@ export default function Landing() {
       {/* HOW IT WORKS */}
       <LandingHowItWorks />
 
+      {/* TESTIMONIALS */}
+      <LandingTestimonials />
+
       {/* COMMUNITY */}
       <LandingCommunity />
 
