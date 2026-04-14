@@ -19,7 +19,7 @@ export default function LandingFeatures() {
         <FadeIn>
           <div className="text-center mb-16">
             <span className="type-data block mb-5 text-primary/70">The Ecosystem</span>
-            <h2 className="type-headline text-4xl md:text-5xl leading-tight" style={{ letterSpacing: '-0.01em' }}>
+            <h2 className="type-headline leading-tight" style={{ letterSpacing: '-0.01em', fontSize: 'clamp(32px, 4vw, 48px)' }}>
               Your Body. Mapped.<br />Your Closet. <span className="text-primary">Infinite.</span>
             </h2>
           </div>
