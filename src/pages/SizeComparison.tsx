@@ -597,7 +597,7 @@ const SizeComparison = () => {
                         {(() => {
                           const dotStyle: React.CSSProperties = { width: 7, height: 7, borderRadius: '50%' };
                           if (brand.confidence >= 0.72) return <div style={{ ...dotStyle, background: '#C49A00', boxShadow: '0 0 6px rgba(196,154,0,0.65)' }} />;
-                          if (brand.confidence >= 0.55) return <div style={{ ...dotStyle, background: '#F59E0B', boxShadow: '0 0 5px rgba(245,158,11,0.4)' }} />;
+                          if (brand.confidence >= 0.55) return <div style={{ ...dotStyle, background: '#C49A00', boxShadow: '0 0 5px rgba(196,154,0,0.4)' }} />;
                           return <div style={{ ...dotStyle, background: '#333333', border: '1px solid #444444' }} />;
                         })()}
                       </div>
@@ -659,11 +659,11 @@ const SizeComparison = () => {
 
                         {/* Match quality + percentage */}
                         <span style={{ textAlign: 'center', fontSize: 10, fontWeight: 500 }}>
-                          <span style={{ fontFamily: "'DM Mono', monospace", color: brand.confidence >= 0.72 ? '#D4AE2A' : brand.confidence >= 0.55 ? '#F59E0B' : '#555555' }}>
+                          <span style={{ fontFamily: "'DM Mono', monospace", color: brand.confidence >= 0.72 ? '#D4AE2A' : brand.confidence >= 0.55 ? '#D4AE2A' : '#555555' }}>
                             {brand.confidence >= 0.72 ? 'High match' : brand.confidence >= 0.55 ? 'Good match' : 'Near match'}
                           </span>
                           <span style={{ color: '#2A2A2A', fontFamily: "'DM Mono', monospace" }}> · </span>
-                          <span style={{ fontFamily: "'DM Mono', monospace", fontWeight: 400, color: brand.confidence >= 0.72 ? '#D4AE2A' : brand.confidence >= 0.55 ? '#F59E0B' : '#555555' }}>
+                          <span style={{ fontFamily: "'DM Mono', monospace", fontWeight: 400, color: brand.confidence >= 0.72 ? '#D4AE2A' : brand.confidence >= 0.55 ? '#D4AE2A' : '#555555' }}>
                             {getTierPercentage(brand.confidence, brand.brandName)}%
                           </span>
                         </span>
