@@ -249,7 +249,7 @@ const SizeComparison = () => {
         </ScrollFadeRow>
 
         {/* Genre style chips */}
-        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
+        <ScrollFadeRow>
           {GENRE_PILLS.map(g => (
             <button
               key={g.value}
@@ -264,7 +264,7 @@ const SizeComparison = () => {
               {g.label}
             </button>
           ))}
-        </div>
+        </ScrollFadeRow>
       </div>
 
       {/* Content */}
