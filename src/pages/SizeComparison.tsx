@@ -51,6 +51,30 @@ const CATEGORY_MAPPING: Record<string, string[]> = {
   swimwear: ['swimwear'],
 };
 
+function ScrollFadeRow({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [showFade, setShowFade] = useState(false);
+
+  const check = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    setShowFade(el.scrollWidth - el.scrollLeft - el.clientWidth > 2);
+  }, []);
+
+  useEffect(() => { check(); }, [check, children]);
+
+  return (
+    <div className={cn('relative overflow-hidden', className)}>
+      <div ref={ref} onScroll={check} className="flex gap-1.5 overflow-x-auto scrollbar-hide">
+        {children}
+      </div>
+      {showFade && (
+        <div className="absolute right-0 top-0 bottom-0 w-12 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent, #0A0A0A)' }} />
+      )}
+    </div>
+  );
+}
+
 const SizeComparison = () => {
   usePageMeta({
     title: 'Your Verified Sizes',
