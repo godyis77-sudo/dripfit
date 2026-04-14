@@ -311,6 +311,12 @@ const SizeComparison = () => {
               {filtered.length} brand{filtered.length !== 1 ? 's' : ''} • {selectedCategory}
             </p>
 
+            <div className="flex gap-4 items-center py-1 pb-3" style={{ fontSize: 11, fontFamily: 'DM Sans', color: '#888888', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-primary inline-block" /> High Match</span>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: '#666666' }} /> Good Match</span>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: '#333333', border: '1px solid #555555' }} /> Near Match</span>
+            </div>
+
             <div className="grid grid-cols-2 gap-2.5">
               <AnimatePresence mode="popLayout">
                 {filtered.map((brand, i) => (
