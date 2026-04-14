@@ -147,12 +147,18 @@ const SizeComparison = () => {
 
         const recommendation = recommendInlineChartSize(sizeData, measurements, fit, chart.category);
         if (recommendation && recommendation.confidence > 0.2) {
+          let displaySize = recommendation.size;
+          // Prefix bare numeric sizes with their sizing system
+          const system = (chart.size_system || '').toUpperCase();
+          if (/^\d+$/.test(displaySize) && system && !['US', 'ALPHA', 'NUMERIC'].includes(system)) {
+            displaySize = `${system} ${displaySize}`;
+          }
           results.push({
             brandName: chart.brand_name,
             brandSlug: chart.brand_slug,
             category: chart.category,
             gender: chart.gender,
-            size: recommendation.size,
+            size: displaySize,
             confidence: recommendation.confidence,
             genre: getBrandGenre(chart.brand_name) || 'Casual',
           });
