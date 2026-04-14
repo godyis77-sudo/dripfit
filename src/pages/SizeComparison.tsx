@@ -393,7 +393,7 @@ const SizeComparison = () => {
                   No verified sizes found for &lsquo;{searchQuery}&rsquo;
                 </p>
               </div>
-            ) : (
+            ) : viewMode === 'brand' ? (
             <div className="grid grid-cols-2 gap-2.5">
               <AnimatePresence mode="popLayout">
                 {filtered.map((brand, i) => (
@@ -405,15 +405,8 @@ const SizeComparison = () => {
                     transition={{ delay: i * 0.02, duration: 0.2 }}
                     className="relative bg-black/30 backdrop-blur-sm rounded-xl border border-white/6 p-3 flex flex-col items-center gap-1.5"
                   >
-                    {/* Confidence dot */}
                     <div className={cn('absolute top-2 right-2 h-1.5 w-1.5 rounded-full', confidenceDot(brand.confidence))} />
-
-                    {/* YOUR SIZE label */}
-                    <span className="text-[10px] font-semibold tracking-[0.1em] uppercase text-primary/60 mb-0.5">
-                      Your Size
-                    </span>
-
-                    {/* Size — GOLD */}
+                    <span className="text-[10px] font-semibold tracking-[0.1em] uppercase text-primary/60 mb-0.5">Your Size</span>
                     {(() => {
                       const parenMatch = brand.size.match(/^([^(]+)\((.+)\)$/);
                       const slashMatch = !parenMatch && brand.size.match(/^(\d+)\/(.+)$/);
@@ -435,18 +428,8 @@ const SizeComparison = () => {
                       }
                       return <span className="font-display text-2xl text-primary tracking-tight leading-none">{brand.size}</span>;
                     })()}
-
-                    {/* Brand name */}
-                    <span className="text-[11px] font-medium text-white/70 text-center leading-tight line-clamp-1">
-                      {brand.brandName}
-                    </span>
-
-                    {/* Genre tag */}
-                    <span className="text-[9px] text-white/30 font-medium uppercase tracking-[0.15em]">
-                      {brand.genre}
-                    </span>
-
-                    {/* Confidence text */}
+                    <span className="text-[11px] font-medium text-white/70 text-center leading-tight line-clamp-1">{brand.brandName}</span>
+                    <span className="text-[9px] text-white/30 font-medium uppercase tracking-[0.15em]">{brand.genre}</span>
                     <span className={cn('text-[10px]', 
                       brand.confidence >= 0.72 ? 'text-primary/70' : 
                       brand.confidence >= 0.55 ? 'text-amber-400/70' : 'text-muted-foreground/50'
@@ -457,6 +440,39 @@ const SizeComparison = () => {
                 ))}
               </AnimatePresence>
             </div>
+            ) : (
+              /* Size View — grouped by size value */
+              <div className="space-y-5">
+                {(() => {
+                  const groups = new Map<string, BrandSize[]>();
+                  for (const b of filtered) {
+                    const list = groups.get(b.size) || [];
+                    list.push(b);
+                    groups.set(b.size, list);
+                  }
+                  return Array.from(groups.entries())
+                    .sort((a, b) => b[1].length - a[1].length)
+                    .map(([size, brands]) => (
+                      <div key={size}>
+                        <div className="flex items-baseline gap-2 mb-2">
+                          <span className="text-primary" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: '2rem', lineHeight: 1 }}>{size}</span>
+                          <span className="text-[12px]" style={{ color: '#888888', fontFamily: 'DM Sans' }}>({brands.length} {brands.length === 1 ? 'brand' : 'brands'})</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {brands.map(b => (
+                            <span
+                              key={b.brandName}
+                              className="rounded-full px-3 py-1 text-[12px]"
+                              style={{ fontFamily: 'DM Sans', backgroundColor: '#1A1A1A', border: '1px solid #2D2D2D', color: '#CCCCCC' }}
+                            >
+                              {b.brandName}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ));
+                })()}
+              </div>
             )}
 
             {!isSubscribed && (
