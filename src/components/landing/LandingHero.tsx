@@ -67,7 +67,7 @@ export default function LandingHero() {
                 </Link>
                 <button
                   onClick={handleGuestMode}
-                  className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors ml-1"
+                  className="text-xs text-muted-foreground/70 hover:text-muted-foreground transition-colors ml-1"
                 >
                   or try as guest →
                 </button>

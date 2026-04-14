@@ -32,7 +32,7 @@ export default function LandingFeatures() {
                   <f.icon className="w-5 h-5 text-primary" />
                 </div>
                 <h3 className="type-headline text-xl mb-3">{f.title}</h3>
-                <p className="type-body leading-relaxed" style={{ fontSize: 14 }}>{f.desc}</p>
+                <p className="type-body leading-relaxed text-muted-foreground/80" style={{ fontSize: 15 }}>{f.desc}</p>
               </div>
             </FadeIn>
           ))}

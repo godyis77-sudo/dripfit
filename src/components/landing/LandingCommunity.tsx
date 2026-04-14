@@ -19,7 +19,7 @@ export default function LandingCommunity() {
             <p className="type-body text-base leading-relaxed">
               Find the heads who dress like you think. Share fits. Rate drape. Build your verified circle.
             </p>
-            <p className="text-xs text-muted-foreground/45 mt-4">Join 1,200+ members who've already verified their drip.</p>
+            <p className="text-sm text-muted-foreground/65 mt-4">Join 1,200+ members who've already verified their drip.</p>
           </div>
         </FadeIn>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -28,7 +28,7 @@ export default function LandingCommunity() {
               <div className="bg-[hsl(var(--surface-glass)/0.03)] backdrop-blur-xl border border-border/40 rounded-2xl p-10 text-center">
                 <div className="type-data mb-4">{c.title}</div>
                 <div className="type-headline text-4xl text-primary mb-2">{c.value}</div>
-                <div className="type-data text-muted-foreground/40">{c.sub}</div>
+                <div className="type-data text-muted-foreground/60">{c.sub}</div>
               </div>
             </FadeIn>
           ))}

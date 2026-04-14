@@ -14,7 +14,7 @@ export default function LandingCommunityVerdict() {
       <div className="max-w-3xl mx-auto px-6">
         <FadeIn>
           <div className="bg-[hsl(var(--surface-glass)/0.03)] backdrop-blur-xl border border-border/40 rounded-2xl p-8 md:p-10">
-            <span className="type-data text-primary/70 block mb-6" style={{ fontSize: 9 }}>Live Community Verdict</span>
+            <span className="type-data text-primary/80 block mb-6" style={{ fontSize: 11 }}>Live Community Verdict</span>
             <div className="space-y-5">
               {COP_DROP_DATA.map((d) => (
                 <div key={d.label}>
@@ -31,7 +31,7 @@ export default function LandingCommunityVerdict() {
                 </div>
               ))}
             </div>
-            <p className="text-[11px] text-muted-foreground/50 text-center mt-6 pt-5 border-t border-border/30">
+            <p className="text-xs text-muted-foreground/60 text-center mt-6 pt-5 border-t border-border/30">
               Verdicts from Body Twins within your measurement range
             </p>
             <div className="mt-6 flex justify-center">

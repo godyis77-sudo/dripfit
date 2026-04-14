@@ -91,8 +91,8 @@ export default function Landing() {
       {/* SOCIAL PROOF BAR */}
       <div className="border-y border-border/30 py-5">
         <div className="max-w-6xl mx-auto px-6 flex items-center justify-center gap-8 md:gap-14 flex-wrap">
-          {PROOF_TAGS.map((t) => (
-            <span key={t} className="text-[11px] tracking-[.18em] uppercase text-muted-foreground/40 font-semibold">{t}</span>
+        {PROOF_TAGS.map((t) => (
+            <span key={t} className="text-xs tracking-[.15em] uppercase text-muted-foreground/60 font-semibold">{t}</span>
           ))}
         </div>
       </div>
@@ -104,12 +104,12 @@ export default function Landing() {
       <section className="pt-20 md:pt-28 pb-20">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <FadeIn>
-            <span className="font-mono text-[10px] tracking-[.22em] uppercase text-muted-foreground/60 block mb-5">The Problem</span>
+            <span className="font-mono text-xs tracking-[.18em] uppercase text-muted-foreground/70 block mb-5">The Problem</span>
             <h2 className="font-display font-bold leading-tight mb-6" style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}>
               Ordering Three Sizes.<br />
               <span className="text-muted-foreground/40">Returning Two.</span>
             </h2>
-            <p className="text-muted-foreground text-base leading-relaxed max-w-lg mx-auto">
+            <p className="text-muted-foreground/80 text-base leading-relaxed max-w-lg mx-auto">
               The grail piece drops. You cop three sizes because every brand fits different. Two go back. Money locked. Drip delayed. Dead returns piling up.
             </p>
           </FadeIn>
@@ -125,7 +125,7 @@ export default function Landing() {
           ))}
         </div>
         <FadeIn delay={0.3}>
-          <p className="text-[11px] text-muted-foreground/30 text-right max-w-5xl mx-auto px-6 mt-3">
+          <p className="text-xs text-muted-foreground/50 text-right max-w-5xl mx-auto px-6 mt-3">
             ¹ National Retail Federation, 2023 Returns Report
           </p>
         </FadeIn>
@@ -150,7 +150,7 @@ export default function Landing() {
       <footer className="border-t border-border/30 py-8">
         <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <BrandLogo size="sm" className="opacity-50" />
-          <span className="text-xs text-muted-foreground/50 text-center">Discover styles. Verify size. Drip checked. © 2026</span>
+          <span className="text-xs text-muted-foreground/60 text-center">Discover styles. Verify size. Drip checked. © 2026</span>
           <div className="flex gap-6">
             <Link to="/privacy" className="text-xs text-muted-foreground/50 hover:text-foreground transition-colors whitespace-nowrap">Privacy</Link>
             <Link to="/terms" className="text-xs text-muted-foreground/50 hover:text-foreground transition-colors whitespace-nowrap">Terms</Link>

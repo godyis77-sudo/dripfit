@@ -28,7 +28,7 @@ export default function LandingHowItWorks() {
                   </div>
                   <div>
                     <h4 className="type-headline text-base mb-1.5">{s.title}</h4>
-                    <p className="type-body leading-relaxed" style={{ fontSize: 14 }}>{s.desc}</p>
+                    <p className="type-body leading-relaxed text-muted-foreground/80" style={{ fontSize: 15 }}>{s.desc}</p>
                   </div>
                 </div>
               </FadeIn>
