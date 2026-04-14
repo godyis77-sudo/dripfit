@@ -1,5 +1,6 @@
 import { Scan, Shirt, Users, Scale, ShieldCheck, MessageSquare, LucideIcon } from 'lucide-react';
 import { FadeIn } from './LandingAnimations';
+import bodyScanShowcase from '@/assets/body-scan-showcase.jpg';
 
 interface Feature { icon: LucideIcon; title: string; desc: string }
 
