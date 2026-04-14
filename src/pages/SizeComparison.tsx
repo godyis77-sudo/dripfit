@@ -276,7 +276,7 @@ const SizeComparison = () => {
 
         {/* Category pills */}
         <ScrollFadeRow className="mb-1.5">
-          {CATEGORY_PILLS.map(c => (
+          {categoryPills.map(c => (
             <button
               key={c.value}
               onClick={() => setSelectedCategory(c.value)}
