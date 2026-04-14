@@ -19,7 +19,7 @@ export default function LandingCommunity() {
             <p className="type-body text-base leading-relaxed">
               Find the heads who dress like you think. Share fits. Rate drape. Build your verified circle.
             </p>
-            <p className="text-sm text-muted-foreground/65 mt-4">Join 1,200+ members who've already verified their drip.</p>
+            <p className="text-sm text-muted-foreground/65 mt-4">Join the verified circle. Growing daily.</p>
           </div>
         </FadeIn>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
