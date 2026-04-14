@@ -233,6 +233,105 @@ const SizeComparison = () => {
     return 'bg-muted-foreground/40';
   };
 
+  const generateShareImage = async (): Promise<Blob | null> => {
+    const top6 = filtered.slice(0, 6);
+    if (top6.length === 0) return null;
+
+    const W = 1080, H = 1080;
+    const canvas = document.createElement('canvas');
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d')!;
+
+    // Background
+    ctx.fillStyle = '#0A0A0A';
+    ctx.fillRect(0, 0, W, H);
+
+    // Header
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = '700 42px "Cormorant Garamond", serif';
+    ctx.fillText('YOUR VERIFIED SIZES', 60, 80);
+    ctx.fillStyle = '#666666';
+    ctx.font = '300 24px "DM Sans", sans-serif';
+    ctx.fillText('Every brand. Locked.', 60, 115);
+
+    // Logo right-aligned
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#D4AF37';
+    ctx.font = '700 28px "DM Sans", sans-serif';
+    ctx.fillText('DRIPFIT✓', W - 60, 85);
+
+    // Grid: 3 cols × 2 rows
+    const cols = 3, rows = 2;
+    const gridX = 60, gridY = 150;
+    const gap = 20;
+    const cardW = (W - 2 * gridX - (cols - 1) * gap) / cols;
+    const cardH = (H - gridY - 100 - (rows - 1) * gap) / rows;
+
+    for (let i = 0; i < Math.min(top6.length, 6); i++) {
+      const brand = top6[i];
+      const col = i % cols, row = Math.floor(i / cols);
+      const x = gridX + col * (cardW + gap);
+      const y = gridY + row * (cardH + gap);
+
+      // Card bg
+      ctx.fillStyle = '#111111';
+      const r = 14;
+      ctx.beginPath();
+      ctx.roundRect(x, y, cardW, cardH, r);
+      ctx.fill();
+
+      // Gold top border
+      ctx.fillStyle = '#D4AF37';
+      ctx.beginPath();
+      ctx.roundRect(x, y, cardW, 3, [r, r, 0, 0]);
+      ctx.fill();
+
+      // Match %
+      const pct = `${Math.round(brand.confidence * 100)}%`;
+      ctx.fillStyle = 'rgba(212,174,42,0.1)';
+      ctx.beginPath();
+      ctx.roundRect(x + 14, y + 16, 48, 22, 11);
+      ctx.fill();
+      ctx.fillStyle = '#D4AE2A';
+      ctx.font = '400 18px "DM Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(pct, x + 38, y + 32);
+
+      // "YOUR SIZE"
+      ctx.fillStyle = '#C49A00';
+      ctx.font = '500 14px "DM Sans", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.letterSpacing = '1.5px';
+      ctx.fillText('YOUR SIZE', x + cardW / 2, y + 62);
+
+      // Size value
+      ctx.fillStyle = '#D4AF37';
+      ctx.font = 'italic 700 72px "Cormorant Garamond", serif';
+      ctx.fillText(brand.size, x + cardW / 2, y + cardH / 2 + 30);
+
+      // Brand name
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '600 20px "DM Sans", sans-serif';
+      const bName = brand.brandName.length > 14 ? brand.brandName.slice(0, 13) + '…' : brand.brandName;
+      ctx.fillText(bName, x + cardW / 2, y + cardH - 55);
+
+      // Match quality
+      ctx.fillStyle = brand.confidence >= 0.72 ? '#D4AE2A' : brand.confidence >= 0.55 ? '#F59E0B' : '#888888';
+      ctx.font = '500 16px "DM Sans", sans-serif';
+      const label = brand.confidence >= 0.72 ? 'High match' : brand.confidence >= 0.55 ? 'Good match' : 'Near match';
+      ctx.fillText(label, x + cardW / 2, y + cardH - 25);
+    }
+
+    // Footer
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#555555';
+    ctx.font = '400 18px "DM Mono", monospace';
+    ctx.fillText('dripfitcheck.com', W / 2, H - 35);
+
+    return new Promise(resolve => canvas.toBlob(b => resolve(b), 'image/png'));
+  };
+
   return (
     <div className="min-h-screen bg-background pb-safe-tab">
       {/* Header */}
@@ -256,17 +355,28 @@ const SizeComparison = () => {
             className="h-10 w-10 rounded-full min-h-[44px] min-w-[44px] bg-white/[0.06] border border-white/10 backdrop-blur-sm"
             aria-label="Share my size chart"
             onClick={async () => {
-              const shareData = {
-                title: 'My Verified Sizes — DripFit',
-                text: 'Your body. Mapped. Every brand. Locked. — dripfitcheck.com',
-                url: window.location.href,
-              };
-              if (navigator.share) {
-                try { await navigator.share(shareData); } catch {}
+              const { toast } = await import('sonner');
+              if (filtered.length === 0) {
+                toast('No sizes to share yet');
+                return;
+              }
+              toast('Generating share image…');
+              const blob = await generateShareImage();
+              if (!blob) { toast('Failed to generate image'); return; }
+
+              const file = new File([blob], 'my-verified-sizes.png', { type: 'image/png' });
+
+              if (navigator.share && navigator.canShare?.({ files: [file] })) {
+                try {
+                  await navigator.share({ files: [file], title: 'My Verified Sizes — DripFit' });
+                } catch {}
               } else {
-                await navigator.clipboard.writeText(window.location.href);
-                const { toast } = await import('sonner');
-                toast('Link copied');
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = 'my-verified-sizes.png';
+                a.click();
+                URL.revokeObjectURL(url);
+                toast('Image downloaded');
               }
             }}
           >
