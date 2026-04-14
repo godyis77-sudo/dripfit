@@ -468,34 +468,34 @@ const SizeComparison = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ delay: i * 0.02, duration: 0.2 }}
-                    className="relative bg-black/30 backdrop-blur-sm rounded-xl border border-white/6 p-3 flex flex-col items-center gap-1.5"
+                    className="relative bg-black/30 backdrop-blur-sm rounded-xl border border-white/6 p-3 flex flex-col items-center gap-0.5"
                   >
                     <div className={cn('absolute top-2 right-2 h-1.5 w-1.5 rounded-full', confidenceDot(brand.confidence))} />
-                    <span className="text-[10px] font-semibold tracking-[0.1em] uppercase text-primary/60 mb-0.5">Your Size</span>
+                    <span className="text-[9px] font-semibold tracking-[0.1em] uppercase text-primary/60">Your Size</span>
                     {(() => {
                       const parenMatch = brand.size.match(/^([^(]+)\((.+)\)$/);
                       const slashMatch = !parenMatch && brand.size.match(/^(\d+)\/(.+)$/);
                       if (parenMatch) {
                         return (
                           <div className="flex flex-col items-center">
-                            <span className="font-display text-2xl text-primary tracking-tight leading-none">{parenMatch[1].trim()}</span>
-                            <span className="text-[12px] uppercase tracking-[0.06em]" style={{ fontFamily: 'DM Sans', color: '#888888' }}>{parenMatch[2].trim()}</span>
+                            <span className="font-display text-primary tracking-tight leading-none" style={{ fontSize: '2.5rem' }}>{parenMatch[1].trim()}</span>
+                            <span className="text-[11px] uppercase tracking-[0.06em]" style={{ fontFamily: 'DM Sans', color: '#888888' }}>{parenMatch[2].trim()}</span>
                           </div>
                         );
                       }
                       if (slashMatch) {
                         return (
                           <div className="flex flex-col items-center">
-                            <span className="font-display text-2xl text-primary tracking-tight leading-none">{slashMatch[1]}</span>
-                            <span className="text-[12px] uppercase tracking-[0.06em]" style={{ fontFamily: 'DM Sans', color: '#888888' }}>/{slashMatch[2]}</span>
+                            <span className="font-display text-primary tracking-tight leading-none" style={{ fontSize: '2.5rem' }}>{slashMatch[1]}</span>
+                            <span className="text-[11px] uppercase tracking-[0.06em]" style={{ fontFamily: 'DM Sans', color: '#888888' }}>/{slashMatch[2]}</span>
                           </div>
                         );
                       }
-                      return <span className="font-display text-2xl text-primary tracking-tight leading-none">{brand.size}</span>;
+                      return <span className="font-display text-primary tracking-tight leading-none" style={{ fontSize: '2.5rem' }}>{brand.size}</span>;
                     })()}
-                    <span className="text-[11px] font-medium text-white/70 text-center leading-tight line-clamp-1">{brand.brandName}</span>
-                    <span className="text-[9px] text-white/30 font-medium uppercase tracking-[0.15em]">{brand.genre}</span>
-                    <span className={cn('text-[10px]', 
+                    <span className="text-[11px] font-medium text-white/70 text-center leading-tight line-clamp-1 mt-0.5">{brand.brandName}</span>
+                    <span className="text-[9px] text-white/30 font-medium uppercase tracking-[0.15em] leading-none">{brand.genre}</span>
+                    <span className={cn('text-[9px] leading-none', 
                       brand.confidence >= 0.72 ? 'text-primary/70' : 
                       brand.confidence >= 0.55 ? 'text-amber-400/70' : 'text-muted-foreground/50'
                     )}>
