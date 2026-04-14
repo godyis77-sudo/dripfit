@@ -33,7 +33,28 @@ const GENRE_PILLS: { label: string; value: BrandGenre | 'all' }[] = [
   { label: 'Outdoor', value: 'Outdoor & Active' },
 ];
 
-const CATEGORY_PILLS = [
+const MALE_CATEGORY_PILLS = [
+  { label: 'Tops', value: 'tops' },
+  { label: 'Bottoms', value: 'bottoms' },
+  { label: 'Suits', value: 'suits' },
+  { label: 'Outerwear', value: 'outerwear' },
+  { label: 'Activewear', value: 'activewear' },
+  { label: 'Shorts', value: 'shorts' },
+  { label: 'Swimwear', value: 'swimwear' },
+];
+
+const FEMALE_CATEGORY_PILLS = [
+  { label: 'Tops', value: 'tops' },
+  { label: 'Bottoms', value: 'bottoms' },
+  { label: 'Dresses', value: 'dresses' },
+  { label: 'Outerwear', value: 'outerwear' },
+  { label: 'Skirts', value: 'skirts' },
+  { label: 'Activewear', value: 'activewear' },
+  { label: 'Jumpsuits', value: 'jumpsuits' },
+  { label: 'Swimwear', value: 'swimwear' },
+];
+
+const DEFAULT_CATEGORY_PILLS = [
   { label: 'Tops', value: 'tops' },
   { label: 'Bottoms', value: 'bottoms' },
   { label: 'Dresses', value: 'dresses' },
@@ -44,9 +65,13 @@ const CATEGORY_PILLS = [
 
 const CATEGORY_MAPPING: Record<string, string[]> = {
   tops: ['tops', 'hoodies', 'fleece', 'knitwear'],
-  bottoms: ['bottoms', 'jeans', 'shorts'],
-  dresses: ['dresses', 'jumpsuits'],
-  outerwear: ['outerwear', 'blazers', 'suits'],
+  bottoms: ['bottoms', 'jeans'],
+  shorts: ['shorts'],
+  dresses: ['dresses'],
+  skirts: ['skirts'],
+  jumpsuits: ['jumpsuits'],
+  suits: ['suits', 'blazers'],
+  outerwear: ['outerwear', 'blazers'],
   activewear: ['activewear', 'sports-bras'],
   swimwear: ['swimwear'],
 };
@@ -83,7 +108,13 @@ const SizeComparison = () => {
   });
 
   const navigate = useNavigate();
-  const { user, isSubscribed } = useAuth();
+  const { user, isSubscribed, userGender } = useAuth();
+
+  const categoryPills = useMemo(() => {
+    if (userGender === 'male') return MALE_CATEGORY_PILLS;
+    if (userGender === 'female') return FEMALE_CATEGORY_PILLS;
+    return DEFAULT_CATEGORY_PILLS;
+  }, [userGender]);
   const [loading, setLoading] = useState(true);
   const [brandSizes, setBrandSizes] = useState<BrandSize[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -245,7 +276,7 @@ const SizeComparison = () => {
 
         {/* Category pills */}
         <ScrollFadeRow className="mb-1.5">
-          {CATEGORY_PILLS.map(c => (
+          {categoryPills.map(c => (
             <button
               key={c.value}
               onClick={() => setSelectedCategory(c.value)}
