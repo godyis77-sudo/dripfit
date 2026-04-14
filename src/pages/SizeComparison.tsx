@@ -371,21 +371,6 @@ const SizeComparison = () => {
               </AnimatePresence>
             </div>
 
-            {/* Legend */}
-            <div className="flex items-center justify-center gap-4 mt-6 mb-4">
-              <div className="flex items-center gap-1.5">
-                <div className="h-2 w-2 rounded-full bg-primary" />
-                <span className="text-[10px] text-white/30">High match</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="h-2 w-2 rounded-full bg-amber-400" />
-                <span className="text-[10px] text-white/30">Good match</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="h-2 w-2 rounded-full bg-muted-foreground/40" />
-                <span className="text-[10px] text-white/30">Near Match</span>
-              </div>
-            </div>
           </>
         )}
       </div>
