@@ -147,6 +147,15 @@ export default function Landing() {
       {/* LIVE COMMUNITY VERDICT */}
       <LandingCommunityVerdict />
 
+      {/* FEATURES */}
+      <LandingFeatures />
+
+      {/* HOW IT WORKS */}
+      <LandingHowItWorks />
+
+      {/* COMMUNITY */}
+      <LandingCommunity />
+
       {/* PROBLEM */}
       <section className="pt-20 md:pt-28 pb-20">
         <div className="max-w-3xl mx-auto px-6 text-center">
@@ -182,7 +191,7 @@ export default function Landing() {
           <FadeIn delay={0.1}>
             <span className="font-mono text-xs tracking-[.18em] uppercase text-[#AAAAAA] block mb-6">Apparel Leads Every Category</span>
           </FadeIn>
-          <div className="space-y-4">
+          <div className="space-y-4 pb-4">
             {RETURN_BARS.map((bar, i) => (
               <FadeIn key={bar.label} delay={0.15 + i * 0.06}>
                 <div className="flex items-center gap-4">
@@ -214,15 +223,6 @@ export default function Landing() {
 
       {/* ROOT CAUSE */}
       <LandingRootCause />
-
-      {/* FEATURES */}
-      <LandingFeatures />
-
-      {/* HOW IT WORKS */}
-      <LandingHowItWorks />
-
-      {/* COMMUNITY */}
-      <LandingCommunity />
 
       {/* MARKET */}
       <LandingMarket />
