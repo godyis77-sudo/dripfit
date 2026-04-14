@@ -646,7 +646,7 @@ const SizeComparison = () => {
                           marginBottom: 6,
                         }}
                       >
-                        {brand.category}
+                        {brand.genre}
                       </span>
 
                        {/* Match quality + percentage */}
