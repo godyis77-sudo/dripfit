@@ -8,7 +8,7 @@ const CARDS = [
 
 export default function LandingCommunity() {
   return (
-    <section id="community" className="py-28 md:py-36 bg-secondary/20 border-y border-border/30">
+    <section id="community" className="py-20 bg-secondary/20 border-y border-border/30">
       <div className="max-w-5xl mx-auto px-6">
         <FadeIn>
           <div className="text-center mb-14 max-w-lg mx-auto">

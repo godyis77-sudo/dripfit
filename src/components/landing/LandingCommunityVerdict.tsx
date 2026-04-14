@@ -10,7 +10,7 @@ const COP_DROP_DATA = [
 
 export default function LandingCommunityVerdict() {
   return (
-    <section className="py-20 md:py-28">
+    <section className="pt-10 pb-0">
       <div className="max-w-3xl mx-auto px-6">
         <FadeIn>
           <div className="bg-[hsl(var(--surface-glass)/0.03)] backdrop-blur-xl border border-border/40 rounded-2xl p-8 md:p-10">
