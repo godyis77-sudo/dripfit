@@ -9,6 +9,7 @@ import LandingCommunityVerdict from '@/components/landing/LandingCommunityVerdic
 import LandingFeatures from '@/components/landing/LandingFeatures';
 import LandingRootCause from '@/components/landing/LandingRootCause';
 import LandingHowItWorks from '@/components/landing/LandingHowItWorks';
+import LandingMarket from '@/components/landing/LandingMarket';
 import LandingCommunity from '@/components/landing/LandingCommunity';
 import LandingFAQ from '@/components/landing/LandingFAQ';
 import LandingFinalCTA from '@/components/landing/LandingFinalCTA';
@@ -185,6 +186,9 @@ export default function Landing() {
 
       {/* COMMUNITY */}
       <LandingCommunity />
+
+      {/* MARKET */}
+      <LandingMarket />
 
       {/* FAQ */}
       <LandingFAQ />
