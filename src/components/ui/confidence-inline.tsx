@@ -10,7 +10,7 @@ function getTier(confidence: number): { textColor: string; label: string } {
   // WCAG AA compliant text colors on white background
   if (confidence >= 0.85) return { textColor: "#15803D", label: "Great match" };   // green-700
   if (confidence >= 0.70) return { textColor: "#B45309", label: "Good fit" };       // amber-700
-  if (confidence >= 0.60) return { textColor: "#DC2626", label: "Approximate" };    // red-600
+  if (confidence >= 0.60) return { textColor: "#DC2626", label: "Near Match" };    // red-600
   return { textColor: "#6B7280", label: "Check sizing" };                           // gray-500
 }
 

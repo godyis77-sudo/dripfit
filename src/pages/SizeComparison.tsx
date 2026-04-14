@@ -350,7 +350,7 @@ const SizeComparison = () => {
                       brand.confidence >= 0.72 ? 'text-primary/70' : 
                       brand.confidence >= 0.55 ? 'text-amber-400/70' : 'text-muted-foreground/50'
                     )}>
-                      {brand.confidence >= 0.72 ? 'High match' : brand.confidence >= 0.55 ? 'Good match' : 'Approximate'}
+                      {brand.confidence >= 0.72 ? 'High match' : brand.confidence >= 0.55 ? 'Good match' : 'Near Match'}
                     </span>
                   </motion.div>
                 ))}
@@ -369,7 +369,7 @@ const SizeComparison = () => {
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="h-2 w-2 rounded-full bg-muted-foreground/40" />
-                <span className="text-[10px] text-white/30">Approximate</span>
+                <span className="text-[10px] text-white/30">Near Match</span>
               </div>
             </div>
           </>
