@@ -9,7 +9,7 @@ const FEATURES: Feature[] = [
   { icon: Users, title: 'Body & Style Twins', desc: 'Members with your exact proportions. If it drapes on them — it drapes on you. Verified.' },
   { icon: Scale, title: 'COP / DROP Voting', desc: 'The community verdict. Your Body Twins have spoken. Binary. Decisive. No ambiguity.' },
   { icon: ShieldCheck, title: 'Verified Sizing', desc: 'Your mapped size across every brand. Instantly. No more guessing between a Medium at Nike and a Large at Zara.' },
-  { icon: MessageSquare, title: 'AI Style Assistant', desc: 'Streaming AI that knows your measurements, taste, and closet. Personalized recommendations. No generic picks.' },
+  { icon: MessageSquare, title: 'AI Style Assistant', desc: 'AI that maps your taste, measurements, and closet. Drops heat that\'s actually yours. No generic picks.' },
 ];
 
 export default function LandingFeatures() {

@@ -2,10 +2,10 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { FadeIn } from './LandingAnimations';
 
 const DONUT_DATA = [
-  { name: 'Wrong size / fit', value: 38, color: '#D4AF37' },
-  { name: 'Looked different in person', value: 22, color: '#6B21A8' },
-  { name: 'Changed mind / style', value: 15, color: '#3D3D3D' },
-  { name: 'Other reasons', value: 25, color: '#1a1a1a' },
+  { name: 'Wrong Fit', value: 38, color: '#D4AF37' },
+  { name: 'Looked Different', value: 22, color: '#4A4A4A' },
+  { name: 'Style Change', value: 15, color: '#3D3D3D' },
+  { name: 'Other', value: 25, color: '#1a1a1a' },
 ];
 
 const INSIGHT_STATS = [
