@@ -105,7 +105,7 @@ export default function Landing() {
         <div className="max-w-3xl mx-auto px-6 text-center">
           <FadeIn>
             <span className="font-mono text-[10px] tracking-[.22em] uppercase text-muted-foreground/60 block mb-5">The Problem</span>
-            <h2 className="font-display text-4xl md:text-5xl font-bold leading-tight mb-6">
+            <h2 className="font-display font-bold leading-tight mb-6" style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}>
               Ordering Three Sizes.<br />
               <span className="text-muted-foreground/40">Returning Two.</span>
             </h2>
