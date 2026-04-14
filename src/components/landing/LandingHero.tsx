@@ -58,7 +58,7 @@ export default function LandingHero() {
                 Enter App <ArrowRight className="h-4 w-4" />
               </Link>
             ) : (
-              <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+              <div className="flex flex-col items-start gap-2 w-full max-w-md">
                 <Link
                   to="/auth"
                   className="inline-flex items-center justify-center gap-2 h-13 px-8 rounded-full bg-foreground text-background font-medium text-sm transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
@@ -67,9 +67,9 @@ export default function LandingHero() {
                 </Link>
                 <button
                   onClick={handleGuestMode}
-                  className="h-13 px-8 rounded-full border border-border bg-secondary/60 text-foreground font-medium text-sm transition-all duration-300 hover:bg-secondary active:scale-[0.98]"
+                  className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors ml-1"
                 >
-                  Try as Guest
+                  or try as guest →
                 </button>
               </div>
             )}
