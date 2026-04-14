@@ -5,7 +5,7 @@ const TESTIMONIALS = [
   {
     quote: "Ordered the Arc'teryx Beta LT in M first try. My Body Twins said 91% COP on M. They were right.",
     name: 'Jordan K.',
-    tag: 'Streetwear / Arc'teryx collector',
+    tag: "Streetwear / Arc'teryx collector",
     location: 'Toronto, CA',
   },
   {
