@@ -83,9 +83,10 @@ export default function LandingHero() {
                 src={heroPhoneMockup}
                 alt="DripFit My Sizes screen showing verified size cards for multiple brands"
                 className="w-full block"
-              loading="eager"
-              fetchPriority="high"
-            />
+                loading="eager"
+                fetchPriority="high"
+              />
+            </div>
           </div>
         </FadeIn>
       </div>
