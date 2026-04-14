@@ -30,12 +30,15 @@ export default function LandingFinalCTA() {
                 Enter App <ArrowRight className="h-4 w-4" />
               </Link>
             ) : (
-              <Link
-                to="/auth"
-                className="bg-[#C49A00] text-[#0A0A0A] font-bold rounded-full py-4 px-8 text-base tracking-wide inline-flex items-center justify-center gap-2 hover:bg-[#D4AF37] transition-colors duration-200"
-              >
-                Sign Up Free <ArrowRight className="h-4 w-4" />
-              </Link>
+              <div className="flex flex-col items-center gap-0">
+                <Link
+                  to="/auth"
+                  className="bg-[#C49A00] text-[#0A0A0A] font-bold rounded-full py-4 px-8 text-base tracking-wide inline-flex items-center justify-center gap-2 hover:bg-[#D4AF37] transition-colors duration-200"
+                >
+                  Sign Up Free <ArrowRight className="h-4 w-4" />
+                </Link>
+                <span className="text-xs text-center text-[#666666] mt-2">Your biometric data is encrypted and never sold.</span>
+              </div>
             )}
           </div>
         </FadeIn>
