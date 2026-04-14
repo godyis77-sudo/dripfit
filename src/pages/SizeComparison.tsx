@@ -224,51 +224,23 @@ const SizeComparison = () => {
           ))}
         </div>
 
-        {/* Genre filter toggle */}
-        <div className="flex items-center gap-1.5">
-          <button
-            onClick={() => setShowGenreFilter(prev => !prev)}
-            className={cn(
-              'px-3 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap transition-all border min-h-[28px] backdrop-blur-sm flex items-center gap-1',
-              selectedGenre !== 'all'
-                ? 'bg-primary/10 border-primary/25 text-primary'
-                : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/8'
-            )}
-          >
-            <Filter className="h-3 w-3" />
-            {selectedGenre !== 'all' ? GENRE_PILLS.find(g => g.value === selectedGenre)?.label : 'Filter'}
-            {selectedGenre !== 'all' && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}
-          </button>
-        </div>
-
-        {/* Genre pills — collapsible */}
-        <AnimatePresence>
-          {showGenreFilter && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden"
+        {/* Genre style chips */}
+        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
+          {GENRE_PILLS.map(g => (
+            <button
+              key={g.value}
+              onClick={() => setSelectedGenre(g.value)}
+              className={cn(
+                'px-2.5 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap transition-all border min-h-[28px] backdrop-blur-sm',
+                selectedGenre === g.value
+                  ? 'bg-primary/10 border-primary/25 text-primary'
+                  : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/8'
+              )}
             >
-              <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pt-1.5">
-                {GENRE_PILLS.map(g => (
-                  <button
-                    key={g.value}
-                    onClick={() => setSelectedGenre(g.value)}
-                    className={cn(
-                      'px-2.5 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap transition-all border min-h-[28px] backdrop-blur-sm',
-                      selectedGenre === g.value
-                        ? 'bg-primary/10 border-primary/25 text-primary'
-                        : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/8'
-                    )}
-                  >
-                    {g.label}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              {g.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Content */}
