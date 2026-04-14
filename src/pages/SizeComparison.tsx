@@ -83,7 +83,7 @@ const SizeComparison = () => {
   });
 
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isSubscribed } = useAuth();
   const [loading, setLoading] = useState(true);
   const [brandSizes, setBrandSizes] = useState<BrandSize[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -388,6 +388,33 @@ const SizeComparison = () => {
                 ))}
               </AnimatePresence>
             </div>
+
+            {!isSubscribed && (
+              <div
+                className="mt-4 rounded-2xl p-6 border"
+                style={{
+                  background: 'linear-gradient(135deg, #1A1A1A 0%, #111008 100%)',
+                  borderColor: '#D4AF37',
+                }}
+              >
+                <span className="text-[11px] font-semibold uppercase tracking-[0.1em]" style={{ color: '#D4AE2A', fontFamily: 'DM Sans' }}>
+                  Unlock More Brands
+                </span>
+                <h2 className="mt-1.5 text-white" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: '1.75rem' }}>
+                  {filtered.length} of 186 brands.
+                </h2>
+                <p className="mt-1 text-[13px]" style={{ color: '#888888', fontFamily: 'DM Sans' }}>
+                  Premium maps your size across all 186 brands and 389 size charts.
+                </p>
+                <Button
+                  className="w-full mt-4 rounded-full py-3 px-6 font-bold text-black"
+                  style={{ backgroundColor: '#C49A00' }}
+                  onClick={() => navigate('/premium')}
+                >
+                  Go Premium →
+                </Button>
+              </div>
+            )}
 
           </>
         )}
