@@ -12,13 +12,13 @@ const MARKET_DATA = [
 
 const MARKET_STATS = [
   { stat: '6.99% CAGR', label: 'Projected growth through 2030' },
-  { stat: '$957B', label: 'Global fashion ecommerce in 2025' },
+  { stat: '$1.01T', label: 'Fashion ecommerce market today' },
   { stat: '70% of returns', label: 'Are preventable with verified sizing' },
 ];
 
 function CustomDot(props: any) {
   const { cx, cy, payload } = props;
-  const isCurrent = payload.year === '2025';
+  const isCurrent = payload.year === '2026';
   return (
     <g>
       <circle cx={cx} cy={cy} r={isCurrent ? 6 : 3} fill="#D4AF37" stroke="none" />
@@ -70,7 +70,7 @@ export default function LandingMarket() {
                     tickLine={false}
                     width={60}
                   />
-                  <ReferenceLine x="2025" stroke="#D4AF37" strokeDasharray="6 4" strokeOpacity={0.5} />
+                  <ReferenceLine x="2026" stroke="#D4AF37" strokeDasharray="6 4" strokeOpacity={0.5} />
                   <Area type="monotone" dataKey="value" stroke="none" fill="url(#goldFill)" />
                   <Line type="monotone" dataKey="value" stroke="#D4AF37" strokeWidth={2} dot={<CustomDot />} activeDot={false} />
                 </LineChart>
