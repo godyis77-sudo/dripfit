@@ -317,6 +317,7 @@ const SizeComparison = () => {
               <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: '#333333', border: '1px solid #555555' }} /> Near Match</span>
             </div>
 
+            <div className="grid grid-cols-2 gap-2.5">
               <AnimatePresence mode="popLayout">
                 {filtered.map((brand, i) => (
                   <motion.div
