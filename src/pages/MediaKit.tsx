@@ -144,8 +144,7 @@ const MediaKit = () => {
           <div className="grid grid-cols-2 gap-3 mt-4">
             <LogoCard bg="bg-card" label="Full Logo — Dark BG"><BrandLogo size="xl" /></LogoCard>
             <LogoCard bg="bg-foreground" label="Full Logo — Light BG" labelClass="text-background/60">
-              <div className="flex items-center gap-3">
-                <BrandLogo size="xl" />
+              <BrandLogo size="xl" />
             </LogoCard>
             <LogoCard bg="bg-card" label="Icon Only"><BrandLogo size="md" iconOnly /></LogoCard>
             <LogoCard bg="bg-card" label="Compact"><BrandLogo size="sm" /></LogoCard>
