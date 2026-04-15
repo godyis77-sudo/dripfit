@@ -1273,6 +1273,20 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
           }
         }
 
+        if (isTimeout && isSportsBraOrCropTop) {
+          const hasTextBridgeReference = Boolean(aiGarmentDescription);
+          if (hasTextBridgeReference) {
+            console.warn(
+              `Attempt ${
+                attempt + 1
+              } (${plan.label}): timed out for crop-top/sports-bra flow, switching to text-bridge rescue early.`,
+            );
+            lastTextContent =
+              "This garment is taking longer than usual. Trying an alternate generation path...";
+            break;
+          }
+        }
+
         if (
           !lastTextContent ||
           !lastTextContent.toLowerCase().includes("rejected this garment style")
