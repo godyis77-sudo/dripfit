@@ -14,6 +14,7 @@ interface TrendingFit {
   product_url: string | null;
   price_cents: number | null;
   category: string;
+  description?: string | null;
 }
 
 interface TrendingFitsGridProps {
@@ -74,6 +75,9 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
               <div className="p-2">
                 <p className="font-mono text-[10px] tracking-widest uppercase text-zinc-500">{fit.brand}</p>
                 <p className="font-sans text-sm text-zinc-200 line-clamp-1 leading-tight">{fit.name}</p>
+                {fit.description && (
+                  <p className="text-[10px] text-zinc-500 line-clamp-1 leading-snug mt-0.5">{fit.description}</p>
+                )}
                 {fit.price_cents != null && (
                   <p className="font-mono text-sm text-white font-medium mt-0.5">${(fit.price_cents / 100).toFixed(0)}</p>
                 )}
