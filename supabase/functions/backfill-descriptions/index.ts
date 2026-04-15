@@ -210,46 +210,8 @@ Deno.serve(async (req) => {
         retailerResults[retailer] = 0;
       }
     } else {
-      // Non-Shopify: try to extract description from product page via simple fetch
-      let updated = 0;
-      for (const item of items.slice(0, 50)) { // limit non-Shopify to 50 per batch
-        if (!item.product_url) continue;
-        try {
-          const resp = await fetch(item.product_url, {
-            headers: { 'User-Agent': HTTP_UA },
-            redirect: 'follow',
-          });
-          if (!resp.ok) continue;
-          const html = await resp.text();
-
-          // Try meta description
-          const metaMatch = html.match(/<meta\s+name=["']description["']\s+content=["']([^"']{20,500})["']/i)
-            || html.match(/<meta\s+content=["']([^"']{20,500})["']\s+name=["']description["']/i);
-          
-          // Try og:description
-          const ogMatch = html.match(/<meta\s+property=["']og:description["']\s+content=["']([^"']{20,500})["']/i)
-            || html.match(/<meta\s+content=["']([^"']{20,500})["']\s+property=["']og:description["']/i);
-
-          // Try JSON-LD
-          const ldMatch = html.match(/"description"\s*:\s*"([^"]{20,500})"/);
-
-          const desc = metaMatch?.[1] || ogMatch?.[1] || ldMatch?.[1] || null;
-          if (desc) {
-            const clean = desc.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
-            if (clean.length > 15) {
-              const { error: upErr } = await supabase
-                .from('product_catalog')
-                .update({ description: clean.slice(0, 500) })
-                .eq('id', item.id);
-              if (!upErr) updated++;
-            }
-          }
-
-          await new Promise(r => setTimeout(r, 300)); // rate limit
-        } catch {
-          // skip
-        }
-      }
+      // Non-Shopify: scrape product pages directly
+      const updated = await scrapeDescriptionsFromPages(supabase, items.slice(0, 50));
       retailerResults[retailer] = updated;
       totalUpdated += updated;
     }
