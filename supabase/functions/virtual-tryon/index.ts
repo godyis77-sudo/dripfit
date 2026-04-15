@@ -899,7 +899,8 @@ TASK — FOOTWEAR SWAP:
 
 Output: A single photorealistic FULL-BODY image showing the person head to feet. No text/watermarks/split views.`;
     } else if (
-      (isAccessory || isLayering) && !isIntimateGarment && !isSportsBraOrCropTop &&
+      (isAccessory || isLayering) && !isIntimateGarment &&
+      !isSportsBraOrCropTop &&
       !isTopLikeGarment
     ) {
       const accessoryLayoutGuard = isBelt
