@@ -1002,6 +1002,7 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
 
       const firstChoice = (aiData.choices as Array<Record<string, unknown>>)?.[0];
       const finishReason = typeof firstChoice?.finish_reason === "string" ? firstChoice.finish_reason : "";
+      const nativeFinishReason = typeof firstChoice?.native_finish_reason === "string" ? firstChoice.native_finish_reason : "";
       const msg = firstChoice?.message as Record<string, unknown> | undefined;
       const refusal = msg && Object.prototype.hasOwnProperty.call(msg, "refusal") ? msg.refusal : undefined;
       const messageTextRaw = typeof msg?.content === "string"
@@ -1009,14 +1010,28 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
         : messageContentToText(msg?.content);
       const messageText = messageTextRaw.trim();
 
-      const refusalSignal = `${typeof refusal === "string" ? refusal : ""} ${messageText}`.toLowerCase();
+      const refusalSignal = `${typeof refusal === "string" ? refusal : ""} ${messageText} ${nativeFinishReason}`.toLowerCase();
       const looksLikeRefusal =
         refusal !== undefined ||
         /reject|refus|policy|unsafe|cannot|can't|unable/.test(refusalSignal) ||
-        /safety|content_filter|blocked|other|no_image/.test(finishReason.toLowerCase());
+        /safety|content_filter|blocked|other|no_image|image_prohibited_content/.test(finishReason.toLowerCase()) ||
+        /image_prohibited_content/.test(nativeFinishReason.toLowerCase());
 
       if (refusal !== undefined) {
         console.warn(`REFUSED (${plan.label}):`, JSON.stringify(refusal).substring(0, 300));
+      }
+
+      // Detect IMAGE_PROHIBITED_CONTENT for sports bras (standard path items that still trigger safety)
+      const isProhibitedContent = /image_prohibited_content/.test(nativeFinishReason.toLowerCase()) ||
+        /image_prohibited_content/.test(finishReason.toLowerCase());
+      if (isProhibitedContent && isSportsBraOrCropTop) {
+        sawSafetyRefusal = true;
+        console.warn(`Sports bra safety refusal detected (${plan.label}), will attempt text-bridge rescue.`);
+        // Break out of standard loop early if we have a description ready
+        if (aiGarmentDescription) {
+          lastTextContent = "Safety filter triggered for this garment. Trying alternative approach...";
+          break;
+        }
       }
 
       let extractedAfterRefusal = false;
