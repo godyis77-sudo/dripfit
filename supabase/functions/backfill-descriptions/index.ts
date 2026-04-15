@@ -128,6 +128,7 @@ Deno.serve(async (req) => {
         }
 
         let updated = 0;
+        const unmatchedItems: typeof items = [];
         for (const item of items) {
           let desc: string | null = null;
 
@@ -152,7 +153,16 @@ Deno.serve(async (req) => {
               .update({ description: desc })
               .eq('id', item.id);
             if (!upErr) updated++;
+          } else {
+            unmatchedItems.push(item);
           }
+        }
+
+        // Fallback: scrape product pages for unmatched Shopify items
+        if (unmatchedItems.length > 0) {
+          console.log(`[backfill] ${retailer}: ${unmatchedItems.length} unmatched, falling back to HTML scrape`);
+          const htmlUpdated = await scrapeDescriptionsFromPages(supabase, unmatchedItems.slice(0, 50));
+          updated += htmlUpdated;
         }
 
         retailerResults[retailer] = updated;
