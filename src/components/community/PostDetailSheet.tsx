@@ -326,7 +326,7 @@ export const PostDetailSheet = ({
       </AnimatePresence>
 
       <AlertDialog open={!!confirmDeleteId} onOpenChange={(open) => !open && setConfirmDeleteId(null)}>
-        <AlertDialogContent className="max-w-[320px] rounded-2xl">
+        <AlertDialogContent className="max-w-[320px] rounded-2xl z-[110]">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-[15px]">Delete this post?</AlertDialogTitle>
             <AlertDialogDescription className="text-[13px]">This will permanently remove your post and all votes/comments. This action cannot be undone.</AlertDialogDescription>
