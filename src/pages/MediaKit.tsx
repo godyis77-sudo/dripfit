@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Palette, Type, Image, BarChart3, Users, ShoppingBag, Ruler, Eye, ExternalLink, Mail } from 'lucide-react';
-import InlineCrown from '@/components/ui/InlineCrown';
+import { Sparkles } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
@@ -140,14 +140,12 @@ const MediaKit = () => {
 
         {/* ── Logo & Brand Mark ────────────────────── */}
         <motion.section {...fade(0.08)}>
-          <SectionHead icon={() => <InlineCrown size={16} />} title="Logo &amp; Brand Mark" />
+          <SectionHead icon={() => <Sparkles className="h-4 w-4 text-primary" />} title="Logo &amp; Brand Mark" />
           <div className="grid grid-cols-2 gap-3 mt-4">
             <LogoCard bg="bg-card" label="Full Logo — Dark BG"><BrandLogo size="xl" /></LogoCard>
             <LogoCard bg="bg-foreground" label="Full Logo — Light BG" labelClass="text-background/60">
               <div className="flex items-center gap-3">
-                <div className="h-20 w-20 rounded-2xl bg-primary/90 flex items-center justify-center"><InlineCrown size={40} /></div>
-                <span className="font-display font-bold text-2xl tracking-[3px] text-background">DRIPFIT <span className="text-primary">✔</span></span>
-              </div>
+                <BrandLogo size="xl" />
             </LogoCard>
             <LogoCard bg="bg-card" label="Icon Only"><BrandLogo size="md" iconOnly /></LogoCard>
             <LogoCard bg="bg-card" label="Compact"><BrandLogo size="sm" /></LogoCard>
