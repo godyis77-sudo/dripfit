@@ -454,7 +454,11 @@ export function useTryOnState() {
             setSelectedQuickPick(state.quickPick as CatalogProduct);
             if (state.quickPick.category) setCategory(state.quickPick.category);
           }
-          handleAddAccessory(photo, state.quickPick?.category || detectCategoryFromUrl(state.productUrl || '') || null);
+          handleAddAccessory(
+            photo,
+            state.quickPick?.category || detectCategoryFromUrl(state.productUrl || '') || null,
+            state.quickPick as CatalogProduct | null,
+          );
         } else {
           // Fresh try-on — clear old result and start clean
           if (isFreshSession) {
@@ -1035,7 +1039,7 @@ export function useTryOnState() {
       trackEvent('tryon_add_item_to_result', { brand: product.brand, category: product.category });
       let photo: string;
       try { photo = await imageUrlToBase64(product.image_url); } catch { photo = product.image_url; }
-      handleAddAccessory(photo, product.category || null);
+      handleAddAccessory(photo, product.category || null, product);
       return;
     }
 
