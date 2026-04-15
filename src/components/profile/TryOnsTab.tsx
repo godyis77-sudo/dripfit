@@ -278,9 +278,9 @@ const TryOnsTab = ({ tryOnPosts, loading, onPostUpdated }: TryOnsTabProps) => {
             <AlertDialogAction
               className="rounded-xl text-[12px] bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={() => {
-                if (!confirmDeleteId) return;
-                void handleDeleteTryOn(confirmDeleteId);
+                const id = confirmDeleteId;
                 setConfirmDeleteId(null);
+                if (id) setTimeout(() => void handleDeleteTryOn(id), 50);
               }}
             >
               Delete
