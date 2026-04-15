@@ -47,6 +47,44 @@ function stripHtml(html: string): string | null {
   return plain.length > 15 ? plain.slice(0, 500) : null;
 }
 
+async function scrapeDescriptionsFromPages(supabase: any, items: { id: string; product_url: string | null; name: string }[]): Promise<number> {
+  let updated = 0;
+  for (const item of items) {
+    if (!item.product_url) continue;
+    try {
+      const resp = await fetch(item.product_url, {
+        headers: { 'User-Agent': HTTP_UA },
+        redirect: 'follow',
+      });
+      if (!resp.ok) continue;
+      const html = await resp.text();
+
+      const metaMatch = html.match(/<meta\s+name=["']description["']\s+content=["']([^"']{20,500})["']/i)
+        || html.match(/<meta\s+content=["']([^"']{20,500})["']\s+name=["']description["']/i);
+      const ogMatch = html.match(/<meta\s+property=["']og:description["']\s+content=["']([^"']{20,500})["']/i)
+        || html.match(/<meta\s+content=["']([^"']{20,500})["']\s+property=["']og:description["']/i);
+      const ldMatch = html.match(/"description"\s*:\s*"([^"]{20,500})"/);
+
+      const desc = metaMatch?.[1] || ogMatch?.[1] || ldMatch?.[1] || null;
+      if (desc) {
+        const clean = desc.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
+        if (clean.length > 15) {
+          const { error: upErr } = await supabase
+            .from('product_catalog')
+            .update({ description: clean.slice(0, 500) })
+            .eq('id', item.id);
+          if (!upErr) updated++;
+        }
+      }
+
+      await new Promise(r => setTimeout(r, 300));
+    } catch {
+      // skip
+    }
+  }
+  return updated;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
