@@ -233,9 +233,11 @@ Deno.serve(async (req) => {
 
     const isSwimwearOnly = isSwimwear && !isUnderwear;
     const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
+    // Sports bras / crop tops are NOT intimate but DO trigger safety filters, so they need extra budget for rescue paths.
+    const needsSafetyRescue = isIntimateGarment || isSportsBraOrCropTop;
     const FUNCTION_BUDGET_MS = 58_000;
-    const MIN_REQUIRED_MS_PER_ATTEMPT = isIntimateGarment ? 8_000 : 6_000;
-    const EXTRACTION_BUDGET_MS = isIntimateGarment ? 14_000 : 12_000;
+    const MIN_REQUIRED_MS_PER_ATTEMPT = needsSafetyRescue ? 8_000 : 6_000;
+    const EXTRACTION_BUDGET_MS = needsSafetyRescue ? 14_000 : 12_000;
     const MIN_REQUIRED_MS_FOR_EXTRACTION = 4_000;
     const startedAt = Date.now();
 
