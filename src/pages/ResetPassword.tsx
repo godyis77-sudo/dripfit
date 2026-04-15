@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { Lock, Eye, EyeOff, CheckCircle, AlertTriangle } from 'lucide-react';
-import InlineCrown from '@/components/ui/InlineCrown';
+import BrandLogo from '@/components/ui/BrandLogo';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -102,10 +102,7 @@ const ResetPassword = () => {
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 w-full max-w-[320px]">
         <div className="flex flex-col items-center mb-4">
-          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200, damping: 18 }} className="h-11 w-11 rounded-xl badge-gold-3d shimmer-sweep flex items-center justify-center mb-2">
-            <InlineCrown size={20} />
-          </motion.div>
-          <span className="font-display font-bold text-[12px] tracking-wider text-muted-foreground">DRIPFIT ✔</span>
+          <BrandLogo size="md" />
         </div>
 
         <Card className="rounded-xl border-border/40">

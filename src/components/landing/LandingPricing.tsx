@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Check } from 'lucide-react';
+import { ArrowRight, Check, Sparkles } from 'lucide-react';
 import { FadeIn } from './LandingAnimations';
-import InlineCrown from '@/components/ui/InlineCrown';
 
 const FREE_FEATURES = [
   '3 AR try-ons per month',
@@ -68,7 +67,7 @@ export default function LandingPricing() {
               </span>
 
               <span className="font-mono text-xs tracking-[.18em] uppercase text-[#D4AF37] mb-4 flex items-center gap-1.5">
-                <InlineCrown size={12} /> Premium
+                <Sparkles className="h-3 w-3" /> Premium
               </span>
               <div className="font-display text-4xl font-bold mb-1">$4.17<span className="text-lg font-normal text-muted-foreground">/mo</span></div>
               <p className="text-xs text-muted-foreground/60 mb-8">billed annually · $7.99 month-to-month</p>

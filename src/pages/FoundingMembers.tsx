@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Users, MessageSquare, Crown, TrendingUp, Zap, ArrowRight, Quote } from 'lucide-react';
-import InlineCrown from '@/components/ui/InlineCrown';
+import { Users, MessageSquare, Crown, TrendingUp, Zap, ArrowRight, Quote, Sparkles } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
@@ -69,7 +68,7 @@ const FoundingMembers = () => {
             transition={{ duration: 0.5 }}
           >
             <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[3px] text-primary bg-primary/10 px-3 py-1.5 rounded-full mb-5">
-              <InlineCrown size={12} /> Founding 100
+              <Sparkles className="h-3 w-3" /> Founding 100
             </span>
 
             <h1 className="headline-editorial text-3xl sm:text-4xl tracking-tight leading-[1.15] mb-3 text-primary">
