@@ -7,7 +7,6 @@ const corsHeaders = {
 
 const HTTP_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
 
-// Known Shopify domains → their /products.json base
 const SHOPIFY_DOMAINS: Record<string, string> = {
   'Essentials': 'https://fearofgod.com',
   'Fear of God': 'https://fearofgod.com',
@@ -47,16 +46,78 @@ function stripHtml(html: string): string | null {
   return plain.length > 15 ? plain.slice(0, 500) : null;
 }
 
-async function scrapeDescriptionsFromPages(supabase: any, items: { id: string; product_url: string | null; name: string }[]): Promise<number> {
+type BackfillItem = { id: string; product_url: string | null; name: string; retailer: string };
+
+async function generateDescriptionsViaAI(supabase: any, items: BackfillItem[]): Promise<number> {
+  const apiKey = Deno.env.get('LOVABLE_API_KEY');
+  if (!apiKey || items.length === 0) return 0;
+
+  const productList = items.map((item, i) =>
+    `${i + 1}. "${item.name}" by ${item.retailer}`
+  ).join('\n');
+
+  try {
+    const resp = await fetch('https://agentic.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash-lite',
+        messages: [{
+          role: 'user',
+          content: `Write a brief 1-2 sentence product description for each fashion item below. Focus on what the garment looks like, its key features (fit, fabric type, design details), and what occasion it suits. Keep each under 200 characters. Return ONLY a JSON array of strings in order, no markdown.\n\n${productList}`
+        }],
+        temperature: 0.3,
+      }),
+      signal: AbortSignal.timeout(25000),
+    });
+
+    if (!resp.ok) {
+      console.warn(`[backfill] AI API returned ${resp.status}`);
+      return 0;
+    }
+
+    const json = await resp.json();
+    const content = json.choices?.[0]?.message?.content || '';
+    const jsonMatch = content.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) {
+      console.warn('[backfill] AI response not parseable as JSON array');
+      return 0;
+    }
+
+    const descriptions: string[] = JSON.parse(jsonMatch[0]);
+    let updated = 0;
+
+    for (let i = 0; i < Math.min(descriptions.length, items.length); i++) {
+      const desc = descriptions[i]?.trim();
+      if (!desc || desc.length < 15) continue;
+      const { error } = await supabase
+        .from('product_catalog')
+        .update({ description: desc.slice(0, 500) })
+        .eq('id', items[i].id);
+      if (!error) updated++;
+    }
+
+    console.log(`[backfill] AI generated ${updated}/${items.length} descriptions`);
+    return updated;
+  } catch (err) {
+    console.error('[backfill] AI description error:', (err as Error).message);
+    return 0;
+  }
+}
+
+async function scrapeDescriptionsFromPages(supabase: any, items: BackfillItem[]): Promise<number> {
   let updated = 0;
+  const unscrapeableItems: BackfillItem[] = [];
+
   for (const item of items) {
-    if (!item.product_url) continue;
+    if (!item.product_url) { unscrapeableItems.push(item); continue; }
     try {
       const resp = await fetch(item.product_url, {
         headers: { 'User-Agent': HTTP_UA },
         redirect: 'follow',
+        signal: AbortSignal.timeout(8000),
       });
-      if (!resp.ok) continue;
+      if (!resp.ok) { unscrapeableItems.push(item); continue; }
       const html = await resp.text();
 
       const metaMatch = html.match(/<meta\s+name=["']description["']\s+content=["']([^"']{20,500})["']/i)
@@ -73,15 +134,23 @@ async function scrapeDescriptionsFromPages(supabase: any, items: { id: string; p
             .from('product_catalog')
             .update({ description: clean.slice(0, 500) })
             .eq('id', item.id);
-          if (!upErr) updated++;
+          if (!upErr) { updated++; continue; }
         }
       }
-
-      await new Promise(r => setTimeout(r, 300));
+      unscrapeableItems.push(item);
+      await new Promise(r => setTimeout(r, 200));
     } catch {
-      // skip
+      unscrapeableItems.push(item);
     }
   }
+
+  // AI fallback for items that couldn't be scraped
+  if (unscrapeableItems.length > 0) {
+    console.log(`[backfill] ${unscrapeableItems.length} items unscrapeable, using AI fallback`);
+    const aiUpdated = await generateDescriptionsViaAI(supabase, unscrapeableItems.slice(0, 40));
+    updated += aiUpdated;
+  }
+
   return updated;
 }
 
@@ -97,7 +166,6 @@ Deno.serve(async (req) => {
   const retailerFilter: string | null = body.retailer || null;
   const batchSize: number = body.batch_size || 200;
 
-  // Get products missing descriptions
   let query = supabase
     .from('product_catalog')
     .select('id, product_url, retailer, name')
@@ -119,12 +187,11 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ message: 'No products need description backfill', updated: 0 }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   }
 
-  // Group by retailer
-  const byRetailer: Record<string, typeof products> = {};
+  const byRetailer: Record<string, BackfillItem[]> = {};
   for (const p of products) {
     const r = p.retailer;
     if (!byRetailer[r]) byRetailer[r] = [];
-    byRetailer[r].push(p);
+    byRetailer[r].push(p as BackfillItem);
   }
 
   let totalUpdated = 0;
@@ -132,45 +199,39 @@ Deno.serve(async (req) => {
 
   for (const [retailer, items] of Object.entries(byRetailer)) {
     const shopifyBase = SHOPIFY_DOMAINS[retailer];
-    
+
     if (shopifyBase) {
-      // Fetch from Shopify API and match by product_url
       try {
         const allShopifyProducts: any[] = [];
         for (let page = 1; page <= 10; page++) {
           const url = `${shopifyBase}/products.json?limit=250&page=${page}`;
-          const resp = await fetch(url, { headers: { 'User-Agent': HTTP_UA } });
+          const resp = await fetch(url, { headers: { 'User-Agent': HTTP_UA }, signal: AbortSignal.timeout(10000) });
           if (!resp.ok) break;
           const json = await resp.json();
           if (!json.products || json.products.length === 0) break;
           allShopifyProducts.push(...json.products);
           if (json.products.length < 250) break;
-          // Rate limit respect
           await new Promise(r => setTimeout(r, 500));
         }
 
         console.log(`[backfill] ${retailer}: fetched ${allShopifyProducts.length} Shopify products`);
 
-        // Build handle→description map
         const descMap = new Map<string, string>();
         for (const sp of allShopifyProducts) {
           if (sp.body_html) {
             const desc = stripHtml(sp.body_html);
             if (desc) {
-              // Match by handle in URL
               if (sp.handle) descMap.set(sp.handle.toLowerCase(), desc);
-              // Also store by title for fuzzy matching
               descMap.set(sp.title?.toLowerCase()?.trim(), desc);
             }
           }
         }
 
         let updated = 0;
-        const unmatchedItems: typeof items = [];
+        const unmatchedItems: BackfillItem[] = [];
         for (const item of items) {
           let desc: string | null = null;
 
-          // Try matching by handle in product_url
           if (item.product_url) {
             try {
               const u = new URL(item.product_url);
@@ -180,7 +241,6 @@ Deno.serve(async (req) => {
             } catch {}
           }
 
-          // Fallback: match by name
           if (!desc) {
             desc = descMap.get(item.name?.toLowerCase()?.trim()) || null;
           }
@@ -196,21 +256,23 @@ Deno.serve(async (req) => {
           }
         }
 
-        // Fallback: scrape product pages for unmatched Shopify items
+        // Fallback for unmatched Shopify items: scrape pages then AI
         if (unmatchedItems.length > 0) {
-          console.log(`[backfill] ${retailer}: ${unmatchedItems.length} unmatched, falling back to HTML scrape`);
-          const htmlUpdated = await scrapeDescriptionsFromPages(supabase, unmatchedItems.slice(0, 50));
-          updated += htmlUpdated;
+          console.log(`[backfill] ${retailer}: ${unmatchedItems.length} unmatched, falling back`);
+          const fallbackUpdated = await scrapeDescriptionsFromPages(supabase, unmatchedItems.slice(0, 50));
+          updated += fallbackUpdated;
         }
 
         retailerResults[retailer] = updated;
         totalUpdated += updated;
       } catch (err) {
         console.error(`[backfill] ${retailer} error:`, (err as Error).message);
-        retailerResults[retailer] = 0;
+        // If Shopify totally failed, try AI directly
+        const aiUpdated = await generateDescriptionsViaAI(supabase, items.slice(0, 40));
+        retailerResults[retailer] = aiUpdated;
+        totalUpdated += aiUpdated;
       }
     } else {
-      // Non-Shopify: scrape product pages directly
       const updated = await scrapeDescriptionsFromPages(supabase, items.slice(0, 50));
       retailerResults[retailer] = updated;
       totalUpdated += updated;
