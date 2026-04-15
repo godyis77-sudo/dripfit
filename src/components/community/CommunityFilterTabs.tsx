@@ -11,7 +11,7 @@ const TABS: { key: FilterType; label: string }[] = [
   { key: 'new', label: 'New' },
   { key: 'following', label: 'Following' },
   { key: 'trending', label: 'Trending' },
-  { key: 'similar', label: 'Similar Fit' },
+  { key: 'similar', label: 'Twins' },
   { key: 'shop', label: 'Shop' },
 ];
 
