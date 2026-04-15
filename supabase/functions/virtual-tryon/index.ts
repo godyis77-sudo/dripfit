@@ -547,7 +547,7 @@ TASK — FOOTWEAR SWAP:
 8. ${noResizeInstruction}
 
 Output: A single photorealistic FULL-BODY image showing the person head to feet. No text/watermarks/split views.`;
-    } else if ((isAccessory || isLayering) && !isIntimateGarment) {
+    } else if ((isAccessory || isLayering) && !isIntimateGarment && !isSportsBraOrCropTop) {
       const accessoryLayoutGuard = isBelt
         ? 'BELT-SPECIFIC: The belt MUST be clearly visible around the waist, worn OVER the existing clothing. Show the full belt including buckle/chain details. Do NOT hide it under clothing layers.'
         : 'ACCESSORY-SPECIFIC: Image B may be a retail product card, collage, or multi-model photo. Extract ONLY the accessory item itself and DISCARD any person, body, pose, white frame, banner, padding, studio card layout, duplicate figure, or side-by-side composition from Image B. The final image must keep the original single-person framing from Image A only.';
@@ -571,265 +571,60 @@ TASK: Add the accessory from Image B onto the person in Image A. Match the targe
 ${accessoryBagGuard ? `- ${accessoryBagGuard}\n` : ''}- ${bgInstruction}
 - Correct scale, lighting, shadows. No text/watermarks.
 
-IMAGE QUALITY: Maintain or improve the resolution and sharpness of Image A. Do NOT reduce image quality, introduce blur, compression artifacts, or soften details. The output must be at least as sharp and detailed as Image A.
 ${noResizeInstruction}`;
     } else if (isIntimateGarment) {
       const intimateReferenceLine = `IMAGE B: An activewear/athletic product listing photo from an online retailer.${intimateTextReference ? `\nHint: ${intimateTextReference}` : ""}`;
 
       const underwearSafetyInstruction = isUnderwearSafeMode
-        ? "\n\nBASE-LAYER SAFETY RULES:\n- Keep the model fully covered and commercially styled (no nudity).\n- If the reference looks like a base-layer, reinterpret it as athletic styling (e.g., waistband detail, modest athletic shorts/top silhouette) while preserving branding, colors, and materials.\n- Do NOT generate see-through fabric; treat any sheer areas as opaque."
-        : "";
+        ? `COMMERCIAL SAFETY MODE:
+- Recreate the exact garment as a commercially appropriate FULL-COVERAGE athletic base-layer / shortie / fitted activewear styling.
+- Preserve exact color, pattern, logo/waistband cues, and silhouette family where possible.
+- Do NOT depict exposed intimate anatomy, transparent coverage, or minimal-coverage styling.`
+        : `SAFETY NOTE:
+- ${safetyNote}`;
 
-      prompt = `You are a professional fashion catalog photographer. Generate ONE photorealistic product catalog image.
+      prompt = `You are a professional retail fashion photo editor.
+Generate ONE photorealistic full-body editorial ecommerce image.
 
-IMAGE A: A fitness model posing — this is the MODEL for the catalog shoot.
+${identityInstruction}
+${noResizeInstruction}
+
+IMAGE A: The person photo. Preserve face, hair, body shape, skin tone, pose, hand position, camera angle, framing, and background.
 ${intimateReferenceLine}
 
-TASK: Create a product catalog photo showing the model from Image A wearing the athletic garment from Image B.
+TASK:
+- Dress the person from Image A in the garment represented by Image B.
+- Match the garment's exact color, silhouette, neckline, straps, coverage level, material appearance, seams, print, trim, and branding cues as closely as possible.
+- Keep it retail-safe, natural, and commercially appropriate.
+- Output ONE full-body image only. No collage, no split panels, no duplicate people, no text.
+- ${bgInstruction}
 
- CATALOG PHOTOGRAPHY RULES:
-- Copy ONLY the garment from Image B onto the model. If Image B shows another person, ignore them — extract only the garment design.
-- ${garmentSwapScopeInstruction}
-- Reproduce garment details exactly: color, fabric texture, cut lines, straps, neckline, hemline, logos, prints.
-- CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate, flip, or turn the model. Only copy the GARMENT from Image B, never its pose or camera angle.
-- ${identityInstruction}
-${intimateFramingInstruction}
-- CRITICAL: ${bgInstruction}
-- Natural fabric drape and realistic shadows matching the scene lighting.
-- Do NOT add extra clothing items not shown in the garment reference.
- - Professional retail catalog quality — clean, commercially appropriate.${underwearSafetyInstruction}
-- CRITICAL: Show the model's FULL BODY from head to feet in the output image. Include legs and feet — do NOT crop at the waist or torso.
-- ${noResizeInstruction}
-
-Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, or collages.`;
+${underwearSafetyInstruction}`;
     } else {
-      // Detect if garment is top-only or bottom-only to preserve existing clothing
-      const BOTTOM_TYPES = ["jeans", "pants", "pant", "trousers", "shorts", "skirt", "skirts", "leggings", "chinos", "joggers", "sweatpants", "cargo", "culottes", "bottom", "bottoms"];
-      const TOP_TYPES = ["top", "tops", "shirt", "shirts", "blouse", "t-shirt", "t-shirts", "tee", "sweater", "sweaters", "hoodie", "hoodies", "polo", "polos", "tank", "tank top", "crop top", "sports bra", "bra", "bralette", "cardigan", "pullover", "henley", "jersey"];
-      const FULL_BODY_TYPES = ["dress", "dresses", "jumpsuit", "jumpsuits", "romper", "overalls", "full"];
-      const OUTERWEAR_TYPES = ["jacket", "jackets", "coat", "coats", "blazer", "blazers", "parka", "windbreaker", "outerwear", "gilet"];
-      const OUTERWEAR_VEST_HINT = /\b(puffer\s*vest|down\s*vest|quilted\s*vest|fleece\s*vest|insulated\s*vest|gilet|vest|vests|puffer\s*gilet)\b/;
-      const SET_TYPES = ["set", "matching set", "two piece", "2 piece", "2-piece", "co-ord", "co ord", "coord", "pajama set", "pj set", "lounge set", "sleep set", "tracksuit", "sweatsuit", "matching", "outfit", "combo", "bundle", "pair"];
-      const COMFORTWEAR_STD_TYPES = ["loungewear", "loungeware", "sleepwear", "pajamas", "pyjamas", "robe", "robes", "lounge"];
-
-      const stdContext = normalizeMatchText([itemLower, productName.toLowerCase(), productCategory.toLowerCase()].join(" "));
-
-      // PRIORITY 1: Explicit "set" keyword in product name/category overrides single-piece classification.
-      // E.g. "satin bralette, pant and robe pajama set" must route as a set, not as a top.
-      const hasExplicitSetKeyword = SET_TYPES.some(t => hasContextTerm(stdContext, t)) || COMFORTWEAR_STD_TYPES.some(t => hasContextTerm(stdContext, t));
-      // Detect if context mentions BOTH a top AND a bottom — this implies a set even without "set" keyword
-      const hasBothTopAndBottom = TOP_TYPES.some(t => hasContextTerm(stdContext, t)) && BOTTOM_TYPES.some(t => hasContextTerm(stdContext, t));
-      // Also detect 3+ piece descriptions like "bralette, pant and robe"
-      const hasMultiplePieceSignals = [
-        TOP_TYPES.some(t => hasContextTerm(stdContext, t)),
-        BOTTOM_TYPES.some(t => hasContextTerm(stdContext, t)),
-        /\b(robe|robes|jacket|coat|blazer|cardigan|hoodie)\b/.test(stdContext),
-      ].filter(Boolean).length >= 2;
-
-      const isSetGarmentStd = hasExplicitSetKeyword || hasBothTopAndBottom || hasMultiplePieceSignals;
-
-      const isBottomGarment = !isSetGarmentStd && BOTTOM_TYPES.some(t => hasContextTerm(stdContext, t));
-      const isTopGarment = !isSetGarmentStd && TOP_TYPES.some(t => hasContextTerm(stdContext, t)) && !isBottomGarment;
-      const isFullBodyGarment = !isSetGarmentStd && FULL_BODY_TYPES.some(t => hasContextTerm(stdContext, t));
-      // Only classify as outerwear if it's a jacket/coat/blazer OR explicitly an insulated vest (puffer vest, gilet)
-      const isOuterwearGarment = !isSetGarmentStd && (OUTERWEAR_TYPES.some(t => hasContextTerm(stdContext, t)) || OUTERWEAR_VEST_HINT.test(stdContext)) && !isTopGarment;
-
-      let swapInstruction: string;
-      if (isSetGarmentStd) {
-        swapInstruction = `1. Image B shows a COMPLETE SET / MULTI-PIECE OUTFIT. You MUST replace ALL clothing from Image A with the ENTIRE outfit shown in Image B — apply EVERY piece (top, bottom, and any layering piece like a robe/jacket/cardigan).
-2. CRITICAL: Do NOT apply only one piece. ALL pieces visible in Image B must appear on the model. If the set includes 3 pieces (e.g., bralette + pants + robe), ALL THREE must be worn.
-3. Match every detail from Image B: color, pattern, print, fabric texture, fit, and styling of ALL pieces precisely.
-4. Keep the person's EXISTING footwear from Image A UNCHANGED unless the set from Image B includes footwear. For loungewear/sleepwear sets, remove footwear — the model should be barefoot.`;
-      } else if (isBottomGarment) {
-        swapInstruction = `1. Replace ONLY the lower-body clothing (pants, jeans, shorts, skirt, etc.) from Image A with the garment from Image B.
-2. Keep the person's EXISTING upper-body clothing (shirt, top, jacket, etc.) from Image A completely UNCHANGED.
-3. Keep the person's EXISTING footwear from Image A completely UNCHANGED.`;
-      } else if (isOuterwearGarment) {
-        swapInstruction = `1. LAYER the outerwear garment from Image B ON TOP of the person's EXISTING clothing in Image A. This is an OUTER LAYER — it goes OVER the shirt/top, NOT instead of it.
-2. If the person in Image A is already wearing a different jacket/coat/blazer, REMOVE only that outer layer and replace it with the garment from Image B. The inner layers (shirt, t-shirt, top, sweater) MUST remain visible underneath.
-3. CRITICAL — PRESERVE INNER CLOTHING: The person's shirt, t-shirt, top, or sweater from Image A MUST remain fully visible under the new outerwear. Do NOT remove, replace, or hide the inner layer. The collar, sleeves, and hem of the inner garment should peek out naturally.
-4. Keep the person's EXISTING lower-body clothing and footwear from Image A completely UNCHANGED.
-5. CRITICAL PRODUCT FIDELITY: Reproduce the EXACT silhouette and construction of the garment from Image B. If Image B shows a SLEEVELESS vest/gilet (no sleeves), the output garment MUST also be sleeveless — do NOT add sleeves. If Image B shows a sleeved jacket, keep the sleeves. Match the exact sleeve length (or lack thereof), collar style, zipper/button placement, quilting pattern, pockets, logos, and all construction details from Image B precisely.
-6. If the outerwear from Image B is an OPEN-FRONT garment (unzipped, unbuttoned, or naturally worn open), show it OPEN in the output so the inner shirt/top is clearly visible through the opening.`;
-      } else if (isFullBodyGarment) {
-        swapInstruction = `1. Put the dress/jumpsuit/romper from Image B onto the person in Image A.
-2. REMOVE ALL existing clothing layers from Image A that conflict with full-body garments: outerwear (jackets/coats/blazers/vests), tops, and bottoms.
-3. Do NOT keep or blend any prior garment from Image A over the new full-body garment.
-4. Keep the person's EXISTING footwear from Image A UNCHANGED unless the garment from Image B explicitly includes footwear.
-5. CRITICAL PRODUCT FIDELITY: replicate Image B exactly — same silhouette, panel/cutout placement, print placement, seam lines, neckline, hemline, and fabric texture. Do NOT invent or restyle any dress details.`;
-      } else if (isTopGarment) {
-        const isCropped = /\b(sports?\s*bra|crop\s*top|bralette|bra)\b/.test(stdContext);
-        swapInstruction = isCropped
-          ? `1. Replace ONLY the upper-body clothing from Image A with the CROPPED TOP / SPORTS BRA from Image B. This is a SINGLE ITEM — NOT a set or outfit.
-2. CRITICAL COLOR ACCURACY: The output garment MUST be the EXACT same color as shown in Image B. Match the precise hue, saturation, and tone pixel-for-pixel.
-3. The top must remain SHORT and cropped — ending ABOVE the waist or at the midriff. Do NOT extend it into a full-length shirt, tank top, or bodysuit. Do NOT add any extra fabric below the natural hemline of the garment.
-4. CRITICAL — PRESERVE EXISTING BOTTOMS: The person's lower-body clothing from Image A (pants, jeans, shorts, skirt, leggings, pajama bottoms) MUST remain EXACTLY as they are — same color, same pattern, same fabric. Do NOT change the bottom color to match the new top. Do NOT replace patterned/colored bottoms with plain black. The bottoms must be a PIXEL-PERFECT copy of what is in Image A.
-5. Keep the person's EXISTING footwear from Image A completely UNCHANGED.
-6. IDENTITY: The person in the output MUST be the SAME person from Image A — same face, same hair, same body, same skin tone. Do NOT use the model from Image B. Image B is ONLY a garment reference.
-7. Do NOT create a matching outfit or bodysuit. The top from Image B and the bottoms from Image A should look like MISMATCHED separate pieces if they are different colors/patterns.`
-          : `1. Replace ONLY the upper-body clothing (shirt, top, sweater, etc.) from Image A with the garment from Image B. This is a SINGLE ITEM — NOT a set or outfit.
-2. CRITICAL — PRESERVE EXISTING BOTTOMS: The person's lower-body clothing from Image A MUST remain EXACTLY as they are — same color, same pattern, same fabric. Do NOT change the bottom color to match the new top. The bottoms must be a PIXEL-PERFECT copy of Image A.
-3. Keep the person's EXISTING footwear from Image A completely UNCHANGED.`;
-      } else {
-        swapInstruction = `1. Replace the clothing from Image A with the garment from Image B. If Image B shows a complete outfit (top + bottom), apply the ENTIRE outfit — do NOT apply only one piece.
-2. Keep other unrelated clothing items from Image A where appropriate.`;
-      }
-
       prompt = `You are a fashion photo editor. Generate ONE photorealistic image.
 
 IMAGES PROVIDED:
-- Image A (first image below): A person wearing an outfit — preserve their face, body, pose EXACTLY. Image A defines the ONLY person, pose, framing, and scene allowed in the output.
-- Image B (second image below): The target garment reference only.
+- Image A (first image below): The person photo to preserve.
+- Image B (second image below): The clothing item to apply.${productHint}
 
-TARGET GARMENT:
-- The clothing shown in Image B.${productHint}
-- Treat Image B as a GARMENT SAMPLE ONLY. Ignore any people, faces, heads, hands, legs, mannequins, styling props, extra garments, layout, and background in Image B.
-- Mentally isolate the garment from Image B as if it were shown alone on an invisible mannequin, then place THAT garment onto the person in Image A.
-
-TASK — CLOTHING SWAP:
-${swapInstruction}
-
-RULES:
-- CRITICAL COLOR ACCURACY: The output garment MUST be the EXACT same color as shown in Image B. Match the precise hue, saturation, and tone.
-- CRITICAL ORIENTATION: Keep the model facing the SAME DIRECTION as in Image A. Do NOT rotate, flip, duplicate, or re-stage the model to match Image B.
-- IDENTITY: The person in the output MUST be the SAME person from Image A — same face, same hair, same body, same skin tone. Do NOT use any body part, pose, or person from Image B.
-- PERSON COUNT: Output ONE person only — the person already present in Image A. Never add a second or third person, reflections, clones, side-by-side figures, or a collage.
-- COMPOSITION LOCK: Keep the composition from Image A only. Do NOT copy camera framing, spacing, lineup, or multi-model arrangement from Image B.
-- Match garment details exactly: color, pattern, fabric texture, neckline, sleeve length, hemline, logos, prints, buttons, zippers.
+TASK:
+- Replace ONLY the target garment on the person in Image A with the item from Image B.
+- Match the product exactly: color, silhouette, neckline, sleeves/straps, hem, fabric texture, logos, and distinctive details.
+- Preserve the person's identity, pose, body, hands, legs, camera framing, and background from Image A.
+- Keep the image commercially appropriate and realistic.
 - ${bgInstruction}
-- IMAGE QUALITY: Maintain or improve the resolution and sharpness of Image A. Do NOT reduce image quality, introduce blur, compression artifacts, or soften details.
 - ${noResizeInstruction}
 
-Output: A single photorealistic FULL-BODY image showing only the person from Image A head to feet. No text, watermarks, split views, duplicates, or extra people.`;
+Output: a single photorealistic full-body fashion image. No text, no collage, no watermark.`;
     }
 
-    const fullBodyImageHint = "Show the person FULL BODY from head to feet — never crop at the waist, torso, or mid-thigh.";
-    const bgFallbackHint = bgInstruction;
-
-    const fallbackPrompt = isFootwear && !isLayering
-      ? `Create ONE photorealistic FULL-BODY output image.
-Image A = person. Image B = target footwear.${productHint}
-Replace ONLY the footwear from Image A with the exact shoes from Image B. Keep ALL other clothing unchanged.
-Preserve face, body, pose, and orientation from Image A. ${bgFallbackHint}
-Match shoe details exactly (color, material, branding, sole). ${noResizeInstruction} Full body head to feet. No text/watermark.`
-        : (() => {
-          const fbContext = normalizeMatchText([itemLower, productName.toLowerCase(), productCategory.toLowerCase()].join(" "));
-          const fbBottom = ["jeans","pants","trousers","shorts","skirt","leggings","joggers","chinos","bottom","bottoms"].some(t => hasContextTerm(fbContext, t));
-          const fbTop = ["top","shirt","blouse","t-shirt","sweater","hoodie","polo","tank","cardigan","pullover","tee"].some(t => hasContextTerm(fbContext, t)) && !fbBottom;
-          const fbOuterwear = ["jacket","coat","blazer","vest","vests","gilet","parka","outerwear"].some(t => hasContextTerm(fbContext, t));
-          const fbFullBody = ["dress","dresses","jumpsuit","jumpsuits","romper","overalls","full"].some(t => hasContextTerm(fbContext, t));
-          const scopeHint = fbFullBody
-            ? "Put the dress/jumpsuit/romper from Image B onto the person and REMOVE conflicting layers (jackets/coats/blazers/tops/bottoms) from Image A. Do NOT blend old clothing over the new garment. Keep footwear unless Image B includes footwear. Match Image B exactly: silhouette, cutouts/panels, print placement, seams, neckline, hemline, and texture."
-            : fbBottom
-            ? "Replace ONLY the lower-body clothing (pants/jeans/shorts/skirt). Keep the existing top, shirt, and shoes from Image A UNCHANGED."
-            : fbOuterwear
-              ? "LAYER this outerwear garment ON TOP of the person's existing shirt/top from Image A. Keep the inner shirt/top visible underneath. If the garment is sleeveless (vest/gilet), do NOT add sleeves. Match the exact silhouette from Image B. Keep lower body from Image A UNCHANGED."
-              : fbTop
-                ? "Replace ONLY the upper-body clothing (shirt/top/sweater). Keep existing pants/jeans/shoes from Image A UNCHANGED."
-                : "Replace the clothing with the garment from Image B.";
-          return `Create ONE photorealistic clothing-swap image.
-Image A = the original person and the ONLY allowed person in the final image. Image B = garment sample only.${productHint}
-${fullBodyImageHint}
-${scopeHint}
-Ignore all people, body parts, mannequins, props, and background in Image B. Extract only the garment design from Image B and apply it to the person in Image A.
-Preserve face, body shape, skin tone, pose, camera angle, and facing direction from Image A — do NOT rotate the model. ${bgFallbackHint}
-Do NOT copy any multi-model arrangement, duplicated figure, side-by-side composition, or extra person from Image B.
-Match the target item exactly (color, pattern, cut, neckline, sleeve/hem length, logos). ${noResizeInstruction} Full body head to feet. No text, watermark, collage, or extra people.`;
-        })();
-
-    const intimateReferenceForFallback = `Image B = athletic garment product photo. Apply garment from Image B onto model in Image A, ignoring any person shown in Image B.`;
-
-    const fastIntimatePrompt = `Professional athletic catalog photo.
-Image A = model. ${intimateReferenceForFallback}
-${garmentSwapScopeInstruction} ${bgFallbackHint}
-${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. Match product details exactly. ${noResizeInstruction} CRITICAL: Show FULL BODY from head to feet — include legs. Professional catalog quality. No text/watermark.`;
-
-    const complianceIntimatePrompt = `Retail activewear catalog photo edit.
-Use Image A as the model and Image B as the garment reference product photo.
-Apply only the garment to the model with accurate color, pattern, straps, neckline, seams and logos.
-${garmentSwapScopeInstruction} ${bgFallbackHint}
-${identityInstruction} Keep model facing the same direction as Image A — never rotate to match Image B. ${noResizeInstruction} CRITICAL: Show FULL BODY from head to feet — include legs. Keep result clean and professionally styled. No text/watermark.`;
-
-    const buildTryOnContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
-      const userImageLabel = isIntimateGarment
-        ? "\n\n========== IMAGE A — BODY/POSE REFERENCE (do NOT preserve exact face identity) =========="
-        : "\n\n========== IMAGE A — THE ONLY PERSON ALLOWED IN THE OUTPUT (keep this person's face/body/pose exactly) ==========";
-      const garmentImageLabel = isIntimateGarment
-        ? "\n\n========== IMAGE B — THE TARGET GARMENT (replicate this garment exactly) =========="
-        : "\n\n========== IMAGE B — GARMENT SAMPLE ONLY (replicate garment exactly; ignore any people, body parts, mannequin, props, or background in this image) ==========";
-      const content: Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> = [
-        { type: "text", text: promptText },
-        { type: "text", text: userImageLabel },
-        { type: "image_url", image_url: { url: userImageInput } },
-      ];
-
-      content.push({ type: "text", text: garmentImageLabel });
-      content.push({ type: "image_url", image_url: { url: garmentOnlyImage } });
-
-      return content;
-    };
-
-    // ── CHANGE 5: Text-bridge prompt builder — hyper-sanitized, no intimate language ──
-    const makeTextBridgePrompt = (description: string, hasGarmentImage: boolean): string => {
-      // Strip any remaining intimate words from the description itself
-      const hyperSanitized = sanitizeIntimateText(description)
-        .replace(/\b(underwear|panties|briefs|boxers|bra|bralette|lingerie|intimate|intimates|bikini|swimwear|swimsuit|thong|g-string)\b/gi, "athletic garment")
-        .replace(/\b(waistband|elastic band|hip|hips|waist)\b/gi, "trim")
-        .replace(/\b(coverage|covering|covered)\b/gi, "styled")
-        .replace(/\s+/g, " ").trim();
-
-      const garmentRef = hasGarmentImage
-        ? `See the GARMENT REFERENCE image below for the exact product. Additional details: ${hyperSanitized}`
-        : `Garment details: ${hyperSanitized}`;
-
-      // Scope instruction rewritten without "Image B" references for text-bridge
-      const tbScopeInstruction = isSetGarment
-        ? "Replace ALL clothing with BOTH pieces of the athletic set described."
-        : isTopOnlyGarment
-          ? (isUnderwearSafeMode
-            ? "Style as a modest cropped athletic top with full coverage. Keep the rest of the outfit commercially appropriate."
-            : "Replace only upper-body clothing. Keep existing lower-body clothing unchanged.")
-          : isBottomOnlyIntimate
-            ? (isUnderwearSafeMode
-              ? "Keep the model fully covered: use modest athletic shorts/pants and show ONLY a branded waistband/upper trim detail inspired by the garment."
-              : "Replace only lower-body clothing. Keep existing upper-body clothing unchanged.")
-            : "Replace ALL clothing with the garment described. Show ONLY what is described — do NOT add extra garments.";
-
-      return `Professional athletic activewear product catalog photo.
-
-IMAGE: A fitness model — use as pose, proportions, and scene reference.
-${garmentRef}
-
-TASK: Create a product catalog photo showing the model wearing the athletic garment described.
-- ${tbScopeInstruction}
-- Reproduce garment faithfully: match color, cut, fabric texture, straps, neckline, hemline, logos.
-- Keep the model facing the SAME DIRECTION as in the reference image.
-- Show FULL BODY from head to feet — include legs. Do NOT crop at waist.
-- ${noResizeInstruction}
-- ${bgInstruction}
-- Professional retail catalog quality.
-
-Output: One clean photorealistic FULL-BODY catalog photo. No text, watermarks, or collages.`;
-    };
-
-    const buildTextBridgeContent = (promptText: string): Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> => {
-      const content: Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> = [
-        { type: "text", text: promptText },
-        { type: "text", text: "\n\n========== MODEL REFERENCE (pose & proportions) ==========" },
-        { type: "image_url", image_url: { url: userImageInput } },
-      ];
-
-      // Include clean extracted garment flat-lay — this is CRITICAL for avoiding IMAGE_PROHIBITED_CONTENT
-      // BUT for underwear safe-mode, never attach a product/garment image at all.
-      if (!isUnderwearSafeMode && garmentOnlyImage !== clothingImageInput) {
-        content.push({ type: "text", text: "\n\n========== GARMENT REFERENCE (clean product flat-lay on white background) ==========" });
-        content.push({ type: "image_url", image_url: { url: garmentOnlyImage } });
-      }
-
-      return content;
-    };
-
-    const typeLabel = isFootwear ? "footwear" : (isAccessory || isLayering) && !isIntimateGarment ? "accessory" : isIntimateGarment ? "intimate" : "standard";
+    const typeLabel = isFootwear
+      ? "footwear"
+      : (isAccessory || isLayering) && !isIntimateGarment && !isSportsBraOrCropTop
+        ? "accessory"
+        : isIntimateGarment
+          ? "intimate"
+          : "standard";
     const footwearFastPrompt = `Fast shoe swap. Image A is the person, Image B is the exact shoe.${productHint} Replace only footwear in Image A with Image B. Keep all other clothing, pose, and framing unchanged. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
     const footwearRetryPrompt = `Photorealistic shoe replacement.${productHint} Replace only the shoes from Image A with the shoes from Image B. Keep body, outfit, orientation, and lighting natural. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
     const beltDescHint = sanitizedProductDesc ? `\nThe belt to use is: "${sanitizedProductDesc}". If Image B shows a full-body model, identify ONLY the belt described above and ignore all other clothing.` : "";
@@ -864,7 +659,7 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
             { model: "google/gemini-2.5-flash-image", prompt: footwearFastPrompt, label: `${typeLabel}-nano-primary`, timeoutMs: 14_000 },
             { model: "google/gemini-3.1-flash-image-preview", prompt: footwearRetryPrompt, label: `${typeLabel}-flash-retry`, timeoutMs: 16_000 },
           ]
-        : (isAccessory || isLayering)
+        : ((isAccessory || isLayering) && !isSportsBraOrCropTop)
           ? (
               isBelt
                 ? [
