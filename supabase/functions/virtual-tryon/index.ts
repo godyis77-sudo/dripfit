@@ -233,9 +233,11 @@ Deno.serve(async (req) => {
 
     const isSwimwearOnly = isSwimwear && !isUnderwear;
     const isIntimateGarment = isSwimwear || isUnderwear || isIntimate;
+    // Sports bras / crop tops are NOT intimate but DO trigger safety filters, so they need extra budget for rescue paths.
+    const needsSafetyRescue = isIntimateGarment || isSportsBraOrCropTop;
     const FUNCTION_BUDGET_MS = 58_000;
-    const MIN_REQUIRED_MS_PER_ATTEMPT = isIntimateGarment ? 8_000 : 6_000;
-    const EXTRACTION_BUDGET_MS = isIntimateGarment ? 14_000 : 12_000;
+    const MIN_REQUIRED_MS_PER_ATTEMPT = needsSafetyRescue ? 8_000 : 6_000;
+    const EXTRACTION_BUDGET_MS = needsSafetyRescue ? 14_000 : 12_000;
     const MIN_REQUIRED_MS_FOR_EXTRACTION = 4_000;
     const startedAt = Date.now();
 
@@ -321,7 +323,7 @@ Deno.serve(async (req) => {
 
     // ── CHANGE 2: AI-powered garment description ──
     const describeGarmentViaAI = async (): Promise<string | null> => {
-      if (!isIntimateGarment) return null;
+      if (!isIntimateGarment && !isSportsBraOrCropTop) return null;
       const describePrompt = `Describe this clothing item in 2-3 sentences for a product catalog. Focus on: primary color(s), fabric type, cut/silhouette, neckline style, strap type, hemline, and any distinctive design elements like prints or hardware. Do NOT mention any person or model — describe only the garment itself. Use neutral retail terminology.`;
       
       try {
@@ -404,6 +406,11 @@ Deno.serve(async (req) => {
           console.log(`Intimate parallel: extraction=FAILED, description=${!!description}, took ${Date.now() - startedAt}ms`);
         }
       }
+    } else if (isSportsBraOrCropTop) {
+      // Sports bras are standard routing but frequently hit safety filters.
+      // Pre-compute a text description so we can use text-bridge rescue if needed.
+      aiGarmentDescription = await describeGarmentViaAI();
+      console.log(`Sports bra pre-description: ${!!aiGarmentDescription} (${aiGarmentDescription?.length || 0} chars), took ${Date.now() - startedAt}ms`);
     }
 
     const buildIntimateReferenceFromMetadata = (): string => {
@@ -884,6 +891,7 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
     let lastTextContent = "";
     let sawIntimateRefusal = false;
     let sawIntimateTimeout = false;
+    let sawSafetyRefusal = false; // Tracks IMAGE_PROHIBITED_CONTENT for sports bras/crop tops
     let attemptedRefusalExtraction = preExtractedGarment;
 
     for (let attempt = 0; attempt < attemptPlan.length; attempt++) {
@@ -994,6 +1002,7 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
 
       const firstChoice = (aiData.choices as Array<Record<string, unknown>>)?.[0];
       const finishReason = typeof firstChoice?.finish_reason === "string" ? firstChoice.finish_reason : "";
+      const nativeFinishReason = typeof firstChoice?.native_finish_reason === "string" ? firstChoice.native_finish_reason : "";
       const msg = firstChoice?.message as Record<string, unknown> | undefined;
       const refusal = msg && Object.prototype.hasOwnProperty.call(msg, "refusal") ? msg.refusal : undefined;
       const messageTextRaw = typeof msg?.content === "string"
@@ -1001,14 +1010,28 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
         : messageContentToText(msg?.content);
       const messageText = messageTextRaw.trim();
 
-      const refusalSignal = `${typeof refusal === "string" ? refusal : ""} ${messageText}`.toLowerCase();
+      const refusalSignal = `${typeof refusal === "string" ? refusal : ""} ${messageText} ${nativeFinishReason}`.toLowerCase();
       const looksLikeRefusal =
         refusal !== undefined ||
         /reject|refus|policy|unsafe|cannot|can't|unable/.test(refusalSignal) ||
-        /safety|content_filter|blocked|other|no_image/.test(finishReason.toLowerCase());
+        /safety|content_filter|blocked|other|no_image|image_prohibited_content/.test(finishReason.toLowerCase()) ||
+        /image_prohibited_content/.test(nativeFinishReason.toLowerCase());
 
       if (refusal !== undefined) {
         console.warn(`REFUSED (${plan.label}):`, JSON.stringify(refusal).substring(0, 300));
+      }
+
+      // Detect IMAGE_PROHIBITED_CONTENT for sports bras (standard path items that still trigger safety)
+      const isProhibitedContent = /image_prohibited_content/.test(nativeFinishReason.toLowerCase()) ||
+        /image_prohibited_content/.test(finishReason.toLowerCase());
+      if (isProhibitedContent && isSportsBraOrCropTop) {
+        sawSafetyRefusal = true;
+        console.warn(`Sports bra safety refusal detected (${plan.label}), will attempt text-bridge rescue.`);
+        // Break out of standard loop early if we have a description ready
+        if (aiGarmentDescription) {
+          lastTextContent = "Safety filter triggered for this garment. Trying alternative approach...";
+          break;
+        }
       }
 
       let extractedAfterRefusal = false;
@@ -1117,8 +1140,11 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
       }
     }
 
-    // ── CHANGE 6: Layer 3 text-bridge rescue ──
-    if (!resultImage && isIntimateGarment && (sawIntimateRefusal || sawIntimateTimeout || shouldBypassPrimaryForIntimate)) {
+    // ── CHANGE 6: Layer 3 text-bridge rescue (also covers sports bras with safety refusals) ──
+    const needsTextBridgeRescue = isIntimateGarment
+      ? (sawIntimateRefusal || sawIntimateTimeout || shouldBypassPrimaryForIntimate)
+      : (isSportsBraOrCropTop && sawSafetyRefusal);
+    if (!resultImage && needsTextBridgeRescue) {
       // Prefer metadata reference for high-risk intimate bottoms; it is safer than free-form AI descriptions.
       const textDesc = (isBottomOnlyIntimate || isUnderwear || isExplicitIntimate)
         ? (intimateTextReference || aiGarmentDescription)
