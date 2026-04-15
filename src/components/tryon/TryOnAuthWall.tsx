@@ -37,7 +37,7 @@ const TryOnAuthWall = forwardRef<HTMLDivElement, TryOnAuthWallProps>(({ onClose,
         <div className="flex justify-center mb-4">
           <div className="h-14 w-14 rounded-2xl badge-gold-3d flex items-center justify-center">
             {isAuthenticatedDailyLimit ? (
-              <Crown className="h-6 w-6 text-primary-foreground" />
+              <Sparkles className="h-6 w-6 text-primary-foreground" />
             ) : (
               <Lock className="h-6 w-6 text-primary-foreground" />
             )}
