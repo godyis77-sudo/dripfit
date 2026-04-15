@@ -891,6 +891,7 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
     let lastTextContent = "";
     let sawIntimateRefusal = false;
     let sawIntimateTimeout = false;
+    let sawSafetyRefusal = false; // Tracks IMAGE_PROHIBITED_CONTENT for sports bras/crop tops
     let attemptedRefusalExtraction = preExtractedGarment;
 
     for (let attempt = 0; attempt < attemptPlan.length; attempt++) {
