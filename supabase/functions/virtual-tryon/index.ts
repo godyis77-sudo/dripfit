@@ -1143,7 +1143,7 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
     // ── CHANGE 6: Layer 3 text-bridge rescue (also covers sports bras with safety refusals) ──
     const needsTextBridgeRescue = isIntimateGarment
       ? (sawIntimateRefusal || sawIntimateTimeout || shouldBypassPrimaryForIntimate)
-      : (isSportsBraOrCropTop && sawSafetyRefusal);
+      : (isSportsBraOrCropTop && (sawSafetyRefusal || !resultImage));
     if (!resultImage && needsTextBridgeRescue) {
       // Prefer metadata reference for high-risk intimate bottoms; it is safer than free-form AI descriptions.
       const textDesc = (isBottomOnlyIntimate || isUnderwear || isExplicitIntimate)
