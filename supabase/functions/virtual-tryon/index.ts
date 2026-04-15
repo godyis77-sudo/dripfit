@@ -961,6 +961,15 @@ TASK:
 
 ${underwearSafetyInstruction}`;
     } else {
+      // Determine scope instruction based on what the product actually is
+      const standardScopeInstruction = isSetGarment
+        ? "Image B shows a MATCHING SET (top AND bottom). Replace ALL clothing from Image A with BOTH pieces from Image B. Show ONLY what is visible in Image B — do NOT add extra garments not shown in Image B."
+        : isTopOnlyGarment
+        ? "Image B shows a TOP-ONLY garment. Replace ONLY the upper-body clothing from Image A with the item from Image B. Keep the person's EXISTING lower-body clothing (pants, jeans, shorts, skirt, leggings) from Image A EXACTLY as they are — do NOT replace, remove, or change the bottoms in any way. Do NOT add new pants or bottoms."
+        : /\b(pants|jeans|trousers|shorts|skirt|leggings|joggers|sweatpants)\b/.test(normalizedProductContext)
+        ? "Image B shows a BOTTOM-ONLY garment. Replace ONLY the lower-body clothing from Image A with the item from Image B. Keep the person's EXISTING upper-body clothing from Image A unchanged."
+        : "Replace ONLY the clothing that matches the garment type from Image B. Keep all other clothing from Image A unchanged.";
+
       prompt =
         `You are a fashion photo editor. Generate ONE photorealistic image.
 
@@ -968,10 +977,14 @@ IMAGES PROVIDED:
 - Image A (first image below): The person photo to preserve.
 - Image B (second image below): The clothing item to apply.${productHint}
 
+ITEM SCOPE:
+${standardScopeInstruction}
+
 TASK:
-- Replace ONLY the target garment on the person in Image A with the item from Image B.
+- Apply the garment from Image B onto the person in Image A following the ITEM SCOPE rules above.
 - Match the product exactly: color, silhouette, neckline, sleeves/straps, hem, fabric texture, logos, and distinctive details.
 - Preserve the person's identity, pose, body, hands, legs, camera framing, and background from Image A.
+- CRITICAL: Generate ONLY the item(s) shown in Image B. Do NOT invent or add clothing items that are not in Image B.
 - Keep the image commercially appropriate and realistic.
 - ${bgInstruction}
 - ${noResizeInstruction}
