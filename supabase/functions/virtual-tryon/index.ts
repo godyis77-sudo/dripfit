@@ -975,6 +975,54 @@ TASK:
 Output: a single photorealistic full-body fashion image. No text, no collage, no watermark.`;
     }
 
+    const bgFallbackHint = useClothingBg
+      ? "Use the setting/background from Image B when it is clean and realistic."
+      : "Keep the original background from Image A unchanged.";
+    const fallbackPrompt = `${prompt}\n\nFallback mode: ${garmentSwapScopeInstruction} ${intimateFramingInstruction}`
+      .replace(/\s+/g, " ")
+      .trim();
+    const fastIntimatePrompt = `${prompt}\n\nFast safe mode: Use the garment description and preserve Image A pose/background. ${garmentSwapScopeInstruction} ${intimateFramingInstruction}`
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const buildTryOnContent = (promptText: string) => {
+      const content: Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> = [
+        { type: "text", text: promptText },
+        { type: "image_url", image_url: { url: userImageInput } },
+      ];
+
+      if (isUnderwearSafeMode) {
+        if (garmentOnlyImage && garmentOnlyImage !== clothingImageInput) {
+          content.push({ type: "image_url", image_url: { url: garmentOnlyImage } });
+        }
+        return content;
+      }
+
+      content.push({
+        type: "image_url",
+        image_url: { url: garmentOnlyImage || clothingImageInput },
+      });
+      return content;
+    };
+
+    const makeTextBridgePrompt = (
+      garmentText: string,
+      hasCleanFlatLay: boolean,
+    ) => `You are a fashion photo editor. Generate ONE photorealistic full-body image.\n\nUse Image A as the only person, pose, body, camera framing, and background reference. Replace only the target garment with this item description: ${garmentText}. Match color, silhouette, neckline, straps, hem, fabric feel, and visible branding details as closely as possible. Keep the result commercially appropriate and realistic. ${hasCleanFlatLay ? "A clean garment reference is available for product fidelity." : "No product image should be copied into the final composition."} ${garmentSwapScopeInstruction} ${intimateFramingInstruction} ${noResizeInstruction}`
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const buildTextBridgeContent = (promptText: string) => {
+      const content: Array<{ type: "text" | "image_url"; text?: string; image_url?: { url: string } }> = [
+        { type: "text", text: promptText },
+        { type: "image_url", image_url: { url: userImageInput } },
+      ];
+      if (garmentOnlyImage && garmentOnlyImage !== clothingImageInput) {
+        content.push({ type: "image_url", image_url: { url: garmentOnlyImage } });
+      }
+      return content;
+    };
+
     const typeLabel = isFootwear
       ? "footwear"
       : (isAccessory || isLayering) && !isIntimateGarment &&
