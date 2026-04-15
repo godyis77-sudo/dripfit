@@ -70,7 +70,7 @@ const Partnership = () => {
       <section className="max-w-3xl mx-auto px-6 py-14">
         <div className="bg-destructive/8 border border-destructive/20 rounded-2xl p-6 sm:p-8">
           <div className="flex items-start gap-3 mb-4">
-            <TrendingDown className="h-6 w-6 text-destructive shrink-0 mt-0.5" />
+            <TrendingDown className="h-6 w-6 text-primary shrink-0 mt-0.5" />
             <div>
               <h2 className="font-display text-xl font-bold">The $100B Problem</h2>
               <p className="text-muted-foreground text-sm mt-1">Sizing is the #1 reason for online fashion returns.</p>
