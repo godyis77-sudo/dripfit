@@ -14,6 +14,7 @@ interface TrendingFit {
   product_url: string | null;
   price_cents: number | null;
   category: string;
+  description?: string | null;
 }
 
 interface TrendingFitsGridProps {
