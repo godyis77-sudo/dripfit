@@ -367,9 +367,14 @@ Deno.serve(async (req) => {
       hasContextTerm(normalizedItemContext, t) ||
       hasContextTerm(normalizedProductContext, t)
     );
-    // Athletic tops (sports bras / bralettes / crop tops) should use standard top-swap routing, not intimate routing.
-    const isSportsBraOrCropTop =
-      /\b(sports?\s*bra|crop\s*top|bralette|support\s*top|seamless\s*bra)\b/
+    const cropTopPattern =
+      /\b(sports?\s*bra|crop\s*top|cropped\s*top|crop\s*tank|cropped\s*tank|crop\s*cami|cropped\s*cami|bralette|support\s*top|seamless\s*bra|longline\s*bra|bandeau|tube\s*top)\b/;
+    const topGarmentPattern =
+      /\b(crop\w*|top|tank|cami|camisole|tee|t\s*shirt|shirt|blouse|halter|bandeau|tube\s*top|bralette|sports?\s*bra|support\s*top)\b/;
+    // Athletic tops / crop tops should use standard top-swap routing, not accessory or intimate routing.
+    const isSportsBraOrCropTop = cropTopPattern.test(normalizedProductContext);
+    const isTopLikeGarment = topGarmentPattern.test(normalizedProductContext) &&
+      !/\b(bag|purse|handbag|belt|jewelry|earring|necklace|bracelet|watch|sunglasses|hat|cap|beanie|scarf|shoe|sneaker|boot|heel|loafer|sandal)\b/
         .test(normalizedProductContext);
     const isUnderwearRaw = UNDERWEAR_TYPES.some((t) =>
       hasContextTerm(normalizedProductContext, t)
@@ -437,10 +442,7 @@ Deno.serve(async (req) => {
       return "athletic garment";
     })();
 
-    const isCropTopOrSportsBra =
-      /\b(sports?\s*bra|crop\s*top|bralette|support\s*top)\b/.test(
-        normalizedProductContext,
-      );
+    const isCropTopOrSportsBra = cropTopPattern.test(normalizedProductContext);
 
     const isTopOnlyGarment = (isCropTopOrSportsBra ||
       /\b(top|bralette|bra|tankini top|bikini top|triangle)\b/.test(
@@ -897,7 +899,9 @@ TASK — FOOTWEAR SWAP:
 
 Output: A single photorealistic FULL-BODY image showing the person head to feet. No text/watermarks/split views.`;
     } else if (
-      (isAccessory || isLayering) && !isIntimateGarment && !isSportsBraOrCropTop
+      (isAccessory || isLayering) && !isIntimateGarment &&
+      !isSportsBraOrCropTop &&
+      !isTopLikeGarment
     ) {
       const accessoryLayoutGuard = isBelt
         ? "BELT-SPECIFIC: The belt MUST be clearly visible around the waist, worn OVER the existing clothing. Show the full belt including buckle/chain details. Do NOT hide it under clothing layers."
@@ -1051,7 +1055,7 @@ Output: a single photorealistic full-body fashion image. No text, no collage, no
     const typeLabel = isFootwear
       ? "footwear"
       : (isAccessory || isLayering) && !isIntimateGarment &&
-          !isSportsBraOrCropTop
+          !isSportsBraOrCropTop && !isTopLikeGarment
       ? "accessory"
       : isIntimateGarment
       ? "intimate"
@@ -1113,7 +1117,8 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
           timeoutMs: 16_000,
         },
       ]
-      : ((isAccessory || isLayering) && !isSportsBraOrCropTop)
+      : ((isAccessory || isLayering) && !isSportsBraOrCropTop &&
+          !isTopLikeGarment)
       ? (
         isBelt
           ? [
