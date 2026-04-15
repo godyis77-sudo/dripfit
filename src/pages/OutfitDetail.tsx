@@ -7,7 +7,7 @@ import { useWeeklyOutfits, type WeeklyOutfitItem } from '@/hooks/useWeeklyOutfit
 import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
 import { Button } from '@/components/ui/button';
 import { FullscreenImage } from '@/components/ui/fullscreen-image';
-import InlineCrown from '@/components/ui/InlineCrown';
+import { Sparkles } from 'lucide-react';
 
 const OutfitDetail = () => {
   const { outfitId } = useParams<{ outfitId: string }>();
@@ -114,7 +114,7 @@ const OutfitDetail = () => {
       {/* Product cards */}
       <div className="px-4 pb-32">
         <h3 className="text-[11px] tracking-widest uppercase text-muted-foreground mb-3 flex items-center gap-1.5">
-          <InlineCrown size={12} /> Items in this look
+          <Sparkles className="h-3 w-3 text-primary" /> Items in this look
         </h3>
 
         <div className="space-y-3">

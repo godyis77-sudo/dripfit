@@ -1,10 +1,9 @@
 import { forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Lock, Sparkles, ArrowRight, Crown } from 'lucide-react';
+import { Lock, Sparkles, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { GUEST_LIFETIME_LIMIT, FREE_DAILY_LIMIT } from '@/lib/guestSession';
-import InlineCrown from '@/components/ui/InlineCrown';
 
 interface TryOnAuthWallProps {
   onClose: () => void;
@@ -38,7 +37,7 @@ const TryOnAuthWall = forwardRef<HTMLDivElement, TryOnAuthWallProps>(({ onClose,
         <div className="flex justify-center mb-4">
           <div className="h-14 w-14 rounded-2xl badge-gold-3d flex items-center justify-center">
             {isAuthenticatedDailyLimit ? (
-              <Crown className="h-6 w-6 text-primary-foreground" />
+              <Sparkles className="h-6 w-6 text-primary-foreground" />
             ) : (
               <Lock className="h-6 w-6 text-primary-foreground" />
             )}
@@ -72,7 +71,7 @@ const TryOnAuthWall = forwardRef<HTMLDivElement, TryOnAuthWallProps>(({ onClose,
                 'Background swap & style layers',
               ].map((benefit) => (
                 <div key={benefit} className="flex items-center gap-2">
-                  <InlineCrown size={12} />
+                  <Sparkles className="h-3 w-3 text-primary shrink-0" />
                   <p className="text-[12px] text-foreground">{benefit}</p>
                 </div>
               ))}
@@ -100,7 +99,7 @@ const TryOnAuthWall = forwardRef<HTMLDivElement, TryOnAuthWallProps>(({ onClose,
               onClick={() => navigate('/premium')}
               className="w-full h-12 rounded-xl btn-luxury text-primary-foreground font-display font-bold text-base uppercase tracking-wider active:scale-[0.97] transition-transform mb-2"
             >
-              <InlineCrown size={16} />
+              <Sparkles className="h-4 w-4" />
               <span className="ml-2">Go Premium</span>
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

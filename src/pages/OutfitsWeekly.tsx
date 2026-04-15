@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { useWeeklyOutfits, type WeeklyOutfit } from '@/hooks/useWeeklyOutfits';
 import BottomTabBar from '@/components/BottomTabBar';
-import InlineCrown from '@/components/ui/InlineCrown';
+import { Sparkles } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 const GENDER_OPTIONS = [
@@ -44,7 +44,7 @@ const OutfitsWeekly = () => {
       <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border/20 px-4 py-3 flex items-center gap-3">
         <button onClick={() => navigate(-1)} className="text-foreground"><ArrowLeft className="h-5 w-5" /></button>
         <h1 className="text-base font-bold text-foreground flex items-center gap-1.5 uppercase">
-          This Week's Drip <InlineCrown size={18} />
+          This Week's Drip <Sparkles className="h-4 w-4 text-primary" />
         </h1>
       </div>
 
@@ -80,7 +80,7 @@ const OutfitsWeekly = () => {
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <InlineCrown size={40} className="mb-3 opacity-50" />
+            <Sparkles className="h-8 w-8 text-primary mb-3 opacity-50" />
             <p className="text-sm font-semibold text-foreground">No outfits curated yet.</p>
             <p className="text-[11px] text-muted-foreground mt-1">Check back Monday.</p>
           </div>

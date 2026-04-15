@@ -6,7 +6,7 @@ import iconStylecheck from '@/assets/icon-stylecheck.webp';
 import iconPost from '@/assets/icon-post.webp';
 import iconHome from '@/assets/icon-home.webp';
 import iconProfile from '@/assets/icon-profile.webp';
-import iconCrown from '@/assets/icon-crown.webp';
+
 import { cn } from '@/lib/utils';
 
 export const featureIcons = {
@@ -17,7 +17,7 @@ export const featureIcons = {
   post: iconPost,
   home: iconHome,
   profile: iconProfile,
-  crown: iconCrown,
+  
 } as const;
 
 export type FeatureIconName = keyof typeof featureIcons;

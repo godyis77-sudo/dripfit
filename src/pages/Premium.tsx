@@ -4,7 +4,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Check, Sparkles, Ruler, Shirt, MessageSquare, Store, Shield, Zap, BarChart3, Eye, Star, Ban, Loader2, Quote, RotateCcw } from 'lucide-react';
-import InlineCrown from '@/components/ui/InlineCrown';
+
 import BrandLogo from '@/components/ui/BrandLogo';
 import { trackEvent } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
@@ -191,7 +191,7 @@ const Premium = () => {
                   transition={{ delay: 0.3 }}
                   className="mt-2 inline-flex items-center gap-1 px-3 py-1 rounded-full bg-card border border-primary/20"
                 >
-                  <InlineCrown size={10} />
+                  <Sparkles className="h-2.5 w-2.5 text-primary" />
                   <span className="text-[10px] font-bold text-primary">
                     {memberCount >= 1000
                       ? `${Math.floor(memberCount / 1000).toLocaleString()},000+ premium members`
