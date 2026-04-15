@@ -231,7 +231,7 @@ const PostCard = ({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="rounded-xl text-[12px]">Cancel</AlertDialogCancel>
-            <AlertDialogAction className="rounded-xl text-[12px] bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => { if (confirmDeleteId) onDeletePost(confirmDeleteId); setConfirmDeleteId(null); }}>Delete Post</AlertDialogAction>
+            <AlertDialogAction className="rounded-xl text-[12px] bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => { const id = confirmDeleteId; setConfirmDeleteId(null); setTimeout(() => { if (id) onDeletePost(id); }, 50); }}>Delete Post</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

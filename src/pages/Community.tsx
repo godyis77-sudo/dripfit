@@ -271,7 +271,15 @@ const Community = () => {
           navigate(`/profile/${encodeURIComponent(name)}`);
         }}
         onShopLook={handleShopLook}
-        onDelete={(postId) => { setDetailPost(null); handleDeletePost(postId); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+        onDelete={async (postId) => {
+          setDetailPost(null);
+          // Allow sheet to fully unmount and restore body overflow before proceeding
+          await new Promise(r => setTimeout(r, 100));
+          document.body.style.overflow = '';
+          document.documentElement.style.overflow = '';
+          await handleDeletePost(postId);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
         onTryOn={(p) => {
           setDetailPost(null);
           const urls = p.product_urls;
