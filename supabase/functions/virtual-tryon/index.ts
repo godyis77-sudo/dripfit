@@ -406,6 +406,11 @@ Deno.serve(async (req) => {
           console.log(`Intimate parallel: extraction=FAILED, description=${!!description}, took ${Date.now() - startedAt}ms`);
         }
       }
+    } else if (isSportsBraOrCropTop) {
+      // Sports bras are standard routing but frequently hit safety filters.
+      // Pre-compute a text description so we can use text-bridge rescue if needed.
+      aiGarmentDescription = await describeGarmentViaAI();
+      console.log(`Sports bra pre-description: ${!!aiGarmentDescription} (${aiGarmentDescription?.length || 0} chars), took ${Date.now() - startedAt}ms`);
     }
 
     const buildIntimateReferenceFromMetadata = (): string => {
