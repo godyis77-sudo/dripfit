@@ -323,7 +323,7 @@ Deno.serve(async (req) => {
 
     // ── CHANGE 2: AI-powered garment description ──
     const describeGarmentViaAI = async (): Promise<string | null> => {
-      if (!isIntimateGarment) return null;
+      if (!isIntimateGarment && !isSportsBraOrCropTop) return null;
       const describePrompt = `Describe this clothing item in 2-3 sentences for a product catalog. Focus on: primary color(s), fabric type, cut/silhouette, neckline style, strap type, hemline, and any distinctive design elements like prints or hardware. Do NOT mention any person or model — describe only the garment itself. Use neutral retail terminology.`;
       
       try {
