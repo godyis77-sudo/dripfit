@@ -93,7 +93,7 @@ const OutfitDetail = () => {
             src={heroImage}
             alt={outfit.title}
             className="w-full h-full object-cover object-top cursor-pointer"
-            onClick={() => setFullscreenSrc(heroImage)}
+            onClick={() => setFullscreenHero(heroImage)}
           />
         )}
 
@@ -159,7 +159,7 @@ const OutfitDetail = () => {
               {item.image_url && (
                 <div
                   className="w-24 h-24 rounded-xl overflow-hidden bg-secondary shrink-0 cursor-pointer"
-                  onClick={() => setFullscreenSrc(item.image_url!)}
+                  onClick={() => setFullscreenItem(item)}
                 >
                   <img
                     src={item.image_url}
@@ -221,8 +221,21 @@ const OutfitDetail = () => {
         </div>
       )}
 
-      {fullscreenSrc && (
-        <FullscreenImage src={fullscreenSrc} alt="" externalOpen onExternalClose={() => setFullscreenSrc(null)} />
+      {fullscreenHero && (
+        <FullscreenImage src={fullscreenHero} alt={outfit.title} externalOpen onExternalClose={() => setFullscreenHero(null)} />
+      )}
+
+      {fullscreenItem && fullscreenItem.image_url && (
+        <FullscreenImage
+          src={fullscreenItem.image_url}
+          alt={fullscreenItem.product_name}
+          externalOpen
+          onExternalClose={() => setFullscreenItem(null)}
+          description={`${fullscreenItem.product_name}${fullscreenItem.brand ? ` · ${fullscreenItem.brand}` : ''}${fullscreenItem.price_cents != null ? ` · $${(fullscreenItem.price_cents / 100).toFixed(0)}` : ''}`}
+          onShop={fullscreenItem.product_url ? () => handleShop(fullscreenItem) : undefined}
+          onTryOn={() => handleTryOn(fullscreenItem)}
+          onAddToWardrobe={savedIds.has(fullscreenItem.id) ? undefined : () => handleSaveToCloset(fullscreenItem)}
+        />
       )}
 
       {pendingClickout && createPortal(
