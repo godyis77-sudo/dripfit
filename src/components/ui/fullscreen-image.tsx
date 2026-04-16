@@ -180,6 +180,12 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, descr
 
               <ZoomableFullscreenImg src={src} alt={alt} />
 
+              {description && (
+                <p className="text-[12px] text-white/50 leading-relaxed text-center line-clamp-3 px-6 mt-3 max-w-sm">
+                  {description}
+                </p>
+              )}
+
               {hasActions && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
