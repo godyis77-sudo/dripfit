@@ -146,24 +146,24 @@ const GalleryPlayground = () => {
               </div>
             </div>
 
-            {/* Secondary cards — side by side */}
-            <div className="grid grid-cols-2 gap-3 mb-8">
+            {/* COP / DROP — primary secondary card */}
+            <button
+              onClick={() => navigate('/closet')}
+              className="relative w-full bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 pr-8 py-4 text-left active:scale-[0.97] transition-all hover:bg-white/[0.05] mb-3"
+            >
+              <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">COP / DROP</span>
+              <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Your Body Twins weigh in.</span>
+              <ChevronRight className="w-4 h-4 text-zinc-400 absolute right-4 top-1/2 -translate-y-1/2" strokeWidth={2} />
+            </button>
+
+            {/* Subtle Verified Size redirect */}
+            <div className="flex justify-center mb-8">
               <button
                 onClick={() => navigate('/profile/body')}
-                className="relative bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 pr-8 py-4 text-left active:scale-[0.97] transition-all hover:bg-white/[0.05]"
+                className="inline-flex items-center gap-1 text-[12px] font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
-                <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">Your Verified Size</span>
-                <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Mapped across 186 brands</span>
-<ChevronRight className="w-4 h-4 text-zinc-400 absolute right-4 top-1/2 -translate-y-1/2" strokeWidth={2} />
-              </button>
-
-              <button
-                onClick={() => navigate('/closet')}
-                className="relative bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 pr-8 py-4 text-left active:scale-[0.97] transition-all hover:bg-white/[0.05]"
-              >
-                <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">COP / DROP</span>
-                <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Your Body Twins weigh in.</span>
-                <ChevronRight className="w-4 h-4 text-zinc-400 absolute right-4 top-1/2 -translate-y-1/2" strokeWidth={2} />
+                Your Verified Size
+                <ChevronRight className="w-3 h-3" strokeWidth={2} />
               </button>
             </div>
           </>
