@@ -9,6 +9,7 @@ import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import { ALL_PRODUCT_CATEGORIES } from '@/components/tryon/tryon-constants';
 import { useProfileInfo, useLatestScan, useTrendingFits } from '@/hooks/useProfileData';
 import TrendingFitsGrid from '@/components/home/TrendingFitsGrid';
+import SwipeFeedSection from '@/components/home/SwipeFeedSection';
 import { useForYourFit } from '@/hooks/useForYourFit';
 import { thumbnailUrl } from '@/lib/imageOptimize';
 import { TYPE, CARD, BUTTON, SPACING } from '@/lib/design-tokens';
@@ -171,6 +172,9 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
             <p className={TYPE.body + ' text-[11px]'}>Your Body Twins weigh in</p>
           </div>
         </motion.button>
+
+        {/* The Drop — swipeable weekly looks + top posts */}
+        <SwipeFeedSection gender={mappedGender} />
 
         {/* Trending Fits */}
         <TrendingFitsGrid fits={trendingFits} />
