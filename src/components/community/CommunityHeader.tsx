@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ShoppingCart, Sparkles } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Plus } from 'lucide-react';
 
 interface CommunityHeaderProps {
   cartCount: number;
