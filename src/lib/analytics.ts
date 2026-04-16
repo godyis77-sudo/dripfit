@@ -215,7 +215,10 @@ type FunnelEvent =
   | 'closet_drop'
   | 'premium_started_ios_iap'
   | 'premium_restore_ios'
-  | 'home_scan_strip_click';
+  | 'home_scan_strip_click'
+  | 'home_swipe_cop'
+  | 'home_swipe_drop'
+  | 'home_swipe_tap';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
