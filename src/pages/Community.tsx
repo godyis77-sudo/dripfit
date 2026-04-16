@@ -222,6 +222,16 @@ const Community = () => {
               )}
             </div>
           </>
+        ) : filter === 'swipe' ? (
+          <CommunitySwipeStack
+            posts={visiblePosts}
+            loading={loading}
+            votes={votes}
+            voteCounts={voteCounts}
+            failedImages={new Set()}
+            onVote={handleVote}
+            onOpenDetail={setDetailPost}
+          />
         ) : (
           <CommunityFeedGrid
             posts={visiblePosts}
