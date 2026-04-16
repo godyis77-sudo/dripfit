@@ -169,6 +169,9 @@ const GalleryPlayground = () => {
           </>
         )}
 
+        {/* Swipe Feed — The Drop (only for scanned users) */}
+        {hasScan && <SwipeFeedSection />}
+
         {/* Weekly Outfits Hero Section */}
         <WeeklyOutfitsSection />
 
