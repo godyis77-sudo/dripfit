@@ -87,9 +87,14 @@ export function useWeeklyOutfits(gender?: string) {
     enabled: !waiting,
     queryFn: async () => {
       let results = await fetchOutfits(weekId);
-      // Fallback to previous week
-      if (results.length === 0) {
-        results = await fetchOutfits(getPreviousWeekId(weekId));
+      // Fallback to previous week if current week has no outfits OR no outfits with hero images yet
+      const hasUsableHero = (list: WeeklyOutfit[]) => list.some(o => o.hero_image_url);
+      if (results.length === 0 || !hasUsableHero(results)) {
+        const prev = await fetchOutfits(getPreviousWeekId(weekId));
+        // Prefer previous week if it actually has hero images
+        if (prev.length > 0 && hasUsableHero(prev)) {
+          results = prev;
+        }
       }
       // Filter by gender
       if (gender && gender !== 'all') {
