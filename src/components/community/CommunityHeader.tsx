@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ShoppingCart, Sparkles } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Plus } from 'lucide-react';
 
 interface CommunityHeaderProps {
   cartCount: number;
@@ -35,7 +35,7 @@ const CommunityHeader = ({ cartCount, onPostLook }: CommunityHeaderProps) => {
           )}
         </button>
         <Button className="rounded-lg btn-glass text-white/80 h-8 px-3 text-[11px] font-bold active:scale-95 transition-transform" onClick={onPostLook} aria-label="Create new post">
-          <Sparkles className="mr-1 h-3 w-3 text-primary" /> Post a Look
+          <Plus className="mr-1 h-3.5 w-3.5 text-primary" /> Post a Look
         </Button>
       </div>
     </div>
