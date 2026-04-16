@@ -76,7 +76,7 @@ const ImageViewer = ({ src, alt, retailers, retailerUrlMap }: ImageViewerProps) 
       onTouchEnd={handleTouchEnd}
       onDoubleClick={handleDoubleClick}
     >
-      <div className="relative mx-auto w-full aspect-[3/3.5] overflow-hidden rounded-2xl bg-background touch-none">
+      <div className="relative mx-auto w-full aspect-[3/4] overflow-hidden rounded-2xl bg-background touch-none">
         <img
           src={src}
           alt={alt}

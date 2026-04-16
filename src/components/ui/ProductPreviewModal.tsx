@@ -150,7 +150,7 @@ function ZoomableProductImage({ src, alt, brand, caption, additionalImages }: { 
 
   return (
     <div
-      className="flex-1 flex items-center justify-center p-2 min-h-0 max-h-[50vh] overflow-hidden touch-none"
+      className="flex-1 flex items-center justify-center p-2 min-h-0 max-h-[60dvh] overflow-hidden touch-none"
       onClick={(e) => e.stopPropagation()}
       onTouchStart={(e) => { e.stopPropagation(); handleTouchStart(e); }}
       onTouchMove={(e) => { e.stopPropagation(); handleTouchMove(e); }}
@@ -292,14 +292,20 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
 
       {/* Info + Actions */}
       <div
-        className="shrink-0 px-5 pb-6 pt-3 space-y-3 max-h-[45dvh] overflow-y-auto"
+        className="shrink-0 px-5 pb-6 pt-3 space-y-3 max-h-[38dvh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="text-center">
           <p className="text-[10px] tracking-[0.2em] uppercase text-white/40 font-bold">{product.brand}</p>
+          <p className="text-[13px] text-white/80 font-semibold mt-0.5 line-clamp-2 px-2">{decodeHtmlEntities(product.name)}</p>
           {product.price_cents != null && (
             <p className="font-display text-xl text-primary mt-1">
               ${(product.price_cents / 100).toFixed(0)}
+            </p>
+          )}
+          {product.description && (
+            <p className="text-[11px] text-white/45 leading-relaxed text-center line-clamp-3 px-2 mt-1">
+              {product.description}
             </p>
           )}
           {(hasFit || hasFabric || product.style_genre) && (
@@ -321,11 +327,6 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
               ))}
             </div>
            )}
-          {product.description && (
-            <p className="text-[12px] text-white/50 leading-relaxed text-center line-clamp-3 px-2 mt-1">
-              {product.description}
-            </p>
-          )}
         </div>
 
         {/* +Closet + +Cart — glass treatment */}
