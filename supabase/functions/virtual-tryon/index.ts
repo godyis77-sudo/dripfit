@@ -977,6 +977,11 @@ IMAGES PROVIDED:
 - Image A (first image below): The person photo to preserve.
 - Image B (second image below): The clothing item to apply.${productHint}
 
+CRITICAL — SINGLE PERSON RULE:
+- Image B may show MULTIPLE models, a product collage, or a multi-person editorial photo. IGNORE all people/models in Image B entirely.
+- Extract ONLY the clothing garment from Image B and apply it to the SINGLE person from Image A.
+- The output must contain EXACTLY ONE person — the person from Image A. Never duplicate people, never add extra figures.
+
 ITEM SCOPE:
 ${standardScopeInstruction}
 
@@ -989,7 +994,7 @@ TASK:
 - ${bgInstruction}
 - ${noResizeInstruction}
 
-Output: a single photorealistic full-body fashion image. No text, no collage, no watermark.`;
+Output: a single photorealistic full-body fashion image showing ONE person only. No text, no collage, no watermark, no side-by-side, no multiple figures.`;
     }
 
     const bgFallbackHint = useClothingBg
