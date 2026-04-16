@@ -1,5 +1,4 @@
 import { useCallback, useState } from 'react';
-import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Flame } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
