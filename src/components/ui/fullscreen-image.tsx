@@ -8,6 +8,8 @@ interface FullscreenImageProps {
   alt?: string;
   className?: string;
   children?: React.ReactNode;
+  /** Product description shown in fullscreen overlay */
+  description?: string | null;
   /** Optional action buttons shown at bottom */
   onShop?: () => void;
   onTryOn?: () => void;
