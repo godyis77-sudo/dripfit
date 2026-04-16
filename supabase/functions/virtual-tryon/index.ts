@@ -886,8 +886,9 @@ IMAGES PROVIDED:
 
 TARGET FOOTWEAR:
 - The shoes shown in Image B.${productHint}
+- IMPORTANT: If Image B shows multiple models or a product collage, extract ONLY the footwear and ignore all people in Image B.
 
-TASK — FOOTWEAR SWAP:
+TASK — FOOTWEAR SWAP (output must show exactly ONE person — the person from Image A):
 1. REMOVE whatever shoes/footwear the person in Image A is currently wearing.
 2. REPLACE them with the EXACT footwear from Image B — match color, shape, material, branding, sole, laces, and all details precisely.
 3. Keep ALL other clothing from Image A completely unchanged — do NOT modify tops, bottoms, or any other garment.
@@ -953,10 +954,11 @@ IMAGE A: The person photo. Preserve face, hair, body shape, skin tone, pose, han
 ${intimateReferenceLine}
 
 TASK:
+- If Image B shows multiple models or a product collage, extract ONLY the garment and ignore all people in Image B.
 - Dress the person from Image A in the garment represented by Image B.
 - Match the garment's exact color, silhouette, neckline, straps, coverage level, material appearance, seams, print, trim, and branding cues as closely as possible.
 - Keep it retail-safe, natural, and commercially appropriate.
-- Output ONE full-body image only. No collage, no split panels, no duplicate people, no text.
+- Output ONE full-body image showing EXACTLY ONE person (from Image A). No collage, no split panels, no duplicate people, no multiple figures, no text.
 - ${bgInstruction}
 
 ${underwearSafetyInstruction}`;
@@ -977,6 +979,11 @@ IMAGES PROVIDED:
 - Image A (first image below): The person photo to preserve.
 - Image B (second image below): The clothing item to apply.${productHint}
 
+CRITICAL — SINGLE PERSON RULE:
+- Image B may show MULTIPLE models, a product collage, or a multi-person editorial photo. IGNORE all people/models in Image B entirely.
+- Extract ONLY the clothing garment from Image B and apply it to the SINGLE person from Image A.
+- The output must contain EXACTLY ONE person — the person from Image A. Never duplicate people, never add extra figures.
+
 ITEM SCOPE:
 ${standardScopeInstruction}
 
@@ -989,7 +996,7 @@ TASK:
 - ${bgInstruction}
 - ${noResizeInstruction}
 
-Output: a single photorealistic full-body fashion image. No text, no collage, no watermark.`;
+Output: a single photorealistic full-body fashion image showing ONE person only. No text, no collage, no watermark, no side-by-side, no multiple figures.`;
     }
 
     const bgFallbackHint = useClothingBg
@@ -1074,9 +1081,9 @@ Output: a single photorealistic full-body fashion image. No text, no collage, no
       ? "intimate"
       : "standard";
     const footwearFastPrompt =
-      `Fast shoe swap. Image A is the person, Image B is the exact shoe.${productHint} Replace only footwear in Image A with Image B. Keep all other clothing, pose, and framing unchanged. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
+      `Fast shoe swap. Image A is the person, Image B is the exact shoe.${productHint} If Image B shows multiple models, extract ONLY the shoes. Replace only footwear in Image A with Image B. Output exactly ONE person. Keep all other clothing, pose, and framing unchanged. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
     const footwearRetryPrompt =
-      `Photorealistic shoe replacement.${productHint} Replace only the shoes from Image A with the shoes from Image B. Keep body, outfit, orientation, and lighting natural. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
+      `Photorealistic shoe replacement.${productHint} If Image B shows multiple models, extract ONLY the shoes. Replace only the shoes from Image A with the shoes from Image B. Output exactly ONE person. Keep body, outfit, orientation, and lighting natural. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
     const beltDescHint = sanitizedProductDesc
       ? `\nThe belt to use is: "${sanitizedProductDesc}". If Image B shows a full-body model, identify ONLY the belt described above and ignore all other clothing.`
       : "";
