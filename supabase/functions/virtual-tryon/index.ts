@@ -1081,9 +1081,9 @@ Output: a single photorealistic full-body fashion image showing ONE person only.
       ? "intimate"
       : "standard";
     const footwearFastPrompt =
-      `Fast shoe swap. Image A is the person, Image B is the exact shoe.${productHint} Replace only footwear in Image A with Image B. Keep all other clothing, pose, and framing unchanged. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
+      `Fast shoe swap. Image A is the person, Image B is the exact shoe.${productHint} If Image B shows multiple models, extract ONLY the shoes. Replace only footwear in Image A with Image B. Output exactly ONE person. Keep all other clothing, pose, and framing unchanged. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
     const footwearRetryPrompt =
-      `Photorealistic shoe replacement.${productHint} Replace only the shoes from Image A with the shoes from Image B. Keep body, outfit, orientation, and lighting natural. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
+      `Photorealistic shoe replacement.${productHint} If Image B shows multiple models, extract ONLY the shoes. Replace only the shoes from Image A with the shoes from Image B. Output exactly ONE person. Keep body, outfit, orientation, and lighting natural. ${bgFallbackHint} ${noResizeInstruction} No text/watermark.`;
     const beltDescHint = sanitizedProductDesc
       ? `\nThe belt to use is: "${sanitizedProductDesc}". If Image B shows a full-body model, identify ONLY the belt described above and ignore all other clothing.`
       : "";
