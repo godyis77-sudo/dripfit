@@ -152,7 +152,7 @@ const GalleryPlayground = () => {
               className="relative w-full bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 pr-8 py-4 text-left active:scale-[0.97] transition-all hover:bg-white/[0.05] mb-3"
             >
               <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">COP / DROP</span>
-              <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Your Body Twins weigh in.</span>
+              <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Browse Fresh Drip</span>
               <ChevronRight className="w-4 h-4 text-zinc-400 absolute right-4 top-1/2 -translate-y-1/2" strokeWidth={2} />
             </button>
 
