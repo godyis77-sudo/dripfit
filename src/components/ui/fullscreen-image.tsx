@@ -107,7 +107,7 @@ function ZoomableFullscreenImg({ src, alt }: { src: string; alt: string }) {
   );
 }
 
-export const FullscreenImage = ({ src, alt = '', className = '', children, onShop, onTryOn, onAddToWardrobe, externalOpen, onExternalClose }: FullscreenImageProps) => {
+export const FullscreenImage = ({ src, alt = '', className = '', children, description, onShop, onTryOn, onAddToWardrobe, externalOpen, onExternalClose }: FullscreenImageProps) => {
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen ?? internalOpen;
   const setOpen = useCallback((v: boolean) => {
