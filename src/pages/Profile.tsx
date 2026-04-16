@@ -3,7 +3,8 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Shirt, Camera, Settings, ShoppingBag, ShoppingCart, User, Globe, X, Gift, ChevronDown, Award, Sparkles } from 'lucide-react';
+import { LogOut, Shirt, Camera, Settings, ShoppingBag, ShoppingCart, User, Globe, X, Gift, ChevronDown, Award, Wand2 } from 'lucide-react';
+import BrandLogo from '@/components/ui/BrandLogo';
 
 import { useAuth } from '@/hooks/useAuth';
 const GuestProfileView = lazy(() => import('@/components/guest/GuestProfileView'));
@@ -141,9 +142,9 @@ const Profile = () => {
         {isSubscribed ? (
           <button
             onClick={() => navigate('/premium')}
-            className="w-full flex items-center gap-2 px-3 py-0 rounded-xl bg-white/[0.03] backdrop-blur-md border border-primary/20 mb-3 active:scale-[0.98] transition-transform"
+            className="w-full flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.03] backdrop-blur-md border border-primary/20 mb-3 active:scale-[0.98] transition-transform"
           >
-            <Sparkles className="h-8 w-8 text-primary" />
+            <BrandLogo size="sm" iconOnly />
             <span className="type-label text-primary flex-1 text-left">DRIPFIT ✔ PREMIUM</span>
             <span className="text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: 'rgba(212,175,55,0.12)', border: '1px solid rgba(212,175,55,0.45)', color: '#D4AF37' }}>
               <span className="h-1.5 w-1.5 rounded-full inline-block" style={{ background: '#D4AF37' }} /> ACTIVE
@@ -155,7 +156,7 @@ const Profile = () => {
               onClick={() => { trackEvent('premium_viewed', { source: 'profile_banner' }); navigate('/premium'); }}
               className="flex items-center gap-2 flex-1 active:scale-[0.98] transition-transform"
             >
-              <Sparkles className="h-4 w-4 text-primary" />
+              <BrandLogo size="sm" iconOnly />
               <span className="text-[11px] font-bold text-foreground flex-1 text-left">Go Premium</span>
               <span className="text-[11px] text-primary font-bold">7-day free trial →</span>
             </button>
@@ -183,7 +184,7 @@ const Profile = () => {
             </div>
             {isSubscribed ? (
               <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-primary/80 flex items-center justify-center border-2 border-background">
-                <Sparkles className="h-2.5 w-2.5 text-primary-foreground" />
+                <BrandLogo size="sm" iconOnly className="scale-[0.35]" />
               </div>
             ) : (
               <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
@@ -218,18 +219,18 @@ const Profile = () => {
           </button>
           <div className="flex items-center gap-1.5 mt-3">
             <button
-              onClick={() => navigate('/style-assistant')}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass-gold active:scale-95 transition-transform"
-            >
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-[13px] text-primary font-bold tracking-wide">Style AI</span>
-            </button>
-            <button
               onClick={() => navigate('/profile/body')}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass-gold active:scale-95 transition-transform"
             >
               <User className="h-4 w-4 text-primary" />
               <span className="text-[13px] text-primary font-bold tracking-wide">Sizes</span>
+            </button>
+            <button
+              onClick={() => navigate('/style-assistant')}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass-gold active:scale-95 transition-transform"
+            >
+              <Wand2 className="h-4 w-4 text-primary" />
+              <span className="text-[13px] text-primary font-bold tracking-wide">Style AI</span>
             </button>
           </div>
         </div>
