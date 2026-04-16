@@ -129,12 +129,12 @@ const GalleryPlayground = () => {
               9,000+ pieces · 186 brands · 389 size charts
             </p>
 
-            {/* Hero card — The Infinite Closet */}
+            {/* Hero card — Infinite Drape Studio */}
             <div
               onClick={() => { trackEvent('gallery_hero_tryon'); navigate('/tryon'); }}
               className="relative w-full mb-3 bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-5 py-5 active:scale-[0.97] transition-all cursor-pointer hover:bg-white/[0.05]"
             >
-              <p className="font-display text-[22px] font-semibold text-foreground leading-tight tracking-tight">The Infinite Closet</p>
+              <p className="font-display text-[22px] font-semibold text-foreground leading-tight tracking-tight">Infinite Drape Studio</p>
               <p className="font-sans text-[14px] text-muted-foreground mt-1">9,000+ pieces. Your exact silhouette.</p>
               <div className="flex justify-end mt-3">
                 <button
@@ -221,7 +221,7 @@ const GalleryPlayground = () => {
           onClick={() => navigate('/browse/all')}
           className="w-full mb-3 h-12 rounded-2xl bg-white/[0.04] backdrop-blur-md border border-primary/30 text-primary font-sans text-xs tracking-widest uppercase font-semibold active:scale-[0.97] transition-transform flex items-center justify-center gap-2"
         >
-          <ShoppingBag className="h-3.5 w-3.5 text-primary" /> Enter the Infinite Closet
+          <ShoppingBag className="h-3.5 w-3.5 text-primary" /> Enter Infinite Drape Studio
         </button>
 
         {/* Product Grid — category-broken like try-on page */}
