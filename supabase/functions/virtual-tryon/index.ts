@@ -873,6 +873,8 @@ Deno.serve(async (req) => {
       : "Keep output commercially appropriate for retail catalog standards.";
     const noResizeInstruction =
       "CRITICAL DIMENSIONS: Preserve Image A exactly. Output must keep the SAME aspect ratio, width, and height as Image A. Do NOT resize, crop, zoom, expand the canvas, or reframe.";
+    const antiCollageInstruction =
+      "ABSOLUTE LAYOUT RULE: Output EXACTLY ONE single image panel. NEVER generate a triptych, diptych, side-by-side comparison, before/after, multi-panel grid, or any layout showing multiple versions of the person. The output must be ONE seamless photograph — not multiple images stitched together.";
 
     let prompt: string;
 
@@ -897,8 +899,9 @@ TASK — FOOTWEAR SWAP (output must show exactly ONE person — the person from 
 6. ${bgInstruction}
 7. Correct scale — shoes must match the person's foot size realistically. Natural shadows and lighting.
 8. ${noResizeInstruction}
+9. ${antiCollageInstruction}
 
-Output: A single photorealistic FULL-BODY image showing the person head to feet. No text/watermarks/split views.`;
+Output: A single photorealistic FULL-BODY image showing the person head to feet. No text/watermarks/split views/triptych/comparison panels.`;
     } else if (
       (isAccessory || isLayering) && !isIntimateGarment &&
       !isSportsBraOrCropTop &&
@@ -958,7 +961,8 @@ TASK:
 - Dress the person from Image A in the garment represented by Image B.
 - Match the garment's exact color, silhouette, neckline, straps, coverage level, material appearance, seams, print, trim, and branding cues as closely as possible.
 - Keep it retail-safe, natural, and commercially appropriate.
-- Output ONE full-body image showing EXACTLY ONE person (from Image A). No collage, no split panels, no duplicate people, no multiple figures, no text.
+- Output ONE full-body image showing EXACTLY ONE person (from Image A). No collage, no split panels, no duplicate people, no multiple figures, no text, no triptych, no comparison layout.
+- ${antiCollageInstruction}
 - ${bgInstruction}
 
 ${underwearSafetyInstruction}`;
@@ -995,8 +999,9 @@ TASK:
 - Keep the image commercially appropriate and realistic.
 - ${bgInstruction}
 - ${noResizeInstruction}
+- ${antiCollageInstruction}
 
-Output: a single photorealistic full-body fashion image showing ONE person only. No text, no collage, no watermark, no side-by-side, no multiple figures.`;
+Output: a single photorealistic full-body fashion image showing ONE person only. No text, no collage, no watermark, no side-by-side, no triptych, no multiple figures, no comparison panels.`;
     }
 
     const bgFallbackHint = useClothingBg
