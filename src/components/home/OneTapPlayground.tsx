@@ -117,6 +117,7 @@ const OneTapPlayground = () => {
       fit_profile: product.fit_profile,
       fabric_composition: product.fabric_composition,
       style_genre: product.style_genre,
+      description: product.description,
     });
   }, [uploading]);
 
