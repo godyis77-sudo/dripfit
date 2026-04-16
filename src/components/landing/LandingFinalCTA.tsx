@@ -17,7 +17,7 @@ export default function LandingFinalCTA() {
             <span className="text-primary">It Fits.</span>
           </h2>
           <p className="type-body text-lg leading-relaxed max-w-md mx-auto mb-10">
-            Map your body. Enter the Infinite Closet. Cop with confidence.
+            Map your body. Enter Infinite Drape Studio. Cop with confidence.
           </p>
         </FadeIn>
         <FadeIn delay={0.1}>

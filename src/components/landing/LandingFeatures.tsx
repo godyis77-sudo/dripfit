@@ -6,7 +6,7 @@ interface Feature { icon: LucideIcon; title: string; desc: string }
 
 const FEATURES: Feature[] = [
   { icon: Scan, title: 'The Biometric Scan', desc: '2 photos. 60 seconds. Your exact geometry — mapped. 20+ biometric data points. Cross-referenced against 186 brand size charts. Locked.' },
-  { icon: Shirt, title: 'The Infinite Closet', desc: '9,000+ pieces. 69 retailers. AR try-on. The exact drape — on your silhouette. No model. Just you.' },
+  { icon: Shirt, title: 'Infinite Drape Studio', desc: '9,000+ pieces. 69 retailers. AR try-on. The exact drape — on your silhouette. No model. Just you.' },
   { icon: Users, title: 'Body & Style Twins', desc: 'Members with your exact proportions. If it drapes on them — it drapes on you. Verified.' },
   { icon: Scale, title: 'COP / DROP Voting', desc: 'The community verdict. Your Body Twins have spoken. Binary. Decisive. No ambiguity.' },
   { icon: ShieldCheck, title: 'Verified Sizing', desc: 'Your mapped size across every brand. Instantly. No more guessing between a Medium at Nike and a Large at Zara.' },

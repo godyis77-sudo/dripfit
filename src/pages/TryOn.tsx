@@ -94,7 +94,7 @@ const TryOn = () => {
     <div className="min-h-screen bg-background px-4 pt-4 pb-safe-tab">
       <div>
         <PageHeader
-          title="THE INFINITE CLOSET"
+          title="INFINITE DRAPE STUDIO"
           subtitle="Try the drape before you cop."
           actions={s.resultImage ? (
             <Button variant="outline" size="sm" onClick={s.handleTryAnother} className="h-8 rounded-lg text-[11px] font-bold gap-1.5">
