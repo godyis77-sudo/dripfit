@@ -156,7 +156,7 @@ const Profile = () => {
               onClick={() => { trackEvent('premium_viewed', { source: 'profile_banner' }); navigate('/premium'); }}
               className="flex items-center gap-2 flex-1 active:scale-[0.98] transition-transform"
             >
-              <BrandLogo size="sm" iconOnly />
+              <BrandLogo size="sm" className="text-white" />
               <span className="text-[11px] font-bold text-foreground flex-1 text-left">Go Premium</span>
               <span className="text-[11px] text-primary font-bold">7-day free trial →</span>
             </button>
