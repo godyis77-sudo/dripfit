@@ -201,6 +201,16 @@ const OutfitDetail = () => {
                         <Shirt className="h-3 w-3 mr-1" /> Try
                       </Button>
                     )}
+                    {item.image_url && (
+                      <Button
+                        size="sm"
+                        disabled={savedIds.has(item.id)}
+                        className={`h-7 text-[10px] px-2.5 rounded-full border shadow-none ${savedIds.has(item.id) ? 'bg-primary/15 border-primary/30 text-primary' : 'bg-white/[0.06] border-white/[0.1] text-white hover:bg-white/10'}`}
+                        onClick={() => handleSaveToCloset(item)}
+                      >
+                        {savedIds.has(item.id) ? 'Saved' : 'Save'}
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
