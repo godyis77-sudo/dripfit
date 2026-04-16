@@ -954,10 +954,11 @@ IMAGE A: The person photo. Preserve face, hair, body shape, skin tone, pose, han
 ${intimateReferenceLine}
 
 TASK:
+- If Image B shows multiple models or a product collage, extract ONLY the garment and ignore all people in Image B.
 - Dress the person from Image A in the garment represented by Image B.
 - Match the garment's exact color, silhouette, neckline, straps, coverage level, material appearance, seams, print, trim, and branding cues as closely as possible.
 - Keep it retail-safe, natural, and commercially appropriate.
-- Output ONE full-body image only. No collage, no split panels, no duplicate people, no text.
+- Output ONE full-body image showing EXACTLY ONE person (from Image A). No collage, no split panels, no duplicate people, no multiple figures, no text.
 - ${bgInstruction}
 
 ${underwearSafetyInstruction}`;
