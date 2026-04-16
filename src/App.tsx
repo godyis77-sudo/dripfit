@@ -16,14 +16,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import AffiliateProvider from "./components/AffiliateProvider";
 import Capture from "./pages/Capture";
 import GuestTimedNudge from "./components/guest/GuestTimedNudge";
-import Splash from "./pages/Splash";
 import Welcome from "./pages/Welcome";
-
-/** Clears onboarding flags and redirects to /home so the overlay re-appears */
-function OnboardingReset() {
-  localStorage.removeItem('onboarding_complete');
-  return <Navigate to="/home" replace />;
-}
 
 /** Smart root redirect: authenticated → /home, guest → /landing */
 function RootRedirect() {
@@ -59,7 +52,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const AdminRetailers = lazy(() => import("./pages/AdminRetailers"));
 const AdminCommissions = lazy(() => import("./pages/AdminCommissions"));
 const CreatorDashboard = lazy(() => import("./pages/CreatorDashboard"));
-const Waitlist = lazy(() => import("./pages/Waitlist"));
+
 const Partnership = lazy(() => import("./pages/Partnership"));
 const FoundingMembers = lazy(() => import("./pages/FoundingMembers"));
 const MediaKit = lazy(() => import("./pages/MediaKit"));
@@ -124,7 +117,7 @@ const AnimatedRoutes = () => {
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<RootRedirect />} />
           <Route path="/home" element={<PageTransition><Welcome /></PageTransition>} />
-          <Route path="/onboarding" element={<OnboardingReset />} />
+          <Route path="/onboarding" element={<Navigate to="/home" replace />} />
           <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
           <Route path="/capture" element={<PageTransition><Capture /></PageTransition>} />
           <Route path="/analyze" element={<PageTransition><Analyze /></PageTransition>} />
@@ -162,7 +155,7 @@ const AnimatedRoutes = () => {
           <Route path="/admin/retailers" element={<ProtectedRoute><PageTransition><AdminRetailers /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/commissions" element={<ProtectedRoute><PageTransition><AdminCommissions /></PageTransition></ProtectedRoute>} />
           <Route path="/creator" element={<ProtectedRoute><PageTransition><CreatorDashboard /></PageTransition></ProtectedRoute>} />
-          <Route path="/waitlist" element={<PageTransition><Waitlist /></PageTransition>} />
+          <Route path="/waitlist" element={<Navigate to="/landing" replace />} />
           <Route path="/partnership" element={<PageTransition><Partnership /></PageTransition>} />
           <Route path="/founding-members" element={<PageTransition><FoundingMembers /></PageTransition>} />
           <Route path="/media-kit" element={<PageTransition><MediaKit /></PageTransition>} />
