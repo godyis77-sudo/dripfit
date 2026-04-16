@@ -120,7 +120,7 @@ export default function SwipeFeedSection({ gender }: SwipeFeedSectionProps) {
     <section className="mb-6">
       <SectionHeader navigate={navigate} />
       <div className="relative">
-        {/* Peek of next card */}
+        {/* Peek of next card — sits behind, becomes the new top after swipe */}
         {next && (
           <div
             key={next.id}
@@ -135,13 +135,7 @@ export default function SwipeFeedSection({ gender }: SwipeFeedSectionProps) {
             />
           </div>
         )}
-        <motion.div
-          key={current.id}
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.2 }}
-          className="relative"
-        >
+        <div key={current.id} className="relative">
           <SwipeFeedCard
             card={current}
             onCop={handleCop}
@@ -150,7 +144,7 @@ export default function SwipeFeedSection({ gender }: SwipeFeedSectionProps) {
             copPercent={copPercent}
             voteCount={total}
           />
-        </motion.div>
+        </div>
       </div>
     </section>
   );
