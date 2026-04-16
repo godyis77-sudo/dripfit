@@ -997,8 +997,9 @@ TASK:
 - Keep the image commercially appropriate and realistic.
 - ${bgInstruction}
 - ${noResizeInstruction}
+- ${antiCollageInstruction}
 
-Output: a single photorealistic full-body fashion image showing ONE person only. No text, no collage, no watermark, no side-by-side, no multiple figures.`;
+Output: a single photorealistic full-body fashion image showing ONE person only. No text, no collage, no watermark, no side-by-side, no triptych, no multiple figures, no comparison panels.`;
     }
 
     const bgFallbackHint = useClothingBg
