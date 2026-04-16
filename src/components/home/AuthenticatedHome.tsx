@@ -169,7 +169,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           </div>
           <div className="text-left flex-1">
             <p className={TYPE.headlineSm + ' text-[14px]'}>COP or DROP</p>
-            <p className={TYPE.body + ' text-[11px]'}>Your Body Twins weigh in</p>
+            <p className={TYPE.body + ' text-[11px]'}>Browse Fresh Drip</p>
           </div>
         </motion.button>
 
