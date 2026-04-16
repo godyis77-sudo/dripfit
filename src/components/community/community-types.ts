@@ -55,7 +55,7 @@ export const GENDER_OPTIONS = [
 ] as const;
 
 export type GenderKey = typeof GENDER_OPTIONS[number]['key'];
-export type FilterType = 'trending' | 'new' | 'similar' | 'shop' | 'following';
+export type FilterType = 'trending' | 'new' | 'similar' | 'shop' | 'following' | 'swipe';
 export type TrendingSort = 'hot' | 'love' | 'buy' | 'newest' | 'user';
 
 export const RATING_LABELS = [

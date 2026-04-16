@@ -218,7 +218,9 @@ type FunnelEvent =
   | 'home_scan_strip_click'
   | 'home_swipe_cop'
   | 'home_swipe_drop'
-  | 'home_swipe_tap';
+  | 'home_swipe_tap'
+  | 'style_check_swipe_cop'
+  | 'style_check_swipe_drop';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
