@@ -886,8 +886,9 @@ IMAGES PROVIDED:
 
 TARGET FOOTWEAR:
 - The shoes shown in Image B.${productHint}
+- IMPORTANT: If Image B shows multiple models or a product collage, extract ONLY the footwear and ignore all people in Image B.
 
-TASK — FOOTWEAR SWAP:
+TASK — FOOTWEAR SWAP (output must show exactly ONE person — the person from Image A):
 1. REMOVE whatever shoes/footwear the person in Image A is currently wearing.
 2. REPLACE them with the EXACT footwear from Image B — match color, shape, material, branding, sole, laces, and all details precisely.
 3. Keep ALL other clothing from Image A completely unchanged — do NOT modify tops, bottoms, or any other garment.
