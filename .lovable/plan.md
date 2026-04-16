@@ -1,41 +1,22 @@
 
 
-## Review Summary & Action Plan
+The user wants to add a swipe card feed to the authenticated home page (post-scan), populated with:
+1. This week's curated looks (`weekly_outfits` table)
+2. Top liked community posts of the week (`tryon_posts` filtered by recent engagement)
 
-### What's Already Solved
+Let me check what's already in place quickly.
 
-The reviewer raised three landing page concerns. Two are already addressed in the current V2 build:
+Key context I already have:
+- `useWeeklyOutfits` hook exists and returns `WeeklyOutfit[]` with `hero_image_url`
+- `useCommunityFeed` exists with trending sort via `get_trending_posts` RPC (already filters last 168h = 7 days, sorts by votes+ratings+comments)
+- `AuthenticatedHome.tsx` is the post-scan home
+- `tryon_posts` already has `is_public`, `moderation_status`, `result_photo_url`, `clothing_category`, `product_urls`
+- `community_votes` powers COP/DROP via `VotePanel`
+- `framer-motion` is used throughout for animations
 
-1. **Email capture above the fold** — Already done. `LandingEmailCapture` is in the hero section (line 42 of `LandingHero.tsx`).
-2. **Competing CTAs removed** — The "Watch It Work" outline button was eliminated in the V2 rebuild. Only "Map Your Body" remains.
-3. **Hero CTA destination** — Currently submits to `waitlist_signups`. Once the app is live on stores, this should link to the app store listing. No change needed yet.
+What's missing:
+- A swipe card component
+- An "add top liked posts of the week to the feed" function — this could mean either (a) automatically promote top posts for visibility, or (b) just surface top weekly posts in this swipe feed. Need to clarify but I'll assume the simpler read-only approach: query top-of-week posts directly via existing `get_trending_posts` (it already does 168h window).
 
-### What Needs Fixing: Scraper Queue Architecture
-
-The reviewer correctly identified a real risk. The `scrape-all-products` function uses `setTimeout` (line 290) to fire post-processing tasks after individual scrapes complete. In Deno Deploy, the worker can be killed after the response is sent, meaning `setTimeout` callbacks may never execute.
-
-Your project already uses `pg_cron` + `pg_net` for scheduled tasks (per your automation memory). The fix is to move the post-processing chain into that same pattern instead of relying on in-function timeouts.
-
-### Plan
-
-**Task 1: Replace setTimeout post-processing with pg_cron jobs**
-
-In `scrape-all-products/index.ts`:
-- Remove the `setTimeout` block (lines 289-316) that fires categorize, gender backfill, audit, and cleanup
-- Instead, after dispatching scrape jobs, insert a row into a new `scrape_runs` table with `status = 'scraping'` and a `post_process_at` timestamp (e.g., now + estimated delay)
-- Create a `scrape_runs` table via migration: `id`, `batch_number`, `status` (scraping/post_processing/done), `post_process_at`, `created_at`
-- Add a pg_cron job (every 2 minutes) that checks for rows where `status = 'scraping' AND post_process_at <= now()`, then fires the 4 post-processing functions via `pg_net.http_post`, and updates status to `post_processing`
-
-This guarantees execution regardless of edge function lifecycle.
-
-**Task 2: Landing page — minor CTA refinement**
-
-The "Map Your Body" button currently submits to the waitlist. Once app store links are live, we swap the hero CTA to link directly to the store listing. For now, no change needed — the waitlist flow is correct for pre-launch.
-
-### Technical Details
-
-- **Migration**: New `scrape_runs` table with RLS disabled (internal use only, accessed via service role)
-- **pg_cron job**: Uses existing `pg_net` extension to POST to the 4 cleanup functions
-- **Edge function edit**: ~30 lines removed (setTimeout block), ~10 lines added (insert into scrape_runs)
-- **No UI changes required**
+I should keep this concise and not over-engineer.
 
