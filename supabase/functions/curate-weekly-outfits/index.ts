@@ -281,14 +281,11 @@ Deno.serve(async (req) => {
     }
 
     // Fetch products from catalog.
-    // STRICT gender separation: when curating mens/womens outfits we ONLY use
-    // products explicitly tagged with that gender. We exclude "unisex" because
-    // many catalog items are mis-tagged unisex when they are actually
-    // gender-specific, which causes cross-contamination (e.g. a women's blazer
-    // appearing in a men's outfit). Better to skip an outfit than to mix.
-    const genders = gender
-      ? [gender === "mens" ? "male" : "female"]
-      : ["male", "female"];
+    // STRICT gender separation: the catalog uses "mens" / "womens" / "unisex".
+    // We exclude "unisex" because many catalog items are mis-tagged unisex when
+    // they are actually gender-specific (e.g. a women's Reiss blazer landing in
+    // a men's outfit). Better to skip an outfit than to mix.
+    const genders = gender ? [gender] : ["mens", "womens"];
 
     // Fetch enough products — 2000 limit
     const { data: allProducts, error: fetchErr } = await sb
@@ -309,9 +306,9 @@ Deno.serve(async (req) => {
     log.push(`[Catalog] ${allProducts.length} products loaded (strict gender, no unisex)`);
 
     // Strict gender split — no cross-pollination from unisex bucket.
-    const maleProducts = allProducts.filter(p => p.gender === "male");
-    const femaleProducts = allProducts.filter(p => p.gender === "female");
-    log.push(`[Pools] male=${maleProducts.length}, female=${femaleProducts.length}`);
+    const maleProducts = allProducts.filter(p => p.gender === "mens");
+    const femaleProducts = allProducts.filter(p => p.gender === "womens");
+    log.push(`[Pools] mens=${maleProducts.length}, womens=${femaleProducts.length}`);
 
     // Pick occasions
     const selectedOccasions = shuffle(OCCASIONS).slice(0, occasionCount);
