@@ -70,57 +70,7 @@ const PostCard = ({
       transition={{ delay: index * 0.03 }}
       className="bg-black/30 backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden flex flex-col"
     >
-      {/* Header */}
-      <div className="flex items-center gap-1.5 px-2 pt-1.5 pb-1">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button onClick={(e) => e.stopPropagation()} className="flex items-center gap-1 active:opacity-70 transition-opacity min-w-0">
-              {post.profile?.avatar_url ? (
-                <img src={post.profile.avatar_url} alt="" className="h-4 w-4 rounded-full object-cover shrink-0" />
-              ) : (
-                <div className="h-4 w-4 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                  <span className="text-[7px] font-bold text-white/70">{(post.profile?.display_name || 'A')[0].toUpperCase()}</span>
-                </div>
-              )}
-              <p className="text-[11px] font-medium text-white truncate">{post.profile?.display_name || 'Anon'}</p>
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="min-w-[140px]">
-            <DropdownMenuItem onClick={() => {
-              const name = post.profile?.display_name || 'Anonymous';
-              if (user && post.user_id === user.id) { navigate('/profile'); return; }
-              navigate(`/profile/${encodeURIComponent(name)}`);
-            }}>
-              <User className="mr-2 h-3.5 w-3.5" /> View Profile
-            </DropdownMenuItem>
-            {user && post.user_id !== user.id && !isPlaceholder(post) && (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => onFollowToggle(post.user_id)}>
-                  {followToggles[post.user_id]
-                    ? <><UserCheck className="mr-2 h-3.5 w-3.5 text-primary" /> Unfollow</>
-                    : <><UserPlus className="mr-2 h-3.5 w-3.5" /> Follow</>
-                  }
-                </DropdownMenuItem>
-              </>
-            )}
-            {user && post.user_id === user.id && !isPlaceholder(post) && (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setConfirmDeleteId(post.id)} className="text-destructive focus:text-destructive">
-                  <Trash2 className="mr-2 h-3.5 w-3.5" /> Remove Post
-                </DropdownMenuItem>
-              </>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <span className="flex-1" />
-        {user && post.user_id !== user.id && !isPlaceholder(post) && (
-          <span className={`shrink-0 p-0.5 ${followToggles[post.user_id] ? 'text-primary' : 'text-muted-foreground/40'}`}>
-            {followToggles[post.user_id] ? <UserCheck className="h-3 w-3" /> : null}
-          </span>
-        )}
-      </div>
+      {/* Header removed — username only shown in full-screen detail view */}
 
       {/* Image */}
       <div
