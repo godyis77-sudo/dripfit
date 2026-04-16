@@ -32,7 +32,7 @@ const TESTIMONIALS = [
   { quote: "Love that I can actually influence what brands get added next. Feels like I'm building this with the team.", name: 'Marcus L.', detail: 'Day-one beta' },
 ];
 
-const DISCORD_INVITE = 'https://discord.gg/YOUR_INVITE_LINK';
+const CONTACT_EMAIL = 'mailto:hello@dripfitcheck.com';
 
 const FoundingMembers = () => {
   usePageMeta({ title: 'Founding Members', description: 'Join the Founding 100 — exclusive early access, direct input on features, and lifetime perks.', path: '/founding-members' });
@@ -115,9 +115,9 @@ const FoundingMembers = () => {
             className="mt-6"
           >
             <Button size="lg" className="w-full text-base gap-2" asChild>
-              <a href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
+              <a href={CONTACT_EMAIL}>
                 <Users className="h-5 w-5" />
-                Join the Discord
+                Join the Conversation
                 <ArrowRight className="h-4 w-4" />
               </a>
             </Button>
