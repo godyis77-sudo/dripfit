@@ -30,6 +30,7 @@ import FeedSortControls from '@/components/community/FeedSortControls';
 import ShopFiltersPanel from '@/components/community/ShopFiltersPanel';
 import type { SortKey } from '@/components/community/ShopFiltersPanel';
 import CommunityFeedGrid from '@/components/community/CommunityFeedGrid';
+import CommunitySwipeStack from '@/components/community/CommunitySwipeStack';
 
 const FIT_OPTIONS = [
   'athletic fit', 'boxy', 'classic fit', 'cropped', 'drop shoulder',
