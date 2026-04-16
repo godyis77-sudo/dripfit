@@ -407,11 +407,11 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
       const { error: upErr } = await supabase.storage.from('tryon-composites').upload(path, blob, { contentType: 'image/jpeg' });
       if (upErr) throw upErr;
 
-      // Requires: tryon-composites bucket set to public in Supabase
-      const { data: { publicUrl } } = supabase.storage
+      const { data: signedData, error: signErr } = await supabase.storage
         .from('tryon-composites')
-        .getPublicUrl(path);
-      const compositeViewUrl = publicUrl;
+        .createSignedUrl(path, 60 * 60 * 24 * 365);
+      if (signErr || !signedData?.signedUrl) throw signErr || new Error('Could not create image URL');
+      const compositeViewUrl = signedData.signedUrl;
       const normalizedProductUrls = Array.from(
         new Set(
           (productUrls || [])
