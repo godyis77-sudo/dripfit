@@ -129,32 +129,32 @@ const GalleryPlayground = () => {
               9,000+ pieces · 186 brands · 389 size charts
             </p>
 
-            {/* Hero card — Infinite Drape Studio */}
-            <div
-              onClick={() => { trackEvent('gallery_hero_tryon'); navigate('/tryon'); }}
-              className="relative w-full mb-3 bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-5 py-5 active:scale-[0.97] transition-all cursor-pointer hover:bg-white/[0.05]"
-            >
-              <p className="font-display text-[22px] font-semibold text-foreground leading-tight tracking-tight">Infinite Drape Studio</p>
-              <p className="font-sans text-[14px] text-muted-foreground mt-1">9,000+ pieces. Your exact silhouette.</p>
-              <div className="flex justify-end mt-3">
-                <button
-                  onClick={(e) => { e.stopPropagation(); navigate('/tryon'); }}
-                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-primary/[0.10] backdrop-blur-md border border-primary/30 text-primary text-[12px] font-bold tracking-wide hover:scale-[1.02] active:scale-[0.98] transition-transform"
-                >
-                  Browse Closet <ArrowRight className="h-3.5 w-3.5" />
-                </button>
+            {/* Hero row — Infinite Drape Studio + COP / DROP side by side */}
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              <div
+                onClick={() => { trackEvent('gallery_hero_tryon'); navigate('/tryon'); }}
+                className="relative bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 py-4 active:scale-[0.97] transition-all cursor-pointer hover:bg-white/[0.05] flex flex-col"
+              >
+                <p className="font-display text-[16px] font-semibold text-foreground leading-tight tracking-tight">Infinite Drape Studio</p>
+                <p className="font-sans text-[12px] text-muted-foreground mt-1 leading-snug">9,000+ pieces. Your exact silhouette.</p>
+                <div className="flex justify-end mt-auto pt-3">
+                  <span className="inline-flex items-center gap-1 text-primary text-[11px] font-bold tracking-wide">
+                    Browse <ArrowRight className="h-3 w-3" />
+                  </span>
+                </div>
               </div>
-            </div>
 
-            {/* COP / DROP — primary secondary card */}
-            <button
-              onClick={() => navigate('/closet')}
-              className="relative w-full bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 pr-8 py-4 text-left active:scale-[0.97] transition-all hover:bg-white/[0.05] mb-3"
-            >
-              <span className="block font-display text-[18px] font-semibold text-foreground leading-tight tracking-tight">COP / DROP</span>
-              <span className="block font-sans text-[14px] text-muted-foreground leading-tight mt-1">Browse Fresh Drip</span>
-              <ChevronRight className="w-4 h-4 text-zinc-400 absolute right-4 top-1/2 -translate-y-1/2" strokeWidth={2} />
-            </button>
+              <button
+                onClick={() => navigate('/closet')}
+                className="relative bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 py-4 text-left active:scale-[0.97] transition-all hover:bg-white/[0.05] flex flex-col"
+              >
+                <span className="block font-display text-[16px] font-semibold text-foreground leading-tight tracking-tight">COP / DROP</span>
+                <span className="block font-sans text-[12px] text-muted-foreground leading-snug mt-1">Browse Fresh Drip</span>
+                <div className="flex justify-end mt-auto pt-3">
+                  <ChevronRight className="w-4 h-4 text-zinc-400" strokeWidth={2} />
+                </div>
+              </button>
+            </div>
 
             {/* Subtle Verified Size redirect */}
             <div className="flex justify-center mb-8">
