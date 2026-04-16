@@ -144,8 +144,8 @@ const Profile = () => {
             onClick={() => navigate('/premium')}
             className="w-full flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.03] backdrop-blur-md border border-primary/20 mb-3 active:scale-[0.98] transition-transform"
           >
-            <BrandLogo size="sm" iconOnly />
-            <span className="type-label text-primary flex-1 text-left">DRIPFIT ✔ PREMIUM</span>
+            <BrandLogo size="sm" className="text-white" />
+            <span className="type-label text-primary flex-1 text-left">PREMIUM</span>
             <span className="text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: 'rgba(212,175,55,0.12)', border: '1px solid rgba(212,175,55,0.45)', color: '#D4AF37' }}>
               <span className="h-1.5 w-1.5 rounded-full inline-block" style={{ background: '#D4AF37' }} /> ACTIVE
             </span>
@@ -156,7 +156,7 @@ const Profile = () => {
               onClick={() => { trackEvent('premium_viewed', { source: 'profile_banner' }); navigate('/premium'); }}
               className="flex items-center gap-2 flex-1 active:scale-[0.98] transition-transform"
             >
-              <BrandLogo size="sm" iconOnly />
+              <BrandLogo size="sm" className="text-white" />
               <span className="text-[11px] font-bold text-foreground flex-1 text-left">Go Premium</span>
               <span className="text-[11px] text-primary font-bold">7-day free trial →</span>
             </button>
