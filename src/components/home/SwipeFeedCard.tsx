@@ -42,7 +42,7 @@ export default function SwipeFeedCard({
 
   return (
     <motion.div
-      className="relative w-full aspect-[3/4] rounded-2xl overflow-hidden bg-card border border-white/8 shadow-luxury cursor-grab active:cursor-grabbing select-none"
+      className="relative w-full aspect-[3/4] rounded-2xl overflow-hidden bg-card border border-white/8 shadow-luxury cursor-grab active:cursor-grabbing select-none touch-pan-y"
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.6}
@@ -57,6 +57,9 @@ export default function SwipeFeedCard({
       }
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       onClick={() => !exiting && onTap(card)}
+      onTouchStart={(e) => e.stopPropagation()}
+      onTouchMove={(e) => e.stopPropagation()}
+      onTouchEnd={(e) => e.stopPropagation()}
     >
       {/* Image */}
       <img
