@@ -899,8 +899,9 @@ TASK — FOOTWEAR SWAP (output must show exactly ONE person — the person from 
 6. ${bgInstruction}
 7. Correct scale — shoes must match the person's foot size realistically. Natural shadows and lighting.
 8. ${noResizeInstruction}
+9. ${antiCollageInstruction}
 
-Output: A single photorealistic FULL-BODY image showing the person head to feet. No text/watermarks/split views.`;
+Output: A single photorealistic FULL-BODY image showing the person head to feet. No text/watermarks/split views/triptych/comparison panels.`;
     } else if (
       (isAccessory || isLayering) && !isIntimateGarment &&
       !isSportsBraOrCropTop &&
@@ -960,7 +961,8 @@ TASK:
 - Dress the person from Image A in the garment represented by Image B.
 - Match the garment's exact color, silhouette, neckline, straps, coverage level, material appearance, seams, print, trim, and branding cues as closely as possible.
 - Keep it retail-safe, natural, and commercially appropriate.
-- Output ONE full-body image showing EXACTLY ONE person (from Image A). No collage, no split panels, no duplicate people, no multiple figures, no text.
+- Output ONE full-body image showing EXACTLY ONE person (from Image A). No collage, no split panels, no duplicate people, no multiple figures, no text, no triptych, no comparison layout.
+- ${antiCollageInstruction}
 - ${bgInstruction}
 
 ${underwearSafetyInstruction}`;
