@@ -8,13 +8,19 @@ import { useAffiliateClickout } from '@/hooks/useAffiliateClickout';
 import { Button } from '@/components/ui/button';
 import { FullscreenImage } from '@/components/ui/fullscreen-image';
 import { Sparkles } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from '@/hooks/use-toast';
 
 const OutfitDetail = () => {
   const { outfitId } = useParams<{ outfitId: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { data: outfits, isLoading } = useWeeklyOutfits();
   const { pendingClickout, beginClickout, confirmClickout, cancelClickout } = useAffiliateClickout({ extraProps: { source: 'outfit_detail' } });
-  const [fullscreenSrc, setFullscreenSrc] = useState<string | null>(null);
+  const [fullscreenItem, setFullscreenItem] = useState<WeeklyOutfitItem | null>(null);
+  const [fullscreenHero, setFullscreenHero] = useState<string | null>(null);
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
   const outfit = outfits?.find(o => o.id === outfitId);
 
@@ -26,6 +32,30 @@ const OutfitDetail = () => {
   const handleTryOn = useCallback((item: WeeklyOutfitItem) => {
     navigate('/tryon', { state: { clothingUrl: item.image_url, productUrl: item.product_url, freshSession: true } });
   }, [navigate]);
+
+  const handleSaveToCloset = useCallback(async (item: WeeklyOutfitItem) => {
+    if (!user) {
+      toast({ title: 'Sign in to save', description: 'Create a free account to build your closet.', variant: 'destructive' });
+      navigate('/auth');
+      return;
+    }
+    if (!item.image_url) return;
+    const { error } = await supabase.from('clothing_wardrobe').insert({
+      user_id: user.id,
+      image_url: item.image_url,
+      category: item.category || 'top',
+      brand: item.brand || null,
+      product_link: item.product_url || null,
+      is_saved: true,
+      notes: item.product_name,
+    });
+    if (error) {
+      toast({ title: 'Could not save', description: error.message, variant: 'destructive' });
+      return;
+    }
+    setSavedIds(prev => new Set(prev).add(item.id));
+    toast({ title: 'Saved to closet', description: item.product_name });
+  }, [user, navigate]);
 
   if (isLoading) {
     return (
