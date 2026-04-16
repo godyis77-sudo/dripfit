@@ -873,6 +873,8 @@ Deno.serve(async (req) => {
       : "Keep output commercially appropriate for retail catalog standards.";
     const noResizeInstruction =
       "CRITICAL DIMENSIONS: Preserve Image A exactly. Output must keep the SAME aspect ratio, width, and height as Image A. Do NOT resize, crop, zoom, expand the canvas, or reframe.";
+    const antiCollageInstruction =
+      "ABSOLUTE LAYOUT RULE: Output EXACTLY ONE single image panel. NEVER generate a triptych, diptych, side-by-side comparison, before/after, multi-panel grid, or any layout showing multiple versions of the person. The output must be ONE seamless photograph — not multiple images stitched together.";
 
     let prompt: string;
 
