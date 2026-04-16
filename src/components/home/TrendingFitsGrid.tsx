@@ -59,6 +59,7 @@ const TrendingFitsGrid = ({ fits }: TrendingFitsGridProps) => {
                   product_url: fit.product_url,
                   price_cents: fit.price_cents,
                   category: fit.category,
+                  description: fit.description,
                 })
               }
               className="relative rounded-xl overflow-hidden group active:scale-[0.97] active:translate-y-[1px] transition-all bg-secondary text-left h-full flex flex-col"

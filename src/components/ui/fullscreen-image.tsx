@@ -8,6 +8,8 @@ interface FullscreenImageProps {
   alt?: string;
   className?: string;
   children?: React.ReactNode;
+  /** Product description shown in fullscreen overlay */
+  description?: string | null;
   /** Optional action buttons shown at bottom */
   onShop?: () => void;
   onTryOn?: () => void;
@@ -105,7 +107,7 @@ function ZoomableFullscreenImg({ src, alt }: { src: string; alt: string }) {
   );
 }
 
-export const FullscreenImage = ({ src, alt = '', className = '', children, onShop, onTryOn, onAddToWardrobe, externalOpen, onExternalClose }: FullscreenImageProps) => {
+export const FullscreenImage = ({ src, alt = '', className = '', children, description, onShop, onTryOn, onAddToWardrobe, externalOpen, onExternalClose }: FullscreenImageProps) => {
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen ?? internalOpen;
   const setOpen = useCallback((v: boolean) => {
@@ -177,6 +179,12 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, onSho
               </button>
 
               <ZoomableFullscreenImg src={src} alt={alt} />
+
+              {description && (
+                <p className="text-[12px] text-white/50 leading-relaxed text-center line-clamp-3 px-6 mt-3 max-w-sm">
+                  {description}
+                </p>
+              )}
 
               {hasActions && (
                 <motion.div
