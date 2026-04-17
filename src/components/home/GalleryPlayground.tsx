@@ -72,7 +72,7 @@ const GalleryPlayground = () => {
               </p>
             ) : (
               <p className="font-sans text-[13px] font-medium tracking-[0.15em] uppercase text-foreground/70 mt-1 mb-3">
-                Scan to unlock your fitting room.
+                Your fitting room awaits.
               </p>
             )}
           </div>
