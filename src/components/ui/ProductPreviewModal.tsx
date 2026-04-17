@@ -274,13 +274,17 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden overscroll-none bg-black/95 flex flex-col"
-      onClick={onClose}
+      className="fixed inset-0 z-[200] h-dvh w-screen overflow-hidden overscroll-none bg-black flex flex-col"
+      onPointerDown={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
     >
       {/* Close — glass circular */}
       <button
-        onClick={onClose}
-        className="absolute right-4 z-[120] h-11 w-11 min-h-[44px] min-w-[44px] rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center active:scale-90 transition-transform"
+        type="button"
+        onPointerDown={(e) => { e.stopPropagation(); }}
+        onClick={(e) => { e.stopPropagation(); onClose(); }}
+        className="absolute right-4 z-[220] h-11 w-11 min-h-[44px] min-w-[44px] rounded-full bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center active:scale-90 transition-transform"
         style={{ top: 'max(1rem, env(safe-area-inset-top, 1rem))' }}
         aria-label="Close"
       >
