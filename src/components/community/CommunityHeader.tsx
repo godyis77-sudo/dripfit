@@ -34,7 +34,13 @@ const CommunityHeader = ({ cartCount, onPostLook }: CommunityHeaderProps) => {
             </span>
           )}
         </button>
-        <Button className="rounded-lg btn-glass text-white/80 h-8 px-3 text-[11px] font-bold active:scale-95 transition-transform" onClick={onPostLook} aria-label="Create new post">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onPostLook}
+          aria-label="Create new post"
+          className="rounded-lg h-8 px-3 text-[11px] font-bold bg-white/5 border border-white/10 text-white/80 hover:bg-white/10 hover:text-white active:scale-95 transition-transform"
+        >
           <Plus className="mr-1 h-3.5 w-3.5 text-primary" /> Post a Look
         </Button>
       </div>
