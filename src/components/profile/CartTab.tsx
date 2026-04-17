@@ -25,7 +25,7 @@ const CartTab = forwardRef<HTMLDivElement>((_, ref) => {
   const [previewProduct, setPreviewProduct] = useState<ProductPreviewData | null>(null);
   const [previewLookItems, setPreviewLookItems] = useState<LookItemData[]>([]);
   const [previewCaption, setPreviewCaption] = useState<string | null>(null);
-  const [catalogInfo, setCatalogInfo] = useState<Record<string, { brand: string; name: string }>>({});
+  const [catalogInfo, setCatalogInfo] = useState<Record<string, { brand: string; name: string; description?: string | null; price_cents?: number | null; image_url?: string | null }>>({});
 
   useEffect(() => {
     const urls = items
@@ -35,14 +35,14 @@ const CartTab = forwardRef<HTMLDivElement>((_, ref) => {
     let cancelled = false;
     supabase
       .from('product_catalog')
-      .select('product_url, brand, name')
+      .select('product_url, brand, name, description, price_cents, image_url')
       .in('product_url', urls)
       .eq('is_active', true)
       .then(({ data }) => {
         if (cancelled || !data) return;
-        const map: Record<string, { brand: string; name: string }> = {};
+        const map: Record<string, { brand: string; name: string; description?: string | null; price_cents?: number | null; image_url?: string | null }> = {};
         data.forEach(r => {
-          if (r.product_url) map[r.product_url] = { brand: r.brand, name: r.name };
+          if (r.product_url) map[r.product_url] = { brand: r.brand, name: r.name, description: r.description, price_cents: r.price_cents, image_url: r.image_url };
         });
         setCatalogInfo(map);
       });

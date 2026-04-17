@@ -544,6 +544,7 @@ const TryOnResultSection = ({
                   fit_profile: latestMatchesQuickPick ? selectedQuickPick?.fit_profile : undefined,
                   fabric_composition: latestMatchesQuickPick ? selectedQuickPick?.fabric_composition : undefined,
                   style_genre: latestMatchesQuickPick ? selectedQuickPick?.style_genre : undefined,
+                  description: latestMatchesQuickPick ? selectedQuickPick?.description : undefined,
                 });
               }
             }}

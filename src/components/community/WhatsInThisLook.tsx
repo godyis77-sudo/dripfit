@@ -59,6 +59,7 @@ const WhatsInThisLook = ({
 }: WhatsInThisLookProps) => {
   const [open, setOpen] = useState(defaultOpen);
   const [catalogImages, setCatalogImages] = useState<Record<string, string>>({});
+  const [catalogDescriptions, setCatalogDescriptions] = useState<Record<string, string>>({});
   const [previewProduct, setPreviewProduct] = useState<ProductPreviewData | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const { pendingClickout, beginClickout, confirmClickout, cancelClickout } = useAffiliateClickout({ extraProps: { source: 'whats_in_look' } });
@@ -82,24 +83,28 @@ const WhatsInThisLook = ({
   }
 
   const urlsNeedingImages = items.filter(i => !i.image_url).map(i => i.url).filter(Boolean);
+  const allItemUrls = items.map(i => i.url).filter(Boolean);
 
   useEffect(() => {
-    if (urlsNeedingImages.length === 0) return;
+    if (allItemUrls.length === 0) return;
     let cancelled = false;
     supabase
       .from('product_catalog')
-      .select('product_url, image_url')
-      .in('product_url', urlsNeedingImages)
+      .select('product_url, image_url, description')
+      .in('product_url', allItemUrls)
       .then(({ data }) => {
         if (cancelled || !data) return;
-        const map: Record<string, string> = {};
+        const imgMap: Record<string, string> = {};
+        const descMap: Record<string, string> = {};
         data.forEach(row => {
-          if (row.product_url && row.image_url) map[row.product_url] = row.image_url;
+          if (row.product_url && row.image_url) imgMap[row.product_url] = row.image_url;
+          if (row.product_url && row.description) descMap[row.product_url] = row.description;
         });
-        if (Object.keys(map).length > 0) setCatalogImages(map);
+        if (Object.keys(imgMap).length > 0) setCatalogImages(imgMap);
+        if (Object.keys(descMap).length > 0) setCatalogDescriptions(descMap);
       });
     return () => { cancelled = true; };
-  }, [urlsNeedingImages.join(',')]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [allItemUrls.join(',')]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (items.length === 0) return null;
 
@@ -169,6 +174,7 @@ const WhatsInThisLook = ({
                             brand: item.brand,
                             price_cents: item.price_cents,
                             product_url: item.url,
+                            description: catalogDescriptions[item.url] || null,
                           });
                         }}
                         className="shrink-0 h-14 w-14 rounded-lg overflow-hidden bg-muted border border-white/10 cursor-pointer active:scale-95 transition-transform"
