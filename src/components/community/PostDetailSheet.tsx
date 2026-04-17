@@ -248,7 +248,7 @@ export const PostDetailSheet = ({
 
             {/* Retailer badges — horizontal scroll below image (C09) */}
             {retailers.length > 0 && (
-              <div className="px-4 pt-1.5 flex gap-2 overflow-x-auto scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }} onClick={e => e.stopPropagation()}>
+              <div className="px-4 pt-3 flex gap-2 overflow-x-auto scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }} onClick={e => e.stopPropagation()}>
                 {retailers.map(r => (
                   <button
                     key={r}
