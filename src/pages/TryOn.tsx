@@ -96,6 +96,7 @@ const TryOn = () => {
         <PageHeader
           title="INFINITE DRAPE STUDIO"
           subtitle="Try the drape before you cop."
+          backTo="/home"
           actions={s.resultImage ? (
             <Button variant="outline" size="sm" onClick={s.handleTryAnother} className="h-8 rounded-lg text-[11px] font-bold gap-1.5">
               <RotateCcw className="h-3.5 w-3.5" /> New
