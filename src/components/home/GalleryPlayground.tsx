@@ -235,30 +235,32 @@ const GalleryPlayground = () => {
         </button>
 
         {/* Product Grid — category-broken like try-on page */}
-        {catalogReady ? <div className="mb-6 space-y-2">
-          {activeCategory === 'all' ? (
-            ALL_PRODUCT_CATEGORIES.map(cat => (
+        {catalogReady ? (
+          <div className="mb-6 space-y-2">
+            {activeCategory === 'all' ? (
+              ALL_PRODUCT_CATEGORIES.map(cat => (
+                <CategoryProductGrid
+                  key={cat.key}
+                  category={cat.key}
+                  title={cat.label}
+                  collapsed={true}
+                  maxItems={100}
+                  gender={mappedGender}
+                  onSelectProduct={handleSelectProduct}
+                />
+              ))
+            ) : (
               <CategoryProductGrid
-                key={cat.key}
-                category={cat.key}
-                title={cat.label}
-                collapsed={true}
+                category={activeCategory}
+                title={HERO_CATEGORIES.find(c => c.key === activeCategory)?.label || activeCategory}
+                collapsed={false}
                 maxItems={100}
                 gender={mappedGender}
                 onSelectProduct={handleSelectProduct}
               />
-            ))
-          ) : (
-            <CategoryProductGrid
-              category={activeCategory}
-              title={HERO_CATEGORIES.find(c => c.key === activeCategory)?.label || activeCategory}
-              collapsed={false}
-              maxItems={100}
-              gender={mappedGender}
-              onSelectProduct={handleSelectProduct}
-            />
-          )}
-        </div> : (
+            )}
+          </div>
+        ) : (
           <div className="mb-6 space-y-3">
             {[1,2,3].map(i => (
               <div key={i} className="h-32 rounded-xl bg-white/5 animate-pulse" />
