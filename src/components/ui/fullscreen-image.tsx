@@ -162,69 +162,76 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, descr
         <AnimatePresence>
           {open && (
             <motion.div
+              key="fs-image-overlay"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.12 }}
-              className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden overscroll-none bg-black flex flex-col items-center justify-center"
+              className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden overscroll-none bg-black"
               style={{ ['--fs-img-max-h' as any]: (description || hasActions) ? '78dvh' : '100dvh' }}
-              onPointerDown={(e) => {
-                if (e.target === e.currentTarget) setOpen(false);
-              }}
             >
+              {/* Backdrop layer — closes on tap */}
+              <div
+                className="absolute inset-0 z-0 flex flex-col items-center justify-center"
+                onPointerDown={(e) => {
+                  if (e.target === e.currentTarget) setOpen(false);
+                }}
+              >
+                <ZoomableFullscreenImg src={src} alt={alt} />
+
+                {description && (
+                  <p className="text-[12px] text-white/50 leading-relaxed text-center line-clamp-3 px-6 mt-3 max-w-sm">
+                    {description}
+                  </p>
+                )}
+
+                {hasActions && (
+                  <div
+                    className="flex gap-3 mt-4 px-6 pb-safe-tab"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {onShop && (
+                      <button
+                        type="button"
+                        onClick={() => { onShop(); setOpen(false); }}
+                        className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[12px] font-bold text-white bg-white/15 border border-white/20 backdrop-blur-sm active:scale-95 transition-transform"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" /> Shop
+                      </button>
+                    )}
+                    {onTryOn && (
+                      <button
+                        type="button"
+                        onClick={() => { onTryOn(); setOpen(false); }}
+                        className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[12px] font-bold text-black bg-white border border-white/80 active:scale-95 transition-transform"
+                      >
+                        <Sparkles className="h-3.5 w-3.5" /> Try-On
+                      </button>
+                    )}
+                    {onAddToWardrobe && (
+                      <button
+                        type="button"
+                        onClick={() => { onAddToWardrobe(); setOpen(false); }}
+                        className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[12px] font-bold text-white bg-white/15 border border-white/20 backdrop-blur-sm active:scale-95 transition-transform"
+                      >
+                        <Plus className="h-3.5 w-3.5" /> Wardrobe
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Close — top z-index sibling, isolated from backdrop handlers */}
               <button
                 type="button"
                 onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); setOpen(false); }}
                 onClick={(e) => { e.stopPropagation(); setOpen(false); }}
-                className="absolute top-4 right-4 z-[110] h-11 w-11 min-h-[44px] min-w-[44px] rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center active:scale-90 transition-transform"
-                style={{ top: 'max(1rem, env(safe-area-inset-top, 1rem))' }}
+                className="absolute right-3 z-[200] h-12 w-12 min-h-[48px] min-w-[48px] rounded-full bg-black/75 backdrop-blur-md border-2 border-white/40 flex items-center justify-center active:scale-90 transition-transform shadow-[0_2px_12px_rgba(0,0,0,0.4)]"
+                style={{ top: 'max(0.75rem, env(safe-area-inset-top, 0.75rem))' }}
                 aria-label="Close"
               >
-                <X className="h-5 w-5 text-white" />
+                <X className="h-6 w-6 text-white" strokeWidth={2.5} />
               </button>
-
-              <ZoomableFullscreenImg src={src} alt={alt} />
-
-              {description && (
-                <p className="text-[12px] text-white/50 leading-relaxed text-center line-clamp-3 px-6 mt-3 max-w-sm">
-                  {description}
-                </p>
-              )}
-
-              {hasActions && (
-                <div
-                  className="flex gap-3 mt-4 px-6 pb-safe-tab"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {onShop && (
-                    <button
-                      type="button"
-                      onClick={() => { onShop(); setOpen(false); }}
-                      className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[12px] font-bold text-white bg-white/15 border border-white/20 backdrop-blur-sm active:scale-95 transition-transform"
-                    >
-                      <ExternalLink className="h-3.5 w-3.5" /> Shop
-                    </button>
-                  )}
-                  {onTryOn && (
-                    <button
-                      type="button"
-                      onClick={() => { onTryOn(); setOpen(false); }}
-                      className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[12px] font-bold text-black bg-white border border-white/80 active:scale-95 transition-transform"
-                    >
-                      <Sparkles className="h-3.5 w-3.5" /> Try-On
-                    </button>
-                  )}
-                  {onAddToWardrobe && (
-                    <button
-                      type="button"
-                      onClick={() => { onAddToWardrobe(); setOpen(false); }}
-                      className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[12px] font-bold text-white bg-white/15 border border-white/20 backdrop-blur-sm active:scale-95 transition-transform"
-                    >
-                      <Plus className="h-3.5 w-3.5" /> Wardrobe
-                    </button>
-                  )}
-                </div>
-              )}
             </motion.div>
           )}
         </AnimatePresence>,
