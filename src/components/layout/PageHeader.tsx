@@ -7,14 +7,19 @@ interface PageHeaderProps {
   title: string;
   subtitle?: string;
   backTo?: string | number;
+  onBack?: () => void;
   actions?: ReactNode;
   className?: string;
 }
 
-const PageHeader = ({ title, subtitle, backTo = -1, actions, className = '' }: PageHeaderProps) => {
+const PageHeader = ({ title, subtitle, backTo = -1, onBack, actions, className = '' }: PageHeaderProps) => {
   const navigate = useNavigate();
 
   const handleBack = () => {
+    if (onBack) {
+      onBack();
+      return;
+    }
     if (typeof backTo === 'number') {
       navigate(backTo as number);
     } else {
