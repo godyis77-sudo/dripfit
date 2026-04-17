@@ -275,6 +275,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
   return createPortal(
     <div
       className="fixed inset-0 z-[200] h-dvh w-screen overflow-hidden overscroll-none bg-black flex flex-col"
+      style={{ pointerEvents: 'auto' }}
       onPointerDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -285,7 +286,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
         onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); onClose(); }}
         onClick={(e) => { e.stopPropagation(); onClose(); }}
         className="absolute right-4 z-[220] h-11 w-11 rounded-full bg-black/80 backdrop-blur-md border border-white/30 flex items-center justify-center active:scale-90 transition-transform shadow-[0_2px_12px_rgba(0,0,0,0.5)] p-0"
-        style={{ top: 'max(1rem, env(safe-area-inset-top, 1rem))' }}
+        style={{ top: 'max(1rem, env(safe-area-inset-top, 1rem))', pointerEvents: 'auto' }}
         aria-label="Close"
       >
         <X className="h-5 w-5 text-white" strokeWidth={2.5} />
