@@ -97,6 +97,23 @@ const GalleryPlayground = () => {
               {/* Gradient background */}
               <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A] via-[#141414] to-[rgba(212,175,55,0.06)]" />
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(212,175,55,0.08),transparent_70%)]" />
+              {/* Warm gold glow (bottom-right) */}
+              <div
+                className="absolute bottom-0 right-0 w-48 h-48 rounded-full pointer-events-none"
+                style={{
+                  background: 'radial-gradient(circle, rgba(212,175,55,0.12) 0%, transparent 70%)',
+                  filter: 'blur(40px)',
+                  transform: 'translate(20%, 20%)',
+                }}
+              />
+              {/* Subtle grain texture */}
+              <div
+                className="absolute inset-0 rounded-2xl pointer-events-none opacity-[0.03]"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
+                  backgroundSize: '128px 128px',
+                }}
+              />
               <div className="relative px-6 py-10">
                 <h2 className="font-serif text-2xl text-foreground font-semibold mb-2 uppercase tracking-wide">Your Body. Mapped.</h2>
                 <p className="text-sm text-zinc-400 max-w-[260px] leading-relaxed">
