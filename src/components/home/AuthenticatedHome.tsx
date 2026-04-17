@@ -174,9 +174,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
         {/* The Drop — swipeable weekly looks + top posts */}
         <SwipeFeedSection gender={mappedGender} />
 
-        {/* Trending Fits */}
-        <TrendingFitsGrid fits={trendingFits} />
-
         {/* For Your Fit — items similar-body users loved */}
         {fitRecs.length > 0 && (
           <motion.div
