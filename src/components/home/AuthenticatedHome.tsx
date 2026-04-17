@@ -7,8 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import { ALL_PRODUCT_CATEGORIES } from '@/components/tryon/tryon-constants';
-import { useProfileInfo, useLatestScan, useTrendingFits } from '@/hooks/useProfileData';
-import TrendingFitsGrid from '@/components/home/TrendingFitsGrid';
+import { useProfileInfo, useLatestScan } from '@/hooks/useProfileData';
 import SwipeFeedSection from '@/components/home/SwipeFeedSection';
 import { useForYourFit } from '@/hooks/useForYourFit';
 import { thumbnailUrl } from '@/lib/imageOptimize';
@@ -35,7 +34,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
 
   const { data: profileData } = useProfileInfo(user?.id);
   const { data: scanData } = useLatestScan(user?.id);
-  const { data: trendingFits = [] } = useTrendingFits(user?.id);
   const { data: fitRecs = [] } = useForYourFit(user?.id);
 
   const hasScan = scanData !== undefined ? !!scanData : null;
@@ -175,9 +173,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
 
         {/* The Drop — swipeable weekly looks + top posts */}
         <SwipeFeedSection gender={mappedGender} />
-
-        {/* Trending Fits */}
-        <TrendingFitsGrid fits={trendingFits} />
 
         {/* For Your Fit — items similar-body users loved */}
         {fitRecs.length > 0 && (
