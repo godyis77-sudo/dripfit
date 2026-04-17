@@ -127,9 +127,6 @@ const GalleryPlayground = () => {
         {/* ═══ STATE B: Returning user (scan completed) ═══ */}
         {hasScan && (
           <>
-        {/* ═══ STATE B: Returning user (scan completed) ═══ */}
-        {hasScan && (
-          <>
             {/* Weekly Outfits — moved to top */}
             <WeeklyOutfitsSection />
 
