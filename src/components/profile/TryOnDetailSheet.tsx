@@ -176,6 +176,19 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
   const [savingCaption, setSavingCaption] = useState(false);
   const [previewProduct, setPreviewProduct] = useState<ProductPreviewData | null>(null);
 
+  // Reset all per-post state when switching to a different try-on
+  useEffect(() => {
+    setPreviewProduct(null);
+    setLiked(false);
+    setAddedToWardrobe(false);
+    setAddingToWardrobe(false);
+    setShowCaptionForPost(false);
+    setEditingCaption(false);
+    setCaptionDraft('');
+    setSavingCaption(false);
+    setPosting(false);
+    setConfirmDeleteId(null);
+  }, [post?.id]);
   const handleSaveCaption = async () => {
     if (!user || !post) return;
     setSavingCaption(true);
