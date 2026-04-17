@@ -65,9 +65,13 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <BrandLogo size="sm" />
           <div className="hidden md:flex items-center gap-8">
-            {['Features', 'How It Works', 'Community'].map((t) => (
-              <a key={t} href={`#${t.toLowerCase().replace(/ /g, '-')}`} className="text-muted-foreground hover:text-foreground transition-colors text-xs tracking-[.15em] uppercase font-medium whitespace-nowrap">
-                {t}
+            {[
+              { label: 'The Scan', href: '#features' },
+              { label: 'The Drape', href: '#how-it-works' },
+              { label: 'Body Twins', href: '#community' },
+            ].map((item) => (
+              <a key={item.label} href={item.href} className="text-muted-foreground hover:text-foreground transition-colors text-xs tracking-[.15em] uppercase font-medium whitespace-nowrap">
+                {item.label}
               </a>
             ))}
           </div>
