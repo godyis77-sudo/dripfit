@@ -96,8 +96,9 @@ function ZoomableFullscreenImg({ src, alt }: { src: string; alt: string }) {
       <img
         src={src}
         alt={alt}
-        className="max-w-[calc(100%-2rem)] max-h-[72dvh] w-auto h-auto rounded-2xl"
+        className="max-w-[100dvw] w-auto h-auto object-contain"
         style={{
+          maxHeight: 'var(--fs-img-max-h, 100dvh)',
           transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)`,
           transition: isPanning ? 'none' : 'transform 0.15s ease-out',
         }}
@@ -164,16 +165,19 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, descr
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden overscroll-none bg-black/95 flex flex-col items-center justify-center"
+              transition={{ duration: 0.12 }}
+              className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden overscroll-none bg-black flex flex-col items-center justify-center"
+              style={{ ['--fs-img-max-h' as any]: (description || hasActions) ? '78dvh' : '100dvh' }}
               onPointerDown={(e) => {
                 if (e.target === e.currentTarget) setOpen(false);
               }}
             >
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => { e.stopPropagation(); setOpen(false); }}
                 className="absolute top-4 right-4 z-[101] h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
+                aria-label="Close"
               >
                 <X className="h-5 w-5 text-white" />
               </button>
@@ -187,11 +191,8 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, descr
               )}
 
               {hasActions && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1, duration: 0.2 }}
-                  className="flex gap-3 mt-6 px-6 pb-safe-tab"
+                <div
+                  className="flex gap-3 mt-4 px-6 pb-safe-tab"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {onShop && (
@@ -221,7 +222,7 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, descr
                       <Plus className="h-3.5 w-3.5" /> Wardrobe
                     </button>
                   )}
-                </motion.div>
+                </div>
               )}
             </motion.div>
           )}
