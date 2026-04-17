@@ -77,8 +77,7 @@ function ZoomableFullscreenImg({ src, alt }: { src: string; alt: string }) {
 
   return (
     <div
-      className="relative touch-none flex items-center justify-center w-screen"
-      style={{ height: 'var(--fs-img-max-h, 100dvh)' }}
+      className="relative touch-none flex items-center justify-center w-full h-full"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
