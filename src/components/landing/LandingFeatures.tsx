@@ -1,7 +1,6 @@
 import { Scan, Shirt, Users, Scale, ShieldCheck, MessageSquare, LucideIcon } from 'lucide-react';
 import { FadeIn } from './LandingAnimations';
 import bodyScanShowcase from '@/assets/body-scan-showcase.jpg';
-import heroPhoneMockup from '@/assets/hero-phone-mockup.jpg';
 
 interface Feature { icon: LucideIcon; title: string; desc: string }
 
@@ -54,23 +53,6 @@ export default function LandingFeatures() {
             </FadeIn>
           ))}
         </div>
-
-        {/* Phone mockup with My Sizes screenshot — placed below feature grid */}
-        <FadeIn delay={0.1}>
-          <div className="flex justify-center mt-14">
-            <div className="relative mx-auto w-full max-w-[326px]">
-              <div className="absolute inset-0 rounded-full blur-[80px] opacity-15 bg-primary" />
-              <div className="relative rounded-[2rem] border-[10px] border-primary shadow-[0_0_30px_rgba(212,175,55,0.4)] overflow-hidden">
-                <img
-                  src={heroPhoneMockup}
-                  alt="DripFit My Sizes screen showing verified size cards for multiple brands"
-                  className="w-full block"
-                  loading="lazy"
-                />
-              </div>
-            </div>
-          </div>
-        </FadeIn>
       </div>
     </section>
   );
