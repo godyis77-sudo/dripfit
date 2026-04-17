@@ -17,6 +17,7 @@ import { getPostedCaption } from '@/components/community/community-types';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import ProductPreviewModal, { type ProductPreviewData } from '@/components/ui/ProductPreviewModal';
 import { decodeHtmlEntities } from '@/lib/utils';
+import { FullscreenImage } from '@/components/ui/fullscreen-image';
 
 interface TryOnPost {
   id: string;
@@ -293,11 +294,17 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
             <div className="absolute top-3 left-3 z-10">
               <p className="text-[10px] text-white/25">{new Date(post.created_at).toLocaleDateString()}</p>
             </div>
-            <img
+            <FullscreenImage
               src={post.result_photo_url}
               alt={post.caption || 'Try-on result'}
-              className="max-w-full max-h-[45dvh] w-auto h-auto rounded-2xl object-contain"
-            />
+              description={postedCaption}
+            >
+              <img
+                src={post.result_photo_url}
+                alt={post.caption || 'Try-on result'}
+                className="max-w-full max-h-[45dvh] w-auto h-auto rounded-2xl object-contain cursor-zoom-in"
+              />
+            </FullscreenImage>
             {postedCaption && (
               <div className="absolute bottom-14 right-4 left-4 z-10">
                 <p className="text-[13px] text-white font-medium drop-shadow-sm text-center">{postedCaption}</p>
