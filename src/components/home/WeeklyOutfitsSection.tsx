@@ -30,7 +30,9 @@ const WeeklyOutfitsSection = () => {
 
   const readyOutfits = useMemo(() => {
     if (!outfits) return [];
-    return outfits.filter(o => Boolean(o.hero_image_url) && o.items.length > 0);
+    // Show all outfits with items; cards with a hero image render as editorial,
+    // others fall back to the glass card (image generating soon).
+    return outfits.filter(o => o.items.length > 0);
   }, [outfits]);
 
   const occasions = useMemo(() => {
