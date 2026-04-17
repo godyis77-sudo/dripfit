@@ -139,9 +139,9 @@ const GalleryPlayground = () => {
               >
                 <div className="flex-1 min-w-0">
                   <p className="font-serif text-[24px] font-bold italic text-foreground tracking-tight leading-tight">The Drape</p>
-                  <p className="font-sans text-[12px] text-muted-foreground mt-1">Try any piece. On your body.</p>
+                  <p className="font-sans text-[12px] text-muted-foreground mt-1">Infinite Try On Studio</p>
                   <span className="mt-3 inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-[12px] font-bold tracking-wide">
-                    Try it on <ArrowRight className="h-3.5 w-3.5" />
+                    Enter <ArrowRight className="h-3.5 w-3.5" />
                   </span>
                 </div>
                 <div className="w-14 h-14 rounded-full bg-primary/[0.06] blur-xl pointer-events-none shrink-0 ml-2" aria-hidden />
