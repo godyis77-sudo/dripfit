@@ -174,9 +174,10 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, descr
             >
               <button
                 type="button"
-                onPointerDown={(e) => e.stopPropagation()}
+                onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); setOpen(false); }}
                 onClick={(e) => { e.stopPropagation(); setOpen(false); }}
-                className="absolute top-4 right-4 z-[101] h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
+                className="absolute top-4 right-4 z-[110] h-11 w-11 min-h-[44px] min-w-[44px] rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center active:scale-90 transition-transform"
+                style={{ top: 'max(1rem, env(safe-area-inset-top, 1rem))' }}
                 aria-label="Close"
               >
                 <X className="h-5 w-5 text-white" />
