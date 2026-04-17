@@ -103,7 +103,7 @@ const GalleryPlayground = () => {
                   2 photos. 60 seconds. Your size across 186 brands — locked.
                 </p>
                 <p className="text-[12px] text-white/50 mt-2 mb-4">
-                  {scanCount > 0 ? `${scanCount.toLocaleString()}+ bodies mapped across 186 brands` : '1,200+ bodies mapped across 186 brands'}
+                  {scanCount > 0 ? `${scanCount.toLocaleString()}+ bodies mapped across 186 brands` : '9,000+ bodies mapped across 186 brands'}
                 </p>
                 <button
                   onClick={(e) => { e.stopPropagation(); navigate('/capture'); }}
@@ -119,7 +119,7 @@ const GalleryPlayground = () => {
               onClick={() => navigate('/browse/all')}
               className="w-full text-center text-xs text-zinc-500 mb-4 active:opacity-70 transition-opacity"
             >
-              Skip for now — browse the closet →
+              Skip — explore first →
             </button>
           </>
         )}
