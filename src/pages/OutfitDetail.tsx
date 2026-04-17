@@ -87,12 +87,12 @@ const OutfitDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero image — full width, tappable for fullscreen */}
-      <div className="relative w-full aspect-[3/4] max-h-[65vh] overflow-hidden bg-muted">
+      <div className="relative w-full aspect-[3/4] max-h-[80vh] overflow-hidden bg-black flex items-center justify-center">
         {heroImage && (
           <img
             src={heroImage}
             alt={outfit.title}
-            className="w-full h-full object-cover object-top cursor-pointer"
+            className="w-full h-full object-contain cursor-pointer"
             onClick={() => setFullscreenHero(heroImage)}
           />
         )}
