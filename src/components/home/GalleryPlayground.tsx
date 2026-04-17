@@ -61,19 +61,25 @@ const GalleryPlayground = () => {
 
   return (
     <div className="relative bg-background pb-safe-tab">
-      <div className="relative z-10 px-4 pt-2">
-        {/* Header — transparent, editorial */}
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h1 className="font-display text-[28px] font-extrabold text-foreground uppercase tracking-tight">DRIPFIT <span className="text-primary text-[22px]">✔</span></h1>
-            <p className="font-sans text-[13px] font-medium tracking-[0.15em] uppercase text-foreground/70 mt-1 mb-3">
-              {hasScan ? 'Your Body. Mapped.' : 'Scan to unlock your fitting room.'}
-            </p>
+      <div className="relative z-10 px-4 pt-1">
+        {/* Header — transparent, editorial (compact) */}
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex-1 min-w-0">
+            <h1 className="font-display text-[28px] font-extrabold text-foreground uppercase tracking-tight leading-none">DRIPFIT <span className="text-primary text-[22px]">✔</span></h1>
+            {hasScan ? (
+              <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-foreground/60 mt-1">
+                Verified. Ready to drip. <span className="text-foreground/40">· 9,000+ · 186 brands · 389 size charts</span>
+              </p>
+            ) : (
+              <p className="font-sans text-[13px] font-medium tracking-[0.15em] uppercase text-foreground/70 mt-1 mb-3">
+                Scan to unlock your fitting room.
+              </p>
+            )}
           </div>
           {!user && (
             <button
               onClick={() => navigate('/auth')}
-              className="text-[12px] font-semibold text-white tracking-[0.08em] uppercase active:opacity-70 border border-white/[0.35] rounded-full px-3.5 py-1 bg-transparent hover:border-primary/60 hover:text-primary transition-colors"
+              className="text-[12px] font-semibold text-white tracking-[0.08em] uppercase active:opacity-70 border border-white/[0.35] rounded-full px-3.5 py-1 bg-transparent hover:border-primary/60 hover:text-primary transition-colors shrink-0 ml-2"
             >
               Sign In
             </button>
