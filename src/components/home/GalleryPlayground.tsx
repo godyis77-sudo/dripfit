@@ -175,8 +175,8 @@ const GalleryPlayground = () => {
         {/* Weekly Outfits Hero Section */}
         <WeeklyOutfitsSection />
 
-        {/* One-Tap Playground — interactive split-screen */}
-        <OneTapPlayground />
+        {/* One-Tap Playground — only for unauthenticated users */}
+        {!user && <OneTapPlayground />}
 
         {/* Hero Scan CTA Strip — conditional on scan status */}
         {!hasScan ? (
