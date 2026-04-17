@@ -101,15 +101,7 @@ export default function Landing() {
         </div>
       </nav>
 
-      {/* TECHNICAL INFRASTRUCTURE BADGE — moved above "Your Body. Mapped." */}
-      <div className="pt-28 md:pt-32 pb-0 flex justify-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/60">
-          <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-          <span className="type-data">Technical Infrastructure for Fashion Culture</span>
-        </div>
-      </div>
-
-      {/* FEATURES — "Your Body. Mapped." */}
+      {/* FEATURES — "Your Body. Mapped." moved above hero size card image */}
       <LandingFeatures />
 
       {/* HERO */}
