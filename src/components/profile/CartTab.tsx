@@ -107,11 +107,14 @@ const CartTab = forwardRef<HTMLDivElement>((_, ref) => {
                 const urls = item.product_urls ?? [];
                 const primaryProductUrl = urls[0] ?? null;
                 const primaryBrand = primaryProductUrl ? detectBrandFromUrl(primaryProductUrl).brand : null;
+                const primaryCatalog = primaryProductUrl ? catalogInfo[primaryProductUrl] : null;
                 setPreviewProduct({
-                  image_url: item.image_url,
-                  name: 'Look',
-                  brand: primaryBrand || 'Shop',
+                  image_url: primaryCatalog?.image_url || item.image_url,
+                  name: primaryCatalog?.name || 'Look',
+                  brand: primaryCatalog?.brand || primaryBrand || 'Shop',
                   product_url: primaryProductUrl,
+                  price_cents: primaryCatalog?.price_cents ?? null,
+                  description: primaryCatalog?.description ?? null,
                 });
                 setPreviewCaption(item.caption || null);
                 const derived: LookItemData[] = urls.map(url => {
