@@ -154,7 +154,7 @@ const GalleryPlayground = () => {
               >
                 <div className="flex-1 min-w-0">
                   <p className="font-sans text-[16px] font-bold text-foreground leading-tight">COP or DROP</p>
-                  <p className="font-sans text-[12px] text-muted-foreground mt-0.5">Swipe new drops.</p>
+                  <p className="font-sans text-[12px] text-muted-foreground mt-0.5">Swipe fresh pieces.</p>
                   <p className="font-mono text-[9px] tracking-widest uppercase text-primary/60 mt-1">New drops daily</p>
                 </div>
                 <ChevronRight className="w-4 h-4 text-zinc-400 shrink-0 ml-2" strokeWidth={2} />
