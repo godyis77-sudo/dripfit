@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,9 @@ import { trackEvent } from '@/lib/analytics';
 import { generateTryOnShareCard } from '@/lib/shareImage';
 import { useCart } from '@/hooks/useCart';
 import { getPostedCaption } from '@/components/community/community-types';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
+import ProductPreviewModal, { type ProductPreviewData } from '@/components/ui/ProductPreviewModal';
+import { decodeHtmlEntities } from '@/lib/utils';
 
 interface TryOnPost {
   id: string;
@@ -34,44 +36,124 @@ interface TryOnDetailSheetProps {
   onDelete?: (id: string) => void;
 }
 
-const ShopDropdown = ({ urls, onClickout }: { urls: string[]; onClickout: () => void }) => {
-  const [open, setOpen] = useState(false);
-  const extractLabel = (url: string, idx: number) => {
-    try {
-      const host = new URL(url).hostname.replace('www.', '');
-      return `Item ${idx + 1} — ${host}`;
-    } catch {
-      return `Item ${idx + 1}`;
-    }
-  };
+const normalizeUrl = (url: string) => {
+  try {
+    const u = new URL(url);
+    return `${u.origin}${u.pathname}`.replace(/\/+$/, '').toLowerCase();
+  } catch {
+    return url.split('?')[0].split('#')[0].replace(/\/+$/, '').toLowerCase();
+  }
+};
+
+const hostLabel = (url: string) => {
+  try {
+    return new URL(url).hostname.replace('www.', '');
+  } catch {
+    return url;
+  }
+};
+
+/** Resolves product_catalog entries for the given product URLs (best-effort). */
+function useResolvedProducts(urls: string[] | null | undefined) {
+  return useQuery({
+    queryKey: ['tryon-shop-items', urls?.join('|')],
+    enabled: !!urls && urls.length > 0,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async (): Promise<Array<{ url: string; product: ProductPreviewData | null }>> => {
+      if (!urls || urls.length === 0) return [];
+      const results = await Promise.all(
+        urls.map(async (url) => {
+          try {
+            const norm = normalizeUrl(url);
+            const { data } = await supabase
+              .from('product_catalog')
+              .select('id, image_url, name, brand, price_cents, product_url, category, currency, fit_profile, fabric_composition, style_genre, additional_images, description')
+              .ilike('product_url', `${norm}%`)
+              .eq('is_active', true)
+              .limit(1);
+            if (data?.[0]) {
+              return { url, product: data[0] as ProductPreviewData };
+            }
+            return { url, product: null };
+          } catch {
+            return { url, product: null };
+          }
+        })
+      );
+      return results;
+    },
+  });
+}
+
+const ShopItemsList = ({
+  urls,
+  onClickout,
+  onSelectProduct,
+}: {
+  urls: string[];
+  onClickout: () => void;
+  onSelectProduct: (product: ProductPreviewData) => void;
+}) => {
+  const { data: resolved, isLoading } = useResolvedProducts(urls);
 
   return (
-    <div className="col-span-2 relative">
-      <Button
-        className="h-11 rounded-xl text-[12px] font-bold gap-1.5 glass-gold text-primary border border-primary/20 w-full tracking-wide uppercase"
-        onClick={() => setOpen((v) => !v)}
-      >
-        <ShoppingBag className="h-4 w-4" />
-        Shop Items
-        <ChevronDown className={`h-3.5 w-3.5 ml-auto transition-transform ${open ? 'rotate-180' : ''}`} />
-      </Button>
-      {open && (
-        <div className="mt-1.5 rounded-xl glass-dark border-white/10 overflow-hidden shadow-lg">
-          {urls.map((url, i) => (
-            <button
-              key={i}
-              className="flex items-center gap-2 w-full px-4 py-3 text-[12px] font-medium text-white/70 hover:bg-white/5 active:bg-white/10 transition-colors border-b border-white/5 last:border-b-0 min-h-[44px]"
-              onClick={() => {
+    <div className="space-y-2">
+      <div className="flex items-center gap-2 px-1">
+        <ShoppingBag className="h-3.5 w-3.5 text-primary" />
+        <span className="text-[11px] font-bold uppercase tracking-wider text-primary">Shop Items ({urls.length})</span>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {(resolved || urls.map((url) => ({ url, product: null }))).map(({ url, product }, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => {
+              if (product) {
+                onSelectProduct(product);
+              } else {
                 window.open(url, '_blank', 'noopener');
                 onClickout();
-              }}
-            >
-              <ExternalLink className="h-3.5 w-3.5 text-primary shrink-0" />
-              {extractLabel(url, i)}
-            </button>
-          ))}
-        </div>
-      )}
+              }
+            }}
+            className="group relative aspect-[3/4] rounded-xl overflow-hidden bg-white/5 border border-white/10 active:scale-[0.97] transition-transform text-left"
+          >
+            {product?.image_url ? (
+              <img
+                src={product.image_url}
+                alt={decodeHtmlEntities(product.name)}
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center">
+                {isLoading ? (
+                  <div className="h-6 w-6 rounded-full border-2 border-white/20 border-t-white/60 animate-spin" />
+                ) : (
+                  <ExternalLink className="h-5 w-5 text-white/30" />
+                )}
+              </div>
+            )}
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-2">
+              {product ? (
+                <>
+                  <p className="text-[9px] tracking-[0.18em] uppercase text-white/55 font-bold truncate">{product.brand}</p>
+                  <p className="text-[11px] text-white font-semibold truncate">{decodeHtmlEntities(product.name)}</p>
+                  {product.price_cents != null && (
+                    <p className="text-[11px] text-primary font-bold mt-0.5">${(product.price_cents / 100).toFixed(0)}</p>
+                  )}
+                </>
+              ) : (
+                <p className="text-[10px] text-white/70 font-semibold truncate">{hostLabel(url)}</p>
+              )}
+            </div>
+            {!product && !isLoading && (
+              <span className="absolute top-2 right-2 h-5 w-5 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center">
+                <ExternalLink className="h-2.5 w-2.5 text-white/80" />
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
@@ -91,6 +173,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
   const [editingCaption, setEditingCaption] = useState(false);
   const [captionDraft, setCaptionDraft] = useState('');
   const [savingCaption, setSavingCaption] = useState(false);
+  const [previewProduct, setPreviewProduct] = useState<ProductPreviewData | null>(null);
 
   const handleSaveCaption = async () => {
     if (!user || !post) return;
@@ -205,15 +288,15 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
         </button>
 
         {/* Image */}
-        <div className="relative w-full flex-1 min-h-0 flex items-center justify-center overflow-hidden px-2 pt-1">
-          <div className="relative inline-flex rounded-2xl overflow-hidden bg-black max-w-full max-h-full">
+        <div className="relative w-full flex-shrink-0 flex items-center justify-center overflow-hidden px-2 pt-1">
+          <div className="relative inline-flex rounded-2xl overflow-hidden bg-black max-w-full">
             <div className="absolute top-3 left-3 z-10">
               <p className="text-[10px] text-white/25">{new Date(post.created_at).toLocaleDateString()}</p>
             </div>
             <img
               src={post.result_photo_url}
               alt={post.caption || 'Try-on result'}
-              className="max-w-full max-h-[calc(95dvh-220px)] w-auto h-auto rounded-2xl object-contain"
+              className="max-w-full max-h-[45dvh] w-auto h-auto rounded-2xl object-contain"
             />
             {postedCaption && (
               <div className="absolute bottom-14 right-4 left-4 z-10">
@@ -232,7 +315,7 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
 
         {/* Caption field */}
         {showCaptionForPost && (
-          <div className="px-4 pt-2">
+          <div className="px-4 pt-2 flex-shrink-0">
             {editingCaption ? (
               <div className="flex items-center gap-2">
                 <input
@@ -269,26 +352,18 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
           </div>
         )}
 
-        {/* Actions */}
-        <div className="px-4 pt-2 pb-[max(1.5rem,env(safe-area-inset-bottom,1.5rem))] space-y-3 overflow-y-auto">
+        {/* Actions + Shop items */}
+        <div className="px-4 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom,1.5rem))] space-y-3 overflow-y-auto flex-1 min-h-0">
 
-          {post.product_urls && post.product_urls.length === 1 && (
-            <Button
-              className="h-11 rounded-xl text-[12px] font-bold gap-1.5 glass-gold text-primary border border-primary/20 w-full tracking-wide uppercase"
-              onClick={() => {
-                window.open(post.product_urls![0], '_blank', 'noopener');
-                trackEvent('shop_clickout', { post_id: post.id });
-              }}
-            >
-              <ShoppingBag className="h-4 w-4" />
-              Shop this Style
-            </Button>
-          )}
-
-          {post.product_urls && post.product_urls.length > 1 && (
-            <ShopDropdown
+          {/* Shop items grid with thumbnails */}
+          {post.product_urls && post.product_urls.length > 0 && (
+            <ShopItemsList
               urls={post.product_urls}
               onClickout={() => trackEvent('shop_clickout', { post_id: post.id })}
+              onSelectProduct={(product) => {
+                trackEvent('tryon_shop_item_preview', { post_id: post.id, brand: product.brand });
+                setPreviewProduct(product);
+              }}
             />
           )}
 
@@ -415,6 +490,25 @@ const TryOnDetailSheet = ({ post, open, onOpenChange, onPostUpdated, onDelete }:
             </>
           )}
         </div>
+
+        {/* Fullscreen product preview */}
+        <ProductPreviewModal
+          product={previewProduct}
+          onClose={() => setPreviewProduct(null)}
+          onShop={(product) => {
+            if (product.product_url) {
+              window.open(product.product_url, '_blank', 'noopener');
+              trackEvent('shop_clickout', { post_id: post.id, brand: product.brand });
+            }
+          }}
+          onTryOn={(product) => {
+            setPreviewProduct(null);
+            onOpenChange(false);
+            navigate('/tryon', {
+              state: { clothingUrl: product.image_url, productUrl: product.product_url },
+            });
+          }}
+        />
       </SheetContent>
     </Sheet>
   );
