@@ -73,7 +73,7 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
           </div>
           <div className="text-left flex-1 min-w-0">
             <p className={TYPE.headlineSm + ' text-[14px] leading-tight'}>COP or DROP</p>
-            <p className={TYPE.body + ' text-[11px] mt-0.5'}>Swipe new drops.</p>
+            <p className={TYPE.body + ' text-[11px] mt-0.5'}>Swipe fresh pieces.</p>
           </div>
           <span className={TYPE.dataGold + ' shrink-0 text-[10px]'}>NEW DROPS DAILY</span>
         </motion.button>
