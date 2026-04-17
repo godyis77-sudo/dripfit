@@ -17,7 +17,7 @@ export interface SwipeCard {
 }
 
 const TOP_POSTS_LIMIT = 10;
-const TOP_OUTFITS_LIMIT = 5;
+const TOP_OUTFITS_LIMIT = 20;
 
 async function fetchTopWeeklyPosts(): Promise<SwipeCard[]> {
   const { data, error } = await supabase.rpc('get_trending_posts', {
