@@ -21,6 +21,12 @@ export default function LandingHero() {
 
       <div className="max-w-6xl mx-auto px-6 pt-32 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
         <div>
+          <FadeIn>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-8 rounded-full border border-border bg-secondary/60">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+              <span className="type-data">Technical Infrastructure for Fashion Culture</span>
+            </div>
+          </FadeIn>
 
           <FadeIn delay={0.08}>
             <h1 className="type-brand leading-[1.05] mb-7" style={{ letterSpacing: '-0.02em', fontSize: 'clamp(40px, 6vw, 72px)' }}>
