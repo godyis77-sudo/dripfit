@@ -104,9 +104,6 @@ export default function Landing() {
       {/* HERO */}
       <LandingHero />
 
-      {/* FEATURES — moved directly under hero stats */}
-      <LandingFeatures />
-
       {/* PROOF TICKER */}
       <div
         className="relative overflow-hidden select-none pointer-events-none"
@@ -154,6 +151,9 @@ export default function Landing() {
 
       {/* LIVE COMMUNITY VERDICT */}
       <LandingCommunityVerdict />
+
+      {/* FEATURES */}
+      <LandingFeatures />
 
       {/* HOW IT WORKS */}
       <LandingHowItWorks />
