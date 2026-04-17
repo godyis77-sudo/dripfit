@@ -167,59 +167,63 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, descr
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.12 }}
-              className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden overscroll-none bg-black"
-              style={{ ['--fs-img-max-h' as any]: (description || hasActions) ? '78dvh' : '100dvh', pointerEvents: 'auto' }}
+              className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden overscroll-none bg-black flex flex-col"
+              style={{ ['--fs-img-max-h' as any]: '100%', pointerEvents: 'auto' }}
             >
               {/* Backdrop layer — closes on tap */}
               <div
-                className="absolute inset-0 z-0 flex flex-col items-center justify-center"
+                className="relative flex-1 min-h-0 flex items-center justify-center"
                 onPointerDown={(e) => {
                   if (e.target === e.currentTarget) setOpen(false);
                 }}
               >
                 <ZoomableFullscreenImg src={src} alt={alt} />
-
-                {description && (
-                  <p className="text-[12px] text-white/50 leading-relaxed text-center line-clamp-3 px-6 mt-3 max-w-sm">
-                    {description}
-                  </p>
-                )}
-
-                {hasActions && (
-                  <div
-                    className="flex gap-3 mt-4 px-6 pb-safe-tab"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {onShop && (
-                      <button
-                        type="button"
-                        onClick={() => { onShop(); setOpen(false); }}
-                        className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[12px] font-bold text-white bg-white/15 border border-white/20 backdrop-blur-sm active:scale-95 transition-transform"
-                      >
-                        <ExternalLink className="h-3.5 w-3.5" /> Shop
-                      </button>
-                    )}
-                    {onTryOn && (
-                      <button
-                        type="button"
-                        onClick={() => { onTryOn(); setOpen(false); }}
-                        className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[12px] font-bold text-black bg-white border border-white/80 active:scale-95 transition-transform"
-                      >
-                        <Sparkles className="h-3.5 w-3.5" /> Try-On
-                      </button>
-                    )}
-                    {onAddToWardrobe && (
-                      <button
-                        type="button"
-                        onClick={() => { onAddToWardrobe(); setOpen(false); }}
-                        className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[12px] font-bold text-white bg-white/15 border border-white/20 backdrop-blur-sm active:scale-95 transition-transform"
-                      >
-                        <Plus className="h-3.5 w-3.5" /> Wardrobe
-                      </button>
-                    )}
-                  </div>
-                )}
               </div>
+
+              {(description || hasActions) && (
+                <div
+                  className="relative z-10 flex flex-col items-center pb-safe-tab bg-gradient-to-t from-black via-black/80 to-transparent pt-6"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {description && (
+                    <p className="text-[12px] text-white/60 leading-relaxed text-center line-clamp-3 px-6 mb-3 max-w-sm">
+                      {description}
+                    </p>
+                  )}
+
+                  {hasActions && (
+                    <div className="flex gap-3 px-6 pb-3">
+                      {onShop && (
+                        <button
+                          type="button"
+                          onClick={() => { onShop(); setOpen(false); }}
+                          className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[12px] font-bold text-white bg-white/15 border border-white/20 backdrop-blur-sm active:scale-95 transition-transform"
+                        >
+                          <ExternalLink className="h-3.5 w-3.5" /> Shop
+                        </button>
+                      )}
+                      {onTryOn && (
+                        <button
+                          type="button"
+                          onClick={() => { onTryOn(); setOpen(false); }}
+                          className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[12px] font-bold text-black bg-white border border-white/80 active:scale-95 transition-transform"
+                        >
+                          <Sparkles className="h-3.5 w-3.5" /> Try-On
+                        </button>
+                      )}
+                      {onAddToWardrobe && (
+                        <button
+                          type="button"
+                          onClick={() => { onAddToWardrobe(); setOpen(false); }}
+                          className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-[12px] font-bold text-white bg-white/15 border border-white/20 backdrop-blur-sm active:scale-95 transition-transform"
+                        >
+                          <Plus className="h-3.5 w-3.5" /> Wardrobe
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Close — top z-index sibling, isolated from backdrop handlers */}
               <button
