@@ -72,14 +72,14 @@ const GalleryPlayground = () => {
               </p>
             ) : (
               <p className="font-sans text-[13px] font-medium tracking-[0.15em] uppercase text-foreground/70 mt-1 mb-3">
-                Scan to unlock your fitting room.
+                Your fitting room awaits.
               </p>
             )}
           </div>
           {!user && (
             <button
               onClick={() => navigate('/auth')}
-              className="text-[12px] font-semibold text-white tracking-[0.08em] uppercase active:opacity-70 border border-white/[0.35] rounded-full px-3.5 py-1 bg-transparent hover:border-primary/60 hover:text-primary transition-colors shrink-0 ml-2"
+              className="text-[12px] font-semibold text-white/70 tracking-[0.08em] uppercase border border-white/20 rounded-full px-3.5 py-1 bg-transparent hover:border-primary/40 hover:text-primary/80 transition-colors shrink-0 ml-2"
             >
               Sign In
             </button>
@@ -103,7 +103,7 @@ const GalleryPlayground = () => {
                   2 photos. 60 seconds. Your size across 186 brands — locked.
                 </p>
                 <p className="text-[12px] text-white/50 mt-2 mb-4">
-                  {scanCount > 0 ? `${scanCount.toLocaleString()}+ bodies mapped across 186 brands` : '1,200+ bodies mapped across 186 brands'}
+                  {scanCount > 0 ? `${scanCount.toLocaleString()}+ bodies mapped across 186 brands` : '9,000+ bodies mapped across 186 brands'}
                 </p>
                 <button
                   onClick={(e) => { e.stopPropagation(); navigate('/capture'); }}
@@ -119,7 +119,7 @@ const GalleryPlayground = () => {
               onClick={() => navigate('/browse/all')}
               className="w-full text-center text-xs text-zinc-500 mb-4 active:opacity-70 transition-opacity"
             >
-              Skip for now — browse the closet →
+              Skip — explore first →
             </button>
           </>
         )}
