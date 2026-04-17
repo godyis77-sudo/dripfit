@@ -53,7 +53,7 @@ export default function LandingHero() {
               <div className="flex flex-col items-start gap-0 w-full max-w-md">
                 <Link
                   to="/auth"
-                  className="w-full bg-[#C49A00] text-[#0A0A0A] font-bold rounded-full py-4 px-8 text-base tracking-wide flex items-center justify-center gap-2 hover:bg-[#D4AF37] transition-colors duration-200"
+                  className="w-full bg-primary text-[#0A0A0A] font-bold rounded-full py-4 px-8 text-base tracking-wide flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors duration-200"
                 >
                   Sign Up Free <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -63,7 +63,7 @@ export default function LandingHero() {
           </FadeIn>
 
           <FadeIn delay={0.32}>
-            <div className="flex gap-10 mt-14 pt-8 border-t border-border/30">
+            <div className="flex gap-10 mt-8 pt-8 border-t border-border/30">
               {STATS.map((s) => (
                 <div key={s.l} className="text-center">
                   <div className="type-headline text-3xl text-primary">{s.v}</div>

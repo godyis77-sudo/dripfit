@@ -18,7 +18,7 @@ import LandingFinalCTA from '@/components/landing/LandingFinalCTA';
 import { FadeIn } from '@/components/landing/LandingAnimations';
 
 /* ── Social proof marquee ── */
-const PROOF_TAGS = ['AI Body Scan', 'AR Try-On', 'Body Twins', 'Style Twins', 'COP/DROP', 'Size Verification'];
+const PROOF_TAGS = ['AI Body Scan', 'AR Try-On', 'Body Twins', 'Style Twins', 'COP or DROP', 'Size Verification'];
 
 /* ── Problem stats ── */
 const STATS = [
