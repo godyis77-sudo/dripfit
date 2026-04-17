@@ -220,7 +220,8 @@ type FunnelEvent =
   | 'home_swipe_drop'
   | 'home_swipe_tap'
   | 'style_check_swipe_cop'
-  | 'style_check_swipe_drop';
+  | 'style_check_swipe_drop'
+  | 'tryon_shop_item_preview';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
