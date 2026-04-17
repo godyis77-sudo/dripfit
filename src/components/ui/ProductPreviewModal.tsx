@@ -279,16 +279,16 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      {/* Close — high-contrast circular */}
+      {/* Close — high-contrast circular, hit area = visible area */}
       <button
         type="button"
         onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); onClose(); }}
         onClick={(e) => { e.stopPropagation(); onClose(); }}
-        className="absolute right-3 z-[220] h-12 w-12 min-h-[48px] min-w-[48px] rounded-full bg-black/75 backdrop-blur-md border-2 border-white/40 flex items-center justify-center active:scale-90 transition-transform shadow-[0_2px_12px_rgba(0,0,0,0.4)]"
-        style={{ top: 'max(0.75rem, env(safe-area-inset-top, 0.75rem))' }}
+        className="absolute right-4 z-[220] h-11 w-11 rounded-full bg-black/80 backdrop-blur-md border border-white/30 flex items-center justify-center active:scale-90 transition-transform shadow-[0_2px_12px_rgba(0,0,0,0.5)] p-0"
+        style={{ top: 'max(1rem, env(safe-area-inset-top, 1rem))' }}
         aria-label="Close"
       >
-        <X className="h-6 w-6 text-white" strokeWidth={2.5} />
+        <X className="h-5 w-5 text-white" strokeWidth={2.5} />
       </button>
 
       {/* Image */}
