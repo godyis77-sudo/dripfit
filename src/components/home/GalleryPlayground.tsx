@@ -61,19 +61,25 @@ const GalleryPlayground = () => {
 
   return (
     <div className="relative bg-background pb-safe-tab">
-      <div className="relative z-10 px-4 pt-2">
-        {/* Header — transparent, editorial */}
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h1 className="font-display text-[28px] font-extrabold text-foreground uppercase tracking-tight">DRIPFIT <span className="text-primary text-[22px]">✔</span></h1>
-            <p className="font-sans text-[13px] font-medium tracking-[0.15em] uppercase text-foreground/70 mt-1 mb-3">
-              {hasScan ? 'Your Body. Mapped.' : 'Scan to unlock your fitting room.'}
-            </p>
+      <div className="relative z-10 px-4 pt-1">
+        {/* Header — transparent, editorial (compact) */}
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex-1 min-w-0">
+            <h1 className="font-display text-[28px] font-extrabold text-foreground uppercase tracking-tight leading-none">DRIPFIT <span className="text-primary text-[22px]">✔</span></h1>
+            {hasScan ? (
+              <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-foreground/60 mt-1">
+                Verified. Ready to drip. <span className="text-foreground/40">· 9,000+ · 186 brands · 389 size charts</span>
+              </p>
+            ) : (
+              <p className="font-sans text-[13px] font-medium tracking-[0.15em] uppercase text-foreground/70 mt-1 mb-3">
+                Scan to unlock your fitting room.
+              </p>
+            )}
           </div>
           {!user && (
             <button
               onClick={() => navigate('/auth')}
-              className="text-[12px] font-semibold text-white tracking-[0.08em] uppercase active:opacity-70 border border-white/[0.35] rounded-full px-3.5 py-1 bg-transparent hover:border-primary/60 hover:text-primary transition-colors"
+              className="text-[12px] font-semibold text-white tracking-[0.08em] uppercase active:opacity-70 border border-white/[0.35] rounded-full px-3.5 py-1 bg-transparent hover:border-primary/60 hover:text-primary transition-colors shrink-0 ml-2"
             >
               Sign In
             </button>
@@ -121,49 +127,52 @@ const GalleryPlayground = () => {
         {/* ═══ STATE B: Returning user (scan completed) ═══ */}
         {hasScan && (
           <>
-            {/* Stats bar */}
-            <p
-              className="text-[10px] tracking-[0.12em] uppercase text-muted-foreground mb-4"
-              style={{ fontFamily: '"DM Mono", monospace' }}
-            >
-              9,000+ pieces · 186 brands · 389 size charts
-            </p>
+        {/* ═══ STATE B: Returning user (scan completed) ═══ */}
+        {hasScan && (
+          <>
+            {/* Weekly Outfits — moved to top */}
+            <WeeklyOutfitsSection />
 
-            {/* Hero row — Infinite Drape Studio + COP / DROP side by side */}
-            <div className="grid grid-cols-2 gap-2 mb-3">
+            {/* Feature cards — full-width stack */}
+            <div className="flex flex-col gap-3 mt-3">
+              {/* THE DRAPE — primary */}
               <div
                 onClick={() => { trackEvent('gallery_hero_tryon'); navigate('/tryon'); }}
-                className="relative bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 py-4 active:scale-[0.97] transition-all cursor-pointer hover:bg-white/[0.05] flex flex-col"
+                className="relative bg-white/[0.03] backdrop-blur-md border border-white/[0.06] border-t-2 border-t-primary rounded-2xl px-5 py-5 flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer hover:bg-white/[0.05]"
               >
-                <p className="font-display text-[16px] font-semibold text-foreground leading-tight tracking-tight">Infinite Drape Studio</p>
-                <p className="font-sans text-[12px] text-muted-foreground mt-1 leading-snug">9,000+ pieces. Your exact silhouette.</p>
-                <div className="flex justify-end mt-auto pt-3">
-                  <span className="inline-flex items-center gap-1 text-primary text-[11px] font-bold tracking-wide">
-                    Browse <ArrowRight className="h-3 w-3" />
+                <div className="flex-1 min-w-0">
+                  <p className="font-serif text-[24px] font-bold italic text-foreground tracking-tight leading-tight">The Drape</p>
+                  <p className="font-sans text-[12px] text-muted-foreground mt-1">Try any piece. On your body.</p>
+                  <span className="mt-3 inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-[12px] font-bold tracking-wide">
+                    Try it on <ArrowRight className="h-3.5 w-3.5" />
                   </span>
                 </div>
+                <div className="w-14 h-14 rounded-full bg-primary/[0.06] blur-xl pointer-events-none shrink-0 ml-2" aria-hidden />
               </div>
 
+              {/* COP or DROP — compact */}
               <button
                 onClick={() => navigate('/closet')}
-                className="relative bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-2xl px-4 py-4 text-left active:scale-[0.97] transition-all hover:bg-white/[0.05] flex flex-col"
+                className="bg-white/[0.02] backdrop-blur-md border border-white/[0.04] rounded-2xl px-5 py-4 flex items-center justify-between text-left active:scale-[0.98] transition-all hover:bg-white/[0.04]"
               >
-                <span className="block font-display text-[16px] font-semibold text-foreground leading-tight tracking-tight">COP / DROP</span>
-                <span className="block font-sans text-[12px] text-muted-foreground leading-snug mt-1">Browse Fresh Drip</span>
-                <div className="flex justify-end mt-auto pt-3">
-                  <ChevronRight className="w-4 h-4 text-zinc-400" strokeWidth={2} />
+                <div className="flex-1 min-w-0">
+                  <p className="font-sans text-[16px] font-bold text-foreground leading-tight">COP or DROP</p>
+                  <p className="font-sans text-[12px] text-muted-foreground mt-0.5">Swipe new drops.</p>
+                  <p className="font-mono text-[9px] tracking-widest uppercase text-primary/60 mt-1">New drops daily</p>
                 </div>
+                <ChevronRight className="w-4 h-4 text-zinc-400 shrink-0 ml-2" strokeWidth={2} />
               </button>
-            </div>
 
-            {/* Subtle Verified Size redirect */}
-            <div className="flex justify-center mb-8">
+              {/* Your Verified Size — contained row */}
               <button
                 onClick={() => navigate('/profile/body')}
-                className="inline-flex items-center gap-1 text-[12px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className="w-full bg-white/[0.02] border border-white/[0.04] rounded-xl px-4 py-3 flex items-center justify-between cursor-pointer active:scale-[0.97] transition-transform"
               >
-                Your Verified Size
-                <ChevronRight className="w-3 h-3" strokeWidth={2} />
+                <div className="flex flex-col gap-0 text-left">
+                  <span className="font-sans text-[13px] font-semibold text-foreground">Your Verified Size</span>
+                  <span className="font-sans text-[10px] text-muted-foreground">186 brands mapped</span>
+                </div>
+                <ChevronRight className="w-4 h-4 text-zinc-400 shrink-0" strokeWidth={2} />
               </button>
             </div>
           </>
@@ -172,11 +181,12 @@ const GalleryPlayground = () => {
         {/* Swipe Feed — The Drop (only for scanned users) */}
         {hasScan && <SwipeFeedSection />}
 
-        {/* Weekly Outfits Hero Section */}
-        <WeeklyOutfitsSection />
+        {/* Weekly Outfits Hero Section — only for non-scanned (scanned users see it at top) */}
+        {!hasScan && <WeeklyOutfitsSection />}
 
         {/* One-Tap Playground — only for unauthenticated users */}
         {!user && <OneTapPlayground />}
+
 
         {/* Hero Scan CTA Strip — conditional on scan status */}
         {!hasScan ? (
