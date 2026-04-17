@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface WeeklyOutfitItem {
@@ -47,33 +47,32 @@ function getPreviousWeekId(weekId: string): string {
   return `${year}-W${String(w - 1).padStart(2, '0')}`;
 }
 
-async function fetchOutfits(weekId: string): Promise<WeeklyOutfit[]> {
-  const { data: outfits, error: oErr } = await supabase
+async function fetchOutfits(weekId: string, gender?: string): Promise<WeeklyOutfit[]> {
+  // Single round-trip: outfits with embedded items, ordered, gender-filtered at DB level.
+  let query = supabase
     .from('weekly_outfits')
-    .select('*')
+    .select('*, weekly_outfit_items(*)')
     .eq('week_id', weekId)
     .eq('is_active', true)
-    .order('sort_order', { ascending: true });
+    .order('sort_order', { ascending: true })
+    .limit(40);
 
-  if (oErr) throw oErr;
+  if (gender && gender !== 'all') {
+    // Match exact gender or null (unisex / unspecified)
+    query = query.or(`gender.eq.${gender},gender.is.null`);
+  }
+
+  const { data: outfits, error } = await query;
+  if (error) throw error;
   if (!outfits || outfits.length === 0) return [];
 
-  const outfitIds = outfits.map(o => o.id);
-  const { data: items, error: iErr } = await supabase
-    .from('weekly_outfit_items')
-    .select('*')
-    .in('outfit_id', outfitIds)
-    .order('position', { ascending: true });
-
-  if (iErr) throw iErr;
-
-  return outfits.map(o => {
-    const oItems = (items || []).filter(i => i.outfit_id === o.id);
+  return outfits.map((o: any) => {
+    const oItems = (o.weekly_outfit_items || []).slice().sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0));
     return {
       ...o,
       sort_order: o.sort_order ?? 0,
-      items: oItems.map(i => ({ ...i, position: i.position ?? 0 })),
-      total_price_cents: oItems.reduce((sum, i) => sum + (i.price_cents ?? 0), 0),
+      items: oItems.map((i: any) => ({ ...i, position: i.position ?? 0 })),
+      total_price_cents: oItems.reduce((sum: number, i: any) => sum + (i.price_cents ?? 0), 0),
     };
   });
 }
@@ -81,27 +80,25 @@ async function fetchOutfits(weekId: string): Promise<WeeklyOutfit[]> {
 export function useWeeklyOutfits(gender?: string) {
   const weekId = getCurrentWeekId();
   const waiting = gender === '__wait__';
+  const normalizedGender = gender && gender !== 'all' ? gender : undefined;
 
   return useQuery({
-    queryKey: ['weekly-outfits', weekId, waiting ? '__wait__' : (gender ?? 'all')],
+    queryKey: ['weekly-outfits', weekId, waiting ? '__wait__' : (normalizedGender ?? 'all')],
     enabled: !waiting,
+    placeholderData: keepPreviousData,
     queryFn: async () => {
-      let results = await fetchOutfits(weekId);
-      // Fallback to previous week if current week has no outfits OR no outfits with hero images yet
+      let results = await fetchOutfits(weekId, normalizedGender);
       const hasUsableHero = (list: WeeklyOutfit[]) => list.some(o => o.hero_image_url);
+      // Only fall back to previous week if current week is fully empty or has zero hero images.
       if (results.length === 0 || !hasUsableHero(results)) {
-        const prev = await fetchOutfits(getPreviousWeekId(weekId));
-        // Prefer previous week if it actually has hero images
+        const prev = await fetchOutfits(getPreviousWeekId(weekId), normalizedGender);
         if (prev.length > 0 && hasUsableHero(prev)) {
           results = prev;
         }
       }
-      // Filter by gender
-      if (gender && gender !== 'all') {
-        results = results.filter(o => !o.gender || o.gender === gender);
-      }
       return results;
     },
     staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 }
