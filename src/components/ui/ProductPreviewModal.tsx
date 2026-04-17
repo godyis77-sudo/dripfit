@@ -304,7 +304,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
             </p>
           )}
           {product.description && (
-            <p className="text-[11px] text-white/45 leading-relaxed text-center line-clamp-3 px-2 mt-1">
+            <p className="text-[12px] text-white/55 leading-relaxed text-left whitespace-pre-line px-2 mt-2">
               {product.description}
             </p>
           )}
