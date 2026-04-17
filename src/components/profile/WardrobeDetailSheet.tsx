@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -12,6 +12,8 @@ import { buildRetailerSearchUrl, getRetailersForCategory } from '@/lib/retailerL
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { trackEvent } from '@/lib/analytics';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { decodeHtmlEntities } from '@/lib/utils';
 
 interface WardrobeItem {
   id: string;
@@ -46,6 +48,32 @@ const ALL_RETAILERS = [
 const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetailers = [] }: WardrobeDetailSheetProps) => {
   const navigate = useNavigate();
   const [retailerSearch, setRetailerSearch] = useState('');
+  const [catalogInfo, setCatalogInfo] = useState<{ name?: string; brand?: string; description?: string; price_cents?: number | null; currency?: string | null } | null>(null);
+
+  useEffect(() => {
+    setCatalogInfo(null);
+    if (!item?.product_link) return;
+    let cancelled = false;
+    const normalized = (() => {
+      try {
+        const u = new URL(item.product_link);
+        return `${u.origin}${u.pathname}`.replace(/\/+$/, '');
+      } catch {
+        return item.product_link.split('?')[0].split('#')[0].replace(/\/+$/, '');
+      }
+    })();
+    supabase
+      .from('product_catalog')
+      .select('name, brand, description, price_cents, currency')
+      .ilike('product_url', `${normalized}%`)
+      .eq('is_active', true)
+      .limit(1)
+      .then(({ data }) => {
+        if (cancelled || !data?.[0]) return;
+        setCatalogInfo(data[0]);
+      });
+    return () => { cancelled = true; };
+  }, [item?.product_link]);
 
   const searchQuery = item?.category ?? '';
   const categoryRetailers = getRetailersForCategory(item?.category ?? 'top');
@@ -66,6 +94,11 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
   if (!item) return null;
 
   const displayRetailer = item.brand || (item.product_link ? detectBrandFromUrl(item.product_link).brand : null) || item.retailer;
+  const productName = catalogInfo?.name ? decodeHtmlEntities(catalogInfo.name) : null;
+  const productDescription = catalogInfo?.description ? decodeHtmlEntities(catalogInfo.description) : null;
+  const formattedPrice = catalogInfo?.price_cents != null
+    ? new Intl.NumberFormat('en-US', { style: 'currency', currency: catalogInfo.currency || 'USD', maximumFractionDigits: 0 }).format(catalogInfo.price_cents / 100)
+    : null;
 
   const handleShop = (retailerName: string) => {
     trackEvent('shop_clickout', { source: 'wardrobe_detail', retailer: retailerName });
@@ -120,8 +153,24 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
             })()}
           </div>
 
+          {/* Product info from catalog */}
+          {(productName || formattedPrice) && (
+            <div className="space-y-1">
+              {productName && (
+                <p className="text-[14px] font-bold text-white leading-snug">{productName}</p>
+              )}
+              {formattedPrice && (
+                <p className="text-[12px] text-primary font-bold tracking-wide">{formattedPrice}</p>
+              )}
+            </div>
+          )}
+
+          {productDescription && (
+            <p className="text-[12px] text-white/55 leading-relaxed whitespace-pre-line">{productDescription}</p>
+          )}
+
           {item.notes && (
-            <p className="text-[12px] text-white/50">{item.notes}</p>
+            <p className="text-[11px] text-white/40 italic">"{item.notes}"</p>
           )}
 
           {/* Try-On + Buy Now row */}
