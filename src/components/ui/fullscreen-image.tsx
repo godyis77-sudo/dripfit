@@ -77,7 +77,8 @@ function ZoomableFullscreenImg({ src, alt }: { src: string; alt: string }) {
 
   return (
     <div
-      className="relative touch-none"
+      className="relative touch-none flex items-center justify-center w-screen"
+      style={{ height: 'var(--fs-img-max-h, 100dvh)' }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -96,9 +97,8 @@ function ZoomableFullscreenImg({ src, alt }: { src: string; alt: string }) {
       <img
         src={src}
         alt={alt}
-        className="max-w-[100dvw] w-auto h-auto object-contain"
+        className="max-w-full max-h-full w-auto h-auto object-contain"
         style={{
-          maxHeight: 'var(--fs-img-max-h, 100dvh)',
           transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)`,
           transition: isPanning ? 'none' : 'transform 0.15s ease-out',
         }}
@@ -174,9 +174,10 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, descr
             >
               <button
                 type="button"
-                onPointerDown={(e) => e.stopPropagation()}
+                onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); setOpen(false); }}
                 onClick={(e) => { e.stopPropagation(); setOpen(false); }}
-                className="absolute top-4 right-4 z-[101] h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-transform"
+                className="absolute top-4 right-4 z-[110] h-11 w-11 min-h-[44px] min-w-[44px] rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center active:scale-90 transition-transform"
+                style={{ top: 'max(1rem, env(safe-area-inset-top, 1rem))' }}
                 aria-label="Close"
               >
                 <X className="h-5 w-5 text-white" />
