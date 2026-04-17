@@ -6,7 +6,7 @@ const FREE_FEATURES = [
   '3 AR try-ons per month',
   'Top 20 brand size sync',
   'Body Twin matching',
-  'COP/DROP voting access',
+  'COP or DROP access',
   'Basic fit verification',
 ];
 

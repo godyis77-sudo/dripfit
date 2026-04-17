@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 const tabs: { icon: FeatureIconName; label: string; path: string }[] = [
   { icon: 'home', label: 'Home', path: '/home' },
   { icon: 'post', label: 'Scan', path: '/capture' },
-  { icon: 'tryon', label: 'Try-On', path: '/tryon' },
+  { icon: 'tryon', label: 'Drape', path: '/tryon' },
   { icon: 'stylecheck', label: 'Twins', path: '/style-check' },
   { icon: 'profile', label: 'Profile', path: '/profile' },
 ];
