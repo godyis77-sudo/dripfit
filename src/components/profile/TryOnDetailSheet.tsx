@@ -17,6 +17,7 @@ import { getPostedCaption } from '@/components/community/community-types';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import ProductPreviewModal, { type ProductPreviewData } from '@/components/ui/ProductPreviewModal';
 import { decodeHtmlEntities } from '@/lib/utils';
+import { FullscreenImage } from '@/components/ui/fullscreen-image';
 
 interface TryOnPost {
   id: string;
