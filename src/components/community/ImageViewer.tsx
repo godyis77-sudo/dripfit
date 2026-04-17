@@ -76,11 +76,11 @@ const ImageViewer = ({ src, alt, retailers, retailerUrlMap }: ImageViewerProps) 
       onTouchEnd={handleTouchEnd}
       onDoubleClick={handleDoubleClick}
     >
-      <div className="relative mx-auto flex w-full justify-center overflow-hidden rounded-2xl bg-background touch-none">
+      <div className="relative mx-auto w-full aspect-[4/5] overflow-hidden rounded-2xl bg-background touch-none">
         <img
           src={src}
           alt={alt}
-          className="block h-auto max-h-[72dvh] w-auto max-w-full rounded-2xl object-contain object-top transition-transform duration-100"
+          className="absolute inset-0 h-full w-full rounded-2xl object-cover object-top transition-transform duration-100"
           style={{ transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)` }}
           draggable={false}
         />
