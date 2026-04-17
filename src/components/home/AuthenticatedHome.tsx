@@ -35,7 +35,6 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
 
   const { data: profileData } = useProfileInfo(user?.id);
   const { data: scanData } = useLatestScan(user?.id);
-  const { data: trendingFits = [] } = useTrendingFits(user?.id);
   const { data: fitRecs = [] } = useForYourFit(user?.id);
 
   const hasScan = scanData !== undefined ? !!scanData : null;
