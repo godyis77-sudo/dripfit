@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -12,6 +12,8 @@ import { buildRetailerSearchUrl, getRetailersForCategory } from '@/lib/retailerL
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { trackEvent } from '@/lib/analytics';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { decodeHtmlEntities } from '@/lib/utils';
 
 interface WardrobeItem {
   id: string;
