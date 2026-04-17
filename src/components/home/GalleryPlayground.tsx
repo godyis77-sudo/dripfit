@@ -79,7 +79,7 @@ const GalleryPlayground = () => {
           {!user && (
             <button
               onClick={() => navigate('/auth')}
-              className="text-[12px] font-semibold text-white tracking-[0.08em] uppercase active:opacity-70 border border-white/[0.35] rounded-full px-3.5 py-1 bg-transparent hover:border-primary/60 hover:text-primary transition-colors shrink-0 ml-2"
+              className="text-[12px] font-semibold text-white/70 tracking-[0.08em] uppercase border border-white/20 rounded-full px-3.5 py-1 bg-transparent hover:border-primary/40 hover:text-primary/80 transition-colors shrink-0 ml-2"
             >
               Sign In
             </button>
