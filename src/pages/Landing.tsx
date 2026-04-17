@@ -101,11 +101,11 @@ export default function Landing() {
         </div>
       </nav>
 
-      {/* FEATURES — "Your Body. Mapped." moved above hero size card image */}
-      <LandingFeatures />
-
       {/* HERO */}
       <LandingHero />
+
+      {/* FEATURES — moved directly under hero stats */}
+      <LandingFeatures />
 
       {/* PROOF TICKER */}
       <div
