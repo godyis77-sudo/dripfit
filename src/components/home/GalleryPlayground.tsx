@@ -72,14 +72,14 @@ const GalleryPlayground = () => {
               </p>
             ) : (
               <p className="font-sans text-[13px] font-medium tracking-[0.15em] uppercase text-foreground/70 mt-1 mb-3">
-                Your Drape Studio Awaits.
+                Your Infinite Drape Studio Awaits.
               </p>
             )}
           </div>
           {!user && (
             <button
               onClick={() => navigate('/auth')}
-              className="text-[12px] font-semibold text-white/70 tracking-[0.08em] uppercase border border-white/20 rounded-full px-3.5 py-1 bg-transparent hover:border-primary/40 hover:text-primary/80 transition-colors shrink-0 ml-2"
+              className="text-[12px] font-semibold text-white/70 tracking-[0.08em] uppercase border border-white/20 rounded-full px-3.5 py-1 bg-transparent hover:border-primary/40 hover:text-primary/80 transition-colors active:opacity-70 shrink-0 ml-2"
             >
               Sign In
             </button>
