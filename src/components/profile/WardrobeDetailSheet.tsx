@@ -153,8 +153,24 @@ const WardrobeDetailSheet = ({ item, open, onOpenChange, onDelete, favoriteRetai
             })()}
           </div>
 
+          {/* Product info from catalog */}
+          {(productName || formattedPrice) && (
+            <div className="space-y-1">
+              {productName && (
+                <p className="text-[14px] font-bold text-white leading-snug">{productName}</p>
+              )}
+              {formattedPrice && (
+                <p className="text-[12px] text-primary font-bold tracking-wide">{formattedPrice}</p>
+              )}
+            </div>
+          )}
+
+          {productDescription && (
+            <p className="text-[12px] text-white/55 leading-relaxed whitespace-pre-line">{productDescription}</p>
+          )}
+
           {item.notes && (
-            <p className="text-[12px] text-white/50">{item.notes}</p>
+            <p className="text-[11px] text-white/40 italic">"{item.notes}"</p>
           )}
 
           {/* Try-On + Buy Now row */}
