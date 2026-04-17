@@ -77,7 +77,8 @@ function ZoomableFullscreenImg({ src, alt }: { src: string; alt: string }) {
 
   return (
     <div
-      className="relative touch-none"
+      className="relative touch-none flex items-center justify-center w-screen"
+      style={{ height: 'var(--fs-img-max-h, 100dvh)' }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -96,9 +97,8 @@ function ZoomableFullscreenImg({ src, alt }: { src: string; alt: string }) {
       <img
         src={src}
         alt={alt}
-        className="max-w-[100dvw] w-auto h-auto object-contain"
+        className="max-w-full max-h-full w-auto h-auto object-contain"
         style={{
-          maxHeight: 'var(--fs-img-max-h, 100dvh)',
           transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)`,
           transition: isPanning ? 'none' : 'transform 0.15s ease-out',
         }}
