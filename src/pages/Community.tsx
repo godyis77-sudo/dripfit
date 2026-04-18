@@ -171,9 +171,10 @@ const Community = () => {
             loading={loading}
             votes={votes}
             voteCounts={voteCounts}
-            failedImages={new Set()}
+            failedImages={failedImages}
             onVote={handleVote}
             onOpenDetail={setDetailPost}
+            onImageError={handleImageError}
           />
         </div>
 
