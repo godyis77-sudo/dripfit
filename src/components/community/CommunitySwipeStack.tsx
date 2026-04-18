@@ -52,22 +52,22 @@ export default function CommunitySwipeStack({
 
   const advance = useCallback(() => setIndex((i) => i + 1), []);
 
+  // Swipe is browse-only: track analytics and advance, but do NOT mutate
+  // votes or cart. Voting/shopping happens from the full-screen detail sheet.
   const handleCop = useCallback(
     (card: SwipeCard) => {
       trackEvent('style_check_swipe_cop', { postId: card.postId });
-      if (card.postId) void onVote(card.postId, 'buy_yes');
       advance();
     },
-    [onVote, advance],
+    [advance],
   );
 
   const handleDrop = useCallback(
     (card: SwipeCard) => {
       trackEvent('style_check_swipe_drop', { postId: card.postId });
-      if (card.postId) void onVote(card.postId, 'buy_no');
       advance();
     },
-    [onVote, advance],
+    [advance],
   );
 
   const handleTap = useCallback(
