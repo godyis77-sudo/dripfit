@@ -32,6 +32,14 @@ function RootRedirect() {
   return <Navigate to={user ? '/home' : '/landing'} replace />;
 }
 
+/** Landing is for guests only — authenticated users go to /home */
+function GuestOnlyLanding({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="min-h-screen bg-background" />;
+  if (user) return <Navigate to="/home" replace />;
+  return <>{children}</>;
+}
+
 // ── Lazy-loaded pages (code-split per route) ──────────────────────────
 const Analyze = lazy(() => import("./pages/Analyze"));
 const Results = lazy(() => import("./pages/Results"));
@@ -174,7 +182,7 @@ const AnimatedRoutes = () => {
           <Route path="/outfit/:outfitId" element={<PageTransition><OutfitDetail /></PageTransition>} />
           <Route path="/style-assistant" element={<PageTransition><StyleAssistant /></PageTransition>} />
           <Route path="/closet" element={<PageTransition><Closet /></PageTransition>} />
-          <Route path="/landing" element={<PageTransition><Landing /></PageTransition>} />
+          <Route path="/landing" element={<GuestOnlyLanding><PageTransition><Landing /></PageTransition></GuestOnlyLanding>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </AnimatePresence>
