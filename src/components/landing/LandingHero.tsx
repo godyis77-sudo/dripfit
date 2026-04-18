@@ -57,6 +57,12 @@ export default function LandingHero() {
                 >
                   Sign Up Free <ArrowRight className="h-4 w-4" />
                 </Link>
+                <Link
+                  to="/home"
+                  className="w-full text-center text-sm text-foreground/70 hover:text-foreground underline underline-offset-4 mt-3 py-2 transition-colors duration-200"
+                >
+                  Continue as guest
+                </Link>
                 <span className="text-xs text-center text-[#666666] mt-2 w-full">Your biometric data is encrypted and never sold.</span>
               </div>
             )}
