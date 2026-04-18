@@ -78,7 +78,7 @@ export default function Landing() {
           {user ? (
             <Link
               to="/home"
-              className="px-5 py-2 text-xs font-semibold tracking-wider uppercase rounded-full bg-primary text-primary-foreground hover:scale-105 transition-transform duration-300"
+              className="px-5 py-2 text-sm font-semibold tracking-wide rounded-full border border-primary/40 text-primary bg-transparent hover:bg-primary/10 transition-colors duration-300"
             >
               Enter App
             </Link>
