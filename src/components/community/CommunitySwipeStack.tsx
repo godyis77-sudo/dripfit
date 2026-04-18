@@ -17,6 +17,7 @@ interface CommunitySwipeStackProps {
   failedImages: Set<string>;
   onVote: (postId: string, voteKey: string) => void | Promise<void>;
   onOpenDetail: (post: Post) => void;
+  onImageError?: (postId: string) => void;
 }
 
 /**
@@ -31,6 +32,7 @@ export default function CommunitySwipeStack({
   failedImages,
   onVote,
   onOpenDetail,
+  onImageError,
 }: CommunitySwipeStackProps) {
   const navigate = useNavigate();
   const [index, setIndex] = useState(0);
