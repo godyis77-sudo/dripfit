@@ -92,26 +92,29 @@ const GalleryPlayground = () => {
             {/* Hero scan card */}
             <div
               onClick={() => { trackEvent('home_start_scan_click'); navigate('/capture'); }}
-              className="w-full mb-3 rounded-2xl overflow-hidden cursor-pointer active:scale-[0.97] transition-all relative"
+              className="w-full mb-3 rounded-2xl overflow-hidden cursor-pointer active:scale-[0.97] transition-all relative border-l-2 border-primary/40"
             >
-              {/* Gradient background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A] via-[#141414] to-[rgba(212,175,55,0.06)]" />
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(212,175,55,0.08),transparent_70%)]" />
-              {/* Warm gold glow (bottom-right) */}
+              {/* Gold radial glow — bottom-right */}
               <div
-                className="absolute bottom-0 right-0 w-48 h-48 rounded-full pointer-events-none"
+                className="absolute bottom-0 right-0 w-56 h-56 pointer-events-none"
                 style={{
-                  background: 'radial-gradient(circle, rgba(212,175,55,0.12) 0%, transparent 70%)',
-                  filter: 'blur(40px)',
-                  transform: 'translate(20%, 20%)',
+                  background: 'radial-gradient(circle at 80% 80%, rgba(212,175,55,0.14) 0%, transparent 65%)',
+                  filter: 'blur(32px)',
                 }}
               />
-              {/* Subtle grain texture */}
+              {/* Subtle top-left cool shadow */}
               <div
-                className="absolute inset-0 rounded-2xl pointer-events-none opacity-[0.03]"
+                className="absolute top-0 left-0 w-40 h-40 pointer-events-none"
                 style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
-                  backgroundSize: '128px 128px',
+                  background: 'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.015) 0%, transparent 70%)',
+                }}
+              />
+              {/* Grain texture overlay */}
+              <div
+                className="absolute inset-0 rounded-2xl pointer-events-none opacity-[0.025]"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                  backgroundSize: '120px 120px',
                 }}
               />
               <div className="relative px-6 py-10">
