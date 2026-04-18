@@ -32,8 +32,12 @@ const WeeklyOutfitsSection = () => {
     if (!outfits) return [];
     // Show all outfits with items; cards with a hero image render as editorial,
     // others fall back to the glass card (image generating soon).
-    return outfits.filter(o => o.items.length > 0);
-  }, [outfits]);
+    const ready = outfits.filter(o => o.items.length > 0);
+    // Shuffle once per mount so the first card differs each visit (and never
+    // matches the home swipe feed's first card).
+    return shuffleArray(ready);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [outfits?.length]);
 
   const occasions = useMemo(() => {
     const seen = new Map<string, { label: string; emoji: string | null }>();
