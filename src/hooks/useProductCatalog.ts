@@ -125,7 +125,7 @@ async function fetchCatalogProducts(filters: CatalogFilters): Promise<CatalogPro
     p_retailer: retailer || null,
     p_price_min_cents: priceMin != null ? Math.round(priceMin * 100) : null,
     p_price_max_cents: priceMax != null ? Math.round(priceMax * 100) : null,
-    p_min_confidence: isSwim ? 0.15 : 0.05,
+    p_min_confidence: isSwim ? 0.3 : 0.2,
     p_presentation: isSwim ? 'model_shot' : null,
     p_limit: brand ? 1000 : (category && category !== 'all' ? 500 : 2000),
     p_offset: 0,
@@ -138,10 +138,17 @@ async function fetchCatalogProducts(filters: CatalogFilters): Promise<CatalogPro
     return [];
   }
 
-  // Deduplicate by image_url (still needed for edge cases)
+  // Defensive client-side filters: drop any junk-tagged or obviously-broken items
+  // that may slip through (e.g., logos, category pages, outlet banners, scraper artifacts)
+  const JUNK_TAGS = new Set(['ai_failed', 'ai_invalid', 'junk_image', 'category_page', 'kids_product']);
+  const NAME_BLOCKLIST = /\b(shopsimon|gilt outlet|outlet\s*-\s*shopsimon|category page|404|not found)\b/i;
+
   const seen = new Set<string>();
   return ((data as unknown as CatalogProduct[]) ?? []).filter(p => {
     if (!p.image_url) return false;
+    if ((p.image_confidence ?? 0) < 0.15) return false;
+    if (Array.isArray(p.tags) && p.tags.some(t => JUNK_TAGS.has(t))) return false;
+    if (p.name && NAME_BLOCKLIST.test(p.name)) return false;
     const key = p.image_url.trim().toLowerCase();
     if (seen.has(key)) return false;
     seen.add(key);
