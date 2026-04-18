@@ -6,7 +6,7 @@ import { FadeIn } from './LandingAnimations';
 const FAQS = [
   { q: 'How accurate is the body scan?', a: "20+ biometric data points extracted from two photos with sub-centimeter precision. Your measurements are cross-referenced against each brand's proprietary size chart — not generic S/M/L ranges." },
   { q: 'Is my body scan data private?', a: 'Your biometric data is encrypted end-to-end and never shared with retailers or third parties. Delete anytime. You own your geometry. Period.' },
-  { q: 'How does AR try-on work?', a: 'Infinite Drape Studio renders garments directly onto your mapped silhouette using augmented reality. You see the actual drape, proportions, and fit on YOUR body — not a mannequin or model.' },
+  { q: 'How does Infinite Drape Studio work?', a: 'Infinite Drape Studio renders garments directly onto your mapped silhouette. You see the actual drape, proportions, and fit on YOUR body — not a mannequin or model.' },
   { q: 'What are Body Twins?', a: 'Members who share your exact proportions — within verified measurement tolerances. When they try a piece, their fit feedback is directly applicable to you. Same body. Same drape.' },
   { q: 'What brands are available?', a: "186 brands across 69 retailers — from Arc'teryx and Stone Island to The Row and Totême. 9,000+ products and growing weekly." },
   { q: 'Is DripFit free?', a: 'Core features including body scanning, size verification, and browsing are free. Premium features like unlimited AR try-ons and advanced Twin matching are available with DripFit Pro.' },
