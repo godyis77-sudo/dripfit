@@ -100,10 +100,11 @@ const GalleryPlayground = () => {
         {/* ═══ STATE A: New user (no scan) ═══ */}
         {!hasScan && (
           <>
-            {/* Hero scan card */}
+            {/* Hero scan card — editorial split layout */}
             <div
               onClick={() => { trackEvent('home_start_scan_click'); navigate('/capture'); }}
-              className="w-full mb-3 rounded-2xl overflow-hidden cursor-pointer active:scale-[0.97] transition-all relative"
+              className="relative w-full mb-3 rounded-2xl overflow-hidden cursor-pointer active:scale-[0.97] transition-all bg-gradient-to-br from-[#1A1A1A] via-[#141414] to-[rgba(212,175,55,0.08)]"
+              style={{ minHeight: '320px' }}
             >
               {/* Gold radial glow — bottom-right */}
               <div
@@ -111,13 +112,6 @@ const GalleryPlayground = () => {
                 style={{
                   background: 'radial-gradient(circle at 80% 80%, rgba(212,175,55,0.14) 0%, transparent 65%)',
                   filter: 'blur(32px)',
-                }}
-              />
-              {/* Subtle top-left cool shadow */}
-              <div
-                className="absolute top-0 left-0 w-40 h-40 pointer-events-none"
-                style={{
-                  background: 'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.015) 0%, transparent 70%)',
                 }}
               />
               {/* Grain texture overlay */}
@@ -128,20 +122,59 @@ const GalleryPlayground = () => {
                   backgroundSize: '120px 120px',
                 }}
               />
-              <div className="relative px-6 py-10">
-                <h2 className="font-serif text-2xl text-foreground font-semibold mb-2 uppercase tracking-wide">Your Body. Mapped.</h2>
-                <p className="text-sm text-zinc-400 max-w-[260px] leading-relaxed">
-                  2 photos. 60 seconds. Your size across 186 brands — locked.
-                </p>
-                <p className="text-[12px] text-white/50 mt-2 mb-4">
-                  186 brands. 389 size charts. Zero guessing.
-                </p>
-                <button
-                  onClick={(e) => { e.stopPropagation(); navigate('/capture'); }}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground text-sm font-bold tracking-wide hover:scale-[1.02] active:scale-[0.98] transition-transform"
-                >
-                  Start the Scan <ArrowRight className="h-4 w-4" />
-                </button>
+
+              <div className="relative z-10 px-6 py-7 flex items-center gap-4">
+                {/* LEFT COLUMN */}
+                <div className="flex-1 min-w-0">
+                  <p className="font-mono text-[10px] tracking-[0.22em] uppercase text-primary/70 font-bold mb-3">
+                    STEP 01 · YOUR SCAN
+                  </p>
+                  <h2 className="font-serif italic text-[28px] font-bold text-foreground leading-[1.05] tracking-tight mb-3">
+                    Your body.<br />Mapped.
+                  </h2>
+                  <p className="font-sans text-[13px] text-white/70 leading-snug max-w-[240px] mb-2">
+                    2 photos. 60 seconds. Your exact size across 186 brands — locked.
+                  </p>
+                  <p className="font-mono text-[10px] tracking-[0.1em] uppercase text-white/40 mb-4">
+                    186 brands · 389 size charts · 9,000+ pieces
+                  </p>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); navigate('/capture'); }}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-[13px] font-bold tracking-wide hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                  >
+                    Start the Scan <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
+
+                {/* RIGHT COLUMN — fanned size card stack */}
+                <div className="hidden sm:block w-[110px] shrink-0 relative h-[130px]">
+                  {/* Card 1 — back */}
+                  <div
+                    className="absolute left-0 top-2 w-[90px] h-[110px] rounded-xl bg-gradient-to-br from-[#1C1810] to-[#0F0D08] border border-primary/30 shadow-[0_4px_20px_rgba(0,0,0,0.6)] flex flex-col items-center justify-center z-10"
+                    style={{ transform: 'rotate(-8deg)' }}
+                  >
+                    <p className="font-mono text-[7px] tracking-widest text-primary/60 uppercase">ARITZIA</p>
+                    <p className="font-serif italic text-[36px] font-bold bg-gradient-to-b from-[#F5E87A] to-[#9A7420] bg-clip-text text-transparent leading-none my-0.5">L</p>
+                    <p className="font-mono text-[6px] tracking-widest text-white/40 uppercase">VERIFIED</p>
+                  </div>
+                  {/* Card 2 — middle */}
+                  <div
+                    className="absolute left-1 top-0 w-[90px] h-[110px] rounded-xl bg-gradient-to-br from-[#1C1810] to-[#0F0D08] border border-primary/30 shadow-[0_4px_20px_rgba(0,0,0,0.6)] flex flex-col items-center justify-center z-20"
+                  >
+                    <p className="font-mono text-[7px] tracking-widest text-primary/60 uppercase">NIKE</p>
+                    <p className="font-serif italic text-[36px] font-bold bg-gradient-to-b from-[#F5E87A] to-[#9A7420] bg-clip-text text-transparent leading-none my-0.5">M</p>
+                    <p className="font-mono text-[6px] tracking-widest text-white/40 uppercase">VERIFIED</p>
+                  </div>
+                  {/* Card 3 — front */}
+                  <div
+                    className="absolute left-2 top-3 w-[90px] h-[110px] rounded-xl bg-gradient-to-br from-[#1C1810] to-[#0F0D08] border border-primary/30 shadow-[0_4px_20px_rgba(0,0,0,0.6)] flex flex-col items-center justify-center z-30"
+                    style={{ transform: 'rotate(6deg)' }}
+                  >
+                    <p className="font-mono text-[7px] tracking-widest text-primary/60 uppercase">ASOS</p>
+                    <p className="font-serif italic text-[28px] font-bold bg-gradient-to-b from-[#F5E87A] to-[#9A7420] bg-clip-text text-transparent leading-none my-0.5">US 10</p>
+                    <p className="font-mono text-[6px] tracking-widest text-white/40 uppercase">VERIFIED</p>
+                  </div>
+                </div>
               </div>
             </div>
 
