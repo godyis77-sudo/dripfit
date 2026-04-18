@@ -12,6 +12,7 @@ interface SwipeFeedCardProps {
   onTap: (card: SwipeCard) => void;
   copPercent?: number;
   voteCount?: number;
+  showKindPill?: boolean;
 }
 
 const SWIPE_THRESHOLD = 80;
@@ -23,6 +24,7 @@ export default function SwipeFeedCard({
   onTap,
   copPercent,
   voteCount,
+  showKindPill = true,
 }: SwipeFeedCardProps) {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 0, 200], [-8, 0, 8]);
@@ -71,18 +73,20 @@ export default function SwipeFeedCard({
       />
 
       {/* Kind pill */}
-      <div className="absolute top-3 left-3 z-10">
-        <span
-          className={cn(
-            'px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider backdrop-blur-md',
-            card.kind === 'outfit'
-              ? 'bg-primary/90 text-primary-foreground'
-              : 'bg-black/50 text-white border border-white/20',
-          )}
-        >
-          {card.kind === 'outfit' ? 'Weekly Drip' : 'Style Check'}
-        </span>
-      </div>
+      {showKindPill && (
+        <div className="absolute top-3 left-3 z-10">
+          <span
+            className={cn(
+              'px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider backdrop-blur-md',
+              card.kind === 'outfit'
+                ? 'bg-primary/90 text-primary-foreground'
+                : 'bg-black/50 text-white border border-white/20',
+            )}
+          >
+            {card.kind === 'outfit' ? 'Weekly Drip' : 'Style Check'}
+          </span>
+        </div>
+      )}
 
       {/* Author top-right */}
       {card.authorName && (
