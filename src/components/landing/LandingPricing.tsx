@@ -11,8 +11,8 @@ const FREE_FEATURES = [
 ];
 
 const PREMIUM_FEATURES = [
-  'Unlimited AR try-ons',
-  '186+ brand size sync',
+  'Unlimited Infinite Drape Studio access',
+  '186+ brand size map',
   'Priority scan queue',
   'Side-by-side fit comparison',
   'Advanced fit analytics',
