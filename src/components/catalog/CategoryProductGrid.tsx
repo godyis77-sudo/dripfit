@@ -194,6 +194,25 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
                     alt={product.name}
                     className="w-full h-full object-cover"
                     loading="lazy"
+                    onLoad={(e) => {
+                      // Verify image is product-shaped (not a logo/banner/icon).
+                      // Reject extreme aspect ratios or tiny natural dimensions.
+                      const img = e.currentTarget;
+                      const w = img.naturalWidth;
+                      const h = img.naturalHeight;
+                      if (!w || !h) return;
+                      const ratio = w / h;
+                      const tooSmall = w < 200 || h < 200;
+                      const tooWide = ratio > 2.2 || ratio < 0.4;
+                      if (tooSmall || tooWide) {
+                        setFailedImageIds(prev => {
+                          if (prev.has(product.id)) return prev;
+                          const next = new Set(prev);
+                          next.add(product.id);
+                          return next;
+                        });
+                      }
+                    }}
                     onError={() => {
                       setFailedImageIds(prev => {
                         if (prev.has(product.id)) return prev;
