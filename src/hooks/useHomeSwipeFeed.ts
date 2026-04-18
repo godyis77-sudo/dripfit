@@ -20,8 +20,9 @@ const TOP_POSTS_LIMIT = 10;
 const TOP_OUTFITS_LIMIT = 20;
 
 async function fetchTopWeeklyPosts(): Promise<SwipeCard[]> {
+  // 90-day window so recent (but not last-7-day) posts still surface in the home swipe.
   const { data, error } = await supabase.rpc('get_trending_posts', {
-    p_hours_window: 168,
+    p_hours_window: 24 * 90,
     p_limit: TOP_POSTS_LIMIT,
     p_offset: 0,
   });
