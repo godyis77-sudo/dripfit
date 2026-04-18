@@ -151,6 +151,7 @@ export default function CommunitySwipeStack({
               alt=""
               className="w-full h-full object-cover"
               draggable={false}
+              onError={() => next.postId && onImageError?.(next.postId)}
             />
           </div>
         )}
@@ -160,6 +161,7 @@ export default function CommunitySwipeStack({
             onCop={handleCop}
             onDrop={handleDrop}
             onTap={handleTap}
+            onImageError={(c) => c.postId && onImageError?.(c.postId)}
             copPercent={copPercent}
             voteCount={total}
             showKindPill={false}
