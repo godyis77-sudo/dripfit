@@ -59,9 +59,9 @@ export default function LandingHero() {
                 </Link>
                 <Link
                   to="/home"
-                  className="w-full text-center text-sm text-foreground/70 hover:text-foreground underline underline-offset-4 mt-3 py-2 transition-colors duration-200"
+                  className="w-full text-center type-data text-foreground/50 hover:text-primary mt-4 py-2 transition-colors duration-300 tracking-[0.2em]"
                 >
-                  Continue as guest
+                  CONTINUE AS GUEST
                 </Link>
                 <span className="text-xs text-center text-[#666666] mt-2 w-full">Your biometric data is encrypted and never sold.</span>
               </div>
