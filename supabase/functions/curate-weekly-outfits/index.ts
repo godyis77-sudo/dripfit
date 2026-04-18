@@ -661,7 +661,7 @@ Deno.serve(async (req) => {
 
     const { data: fetchedProducts, error: fetchErr } = await sb
       .from("product_catalog")
-      .select("id, name, brand, category, image_url, product_url, price_cents, currency, gender, image_confidence")
+      .select("id, name, brand, category, image_url, product_url, price_cents, currency, gender, image_confidence, style_genre, tags, fabric_composition, presentation")
       .eq("is_active", true)
       .in("gender", genders)
       .in("brand", Array.from(APPROVED_BRANDS))
