@@ -121,21 +121,21 @@ export default function SwipeFeedCard({
         )}
       </div>
 
-      {/* COP/DROP overlays */}
+      {/* COP/DROP overlays — subtle */}
       <motion.div
-        className="absolute top-1/2 right-6 -translate-y-1/2 z-20 pointer-events-none"
+        className="absolute top-6 right-5 z-20 pointer-events-none"
         style={{ opacity: copOpacity }}
       >
-        <div className="px-4 py-2 rounded-lg border-2 border-primary bg-primary/20 backdrop-blur-sm rotate-12">
-          <span className="text-primary font-display italic text-2xl font-bold">COP</span>
+        <div className="px-3 py-1 rounded-full border border-primary/70 bg-primary/10 backdrop-blur-sm rotate-6">
+          <span className="text-primary font-display italic text-sm font-semibold tracking-wide">COP</span>
         </div>
       </motion.div>
       <motion.div
-        className="absolute top-1/2 left-6 -translate-y-1/2 z-20 pointer-events-none"
+        className="absolute top-6 left-5 z-20 pointer-events-none"
         style={{ opacity: dropOpacity }}
       >
-        <div className="px-4 py-2 rounded-lg border-2 border-destructive bg-destructive/20 backdrop-blur-sm -rotate-12">
-          <span className="text-destructive font-display italic text-2xl font-bold">DROP</span>
+        <div className="px-3 py-1 rounded-full border border-destructive/70 bg-destructive/10 backdrop-blur-sm -rotate-6">
+          <span className="text-destructive font-display italic text-sm font-semibold tracking-wide">DROP</span>
         </div>
       </motion.div>
 

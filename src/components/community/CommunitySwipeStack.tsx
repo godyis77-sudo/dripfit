@@ -34,6 +34,8 @@ export default function CommunitySwipeStack({
 }: CommunitySwipeStackProps) {
   const navigate = useNavigate();
   const [index, setIndex] = useState(0);
+  const [copCount, setCopCount] = useState(0);
+  const [dropCount, setDropCount] = useState(0);
 
   // Map Post -> SwipeCard
   const cards: SwipeCard[] = useMemo(() => {
@@ -57,6 +59,7 @@ export default function CommunitySwipeStack({
   const handleCop = useCallback(
     (card: SwipeCard) => {
       trackEvent('style_check_swipe_cop', { postId: card.postId });
+      setCopCount((c) => c + 1);
       advance();
     },
     [advance],
@@ -65,6 +68,7 @@ export default function CommunitySwipeStack({
   const handleDrop = useCallback(
     (card: SwipeCard) => {
       trackEvent('style_check_swipe_drop', { postId: card.postId });
+      setDropCount((c) => c + 1);
       advance();
     },
     [advance],
@@ -106,7 +110,11 @@ export default function CommunitySwipeStack({
           {cards.length} look{cards.length === 1 ? '' : 's'} swiped
         </p>
         <button
-          onClick={() => setIndex(0)}
+          onClick={() => {
+            setIndex(0);
+            setCopCount(0);
+            setDropCount(0);
+          }}
           className="px-4 py-2 rounded-full bg-primary text-primary-foreground text-[12px] font-bold active:scale-95 transition-transform"
         >
           Swipe again
@@ -118,7 +126,7 @@ export default function CommunitySwipeStack({
   const current = cards[index];
   const next = cards[index + 1];
 
-  // Vote count for current card
+  // Vote count for current card (from server, used inside card progress bar)
   const currentCounts = current.postId ? voteCounts[current.postId] : undefined;
   const yes = currentCounts?.['buy_yes'] ?? 0;
   const no = currentCounts?.['buy_no'] ?? 0;
@@ -127,43 +135,50 @@ export default function CommunitySwipeStack({
 
   return (
     <div className="relative">
-      {/* Peek of next card behind */}
-      {next && (
-        <div
-          key={next.id}
-          className="absolute inset-0 rounded-2xl overflow-hidden scale-95 opacity-50 pointer-events-none"
-          aria-hidden
-        >
-          <img
-            src={next.imageUrl}
-            alt=""
-            className="w-full h-full object-cover"
-            draggable={false}
+      {/* Card stack — fixed aspect wrapper so peek can't bleed below */}
+      <div className="relative w-full aspect-[3/4]">
+        {/* Peek of next card behind */}
+        {next && (
+          <div
+            key={next.id}
+            className="absolute inset-0 rounded-2xl overflow-hidden scale-[0.94] opacity-40 pointer-events-none"
+            aria-hidden
+          >
+            <img
+              src={next.imageUrl}
+              alt=""
+              className="w-full h-full object-cover"
+              draggable={false}
+            />
+          </div>
+        )}
+        <div key={current.id} className="absolute inset-0">
+          <SwipeFeedCard
+            card={current}
+            onCop={handleCop}
+            onDrop={handleDrop}
+            onTap={handleTap}
+            copPercent={copPercent}
+            voteCount={total}
+            showKindPill={false}
           />
         </div>
-      )}
-      <div key={current.id} className="relative">
-        <SwipeFeedCard
-          card={current}
-          onCop={handleCop}
-          onDrop={handleDrop}
-          onTap={handleTap}
-          copPercent={copPercent}
-          voteCount={total}
-          showKindPill={false}
-        />
       </div>
-      <div className="mt-3 flex items-center justify-center gap-4 text-[11px] text-white/70">
-        <span className="flex items-center gap-1">
+
+      {/* Swipe tally — reflects this session's swipes */}
+      <div className="mt-4 flex items-center justify-center gap-5 text-[11px] text-white/70">
+        <span className="flex items-center gap-1.5">
           <X className="h-3.5 w-3.5 text-destructive" />
-          <span className="font-bold tabular-nums">{no}</span>
+          <span className="font-bold tabular-nums text-white">{dropCount}</span>
+          <span className="text-[9px] uppercase tracking-wider text-muted-foreground">drop</span>
         </span>
-        <span className="text-[10px] text-muted-foreground tracking-wider uppercase">
-          {index + 1} / {cards.length}
+        <span className="text-[10px] text-muted-foreground tracking-wider uppercase tabular-nums">
+          {Math.min(index + 1, cards.length)} / {cards.length}
         </span>
-        <span className="flex items-center gap-1">
+        <span className="flex items-center gap-1.5">
+          <span className="text-[9px] uppercase tracking-wider text-muted-foreground">cop</span>
+          <span className="font-bold tabular-nums text-white">{copCount}</span>
           <Flame className="h-3.5 w-3.5 text-primary" />
-          <span className="font-bold tabular-nums">{yes}</span>
         </span>
       </div>
     </div>
