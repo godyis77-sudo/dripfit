@@ -164,7 +164,6 @@ const Community = () => {
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2 px-1">
             <h2 className="text-[12px] font-bold tracking-[0.18em] uppercase text-white/70">Fresh</h2>
-            <span className="text-[10px] text-muted-foreground tracking-wider uppercase">Swipe to vote</span>
           </div>
           <CommunitySwipeStack
             posts={posts.filter(p => isValidImageUrl(p.result_photo_url) && !failedImages.has(p.id))}
