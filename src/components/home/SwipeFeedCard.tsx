@@ -12,6 +12,7 @@ interface SwipeFeedCardProps {
   onTap: (card: SwipeCard) => void;
   copPercent?: number;
   voteCount?: number;
+  showKindPill?: boolean;
 }
 
 const SWIPE_THRESHOLD = 80;
