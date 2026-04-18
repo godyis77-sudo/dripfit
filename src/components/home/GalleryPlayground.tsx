@@ -61,6 +61,17 @@ const GalleryPlayground = () => {
 
   return (
     <div className="relative bg-background pb-safe-tab">
+      {/* Ambient gold haze behind wordmark */}
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none"
+        style={{
+          width: '320px',
+          height: '160px',
+          background: 'radial-gradient(ellipse, rgba(212,175,55,0.07) 0%, transparent 70%)',
+          filter: 'blur(40px)',
+          zIndex: 0,
+        }}
+      />
       <div className="relative z-10 px-4 pt-1">
         {/* Header — transparent, editorial (compact) */}
         <div className="flex items-center justify-between mb-1">
