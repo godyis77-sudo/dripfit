@@ -134,7 +134,7 @@ const GalleryPlayground = () => {
                   2 photos. 60 seconds. Your size across 186 brands — locked.
                 </p>
                 <p className="text-[12px] text-white/50 mt-2 mb-4">
-                  {scanCount > 0 ? `${scanCount.toLocaleString()}+ bodies mapped across 186 brands` : '9,000+ bodies mapped across 186 brands'}
+                  186 brands. 389 size charts. Zero guessing.
                 </p>
                 <button
                   onClick={(e) => { e.stopPropagation(); navigate('/capture'); }}
