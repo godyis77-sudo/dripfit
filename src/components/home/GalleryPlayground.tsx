@@ -103,7 +103,7 @@ const GalleryPlayground = () => {
             {/* Hero scan card */}
             <div
               onClick={() => { trackEvent('home_start_scan_click'); navigate('/capture'); }}
-              className="w-full mb-3 rounded-2xl overflow-hidden cursor-pointer active:scale-[0.97] transition-all relative border-l-2 border-primary/40"
+              className="w-full mb-3 rounded-2xl overflow-hidden cursor-pointer active:scale-[0.97] transition-all relative"
             >
               {/* Gold radial glow — bottom-right */}
               <div
