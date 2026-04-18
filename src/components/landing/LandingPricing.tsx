@@ -3,7 +3,7 @@ import { ArrowRight, Check, Sparkles } from 'lucide-react';
 import { FadeIn } from './LandingAnimations';
 
 const FREE_FEATURES = [
-  '3 AR try-ons per month',
+  '30 Drape try-ons per month',
   'Top 20 brand size sync',
   'Body Twin matching',
   'COP or DROP access',
