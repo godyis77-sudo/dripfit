@@ -2,7 +2,7 @@ import { FadeIn } from './LandingAnimations';
 
 const CARDS = [
   { title: 'Body Twin Match', value: '97.3%', sub: 'Measurement alignment' },
-  { title: 'Style Twin Score', value: '84', sub: 'Aesthetic compatibility' },
+  { title: 'Style Twin Score', value: '84/100', sub: 'Aesthetic compatibility' },
   { title: 'Fit Consensus', value: 'COP', sub: '92% community verdict' },
 ];
 
