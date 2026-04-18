@@ -25,7 +25,7 @@ export default function LandingFinalCTA() {
             {user ? (
               <Link
                 to="/home"
-                className="inline-flex items-center gap-2 h-13 px-8 rounded-full bg-foreground text-background font-medium text-sm transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                className="inline-flex items-center gap-2 h-13 px-8 py-4 rounded-full bg-primary text-primary-foreground font-bold text-sm transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
               >
                 Enter App <ArrowRight className="h-4 w-4" />
               </Link>
