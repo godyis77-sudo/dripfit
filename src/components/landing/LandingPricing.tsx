@@ -3,7 +3,7 @@ import { ArrowRight, Check, Sparkles } from 'lucide-react';
 import { FadeIn } from './LandingAnimations';
 
 const FREE_FEATURES = [
-  '3 AR try-ons per month',
+  '30 Drape try-ons per month',
   'Top 20 brand size sync',
   'Body Twin matching',
   'COP or DROP access',
@@ -11,8 +11,8 @@ const FREE_FEATURES = [
 ];
 
 const PREMIUM_FEATURES = [
-  'Unlimited AR try-ons',
-  '186+ brand size sync',
+  'Unlimited Infinite Drape Studio access',
+  '186+ brand size map',
   'Priority scan queue',
   'Side-by-side fit comparison',
   'Advanced fit analytics',
