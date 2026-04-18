@@ -92,7 +92,7 @@ export default function Landing() {
               </Link>
               <Link
                 to="/auth"
-                className="px-5 py-2 text-xs font-semibold tracking-wider uppercase rounded-full bg-primary text-primary-foreground hover:scale-105 transition-transform duration-300"
+                className="px-5 py-2 text-xs font-semibold tracking-wide rounded-full bg-primary text-primary-foreground hover:scale-105 transition-transform duration-300"
               >
                 Sign Up Free
               </Link>
