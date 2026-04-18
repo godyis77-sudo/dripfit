@@ -104,7 +104,6 @@ const GalleryPlayground = () => {
             <div
               onClick={() => { trackEvent('home_start_scan_click'); navigate('/capture'); }}
               className="relative w-full mb-3 rounded-2xl overflow-hidden cursor-pointer active:scale-[0.97] transition-all bg-gradient-to-br from-[#1A1A1A] via-[#141414] to-[rgba(212,175,55,0.08)]"
-              style={{ minHeight: '320px' }}
             >
               {/* Gold radial glow — bottom-right */}
               <div
