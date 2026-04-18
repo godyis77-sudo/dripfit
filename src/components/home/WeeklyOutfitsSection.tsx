@@ -5,6 +5,7 @@ import { Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useWeeklyOutfits, type WeeklyOutfit } from '@/hooks/useWeeklyOutfits';
 import { useAuth } from '@/hooks/useAuth';
+import { shuffleArray } from '@/lib/utils';
 
 
 const APP_URL = 'https://dripfitcheck.lovable.app';
