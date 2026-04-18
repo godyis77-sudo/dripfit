@@ -66,9 +66,9 @@ export default function Landing() {
           <BrandLogo size="sm" />
           <div className="hidden md:flex items-center gap-8">
             {[
-              { label: 'The Scan', href: '#features' },
-              { label: 'The Drape', href: '#how-it-works' },
-              { label: 'Body Twins', href: '#community' },
+              { label: 'Scan.', href: '#features' },
+              { label: 'Drape.', href: '#how-it-works' },
+              { label: 'Twins.', href: '#community' },
             ].map((item) => (
               <a key={item.label} href={item.href} className="text-muted-foreground hover:text-foreground transition-colors text-xs tracking-[.15em] uppercase font-medium whitespace-nowrap">
                 {item.label}
