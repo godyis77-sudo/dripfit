@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Flame } from 'lucide-react';
+import { Flame, X } from 'lucide-react';
 import SwipeFeedCard from '@/components/home/SwipeFeedCard';
 import type { SwipeCard } from '@/hooks/useHomeSwipeFeed';
 import type { Post } from './community-types';
