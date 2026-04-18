@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Flame } from 'lucide-react';
+import { Flame, X } from 'lucide-react';
 import SwipeFeedCard from '@/components/home/SwipeFeedCard';
 import type { SwipeCard } from '@/hooks/useHomeSwipeFeed';
 import type { Post } from './community-types';
@@ -153,9 +153,19 @@ export default function CommunitySwipeStack({
           showKindPill={false}
         />
       </div>
-      <p className="text-center text-[10px] text-muted-foreground mt-3 tracking-wider uppercase">
-        {index + 1} / {cards.length}
-      </p>
+      <div className="mt-3 flex items-center justify-center gap-4 text-[11px] text-white/70">
+        <span className="flex items-center gap-1">
+          <X className="h-3.5 w-3.5 text-destructive" />
+          <span className="font-bold tabular-nums">{no}</span>
+        </span>
+        <span className="text-[10px] text-muted-foreground tracking-wider uppercase">
+          {index + 1} / {cards.length}
+        </span>
+        <span className="flex items-center gap-1">
+          <Flame className="h-3.5 w-3.5 text-primary" />
+          <span className="font-bold tabular-nums">{yes}</span>
+        </span>
+      </div>
     </div>
   );
 }
