@@ -135,10 +135,12 @@ const CategoryProductGrid = forwardRef<HTMLDivElement, CategoryProductGridProps>
   }
 
   const COLLAPSED_COUNT = 4;
-  const displayed = expanded ? visibleProducts.slice(0, Math.min(visibleCount, maxItems)) : visibleProducts.slice(0, COLLAPSED_COUNT);
+  // Drop items whose images failed verification so users never see broken/logo placeholders
+  const verifiedProducts = visibleProducts.filter(p => !failedImageIds.has(p.id));
+  const displayed = expanded ? verifiedProducts.slice(0, Math.min(visibleCount, maxItems)) : verifiedProducts.slice(0, COLLAPSED_COUNT);
   const hasMore = expanded
-    ? displayed.length < Math.min(visibleProducts.length, maxItems)
-    : visibleProducts.length > COLLAPSED_COUNT;
+    ? displayed.length < Math.min(verifiedProducts.length, maxItems)
+    : verifiedProducts.length > COLLAPSED_COUNT;
 
   return (
     <div ref={(node) => {
