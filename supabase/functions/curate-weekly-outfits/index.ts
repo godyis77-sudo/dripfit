@@ -385,9 +385,143 @@ interface CatalogProduct {
   currency: string | null;
   gender: string | null;
   image_confidence: number | null;
+  style_genre: string | null;
+  tags: string[] | null;
+  fabric_composition: string[] | null;
+  presentation: string | null;
 }
 
-/* ── Build one outfit with tribe coherence ────────────────────── */
+/* ── Cohesion: STYLE families ─────────────────────────────────── */
+
+const STYLE_FAMILIES: Record<string, string[]> = {
+  minimalist: ['minimalist', 'clean', 'understated', 'modern', 'contemporary', 'refined', 'polished'],
+  streetwear: ['streetwear', 'urban', 'skate', 'hype', 'hypebeast', 'graphic', 'logo-heavy'],
+  technical: ['technical', 'techwear', 'performance', 'athletic', 'sport', 'activewear', 'functional'],
+  heritage: ['heritage', 'classic', 'traditional', 'preppy', 'tailored', 'formal', 'workwear', 'americana'],
+  bohemian: ['bohemian', 'boho', 'relaxed', 'flowy', 'festival', 'romantic', 'vintage'],
+  edgy: ['edgy', 'punk', 'rock', 'grunge', 'goth', 'rebellious', 'avant-garde'],
+};
+
+function getStyleFamily(genre: string | null): string | null {
+  if (!genre) return null;
+  const g = genre.toLowerCase();
+  for (const [family, keywords] of Object.entries(STYLE_FAMILIES)) {
+    if (keywords.some(k => g.includes(k))) return family;
+  }
+  return null;
+}
+
+const COMPATIBLE_FAMILIES: Record<string, string[]> = {
+  minimalist: ['minimalist', 'heritage', 'technical'],
+  streetwear: ['streetwear', 'technical', 'edgy'],
+  technical: ['technical', 'streetwear', 'minimalist'],
+  heritage: ['heritage', 'minimalist', 'bohemian'],
+  bohemian: ['bohemian', 'heritage', 'minimalist'],
+  edgy: ['edgy', 'streetwear', 'minimalist'],
+};
+
+function stylesCompatible(a: string | null, b: string | null): boolean {
+  const fa = getStyleFamily(a);
+  const fb = getStyleFamily(b);
+  if (!fa || !fb) return true;
+  if (fa === fb) return true;
+  return COMPATIBLE_FAMILIES[fa]?.includes(fb) ?? false;
+}
+
+/* ── Cohesion: COLOR ──────────────────────────────────────────── */
+
+const COLOR_KEYWORDS = [
+  'black', 'white', 'cream', 'ivory', 'beige', 'tan',
+  'camel', 'brown', 'chocolate', 'khaki', 'olive',
+  'forest', 'navy', 'blue', 'denim', 'indigo',
+  'grey', 'gray', 'charcoal', 'silver',
+  'burgundy', 'wine', 'maroon', 'red', 'rust',
+  'orange', 'yellow', 'mustard', 'gold',
+  'green', 'sage', 'emerald', 'teal',
+  'purple', 'lavender', 'pink', 'rose',
+  'cobalt', 'multi', 'pattern', 'print',
+];
+
+const NEUTRALS = new Set([
+  'black', 'white', 'cream', 'ivory', 'beige', 'tan',
+  'camel', 'brown', 'khaki', 'navy', 'denim', 'grey',
+  'gray', 'charcoal', 'silver',
+]);
+
+function extractColors(tags: string[] | null): Set<string> {
+  if (!tags) return new Set();
+  const colors = new Set<string>();
+  for (const tag of tags) {
+    const lower = tag.toLowerCase();
+    for (const keyword of COLOR_KEYWORDS) {
+      if (lower.includes(keyword)) colors.add(keyword);
+    }
+  }
+  return colors;
+}
+
+function colorsCohesive(outfitColors: Set<string>, newColors: Set<string>): boolean {
+  if (newColors.size === 0) return true;
+  const combined = new Set([...outfitColors, ...newColors]);
+  const accents = [...combined].filter(c => !NEUTRALS.has(c));
+  if (accents.length > 2) return false;
+
+  const clashes: Array<[string, string]> = [
+    ['red', 'pink'], ['orange', 'pink'],
+    ['purple', 'orange'], ['yellow', 'pink'],
+    ['red', 'green'], ['blue', 'brown'],
+  ];
+  for (const [a, b] of clashes) {
+    if (combined.has(a) && combined.has(b)) return false;
+  }
+  return true;
+}
+
+/* ── Cohesion: PATTERN ────────────────────────────────────────── */
+
+const PATTERN_KEYWORDS = [
+  'striped', 'stripes', 'plaid', 'checked', 'check',
+  'floral', 'print', 'printed', 'graphic', 'logo',
+  'camo', 'camouflage', 'argyle', 'houndstooth',
+  'paisley', 'polka', 'abstract', 'tie-dye',
+  'geometric', 'patterned',
+];
+
+function hasPattern(tags: string[] | null, name: string, presentation: string | null): boolean {
+  const haystack = [...(tags ?? []), name, presentation ?? ''].join(' ').toLowerCase();
+  return PATTERN_KEYWORDS.some(p => haystack.includes(p));
+}
+
+/* ── Cohesion: FABRIC weight ──────────────────────────────────── */
+
+const FABRIC_WEIGHTS: Record<string, string> = {
+  cotton: 'light', linen: 'light', silk: 'light',
+  chiffon: 'light', rayon: 'light', viscose: 'light',
+  modal: 'light', tencel: 'light',
+  polyester: 'mid', nylon: 'mid', denim: 'mid',
+  twill: 'mid', jersey: 'mid', ponte: 'mid',
+  wool: 'heavy', cashmere: 'heavy', mohair: 'heavy',
+  leather: 'heavy', suede: 'heavy', fleece: 'heavy',
+  shearling: 'heavy', tweed: 'heavy', corduroy: 'heavy',
+};
+
+function getFabricWeight(composition: string[] | null): string | null {
+  if (!composition || composition.length === 0) return null;
+  const text = composition.join(' ').toLowerCase();
+  for (const [fabric, weight] of Object.entries(FABRIC_WEIGHTS)) {
+    if (text.includes(fabric)) return weight;
+  }
+  return null;
+}
+
+function fabricsCohesive(outfitWeights: Set<string>, newWeight: string | null): boolean {
+  if (!newWeight) return true;
+  const combined = new Set([...outfitWeights, newWeight]);
+  if (combined.has('light') && combined.has('heavy')) return false;
+  return true;
+}
+
+/* ── Build one outfit with tribe + cohesion logic ─────────────── */
 
 function buildOutfit(
   occasion: OccasionDef,
@@ -402,6 +536,12 @@ function buildOutfit(
   const items: Array<{ product: CatalogProduct; role: string; position: number }> = [];
   let position = 0;
 
+  // Cohesion state — updated as each slot is filled
+  const outfitColors = new Set<string>();
+  const outfitFabricWeights = new Set<string>();
+  let outfitStyleFamily: string | null = null;
+  let hasPatternPiece = false;
+
   for (const slot of occasion.slots) {
     const candidates = products.filter(p => {
       if (usedProductIds.has(p.id)) return false;
@@ -414,8 +554,31 @@ function buildOutfit(
       continue;
     }
 
-    // Score: image confidence (weighted) + tribe tier + primary-tribe bonus
-    const scored = candidates.map(p => {
+    // Apply cohesion filters
+    const cohesiveCandidates = candidates.filter(p => {
+      // STYLE
+      if (outfitStyleFamily) {
+        const candidateFamily = getStyleFamily(p.style_genre);
+        if (candidateFamily && !stylesCompatible(outfitStyleFamily, p.style_genre)) {
+          return false;
+        }
+      }
+      // COLOR
+      const candidateColors = extractColors(p.tags);
+      if (!colorsCohesive(outfitColors, candidateColors)) return false;
+      // PATTERN — max 1 patterned piece
+      if (hasPatternPiece && hasPattern(p.tags, p.name, p.presentation)) return false;
+      // FABRIC weight
+      const candidateWeight = getFabricWeight(p.fabric_composition);
+      if (!fabricsCohesive(outfitFabricWeights, candidateWeight)) return false;
+      return true;
+    });
+
+    // Graceful degradation: if cohesion eliminates all, fall back
+    const workingCandidates = cohesiveCandidates.length > 0 ? cohesiveCandidates : candidates;
+
+    // Score: image confidence + tribe tier + primary-tribe bonus
+    const scored = workingCandidates.map(p => {
       const t = getBrandTribe(p.brand);
       const tribeBonus =
         t === primaryTribe ? 50 :
@@ -441,6 +604,14 @@ function buildOutfit(
       if (r <= 0) { pickIdx = i; break; }
     }
     const pick = topN[pickIdx].product;
+
+    // Update cohesion state with the picked piece
+    extractColors(pick.tags).forEach(c => outfitColors.add(c));
+    const pickWeight = getFabricWeight(pick.fabric_composition);
+    if (pickWeight) outfitFabricWeights.add(pickWeight);
+    const pickFamily = getStyleFamily(pick.style_genre);
+    if (pickFamily && !outfitStyleFamily) outfitStyleFamily = pickFamily;
+    if (hasPattern(pick.tags, pick.name, pick.presentation)) hasPatternPiece = true;
 
     usedProductIds.add(pick.id);
     items.push({ product: pick, role: slot.role, position: position++ });
