@@ -150,6 +150,7 @@ export default function CommunitySwipeStack({
           onTap={handleTap}
           copPercent={copPercent}
           voteCount={total}
+          showKindPill={false}
         />
       </div>
       <p className="text-center text-[10px] text-muted-foreground mt-3 tracking-wider uppercase">
