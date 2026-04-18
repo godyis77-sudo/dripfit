@@ -10,6 +10,7 @@ interface SwipeFeedCardProps {
   onCop: (card: SwipeCard) => void;
   onDrop: (card: SwipeCard) => void;
   onTap: (card: SwipeCard) => void;
+  onImageError?: (card: SwipeCard) => void;
   copPercent?: number;
   voteCount?: number;
   showKindPill?: boolean;
@@ -22,6 +23,7 @@ export default function SwipeFeedCard({
   onCop,
   onDrop,
   onTap,
+  onImageError,
   copPercent,
   voteCount,
   showKindPill = true,
@@ -70,6 +72,7 @@ export default function SwipeFeedCard({
         className="absolute inset-0 w-full h-full object-cover"
         draggable={false}
         loading="lazy"
+        onError={() => onImageError?.(card)}
       />
 
       {/* Kind pill */}
