@@ -24,6 +24,7 @@ export default function SwipeFeedCard({
   onTap,
   copPercent,
   voteCount,
+  showKindPill = true,
 }: SwipeFeedCardProps) {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 0, 200], [-8, 0, 8]);
