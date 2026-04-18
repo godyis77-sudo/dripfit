@@ -152,6 +152,51 @@ const GalleryPlayground = () => {
             >
               Skip — explore first →
             </button>
+
+            {/* COP OR DROP preview card */}
+            <div className="w-full mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-primary/70">COP OR DROP</p>
+                <button
+                  onClick={() => navigate('/closet')}
+                  className="font-sans text-[11px] text-muted-foreground active:opacity-70"
+                >
+                  See all →
+                </button>
+              </div>
+              <div
+                onClick={() => navigate('/auth')}
+                className="w-full bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-hidden flex items-stretch min-h-[100px] active:scale-[0.98] transition-transform cursor-pointer"
+              >
+                {/* Product image */}
+                <div className="w-[40%] aspect-square bg-zinc-900 overflow-hidden shrink-0" />
+                {/* Content */}
+                <div className="w-[60%] px-4 py-3 flex flex-col">
+                  <p className="font-sans text-[14px] font-semibold text-foreground leading-tight">Fresh Drop</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">New today</p>
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="font-mono text-[12px] font-bold text-primary">94% COP</span>
+                    <span className="text-muted-foreground">·</span>
+                    <span className="font-mono text-[10px] text-muted-foreground">2,847 votes</span>
+                  </div>
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); navigate('/auth'); }}
+                      className="flex-1 py-1.5 rounded-lg bg-primary/10 border border-primary/30 text-primary text-[11px] font-bold"
+                    >
+                      🔥 COP
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); navigate('/auth'); }}
+                      className="flex-1 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white/50 text-[11px] font-bold"
+                    >
+                      👎 DROP
+                    </button>
+                  </div>
+                  <p className="text-[9px] text-muted-foreground/50 text-center mt-1">Sign in to vote</p>
+                </div>
+              </div>
+            </div>
           </>
         )}
 
