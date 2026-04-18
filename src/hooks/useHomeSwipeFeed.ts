@@ -1,6 +1,8 @@
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useWeeklyOutfits } from '@/hooks/useWeeklyOutfits';
+import { shuffleArray } from '@/lib/utils';
 
 export type SwipeCardKind = 'outfit' | 'post';
 
@@ -82,8 +84,16 @@ export function useHomeSwipeFeed(gender?: string) {
       subtitle: o.occasion_label,
     }));
 
+  // Shuffle each list once per mount so the home swipe feed never opens with
+  // the same first image as This Week's Drip carousel above it.
+  const cards = useMemo(
+    () => interleave(shuffleArray(outfitCards), shuffleArray(topPosts)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [outfitCards.length, topPosts.length],
+  );
+
   return {
-    cards: interleave(outfitCards, topPosts),
+    cards,
     isLoading: outfitsLoading || postsLoading,
   };
 }
