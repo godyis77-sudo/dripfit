@@ -8,7 +8,7 @@ interface CommunityFilterTabsProps {
 }
 
 const TABS: { key: FilterType; label: string }[] = [
-  { key: 'new', label: 'New' },
+  { key: 'new', label: 'Fresh' },
   { key: 'following', label: 'Following' },
   { key: 'trending', label: 'Trending' },
   { key: 'similar', label: 'Twins' },
