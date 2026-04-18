@@ -9,7 +9,7 @@ const FAQS = [
   { q: 'How does Infinite Drape Studio work?', a: 'Infinite Drape Studio renders garments directly onto your mapped silhouette. You see the actual drape, proportions, and fit on YOUR body — not a mannequin or model.' },
   { q: 'What are Body Twins?', a: 'Members who share your exact proportions — within verified measurement tolerances. When they try a piece, their fit feedback is directly applicable to you. Same body. Same drape.' },
   { q: 'What brands are available?', a: "186 brands across 69 retailers — from Arc'teryx and Stone Island to The Row and Totême. 9,000+ products and growing weekly." },
-  { q: 'Is DripFit free?', a: 'Core features including body scanning, size verification, and browsing are free. Premium features like unlimited AR try-ons and advanced Twin matching are available with DripFit Pro.' },
+  { q: 'Is DripFit free?', a: 'Core features including body scanning, size verification, and browsing are free. Premium features like unlimited Infinite Drape Studio access and advanced Twin matching are available with DripFit Pro.' },
 ];
 
 function FAQItem({ q, a }: { q: string; a: string }) {
