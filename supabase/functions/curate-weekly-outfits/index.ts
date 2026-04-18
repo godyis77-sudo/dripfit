@@ -12,6 +12,202 @@ import { createClient } from "npm:@supabase/supabase-js@2.49.1";
  *   clear_existing?: boolean  — remove previous outfits for this week_id first
  */
 
+/* ── DripFit Brand Pool & Tribe Logic ─────────────────────────── */
+
+const DRIPFIT_BRAND_POOL = {
+  heritage_luxury: [
+    'AMIRI', 'Saint Laurent', 'Fear of God',
+    'GALLERY DEPARTMENT LLC', 'Gucci', 'Balenciaga',
+    'Louis Vuitton', 'Prada', 'Moncler', 'Dior',
+    'Loewe', 'Fendi', 'Burberry', 'Valentino',
+    'Acne Studios', 'Alexander McQueen', 'Celine',
+    'Bottega Veneta', 'Givenchy', 'Rick Owens',
+    'Maison Margiela', 'Jacquemus', 'Sacai',
+    'AMI Paris', 'Off-White', 'Stone Island',
+    'Essentials',
+  ],
+  elevated_streetwear: [
+    'Palace Skateboards', 'Daily Paper', 'Stüssy',
+    'Eric Emanuel', 'Kith', 'Supreme', 'Carhartt',
+    "Arc'teryx", 'Salomon', 'Dr. Martens',
+    'Vans', 'New Balance', 'Converse',
+  ],
+  quiet_luxury: [
+    'Reiss', 'Theory', 'Todd Snyder', 'COS',
+    'Everlane', "Rothy's", 'Outerknown',
+    'Marine Layer', 'Taylor Stitch', 'Reformation',
+    'Faherty', 'Buck Mason',
+  ],
+  supporting: [
+    'Nike', 'Adidas', 'Puma', "Levi's",
+    'Uniqlo', 'Gap', 'AllSaints',
+  ],
+};
+
+const APPROVED_BRANDS = new Set<string>([
+  ...DRIPFIT_BRAND_POOL.heritage_luxury,
+  ...DRIPFIT_BRAND_POOL.elevated_streetwear,
+  ...DRIPFIT_BRAND_POOL.quiet_luxury,
+  ...DRIPFIT_BRAND_POOL.supporting,
+]);
+
+const OCCASION_TRIBE_MAP: Record<string, string[]> = {
+  night_out: ['heritage_luxury', 'elevated_streetwear'],
+  lunch_date: ['quiet_luxury', 'heritage_luxury'],
+  office: ['quiet_luxury', 'heritage_luxury'],
+  weekend_casual: ['elevated_streetwear', 'quiet_luxury'],
+  beach_day: ['quiet_luxury', 'elevated_streetwear'],
+  festival: ['elevated_streetwear', 'heritage_luxury'],
+  gym: ['elevated_streetwear', 'supporting'],
+  brunch: ['quiet_luxury', 'heritage_luxury'],
+};
+
+function getBrandTribe(brand: string): string {
+  if (!brand) return 'supporting';
+  if (DRIPFIT_BRAND_POOL.heritage_luxury.includes(brand)) return 'heritage_luxury';
+  if (DRIPFIT_BRAND_POOL.elevated_streetwear.includes(brand)) return 'elevated_streetwear';
+  if (DRIPFIT_BRAND_POOL.quiet_luxury.includes(brand)) return 'quiet_luxury';
+  return 'supporting';
+}
+
+function tribeScore(tribe: string): number {
+  const scores: Record<string, number> = {
+    heritage_luxury: 100,
+    quiet_luxury: 80,
+    elevated_streetwear: 60,
+    supporting: 20,
+  };
+  return scores[tribe] ?? 0;
+}
+
+/* ── Editorial naming pools (DripFit voice) ───────────────────── */
+
+const EDITORIAL_NAME_POOLS: Record<string, string[]> = {
+  night_out_heritage_luxury: [
+    'Midnight on Madison', 'After Dark Allure',
+    'Gallery Row', 'The Archive Drop',
+    'Atelier After Hours',
+  ],
+  night_out_elevated_streetwear: [
+    'Warehouse Pulse', 'Block Party Grail',
+    'Downtown Heat', 'Afterglow Stack',
+  ],
+  lunch_date_quiet_luxury: [
+    'Elevated Brunch', 'Midday Edit',
+    'Cafe Society', 'The Loire Lunch',
+  ],
+  lunch_date_heritage_luxury: [
+    'Polished Casual', 'Left Bank Morning',
+    "The Curator's Hour",
+  ],
+  office_quiet_luxury: [
+    'Boardroom Edge', 'Quiet Authority',
+    'Office Flex', 'The Tailored Tuesday',
+  ],
+  office_heritage_luxury: [
+    'Power Feminine', 'Monograms & Meetings',
+    'Executive Suite',
+  ],
+  weekend_casual_elevated_streetwear: [
+    'Gym to Street', 'Iron & Ink',
+    'Weekend Uniform', 'Off-Duty Drop',
+  ],
+  weekend_casual_quiet_luxury: [
+    'Chill Capsule', 'Sunday Edit',
+    'The Slow Saturday',
+  ],
+  beach_day_quiet_luxury: [
+    'Coastal Linen', 'Golden Hour Brunch',
+    'The Riviera Edit',
+  ],
+  beach_day_elevated_streetwear: [
+    'Boardwalk Drop', 'Sandy Concrete',
+  ],
+  festival_elevated_streetwear: [
+    'Festival Ready', 'Desert Daze',
+    'The Main Stage Fit',
+  ],
+  festival_heritage_luxury: [
+    'Late Bloom Festival', 'Grails on Grass',
+  ],
+  gym_elevated_streetwear: [
+    'Track Mode', 'Street Athletics', 'The Grind Edit',
+  ],
+  gym_supporting: [
+    'Rep & Reset', 'Iron Hours',
+  ],
+  brunch_quiet_luxury: [
+    'Garden Party', 'Morning Glory', 'Light & Easy',
+  ],
+  brunch_heritage_luxury: [
+    'Golden Morning', 'The Terrace Edit',
+  ],
+};
+
+function generateEditorialName(
+  occasionKey: string,
+  tribe: string,
+  usedNames: Set<string>
+): string {
+  const key = `${occasionKey}_${tribe}`;
+  const pool =
+    EDITORIAL_NAME_POOLS[key] ??
+    EDITORIAL_NAME_POOLS[`${occasionKey}_quiet_luxury`] ??
+    [occasionKey.replace(/_/g, ' ')];
+
+  const available = pool.filter(n => !usedNames.has(n));
+  if (available.length === 0) {
+    const base = pool[0];
+    let i = 2;
+    while (usedNames.has(`${base} ${i}`)) i++;
+    const name = `${base} ${i}`;
+    usedNames.add(name);
+    return name;
+  }
+
+  const pick = available[Math.floor(Math.random() * available.length)];
+  usedNames.add(pick);
+  return pick;
+}
+
+function generateDescription(
+  tribe: string,
+  items: Array<{ product: CatalogProduct; role: string; position: number }>
+): string {
+  const brands = items
+    .map(it => it.product.brand)
+    .filter(Boolean)
+    .filter((b, i, arr) => arr.indexOf(b) === i);
+
+  if (brands.length === 0) return '';
+
+  const brandList = brands.slice(0, 3).join(' · ');
+
+  const templates: Record<string, string[]> = {
+    heritage_luxury: [
+      `${brandList}. Archive energy. Verified drape.`,
+      `${brandList}. Houses. Cut right.`,
+      `${brandList}. The grail stack.`,
+    ],
+    quiet_luxury: [
+      `${brandList}. Quiet. Precise. Locked.`,
+      `${brandList}. The silhouette is the statement.`,
+      `${brandList}. Restraint. Mapped to you.`,
+    ],
+    elevated_streetwear: [
+      `${brandList}. Heat. Layered right.`,
+      `${brandList}. The uniform, elevated.`,
+      `${brandList}. Grails. Dropped clean.`,
+    ],
+    supporting: [
+      `${brandList}. Clean fit. Zero guessing.`,
+    ],
+  };
+
+  const pool = templates[tribe] ?? templates.supporting;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 /* ── Occasion definitions with slot-based layering ─────────────── */
 
 interface SlotDef {
@@ -121,24 +317,6 @@ const OCCASIONS: OccasionDef[] = [
   },
 ];
 
-/* ── Title generation ─────────────────────────────────────────── */
-
-const TITLE_TEMPLATES: Record<string, string[]> = {
-  night_out: ["Midnight on Madison", "After Dark Edit", "Noir & Neon", "Downtown After Hours", "Late Night Legend"],
-  beach_day: ["Salt & Stone", "Coastal Drift", "Golden Hour Edit", "Shore Leave", "Tide Pool Style"],
-  lunch_date: ["Left Bank Morning", "Café au Lait", "Sunlit Terrace", "The Good Life", "Sidewalk Scene"],
-  weekend_casual: ["Sunday Slowdown", "Off-Duty Edit", "The Comfort Zone", "Easy Does It", "Lazy Luxe"],
-  office: ["Power Hour", "Corner Office", "The Sharp Edit", "Boardroom Ready", "9-to-Wine"],
-  festival: ["Main Stage Energy", "Desert Bloom", "Sound & Vision", "The Lineup", "Stage Left"],
-  brunch: ["Garden Party", "Morning Glory", "Golden Morning", "The Terrace Edit", "Light & Easy"],
-  gym: ["Iron & Ink", "Rep & Reset", "Track Mode", "Street Athletics", "The Grind Edit"],
-};
-
-function pickTitle(occasion: string, index: number): string {
-  const templates = TITLE_TEMPLATES[occasion] || ["Curated Look"];
-  return templates[index % templates.length];
-}
-
 /* ── Helpers ──────────────────────────────────────────────────── */
 
 function getCurrentWeekId(): string {
@@ -209,13 +387,18 @@ interface CatalogProduct {
   image_confidence: number | null;
 }
 
-/* ── Build one outfit from catalog products ───────────────────── */
+/* ── Build one outfit with tribe coherence ────────────────────── */
 
 function buildOutfit(
   occasion: OccasionDef,
   products: CatalogProduct[],
   usedProductIds: Set<string>
-): { items: Array<{ product: CatalogProduct; role: string; position: number }> } | null {
+): { items: Array<{ product: CatalogProduct; role: string; position: number }>; tribe: string } | null {
+  // Pick a primary tribe for this outfit
+  const occasionTribes = OCCASION_TRIBE_MAP[occasion.key] ?? ['quiet_luxury', 'heritage_luxury'];
+  const primaryTribe = occasionTribes[Math.floor(Math.random() * occasionTribes.length)];
+  const secondaryTribe = occasionTribes.find(t => t !== primaryTribe) ?? occasionTribes[0];
+
   const items: Array<{ product: CatalogProduct; role: string; position: number }> = [];
   let position = 0;
 
@@ -227,20 +410,43 @@ function buildOutfit(
     });
 
     if (candidates.length === 0) {
-      if (slot.required) return null; // Can't fill required slot
+      if (slot.required) return null;
       continue;
     }
 
-    // Pick best by image_confidence, with some randomness
-    const sorted = candidates.sort((a, b) => (b.image_confidence ?? 0) - (a.image_confidence ?? 0));
-    const topN = sorted.slice(0, Math.min(10, sorted.length));
-    const pick = topN[Math.floor(Math.random() * topN.length)];
+    // Score: image confidence (weighted) + tribe tier + primary-tribe bonus
+    const scored = candidates.map(p => {
+      const t = getBrandTribe(p.brand);
+      const tribeBonus =
+        t === primaryTribe ? 50 :
+        t === secondaryTribe ? 20 :
+        t === 'supporting' ? 0 : 10;
+      return {
+        product: p,
+        tribe: t,
+        score: (p.image_confidence ?? 0) * 100 + tribeScore(t) + tribeBonus,
+      };
+    });
+
+    scored.sort((a, b) => b.score - a.score);
+    const topN = scored.slice(0, Math.min(5, scored.length));
+
+    // Weighted random — top-of-list more likely
+    const weights = topN.map((_, i) => topN.length - i);
+    const totalW = weights.reduce((a, b) => a + b, 0);
+    let r = Math.random() * totalW;
+    let pickIdx = 0;
+    for (let i = 0; i < weights.length; i++) {
+      r -= weights[i];
+      if (r <= 0) { pickIdx = i; break; }
+    }
+    const pick = topN[pickIdx].product;
 
     usedProductIds.add(pick.id);
     items.push({ product: pick, role: slot.role, position: position++ });
   }
 
-  return items.length >= 3 ? { items } : null;
+  return items.length >= 3 ? { items, tribe: primaryTribe } : null;
 }
 
 /* ── Main handler ─────────────────────────────────────────────── */
@@ -252,7 +458,7 @@ Deno.serve(async (req) => {
   try {
     const body = await req.json().catch(() => ({}));
     const weekId = body.week_id || getCurrentWeekId();
-    const gender = body.gender as string | undefined; // "mens" | "womens" | undefined (both)
+    const gender = body.gender as string | undefined;
     const outfitsPerOccasion = Math.min(body.outfits_per_occasion || 5, 10);
     const occasionCount = Math.min(body.occasion_count || 5, OCCASIONS.length);
     const clearExisting = body.clear_existing ?? true;
@@ -264,8 +470,8 @@ Deno.serve(async (req) => {
 
     const log: string[] = [];
     log.push(`[Config] week=${weekId}, gender=${gender || "both"}, ${occasionCount} occasions × ${outfitsPerOccasion}/each`);
+    log.push(`[BrandPool] ${APPROVED_BRANDS.size} approved brands across 4 tribes`);
 
-    // Clear existing outfits for this week if requested
     if (clearExisting) {
       const { data: existing } = await sb
         .from("weekly_outfits")
@@ -280,46 +486,41 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Fetch products from catalog.
-    // STRICT gender separation: the catalog uses "mens" / "womens" / "unisex".
-    // We exclude "unisex" because many catalog items are mis-tagged unisex when
-    // they are actually gender-specific (e.g. a women's Reiss blazer landing in
-    // a men's outfit). Better to skip an outfit than to mix.
     const genders = gender ? [gender] : ["mens", "womens"];
 
-    // Fetch enough products — 2000 limit
-    const { data: allProducts, error: fetchErr } = await sb
+    const { data: fetchedProducts, error: fetchErr } = await sb
       .from("product_catalog")
       .select("id, name, brand, category, image_url, product_url, price_cents, currency, gender, image_confidence")
       .eq("is_active", true)
       .in("gender", genders)
+      .in("brand", Array.from(APPROVED_BRANDS))
       .not("image_url", "is", null)
       .gte("image_confidence", 0.1)
       .order("image_confidence", { ascending: false })
       .limit(2000);
 
     if (fetchErr) throw fetchErr;
-    if (!allProducts || allProducts.length === 0) {
-      return successResponse({ created: 0, log: ["No products available"] }, 200, cors);
+    if (!fetchedProducts || fetchedProducts.length === 0) {
+      return successResponse({ created: 0, log: ["No approved-brand products available"] }, 200, cors);
     }
 
-    log.push(`[Catalog] ${allProducts.length} products loaded (strict gender, no unisex)`);
+    // Defensive in-memory filter (case-sensitive brand match)
+    const allProducts = fetchedProducts.filter(p => APPROVED_BRANDS.has(p.brand));
 
-    // Strict gender split — no cross-pollination from unisex bucket.
+    log.push(`[Catalog] ${allProducts.length} approved-brand products loaded`);
+
     const maleProducts = allProducts.filter(p => p.gender === "mens");
     const femaleProducts = allProducts.filter(p => p.gender === "womens");
     log.push(`[Pools] mens=${maleProducts.length}, womens=${femaleProducts.length}`);
 
-    // Pick occasions
     const selectedOccasions = shuffle(OCCASIONS).slice(0, occasionCount);
     const usedIds = new Set<string>();
+    const usedNames = new Set<string>();
     let totalCreated = 0;
     let sortOrder = 0;
 
     for (const occ of selectedOccasions) {
-      const genderTargets = gender
-        ? [gender]
-        : ["mens", "womens"];
+      const genderTargets = gender ? [gender] : ["mens", "womens"];
 
       for (const g of genderTargets) {
         const pool = shuffle(g === "mens" ? maleProducts : femaleProducts);
@@ -331,11 +532,9 @@ Deno.serve(async (req) => {
             continue;
           }
 
-          const totalPrice = result.items.reduce((s, it) => s + (it.product.price_cents ?? 0), 0);
-          const title = pickTitle(occ.key, i + (g === "womens" ? 5 : 0));
-          const description = `A curated ${occ.label.toLowerCase()} look featuring ${result.items.map(it => it.product.brand).filter(Boolean).join(", ")}.`;
+          const title = generateEditorialName(occ.key, result.tribe, usedNames);
+          const description = generateDescription(result.tribe, result.items);
 
-          // Insert outfit
           const { data: outfit, error: oErr } = await sb
             .from("weekly_outfits")
             .insert({
@@ -359,7 +558,6 @@ Deno.serve(async (req) => {
             continue;
           }
 
-          // Insert items
           const itemRows = result.items.map(it => ({
             outfit_id: outfit.id,
             product_id: it.product.id,
