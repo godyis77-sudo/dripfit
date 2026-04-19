@@ -509,6 +509,11 @@ function shuffle<T>(arr: T[]): T[] {
 
 function normalizeCategory(cat: string): string {
   const c = cat.toLowerCase().trim();
+  // Accessory subtypes — ordered before generics so they win.
+  if (c.includes("swim") || c.includes("bikini")) return "swimwear";
+  if (c.includes("sunglass")) return "sunglasses";
+  if (c.includes("watch")) return "watches";
+  if (c.includes("jewel") || c.includes("necklace") || c.includes("earring") || c.includes("bracelet") || c === "ring" || c.includes(" ring")) return "jewelry";
   if (c.includes("t-shirt") || c.includes("tee")) return "t-shirts";
   if (c.includes("shirt") && !c.includes("t-shirt")) return "shirts";
   if (c.includes("blouse")) return "blouses";
@@ -517,7 +522,8 @@ function normalizeCategory(cat: string): string {
   if (c.includes("hoodie") || c.includes("sweatshirt")) return "hoodies";
   if (c.includes("top")) return "tops";
   if (c.includes("jean") || c.includes("denim")) return "jeans";
-  if (c.includes("trouser") || c.includes("chino")) return "trousers";
+  if (c.includes("chino")) return "chinos";
+  if (c.includes("trouser")) return "trousers";
   if (c.includes("pant")) return "pants";
   if (c.includes("short")) return "shorts";
   if (c.includes("skirt")) return "skirts";
@@ -535,9 +541,9 @@ function normalizeCategory(cat: string): string {
   if (c.includes("sandal")) return "sandals";
   if (c.includes("loafer") || c.includes("moccasin")) return "loafers";
   if (c.includes("shoe") || c.includes("footwear")) return "shoes";
-  if (c.includes("bag") || c.includes("tote") || c.includes("purse")) return "bags";
+  if (c.includes("bag") || c.includes("tote") || c.includes("purse") || c.includes("backpack") || c.includes("clutch")) return "bags";
   if (c.includes("hat") || c.includes("cap") || c.includes("beanie")) return "hats";
-  if (c.includes("accessor") || c.includes("jewel") || c.includes("watch") || c.includes("belt") || c.includes("scarf")) return "accessories";
+  if (c.includes("accessor") || c.includes("belt") || c.includes("scarf")) return "accessories";
   return c;
 }
 
