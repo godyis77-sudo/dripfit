@@ -751,18 +751,6 @@ const CATEGORY_MAP: Record<string, Record<string, CategoryUrl[]>> = {
     accessories:toUrlConfig(['https://www.mrporter.com/en-us/mens/accessories/bags'], { waitFor: 4000 }),
     shorts:     toUrlConfig(['https://www.mrporter.com/en-us/mens/clothing/shorts'], { waitFor: 4000 }),
   },
-
-  // ─── RETAILER DESIGNER-FILTERED URLS ─────────────────────────
-  // Maps a luxury brand → designer-filtered pages on scrape-friendly
-  // retailers. Mr Porter = mens-only; Net-a-Porter = womens-only;
-  // Farfetch covers Louis Vuitton (no SSENSE/MrPorter LV wholesale).
-  // Keys are lowercase — callers must lowercase-normalize on lookup.
-  // NOTE: SSENSE/Mr Porter use Cloudflare bot protection — these URLs
-  // ONLY succeed when fetched via Firecrawl (rendered). Direct HTTP = 403.
-  // ────────────────────────────────────────────────────────────
-  // (Exported via module scope — referenced by Prompt 2.)
-  // deno-lint-ignore no-unused-vars
-  // ────────────────────────────────────────────────────────────
   // ── New Luxury Brand URLs ──
   balmain: {
     tops:       toUrlConfig(['https://www.balmain.com/us/en/men/ready-to-wear/t-shirts', 'https://www.balmain.com/us/en/women/ready-to-wear/tops'], { waitFor: 5000 }),
