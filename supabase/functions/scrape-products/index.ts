@@ -2460,6 +2460,7 @@ async function scrapeBrandViaRetailer(
   return deduped;
 }
 
+async function scrapeProducts(
   brand: string,
   category: string,
   firecrawlApiKey: string,
