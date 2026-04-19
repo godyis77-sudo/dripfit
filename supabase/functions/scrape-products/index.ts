@@ -2927,7 +2927,8 @@ async function searchProducts(
       return searchProductsFallback(brand, category, firecrawlApiKey);
     }
 
-    const results = data.data || [];
+    // Firecrawl v2 returns { data: { web: [...] } }; v1 returned { data: [...] }
+    const results: any[] = Array.isArray(data?.data) ? data.data : (data?.data?.web || []);
     const approxCredits = FIRECRAWL_SEARCH_WITH_MARKDOWN ? results.length + 1 : 1;
     console.log(`[search-fallback] Got ${results.length} search results (~${approxCredits} credits)`);
 
@@ -3013,7 +3014,8 @@ async function searchProductsFallback(
       return [];
     }
 
-    const results = data.data || [];
+    // Firecrawl v2 returns { data: { web: [...] } }; v1 returned { data: [...] }
+    const results: any[] = Array.isArray(data?.data) ? data.data : (data?.data?.web || []);
     const approxCredits = FIRECRAWL_SEARCH_WITH_MARKDOWN ? results.length + 1 : 1;
     console.log(`[search-fallback-broad] Got ${results.length} results (~${approxCredits} credits)`);
     return parseSearchResults(results, brand, category);
