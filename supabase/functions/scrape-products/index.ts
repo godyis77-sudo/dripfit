@@ -4518,7 +4518,7 @@ Deno.serve(async (req) => {
 
     // ── STAGES 1+2: Direct HTTP + optional Firecrawl scraping ────────
     const creditsBefore = credits;
-    const rawProducts = await scrapeProducts(brand, category, FIRECRAWL_API_KEY, useFirecrawl);
+    const rawProducts = await scrapeProducts(brand, category, FIRECRAWL_API_KEY, useFirecrawl, forceSearchFallback);
     results.extracted = rawProducts.length;
     results.scraped = rawProducts.length > 0 ? 1 : 0;
     results.withImages = rawProducts.filter(p => p.image_urls.length > 0).length;
