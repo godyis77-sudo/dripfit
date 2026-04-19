@@ -2487,7 +2487,35 @@ async function scrapeProducts(
     console.log(`[scrape] Shopify(${shopifyProducts.length}) + Direct(${directProducts.length}) = ${mergedDirect.length} products, skipping Firecrawl`);
     return mergedDirect;
   }
-  
+
+  // ── STEP 1.5: Retailer-first for hard-luxury brands behind Cloudflare ──
+  // Routes via Firecrawl (the only thing that bypasses SSENSE/Mr Porter/END WAFs).
+  // Only fires if the brand is mapped in RETAILER_DESIGNER_URLS AND a Firecrawl
+  // key is present AND useFirecrawl is on.
+  const _retailerKey = brand.toLowerCase().trim();
+  if (useFirecrawl && firecrawlApiKey && RETAILER_DESIGNER_URLS[_retailerKey]) {
+    console.log(`[scrape] Retailer-first for ${brand}/${category}`);
+    const retailerProducts = await scrapeBrandViaRetailer(brand, category, firecrawlApiKey);
+    if (retailerProducts.length > 0) {
+      const merged = [...mergedDirect, ...retailerProducts];
+      const seen = new Set<string>();
+      const deduped = merged.filter((p) => {
+        const k = (p.product_url || '').toLowerCase();
+        if (!k || seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      });
+      if (deduped.length >= 3) {
+        console.log(`[scrape] Retailer-first returned ${retailerProducts.length}, total ${deduped.length} — skipping Google/search`);
+        return deduped;
+      }
+      mergedDirect.push(...retailerProducts.filter((p) => !mergedDirect.some((d) => d.product_url.toLowerCase() === p.product_url.toLowerCase())));
+      console.log(`[scrape] Retailer-first returned ${retailerProducts.length}, falling through to Google/search`);
+    } else {
+      console.log(`[scrape] Retailer-first returned 0, falling through`);
+    }
+  }
+
   // ── STEP 2: Try Google Custom Search (free, 100 queries/day) ──
   const googleApiKey = Deno.env.get('GOOGLE_SEARCH_API_KEY');
   const googleCx = Deno.env.get('GOOGLE_SEARCH_CX');
