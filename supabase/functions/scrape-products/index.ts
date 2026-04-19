@@ -2673,12 +2673,31 @@ async function scrapeProducts(
 // GOOGLE CUSTOM SEARCH — Free tier (100 queries/day), primary search provider
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Module-level quota cache — survives across requests in the same isolate.
+// When Google returns 429/403 we suppress further calls for `GOOGLE_QUOTA_COOLDOWN_MS`.
+const GOOGLE_QUOTA_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour
+let googleQuotaExhaustedUntil = 0;
+
+function isGoogleQuotaCooling(): boolean {
+  return Date.now() < googleQuotaExhaustedUntil;
+}
+
+function markGoogleQuotaExhausted(reason: string) {
+  googleQuotaExhaustedUntil = Date.now() + GOOGLE_QUOTA_COOLDOWN_MS;
+  console.warn(`[google-search] Quota exhausted (${reason}) — suppressing calls until ${new Date(googleQuotaExhaustedUntil).toISOString()}`);
+}
+
 async function searchGoogleProducts(
   brand: string,
   category: string,
   apiKey: string,
   cx: string,
 ): Promise<RawProduct[]> {
+  if (isGoogleQuotaCooling()) {
+    const remainingMin = Math.ceil((googleQuotaExhaustedUntil - Date.now()) / 60000);
+    console.log(`[google-search] Skipping — quota cooling for ~${remainingMin}m more`);
+    return [];
+  }
   const catTerms = CATEGORY_TERMS[category.toLowerCase()] || category;
   const brandLower = brand.toLowerCase();
 
