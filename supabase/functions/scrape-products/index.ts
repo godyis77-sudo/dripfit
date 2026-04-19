@@ -948,6 +948,188 @@ const RETAILER_DESIGNER_URLS: Record<string, string[]> = {
     'https://www.ssense.com/en-us/men/designers/givenchy',
     'https://www.net-a-porter.com/en-us/shop/designer/givenchy',
   ],
+
+  // ── Streetwear / hype (non-Shopify) ──
+  'supreme': [
+    'https://www.endclothing.com/us/brands/supreme',
+    'https://www.farfetch.com/shopping/men/supreme/items.aspx',
+    'https://www.ssense.com/en-us/men/designers/supreme',
+  ],
+  'kith': [
+    'https://kith.com/collections/mens',
+    'https://kith.com/collections/womens',
+    'https://www.farfetch.com/shopping/men/kith/items.aspx',
+  ],
+  'a bathing ape': [
+    'https://www.endclothing.com/us/brands/a-bathing-ape',
+    'https://www.farfetch.com/shopping/men/a-bathing-ape/items.aspx',
+  ],
+  'fear of god': [
+    'https://www.ssense.com/en-us/men/designers/fear-of-god',
+    'https://www.farfetch.com/shopping/men/fear-of-god/items.aspx',
+    'https://fearofgod.com/collections/all',
+  ],
+
+  // ── Outdoor / outerwear ──
+  'the north face': [
+    'https://www.endclothing.com/us/brands/the-north-face',
+    'https://www.nordstrom.com/brands/the-north-face--3933',
+    'https://www.zappos.com/brand/3138/the-north-face',
+  ],
+  'patagonia': [
+    'https://www.backcountry.com/patagonia',
+    'https://www.nordstrom.com/brands/patagonia--6020',
+  ],
+  'columbia': [
+    'https://www.zappos.com/brand/74/columbia',
+    'https://www.nordstrom.com/brands/columbia--3015',
+  ],
+  'carhartt': [
+    'https://www.endclothing.com/us/brands/carhartt-wip',
+    'https://www.zappos.com/brand/77/carhartt',
+    'https://www.nordstrom.com/brands/carhartt-wip--14687',
+  ],
+
+  // ── Eyewear ──
+  'oakley': [
+    'https://www.zappos.com/brand/315/oakley',
+    'https://www.nordstrom.com/brands/oakley--3973',
+    'https://www.farfetch.com/shopping/men/oakley/items.aspx',
+  ],
+  'ray-ban': [
+    'https://www.nordstrom.com/brands/ray-ban--4226',
+    'https://www.farfetch.com/shopping/men/ray-ban/items.aspx',
+  ],
+
+  // ── Footwear ──
+  'ugg': [
+    'https://www.zappos.com/brand/518/ugg',
+    'https://www.nordstrom.com/brands/ugg--4961',
+  ],
+  'hoka': [
+    'https://www.zappos.com/brand/3597/hoka-one-one',
+    'https://www.nordstrom.com/brands/hoka--19237',
+  ],
+  'on running': [
+    'https://www.zappos.com/brand/4900/on',
+    'https://www.nordstrom.com/brands/on--19236',
+  ],
+  'new balance': [
+    'https://www.zappos.com/brand/270/new-balance',
+    'https://www.endclothing.com/us/brands/new-balance',
+  ],
+  'converse': [
+    'https://www.zappos.com/brand/95/converse',
+    'https://www.nordstrom.com/brands/converse--3024',
+  ],
+  'steve madden': [
+    'https://www.zappos.com/brand/406/steve-madden',
+    'https://www.nordstrom.com/brands/steve-madden--4622',
+  ],
+
+  // ── Menswear ──
+  'suitsupply': [
+    'https://www.farfetch.com/shopping/men/suitsupply/items.aspx',
+  ],
+  'buck mason': [
+    'https://www.nordstrom.com/brands/buck-mason--19303',
+  ],
+  'untuckit': [
+    'https://www.nordstrom.com/brands/untuckit--16236',
+  ],
+  'bonobos': [
+    'https://www.nordstrom.com/brands/bonobos--13379',
+  ],
+  'banana republic': [
+    'https://www.nordstrom.com/brands/banana-republic--2737',
+  ],
+
+  // ── Womenswear / contemporary ──
+  'mejuri': [
+    'https://mejuri.com/collections/all',
+    'https://www.nordstrom.com/brands/mejuri--19825',
+  ],
+  'topshop': [
+    'https://www.nordstrom.com/brands/topshop--4775',
+    'https://www.asos.com/topshop/cat/?cid=27928',
+  ],
+  'anthropologie': [
+    'https://www.anthropologie.com/clothing',
+    'https://www.anthropologie.com/shoes',
+  ],
+  'urban outfitters': [
+    'https://www.urbanoutfitters.com/mens-clothing',
+    'https://www.urbanoutfitters.com/womens-clothing',
+  ],
+  'reformation': [
+    'https://www.nordstrom.com/brands/reformation--14667',
+  ],
+  'forever 21': [
+    'https://www.forever21.com/us/shop/catalog/category/f21/sale_main',
+  ],
+  'shein': [
+    'https://us.shein.com/Women-Clothing-c-2030.html',
+    'https://us.shein.com/Men-Clothing-c-2032.html',
+  ],
+  'savage x fenty': [
+    'https://www.savagex.com/shop/all-bras',
+    'https://www.savagex.com/shop/all-undies',
+  ],
+
+  // ── Hard luxury / jewelry ──
+  'cartier': [
+    'https://www.farfetch.com/shopping/women/cartier/items.aspx',
+    'https://www.net-a-porter.com/en-us/shop/designer/cartier',
+  ],
+  'tiffany & co': [
+    'https://www.farfetch.com/shopping/women/tiffany-and-co/items.aspx',
+  ],
+
+  // ── Premium contemporary ──
+  'sandro': [
+    'https://www.nordstrom.com/brands/sandro--13384',
+    'https://www.farfetch.com/shopping/women/sandro-paris/items.aspx',
+  ],
+  'ted baker': [
+    'https://www.nordstrom.com/brands/ted-baker-london--4774',
+  ],
+  'kate spade': [
+    'https://www.nordstrom.com/brands/kate-spade-new-york--3758',
+  ],
+  'michael kors': [
+    'https://www.nordstrom.com/brands/michael-michael-kors--3915',
+  ],
+  'coach': [
+    'https://www.nordstrom.com/brands/coach--3007',
+  ],
+  'ralph lauren': [
+    'https://www.nordstrom.com/brands/polo-ralph-lauren--4138',
+    'https://www.mrporter.com/en-us/mens/designer/polo-ralph-lauren',
+  ],
+  'tommy hilfiger': [
+    'https://www.nordstrom.com/brands/tommy-hilfiger--4773',
+  ],
+  'calvin klein': [
+    'https://www.nordstrom.com/brands/calvin-klein--2888',
+  ],
+  'lacoste': [
+    'https://www.nordstrom.com/brands/lacoste--3777',
+  ],
+  'eileen fisher': [
+    'https://www.nordstrom.com/brands/eileen-fisher--3186',
+  ],
+  'cos': [
+    'https://www.cos.com/en_usd/men/menswear.html',
+    'https://www.cos.com/en_usd/women/womenswear.html',
+  ],
+  'abercrombie': [
+    'https://www.abercrombie.com/shop/us/mens-new-arrivals',
+    'https://www.abercrombie.com/shop/us/womens-new-arrivals',
+  ],
+  'american eagle': [
+    'https://www.ae.com/us/en/c/men/cat3540006',
+    'https://www.ae.com/us/en/c/women/cat3540004',
+  ],
 };
 
 // Brands that block direct scraping — use search fallback
