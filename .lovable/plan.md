@@ -1,39 +1,32 @@
 
-The user clarified the routing: "COP or DROP" card actually navigates to `/closet` which is the **product discovery swipe** (not community posts). So the labels should be:
+The user is providing a detailed spec for a fix I already proposed (URL normalization in PDP enrichment matching). Their approach is more thorough than mine — adds locale-prefix stripping, query-param whitelist, and explicit `via` tracking for telemetry. I should adopt it as-is.
 
-- `WeeklyOutfitsSection` (top hero) = curated weekly editorial outfits
-- `SwipeFeedSection` ("THE DROP · THIS WEEK") = community posts (user-submitted fits)
-- `COP or DROP` card → `/closet` = product discovery swipe (Tinder-style for shopping new pieces)
+Let me locate the exact code section to confirm the current shape before planning the edit.
 
-Three distinct surfaces, currently confusingly labeled. Here's the copy fix:
+Plan is straightforward: 1 file, 3 surgical edits per the spec. No questions needed — spec is unambiguous.
 
-## Proposed Copy
+## Plan
 
-| Section | Current Label | New Label | Subtitle | Source |
-|---|---|---|---|---|
-| Curated weekly outfits (top hero) | "THIS WEEK'S DRIP" | **THIS WEEK'S DRIP** | Curated fits. Dropped weekly. | Editorial AI |
-| Community feed (`SwipeFeedSection`) | "THE DROP · THIS WEEK" | **COMMUNITY DROPS** | Real fits. Real bodies. | Users |
-| Product swipe card → /closet | "COP or DROP" / "Swipe new drops." | **COP or DROP** | Swipe fresh pieces. | Catalog |
+**File:** `supabase/functions/scrape-products/index.ts`
 
-The key fixes:
-1. **Remove "THIS WEEK"** from the community feed header — it collides with "THIS WEEK'S DRIP"
-2. **Rename community feed to "COMMUNITY DROPS"** — instantly signals user-generated
-3. **Keep "COP or DROP" exclusively for the product/closet swipe** — it's the shopping action
-4. Subtitles clarify source: *Curated* = editorial, *Real fits. Real bodies.* = community, *Swipe fresh pieces.* = catalog
+**Step 1 — Add helpers** (near top, after type defs):
+- `PRODUCT_ID_PARAMS` Set (whitelist: pid, id, sku, variant, color, etc.)
+- `normalizeUrlForMatch(url)` — strips protocol/www/trailing-slash/locale-prefix/tracking params, sorts whitelisted query params, lowercase
+- `extractProductSlug(url)` — last path segment, strips .html/.aspx/.php
 
-## Files to Edit
+**Step 2 — Replace batch matching logic** in the `[pdp-enrich]` block:
+- Build two indexes from Firecrawl results: `byNormUrl` and `bySlug`
+- Two-tier lookup: normalized URL first, slug fallback (slug must be >3 chars)
+- Track match path via `via: 'norm' | 'slug'`
+- Emit new log: `[pdp-enrich] match breakdown: norm=X, slug=Y, unmatched=Z`
+- When 0 matched, log first-sent vs first-returned URL pair for diagnosis
 
-1. **`src/components/home/SwipeFeedSection.tsx`** (~line 145)
-   - Header: `"The Drop · This Week"` → `"Community Drops"`
-   - Optional: add subtitle row "Real fits. Real bodies."
+**Step 3 — Update downstream consumer loop**:
+- Change from `for (const p of heroCandidates) { ...byUrl.get... }` to `for (const m of matched) { const p = ...; const hit = m.result }`
+- Preserve description extraction, image merging, DB writes — only the lookup mechanism changes
 
-2. **`src/components/home/GalleryPlayground.tsx`** (~line 175, COP or DROP card)
-   - Subtitle: `"Swipe new drops."` → `"Swipe fresh pieces."`
-   - Micro: keep `"New drops daily"` (still accurate for catalog)
+**Step 4 — Deploy** the `scrape-products` function.
 
-3. **`src/components/home/AuthenticatedHome.tsx`** (~line 78, COP or DROP card)
-   - Subtitle: `"Swipe new drops."` → `"Swipe fresh pieces."`
+**Step 5 — Trigger one test scrape** (Stone Island/outerwear or Essentials/tops) and read logs to report back the `match breakdown: norm=X, slug=Y, unmatched=Z` line.
 
-4. **`src/components/home/WeeklyOutfitsSection.tsx`** — verify header reads "THIS WEEK'S DRIP" with subtitle "Curated fits. Dropped weekly." (update if needed)
-
-No routing, data, or component internals change — copy only.
+**Out of scope (per spec):** enrichment merge logic, description extraction, image merging, DB writes, orchestrator rate-limit fix (separate concern from earlier diff).
