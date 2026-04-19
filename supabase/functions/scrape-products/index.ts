@@ -4066,18 +4066,32 @@ Deno.serve(async (req) => {
         };
       });
 
-      const { error } = await supabase.from('product_catalog').insert(rows);
-
-      if (error) {
-        if (error.code === '23505') {
-          console.warn(`[run:${runId}] Some skipped (unique constraint)`);
+      // ── BATCHED INSERT ──────────────────────────────────────────────
+      // Chunk inserts to avoid worker memory/CPU limits (WORKER_RESOURCE_LIMIT)
+      // when ingesting 100+ products from large Shopify brands.
+      const INSERT_BATCH = 25;
+      let insertedCount = 0;
+      for (let i = 0; i < rows.length; i += INSERT_BATCH) {
+        const chunk = rows.slice(i, i + INSERT_BATCH);
+        const { error } = await supabase.from('product_catalog').insert(chunk);
+        if (error) {
+          if (error.code === '23505') {
+            console.warn(`[run:${runId}] Batch ${i / INSERT_BATCH + 1}: some skipped (unique constraint)`);
+            insertedCount += chunk.length;
+          } else {
+            console.error(`[run:${runId}] Batch ${i / INSERT_BATCH + 1} insert failed:`, error.message);
+            // continue with remaining batches rather than aborting the whole run
+          }
         } else {
-          throw error;
+          insertedCount += chunk.length;
         }
       }
-      results.inserted = rows.length;
+      results.inserted = insertedCount;
+      console.log(`[run:${runId}] Inserted ${insertedCount}/${rows.length} in ${Math.ceil(rows.length / INSERT_BATCH)} batches`);
 
-      // Fire-and-forget: trigger QC pipeline
+      // ── BACKGROUND POST-PROCESSING ─────────────────────────────────
+      // Fire-and-forget downstream triggers via EdgeRuntime.waitUntil so the
+      // main response returns immediately and the worker isn't killed mid-flight.
       const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
       const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
       const qcHeaders = {
@@ -4085,41 +4099,49 @@ Deno.serve(async (req) => {
         'Authorization': `Bearer ${anonKey}`,
       };
 
-      fetch(`${supabaseUrl}/functions/v1/categorize-products`, {
-        method: 'POST',
-        headers: qcHeaders,
-        body: JSON.stringify({ batch_size: 15, only_unchecked: true }),
-      }).catch(e => console.warn(`[run:${runId}] Categorize trigger failed:`, e));
+      const triggerPostProcessing = async () => {
+        const tasks: Promise<unknown>[] = [
+          fetch(`${supabaseUrl}/functions/v1/categorize-products`, {
+            method: 'POST', headers: qcHeaders,
+            body: JSON.stringify({ batch_size: 15, only_unchecked: true }),
+          }).catch(e => console.warn(`[run:${runId}] Categorize trigger failed:`, e)),
 
-      fetch(`${supabaseUrl}/functions/v1/backfill-gender`, {
-        method: 'POST',
-        headers: qcHeaders,
-        body: JSON.stringify({ batch_size: 300 }),
-      }).catch(e => console.warn(`[run:${runId}] Gender backfill trigger failed:`, e));
+          fetch(`${supabaseUrl}/functions/v1/backfill-gender`, {
+            method: 'POST', headers: qcHeaders,
+            body: JSON.stringify({ batch_size: 300 }),
+          }).catch(e => console.warn(`[run:${runId}] Gender backfill trigger failed:`, e)),
 
-      // Fire-and-forget: scrape size charts for this brand if missing
-      if (brand) {
-        const brandSlug = brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        fetch(`${supabaseUrl}/functions/v1/scrape-size-charts`, {
-          method: 'POST',
-          headers: qcHeaders,
-          body: JSON.stringify({ brand_slug: brandSlug, batch_size: 8 }),
-        }).catch(e => console.warn(`[run:${runId}] Size chart trigger failed:`, e));
+          fetch(`${supabaseUrl}/functions/v1/audit-product-urls`, {
+            method: 'POST', headers: qcHeaders,
+            body: JSON.stringify({ batch_size: 50, brand: brand || undefined }),
+          }).catch(e => console.warn(`[run:${runId}] Audit URLs trigger failed:`, e)),
+
+          fetch(`${supabaseUrl}/functions/v1/cleanup-catalog`, {
+            method: 'POST', headers: qcHeaders,
+            body: JSON.stringify({}),
+          }).catch(e => console.warn(`[run:${runId}] Cleanup catalog trigger failed:`, e)),
+        ];
+
+        if (brand) {
+          const brandSlug = brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+          tasks.push(
+            fetch(`${supabaseUrl}/functions/v1/scrape-size-charts`, {
+              method: 'POST', headers: qcHeaders,
+              body: JSON.stringify({ brand_slug: brandSlug, batch_size: 8 }),
+            }).catch(e => console.warn(`[run:${runId}] Size chart trigger failed:`, e))
+          );
+        }
+
+        await Promise.allSettled(tasks);
+      };
+
+      try {
+        // @ts-ignore — EdgeRuntime is a Supabase Deno Deploy global
+        EdgeRuntime.waitUntil(triggerPostProcessing());
+      } catch {
+        // Fallback for local/test environments without EdgeRuntime
+        triggerPostProcessing();
       }
-
-      // Fire-and-forget: audit product URLs for broken images
-      fetch(`${supabaseUrl}/functions/v1/audit-product-urls`, {
-        method: 'POST',
-        headers: qcHeaders,
-        body: JSON.stringify({ batch_size: 50, brand: brand || undefined }),
-      }).catch(e => console.warn(`[run:${runId}] Audit URLs trigger failed:`, e));
-
-      // Fire-and-forget: cleanup catalog (deactivate junk, normalize brands)
-      fetch(`${supabaseUrl}/functions/v1/cleanup-catalog`, {
-        method: 'POST',
-        headers: qcHeaders,
-        body: JSON.stringify({}),
-      }).catch(e => console.warn(`[run:${runId}] Cleanup catalog trigger failed:`, e));
     }
 
     console.log(`[run:${runId}] Done. Inserted ${results.inserted}`);
