@@ -3544,7 +3544,21 @@ async function searchProducts(
       body: JSON.stringify(payload),
     });
 
-    const data = await resp.json();
+    // Defensive parse: capture raw text so we can diagnose malformed responses
+    // (Firecrawl has been observed to return HTML error pages or truncated bodies
+    // during partial outages, which previously surfaced as "JSON parse error").
+    const rawText = await resp.text();
+    let data: any = null;
+    try {
+      data = rawText ? JSON.parse(rawText) : {};
+    } catch (parseErr) {
+      console.warn(
+        `[search-fallback] /v2/search non-JSON response [${resp.status}] (${rawText.length}b): ` +
+        `${rawText.slice(0, 400).replace(/\s+/g, ' ')}`
+      );
+      // If body was non-JSON we can't trust this branch — try the broader fallback.
+      return searchProductsFallback(brand, category, firecrawlApiKey);
+    }
 
     if (!resp.ok) {
       console.warn(`[search-fallback] Firecrawl search error [${resp.status}]: ${JSON.stringify(data).slice(0, 300)}`);
@@ -3633,7 +3647,17 @@ async function searchProductsFallback(
       body: JSON.stringify(payload),
     });
 
-    const data = await resp.json();
+    const rawText = await resp.text();
+    let data: any = null;
+    try {
+      data = rawText ? JSON.parse(rawText) : {};
+    } catch (parseErr) {
+      console.warn(
+        `[search-fallback-broad] /v2/search non-JSON response [${resp.status}] (${rawText.length}b): ` +
+        `${rawText.slice(0, 400).replace(/\s+/g, ' ')}`
+      );
+      return [];
+    }
     if (!resp.ok) {
       console.warn(`[search-fallback-broad] Error [${resp.status}]: ${JSON.stringify(data).slice(0, 200)}`);
       return [];
