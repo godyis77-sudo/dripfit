@@ -2453,7 +2453,9 @@ async function firecrawlScrapeProducts(
       },
       body: JSON.stringify({
         url,
-        formats: [{ type: 'json', schema, prompt }],
+        // 'images' is free and returns the page's full image list — we use it
+        // as a gallery fallback to enrich the JSON-extracted hero image.
+        formats: [{ type: 'json', schema, prompt }, 'images'],
         onlyMainContent: false,
         waitFor: 4000,
         ...(useStealth ? { proxy: 'stealth' } : {}),
@@ -2475,10 +2477,19 @@ async function firecrawlScrapeProducts(
       );
       return [];
     }
+    // Page-level image gallery (from the `images` format). We attach it to
+    // every product so the caller can dedupe / pick the best matching image.
+    const pageImages: string[] = Array.isArray(body?.data?.images)
+      ? (body.data.images as unknown[]).filter((u): u is string => typeof u === 'string')
+      : [];
+    const enriched = (products as FirecrawlExtractedProduct[]).map((p) => ({
+      ...p,
+      gallery_images: pageImages,
+    }));
     console.log(
-      `[firecrawl-json] ${url}: ${products.length} products extracted (stealth=${useStealth})`,
+      `[firecrawl-json] ${url}: ${enriched.length} products extracted, ${pageImages.length} page images (stealth=${useStealth})`,
     );
-    return products as FirecrawlExtractedProduct[];
+    return enriched;
   } catch (err) {
     const e = err as Error;
     console.error(`[firecrawl-json] ${url}: ${e.name} — ${e.message}`);
