@@ -2387,7 +2387,9 @@ async function firecrawlScrapeProducts(
     console.warn(`[firecrawl-json] no API key, skipping ${url}`);
     return [];
   }
-  const timeoutMs = opts.timeoutMs ?? 60000;
+  // JSON-mode + stealth on a heavy listing page legitimately needs 60–120s
+  // (waitFor + JS render + LLM extraction over the page). Default to 120s.
+  const timeoutMs = opts.timeoutMs ?? 120000;
   const useStealth = opts.useStealth ?? false;
 
   const schema = {
