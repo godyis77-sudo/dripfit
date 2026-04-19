@@ -875,20 +875,27 @@ Deno.serve(async (req) => {
     const femaleProducts = allProducts.filter(p => p.gender === "womens");
     log.push(`[Pools] mens=${maleProducts.length}, womens=${femaleProducts.length}`);
 
-    const selectedOccasions = shuffle(OCCASIONS).slice(0, occasionCount);
+    // Bias occasion selection toward the current season:
+    // pick all in-season + evergreen, drop other seasons; shuffle then take occasionCount.
+    const currentSeason = getCurrentSeason();
+    log.push(`[Season] Current season: ${currentSeason}`);
+    const seasonalEligible = OCCASIONS.filter(o => !o.season || o.season === currentSeason);
+    const selectedOccasions = shuffle(seasonalEligible).slice(0, occasionCount);
+    log.push(`[Occasions] ${selectedOccasions.map(o => o.label).join(", ")}`);
+
     const usedIds = new Set<string>();
     const usedNames = new Set<string>();
     let totalCreated = 0;
     let sortOrder = 0;
 
     for (const occ of selectedOccasions) {
-      const genderTargets = gender ? [gender] : ["mens", "womens"];
+      const genderTargets = (gender ? [gender] : ["mens", "womens"]) as Array<"mens" | "womens">;
 
       for (const g of genderTargets) {
         const pool = shuffle(g === "mens" ? maleProducts : femaleProducts);
 
         for (let i = 0; i < outfitsPerOccasion; i++) {
-          const result = buildOutfit(occ, pool, usedIds);
+          const result = buildOutfit(occ, pool, usedIds, g);
           if (!result) {
             log.push(`[Skip] ${occ.label} ${g} #${i + 1}: not enough products`);
             continue;
