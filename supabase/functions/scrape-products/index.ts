@@ -3223,6 +3223,50 @@ async function scrapeBrandViaRetailer(
     return onRetailer;
   }
 
+  // ── HERO PDP ENRICHMENT (markdown-only, ~1 credit per URL) ──
+  // For up to 5 top products that lack descriptions, batch-fetch the PDP
+  // markdown so we can persist a real description on first ingest. Skipped
+  // when the breaker is open or there are no candidates. Capped at 5 URLs to
+  // keep total batch cost ≤5 credits and total wall time under ~60s.
+  try {
+    const heroCandidates = deduped
+      .filter((p) => !p.description && p.product_url.startsWith('http'))
+      .slice(0, 5);
+    if (heroCandidates.length > 0) {
+      const useStealth = heroCandidates.some((p) => shouldUseStealth(p.product_url));
+      const pdpResults = await firecrawlBatchScrapePdps(
+        heroCandidates.map((p) => p.product_url),
+        firecrawlApiKey,
+        { useStealth, maxWaitMs: 50000 },
+      );
+      const byUrl = new Map<string, BatchPdpResult>();
+      for (const r of pdpResults) {
+        byUrl.set(r.url.toLowerCase().replace(/\/$/, ''), r);
+      }
+      let enrichedCount = 0;
+      for (const p of heroCandidates) {
+        const key = p.product_url.toLowerCase().replace(/\/$/, '');
+        const hit = byUrl.get(key);
+        if (!hit?.markdown) continue;
+        const desc = extractDescriptionFromPdpMarkdown(hit.markdown, p.name);
+        if (desc) {
+          p.description = desc;
+          enrichedCount++;
+        }
+        // Merge in extra hero PDP images if we don't already have a gallery.
+        if (hit.imageUrls.length > 0 && p.image_urls.length < 3) {
+          const merged = [...new Set([...p.image_urls, ...hit.imageUrls])].slice(0, 6);
+          p.image_urls = merged;
+        }
+      }
+      console.log(
+        `[retailer] ${brand}/${category} PDP enrichment: ${enrichedCount}/${heroCandidates.length} descriptions added`,
+      );
+    }
+  } catch (err) {
+    console.warn(`[retailer] PDP enrichment threw: ${(err as Error).message}`);
+  }
+
   return deduped;
 }
 
