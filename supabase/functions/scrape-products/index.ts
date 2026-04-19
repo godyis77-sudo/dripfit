@@ -8,7 +8,13 @@ const HTTP_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWe
 // TYPES
 // ─────────────────────────────────────────────────────────────────────────────
 
-type ScrapeMethod = 'shopify' | 'direct' | 'search' | 'search_fallback';
+type ScrapeMethod =
+  | 'shopify'
+  | 'direct'
+  | 'search'
+  | 'search_fallback'
+  | 'retailer_jsonld' // parsed from retailer listing (SSENSE/Mr Porter/END/etc.) via Firecrawl
+  | 'retailer_pdp';   // PDP follow-up after a thin retailer listing stub
 
 interface RawProduct {
   name: string;
