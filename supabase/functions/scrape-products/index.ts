@@ -1410,7 +1410,7 @@ async function mapBrandUrls(
   console.log(`[map] Discovering URLs on ${domain} for ${category} (keywords: ${keywords.join(',')})`);
 
   try {
-    const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/map', {
+    const resp = await fetchWithRetry('https://api.firecrawl.dev/v2/map', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${firecrawlApiKey}`,
@@ -1487,7 +1487,7 @@ async function crawlBrandCategory(
   console.log(`[crawl] Crawling ${crawlUrl} with ${includePaths.length} include paths, limit 30`);
 
   try {
-    const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/crawl', {
+    const resp = await fetchWithRetry('https://api.firecrawl.dev/v2/crawl', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${firecrawlApiKey}`,
@@ -1496,7 +1496,7 @@ async function crawlBrandCategory(
       body: JSON.stringify({
         url: crawlUrl,
         limit: 30,
-        maxDepth: 2,
+        maxDiscoveryDepth: 2,
         includePaths,
         excludePaths: ['/cart', '/checkout', '/account', '/login', '/search', '/help', '/blog'],
         scrapeOptions: {
@@ -1524,7 +1524,7 @@ async function crawlBrandCategory(
       for (let poll = 0; poll < 12; poll++) {
         await delay(5000);
         try {
-          const pollResp = await fetchWithRetry(`https://api.firecrawl.dev/v1/crawl/${jobId}`, {
+          const pollResp = await fetchWithRetry(`https://api.firecrawl.dev/v2/crawl/${jobId}`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${firecrawlApiKey}` },
           });
@@ -2258,7 +2258,7 @@ async function scrapeDirectHttp(
  */
 async function checkFirecrawlCredits(apiKey: string): Promise<number | null> {
   try {
-    const resp = await fetch('https://api.firecrawl.dev/v1/team/credit-usage', {
+    const resp = await fetch('https://api.firecrawl.dev/v2/team/credit-usage', {
       headers: { 'Authorization': `Bearer ${apiKey}` },
     });
     if (!resp.ok) {
@@ -2299,7 +2299,7 @@ async function firecrawlScrape(
   const ac = new AbortController();
   const timer = setTimeout(() => ac.abort(), timeoutMs);
   try {
-    const resp = await fetch('https://api.firecrawl.dev/v1/scrape', {
+    const resp = await fetch('https://api.firecrawl.dev/v2/scrape', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
@@ -2910,7 +2910,7 @@ async function searchProducts(
       payload.scrapeOptions = { formats: ['markdown'] };
     }
 
-    const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/search', {
+    const resp = await fetchWithRetry('https://api.firecrawl.dev/v2/search', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${firecrawlApiKey}`,
@@ -2998,7 +2998,7 @@ async function searchProductsFallback(
       payload.scrapeOptions = { formats: ['markdown'] };
     }
 
-    const resp = await fetchWithRetry('https://api.firecrawl.dev/v1/search', {
+    const resp = await fetchWithRetry('https://api.firecrawl.dev/v2/search', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${firecrawlApiKey}`,
