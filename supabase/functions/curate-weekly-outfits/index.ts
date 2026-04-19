@@ -60,6 +60,11 @@ const OCCASION_TRIBE_MAP: Record<string, string[]> = {
   festival: ['elevated_streetwear', 'heritage_luxury'],
   gym: ['elevated_streetwear', 'supporting'],
   brunch: ['quiet_luxury', 'heritage_luxury'],
+  patio_evening: ['quiet_luxury', 'heritage_luxury'],
+  summer_night_out: ['heritage_luxury', 'quiet_luxury'],
+  spring_garden: ['quiet_luxury', 'bohemian' as any, 'heritage_luxury'],
+  autumn_layers: ['quiet_luxury', 'heritage_luxury'],
+  winter_polish: ['heritage_luxury', 'quiet_luxury'],
 };
 
 function getBrandTribe(brand: string): string {
