@@ -4465,6 +4465,21 @@ Deno.serve(async (req) => {
       });
     }
 
+    // ── DEV/DEBUG OVERRIDES (query string) ──
+    // ?force_search_fallback=1 bypasses the Firecrawl breaker check inside
+    // scrapeBrandViaRetailer and routes directly to /v2/search, so the
+    // SEARCH-FALLBACK branch can be exercised end-to-end without waiting for
+    // a real /v2/scrape outage.
+    let forceSearchFallback = false;
+    try {
+      const params = new URL(req.url).searchParams;
+      const v = (params.get('force_search_fallback') || '').toLowerCase();
+      forceSearchFallback = v === '1' || v === 'true' || v === 'yes';
+    } catch { /* ignore malformed URL */ }
+    if (forceSearchFallback) {
+      console.warn(`[handler] force_search_fallback=1 — breaker check will be bypassed for ${brand}/${category}`);
+    }
+
     // ── FIRECRAWL AUTH ──────────────────────────────────────────────
     // Prefer the user-topped-up key; fall back to the connector-managed one
     const FIRECRAWL_API_KEY =
