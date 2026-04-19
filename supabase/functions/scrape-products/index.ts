@@ -2931,10 +2931,8 @@ async function searchProducts(
     const results: any[] = Array.isArray(data?.data) ? data.data : (data?.data?.web || []);
     const approxCredits = FIRECRAWL_SEARCH_WITH_MARKDOWN ? results.length + 1 : 1;
     console.log(`[search-fallback] Got ${results.length} search results (~${approxCredits} credits)`);
-    if (results.length > 0) console.log(`[search-fallback] DEBUG keys=${Object.keys(results[0]).join(',')} url=${results[0].url || results[0].link || '<missing>'}`);
 
     const allProducts = parseSearchResults(results, brand, category);
-    console.log(`[search-fallback] DEBUG parseSearchResults: ${results.length} in → ${allProducts.length} out`);
 
     // Try broader query only when primary returned very little.
     if (allProducts.length < 2) {
