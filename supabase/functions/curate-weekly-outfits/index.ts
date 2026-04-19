@@ -750,10 +750,53 @@ Deno.serve(async (req) => {
 
     log.push(`[Done] Created ${totalCreated} outfits for week ${weekId}`);
 
+    // ── Auto-trigger hero image generation in the background ────────
+    // Fire-and-forget call to generate-outfit-hero with week_id so every
+    // freshly curated outfit gets an editorial hero image without a
+    // separate manual step. Skipped via skip_hero=true.
+    const skipHero = body.skip_hero ?? false;
+    if (totalCreated > 0 && !skipHero) {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+      const triggerHeroes = async () => {
+        try {
+          const res = await fetch(`${supabaseUrl}/functions/v1/generate-outfit-hero`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${serviceKey}`,
+            },
+            body: JSON.stringify({
+              week_id: weekId,
+              regenerate: false, // don't overwrite existing heroes
+            }),
+          });
+          if (!res.ok) {
+            console.error(`[curate→hero] trigger failed: ${res.status} ${await res.text()}`);
+          } else {
+            console.log(`[curate→hero] background generation kicked off for ${weekId}`);
+          }
+        } catch (err) {
+          console.error(`[curate→hero] error:`, err);
+        }
+      };
+
+      // @ts-ignore: EdgeRuntime.waitUntil is available in Supabase edge runtime
+      if (typeof EdgeRuntime !== "undefined" && EdgeRuntime.waitUntil) {
+        // @ts-ignore
+        EdgeRuntime.waitUntil(triggerHeroes());
+      } else {
+        triggerHeroes();
+      }
+      log.push(`[Hero] Background generation triggered for ${totalCreated} outfits`);
+    }
+
     return successResponse({
       week_id: weekId,
       created: totalCreated,
       occasions: selectedOccasions.map(o => o.label),
+      hero_generation: skipHero ? "skipped" : "triggered",
       log,
     }, 200, cors);
   } catch (err) {
