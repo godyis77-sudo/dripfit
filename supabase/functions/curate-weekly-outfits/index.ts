@@ -60,6 +60,11 @@ const OCCASION_TRIBE_MAP: Record<string, string[]> = {
   festival: ['elevated_streetwear', 'heritage_luxury'],
   gym: ['elevated_streetwear', 'supporting'],
   brunch: ['quiet_luxury', 'heritage_luxury'],
+  patio_evening: ['quiet_luxury', 'heritage_luxury'],
+  summer_night_out: ['heritage_luxury', 'quiet_luxury'],
+  spring_garden: ['quiet_luxury', 'bohemian' as any, 'heritage_luxury'],
+  autumn_layers: ['quiet_luxury', 'heritage_luxury'],
+  winter_polish: ['heritage_luxury', 'quiet_luxury'],
 };
 
 function getBrandTribe(brand: string): string {
@@ -142,6 +147,36 @@ const EDITORIAL_NAME_POOLS: Record<string, string[]> = {
   brunch_heritage_luxury: [
     'Golden Morning', 'The Terrace Edit',
   ],
+  patio_evening_quiet_luxury: [
+    'Patio Hours', 'Twilight Linen', 'The Veranda Edit',
+  ],
+  patio_evening_heritage_luxury: [
+    'Sunset Terrace', 'Aperitivo Hour',
+  ],
+  summer_night_out_heritage_luxury: [
+    'Heatwave After Dark', 'Rooftop Drop', 'Neon Boulevard',
+  ],
+  summer_night_out_quiet_luxury: [
+    'Sultry Soiree', 'The Late Summer Edit',
+  ],
+  spring_garden_quiet_luxury: [
+    'Spring Bloom', 'The Garden Edit', 'Pastel Stroll',
+  ],
+  spring_garden_heritage_luxury: [
+    'First Warmth', 'Botanical Hour',
+  ],
+  autumn_layers_quiet_luxury: [
+    'Crisp Air Capsule', 'The Layered Edit', 'Amber Hours',
+  ],
+  autumn_layers_heritage_luxury: [
+    'Heritage Autumn', 'The Topcoat Drop',
+  ],
+  winter_polish_heritage_luxury: [
+    'Cold Front Couture', 'The Camel Coat Edit', 'Polished in Sub-Zero',
+  ],
+  winter_polish_quiet_luxury: [
+    'Quiet Winter', 'Snow Day Tailoring',
+  ],
 };
 
 function generateEditorialName(
@@ -214,6 +249,11 @@ interface SlotDef {
   role: string;
   required: boolean;
   categories: string[];
+  /** Optional gender-specific category override. If present and gender matches, replaces categories. */
+  mensCategories?: string[];
+  womensCategories?: string[];
+  /** Optional preference keywords — boost candidates whose name/tags match. */
+  keywordPrefer?: string[];
 }
 
 interface OccasionDef {
@@ -224,7 +264,12 @@ interface OccasionDef {
   season?: string;
 }
 
+/** Accessory categories — at least one accessory per look. */
+const ACCESSORY_CATS_WOMENS = ["bags", "jewelry", "sunglasses", "watches", "accessories", "hats"];
+const ACCESSORY_CATS_MENS   = ["watches", "sunglasses", "bags", "hats", "accessories", "jewelry"];
+
 const OCCASIONS: OccasionDef[] = [
+  /* ── EVERGREEN ──────────────────────────────────────────────── */
   {
     key: "night_out",
     label: "Night Out",
@@ -232,21 +277,10 @@ const OCCASIONS: OccasionDef[] = [
     slots: [
       { role: "outerwear", required: false, categories: ["jackets", "blazers", "coats", "outerwear"] },
       { role: "top", required: true, categories: ["t-shirts", "shirts", "tops", "blouses", "sweaters", "tank tops"] },
-      { role: "bottom", required: true, categories: ["pants", "jeans", "trousers", "skirts", "shorts"] },
+      { role: "bottom", required: true, categories: ["pants", "jeans", "trousers", "skirts", "shorts"],
+        mensCategories: ["pants", "jeans", "trousers"] },
       { role: "shoes", required: true, categories: ["shoes", "sneakers", "boots", "heels", "sandals", "footwear"] },
-      { role: "accessory", required: false, categories: ["accessories", "bags", "jewelry", "hats"] },
-    ],
-  },
-  {
-    key: "beach_day",
-    label: "Beach Day",
-    emoji: "🏖️",
-    season: "summer",
-    slots: [
-      { role: "top", required: true, categories: ["t-shirts", "shirts", "tops", "tank tops"] },
-      { role: "bottom", required: true, categories: ["shorts", "skirts", "pants"] },
-      { role: "shoes", required: true, categories: ["shoes", "sandals", "footwear", "sneakers"] },
-      { role: "accessory", required: false, categories: ["accessories", "bags", "hats"] },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
     ],
   },
   {
@@ -256,8 +290,10 @@ const OCCASIONS: OccasionDef[] = [
     slots: [
       { role: "outerwear", required: false, categories: ["blazers", "jackets", "coats", "outerwear", "cardigans"] },
       { role: "top", required: true, categories: ["shirts", "tops", "blouses", "t-shirts", "sweaters", "knits"] },
-      { role: "bottom", required: true, categories: ["pants", "trousers", "jeans", "skirts"] },
+      { role: "bottom", required: true, categories: ["pants", "trousers", "jeans", "skirts"],
+        mensCategories: ["pants", "trousers", "jeans", "chinos"] },
       { role: "shoes", required: true, categories: ["shoes", "sneakers", "boots", "loafers", "footwear"] },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
     ],
   },
   {
@@ -269,6 +305,7 @@ const OCCASIONS: OccasionDef[] = [
       { role: "top", required: true, categories: ["t-shirts", "tops", "sweaters", "hoodies", "tank tops"] },
       { role: "bottom", required: true, categories: ["pants", "jeans", "shorts", "joggers", "sweatpants"] },
       { role: "shoes", required: true, categories: ["sneakers", "shoes", "footwear"] },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
     ],
   },
   {
@@ -278,20 +315,10 @@ const OCCASIONS: OccasionDef[] = [
     slots: [
       { role: "outerwear", required: true, categories: ["blazers", "jackets", "coats", "outerwear"] },
       { role: "top", required: true, categories: ["shirts", "blouses", "tops", "knits"] },
-      { role: "bottom", required: true, categories: ["trousers", "pants", "skirts"] },
+      { role: "bottom", required: true, categories: ["trousers", "pants", "skirts"],
+        mensCategories: ["trousers", "pants"] },
       { role: "shoes", required: true, categories: ["shoes", "boots", "loafers", "heels", "footwear"] },
-    ],
-  },
-  {
-    key: "festival",
-    label: "Festival Ready",
-    emoji: "🎶",
-    season: "summer",
-    slots: [
-      { role: "top", required: true, categories: ["t-shirts", "tops", "tank tops", "shirts"] },
-      { role: "bottom", required: true, categories: ["shorts", "pants", "jeans", "skirts"] },
-      { role: "shoes", required: true, categories: ["sneakers", "boots", "shoes", "footwear"] },
-      { role: "accessory", required: false, categories: ["accessories", "bags", "hats"] },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
     ],
   },
   {
@@ -301,8 +328,10 @@ const OCCASIONS: OccasionDef[] = [
     slots: [
       { role: "outerwear", required: false, categories: ["cardigans", "jackets", "blazers", "outerwear"] },
       { role: "top", required: true, categories: ["tops", "blouses", "shirts", "t-shirts", "knits"] },
-      { role: "bottom", required: true, categories: ["pants", "jeans", "skirts", "shorts"] },
+      { role: "bottom", required: true, categories: ["pants", "jeans", "skirts", "shorts"],
+        mensCategories: ["pants", "jeans", "shorts", "chinos"] },
       { role: "shoes", required: true, categories: ["sneakers", "shoes", "sandals", "footwear"] },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
     ],
   },
   {
@@ -313,6 +342,137 @@ const OCCASIONS: OccasionDef[] = [
       { role: "top", required: true, categories: ["t-shirts", "tops", "tank tops", "hoodies"] },
       { role: "bottom", required: true, categories: ["shorts", "joggers", "pants", "leggings", "sweatpants"] },
       { role: "shoes", required: true, categories: ["sneakers", "shoes", "footwear"] },
+      { role: "accessory", required: false, categories: ["watches", "bags", "hats", "accessories"] },
+    ],
+  },
+
+  /* ── SPRING ─────────────────────────────────────────────────── */
+  {
+    key: "spring_garden",
+    label: "Spring Garden",
+    emoji: "🌷",
+    season: "spring",
+    slots: [
+      { role: "outerwear", required: false, categories: ["cardigans", "blazers", "jackets"] },
+      // Women: sundress / crop top / blouse. Men: linen long-sleeve / surf shirt / light tee.
+      { role: "top", required: true,
+        categories: ["tops", "blouses", "t-shirts", "shirts"],
+        womensCategories: ["dresses", "tops", "blouses", "t-shirts"],
+        mensCategories: ["shirts", "t-shirts", "tops"],
+        keywordPrefer: ["sun", "linen", "crop", "floral", "pastel", "spring", "surf"] },
+      { role: "bottom", required: false,
+        categories: ["skirts", "pants", "shorts", "jeans"],
+        womensCategories: ["skirts", "shorts", "pants"],
+        mensCategories: ["chinos", "trousers", "pants", "shorts"] },
+      { role: "shoes", required: true, categories: ["sneakers", "sandals", "loafers", "shoes", "footwear"] },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+    ],
+  },
+
+  /* ── SUMMER ─────────────────────────────────────────────────── */
+  {
+    key: "beach_day",
+    label: "Beach Day",
+    emoji: "🏖️",
+    season: "summer",
+    slots: [
+      { role: "top", required: true,
+        categories: ["tops", "t-shirts", "tank tops", "shirts"],
+        womensCategories: ["swimwear", "dresses", "tops", "tank tops"],
+        mensCategories: ["shirts", "t-shirts", "tops", "tank tops"],
+        keywordPrefer: ["swim", "bikini", "sun", "surf", "linen", "crop", "rash"] },
+      { role: "bottom", required: false,
+        categories: ["shorts", "skirts"],
+        womensCategories: ["skirts", "shorts"],
+        mensCategories: ["shorts"],
+        keywordPrefer: ["cargo", "swim", "board", "linen", "beach"] },
+      { role: "shoes", required: true, categories: ["sandals", "sneakers", "shoes", "footwear"] },
+      { role: "accessory", required: false,
+        categories: ["sunglasses", "hats", "bags", "jewelry", "watches", "accessories"] },
+    ],
+  },
+  {
+    key: "patio_evening",
+    label: "Patio Evening",
+    emoji: "🌅",
+    season: "summer",
+    slots: [
+      { role: "outerwear", required: false, categories: ["cardigans", "blazers", "jackets"] },
+      { role: "top", required: true,
+        categories: ["tops", "blouses", "shirts", "t-shirts"],
+        womensCategories: ["dresses", "tops", "blouses"],
+        mensCategories: ["shirts", "t-shirts"],
+        keywordPrefer: ["linen", "silk", "sun", "crop"] },
+      { role: "bottom", required: false,
+        categories: ["skirts", "pants", "shorts"],
+        womensCategories: ["skirts", "pants", "shorts"],
+        mensCategories: ["chinos", "trousers", "pants"] },
+      { role: "shoes", required: true, categories: ["sandals", "loafers", "heels", "shoes", "footwear"] },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+    ],
+  },
+  {
+    key: "summer_night_out",
+    label: "Summer Night Out",
+    emoji: "🌃",
+    season: "summer",
+    slots: [
+      { role: "top", required: true,
+        categories: ["tops", "blouses", "shirts", "t-shirts"],
+        womensCategories: ["dresses", "tops", "blouses"],
+        mensCategories: ["shirts", "t-shirts"],
+        keywordPrefer: ["silk", "satin", "linen", "crop", "mini"] },
+      { role: "bottom", required: false,
+        categories: ["skirts", "pants", "shorts"],
+        womensCategories: ["skirts", "pants", "shorts"],
+        mensCategories: ["trousers", "pants", "chinos"] },
+      { role: "shoes", required: true, categories: ["heels", "loafers", "sneakers", "shoes", "footwear"] },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+    ],
+  },
+  {
+    key: "festival",
+    label: "Festival Ready",
+    emoji: "🎶",
+    season: "summer",
+    slots: [
+      { role: "top", required: true, categories: ["t-shirts", "tops", "tank tops", "shirts"] },
+      { role: "bottom", required: true, categories: ["shorts", "pants", "jeans", "skirts"],
+        mensCategories: ["shorts", "pants", "jeans"] },
+      { role: "shoes", required: true, categories: ["sneakers", "boots", "shoes", "footwear"] },
+      { role: "accessory", required: false, categories: ["sunglasses", "hats", "bags", "jewelry", "accessories"] },
+    ],
+  },
+
+  /* ── AUTUMN ─────────────────────────────────────────────────── */
+  {
+    key: "autumn_layers",
+    label: "Autumn Layers",
+    emoji: "🍂",
+    season: "autumn",
+    slots: [
+      { role: "outerwear", required: true, categories: ["jackets", "coats", "blazers", "cardigans", "outerwear"] },
+      { role: "top", required: true, categories: ["sweaters", "knits", "shirts", "t-shirts", "tops", "blouses"] },
+      { role: "bottom", required: true, categories: ["pants", "jeans", "trousers", "skirts"],
+        mensCategories: ["pants", "jeans", "trousers", "chinos"] },
+      { role: "shoes", required: true, categories: ["boots", "loafers", "sneakers", "shoes", "footwear"] },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+    ],
+  },
+
+  /* ── WINTER ─────────────────────────────────────────────────── */
+  {
+    key: "winter_polish",
+    label: "Winter Polish",
+    emoji: "❄️",
+    season: "winter",
+    slots: [
+      { role: "outerwear", required: true, categories: ["coats", "jackets", "outerwear"] },
+      { role: "top", required: true, categories: ["sweaters", "knits", "shirts", "blouses", "tops"] },
+      { role: "bottom", required: true, categories: ["pants", "trousers", "jeans", "skirts"],
+        mensCategories: ["pants", "trousers", "jeans"] },
+      { role: "shoes", required: true, categories: ["boots", "loafers", "shoes", "footwear"] },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
     ],
   },
 ];
@@ -325,6 +485,15 @@ function getCurrentWeekId(): string {
   const dayOfYear = Math.floor((now.getTime() - jan1.getTime()) / 86400000) + 1;
   const weekNum = Math.ceil((dayOfYear + jan1.getDay()) / 7);
   return `${now.getFullYear()}-W${String(weekNum).padStart(2, "0")}`;
+}
+
+/** Northern-hemisphere season for occasion biasing. */
+function getCurrentSeason(): "spring" | "summer" | "autumn" | "winter" {
+  const m = new Date().getMonth() + 1;
+  if (m >= 3 && m <= 5) return "spring";
+  if (m >= 6 && m <= 8) return "summer";
+  if (m >= 9 && m <= 11) return "autumn";
+  return "winter";
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -340,6 +509,11 @@ function shuffle<T>(arr: T[]): T[] {
 
 function normalizeCategory(cat: string): string {
   const c = cat.toLowerCase().trim();
+  // Accessory subtypes — ordered before generics so they win.
+  if (c.includes("swim") || c.includes("bikini")) return "swimwear";
+  if (c.includes("sunglass")) return "sunglasses";
+  if (c.includes("watch")) return "watches";
+  if (c.includes("jewel") || c.includes("necklace") || c.includes("earring") || c.includes("bracelet") || c === "ring" || c.includes(" ring")) return "jewelry";
   if (c.includes("t-shirt") || c.includes("tee")) return "t-shirts";
   if (c.includes("shirt") && !c.includes("t-shirt")) return "shirts";
   if (c.includes("blouse")) return "blouses";
@@ -348,7 +522,8 @@ function normalizeCategory(cat: string): string {
   if (c.includes("hoodie") || c.includes("sweatshirt")) return "hoodies";
   if (c.includes("top")) return "tops";
   if (c.includes("jean") || c.includes("denim")) return "jeans";
-  if (c.includes("trouser") || c.includes("chino")) return "trousers";
+  if (c.includes("chino")) return "chinos";
+  if (c.includes("trouser")) return "trousers";
   if (c.includes("pant")) return "pants";
   if (c.includes("short")) return "shorts";
   if (c.includes("skirt")) return "skirts";
@@ -366,9 +541,9 @@ function normalizeCategory(cat: string): string {
   if (c.includes("sandal")) return "sandals";
   if (c.includes("loafer") || c.includes("moccasin")) return "loafers";
   if (c.includes("shoe") || c.includes("footwear")) return "shoes";
-  if (c.includes("bag") || c.includes("tote") || c.includes("purse")) return "bags";
+  if (c.includes("bag") || c.includes("tote") || c.includes("purse") || c.includes("backpack") || c.includes("clutch")) return "bags";
   if (c.includes("hat") || c.includes("cap") || c.includes("beanie")) return "hats";
-  if (c.includes("accessor") || c.includes("jewel") || c.includes("watch") || c.includes("belt") || c.includes("scarf")) return "accessories";
+  if (c.includes("accessor") || c.includes("belt") || c.includes("scarf")) return "accessories";
   return c;
 }
 
@@ -526,7 +701,8 @@ function fabricsCohesive(outfitWeights: Set<string>, newWeight: string | null): 
 function buildOutfit(
   occasion: OccasionDef,
   products: CatalogProduct[],
-  usedProductIds: Set<string>
+  usedProductIds: Set<string>,
+  gender: "mens" | "womens",
 ): { items: Array<{ product: CatalogProduct; role: string; position: number }>; tribe: string } | null {
   // Pick a primary tribe for this outfit
   const occasionTribes = OCCASION_TRIBE_MAP[occasion.key] ?? ['quiet_luxury', 'heritage_luxury'];
@@ -543,10 +719,16 @@ function buildOutfit(
   let hasPatternPiece = false;
 
   for (const slot of occasion.slots) {
+    // Resolve the effective category list for this gender
+    const effectiveCats =
+      gender === "mens" && slot.mensCategories?.length ? slot.mensCategories :
+      gender === "womens" && slot.womensCategories?.length ? slot.womensCategories :
+      slot.categories;
+
     const candidates = products.filter(p => {
       if (usedProductIds.has(p.id)) return false;
       const normCat = normalizeCategory(p.category);
-      return slot.categories.includes(normCat);
+      return effectiveCats.includes(normCat);
     });
 
     if (candidates.length === 0) {
@@ -577,17 +759,26 @@ function buildOutfit(
     // Graceful degradation: if cohesion eliminates all, fall back
     const workingCandidates = cohesiveCandidates.length > 0 ? cohesiveCandidates : candidates;
 
-    // Score: image confidence + tribe tier + primary-tribe bonus
+    // Keyword preference (e.g. "cargo", "swim", "sun", "linen", "surf")
+    const kw = (slot.keywordPrefer ?? []).map(k => k.toLowerCase());
+    const matchesKeyword = (p: CatalogProduct): boolean => {
+      if (kw.length === 0) return false;
+      const hay = [p.name, ...(p.tags ?? [])].join(" ").toLowerCase();
+      return kw.some(k => hay.includes(k));
+    };
+
+    // Score: image confidence + tribe tier + primary-tribe bonus + keyword bonus
     const scored = workingCandidates.map(p => {
       const t = getBrandTribe(p.brand);
       const tribeBonus =
         t === primaryTribe ? 50 :
         t === secondaryTribe ? 20 :
         t === 'supporting' ? 0 : 10;
+      const keywordBonus = matchesKeyword(p) ? 75 : 0;
       return {
         product: p,
         tribe: t,
-        score: (p.image_confidence ?? 0) * 100 + tribeScore(t) + tribeBonus,
+        score: (p.image_confidence ?? 0) * 100 + tribeScore(t) + tribeBonus + keywordBonus,
       };
     });
 
@@ -684,20 +875,27 @@ Deno.serve(async (req) => {
     const femaleProducts = allProducts.filter(p => p.gender === "womens");
     log.push(`[Pools] mens=${maleProducts.length}, womens=${femaleProducts.length}`);
 
-    const selectedOccasions = shuffle(OCCASIONS).slice(0, occasionCount);
+    // Bias occasion selection toward the current season:
+    // pick all in-season + evergreen, drop other seasons; shuffle then take occasionCount.
+    const currentSeason = getCurrentSeason();
+    log.push(`[Season] Current season: ${currentSeason}`);
+    const seasonalEligible = OCCASIONS.filter(o => !o.season || o.season === currentSeason);
+    const selectedOccasions = shuffle(seasonalEligible).slice(0, occasionCount);
+    log.push(`[Occasions] ${selectedOccasions.map(o => o.label).join(", ")}`);
+
     const usedIds = new Set<string>();
     const usedNames = new Set<string>();
     let totalCreated = 0;
     let sortOrder = 0;
 
     for (const occ of selectedOccasions) {
-      const genderTargets = gender ? [gender] : ["mens", "womens"];
+      const genderTargets = (gender ? [gender] : ["mens", "womens"]) as Array<"mens" | "womens">;
 
       for (const g of genderTargets) {
         const pool = shuffle(g === "mens" ? maleProducts : femaleProducts);
 
         for (let i = 0; i < outfitsPerOccasion; i++) {
-          const result = buildOutfit(occ, pool, usedIds);
+          const result = buildOutfit(occ, pool, usedIds, g);
           if (!result) {
             log.push(`[Skip] ${occ.label} ${g} #${i + 1}: not enough products`);
             continue;
