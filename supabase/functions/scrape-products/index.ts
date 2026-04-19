@@ -3130,70 +3130,55 @@ function parseSearchResults(results: any[], brand: string, category: string): Ra
   const allProducts: RawProduct[] = [];
 
   for (const result of results) {
-    if (!result.url) continue;
+    if (!result.url) { console.log(`[parse] skip: no url`); continue; }
 
-    // Skip non-product pages (expanded URL patterns)
     const url = result.url.toLowerCase();
-    if (/\/search|\/category|\/collection[s]?\/?$|\/shop\/?$|\/c\/|\/cat\/?$|page=\d|\/sale\/?$|\/browse|\/all\/?$/i.test(url)) continue;
+    if (/\/search|\/category|\/collection[s]?\/?$|\/shop\/?$|\/c\/|\/cat\/?$|page=\d|\/sale\/?$|\/browse|\/all\/?$/i.test(url)) {
+      console.log(`[parse] skip url-block: ${result.url}`); continue;
+    }
 
-    // Extract product info from the search result
     const title = result.title || '';
     const markdown = result.markdown || result.description || '';
 
-    // Try to extract price from markdown/description
     const priceMatch = markdown.match(/\$\s*([\d,]+(?:\.\d{2})?)/);
     const priceCents = priceMatch ? Math.round(parseFloat(priceMatch[1].replace(',', '')) * 100) : null;
 
-    // Extract image URLs from markdown (if available) or metadata
     const imageUrls: string[] = [];
-
-    // Check result metadata for og:image first (always available from search)
-    if (result.metadata?.ogImage) {
-      imageUrls.push(result.metadata.ogImage);
-    }
-
-    // Also extract from markdown if present
+    if (result.metadata?.ogImage) imageUrls.push(result.metadata.ogImage);
     if (result.markdown) {
       const imgRegex = /!\[.*?\]\((https?:\/\/[^\s)]+)\)/g;
       let imgMatch;
       while ((imgMatch = imgRegex.exec(result.markdown)) !== null) {
         const imgUrl = imgMatch[1];
-        if (!/logo|icon|sprite|favicon|banner|pixel|tracking/i.test(imgUrl)) {
-          imageUrls.push(imgUrl);
-        }
+        if (!/logo|icon|sprite|favicon|banner|pixel|tracking/i.test(imgUrl)) imageUrls.push(imgUrl);
       }
     }
 
-    // Clean the product name from the title
     let productName = title
       .replace(/\s*[-|]\s*(SSENSE|Farfetch|Nordstrom|NET-A-PORTER|MR PORTER|Macy's|Macys|Zappos|Amazon|Target|Kohl's|Saks|Revolve|ASOS|Shopbop|Mytheresa|END\.|Foot Locker|Dick's|REI).*$/i, '')
       .replace(/\s*Buy\s.*$/i, '')
       .trim();
 
-    if (!productName || productName.length < 8) continue;
+    if (!productName || productName.length < 8) { console.log(`[parse] skip short: "${productName}"`); continue; }
+    if (isListingPageName(productName)) { console.log(`[parse] skip listing-name: "${productName}"`); continue; }
 
-    // Skip listing/category page titles
-    if (isListingPageName(productName)) continue;
-
-    // Brand matching: accept if brand name in title/URL, or if result is from the brand's own domain
     const brandLower = brand.toLowerCase();
     const brandSearchable = brandLower.replace(/&/g, '').replace(/[^a-z0-9]/g, '');
     const isRetailerBrand = ['nordstrom', 'macys', "macy's", 'bloomingdales', "bloomingdale's", 'target', 'kohls', "kohl's", 'jcpenney', 'walmart', 'saks', 'net-a-porter', 'revolve', 'asos'].includes(brandLower);
     const titleLower = title.toLowerCase();
     const nameLower = productName.toLowerCase();
     const urlLower = (result.url || '').toLowerCase();
-    const brandInResult = nameLower.includes(brandLower) || titleLower.includes(brandLower) 
-      || nameLower.replace(/[^a-z0-9]/g, '').includes(brandSearchable) 
+    const brandInResult = nameLower.includes(brandLower) || titleLower.includes(brandLower)
+      || nameLower.replace(/[^a-z0-9]/g, '').includes(brandSearchable)
       || titleLower.replace(/[^a-z0-9]/g, '').includes(brandSearchable);
-    // Accept products from the brand's own domain (e.g. zara.com for "zara")
     const brandDomainMatch = urlLower.includes(`${brandSearchable}.com`) || urlLower.includes(`${brandSearchable}.co`);
     if (!isRetailerBrand && !brandInResult && !brandDomainMatch) {
-      continue;
+      console.log(`[parse] skip brand-mismatch: "${productName}" (looking for ${brandLower})`); continue;
     }
 
-    // Extract description from markdown
     const description = extractDescription(markdown, productName);
 
+    console.log(`[parse] PASS: "${productName}" url=${result.url}`);
     allProducts.push({
       name: productName,
       brand,
