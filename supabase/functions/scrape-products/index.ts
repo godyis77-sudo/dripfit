@@ -2955,18 +2955,21 @@ async function scrapeBrandViaRetailer(
     const more = await mapRetailerBrandUrls(seed, brand, category, firecrawlApiKey);
     discovered.push(...more);
   }
-  // Combine seeds + discovered, dedupe, cap to 6 to control credit spend (~30–54 credits/run).
-  const combined = [...new Set([...retailerUrls, ...discovered])].slice(0, 6);
+  // Combine seeds + discovered, dedupe, cap to 4 to control credit spend AND
+  // stay inside the 150s edge function CPU ceiling. Each page costs ~10–15s
+  // (stealth scrape + 1.5s throttle), so 4 pages ≈ 40–60s, leaving headroom
+  // for the SEARCH RESCUE branch + classification + DB insert.
+  const combined = [...new Set([...retailerUrls, ...discovered])].slice(0, 4);
   console.log(
     `[retailer] ${brand}/${category}: ${retailerUrls.length} seeds + ${discovered.length} mapped → ${combined.length} pages to scrape`,
   );
 
-  const RETAILER_THROTTLE_MS = 2000;
+  const RETAILER_THROTTLE_MS = 1000;
   const allProducts: RawProduct[] = [];
 
   for (const listingUrl of combined) {
     // Stagger retailer requests to avoid WAF clustering.
-    await new Promise((r) => setTimeout(r, RETAILER_THROTTLE_MS + Math.random() * 1500));
+    await new Promise((r) => setTimeout(r, RETAILER_THROTTLE_MS + Math.random() * 500));
 
     const useStealth = shouldUseStealth(listingUrl);
     const extracted = await firecrawlScrapeProducts(listingUrl, firecrawlApiKey, {
