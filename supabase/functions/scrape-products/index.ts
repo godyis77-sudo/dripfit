@@ -13,8 +13,9 @@ type ScrapeMethod =
   | 'direct'
   | 'search'
   | 'search_fallback'
-  | 'retailer_jsonld' // parsed from retailer listing (SSENSE/Mr Porter/END/etc.) via Firecrawl
-  | 'retailer_pdp';   // PDP follow-up after a thin retailer listing stub
+  | 'retailer_jsonld'         // (legacy) parsed from retailer HTML via Firecrawl + JSON-LD
+  | 'retailer_pdp'            // (legacy) PDP follow-up after a thin retailer listing stub
+  | 'retailer_firecrawl_json'; // Firecrawl v2 JSON-schema array extraction (current path)
 
 interface RawProduct {
   name: string;
@@ -2336,10 +2337,149 @@ async function firecrawlScrape(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// FIRECRAWL v2 JSON-SCHEMA PRODUCT EXTRACTION
+// Single /v2/scrape call with formats:[{type:'json',schema}] returns an array
+// of typed products from a retailer listing page. ~5–9 credits per page (vs.
+// ~10–20+ for the legacy HTML+JSON-LD+PDP-loop approach). Required for
+// Cloudflare-protected luxury retailers (SSENSE / Mr Porter / Farfetch /
+// Mytheresa) — those need `proxy: 'stealth'` (+4 credits) to bypass the WAF.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Hosts where the listing pages sit behind Cloudflare / heavy bot protection
+// and require Firecrawl's stealth proxy.
+const STEALTH_RETAILER_HOSTS = new Set<string>([
+  'ssense.com',
+  'mrporter.com',
+  'farfetch.com',
+  'mytheresa.com',
+  'net-a-porter.com',
+  'matchesfashion.com',
+]);
+
+function shouldUseStealth(url: string): boolean {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, '').toLowerCase();
+    for (const h of STEALTH_RETAILER_HOSTS) {
+      if (host === h || host.endsWith(`.${h}`)) return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+interface FirecrawlExtractedProduct {
+  name?: string | null;
+  brand?: string | null;
+  price_usd?: number | null;
+  product_url?: string | null;
+  image_url?: string | null;
+  color?: string | null;
+  category?: string | null;
+}
+
+async function firecrawlScrapeProducts(
+  url: string,
+  apiKey: string,
+  opts: { brandHint?: string; useStealth?: boolean; timeoutMs?: number } = {},
+): Promise<FirecrawlExtractedProduct[]> {
+  if (!apiKey) {
+    console.warn(`[firecrawl-json] no API key, skipping ${url}`);
+    return [];
+  }
+  // JSON-mode + stealth on a heavy listing page legitimately needs 60–120s
+  // (waitFor + JS render + LLM extraction over the page). Default to 120s.
+  const timeoutMs = opts.timeoutMs ?? 120000;
+  const useStealth = opts.useStealth ?? false;
+
+  const schema = {
+    type: 'object',
+    properties: {
+      products: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string', description: 'Full product name as shown on the page' },
+            brand: { type: ['string', 'null'], description: 'Designer or brand name' },
+            price_usd: {
+              type: ['number', 'null'],
+              description: 'Current USD selling price as a number, not a string. Null if not visible.',
+            },
+            product_url: { type: ['string', 'null'], description: 'Direct URL to the product detail page' },
+            image_url: {
+              type: ['string', 'null'],
+              description: 'Primary product image URL at highest available resolution',
+            },
+            color: { type: ['string', 'null'], description: 'Primary product color' },
+            category: {
+              type: ['string', 'null'],
+              description: 'Category: t-shirt, hoodie, jacket, trousers, sneakers, etc.',
+            },
+          },
+          required: ['name'],
+        },
+      },
+    },
+    required: ['products'],
+  };
+
+  const prompt = opts.brandHint
+    ? `Extract every product visible on this page. Only include products where the brand or designer is "${opts.brandHint}". Do not skip any.`
+    : 'Extract every product visible on this page. Do not skip any.';
+
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), timeoutMs);
+  try {
+    const resp = await fetch('https://api.firecrawl.dev/v2/scrape', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        url,
+        formats: [{ type: 'json', schema, prompt }],
+        onlyMainContent: false,
+        waitFor: 4000,
+        ...(useStealth ? { proxy: 'stealth' } : {}),
+      }),
+      signal: ac.signal,
+    });
+    if (!resp.ok) {
+      const errText = await resp.text().catch(() => '');
+      console.error(
+        `[firecrawl-json] ${url}: HTTP ${resp.status} (stealth=${useStealth}) — ${errText.slice(0, 240)}`,
+      );
+      return [];
+    }
+    const body = await resp.json().catch(() => null);
+    const products = body?.data?.json?.products;
+    if (!Array.isArray(products)) {
+      console.warn(
+        `[firecrawl-json] ${url}: response had no products array — ${JSON.stringify(body ?? {}).slice(0, 240)}`,
+      );
+      return [];
+    }
+    console.log(
+      `[firecrawl-json] ${url}: ${products.length} products extracted (stealth=${useStealth})`,
+    );
+    return products as FirecrawlExtractedProduct[];
+  } catch (err) {
+    const e = err as Error;
+    console.error(`[firecrawl-json] ${url}: ${e.name} — ${e.message}`);
+    return [];
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // RETAILER-FIRST SCRAPING — for hard-luxury brands behind Cloudflare WAF
-// Uses Firecrawl on RETAILER_DESIGNER_URLS, parses listings via existing
-// parseProductsFromHtml (JSON-LD + __NEXT_DATA__ + state blobs), then does
-// PDP follow-up for thin stubs.
+// New (2026): single /v2/scrape call per listing with JSON-schema array
+// extraction. ~5–9 credits per page; no PDP follow-up loop needed.
+// Legacy HTML + JSON-LD + __NEXT_DATA__ parsers remain in this file because
+// they're still used by the Shopify-direct path (where they cost 0 credits).
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function scrapeBrandViaRetailer(
@@ -2356,89 +2496,57 @@ async function scrapeBrandViaRetailer(
   }
 
   const brandTokens = brandKey.split(/\s+/).filter((t) => t.length > 2);
-  const matchesBrand = (p: RawProduct): boolean => {
-    const hay = `${(p.brand || '').toLowerCase()} ${(p.name || '').toLowerCase()}`;
+  const matchesBrand = (name: string, brandField: string | null | undefined): boolean => {
+    const hay = `${(brandField || '').toLowerCase()} ${(name || '').toLowerCase()}`;
     return brandTokens.some((t) => hay.includes(t));
   };
 
-  const allProducts: RawProduct[] = [];
-  const PDP_BUDGET_PER_LISTING = 10;
-  const PDP_THROTTLE_MS = 1500;
   const RETAILER_THROTTLE_MS = 2000;
+  const allProducts: RawProduct[] = [];
 
   for (const listingUrl of retailerUrls) {
     // Stagger retailer requests to avoid WAF clustering.
     await new Promise((r) => setTimeout(r, RETAILER_THROTTLE_MS + Math.random() * 1500));
 
-    const listingHtml = await firecrawlScrape(listingUrl, firecrawlApiKey, {
-      waitFor: 5000,
-      onlyMainContent: false,
+    const useStealth = shouldUseStealth(listingUrl);
+    const extracted = await firecrawlScrapeProducts(listingUrl, firecrawlApiKey, {
+      brandHint: brand,
+      useStealth,
     });
-    if (!listingHtml) {
-      console.warn(`[retailer] ${listingUrl}: empty html`);
-      continue;
-    }
 
-    let listingProducts: RawProduct[] = [];
-    try {
-      listingProducts = parseProductsFromHtml(listingHtml, brand, category, listingUrl);
-    } catch (err) {
-      const e = err as Error;
-      console.error(`[retailer] parse failed for ${listingUrl} (${e.name}): ${e.message}`);
+    if (!extracted.length) {
+      console.warn(`[retailer] ${listingUrl}: 0 products (stealth=${useStealth})`);
       continue;
     }
 
     // Strict brand filter — discard cross-brand carousel pollution.
-    const onBrand = listingProducts.filter(matchesBrand);
+    const onBrand = extracted.filter((p) => matchesBrand(p.name || '', p.brand));
     console.log(
-      `[retailer] ${listingUrl}: parsed=${listingProducts.length} on-brand=${onBrand.length}`,
+      `[retailer] ${listingUrl}: extracted=${extracted.length} on-brand=${onBrand.length}`,
     );
 
-    const complete = onBrand.filter(
-      (p) => p.image_urls.length > 0 && p.price_cents !== null,
-    );
-    const stubs = onBrand.filter(
-      (p) => p.image_urls.length === 0 || p.price_cents === null,
-    );
-
-    for (const p of complete) p._method = 'retailer_jsonld';
-    allProducts.push(...complete);
-
-    // PDP follow-up for thin stubs — capped budget.
-    const pdpTargets = stubs
-      .filter((s) => s.product_url && s.product_url !== listingUrl)
-      .slice(0, PDP_BUDGET_PER_LISTING);
-
-    for (const stub of pdpTargets) {
-      await new Promise((r) => setTimeout(r, PDP_THROTTLE_MS));
-      const pdpHtml = await firecrawlScrape(stub.product_url, firecrawlApiKey, {
-        waitFor: 3500,
-        onlyMainContent: false,
+    for (const p of onBrand) {
+      const name = (p.name || '').trim();
+      if (!name) continue;
+      const rawUrl = (p.product_url || '').trim();
+      const productUrl = rawUrl
+        ? (rawUrl.startsWith('http') ? rawUrl : new URL(rawUrl, listingUrl).toString())
+        : listingUrl;
+      const imageUrl = (p.image_url || '').trim();
+      allProducts.push({
+        name,
+        brand, // canonical brand, ignore retailer spelling
+        product_url: productUrl,
+        price_cents: typeof p.price_usd === 'number' && Number.isFinite(p.price_usd)
+          ? Math.round(p.price_usd * 100)
+          : null,
+        currency: 'USD',
+        image_urls: imageUrl ? [imageUrl] : [],
+        category_raw: (p.category || category) ?? category,
+        colour: p.color || null,
+        description: null, // not extracted from listing
+        _method: 'retailer_firecrawl_json',
       });
-      if (!pdpHtml) continue;
-
-      let pdpParsed: RawProduct[] = [];
-      try {
-        pdpParsed = parseProductsFromHtml(pdpHtml, brand, category, stub.product_url);
-      } catch (err) {
-        const e = err as Error;
-        console.error(`[retailer] PDP parse failed ${stub.product_url} (${e.name}): ${e.message}`);
-        continue;
-      }
-      const pdpOnBrand = pdpParsed.filter(matchesBrand);
-      if (pdpOnBrand.length === 0) continue;
-
-      const full = pdpOnBrand[0];
-      full._method = 'retailer_pdp';
-      // Merge stub metadata where PDP is missing fields.
-      if (!full.name && stub.name) full.name = stub.name;
-      if (full.image_urls.length === 0 && stub.image_urls.length > 0) {
-        full.image_urls = stub.image_urls;
-      }
-      if (full.price_cents === null && stub.price_cents !== null) {
-        full.price_cents = stub.price_cents;
-      }
-      allProducts.push(full);
     }
   }
 
@@ -2451,11 +2559,8 @@ async function scrapeBrandViaRetailer(
     return true;
   });
 
-  const jsonldCount = deduped.filter((p) => p._method === 'retailer_jsonld').length;
-  const pdpCount = deduped.filter((p) => p._method === 'retailer_pdp').length;
   console.log(
-    `[retailer] ${brand}/${category} FINAL: ${deduped.length} products ` +
-      `(jsonld=${jsonldCount}, pdp=${pdpCount})`,
+    `[retailer] ${brand}/${category} FINAL: ${deduped.length} products via firecrawl_json`,
   );
   return deduped;
 }
