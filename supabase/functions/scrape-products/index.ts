@@ -15,7 +15,8 @@ type ScrapeMethod =
   | 'search_fallback'
   | 'retailer_jsonld'         // (legacy) parsed from retailer HTML via Firecrawl + JSON-LD
   | 'retailer_pdp'            // (legacy) PDP follow-up after a thin retailer listing stub
-  | 'retailer_firecrawl_json'; // Firecrawl v2 JSON-schema array extraction (current path)
+  | 'retailer_firecrawl_json'  // Firecrawl v2 JSON-schema array extraction (current path)
+  | 'retailer_search_fallback'; // /v2/search-based fallback when /v2/scrape breaker is OPEN
 
 interface RawProduct {
   name: string;
@@ -1165,6 +1166,11 @@ const ANTI_SCRAPE_BRANDS = new Set([
 // Firecrawl service outages (observed 2026-04-19: persistent UNKNOWN_ERROR
 // 500s across all keys/URLs).
 // ─────────────────────────────────────────────────────────────────────────────
+// NOTE: This breaker only gates Firecrawl `/v2/scrape` and `/v2/extract`-style
+// calls (firecrawl-json, retailer-map). It does NOT gate `/v2/search`, which
+// has been observed to stay healthy during /v2/scrape outages — see the
+// `searchProducts` fallback used by retailer/extract paths when the breaker
+// is open.
 
 const FIRECRAWL_BREAKER = {
   consecutiveFailures: 0,
@@ -2899,6 +2905,36 @@ async function scrapeBrandViaRetailer(
   if (!firecrawlApiKey) {
     console.warn(`[retailer] ${brand}: Firecrawl key missing, skipping`);
     return [];
+  }
+
+  // ── BREAKER OPEN → /v2/search fallback ──
+  // /v2/scrape is degrading but /v2/search is healthy. Instead of returning
+  // nothing, search the retailer hosts directly via Firecrawl Search and
+  // parse the SERP snippets — same shape as Google Custom Search fallback.
+  const breaker = isFirecrawlOpen();
+  if (breaker.open) {
+    console.warn(
+      `[retailer] ${brand}/${category}: scrape breaker OPEN (${Math.round(breaker.remainingMs / 1000)}s left) — falling back to /v2/search`,
+    );
+    const searched = await searchProducts(brand, category, firecrawlApiKey);
+    // Restrict to the brand's mapped retailer hosts so we keep retailer-first intent.
+    const retailerHosts = new Set<string>();
+    for (const seed of retailerUrls) {
+      try { retailerHosts.add(new URL(seed).host.replace(/^www\./, '')); } catch { /* skip */ }
+    }
+    const onRetailer = searched.filter((p) => {
+      try {
+        const h = new URL(p.product_url).host.replace(/^www\./, '');
+        return [...retailerHosts].some((rh) => h === rh || h.endsWith(`.${rh}`));
+      } catch {
+        return false;
+      }
+    });
+    for (const p of onRetailer) p._method = 'retailer_search_fallback';
+    console.log(
+      `[retailer] ${brand}/${category} SEARCH-FALLBACK: ${searched.length} total → ${onRetailer.length} on-retailer`,
+    );
+    return onRetailer;
   }
 
   const brandTokens = brandKey.split(/\s+/).filter((t) => t.length > 2);
