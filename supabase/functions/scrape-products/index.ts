@@ -1363,9 +1363,13 @@ function parseShopifyProduct(
     if (plain.length > 15) description = plain.slice(0, 500);
   }
 
+  // CANONICAL BRAND WINS. item.vendor on Shopify is often a season/collection
+  // tag ("FW22", "BF25", "CARRYOVER", "WHOLESALE EXCLUSIVE") rather than the
+  // actual brand — using it pollutes the catalog with junk "brands". Only fall
+  // back to item.vendor if the caller didn't provide a canonical brand.
   return {
     name: title,
-    brand: item.vendor || brand,
+    brand: brand || item.vendor,
     product_url: productUrl,
     price_cents: priceCents,
     currency: 'USD',
