@@ -851,63 +851,88 @@ function buildOutfit(
   products: CatalogProduct[],
   usedProductIds: Set<string>,
   gender: "mens" | "womens",
-): { items: Array<{ product: CatalogProduct; role: string; position: number }>; tribe: string } | null {
-  // Pick a primary tribe for this outfit
-  const occasionTribes = OCCASION_TRIBE_MAP[occasion.key] ?? ['quiet_luxury', 'heritage_luxury'];
-  const primaryTribe = occasionTribes[Math.floor(Math.random() * occasionTribes.length)];
-  const secondaryTribe = occasionTribes.find(t => t !== primaryTribe) ?? occasionTribes[0];
+): { items: Array<{ product: CatalogProduct; role: string; position: number }>;
+     cohort: CohortKey } | null {
+
+  // ─── STEP 1: CHOOSE AESTHETIC LANE ─────────────────────────────
+  const aestheticLeads = OCCASION_AESTHETIC_LEADS[occasion.key]
+    ?? ['minimalist_luxury'];
+  const primaryCohort = aestheticLeads[
+    Math.floor(Math.random() * aestheticLeads.length)
+  ];
+  const alliedCohorts = COHORT_ALLIANCES[primaryCohort];
+
+  // Filter pool to brands belonging to ANY allied cohort.
+  const eligibleProducts = products.filter(p => brandCompatible(p.brand, alliedCohorts));
+
+  const requiredSlotCount = occasion.slots.filter(s => s.required).length;
+  if (eligibleProducts.length < requiredSlotCount) return null;
+
+  // Brand diversity gate — abort if pool collapses to a single brand
+  // (would produce a one-brand outfit, e.g., all Stone Island).
+  const distinctBrands = new Set(eligibleProducts.map(p => p.brand));
+  if (distinctBrands.size < 2) return null;
 
   const items: Array<{ product: CatalogProduct; role: string; position: number }> = [];
   let position = 0;
 
-  // Cohesion state — updated as each slot is filled
+  // Cohesion state
   const outfitColors = new Set<string>();
   const outfitFabricWeights = new Set<string>();
   let outfitStyleFamily: string | null = null;
   let hasPatternPiece = false;
+  const outfitCohortsUsed = new Set<CohortKey>();
 
-  for (const slot of occasion.slots) {
-    // Resolve the effective category list for this gender
+  // ─── STEP 2: HERO-FIRST SLOT ORDER ─────────────────────────────
+  const heroSlotOrder = ["outerwear", "shoes", "top", "bottom", "accessory"];
+  const orderedSlots = [...occasion.slots].sort((a, b) => {
+    const aIdx = heroSlotOrder.indexOf(a.role);
+    const bIdx = heroSlotOrder.indexOf(b.role);
+    return (aIdx === -1 ? 99 : aIdx) - (bIdx === -1 ? 99 : bIdx);
+  });
+
+  for (const slot of orderedSlots) {
     const effectiveCats =
       gender === "mens" && slot.mensCategories?.length ? slot.mensCategories :
       gender === "womens" && slot.womensCategories?.length ? slot.womensCategories :
       slot.categories;
 
-    const candidates = products.filter(p => {
+    // ─── STEP 3: CATEGORY CANDIDATES ─────────────────────────────
+    const categoryCandidates = eligibleProducts.filter(p => {
       if (usedProductIds.has(p.id)) return false;
       const normCat = normalizeCategory(p.category);
       return effectiveCats.includes(normCat);
     });
 
-    if (candidates.length === 0) {
+    if (categoryCandidates.length === 0) {
       if (slot.required) return null;
       continue;
     }
 
-    // Apply cohesion filters
-    const cohesiveCandidates = candidates.filter(p => {
-      // STYLE
+    // ─── STEP 4: COHESION FILTER ─────────────────────────────────
+    const cohesiveCandidates = categoryCandidates.filter(p => {
       if (outfitStyleFamily) {
-        const candidateFamily = getStyleFamily(p.style_genre);
-        if (candidateFamily && !stylesCompatible(outfitStyleFamily, p.style_genre)) {
-          return false;
-        }
+        if (!stylesCompatible(outfitStyleFamily, p.style_genre)) return false;
       }
-      // COLOR
       const candidateColors = extractColors(p.tags);
       if (!colorsCohesive(outfitColors, candidateColors)) return false;
-      // PATTERN — max 1 patterned piece
       if (hasPatternPiece && hasPattern(p.tags, p.name, p.presentation)) return false;
-      // FABRIC weight
       const candidateWeight = getFabricWeight(p.fabric_composition);
       if (!fabricsCohesive(outfitFabricWeights, candidateWeight)) return false;
+      // Cohort cap — max 3 distinct cohorts per outfit
+      const brandCohort = getBrandCohortInAlliance(p.brand, alliedCohorts);
+      if (!brandCohort) return false;
+      if (!outfitCohortsUsed.has(brandCohort) && outfitCohortsUsed.size >= 3) {
+        return false;
+      }
       return true;
     });
 
-    // Graceful degradation: if cohesion eliminates all, fall back
-    const workingCandidates = cohesiveCandidates.length > 0 ? cohesiveCandidates : candidates;
+    const workingCandidates = cohesiveCandidates.length > 0
+      ? cohesiveCandidates
+      : categoryCandidates;
 
-    // Keyword preference (e.g. "cargo", "swim", "sun", "linen", "surf")
+    // ─── STEP 5: STYLIST SCORING ─────────────────────────────────
     const kw = (slot.keywordPrefer ?? []).map(k => k.toLowerCase());
     const matchesKeyword = (p: CatalogProduct): boolean => {
       if (kw.length === 0) return false;
@@ -915,25 +940,40 @@ function buildOutfit(
       return kw.some(k => hay.includes(k));
     };
 
-    // Score: image confidence + tribe tier + primary-tribe bonus + keyword bonus
     const scored = workingCandidates.map(p => {
-      const t = getBrandTribe(p.brand);
-      const tribeBonus =
-        t === primaryTribe ? 50 :
-        t === secondaryTribe ? 20 :
-        t === 'supporting' ? 0 : 10;
-      const keywordBonus = matchesKeyword(p) ? 75 : 0;
+      const brandCohort =
+        getBrandCohortInAlliance(p.brand, alliedCohorts) ?? 'supporting';
+      const isPrimary = brandCohort === primaryCohort;
+      const isSupporting = brandCohort === 'supporting';
+      const isHeroSlot = slot.role === "outerwear" || slot.role === "shoes";
+
+      // Hard penalty: supporting brands MUST NOT lead hero slots
+      const supportingPenalty = (isHeroSlot && isSupporting) ? -1000 : 0;
+
+      const cohortBaseScore = cohortScore(brandCohort);
+      const primaryBonus = isPrimary ? 75 : 0;
+      const heroSlotBonus = (isHeroSlot && !isSupporting) ? 40 : 0;
+      const keywordBonus = matchesKeyword(p) ? 60 : 0;
+      const imageBonus = (p.image_confidence ?? 0) * 80;
+
       return {
         product: p,
-        tribe: t,
-        score: (p.image_confidence ?? 0) * 100 + tribeScore(t) + tribeBonus + keywordBonus,
+        cohort: brandCohort,
+        score: cohortBaseScore + primaryBonus + heroSlotBonus
+               + keywordBonus + imageBonus + supportingPenalty,
       };
     });
 
-    scored.sort((a, b) => b.score - a.score);
-    const topN = scored.slice(0, Math.min(5, scored.length));
+    const validScored = scored.filter(s => s.score > -500);
+    if (validScored.length === 0) {
+      if (slot.required) return null;
+      continue;
+    }
 
-    // Weighted random — top-of-list more likely
+    validScored.sort((a, b) => b.score - a.score);
+    const topN = validScored.slice(0, Math.min(4, validScored.length));
+
+    // ─── STEP 6: WEIGHTED SELECTION ──────────────────────────────
     const weights = topN.map((_, i) => topN.length - i);
     const totalW = weights.reduce((a, b) => a + b, 0);
     let r = Math.random() * totalW;
@@ -943,20 +983,40 @@ function buildOutfit(
       if (r <= 0) { pickIdx = i; break; }
     }
     const pick = topN[pickIdx].product;
+    const pickCohort = topN[pickIdx].cohort;
 
-    // Update cohesion state with the picked piece
+    // ─── STEP 7: UPDATE OUTFIT STATE ─────────────────────────────
     extractColors(pick.tags).forEach(c => outfitColors.add(c));
     const pickWeight = getFabricWeight(pick.fabric_composition);
     if (pickWeight) outfitFabricWeights.add(pickWeight);
     const pickFamily = getStyleFamily(pick.style_genre);
     if (pickFamily && !outfitStyleFamily) outfitStyleFamily = pickFamily;
     if (hasPattern(pick.tags, pick.name, pick.presentation)) hasPatternPiece = true;
+    outfitCohortsUsed.add(pickCohort);
 
     usedProductIds.add(pick.id);
     items.push({ product: pick, role: slot.role, position: position++ });
   }
 
-  return items.length >= 3 ? { items, tribe: primaryTribe } : null;
+  // ─── STEP 8: VALIDATE OUTFIT QUALITY ───────────────────────────
+  const hasShoes = items.some(i => i.role === "shoes");
+  const hasTop = items.some(i => i.role === "top");
+  const hasBottom = items.some(i => i.role === "bottom");
+  const hasOuterwear = items.some(i => i.role === "outerwear");
+  const hasDress = items.some(i =>
+    normalizeCategory(i.product.category) === "dresses"
+  );
+
+  if (!hasShoes) return null;
+  if (!hasTop && !hasOuterwear && !hasDress) return null;
+  if (!hasBottom && !hasDress && !hasOuterwear) return null;
+
+  // Reposition for display order: outerwear, top, bottom, shoes, accessory
+  const displayOrder = ["outerwear", "top", "bottom", "shoes", "accessory"];
+  items.sort((a, b) => displayOrder.indexOf(a.role) - displayOrder.indexOf(b.role));
+  items.forEach((it, idx) => { it.position = idx; });
+
+  return items.length >= 3 ? { items, cohort: primaryCohort } : null;
 }
 
 /* ── Main handler ─────────────────────────────────────────────── */
