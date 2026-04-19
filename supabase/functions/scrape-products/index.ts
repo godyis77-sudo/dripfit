@@ -3232,22 +3232,39 @@ async function scrapeBrandViaRetailer(
     const heroCandidates = deduped
       .filter((p) => !p.description && p.product_url.startsWith('http'))
       .slice(0, 5);
-    if (heroCandidates.length > 0) {
+    const missingDescTotal = deduped.filter((p) => !p.description).length;
+    if (heroCandidates.length === 0) {
+      console.log(
+        `[pdp-enrich] ${brand}/${category}: SKIP — no candidates (deduped=${deduped.length}, missing_desc=${missingDescTotal})`,
+      );
+    } else {
       const useStealth = heroCandidates.some((p) => shouldUseStealth(p.product_url));
+      console.log(
+        `[pdp-enrich] ${brand}/${category}: START batch of ${heroCandidates.length} PDPs (stealth=${useStealth}, missing_desc_total=${missingDescTotal})`,
+      );
+      const t0 = Date.now();
       const pdpResults = await firecrawlBatchScrapePdps(
         heroCandidates.map((p) => p.product_url),
         firecrawlApiKey,
         { useStealth, maxWaitMs: 50000 },
+      );
+      console.log(
+        `[pdp-enrich] ${brand}/${category}: batch returned ${pdpResults.length}/${heroCandidates.length} PDPs in ${Math.round((Date.now() - t0) / 1000)}s`,
       );
       const byUrl = new Map<string, BatchPdpResult>();
       for (const r of pdpResults) {
         byUrl.set(r.url.toLowerCase().replace(/\/$/, ''), r);
       }
       let enrichedCount = 0;
+      let imagesMerged = 0;
+      let unmatchedUrls = 0;
       for (const p of heroCandidates) {
         const key = p.product_url.toLowerCase().replace(/\/$/, '');
         const hit = byUrl.get(key);
-        if (!hit?.markdown) continue;
+        if (!hit?.markdown) {
+          unmatchedUrls++;
+          continue;
+        }
         const desc = extractDescriptionFromPdpMarkdown(hit.markdown, p.name);
         if (desc) {
           p.description = desc;
@@ -3257,14 +3274,15 @@ async function scrapeBrandViaRetailer(
         if (hit.imageUrls.length > 0 && p.image_urls.length < 3) {
           const merged = [...new Set([...p.image_urls, ...hit.imageUrls])].slice(0, 6);
           p.image_urls = merged;
+          imagesMerged++;
         }
       }
       console.log(
-        `[retailer] ${brand}/${category} PDP enrichment: ${enrichedCount}/${heroCandidates.length} descriptions added`,
+        `[pdp-enrich] ${brand}/${category}: DONE descriptions=${enrichedCount}/${heroCandidates.length}, images_merged=${imagesMerged}, unmatched=${unmatchedUrls}`,
       );
     }
   } catch (err) {
-    console.warn(`[retailer] PDP enrichment threw: ${(err as Error).message}`);
+    console.warn(`[pdp-enrich] ${brand}/${category}: THREW ${(err as Error).message}`);
   }
 
   return deduped;
