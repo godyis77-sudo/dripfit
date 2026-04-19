@@ -701,7 +701,8 @@ function fabricsCohesive(outfitWeights: Set<string>, newWeight: string | null): 
 function buildOutfit(
   occasion: OccasionDef,
   products: CatalogProduct[],
-  usedProductIds: Set<string>
+  usedProductIds: Set<string>,
+  gender: "mens" | "womens",
 ): { items: Array<{ product: CatalogProduct; role: string; position: number }>; tribe: string } | null {
   // Pick a primary tribe for this outfit
   const occasionTribes = OCCASION_TRIBE_MAP[occasion.key] ?? ['quiet_luxury', 'heritage_luxury'];
@@ -718,10 +719,16 @@ function buildOutfit(
   let hasPatternPiece = false;
 
   for (const slot of occasion.slots) {
+    // Resolve the effective category list for this gender
+    const effectiveCats =
+      gender === "mens" && slot.mensCategories?.length ? slot.mensCategories :
+      gender === "womens" && slot.womensCategories?.length ? slot.womensCategories :
+      slot.categories;
+
     const candidates = products.filter(p => {
       if (usedProductIds.has(p.id)) return false;
       const normCat = normalizeCategory(p.category);
-      return slot.categories.includes(normCat);
+      return effectiveCats.includes(normCat);
     });
 
     if (candidates.length === 0) {
@@ -752,17 +759,26 @@ function buildOutfit(
     // Graceful degradation: if cohesion eliminates all, fall back
     const workingCandidates = cohesiveCandidates.length > 0 ? cohesiveCandidates : candidates;
 
-    // Score: image confidence + tribe tier + primary-tribe bonus
+    // Keyword preference (e.g. "cargo", "swim", "sun", "linen", "surf")
+    const kw = (slot.keywordPrefer ?? []).map(k => k.toLowerCase());
+    const matchesKeyword = (p: CatalogProduct): boolean => {
+      if (kw.length === 0) return false;
+      const hay = [p.name, ...(p.tags ?? [])].join(" ").toLowerCase();
+      return kw.some(k => hay.includes(k));
+    };
+
+    // Score: image confidence + tribe tier + primary-tribe bonus + keyword bonus
     const scored = workingCandidates.map(p => {
       const t = getBrandTribe(p.brand);
       const tribeBonus =
         t === primaryTribe ? 50 :
         t === secondaryTribe ? 20 :
         t === 'supporting' ? 0 : 10;
+      const keywordBonus = matchesKeyword(p) ? 75 : 0;
       return {
         product: p,
         tribe: t,
-        score: (p.image_confidence ?? 0) * 100 + tribeScore(t) + tribeBonus,
+        score: (p.image_confidence ?? 0) * 100 + tribeScore(t) + tribeBonus + keywordBonus,
       };
     });
 
