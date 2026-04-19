@@ -12,182 +12,305 @@ import { createClient } from "npm:@supabase/supabase-js@2.49.1";
  *   clear_existing?: boolean  — remove previous outfits for this week_id first
  */
 
-/* ── DripFit Brand Pool & Tribe Logic ─────────────────────────── */
+/* ── Luxury Stylist — House Cohort System ─────────────────────── */
+// Editorial cohorts. Brands MAY belong to multiple cohorts; an outfit's
+// allied set is checked against ALL cohorts a brand qualifies for, not a
+// single canonical one. Prevents demoting Saint Laurent / Celine / Dior
+// to one fixed lane.
 
-const DRIPFIT_BRAND_POOL = {
-  heritage_luxury: [
-    'AMIRI', 'Saint Laurent', 'Fear of God',
-    'GALLERY DEPARTMENT LLC', 'Gucci', 'Balenciaga',
-    'Louis Vuitton', 'Prada', 'Moncler', 'Dior',
-    'Loewe', 'Fendi', 'Burberry', 'Valentino',
-    'Acne Studios', 'Alexander McQueen', 'Celine',
-    'Bottega Veneta', 'Givenchy', 'Rick Owens',
-    'Maison Margiela', 'Jacquemus', 'Sacai',
-    'AMI Paris', 'Off-White', 'Stone Island',
-    'Essentials',
+const COHORTS = {
+  // A: MAXIMALIST LUXURY — bold prints, gold, 70s silhouettes
+  maximalist_luxury: [
+    'Gucci', 'Versace', 'Saint Laurent', 'AMIRI',
+    'Dolce & Gabbana', 'Valentino',
   ],
-  elevated_streetwear: [
-    'Palace Skateboards', 'Daily Paper', 'Stüssy',
-    'Eric Emanuel', 'Kith', 'Supreme', 'Carhartt',
-    "Arc'teryx", 'Salomon', 'Dr. Martens',
-    'Vans', 'New Balance', 'Converse',
+  // B: ROCKSTAR LUXURY — skinny tailoring, leather, midnight palette
+  rockstar_luxury: [
+    'Saint Laurent', 'Celine', 'AMIRI', 'Dior',
   ],
-  quiet_luxury: [
-    'Reiss', 'Theory', 'Todd Snyder', 'COS',
-    'Everlane', "Rothy's", 'Outerknown',
-    'Marine Layer', 'Taylor Stitch', 'Reformation',
-    'Faherty', 'Buck Mason',
+  // C: MINIMALIST LUXURY — anti-logo, sculptural, intellectual
+  minimalist_luxury: [
+    'Prada', 'Bottega Veneta', 'Celine', 'Loewe',
+    'Acne Studios', 'Jil Sander', 'Lemaire', 'The Row',
+    'Jacquemus',
   ],
+  // D: LUXURY STREETWEAR BRIDGE — universal crossover
+  luxury_streetwear: [
+    'Louis Vuitton', 'Dior', 'Off-White', 'Fear of God',
+    'Essentials', 'Kith', 'AMI Paris', 'Sacai',
+    'GALLERY DEPARTMENT LLC',
+  ],
+  // E: PURE STREETWEAR — skate heritage, logos, relaxed
+  pure_streetwear: [
+    'Supreme', 'Stüssy', 'Palace Skateboards', 'Palace', 'Kith',
+    'Carhartt', 'Eric Emanuel', 'Daily Paper',
+  ],
+  // F: TECHWEAR — technical fabrics, utility, hardware
+  techwear: [
+    'Stone Island', "Arc'teryx", 'Salomon', 'Carhartt',
+  ],
+  // G: AVANT-GARDE — deconstruction, elongated silhouettes
+  avant_garde: [
+    'Balenciaga', 'Rick Owens', 'Maison Margiela',
+    'Acne Studios', 'Moncler',
+  ],
+  // H: BOURGEOIS / QUIET WEALTH — old money restraint
+  bourgeois: [
+    'The Row', 'Burberry', 'Fendi', 'Givenchy',
+    'Alexander McQueen',
+  ],
+  // I: FOOTWEAR/ACCESSORY SPECIALIST (treat as supporting)
+  footwear_specialist: [
+    'Nike', 'Adidas', 'Puma', 'Vans', 'Converse',
+    'New Balance', 'Dr. Martens',
+  ],
+  // J: SUPPORTING BASICS — tees, denim, fillers ONLY
   supporting: [
-    'Nike', 'Adidas', 'Puma', "Levi's",
+    'Reiss', 'Theory', 'Todd Snyder', 'COS', 'Everlane',
+    "Rothy's", 'Outerknown', 'Marine Layer', 'Taylor Stitch',
+    'Reformation', 'Faherty', 'Buck Mason', "Levi's",
     'Uniqlo', 'Gap', 'AllSaints',
   ],
+} as const;
+
+type CohortKey = keyof typeof COHORTS;
+
+const ALL_COHORT_KEYS = Object.keys(COHORTS) as CohortKey[];
+
+const APPROVED_BRANDS = new Set<string>(
+  Object.values(COHORTS).flat() as string[]
+);
+
+// Allied cohorts per primary. Tightened: luxury_streetwear no longer
+// allies with both maximalist + minimalist + techwear (was too permissive
+// — basically "anything goes"). Now picks luxury crossovers only.
+const COHORT_ALLIANCES: Record<CohortKey, CohortKey[]> = {
+  maximalist_luxury:   ['maximalist_luxury', 'rockstar_luxury', 'luxury_streetwear', 'supporting'],
+  rockstar_luxury:     ['rockstar_luxury', 'maximalist_luxury', 'avant_garde', 'luxury_streetwear', 'supporting'],
+  minimalist_luxury:   ['minimalist_luxury', 'bourgeois', 'luxury_streetwear', 'supporting'],
+  luxury_streetwear:   ['luxury_streetwear', 'pure_streetwear', 'rockstar_luxury', 'footwear_specialist', 'supporting'],
+  pure_streetwear:     ['pure_streetwear', 'luxury_streetwear', 'techwear', 'footwear_specialist', 'supporting'],
+  techwear:            ['techwear', 'pure_streetwear', 'footwear_specialist', 'supporting'],
+  avant_garde:         ['avant_garde', 'rockstar_luxury', 'minimalist_luxury', 'supporting'],
+  bourgeois:           ['bourgeois', 'minimalist_luxury', 'supporting'],
+  footwear_specialist: ['footwear_specialist', 'pure_streetwear', 'luxury_streetwear', 'techwear'],
+  supporting:          ['supporting'],
 };
 
-const APPROVED_BRANDS = new Set<string>([
-  ...DRIPFIT_BRAND_POOL.heritage_luxury,
-  ...DRIPFIT_BRAND_POOL.elevated_streetwear,
-  ...DRIPFIT_BRAND_POOL.quiet_luxury,
-  ...DRIPFIT_BRAND_POOL.supporting,
-]);
-
-const OCCASION_TRIBE_MAP: Record<string, string[]> = {
-  night_out: ['heritage_luxury', 'elevated_streetwear'],
-  lunch_date: ['quiet_luxury', 'heritage_luxury'],
-  office: ['quiet_luxury', 'heritage_luxury'],
-  weekend_casual: ['elevated_streetwear', 'quiet_luxury'],
-  beach_day: ['quiet_luxury', 'elevated_streetwear'],
-  festival: ['elevated_streetwear', 'heritage_luxury'],
-  gym: ['elevated_streetwear', 'supporting'],
-  brunch: ['quiet_luxury', 'heritage_luxury'],
-  patio_evening: ['quiet_luxury', 'heritage_luxury'],
-  summer_night_out: ['heritage_luxury', 'quiet_luxury'],
-  spring_garden: ['quiet_luxury', 'bohemian' as any, 'heritage_luxury'],
-  autumn_layers: ['quiet_luxury', 'heritage_luxury'],
-  winter_polish: ['heritage_luxury', 'quiet_luxury'],
-};
-
-function getBrandTribe(brand: string): string {
-  if (!brand) return 'supporting';
-  if (DRIPFIT_BRAND_POOL.heritage_luxury.includes(brand)) return 'heritage_luxury';
-  if (DRIPFIT_BRAND_POOL.elevated_streetwear.includes(brand)) return 'elevated_streetwear';
-  if (DRIPFIT_BRAND_POOL.quiet_luxury.includes(brand)) return 'quiet_luxury';
-  return 'supporting';
+// All cohorts a brand belongs to (a brand can be in several).
+function getBrandCohorts(brand: string): CohortKey[] {
+  if (!brand) return ['supporting'];
+  const out: CohortKey[] = [];
+  for (const c of ALL_COHORT_KEYS) {
+    if ((COHORTS[c] as readonly string[]).includes(brand)) out.push(c);
+  }
+  return out.length > 0 ? out : ['supporting'];
 }
 
-function tribeScore(tribe: string): number {
-  const scores: Record<string, number> = {
-    heritage_luxury: 100,
-    quiet_luxury: 80,
-    elevated_streetwear: 60,
-    supporting: 20,
+// Best-fit cohort for a brand WITHIN a given allied set. Picks the highest-
+// scoring cohort the brand belongs to that is allowed under primary.
+function getBrandCohortInAlliance(brand: string, alliedSet: CohortKey[]): CohortKey | null {
+  const cohorts = getBrandCohorts(brand).filter(c => alliedSet.includes(c));
+  if (cohorts.length === 0) return null;
+  return cohorts.sort((a, b) => cohortScore(b) - cohortScore(a))[0];
+}
+
+// Editorial weight. Higher = more likely to be hero piece.
+function cohortScore(cohort: CohortKey): number {
+  const scores: Record<CohortKey, number> = {
+    maximalist_luxury: 100,
+    avant_garde: 95,
+    rockstar_luxury: 90,
+    minimalist_luxury: 85,
+    luxury_streetwear: 75,
+    bourgeois: 70,
+    pure_streetwear: 55,
+    techwear: 50,
+    footwear_specialist: 30,
+    supporting: 15,
   };
-  return scores[tribe] ?? 0;
+  return scores[cohort];
 }
+
+function brandCompatible(brand: string, alliedSet: CohortKey[]): boolean {
+  return getBrandCohortInAlliance(brand, alliedSet) !== null;
+}
+
+/* ── Occasion aesthetic leads ─────────────────────────────────── */
+// Which cohort leads each occasion. Outfits' primary cohort is sampled
+// from this list; allied cohorts (per COHORT_ALLIANCES) fill the rest.
+const OCCASION_AESTHETIC_LEADS: Record<string, CohortKey[]> = {
+  night_out:           ['rockstar_luxury', 'maximalist_luxury', 'avant_garde'],
+  summer_night_out:    ['maximalist_luxury', 'rockstar_luxury', 'minimalist_luxury'],
+  lunch_date:          ['minimalist_luxury', 'bourgeois', 'rockstar_luxury'],
+  brunch:              ['minimalist_luxury', 'bourgeois', 'luxury_streetwear'],
+  office:              ['minimalist_luxury', 'bourgeois', 'rockstar_luxury'],
+  weekend_casual:      ['luxury_streetwear', 'pure_streetwear', 'techwear'],
+  beach_day:           ['minimalist_luxury', 'luxury_streetwear'],
+  patio_evening:       ['minimalist_luxury', 'rockstar_luxury', 'bourgeois'],
+  festival:            ['rockstar_luxury', 'luxury_streetwear', 'maximalist_luxury'],
+  gym:                 ['techwear', 'luxury_streetwear', 'pure_streetwear'],
+  spring_garden:       ['minimalist_luxury', 'bourgeois'],
+  autumn_layers:       ['minimalist_luxury', 'bourgeois', 'luxury_streetwear'],
+  winter_polish:       ['bourgeois', 'minimalist_luxury', 'rockstar_luxury'],
+};
 
 /* ── Editorial naming pools (DripFit voice) ───────────────────── */
 
 const EDITORIAL_NAME_POOLS: Record<string, string[]> = {
-  night_out_heritage_luxury: [
+  // night_out
+  night_out_rockstar_luxury: [
     'Midnight on Madison', 'After Dark Allure',
-    'Gallery Row', 'The Archive Drop',
-    'Atelier After Hours',
+    'The Archive Drop', 'Atelier After Hours',
+    'Post-Runway Dinner',
   ],
-  night_out_elevated_streetwear: [
-    'Warehouse Pulse', 'Block Party Grail',
-    'Downtown Heat', 'Afterglow Stack',
+  night_out_maximalist_luxury: [
+    'Gallery Row', 'Velvet Rope Protocol',
+    'The VIP Floor', 'Baroque After Dark',
   ],
-  lunch_date_quiet_luxury: [
-    'Elevated Brunch', 'Midday Edit',
-    'Cafe Society', 'The Loire Lunch',
+  night_out_avant_garde: [
+    'Anti-Fashion Hours', 'Deconstructed Dinner',
+    'Downtown Uniform', 'The Concrete Floor',
   ],
-  lunch_date_heritage_luxury: [
-    'Polished Casual', 'Left Bank Morning',
-    "The Curator's Hour",
-  ],
-  office_quiet_luxury: [
-    'Boardroom Edge', 'Quiet Authority',
-    'Office Flex', 'The Tailored Tuesday',
-  ],
-  office_heritage_luxury: [
-    'Power Feminine', 'Monograms & Meetings',
-    'Executive Suite',
-  ],
-  weekend_casual_elevated_streetwear: [
-    'Gym to Street', 'Iron & Ink',
-    'Weekend Uniform', 'Off-Duty Drop',
-  ],
-  weekend_casual_quiet_luxury: [
-    'Chill Capsule', 'Sunday Edit',
-    'The Slow Saturday',
-  ],
-  beach_day_quiet_luxury: [
-    'Coastal Linen', 'Golden Hour Brunch',
-    'The Riviera Edit',
-  ],
-  beach_day_elevated_streetwear: [
-    'Boardwalk Drop', 'Sandy Concrete',
-  ],
-  festival_elevated_streetwear: [
-    'Festival Ready', 'Desert Daze',
-    'The Main Stage Fit',
-  ],
-  festival_heritage_luxury: [
-    'Late Bloom Festival', 'Grails on Grass',
-  ],
-  gym_elevated_streetwear: [
-    'Track Mode', 'Street Athletics', 'The Grind Edit',
-  ],
-  gym_supporting: [
-    'Rep & Reset', 'Iron Hours',
-  ],
-  brunch_quiet_luxury: [
-    'Garden Party', 'Morning Glory', 'Light & Easy',
-  ],
-  brunch_heritage_luxury: [
-    'Golden Morning', 'The Terrace Edit',
-  ],
-  patio_evening_quiet_luxury: [
-    'Patio Hours', 'Twilight Linen', 'The Veranda Edit',
-  ],
-  patio_evening_heritage_luxury: [
-    'Sunset Terrace', 'Aperitivo Hour',
-  ],
-  summer_night_out_heritage_luxury: [
+  // summer_night_out
+  summer_night_out_maximalist_luxury: [
     'Heatwave After Dark', 'Rooftop Drop', 'Neon Boulevard',
   ],
-  summer_night_out_quiet_luxury: [
+  summer_night_out_rockstar_luxury: [
     'Sultry Soiree', 'The Late Summer Edit',
   ],
-  spring_garden_quiet_luxury: [
+  summer_night_out_minimalist_luxury: [
+    'Linen After Dark', 'White Noise Hour',
+  ],
+  // lunch_date
+  lunch_date_minimalist_luxury: [
+    'Quiet Authority', 'The Loire Lunch',
+    'Cashmere Midday', 'Cafe Society',
+  ],
+  lunch_date_bourgeois: [
+    'Old Money Hour', 'The Long Lunch',
+    'Polished Casual', 'Private Club Midday',
+  ],
+  lunch_date_rockstar_luxury: [
+    'Left Bank Morning', "The Curator's Hour",
+  ],
+  // brunch
+  brunch_minimalist_luxury: [
+    'Garden Party', 'Morning Glory', 'Light & Easy',
+  ],
+  brunch_bourgeois: [
+    'Golden Morning', 'The Terrace Edit',
+  ],
+  brunch_luxury_streetwear: [
+    'Off-Duty Brunch', 'The Sunday Drop',
+  ],
+  // office
+  office_minimalist_luxury: [
+    'Boardroom Edge', 'Quiet Authority',
+    'The Tailored Tuesday', 'Monday in Monochrome',
+  ],
+  office_bourgeois: [
+    'Executive Suite', 'Power Feminine',
+    'The Corner Office', 'Monograms & Meetings',
+  ],
+  office_rockstar_luxury: [
+    'Slimane at the Desk', 'Sharp Suit Hour',
+  ],
+  // weekend_casual
+  weekend_casual_luxury_streetwear: [
+    'Off-Duty Drop', 'The Pharrell Uniform',
+    'Weekend Monogram', 'Sunday Streetwear',
+  ],
+  weekend_casual_pure_streetwear: [
+    'Gym to Street', 'Block Party Sunday',
+    'The Kith Lineup', 'Skate Park Polish',
+  ],
+  weekend_casual_techwear: [
+    'Trail to Town', 'Tech Sunday',
+  ],
+  // beach_day
+  beach_day_minimalist_luxury: [
+    'Coastal Linen', 'The Riviera Edit',
+    'Mediterranean Minimal', 'Saint-Tropez Morning',
+  ],
+  beach_day_luxury_streetwear: [
+    'Boardwalk Drop', 'Sandy Concrete',
+  ],
+  // patio_evening
+  patio_evening_minimalist_luxury: [
+    'Patio Hours', 'Twilight Linen', 'The Veranda Edit',
+  ],
+  patio_evening_rockstar_luxury: [
+    'Sunset Terrace', 'Aperitivo Hour',
+  ],
+  patio_evening_bourgeois: [
+    'Members Only Patio', 'Old Money Sundown',
+  ],
+  // festival
+  festival_rockstar_luxury: [
+    'AMIRI After Dark', 'The Desert Set',
+    'Late Bloom Festival', 'Main Stage Leather',
+  ],
+  festival_luxury_streetwear: [
+    'Cactus Jack Compound', 'Festival Monogram',
+    'The VIP Pit', 'Paris Fashion Week Street',
+  ],
+  festival_maximalist_luxury: [
+    'Grails on Grass', 'Baroque on the Field',
+  ],
+  // gym
+  gym_techwear: [
+    'Track Mode', 'Iron Hours', 'The Grind Edit',
+  ],
+  gym_luxury_streetwear: [
+    'Lux Cardio', 'Studio Drop',
+  ],
+  gym_pure_streetwear: [
+    'Rep & Reset', 'Street Athletics',
+  ],
+  // spring_garden
+  spring_garden_minimalist_luxury: [
     'Spring Bloom', 'The Garden Edit', 'Pastel Stroll',
   ],
-  spring_garden_heritage_luxury: [
+  spring_garden_bourgeois: [
     'First Warmth', 'Botanical Hour',
   ],
-  autumn_layers_quiet_luxury: [
-    'Crisp Air Capsule', 'The Layered Edit', 'Amber Hours',
+  // autumn_layers
+  autumn_layers_minimalist_luxury: [
+    'October Uniform', 'Bottega Autumn',
+    'The Loewe Layer', 'Cashmere Weekend',
   ],
-  autumn_layers_heritage_luxury: [
+  autumn_layers_bourgeois: [
     'Heritage Autumn', 'The Topcoat Drop',
   ],
-  winter_polish_heritage_luxury: [
-    'Cold Front Couture', 'The Camel Coat Edit', 'Polished in Sub-Zero',
+  autumn_layers_luxury_streetwear: [
+    'Fall Drop Stack', 'Crispwear',
   ],
-  winter_polish_quiet_luxury: [
+  // winter_polish
+  winter_polish_bourgeois: [
+    'The Winter Edit', 'Sofia Richie Winter',
+    'Old Money Cold', 'Private Club December',
+  ],
+  winter_polish_minimalist_luxury: [
     'Quiet Winter', 'Snow Day Tailoring',
+  ],
+  winter_polish_rockstar_luxury: [
+    'Cold Front Couture', 'Black Coat Hours',
   ],
 };
 
 function generateEditorialName(
   occasionKey: string,
-  tribe: string,
+  cohort: CohortKey,
   usedNames: Set<string>
 ): string {
-  const key = `${occasionKey}_${tribe}`;
+  const key = `${occasionKey}_${cohort}`;
+  // Fallback chain: exact (occasion, cohort) → first lead for occasion → generic
+  const leads = OCCASION_AESTHETIC_LEADS[occasionKey] ?? [];
+  const fallbackKey = leads.length > 0 ? `${occasionKey}_${leads[0]}` : '';
   const pool =
     EDITORIAL_NAME_POOLS[key] ??
-    EDITORIAL_NAME_POOLS[`${occasionKey}_quiet_luxury`] ??
+    EDITORIAL_NAME_POOLS[fallbackKey] ??
     [occasionKey.replace(/_/g, ' ')];
 
   const available = pool.filter(n => !usedNames.has(n));
@@ -206,40 +329,65 @@ function generateEditorialName(
 }
 
 function generateDescription(
-  tribe: string,
+  cohort: CohortKey,
   items: Array<{ product: CatalogProduct; role: string; position: number }>
 ): string {
-  const brands = items
-    .map(it => it.product.brand)
-    .filter(Boolean)
-    .filter((b, i, arr) => arr.indexOf(b) === i);
-
+  const brands = Array.from(new Set(
+    items.map(it => it.product.brand).filter(Boolean)
+  )).slice(0, 3);
   if (brands.length === 0) return '';
+  const brandList = brands.join(' · ');
 
-  const brandList = brands.slice(0, 3).join(' · ');
-
-  const templates: Record<string, string[]> = {
-    heritage_luxury: [
-      `${brandList}. Archive energy. Verified drape.`,
+  const templates: Record<CohortKey, string[]> = {
+    maximalist_luxury: [
+      `${brandList}. Archive maximalism. Verified drape.`,
       `${brandList}. Houses. Cut right.`,
-      `${brandList}. The grail stack.`,
+      `${brandList}. Baroque refinement.`,
     ],
-    quiet_luxury: [
+    rockstar_luxury: [
+      `${brandList}. Leather and midnight.`,
+      `${brandList}. The Slimane silhouette.`,
+      `${brandList}. Rock-and-roll tailoring.`,
+    ],
+    minimalist_luxury: [
       `${brandList}. Quiet. Precise. Locked.`,
       `${brandList}. The silhouette is the statement.`,
       `${brandList}. Restraint. Mapped to you.`,
     ],
-    elevated_streetwear: [
+    luxury_streetwear: [
+      `${brandList}. Pharrell-era luxury streetwear.`,
+      `${brandList}. Monogram, modern.`,
+      `${brandList}. The bridge between houses.`,
+    ],
+    pure_streetwear: [
       `${brandList}. Heat. Layered right.`,
+      `${brandList}. Grails, dropped clean.`,
       `${brandList}. The uniform, elevated.`,
-      `${brandList}. Grails. Dropped clean.`,
+    ],
+    techwear: [
+      `${brandList}. Technical precision.`,
+      `${brandList}. Industrial luxury.`,
+      `${brandList}. Function, refined.`,
+    ],
+    avant_garde: [
+      `${brandList}. Deconstructed authority.`,
+      `${brandList}. Anti-fashion fashion.`,
+      `${brandList}. The downtown uniform.`,
+    ],
+    bourgeois: [
+      `${brandList}. Old money, new fit.`,
+      `${brandList}. Quiet wealth, verified.`,
+      `${brandList}. No logo required.`,
+    ],
+    footwear_specialist: [
+      `${brandList}. Grounded right.`,
     ],
     supporting: [
-      `${brandList}. Clean fit. Zero guessing.`,
+      `${brandList}. Clean foundation.`,
     ],
   };
 
-  const pool = templates[tribe] ?? templates.supporting;
+  const pool = templates[cohort] ?? templates.supporting;
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
@@ -703,63 +851,88 @@ function buildOutfit(
   products: CatalogProduct[],
   usedProductIds: Set<string>,
   gender: "mens" | "womens",
-): { items: Array<{ product: CatalogProduct; role: string; position: number }>; tribe: string } | null {
-  // Pick a primary tribe for this outfit
-  const occasionTribes = OCCASION_TRIBE_MAP[occasion.key] ?? ['quiet_luxury', 'heritage_luxury'];
-  const primaryTribe = occasionTribes[Math.floor(Math.random() * occasionTribes.length)];
-  const secondaryTribe = occasionTribes.find(t => t !== primaryTribe) ?? occasionTribes[0];
+): { items: Array<{ product: CatalogProduct; role: string; position: number }>;
+     cohort: CohortKey } | null {
+
+  // ─── STEP 1: CHOOSE AESTHETIC LANE ─────────────────────────────
+  const aestheticLeads = OCCASION_AESTHETIC_LEADS[occasion.key]
+    ?? ['minimalist_luxury'];
+  const primaryCohort = aestheticLeads[
+    Math.floor(Math.random() * aestheticLeads.length)
+  ];
+  const alliedCohorts = COHORT_ALLIANCES[primaryCohort];
+
+  // Filter pool to brands belonging to ANY allied cohort.
+  const eligibleProducts = products.filter(p => brandCompatible(p.brand, alliedCohorts));
+
+  const requiredSlotCount = occasion.slots.filter(s => s.required).length;
+  if (eligibleProducts.length < requiredSlotCount) return null;
+
+  // Brand diversity gate — abort if pool collapses to a single brand
+  // (would produce a one-brand outfit, e.g., all Stone Island).
+  const distinctBrands = new Set(eligibleProducts.map(p => p.brand));
+  if (distinctBrands.size < 2) return null;
 
   const items: Array<{ product: CatalogProduct; role: string; position: number }> = [];
   let position = 0;
 
-  // Cohesion state — updated as each slot is filled
+  // Cohesion state
   const outfitColors = new Set<string>();
   const outfitFabricWeights = new Set<string>();
   let outfitStyleFamily: string | null = null;
   let hasPatternPiece = false;
+  const outfitCohortsUsed = new Set<CohortKey>();
 
-  for (const slot of occasion.slots) {
-    // Resolve the effective category list for this gender
+  // ─── STEP 2: HERO-FIRST SLOT ORDER ─────────────────────────────
+  const heroSlotOrder = ["outerwear", "shoes", "top", "bottom", "accessory"];
+  const orderedSlots = [...occasion.slots].sort((a, b) => {
+    const aIdx = heroSlotOrder.indexOf(a.role);
+    const bIdx = heroSlotOrder.indexOf(b.role);
+    return (aIdx === -1 ? 99 : aIdx) - (bIdx === -1 ? 99 : bIdx);
+  });
+
+  for (const slot of orderedSlots) {
     const effectiveCats =
       gender === "mens" && slot.mensCategories?.length ? slot.mensCategories :
       gender === "womens" && slot.womensCategories?.length ? slot.womensCategories :
       slot.categories;
 
-    const candidates = products.filter(p => {
+    // ─── STEP 3: CATEGORY CANDIDATES ─────────────────────────────
+    const categoryCandidates = eligibleProducts.filter(p => {
       if (usedProductIds.has(p.id)) return false;
       const normCat = normalizeCategory(p.category);
       return effectiveCats.includes(normCat);
     });
 
-    if (candidates.length === 0) {
+    if (categoryCandidates.length === 0) {
       if (slot.required) return null;
       continue;
     }
 
-    // Apply cohesion filters
-    const cohesiveCandidates = candidates.filter(p => {
-      // STYLE
+    // ─── STEP 4: COHESION FILTER ─────────────────────────────────
+    const cohesiveCandidates = categoryCandidates.filter(p => {
       if (outfitStyleFamily) {
-        const candidateFamily = getStyleFamily(p.style_genre);
-        if (candidateFamily && !stylesCompatible(outfitStyleFamily, p.style_genre)) {
-          return false;
-        }
+        if (!stylesCompatible(outfitStyleFamily, p.style_genre)) return false;
       }
-      // COLOR
       const candidateColors = extractColors(p.tags);
       if (!colorsCohesive(outfitColors, candidateColors)) return false;
-      // PATTERN — max 1 patterned piece
       if (hasPatternPiece && hasPattern(p.tags, p.name, p.presentation)) return false;
-      // FABRIC weight
       const candidateWeight = getFabricWeight(p.fabric_composition);
       if (!fabricsCohesive(outfitFabricWeights, candidateWeight)) return false;
+      // Cohort cap — max 3 distinct cohorts per outfit
+      const brandCohort = getBrandCohortInAlliance(p.brand, alliedCohorts);
+      if (!brandCohort) return false;
+      if (!outfitCohortsUsed.has(brandCohort) && outfitCohortsUsed.size >= 3) {
+        return false;
+      }
       return true;
     });
 
-    // Graceful degradation: if cohesion eliminates all, fall back
-    const workingCandidates = cohesiveCandidates.length > 0 ? cohesiveCandidates : candidates;
+    const workingCandidates = cohesiveCandidates.length > 0
+      ? cohesiveCandidates
+      : categoryCandidates;
 
-    // Keyword preference (e.g. "cargo", "swim", "sun", "linen", "surf")
+    // ─── STEP 5: STYLIST SCORING ─────────────────────────────────
     const kw = (slot.keywordPrefer ?? []).map(k => k.toLowerCase());
     const matchesKeyword = (p: CatalogProduct): boolean => {
       if (kw.length === 0) return false;
@@ -767,25 +940,40 @@ function buildOutfit(
       return kw.some(k => hay.includes(k));
     };
 
-    // Score: image confidence + tribe tier + primary-tribe bonus + keyword bonus
     const scored = workingCandidates.map(p => {
-      const t = getBrandTribe(p.brand);
-      const tribeBonus =
-        t === primaryTribe ? 50 :
-        t === secondaryTribe ? 20 :
-        t === 'supporting' ? 0 : 10;
-      const keywordBonus = matchesKeyword(p) ? 75 : 0;
+      const brandCohort =
+        getBrandCohortInAlliance(p.brand, alliedCohorts) ?? 'supporting';
+      const isPrimary = brandCohort === primaryCohort;
+      const isSupporting = brandCohort === 'supporting';
+      const isHeroSlot = slot.role === "outerwear" || slot.role === "shoes";
+
+      // Hard penalty: supporting brands MUST NOT lead hero slots
+      const supportingPenalty = (isHeroSlot && isSupporting) ? -1000 : 0;
+
+      const cohortBaseScore = cohortScore(brandCohort);
+      const primaryBonus = isPrimary ? 75 : 0;
+      const heroSlotBonus = (isHeroSlot && !isSupporting) ? 40 : 0;
+      const keywordBonus = matchesKeyword(p) ? 60 : 0;
+      const imageBonus = (p.image_confidence ?? 0) * 80;
+
       return {
         product: p,
-        tribe: t,
-        score: (p.image_confidence ?? 0) * 100 + tribeScore(t) + tribeBonus + keywordBonus,
+        cohort: brandCohort,
+        score: cohortBaseScore + primaryBonus + heroSlotBonus
+               + keywordBonus + imageBonus + supportingPenalty,
       };
     });
 
-    scored.sort((a, b) => b.score - a.score);
-    const topN = scored.slice(0, Math.min(5, scored.length));
+    const validScored = scored.filter(s => s.score > -500);
+    if (validScored.length === 0) {
+      if (slot.required) return null;
+      continue;
+    }
 
-    // Weighted random — top-of-list more likely
+    validScored.sort((a, b) => b.score - a.score);
+    const topN = validScored.slice(0, Math.min(4, validScored.length));
+
+    // ─── STEP 6: WEIGHTED SELECTION ──────────────────────────────
     const weights = topN.map((_, i) => topN.length - i);
     const totalW = weights.reduce((a, b) => a + b, 0);
     let r = Math.random() * totalW;
@@ -795,20 +983,40 @@ function buildOutfit(
       if (r <= 0) { pickIdx = i; break; }
     }
     const pick = topN[pickIdx].product;
+    const pickCohort = topN[pickIdx].cohort;
 
-    // Update cohesion state with the picked piece
+    // ─── STEP 7: UPDATE OUTFIT STATE ─────────────────────────────
     extractColors(pick.tags).forEach(c => outfitColors.add(c));
     const pickWeight = getFabricWeight(pick.fabric_composition);
     if (pickWeight) outfitFabricWeights.add(pickWeight);
     const pickFamily = getStyleFamily(pick.style_genre);
     if (pickFamily && !outfitStyleFamily) outfitStyleFamily = pickFamily;
     if (hasPattern(pick.tags, pick.name, pick.presentation)) hasPatternPiece = true;
+    outfitCohortsUsed.add(pickCohort);
 
     usedProductIds.add(pick.id);
     items.push({ product: pick, role: slot.role, position: position++ });
   }
 
-  return items.length >= 3 ? { items, tribe: primaryTribe } : null;
+  // ─── STEP 8: VALIDATE OUTFIT QUALITY ───────────────────────────
+  const hasShoes = items.some(i => i.role === "shoes");
+  const hasTop = items.some(i => i.role === "top");
+  const hasBottom = items.some(i => i.role === "bottom");
+  const hasOuterwear = items.some(i => i.role === "outerwear");
+  const hasDress = items.some(i =>
+    normalizeCategory(i.product.category) === "dresses"
+  );
+
+  if (!hasShoes) return null;
+  if (!hasTop && !hasOuterwear && !hasDress) return null;
+  if (!hasBottom && !hasDress && !hasOuterwear) return null;
+
+  // Reposition for display order: outerwear, top, bottom, shoes, accessory
+  const displayOrder = ["outerwear", "top", "bottom", "shoes", "accessory"];
+  items.sort((a, b) => displayOrder.indexOf(a.role) - displayOrder.indexOf(b.role));
+  items.forEach((it, idx) => { it.position = idx; });
+
+  return items.length >= 3 ? { items, cohort: primaryCohort } : null;
 }
 
 /* ── Main handler ─────────────────────────────────────────────── */
@@ -832,7 +1040,7 @@ Deno.serve(async (req) => {
 
     const log: string[] = [];
     log.push(`[Config] week=${weekId}, gender=${gender || "both"}, ${occasionCount} occasions × ${outfitsPerOccasion}/each`);
-    log.push(`[BrandPool] ${APPROVED_BRANDS.size} approved brands across 4 tribes`);
+    log.push(`[BrandPool] ${APPROVED_BRANDS.size} approved brands across ${ALL_COHORT_KEYS.length} cohorts`);
 
     if (clearExisting) {
       const { data: existing } = await sb
@@ -901,8 +1109,8 @@ Deno.serve(async (req) => {
             continue;
           }
 
-          const title = generateEditorialName(occ.key, result.tribe, usedNames);
-          const description = generateDescription(result.tribe, result.items);
+          const title = generateEditorialName(occ.key, result.cohort, usedNames);
+          const description = generateDescription(result.cohort, result.items);
 
           const { data: outfit, error: oErr } = await sb
             .from("weekly_outfits")
