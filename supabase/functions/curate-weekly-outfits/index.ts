@@ -280,7 +280,7 @@ const OCCASIONS: OccasionDef[] = [
       { role: "bottom", required: true, categories: ["pants", "jeans", "trousers", "skirts", "shorts"],
         mensCategories: ["pants", "jeans", "trousers"] },
       { role: "shoes", required: true, categories: ["shoes", "sneakers", "boots", "heels", "sandals", "footwear"] },
-      { role: "accessory", required: true, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
     ],
   },
   {
@@ -293,7 +293,7 @@ const OCCASIONS: OccasionDef[] = [
       { role: "bottom", required: true, categories: ["pants", "trousers", "jeans", "skirts"],
         mensCategories: ["pants", "trousers", "jeans", "chinos"] },
       { role: "shoes", required: true, categories: ["shoes", "sneakers", "boots", "loafers", "footwear"] },
-      { role: "accessory", required: true, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
     ],
   },
   {
@@ -305,7 +305,7 @@ const OCCASIONS: OccasionDef[] = [
       { role: "top", required: true, categories: ["t-shirts", "tops", "sweaters", "hoodies", "tank tops"] },
       { role: "bottom", required: true, categories: ["pants", "jeans", "shorts", "joggers", "sweatpants"] },
       { role: "shoes", required: true, categories: ["sneakers", "shoes", "footwear"] },
-      { role: "accessory", required: true, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
     ],
   },
   {
@@ -318,7 +318,7 @@ const OCCASIONS: OccasionDef[] = [
       { role: "bottom", required: true, categories: ["trousers", "pants", "skirts"],
         mensCategories: ["trousers", "pants"] },
       { role: "shoes", required: true, categories: ["shoes", "boots", "loafers", "heels", "footwear"] },
-      { role: "accessory", required: true, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
     ],
   },
   {
@@ -331,7 +331,7 @@ const OCCASIONS: OccasionDef[] = [
       { role: "bottom", required: true, categories: ["pants", "jeans", "skirts", "shorts"],
         mensCategories: ["pants", "jeans", "shorts", "chinos"] },
       { role: "shoes", required: true, categories: ["sneakers", "shoes", "sandals", "footwear"] },
-      { role: "accessory", required: true, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
     ],
   },
   {
@@ -342,7 +342,7 @@ const OCCASIONS: OccasionDef[] = [
       { role: "top", required: true, categories: ["t-shirts", "tops", "tank tops", "hoodies"] },
       { role: "bottom", required: true, categories: ["shorts", "joggers", "pants", "leggings", "sweatpants"] },
       { role: "shoes", required: true, categories: ["sneakers", "shoes", "footwear"] },
-      { role: "accessory", required: true, categories: ["watches", "bags", "hats", "accessories"] },
+      { role: "accessory", required: false, categories: ["watches", "bags", "hats", "accessories"] },
     ],
   },
 
@@ -365,7 +365,7 @@ const OCCASIONS: OccasionDef[] = [
         womensCategories: ["skirts", "shorts", "pants"],
         mensCategories: ["chinos", "trousers", "pants", "shorts"] },
       { role: "shoes", required: true, categories: ["sneakers", "sandals", "loafers", "shoes", "footwear"] },
-      { role: "accessory", required: true, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
     ],
   },
 
@@ -387,7 +387,7 @@ const OCCASIONS: OccasionDef[] = [
         mensCategories: ["shorts"],
         keywordPrefer: ["cargo", "swim", "board", "linen", "beach"] },
       { role: "shoes", required: true, categories: ["sandals", "sneakers", "shoes", "footwear"] },
-      { role: "accessory", required: true,
+      { role: "accessory", required: false,
         categories: ["sunglasses", "hats", "bags", "jewelry", "watches", "accessories"] },
     ],
   },
@@ -408,7 +408,7 @@ const OCCASIONS: OccasionDef[] = [
         womensCategories: ["skirts", "pants", "shorts"],
         mensCategories: ["chinos", "trousers", "pants"] },
       { role: "shoes", required: true, categories: ["sandals", "loafers", "heels", "shoes", "footwear"] },
-      { role: "accessory", required: true, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
     ],
   },
   {
@@ -427,7 +427,7 @@ const OCCASIONS: OccasionDef[] = [
         womensCategories: ["skirts", "pants", "shorts"],
         mensCategories: ["trousers", "pants", "chinos"] },
       { role: "shoes", required: true, categories: ["heels", "loafers", "sneakers", "shoes", "footwear"] },
-      { role: "accessory", required: true, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
     ],
   },
   {
@@ -440,7 +440,7 @@ const OCCASIONS: OccasionDef[] = [
       { role: "bottom", required: true, categories: ["shorts", "pants", "jeans", "skirts"],
         mensCategories: ["shorts", "pants", "jeans"] },
       { role: "shoes", required: true, categories: ["sneakers", "boots", "shoes", "footwear"] },
-      { role: "accessory", required: true, categories: ["sunglasses", "hats", "bags", "jewelry", "accessories"] },
+      { role: "accessory", required: false, categories: ["sunglasses", "hats", "bags", "jewelry", "accessories"] },
     ],
   },
 
@@ -456,7 +456,7 @@ const OCCASIONS: OccasionDef[] = [
       { role: "bottom", required: true, categories: ["pants", "jeans", "trousers", "skirts"],
         mensCategories: ["pants", "jeans", "trousers", "chinos"] },
       { role: "shoes", required: true, categories: ["boots", "loafers", "sneakers", "shoes", "footwear"] },
-      { role: "accessory", required: true, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
     ],
   },
 
@@ -472,7 +472,7 @@ const OCCASIONS: OccasionDef[] = [
       { role: "bottom", required: true, categories: ["pants", "trousers", "jeans", "skirts"],
         mensCategories: ["pants", "trousers", "jeans"] },
       { role: "shoes", required: true, categories: ["boots", "loafers", "shoes", "footwear"] },
-      { role: "accessory", required: true, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
     ],
   },
 ];
