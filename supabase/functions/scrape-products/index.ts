@@ -2797,6 +2797,69 @@ interface BatchPdpResult {
   imageUrls: string[];
 }
 
+// Whitelist of query params that carry product identity.
+// Anything else (utm_*, ref, gclid, tracking) gets stripped.
+const PRODUCT_ID_PARAMS = new Set([
+  'pid', 'id', 'productid', 'product_id', 'sku', 'itemid',
+  'item_id', 'variant', 'style', 'color', 'colour',
+]);
+
+/**
+ * Normalize a URL for matching. Handles:
+ * - Protocol case (http vs https)
+ * - www subdomain drift
+ * - Trailing slash differences
+ * - Locale path injection (/us/en/ etc)
+ * - Tracking query params (utm_*, ref, gclid, _gl)
+ * - Fragment hashes
+ * Returns a lowercase string safe to compare.
+ */
+function normalizeUrlForMatch(url: string): string {
+  if (!url) return '';
+  try {
+    const u = new URL(url);
+    const host = u.hostname.toLowerCase().replace(/^www\./, '');
+    let path = u.pathname.replace(/\/+/g, '/').replace(/\/+$/, '');
+    // Strip locale prefix like /us/, /en-us/, /us/en/
+    const localePattern = /^\/(?:[a-z]{2}(?:[-_][a-z]{2})?\/){1,2}/i;
+    path = path.replace(localePattern, '/');
+    const params: Array<[string, string]> = [];
+    u.searchParams.forEach((value, key) => {
+      if (PRODUCT_ID_PARAMS.has(key.toLowerCase())) {
+        params.push([key.toLowerCase(), value.toLowerCase()]);
+      }
+    });
+    params.sort(([a], [b]) => a.localeCompare(b));
+    const query = params.length
+      ? '?' + params.map(([k, v]) => `${k}=${v}`).join('&')
+      : '';
+    return `${host}${path}${query}`.toLowerCase();
+  } catch {
+    return url
+      .toLowerCase()
+      .replace(/^https?:\/\//, '')
+      .replace(/^www\./, '')
+      .replace(/[?#].*$/, '')
+      .replace(/\/+$/, '');
+  }
+}
+
+/**
+ * Extract the product slug (last path segment) as a fallback matching key.
+ * Useful when canonical URLs change structure but the product identifier stays the same.
+ */
+function extractProductSlug(url: string): string {
+  if (!url) return '';
+  try {
+    const u = new URL(url);
+    const segments = u.pathname.split('/').filter(Boolean);
+    const last = segments[segments.length - 1] ?? '';
+    return last.toLowerCase().replace(/\.(html?|aspx?|php)$/, '');
+  } catch {
+    return '';
+  }
+}
+
 /**
  * Submit a list of PDP URLs to Firecrawl /v2/batch/scrape and poll until done.
  * Returns markdown + image URLs per URL. Costs ~1 credit per URL (markdown-only,
@@ -3251,20 +3314,43 @@ async function scrapeBrandViaRetailer(
       console.log(
         `[pdp-enrich] ${brand}/${category}: batch returned ${pdpResults.length}/${heroCandidates.length} PDPs in ${Math.round((Date.now() - t0) / 1000)}s`,
       );
-      const byUrl = new Map<string, BatchPdpResult>();
+      // Build two indexes on the Firecrawl results: normalized URL + slug fallback
+      const byNormUrl = new Map<string, BatchPdpResult>();
+      const bySlug = new Map<string, BatchPdpResult>();
       for (const r of pdpResults) {
-        byUrl.set(r.url.toLowerCase().replace(/\/$/, ''), r);
+        const returnedUrl = r.url ?? '';
+        if (!returnedUrl) continue;
+        const norm = normalizeUrlForMatch(returnedUrl);
+        const slug = extractProductSlug(returnedUrl);
+        if (norm) byNormUrl.set(norm, r);
+        if (slug && slug.length > 3) bySlug.set(slug, r);
       }
+
       let enrichedCount = 0;
       let imagesMerged = 0;
+      let matchedNorm = 0;
+      let matchedSlug = 0;
       let unmatchedUrls = 0;
       for (const p of heroCandidates) {
-        const key = p.product_url.toLowerCase().replace(/\/$/, '');
-        const hit = byUrl.get(key);
+        const norm = normalizeUrlForMatch(p.product_url);
+        const slug = extractProductSlug(p.product_url);
+
+        let hit = byNormUrl.get(norm);
+        let via: 'norm' | 'slug' | null = hit ? 'norm' : null;
+
+        if (!hit && slug && slug.length > 3) {
+          hit = bySlug.get(slug);
+          if (hit) via = 'slug';
+        }
+
         if (!hit?.markdown) {
           unmatchedUrls++;
           continue;
         }
+
+        if (via === 'norm') matchedNorm++;
+        else if (via === 'slug') matchedSlug++;
+
         const desc = extractDescriptionFromPdpMarkdown(hit.markdown, p.name);
         if (desc) {
           p.description = desc;
@@ -3277,6 +3363,19 @@ async function scrapeBrandViaRetailer(
           imagesMerged++;
         }
       }
+
+      console.log(
+        `[pdp-enrich] ${brand}/${category}: match breakdown: norm=${matchedNorm}, slug=${matchedSlug}, unmatched=${unmatchedUrls}`,
+      );
+
+      if (unmatchedUrls > 0 && (matchedNorm + matchedSlug) === 0) {
+        const firstReturned = pdpResults[0]?.url ?? '(none)';
+        console.log(
+          `[pdp-enrich] ${brand}/${category}: 0/${heroCandidates.length} matched. ` +
+          `Sent: ${heroCandidates[0]?.product_url} | Got: ${firstReturned}`,
+        );
+      }
+
       console.log(
         `[pdp-enrich] ${brand}/${category}: DONE descriptions=${enrichedCount}/${heroCandidates.length}, images_merged=${imagesMerged}, unmatched=${unmatchedUrls}`,
       );
