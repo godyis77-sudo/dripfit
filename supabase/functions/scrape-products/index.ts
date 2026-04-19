@@ -3953,18 +3953,22 @@ Deno.serve(async (req) => {
       await delay(jitterMs);
     }
 
-    // ── CHECK FIRECRAWL CREDITS & THIN-CATEGORY GATE ─────────────
+    // ── CHECK FIRECRAWL CREDITS & BRAND-AWARE THIN GATE ─────────
+    // Firecrawl runs when EITHER the global category is thin OR this specific
+    // brand+category combo has <10 recent products (brand-blind gate was missing low-stock combos).
     let useFirecrawl = true;
     const credits = await checkFirecrawlCredits(FIRECRAWL_API_KEY);
+    const brandCatIsThin = recentCount < 10;
     if (credits !== null && credits <= 0) {
       console.log(`[run:${runId}] Firecrawl credits exhausted (${credits}), using direct HTTP only`);
       useFirecrawl = false;
-    } else if (!isThinCategory(category)) {
-      // Well-stocked categories: skip Firecrawl to save credits
-      console.log(`[run:${runId}] Category "${category}" is well-stocked, skipping Firecrawl (credits: ${credits ?? 'unknown'})`);
+    } else if (!isThinCategory(category) && !brandCatIsThin) {
+      // Well-stocked globally AND this brand+cat already has stock — skip to save credits
+      console.log(`[run:${runId}] ${brand}/${category} well-stocked (${recentCount} recent) and category not thin, skipping Firecrawl (credits: ${credits ?? 'unknown'})`);
       useFirecrawl = false;
     } else {
-      console.log(`[run:${runId}] Thin category "${category}" — Firecrawl enabled (credits: ${credits ?? 'unknown'})`);
+      const reason = !isThinCategory(category) ? `brand+cat thin (${recentCount} recent)` : `category "${category}" globally thin`;
+      console.log(`[run:${runId}] Firecrawl enabled — ${reason} (credits: ${credits ?? 'unknown'})`);
     }
 
     // ── STAGES 1+2: Direct HTTP + optional Firecrawl scraping ────────
