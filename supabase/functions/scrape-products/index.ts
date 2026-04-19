@@ -2388,6 +2388,8 @@ interface FirecrawlExtractedProduct {
   image_url?: string | null;
   color?: string | null;
   category?: string | null;
+  /** Optional gallery — populated from the page-level `images` format when available. */
+  gallery_images?: string[];
 }
 
 async function firecrawlScrapeProducts(
