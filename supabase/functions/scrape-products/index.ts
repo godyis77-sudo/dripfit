@@ -2789,6 +2789,11 @@ async function mapRetailerBrandUrls(
   firecrawlApiKey: string,
 ): Promise<string[]> {
   if (!firecrawlApiKey) return [];
+  const breaker = isFirecrawlOpen();
+  if (breaker.open) {
+    console.warn(`[retailer-map] breaker OPEN (${Math.round(breaker.remainingMs / 1000)}s left), skipping ${seedUrl}`);
+    return [];
+  }
   let host: string;
   try {
     host = new URL(seedUrl).origin;
@@ -2798,64 +2803,81 @@ async function mapRetailerBrandUrls(
   const brandTokens = brand.toLowerCase().split(/\s+/).filter((t) => t.length > 2);
   const search = [brand, category].filter(Boolean).join(' ');
 
-  try {
-    const ac = new AbortController();
-    const t = setTimeout(() => ac.abort(), 25000);
-    const resp = await fetch('https://api.firecrawl.dev/v2/map', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${firecrawlApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        url: host,
-        search,
-        limit: 200,
-        includeSubdomains: false,
-      }),
-      signal: ac.signal,
-    });
-    clearTimeout(t);
-    const data = await resp.json().catch(() => null);
-    if (!resp.ok) {
-      console.warn(
-        `[retailer-map] ${host} for ${brand}: HTTP ${resp.status} — ${JSON.stringify(data ?? {}).slice(0, 200)}`,
+  // Retry up to 2x on Firecrawl 5xx — covers transient outages without
+  // burning the breaker too quickly.
+  const MAX_ATTEMPTS = 2;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const ac = new AbortController();
+      const t = setTimeout(() => ac.abort(), 25000);
+      const resp = await fetch('https://api.firecrawl.dev/v2/map', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${firecrawlApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          url: host,
+          search,
+          limit: 200,
+          includeSubdomains: false,
+        }),
+        signal: ac.signal,
+      });
+      clearTimeout(t);
+      const data = await resp.json().catch(() => null);
+      if (!resp.ok) {
+        console.warn(
+          `[retailer-map] ${host} for ${brand}: HTTP ${resp.status} (attempt ${attempt}/${MAX_ATTEMPTS}) — ${JSON.stringify(data ?? {}).slice(0, 200)}`,
+        );
+        recordFirecrawlFailure(resp.status);
+        if (resp.status >= 500 && attempt < MAX_ATTEMPTS) {
+          await delay(800 * attempt + Math.random() * 400);
+          continue;
+        }
+        return [];
+      }
+      recordFirecrawlSuccess();
+      // Firecrawl /v2/map returns links as objects ({ url, title, description })
+      // OR plain strings depending on plan/version — normalize both.
+      const rawLinks: unknown[] = Array.isArray(data?.links)
+        ? data.links
+        : Array.isArray(data?.data?.links)
+          ? data.data.links
+          : [];
+      const links: string[] = rawLinks
+        .map((l) => {
+          if (typeof l === 'string') return l;
+          if (l && typeof l === 'object' && typeof (l as { url?: unknown }).url === 'string') {
+            return (l as { url: string }).url;
+          }
+          return '';
+        })
+        .filter((u) => u.startsWith('http'));
+      const filtered = links.filter((u) => {
+        const lower = u.toLowerCase();
+        const onBrand = brandTokens.some((tok) => lower.includes(tok.replace(/\s+/g, '-')) || lower.includes(tok));
+        const isExcluded =
+          /\/(search|cart|checkout|account|login|help|faq|about|blog|press|careers|legal|privacy|terms)(\/|$)/i.test(
+            lower,
+          );
+        return onBrand && !isExcluded;
+      });
+      console.log(
+        `[retailer-map] ${host} for ${brand}/${category}: ${rawLinks.length} total → ${filtered.length} on-brand`,
       );
+      return filtered.slice(0, 8);
+    } catch (err) {
+      console.warn(`[retailer-map] ${host}: ${(err as Error).message} (attempt ${attempt}/${MAX_ATTEMPTS})`);
+      recordFirecrawlFailure(500);
+      if (attempt < MAX_ATTEMPTS) {
+        await delay(800 * attempt + Math.random() * 400);
+        continue;
+      }
       return [];
     }
-    // Firecrawl /v2/map returns links as objects ({ url, title, description })
-    // OR plain strings depending on plan/version — normalize both.
-    const rawLinks: unknown[] = Array.isArray(data?.links)
-      ? data.links
-      : Array.isArray(data?.data?.links)
-        ? data.data.links
-        : [];
-    const links: string[] = rawLinks
-      .map((l) => {
-        if (typeof l === 'string') return l;
-        if (l && typeof l === 'object' && typeof (l as { url?: unknown }).url === 'string') {
-          return (l as { url: string }).url;
-        }
-        return '';
-      })
-      .filter((u) => u.startsWith('http'));
-    const filtered = links.filter((u) => {
-      const lower = u.toLowerCase();
-      const onBrand = brandTokens.some((tok) => lower.includes(tok.replace(/\s+/g, '-')) || lower.includes(tok));
-      const isExcluded =
-        /\/(search|cart|checkout|account|login|help|faq|about|blog|press|careers|legal|privacy|terms)(\/|$)/i.test(
-          lower,
-        );
-      return onBrand && !isExcluded;
-    });
-    console.log(
-      `[retailer-map] ${host} for ${brand}/${category}: ${rawLinks.length} total → ${filtered.length} on-brand`,
-    );
-    return filtered.slice(0, 8);
-  } catch (err) {
-    console.warn(`[retailer-map] ${host}: ${(err as Error).message}`);
-    return [];
   }
+  return [];
 }
 
 async function scrapeBrandViaRetailer(
