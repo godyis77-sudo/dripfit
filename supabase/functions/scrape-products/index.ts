@@ -3027,6 +3027,36 @@ async function scrapeBrandViaRetailer(
   console.log(
     `[retailer] ${brand}/${category} FINAL: ${deduped.length} products via firecrawl_json`,
   );
+
+  // ── 0-RESULT RESCUE: retailer-first found nothing (anti-bot/stealth blocked) ──
+  // Even when /v2/scrape returns HTTP 200 with empty payloads, retailers like
+  // Net-A-Porter / MrPorter / Farfetch / SSENSE can stealth-block the JSON
+  // extractor. Fall back to /v2/search SERP parsing restricted to the brand's
+  // mapped retailer hosts so we still ingest *something* for this brand/category.
+  if (deduped.length === 0) {
+    console.warn(
+      `[retailer] ${brand}/${category}: retailer-first returned 0 products — invoking SEARCH RESCUE`,
+    );
+    const searched = await searchProducts(brand, category, firecrawlApiKey);
+    const retailerHosts = new Set<string>();
+    for (const seed of retailerUrls) {
+      try { retailerHosts.add(new URL(seed).host.replace(/^www\./, '')); } catch { /* skip */ }
+    }
+    const onRetailer = searched.filter((p) => {
+      try {
+        const h = new URL(p.product_url).host.replace(/^www\./, '');
+        return [...retailerHosts].some((rh) => h === rh || h.endsWith(`.${rh}`));
+      } catch {
+        return false;
+      }
+    });
+    for (const p of onRetailer) p._method = 'retailer_search_fallback';
+    console.log(
+      `[retailer] ${brand}/${category} SEARCH RESCUE: ${searched.length} total → ${onRetailer.length} on-retailer`,
+    );
+    return onRetailer;
+  }
+
   return deduped;
 }
 
