@@ -15,7 +15,8 @@ type ScrapeMethod =
   | 'search_fallback'
   | 'retailer_jsonld'         // (legacy) parsed from retailer HTML via Firecrawl + JSON-LD
   | 'retailer_pdp'            // (legacy) PDP follow-up after a thin retailer listing stub
-  | 'retailer_firecrawl_json'; // Firecrawl v2 JSON-schema array extraction (current path)
+  | 'retailer_firecrawl_json'  // Firecrawl v2 JSON-schema array extraction (current path)
+  | 'retailer_search_fallback'; // /v2/search-based fallback when /v2/scrape breaker is OPEN
 
 interface RawProduct {
   name: string;
