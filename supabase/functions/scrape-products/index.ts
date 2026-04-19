@@ -2906,6 +2906,36 @@ async function scrapeBrandViaRetailer(
     return [];
   }
 
+  // ── BREAKER OPEN → /v2/search fallback ──
+  // /v2/scrape is degrading but /v2/search is healthy. Instead of returning
+  // nothing, search the retailer hosts directly via Firecrawl Search and
+  // parse the SERP snippets — same shape as Google Custom Search fallback.
+  const breaker = isFirecrawlOpen();
+  if (breaker.open) {
+    console.warn(
+      `[retailer] ${brand}/${category}: scrape breaker OPEN (${Math.round(breaker.remainingMs / 1000)}s left) — falling back to /v2/search`,
+    );
+    const searched = await searchProducts(brand, category, firecrawlApiKey);
+    // Restrict to the brand's mapped retailer hosts so we keep retailer-first intent.
+    const retailerHosts = new Set<string>();
+    for (const seed of retailerUrls) {
+      try { retailerHosts.add(new URL(seed).host.replace(/^www\./, '')); } catch { /* skip */ }
+    }
+    const onRetailer = searched.filter((p) => {
+      try {
+        const h = new URL(p.product_url).host.replace(/^www\./, '');
+        return [...retailerHosts].some((rh) => h === rh || h.endsWith(`.${rh}`));
+      } catch {
+        return false;
+      }
+    });
+    for (const p of onRetailer) p._method = 'retailer_search_fallback';
+    console.log(
+      `[retailer] ${brand}/${category} SEARCH-FALLBACK: ${searched.length} total → ${onRetailer.length} on-retailer`,
+    );
+    return onRetailer;
+  }
+
   const brandTokens = brandKey.split(/\s+/).filter((t) => t.length > 2);
   const matchesBrand = (name: string, brandField: string | null | undefined): boolean => {
     const hay = `${(brandField || '').toLowerCase()} ${(name || '').toLowerCase()}`;
