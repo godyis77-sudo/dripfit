@@ -2898,6 +2898,7 @@ async function scrapeBrandViaRetailer(
   brand: string,
   category: string,
   firecrawlApiKey: string,
+  forceSearchFallback = false,
 ): Promise<RawProduct[]> {
   const brandKey = brand.toLowerCase().trim();
   const retailerUrls = RETAILER_DESIGNER_URLS[brandKey];
@@ -2907,15 +2908,23 @@ async function scrapeBrandViaRetailer(
     return [];
   }
 
-  // ── BREAKER OPEN → /v2/search fallback ──
+  // ── BREAKER OPEN (or forced via ?force_search_fallback=1) → /v2/search fallback ──
   // /v2/scrape is degrading but /v2/search is healthy. Instead of returning
   // nothing, search the retailer hosts directly via Firecrawl Search and
   // parse the SERP snippets — same shape as Google Custom Search fallback.
+  // The force flag bypasses the breaker so we can exercise this branch
+  // end-to-end without waiting for a real Firecrawl outage.
   const breaker = isFirecrawlOpen();
-  if (breaker.open) {
-    console.warn(
-      `[retailer] ${brand}/${category}: scrape breaker OPEN (${Math.round(breaker.remainingMs / 1000)}s left) — falling back to /v2/search`,
-    );
+  if (breaker.open || forceSearchFallback) {
+    if (forceSearchFallback) {
+      console.warn(
+        `[retailer] ${brand}/${category}: FORCED /v2/search fallback (?force_search_fallback=1)`,
+      );
+    } else {
+      console.warn(
+        `[retailer] ${brand}/${category}: scrape breaker OPEN (${Math.round(breaker.remainingMs / 1000)}s left) — falling back to /v2/search`,
+      );
+    }
     const searched = await searchProducts(brand, category, firecrawlApiKey);
     // Restrict to the brand's mapped retailer hosts so we keep retailer-first intent.
     const retailerHosts = new Set<string>();
@@ -3068,6 +3077,7 @@ async function scrapeProducts(
   category: string,
   firecrawlApiKey: string,
   useFirecrawl = true,
+  forceSearchFallback = false,
 ): Promise<RawProduct[]> {
   // Helper to tag all products in an array with their source method
   const tag = (products: RawProduct[], method: ScrapeMethod): RawProduct[] => {
@@ -3097,8 +3107,8 @@ async function scrapeProducts(
   // key is present AND useFirecrawl is on.
   const _retailerKey = brand.toLowerCase().trim();
   if (useFirecrawl && firecrawlApiKey && RETAILER_DESIGNER_URLS[_retailerKey]) {
-    console.log(`[scrape] Retailer-first for ${brand}/${category}`);
-    const retailerProducts = await scrapeBrandViaRetailer(brand, category, firecrawlApiKey);
+    console.log(`[scrape] Retailer-first for ${brand}/${category}${forceSearchFallback ? ' (force_search_fallback)' : ''}`);
+    const retailerProducts = await scrapeBrandViaRetailer(brand, category, firecrawlApiKey, forceSearchFallback);
     if (retailerProducts.length > 0) {
       const merged = [...mergedDirect, ...retailerProducts];
       const seen = new Set<string>();
