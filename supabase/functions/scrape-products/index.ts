@@ -3600,22 +3600,38 @@ async function filterExistingProducts(
 ): Promise<ClassifiedProduct[]> {
   if (!products.length) return [];
 
-  const productUrls = products.map(p => normaliseUrl(p.product_url));
-  const { data: existingByUrl } = await supabase
-    .from('product_catalog')
-    .select('product_url')
-    .in('product_url', productUrls);
+  // Batch the IN(...) lookups so we never ask Postgres to compare 300+ URLs at once.
+  const LOOKUP_CHUNK = 50;
+  const chunkArr = <T>(arr: T[], n: number): T[][] => {
+    const out: T[][] = [];
+    for (let i = 0; i < arr.length; i += n) out.push(arr.slice(i, i + n));
+    return out;
+  };
 
-  const existingUrlSet = new Set((existingByUrl ?? []).map((r: any) => normaliseUrl(r.product_url)));
+  const productUrls = products.map(p => normaliseUrl(p.product_url));
+  const existingUrlSet = new Set<string>();
+  for (const chunk of chunkArr(productUrls, LOOKUP_CHUNK)) {
+    const { data } = await supabase
+      .from('product_catalog')
+      .select('product_url')
+      .in('product_url', chunk);
+    for (const r of (data ?? []) as Array<{ product_url: string }>) {
+      existingUrlSet.add(normaliseUrl(r.product_url));
+    }
+  }
   let filtered = products.filter(p => !existingUrlSet.has(normaliseUrl(p.product_url)));
 
   const imageUrls = filtered.map(p => normaliseUrl(p.image_url));
-  const { data: existingByImage } = await supabase
-    .from('product_catalog')
-    .select('image_url')
-    .in('image_url', imageUrls);
-
-  const existingImageSet = new Set((existingByImage ?? []).map((r: any) => normaliseUrl(r.image_url)));
+  const existingImageSet = new Set<string>();
+  for (const chunk of chunkArr(imageUrls, LOOKUP_CHUNK)) {
+    const { data } = await supabase
+      .from('product_catalog')
+      .select('image_url')
+      .in('image_url', chunk);
+    for (const r of (data ?? []) as Array<{ image_url: string }>) {
+      existingImageSet.add(normaliseUrl(r.image_url));
+    }
+  }
   filtered = filtered.filter(p => !existingImageSet.has(normaliseUrl(p.image_url)));
 
   console.log(`[dedup] ${products.length} → ${filtered.length} new`);
