@@ -2898,6 +2898,7 @@ async function scrapeBrandViaRetailer(
   brand: string,
   category: string,
   firecrawlApiKey: string,
+  forceSearchFallback = false,
 ): Promise<RawProduct[]> {
   const brandKey = brand.toLowerCase().trim();
   const retailerUrls = RETAILER_DESIGNER_URLS[brandKey];
@@ -2907,15 +2908,23 @@ async function scrapeBrandViaRetailer(
     return [];
   }
 
-  // ── BREAKER OPEN → /v2/search fallback ──
+  // ── BREAKER OPEN (or forced via ?force_search_fallback=1) → /v2/search fallback ──
   // /v2/scrape is degrading but /v2/search is healthy. Instead of returning
   // nothing, search the retailer hosts directly via Firecrawl Search and
   // parse the SERP snippets — same shape as Google Custom Search fallback.
+  // The force flag bypasses the breaker so we can exercise this branch
+  // end-to-end without waiting for a real Firecrawl outage.
   const breaker = isFirecrawlOpen();
-  if (breaker.open) {
-    console.warn(
-      `[retailer] ${brand}/${category}: scrape breaker OPEN (${Math.round(breaker.remainingMs / 1000)}s left) — falling back to /v2/search`,
-    );
+  if (breaker.open || forceSearchFallback) {
+    if (forceSearchFallback) {
+      console.warn(
+        `[retailer] ${brand}/${category}: FORCED /v2/search fallback (?force_search_fallback=1)`,
+      );
+    } else {
+      console.warn(
+        `[retailer] ${brand}/${category}: scrape breaker OPEN (${Math.round(breaker.remainingMs / 1000)}s left) — falling back to /v2/search`,
+      );
+    }
     const searched = await searchProducts(brand, category, firecrawlApiKey);
     // Restrict to the brand's mapped retailer hosts so we keep retailer-first intent.
     const retailerHosts = new Set<string>();
@@ -3068,6 +3077,7 @@ async function scrapeProducts(
   category: string,
   firecrawlApiKey: string,
   useFirecrawl = true,
+  forceSearchFallback = false,
 ): Promise<RawProduct[]> {
   // Helper to tag all products in an array with their source method
   const tag = (products: RawProduct[], method: ScrapeMethod): RawProduct[] => {
@@ -3097,8 +3107,8 @@ async function scrapeProducts(
   // key is present AND useFirecrawl is on.
   const _retailerKey = brand.toLowerCase().trim();
   if (useFirecrawl && firecrawlApiKey && RETAILER_DESIGNER_URLS[_retailerKey]) {
-    console.log(`[scrape] Retailer-first for ${brand}/${category}`);
-    const retailerProducts = await scrapeBrandViaRetailer(brand, category, firecrawlApiKey);
+    console.log(`[scrape] Retailer-first for ${brand}/${category}${forceSearchFallback ? ' (force_search_fallback)' : ''}`);
+    const retailerProducts = await scrapeBrandViaRetailer(brand, category, firecrawlApiKey, forceSearchFallback);
     if (retailerProducts.length > 0) {
       const merged = [...mergedDirect, ...retailerProducts];
       const seen = new Set<string>();
@@ -3544,7 +3554,21 @@ async function searchProducts(
       body: JSON.stringify(payload),
     });
 
-    const data = await resp.json();
+    // Defensive parse: capture raw text so we can diagnose malformed responses
+    // (Firecrawl has been observed to return HTML error pages or truncated bodies
+    // during partial outages, which previously surfaced as "JSON parse error").
+    const rawText = await resp.text();
+    let data: any = null;
+    try {
+      data = rawText ? JSON.parse(rawText) : {};
+    } catch (parseErr) {
+      console.warn(
+        `[search-fallback] /v2/search non-JSON response [${resp.status}] (${rawText.length}b): ` +
+        `${rawText.slice(0, 400).replace(/\s+/g, ' ')}`
+      );
+      // If body was non-JSON we can't trust this branch — try the broader fallback.
+      return searchProductsFallback(brand, category, firecrawlApiKey);
+    }
 
     if (!resp.ok) {
       console.warn(`[search-fallback] Firecrawl search error [${resp.status}]: ${JSON.stringify(data).slice(0, 300)}`);
@@ -3633,7 +3657,17 @@ async function searchProductsFallback(
       body: JSON.stringify(payload),
     });
 
-    const data = await resp.json();
+    const rawText = await resp.text();
+    let data: any = null;
+    try {
+      data = rawText ? JSON.parse(rawText) : {};
+    } catch (parseErr) {
+      console.warn(
+        `[search-fallback-broad] /v2/search non-JSON response [${resp.status}] (${rawText.length}b): ` +
+        `${rawText.slice(0, 400).replace(/\s+/g, ' ')}`
+      );
+      return [];
+    }
     if (!resp.ok) {
       console.warn(`[search-fallback-broad] Error [${resp.status}]: ${JSON.stringify(data).slice(0, 200)}`);
       return [];
@@ -4431,6 +4465,21 @@ Deno.serve(async (req) => {
       });
     }
 
+    // ── DEV/DEBUG OVERRIDES (query string) ──
+    // ?force_search_fallback=1 bypasses the Firecrawl breaker check inside
+    // scrapeBrandViaRetailer and routes directly to /v2/search, so the
+    // SEARCH-FALLBACK branch can be exercised end-to-end without waiting for
+    // a real /v2/scrape outage.
+    let forceSearchFallback = false;
+    try {
+      const params = new URL(req.url).searchParams;
+      const v = (params.get('force_search_fallback') || '').toLowerCase();
+      forceSearchFallback = v === '1' || v === 'true' || v === 'yes';
+    } catch { /* ignore malformed URL */ }
+    if (forceSearchFallback) {
+      console.warn(`[handler] force_search_fallback=1 — breaker check will be bypassed for ${brand}/${category}`);
+    }
+
     // ── FIRECRAWL AUTH ──────────────────────────────────────────────
     // Prefer the user-topped-up key; fall back to the connector-managed one
     const FIRECRAWL_API_KEY =
@@ -4484,7 +4533,7 @@ Deno.serve(async (req) => {
 
     // ── STAGES 1+2: Direct HTTP + optional Firecrawl scraping ────────
     const creditsBefore = credits;
-    const rawProducts = await scrapeProducts(brand, category, FIRECRAWL_API_KEY, useFirecrawl);
+    const rawProducts = await scrapeProducts(brand, category, FIRECRAWL_API_KEY, useFirecrawl, forceSearchFallback);
     results.extracted = rawProducts.length;
     results.scraped = rawProducts.length > 0 ? 1 : 0;
     results.withImages = rawProducts.filter(p => p.image_urls.length > 0).length;
