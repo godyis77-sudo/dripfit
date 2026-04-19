@@ -2554,11 +2554,22 @@ async function mapRetailerBrandUrls(
       );
       return [];
     }
-    const links: string[] = Array.isArray(data?.links)
+    // Firecrawl /v2/map returns links as objects ({ url, title, description })
+    // OR plain strings depending on plan/version — normalize both.
+    const rawLinks: unknown[] = Array.isArray(data?.links)
       ? data.links
       : Array.isArray(data?.data?.links)
         ? data.data.links
         : [];
+    const links: string[] = rawLinks
+      .map((l) => {
+        if (typeof l === 'string') return l;
+        if (l && typeof l === 'object' && typeof (l as { url?: unknown }).url === 'string') {
+          return (l as { url: string }).url;
+        }
+        return '';
+      })
+      .filter((u) => u.startsWith('http'));
     const filtered = links.filter((u) => {
       const lower = u.toLowerCase();
       const onBrand = brandTokens.some((tok) => lower.includes(tok.replace(/\s+/g, '-')) || lower.includes(tok));
@@ -2569,7 +2580,7 @@ async function mapRetailerBrandUrls(
       return onBrand && !isExcluded;
     });
     console.log(
-      `[retailer-map] ${host} for ${brand}/${category}: ${links.length} total → ${filtered.length} on-brand`,
+      `[retailer-map] ${host} for ${brand}/${category}: ${rawLinks.length} total → ${filtered.length} on-brand`,
     );
     return filtered.slice(0, 8);
   } catch (err) {
