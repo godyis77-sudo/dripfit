@@ -4064,8 +4064,9 @@ Deno.serve(async (req) => {
     }
 
     // ── FIRECRAWL AUTH ──────────────────────────────────────────────
+    // Prefer the user-topped-up key; fall back to the connector-managed one
     const FIRECRAWL_API_KEY =
-      Deno.env.get('FIRECRAWL_API_KEY_1') || Deno.env.get('FIRECRAWL_API_KEY') || '';
+      Deno.env.get('FIRECRAWL_API_KEY') || Deno.env.get('FIRECRAWL_API_KEY_1') || '';
     if (FIRECRAWL_API_KEY) {
       console.log(`[auth] Firecrawl ENABLED — full pipeline (Shopify, Direct HTTP, Google, Firecrawl)`);
     } else {
