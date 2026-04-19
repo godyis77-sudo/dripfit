@@ -233,21 +233,21 @@ Deno.serve(async (req) => {
     // Support batch params to process a slice of jobs (0-indexed batch number)
     let batchNumber = 0;
     let batchTotal = 1;
-    let dispatchDelayMs = 900;
+    let dispatchDelayMs = 1500;
     let thinOnly = false;
     try {
       const body = await req.json();
       batchNumber = Number(body.batch ?? 0);
       batchTotal = Number(body.totalBatches ?? 1);
-      dispatchDelayMs = Number(body.dispatchDelayMs ?? 900);
+      dispatchDelayMs = Number(body.dispatchDelayMs ?? 1500);
       thinOnly = body.thinOnly === true;
     } catch { /* no body = run all */ }
 
     batchTotal = Number.isFinite(batchTotal) && batchTotal > 0 ? Math.floor(batchTotal) : 1;
     batchNumber = Number.isFinite(batchNumber) && batchNumber >= 0 ? Math.floor(batchNumber) : 0;
     dispatchDelayMs = Number.isFinite(dispatchDelayMs)
-      ? Math.max(250, Math.min(3000, Math.floor(dispatchDelayMs)))
-      : 900;
+      ? Math.max(250, Math.min(5000, Math.floor(dispatchDelayMs)))
+      : 1500;
 
     // Build all jobs (optionally filtered to thin categories only)
     const allJobs: { brand: string; category: string }[] = [];
@@ -268,32 +268,101 @@ Deno.serve(async (req) => {
     const batchJobs = allJobs.slice(start, start + jobsPerBatch);
 
     console.log(
-      `[scrape-all] Batch ${batchNumber + 1}/${batchTotal}: dispatching ${batchJobs.length} jobs fire-and-forget with ${dispatchDelayMs}ms stagger (of ${allJobs.length} total)`
+      `[scrape-all] Batch ${batchNumber + 1}/${batchTotal}: dispatching ${batchJobs.length} jobs with ${dispatchDelayMs}ms stagger (of ${allJobs.length} total)`
     );
 
-    // Fire-and-forget: dispatch all jobs without awaiting responses
-    // Each scrape-products call runs independently with its own timeout
+    // Runtime budget warning (Option B): edge function runtime caps are
+    // ~150s on Free, ~400s on Pro. At dispatchDelayMs per job, batches
+    // larger than ~265 jobs on Pro will exceed the cap mid-dispatch.
+    const estimatedRuntimeSec = (batchJobs.length * dispatchDelayMs) / 1000;
+    if (estimatedRuntimeSec > 380) {
+      console.warn(
+        `[scrape-all] WARN: ${batchJobs.length} jobs × ${dispatchDelayMs}ms = ` +
+        `${estimatedRuntimeSec.toFixed(0)}s. Edge runtime cap is ~400s on Pro. ` +
+        `Consider increasing totalBatches or reducing job count to avoid mid-run timeout.`
+      );
+    }
+
+    // Awaited dispatch with 429/5xx retry + body drain.
+    // We await each dispatch (just the request send, not the scrape work)
+    // so we can detect rate-limit responses and back off, instead of
+    // silently dropping jobs as fire-and-forget would.
     let dispatched = 0;
-    for (const job of batchJobs) {
-      fetch(`${SUPABASE_URL}/functions/v1/scrape-products`, {
+    let retried = 0;
+    let failed = 0;
+    for (let i = 0; i < batchJobs.length; i++) {
+      const job = batchJobs[i];
+      const url = `${SUPABASE_URL}/functions/v1/scrape-products`;
+      const init: RequestInit = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
         },
         body: JSON.stringify({ brand: job.brand, category: job.category }),
-      }).catch(err => {
-        console.warn(`[scrape-all] ${job.brand}/${job.category} dispatch failed: ${err.message}`);
-      });
+      };
+
+      let attempt = 0;
+      const maxAttempts = 3;
+      let ok = false;
+      while (attempt < maxAttempts && !ok) {
+        attempt++;
+        try {
+          const resp = await fetch(url, init);
+          // Drain body to free the connection (Deno will leak otherwise)
+          resp.body?.cancel().catch(() => {});
+
+          if (resp.status === 429 || (resp.status >= 500 && resp.status < 600)) {
+            if (attempt < maxAttempts) {
+              retried++;
+              const backoffMs = 1000 * attempt; // 1s, 2s
+              console.warn(
+                `[scrape-all] ${job.brand}/${job.category} got ${resp.status}, ` +
+                `retry ${attempt}/${maxAttempts - 1} after ${backoffMs}ms`
+              );
+              await new Promise(r => setTimeout(r, backoffMs));
+              continue;
+            }
+            failed++;
+            console.warn(
+              `[scrape-all] ${job.brand}/${job.category} gave up after ${maxAttempts} attempts (${resp.status})`
+            );
+          } else {
+            ok = true;
+          }
+        } catch (err: any) {
+          if (attempt < maxAttempts) {
+            retried++;
+            const backoffMs = 1000 * attempt;
+            console.warn(
+              `[scrape-all] ${job.brand}/${job.category} dispatch error: ${err.message}, ` +
+              `retry ${attempt}/${maxAttempts - 1} after ${backoffMs}ms`
+            );
+            await new Promise(r => setTimeout(r, backoffMs));
+            continue;
+          }
+          failed++;
+          console.warn(
+            `[scrape-all] ${job.brand}/${job.category} dispatch failed permanently: ${err.message}`
+          );
+        }
+      }
       dispatched++;
 
-      // Stagger dispatches to avoid downstream rate limits
-      if (dispatched < batchJobs.length) {
+      // Stagger between jobs (skip after the last one)
+      if (i < batchJobs.length - 1) {
         await new Promise(r => setTimeout(r, dispatchDelayMs));
       }
     }
 
-    console.log(`[scrape-all] Batch ${batchNumber + 1} dispatched ${dispatched} jobs`);
+    // Brief flush before returning so the last fire-and-forget request
+    // has time to leave the runtime before the function exits.
+    await new Promise(r => setTimeout(r, 500));
+
+    console.log(
+      `[scrape-all] Batch ${batchNumber + 1} dispatched ${dispatched} jobs ` +
+      `(retried=${retried}, failed=${failed})`
+    );
 
     // Insert a scrape_runs row so pg_cron handles post-processing
     const estimatedSeconds = Math.max(Math.ceil(dispatched * dispatchDelayMs * 0.5 / 1000), 30);
