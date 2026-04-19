@@ -2955,18 +2955,21 @@ async function scrapeBrandViaRetailer(
     const more = await mapRetailerBrandUrls(seed, brand, category, firecrawlApiKey);
     discovered.push(...more);
   }
-  // Combine seeds + discovered, dedupe, cap to 6 to control credit spend (~30–54 credits/run).
-  const combined = [...new Set([...retailerUrls, ...discovered])].slice(0, 6);
+  // Combine seeds + discovered, dedupe, cap to 4 to control credit spend AND
+  // stay inside the 150s edge function CPU ceiling. Each page costs ~10–15s
+  // (stealth scrape + 1.5s throttle), so 4 pages ≈ 40–60s, leaving headroom
+  // for the SEARCH RESCUE branch + classification + DB insert.
+  const combined = [...new Set([...retailerUrls, ...discovered])].slice(0, 4);
   console.log(
     `[retailer] ${brand}/${category}: ${retailerUrls.length} seeds + ${discovered.length} mapped → ${combined.length} pages to scrape`,
   );
 
-  const RETAILER_THROTTLE_MS = 2000;
+  const RETAILER_THROTTLE_MS = 1000;
   const allProducts: RawProduct[] = [];
 
   for (const listingUrl of combined) {
     // Stagger retailer requests to avoid WAF clustering.
-    await new Promise((r) => setTimeout(r, RETAILER_THROTTLE_MS + Math.random() * 1500));
+    await new Promise((r) => setTimeout(r, RETAILER_THROTTLE_MS + Math.random() * 500));
 
     const useStealth = shouldUseStealth(listingUrl);
     const extracted = await firecrawlScrapeProducts(listingUrl, firecrawlApiKey, {
@@ -3027,6 +3030,36 @@ async function scrapeBrandViaRetailer(
   console.log(
     `[retailer] ${brand}/${category} FINAL: ${deduped.length} products via firecrawl_json`,
   );
+
+  // ── 0-RESULT RESCUE: retailer-first found nothing (anti-bot/stealth blocked) ──
+  // Even when /v2/scrape returns HTTP 200 with empty payloads, retailers like
+  // Net-A-Porter / MrPorter / Farfetch / SSENSE can stealth-block the JSON
+  // extractor. Fall back to /v2/search SERP parsing restricted to the brand's
+  // mapped retailer hosts so we still ingest *something* for this brand/category.
+  if (deduped.length === 0) {
+    console.warn(
+      `[retailer] ${brand}/${category}: retailer-first returned 0 products — invoking SEARCH RESCUE`,
+    );
+    const searched = await searchProducts(brand, category, firecrawlApiKey);
+    const retailerHosts = new Set<string>();
+    for (const seed of retailerUrls) {
+      try { retailerHosts.add(new URL(seed).host.replace(/^www\./, '')); } catch { /* skip */ }
+    }
+    const onRetailer = searched.filter((p) => {
+      try {
+        const h = new URL(p.product_url).host.replace(/^www\./, '');
+        return [...retailerHosts].some((rh) => h === rh || h.endsWith(`.${rh}`));
+      } catch {
+        return false;
+      }
+    });
+    for (const p of onRetailer) p._method = 'retailer_search_fallback';
+    console.log(
+      `[retailer] ${brand}/${category} SEARCH RESCUE: ${searched.length} total → ${onRetailer.length} on-retailer`,
+    );
+    return onRetailer;
+  }
+
   return deduped;
 }
 
