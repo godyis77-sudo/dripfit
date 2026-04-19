@@ -13,8 +13,9 @@ type ScrapeMethod =
   | 'direct'
   | 'search'
   | 'search_fallback'
-  | 'retailer_jsonld' // parsed from retailer listing (SSENSE/Mr Porter/END/etc.) via Firecrawl
-  | 'retailer_pdp';   // PDP follow-up after a thin retailer listing stub
+  | 'retailer_jsonld'         // (legacy) parsed from retailer HTML via Firecrawl + JSON-LD
+  | 'retailer_pdp'            // (legacy) PDP follow-up after a thin retailer listing stub
+  | 'retailer_firecrawl_json'; // Firecrawl v2 JSON-schema array extraction (current path)
 
 interface RawProduct {
   name: string;
