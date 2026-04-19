@@ -1159,6 +1159,82 @@ const ANTI_SCRAPE_BRANDS = new Set([
 ]);
 
 // ─────────────────────────────────────────────────────────────────────────────
+// FIRECRAWL CIRCUIT BREAKER
+// Trips after N consecutive 5xx responses and short-circuits all Firecrawl
+// calls for COOLDOWN_MS. Prevents wasted ~1.2s + jitter per call during
+// Firecrawl service outages (observed 2026-04-19: persistent UNKNOWN_ERROR
+// 500s across all keys/URLs).
+// ─────────────────────────────────────────────────────────────────────────────
+
+const FIRECRAWL_BREAKER = {
+  consecutiveFailures: 0,
+  trippedUntil: 0,
+  THRESHOLD: 4,
+  COOLDOWN_MS: 5 * 60 * 1000,
+};
+
+function isFirecrawlOpen(): { open: boolean; remainingMs: number } {
+  const now = Date.now();
+  if (now < FIRECRAWL_BREAKER.trippedUntil) {
+    return { open: true, remainingMs: FIRECRAWL_BREAKER.trippedUntil - now };
+  }
+  return { open: false, remainingMs: 0 };
+}
+
+function recordFirecrawlSuccess() {
+  FIRECRAWL_BREAKER.consecutiveFailures = 0;
+}
+
+function recordFirecrawlFailure(httpStatus?: number) {
+  // Only count 5xx / network errors toward the breaker — 4xx are usually
+  // caller-side (bad URL, bad schema) and shouldn't trip the gate.
+  if (httpStatus !== undefined && httpStatus < 500) return;
+  FIRECRAWL_BREAKER.consecutiveFailures += 1;
+  if (FIRECRAWL_BREAKER.consecutiveFailures >= FIRECRAWL_BREAKER.THRESHOLD) {
+    FIRECRAWL_BREAKER.trippedUntil = Date.now() + FIRECRAWL_BREAKER.COOLDOWN_MS;
+    console.warn(
+      `[firecrawl-breaker] OPEN — ${FIRECRAWL_BREAKER.consecutiveFailures} consecutive failures, suppressing for ${FIRECRAWL_BREAKER.COOLDOWN_MS / 1000}s`,
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// KNOWN-403 RETAILERS — direct HTTP fetch always blocked by Cloudflare/WAF.
+// Skip the wasted retry loop and let Firecrawl / search fallback handle these.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const DIRECT_HTTP_BLOCKLIST = new Set<string>([
+  'vans',
+  'salomon',
+  'puma',
+  'nike',
+  'adidas',
+  'lululemon',
+  'patagonia',
+  'arc\u2019teryx',
+  "arc'teryx",
+  'arcteryx',
+  'the north face',
+  'thenorthface',
+  'underarmour',
+  'under armour',
+  'columbia',
+  'newbalance',
+  'new balance',
+  'asics',
+  'reebok',
+  'mizuno',
+  'brooks',
+  'hoka',
+  'allbirds',
+]);
+
+function isDirectHttpBlocked(brand: string): boolean {
+  const k = brand.toLowerCase().trim();
+  return DIRECT_HTTP_BLOCKLIST.has(k);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // RETRY LOGIC WITH EXPONENTIAL BACKOFF
 // ─────────────────────────────────────────────────────────────────────────────
 
