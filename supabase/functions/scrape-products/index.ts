@@ -2730,6 +2730,7 @@ async function firecrawlScrapeProducts(
       console.error(
         `[firecrawl-json] ${url}: HTTP ${resp.status} (stealth=${useStealth}) — ${errText.slice(0, 240)}`,
       );
+      recordFirecrawlFailure(resp.status);
       return [];
     }
     const body = await resp.json().catch(() => null);
@@ -2738,8 +2739,11 @@ async function firecrawlScrapeProducts(
       console.warn(
         `[firecrawl-json] ${url}: response had no products array — ${JSON.stringify(body ?? {}).slice(0, 240)}`,
       );
+      // Empty/malformed body on a 200 = upstream weirdness, count as soft fail
+      recordFirecrawlFailure(500);
       return [];
     }
+    recordFirecrawlSuccess();
     // Page-level image gallery (from the `images` format). We attach it to
     // every product so the caller can dedupe / pick the best matching image.
     const pageImages: string[] = Array.isArray(body?.data?.images)
@@ -2756,6 +2760,8 @@ async function firecrawlScrapeProducts(
   } catch (err) {
     const e = err as Error;
     console.error(`[firecrawl-json] ${url}: ${e.name} — ${e.message}`);
+    // Network error / timeout — feed breaker
+    recordFirecrawlFailure(500);
     return [];
   } finally {
     clearTimeout(timer);
