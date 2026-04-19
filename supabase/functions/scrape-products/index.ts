@@ -2478,9 +2478,17 @@ async function scrapeDirectHttp(
   brand: string,
   category: string,
 ): Promise<RawProduct[]> {
+  // Known-403 retailers (Vans, Salomon, Puma, Nike, etc.) always block direct
+  // fetches via Cloudflare. Skip the wasted retry loop and let Shopify/
+  // Firecrawl/search fallback handle these.
+  if (isDirectHttpBlocked(brand)) {
+    console.log(`[direct] ${brand} is blocklisted (known 403/Cloudflare), skipping direct scrape`);
+    return [];
+  }
+
   const brandKey = normalizeBrandKey(brand);
   const brandUrls = CATEGORY_MAP[brandKey];
-  
+
   if (!brandUrls) {
     console.log(`[direct] No URL config for ${brand}, skipping direct scrape`);
     return [];
