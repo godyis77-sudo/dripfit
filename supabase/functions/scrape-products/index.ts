@@ -2737,7 +2737,10 @@ async function searchGoogleProducts(
       if (!resp.ok) {
         const errText = await resp.text();
         console.warn(`[google-search] HTTP ${resp.status}: ${errText.slice(0, 200)}`);
-        if (resp.status === 429 || resp.status === 403) break;
+        if (resp.status === 429 || resp.status === 403) {
+          markGoogleQuotaExhausted(`HTTP ${resp.status}`);
+          break;
+        }
         continue;
       }
 
