@@ -2507,6 +2507,77 @@ async function firecrawlScrapeProducts(
 // they're still used by the Shopify-direct path (where they cost 0 credits).
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Discover extra listing/PDP URLs on a retailer's domain matching `brand`.
+ * Uses Firecrawl /v2/map (1 credit, no JS render) — much cheaper than
+ * brute-forcing pagination via /scrape. Returns URLs that look like
+ * brand-relevant product pages on the same host as `seedUrl`.
+ */
+async function mapRetailerBrandUrls(
+  seedUrl: string,
+  brand: string,
+  category: string,
+  firecrawlApiKey: string,
+): Promise<string[]> {
+  if (!firecrawlApiKey) return [];
+  let host: string;
+  try {
+    host = new URL(seedUrl).origin;
+  } catch {
+    return [];
+  }
+  const brandTokens = brand.toLowerCase().split(/\s+/).filter((t) => t.length > 2);
+  const search = [brand, category].filter(Boolean).join(' ');
+
+  try {
+    const ac = new AbortController();
+    const t = setTimeout(() => ac.abort(), 25000);
+    const resp = await fetch('https://api.firecrawl.dev/v2/map', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${firecrawlApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        url: host,
+        search,
+        limit: 200,
+        includeSubdomains: false,
+      }),
+      signal: ac.signal,
+    });
+    clearTimeout(t);
+    const data = await resp.json().catch(() => null);
+    if (!resp.ok) {
+      console.warn(
+        `[retailer-map] ${host} for ${brand}: HTTP ${resp.status} — ${JSON.stringify(data ?? {}).slice(0, 200)}`,
+      );
+      return [];
+    }
+    const links: string[] = Array.isArray(data?.links)
+      ? data.links
+      : Array.isArray(data?.data?.links)
+        ? data.data.links
+        : [];
+    const filtered = links.filter((u) => {
+      const lower = u.toLowerCase();
+      const onBrand = brandTokens.some((tok) => lower.includes(tok.replace(/\s+/g, '-')) || lower.includes(tok));
+      const isExcluded =
+        /\/(search|cart|checkout|account|login|help|faq|about|blog|press|careers|legal|privacy|terms)(\/|$)/i.test(
+          lower,
+        );
+      return onBrand && !isExcluded;
+    });
+    console.log(
+      `[retailer-map] ${host} for ${brand}/${category}: ${links.length} total → ${filtered.length} on-brand`,
+    );
+    return filtered.slice(0, 8);
+  } catch (err) {
+    console.warn(`[retailer-map] ${host}: ${(err as Error).message}`);
+    return [];
+  }
+}
+
 async function scrapeBrandViaRetailer(
   brand: string,
   category: string,
@@ -2526,10 +2597,28 @@ async function scrapeBrandViaRetailer(
     return brandTokens.some((t) => hay.includes(t));
   };
 
+  // ── /map discovery: enrich seed listings with brand-relevant URLs from each retailer's domain.
+  // Run map only against the FIRST seed per host to avoid duplicate map calls.
+  const seenHosts = new Set<string>();
+  const discovered: string[] = [];
+  for (const seed of retailerUrls) {
+    let host = '';
+    try { host = new URL(seed).host; } catch { continue; }
+    if (seenHosts.has(host)) continue;
+    seenHosts.add(host);
+    const more = await mapRetailerBrandUrls(seed, brand, category, firecrawlApiKey);
+    discovered.push(...more);
+  }
+  // Combine seeds + discovered, dedupe, cap to 6 to control credit spend (~30–54 credits/run).
+  const combined = [...new Set([...retailerUrls, ...discovered])].slice(0, 6);
+  console.log(
+    `[retailer] ${brand}/${category}: ${retailerUrls.length} seeds + ${discovered.length} mapped → ${combined.length} pages to scrape`,
+  );
+
   const RETAILER_THROTTLE_MS = 2000;
   const allProducts: RawProduct[] = [];
 
-  for (const listingUrl of retailerUrls) {
+  for (const listingUrl of combined) {
     // Stagger retailer requests to avoid WAF clustering.
     await new Promise((r) => setTimeout(r, RETAILER_THROTTLE_MS + Math.random() * 1500));
 
@@ -2557,7 +2646,12 @@ async function scrapeBrandViaRetailer(
       const productUrl = rawUrl
         ? (rawUrl.startsWith('http') ? rawUrl : new URL(rawUrl, listingUrl).toString())
         : listingUrl;
-      const imageUrl = (p.image_url || '').trim();
+      const heroImage = (p.image_url || '').trim();
+      // Merge hero + page gallery; dedupe; cap at 6 to keep payload sane.
+      const gallery = Array.isArray(p.gallery_images) ? p.gallery_images : [];
+      const imageUrls = [...new Set(
+        [heroImage, ...gallery].filter((u): u is string => typeof u === 'string' && u.startsWith('http')),
+      )].slice(0, 6);
       allProducts.push({
         name,
         brand, // canonical brand, ignore retailer spelling
@@ -2566,7 +2660,7 @@ async function scrapeBrandViaRetailer(
           ? Math.round(p.price_usd * 100)
           : null,
         currency: 'USD',
-        image_urls: imageUrl ? [imageUrl] : [],
+        image_urls: imageUrls,
         category_raw: (p.category || category) ?? category,
         colour: p.color || null,
         description: null, // not extracted from listing
