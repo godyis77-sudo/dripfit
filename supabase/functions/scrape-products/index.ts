@@ -2272,7 +2272,194 @@ async function checkFirecrawlCredits(apiKey: string): Promise<number | null> {
   }
 }
 
-async function scrapeProducts(
+// ─────────────────────────────────────────────────────────────────────────────
+// FIRECRAWL SCRAPE — single-URL HTML fetch with JS rendering (Cloudflare-safe)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Scrape a single URL via Firecrawl /v1/scrape and return raw HTML.
+ * Use this for Cloudflare-protected retailers (SSENSE / Mr Porter / END / etc.)
+ * where plain `fetchPageHtml` returns 403.
+ *
+ * Returns null on any failure (logs the reason).
+ */
+async function firecrawlScrape(
+  url: string,
+  apiKey: string,
+  opts: { waitFor?: number; onlyMainContent?: boolean; timeoutMs?: number } = {},
+): Promise<string | null> {
+  if (!apiKey) {
+    console.warn(`[firecrawl-scrape] no API key, skipping ${url}`);
+    return null;
+  }
+  const waitFor = opts.waitFor ?? 4000;
+  const onlyMainContent = opts.onlyMainContent ?? false;
+  const timeoutMs = opts.timeoutMs ?? 30000;
+
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), timeoutMs);
+  try {
+    const resp = await fetch('https://api.firecrawl.dev/v1/scrape', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        url,
+        formats: ['html'],
+        onlyMainContent,
+        waitFor,
+      }),
+      signal: ac.signal,
+    });
+    const data = await resp.json().catch(() => null);
+    if (!resp.ok || !data?.success) {
+      console.warn(
+        `[firecrawl-scrape] ${url} HTTP ${resp.status}: ${JSON.stringify(data ?? {}).slice(0, 240)}`,
+      );
+      return null;
+    }
+    const html = data?.data?.html || data?.data?.rawHtml || '';
+    if (!html) {
+      console.warn(`[firecrawl-scrape] ${url} returned no html field`);
+      return null;
+    }
+    return html as string;
+  } catch (err) {
+    const e = err as Error;
+    console.warn(`[firecrawl-scrape] ${url} threw (${e.name}): ${e.message}`);
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RETAILER-FIRST SCRAPING — for hard-luxury brands behind Cloudflare WAF
+// Uses Firecrawl on RETAILER_DESIGNER_URLS, parses listings via existing
+// parseProductsFromHtml (JSON-LD + __NEXT_DATA__ + state blobs), then does
+// PDP follow-up for thin stubs.
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function scrapeBrandViaRetailer(
+  brand: string,
+  category: string,
+  firecrawlApiKey: string,
+): Promise<RawProduct[]> {
+  const brandKey = brand.toLowerCase().trim();
+  const retailerUrls = RETAILER_DESIGNER_URLS[brandKey];
+  if (!retailerUrls?.length) return [];
+  if (!firecrawlApiKey) {
+    console.warn(`[retailer] ${brand}: Firecrawl key missing, skipping`);
+    return [];
+  }
+
+  const brandTokens = brandKey.split(/\s+/).filter((t) => t.length > 2);
+  const matchesBrand = (p: RawProduct): boolean => {
+    const hay = `${(p.brand || '').toLowerCase()} ${(p.name || '').toLowerCase()}`;
+    return brandTokens.some((t) => hay.includes(t));
+  };
+
+  const allProducts: RawProduct[] = [];
+  const PDP_BUDGET_PER_LISTING = 10;
+  const PDP_THROTTLE_MS = 1500;
+  const RETAILER_THROTTLE_MS = 2000;
+
+  for (const listingUrl of retailerUrls) {
+    // Stagger retailer requests to avoid WAF clustering.
+    await new Promise((r) => setTimeout(r, RETAILER_THROTTLE_MS + Math.random() * 1500));
+
+    const listingHtml = await firecrawlScrape(listingUrl, firecrawlApiKey, {
+      waitFor: 5000,
+      onlyMainContent: false,
+    });
+    if (!listingHtml) {
+      console.warn(`[retailer] ${listingUrl}: empty html`);
+      continue;
+    }
+
+    let listingProducts: RawProduct[] = [];
+    try {
+      listingProducts = parseProductsFromHtml(listingHtml, brand, category, listingUrl);
+    } catch (err) {
+      const e = err as Error;
+      console.error(`[retailer] parse failed for ${listingUrl} (${e.name}): ${e.message}`);
+      continue;
+    }
+
+    // Strict brand filter — discard cross-brand carousel pollution.
+    const onBrand = listingProducts.filter(matchesBrand);
+    console.log(
+      `[retailer] ${listingUrl}: parsed=${listingProducts.length} on-brand=${onBrand.length}`,
+    );
+
+    const complete = onBrand.filter(
+      (p) => p.image_urls.length > 0 && p.price_cents !== null,
+    );
+    const stubs = onBrand.filter(
+      (p) => p.image_urls.length === 0 || p.price_cents === null,
+    );
+
+    for (const p of complete) p._method = 'retailer_jsonld';
+    allProducts.push(...complete);
+
+    // PDP follow-up for thin stubs — capped budget.
+    const pdpTargets = stubs
+      .filter((s) => s.product_url && s.product_url !== listingUrl)
+      .slice(0, PDP_BUDGET_PER_LISTING);
+
+    for (const stub of pdpTargets) {
+      await new Promise((r) => setTimeout(r, PDP_THROTTLE_MS));
+      const pdpHtml = await firecrawlScrape(stub.product_url, firecrawlApiKey, {
+        waitFor: 3500,
+        onlyMainContent: false,
+      });
+      if (!pdpHtml) continue;
+
+      let pdpParsed: RawProduct[] = [];
+      try {
+        pdpParsed = parseProductsFromHtml(pdpHtml, brand, category, stub.product_url);
+      } catch (err) {
+        const e = err as Error;
+        console.error(`[retailer] PDP parse failed ${stub.product_url} (${e.name}): ${e.message}`);
+        continue;
+      }
+      const pdpOnBrand = pdpParsed.filter(matchesBrand);
+      if (pdpOnBrand.length === 0) continue;
+
+      const full = pdpOnBrand[0];
+      full._method = 'retailer_pdp';
+      // Merge stub metadata where PDP is missing fields.
+      if (!full.name && stub.name) full.name = stub.name;
+      if (full.image_urls.length === 0 && stub.image_urls.length > 0) {
+        full.image_urls = stub.image_urls;
+      }
+      if (full.price_cents === null && stub.price_cents !== null) {
+        full.price_cents = stub.price_cents;
+      }
+      allProducts.push(full);
+    }
+  }
+
+  // Dedupe by product_url.
+  const seen = new Set<string>();
+  const deduped = allProducts.filter((p) => {
+    const k = (p.product_url || '').toLowerCase();
+    if (!k || seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+
+  const jsonldCount = deduped.filter((p) => p._method === 'retailer_jsonld').length;
+  const pdpCount = deduped.filter((p) => p._method === 'retailer_pdp').length;
+  console.log(
+    `[retailer] ${brand}/${category} FINAL: ${deduped.length} products ` +
+      `(jsonld=${jsonldCount}, pdp=${pdpCount})`,
+  );
+  return deduped;
+}
+
   brand: string,
   category: string,
   firecrawlApiKey: string,
