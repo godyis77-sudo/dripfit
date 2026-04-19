@@ -790,6 +790,159 @@ const CATEGORY_MAP: Record<string, Record<string, CategoryUrl[]>> = {
   },
 };
 
+// ─── RETAILER DESIGNER-FILTERED URLS ─────────────────────────
+// Maps a luxury brand → designer-filtered pages on scrape-friendly
+// retailers. Use these as a fallback when direct brand scraping
+// returns 403 (LV, Stone Island, Bottega, Arc'teryx, etc.).
+//
+// Conventions:
+//   - Mr Porter  = MENS-only (no women's section exists)
+//   - Net-a-Porter = WOMENS-only (sister site to Mr Porter)
+//   - Farfetch   = broadest coverage incl. Louis Vuitton
+//   - SSENSE     = mens + womens, but does NOT carry LV
+//   - END Clothing = strong on streetwear/techwear (UK-stocked)
+//
+// Keys are lowercase. Callers MUST lowercase-normalize on lookup
+// (e.g. RETAILER_DESIGNER_URLS[brand.toLowerCase().trim()]).
+//
+// WARNING: SSENSE / Mr Porter / Net-a-Porter / Farfetch all use
+// Cloudflare bot protection. These URLs ONLY succeed via Firecrawl
+// (rendered). Direct HTTP fetch = 403. Verify FIRECRAWL_API_KEY is
+// connected before relying on this map.
+// ────────────────────────────────────────────────────────────
+const RETAILER_DESIGNER_URLS: Record<string, string[]> = {
+  // ── Hard-luxury houses ──
+  'louis vuitton': [
+    'https://www.farfetch.com/shopping/men/louis-vuitton/items.aspx',
+    'https://www.farfetch.com/shopping/women/louis-vuitton/items.aspx',
+    'https://www.mrporter.com/en-us/mens/designer/louis-vuitton',
+  ],
+  'gucci': [
+    'https://www.ssense.com/en-us/men/designers/gucci',
+    'https://www.ssense.com/en-us/women/designers/gucci',
+    'https://www.mrporter.com/en-us/mens/designer/gucci',
+    'https://www.net-a-porter.com/en-us/shop/designer/gucci',
+    'https://www.farfetch.com/shopping/men/gucci/items.aspx',
+  ],
+  'prada': [
+    'https://www.ssense.com/en-us/men/designers/prada',
+    'https://www.ssense.com/en-us/women/designers/prada',
+    'https://www.mrporter.com/en-us/mens/designer/prada',
+    'https://www.net-a-porter.com/en-us/shop/designer/prada',
+  ],
+  'dior': [
+    'https://www.ssense.com/en-us/men/designers/dior-homme',
+    'https://www.mrporter.com/en-us/mens/designer/dior-men',
+    'https://www.farfetch.com/shopping/women/dior/items.aspx',
+  ],
+  'bottega veneta': [
+    'https://www.ssense.com/en-us/men/designers/bottega-veneta',
+    'https://www.ssense.com/en-us/women/designers/bottega-veneta',
+    'https://www.mrporter.com/en-us/mens/designer/bottega-veneta',
+    'https://www.net-a-porter.com/en-us/shop/designer/bottega-veneta',
+  ],
+  'versace': [
+    'https://www.ssense.com/en-us/men/designers/versace',
+    'https://www.ssense.com/en-us/women/designers/versace',
+    'https://www.net-a-porter.com/en-us/shop/designer/versace',
+  ],
+  'saint laurent': [
+    'https://www.ssense.com/en-us/men/designers/saint-laurent',
+    'https://www.ssense.com/en-us/women/designers/saint-laurent',
+    'https://www.mrporter.com/en-us/mens/designer/saint-laurent',
+    'https://www.net-a-porter.com/en-us/shop/designer/saint-laurent',
+  ],
+  'balenciaga': [
+    'https://www.ssense.com/en-us/men/designers/balenciaga',
+    'https://www.ssense.com/en-us/women/designers/balenciaga',
+    'https://www.net-a-porter.com/en-us/shop/designer/balenciaga',
+  ],
+  'celine': [
+    'https://www.ssense.com/en-us/men/designers/celine',
+    'https://www.ssense.com/en-us/women/designers/celine',
+    'https://www.net-a-porter.com/en-us/shop/designer/celine',
+  ],
+  'loewe': [
+    'https://www.ssense.com/en-us/men/designers/loewe',
+    'https://www.ssense.com/en-us/women/designers/loewe',
+    'https://www.mrporter.com/en-us/mens/designer/loewe',
+    'https://www.net-a-porter.com/en-us/shop/designer/loewe',
+  ],
+  // ── Techwear / outdoor luxury ──
+  'stone island': [
+    'https://www.ssense.com/en-us/men/designers/stone-island',
+    'https://www.mrporter.com/en-us/mens/designer/stone-island',
+    'https://www.endclothing.com/us/brands/stone-island',
+  ],
+  "arc'teryx": [
+    'https://www.ssense.com/en-us/men/designers/arcteryx',
+    'https://www.endclothing.com/us/brands/arcteryx',
+  ],
+  // ── Luxury streetwear bridge ──
+  'off-white': [
+    'https://www.ssense.com/en-us/men/designers/off-white',
+    'https://www.ssense.com/en-us/women/designers/off-white',
+    'https://www.endclothing.com/us/brands/off-white',
+  ],
+  // ── Avant-garde ──
+  'rick owens': [
+    'https://www.ssense.com/en-us/men/designers/rick-owens',
+    'https://www.ssense.com/en-us/women/designers/rick-owens',
+    'https://www.net-a-porter.com/en-us/shop/designer/rick-owens',
+  ],
+  'maison margiela': [
+    'https://www.ssense.com/en-us/men/designers/maison-margiela',
+    'https://www.ssense.com/en-us/women/designers/maison-margiela',
+    'https://www.net-a-porter.com/en-us/shop/designer/maison-margiela',
+  ],
+  'acne studios': [
+    'https://www.ssense.com/en-us/men/designers/acne-studios',
+    'https://www.ssense.com/en-us/women/designers/acne-studios',
+    'https://www.net-a-porter.com/en-us/shop/designer/acne-studios',
+  ],
+  'jacquemus': [
+    'https://www.ssense.com/en-us/men/designers/jacquemus',
+    'https://www.ssense.com/en-us/women/designers/jacquemus',
+    'https://www.net-a-porter.com/en-us/shop/designer/jacquemus',
+  ],
+  'ami paris': [
+    'https://www.ssense.com/en-us/men/designers/ami-alexandre-mattiussi',
+    'https://www.net-a-porter.com/en-us/shop/designer/ami-paris',
+  ],
+  'sacai': [
+    'https://www.ssense.com/en-us/men/designers/sacai',
+    'https://www.ssense.com/en-us/women/designers/sacai',
+  ],
+  'moncler': [
+    'https://www.ssense.com/en-us/men/designers/moncler',
+    'https://www.mrporter.com/en-us/mens/designer/moncler',
+    'https://www.net-a-porter.com/en-us/shop/designer/moncler',
+  ],
+  'fendi': [
+    'https://www.ssense.com/en-us/men/designers/fendi',
+    'https://www.ssense.com/en-us/women/designers/fendi',
+    'https://www.net-a-porter.com/en-us/shop/designer/fendi',
+  ],
+  'burberry': [
+    'https://www.ssense.com/en-us/men/designers/burberry',
+    'https://www.mrporter.com/en-us/mens/designer/burberry',
+    'https://www.net-a-porter.com/en-us/shop/designer/burberry',
+  ],
+  'valentino': [
+    'https://www.ssense.com/en-us/men/designers/valentino',
+    'https://www.ssense.com/en-us/women/designers/valentino',
+    'https://www.net-a-porter.com/en-us/shop/designer/valentino',
+  ],
+  'alexander mcqueen': [
+    'https://www.ssense.com/en-us/men/designers/alexander-mcqueen',
+    'https://www.net-a-porter.com/en-us/shop/designer/alexander-mcqueen',
+  ],
+  'givenchy': [
+    'https://www.ssense.com/en-us/men/designers/givenchy',
+    'https://www.net-a-porter.com/en-us/shop/designer/givenchy',
+  ],
+};
+
 // Brands that block direct scraping — use search fallback
 const ANTI_SCRAPE_BRANDS = new Set([
   'hm', 'h&m', 'zara', 'uniqlo', 'shein', 'nike', 'asos',
