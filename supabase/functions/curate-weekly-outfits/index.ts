@@ -12,77 +12,128 @@ import { createClient } from "npm:@supabase/supabase-js@2.49.1";
  *   clear_existing?: boolean  — remove previous outfits for this week_id first
  */
 
-/* ── DripFit Brand Pool & Tribe Logic ─────────────────────────── */
+/* ── Luxury Stylist — House Cohort System ─────────────────────── */
+// Editorial cohorts. Brands MAY belong to multiple cohorts; an outfit's
+// allied set is checked against ALL cohorts a brand qualifies for, not a
+// single canonical one. Prevents demoting Saint Laurent / Celine / Dior
+// to one fixed lane.
 
-const DRIPFIT_BRAND_POOL = {
-  heritage_luxury: [
-    'AMIRI', 'Saint Laurent', 'Fear of God',
-    'GALLERY DEPARTMENT LLC', 'Gucci', 'Balenciaga',
-    'Louis Vuitton', 'Prada', 'Moncler', 'Dior',
-    'Loewe', 'Fendi', 'Burberry', 'Valentino',
-    'Acne Studios', 'Alexander McQueen', 'Celine',
-    'Bottega Veneta', 'Givenchy', 'Rick Owens',
-    'Maison Margiela', 'Jacquemus', 'Sacai',
-    'AMI Paris', 'Off-White', 'Stone Island',
-    'Essentials',
+const COHORTS = {
+  // A: MAXIMALIST LUXURY — bold prints, gold, 70s silhouettes
+  maximalist_luxury: [
+    'Gucci', 'Versace', 'Saint Laurent', 'AMIRI',
+    'Dolce & Gabbana', 'Valentino',
   ],
-  elevated_streetwear: [
-    'Palace Skateboards', 'Daily Paper', 'Stüssy',
-    'Eric Emanuel', 'Kith', 'Supreme', 'Carhartt',
-    "Arc'teryx", 'Salomon', 'Dr. Martens',
-    'Vans', 'New Balance', 'Converse',
+  // B: ROCKSTAR LUXURY — skinny tailoring, leather, midnight palette
+  rockstar_luxury: [
+    'Saint Laurent', 'Celine', 'AMIRI', 'Dior',
   ],
-  quiet_luxury: [
-    'Reiss', 'Theory', 'Todd Snyder', 'COS',
-    'Everlane', "Rothy's", 'Outerknown',
-    'Marine Layer', 'Taylor Stitch', 'Reformation',
-    'Faherty', 'Buck Mason',
+  // C: MINIMALIST LUXURY — anti-logo, sculptural, intellectual
+  minimalist_luxury: [
+    'Prada', 'Bottega Veneta', 'Celine', 'Loewe',
+    'Acne Studios', 'Jil Sander', 'Lemaire', 'The Row',
+    'Jacquemus',
   ],
+  // D: LUXURY STREETWEAR BRIDGE — universal crossover
+  luxury_streetwear: [
+    'Louis Vuitton', 'Dior', 'Off-White', 'Fear of God',
+    'Essentials', 'Kith', 'AMI Paris', 'Sacai',
+    'GALLERY DEPARTMENT LLC',
+  ],
+  // E: PURE STREETWEAR — skate heritage, logos, relaxed
+  pure_streetwear: [
+    'Supreme', 'Stüssy', 'Palace Skateboards', 'Palace', 'Kith',
+    'Carhartt', 'Eric Emanuel', 'Daily Paper',
+  ],
+  // F: TECHWEAR — technical fabrics, utility, hardware
+  techwear: [
+    'Stone Island', "Arc'teryx", 'Salomon', 'Carhartt',
+  ],
+  // G: AVANT-GARDE — deconstruction, elongated silhouettes
+  avant_garde: [
+    'Balenciaga', 'Rick Owens', 'Maison Margiela',
+    'Acne Studios', 'Moncler',
+  ],
+  // H: BOURGEOIS / QUIET WEALTH — old money restraint
+  bourgeois: [
+    'The Row', 'Burberry', 'Fendi', 'Givenchy',
+    'Alexander McQueen',
+  ],
+  // I: FOOTWEAR/ACCESSORY SPECIALIST (treat as supporting)
+  footwear_specialist: [
+    'Nike', 'Adidas', 'Puma', 'Vans', 'Converse',
+    'New Balance', 'Dr. Martens',
+  ],
+  // J: SUPPORTING BASICS — tees, denim, fillers ONLY
   supporting: [
-    'Nike', 'Adidas', 'Puma', "Levi's",
+    'Reiss', 'Theory', 'Todd Snyder', 'COS', 'Everlane',
+    "Rothy's", 'Outerknown', 'Marine Layer', 'Taylor Stitch',
+    'Reformation', 'Faherty', 'Buck Mason', "Levi's",
     'Uniqlo', 'Gap', 'AllSaints',
   ],
+} as const;
+
+type CohortKey = keyof typeof COHORTS;
+
+const ALL_COHORT_KEYS = Object.keys(COHORTS) as CohortKey[];
+
+const APPROVED_BRANDS = new Set<string>(
+  Object.values(COHORTS).flat() as string[]
+);
+
+// Allied cohorts per primary. Tightened: luxury_streetwear no longer
+// allies with both maximalist + minimalist + techwear (was too permissive
+// — basically "anything goes"). Now picks luxury crossovers only.
+const COHORT_ALLIANCES: Record<CohortKey, CohortKey[]> = {
+  maximalist_luxury:   ['maximalist_luxury', 'rockstar_luxury', 'luxury_streetwear', 'supporting'],
+  rockstar_luxury:     ['rockstar_luxury', 'maximalist_luxury', 'avant_garde', 'luxury_streetwear', 'supporting'],
+  minimalist_luxury:   ['minimalist_luxury', 'bourgeois', 'luxury_streetwear', 'supporting'],
+  luxury_streetwear:   ['luxury_streetwear', 'pure_streetwear', 'rockstar_luxury', 'footwear_specialist', 'supporting'],
+  pure_streetwear:     ['pure_streetwear', 'luxury_streetwear', 'techwear', 'footwear_specialist', 'supporting'],
+  techwear:            ['techwear', 'pure_streetwear', 'footwear_specialist', 'supporting'],
+  avant_garde:         ['avant_garde', 'rockstar_luxury', 'minimalist_luxury', 'supporting'],
+  bourgeois:           ['bourgeois', 'minimalist_luxury', 'supporting'],
+  footwear_specialist: ['footwear_specialist', 'pure_streetwear', 'luxury_streetwear', 'techwear'],
+  supporting:          ['supporting'],
 };
 
-const APPROVED_BRANDS = new Set<string>([
-  ...DRIPFIT_BRAND_POOL.heritage_luxury,
-  ...DRIPFIT_BRAND_POOL.elevated_streetwear,
-  ...DRIPFIT_BRAND_POOL.quiet_luxury,
-  ...DRIPFIT_BRAND_POOL.supporting,
-]);
-
-const OCCASION_TRIBE_MAP: Record<string, string[]> = {
-  night_out: ['heritage_luxury', 'elevated_streetwear'],
-  lunch_date: ['quiet_luxury', 'heritage_luxury'],
-  office: ['quiet_luxury', 'heritage_luxury'],
-  weekend_casual: ['elevated_streetwear', 'quiet_luxury'],
-  beach_day: ['quiet_luxury', 'elevated_streetwear'],
-  festival: ['elevated_streetwear', 'heritage_luxury'],
-  gym: ['elevated_streetwear', 'supporting'],
-  brunch: ['quiet_luxury', 'heritage_luxury'],
-  patio_evening: ['quiet_luxury', 'heritage_luxury'],
-  summer_night_out: ['heritage_luxury', 'quiet_luxury'],
-  spring_garden: ['quiet_luxury', 'bohemian' as any, 'heritage_luxury'],
-  autumn_layers: ['quiet_luxury', 'heritage_luxury'],
-  winter_polish: ['heritage_luxury', 'quiet_luxury'],
-};
-
-function getBrandTribe(brand: string): string {
-  if (!brand) return 'supporting';
-  if (DRIPFIT_BRAND_POOL.heritage_luxury.includes(brand)) return 'heritage_luxury';
-  if (DRIPFIT_BRAND_POOL.elevated_streetwear.includes(brand)) return 'elevated_streetwear';
-  if (DRIPFIT_BRAND_POOL.quiet_luxury.includes(brand)) return 'quiet_luxury';
-  return 'supporting';
+// All cohorts a brand belongs to (a brand can be in several).
+function getBrandCohorts(brand: string): CohortKey[] {
+  if (!brand) return ['supporting'];
+  const out: CohortKey[] = [];
+  for (const c of ALL_COHORT_KEYS) {
+    if ((COHORTS[c] as readonly string[]).includes(brand)) out.push(c);
+  }
+  return out.length > 0 ? out : ['supporting'];
 }
 
-function tribeScore(tribe: string): number {
-  const scores: Record<string, number> = {
-    heritage_luxury: 100,
-    quiet_luxury: 80,
-    elevated_streetwear: 60,
-    supporting: 20,
+// Best-fit cohort for a brand WITHIN a given allied set. Picks the highest-
+// scoring cohort the brand belongs to that is allowed under primary.
+function getBrandCohortInAlliance(brand: string, alliedSet: CohortKey[]): CohortKey | null {
+  const cohorts = getBrandCohorts(brand).filter(c => alliedSet.includes(c));
+  if (cohorts.length === 0) return null;
+  return cohorts.sort((a, b) => cohortScore(b) - cohortScore(a))[0];
+}
+
+// Editorial weight. Higher = more likely to be hero piece.
+function cohortScore(cohort: CohortKey): number {
+  const scores: Record<CohortKey, number> = {
+    maximalist_luxury: 100,
+    avant_garde: 95,
+    rockstar_luxury: 90,
+    minimalist_luxury: 85,
+    luxury_streetwear: 75,
+    bourgeois: 70,
+    pure_streetwear: 55,
+    techwear: 50,
+    footwear_specialist: 30,
+    supporting: 15,
   };
-  return scores[tribe] ?? 0;
+  return scores[cohort];
+}
+
+function brandCompatible(brand: string, alliedSet: CohortKey[]): boolean {
+  return getBrandCohortInAlliance(brand, alliedSet) !== null;
 }
 
 /* ── Editorial naming pools (DripFit voice) ───────────────────── */
