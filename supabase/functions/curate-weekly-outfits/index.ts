@@ -136,109 +136,181 @@ function brandCompatible(brand: string, alliedSet: CohortKey[]): boolean {
   return getBrandCohortInAlliance(brand, alliedSet) !== null;
 }
 
+/* ── Occasion aesthetic leads ─────────────────────────────────── */
+// Which cohort leads each occasion. Outfits' primary cohort is sampled
+// from this list; allied cohorts (per COHORT_ALLIANCES) fill the rest.
+const OCCASION_AESTHETIC_LEADS: Record<string, CohortKey[]> = {
+  night_out:           ['rockstar_luxury', 'maximalist_luxury', 'avant_garde'],
+  summer_night_out:    ['maximalist_luxury', 'rockstar_luxury', 'minimalist_luxury'],
+  lunch_date:          ['minimalist_luxury', 'bourgeois', 'rockstar_luxury'],
+  brunch:              ['minimalist_luxury', 'bourgeois', 'luxury_streetwear'],
+  office:              ['minimalist_luxury', 'bourgeois', 'rockstar_luxury'],
+  weekend_casual:      ['luxury_streetwear', 'pure_streetwear', 'techwear'],
+  beach_day:           ['minimalist_luxury', 'luxury_streetwear'],
+  patio_evening:       ['minimalist_luxury', 'rockstar_luxury', 'bourgeois'],
+  festival:            ['rockstar_luxury', 'luxury_streetwear', 'maximalist_luxury'],
+  gym:                 ['techwear', 'luxury_streetwear', 'pure_streetwear'],
+  spring_garden:       ['minimalist_luxury', 'bourgeois'],
+  autumn_layers:       ['minimalist_luxury', 'bourgeois', 'luxury_streetwear'],
+  winter_polish:       ['bourgeois', 'minimalist_luxury', 'rockstar_luxury'],
+};
+
 /* ── Editorial naming pools (DripFit voice) ───────────────────── */
 
 const EDITORIAL_NAME_POOLS: Record<string, string[]> = {
-  night_out_heritage_luxury: [
+  // night_out
+  night_out_rockstar_luxury: [
     'Midnight on Madison', 'After Dark Allure',
-    'Gallery Row', 'The Archive Drop',
-    'Atelier After Hours',
+    'The Archive Drop', 'Atelier After Hours',
+    'Post-Runway Dinner',
   ],
-  night_out_elevated_streetwear: [
-    'Warehouse Pulse', 'Block Party Grail',
-    'Downtown Heat', 'Afterglow Stack',
+  night_out_maximalist_luxury: [
+    'Gallery Row', 'Velvet Rope Protocol',
+    'The VIP Floor', 'Baroque After Dark',
   ],
-  lunch_date_quiet_luxury: [
-    'Elevated Brunch', 'Midday Edit',
-    'Cafe Society', 'The Loire Lunch',
+  night_out_avant_garde: [
+    'Anti-Fashion Hours', 'Deconstructed Dinner',
+    'Downtown Uniform', 'The Concrete Floor',
   ],
-  lunch_date_heritage_luxury: [
-    'Polished Casual', 'Left Bank Morning',
-    "The Curator's Hour",
-  ],
-  office_quiet_luxury: [
-    'Boardroom Edge', 'Quiet Authority',
-    'Office Flex', 'The Tailored Tuesday',
-  ],
-  office_heritage_luxury: [
-    'Power Feminine', 'Monograms & Meetings',
-    'Executive Suite',
-  ],
-  weekend_casual_elevated_streetwear: [
-    'Gym to Street', 'Iron & Ink',
-    'Weekend Uniform', 'Off-Duty Drop',
-  ],
-  weekend_casual_quiet_luxury: [
-    'Chill Capsule', 'Sunday Edit',
-    'The Slow Saturday',
-  ],
-  beach_day_quiet_luxury: [
-    'Coastal Linen', 'Golden Hour Brunch',
-    'The Riviera Edit',
-  ],
-  beach_day_elevated_streetwear: [
-    'Boardwalk Drop', 'Sandy Concrete',
-  ],
-  festival_elevated_streetwear: [
-    'Festival Ready', 'Desert Daze',
-    'The Main Stage Fit',
-  ],
-  festival_heritage_luxury: [
-    'Late Bloom Festival', 'Grails on Grass',
-  ],
-  gym_elevated_streetwear: [
-    'Track Mode', 'Street Athletics', 'The Grind Edit',
-  ],
-  gym_supporting: [
-    'Rep & Reset', 'Iron Hours',
-  ],
-  brunch_quiet_luxury: [
-    'Garden Party', 'Morning Glory', 'Light & Easy',
-  ],
-  brunch_heritage_luxury: [
-    'Golden Morning', 'The Terrace Edit',
-  ],
-  patio_evening_quiet_luxury: [
-    'Patio Hours', 'Twilight Linen', 'The Veranda Edit',
-  ],
-  patio_evening_heritage_luxury: [
-    'Sunset Terrace', 'Aperitivo Hour',
-  ],
-  summer_night_out_heritage_luxury: [
+  // summer_night_out
+  summer_night_out_maximalist_luxury: [
     'Heatwave After Dark', 'Rooftop Drop', 'Neon Boulevard',
   ],
-  summer_night_out_quiet_luxury: [
+  summer_night_out_rockstar_luxury: [
     'Sultry Soiree', 'The Late Summer Edit',
   ],
-  spring_garden_quiet_luxury: [
+  summer_night_out_minimalist_luxury: [
+    'Linen After Dark', 'White Noise Hour',
+  ],
+  // lunch_date
+  lunch_date_minimalist_luxury: [
+    'Quiet Authority', 'The Loire Lunch',
+    'Cashmere Midday', 'Cafe Society',
+  ],
+  lunch_date_bourgeois: [
+    'Old Money Hour', 'The Long Lunch',
+    'Polished Casual', 'Private Club Midday',
+  ],
+  lunch_date_rockstar_luxury: [
+    'Left Bank Morning', "The Curator's Hour",
+  ],
+  // brunch
+  brunch_minimalist_luxury: [
+    'Garden Party', 'Morning Glory', 'Light & Easy',
+  ],
+  brunch_bourgeois: [
+    'Golden Morning', 'The Terrace Edit',
+  ],
+  brunch_luxury_streetwear: [
+    'Off-Duty Brunch', 'The Sunday Drop',
+  ],
+  // office
+  office_minimalist_luxury: [
+    'Boardroom Edge', 'Quiet Authority',
+    'The Tailored Tuesday', 'Monday in Monochrome',
+  ],
+  office_bourgeois: [
+    'Executive Suite', 'Power Feminine',
+    'The Corner Office', 'Monograms & Meetings',
+  ],
+  office_rockstar_luxury: [
+    'Slimane at the Desk', 'Sharp Suit Hour',
+  ],
+  // weekend_casual
+  weekend_casual_luxury_streetwear: [
+    'Off-Duty Drop', 'The Pharrell Uniform',
+    'Weekend Monogram', 'Sunday Streetwear',
+  ],
+  weekend_casual_pure_streetwear: [
+    'Gym to Street', 'Block Party Sunday',
+    'The Kith Lineup', 'Skate Park Polish',
+  ],
+  weekend_casual_techwear: [
+    'Trail to Town', 'Tech Sunday',
+  ],
+  // beach_day
+  beach_day_minimalist_luxury: [
+    'Coastal Linen', 'The Riviera Edit',
+    'Mediterranean Minimal', 'Saint-Tropez Morning',
+  ],
+  beach_day_luxury_streetwear: [
+    'Boardwalk Drop', 'Sandy Concrete',
+  ],
+  // patio_evening
+  patio_evening_minimalist_luxury: [
+    'Patio Hours', 'Twilight Linen', 'The Veranda Edit',
+  ],
+  patio_evening_rockstar_luxury: [
+    'Sunset Terrace', 'Aperitivo Hour',
+  ],
+  patio_evening_bourgeois: [
+    'Members Only Patio', 'Old Money Sundown',
+  ],
+  // festival
+  festival_rockstar_luxury: [
+    'AMIRI After Dark', 'The Desert Set',
+    'Late Bloom Festival', 'Main Stage Leather',
+  ],
+  festival_luxury_streetwear: [
+    'Cactus Jack Compound', 'Festival Monogram',
+    'The VIP Pit', 'Paris Fashion Week Street',
+  ],
+  festival_maximalist_luxury: [
+    'Grails on Grass', 'Baroque on the Field',
+  ],
+  // gym
+  gym_techwear: [
+    'Track Mode', 'Iron Hours', 'The Grind Edit',
+  ],
+  gym_luxury_streetwear: [
+    'Lux Cardio', 'Studio Drop',
+  ],
+  gym_pure_streetwear: [
+    'Rep & Reset', 'Street Athletics',
+  ],
+  // spring_garden
+  spring_garden_minimalist_luxury: [
     'Spring Bloom', 'The Garden Edit', 'Pastel Stroll',
   ],
-  spring_garden_heritage_luxury: [
+  spring_garden_bourgeois: [
     'First Warmth', 'Botanical Hour',
   ],
-  autumn_layers_quiet_luxury: [
-    'Crisp Air Capsule', 'The Layered Edit', 'Amber Hours',
+  // autumn_layers
+  autumn_layers_minimalist_luxury: [
+    'October Uniform', 'Bottega Autumn',
+    'The Loewe Layer', 'Cashmere Weekend',
   ],
-  autumn_layers_heritage_luxury: [
+  autumn_layers_bourgeois: [
     'Heritage Autumn', 'The Topcoat Drop',
   ],
-  winter_polish_heritage_luxury: [
-    'Cold Front Couture', 'The Camel Coat Edit', 'Polished in Sub-Zero',
+  autumn_layers_luxury_streetwear: [
+    'Fall Drop Stack', 'Crispwear',
   ],
-  winter_polish_quiet_luxury: [
+  // winter_polish
+  winter_polish_bourgeois: [
+    'The Winter Edit', 'Sofia Richie Winter',
+    'Old Money Cold', 'Private Club December',
+  ],
+  winter_polish_minimalist_luxury: [
     'Quiet Winter', 'Snow Day Tailoring',
+  ],
+  winter_polish_rockstar_luxury: [
+    'Cold Front Couture', 'Black Coat Hours',
   ],
 };
 
 function generateEditorialName(
   occasionKey: string,
-  tribe: string,
+  cohort: CohortKey,
   usedNames: Set<string>
 ): string {
-  const key = `${occasionKey}_${tribe}`;
+  const key = `${occasionKey}_${cohort}`;
+  // Fallback chain: exact (occasion, cohort) → first lead for occasion → generic
+  const leads = OCCASION_AESTHETIC_LEADS[occasionKey] ?? [];
+  const fallbackKey = leads.length > 0 ? `${occasionKey}_${leads[0]}` : '';
   const pool =
     EDITORIAL_NAME_POOLS[key] ??
-    EDITORIAL_NAME_POOLS[`${occasionKey}_quiet_luxury`] ??
+    EDITORIAL_NAME_POOLS[fallbackKey] ??
     [occasionKey.replace(/_/g, ' ')];
 
   const available = pool.filter(n => !usedNames.has(n));
@@ -257,40 +329,65 @@ function generateEditorialName(
 }
 
 function generateDescription(
-  tribe: string,
+  cohort: CohortKey,
   items: Array<{ product: CatalogProduct; role: string; position: number }>
 ): string {
-  const brands = items
-    .map(it => it.product.brand)
-    .filter(Boolean)
-    .filter((b, i, arr) => arr.indexOf(b) === i);
-
+  const brands = Array.from(new Set(
+    items.map(it => it.product.brand).filter(Boolean)
+  )).slice(0, 3);
   if (brands.length === 0) return '';
+  const brandList = brands.join(' · ');
 
-  const brandList = brands.slice(0, 3).join(' · ');
-
-  const templates: Record<string, string[]> = {
-    heritage_luxury: [
-      `${brandList}. Archive energy. Verified drape.`,
+  const templates: Record<CohortKey, string[]> = {
+    maximalist_luxury: [
+      `${brandList}. Archive maximalism. Verified drape.`,
       `${brandList}. Houses. Cut right.`,
-      `${brandList}. The grail stack.`,
+      `${brandList}. Baroque refinement.`,
     ],
-    quiet_luxury: [
+    rockstar_luxury: [
+      `${brandList}. Leather and midnight.`,
+      `${brandList}. The Slimane silhouette.`,
+      `${brandList}. Rock-and-roll tailoring.`,
+    ],
+    minimalist_luxury: [
       `${brandList}. Quiet. Precise. Locked.`,
       `${brandList}. The silhouette is the statement.`,
       `${brandList}. Restraint. Mapped to you.`,
     ],
-    elevated_streetwear: [
+    luxury_streetwear: [
+      `${brandList}. Pharrell-era luxury streetwear.`,
+      `${brandList}. Monogram, modern.`,
+      `${brandList}. The bridge between houses.`,
+    ],
+    pure_streetwear: [
       `${brandList}. Heat. Layered right.`,
+      `${brandList}. Grails, dropped clean.`,
       `${brandList}. The uniform, elevated.`,
-      `${brandList}. Grails. Dropped clean.`,
+    ],
+    techwear: [
+      `${brandList}. Technical precision.`,
+      `${brandList}. Industrial luxury.`,
+      `${brandList}. Function, refined.`,
+    ],
+    avant_garde: [
+      `${brandList}. Deconstructed authority.`,
+      `${brandList}. Anti-fashion fashion.`,
+      `${brandList}. The downtown uniform.`,
+    ],
+    bourgeois: [
+      `${brandList}. Old money, new fit.`,
+      `${brandList}. Quiet wealth, verified.`,
+      `${brandList}. No logo required.`,
+    ],
+    footwear_specialist: [
+      `${brandList}. Grounded right.`,
     ],
     supporting: [
-      `${brandList}. Clean fit. Zero guessing.`,
+      `${brandList}. Clean foundation.`,
     ],
   };
 
-  const pool = templates[tribe] ?? templates.supporting;
+  const pool = templates[cohort] ?? templates.supporting;
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
