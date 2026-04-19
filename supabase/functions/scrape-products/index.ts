@@ -1165,6 +1165,11 @@ const ANTI_SCRAPE_BRANDS = new Set([
 // Firecrawl service outages (observed 2026-04-19: persistent UNKNOWN_ERROR
 // 500s across all keys/URLs).
 // ─────────────────────────────────────────────────────────────────────────────
+// NOTE: This breaker only gates Firecrawl `/v2/scrape` and `/v2/extract`-style
+// calls (firecrawl-json, retailer-map). It does NOT gate `/v2/search`, which
+// has been observed to stay healthy during /v2/scrape outages — see the
+// `searchProducts` fallback used by retailer/extract paths when the breaker
+// is open.
 
 const FIRECRAWL_BREAKER = {
   consecutiveFailures: 0,
