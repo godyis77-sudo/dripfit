@@ -1190,6 +1190,14 @@ async function scrapeShopifyProducts(
     allProducts.push(...products);
   }
 
+  // Hard cap to avoid WORKER_RESOURCE_LIMIT downstream when image scoring +
+  // dedup are forced to hold huge result sets in memory at once.
+  const SHOPIFY_RAW_CAP = 120;
+  if (allProducts.length > SHOPIFY_RAW_CAP) {
+    console.log(`[shopify] ${brand}/${category}: capping ${allProducts.length} → ${SHOPIFY_RAW_CAP} raw products`);
+    allProducts.length = SHOPIFY_RAW_CAP;
+  }
+
   console.log(`[shopify] ${brand}/${category}: ${allProducts.length} products via /products.json`);
   return allProducts;
 }
@@ -2673,12 +2681,31 @@ async function scrapeProducts(
 // GOOGLE CUSTOM SEARCH — Free tier (100 queries/day), primary search provider
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Module-level quota cache — survives across requests in the same isolate.
+// When Google returns 429/403 we suppress further calls for `GOOGLE_QUOTA_COOLDOWN_MS`.
+const GOOGLE_QUOTA_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour
+let googleQuotaExhaustedUntil = 0;
+
+function isGoogleQuotaCooling(): boolean {
+  return Date.now() < googleQuotaExhaustedUntil;
+}
+
+function markGoogleQuotaExhausted(reason: string) {
+  googleQuotaExhaustedUntil = Date.now() + GOOGLE_QUOTA_COOLDOWN_MS;
+  console.warn(`[google-search] Quota exhausted (${reason}) — suppressing calls until ${new Date(googleQuotaExhaustedUntil).toISOString()}`);
+}
+
 async function searchGoogleProducts(
   brand: string,
   category: string,
   apiKey: string,
   cx: string,
 ): Promise<RawProduct[]> {
+  if (isGoogleQuotaCooling()) {
+    const remainingMin = Math.ceil((googleQuotaExhaustedUntil - Date.now()) / 60000);
+    console.log(`[google-search] Skipping — quota cooling for ~${remainingMin}m more`);
+    return [];
+  }
   const catTerms = CATEGORY_TERMS[category.toLowerCase()] || category;
   const brandLower = brand.toLowerCase();
 
@@ -2718,7 +2745,10 @@ async function searchGoogleProducts(
       if (!resp.ok) {
         const errText = await resp.text();
         console.warn(`[google-search] HTTP ${resp.status}: ${errText.slice(0, 200)}`);
-        if (resp.status === 429 || resp.status === 403) break;
+        if (resp.status === 429 || resp.status === 403) {
+          markGoogleQuotaExhausted(`HTTP ${resp.status}`);
+          break;
+        }
         continue;
       }
 
@@ -3570,22 +3600,38 @@ async function filterExistingProducts(
 ): Promise<ClassifiedProduct[]> {
   if (!products.length) return [];
 
-  const productUrls = products.map(p => normaliseUrl(p.product_url));
-  const { data: existingByUrl } = await supabase
-    .from('product_catalog')
-    .select('product_url')
-    .in('product_url', productUrls);
+  // Batch the IN(...) lookups so we never ask Postgres to compare 300+ URLs at once.
+  const LOOKUP_CHUNK = 50;
+  const chunkArr = <T>(arr: T[], n: number): T[][] => {
+    const out: T[][] = [];
+    for (let i = 0; i < arr.length; i += n) out.push(arr.slice(i, i + n));
+    return out;
+  };
 
-  const existingUrlSet = new Set((existingByUrl ?? []).map((r: any) => normaliseUrl(r.product_url)));
+  const productUrls = products.map(p => normaliseUrl(p.product_url));
+  const existingUrlSet = new Set<string>();
+  for (const chunk of chunkArr(productUrls, LOOKUP_CHUNK)) {
+    const { data } = await supabase
+      .from('product_catalog')
+      .select('product_url')
+      .in('product_url', chunk);
+    for (const r of (data ?? []) as Array<{ product_url: string }>) {
+      existingUrlSet.add(normaliseUrl(r.product_url));
+    }
+  }
   let filtered = products.filter(p => !existingUrlSet.has(normaliseUrl(p.product_url)));
 
   const imageUrls = filtered.map(p => normaliseUrl(p.image_url));
-  const { data: existingByImage } = await supabase
-    .from('product_catalog')
-    .select('image_url')
-    .in('image_url', imageUrls);
-
-  const existingImageSet = new Set((existingByImage ?? []).map((r: any) => normaliseUrl(r.image_url)));
+  const existingImageSet = new Set<string>();
+  for (const chunk of chunkArr(imageUrls, LOOKUP_CHUNK)) {
+    const { data } = await supabase
+      .from('product_catalog')
+      .select('image_url')
+      .in('image_url', chunk);
+    for (const r of (data ?? []) as Array<{ image_url: string }>) {
+      existingImageSet.add(normaliseUrl(r.image_url));
+    }
+  }
   filtered = filtered.filter(p => !existingImageSet.has(normaliseUrl(p.image_url)));
 
   console.log(`[dedup] ${products.length} → ${filtered.length} new`);
@@ -3931,18 +3977,22 @@ Deno.serve(async (req) => {
       await delay(jitterMs);
     }
 
-    // ── CHECK FIRECRAWL CREDITS & THIN-CATEGORY GATE ─────────────
+    // ── CHECK FIRECRAWL CREDITS & BRAND-AWARE THIN GATE ─────────
+    // Firecrawl runs when EITHER the global category is thin OR this specific
+    // brand+category combo has <10 recent products (brand-blind gate was missing low-stock combos).
     let useFirecrawl = true;
     const credits = await checkFirecrawlCredits(FIRECRAWL_API_KEY);
+    const brandCatIsThin = recentCount < 10;
     if (credits !== null && credits <= 0) {
       console.log(`[run:${runId}] Firecrawl credits exhausted (${credits}), using direct HTTP only`);
       useFirecrawl = false;
-    } else if (!isThinCategory(category)) {
-      // Well-stocked categories: skip Firecrawl to save credits
-      console.log(`[run:${runId}] Category "${category}" is well-stocked, skipping Firecrawl (credits: ${credits ?? 'unknown'})`);
+    } else if (!isThinCategory(category) && !brandCatIsThin) {
+      // Well-stocked globally AND this brand+cat already has stock — skip to save credits
+      console.log(`[run:${runId}] ${brand}/${category} well-stocked (${recentCount} recent) and category not thin, skipping Firecrawl (credits: ${credits ?? 'unknown'})`);
       useFirecrawl = false;
     } else {
-      console.log(`[run:${runId}] Thin category "${category}" — Firecrawl enabled (credits: ${credits ?? 'unknown'})`);
+      const reason = !isThinCategory(category) ? `brand+cat thin (${recentCount} recent)` : `category "${category}" globally thin`;
+      console.log(`[run:${runId}] Firecrawl enabled — ${reason} (credits: ${credits ?? 'unknown'})`);
     }
 
     // ── STAGES 1+2: Direct HTTP + optional Firecrawl scraping ────────
@@ -4040,18 +4090,32 @@ Deno.serve(async (req) => {
         };
       });
 
-      const { error } = await supabase.from('product_catalog').insert(rows);
-
-      if (error) {
-        if (error.code === '23505') {
-          console.warn(`[run:${runId}] Some skipped (unique constraint)`);
+      // ── BATCHED INSERT ──────────────────────────────────────────────
+      // Chunk inserts to avoid worker memory/CPU limits (WORKER_RESOURCE_LIMIT)
+      // when ingesting 100+ products from large Shopify brands.
+      const INSERT_BATCH = 25;
+      let insertedCount = 0;
+      for (let i = 0; i < rows.length; i += INSERT_BATCH) {
+        const chunk = rows.slice(i, i + INSERT_BATCH);
+        const { error } = await supabase.from('product_catalog').insert(chunk);
+        if (error) {
+          if (error.code === '23505') {
+            console.warn(`[run:${runId}] Batch ${i / INSERT_BATCH + 1}: some skipped (unique constraint)`);
+            insertedCount += chunk.length;
+          } else {
+            console.error(`[run:${runId}] Batch ${i / INSERT_BATCH + 1} insert failed:`, error.message);
+            // continue with remaining batches rather than aborting the whole run
+          }
         } else {
-          throw error;
+          insertedCount += chunk.length;
         }
       }
-      results.inserted = rows.length;
+      results.inserted = insertedCount;
+      console.log(`[run:${runId}] Inserted ${insertedCount}/${rows.length} in ${Math.ceil(rows.length / INSERT_BATCH)} batches`);
 
-      // Fire-and-forget: trigger QC pipeline
+      // ── BACKGROUND POST-PROCESSING ─────────────────────────────────
+      // Fire-and-forget downstream triggers via EdgeRuntime.waitUntil so the
+      // main response returns immediately and the worker isn't killed mid-flight.
       const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
       const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
       const qcHeaders = {
@@ -4059,41 +4123,49 @@ Deno.serve(async (req) => {
         'Authorization': `Bearer ${anonKey}`,
       };
 
-      fetch(`${supabaseUrl}/functions/v1/categorize-products`, {
-        method: 'POST',
-        headers: qcHeaders,
-        body: JSON.stringify({ batch_size: 15, only_unchecked: true }),
-      }).catch(e => console.warn(`[run:${runId}] Categorize trigger failed:`, e));
+      const triggerPostProcessing = async () => {
+        const tasks: Promise<unknown>[] = [
+          fetch(`${supabaseUrl}/functions/v1/categorize-products`, {
+            method: 'POST', headers: qcHeaders,
+            body: JSON.stringify({ batch_size: 15, only_unchecked: true }),
+          }).catch(e => console.warn(`[run:${runId}] Categorize trigger failed:`, e)),
 
-      fetch(`${supabaseUrl}/functions/v1/backfill-gender`, {
-        method: 'POST',
-        headers: qcHeaders,
-        body: JSON.stringify({ batch_size: 300 }),
-      }).catch(e => console.warn(`[run:${runId}] Gender backfill trigger failed:`, e));
+          fetch(`${supabaseUrl}/functions/v1/backfill-gender`, {
+            method: 'POST', headers: qcHeaders,
+            body: JSON.stringify({ batch_size: 300 }),
+          }).catch(e => console.warn(`[run:${runId}] Gender backfill trigger failed:`, e)),
 
-      // Fire-and-forget: scrape size charts for this brand if missing
-      if (brand) {
-        const brandSlug = brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        fetch(`${supabaseUrl}/functions/v1/scrape-size-charts`, {
-          method: 'POST',
-          headers: qcHeaders,
-          body: JSON.stringify({ brand_slug: brandSlug, batch_size: 8 }),
-        }).catch(e => console.warn(`[run:${runId}] Size chart trigger failed:`, e));
+          fetch(`${supabaseUrl}/functions/v1/audit-product-urls`, {
+            method: 'POST', headers: qcHeaders,
+            body: JSON.stringify({ batch_size: 50, brand: brand || undefined }),
+          }).catch(e => console.warn(`[run:${runId}] Audit URLs trigger failed:`, e)),
+
+          fetch(`${supabaseUrl}/functions/v1/cleanup-catalog`, {
+            method: 'POST', headers: qcHeaders,
+            body: JSON.stringify({}),
+          }).catch(e => console.warn(`[run:${runId}] Cleanup catalog trigger failed:`, e)),
+        ];
+
+        if (brand) {
+          const brandSlug = brand.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+          tasks.push(
+            fetch(`${supabaseUrl}/functions/v1/scrape-size-charts`, {
+              method: 'POST', headers: qcHeaders,
+              body: JSON.stringify({ brand_slug: brandSlug, batch_size: 8 }),
+            }).catch(e => console.warn(`[run:${runId}] Size chart trigger failed:`, e))
+          );
+        }
+
+        await Promise.allSettled(tasks);
+      };
+
+      try {
+        // @ts-ignore — EdgeRuntime is a Supabase Deno Deploy global
+        EdgeRuntime.waitUntil(triggerPostProcessing());
+      } catch {
+        // Fallback for local/test environments without EdgeRuntime
+        triggerPostProcessing();
       }
-
-      // Fire-and-forget: audit product URLs for broken images
-      fetch(`${supabaseUrl}/functions/v1/audit-product-urls`, {
-        method: 'POST',
-        headers: qcHeaders,
-        body: JSON.stringify({ batch_size: 50, brand: brand || undefined }),
-      }).catch(e => console.warn(`[run:${runId}] Audit URLs trigger failed:`, e));
-
-      // Fire-and-forget: cleanup catalog (deactivate junk, normalize brands)
-      fetch(`${supabaseUrl}/functions/v1/cleanup-catalog`, {
-        method: 'POST',
-        headers: qcHeaders,
-        body: JSON.stringify({}),
-      }).catch(e => console.warn(`[run:${runId}] Cleanup catalog trigger failed:`, e));
     }
 
     console.log(`[run:${runId}] Done. Inserted ${results.inserted}`);
