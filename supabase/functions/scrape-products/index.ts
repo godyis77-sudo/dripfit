@@ -2783,6 +2783,160 @@ async function firecrawlScrapeProducts(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// FIRECRAWL v2 BATCH SCRAPE + PDP MARKDOWN ENRICHMENT (HYBRID STRATEGY)
+// Cheap markdown-only PDP scrapes (~1 credit each) to fill product descriptions
+// for top-N hero products per run. Uses /v2/batch/scrape for parallel
+// orchestration so we don't burn the 150s edge-function CPU budget looping.
+// Per Firecrawl support guidance: markdown + onlyMainContent is the right
+// shape for single-product PDPs where association is trivial (1 page = 1 product).
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface BatchPdpResult {
+  url: string;
+  markdown: string | null;
+  imageUrls: string[];
+}
+
+/**
+ * Submit a list of PDP URLs to Firecrawl /v2/batch/scrape and poll until done.
+ * Returns markdown + image URLs per URL. Costs ~1 credit per URL (markdown-only,
+ * no stealth proxy — most luxury PDPs are reachable without it once you have
+ * the canonical URL). Caller should cap input to ~10 URLs to stay under 60s.
+ */
+async function firecrawlBatchScrapePdps(
+  urls: string[],
+  apiKey: string,
+  opts: { useStealth?: boolean; maxWaitMs?: number } = {},
+): Promise<BatchPdpResult[]> {
+  if (!apiKey || urls.length === 0) return [];
+  const breaker = isFirecrawlOpen();
+  if (breaker.open) {
+    console.warn(`[batch-pdp] breaker OPEN (${Math.round(breaker.remainingMs / 1000)}s left), skipping ${urls.length} PDPs`);
+    return [];
+  }
+
+  const useStealth = opts.useStealth ?? false;
+  const maxWaitMs = opts.maxWaitMs ?? 45000;
+
+  // 1) Submit batch job
+  let jobId: string | null = null;
+  try {
+    const ac = new AbortController();
+    const t = setTimeout(() => ac.abort(), 15000);
+    const resp = await fetch('https://api.firecrawl.dev/v2/batch/scrape', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        urls,
+        formats: ['markdown'],
+        onlyMainContent: true,
+        ...(useStealth ? { proxy: 'stealth' } : {}),
+      }),
+      signal: ac.signal,
+    });
+    clearTimeout(t);
+    const submitRaw = await resp.text();
+    let submit: any = null;
+    try { submit = submitRaw ? JSON.parse(submitRaw) : null; } catch {
+      console.warn(`[batch-pdp] non-JSON submit response [${resp.status}]: ${submitRaw.slice(0, 240)}`);
+      recordFirecrawlFailure(resp.status);
+      return [];
+    }
+    if (!resp.ok || !submit?.success || !submit?.id) {
+      console.warn(`[batch-pdp] submit HTTP ${resp.status}: ${JSON.stringify(submit ?? {}).slice(0, 240)}`);
+      recordFirecrawlFailure(resp.status);
+      return [];
+    }
+    jobId = submit.id as string;
+    recordFirecrawlSuccess();
+  } catch (err) {
+    console.warn(`[batch-pdp] submit threw: ${(err as Error).message}`);
+    recordFirecrawlFailure(500);
+    return [];
+  }
+
+  // 2) Poll status until completed or timeout
+  const start = Date.now();
+  const POLL_INTERVAL_MS = 3000;
+  while (Date.now() - start < maxWaitMs) {
+    await delay(POLL_INTERVAL_MS);
+    try {
+      const ac = new AbortController();
+      const t = setTimeout(() => ac.abort(), 10000);
+      const resp = await fetch(`https://api.firecrawl.dev/v2/batch/scrape/${jobId}`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${apiKey}` },
+        signal: ac.signal,
+      });
+      clearTimeout(t);
+      const raw = await resp.text();
+      let json: any = null;
+      try { json = raw ? JSON.parse(raw) : null; } catch {
+        console.warn(`[batch-pdp] non-JSON poll response [${resp.status}]: ${raw.slice(0, 240)}`);
+        continue;
+      }
+      if (!resp.ok) {
+        console.warn(`[batch-pdp] poll HTTP ${resp.status}: ${JSON.stringify(json ?? {}).slice(0, 240)}`);
+        if (resp.status >= 500) recordFirecrawlFailure(resp.status);
+        continue;
+      }
+      const status = json?.status as string | undefined;
+      if (status === 'completed') {
+        const items: any[] = Array.isArray(json?.data) ? json.data : [];
+        const out: BatchPdpResult[] = items.map((it) => {
+          const md = typeof it?.markdown === 'string' ? it.markdown : null;
+          const imgs: string[] = Array.isArray(it?.metadata?.images)
+            ? it.metadata.images.filter((u: unknown): u is string => typeof u === 'string' && u.startsWith('http'))
+            : [];
+          const url = (typeof it?.metadata?.sourceURL === 'string' && it.metadata.sourceURL)
+            || (typeof it?.metadata?.url === 'string' && it.metadata.url)
+            || '';
+          return { url, markdown: md, imageUrls: imgs };
+        }).filter((r) => r.url);
+        console.log(`[batch-pdp] completed ${out.length}/${urls.length} PDPs in ${Math.round((Date.now() - start) / 1000)}s`);
+        return out;
+      }
+      if (status === 'failed' || status === 'cancelled') {
+        console.warn(`[batch-pdp] job ${jobId} ended with status=${status}`);
+        return [];
+      }
+      // status is 'scraping' / 'queued' — keep polling
+    } catch (err) {
+      console.warn(`[batch-pdp] poll threw: ${(err as Error).message}`);
+    }
+  }
+  console.warn(`[batch-pdp] timeout after ${Math.round(maxWaitMs / 1000)}s waiting for job ${jobId}`);
+  return [];
+}
+
+/**
+ * Extract a clean product description from PDP markdown. Strips nav/footer
+ * residue, picks the first substantive paragraph after the H1/title.
+ */
+function extractDescriptionFromPdpMarkdown(markdown: string, productName: string): string | null {
+  if (!markdown) return null;
+  // Drop image lines and link-only lines
+  const lines = markdown
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l && !l.startsWith('![') && !/^\[.*\]\(.*\)$/.test(l));
+  // Find the first meaningful paragraph after the product name (or the first
+  // long-ish line if the name doesn't appear).
+  const nameIdx = lines.findIndex((l) => l.toLowerCase().includes(productName.toLowerCase().slice(0, 30)));
+  const start = nameIdx >= 0 ? nameIdx + 1 : 0;
+  for (let i = start; i < Math.min(lines.length, start + 30); i++) {
+    const candidate = lines[i].replace(/^#+\s*/, '').replace(/\*\*/g, '').trim();
+    if (candidate.length >= 60 && candidate.length <= 600 && !/^[-*]/.test(candidate)) {
+      return candidate.slice(0, 500);
+    }
+  }
+  return null;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // RETAILER-FIRST SCRAPING — for hard-luxury brands behind Cloudflare WAF
 // New (2026): single /v2/scrape call per listing with JSON-schema array
 // extraction. ~5–9 credits per page; no PDP follow-up loop needed.
