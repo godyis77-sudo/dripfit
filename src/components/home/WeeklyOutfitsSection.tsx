@@ -31,13 +31,14 @@ const WeeklyOutfitsSection = () => {
 
   const readyOutfits = useMemo(() => {
     if (!outfits) return [];
-    // Only show outfits that have BOTH items AND a generated hero image — skip
-    // any whose editorial image is still rendering so the carousel never shows
-    // a blank black card.
-    const ready = outfits.filter(o => o.items.length > 0 && !!o.hero_image_url);
-    // Shuffle once per mount so the first card differs each visit (and never
-    // matches the home swipe feed's first card).
-    return shuffleArray(ready);
+    // Show any outfit with items. Hero image is preferred but optional —
+    // outfits without a generated hero fall back to the editorial glass card.
+    const ready = outfits.filter(o => o.items.length > 0);
+    // Prioritize outfits that already have an editorial hero image, then
+    // shuffle within each group so the first card varies each visit.
+    const withHero = shuffleArray(ready.filter(o => !!o.hero_image_url));
+    const withoutHero = shuffleArray(ready.filter(o => !o.hero_image_url));
+    return [...withHero, ...withoutHero];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [outfits?.length]);
 
