@@ -1190,6 +1190,14 @@ async function scrapeShopifyProducts(
     allProducts.push(...products);
   }
 
+  // Hard cap to avoid WORKER_RESOURCE_LIMIT downstream when image scoring +
+  // dedup are forced to hold huge result sets in memory at once.
+  const SHOPIFY_RAW_CAP = 120;
+  if (allProducts.length > SHOPIFY_RAW_CAP) {
+    console.log(`[shopify] ${brand}/${category}: capping ${allProducts.length} → ${SHOPIFY_RAW_CAP} raw products`);
+    allProducts.length = SHOPIFY_RAW_CAP;
+  }
+
   console.log(`[shopify] ${brand}/${category}: ${allProducts.length} products via /products.json`);
   return allProducts;
 }
