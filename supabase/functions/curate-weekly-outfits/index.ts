@@ -1040,7 +1040,7 @@ Deno.serve(async (req) => {
 
     const log: string[] = [];
     log.push(`[Config] week=${weekId}, gender=${gender || "both"}, ${occasionCount} occasions × ${outfitsPerOccasion}/each`);
-    log.push(`[BrandPool] ${APPROVED_BRANDS.size} approved brands across 4 tribes`);
+    log.push(`[BrandPool] ${APPROVED_BRANDS.size} approved brands across ${ALL_COHORT_KEYS.length} cohorts`);
 
     if (clearExisting) {
       const { data: existing } = await sb
@@ -1109,8 +1109,8 @@ Deno.serve(async (req) => {
             continue;
           }
 
-          const title = generateEditorialName(occ.key, result.tribe, usedNames);
-          const description = generateDescription(result.tribe, result.items);
+          const title = generateEditorialName(occ.key, result.cohort, usedNames);
+          const description = generateDescription(result.cohort, result.items);
 
           const { data: outfit, error: oErr } = await sb
             .from("weekly_outfits")
