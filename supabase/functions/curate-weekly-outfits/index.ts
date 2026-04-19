@@ -147,6 +147,36 @@ const EDITORIAL_NAME_POOLS: Record<string, string[]> = {
   brunch_heritage_luxury: [
     'Golden Morning', 'The Terrace Edit',
   ],
+  patio_evening_quiet_luxury: [
+    'Patio Hours', 'Twilight Linen', 'The Veranda Edit',
+  ],
+  patio_evening_heritage_luxury: [
+    'Sunset Terrace', 'Aperitivo Hour',
+  ],
+  summer_night_out_heritage_luxury: [
+    'Heatwave After Dark', 'Rooftop Drop', 'Neon Boulevard',
+  ],
+  summer_night_out_quiet_luxury: [
+    'Sultry Soiree', 'The Late Summer Edit',
+  ],
+  spring_garden_quiet_luxury: [
+    'Spring Bloom', 'The Garden Edit', 'Pastel Stroll',
+  ],
+  spring_garden_heritage_luxury: [
+    'First Warmth', 'Botanical Hour',
+  ],
+  autumn_layers_quiet_luxury: [
+    'Crisp Air Capsule', 'The Layered Edit', 'Amber Hours',
+  ],
+  autumn_layers_heritage_luxury: [
+    'Heritage Autumn', 'The Topcoat Drop',
+  ],
+  winter_polish_heritage_luxury: [
+    'Cold Front Couture', 'The Camel Coat Edit', 'Polished in Sub-Zero',
+  ],
+  winter_polish_quiet_luxury: [
+    'Quiet Winter', 'Snow Day Tailoring',
+  ],
 };
 
 function generateEditorialName(
