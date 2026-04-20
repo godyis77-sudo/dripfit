@@ -285,6 +285,7 @@ Reference product images are attached. The model MUST wear items VISUALLY IDENTI
 - Do NOT substitute, reinterpret, or create "inspired by" versions — COPY exactly
 - Show EXACTLY ${itemCount} garment piece${itemCount === 1 ? "" : "s"} on the model — no extra jackets, no extra shoes, no held bags or shopping accessories that aren't in the list
 - The model wears ONE pair of shoes (the listed footwear) and is NOT carrying a second pair
+- BAGS: ${bagInstruction}
 
 ═══ LAYER 2: WARDROBE ═══
 ${brandContext}
