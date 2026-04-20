@@ -237,10 +237,14 @@ function buildPrompt(
     ? `This is a curated ${brands.join(" × ")} look.`
     : "This is a curated multi-brand look.";
 
+  // Decode HTML entities so the prompt reads "Women's" instead of "Women&#x27;s".
+  const decode = (s: string) =>
+    s.replace(/&#x27;/g, "'").replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+
   // Detect footwear in items
   const hasFootwear = items.some(i => {
     const c = `${i.category || ""} ${i.product_name || ""}`.toLowerCase();
-    return /shoe|sneaker|boot|slipper|sandal|loafer|heel|pump|mule|flat|espadrille/.test(c);
+    return /shoe|sneaker|boot|slipper|sandal|loafer|heel|pump|mule|flat|espadrille|slingback|moccasin|trainer/.test(c);
   });
 
   // Build wardrobe layer with layering context
@@ -249,7 +253,7 @@ function buildPrompt(
     const brand = item.brand ? ` by ${item.brand}` : "";
     const price = item.price_cents ? ` $${(item.price_cents / 100).toFixed(0)}` : "";
     const cat = item.category ? ` [${item.category}]` : "";
-    return `  ${i + 1}. ${item.product_name}${brand}${price}${cat}`;
+    return `  ${i + 1}. ${decode(item.product_name)}${brand}${price}${cat}`;
   }).join("\n");
 
   const colorHints = extractColorHints(items);
@@ -262,6 +266,8 @@ function buildPrompt(
     .map(i => i.image_url)
     .filter((url): url is string => !!url);
 
+  const itemCount = items.length;
+
   const text = `You are a world-class fashion photographer shooting for ${campaign.reference}.
 
 ═══ LAYER 1: PRODUCT FIDELITY (ABSOLUTE PRIORITY) ═══
@@ -270,11 +276,13 @@ Reference product images are attached. The model MUST wear items VISUALLY IDENTI
 - EXACT same silhouette, cut, and proportions
 - Brand logos/text ON garments must match reference photos precisely
 - Do NOT substitute, reinterpret, or create "inspired by" versions — COPY exactly
+- Show EXACTLY ${itemCount} garment piece${itemCount === 1 ? "" : "s"} on the model — no extra jackets, no extra shoes, no held bags or shopping accessories that aren't in the list
+- The model wears ONE pair of shoes (the listed footwear) and is NOT carrying a second pair
 
 ═══ LAYER 2: WARDROBE ═══
 ${brandContext}
 
-OUTFIT PIECES (every item must be worn and recognizable):
+OUTFIT PIECES (every item must be worn and recognizable; nothing else may appear):
 ${wardrobeLines}
 
 STYLING: ${campaign.styling}
