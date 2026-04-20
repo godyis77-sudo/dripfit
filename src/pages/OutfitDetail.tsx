@@ -187,21 +187,15 @@ const OutfitDetail = () => {
               className="flex gap-3 p-3 rounded-2xl glass-dark border border-white/5"
             >
               {item.image_url && (
-                <div
-                  className="w-24 h-24 rounded-xl overflow-hidden bg-secondary shrink-0 cursor-pointer"
+                <ItemImage
+                  src={item.image_url}
+                  alt={decodeHtmlEntities(item.product_name)}
                   onClick={() => setFullscreenItem(item)}
-                >
-                  <img
-                    src={item.image_url}
-                    alt={item.product_name}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
+                />
               )}
               <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                 <div>
-                  <p className="text-sm font-medium text-foreground leading-tight line-clamp-2">{item.product_name}</p>
+                  <p className="text-sm font-medium text-foreground leading-tight line-clamp-2">{decodeHtmlEntities(item.product_name)}</p>
                   {item.brand && (
                     <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground mt-0.5">{item.brand}</p>
                   )}
@@ -268,10 +262,10 @@ const OutfitDetail = () => {
       {fullscreenItem && fullscreenItem.image_url && (
         <FullscreenImage
           src={fullscreenItem.image_url}
-          alt={fullscreenItem.product_name}
+          alt={decodeHtmlEntities(fullscreenItem.product_name)}
           externalOpen
           onExternalClose={() => setFullscreenItem(null)}
-          description={`${fullscreenItem.product_name}${fullscreenItem.brand ? ` · ${fullscreenItem.brand}` : ''}${fullscreenItem.price_cents != null ? ` · $${(fullscreenItem.price_cents / 100).toFixed(0)}` : ''}`}
+          description={`${decodeHtmlEntities(fullscreenItem.product_name)}${fullscreenItem.brand ? ` · ${fullscreenItem.brand}` : ''}${fullscreenItem.price_cents != null ? ` · $${(fullscreenItem.price_cents / 100).toFixed(0)}` : ''}`}
           onShop={fullscreenItem.product_url ? () => handleShop(fullscreenItem) : undefined}
           onTryOn={() => handleTryOn(fullscreenItem)}
           onAddToWardrobe={savedIds.has(fullscreenItem.id) ? undefined : () => handleSaveToCloset(fullscreenItem)}
