@@ -156,6 +156,9 @@ const OCCASION_AESTHETIC_LEADS: Record<string, CohortKey[]> = {
   date_night:          ['rockstar_luxury', 'minimalist_luxury', 'avant_garde'],
   gallery_opening:     ['avant_garde', 'minimalist_luxury', 'rockstar_luxury'],
   travel_lounge:       ['bourgeois', 'minimalist_luxury', 'luxury_streetwear'],
+  beach_tropical:      ['minimalist_luxury', 'bourgeois', 'luxury_streetwear'],
+  wilderness_hiking:   ['techwear', 'minimalist_luxury', 'luxury_streetwear'],
+  mountain_lakes:      ['bourgeois', 'minimalist_luxury', 'techwear'],
 };
 
 /* ── Editorial naming pools (DripFit voice) ───────────────────── */
