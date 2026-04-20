@@ -116,6 +116,33 @@ const CATEGORY_PROMPTS: Record<string, { prompts: string[]; premium: boolean[] }
     ],
     premium: [false, false, true, true],
   },
+  "beach-tropical": {
+    prompts: [
+      "A pristine tropical beach with turquoise crystal-clear water, powdery white sand, and a lone palm tree leaning over the shore at golden hour, no people, vertical composition",
+      "A luxury marina at sunset with sleek white yachts moored against a soft pink and gold sky, calm water reflections, wooden dock in foreground, no people, portrait orientation",
+      "A dramatic overwater bungalow view in the Maldives with turquoise lagoon, thatched roofs, and a wooden walkway leading into the water, golden afternoon light, no people, vertical",
+      "A secluded Caribbean cove with dramatic limestone cliffs, emerald water, and lush tropical foliage framing the shoreline, warm sunset glow, no people, portrait orientation",
+    ],
+    premium: [false, false, true, true],
+  },
+  "wilderness-forest": {
+    prompts: [
+      "A lush old-growth forest trail with towering redwoods, soft morning mist, shafts of golden sunlight piercing through the canopy, moss-covered floor, no people, vertical composition",
+      "A dramatic pine forest path in autumn with rich golden and copper leaves carpeting the ground, soft backlight through trees, serene atmosphere, no people, portrait orientation",
+      "A mystical fern-covered forest clearing with a moss-draped fallen log, ethereal light filtering through dense canopy, cinematic depth, no people, vertical",
+      "A rugged wilderness hiking trail winding through towering evergreens with distant mountain peaks visible, dramatic late afternoon light, no people, portrait orientation",
+    ],
+    premium: [false, false, true, true],
+  },
+  "mountains-lakes": {
+    prompts: [
+      "A breathtaking alpine lake with perfectly still mirror-like water reflecting snow-capped peaks, pine trees along the shore, crisp morning light, no people, vertical composition",
+      "A dramatic mountain vista at golden hour with layered ridgelines fading into blue haze, warm light on the peaks, a lone rocky outcrop in foreground, no people, portrait orientation",
+      "A turquoise glacial lake nestled between towering granite peaks, rocky shoreline with wildflowers, cinematic scale, dramatic afternoon light, no people, vertical",
+      "A high-altitude mountain hiking pass with jagged snow-dusted peaks, a narrow rocky trail winding upward, dramatic clouds rolling over the ridge, golden late-day light, no people, portrait orientation",
+    ],
+    premium: [false, false, true, true],
+  },
 };
 
 async function generateImage(prompt: string, apiKey: string): Promise<string | null> {

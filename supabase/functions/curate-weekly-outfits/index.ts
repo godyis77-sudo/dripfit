@@ -156,6 +156,9 @@ const OCCASION_AESTHETIC_LEADS: Record<string, CohortKey[]> = {
   date_night:          ['rockstar_luxury', 'minimalist_luxury', 'avant_garde'],
   gallery_opening:     ['avant_garde', 'minimalist_luxury', 'rockstar_luxury'],
   travel_lounge:       ['bourgeois', 'minimalist_luxury', 'luxury_streetwear'],
+  beach_tropical:      ['minimalist_luxury', 'bourgeois', 'luxury_streetwear'],
+  wilderness_hiking:   ['techwear', 'minimalist_luxury', 'luxury_streetwear'],
+  mountain_lakes:      ['bourgeois', 'minimalist_luxury', 'techwear'],
 };
 
 /* ── Editorial naming pools (DripFit voice) ───────────────────── */
@@ -334,6 +337,36 @@ const EDITORIAL_NAME_POOLS: Record<string, string[]> = {
   ],
   winter_polish_rockstar_luxury: [
     'Cold Front Couture', 'Black Coat Hours',
+  ],
+  // beach_tropical
+  beach_tropical_minimalist_luxury: [
+    'Riviera Linen', 'The Marina Edit', 'Salt & Silk', 'Whitewash Hour',
+  ],
+  beach_tropical_bourgeois: [
+    'Yacht Club Morning', 'Capri Hours', 'Old Money Shore',
+  ],
+  beach_tropical_luxury_streetwear: [
+    'Boardwalk Monogram', 'Sunset Drop',
+  ],
+  // wilderness_hiking
+  wilderness_hiking_techwear: [
+    'Trail Protocol', 'The Veilance Edit', 'Ridgeline Tech', 'Backcountry Precision',
+  ],
+  wilderness_hiking_minimalist_luxury: [
+    'Forest Minimal', 'The Pinewood Edit', 'Canopy Hours',
+  ],
+  wilderness_hiking_luxury_streetwear: [
+    'ALD Outdoors', 'Trail Drop',
+  ],
+  // mountain_lakes
+  mountain_lakes_bourgeois: [
+    'The Alpine Edit', 'Loro Piana Morning', 'Lakeside Heritage', 'Glacier Hours',
+  ],
+  mountain_lakes_minimalist_luxury: [
+    'Mirror Lake Minimal', 'Cashmere at Altitude', 'Still Water Hour',
+  ],
+  mountain_lakes_techwear: [
+    'Summit Protocol', 'Alpine Precision',
   ],
 };
 
@@ -701,6 +734,72 @@ const OCCASIONS: OccasionDef[] = [
         mensCategories: ["pants", "trousers", "jeans"] },
       { role: "shoes", required: true, categories: ["boots", "loafers", "shoes", "footwear"] },
       { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+    ],
+  },
+
+  /* ── NATURE / OUTDOORS (evergreen destination) ───────────────── */
+  {
+    key: "beach_tropical",
+    label: "Beach & Marina",
+    emoji: "🏝️",
+    slots: [
+      { role: "outerwear", required: false, categories: ["shirts", "cardigans", "jackets"],
+        keywordPrefer: ["linen", "kaftan", "cover-up", "open"] },
+      { role: "top", required: true,
+        categories: ["tops", "t-shirts", "tank tops", "shirts"],
+        womensCategories: ["swimwear", "dresses", "tops", "tank tops", "blouses"],
+        mensCategories: ["shirts", "t-shirts", "tops", "tank tops"],
+        keywordPrefer: ["linen", "silk", "sun", "resort", "crop", "cabana"] },
+      { role: "bottom", required: false,
+        categories: ["shorts", "skirts", "pants"],
+        womensCategories: ["skirts", "shorts", "pants"],
+        mensCategories: ["shorts", "chinos", "pants"],
+        keywordPrefer: ["linen", "swim", "board", "cabana", "tailored short"] },
+      { role: "shoes", required: true, categories: ["sandals", "sneakers", "shoes", "footwear", "loafers"] },
+      { role: "accessory", required: false,
+        categories: ["sunglasses", "hats", "bags", "jewelry", "watches", "accessories"] },
+    ],
+  },
+  {
+    key: "wilderness_hiking",
+    label: "Wilderness Trail",
+    emoji: "🌲",
+    slots: [
+      { role: "outerwear", required: true,
+        categories: ["jackets", "coats", "outerwear", "vests"],
+        keywordPrefer: ["shell", "parka", "field", "sherpa", "fleece", "anorak", "utility", "quilted"] },
+      { role: "top", required: true,
+        categories: ["t-shirts", "tops", "shirts", "sweaters", "knits", "hoodies"],
+        keywordPrefer: ["merino", "flannel", "henley", "thermal", "waffle"] },
+      { role: "bottom", required: true,
+        categories: ["pants", "jeans", "trousers", "joggers"],
+        keywordPrefer: ["cargo", "utility", "canvas", "trail", "hiking", "relaxed"] },
+      { role: "shoes", required: true,
+        categories: ["boots", "sneakers", "shoes", "footwear"],
+        keywordPrefer: ["hiking", "trail", "work", "combat", "field"] },
+      { role: "accessory", required: false,
+        categories: ["hats", "bags", "watches", "accessories"] },
+    ],
+  },
+  {
+    key: "mountain_lakes",
+    label: "Mountain & Lake",
+    emoji: "🏔️",
+    slots: [
+      { role: "outerwear", required: true,
+        categories: ["coats", "jackets", "outerwear", "cardigans", "vests"],
+        keywordPrefer: ["cashmere", "wool", "shearling", "quilted", "puffer", "alpine"] },
+      { role: "top", required: true,
+        categories: ["sweaters", "knits", "tops", "shirts", "t-shirts"],
+        keywordPrefer: ["cashmere", "merino", "cable", "ribbed", "turtleneck", "mock"] },
+      { role: "bottom", required: true,
+        categories: ["pants", "trousers", "jeans"],
+        keywordPrefer: ["wool", "flannel", "corduroy", "tailored", "cord"] },
+      { role: "shoes", required: true,
+        categories: ["boots", "loafers", "shoes", "footwear"],
+        keywordPrefer: ["chelsea", "suede", "leather", "mountain", "shearling"] },
+      { role: "accessory", required: false,
+        categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
     ],
   },
 ];
@@ -1137,6 +1236,7 @@ Deno.serve(async (req) => {
     const outfitsPerOccasion = Math.min(body.outfits_per_occasion || 5, 10);
     const occasionCount = Math.min(body.occasion_count || 5, OCCASIONS.length);
     const clearExisting = body.clear_existing ?? true;
+    const forcedOccasions = Array.isArray(body.occasions) ? body.occasions as string[] : null;
 
     const sb = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -1193,8 +1293,14 @@ Deno.serve(async (req) => {
     const currentSeason = getCurrentSeason();
     log.push(`[Season] Current season: ${currentSeason}`);
     const seasonalEligible = OCCASIONS.filter(o => !o.season || o.season === currentSeason);
-    const selectedOccasions = shuffle(seasonalEligible).slice(0, occasionCount);
-    log.push(`[Occasions] ${selectedOccasions.map(o => o.label).join(", ")}`);
+    let selectedOccasions;
+    if (forcedOccasions && forcedOccasions.length > 0) {
+      selectedOccasions = OCCASIONS.filter(o => forcedOccasions.includes(o.key));
+      log.push(`[Occasions] FORCED: ${selectedOccasions.map(o => o.label).join(", ")}`);
+    } else {
+      selectedOccasions = shuffle(seasonalEligible).slice(0, occasionCount);
+      log.push(`[Occasions] ${selectedOccasions.map(o => o.label).join(", ")}`);
+    }
 
     const usedIds = new Set<string>();
     const usedNames = new Set<string>();
