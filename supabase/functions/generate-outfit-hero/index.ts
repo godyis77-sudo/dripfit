@@ -267,6 +267,13 @@ function buildPrompt(
     .filter((url): url is string => !!url);
 
   const itemCount = items.length;
+  const bagCount = items.filter(i => {
+    const c = `${i.category || ""} ${i.product_name || ""}`.toLowerCase();
+    return /\b(bag|tote|clutch|purse|backpack|handbag|pouch|crossbody|shoulder bag|satchel)\b/.test(c);
+  }).length;
+  const bagInstruction = bagCount === 0
+    ? "NO bags of any kind — the model is NOT holding, carrying, or wearing any bag, tote, clutch, purse, backpack, or handbag. Hands are empty or resting naturally."
+    : `EXACTLY ${bagCount} bag${bagCount === 1 ? "" : "s"} total — the model carries only the listed bag${bagCount === 1 ? "" : "s"}. Never add a second bag, extra clutch, tote, or handbag.`;
 
   const text = `You are a world-class fashion photographer shooting for ${campaign.reference}.
 
@@ -278,6 +285,7 @@ Reference product images are attached. The model MUST wear items VISUALLY IDENTI
 - Do NOT substitute, reinterpret, or create "inspired by" versions — COPY exactly
 - Show EXACTLY ${itemCount} garment piece${itemCount === 1 ? "" : "s"} on the model — no extra jackets, no extra shoes, no held bags or shopping accessories that aren't in the list
 - The model wears ONE pair of shoes (the listed footwear) and is NOT carrying a second pair
+- BAGS: ${bagInstruction}
 
 ═══ LAYER 2: WARDROBE ═══
 ${brandContext}
@@ -318,7 +326,7 @@ ${campaign.negative}
 No text overlays. No watermarks. No mannequins. No flat-lay. No product-only shots. Only styled on-body editorial.
 
 ═══ FINAL CHECK ═══
-Portrait orientation (3:4). Confirm BEFORE rendering: (1) head fully in frame with breathing room above, (2) BOTH FEET AND FULL SHOES visible with floor padding beneath them — no ankle/toe crop, (3) every listed garment matches its reference image in color, pattern, graphic, and silhouette.`;
+Portrait orientation (3:4). Confirm BEFORE rendering: (1) head fully in frame with breathing room above, (2) BOTH FEET AND FULL SHOES visible with floor padding beneath them — no ankle/toe crop, (3) every listed garment matches its reference image in color, pattern, graphic, and silhouette, (4) accessory count is exact — ${bagCount === 0 ? "ZERO bags visible" : `exactly ${bagCount} bag${bagCount === 1 ? "" : "s"}`} and ONE pair of shoes only.`;
 
   return { text, imageUrls };
 }
