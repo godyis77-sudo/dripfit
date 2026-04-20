@@ -83,7 +83,7 @@ const GalleryPlayground = () => {
               </p>
             ) : (
               <p className="font-sans text-[13px] font-medium tracking-[0.15em] uppercase text-foreground/70 mt-1 mb-3">
-                Your Infinite Drape Studio Awaits.
+                YOUR SIZE, YOUR FIT, YOUR CULTURE.
               </p>
             )}
           </div>
