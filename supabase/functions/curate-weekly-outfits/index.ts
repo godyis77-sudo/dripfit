@@ -775,6 +775,20 @@ function normalizeCategory(cat: string): string {
   return c;
 }
 
+/** Coarse semantic bucket used to enforce "one footwear / one outerwear / etc."
+ *  per outfit, regardless of which sub-category a product is filed under. */
+function semanticBucket(normCat: string): string | null {
+  if (["sneakers", "boots", "heels", "sandals", "loafers", "shoes", "footwear"].includes(normCat)) return "footwear";
+  if (["jackets", "coats", "blazers", "outerwear", "cardigans"].includes(normCat)) return "outerwear";
+  if (["pants", "jeans", "trousers", "shorts", "skirts", "joggers", "leggings", "chinos"].includes(normCat)) return "bottom";
+  if (["dresses", "jumpsuits"].includes(normCat)) return "one_piece";
+  if (["t-shirts", "shirts", "tops", "blouses", "sweaters", "hoodies", "tank tops", "knits", "polos"].includes(normCat)) return "top";
+  if (["bags"].includes(normCat)) return "bag";
+  if (["hats"].includes(normCat)) return "hat";
+  // sunglasses/jewelry/watches/belts/scarves/accessories share no bucket — many can co-exist.
+  return null;
+}
+
 /* ── Product type ─────────────────────────────────────────────── */
 
 interface CatalogProduct {
@@ -962,6 +976,10 @@ function buildOutfit(
   let outfitStyleFamily: string | null = null;
   let hasPatternPiece = false;
   const outfitCohortsUsed = new Set<CohortKey>();
+  // Semantic-bucket dedupe — prevents two footwear items, two outerwear items,
+  // etc. from being chosen for the same outfit even if their catalog categories
+  // differ (e.g. one product tagged "sneakers" + one tagged "heels"/"loafers").
+  const usedBuckets = new Set<string>();
 
   // ─── STEP 2: HERO-FIRST SLOT ORDER ─────────────────────────────
   const heroSlotOrder = ["outerwear", "shoes", "top", "bottom", "accessory"];
@@ -981,7 +999,12 @@ function buildOutfit(
     const categoryCandidates = eligibleProducts.filter(p => {
       if (usedProductIds.has(p.id)) return false;
       const normCat = normalizeCategory(p.category);
-      return effectiveCats.includes(normCat);
+      if (!effectiveCats.includes(normCat)) return false;
+      // Reject if its semantic bucket (footwear / outerwear / bottom / top)
+      // is already filled by another item in this outfit.
+      const bucket = semanticBucket(normCat);
+      if (bucket && usedBuckets.has(bucket)) return false;
+      return true;
     });
 
     if (categoryCandidates.length === 0) {
@@ -1075,6 +1098,8 @@ function buildOutfit(
     outfitCohortsUsed.add(pickCohort);
 
     usedProductIds.add(pick.id);
+    const pickBucket = semanticBucket(normalizeCategory(pick.category));
+    if (pickBucket) usedBuckets.add(pickBucket);
     items.push({ product: pick, role: slot.role, position: position++ });
   }
 
