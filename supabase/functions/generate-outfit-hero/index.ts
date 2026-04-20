@@ -133,17 +133,6 @@ const CAMPAIGNS: Record<string, CampaignRef> = {
     styling: "Elevated formal with personality — tailored foundation with one unexpected luxury accent piece. Stands out without trying.",
     footwearGuide: "polished leather dress shoes, heeled sandals, or satin pumps",
   },
-  wedding_guest: {
-    reference: "Zimmermann Bridal Party meets Brunello Cucinelli countryside",
-    location: "Sun-drenched Tuscan vineyard at late afternoon. Cypress-lined gravel path, weathered stone villa in background, wildflower meadow at the edges. Long shadows across the lawn.",
-    architecture: "Italian countryside villa. Sun-bleached stucco, terracotta roof tiles, ivy-covered pergola, distant olive groves. Romantic but understated.",
-    camera: "Shot on Pentax 67 with 105mm f/2.4. Environmental three-quarter portrait. Camera at chest height. Subject framed by cypress trees, villa softly out of focus.",
-    lighting: "Late golden-hour sun as warm key from behind (3400K honeyed). Soft bounce fill from cream stucco. Subtle haze in air diffusing highlights.",
-    colorGrade: "Warm Mediterranean palette. Honey highlights, sage shadows, dusty rose midtones. Skin sun-warmed and luminous. Light grain at 7%. Overall: Slim Aarons meets Vogue Italia weddings.",
-    negative: "No flash. No reception interior. No bouquet held in hand. No church. No bridesmaid lineup. No stiff posing. No bright white walls.",
-    styling: "Wedding-guest tailoring with romantic ease — fluid drape, considered color, one statement piece. Polished but not trying to outshine the bride.",
-    footwearGuide: "block-heeled sandals, polished loafers, or refined dress shoes",
-  },
   gallery_opening: {
     reference: "Celine Phoebe Philo era meets Off-White downtown editorial",
     location: "Cavernous downtown art gallery during evening opening. Polished concrete floors, white-cube walls hung with large-scale abstract canvases, single oversized sculpture in mid-floor. Soft museum-grade track lighting.",

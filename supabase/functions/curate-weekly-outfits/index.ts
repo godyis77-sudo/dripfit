@@ -154,7 +154,6 @@ const OCCASION_AESTHETIC_LEADS: Record<string, CohortKey[]> = {
   autumn_layers:       ['minimalist_luxury', 'bourgeois', 'luxury_streetwear'],
   winter_polish:       ['bourgeois', 'minimalist_luxury', 'rockstar_luxury'],
   date_night:          ['rockstar_luxury', 'minimalist_luxury', 'avant_garde'],
-  wedding_guest:       ['bourgeois', 'minimalist_luxury', 'maximalist_luxury'],
   gallery_opening:     ['avant_garde', 'minimalist_luxury', 'rockstar_luxury'],
   travel_lounge:       ['bourgeois', 'minimalist_luxury', 'luxury_streetwear'],
 };
@@ -283,18 +282,6 @@ const EDITORIAL_NAME_POOLS: Record<string, string[]> = {
   ],
   date_night_avant_garde: [
     'Architectural Romance', 'Sculpted for Dinner',
-  ],
-  // wedding_guest
-  wedding_guest_bourgeois: [
-    'Garden Ceremony', 'The Plus-One Edit', 'Cathedral Hour',
-    'Rosé at the Reception', 'Heritage Wedding',
-  ],
-  wedding_guest_minimalist_luxury: [
-    'Quiet Wedding Guest', 'The Ceremony Suit', 'Restraint at the Altar',
-    'Linen & Champagne',
-  ],
-  wedding_guest_maximalist_luxury: [
-    'Statement Plus-One', 'Couture in the Pews', 'The Reception Showstopper',
   ],
   // gallery_opening
   gallery_opening_avant_garde: [
@@ -553,23 +540,6 @@ const OCCASIONS: OccasionDef[] = [
       { role: "bottom", required: false, categories: ["pants", "trousers", "skirts", "jeans"],
         mensCategories: ["trousers", "pants", "jeans"] },
       { role: "shoes", required: true, categories: ["heels", "loafers", "boots", "shoes", "footwear"] },
-      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
-    ],
-  },
-  {
-    key: "wedding_guest",
-    label: "Wedding Guest",
-    emoji: "💍",
-    slots: [
-      { role: "outerwear", required: false, categories: ["blazers", "jackets", "coats"] },
-      { role: "top", required: true,
-        categories: ["shirts", "blouses", "tops", "knits"],
-        womensCategories: ["dresses", "tops", "blouses"],
-        mensCategories: ["shirts", "knits"],
-        keywordPrefer: ["silk", "satin", "linen", "midi", "maxi", "tailored", "cocktail"] },
-      { role: "bottom", required: false, categories: ["trousers", "pants", "skirts"],
-        mensCategories: ["trousers", "pants", "chinos"] },
-      { role: "shoes", required: true, categories: ["heels", "loafers", "shoes", "footwear"] },
       { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
     ],
   },
