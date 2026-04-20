@@ -65,17 +65,8 @@ const CAMPAIGNS: Record<string, CampaignRef> = {
     styling: "Polished elevated casual — clean proportions, thoughtful layering, mixing textures like knit over cotton. Effortless but intentional.",
     footwearGuide: "clean minimalist leather loafers, ballet flats, or designer sneakers",
   },
-  weekend_casual: {
-    reference: "Fear of God Essentials meets Aritzia Super World",
-    location: "Sun-drenched modernist concrete terrace overlooking a coastal city at late afternoon. Clean architectural lines. Warm golden light.",
-    architecture: "Brutalist-meets-California modern. Poured concrete, floor-to-ceiling glass, steel railings. Succulent garden in background.",
-    camera: "Shot on Sony A7RV with 35mm f/1.4 GM. Medium-wide environmental shot. Camera at natural eye level. Subject walking through frame with urban backdrop.",
-    lighting: "Low afternoon sun as strong key from camera-left (4200K warm). Soft fill bounced from concrete surfaces. Strong backlight creating clothing edge definition.",
-    colorGrade: "Warm concrete tones. Highlights in soft gold. Shadows in cool grey-blue. Lifted blacks. Clean and modern. Grain at 5%. Overall: Aritzia campaign meets architectural photography.",
-    negative: "No gym clothes. No loungewear energy. No bedroom. No couch. No messy background. No logo-heavy styling.",
-    styling: "Premium streetwear layering — oversized over fitted, brand-mixing done intentionally, sneakers styled up. Everything looks casual but costs serious money.",
-    footwearGuide: "fresh designer sneakers, lifestyle runners, or premium mules",
-  },
+  // weekend_casual definition lives further below (enriched version)
+
   office: {
     reference: "Prada FW26 meets Hugo Boss Modern Tailoring",
     location: "Sleek glass-walled corner office with panoramic city skyline view at dusk. Soft directional window light. Minimal furniture — a Mies van der Rohe chair, single orchid.",
