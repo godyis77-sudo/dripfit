@@ -11,6 +11,36 @@ import { Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
+import { decodeHtmlEntities } from '@/lib/utils';
+
+/** Inline product image with graceful fallback when the retailer CDN blocks hotlinks. */
+function ItemImage({ src, alt, onClick }: { src: string; alt: string; onClick?: () => void }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <div
+        className="w-24 h-24 rounded-xl overflow-hidden bg-secondary shrink-0 flex items-center justify-center cursor-pointer"
+        onClick={onClick}
+      >
+        <Shirt className="h-6 w-6 text-white/30" />
+      </div>
+    );
+  }
+  return (
+    <div
+      className="w-24 h-24 rounded-xl overflow-hidden bg-secondary shrink-0 cursor-pointer"
+      onClick={onClick}
+    >
+      <img
+        src={src}
+        alt={alt}
+        className="w-full h-full object-cover"
+        loading="lazy"
+        onError={() => setFailed(true)}
+      />
+    </div>
+  );
+}
 
 const OutfitDetail = () => {
   const { outfitId } = useParams<{ outfitId: string }>();
