@@ -172,7 +172,7 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, descr
               {/* Backdrop layer — closes on tap */}
               <div
                 className="relative flex-1 min-h-0 flex items-center justify-center"
-                onPointerDown={(e) => {
+                onClick={(e) => {
                   if (e.target === e.currentTarget) setOpen(false);
                 }}
               >
@@ -227,7 +227,7 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, descr
               {/* Close — top z-index sibling, isolated from backdrop handlers */}
               <button
                 type="button"
-                onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); setOpen(false); }}
+                onPointerDown={(e) => { e.stopPropagation(); }}
                 onClick={(e) => { e.stopPropagation(); setOpen(false); }}
                 className="absolute right-4 z-[200] h-11 w-11 rounded-full bg-black/80 backdrop-blur-md border border-white/30 flex items-center justify-center active:scale-90 transition-transform shadow-[0_2px_12px_rgba(0,0,0,0.5)] p-0"
                 style={{ top: 'max(1rem, env(safe-area-inset-top, 1rem))', pointerEvents: 'auto' }}
