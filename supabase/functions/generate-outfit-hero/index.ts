@@ -301,6 +301,12 @@ ${campaign.architecture}
 ═══ LAYER 5: CAMERA ═══
 ${campaign.camera}
 
+FRAMING OVERRIDE (non-negotiable, supersedes any conflicting camera note above):
+- TRUE FULL BODY: the entire model from the very top of the head down to BELOW THE SOLES OF THE SHOES must be inside the frame.
+- Both feet and the full footwear must be fully visible with clear ground/floor padding beneath them.
+- Leave at least 8% empty space below the shoes and 4% above the head — never crop ankles, shins, knees, or hair.
+- If the chosen pose would crop the feet, adjust the camera distance backward until the shoes are fully in frame.
+
 ═══ LAYER 6: LIGHTING ═══
 ${campaign.lighting}
 
@@ -312,8 +318,7 @@ ${campaign.negative}
 No text overlays. No watermarks. No mannequins. No flat-lay. No product-only shots. Only styled on-body editorial.
 
 ═══ FINAL CHECK ═══
-Full body shot, head to toe, portrait orientation (3:4 aspect ratio).
-Verify each garment matches its reference image in color, pattern, graphic, and silhouette before generating.`;
+Portrait orientation (3:4). Confirm BEFORE rendering: (1) head fully in frame with breathing room above, (2) BOTH FEET AND FULL SHOES visible with floor padding beneath them — no ankle/toe crop, (3) every listed garment matches its reference image in color, pattern, graphic, and silhouette.`;
 
   return { text, imageUrls };
 }
