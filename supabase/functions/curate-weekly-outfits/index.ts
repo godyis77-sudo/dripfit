@@ -1293,8 +1293,14 @@ Deno.serve(async (req) => {
     const currentSeason = getCurrentSeason();
     log.push(`[Season] Current season: ${currentSeason}`);
     const seasonalEligible = OCCASIONS.filter(o => !o.season || o.season === currentSeason);
-    const selectedOccasions = shuffle(seasonalEligible).slice(0, occasionCount);
-    log.push(`[Occasions] ${selectedOccasions.map(o => o.label).join(", ")}`);
+    let selectedOccasions;
+    if (forcedOccasions && forcedOccasions.length > 0) {
+      selectedOccasions = OCCASIONS.filter(o => forcedOccasions.includes(o.key));
+      log.push(`[Occasions] FORCED: ${selectedOccasions.map(o => o.label).join(", ")}`);
+    } else {
+      selectedOccasions = shuffle(seasonalEligible).slice(0, occasionCount);
+      log.push(`[Occasions] ${selectedOccasions.map(o => o.label).join(", ")}`);
+    }
 
     const usedIds = new Set<string>();
     const usedNames = new Set<string>();
