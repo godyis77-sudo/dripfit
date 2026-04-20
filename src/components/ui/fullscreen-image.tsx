@@ -172,7 +172,7 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, descr
               {/* Backdrop layer — closes on tap */}
               <div
                 className="relative flex-1 min-h-0 flex items-center justify-center"
-                onPointerDown={(e) => {
+                onClick={(e) => {
                   if (e.target === e.currentTarget) setOpen(false);
                 }}
               >
