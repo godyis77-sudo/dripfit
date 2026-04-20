@@ -29,15 +29,17 @@ export default function LandingHero() {
           </FadeIn>
 
           <FadeIn delay={0.08}>
-            <h1 className="type-brand leading-[1.05] mb-7" style={{ letterSpacing: '-0.02em', fontSize: 'clamp(40px, 6vw, 72px)' }}>
-              Stop Praying<br />
-              <span className="text-primary">It Fits.</span>
+            <h1 className="type-brand leading-[0.95] mb-2" style={{ letterSpacing: '-0.02em', fontSize: 'clamp(42px, 6.5vw, 76px)' }}>
+              SIZED BY AI.
             </h1>
+            <h2 className="type-brand leading-[1.05] mb-7 italic" style={{ letterSpacing: '-0.02em', fontSize: 'clamp(34px, 5vw, 58px)', color: 'hsl(var(--primary))' }}>
+              VERIFIED BY THE CULTURE.
+            </h2>
           </FadeIn>
 
           <FadeIn delay={0.16}>
-            <p className="type-body text-lg md:text-xl leading-relaxed max-w-md mb-10 font-light">
-              Your body. Mapped. 9,000+ pieces. 186 brands. Perfect drape. Verified before checkout.
+            <p className="type-body text-base md:text-lg leading-relaxed max-w-md mb-10 font-light">
+              One scan learns your body. 186 brands mapped to you. Your fit twins match. The culture votes.
             </p>
           </FadeIn>
 
