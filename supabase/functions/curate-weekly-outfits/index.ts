@@ -1236,6 +1236,7 @@ Deno.serve(async (req) => {
     const outfitsPerOccasion = Math.min(body.outfits_per_occasion || 5, 10);
     const occasionCount = Math.min(body.occasion_count || 5, OCCASIONS.length);
     const clearExisting = body.clear_existing ?? true;
+    const forcedOccasions = Array.isArray(body.occasions) ? body.occasions as string[] : null;
 
     const sb = createClient(
       Deno.env.get("SUPABASE_URL")!,
