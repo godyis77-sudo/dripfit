@@ -266,6 +266,8 @@ function buildPrompt(
     .map(i => i.image_url)
     .filter((url): url is string => !!url);
 
+  const itemCount = items.length;
+
   const text = `You are a world-class fashion photographer shooting for ${campaign.reference}.
 
 ═══ LAYER 1: PRODUCT FIDELITY (ABSOLUTE PRIORITY) ═══
@@ -274,11 +276,13 @@ Reference product images are attached. The model MUST wear items VISUALLY IDENTI
 - EXACT same silhouette, cut, and proportions
 - Brand logos/text ON garments must match reference photos precisely
 - Do NOT substitute, reinterpret, or create "inspired by" versions — COPY exactly
+- Show EXACTLY ${itemCount} garment piece${itemCount === 1 ? "" : "s"} on the model — no extra jackets, no extra shoes, no held bags or shopping accessories that aren't in the list
+- The model wears ONE pair of shoes (the listed footwear) and is NOT carrying a second pair
 
 ═══ LAYER 2: WARDROBE ═══
 ${brandContext}
 
-OUTFIT PIECES (every item must be worn and recognizable):
+OUTFIT PIECES (every item must be worn and recognizable; nothing else may appear):
 ${wardrobeLines}
 
 STYLING: ${campaign.styling}
