@@ -326,7 +326,7 @@ ${campaign.negative}
 No text overlays. No watermarks. No mannequins. No flat-lay. No product-only shots. Only styled on-body editorial.
 
 ═══ FINAL CHECK ═══
-Portrait orientation (3:4). Confirm BEFORE rendering: (1) head fully in frame with breathing room above, (2) BOTH FEET AND FULL SHOES visible with floor padding beneath them — no ankle/toe crop, (3) every listed garment matches its reference image in color, pattern, graphic, and silhouette.`;
+Portrait orientation (3:4). Confirm BEFORE rendering: (1) head fully in frame with breathing room above, (2) BOTH FEET AND FULL SHOES visible with floor padding beneath them — no ankle/toe crop, (3) every listed garment matches its reference image in color, pattern, graphic, and silhouette, (4) accessory count is exact — ${bagCount === 0 ? "ZERO bags visible" : `exactly ${bagCount} bag${bagCount === 1 ? "" : "s"}`} and ONE pair of shoes only.`;
 
   return { text, imageUrls };
 }
