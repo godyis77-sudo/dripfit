@@ -179,9 +179,6 @@ const CAMPAIGNS: Record<string, CampaignRef> = {
   },
 };
 
-// `weekend_casual` was duplicated above to prevent fallthrough — Object literal
-// keeps the LAST occurrence. Keep ONLY the enriched version below.
-delete (CAMPAIGNS as any).__noop;
 
 /* ── Gender model descriptions ────────────────────────────────── */
 
