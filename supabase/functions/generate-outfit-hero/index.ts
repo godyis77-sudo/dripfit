@@ -267,6 +267,13 @@ function buildPrompt(
     .filter((url): url is string => !!url);
 
   const itemCount = items.length;
+  const bagCount = items.filter(i => {
+    const c = `${i.category || ""} ${i.product_name || ""}`.toLowerCase();
+    return /\b(bag|tote|clutch|purse|backpack|handbag|pouch|crossbody|shoulder bag|satchel)\b/.test(c);
+  }).length;
+  const bagInstruction = bagCount === 0
+    ? "NO bags of any kind — the model is NOT holding, carrying, or wearing any bag, tote, clutch, purse, backpack, or handbag. Hands are empty or resting naturally."
+    : `EXACTLY ${bagCount} bag${bagCount === 1 ? "" : "s"} total — the model carries only the listed bag${bagCount === 1 ? "" : "s"}. Never add a second bag, extra clutch, tote, or handbag.`;
 
   const text = `You are a world-class fashion photographer shooting for ${campaign.reference}.
 
