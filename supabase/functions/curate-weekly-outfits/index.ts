@@ -272,6 +272,53 @@ const EDITORIAL_NAME_POOLS: Record<string, string[]> = {
   gym_pure_streetwear: [
     'Rep & Reset', 'Street Athletics',
   ],
+  // date_night
+  date_night_rockstar_luxury: [
+    'Candlelit Leather', 'Reservation at 9', 'After-Hours Romance',
+    'The Velvet Banquette', 'Dim Bar, Sharp Cut',
+  ],
+  date_night_minimalist_luxury: [
+    'Quiet Corner Booth', 'Black Dress Hours', 'The Slow Dinner',
+    'Wine Bar Minimal', 'A Night, Tailored',
+  ],
+  date_night_avant_garde: [
+    'Architectural Romance', 'Sculpted for Dinner',
+  ],
+  // wedding_guest
+  wedding_guest_bourgeois: [
+    'Garden Ceremony', 'The Plus-One Edit', 'Cathedral Hour',
+    'Rosé at the Reception', 'Heritage Wedding',
+  ],
+  wedding_guest_minimalist_luxury: [
+    'Quiet Wedding Guest', 'The Ceremony Suit', 'Restraint at the Altar',
+    'Linen & Champagne',
+  ],
+  wedding_guest_maximalist_luxury: [
+    'Statement Plus-One', 'Couture in the Pews', 'The Reception Showstopper',
+  ],
+  // gallery_opening
+  gallery_opening_avant_garde: [
+    'White Wall Hour', 'The Margiela Opening', 'Concrete & Canvas',
+    'Curator\'s Pick', 'Soho Private View',
+  ],
+  gallery_opening_minimalist_luxury: [
+    'Black Coat, White Wall', 'The Quiet Critic', 'Opening Night Minimal',
+  ],
+  gallery_opening_rockstar_luxury: [
+    'Downtown Opening', 'Leather at the Vernissage',
+  ],
+  // travel_lounge
+  travel_lounge_bourgeois: [
+    'First-Class Hour', 'The Concorde Edit', 'Hotel Arrival',
+    'Heritage Trunk', 'Members Lounge',
+  ],
+  travel_lounge_minimalist_luxury: [
+    'Travel Uniform', 'Cashmere on the Tarmac', 'The Quiet Itinerary',
+    'Terminal 4 Minimal',
+  ],
+  travel_lounge_luxury_streetwear: [
+    'Jet-Set Drop', 'Airport Monogram', 'Long-Haul Lux',
+  ],
   // spring_garden
   spring_garden_minimalist_luxury: [
     'Spring Bloom', 'The Garden Edit', 'Pastel Stroll',
@@ -307,7 +354,7 @@ function generateEditorialName(
   occasionKey: string,
   cohort: CohortKey,
   usedNames: Set<string>
-): string {
+): string | null {
   const key = `${occasionKey}_${cohort}`;
   // Fallback chain: exact (occasion, cohort) → first lead for occasion → generic
   const leads = OCCASION_AESTHETIC_LEADS[occasionKey] ?? [];
@@ -317,15 +364,10 @@ function generateEditorialName(
     EDITORIAL_NAME_POOLS[fallbackKey] ??
     [occasionKey.replace(/_/g, ' ')];
 
+  // Strict 1-per-title cap: skip outfit if no unique name remains in this
+  // occasion's pool. Caller treats null as "skip outfit".
   const available = pool.filter(n => !usedNames.has(n));
-  if (available.length === 0) {
-    const base = pool[0];
-    let i = 2;
-    while (usedNames.has(`${base} ${i}`)) i++;
-    const name = `${base} ${i}`;
-    usedNames.add(name);
-    return name;
-  }
+  if (available.length === 0) return null;
 
   const pick = available[Math.floor(Math.random() * available.length)];
   usedNames.add(pick);
@@ -495,6 +537,70 @@ const OCCASIONS: OccasionDef[] = [
       { role: "bottom", required: true, categories: ["shorts", "joggers", "pants", "leggings", "sweatpants"] },
       { role: "shoes", required: true, categories: ["sneakers", "shoes", "footwear"] },
       { role: "accessory", required: false, categories: ["watches", "bags", "hats", "accessories"] },
+    ],
+  },
+  {
+    key: "date_night",
+    label: "Date Night",
+    emoji: "🕯️",
+    slots: [
+      { role: "outerwear", required: false, categories: ["blazers", "jackets", "coats", "outerwear"] },
+      { role: "top", required: true,
+        categories: ["shirts", "tops", "blouses", "t-shirts", "knits"],
+        womensCategories: ["dresses", "tops", "blouses", "shirts"],
+        mensCategories: ["shirts", "knits", "t-shirts"],
+        keywordPrefer: ["silk", "satin", "leather", "slip", "mini", "tailored"] },
+      { role: "bottom", required: false, categories: ["pants", "trousers", "skirts", "jeans"],
+        mensCategories: ["trousers", "pants", "jeans"] },
+      { role: "shoes", required: true, categories: ["heels", "loafers", "boots", "shoes", "footwear"] },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+    ],
+  },
+  {
+    key: "wedding_guest",
+    label: "Wedding Guest",
+    emoji: "💍",
+    slots: [
+      { role: "outerwear", required: false, categories: ["blazers", "jackets", "coats"] },
+      { role: "top", required: true,
+        categories: ["shirts", "blouses", "tops", "knits"],
+        womensCategories: ["dresses", "tops", "blouses"],
+        mensCategories: ["shirts", "knits"],
+        keywordPrefer: ["silk", "satin", "linen", "midi", "maxi", "tailored", "cocktail"] },
+      { role: "bottom", required: false, categories: ["trousers", "pants", "skirts"],
+        mensCategories: ["trousers", "pants", "chinos"] },
+      { role: "shoes", required: true, categories: ["heels", "loafers", "shoes", "footwear"] },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+    ],
+  },
+  {
+    key: "gallery_opening",
+    label: "Gallery Opening",
+    emoji: "🖼️",
+    slots: [
+      { role: "outerwear", required: false, categories: ["coats", "blazers", "jackets", "outerwear"] },
+      { role: "top", required: true,
+        categories: ["tops", "shirts", "blouses", "knits", "t-shirts"],
+        keywordPrefer: ["black", "oversized", "architectural", "asymmetric", "minimal"] },
+      { role: "bottom", required: true, categories: ["pants", "trousers", "skirts", "jeans"],
+        mensCategories: ["trousers", "pants", "jeans"] },
+      { role: "shoes", required: true, categories: ["boots", "loafers", "shoes", "sneakers", "footwear"] },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+    ],
+  },
+  {
+    key: "travel_lounge",
+    label: "Travel & Airport",
+    emoji: "✈️",
+    slots: [
+      { role: "outerwear", required: true, categories: ["coats", "jackets", "blazers", "cardigans", "outerwear"] },
+      { role: "top", required: true,
+        categories: ["knits", "sweaters", "t-shirts", "tops", "shirts"],
+        keywordPrefer: ["cashmere", "merino", "knit", "ribbed"] },
+      { role: "bottom", required: true, categories: ["pants", "trousers", "joggers"],
+        mensCategories: ["trousers", "pants", "joggers"] },
+      { role: "shoes", required: true, categories: ["loafers", "sneakers", "boots", "shoes", "footwear"] },
+      { role: "accessory", required: false, categories: ["bags", "sunglasses", "watches", "accessories"] },
     ],
   },
 
@@ -1114,6 +1220,10 @@ Deno.serve(async (req) => {
           }
 
           const title = generateEditorialName(occ.key, result.cohort, usedNames);
+          if (!title) {
+            log.push(`[Skip] ${occ.label} ${g} #${i + 1}: title pool exhausted (1-per-title cap)`);
+            continue;
+          }
           const description = generateDescription(result.cohort, result.items);
 
           const { data: outfit, error: oErr } = await sb
