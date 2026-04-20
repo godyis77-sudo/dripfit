@@ -272,6 +272,53 @@ const EDITORIAL_NAME_POOLS: Record<string, string[]> = {
   gym_pure_streetwear: [
     'Rep & Reset', 'Street Athletics',
   ],
+  // date_night
+  date_night_rockstar_luxury: [
+    'Candlelit Leather', 'Reservation at 9', 'After-Hours Romance',
+    'The Velvet Banquette', 'Dim Bar, Sharp Cut',
+  ],
+  date_night_minimalist_luxury: [
+    'Quiet Corner Booth', 'Black Dress Hours', 'The Slow Dinner',
+    'Wine Bar Minimal', 'A Night, Tailored',
+  ],
+  date_night_avant_garde: [
+    'Architectural Romance', 'Sculpted for Dinner',
+  ],
+  // wedding_guest
+  wedding_guest_bourgeois: [
+    'Garden Ceremony', 'The Plus-One Edit', 'Cathedral Hour',
+    'Rosé at the Reception', 'Heritage Wedding',
+  ],
+  wedding_guest_minimalist_luxury: [
+    'Quiet Wedding Guest', 'The Ceremony Suit', 'Restraint at the Altar',
+    'Linen & Champagne',
+  ],
+  wedding_guest_maximalist_luxury: [
+    'Statement Plus-One', 'Couture in the Pews', 'The Reception Showstopper',
+  ],
+  // gallery_opening
+  gallery_opening_avant_garde: [
+    'White Wall Hour', 'The Margiela Opening', 'Concrete & Canvas',
+    'Curator\'s Pick', 'Soho Private View',
+  ],
+  gallery_opening_minimalist_luxury: [
+    'Black Coat, White Wall', 'The Quiet Critic', 'Opening Night Minimal',
+  ],
+  gallery_opening_rockstar_luxury: [
+    'Downtown Opening', 'Leather at the Vernissage',
+  ],
+  // travel_lounge
+  travel_lounge_bourgeois: [
+    'First-Class Hour', 'The Concorde Edit', 'Hotel Arrival',
+    'Heritage Trunk', 'Members Lounge',
+  ],
+  travel_lounge_minimalist_luxury: [
+    'Travel Uniform', 'Cashmere on the Tarmac', 'The Quiet Itinerary',
+    'Terminal 4 Minimal',
+  ],
+  travel_lounge_luxury_streetwear: [
+    'Jet-Set Drop', 'Airport Monogram', 'Long-Haul Lux',
+  ],
   // spring_garden
   spring_garden_minimalist_luxury: [
     'Spring Bloom', 'The Garden Edit', 'Pastel Stroll',
