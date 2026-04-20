@@ -354,7 +354,7 @@ function generateEditorialName(
   occasionKey: string,
   cohort: CohortKey,
   usedNames: Set<string>
-): string {
+): string | null {
   const key = `${occasionKey}_${cohort}`;
   // Fallback chain: exact (occasion, cohort) → first lead for occasion → generic
   const leads = OCCASION_AESTHETIC_LEADS[occasionKey] ?? [];
@@ -364,15 +364,10 @@ function generateEditorialName(
     EDITORIAL_NAME_POOLS[fallbackKey] ??
     [occasionKey.replace(/_/g, ' ')];
 
+  // Strict 1-per-title cap: skip outfit if no unique name remains in this
+  // occasion's pool. Caller treats null as "skip outfit".
   const available = pool.filter(n => !usedNames.has(n));
-  if (available.length === 0) {
-    const base = pool[0];
-    let i = 2;
-    while (usedNames.has(`${base} ${i}`)) i++;
-    const name = `${base} ${i}`;
-    usedNames.add(name);
-    return name;
-  }
+  if (available.length === 0) return null;
 
   const pick = available[Math.floor(Math.random() * available.length)];
   usedNames.add(pick);
