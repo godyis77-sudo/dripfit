@@ -539,6 +539,70 @@ const OCCASIONS: OccasionDef[] = [
       { role: "accessory", required: false, categories: ["watches", "bags", "hats", "accessories"] },
     ],
   },
+  {
+    key: "date_night",
+    label: "Date Night",
+    emoji: "🕯️",
+    slots: [
+      { role: "outerwear", required: false, categories: ["blazers", "jackets", "coats", "outerwear"] },
+      { role: "top", required: true,
+        categories: ["shirts", "tops", "blouses", "t-shirts", "knits"],
+        womensCategories: ["dresses", "tops", "blouses", "shirts"],
+        mensCategories: ["shirts", "knits", "t-shirts"],
+        keywordPrefer: ["silk", "satin", "leather", "slip", "mini", "tailored"] },
+      { role: "bottom", required: false, categories: ["pants", "trousers", "skirts", "jeans"],
+        mensCategories: ["trousers", "pants", "jeans"] },
+      { role: "shoes", required: true, categories: ["heels", "loafers", "boots", "shoes", "footwear"] },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+    ],
+  },
+  {
+    key: "wedding_guest",
+    label: "Wedding Guest",
+    emoji: "💍",
+    slots: [
+      { role: "outerwear", required: false, categories: ["blazers", "jackets", "coats"] },
+      { role: "top", required: true,
+        categories: ["shirts", "blouses", "tops", "knits"],
+        womensCategories: ["dresses", "tops", "blouses"],
+        mensCategories: ["shirts", "knits"],
+        keywordPrefer: ["silk", "satin", "linen", "midi", "maxi", "tailored", "cocktail"] },
+      { role: "bottom", required: false, categories: ["trousers", "pants", "skirts"],
+        mensCategories: ["trousers", "pants", "chinos"] },
+      { role: "shoes", required: true, categories: ["heels", "loafers", "shoes", "footwear"] },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+    ],
+  },
+  {
+    key: "gallery_opening",
+    label: "Gallery Opening",
+    emoji: "🖼️",
+    slots: [
+      { role: "outerwear", required: false, categories: ["coats", "blazers", "jackets", "outerwear"] },
+      { role: "top", required: true,
+        categories: ["tops", "shirts", "blouses", "knits", "t-shirts"],
+        keywordPrefer: ["black", "oversized", "architectural", "asymmetric", "minimal"] },
+      { role: "bottom", required: true, categories: ["pants", "trousers", "skirts", "jeans"],
+        mensCategories: ["trousers", "pants", "jeans"] },
+      { role: "shoes", required: true, categories: ["boots", "loafers", "shoes", "sneakers", "footwear"] },
+      { role: "accessory", required: false, categories: ACCESSORY_CATS_WOMENS, mensCategories: ACCESSORY_CATS_MENS },
+    ],
+  },
+  {
+    key: "travel_lounge",
+    label: "Travel & Airport",
+    emoji: "✈️",
+    slots: [
+      { role: "outerwear", required: true, categories: ["coats", "jackets", "blazers", "cardigans", "outerwear"] },
+      { role: "top", required: true,
+        categories: ["knits", "sweaters", "t-shirts", "tops", "shirts"],
+        keywordPrefer: ["cashmere", "merino", "knit", "ribbed"] },
+      { role: "bottom", required: true, categories: ["pants", "trousers", "joggers"],
+        mensCategories: ["trousers", "pants", "joggers"] },
+      { role: "shoes", required: true, categories: ["loafers", "sneakers", "boots", "shoes", "footwear"] },
+      { role: "accessory", required: false, categories: ["bags", "sunglasses", "watches", "accessories"] },
+    ],
+  },
 
   /* ── SPRING ─────────────────────────────────────────────────── */
   {
@@ -1156,6 +1220,10 @@ Deno.serve(async (req) => {
           }
 
           const title = generateEditorialName(occ.key, result.cohort, usedNames);
+          if (!title) {
+            log.push(`[Skip] ${occ.label} ${g} #${i + 1}: title pool exhausted (1-per-title cap)`);
+            continue;
+          }
           const description = generateDescription(result.cohort, result.items);
 
           const { data: outfit, error: oErr } = await sb
