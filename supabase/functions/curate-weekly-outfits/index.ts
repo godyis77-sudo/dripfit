@@ -338,6 +338,36 @@ const EDITORIAL_NAME_POOLS: Record<string, string[]> = {
   winter_polish_rockstar_luxury: [
     'Cold Front Couture', 'Black Coat Hours',
   ],
+  // beach_tropical
+  beach_tropical_minimalist_luxury: [
+    'Riviera Linen', 'The Marina Edit', 'Salt & Silk', 'Whitewash Hour',
+  ],
+  beach_tropical_bourgeois: [
+    'Yacht Club Morning', 'Capri Hours', 'Old Money Shore',
+  ],
+  beach_tropical_luxury_streetwear: [
+    'Boardwalk Monogram', 'Sunset Drop',
+  ],
+  // wilderness_hiking
+  wilderness_hiking_techwear: [
+    'Trail Protocol', 'The Veilance Edit', 'Ridgeline Tech', 'Backcountry Precision',
+  ],
+  wilderness_hiking_minimalist_luxury: [
+    'Forest Minimal', 'The Pinewood Edit', 'Canopy Hours',
+  ],
+  wilderness_hiking_luxury_streetwear: [
+    'ALD Outdoors', 'Trail Drop',
+  ],
+  // mountain_lakes
+  mountain_lakes_bourgeois: [
+    'The Alpine Edit', 'Loro Piana Morning', 'Lakeside Heritage', 'Glacier Hours',
+  ],
+  mountain_lakes_minimalist_luxury: [
+    'Mirror Lake Minimal', 'Cashmere at Altitude', 'Still Water Hour',
+  ],
+  mountain_lakes_techwear: [
+    'Summit Protocol', 'Alpine Precision',
+  ],
 };
 
 function generateEditorialName(
