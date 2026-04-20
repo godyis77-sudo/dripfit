@@ -142,7 +142,55 @@ const CAMPAIGNS: Record<string, CampaignRef> = {
     styling: "Elevated formal with personality — tailored foundation with one unexpected luxury accent piece. Stands out without trying.",
     footwearGuide: "polished leather dress shoes, heeled sandals, or satin pumps",
   },
+  wedding_guest: {
+    reference: "Zimmermann Bridal Party meets Brunello Cucinelli countryside",
+    location: "Sun-drenched Tuscan vineyard at late afternoon. Cypress-lined gravel path, weathered stone villa in background, wildflower meadow at the edges. Long shadows across the lawn.",
+    architecture: "Italian countryside villa. Sun-bleached stucco, terracotta roof tiles, ivy-covered pergola, distant olive groves. Romantic but understated.",
+    camera: "Shot on Pentax 67 with 105mm f/2.4. Environmental three-quarter portrait. Camera at chest height. Subject framed by cypress trees, villa softly out of focus.",
+    lighting: "Late golden-hour sun as warm key from behind (3400K honeyed). Soft bounce fill from cream stucco. Subtle haze in air diffusing highlights.",
+    colorGrade: "Warm Mediterranean palette. Honey highlights, sage shadows, dusty rose midtones. Skin sun-warmed and luminous. Light grain at 7%. Overall: Slim Aarons meets Vogue Italia weddings.",
+    negative: "No flash. No reception interior. No bouquet held in hand. No church. No bridesmaid lineup. No stiff posing. No bright white walls.",
+    styling: "Wedding-guest tailoring with romantic ease — fluid drape, considered color, one statement piece. Polished but not trying to outshine the bride.",
+    footwearGuide: "block-heeled sandals, polished loafers, or refined dress shoes",
+  },
+  gallery_opening: {
+    reference: "Celine Phoebe Philo era meets Off-White downtown editorial",
+    location: "Cavernous downtown art gallery during evening opening. Polished concrete floors, white-cube walls hung with large-scale abstract canvases, single oversized sculpture in mid-floor. Soft museum-grade track lighting.",
+    architecture: "Industrial-luxury gallery. Twenty-foot ceilings, exposed steel I-beams painted matte black, raw concrete columns, frameless glass entrance. Tribeca/Mayfair aesthetic.",
+    camera: "Shot on Leica Q3 with 28mm f/1.7. Wide environmental shot. Camera at slightly low angle for architectural drama. Subject mid-frame with art piece partially visible behind, deep focus.",
+    lighting: "Crisp museum track-lighting as key from above (4500K neutral). Soft cool fill from skylights (6000K). Single warm spot on artwork creating background depth.",
+    colorGrade: "Refined neutral palette. Cool white highlights, warm graphite shadows. Skin tones true and matte. Tight contrast. Almost no grain. Overall: Document Journal meets Celine campaign.",
+    negative: "No crowd. No champagne flutes in hand. No phone. No casual streetwear. No bright accent walls. No selfie energy. No smiling at camera.",
+    styling: "Intellectual downtown layering — sculptural outerwear, considered proportions, monochrome or tonal palette. Looks like the artist, not the buyer.",
+    footwearGuide: "minimalist leather boots, loafers, or architectural designer sneakers",
+  },
+  travel_lounge: {
+    reference: "The Row Resort meets Loro Piana Voyage editorial",
+    location: "Private terminal first-class lounge at dusk. Floor-to-ceiling windows overlooking tarmac with a parked private jet. Camel leather club chairs, walnut bar, single architect lamp on side table.",
+    architecture: "Mid-century luxury aviation. Walnut paneling, brushed brass fixtures, travertine floors, low slung Saarinen-style seating. Warm but minimal.",
+    camera: "Shot on Mamiya 7 with 80mm f/4. Editorial environmental portrait. Camera at eye level. Subject standing or seated near window, jet softly defocused behind. Cinematic widescreen feel.",
+    lighting: "Last light from windows as warm key (3600K amber). Tungsten lamp practical from camera-left. Subtle blue-grey rim from cool tarmac lights through glass.",
+    colorGrade: "Warm camel-and-graphite palette. Honeyed highlights, deep walnut shadows. Lifted midtones, true skin. Fine grain at 5%. Overall: The Row campaign meets Wes Anderson aviation.",
+    negative: "No crowded gate. No rolling carry-on visible. No boarding pass. No bright airport signage. No casual sweatpants energy. No phone or earbuds.",
+    styling: "Travel-luxury layering — soft cashmere over relaxed tailoring, easy fluid trousers, refined accessories. Made to look effortless on a 12-hour flight.",
+    footwearGuide: "soft leather loafers, cashmere-lined slippers, or premium minimalist sneakers",
+  },
+  weekend_casual: {
+    reference: "Fear of God Essentials meets Aritzia Super World",
+    location: "Sun-drenched modernist concrete terrace overlooking a coastal city at late afternoon. Clean architectural lines. Warm golden light.",
+    architecture: "Brutalist-meets-California modern. Poured concrete, floor-to-ceiling glass, steel railings. Succulent garden in background.",
+    camera: "Shot on Sony A7RV with 35mm f/1.4 GM. Medium-wide environmental shot. Camera at natural eye level. Subject walking through frame with urban backdrop.",
+    lighting: "Low afternoon sun as strong key from camera-left (4200K warm). Soft fill bounced from concrete surfaces. Strong backlight creating clothing edge definition.",
+    colorGrade: "Warm concrete tones. Highlights in soft gold. Shadows in cool grey-blue. Lifted blacks. Clean and modern. Grain at 5%. Overall: Aritzia campaign meets architectural photography.",
+    negative: "No gym clothes. No loungewear energy. No bedroom. No couch. No messy background. No logo-heavy styling.",
+    styling: "Premium streetwear layering — oversized over fitted, brand-mixing done intentionally, sneakers styled up. Everything looks casual but costs serious money.",
+    footwearGuide: "fresh designer sneakers, lifestyle runners, or premium mules",
+  },
 };
+
+// `weekend_casual` was duplicated above to prevent fallthrough — Object literal
+// keeps the LAST occurrence. Keep ONLY the enriched version below.
+delete (CAMPAIGNS as any).__noop;
 
 /* ── Gender model descriptions ────────────────────────────────── */
 
