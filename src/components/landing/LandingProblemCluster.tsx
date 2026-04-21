@@ -155,13 +155,13 @@ export default function LandingProblemCluster() {
               </div>
 
               {/* Divider */}
-              <div className="h-px bg-border/40 my-2" />
+              <div className="h-px bg-border/40 my-1.5" />
 
               {/* Solution */}
-              <div className="mt-4 md:mt-6 flex-1 flex flex-col">
-                <span className="type-data text-primary/70 mb-2">The Fix</span>
-                <h4 className="type-headline text-lg text-primary mb-2">{p.solution}</h4>
-                <p className="type-body text-[13px] md:text-sm leading-[1.55] text-muted-foreground/85">
+              <div className="mt-3 md:mt-4 flex-1 flex flex-col">
+                <span className="type-data text-primary/70 mb-1">The Fix</span>
+                <h4 className="type-headline text-lg text-primary mb-1.5 leading-tight">{p.solution}</h4>
+                <p className="type-body text-[13px] md:text-sm leading-[1.5] text-muted-foreground/85">
                   {p.solutionLabel}
                 </p>
               </div>
