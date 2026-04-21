@@ -16,7 +16,7 @@ const INSIGHT_STATS = [
 
 export default function LandingRootCause() {
   return (
-    <section className="py-20 md:py-24">
+    <section className="pt-10 md:pt-14 pb-20 md:pb-24">
       <div className="max-w-5xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-14">
