@@ -38,7 +38,7 @@ export default function LandingCommunityVerdict() {
             <div className="mt-6 flex justify-center">
               <Link
                 to="/auth"
-                className="bg-[#C49A00] text-[#0A0A0A] font-bold rounded-full py-3 px-8 text-sm tracking-wider uppercase inline-flex items-center gap-2 hover:bg-[#D4AF37] transition-colors duration-200"
+                className="bg-primary text-primary-foreground font-bold rounded-full py-3 px-8 text-sm tracking-wider uppercase inline-flex items-center gap-2 hover:opacity-90 transition-opacity duration-200"
               >
                 Get Your Size Verified →
               </Link>

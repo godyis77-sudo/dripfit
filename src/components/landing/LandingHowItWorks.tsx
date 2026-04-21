@@ -46,7 +46,7 @@ export default function LandingHowItWorks() {
 
             <Link
               to="/auth"
-              className="bg-[#C49A00] text-[#0A0A0A] font-bold rounded-full py-3 px-8 text-sm tracking-wider uppercase inline-flex items-center gap-2 hover:bg-[#D4AF37] transition-colors duration-200"
+              className="bg-primary text-primary-foreground font-bold rounded-full py-3 px-8 text-sm tracking-wider uppercase inline-flex items-center gap-2 hover:opacity-90 transition-[opacity,transform] duration-[300ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]"
             >
               Start the Scan →
             </Link>
