@@ -2,10 +2,10 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { FadeIn } from './LandingAnimations';
 
 const DONUT_DATA = [
-  { name: 'Wrong Fit', value: 38, color: '#D4AF37' },
-  { name: 'Looked Different', value: 22, color: '#4A4A4A' },
-  { name: 'Style Change', value: 15, color: '#3D3D3D' },
-  { name: 'Other', value: 25, color: '#1a1a1a' },
+  { name: 'Wrong Fit', value: 38, color: 'hsl(var(--primary))' },
+  { name: 'Looked Different', value: 22, color: 'hsl(var(--muted-foreground) / 0.45)' },
+  { name: 'Style Change', value: 15, color: 'hsl(var(--muted-foreground) / 0.3)' },
+  { name: 'Other', value: 25, color: 'hsl(var(--muted-foreground) / 0.15)' },
 ];
 
 const INSIGHT_STATS = [
@@ -21,7 +21,7 @@ export default function LandingRootCause() {
         {/* Header */}
         <div className="text-center mb-14">
           <FadeIn>
-            <span className="font-mono text-xs tracking-[.18em] uppercase text-[#AAAAAA] block mb-5">
+            <span className="font-mono text-xs tracking-[.18em] uppercase text-muted-foreground block mb-5">
               The Root Cause
             </span>
             <h2
@@ -31,6 +31,9 @@ export default function LandingRootCause() {
               Every third purchase.{' '}
               <span className="text-muted-foreground/40">The wrong size.</span>
             </h2>
+            <p className="text-sm text-muted-foreground/70 mt-4 max-w-md mx-auto">
+              The fashion economy keeps growing. Returns keep eating it. The bottleneck is sizing.
+            </p>
           </FadeIn>
         </div>
 
