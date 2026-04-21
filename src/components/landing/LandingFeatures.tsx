@@ -15,7 +15,7 @@ const FEATURES: Feature[] = [
 
 export default function LandingFeatures() {
   return (
-    <section id="features" className="pt-28 md:pt-36 pb-12 bg-secondary/20 border-y border-border/30">
+    <section id="features" className="pt-28 md:pt-36 pb-12 bg-secondary/20 border-y border-border/30 scroll-mt-20">
       <div className="max-w-6xl mx-auto px-6">
         <FadeIn>
           <div className="text-center mb-16">

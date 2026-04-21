@@ -10,7 +10,7 @@ const STEPS = [
 
 export default function LandingHowItWorks() {
   return (
-    <section id="how-it-works" className="py-20 md:py-24">
+    <section id="how-it-works" className="py-20 md:py-24 scroll-mt-20">
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
         <div>
           <FadeIn>

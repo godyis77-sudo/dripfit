@@ -22,7 +22,7 @@ const PREMIUM_FEATURES = [
 
 export default function LandingPricing() {
   return (
-    <section id="pricing" className="py-20 md:py-24">
+    <section id="pricing" className="py-20 md:py-24 scroll-mt-20">
       <div className="max-w-5xl mx-auto px-6">
         <FadeIn>
           <span className="font-mono text-xs tracking-[.18em] uppercase text-[#AAAAAA] block mb-5 text-center">Pricing</span>
