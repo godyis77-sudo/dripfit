@@ -6,22 +6,65 @@ import BrandLogo from '@/components/ui/BrandLogo';
 
 const NAV_ITEMS = [
   { label: 'Problem', href: '#problem' },
+  { label: 'Root Cause', href: '#root-cause' },
   { label: 'How It Works', href: '#how-it-works' },
-  { label: 'Features', href: '#features' },
   { label: 'Proof', href: '#proof' },
   { label: 'Pricing', href: '#pricing' },
-  { label: 'FAQ', href: '#faq' },
 ];
+
+const SECTION_IDS = NAV_ITEMS.map((i) => i.href.slice(1));
 
 export default function LandingNav() {
   const { user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 60);
     window.addEventListener('scroll', h, { passive: true });
     return () => window.removeEventListener('scroll', h);
+  }, []);
+
+  // Scroll-spy: track which section is currently in view
+  useEffect(() => {
+    const elements = SECTION_IDS
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+
+    if (elements.length === 0) return;
+
+    // Track intersection ratios per section to pick the most-visible one
+    const visibility = new Map<string, number>();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          visibility.set(entry.target.id, entry.isIntersecting ? entry.intersectionRatio : 0);
+        });
+
+        let bestId: string | null = null;
+        let bestRatio = 0;
+        visibility.forEach((ratio, id) => {
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            bestId = id;
+          }
+        });
+
+        if (bestId && bestRatio > 0) {
+          setActiveId(bestId);
+        }
+      },
+      {
+        // Trigger when section crosses the upper third of the viewport
+        rootMargin: '-20% 0px -60% 0px',
+        threshold: [0, 0.1, 0.25, 0.5, 0.75, 1],
+      },
+    );
+
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
   }, []);
 
   const handleAnchorClick = (e: React.MouseEvent, href: string) => {
