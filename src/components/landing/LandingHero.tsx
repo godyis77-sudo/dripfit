@@ -32,7 +32,15 @@ export default function LandingHero() {
             <h1 className="type-brand leading-[0.95] mb-2" style={{ letterSpacing: '-0.02em', fontSize: 'clamp(42px, 6.5vw, 76px)' }}>
               KNOW YOUR FIT.
             </h1>
-            <h2 className="type-brand leading-[1.05] mb-7 italic" style={{ letterSpacing: '-0.02em', fontSize: 'clamp(34px, 5vw, 58px)', color: 'hsl(var(--primary))' }}>
+            <h2 
+              className="leading-[1.05] mb-7 italic font-bold"
+              style={{ 
+                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                letterSpacing: '-0.02em', 
+                fontSize: 'clamp(34px, 5vw, 58px)', 
+                color: 'hsl(var(--primary))' 
+              }}
+            >
               OWN YOUR DRIP.
             </h2>
           </FadeIn>
