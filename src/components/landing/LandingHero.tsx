@@ -5,9 +5,9 @@ import { useAuth } from '@/hooks/useAuth';
 import heroPhoneMockup from '@/assets/hero-phone-mockup.jpg';
 
 const STATS = [
-  { v: '9,000+', l: 'Products' },
   { v: '186', l: 'Brands' },
   { v: '389', l: 'Size Charts' },
+  { v: '9,000+', l: 'Pieces' },
 ];
 
 export default function LandingHero() {
@@ -33,11 +33,10 @@ export default function LandingHero() {
               KNOW YOUR FIT.
             </h1>
             <h2 
-              className="leading-[1.05] mb-7 italic font-bold"
+              className="leading-[1.05] mb-7 italic font-bold text-[44px] md:text-[58px] lg:text-[64px]"
               style={{ 
                 fontFamily: "'Cormorant Garamond', Georgia, serif",
                 letterSpacing: '-0.02em', 
-                fontSize: 'clamp(34px, 5vw, 58px)', 
                 color: 'hsl(var(--primary))' 
               }}
             >
@@ -47,7 +46,7 @@ export default function LandingHero() {
 
           <FadeIn delay={0.16}>
             <p className="type-body text-base md:text-lg leading-relaxed max-w-md mb-10 font-light">
-              Scan once, your precise measurements. Exact size for 389 brand charts across 9,000 items on your silhouette. Drip and Drape community approved before you COP or DROP.
+              One scan. Your precise size across 389 brand charts. Community verified drape before you COP or DROP.
             </p>
           </FadeIn>
 
