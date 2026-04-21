@@ -211,6 +211,15 @@ export default function Landing() {
       {/* FEATURES — 4-up grid */}
       <LandingFeatures />
 
+      {/* SOCIAL PROOF BAR / FEATURE PILLS — MOVED DOWN after Features */}
+      <div className="border-y border-border/30 py-5">
+        <div className="max-w-6xl mx-auto px-6 flex items-center justify-center gap-8 md:gap-14 flex-wrap">
+          {PROOF_TAGS.map((t) => (
+            <span key={t} className="text-xs tracking-[.15em] uppercase text-muted-foreground/60 font-semibold">{t}</span>
+          ))}
+        </div>
+      </div>
+
       {/* LIVE COMMUNITY VERDICT — MOVED DOWN */}
       <LandingCommunityVerdict />
 
