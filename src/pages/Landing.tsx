@@ -140,15 +140,6 @@ export default function Landing() {
       </div>
       <p className="sr-only">Apparel return rate: 25–40%. 70% of returns are fit-related. 47% of shoppers avoid online fashion due to fit uncertainty. $849.9B in returns processed in 2025. $46 average cost per returned item. 1 in 4 orders includes a bracketed size.</p>
 
-      {/* SOCIAL PROOF BAR / FEATURE PILLS */}
-      <div className="border-y border-border/30 py-5">
-        <div className="max-w-6xl mx-auto px-6 flex items-center justify-center gap-8 md:gap-14 flex-wrap">
-        {PROOF_TAGS.map((t) => (
-            <span key={t} className="text-xs tracking-[.15em] uppercase text-muted-foreground/60 font-semibold">{t}</span>
-          ))}
-        </div>
-      </div>
-
       {/* HOW IT WORKS — MOVED UP */}
       <LandingHowItWorks />
 
