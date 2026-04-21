@@ -39,9 +39,12 @@ export default function LandingMarket() {
           <FadeIn>
             <span className="font-mono text-xs tracking-[.18em] uppercase text-[#AAAAAA] block mb-5">The Market</span>
             <h2 className="font-display font-bold leading-tight" style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}>
-              $1.16 Trillion.{' '}
+              $1.01 Trillion.{' '}
               <span className="text-muted-foreground/40">And Returns Are Eating It.</span>
             </h2>
+            <p className="text-sm text-muted-foreground/60 mt-4 max-w-md mx-auto">
+              Projected $1.16T by 2030. Returns are eating it.
+            </p>
           </FadeIn>
         </div>
 

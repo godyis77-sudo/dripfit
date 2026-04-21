@@ -2,10 +2,10 @@ import { Link } from 'react-router-dom';
 import { FadeIn } from './LandingAnimations';
 
 const STEPS = [
-  { n: '01', title: 'Map Your Body', desc: 'Stand in front of your phone. Two photos. 60 seconds. 20+ biometric data points extracted. Your geometry — locked.' },
+  { n: '01', title: 'Scan Your Body', desc: 'Stand in front of your phone. Two photos. 60 seconds. 20+ biometric data points extracted. Your measurements — verified.' },
   { n: '02', title: 'Enter Infinite Drape Studio', desc: 'Browse 9,000+ pieces from 186 brands. AR try-on renders every garment on your exact silhouette. See the real drape.' },
   { n: '03', title: 'Verify With Your Twins', desc: 'Your Body Twins — same proportions — have already tried it. See the verdict. See the drape.' },
-  { n: '04', title: 'Cop. Verified.', desc: 'Verified. Mapped. Perfect drape confirmed. One size. One purchase. Zero returns.' },
+  { n: '04', title: 'Cop. Verified.', desc: 'Verified. Confirmed. Perfect drape. One size. One purchase. Zero returns.' },
 ];
 
 export default function LandingHowItWorks() {

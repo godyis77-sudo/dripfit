@@ -248,7 +248,7 @@ export default function Landing() {
       <footer className="border-t border-border/30 py-8">
         <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <BrandLogo size="sm" className="opacity-50" />
-          <span className="text-xs text-muted-foreground/60 text-center">Discover styles. Verify size. Drip checked. © 2026</span>
+          <span className="text-xs text-muted-foreground/60 text-center">DripFit — Know your fit. © 2026</span>
           <div className="flex gap-6">
             <Link to="/privacy" className="text-xs text-muted-foreground/50 hover:text-foreground transition-colors whitespace-nowrap">Privacy</Link>
             <Link to="/terms" className="text-xs text-muted-foreground/50 hover:text-foreground transition-colors whitespace-nowrap">Terms</Link>
