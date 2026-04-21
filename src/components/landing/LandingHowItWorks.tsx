@@ -5,7 +5,7 @@ const STEPS = [
   { n: '01', title: 'Scan Your Body', desc: 'Stand in front of your phone. Two photos. 60 seconds. 20+ biometric data points extracted. Your measurements — verified.' },
   { n: '02', title: 'Enter Infinite Drape Studio', desc: 'Browse 9,000+ pieces from 186 brands. AR try-on renders every garment on your exact silhouette. See the real drape.' },
   { n: '03', title: 'Verify With Your Twins', desc: 'Your Body Twins — same proportions — have already tried it. See the verdict. See the drape.' },
-  { n: '04', title: 'Cop. Verified.', desc: 'Verified. Confirmed. Perfect drape. One size. One purchase. Zero returns.' },
+  { n: '04', title: 'Cop. Zero Returns.', desc: 'Confirmed. Perfect drape. One size. One purchase. Done.' },
 ];
 
 export default function LandingHowItWorks() {
@@ -48,7 +48,7 @@ export default function LandingHowItWorks() {
               to="/auth"
               className="bg-primary text-primary-foreground font-bold rounded-full py-3 px-8 text-sm tracking-wider uppercase inline-flex items-center gap-2 hover:opacity-90 transition-[opacity,transform] duration-[300ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]"
             >
-              Start the Scan →
+              Start Your Scan →
             </Link>
           </div>
         </FadeIn>

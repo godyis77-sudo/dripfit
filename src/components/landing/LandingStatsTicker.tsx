@@ -25,7 +25,7 @@ export default function LandingStatsTicker() {
                 </span>
               ))}
               <span className="font-mono text-[11px] tracking-[.14em] uppercase font-bold px-6 text-primary">
-                DRIPFIT ELIMINATES ALL OF THE ABOVE <span className="text-primary font-extrabold">✓</span>
+                DRIPFIT ENDS THE GUESSWORK <span className="text-primary font-extrabold">✓</span>
                 <span className="ml-6 opacity-50">·</span>
               </span>
             </span>
