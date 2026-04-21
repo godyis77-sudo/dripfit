@@ -136,7 +136,10 @@ export default function LandingProblemCluster() {
         {PROBLEMS.map((p, i) => (
           <FadeIn key={p.n} delay={i * 0.1}>
             <div className="bg-card/60 backdrop-blur-xl border border-border/40 rounded-2xl p-6 md:p-8 h-full flex flex-col">
-              {/* Number + icon removed per design */}
+              {/* Card number */}
+              <span className="font-display text-primary text-3xl md:text-4xl leading-none mb-3 md:mb-4">
+                {i + 1}.
+              </span>
 
               {/* Problem */}
               <h3 className="type-headline text-xl md:text-2xl mb-2 text-foreground">{p.problem}</h3>
