@@ -217,7 +217,19 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ROOT CAUSE */}
+      {/* FEATURES — 4-up grid */}
+      <LandingFeatures />
+
+      {/* LIVE COMMUNITY VERDICT — MOVED DOWN */}
+      <LandingCommunityVerdict />
+
+      {/* TESTIMONIALS — Feature Cards Small */}
+      <LandingTestimonials />
+
+      {/* COMMUNITY */}
+      <LandingCommunity />
+
+      {/* ROOT CAUSE — Ecosystem */}
       <LandingRootCause />
 
       {/* MARKET */}
