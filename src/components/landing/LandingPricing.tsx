@@ -31,7 +31,7 @@ export default function LandingPricing() {
             style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}
           >
             Start Free.<br />
-            <span className="text-muted-foreground/40">Go Premium When You're Ready.</span>
+            <span className="text-muted-foreground/40">Upgrade When You Outgrow It.</span>
           </h2>
         </FadeIn>
 
@@ -53,7 +53,7 @@ export default function LandingPricing() {
                 to="/auth"
                 className="w-full bg-transparent text-foreground border border-primary/40 rounded-full py-3 px-6 text-sm font-semibold text-center hover:bg-primary/10 transition-colors duration-200"
               >
-                Get Started Free
+                Start Your Scan
               </Link>
             </div>
           </FadeIn>
@@ -70,7 +70,8 @@ export default function LandingPricing() {
                 <Sparkles className="h-3 w-3" /> Premium
               </span>
               <div className="font-display text-4xl font-bold mb-1">$4.17<span className="text-lg font-normal text-muted-foreground">/mo</span></div>
-              <p className="text-xs text-muted-foreground/60 mb-8">billed annually · $7.99 month-to-month</p>
+              <p className="text-xs text-muted-foreground/60 mb-1">billed annually · $7.99 month-to-month</p>
+              <p className="text-[10px] font-mono tracking-[.18em] uppercase text-primary/80 mb-8">Save 48%</p>
               <ul className="space-y-3 mb-10 flex-1">
                 {PREMIUM_FEATURES.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-sm text-muted-foreground/80">

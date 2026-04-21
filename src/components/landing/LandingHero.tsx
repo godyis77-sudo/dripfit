@@ -51,7 +51,7 @@ export default function LandingHero() {
 
           <FadeIn delay={0.16}>
             <p className="type-body text-base md:text-lg leading-relaxed max-w-md mb-10 mt-7 font-light">
-              One scan. Your precise size across 389 brand charts. Community verified drape before you COP or DROP.
+              One scan. Your exact size at 389 brand charts. No more guessing.
             </p>
           </FadeIn>
 
@@ -69,18 +69,16 @@ export default function LandingHero() {
                   to="/auth"
                   className="w-full bg-primary text-primary-foreground font-bold rounded-full py-4 px-8 text-base tracking-wide flex items-center justify-center gap-2 hover:opacity-90 transition-opacity duration-200"
                 >
-                  Sign Up Free <ArrowRight className="h-4 w-4" />
+                  Start Your Scan <ArrowRight className="h-4 w-4" />
                 </Link>
                 <div className="w-full inline-flex items-center justify-center gap-1.5 mt-3 text-[11px] text-muted-foreground/70">
                   <Lock className="h-3 w-3 text-primary/70" />
                   <span>Biometric data encrypted end-to-end. Never sold.</span>
+                  <span className="opacity-40">·</span>
+                  <Link to="/home" className="hover:text-primary transition-colors underline-offset-2 hover:underline">
+                    Try as guest
+                  </Link>
                 </div>
-                <Link
-                  to="/home"
-                  className="w-full text-center type-data text-foreground/50 hover:text-primary mt-4 py-3 border border-border/40 rounded-full transition-colors duration-300 tracking-[0.2em]"
-                >
-                  CONTINUE AS GUEST
-                </Link>
               </div>
             )}
           </FadeIn>

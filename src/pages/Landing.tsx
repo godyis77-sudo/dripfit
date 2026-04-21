@@ -9,7 +9,7 @@ import LandingCommunityVerdict from '@/components/landing/LandingCommunityVerdic
 import LandingFeatures from '@/components/landing/LandingFeatures';
 import LandingRootCause from '@/components/landing/LandingRootCause';
 import LandingHowItWorks from '@/components/landing/LandingHowItWorks';
-import LandingMarket from '@/components/landing/LandingMarket';
+
 import LandingCommunity from '@/components/landing/LandingCommunity';
 import LandingFAQ from '@/components/landing/LandingFAQ';
 import LandingPricing from '@/components/landing/LandingPricing';
@@ -37,11 +37,8 @@ export default function Landing() {
       {/* ═══ PROBLEM CLUSTER ═══ */}
       <LandingProblemCluster />
 
-      {/* ROOT CAUSE — donut */}
+      {/* ROOT CAUSE — donut + insight stats (consolidated problem) */}
       <LandingRootCause />
-
-      {/* MARKET — line chart */}
-      <LandingMarket />
 
       {/* HOW IT WORKS — the cure */}
       <LandingHowItWorks />
@@ -49,11 +46,11 @@ export default function Landing() {
       {/* FEATURES — grid */}
       <LandingFeatures />
 
-      {/* ═══ PROOF CLUSTER ═══ */}
+      {/* ═══ PROOF CLUSTER ═══ Verdict (data) → Community (system) → Testimonials (voice) */}
       <div id="proof" className="scroll-mt-20">
         <LandingCommunityVerdict />
-        <LandingTestimonials />
         <LandingCommunity />
+        <LandingTestimonials />
       </div>
 
       {/* PRICING */}

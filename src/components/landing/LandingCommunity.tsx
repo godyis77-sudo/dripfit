@@ -14,12 +14,12 @@ export default function LandingCommunity() {
           <div className="text-center mb-14 max-w-lg mx-auto">
             <span className="type-data block mb-5 text-primary/70">The Community</span>
             <h2 className="type-headline leading-tight mb-5" style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}>
-              Your Taste. <span className="text-primary">Verified.</span>
+              Your Fit. <span className="text-primary">Confirmed by the Tribe.</span>
             </h2>
             <p className="type-body text-base leading-relaxed">
-              Find the heads who dress like you think. Share fits. Rate drape. Build your verified circle.
+              Find the heads who dress like you think. Share fits. Rate drape. Build your circle.
             </p>
-            <p className="text-sm text-muted-foreground/65 mt-4">Join the verified circle. Growing daily.</p>
+            <p className="text-sm text-muted-foreground/65 mt-4">Growing daily.</p>
           </div>
         </FadeIn>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">

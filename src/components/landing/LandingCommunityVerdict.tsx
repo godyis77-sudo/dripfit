@@ -40,7 +40,7 @@ export default function LandingCommunityVerdict() {
                 to="/auth"
                 className="bg-primary text-primary-foreground font-bold rounded-full py-3 px-8 text-sm tracking-wider uppercase inline-flex items-center gap-2 hover:opacity-90 transition-opacity duration-200"
               >
-                Get Your Size Verified →
+                Start Your Scan →
               </Link>
             </div>
           </div>

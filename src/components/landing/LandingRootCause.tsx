@@ -2,10 +2,10 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { FadeIn } from './LandingAnimations';
 
 const DONUT_DATA = [
-  { name: 'Wrong Fit', value: 38, color: '#D4AF37' },
-  { name: 'Looked Different', value: 22, color: '#4A4A4A' },
-  { name: 'Style Change', value: 15, color: '#3D3D3D' },
-  { name: 'Other', value: 25, color: '#1a1a1a' },
+  { name: 'Wrong Fit', value: 38, color: 'hsl(var(--primary))' },
+  { name: 'Looked Different', value: 22, color: 'hsl(var(--muted-foreground) / 0.45)' },
+  { name: 'Style Change', value: 15, color: 'hsl(var(--muted-foreground) / 0.3)' },
+  { name: 'Other', value: 25, color: 'hsl(var(--muted-foreground) / 0.15)' },
 ];
 
 const INSIGHT_STATS = [
@@ -21,7 +21,7 @@ export default function LandingRootCause() {
         {/* Header */}
         <div className="text-center mb-14">
           <FadeIn>
-            <span className="font-mono text-xs tracking-[.18em] uppercase text-[#AAAAAA] block mb-5">
+            <span className="font-mono text-xs tracking-[.18em] uppercase text-muted-foreground block mb-5">
               The Root Cause
             </span>
             <h2
@@ -31,6 +31,9 @@ export default function LandingRootCause() {
               Every third purchase.{' '}
               <span className="text-muted-foreground/40">The wrong size.</span>
             </h2>
+            <p className="text-sm text-muted-foreground/70 mt-4 max-w-md mx-auto">
+              The fashion economy keeps growing. Returns keep eating it. The bottleneck is sizing.
+            </p>
           </FadeIn>
         </div>
 
@@ -54,7 +57,7 @@ export default function LandingRootCause() {
                       endAngle={-270}
                     >
                       {DONUT_DATA.map((entry) => (
-                        <Cell key={entry.name} fill={entry.color} stroke={entry.name === 'Other reasons' ? '#2D2D2D' : 'none'} strokeWidth={1} />
+                        <Cell key={entry.name} fill={entry.color} stroke="none" />
                       ))}
                     </Pie>
                   </PieChart>
@@ -69,7 +72,7 @@ export default function LandingRootCause() {
               <div className="grid grid-cols-2 gap-x-6 gap-y-2 mt-6">
                 {DONUT_DATA.map((d) => (
                   <div key={d.name} className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: d.color, border: d.name === 'Other reasons' ? '1px solid #2D2D2D' : 'none' }} />
+                    <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: d.color }} />
                     <span className="font-mono text-[11px] tracking-wider uppercase text-muted-foreground/60">{d.name}</span>
                   </div>
                 ))}

@@ -35,7 +35,7 @@ export default function LandingFinalCTA() {
                   to="/auth"
                   className="bg-primary text-primary-foreground font-bold rounded-full py-4 px-8 text-base tracking-wide inline-flex items-center justify-center gap-2 hover:opacity-90 transition-opacity duration-200"
                 >
-                  Sign Up Free <ArrowRight className="h-4 w-4" />
+                  Start Your Scan <ArrowRight className="h-4 w-4" />
                 </Link>
                 <span className="text-xs text-center text-muted-foreground mt-2">Your biometric data is encrypted and never sold.</span>
               </div>

@@ -21,9 +21,9 @@ function CustomDot(props: any) {
   const isCurrent = payload.year === '2026';
   return (
     <g>
-      <circle cx={cx} cy={cy} r={isCurrent ? 6 : 3} fill="#D4AF37" stroke="none" />
+      <circle cx={cx} cy={cy} r={isCurrent ? 6 : 3} fill="hsl(var(--primary))" stroke="none" />
       {isCurrent && (
-        <text x={cx} y={cy - 14} textAnchor="middle" fill="#D4AF37" fontSize={11} fontFamily="monospace" letterSpacing="0.12em">
+        <text x={cx} y={cy - 14} textAnchor="middle" fill="hsl(var(--primary))" fontSize={11} fontFamily="monospace" letterSpacing="0.12em">
           TODAY
         </text>
       )}
@@ -37,7 +37,7 @@ export default function LandingMarket() {
       <div className="max-w-5xl mx-auto px-6">
         <div className="text-center mb-14">
           <FadeIn>
-            <span className="font-mono text-xs tracking-[.18em] uppercase text-[#AAAAAA] block mb-5">The Market</span>
+            <span className="font-mono text-xs tracking-[.18em] uppercase text-muted-foreground block mb-5">The Market</span>
             <h2 className="font-display font-bold leading-tight" style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}>
               $1.01 Trillion.{' '}
               <span className="text-muted-foreground/40">And Returns Are Eating It.</span>
@@ -55,27 +55,27 @@ export default function LandingMarket() {
                 <LineChart data={MARKET_DATA} margin={{ top: 30, right: 20, bottom: 5, left: 10 }}>
                   <defs>
                     <linearGradient id="goldFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#D4AF37" stopOpacity={0.12} />
-                      <stop offset="100%" stopColor="#D4AF37" stopOpacity={0.01} />
+                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.12} />
+                      <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.01} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid stroke="rgba(255,255,255,0.06)" strokeDasharray="3 3" vertical={false} />
+                  <CartesianGrid stroke="hsl(var(--border) / 0.3)" strokeDasharray="3 3" vertical={false} />
                   <XAxis
                     dataKey="year"
-                    tick={{ fill: '#fff', fontSize: 12, fontFamily: 'monospace', letterSpacing: '0.1em' }}
-                    axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+                    tick={{ fill: 'hsl(var(--foreground))', fontSize: 12, fontFamily: 'monospace', letterSpacing: '0.1em' }}
+                    axisLine={{ stroke: 'hsl(var(--border) / 0.5)' }}
                     tickLine={false}
                   />
                   <YAxis
                     tickFormatter={(v: number) => `$${v}B`}
-                    tick={{ fill: '#fff', fontSize: 12, fontFamily: 'monospace' }}
+                    tick={{ fill: 'hsl(var(--foreground))', fontSize: 12, fontFamily: 'monospace' }}
                     axisLine={false}
                     tickLine={false}
                     width={60}
                   />
-                  <ReferenceLine x="2026" stroke="#D4AF37" strokeDasharray="6 4" strokeOpacity={0.5} />
+                  <ReferenceLine x="2026" stroke="hsl(var(--primary))" strokeDasharray="6 4" strokeOpacity={0.5} />
                   <Area type="monotone" dataKey="value" stroke="none" fill="url(#goldFill)" />
-                  <Line type="monotone" dataKey="value" stroke="#D4AF37" strokeWidth={2} dot={<CustomDot />} activeDot={false} />
+                  <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={2} dot={<CustomDot />} activeDot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
