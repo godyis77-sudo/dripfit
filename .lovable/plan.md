@@ -1,73 +1,87 @@
 
 
-# Landing Page Audit — Execution Plan
+# Landing Page — Layout Reorder Plan
 
-Approved scope: **A, B, C, D, E, G, H** (holding I per your default). Executed in dependency order so each pass leaves the page in a coherent state.
-
----
-
-## Execution Order
-
-### Pass 1 — Copy purge (A)
-**Why first:** Pure text edits, zero layout risk, unblocks accurate review of subsequent visual fixes.
-
-Files: `LandingFeatures.tsx`, `LandingHowItWorks.tsx`, `LandingFinalCTA.tsx`
-
-| Before | After |
-|---|---|
-| "Your Body. Mapped." | "Your Body. Verified." |
-| "geometry — mapped... Locked." | "geometry — measured. Cross-referenced against 186 brand size charts. Verified." |
-| "Your mapped size across every brand" | "Your verified size across every brand" |
-| "Your geometry — locked." | "Your measurements — verified." |
-| "Verified. Mapped." | "Verified. Confirmed." |
-| "Map your body" (Final CTA) | "Scan your body" |
-| "AI that maps your taste" | "AI that learns your taste" |
+Tighten the section order from 14 sections to 10 by following a clean **Pain → Cure → Proof → Buy** narrative. Removes redundant problem sections, consolidates social proof, and surfaces pricing earlier.
 
 ---
 
-### Pass 2 — Data accuracy fixes (B + C)
-**Why second:** Trust-critical. Wrong numbers undermine the brand voice before any UI polish matters.
-
-- **B — `LandingMarket.tsx`:** Headline "$1.16 Trillion" → **"$1.01 Trillion."** with subtitle **"Projected $1.16T by 2030. Returns are eating it."**
-- **C — `LandingPricing.tsx`:** Free tier "30 Drape try-ons per month" → **"3 try-ons per month"** (matches monetization memory)
-
----
-
-### Pass 3 — Spacing + contrast (D + E)
-**Why third:** Both touch the bottom-of-page conversion zone. Bundling them lets us verify the FAQ → Pricing → Final CTA rhythm in one screenshot pass.
-
-- **D — `LandingFinalCTA.tsx`:** `py-20 md:py-24` → `py-14 md:py-16`
-- **E — `LandingPricing.tsx` Free CTA:** `bg-[#1A1A1A] text-white border border-zinc-700` → `bg-transparent text-foreground border border-primary/40 hover:bg-primary/10`
-
----
-
-### Pass 4 — Footer (G)
-**Why fourth:** Isolated, low-risk. Quick win.
-
-- `Landing.tsx` footer: "Discover styles. Verify size. Drip checked. © 2026" → **"DripFit — Know your fit. © 2026"**
+## Current order (14 sections)
+1. Hero
+2. Stats ticker
+3. **How It Works** ← solution shown before problem
+4. **The Problem** (stats + bar chart)
+5. **Features**
+6. Feature pills strip ← orphaned
+7. **Live Community Verdict**
+8. **Testimonials**
+9. **Community**
+10. **Root Cause** (donut) ← repeats problem
+11. **Market** (line chart) ← repeats problem
+12. **Pricing** ← buried
+13. FAQ
+14. Final CTA
 
 ---
 
-### Pass 5 — Phone mockup regeneration (H)
-**Why last:** Image asset regeneration is the highest-risk step (AI output is non-deterministic and may need iteration). Doing it last means a failed/imperfect regen doesn't block the other 6 fixes from shipping.
-
-Regenerate `src/assets/hero-phone-mockup.jpg` with explicit instructions:
-- Replace **every** "XX%" with realistic percentages (88–96% range)
-- Fix **"Antthropologie"** → **"Anthropologie"**
-- Fix **"COHEMAN"** → **"CASUAL"**
-- Remove **"Ai"** watermark from Abercrombie card top-left
-- Preserve gold-on-black aesthetic, card layout, typography
-
-After generation: visual QA against the screenshot to confirm all 4 fixes landed before saving.
-
----
-
-## Held for follow-up
-- **I — Consolidate Root Cause + Market into one "The Problem" block.** Bigger structural change, deserves its own pass with before/after screenshots so you can approve the merged layout.
-- **F — Donut subtitle clipping.** Was in original review but not in your approved set. Flag if you want it added.
+## Proposed order (10 sections)
+1. Hero
+2. Stats ticker
+3. **THE PROBLEM** *(consolidated cluster: inline stats + bar chart → donut → line chart)*
+4. **HOW IT WORKS**
+5. **FEATURES**
+6. **PROOF** *(Live Verdict + Testimonials + Community grid, back-to-back)*
+7. **PRICING**
+8. FAQ
+9. Final CTA
+10. Footer
 
 ---
 
-## Out of scope
-Hero copy, CTA hierarchy, section order, fonts, color tokens, animation easing, component internals beyond the listed edits.
+## Execution passes
+
+### Pass 1 — Reorder (zero content changes)
+**File:** `src/pages/Landing.tsx`
+
+- Move `LandingHowItWorks` → after the inline "The Problem" cluster
+- Move `LandingRootCause` → directly after inline Problem section
+- Move `LandingMarket` → directly after `LandingRootCause`
+- Move `LandingPricing` → after `LandingCommunity` (right before FAQ)
+
+### Pass 2 — Delete orphaned pills strip
+**File:** `src/pages/Landing.tsx`
+
+Remove the `PROOF_TAGS` border-y strip (lines ~215–221) and the `PROOF_TAGS` constant. Info already lives inside `LandingFeatures`.
+
+### Pass 3 — Trim Problem cluster padding
+**Files:** `LandingRootCause.tsx`, `LandingMarket.tsx`
+
+When stacked back-to-back with the inline Problem section, reduce top padding so they read as one continuous Problem narrative, not three full-page beats.
+- `py-20 md:py-24` → `pt-10 md:pt-14 pb-20 md:pb-24`
+
+### Pass 4 — Verify Proof cluster eyebrows
+**File:** `src/pages/Landing.tsx` (verify only)
+
+Confirm `LandingCommunityVerdict`, `LandingTestimonials`, `LandingCommunity` each have distinct eyebrows (e.g., "LIVE", "REVIEWS", "THE FEED") so the back-to-back stack reads as one Proof block with three angles. Only edit if missing.
+
+---
+
+## Held / Out of scope
+- Hero copy, stats ticker copy — locked
+- Merging Live Verdict + Testimonials into one component — separate pass
+- Component internals beyond padding/eyebrow tweaks
+- Color tokens, fonts, animation easing
+
+---
+
+## Risk
+
+| Pass | Risk | Why |
+|---|---|---|
+| 1 | Low | Pure JSX reordering |
+| 2 | Low | Delete orphaned strip + unused constant |
+| 3 | Low | CSS-only padding |
+| 4 | Low | Verify-only, edit only if needed |
+
+**Net result:** ~30% shorter scroll, cleaner narrative, pricing visible 4 sections earlier.
 
