@@ -6,22 +6,65 @@ import BrandLogo from '@/components/ui/BrandLogo';
 
 const NAV_ITEMS = [
   { label: 'Problem', href: '#problem' },
+  { label: 'Root Cause', href: '#root-cause' },
   { label: 'How It Works', href: '#how-it-works' },
-  { label: 'Features', href: '#features' },
   { label: 'Proof', href: '#proof' },
   { label: 'Pricing', href: '#pricing' },
-  { label: 'FAQ', href: '#faq' },
 ];
+
+const SECTION_IDS = NAV_ITEMS.map((i) => i.href.slice(1));
 
 export default function LandingNav() {
   const { user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 60);
     window.addEventListener('scroll', h, { passive: true });
     return () => window.removeEventListener('scroll', h);
+  }, []);
+
+  // Scroll-spy: track which section is currently in view
+  useEffect(() => {
+    const elements = SECTION_IDS
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+
+    if (elements.length === 0) return;
+
+    // Track intersection ratios per section to pick the most-visible one
+    const visibility = new Map<string, number>();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          visibility.set(entry.target.id, entry.isIntersecting ? entry.intersectionRatio : 0);
+        });
+
+        let bestId: string | null = null;
+        let bestRatio = 0;
+        visibility.forEach((ratio, id) => {
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            bestId = id;
+          }
+        });
+
+        if (bestId && bestRatio > 0) {
+          setActiveId(bestId);
+        }
+      },
+      {
+        // Trigger when section crosses the upper third of the viewport
+        rootMargin: '-20% 0px -60% 0px',
+        threshold: [0, 0.1, 0.25, 0.5, 0.75, 1],
+      },
+    );
+
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
   }, []);
 
   const handleAnchorClick = (e: React.MouseEvent, href: string) => {
@@ -44,16 +87,28 @@ export default function LandingNav() {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-7">
-          {NAV_ITEMS.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              onClick={(e) => handleAnchorClick(e, item.href)}
-              className="text-muted-foreground hover:text-foreground transition-colors text-xs tracking-[.15em] uppercase font-medium whitespace-nowrap"
-            >
-              {item.label}
-            </a>
-          ))}
+          {NAV_ITEMS.map((item) => {
+            const id = item.href.slice(1);
+            const isActive = activeId === id;
+            return (
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={(e) => handleAnchorClick(e, item.href)}
+                aria-current={isActive ? 'true' : undefined}
+                className={`relative text-xs tracking-[.15em] uppercase font-medium whitespace-nowrap transition-colors duration-300 ${
+                  isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {item.label}
+                <span
+                  className={`pointer-events-none absolute -bottom-1.5 left-0 right-0 mx-auto h-px bg-primary transition-all duration-300 ease-out ${
+                    isActive ? 'w-full opacity-100' : 'w-0 opacity-0'
+                  }`}
+                />
+              </a>
+            );
+          })}
         </div>
 
         {/* Right cluster */}
@@ -101,16 +156,24 @@ export default function LandingNav() {
         }`}
       >
         <div className="px-6 pb-6 pt-2 flex flex-col gap-1 border-t border-border/30 bg-background/95 backdrop-blur-xl">
-          {NAV_ITEMS.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              onClick={(e) => handleAnchorClick(e, item.href)}
-              className="py-3 text-sm tracking-[.15em] uppercase font-medium text-muted-foreground hover:text-foreground transition-colors border-b border-border/20 last:border-b-0"
-            >
-              {item.label}
-            </a>
-          ))}
+          {NAV_ITEMS.map((item) => {
+            const id = item.href.slice(1);
+            const isActive = activeId === id;
+            return (
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={(e) => handleAnchorClick(e, item.href)}
+                aria-current={isActive ? 'true' : undefined}
+                className={`flex items-center justify-between py-3 text-sm tracking-[.15em] uppercase font-medium transition-colors border-b border-border/20 last:border-b-0 ${
+                  isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <span>{item.label}</span>
+                {isActive && <span className="w-1.5 h-1.5 rounded-full bg-primary" aria-hidden />}
+              </a>
+            );
+          })}
           {!user && (
             <Link
               to="/auth?mode=signin"
