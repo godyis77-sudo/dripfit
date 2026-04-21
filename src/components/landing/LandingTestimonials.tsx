@@ -27,16 +27,16 @@ export default function LandingTestimonials() {
     <section className="py-20 md:py-24">
       <div className="max-w-5xl mx-auto px-6">
         <FadeIn>
-          <span className="font-mono text-xs tracking-[.18em] uppercase text-[#AAAAAA] block mb-5 text-center">What Members Say</span>
+          <span className="type-data block mb-5 text-center text-muted-foreground">What Members Say</span>
         </FadeIn>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {TESTIMONIALS.map((t, i) => (
             <FadeIn key={t.name} delay={i * 0.08}>
-              <div className="bg-[#1A1A1A] border border-[#252525] rounded-2xl p-6 flex flex-col h-full">
-                <Quote className="w-5 h-5 text-[#D4AF37] mb-4 shrink-0" />
-                <p className="text-sm leading-relaxed text-white/90 flex-1 mb-5">"{t.quote}"</p>
+              <div className="bg-card border border-border rounded-2xl p-6 flex flex-col h-full">
+                <Quote className="w-5 h-5 text-primary mb-4 shrink-0" />
+                <p className="text-sm leading-relaxed text-foreground/90 flex-1 mb-5">"{t.quote}"</p>
                 <div>
-                  <span className="text-sm font-semibold text-[#D4AF37]">{t.name}</span>
+                  <span className="text-sm font-semibold text-primary">{t.name}</span>
                   <span className="text-xs text-muted-foreground/60 block mt-0.5">{t.tag}</span>
                   <span className="text-xs text-muted-foreground/40 block">{t.location}</span>
                 </div>

@@ -25,7 +25,7 @@ export default function LandingPricing() {
     <section id="pricing" className="py-20 md:py-24 scroll-mt-20">
       <div className="max-w-5xl mx-auto px-6">
         <FadeIn>
-          <span className="font-mono text-xs tracking-[.18em] uppercase text-[#AAAAAA] block mb-5 text-center">Pricing</span>
+          <span className="type-data block mb-5 text-center text-muted-foreground">Pricing</span>
           <h2
             className="font-display font-bold leading-tight mb-14 text-center"
             style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}
@@ -38,8 +38,8 @@ export default function LandingPricing() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
           {/* FREE */}
           <FadeIn delay={0.08}>
-            <div className="rounded-2xl border border-border/40 bg-[#111111] p-8 flex flex-col h-full">
-              <span className="font-mono text-xs tracking-[.18em] uppercase text-muted-foreground/70 mb-4">Free</span>
+            <div className="rounded-2xl border border-border/40 bg-card p-8 flex flex-col h-full">
+              <span className="type-data mb-4 text-muted-foreground/70">Free</span>
               <div className="font-display text-4xl font-bold mb-8">$0</div>
               <ul className="space-y-3 mb-10 flex-1">
                 {FREE_FEATURES.map((f) => (
@@ -60,13 +60,13 @@ export default function LandingPricing() {
 
           {/* PREMIUM */}
           <FadeIn delay={0.16}>
-            <div className="relative rounded-2xl border border-[#D4AF37]/60 bg-[#111111] p-8 flex flex-col h-full">
+            <div className="relative rounded-2xl border border-primary/60 bg-card p-8 flex flex-col h-full">
               {/* Badge */}
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-[.15em] bg-[#D4AF37] text-[#0A0A0A]">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-[.15em] bg-primary text-primary-foreground">
                 Most Popular
               </span>
 
-              <span className="font-mono text-xs tracking-[.18em] uppercase text-[#D4AF37] mb-4 flex items-center gap-1.5">
+              <span className="type-data mb-4 text-primary flex items-center gap-1.5">
                 <Sparkles className="h-3 w-3" /> Premium
               </span>
               <div className="font-display text-4xl font-bold mb-1">$4.17<span className="text-lg font-normal text-muted-foreground">/mo</span></div>
@@ -74,14 +74,14 @@ export default function LandingPricing() {
               <ul className="space-y-3 mb-10 flex-1">
                 {PREMIUM_FEATURES.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-sm text-muted-foreground/80">
-                    <Check className="h-4 w-4 mt-0.5 text-[#D4AF37] shrink-0" />
+                    <Check className="h-4 w-4 mt-0.5 text-primary shrink-0" />
                     {f}
                   </li>
                 ))}
               </ul>
               <Link
                 to="/auth"
-                className="w-full bg-[#C49A00] text-[#0A0A0A] font-bold rounded-full py-3 px-6 text-sm text-center hover:bg-[#D4AF37] transition-colors duration-200"
+                className="w-full bg-primary text-primary-foreground font-bold rounded-full py-3 px-6 text-sm text-center hover:opacity-90 transition-opacity duration-200"
               >
                 Start 7-Day Free Trial
               </Link>
