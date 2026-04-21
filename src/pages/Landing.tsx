@@ -61,13 +61,25 @@ export default function Landing() {
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-background/80 backdrop-blur-xl border-b border-border/30' : 'bg-transparent border-b border-transparent'}`}>
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <BrandLogo size="sm" />
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-7">
             {[
-              { label: 'Scan.', href: '#features' },
-              { label: 'Drape.', href: '#how-it-works' },
-              { label: 'Twins.', href: '#community' },
+              { label: 'Problem', href: '#problem' },
+              { label: 'How It Works', href: '#how-it-works' },
+              { label: 'Features', href: '#features' },
+              { label: 'Proof', href: '#proof' },
+              { label: 'Pricing', href: '#pricing' },
+              { label: 'FAQ', href: '#faq' },
             ].map((item) => (
-              <a key={item.label} href={item.href} className="text-muted-foreground hover:text-foreground transition-colors text-xs tracking-[.15em] uppercase font-medium whitespace-nowrap">
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const el = document.querySelector(item.href);
+                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }}
+                className="text-muted-foreground hover:text-foreground transition-colors text-xs tracking-[.15em] uppercase font-medium whitespace-nowrap"
+              >
                 {item.label}
               </a>
             ))}
@@ -139,7 +151,7 @@ export default function Landing() {
 
       {/* ═══ THE PROBLEM CLUSTER ═══ */}
       {/* ECOSYSTEM / PROBLEM STATS */}
-      <section className="pt-20 md:pt-28 pb-20">
+      <section id="problem" className="pt-20 md:pt-28 pb-20 scroll-mt-20">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <FadeIn>
             <span className="font-mono text-xs tracking-[.18em] uppercase text-[#AAAAAA] block mb-5">The Problem</span>
