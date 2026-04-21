@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { FadeIn } from './LandingAnimations';
 import { useAuth } from '@/hooks/useAuth';
@@ -23,29 +23,34 @@ export default function LandingHero() {
         <div>
           <FadeIn>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-8 rounded-full border border-border bg-secondary/60">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-              <span className="type-data">Technical Infrastructure for Fashion Culture</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+              <span className="type-data">LIVE · 9,158 PIECES · 186 BRANDS</span>
             </div>
           </FadeIn>
 
           <FadeIn delay={0.08}>
-            <h1 className="type-brand leading-[0.95] mb-2" style={{ letterSpacing: '-0.02em', fontSize: 'clamp(42px, 6.5vw, 76px)' }}>
-              KNOW YOUR FIT.
-            </h1>
-            <h2 
-              className="leading-[1.05] mb-7 italic font-bold text-[44px] md:text-[58px] lg:text-[64px]"
-              style={{ 
-                fontFamily: "'Cormorant Garamond', Georgia, serif",
-                letterSpacing: '-0.02em', 
-                color: 'hsl(var(--primary))' 
-              }}
+            <h1
+              className="type-brand leading-[0.95] mb-2"
+              style={{ letterSpacing: '-0.02em', fontSize: 'clamp(42px, 6.5vw, 76px)' }}
             >
-              OWN YOUR DRIP.
-            </h2>
+              KNOW YOUR FIT.
+              <span
+                className="block italic font-bold text-primary mt-2"
+                style={{
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontStyle: 'italic',
+                  letterSpacing: '-0.02em',
+                  fontSize: 'clamp(44px, 6.5vw, 72px)',
+                  lineHeight: 1.05,
+                }}
+              >
+                Own Your Drip.
+              </span>
+            </h1>
           </FadeIn>
 
           <FadeIn delay={0.16}>
-            <p className="type-body text-base md:text-lg leading-relaxed max-w-md mb-10 font-light">
+            <p className="type-body text-base md:text-lg leading-relaxed max-w-md mb-10 mt-7 font-light">
               One scan. Your precise size across 389 brand charts. Community verified drape before you COP or DROP.
             </p>
           </FadeIn>
@@ -62,17 +67,20 @@ export default function LandingHero() {
               <div className="flex flex-col items-start gap-0 w-full max-w-md">
                 <Link
                   to="/auth"
-                  className="w-full bg-primary text-[#0A0A0A] font-bold rounded-full py-4 px-8 text-base tracking-wide flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors duration-200"
+                  className="w-full bg-primary text-primary-foreground font-bold rounded-full py-4 px-8 text-base tracking-wide flex items-center justify-center gap-2 hover:opacity-90 transition-opacity duration-200"
                 >
                   Sign Up Free <ArrowRight className="h-4 w-4" />
                 </Link>
+                <div className="w-full inline-flex items-center justify-center gap-1.5 mt-3 text-[11px] text-muted-foreground/70">
+                  <Lock className="h-3 w-3 text-primary/70" />
+                  <span>Biometric data encrypted end-to-end. Never sold.</span>
+                </div>
                 <Link
                   to="/home"
-                  className="w-full text-center type-data text-foreground/50 hover:text-primary mt-4 py-2 transition-colors duration-300 tracking-[0.2em]"
+                  className="w-full text-center type-data text-foreground/50 hover:text-primary mt-4 py-3 border border-border/40 rounded-full transition-colors duration-300 tracking-[0.2em]"
                 >
                   CONTINUE AS GUEST
                 </Link>
-                <span className="text-xs text-center text-[#666666] mt-2 w-full">Your biometric data is encrypted and never sold.</span>
               </div>
             )}
           </FadeIn>
@@ -89,11 +97,11 @@ export default function LandingHero() {
           </FadeIn>
         </div>
 
-        {/* Phone mockup with My Sizes screenshot */}
+        {/* Phone mockup */}
         <FadeIn delay={0.15}>
-        <div className="relative mx-auto w-full max-w-[326px]">
+          <div className="relative mx-auto w-full max-w-[326px] animate-float">
             <div className="absolute inset-0 rounded-full blur-[80px] opacity-15 bg-primary" />
-            <div className="relative rounded-[2rem] border-[10px] border-primary shadow-[0_0_30px_rgba(212,175,55,0.4)] overflow-hidden">
+            <div className="relative rounded-[2rem] border-[10px] border-primary shadow-[0_0_30px_hsl(var(--primary)/0.4)] overflow-hidden">
               <img
                 src={heroPhoneMockup}
                 alt="DripFit My Sizes screen showing verified size cards for multiple brands"
