@@ -1,17 +1,40 @@
+import { Ruler, Shirt, Sparkles, LucideIcon } from 'lucide-react';
 import { FadeIn } from './LandingAnimations';
 
-const STATS = [
-  { stat: '$849.9B', label: 'Global fashion returns annually' },
-  { stat: '30%', label: 'Of online orders get returned' },
-  { stat: '70%', label: 'Returned due to size or fit' },
-];
+interface Problem {
+  n: string;
+  icon: LucideIcon;
+  problem: string;
+  question: string;
+  solution: string;
+  solutionLabel: string;
+}
 
-const RETURN_BARS = [
-  { label: 'Apparel & Fashion', pct: 33, range: '25–40%', hero: true },
-  { label: 'Footwear', pct: 18, range: '18%', hero: false },
-  { label: 'Home Goods', pct: 17, range: '15–20%', hero: false },
-  { label: 'Electronics', pct: 11, range: '11%', hero: false },
-  { label: 'Beauty', pct: 7, range: '4–10%', hero: false },
+const PROBLEMS: Problem[] = [
+  {
+    n: '01',
+    icon: Ruler,
+    problem: 'Wrong Size',
+    question: '"Will it actually fit?"',
+    solution: 'The Biometric Scan',
+    solutionLabel: 'Your exact measurements, cross-referenced against 389 brand size charts. One scan. Verified size at every brand.',
+  },
+  {
+    n: '02',
+    icon: Shirt,
+    problem: 'Wrong Drape',
+    question: '"Will it look good on my body?"',
+    solution: 'Infinite Drape Studio',
+    solutionLabel: 'AR try-on renders every garment on your exact silhouette. See the real drape before you cop. No model. Just you.',
+  },
+  {
+    n: '03',
+    icon: Sparkles,
+    problem: 'Wrong Vibe',
+    question: '"Will I actually look hip in this?"',
+    solution: 'COP or DROP — Verified',
+    solutionLabel: 'Your Body & Style Twins have already worn it. Community verdict. Binary. Decisive. Drip approved or dropped.',
+  },
 ];
 
 export default function LandingProblemCluster() {
@@ -24,67 +47,65 @@ export default function LandingProblemCluster() {
             className="font-display font-bold leading-tight mb-6"
             style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}
           >
-            Ordering Three Sizes.
+            Three Reasons.
             <br />
-            <span className="text-muted-foreground/40">Returning Two.</span>
+            <span className="text-muted-foreground/40">Online Shopping Fails.</span>
           </h2>
           <p className="type-body text-base leading-relaxed max-w-lg mx-auto">
-            The grail piece drops. You cop three sizes because every brand fits different. Two go back. Money locked. Drip delayed. Dead returns piling up.
+            Every cart abandoned. Every return shipped. Every "meh" outfit. It comes down to three unanswered questions. DripFit answers all three.
           </p>
         </FadeIn>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 mt-16 grid grid-cols-1 md:grid-cols-3 gap-5">
-        {STATS.map((d, i) => (
-          <FadeIn key={d.label} delay={i * 0.08}>
-            <div className="bg-card/60 backdrop-blur-xl border border-border/40 rounded-2xl p-8 text-center">
-              <div className="font-display text-3xl font-bold text-primary mb-2">{d.stat}</div>
-              <div className="type-body text-sm">{d.label}</div>
+      {/* Three problems → three solutions */}
+      <div className="max-w-6xl mx-auto px-6 mt-16 grid grid-cols-1 md:grid-cols-3 gap-5">
+        {PROBLEMS.map((p, i) => (
+          <FadeIn key={p.n} delay={i * 0.1}>
+            <div className="bg-card/60 backdrop-blur-xl border border-border/40 rounded-2xl p-8 h-full flex flex-col">
+              {/* Number + icon */}
+              <div className="flex items-center justify-between mb-6">
+                <span className="font-mono text-xs tracking-[0.2em] text-muted-foreground/60">
+                  {p.n} / 03
+                </span>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center border border-border/50 bg-secondary/40">
+                  <p.icon className="w-4 h-4 text-muted-foreground" />
+                </div>
+              </div>
+
+              {/* Problem */}
+              <h3 className="type-headline text-2xl mb-2 text-foreground">{p.problem}</h3>
+              <p className="font-display italic text-base text-muted-foreground/70 mb-6 leading-snug">
+                {p.question}
+              </p>
+
+              {/* Divider */}
+              <div className="h-px bg-border/40 my-2" />
+
+              {/* Solution */}
+              <div className="mt-6 flex-1 flex flex-col">
+                <span className="type-data text-primary/70 mb-2">The Fix</span>
+                <h4 className="type-headline text-lg text-primary mb-3">{p.solution}</h4>
+                <p className="type-body text-sm leading-relaxed text-muted-foreground/85" style={{ fontSize: 14 }}>
+                  {p.solutionLabel}
+                </p>
+              </div>
             </div>
           </FadeIn>
         ))}
       </div>
-      <FadeIn delay={0.3}>
-        <p className="text-xs text-muted-foreground/50 text-right max-w-5xl mx-auto px-6 mt-3">
-          ¹ National Retail Federation, 2025 Returns Report
-        </p>
-      </FadeIn>
 
-      {/* Horizontal bar chart */}
-      <div className="max-w-5xl mx-auto px-6 mt-14">
-        <FadeIn delay={0.1}>
-          <span className="type-data block mb-6 text-muted-foreground">Apparel Leads Every Category</span>
-        </FadeIn>
-        <div className="space-y-4 pb-4">
-          {RETURN_BARS.map((bar, i) => (
-            <FadeIn key={bar.label} delay={0.15 + i * 0.06}>
-              <div className="flex items-center gap-4">
-                <span className="font-mono text-xs tracking-wider uppercase text-foreground/90 w-[140px] shrink-0 text-right">
-                  {bar.label}
-                </span>
-                <div className="flex-1 h-7 rounded-sm overflow-hidden bg-secondary">
-                  <div
-                    className={`h-full rounded-sm transition-all duration-[800ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                      bar.hero ? 'bg-primary' : 'bg-muted'
-                    }`}
-                    style={{ width: `${bar.pct * 2.5}%` }}
-                  />
-                </div>
-                <span
-                  className={`font-mono text-xs tracking-wider w-[52px] shrink-0 ${
-                    bar.hero ? 'text-primary' : 'text-muted-foreground'
-                  }`}
-                >
-                  {bar.range}
-                </span>
-              </div>
-            </FadeIn>
-          ))}
+      {/* Industry context — supporting stat */}
+      <FadeIn delay={0.4}>
+        <div className="max-w-3xl mx-auto px-6 mt-14 text-center">
+          <p className="type-body text-sm text-muted-foreground/70 leading-relaxed">
+            <span className="text-primary font-medium">$849.9B</span> in global fashion returns annually.{' '}
+            <span className="text-foreground/80">70%</span> due to size, fit, or "didn't look right." DripFit fixes the entire chain.
+          </p>
+          <p className="text-[11px] text-muted-foreground/40 mt-3">
+            Source: National Retail Federation 2025, McKinsey Returns Survey
+          </p>
         </div>
-        <p className="text-[11px] text-muted-foreground/40 text-right mt-4">
-          Source: McKinsey Returns Survey, Shopify 2025 Ecommerce Report
-        </p>
-      </div>
+      </FadeIn>
     </section>
   );
 }
