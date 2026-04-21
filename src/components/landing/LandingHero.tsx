@@ -5,9 +5,9 @@ import { useAuth } from '@/hooks/useAuth';
 import heroPhoneMockup from '@/assets/hero-phone-mockup.jpg';
 
 const STATS = [
-  { v: '9,000+', l: 'Products' },
   { v: '186', l: 'Brands' },
   { v: '389', l: 'Size Charts' },
+  { v: '9,000+', l: 'Pieces' },
 ];
 
 export default function LandingHero() {
