@@ -3,7 +3,7 @@ import { ArrowRight, Check, Sparkles } from 'lucide-react';
 import { FadeIn } from './LandingAnimations';
 
 const FREE_FEATURES = [
-  '30 Drape try-ons per month',
+  '3 try-ons per month',
   'Top 20 brand size sync',
   'Body Twin matching',
   'COP or DROP access',
@@ -51,7 +51,7 @@ export default function LandingPricing() {
               </ul>
               <Link
                 to="/auth"
-                className="w-full bg-[#1A1A1A] text-white border border-zinc-700 rounded-full py-3 px-6 text-sm font-semibold text-center hover:bg-[#222] transition-colors duration-200"
+                className="w-full bg-transparent text-foreground border border-primary/40 rounded-full py-3 px-6 text-sm font-semibold text-center hover:bg-primary/10 transition-colors duration-200"
               >
                 Get Started Free
               </Link>
