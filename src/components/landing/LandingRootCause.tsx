@@ -57,7 +57,7 @@ export default function LandingRootCause() {
                       endAngle={-270}
                     >
                       {DONUT_DATA.map((entry) => (
-                        <Cell key={entry.name} fill={entry.color} stroke={entry.name === 'Other reasons' ? '#2D2D2D' : 'none'} strokeWidth={1} />
+                        <Cell key={entry.name} fill={entry.color} stroke="none" />
                       ))}
                     </Pie>
                   </PieChart>
@@ -72,7 +72,7 @@ export default function LandingRootCause() {
               <div className="grid grid-cols-2 gap-x-6 gap-y-2 mt-6">
                 {DONUT_DATA.map((d) => (
                   <div key={d.name} className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: d.color, border: d.name === 'Other reasons' ? '1px solid #2D2D2D' : 'none' }} />
+                    <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: d.color }} />
                     <span className="font-mono text-[11px] tracking-wider uppercase text-muted-foreground/60">{d.name}</span>
                   </div>
                 ))}
