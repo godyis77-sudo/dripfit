@@ -33,11 +33,10 @@ export default function LandingHero() {
               KNOW YOUR FIT.
             </h1>
             <h2 
-              className="leading-[1.05] mb-7 italic font-bold"
+              className="leading-[1.05] mb-7 italic font-bold text-[44px] md:text-[58px] lg:text-[64px]"
               style={{ 
                 fontFamily: "'Cormorant Garamond', Georgia, serif",
                 letterSpacing: '-0.02em', 
-                fontSize: 'clamp(34px, 5vw, 58px)', 
                 color: 'hsl(var(--primary))' 
               }}
             >
