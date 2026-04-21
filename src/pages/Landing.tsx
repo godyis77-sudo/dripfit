@@ -228,14 +228,16 @@ export default function Landing() {
       <LandingFeatures />
 
       {/* ═══ PROOF CLUSTER ═══ */}
-      {/* LIVE COMMUNITY VERDICT */}
-      <LandingCommunityVerdict />
+      <div id="proof" className="scroll-mt-20">
+        {/* LIVE COMMUNITY VERDICT */}
+        <LandingCommunityVerdict />
 
-      {/* TESTIMONIALS */}
-      <LandingTestimonials />
+        {/* TESTIMONIALS */}
+        <LandingTestimonials />
 
-      {/* COMMUNITY */}
-      <LandingCommunity />
+        {/* COMMUNITY */}
+        <LandingCommunity />
+      </div>
 
       {/* PRICING — surfaced after proof */}
       <LandingPricing />
