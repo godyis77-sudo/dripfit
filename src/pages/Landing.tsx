@@ -154,7 +154,6 @@ export default function Landing() {
 
       {/* ECOSYSTEM / PROBLEM STATS */}
       <section className="pt-20 md:pt-28 pb-20">
-      <section className="pt-20 md:pt-28 pb-20">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <FadeIn>
             <span className="font-mono text-xs tracking-[.18em] uppercase text-[#AAAAAA] block mb-5">The Problem</span>
