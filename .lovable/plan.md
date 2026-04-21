@@ -1,76 +1,83 @@
 
 
-# Landing Page — Layout Reorder Plan
+# Problem Section — Mobile Polish + Visual Proof
 
-Tighten the section order from 14 sections to 10 by following a clean **Pain → Cure → Proof → Buy** narrative. Removes redundant problem sections, consolidates social proof, and surfaces pricing earlier.
-
----
-
-## Current order (14 sections)
-1. Hero
-2. Stats ticker
-3. **How It Works** ← solution shown before problem
-4. **The Problem** (stats + bar chart)
-5. **Features**
-6. Feature pills strip ← orphaned
-7. **Live Community Verdict**
-8. **Testimonials**
-9. **Community**
-10. **Root Cause** (donut) ← repeats problem
-11. **Market** (line chart) ← repeats problem
-12. **Pricing** ← buried
-13. FAQ
-14. Final CTA
+Tighten the three-card cluster on mobile, kill the awkward wraps, and add a supporting visual to each card so the section reads as data-backed proof, not just copy.
 
 ---
 
-## Proposed order (10 sections)
-1. Hero
-2. Stats ticker
-3. **THE PROBLEM** *(consolidated cluster: inline stats + bar chart → donut → line chart)*
-4. **HOW IT WORKS**
-5. **FEATURES**
-6. **PROOF** *(Live Verdict + Testimonials + Community grid, back-to-back)*
-7. **PRICING**
-8. FAQ
-9. Final CTA
-10. Footer
+## Pass 1 — Mobile typography & spacing
+
+**File:** `src/components/landing/LandingProblemCluster.tsx`
+
+Tighten the card internals so they fit cleanly on a 375–414px viewport:
+
+- Card padding: `p-8` → `p-6 md:p-8`
+- Card gap: `gap-5` → `gap-4 md:gap-5`
+- Section side padding stays `px-6`; reduce inner top margin `mt-16` → `mt-10 md:mt-16`
+- Problem headline: `text-2xl` → `text-xl md:text-2xl` (prevents "Wrong Drape" from wrapping awkwardly under the icon row)
+- Question line: `text-base` → `text-sm md:text-base`
+- Solution title: `text-lg` (keep) but tighten `mb-3` → `mb-2`
+- Body copy: drop the inline `style={{ fontSize: 14 }}` override; use `text-[13px] md:text-sm` with `leading-[1.55]`
+- Icon circle: `w-10 h-10` → `w-9 h-9 md:w-10 md:h-10`
+- Reduce vertical rhythm: `mb-6` blocks → `mb-4 md:mb-6`
+
+Headline above grid:
+- `clamp(32px, 4vw, 48px)` → `clamp(28px, 5vw, 48px)` so "Three Reasons. Online Shopping Fails." doesn't break mid-word at 375px
+- Sub-paragraph: `max-w-lg` → `max-w-md` and `text-base` → `text-[15px] md:text-base`
 
 ---
 
-## Execution passes
+## Pass 2 — Add supporting data visual to each card
 
-### Pass 1 — Reorder (zero content changes)
-**File:** `src/pages/Landing.tsx`
+Each card gets a small inline data element between the question and the divider. Lightweight SVG/CSS only — no new dependencies.
 
-- Move `LandingHowItWorks` → after the inline "The Problem" cluster
-- Move `LandingRootCause` → directly after inline Problem section
-- Move `LandingMarket` → directly after `LandingRootCause`
-- Move `LandingPricing` → after `LandingCommunity` (right before FAQ)
+**Card 01 — Wrong Size**
+Mini horizontal bar comparing return rates:
+```text
+Industry avg returns  ████████████████  30%
+DripFit users          ███               6%
+```
+Rendered as two stacked bars with labels. Source caption: "—80% fewer size returns."
 
-### Pass 2 — Delete orphaned pills strip
-**File:** `src/pages/Landing.tsx`
+**Card 02 — Wrong Drape**
+3-dot confidence meter showing "before scan / after scan":
+```text
+Before:  ● ○ ○   Guessing
+After:   ● ● ●   Verified drape
+```
+Two rows of filled/empty dots in primary gold + muted, with a small caption.
 
-Remove the `PROOF_TAGS` border-y strip (lines ~215–221) and the `PROOF_TAGS` constant. Info already lives inside `LandingFeatures`.
+**Card 03 — Wrong Vibe**
+COP / DROP vote bar — a single horizontal split bar showing community verdict ratio (e.g., 73% COP / 27% DROP) with both labels inline. Mirrors the actual community feature.
 
-### Pass 3 — Trim Problem cluster padding
-**Files:** `LandingRootCause.tsx`, `LandingMarket.tsx`
-
-When stacked back-to-back with the inline Problem section, reduce top padding so they read as one continuous Problem narrative, not three full-page beats.
-- `py-20 md:py-24` → `pt-10 md:pt-14 pb-20 md:pb-24`
-
-### Pass 4 — Verify Proof cluster eyebrows
-**File:** `src/pages/Landing.tsx` (verify only)
-
-Confirm `LandingCommunityVerdict`, `LandingTestimonials`, `LandingCommunity` each have distinct eyebrows (e.g., "LIVE", "REVIEWS", "THE FEED") so the back-to-back stack reads as one Proof block with three angles. Only edit if missing.
+All three visuals share:
+- Height: ~48px block
+- Margin: `my-4`
+- Use `text-primary` for the active/positive value, `text-muted-foreground/40` for inactive
+- Mono font for numbers (`font-mono text-[11px] tracking-wider`)
 
 ---
 
-## Held / Out of scope
-- Hero copy, stats ticker copy — locked
-- Merging Live Verdict + Testimonials into one component — separate pass
-- Component internals beyond padding/eyebrow tweaks
-- Color tokens, fonts, animation easing
+## Pass 3 — Footer stat strip
+
+Replace the single sentence footer with a 3-up mini stat row on desktop, stacked on mobile:
+
+```text
+$849.9B          70%              1 in 3
+Annual returns   Fit-related      Items returned
+```
+
+- Grid: `grid-cols-1 sm:grid-cols-3 gap-4`
+- Each stat: gold value (`type-data` or `font-display` 24px), muted label (11px uppercase mono)
+- Keeps the existing source citation line below
+
+---
+
+## Out of scope
+- Section reorder, copy rewrites, icon swaps
+- New chart libraries (Recharts already used elsewhere but overkill here — pure SVG/divs)
+- Changes to `LandingRootCause` donut or `LandingMarket` line chart
 
 ---
 
@@ -78,10 +85,9 @@ Confirm `LandingCommunityVerdict`, `LandingTestimonials`, `LandingCommunity` eac
 
 | Pass | Risk | Why |
 |---|---|---|
-| 1 | Low | Pure JSX reordering |
-| 2 | Low | Delete orphaned strip + unused constant |
-| 3 | Low | CSS-only padding |
-| 4 | Low | Verify-only, edit only if needed |
+| 1 | Low | Responsive class additions only |
+| 2 | Low | Self-contained SVG/div blocks per card |
+| 3 | Low | Replaces one paragraph with a grid |
 
-**Net result:** ~30% shorter scroll, cleaner narrative, pricing visible 4 sections earlier.
+**Net result:** Cards fit cleanly on 375px without wraps, each card carries its own proof point, footer becomes scannable data instead of prose.
 
