@@ -30,10 +30,10 @@ export default function LandingHero() {
 
           <FadeIn delay={0.08}>
             <h1 className="type-brand leading-[0.95] mb-2" style={{ letterSpacing: '-0.02em', fontSize: 'clamp(42px, 6.5vw, 76px)' }}>
-              SIZED BY AI.
+              KNOW YOUR FIT.
             </h1>
             <h2 className="type-brand leading-[1.05] mb-7 italic" style={{ letterSpacing: '-0.02em', fontSize: 'clamp(34px, 5vw, 58px)', color: 'hsl(var(--primary))' }}>
-              VERIFIED BY THE CULTURE.
+              OWN YOUR DRIP.
             </h2>
           </FadeIn>
 
