@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Menu, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Link, useNavigate } from 'react-router-dom';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -36,6 +37,23 @@ export default function Landing() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  const NAV_ITEMS = [
+    { label: 'Problem', href: '#problem' },
+    { label: 'How It Works', href: '#how-it-works' },
+    { label: 'Features', href: '#features' },
+    { label: 'Proof', href: '#proof' },
+    { label: 'Pricing', href: '#pricing' },
+    { label: 'FAQ', href: '#faq' },
+  ];
+
+  const handleAnchorClick = (e: React.MouseEvent, href: string) => {
+    e.preventDefault();
+    setMobileNavOpen(false);
+    const el = document.querySelector(href);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const handleGuestMode = () => {
     setGuestMode();
@@ -58,55 +76,88 @@ export default function Landing() {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-secondary">
 
       {/* NAV */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-background/80 backdrop-blur-xl border-b border-border/30' : 'bg-transparent border-b border-transparent'}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled || mobileNavOpen ? 'bg-background/90 backdrop-blur-xl border-b border-border/30' : 'bg-transparent border-b border-transparent'}`}>
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <BrandLogo size="sm" />
+
+          {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-7">
-            {[
-              { label: 'Problem', href: '#problem' },
-              { label: 'How It Works', href: '#how-it-works' },
-              { label: 'Features', href: '#features' },
-              { label: 'Proof', href: '#proof' },
-              { label: 'Pricing', href: '#pricing' },
-              { label: 'FAQ', href: '#faq' },
-            ].map((item) => (
+            {NAV_ITEMS.map((item) => (
               <a
                 key={item.label}
                 href={item.href}
-                onClick={(e) => {
-                  e.preventDefault();
-                  const el = document.querySelector(item.href);
-                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }}
+                onClick={(e) => handleAnchorClick(e, item.href)}
                 className="text-muted-foreground hover:text-foreground transition-colors text-xs tracking-[.15em] uppercase font-medium whitespace-nowrap"
               >
                 {item.label}
               </a>
             ))}
           </div>
-          {user ? (
-            <Link
-              to="/home"
-              className="px-5 py-2 text-sm font-semibold tracking-wide rounded-full border border-primary/40 text-primary bg-transparent hover:bg-primary/10 transition-colors duration-300"
+
+          {/* Right cluster: auth + mobile toggle */}
+          <div className="flex items-center gap-3">
+            {user ? (
+              <Link
+                to="/home"
+                className="px-5 py-2 text-sm font-semibold tracking-wide rounded-full border border-primary/40 text-primary bg-transparent hover:bg-primary/10 transition-colors duration-300"
+              >
+                Enter App
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/auth?mode=signin"
+                  className="hidden sm:inline-block px-4 py-2 text-xs font-semibold tracking-wider uppercase text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/auth"
+                  className="px-5 py-2 text-xs font-semibold tracking-wide rounded-full bg-primary text-primary-foreground hover:scale-105 transition-transform duration-300 whitespace-nowrap"
+                >
+                  Sign Up Free
+                </Link>
+              </>
+            )}
+
+            {/* Mobile toggle */}
+            <button
+              type="button"
+              aria-label={mobileNavOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileNavOpen}
+              onClick={() => setMobileNavOpen((v) => !v)}
+              className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-full border border-border/40 text-foreground hover:bg-primary/10 transition-colors"
             >
-              Enter App
-            </Link>
-          ) : (
-            <div className="flex items-center gap-3">
+              {mobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile drawer */}
+        <div
+          className={`md:hidden overflow-hidden transition-[max-height,opacity] duration-300 ease-out ${mobileNavOpen ? 'max-h-[420px] opacity-100' : 'max-h-0 opacity-0'}`}
+        >
+          <div className="px-6 pb-6 pt-2 flex flex-col gap-1 border-t border-border/30 bg-background/95 backdrop-blur-xl">
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={(e) => handleAnchorClick(e, item.href)}
+                className="py-3 text-sm tracking-[.15em] uppercase font-medium text-muted-foreground hover:text-foreground transition-colors border-b border-border/20 last:border-b-0"
+              >
+                {item.label}
+              </a>
+            ))}
+            {!user && (
               <Link
                 to="/auth?mode=signin"
-                className="px-4 py-2 text-xs font-semibold tracking-wider uppercase text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => setMobileNavOpen(false)}
+                className="sm:hidden mt-3 py-3 text-sm tracking-[.15em] uppercase font-semibold text-center text-foreground border border-primary/40 rounded-full hover:bg-primary/10 transition-colors"
               >
                 Sign In
               </Link>
-              <Link
-                to="/auth"
-                className="px-5 py-2 text-xs font-semibold tracking-wide rounded-full bg-primary text-primary-foreground hover:scale-105 transition-transform duration-300"
-              >
-                Sign Up Free
-              </Link>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </nav>
 
