@@ -87,16 +87,28 @@ export default function LandingNav() {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-7">
-          {NAV_ITEMS.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              onClick={(e) => handleAnchorClick(e, item.href)}
-              className="text-muted-foreground hover:text-foreground transition-colors text-xs tracking-[.15em] uppercase font-medium whitespace-nowrap"
-            >
-              {item.label}
-            </a>
-          ))}
+          {NAV_ITEMS.map((item) => {
+            const id = item.href.slice(1);
+            const isActive = activeId === id;
+            return (
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={(e) => handleAnchorClick(e, item.href)}
+                aria-current={isActive ? 'true' : undefined}
+                className={`relative text-xs tracking-[.15em] uppercase font-medium whitespace-nowrap transition-colors duration-300 ${
+                  isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {item.label}
+                <span
+                  className={`pointer-events-none absolute -bottom-1.5 left-0 right-0 mx-auto h-px bg-primary transition-all duration-300 ease-out ${
+                    isActive ? 'w-full opacity-100' : 'w-0 opacity-0'
+                  }`}
+                />
+              </a>
+            );
+          })}
         </div>
 
         {/* Right cluster */}
@@ -144,16 +156,24 @@ export default function LandingNav() {
         }`}
       >
         <div className="px-6 pb-6 pt-2 flex flex-col gap-1 border-t border-border/30 bg-background/95 backdrop-blur-xl">
-          {NAV_ITEMS.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              onClick={(e) => handleAnchorClick(e, item.href)}
-              className="py-3 text-sm tracking-[.15em] uppercase font-medium text-muted-foreground hover:text-foreground transition-colors border-b border-border/20 last:border-b-0"
-            >
-              {item.label}
-            </a>
-          ))}
+          {NAV_ITEMS.map((item) => {
+            const id = item.href.slice(1);
+            const isActive = activeId === id;
+            return (
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={(e) => handleAnchorClick(e, item.href)}
+                aria-current={isActive ? 'true' : undefined}
+                className={`flex items-center justify-between py-3 text-sm tracking-[.15em] uppercase font-medium transition-colors border-b border-border/20 last:border-b-0 ${
+                  isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <span>{item.label}</span>
+                {isActive && <span className="w-1.5 h-1.5 rounded-full bg-primary" aria-hidden />}
+              </a>
+            );
+          })}
           {!user && (
             <Link
               to="/auth?mode=signin"
