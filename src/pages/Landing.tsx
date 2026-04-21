@@ -104,7 +104,7 @@ export default function Landing() {
       {/* HERO */}
       <LandingHero />
 
-      {/* PROOF TICKER */}
+      {/* PROOF TICKER / STATS BAR */}
       <div
         className="relative overflow-hidden select-none pointer-events-none"
         aria-hidden="true"
@@ -140,31 +140,10 @@ export default function Landing() {
       </div>
       <p className="sr-only">Apparel return rate: 25–40%. 70% of returns are fit-related. 47% of shoppers avoid online fashion due to fit uncertainty. $849.9B in returns processed in 2025. $46 average cost per returned item. 1 in 4 orders includes a bracketed size.</p>
 
-      {/* SOCIAL PROOF BAR */}
-      <div className="border-y border-border/30 py-5">
-        <div className="max-w-6xl mx-auto px-6 flex items-center justify-center gap-8 md:gap-14 flex-wrap">
-        {PROOF_TAGS.map((t) => (
-            <span key={t} className="text-xs tracking-[.15em] uppercase text-muted-foreground/60 font-semibold">{t}</span>
-          ))}
-        </div>
-      </div>
-
-      {/* LIVE COMMUNITY VERDICT */}
-      <LandingCommunityVerdict />
-
-      {/* FEATURES */}
-      <LandingFeatures />
-
-      {/* HOW IT WORKS */}
+      {/* HOW IT WORKS — MOVED UP */}
       <LandingHowItWorks />
 
-      {/* TESTIMONIALS */}
-      <LandingTestimonials />
-
-      {/* COMMUNITY */}
-      <LandingCommunity />
-
-      {/* PROBLEM */}
+      {/* ECOSYSTEM / PROBLEM STATS */}
       <section className="pt-20 md:pt-28 pb-20">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <FadeIn>
@@ -229,7 +208,28 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ROOT CAUSE */}
+      {/* FEATURES — 4-up grid */}
+      <LandingFeatures />
+
+      {/* SOCIAL PROOF BAR / FEATURE PILLS — MOVED DOWN after Features */}
+      <div className="border-y border-border/30 py-5">
+        <div className="max-w-6xl mx-auto px-6 flex items-center justify-center gap-8 md:gap-14 flex-wrap">
+          {PROOF_TAGS.map((t) => (
+            <span key={t} className="text-xs tracking-[.15em] uppercase text-muted-foreground/60 font-semibold">{t}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* LIVE COMMUNITY VERDICT — MOVED DOWN */}
+      <LandingCommunityVerdict />
+
+      {/* TESTIMONIALS — Feature Cards Small */}
+      <LandingTestimonials />
+
+      {/* COMMUNITY */}
+      <LandingCommunity />
+
+      {/* ROOT CAUSE — Ecosystem */}
       <LandingRootCause />
 
       {/* MARKET */}
