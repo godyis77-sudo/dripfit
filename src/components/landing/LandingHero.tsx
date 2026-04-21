@@ -47,7 +47,7 @@ export default function LandingHero() {
 
           <FadeIn delay={0.16}>
             <p className="type-body text-base md:text-lg leading-relaxed max-w-md mb-10 font-light">
-              One scan learns your body. 186 brands mapped to you. Your fit twins match. The culture votes.
+              Scan once, your precise measurements. Exact size for 389 brand charts across 9,000 items on your silhouette. Drip and Drape community approved before you COP or DROP.
             </p>
           </FadeIn>
 
