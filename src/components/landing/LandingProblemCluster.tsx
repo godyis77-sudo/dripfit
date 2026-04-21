@@ -135,31 +135,33 @@ export default function LandingProblemCluster() {
       <div className="max-w-6xl mx-auto px-6 mt-10 md:mt-16 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
         {PROBLEMS.map((p, i) => (
           <FadeIn key={p.n} delay={i * 0.1}>
-            <div className="bg-card/60 backdrop-blur-xl border border-border/40 rounded-2xl p-6 md:p-8 h-full flex flex-col">
-              {/* Card number */}
-              <span className="font-display text-primary text-3xl md:text-4xl leading-none mb-3 md:mb-4">
-                {i + 1}.
-              </span>
-
-              {/* Problem */}
-              <h3 className="type-headline text-xl md:text-2xl mb-2 text-foreground">{p.problem}</h3>
-              <p className="font-display italic text-sm md:text-base text-muted-foreground/70 mb-4 md:mb-6 leading-snug">
+            <div className="bg-card/60 backdrop-blur-xl border border-border/40 rounded-2xl p-5 md:p-6 h-full flex flex-col">
+              {/* Number + Problem inline */}
+              <div className="flex items-baseline gap-3 mb-1.5">
+                <span className="font-display text-primary text-2xl md:text-3xl leading-none">
+                  {i + 1}.
+                </span>
+                <h3 className="type-headline text-xl md:text-2xl text-foreground leading-tight">
+                  {p.problem}
+                </h3>
+              </div>
+              <p className="font-display italic text-sm md:text-base text-muted-foreground/70 mb-3 leading-snug">
                 {p.question}
               </p>
 
               {/* Inline data visual */}
-              <div className="my-4">
+              <div className="my-3">
                 <CardVisual kind={p.visual} />
               </div>
 
               {/* Divider */}
-              <div className="h-px bg-border/40 my-2" />
+              <div className="h-px bg-border/40 my-1.5" />
 
               {/* Solution */}
-              <div className="mt-4 md:mt-6 flex-1 flex flex-col">
-                <span className="type-data text-primary/70 mb-2">The Fix</span>
-                <h4 className="type-headline text-lg text-primary mb-2">{p.solution}</h4>
-                <p className="type-body text-[13px] md:text-sm leading-[1.55] text-muted-foreground/85">
+              <div className="mt-3 md:mt-4 flex-1 flex flex-col">
+                <span className="type-data text-primary/70 mb-1">The Fix</span>
+                <h4 className="type-headline text-lg text-primary mb-1.5 leading-tight">{p.solution}</h4>
+                <p className="type-body text-[13px] md:text-sm leading-[1.5] text-muted-foreground/85">
                   {p.solutionLabel}
                 </p>
               </div>
