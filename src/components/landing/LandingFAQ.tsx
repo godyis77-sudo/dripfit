@@ -34,7 +34,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 export default function LandingFAQ() {
   return (
-    <section className="py-20 md:py-24">
+    <section id="faq" className="py-20 md:py-24 scroll-mt-20">
       <div className="max-w-2xl mx-auto px-6">
         <FadeIn>
           <h2 className="type-headline text-3xl md:text-4xl text-center mb-14">VERIFIED. ANSWERED.</h2>
