@@ -510,7 +510,7 @@ const Capture = () => {
               <DecorativeSilhouette height={240} />
 
               <h2 className="type-headline mt-4 mb-1 uppercase">
-                Your Body. Mapped.
+                Your Biometric Scan.
               </h2>
               <p className="type-body mb-4">AI-powered measurements in under 60 seconds</p>
 

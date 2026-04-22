@@ -256,7 +256,7 @@ const GalleryPlayground = () => {
             className="w-full mb-4 rounded-2xl bg-primary/[0.08] border border-primary/30 px-4 py-3 flex items-center justify-between active:scale-[0.97] transition-transform"
           >
             <div>
-              <p className="font-display text-[16px] font-bold text-foreground">Your body. Mapped. 60 seconds.</p>
+              <p className="font-display text-[16px] font-bold text-foreground">Your Biometric Scan. 60 seconds.</p>
               <p className="text-[13px] text-primary font-semibold mt-0.5">Start the scan →</p>
             </div>
           </button>

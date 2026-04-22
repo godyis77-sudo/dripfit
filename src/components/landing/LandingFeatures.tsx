@@ -21,7 +21,7 @@ export default function LandingFeatures() {
           <div className="text-center mb-10 md:mb-12">
             <span className="type-data block mb-4 text-primary/70">The Ecosystem</span>
             <h2 className="type-headline leading-tight" style={{ letterSpacing: '-0.01em', fontSize: 'clamp(32px, 4vw, 48px)' }}>
-              Your Body. Mapped.<br />Your Drip. <span className="text-primary">Confirmed.</span>
+              Your Biometric Scan.<br />Your Drip. <span className="text-primary">Confirmed.</span>
             </h2>
           </div>
         </FadeIn>
