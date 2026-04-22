@@ -193,7 +193,7 @@ export default function OnboardingOverlay() {
                 transition={{ delay: 0.6, duration: 0.4 }}
                 className="font-sans text-xs font-medium tracking-[0.2em] uppercase text-muted-foreground mt-3"
               >
-                YOUR BODY. MAPPED.
+                YOUR BIOMETRIC SCAN.
               </motion.p>
             </motion.div>
           </motion.div>
