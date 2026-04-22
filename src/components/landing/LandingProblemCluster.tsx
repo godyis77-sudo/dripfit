@@ -118,8 +118,8 @@ export default function LandingProblemCluster() {
         <FadeIn>
           <span className="type-data block mb-5 text-muted-foreground">The Problem</span>
           <h2
-            className="font-display font-bold leading-tight mb-6"
-            style={{ fontSize: 'clamp(28px, 5vw, 48px)' }}
+            className="type-headline font-bold leading-tight mb-6"
+            style={{ letterSpacing: '-0.01em', fontSize: 'clamp(32px, 4vw, 48px)' }}
           >
             Three Reasons.
             <br />

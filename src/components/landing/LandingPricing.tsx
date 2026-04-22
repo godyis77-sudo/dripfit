@@ -27,8 +27,8 @@ export default function LandingPricing() {
         <FadeIn>
           <span className="type-data block mb-5 text-center text-muted-foreground">Pricing</span>
           <h2
-            className="font-display font-bold leading-tight mb-14 text-center"
-            style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}
+            className="type-headline font-bold leading-tight mb-14 text-center"
+            style={{ letterSpacing: '-0.01em', fontSize: 'clamp(32px, 4vw, 48px)' }}
           >
             Start Free.<br />
             <span className="text-muted-foreground/85">Upgrade When You Outgrow It.</span>
