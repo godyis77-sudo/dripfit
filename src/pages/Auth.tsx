@@ -15,6 +15,7 @@ const Auth = () => {
 
   const rawReturn = searchParams.get('returnTo') || '/';
   const returnTo = rawReturn.startsWith('/') && !rawReturn.startsWith('//') ? rawReturn : '/';
+  const defaultMode = searchParams.get('mode') === 'signup' ? 'signup' : 'signin';
 
   // Redirect if already logged in
   useEffect(() => {
