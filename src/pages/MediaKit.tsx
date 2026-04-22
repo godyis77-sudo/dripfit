@@ -44,7 +44,7 @@ const COLORS = [
 /* ── 7-Tier Typography System ────────────────────────── */
 const TIERS = [
   { tier: 1, name: 'Brand Mark',    family: 'Playfair Display', weight: '800', size: '28 px', tracking: 'Tight', sample: 'DRIPFIT ✔', use: 'Wordmark only — uppercase, gold checkmark at 80 %' },
-  { tier: 2, name: 'Headlines',     family: 'Playfair Display', weight: '600', size: '22 px', tracking: 'Normal', sample: 'Your Body. Mapped.', use: 'Section headlines, card titles' },
+  { tier: 2, name: 'Headlines',     family: 'Playfair Display', weight: '600', size: '22 px', tracking: 'Normal', sample: 'Your Biometric Scan.', use: 'Section headlines, card titles' },
   { tier: 3, name: 'Taglines',      family: 'DM Sans',          weight: '500', size: '13 px', tracking: '0.15 em', sample: 'STOP PRAYING IT FITS', use: 'Uppercase subtitles, section labels' },
   { tier: 4, name: 'Body',          family: 'DM Sans',          weight: '400', size: '14 px', tracking: 'Normal', sample: 'The future of online sizing.', use: 'Paragraphs, descriptions, UI copy' },
   { tier: 5, name: 'Data / Meta',   family: 'DM Mono',          weight: '400', size: '10 px', tracking: '0.12 em', sample: 'CHEST · 96 CM', use: 'Measurement readouts, metadata, timestamps' },
