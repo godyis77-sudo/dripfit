@@ -33,9 +33,6 @@ export default function Landing() {
       {/* HERO */}
       <LandingHero />
 
-      {/* TEMP — font direction preview */}
-      <LandingFontPreview />
-
       {/* PROOF TICKER */}
       <LandingStatsTicker />
 
