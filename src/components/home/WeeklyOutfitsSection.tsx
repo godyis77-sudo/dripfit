@@ -164,6 +164,12 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
           className="absolute inset-0 w-full h-full object-cover object-top"
           loading="lazy"
         />
+        {/* COP score pill — top-left, ties cards back to the COP or DROP system */}
+        <span
+          className="absolute top-3 left-3 z-20 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-black/55 backdrop-blur-sm border border-primary/40 text-primary"
+        >
+          {copScore}% COP
+        </span>
         {/* Share button */}
         <button
           onClick={(e) => handleShare(outfit.title, e)}
