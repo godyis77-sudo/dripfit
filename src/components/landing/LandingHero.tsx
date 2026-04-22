@@ -37,8 +37,10 @@ export default function LandingHero() {
               <span
                 className="block italic font-bold text-primary mt-2"
                 style={{
-                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontFamily: "'Fraunces', 'Playfair Display', Georgia, serif",
                   fontStyle: 'italic',
+                  fontWeight: 700,
+                  fontVariationSettings: '"opsz" 144, "SOFT" 50',
                   letterSpacing: '-0.02em',
                   fontSize: 'clamp(44px, 6.5vw, 72px)',
                   lineHeight: 1.05,
