@@ -35,11 +35,11 @@ const AppleIcon = () => (
   </svg>
 );
 
-const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = false }: AuthFormProps) => {
+const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = false, defaultMode = 'signin' }: AuthFormProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(defaultMode !== 'signup');
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
