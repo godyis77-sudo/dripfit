@@ -32,20 +32,22 @@ export default function LandingHero() {
             <h1
               className="leading-[1.02] mb-2 text-foreground"
               style={{
-                fontFamily: "'Playfair Display', Georgia, 'Times New Roman', serif",
-                fontWeight: 500,
-                letterSpacing: '0.005em',
-                fontSize: 'clamp(44px, 7vw, 78px)',
+                fontFamily: "'Anton', Impact, sans-serif",
+                fontWeight: 400,
+                letterSpacing: '0.01em',
+                textTransform: 'uppercase',
+                fontSize: 'clamp(48px, 7.5vw, 86px)',
               }}
             >
               Know your fit.
               <span
-                className="block text-primary mt-1"
+                className="block text-primary mt-2"
                 style={{
                   fontFamily: "'Playfair Display', Georgia, 'Times New Roman', serif",
                   fontStyle: 'italic',
                   fontWeight: 500,
                   letterSpacing: '0',
+                  textTransform: 'none',
                   fontSize: 'clamp(44px, 7vw, 78px)',
                   lineHeight: 1.02,
                 }}
