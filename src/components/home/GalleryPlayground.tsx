@@ -14,7 +14,6 @@ import OneTapPlayground from '@/components/home/OneTapPlayground';
 import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import { ALL_PRODUCT_CATEGORIES } from '@/components/tryon/tryon-constants';
 import WeeklyOutfitsSection from '@/components/home/WeeklyOutfitsSection';
-import WeeklySwipeDeck from '@/components/home/WeeklySwipeDeck';
 import SwipeFeedSection from '@/components/home/SwipeFeedSection';
 
 const HERO_CATEGORIES = [
@@ -243,8 +242,8 @@ const GalleryPlayground = () => {
         {/* Swipe Feed — The Drop (only for scanned users) */}
         {hasScan && <SwipeFeedSection />}
 
-        {/* Weekly Drip — interactive swipe deck for unauthenticated/non-scanned users */}
-        {!hasScan && <WeeklySwipeDeck />}
+        {/* Weekly Outfits Hero Section — only for non-scanned (scanned users see it at top) */}
+        {!hasScan && <WeeklyOutfitsSection />}
 
         {/* One-Tap Playground — only for unauthenticated users */}
         {!user && <OneTapPlayground />}
