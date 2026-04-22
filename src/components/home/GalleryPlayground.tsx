@@ -157,7 +157,7 @@ const GalleryPlayground = () => {
                     fontSize: 'clamp(26px, 7vw, 32px)',
                   }}
                 >
-                  YOUR BODY. MAPPED.
+                  YOUR BIOMETRIC SCAN.
                 </h2>
                 <p className="font-sans text-[13px] font-light text-white/70 leading-snug max-w-[280px] mb-2">
                   2 photos. 60 seconds. Your exact size across 186 brands — locked.
