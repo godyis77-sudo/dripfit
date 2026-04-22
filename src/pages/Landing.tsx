@@ -7,7 +7,7 @@ import LandingStatsTicker from '@/components/landing/LandingStatsTicker';
 import LandingProblemCluster from '@/components/landing/LandingProblemCluster';
 import LandingCommunityVerdict from '@/components/landing/LandingCommunityVerdict';
 import LandingFeatures from '@/components/landing/LandingFeatures';
-import LandingRootCause from '@/components/landing/LandingRootCause';
+
 import LandingHowItWorks from '@/components/landing/LandingHowItWorks';
 
 import LandingCommunity from '@/components/landing/LandingCommunity';
@@ -36,9 +36,6 @@ export default function Landing() {
 
       {/* ═══ PROBLEM CLUSTER ═══ */}
       <LandingProblemCluster />
-
-      {/* ROOT CAUSE — donut + insight stats (consolidated problem) */}
-      <LandingRootCause />
 
       {/* HOW IT WORKS — the cure */}
       <LandingHowItWorks />
