@@ -1,22 +1,24 @@
-import { Quote } from 'lucide-react';
 import { FadeIn } from './LandingAnimations';
 
 const TESTIMONIALS = [
   {
     quote: "Ordered the Arc'teryx Beta LT in M first try. My Body Twins said 91% COP on M. They were right.",
     name: 'Jordan K.',
+    initials: 'JK',
     tag: "Streetwear / Arc'teryx collector",
     location: 'Toronto, CA',
   },
   {
     quote: "The Row pieces are expensive and the sizing is cryptic. DripFit told me S before I spent $800. Perfect drape.",
     name: 'Mia T.',
+    initials: 'MT',
     tag: 'Quiet Luxury / Minimalist',
     location: 'New York, NY',
   },
   {
     quote: "Stone Island runs weird. 94% of my Body Twins said Medium sits right. It did. Zero returns.",
     name: 'Marcus D.',
+    initials: 'MD',
     tag: 'Heritage / Stone Island collector',
     location: 'London, UK',
   },
@@ -32,18 +34,27 @@ export default function LandingTestimonials() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {TESTIMONIALS.map((t, i) => (
             <FadeIn key={t.name} delay={i * 0.08}>
-              <div className="bg-card border border-border rounded-2xl p-6 flex flex-col h-full">
-                <Quote className="w-5 h-5 text-primary mb-4 shrink-0" />
-                <p className="text-sm leading-relaxed text-foreground/90 flex-1 mb-5">"{t.quote}"</p>
-                <div>
-                  <span className="text-sm font-semibold text-primary">{t.name}</span>
-                  <span className="text-xs text-muted-foreground/85 block mt-0.5">{t.tag}</span>
-                  <span className="text-xs text-muted-foreground/85 block">{t.location}</span>
+              <div className="bg-card border border-border rounded-2xl p-6 pl-5 flex flex-col h-full border-l-2 border-l-primary">
+                <p className="text-sm leading-relaxed text-foreground/90 flex-1 mb-5">{t.quote}</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full border border-primary bg-background flex items-center justify-center shrink-0">
+                    <span className="text-xs font-semibold text-primary tracking-wide">{t.initials}</span>
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-sm font-semibold text-primary block">{t.name}</span>
+                    <span className="text-xs text-muted-foreground/85 block mt-0.5 truncate">{t.tag}</span>
+                    <span className="text-xs text-muted-foreground/85 block truncate">{t.location}</span>
+                  </div>
                 </div>
               </div>
             </FadeIn>
           ))}
         </div>
+        <FadeIn delay={0.3}>
+          <p className="text-xs italic text-muted-foreground/70 text-center mt-6">
+            From early access members
+          </p>
+        </FadeIn>
       </div>
     </section>
   );
