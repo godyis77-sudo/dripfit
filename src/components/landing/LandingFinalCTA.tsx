@@ -14,11 +14,11 @@ export default function LandingFinalCTA() {
 
       <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
         <FadeIn>
-          {/* Proof bar */}
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mb-8 text-[11px] tracking-[.18em] uppercase font-mono text-muted-foreground/70">
+          {/* Proof bar — single tight line on mobile */}
+          <div className="flex items-center justify-center flex-nowrap gap-x-2.5 sm:gap-x-4 mb-8 text-[10px] sm:text-[11px] tracking-[.12em] sm:tracking-[.18em] uppercase font-mono text-muted-foreground/70 whitespace-nowrap">
             <span><span className="text-primary">186</span> Brands</span>
             <span className="opacity-30">·</span>
-            <span><span className="text-primary">389</span> Size Charts</span>
+            <span><span className="text-primary">389</span> Charts</span>
             <span className="opacity-30">·</span>
             <span><span className="text-primary">9,000+</span> Pieces</span>
           </div>
