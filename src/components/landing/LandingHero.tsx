@@ -35,15 +35,16 @@ export default function LandingHero() {
             >
               KNOW YOUR FIT.
               <span
-                className="block italic font-bold text-primary mt-2 whitespace-nowrap"
+                className="block italic font-bold text-primary mt-3"
                 style={{
                   fontFamily: "'Fraunces', 'Playfair Display', Georgia, serif",
                   fontStyle: 'italic',
                   fontWeight: 700,
-                  fontVariationSettings: '"opsz" 144, "SOFT" 50',
-                  letterSpacing: '-0.02em',
-                  fontSize: 'clamp(38px, 6.5vw, 72px)',
-                  lineHeight: 1.05,
+                  fontVariationSettings: '"opsz" 144, "SOFT" 100',
+                  letterSpacing: '0',
+                  wordSpacing: '0.05em',
+                  fontSize: 'clamp(44px, 8vw, 78px)',
+                  lineHeight: 1.02,
                 }}
               >
                 Own Your Drip.
