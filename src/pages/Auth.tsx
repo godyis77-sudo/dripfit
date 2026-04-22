@@ -15,6 +15,7 @@ const Auth = () => {
 
   const rawReturn = searchParams.get('returnTo') || '/';
   const returnTo = rawReturn.startsWith('/') && !rawReturn.startsWith('//') ? rawReturn : '/';
+  const defaultMode = searchParams.get('mode') === 'signup' ? 'signup' : 'signin';
 
   // Redirect if already logged in
   useEffect(() => {
@@ -44,7 +45,7 @@ const Auth = () => {
       </button>
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 w-full max-w-[320px] flex flex-col items-center">
-        <AuthForm onComplete={() => navigate(returnTo, { replace: true })} />
+        <AuthForm defaultMode={defaultMode} onComplete={() => navigate(returnTo, { replace: true })} />
       </motion.div>
     </div>
   );
