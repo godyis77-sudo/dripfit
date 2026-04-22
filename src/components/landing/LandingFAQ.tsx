@@ -37,7 +37,7 @@ export default function LandingFAQ() {
     <section id="faq" className="py-20 md:py-24 scroll-mt-20">
       <div className="max-w-2xl mx-auto px-6">
         <FadeIn>
-          <h2 className="type-headline text-3xl md:text-4xl text-center mb-14">QUESTIONS. ANSWERED.</h2>
+          <h2 className="type-headline font-bold text-center mb-14 leading-tight" style={{ letterSpacing: '-0.01em', fontSize: 'clamp(32px, 4vw, 48px)' }}>Questions. Answered.</h2>
         </FadeIn>
         <FadeIn delay={0.08}>
           <div className="divide-y divide-border/30">
