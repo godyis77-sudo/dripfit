@@ -64,7 +64,7 @@ const GuestProfileView = () => {
           onClick={() => navigate('/auth?mode=signup&returnTo=/profile')}
           className="w-full max-w-xs bg-primary text-primary-foreground font-bold rounded-full py-4 px-6 text-sm tracking-wide flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all"
         >
-          <Sparkles className="h-4 w-4" /> Start Your Scan <ArrowRight className="h-4 w-4" />
+          <Sparkles className="h-4 w-4" /> Sign Up Now <ArrowRight className="h-4 w-4" />
         </button>
 
         {/* Secondary CTA — outlined, routes to sign-in tab */}
