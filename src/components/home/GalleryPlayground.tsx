@@ -77,13 +77,9 @@ const GalleryPlayground = () => {
         <div className="flex items-center justify-between mb-1">
           <div className="flex-1 min-w-0">
             <h1 className="font-display text-[28px] font-extrabold text-foreground uppercase tracking-tight leading-none">DRIPFIT <span className="text-primary text-[22px]">✔</span></h1>
-            {hasScan ? (
+            {hasScan && (
               <p className="font-sans text-[11px] tracking-[0.14em] uppercase text-foreground/60 mt-1">
                 Verified. Ready to drip. <span className="text-foreground/40">· 9,000+ · 186 brands · 389 size charts</span>
-              </p>
-            ) : (
-              <p className="font-sans text-[13px] font-medium tracking-[0.15em] uppercase text-foreground/70 mt-1 mb-3">
-                YOUR SIZE, YOUR FIT, YOUR CULTURE.
               </p>
             )}
           </div>
