@@ -11,6 +11,14 @@ export default function LandingFinalCTA() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none bg-primary/[0.04] blur-[120px]" />
       <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
         <FadeIn>
+          {/* Proof bar */}
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mb-8 text-[11px] tracking-[.18em] uppercase font-mono text-muted-foreground/70">
+            <span><span className="text-primary">186</span> Brands</span>
+            <span className="opacity-30">·</span>
+            <span><span className="text-primary">389</span> Size Charts</span>
+            <span className="opacity-30">·</span>
+            <span><span className="text-primary">9,000+</span> Pieces</span>
+          </div>
           <span className="type-data text-primary/60 block mb-6">Your Drip. Verified.</span>
           <h2 className="type-brand leading-[1.08] mb-6" style={{ fontSize: 'clamp(32px, 5vw, 56px)' }}>
             Stop Praying<br />

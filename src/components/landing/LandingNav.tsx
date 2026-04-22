@@ -6,7 +6,6 @@ import BrandLogo from '@/components/ui/BrandLogo';
 
 const NAV_ITEMS = [
   { label: 'Problem', href: '#problem' },
-  { label: 'Root Cause', href: '#root-cause' },
   { label: 'How It Works', href: '#how-it-works' },
   { label: 'Proof', href: '#proof' },
   { label: 'Pricing', href: '#pricing' },
