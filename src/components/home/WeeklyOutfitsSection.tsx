@@ -10,6 +10,16 @@ import { shuffleArray } from '@/lib/utils';
 
 const APP_URL = 'https://dripfitcheck.lovable.app';
 
+/**
+ * Derive a stable, deterministic mock COP percentage (89–98) from the outfit id.
+ * Replace with a real `cop_percentage` field on WeeklyOutfit when available.
+ */
+function getCopScore(id: string): number {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  return 89 + (hash % 10); // 89..98
+}
+
 function handleShare(title: string, e: React.MouseEvent) {
   e.stopPropagation();
   const url = `${APP_URL}/outfits-weekly`;
