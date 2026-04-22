@@ -101,6 +101,31 @@ const GalleryPlayground = () => {
               onClick={() => { trackEvent('home_start_scan_click'); navigate('/capture'); }}
               className="relative w-full mb-3 rounded-2xl overflow-hidden cursor-pointer active:scale-[0.97] transition-all bg-gradient-to-br from-[#1A1A1A] via-[#141414] to-[rgba(212,175,55,0.08)]"
             >
+              {/* Gold gradient border (1.5px, mask-composite trick) */}
+              <div
+                aria-hidden
+                className="absolute inset-0 rounded-2xl pointer-events-none z-20"
+                style={{
+                  padding: '1.5px',
+                  background: 'linear-gradient(135deg, #C8A951 0%, rgba(200,169,81,0.35) 35%, transparent 70%)',
+                  WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
+                  WebkitMaskComposite: 'xor',
+                  maskComposite: 'exclude',
+                }}
+              />
+
+              {/* Subtle vertical scan-line — sweeps top → bottom on a slow loop */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-2xl z-10">
+                <div
+                  className="absolute left-0 right-0 h-px"
+                  style={{
+                    background: 'linear-gradient(90deg, transparent 0%, #C8A951 50%, transparent 100%)',
+                    opacity: 0.1,
+                    animation: 'scanline-sweep 4.5s linear infinite',
+                  }}
+                />
+              </div>
+
               {/* Gold radial glow — bottom-right */}
               <div
                 className="absolute bottom-0 right-0 w-56 h-56 pointer-events-none"
@@ -122,7 +147,16 @@ const GalleryPlayground = () => {
                 <p className="font-mono text-[10px] tracking-[0.22em] uppercase text-primary/70 font-bold mb-3">
                   STEP 01 · YOUR SCAN
                 </p>
-                <h2 className="font-serif text-[28px] font-bold uppercase text-foreground leading-[1.05] tracking-tight mb-3">
+                <h2
+                  className="text-foreground leading-[1.05] mb-3"
+                  style={{
+                    fontFamily: "'Playfair Display', Georgia, 'Times New Roman', serif",
+                    fontWeight: 500,
+                    letterSpacing: '0.01em',
+                    textTransform: 'uppercase',
+                    fontSize: 'clamp(26px, 7vw, 32px)',
+                  }}
+                >
                   YOUR BODY. MAPPED.
                 </h2>
                 <p className="font-sans text-[13px] font-light text-white/70 leading-snug max-w-[280px] mb-2">
@@ -133,10 +167,13 @@ const GalleryPlayground = () => {
                 </p>
                 <button
                   onClick={(e) => { e.stopPropagation(); navigate('/capture'); }}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-[13px] font-bold tracking-wide hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-primary text-primary-foreground text-[14px] font-bold tracking-wide hover:opacity-90 active:scale-[0.98] transition-all"
                 >
                   Start the Scan <ArrowRight className="h-4 w-4" />
                 </button>
+                <p className="text-xs text-white/50 text-center mt-3 font-sans tracking-wide">
+                  60 seconds. 186 brands. Encrypted.
+                </p>
               </div>
             </div>
 
