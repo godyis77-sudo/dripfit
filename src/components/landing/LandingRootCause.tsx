@@ -29,9 +29,9 @@ export default function LandingRootCause() {
               style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}
             >
               Every third purchase.{' '}
-              <span className="text-muted-foreground/40">The wrong size.</span>
+              <span className="text-muted-foreground/85">The wrong size.</span>
             </h2>
-            <p className="text-sm text-muted-foreground/70 mt-4 max-w-md mx-auto">
+            <p className="text-sm text-muted-foreground/85 mt-4 max-w-md mx-auto">
               The fashion economy keeps growing. Returns keep eating it. The bottleneck is sizing.
             </p>
           </FadeIn>
@@ -65,7 +65,7 @@ export default function LandingRootCause() {
                 {/* Center label */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                   <span className="font-display font-bold text-primary" style={{ fontSize: 36 }}>70%</span>
-                  <span className="font-mono text-[11px] tracking-wider uppercase text-muted-foreground/60">fit-related returns</span>
+                  <span className="font-mono text-[11px] tracking-wider uppercase text-muted-foreground/85">fit-related returns</span>
                 </div>
               </div>
               {/* Legend */}
@@ -73,7 +73,7 @@ export default function LandingRootCause() {
                 {DONUT_DATA.map((d) => (
                   <div key={d.name} className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: d.color }} />
-                    <span className="font-mono text-[11px] tracking-wider uppercase text-muted-foreground/60">{d.name}</span>
+                    <span className="font-mono text-[11px] tracking-wider uppercase text-muted-foreground/85">{d.name}</span>
                   </div>
                 ))}
               </div>
@@ -94,7 +94,7 @@ export default function LandingRootCause() {
         </div>
 
         <FadeIn delay={0.4}>
-          <p className="text-[11px] text-muted-foreground/40 text-right mt-6">
+          <p className="text-[11px] text-muted-foreground/85 text-right mt-6">
             Sources: McKinsey 2025, Capital One Shopping Research 2025
           </p>
         </FadeIn>

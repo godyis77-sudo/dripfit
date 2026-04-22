@@ -31,7 +31,7 @@ export default function LandingPricing() {
             style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}
           >
             Start Free.<br />
-            <span className="text-muted-foreground/40">Upgrade When You Outgrow It.</span>
+            <span className="text-muted-foreground/85">Upgrade When You Outgrow It.</span>
           </h2>
         </FadeIn>
 
@@ -39,12 +39,12 @@ export default function LandingPricing() {
           {/* FREE */}
           <FadeIn delay={0.08}>
             <div className="rounded-2xl border border-border/40 bg-card p-8 flex flex-col h-full">
-              <span className="type-data mb-4 text-muted-foreground/70">Free</span>
+              <span className="type-data mb-4 text-muted-foreground/85">Free</span>
               <div className="font-display text-4xl font-bold mb-8">$0</div>
               <ul className="space-y-3 mb-10 flex-1">
                 {FREE_FEATURES.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5 text-sm text-muted-foreground/80">
-                    <Check className="h-4 w-4 mt-0.5 text-muted-foreground/50 shrink-0" />
+                  <li key={f} className="flex items-start gap-2.5 text-sm text-muted-foreground/85">
+                    <Check className="h-4 w-4 mt-0.5 text-muted-foreground/85 shrink-0" />
                     {f}
                   </li>
                 ))}
@@ -70,11 +70,11 @@ export default function LandingPricing() {
                 <Sparkles className="h-3 w-3" /> Premium
               </span>
               <div className="font-display text-4xl font-bold mb-1">$4.17<span className="text-lg font-normal text-muted-foreground">/mo</span></div>
-              <p className="text-xs text-muted-foreground/60 mb-1">billed annually · $7.99 month-to-month</p>
+              <p className="text-xs text-muted-foreground/85 mb-1">billed annually · $7.99 month-to-month</p>
               <p className="text-[10px] font-mono tracking-[.18em] uppercase text-primary/80 mb-8">Save 48%</p>
               <ul className="space-y-3 mb-10 flex-1">
                 {PREMIUM_FEATURES.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5 text-sm text-muted-foreground/80">
+                  <li key={f} className="flex items-start gap-2.5 text-sm text-muted-foreground/85">
                     <Check className="h-4 w-4 mt-0.5 text-primary shrink-0" />
                     {f}
                   </li>

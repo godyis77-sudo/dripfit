@@ -32,7 +32,7 @@ export default function LandingCommunityVerdict() {
                 </div>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground/60 text-center mt-6 pt-5 border-t border-border/30">
+            <p className="text-xs text-muted-foreground/85 text-center mt-6 pt-5 border-t border-border/30">
               Verdicts from Body Twins within your measurement range
             </p>
             <div className="mt-6 flex justify-center">

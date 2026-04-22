@@ -37,8 +37,8 @@ export default function LandingTestimonials() {
                 <p className="text-sm leading-relaxed text-foreground/90 flex-1 mb-5">"{t.quote}"</p>
                 <div>
                   <span className="text-sm font-semibold text-primary">{t.name}</span>
-                  <span className="text-xs text-muted-foreground/60 block mt-0.5">{t.tag}</span>
-                  <span className="text-xs text-muted-foreground/40 block">{t.location}</span>
+                  <span className="text-xs text-muted-foreground/85 block mt-0.5">{t.tag}</span>
+                  <span className="text-xs text-muted-foreground/85 block">{t.location}</span>
                 </div>
               </div>
             </FadeIn>
