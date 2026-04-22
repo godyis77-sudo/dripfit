@@ -26,7 +26,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         className="overflow-hidden"
       >
-        <p className="type-body leading-relaxed mt-3 text-muted-foreground/80" style={{ fontSize: 15 }}>{a}</p>
+        <p className="type-body leading-relaxed mt-3 text-muted-foreground/85" style={{ fontSize: 15 }}>{a}</p>
       </motion.div>
     </div>
   );

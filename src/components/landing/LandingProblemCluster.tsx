@@ -45,11 +45,11 @@ function ReturnsBars() {
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <span className="font-mono text-[10px] tracking-wider text-muted-foreground/60 w-16 shrink-0">INDUSTRY</span>
+        <span className="font-mono text-[10px] tracking-wider text-muted-foreground/85 w-16 shrink-0">INDUSTRY</span>
         <div className="flex-1 h-1.5 rounded-full bg-secondary/40 overflow-hidden">
           <div className="h-full bg-muted-foreground/40 rounded-full" style={{ width: '100%' }} />
         </div>
-        <span className="font-mono text-[11px] tracking-wider text-muted-foreground/70 w-8 text-right">30%</span>
+        <span className="font-mono text-[11px] tracking-wider text-muted-foreground/85 w-8 text-right">30%</span>
       </div>
       <div className="flex items-center gap-2">
         <span className="font-mono text-[10px] tracking-wider text-primary/80 w-16 shrink-0">DRIPFIT</span>
@@ -58,7 +58,7 @@ function ReturnsBars() {
         </div>
         <span className="font-mono text-[11px] tracking-wider text-primary w-8 text-right">6%</span>
       </div>
-      <p className="font-mono text-[10px] tracking-wider text-muted-foreground/50 pt-1">— 80% FEWER SIZE RETURNS</p>
+      <p className="font-mono text-[10px] tracking-wider text-muted-foreground/85 pt-1">— 80% FEWER SIZE RETURNS</p>
     </div>
   );
 }
@@ -67,13 +67,13 @@ function ConfidenceDots() {
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <span className="font-mono text-[10px] tracking-wider text-muted-foreground/60 w-14 shrink-0">BEFORE</span>
+        <span className="font-mono text-[10px] tracking-wider text-muted-foreground/85 w-14 shrink-0">BEFORE</span>
         <div className="flex gap-1.5">
           <span className="w-2 h-2 rounded-full bg-muted-foreground/50" />
           <span className="w-2 h-2 rounded-full bg-muted-foreground/15" />
           <span className="w-2 h-2 rounded-full bg-muted-foreground/15" />
         </div>
-        <span className="font-mono text-[10px] tracking-wider text-muted-foreground/50">GUESSING</span>
+        <span className="font-mono text-[10px] tracking-wider text-muted-foreground/85">GUESSING</span>
       </div>
       <div className="flex items-center gap-2">
         <span className="font-mono text-[10px] tracking-wider text-primary/80 w-14 shrink-0">AFTER</span>
@@ -84,7 +84,7 @@ function ConfidenceDots() {
         </div>
         <span className="font-mono text-[10px] tracking-wider text-primary">VERIFIED DRAPE</span>
       </div>
-      <p className="font-mono text-[10px] tracking-wider text-muted-foreground/50 pt-1">— SEE IT BEFORE YOU COP</p>
+      <p className="font-mono text-[10px] tracking-wider text-muted-foreground/85 pt-1">— SEE IT BEFORE YOU COP</p>
     </div>
   );
 }
@@ -94,13 +94,13 @@ function VerdictBar() {
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <span className="font-mono text-[11px] tracking-wider text-primary">COP · 73%</span>
-        <span className="font-mono text-[11px] tracking-wider text-muted-foreground/60">27% · DROP</span>
+        <span className="font-mono text-[11px] tracking-wider text-muted-foreground/85">27% · DROP</span>
       </div>
       <div className="flex h-1.5 rounded-full overflow-hidden bg-secondary/40">
         <div className="bg-primary" style={{ width: '73%' }} />
         <div className="bg-muted-foreground/40" style={{ width: '27%' }} />
       </div>
-      <p className="font-mono text-[10px] tracking-wider text-muted-foreground/50 pt-1">— COMMUNITY VERDICT, BINARY</p>
+      <p className="font-mono text-[10px] tracking-wider text-muted-foreground/85 pt-1">— COMMUNITY VERDICT, BINARY</p>
     </div>
   );
 }
@@ -123,7 +123,7 @@ export default function LandingProblemCluster() {
           >
             Three Reasons.
             <br />
-            <span className="text-muted-foreground/40">Online Shopping Fails.</span>
+            <span className="text-muted-foreground/85">Online Shopping Fails.</span>
           </h2>
           <p className="type-body text-[15px] md:text-base leading-relaxed max-w-md mx-auto">
             Every cart abandoned. Every return shipped. Every "meh" outfit. It comes down to three unanswered questions. DripFit answers all three.
@@ -145,7 +145,7 @@ export default function LandingProblemCluster() {
                   {p.problem}
                 </h3>
               </div>
-              <p className="font-display italic text-sm md:text-base text-muted-foreground/70 mb-3 leading-snug">
+              <p className="font-display italic text-sm md:text-base text-muted-foreground/85 mb-3 leading-snug">
                 {p.question}
               </p>
 
@@ -176,18 +176,18 @@ export default function LandingProblemCluster() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
             <div>
               <div className="font-display font-bold text-2xl text-primary leading-none mb-2">$849.9B</div>
-              <div className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground/60 uppercase">Annual Returns</div>
+              <div className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground/85 uppercase">Annual Returns</div>
             </div>
             <div>
               <div className="font-display font-bold text-2xl text-primary leading-none mb-2">70%</div>
-              <div className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground/60 uppercase">Fit-Related</div>
+              <div className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground/85 uppercase">Fit-Related</div>
             </div>
             <div>
               <div className="font-display font-bold text-2xl text-primary leading-none mb-2">1 in 3</div>
-              <div className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground/60 uppercase">Items Returned</div>
+              <div className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground/85 uppercase">Items Returned</div>
             </div>
           </div>
-          <p className="text-[11px] text-muted-foreground/40 mt-5 text-center">
+          <p className="text-[11px] text-muted-foreground/85 mt-5 text-center">
             Source: National Retail Federation 2025, McKinsey Returns Survey
           </p>
         </div>

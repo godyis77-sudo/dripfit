@@ -40,9 +40,9 @@ export default function LandingMarket() {
             <span className="font-mono text-xs tracking-[.18em] uppercase text-muted-foreground block mb-5">The Market</span>
             <h2 className="font-display font-bold leading-tight" style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}>
               $1.01 Trillion.{' '}
-              <span className="text-muted-foreground/40">And Returns Are Eating It.</span>
+              <span className="text-muted-foreground/85">And Returns Are Eating It.</span>
             </h2>
-            <p className="text-sm text-muted-foreground/60 mt-4 max-w-md mx-auto">
+            <p className="text-sm text-muted-foreground/85 mt-4 max-w-md mx-auto">
               Projected $1.16T by 2030. Returns are eating it.
             </p>
           </FadeIn>
@@ -94,7 +94,7 @@ export default function LandingMarket() {
         </div>
 
         <FadeIn delay={0.4}>
-          <p className="text-[11px] text-muted-foreground/40 text-right mt-4">
+          <p className="text-[11px] text-muted-foreground/85 text-right mt-4">
             Sources: Statista 2025, Capital One Shopping Research 2025, eMarketer 2026
           </p>
         </FadeIn>

@@ -71,7 +71,7 @@ export default function LandingHero() {
                 >
                   Start Your Scan <ArrowRight className="h-4 w-4" />
                 </Link>
-                <div className="w-full inline-flex items-center justify-center gap-1.5 mt-3 text-[11px] text-muted-foreground/70">
+                <div className="w-full inline-flex items-center justify-center gap-1.5 mt-3 text-[11px] text-muted-foreground/85">
                   <Lock className="h-3 w-3 text-primary/70" />
                   <span>Biometric data encrypted end-to-end. Never sold.</span>
                   <span className="opacity-40">·</span>
