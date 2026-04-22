@@ -5,8 +5,8 @@ import bodyScanShowcase from '@/assets/body-scan-showcase.jpg';
 interface Feature { icon: LucideIcon; title: string; desc: string }
 
 const FEATURES: Feature[] = [
-  { icon: Scan, title: 'The Biometric Scan', desc: '2 photos. 60 seconds. Your exact geometry — measured. Cross-referenced against 186 brand size charts.' },
-  { icon: Shirt, title: 'Infinite Drape Studio', desc: '9,000+ pieces. 69 retailers. AR try-on renders the real fit on your silhouette. No model. Just you.' },
+  { icon: Scan, title: 'The Biometric Scan', desc: '2 photos. 60 seconds. Your exact geometry — measured. Cross-referenced against 389 size charts.' },
+  { icon: Shirt, title: 'Infinite Drape Studio', desc: '9,000+ pieces. 186 brands. AR try-on renders the real fit on your silhouette. No model. Just you.' },
   { icon: Users, title: 'Body & Style Twins', desc: 'Members with your exact proportions. If it works on them — it works on you.' },
   { icon: Scale, title: 'COP or DROP', desc: 'The community verdict. Your Twins have spoken. Binary. Decisive. No ambiguity.' },
   { icon: ShieldCheck, title: 'Locked-In Sizing', desc: 'Your exact size at every brand. Instantly. No more guessing between a Medium at Nike and a Large at Zara.' },
