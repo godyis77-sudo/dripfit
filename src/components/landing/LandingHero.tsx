@@ -51,7 +51,7 @@ export default function LandingHero() {
 
           <FadeIn delay={0.16}>
             <p className="type-body text-base md:text-lg leading-relaxed max-w-md mb-10 mt-7 font-light">
-              One scan. Your exact size at 389 brand charts. No more guessing.
+              One scan. Your exact size at 389 size charts. No more guessing.
             </p>
           </FadeIn>
 
