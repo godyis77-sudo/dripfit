@@ -148,6 +148,7 @@ function OccasionPill({ active, onClick, label }: { active: boolean; onClick: ()
 function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }) {
   const heroImage = outfit.hero_image_url;
   const brands = [...new Set(outfit.items.map(i => i.brand).filter(Boolean))].slice(0, 3);
+  const copScore = getCopScore(outfit.id);
 
   // Full-bleed editorial hero card
   if (heroImage) {
