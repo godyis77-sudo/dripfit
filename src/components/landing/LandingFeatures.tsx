@@ -15,11 +15,11 @@ const FEATURES: Feature[] = [
 
 export default function LandingFeatures() {
   return (
-    <section id="features" className="pt-28 md:pt-36 pb-12 bg-secondary/20 border-y border-border/30 scroll-mt-20">
+    <section id="features" className="pt-12 md:pt-16 pb-12 bg-secondary/20 border-y border-border/30 scroll-mt-20">
       <div className="max-w-6xl mx-auto px-6">
         <FadeIn>
-          <div className="text-center mb-16">
-            <span className="type-data block mb-5 text-primary/70">The Ecosystem</span>
+          <div className="text-center mb-10 md:mb-12">
+            <span className="type-data block mb-4 text-primary/70">The Ecosystem</span>
             <h2 className="type-headline leading-tight" style={{ letterSpacing: '-0.01em', fontSize: 'clamp(32px, 4vw, 48px)' }}>
               Your Body. Mapped.<br />Your Drip. <span className="text-primary">Confirmed.</span>
             </h2>
