@@ -23,24 +23,26 @@ export default function LandingFinalCTA() {
             <span><span className="text-primary">9,000+</span> Pieces</span>
           </div>
 
-          {/* Headline — matches hero voice: Playfair 500 sentence-case + italic gold accent */}
+          {/* Headline — Option D: Anton uppercase + Playfair italic accent */}
           <h2
             className="leading-[1.04] mb-6 text-foreground"
             style={{
-              fontFamily: "'Playfair Display', Georgia, 'Times New Roman', serif",
-              fontWeight: 500,
-              letterSpacing: '0.005em',
-              fontSize: 'clamp(38px, 6vw, 64px)',
+              fontFamily: "'Anton', Impact, sans-serif",
+              fontWeight: 400,
+              letterSpacing: '0.01em',
+              textTransform: 'uppercase',
+              fontSize: 'clamp(42px, 6.5vw, 70px)',
             }}
           >
             Stop praying.
             <span
-              className="block text-primary mt-1"
+              className="block text-primary mt-2"
               style={{
                 fontFamily: "'Playfair Display', Georgia, 'Times New Roman', serif",
                 fontStyle: 'italic',
                 fontWeight: 500,
                 letterSpacing: '0',
+                textTransform: 'none',
                 fontSize: 'clamp(38px, 6vw, 64px)',
                 lineHeight: 1.04,
               }}
