@@ -10,6 +10,16 @@ import { shuffleArray } from '@/lib/utils';
 
 const APP_URL = 'https://dripfitcheck.lovable.app';
 
+/**
+ * Derive a stable, deterministic mock COP percentage (89–98) from the outfit id.
+ * Replace with a real `cop_percentage` field on WeeklyOutfit when available.
+ */
+function getCopScore(id: string): number {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  return 89 + (hash % 10); // 89..98
+}
+
 function handleShare(title: string, e: React.MouseEvent) {
   e.stopPropagation();
   const url = `${APP_URL}/outfits-weekly`;
@@ -72,12 +82,21 @@ const WeeklyOutfitsSection = () => {
 
   return (
     <div className="mt-2 mb-4">
+      {/* Section divider — bridges from scan card */}
+      <div className="flex justify-center mb-5">
+        <div className="h-px w-20" style={{ background: 'rgba(200,169,81,0.2)' }} />
+      </div>
+
       <div className="flex items-start justify-between mb-3">
         <div>
           <h2 className="font-display text-[22px] font-semibold text-foreground tracking-tight">
             This Week's Drip
           </h2>
           <p className="font-sans text-[13px] font-medium tracking-[0.15em] uppercase text-foreground/70 mt-0.5">Curated fits · Dropped weekly</p>
+          {/* Context line for unscanned visitors */}
+          <p className="font-sans text-sm text-white/50 mt-1.5">
+            Styled by the community. Verified by Body Twins.
+          </p>
         </div>
         <button
           onClick={() => navigate('/outfits-weekly')}
@@ -129,6 +148,7 @@ function OccasionPill({ active, onClick, label }: { active: boolean; onClick: ()
 function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }) {
   const heroImage = outfit.hero_image_url;
   const brands = [...new Set(outfit.items.map(i => i.brand).filter(Boolean))].slice(0, 3);
+  const copScore = getCopScore(outfit.id);
 
   // Full-bleed editorial hero card
   if (heroImage) {
@@ -144,6 +164,12 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
           className="absolute inset-0 w-full h-full object-cover object-top"
           loading="lazy"
         />
+        {/* COP score pill — top-left, ties cards back to the COP or DROP system */}
+        <span
+          className="absolute top-3 left-3 z-20 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-black/55 backdrop-blur-sm border border-primary/40 text-primary"
+        >
+          {copScore}% COP
+        </span>
         {/* Share button */}
         <button
           onClick={(e) => handleShare(outfit.title, e)}
@@ -185,9 +211,15 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
   return (
     <motion.button
       onClick={onTap}
-      className="snap-start shrink-0 w-[280px] aspect-[3/4] rounded-2xl overflow-hidden text-left active:scale-[0.97] transition-transform glass-dark border border-white/5 flex flex-col justify-end px-3.5 pb-6"
+      className="snap-start shrink-0 w-[280px] aspect-[3/4] rounded-2xl overflow-hidden text-left active:scale-[0.97] transition-transform glass-dark border border-white/5 flex flex-col justify-end px-3.5 pb-6 relative"
       whileTap={{ scale: 0.97 }}
     >
+      {/* COP score pill — top-left */}
+      <span
+        className="absolute top-3 left-3 z-20 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-black/55 backdrop-blur-sm border border-primary/40 text-primary"
+      >
+        {copScore}% COP
+      </span>
       <button
         onClick={(e) => handleShare(outfit.title, e)}
         className="absolute top-3 right-3 z-20 h-8 w-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white/60 hover:text-white transition-colors"
