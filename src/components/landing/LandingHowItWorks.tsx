@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { FadeIn } from './LandingAnimations';
 
 const STEPS = [
@@ -43,13 +42,6 @@ export default function LandingHowItWorks() {
               <span className="text-primary text-4xl leading-none" style={{ fontFamily: 'monospace' }}>✓</span>
               <span className="text-primary font-mono text-[8px] tracking-[.2em] uppercase -mt-1">Verified</span>
             </div>
-
-            <Link
-              to="/auth"
-              className="bg-primary text-primary-foreground font-bold rounded-full py-3 px-8 text-sm tracking-wider uppercase inline-flex items-center gap-2 hover:opacity-90 transition-[opacity,transform] duration-[300ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]"
-            >
-              Start Your Scan →
-            </Link>
           </div>
         </FadeIn>
       </div>
