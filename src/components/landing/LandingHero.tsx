@@ -30,26 +30,28 @@ export default function LandingHero() {
 
           <FadeIn delay={0.08}>
             <h1
-              className="leading-[1.02] mb-2 text-foreground"
+              className="leading-[1.0] mb-2 text-foreground"
               style={{
-                fontFamily: "'Instrument Serif', Georgia, 'Times New Roman', serif",
-                fontWeight: 400,
-                letterSpacing: '-0.01em',
+                fontFamily: "'Fraunces', 'Instrument Serif', Georgia, serif",
+                fontWeight: 800,
+                letterSpacing: '-0.025em',
                 textTransform: 'uppercase',
-                fontSize: 'clamp(46px, 7.2vw, 82px)',
+                fontSize: 'clamp(48px, 7.5vw, 88px)',
+                fontVariationSettings: '"opsz" 144',
               }}
             >
               KNOW YOUR FIT.
               <span
                 className="block text-primary mt-1"
                 style={{
-                  fontFamily: "'Instrument Serif', Georgia, 'Times New Roman', serif",
+                  fontFamily: "'Fraunces', 'Instrument Serif', Georgia, serif",
                   fontStyle: 'italic',
-                  fontWeight: 400,
-                  letterSpacing: '-0.01em',
+                  fontWeight: 800,
+                  letterSpacing: '-0.025em',
                   textTransform: 'uppercase',
-                  fontSize: 'clamp(46px, 7.2vw, 82px)',
-                  lineHeight: 1.02,
+                  fontSize: 'clamp(48px, 7.5vw, 88px)',
+                  lineHeight: 1.0,
+                  fontVariationSettings: '"opsz" 144',
                 }}
               >
                 OWN YOUR DRIP.
