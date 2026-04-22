@@ -211,9 +211,15 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
   return (
     <motion.button
       onClick={onTap}
-      className="snap-start shrink-0 w-[280px] aspect-[3/4] rounded-2xl overflow-hidden text-left active:scale-[0.97] transition-transform glass-dark border border-white/5 flex flex-col justify-end px-3.5 pb-6"
+      className="snap-start shrink-0 w-[280px] aspect-[3/4] rounded-2xl overflow-hidden text-left active:scale-[0.97] transition-transform glass-dark border border-white/5 flex flex-col justify-end px-3.5 pb-6 relative"
       whileTap={{ scale: 0.97 }}
     >
+      {/* COP score pill — top-left */}
+      <span
+        className="absolute top-3 left-3 z-20 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-black/55 backdrop-blur-sm border border-primary/40 text-primary"
+      >
+        {copScore}% COP
+      </span>
       <button
         onClick={(e) => handleShare(outfit.title, e)}
         className="absolute top-3 right-3 z-20 h-8 w-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white/60 hover:text-white transition-colors"
