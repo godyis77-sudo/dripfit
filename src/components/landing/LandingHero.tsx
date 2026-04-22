@@ -32,27 +32,27 @@ export default function LandingHero() {
             <h1
               className="leading-[1.02] mb-2 text-foreground"
               style={{
-                fontFamily: "'Anton', Impact, sans-serif",
+                fontFamily: "'Instrument Serif', Georgia, 'Times New Roman', serif",
                 fontWeight: 400,
-                letterSpacing: '0.01em',
+                letterSpacing: '-0.01em',
                 textTransform: 'uppercase',
-                fontSize: 'clamp(48px, 7.5vw, 86px)',
+                fontSize: 'clamp(46px, 7.2vw, 82px)',
               }}
             >
-              Know your fit.
+              KNOW YOUR FIT.
               <span
-                className="block text-primary mt-2"
+                className="block text-primary mt-1"
                 style={{
-                  fontFamily: "'Playfair Display', Georgia, 'Times New Roman', serif",
+                  fontFamily: "'Instrument Serif', Georgia, 'Times New Roman', serif",
                   fontStyle: 'italic',
-                  fontWeight: 500,
-                  letterSpacing: '0',
-                  textTransform: 'none',
-                  fontSize: 'clamp(44px, 7vw, 78px)',
+                  fontWeight: 400,
+                  letterSpacing: '-0.01em',
+                  textTransform: 'uppercase',
+                  fontSize: 'clamp(46px, 7.2vw, 82px)',
                   lineHeight: 1.02,
                 }}
               >
-                Own your drip.
+                OWN YOUR DRIP.
               </span>
             </h1>
           </FadeIn>
