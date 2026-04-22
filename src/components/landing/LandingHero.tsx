@@ -71,13 +71,15 @@ export default function LandingHero() {
                 >
                   Start Your Scan <ArrowRight className="h-4 w-4" />
                 </Link>
+                <Link
+                  to="/home"
+                  className="w-full mt-3 border border-primary text-primary bg-transparent rounded-full px-6 py-2 text-sm font-medium tracking-wide flex items-center justify-center hover:bg-primary/10 transition-colors duration-200"
+                >
+                  Try as guest
+                </Link>
                 <div className="w-full inline-flex items-center justify-center gap-1.5 mt-3 text-[11px] text-muted-foreground/85">
                   <Lock className="h-3 w-3 text-primary/70" />
                   <span>Biometric data encrypted end-to-end. Never sold.</span>
-                  <span className="opacity-40">·</span>
-                  <Link to="/home" className="hover:text-primary transition-colors underline-offset-2 hover:underline">
-                    Try as guest
-                  </Link>
                 </div>
               </div>
             )}
