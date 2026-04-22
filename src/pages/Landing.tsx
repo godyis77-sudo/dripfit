@@ -62,59 +62,47 @@ export default function Landing() {
       <LandingFinalCTA />
 
       {/* FOOTER */}
-      <footer className="border-t border-border/30 py-8">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col items-center gap-5">
-          {/* Social icons */}
-          <div className="flex items-center justify-center" style={{ gap: 16 }}>
-            <a
-              href="#"
-              aria-label="Instagram"
-              className="text-primary hover:opacity-80 transition-opacity"
-            >
-              <Instagram size={20} />
+      <footer className="border-t border-border/30 py-6">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <BrandLogo size="sm" className="opacity-60" />
+
+          <div className="flex items-center gap-5">
+            <a href="#" aria-label="Instagram" className="text-primary/80 hover:text-primary transition-colors">
+              <Instagram size={18} />
             </a>
-            <a
-              href="#"
-              aria-label="TikTok"
-              className="text-primary hover:opacity-80 transition-opacity"
-            >
-              <Music2 size={20} />
+            <a href="#" aria-label="TikTok" className="text-primary/80 hover:text-primary transition-colors">
+              <Music2 size={18} />
             </a>
-            <a
-              href="#"
-              aria-label="X (Twitter)"
-              className="text-primary hover:opacity-80 transition-opacity"
-            >
-              <Twitter size={20} />
+            <a href="#" aria-label="X (Twitter)" className="text-primary/80 hover:text-primary transition-colors">
+              <Twitter size={18} />
             </a>
           </div>
 
-          <div className="w-full flex flex-col md:flex-row justify-between items-center gap-4">
-            <BrandLogo size="sm" className="opacity-50" />
-            <span className="text-xs text-muted-foreground/85 text-center">
-              DripFit — Know your fit. © 2026
-            </span>
-            <div className="flex gap-6">
-              <Link
-                to="/privacy"
-                className="text-xs text-muted-foreground/85 hover:text-foreground transition-colors whitespace-nowrap"
-              >
-                Privacy
-              </Link>
-              <Link
-                to="/terms"
-                className="text-xs text-muted-foreground/85 hover:text-foreground transition-colors whitespace-nowrap"
-              >
-                Terms
-              </Link>
-              <a
-                href="mailto:hello@dripfitcheck.com"
-                className="text-xs text-muted-foreground/85 hover:text-foreground transition-colors whitespace-nowrap"
-              >
-                Contact
-              </a>
-            </div>
+          <div className="flex items-center gap-5">
+            <Link
+              to="/privacy"
+              className="text-xs text-muted-foreground/85 hover:text-foreground transition-colors whitespace-nowrap"
+            >
+              Privacy
+            </Link>
+            <Link
+              to="/terms"
+              className="text-xs text-muted-foreground/85 hover:text-foreground transition-colors whitespace-nowrap"
+            >
+              Terms
+            </Link>
+            <a
+              href="mailto:hello@dripfitcheck.com"
+              className="text-xs text-muted-foreground/85 hover:text-foreground transition-colors whitespace-nowrap"
+            >
+              Contact
+            </a>
           </div>
+        </div>
+        <div className="max-w-6xl mx-auto px-6 mt-4 text-center md:text-left">
+          <span className="text-[11px] text-muted-foreground/60">
+            DripFit — Know your fit. © 2026
+          </span>
         </div>
       </footer>
 
