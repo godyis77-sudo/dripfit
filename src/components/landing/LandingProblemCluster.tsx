@@ -1,197 +1,67 @@
-import { Ruler, Shirt, Sparkles, LucideIcon } from 'lucide-react';
 import { FadeIn } from './LandingAnimations';
 
-interface Problem {
-  n: string;
-  icon: LucideIcon;
-  problem: string;
-  question: string;
-  solution: string;
-  solutionLabel: string;
-  visual: 'returns' | 'confidence' | 'verdict';
-}
-
-const PROBLEMS: Problem[] = [
-  {
-    n: '01',
-    icon: Ruler,
-    problem: 'Wrong Size',
-    question: '"Will it actually fit?"',
-    solution: 'The Biometric Scan',
-    solutionLabel: 'Your exact measurements, cross-referenced against 389 brand size charts. One scan. Verified size at every brand.',
-    visual: 'returns',
-  },
-  {
-    n: '02',
-    icon: Shirt,
-    problem: 'Wrong Drape',
-    question: '"Will it look good on my body?"',
-    solution: 'Infinite Drape Studio',
-    solutionLabel: 'AR try-on renders every garment on your exact silhouette. See the real drape before you cop. No model. Just you.',
-    visual: 'confidence',
-  },
-  {
-    n: '03',
-    icon: Sparkles,
-    problem: 'Wrong Vibe',
-    question: '"Will I actually look hip in this?"',
-    solution: 'COP or DROP — Verified',
-    solutionLabel: 'Your Body & Style Twins have already worn it. Community verdict. Binary. Decisive. Drip approved or dropped.',
-    visual: 'verdict',
-  },
+const QA_PAIRS: Array<{ q: string; a: string }> = [
+  { q: 'Will it fit?', a: 'The Biometric Scan' },
+  { q: 'Will it look right on me?', a: 'Infinite Drape Studio' },
+  { q: 'Will it pass the vibe check?', a: 'COP or DROP' },
 ];
-
-function ReturnsBars() {
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <span className="font-mono text-[10px] tracking-wider text-muted-foreground/85 w-16 shrink-0">INDUSTRY</span>
-        <div className="flex-1 h-1.5 rounded-full bg-secondary/40 overflow-hidden">
-          <div className="h-full bg-muted-foreground/40 rounded-full" style={{ width: '100%' }} />
-        </div>
-        <span className="font-mono text-[11px] tracking-wider text-muted-foreground/85 w-8 text-right">30%</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <span className="font-mono text-[10px] tracking-wider text-primary/80 w-16 shrink-0">DRIPFIT</span>
-        <div className="flex-1 h-1.5 rounded-full bg-secondary/40 overflow-hidden">
-          <div className="h-full bg-primary rounded-full" style={{ width: '20%' }} />
-        </div>
-        <span className="font-mono text-[11px] tracking-wider text-primary w-8 text-right">6%</span>
-      </div>
-      <p className="font-mono text-[10px] tracking-wider text-muted-foreground/85 pt-1">— 80% FEWER SIZE RETURNS</p>
-    </div>
-  );
-}
-
-function ConfidenceDots() {
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <span className="font-mono text-[10px] tracking-wider text-muted-foreground/85 w-14 shrink-0">BEFORE</span>
-        <div className="flex gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-muted-foreground/50" />
-          <span className="w-2 h-2 rounded-full bg-muted-foreground/15" />
-          <span className="w-2 h-2 rounded-full bg-muted-foreground/15" />
-        </div>
-        <span className="font-mono text-[10px] tracking-wider text-muted-foreground/85">GUESSING</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <span className="font-mono text-[10px] tracking-wider text-primary/80 w-14 shrink-0">AFTER</span>
-        <div className="flex gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-primary" />
-          <span className="w-2 h-2 rounded-full bg-primary" />
-          <span className="w-2 h-2 rounded-full bg-primary" />
-        </div>
-        <span className="font-mono text-[10px] tracking-wider text-primary">VERIFIED DRAPE</span>
-      </div>
-      <p className="font-mono text-[10px] tracking-wider text-muted-foreground/85 pt-1">— SEE IT BEFORE YOU COP</p>
-    </div>
-  );
-}
-
-function VerdictBar() {
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <span className="font-mono text-[11px] tracking-wider text-primary">COP · 73%</span>
-        <span className="font-mono text-[11px] tracking-wider text-muted-foreground/85">27% · DROP</span>
-      </div>
-      <div className="flex h-1.5 rounded-full overflow-hidden bg-secondary/40">
-        <div className="bg-primary" style={{ width: '73%' }} />
-        <div className="bg-muted-foreground/40" style={{ width: '27%' }} />
-      </div>
-      <p className="font-mono text-[10px] tracking-wider text-muted-foreground/85 pt-1">— COMMUNITY VERDICT, BINARY</p>
-    </div>
-  );
-}
-
-function CardVisual({ kind }: { kind: Problem['visual'] }) {
-  if (kind === 'returns') return <ReturnsBars />;
-  if (kind === 'confidence') return <ConfidenceDots />;
-  return <VerdictBar />;
-}
 
 export default function LandingProblemCluster() {
   return (
-    <section id="problem" className="pt-20 md:pt-28 pb-20 scroll-mt-20">
+    <section id="problem" className="py-12 scroll-mt-20">
       <div className="max-w-3xl mx-auto px-6 text-center">
         <FadeIn>
           <span className="type-data block mb-5 text-muted-foreground">The Problem</span>
           <h2
-            className="type-headline font-bold leading-tight mb-6"
+            className="type-headline font-bold leading-tight mb-10"
             style={{ letterSpacing: '-0.01em', fontSize: 'clamp(32px, 4vw, 48px)' }}
           >
-            Three Reasons.
+            Every Third Purchase.
             <br />
-            <span className="text-muted-foreground/85">Online Shopping Fails.</span>
+            <span className="text-muted-foreground/85">Returned.</span>
           </h2>
-          <p className="type-body text-[15px] md:text-base leading-relaxed max-w-md mx-auto">
-            Every cart abandoned. Every return shipped. Every "meh" outfit. It comes down to three unanswered questions. DripFit answers all three.
-          </p>
+        </FadeIn>
+
+        {/* Single-stat display */}
+        <FadeIn delay={0.1}>
+          <div className="flex flex-col items-center">
+            <div
+              className="font-display font-bold text-primary leading-none"
+              style={{ fontSize: 'clamp(80px, 14vw, 144px)', letterSpacing: '-0.03em' }}
+            >
+              70%
+            </div>
+            <p className="text-foreground/70 text-lg mt-4">
+              of online returns are fit-related
+            </p>
+            <p className="text-foreground/40 text-sm mt-2">
+              Source: National Retail Federation 2025
+            </p>
+          </div>
+        </FadeIn>
+
+        {/* Q → A block, 32px spacing above */}
+        <FadeIn delay={0.2}>
+          <div className="mt-8 flex flex-col items-center" style={{ gap: 12 }}>
+            {QA_PAIRS.map(({ q, a }) => (
+              <div
+                key={q}
+                className="w-full max-w-md flex flex-col sm:flex-row sm:items-center sm:justify-center text-center sm:text-left gap-1 sm:gap-3"
+              >
+                <span className="font-display italic text-foreground text-base sm:text-lg sm:flex-1 sm:text-right">
+                  {q}
+                </span>
+                <span className="text-primary text-lg hidden sm:inline" aria-hidden="true">
+                  →
+                </span>
+                <span className="font-display text-primary text-base sm:text-lg sm:flex-1 sm:text-left">
+                  {a}
+                </span>
+              </div>
+            ))}
+          </div>
         </FadeIn>
       </div>
-
-      {/* Three problems → three solutions */}
-      <div className="max-w-6xl mx-auto px-6 mt-10 md:mt-16 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
-        {PROBLEMS.map((p, i) => (
-          <FadeIn key={p.n} delay={i * 0.1}>
-            <div className="bg-card/60 backdrop-blur-xl border border-border/40 rounded-2xl p-5 md:p-6 h-full flex flex-col">
-              {/* Number + Problem inline */}
-              <div className="flex items-baseline gap-3 mb-1.5">
-                <span className="font-display text-primary text-2xl md:text-3xl leading-none">
-                  {i + 1}.
-                </span>
-                <h3 className="type-headline text-xl md:text-2xl text-foreground leading-tight">
-                  {p.problem}
-                </h3>
-              </div>
-              <p className="font-display italic text-sm md:text-base text-muted-foreground/85 mb-3 leading-snug">
-                {p.question}
-              </p>
-
-              {/* Inline data visual */}
-              <div className="my-3">
-                <CardVisual kind={p.visual} />
-              </div>
-
-              {/* Divider */}
-              <div className="h-px bg-border/40 my-1.5" />
-
-              {/* Solution */}
-              <div className="mt-3 md:mt-4 flex-1 flex flex-col">
-                <span className="type-data text-primary/70 mb-1">The Fix</span>
-                <h4 className="type-headline text-lg text-primary mb-1.5 leading-tight">{p.solution}</h4>
-                <p className="type-body text-[13px] md:text-sm leading-[1.5] text-muted-foreground/85">
-                  {p.solutionLabel}
-                </p>
-              </div>
-            </div>
-          </FadeIn>
-        ))}
-      </div>
-
-      {/* Industry context — 3-up stat strip */}
-      <FadeIn delay={0.4}>
-        <div className="max-w-3xl mx-auto px-6 mt-14">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="font-display font-bold text-2xl text-primary leading-none mb-2">$849.9B</div>
-              <div className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground/85 uppercase">Annual Returns</div>
-            </div>
-            <div>
-              <div className="font-display font-bold text-2xl text-primary leading-none mb-2">70%</div>
-              <div className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground/85 uppercase">Fit-Related</div>
-            </div>
-            <div>
-              <div className="font-display font-bold text-2xl text-primary leading-none mb-2">1 in 3</div>
-              <div className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground/85 uppercase">Items Returned</div>
-            </div>
-          </div>
-          <p className="text-[11px] text-muted-foreground/85 mt-5 text-center">
-            Source: National Retail Federation 2025, McKinsey Returns Survey
-          </p>
-        </div>
-      </FadeIn>
     </section>
   );
 }
