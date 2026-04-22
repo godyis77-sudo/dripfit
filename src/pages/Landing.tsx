@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Instagram, Music2, Twitter } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
 import LandingNav from '@/components/landing/LandingNav';
