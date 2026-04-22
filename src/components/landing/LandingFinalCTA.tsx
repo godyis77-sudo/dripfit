@@ -23,18 +23,18 @@ export default function LandingFinalCTA() {
             <span><span className="text-primary">9,000+</span> Pieces</span>
           </div>
 
-          {/* Headline — Option D: Anton uppercase + Playfair italic accent */}
+          {/* Headline — Option C: Archivo Black uppercase + Playfair Italic gold accent */}
           <h2
-            className="leading-[1.04] mb-6 text-foreground"
+            className="leading-[1.02] mb-6 text-foreground"
             style={{
-              fontFamily: "'Anton', Impact, sans-serif",
-              fontWeight: 400,
-              letterSpacing: '0.01em',
+              fontFamily: "'Archivo Black', Impact, sans-serif",
+              fontWeight: 900,
+              letterSpacing: '-0.02em',
               textTransform: 'uppercase',
-              fontSize: 'clamp(42px, 6.5vw, 70px)',
+              fontSize: 'clamp(40px, 6.2vw, 66px)',
             }}
           >
-            Stop praying.
+            STOP PRAYING.
             <span
               className="block text-primary mt-2"
               style={{
@@ -42,12 +42,12 @@ export default function LandingFinalCTA() {
                 fontStyle: 'italic',
                 fontWeight: 500,
                 letterSpacing: '0',
-                textTransform: 'none',
+                textTransform: 'uppercase',
                 fontSize: 'clamp(38px, 6vw, 64px)',
                 lineHeight: 1.04,
               }}
             >
-              It fits.
+              IT FITS.
             </span>
           </h2>
 
