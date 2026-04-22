@@ -15,6 +15,7 @@ import LandingFAQ from '@/components/landing/LandingFAQ';
 import LandingPricing from '@/components/landing/LandingPricing';
 import LandingTestimonials from '@/components/landing/LandingTestimonials';
 import LandingFinalCTA from '@/components/landing/LandingFinalCTA';
+import LandingStickyCTA from '@/components/landing/LandingStickyCTA';
 
 export default function Landing() {
   usePageMeta({
@@ -88,6 +89,9 @@ export default function Landing() {
           </div>
         </div>
       </footer>
+
+      {/* Sticky bottom CTA — appears after hero */}
+      <LandingStickyCTA />
     </div>
   );
 }
