@@ -10,7 +10,7 @@ export default function LandingStickyCTA() {
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolledPast(window.scrollY > 500);
+    const onScroll = () => setScrolledPast(window.scrollY > 900);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);

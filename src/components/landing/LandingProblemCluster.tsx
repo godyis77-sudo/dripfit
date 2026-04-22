@@ -8,8 +8,9 @@ const QA_PAIRS: Array<{ q: string; a: string }> = [
 
 export default function LandingProblemCluster() {
   return (
-    <section id="problem" className="py-12 scroll-mt-20">
-      <div className="max-w-3xl mx-auto px-6 text-center">
+    <section id="problem" className="py-16 md:py-24 scroll-mt-20 relative overflow-hidden border-y border-border/20 bg-[hsl(var(--surface-glass)/0.02)]">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full pointer-events-none bg-primary/[0.03] blur-[140px]" />
+      <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
         <FadeIn>
           <span className="type-data block mb-5 text-muted-foreground">The Problem</span>
           <h2
