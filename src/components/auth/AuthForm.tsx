@@ -17,6 +17,8 @@ interface AuthFormProps {
   onComplete?: () => void;
   showGuestContinue?: boolean;
   showBackButton?: boolean;
+  /** Which tab to land on. 'signup' opens the create-account form; otherwise sign-in. */
+  defaultMode?: 'signin' | 'signup';
 }
 
 
