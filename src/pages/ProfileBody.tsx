@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Camera, Ruler, Sparkles, LayoutGrid, Check, RotateCcw, Shield, Trash2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Camera, Ruler, Sparkles, LayoutGrid, Check, RotateCcw, Shield, Trash2 } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -163,18 +163,17 @@ const ProfileBody = () => {
           </div>
         ) : (
           <div className="space-y-3">
-            {/* Size Guide Tool — glass-dark */}
+            {/* Size Guide Tool — gold-accent CTA */}
             <button
               onClick={() => navigate('/size-guide')}
-              className="w-full flex items-center gap-4 rounded-xl bg-black/30 backdrop-blur-md border border-white/8 p-4 active:scale-[0.98] transition-transform"
+              className="w-full flex items-center justify-between rounded-xl bg-primary/[0.06] backdrop-blur-md border border-primary/30 px-4 py-4 active:scale-[0.98] transition-transform"
             >
-              <div className="h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                <Ruler className="h-5 w-5 text-primary" />
+              <div className="text-left flex-1 min-w-0">
+                <p className="font-mono text-[10px] tracking-[0.18em] uppercase text-primary/70 font-bold mb-1">Tool</p>
+                <p className="text-[15px] font-semibold text-white leading-tight">Size Guide</p>
+                <p className="text-[11px] text-white/50 mt-0.5">Check your size for any brand instantly</p>
               </div>
-              <div className="text-left flex-1">
-                <p className="text-[14px] font-semibold text-white">Size Guide Tool</p>
-                <p className="text-[11px] text-white/40">Check your size for any brand instantly</p>
-              </div>
+              <ArrowRight className="h-4 w-4 text-primary shrink-0 ml-3" />
             </button>
 
             {/* Fit Preference Toggle & Alternatives */}
