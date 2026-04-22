@@ -1122,3 +1122,9 @@
 .df-btn-secondary:hover {
   background: rgba(255, 255, 255, 0.1);
 }
+
+/* ── Home scan card scan-line sweep (subtle, vertical) ── */
+@keyframes scanline-sweep {
+  0%   { top: -2%; }
+  100% { top: 102%; }
+}
