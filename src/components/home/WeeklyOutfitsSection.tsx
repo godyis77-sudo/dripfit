@@ -72,12 +72,21 @@ const WeeklyOutfitsSection = () => {
 
   return (
     <div className="mt-2 mb-4">
+      {/* Section divider — bridges from scan card */}
+      <div className="flex justify-center mb-5">
+        <div className="h-px w-20" style={{ background: 'rgba(200,169,81,0.2)' }} />
+      </div>
+
       <div className="flex items-start justify-between mb-3">
         <div>
           <h2 className="font-display text-[22px] font-semibold text-foreground tracking-tight">
             This Week's Drip
           </h2>
           <p className="font-sans text-[13px] font-medium tracking-[0.15em] uppercase text-foreground/70 mt-0.5">Curated fits · Dropped weekly</p>
+          {/* Context line for unscanned visitors */}
+          <p className="font-sans text-sm text-white/50 mt-1.5">
+            Styled by the community. Verified by Body Twins.
+          </p>
         </div>
         <button
           onClick={() => navigate('/outfits-weekly')}
