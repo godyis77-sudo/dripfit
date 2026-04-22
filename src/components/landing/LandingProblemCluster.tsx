@@ -3,7 +3,7 @@ import { FadeIn } from './LandingAnimations';
 const QA_PAIRS: Array<{ q: string; a: string }> = [
   { q: 'Will it fit?', a: 'The Biometric Scan' },
   { q: 'Will it look right on me?', a: 'Infinite Drape Studio' },
-  { q: 'Will it pass the vibe check?', a: 'COP or DROP' },
+  { q: 'Will my crew approve?', a: 'COP or DROP' },
 ];
 
 export default function LandingProblemCluster() {

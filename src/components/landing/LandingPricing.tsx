@@ -4,7 +4,7 @@ import { FadeIn } from './LandingAnimations';
 
 const FREE_FEATURES = [
   '3 try-ons per month',
-  'Top 20 brand size sync',
+  'Full access to all 186 brand size charts',
   'Body Twin matching',
   'COP or DROP access',
   'Basic fit verification',
@@ -12,7 +12,7 @@ const FREE_FEATURES = [
 
 const PREMIUM_FEATURES = [
   'Unlimited Infinite Drape Studio access',
-  '186+ brand size map',
+  'Full 186 brand size map',
   'Priority scan queue',
   'Side-by-side fit comparison',
   'Advanced fit analytics',
