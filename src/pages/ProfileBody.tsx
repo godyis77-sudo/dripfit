@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Camera, Ruler, Sparkles, LayoutGrid, Check, RotateCcw, Shield, Trash2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Camera, Ruler, Sparkles, LayoutGrid, Check, RotateCcw, Shield, Trash2 } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
