@@ -34,7 +34,7 @@ export default function LandingTestimonials() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {TESTIMONIALS.map((t, i) => (
             <FadeIn key={t.name} delay={i * 0.08}>
-              <div className="bg-card border border-border rounded-2xl p-6 pl-5 flex flex-col h-full border-l-2 border-l-primary">
+              <div className="bg-card border-l-2 border-l-primary border-y border-r border-border/40 rounded-r-2xl rounded-l-sm p-6 pl-5 flex flex-col h-full">
                 <p className="text-sm leading-relaxed text-foreground/90 flex-1 mb-5">{t.quote}</p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full border border-primary bg-background flex items-center justify-center shrink-0">

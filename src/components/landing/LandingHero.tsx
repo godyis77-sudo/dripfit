@@ -35,14 +35,14 @@ export default function LandingHero() {
             >
               KNOW YOUR FIT.
               <span
-                className="block italic font-bold text-primary mt-2"
+                className="block italic font-bold text-primary mt-2 whitespace-nowrap"
                 style={{
                   fontFamily: "'Fraunces', 'Playfair Display', Georgia, serif",
                   fontStyle: 'italic',
                   fontWeight: 700,
                   fontVariationSettings: '"opsz" 144, "SOFT" 50',
                   letterSpacing: '-0.02em',
-                  fontSize: 'clamp(44px, 6.5vw, 72px)',
+                  fontSize: 'clamp(38px, 6.5vw, 72px)',
                   lineHeight: 1.05,
                 }}
               >
@@ -101,7 +101,7 @@ export default function LandingHero() {
 
         {/* Phone mockup */}
         <FadeIn delay={0.15}>
-          <div className="relative mx-auto w-full max-w-[326px] animate-float">
+          <div className="relative mx-auto w-full max-w-[280px] lg:max-w-[360px] animate-float">
             <div className="absolute inset-0 rounded-full blur-[80px] opacity-15 bg-primary" />
             <div className="relative rounded-[2rem] border-[10px] border-primary shadow-[0_0_30px_hsl(var(--primary)/0.4)] overflow-hidden">
               <img

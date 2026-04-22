@@ -36,11 +36,27 @@ export default function LandingHowItWorks() {
         </div>
 
         <FadeIn delay={0.15}>
-          <div className="flex flex-col items-center justify-center sticky top-24 min-h-[300px] gap-8">
+          <div className="hidden lg:flex flex-col items-center justify-center sticky top-24 min-h-[400px] gap-10">
             {/* Verified badge */}
-            <div className="flex flex-col items-center justify-center w-20 h-20 rounded-full border-[1.5px] border-primary animate-[pulse-ring_2s_ease-in-out_infinite]">
-              <span className="text-primary text-4xl leading-none" style={{ fontFamily: 'monospace' }}>✓</span>
-              <span className="text-primary font-mono text-[8px] tracking-[.2em] uppercase -mt-1">Verified</span>
+            <div className="flex flex-col items-center justify-center w-28 h-28 rounded-full border-[1.5px] border-primary animate-[pulse-ring_2s_ease-in-out_infinite]">
+              <span className="text-primary text-5xl leading-none" style={{ fontFamily: 'monospace' }}>✓</span>
+              <span className="text-primary font-mono text-[9px] tracking-[.2em] uppercase mt-1">Verified</span>
+            </div>
+            {/* Stat block */}
+            <div className="text-center max-w-xs">
+              <div className="font-display font-bold text-primary leading-none" style={{ fontSize: 'clamp(56px, 6vw, 88px)', letterSpacing: '-0.03em' }}>
+                94<span className="text-primary/60">%</span>
+              </div>
+              <p className="type-data text-muted-foreground/85 mt-3">First-Try Fit Rate</p>
+              <p className="text-xs text-muted-foreground/60 mt-2 leading-relaxed">
+                Members who scanned and copped their Body Twin's verified size.
+              </p>
+            </div>
+            {/* Divider quote */}
+            <div className="border-t border-border/30 pt-6 max-w-xs text-center">
+              <p className="font-display italic text-base text-foreground/80 leading-snug">
+                "Stop guessing. <span className="text-primary">Start knowing.</span>"
+              </p>
             </div>
           </div>
         </FadeIn>

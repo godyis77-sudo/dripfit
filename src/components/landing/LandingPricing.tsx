@@ -70,8 +70,10 @@ export default function LandingPricing() {
                 <Sparkles className="h-3 w-3" /> DripFit Pro
               </span>
               <div className="font-display text-4xl font-bold mb-1">$4.17<span className="text-lg font-normal text-muted-foreground">/mo</span></div>
-              <p className="text-xs text-muted-foreground/85 mb-1">$49.99 billed annually · $7.99 month-to-month</p>
-              <p className="text-[10px] font-mono tracking-[.18em] uppercase text-primary/80 mb-8">Save 48%</p>
+              <p className="text-xs text-muted-foreground/85 mb-2">$49.99 billed annually · $7.99 month-to-month</p>
+              <span className="inline-flex items-center self-start px-2.5 py-1 rounded-full bg-primary/15 border border-primary/30 text-primary text-[11px] font-mono tracking-[.16em] uppercase font-bold mb-8">
+                Save 48%
+              </span>
               <ul className="space-y-3 mb-10 flex-1">
                 {PREMIUM_FEATURES.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-sm text-muted-foreground/85">
