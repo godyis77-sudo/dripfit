@@ -3,7 +3,7 @@ import { FadeIn } from './LandingAnimations';
 const STEPS = [
   { n: '01', title: 'Scan Your Body', desc: 'Stand in front of your phone. Two photos. 60 seconds. 20+ biometric data points extracted. Your measurements — verified.' },
   { n: '02', title: 'Enter Infinite Drape Studio', desc: 'Browse 9,000+ pieces from 186 brands. AR try-on renders every garment on your exact silhouette. See the real drape.' },
-  { n: '03', title: 'Verify With Your Twins', desc: 'Your Body Twins — same proportions — have already tried it. See the verdict. See the drape.' },
+  { n: '03', title: 'Verify With Your Twins', desc: 'Your Body Twins have the same proportions. They\'ve already tested it. See their verdict.' },
   { n: '04', title: 'Cop. Zero Returns.', desc: 'Confirmed. Perfect drape. One size. One purchase. Done.' },
 ];
 

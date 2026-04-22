@@ -9,17 +9,17 @@ const TESTIMONIALS = [
     location: 'Toronto, CA',
   },
   {
-    quote: "The Row pieces are expensive and the sizing is cryptic. DripFit told me S before I spent $800. Perfect drape.",
+    quote: "Almost shipped back $800 of The Row. DripFit said S, not M. I tried S — it draped exactly like the lookbook. Saved the return label.",
     name: 'Mia T.',
     initials: 'MT',
     tag: 'Quiet Luxury / Minimalist',
     location: 'New York, NY',
   },
   {
-    quote: "Stone Island runs weird. 94% of my Body Twins said Medium sits right. It did. Zero returns.",
+    quote: "My Twins put me onto Auralee — a brand I'd never have touched. Sized straight into a 3 on their say-so. Now half my closet.",
     name: 'Marcus D.',
     initials: 'MD',
-    tag: 'Heritage / Stone Island collector',
+    tag: 'Heritage / Japanese workwear',
     location: 'London, UK',
   },
 ];

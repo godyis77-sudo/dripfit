@@ -108,7 +108,7 @@ export default function Landing() {
                 Terms
               </Link>
               <a
-                href="mailto:hello@dripfit.app"
+                href="mailto:hello@dripfitcheck.com"
                 className="text-xs text-muted-foreground/85 hover:text-foreground transition-colors whitespace-nowrap"
               >
                 Contact

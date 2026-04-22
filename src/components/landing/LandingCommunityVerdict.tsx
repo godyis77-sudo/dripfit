@@ -33,7 +33,7 @@ export default function LandingCommunityVerdict() {
               ))}
             </div>
             <p className="text-xs text-muted-foreground/85 text-center mt-6 pt-5 border-t border-border/30">
-              Verdicts from Body Twins within your measurement range
+              Real members with your exact measurements have already worn these.
             </p>
             <div className="mt-6 flex justify-center">
               <Link

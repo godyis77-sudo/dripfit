@@ -1,20 +1,47 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function LandingStickyCTA() {
   const { user } = useAuth();
-  const [visible, setVisible] = useState(false);
+  const [scrolledPast, setScrolledPast] = useState(false);
+  const [finalCtaVisible, setFinalCtaVisible] = useState(false);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 500);
+    const onScroll = () => setScrolledPast(window.scrollY > 500);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Hide once Final CTA section enters the viewport — avoids overlapping the
+  // "encrypted / never sold" trust signal at the close of the page.
+  useEffect(() => {
+    const findTarget = (): HTMLElement | null => {
+      const tagged = document.querySelector<HTMLElement>('[data-final-cta]');
+      if (tagged) return tagged;
+      const sections = document.querySelectorAll<HTMLElement>('section');
+      return sections.length ? sections[sections.length - 1] : null;
+    };
+
+    const target = findTarget();
+    if (!target) return;
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => setFinalCtaVisible(entry.isIntersecting));
+      },
+      { rootMargin: '0px 0px -10% 0px', threshold: 0.15 },
+    );
+    observerRef.current.observe(target);
+    return () => observerRef.current?.disconnect();
+  }, []);
+
   if (user) return null;
+
+  const visible = scrolledPast && !finalCtaVisible;
 
   return (
     <div

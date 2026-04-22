@@ -53,6 +53,22 @@ export default function LandingFeatures() {
             </FadeIn>
           ))}
         </div>
+
+        {/* Section exit link */}
+        <FadeIn delay={0.4}>
+          <div className="flex justify-center mt-12">
+            <a
+              href="#pricing"
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector('#pricing')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="text-xs tracking-[.18em] uppercase font-mono text-primary/80 hover:text-primary transition-colors inline-flex items-center gap-2 border-b border-primary/30 hover:border-primary pb-1"
+            >
+              See all 186 brands →
+            </a>
+          </div>
+        </FadeIn>
       </div>
     </section>
   );
