@@ -215,7 +215,7 @@ const MediaKit = () => {
             <div>
               <Label>Taglines</Label>
               <p className="font-display text-lg font-bold">"Stop Praying It Fits."</p>
-              <p className="font-display text-base font-semibold text-muted-foreground mt-1">"Your Body. Mapped."</p>
+              <p className="font-display text-base font-semibold text-muted-foreground mt-1">"Your Biometric Scan."</p>
             </div>
             {/* Elevator Pitch */}
             <div>
