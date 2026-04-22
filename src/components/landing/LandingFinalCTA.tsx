@@ -23,28 +23,28 @@ export default function LandingFinalCTA() {
             <span><span className="text-primary">9,000+</span> Pieces</span>
           </div>
 
-          {/* Headline — Option C: Archivo Black uppercase + Playfair Italic gold accent */}
+          {/* Headline — Playfair 500 uppercase + italic gold accent (matches hero & Features) */}
           <h2
-            className="leading-[1.02] mb-6 text-foreground"
+            className="leading-[1.05] mb-6 text-foreground"
             style={{
-              fontFamily: "'Archivo Black', Impact, sans-serif",
-              fontWeight: 900,
-              letterSpacing: '-0.02em',
+              fontFamily: "'Playfair Display', Georgia, 'Times New Roman', serif",
+              fontWeight: 500,
+              letterSpacing: '0.01em',
               textTransform: 'uppercase',
-              fontSize: 'clamp(40px, 6.2vw, 66px)',
+              fontSize: 'clamp(38px, 6vw, 64px)',
             }}
           >
             STOP PRAYING.
             <span
-              className="block text-primary mt-2"
+              className="block text-primary mt-1"
               style={{
                 fontFamily: "'Playfair Display', Georgia, 'Times New Roman', serif",
                 fontStyle: 'italic',
                 fontWeight: 500,
-                letterSpacing: '0',
+                letterSpacing: '0.01em',
                 textTransform: 'uppercase',
                 fontSize: 'clamp(38px, 6vw, 64px)',
-                lineHeight: 1.04,
+                lineHeight: 1.05,
               }}
             >
               IT FITS.
