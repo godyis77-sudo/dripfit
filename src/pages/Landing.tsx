@@ -89,6 +89,9 @@ export default function Landing() {
           </div>
         </div>
       </footer>
+
+      {/* Sticky bottom CTA — appears after hero */}
+      <LandingStickyCTA />
     </div>
   );
 }
