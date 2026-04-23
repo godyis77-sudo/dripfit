@@ -1,6 +1,6 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, lazy, Suspense, useEffect } from 'react';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogOut, Shirt, Camera, Settings, ShoppingBag, ShoppingCart, User, Globe, X, Gift, ChevronDown, Award, Wand2 } from 'lucide-react';
