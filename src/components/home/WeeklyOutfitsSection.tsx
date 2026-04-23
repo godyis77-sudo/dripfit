@@ -31,7 +31,12 @@ function handleShare(title: string, e: React.MouseEvent) {
   }
 }
 
-const WeeklyOutfitsSection = () => {
+interface WeeklyOutfitsSectionProps {
+  /** 'compact' = 280px carousel cards (default). 'large' = near full-width hero cards to match the auth swipe feed. */
+  size?: 'compact' | 'large';
+}
+
+const WeeklyOutfitsSection = ({ size = 'compact' }: WeeklyOutfitsSectionProps = {}) => {
   const navigate = useNavigate();
   const { userGender, genderLoaded, loading: authLoading } = useAuth();
   const mappedGender = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : undefined;
@@ -118,7 +123,7 @@ const WeeklyOutfitsSection = () => {
 
       <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
         {filtered.map(outfit => (
-          <HeroCard key={outfit.id} outfit={outfit} onTap={() => navigate(`/outfit/${outfit.id}`)} />
+          <HeroCard key={outfit.id} outfit={outfit} size={size} onTap={() => navigate(`/outfit/${outfit.id}`)} />
         ))}
       </div>
     </div>
@@ -141,17 +146,23 @@ function OccasionPill({ active, onClick, label }: { active: boolean; onClick: ()
   );
 }
 
-function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }) {
+function HeroCard({ outfit, onTap, size = 'compact' }: { outfit: WeeklyOutfit; onTap: () => void; size?: 'compact' | 'large' }) {
   const heroImage = outfit.hero_image_url;
   const brands = [...new Set(outfit.items.map(i => i.brand).filter(Boolean))].slice(0, 3);
   const copScore = getCopScore(outfit.id);
+
+  // Width: 'large' uses 88vw (capped) to feel near full-width like the auth swipe feed.
+  const sizeClass =
+    size === 'large'
+      ? 'w-[88vw] max-w-[420px] aspect-[3/4]'
+      : 'w-[280px] aspect-[3/4]';
 
   // Full-bleed editorial hero card
   if (heroImage) {
     return (
       <motion.button
         onClick={onTap}
-        className="snap-start shrink-0 w-[280px] aspect-[3/4] rounded-2xl overflow-hidden relative text-left active:scale-[0.97] transition-transform"
+        className={`snap-start shrink-0 ${sizeClass} rounded-2xl overflow-hidden relative text-left active:scale-[0.97] transition-transform`}
         whileTap={{ scale: 0.97 }}
       >
         <img
@@ -207,7 +218,7 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
   return (
     <motion.button
       onClick={onTap}
-      className="snap-start shrink-0 w-[280px] aspect-[3/4] rounded-2xl overflow-hidden text-left active:scale-[0.97] transition-transform glass-dark border border-white/5 flex flex-col justify-end px-3.5 pb-6 relative"
+      className={`snap-start shrink-0 ${sizeClass} rounded-2xl overflow-hidden text-left active:scale-[0.97] transition-transform glass-dark border border-white/5 flex flex-col justify-end px-3.5 pb-6 relative`}
       whileTap={{ scale: 0.97 }}
     >
       {/* COP score pill — top-left */}
