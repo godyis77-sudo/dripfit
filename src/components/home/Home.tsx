@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, ChevronRight, Flame, Infinity as InfinityIcon } from 'lucide-react';
+import { ArrowRight, ChevronRight, Infinity as InfinityIcon } from 'lucide-react';
 
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
