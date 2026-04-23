@@ -123,7 +123,7 @@ const WeeklyOutfitsSection = ({ size = 'compact' }: WeeklyOutfitsSectionProps = 
 
       <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
         {filtered.map(outfit => (
-          <HeroCard key={outfit.id} outfit={outfit} onTap={() => navigate(`/outfit/${outfit.id}`)} />
+          <HeroCard key={outfit.id} outfit={outfit} size={size} onTap={() => navigate(`/outfit/${outfit.id}`)} />
         ))}
       </div>
     </div>
