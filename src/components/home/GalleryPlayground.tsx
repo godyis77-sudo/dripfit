@@ -243,7 +243,7 @@ const GalleryPlayground = () => {
         {hasScan && <SwipeFeedSection />}
 
         {/* Weekly Outfits Hero Section — only for non-scanned (scanned users see it at top) */}
-        {!hasScan && <WeeklyOutfitsSection size="large" />}
+        {!hasScan && <WeeklyOutfitsSection />}
 
         {/* One-Tap Playground — only for unauthenticated users */}
         {!user && <OneTapPlayground />}
