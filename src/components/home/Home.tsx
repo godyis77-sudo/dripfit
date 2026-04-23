@@ -377,7 +377,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
             >
               <div className="text-left flex flex-col gap-0">
                 <span className="font-sans text-[13px] font-semibold text-foreground">
-                  Your Verified Size
+                  Brand Size Guide
                 </span>
                 <span className="font-sans text-[10px] text-muted-foreground">
                   186 brands mapped
