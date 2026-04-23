@@ -15,6 +15,8 @@ import WeeklyOutfitsSection from '@/components/home/WeeklyOutfitsSection';
 import SwipeFeedSection from '@/components/home/SwipeFeedSection';
 import HomeBrowseErrorBoundary from '@/components/home/HomeBrowseErrorBoundary';
 import { CARD, SPACING } from '@/lib/design-tokens';
+// P3 placeholder — swap when real photography lands
+import editorialScanImg from '@/assets/editorial-scan.jpg';
 
 const HERO_CATEGORIES = [
   { key: 'all', label: 'For You' },
@@ -233,6 +235,24 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
                   filter: 'blur(32px)',
                 }}
               />
+              {/* P3 — editorial scan photography (placeholder, swap when shot delivered) */}
+              <div
+                data-placeholder="p3-scan-photo"
+                className="absolute inset-y-0 right-0 w-[55%] pointer-events-none rounded-2xl overflow-hidden"
+                aria-hidden
+              >
+                <img
+                  src={editorialScanImg}
+                  alt=""
+                  className="absolute inset-0 w-full h-full object-cover object-center opacity-[0.32]"
+                  style={{
+                    maskImage:
+                      'linear-gradient(to left, rgba(0,0,0,1) 0%, rgba(0,0,0,0.7) 35%, transparent 95%)',
+                    WebkitMaskImage:
+                      'linear-gradient(to left, rgba(0,0,0,1) 0%, rgba(0,0,0,0.7) 35%, transparent 95%)',
+                  }}
+                />
+              </div>
               <div
                 className="absolute inset-0 rounded-2xl pointer-events-none opacity-[0.025]"
                 style={{
