@@ -330,7 +330,7 @@ export default function Closet() {
       <PageHeader
         title="The Closet"
         backTo="/home"
-        action={
+        actions={
           sessionCops > 0 ? (
             <button
               onClick={() => navigate('/profile?tab=wardrobe')}
