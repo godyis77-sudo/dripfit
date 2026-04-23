@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, ChevronRight, Flame } from 'lucide-react';
+import { ArrowRight, ChevronRight, Flame, Infinity as InfinityIcon } from 'lucide-react';
 
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
@@ -388,6 +388,31 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
         {showHeroScan && (
           <>
             <SwipeFeedSection gender={mappedGender} />
+
+            {/* THE INFINITE CLOSET — flow hub entry */}
+            <motion.button
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              onClick={() => navigate('/infinite-closet')}
+              className="relative w-full mb-3 rounded-2xl overflow-hidden bg-primary/[0.04] border border-primary/20 px-4 py-3.5 flex items-center gap-3 active:scale-[0.98] hover:bg-primary/[0.07] transition-all"
+            >
+              <div className="h-10 w-10 rounded-full border border-primary/30 bg-primary/10 flex items-center justify-center shrink-0">
+                <InfinityIcon className="h-4 w-4 text-primary" />
+              </div>
+              <div className="text-left flex-1 min-w-0">
+                <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary/80">
+                  HOW IT WORKS
+                </p>
+                <p className="text-[14px] font-bold text-foreground leading-tight mt-0.5">
+                  The Infinite Closet
+                </p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Discover · Try · Verdict · Buy. On loop.
+                </p>
+              </div>
+              <ArrowRight className="h-4 w-4 text-primary shrink-0" />
+            </motion.button>
 
             {/* THE DRAPE — Tier 1 editorial primary (guest entry to try-on) */}
             <motion.button
