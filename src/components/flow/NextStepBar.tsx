@@ -44,7 +44,7 @@ const NextStepBar = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
       onClick={() => {
-        if (trackId) trackEvent(trackId);
+        if (trackId) trackEvent('next_step_bar_click', { id: trackId });
         navigate(to);
       }}
       className={cn(
