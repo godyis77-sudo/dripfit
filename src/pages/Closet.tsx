@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'framer-motion';
-import { X, Flame, Heart, ShoppingBag, SlidersHorizontal } from 'lucide-react';
+import { X, Flame, Heart, ShoppingBag, SlidersHorizontal, Layers, ArrowRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 import { useUserGender } from '@/hooks/useUserGender';
