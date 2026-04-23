@@ -183,6 +183,21 @@ export default function Closet() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [exitDir, setExitDir] = useState<'left' | 'right'>('right');
   const [showFilters, setShowFilters] = useState(false);
+  const [sessionCops, setSessionCops] = useState(0);
+
+  // Total wardrobe count (for footer link)
+  const { data: wardrobeCount = 0 } = useQuery({
+    queryKey: ['wardrobe-count', user?.id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from('clothing_wardrobe')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user!.id);
+      return count ?? 0;
+    },
+    enabled: !!user?.id,
+    staleTime: 60_000,
+  });
 
   // Sync profile gender on load
   useEffect(() => {
