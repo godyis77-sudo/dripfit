@@ -43,7 +43,7 @@ const ScanSuccess = () => {
 
   const { user } = useAuth();
 
-  if (!result) return null;
+  if (!result) return <ScanResultSkeleton />;
 
   // Build measurements map — same pattern as BodyTab
   const measurements: Record<string, { min: number; max: number }> = {};

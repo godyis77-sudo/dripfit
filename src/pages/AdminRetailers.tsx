@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { directAffiliateOverrides } from "@/lib/affiliateOverrides";
+import { AdminListSkeleton } from "@/components/ui/page-skeleton";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { RETAILER_KEY_TO_NAME, type RetailerKey, type AffiliateStatus } from "@/lib/affiliateTypes";
 
@@ -89,11 +90,7 @@ export default function AdminRetailers() {
   }, [allRetailers]);
 
   if (roleLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-pulse text-muted-foreground">Checking access…</div>
-      </div>
-    );
+    return <AdminListSkeleton />;
   }
 
   if (!isAdmin) {
