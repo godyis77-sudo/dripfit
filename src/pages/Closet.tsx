@@ -285,6 +285,7 @@ export default function Closet() {
 
     if (dir === 'right' && currentProduct) {
       saveToWardrobe(currentProduct);
+      setSessionCops(prev => prev + 1);
       toast({ title: `🔥 ${currentProduct.brand} copped!`, duration: 1500 });
     }
 
