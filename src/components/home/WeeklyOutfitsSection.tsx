@@ -146,17 +146,23 @@ function OccasionPill({ active, onClick, label }: { active: boolean; onClick: ()
   );
 }
 
-function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }) {
+function HeroCard({ outfit, onTap, size = 'compact' }: { outfit: WeeklyOutfit; onTap: () => void; size?: 'compact' | 'large' }) {
   const heroImage = outfit.hero_image_url;
   const brands = [...new Set(outfit.items.map(i => i.brand).filter(Boolean))].slice(0, 3);
   const copScore = getCopScore(outfit.id);
+
+  // Width: 'large' uses 88vw (capped) to feel near full-width like the auth swipe feed.
+  const sizeClass =
+    size === 'large'
+      ? 'w-[88vw] max-w-[420px] aspect-[3/4]'
+      : 'w-[280px] aspect-[3/4]';
 
   // Full-bleed editorial hero card
   if (heroImage) {
     return (
       <motion.button
         onClick={onTap}
-        className="snap-start shrink-0 w-[280px] aspect-[3/4] rounded-2xl overflow-hidden relative text-left active:scale-[0.97] transition-transform"
+        className={`snap-start shrink-0 ${sizeClass} rounded-2xl overflow-hidden relative text-left active:scale-[0.97] transition-transform`}
         whileTap={{ scale: 0.97 }}
       >
         <img
