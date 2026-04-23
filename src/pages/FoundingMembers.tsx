@@ -202,6 +202,41 @@ const FoundingMembers = () => {
         </motion.div>
       </section>
 
+      {/* ── P3 Founder Letter (placeholder portrait, swap when shot delivered) ── */}
+      <section
+        data-placeholder="p3-founder-photo"
+        className="max-w-md mx-auto px-6 pb-10 w-full"
+      >
+        <motion.figure
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.5 }}
+          className="relative overflow-hidden rounded-2xl border border-border/40"
+        >
+          <img
+            src={editorialFounderImg}
+            alt="DripFit founder portrait — placeholder"
+            loading="lazy"
+            width={896}
+            height={1152}
+            className="w-full h-auto object-cover"
+          />
+          <figcaption className="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-black/85 via-black/45 to-transparent">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary/80 mb-2">
+              From the founder
+            </p>
+            <p className="font-serif italic text-[15px] text-white leading-snug">
+              "We're building DripFit for the 100 people who want to shape it.
+              You'll see every brand we add. You'll vote on every feature."
+            </p>
+            <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-white/50 mt-2.5">
+              — Founder · DripFit Check
+            </p>
+          </figcaption>
+        </motion.figure>
+      </section>
+
       {/* ── Perks ──────────────────────────────────── */}
       <section className="max-w-md mx-auto px-6 pb-10 w-full">
         <h2 className="font-display text-lg font-bold text-center mb-5">Founding Member Perks</h2>
