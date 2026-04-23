@@ -235,15 +235,14 @@ const Profile = () => {
               onClick={() => navigate('/profile/body')}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass-gold active:scale-95 transition-transform"
             >
-              <User className="h-4 w-4 text-primary" />
-              <span className="text-[13px] text-primary font-bold tracking-wide">Sizes</span>
+              <span className="text-[13px] text-primary font-bold tracking-wide">Size Guide</span>
             </button>
             <button
               onClick={() => navigate('/style-assistant')}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass-gold active:scale-95 transition-transform"
             >
               <Wand2 className="h-4 w-4 text-primary" />
-              <span className="text-[13px] text-primary font-bold tracking-wide">Style AI</span>
+              <span className="text-[13px] text-primary font-bold tracking-wide">Style Assistant</span>
             </button>
           </div>
         </div>
