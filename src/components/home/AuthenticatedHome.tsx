@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Sparkles, Flame, ArrowRight, Ruler } from 'lucide-react';
+import { Flame, ArrowRight, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import SwipeFeedSection from '@/components/home/SwipeFeedSection';
 import { TYPE, CARD, SPACING } from '@/lib/design-tokens';
@@ -13,22 +13,19 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
 
   return (
     <div ref={ref} className="relative bg-background pb-safe-tab">
-      {/* HEADER — compact 56px */}
-      <div className={`${SPACING.pagePx} pt-3 pb-2`}>
+      {/* HEADER — editorial wordmark, single quiet caption */}
+      <div className={`${SPACING.pagePx} pt-3 pb-3`}>
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="flex flex-col items-center text-center gap-1"
+          className="flex flex-col items-center text-center gap-1.5"
         >
-          <div className="flex items-center gap-2">
-            <h1 className={`${TYPE.brandMark} text-[20px] text-primary leading-none`}>DRIPFIT ✔</h1>
-            <span className={TYPE.tagline + ' normal-case tracking-normal text-[11px]'}>
-              · Verified. Ready to drip.
-            </span>
-          </div>
-          <p className={TYPE.data + ' text-[10px]'}>
-            9,000+ · 186 brands · 389 size charts
+          <h1 className="font-display text-[24px] font-extrabold uppercase tracking-tight leading-none text-foreground">
+            DRIPFIT <span className="text-primary text-[20px]">✔</span>
+          </h1>
+          <p className="font-mono text-[10px] tracking-[0.18em] uppercase text-foreground/50">
+            Verified · 186 brands · 9,000+ pieces
           </p>
         </motion.div>
       </div>
@@ -38,60 +35,57 @@ const AuthenticatedHome = forwardRef<HTMLDivElement>((_, ref) => {
         <SwipeFeedSection gender={mappedGender} />
 
         {/* Divider */}
-        <div className="border-t border-white/[0.06] my-2" />
+        <div className="border-t border-white/[0.06] my-3" />
 
-        {/* THE DRAPE — primary action */}
+        {/* THE DRAPE — Tier 1 editorial primary action */}
         <motion.button
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
           onClick={() => navigate('/tryon')}
-          className={`w-full mb-3 ${CARD.glass} px-5 py-4 flex items-center gap-3 active:scale-[0.97] transition-transform`}
+          className="relative w-full mb-3 rounded-2xl overflow-hidden bg-white/[0.03] backdrop-blur-md border border-white/[0.06] border-t-2 border-t-primary px-5 py-5 flex items-center justify-between active:scale-[0.97] transition-transform hover:bg-white/[0.05]"
         >
-          <div className="h-11 w-11 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
-            <Sparkles className="h-5 w-5 text-primary" />
-          </div>
           <div className="text-left flex-1 min-w-0">
-            <p className={TYPE.headlineSm + ' text-[15px] leading-tight'}>THE DRAPE</p>
-            <p className={TYPE.body + ' text-[12px] mt-0.5'}>Try any piece. On your body.</p>
+            <p className="font-serif text-[24px] font-bold italic text-foreground tracking-tight leading-tight">
+              The Drape
+            </p>
+            <p className="font-sans text-[12px] text-muted-foreground mt-1">Infinite Try-On Studio</p>
+            <span className="mt-3 inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-[12px] font-bold tracking-wide">
+              Enter <ArrowRight className="h-3.5 w-3.5" />
+            </span>
           </div>
-          <div className="flex items-center gap-1 text-primary text-[12px] font-bold tracking-wide shrink-0">
-            Try it on <ArrowRight className="h-3.5 w-3.5" />
-          </div>
+          <div className="w-14 h-14 rounded-full bg-primary/[0.08] blur-xl pointer-events-none shrink-0 ml-2" aria-hidden />
         </motion.button>
 
-        {/* COP or DROP — compact */}
+        {/* COP or DROP — Tier 2 utility */}
         <motion.button
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           onClick={() => navigate('/community')}
-          className={`w-full mb-3 ${CARD.glass} px-5 py-3.5 flex items-center gap-3 active:scale-[0.97] transition-transform`}
+          className={`w-full mb-3 ${CARD.glass} px-5 py-4 flex items-center gap-3 active:scale-[0.97] transition-transform`}
         >
-          <div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
-            <Flame className="h-5 w-5 text-primary" />
-          </div>
+          <Flame className="h-4 w-4 text-primary shrink-0" />
           <div className="text-left flex-1 min-w-0">
-            <p className={TYPE.headlineSm + ' text-[14px] leading-tight'}>COP or DROP</p>
-            <p className={TYPE.body + ' text-[11px] mt-0.5'}>Swipe fresh pieces.</p>
+            <p className="font-sans text-[15px] font-bold text-foreground leading-tight">COP or DROP</p>
+            <p className="font-sans text-[12px] text-muted-foreground mt-0.5">Swipe fresh pieces · new daily</p>
           </div>
-          <span className={TYPE.dataGold + ' shrink-0 text-[10px]'}>NEW DROPS DAILY</span>
+          <ChevronRight className="h-4 w-4 text-foreground/40 shrink-0" strokeWidth={2} />
         </motion.button>
 
-        {/* Your Verified Size — contained row */}
+        {/* Your Verified Size — Tier 3 contained row */}
         <motion.button
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
           onClick={() => navigate('/size-guide')}
-          className={`w-full mb-6 ${CARD.glass} px-4 py-3 flex items-center gap-3 active:scale-[0.98] transition-transform`}
+          className="w-full mb-6 bg-white/[0.02] border border-white/[0.04] rounded-xl px-4 py-3 flex items-center justify-between active:scale-[0.97] transition-transform"
         >
-          <Ruler className="h-4 w-4 text-primary shrink-0" />
-          <div className="text-left flex-1 min-w-0">
-            <p className={TYPE.label + ' text-[11px] text-foreground'}>Your Verified Size</p>
-            <p className={TYPE.data + ' text-[10px] mt-0.5'}>186 brands mapped</p>
+          <div className="text-left flex flex-col gap-0">
+            <span className="font-sans text-[13px] font-semibold text-foreground">Your Verified Size</span>
+            <span className="font-sans text-[10px] text-muted-foreground">186 brands mapped</span>
           </div>
-          <ArrowRight className="h-4 w-4 text-primary shrink-0" />
+          <ChevronRight className="h-4 w-4 text-foreground/40 shrink-0" strokeWidth={2} />
         </motion.button>
       </div>
     </div>
