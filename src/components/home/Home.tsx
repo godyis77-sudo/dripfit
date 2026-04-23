@@ -13,6 +13,7 @@ import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import { ALL_PRODUCT_CATEGORIES } from '@/components/tryon/tryon-constants';
 import WeeklyOutfitsSection from '@/components/home/WeeklyOutfitsSection';
 import SwipeFeedSection from '@/components/home/SwipeFeedSection';
+import HomeBrowseErrorBoundary from '@/components/home/HomeBrowseErrorBoundary';
 import { CARD, SPACING } from '@/lib/design-tokens';
 
 const HERO_CATEGORIES = [
@@ -49,34 +50,67 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
 
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [hasScan, setHasScan] = useState(false);
+  const [scanChecked, setScanChecked] = useState(false);
+  const [browseRetryKey, setBrowseRetryKey] = useState(0);
   const [, setScanCount] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
+
+    // Scan-count is non-critical: failure is silent (it only feeds an unused setter today).
     supabase
       .from('app_config')
       .select('value')
       .eq('key', 'total_scan_count')
       .single()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) {
+          console.warn('[Home] scan count fetch failed', error.message);
+          return;
+        }
         if (data?.value) setScanCount(parseInt(data.value, 10) || 0);
       });
-    if (!user) return;
+
+    // Guests have nothing to check — mark resolved so the layout commits immediately.
+    if (!user) {
+      setScanChecked(true);
+      setHasScan(false);
+      return;
+    }
+
+    // Authenticated: probe body_scans. On error, degrade gracefully (assume no scan)
+    // rather than trapping a returning user in a permanent loading state.
+    setScanChecked(false);
     supabase
       .from('body_scans')
       .select('id')
       .eq('user_id', user.id)
       .limit(1)
-      .then(({ data }) => {
-        if (data && data.length > 0) setHasScan(true);
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) {
+          console.warn('[Home] body_scans probe failed', error.message);
+          setHasScan(false);
+        } else {
+          setHasScan(!!(data && data.length > 0));
+        }
+        setScanChecked(true);
       });
+
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
-  // Derive view state from auth + scan
-  const viewState: HomeViewState = useMemo(() => {
+  // Derive view state from auth + scan. Returns null until the scan probe resolves
+  // for authenticated users, so we don't flash the wrong layout.
+  const viewState: HomeViewState | null = useMemo(() => {
     if (forceState) return forceState;
     if (!user) return 'guest';
+    if (!scanChecked) return null;
     return hasScan ? 'returning' : 'new-user';
-  }, [forceState, user, hasScan]);
+  }, [forceState, user, scanChecked, hasScan]);
 
   const visibleCategories = useMemo(
     () => HERO_CATEGORIES.filter(c => !(c.key === 'dress' && userGender === 'male')),
@@ -92,6 +126,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
 
   const showHeroScan = viewState === 'guest' || viewState === 'new-user';
   const showReturningStack = viewState === 'returning';
+  const isResolvingViewState = viewState === null;
 
   return (
     <div ref={ref} className="relative bg-background pb-safe-tab">
@@ -109,7 +144,18 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
 
       <div className="relative z-10 px-4 pt-1">
         {/* ═══ HEADER — auth-aware ═══ */}
-        {showReturningStack ? (
+        {isResolvingViewState ? (
+          // Resolving scan probe: render a quiet skeleton so the layout doesn't shift
+          // when the real header (centered vs. left-aligned) commits.
+          <div className="pt-3 pb-3" aria-hidden>
+            <div className="flex flex-col items-center text-center gap-2">
+              <div className="h-6 w-32 rounded-md bg-white/[0.06] animate-pulse" />
+              <div className="h-3 w-48 rounded-md bg-white/[0.04] animate-pulse" />
+            </div>
+            {/* Hero card placeholder to reserve vertical space */}
+            <div className="mt-4 h-[260px] rounded-2xl bg-white/[0.03] border border-white/[0.04] animate-pulse" />
+          </div>
+        ) : showReturningStack ? (
           // Returning user: centered editorial wordmark
           <div className={`${SPACING.pagePx} pt-3 pb-3 -mx-4`}>
             <motion.div
@@ -339,8 +385,11 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
         )}
 
         {/* ═══ BROWSE — unified header + category pills + grid ═══ */}
-        {!hideBrowse && (
-          <>
+        {!hideBrowse && !isResolvingViewState && (
+          <HomeBrowseErrorBoundary
+            key={browseRetryKey}
+            onRetry={() => setBrowseRetryKey(k => k + 1)}
+          >
             <div className="flex items-center justify-between mb-3 mt-2">
               <p className="font-sans text-[11px] font-bold tracking-[0.15em] uppercase text-foreground/70">
                 Browse · 9,000+ Pieces
@@ -407,7 +456,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
                 ))}
               </div>
             )}
-          </>
+          </HomeBrowseErrorBoundary>
         )}
       </div>
     </div>
