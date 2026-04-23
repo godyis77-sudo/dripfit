@@ -368,24 +368,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
               />
             </motion.button>
 
-            {/* Your Verified Size — Tier 3 contained row */}
-            <motion.button
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.12 }}
-              onClick={() => navigate('/profile/body')}
-              className="w-full mb-6 bg-white/[0.02] border border-white/[0.04] rounded-xl px-4 py-3 flex items-center justify-between active:scale-[0.97] transition-transform"
-            >
-              <div className="text-left flex flex-col gap-0">
-                <span className="font-sans text-[13px] font-semibold text-foreground">
-                  Brand Size Guide
-                </span>
-                <span className="font-sans text-[10px] text-muted-foreground">
-                  186 brands mapped
-                </span>
-              </div>
-              <ChevronRight className="h-4 w-4 text-foreground/40 shrink-0" strokeWidth={2} />
-            </motion.button>
+
 
             {/* Weekly Outfits — secondary editorial */}
             <WeeklyOutfitsSection />
@@ -459,10 +442,17 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
 
         {/* Verified confirmation strip — returning users only */}
         {showReturningStack && (
-          <div className="w-full mb-4 mt-2 rounded-2xl bg-primary/[0.04] border border-primary/10 px-4 py-2.5">
-            <p className="font-sans text-[13px] font-semibold text-foreground/80">
+          <div className="w-full mb-4 mt-2 rounded-2xl bg-primary/[0.04] border border-primary/10 px-4 py-2.5 flex items-center justify-between gap-3">
+            <p className="font-sans text-[13px] font-semibold text-foreground/80 shrink-0">
               ✓ Verified. Shop your fit.
             </p>
+            <button
+              onClick={() => navigate('/profile/body')}
+              className="flex items-center gap-1 text-[11px] font-bold tracking-[0.12em] uppercase text-primary active:opacity-70 transition-opacity shrink-0"
+            >
+              Brand Size Guide
+              <ChevronRight className="h-3 w-3" strokeWidth={2} />
+            </button>
           </div>
         )}
 
