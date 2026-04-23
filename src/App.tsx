@@ -82,8 +82,9 @@ const OutfitDetail = lazy(() => import("./pages/OutfitDetail"));
 const Landing = lazy(() => import("./pages/Landing"));
 const InfiniteCloset = lazy(() => import("./pages/InfiniteCloset"));
 
-// ── Suspense fallback (minimal, matches app background) ───────────────
-const RouteFallback = () => <div className="min-h-screen bg-background" />;
+// ── Suspense fallback (branded skeleton, prevents perceived freeze) ──
+import { PageSkeleton } from "@/components/ui/page-skeleton";
+const RouteFallback = () => <PageSkeleton />;
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -10,6 +10,7 @@ import type { BodyScanResult } from '@/lib/types';
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from '@/hooks/useAuth';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { ScanResultSkeleton } from '@/components/ui/page-skeleton';
 
 const ScanSuccess = () => {
   usePageMeta({ title: 'Scan Complete', description: 'Your DripFit body scan results are ready.', path: '/scan-success' });
@@ -43,7 +44,7 @@ const ScanSuccess = () => {
 
   const { user } = useAuth();
 
-  if (!result) return null;
+  if (!result) return <ScanResultSkeleton />;
 
   // Build measurements map — same pattern as BodyTab
   const measurements: Record<string, { min: number; max: number }> = {};

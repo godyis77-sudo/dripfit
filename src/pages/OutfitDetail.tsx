@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { decodeHtmlEntities } from '@/lib/utils';
+import { OutfitDetailSkeleton } from '@/components/ui/page-skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
 /** Inline product image with graceful fallback when the retailer CDN blocks hotlinks. */
@@ -90,11 +91,7 @@ const OutfitDetail = () => {
   }, [user, navigate]);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="h-6 w-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-      </div>
-    );
+    return <OutfitDetailSkeleton />;
   }
 
   if (!outfit) {
