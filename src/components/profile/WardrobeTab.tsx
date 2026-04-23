@@ -88,9 +88,6 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
           onClick={() => navigate('/outfits')}
           className="w-full flex items-center gap-3 rounded-xl glass-dark p-3 mb-3 active:scale-[0.98] transition-transform"
         >
-          <div className="h-9 w-9 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
-            <span className="text-sm opacity-50">👗</span>
-          </div>
           <div className="text-left">
             <p className="text-[12px] font-semibold text-white">Outfit Builder</p>
             <p className="text-[10px] text-white/40">Mix & match your closet pieces</p>
