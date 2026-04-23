@@ -33,8 +33,8 @@ export default function OutfitList({ outfits, loading, wardrobeCount, onEdit, on
             ? 'Add at least 2 items to your wardrobe to start building outfits.'
             : 'Combine your wardrobe pieces into complete looks.'}
         </p>
-        <Button className="btn-luxury gap-1.5" onClick={onNew} disabled={wardrobeCount < 2}>
-          <Plus className="h-3.5 w-3.5" /> Build First Outfit
+        <Button className="btn-luxury" onClick={onNew} disabled={wardrobeCount < 2}>
+          Build First Outfit
         </Button>
       </div>
     );
