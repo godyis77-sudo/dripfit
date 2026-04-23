@@ -340,7 +340,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
               />
             </motion.button>
 
-            {/* THE INFINITE CLOSET — COP or DROP swipe (consolidated) */}
+            {/* THE INFINITE CLOSET — COP or DROP swipe (consolidated, Tier 1 editorial) */}
             <motion.button
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -349,22 +349,23 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
                 trackEvent('home_infinite_closet_click');
                 navigate('/closet');
               }}
-              className={`w-full mb-3 ${CARD.glass} px-5 py-4 flex items-center gap-3 active:scale-[0.97] transition-transform`}
+              className="relative w-full mb-3 rounded-2xl overflow-hidden bg-white/[0.03] backdrop-blur-md border border-white/[0.06] border-t-2 border-t-primary px-5 py-5 flex items-center justify-between active:scale-[0.97] transition-transform hover:bg-white/[0.05]"
             >
               <div className="text-left flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="font-sans text-[15px] font-bold text-foreground leading-tight">
-                    The Infinite Closet
-                  </p>
-                  <span className="font-mono text-[9px] tracking-[0.16em] uppercase text-primary/80">
-                    COP or DROP
-                  </span>
-                </div>
-                <p className="font-sans text-[12px] text-muted-foreground mt-0.5">
-                  Swipe fresh pieces · new daily
+                <p className="font-serif text-[24px] font-bold italic text-foreground tracking-tight leading-tight">
+                  The Infinite Closet
                 </p>
+                <p className="font-sans text-[12px] text-muted-foreground mt-1">
+                  COP or DROP · new daily
+                </p>
+                <span className="mt-3 inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-[12px] font-bold tracking-wide">
+                  Swipe <ArrowRight className="h-3.5 w-3.5" />
+                </span>
               </div>
-              <ChevronRight className="h-4 w-4 text-foreground/40 shrink-0" strokeWidth={2} />
+              <div
+                className="w-14 h-14 rounded-full bg-primary/[0.08] blur-xl pointer-events-none shrink-0 ml-2"
+                aria-hidden
+              />
             </motion.button>
 
             {/* Your Verified Size — Tier 3 contained row */}
