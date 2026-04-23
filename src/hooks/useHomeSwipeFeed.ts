@@ -46,7 +46,7 @@ async function fetchTopWeeklyPosts(): Promise<SwipeCard[]> {
       postId: p.id,
       imageUrl: p.result_photo_url,
       title: p.caption?.trim() || p.clothing_category || 'Style Check',
-      subtitle: p.clothing_category || null,
+      subtitle: p.clothing_category && p.clothing_category.toLowerCase() !== 'other' ? p.clothing_category : null,
       authorName: nameMap.get(p.user_id) || 'Anonymous',
     }));
 }
