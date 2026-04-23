@@ -13,6 +13,8 @@ import BottomTabBar from '@/components/BottomTabBar';
 import OutfitCanvas from '@/components/outfits/OutfitCanvas';
 import OutfitItemPicker from '@/components/outfits/OutfitItemPicker';
 import OutfitList from '@/components/outfits/OutfitList';
+import NextStepBar from '@/components/flow/NextStepBar';
+import { Wand2 } from 'lucide-react';
 
 const SLOTS = ['top', 'bottom', 'outerwear', 'shoes', 'accessories'] as const;
 type Slot = typeof SLOTS[number];
@@ -206,14 +208,29 @@ const OutfitBuilder = () => {
       </div>
 
       {mode === 'list' ? (
-        <OutfitList
-          outfits={outfits}
-          loading={outfitsLoading}
-          wardrobeCount={wardrobeItems.length}
-          onEdit={handleEditOutfit}
-          onDelete={(id) => deleteMutation.mutate(id)}
-          onNew={() => { setMode('build'); trackEvent('outfit_build_started'); }}
-        />
+        <>
+          <OutfitList
+            outfits={outfits}
+            loading={outfitsLoading}
+            wardrobeCount={wardrobeItems.length}
+            onEdit={handleEditOutfit}
+            onDelete={(id) => deleteMutation.mutate(id)}
+            onNew={() => { setMode('build'); trackEvent('outfit_build_started'); }}
+          />
+          {/* Infinite Closet loop continuation */}
+          {outfits.length > 0 && (
+            <div className="mt-4">
+              <NextStepBar
+                step={4}
+                title="Try this outfit on"
+                subtitle="See it on your body — then post for community verdict"
+                to="/tryon"
+                icon={Wand2}
+                trackId="outfits_to_tryon"
+              />
+            </div>
+          )}
+        </>
       ) : (
         <>
           {/* Outfit name */}
