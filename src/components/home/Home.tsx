@@ -143,7 +143,18 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
 
       <div className="relative z-10 px-4 pt-1">
         {/* ═══ HEADER — auth-aware ═══ */}
-        {showReturningStack ? (
+        {isResolvingViewState ? (
+          // Resolving scan probe: render a quiet skeleton so the layout doesn't shift
+          // when the real header (centered vs. left-aligned) commits.
+          <div className="pt-3 pb-3" aria-hidden>
+            <div className="flex flex-col items-center text-center gap-2">
+              <div className="h-6 w-32 rounded-md bg-white/[0.06] animate-pulse" />
+              <div className="h-3 w-48 rounded-md bg-white/[0.04] animate-pulse" />
+            </div>
+            {/* Hero card placeholder to reserve vertical space */}
+            <div className="mt-4 h-[260px] rounded-2xl bg-white/[0.03] border border-white/[0.04] animate-pulse" />
+          </div>
+        ) : showReturningStack ? (
           // Returning user: centered editorial wordmark
           <div className={`${SPACING.pagePx} pt-3 pb-3 -mx-4`}>
             <motion.div
@@ -373,8 +384,11 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
         )}
 
         {/* ═══ BROWSE — unified header + category pills + grid ═══ */}
-        {!hideBrowse && (
-          <>
+        {!hideBrowse && !isResolvingViewState && (
+          <HomeBrowseErrorBoundary
+            key={browseRetryKey}
+            onRetry={() => setBrowseRetryKey(k => k + 1)}
+          >
             <div className="flex items-center justify-between mb-3 mt-2">
               <p className="font-sans text-[11px] font-bold tracking-[0.15em] uppercase text-foreground/70">
                 Browse · 9,000+ Pieces
@@ -441,7 +455,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
                 ))}
               </div>
             )}
-          </>
+          </HomeBrowseErrorBoundary>
         )}
       </div>
     </div>
