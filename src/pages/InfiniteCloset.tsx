@@ -1,9 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import {
-  Sparkles, Flame, Layers, Wand2, MessageSquare, ShoppingBag, ArrowRight,
-} from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -18,7 +16,6 @@ interface StepDef {
   blurb: string;
   cta: string;
   to: string;
-  icon: typeof Sparkles;
   count?: number;
   countLabel?: string;
 }
@@ -58,41 +55,41 @@ const InfiniteCloset = () => {
       n: 1, key: 'discover',
       title: 'Discover',
       blurb: 'Swipe through 9,000+ pieces. COP what you love, drop the rest.',
-      cta: 'Open Closet Swipe', to: '/closet', icon: Sparkles,
+      cta: 'Open Closet Swipe', to: '/closet',
     },
     {
       n: 2, key: 'closet',
       title: 'Your Closet',
       blurb: 'Everything you copped lives here — your personal infinite rack.',
-      cta: 'View Closet', to: '/profile?tab=wardrobe', icon: Flame,
+      cta: 'View Closet', to: '/profile?tab=wardrobe',
       count: counts?.wardrobe, countLabel: 'pieces',
     },
     {
       n: 3, key: 'build',
       title: 'Build an Outfit',
       blurb: 'Mix tops, bottoms, layers and shoes from your closet into a fit.',
-      cta: 'Build Outfit', to: '/outfits', icon: Layers,
+      cta: 'Build Outfit', to: '/outfits',
       count: counts?.outfits, countLabel: 'outfits',
     },
     {
       n: 4, key: 'tryon',
       title: 'Try It On',
       blurb: 'See it on your body before you commit. Photoreal AI try-on.',
-      cta: 'Open Try-On Studio', to: '/tryon', icon: Wand2,
+      cta: 'Open Try-On Studio', to: '/tryon',
       count: counts?.tryons, countLabel: 'try-ons',
     },
     {
       n: 5, key: 'post',
       title: 'Post for Verdict',
       blurb: 'Share your look on THE DROP. Community votes COP or PASS.',
-      cta: 'See THE DROP', to: '/style-check', icon: MessageSquare,
+      cta: 'See THE DROP', to: '/style-check',
       count: counts?.posts, countLabel: 'posts',
     },
     {
       n: 6, key: 'buy',
       title: 'Buy with Confidence',
       blurb: 'High community score? Cop the real piece direct from the brand.',
-      cta: 'Browse to Buy', to: '/browse/all', icon: ShoppingBag,
+      cta: 'Browse to Buy', to: '/browse/all',
     },
   ];
 
@@ -131,7 +128,6 @@ const InfiniteCloset = () => {
         {/* Loop steps */}
         <div className="space-y-2.5">
           {steps.map((s, i) => {
-            const Icon = s.icon;
             const hasCount = typeof s.count === 'number' && s.count > 0;
             return (
               <motion.button
@@ -145,14 +141,13 @@ const InfiniteCloset = () => {
                 }}
                 className="relative w-full text-left rounded-2xl bg-card border border-border px-4 py-3.5 flex items-center gap-3 active:scale-[0.98] hover:bg-card/80 transition-all"
               >
-                {/* Step number ring */}
+                {/* Step number */}
                 <div className="relative shrink-0">
                   <div className="h-11 w-11 rounded-full border border-primary/30 bg-primary/5 flex items-center justify-center">
-                    <Icon className="h-4 w-4 text-primary" />
+                    <span className="text-[13px] font-bold text-primary">
+                      {s.n}
+                    </span>
                   </div>
-                  <span className="absolute -top-1 -left-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
-                    {s.n}
-                  </span>
                 </div>
 
                 {/* Content */}
