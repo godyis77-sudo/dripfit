@@ -102,7 +102,7 @@ const Partnership = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full uppercase tracking-widest">Step {i + 1}</span>
+                  <span className="font-mono text-[10px] font-bold text-muted-foreground/80 uppercase tracking-widest">Step {String(i + 1).padStart(2, '0')}</span>
                   <h3 className="font-display font-bold text-sm">{step.title}</h3>
                 </div>
                 <p className="text-muted-foreground text-[13px] mt-1 leading-relaxed">{step.desc}</p>
@@ -146,31 +146,35 @@ const Partnership = () => {
         <div className="max-w-3xl mx-auto px-6 py-14">
           <h2 className="font-display text-2xl font-bold text-center mb-8">The User Journey</h2>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
-          {['Scan Body', 'See Exact Size', 'Browse Your Products', 'Buy With Confidence', 'Zero Returns'].map((step, i) => (
-              <div key={step} className="flex items-center gap-2 sm:gap-4">
-                {i > 0 && <ChevronDown className="h-4 w-4 shrink-0 sm:hidden" style={{ color: 'rgba(212,175,55,0.4)' }} />}
-                <div
-                  className={`rounded-xl px-4 py-3 text-center min-w-[120px] ${
-                    i === 4
-                      ? 'border'
-                      : i === 3
-                        ? 'border'
-                        : 'bg-primary/10 border border-primary/20'
-                  }`}
-                  style={
-                    i === 4
-                      ? { background: 'rgba(212,175,55,0.12)', borderColor: 'rgba(212,175,55,0.4)' }
-                      : i === 3
-                        ? { background: 'hsl(var(--primary) / 0.1)', borderColor: 'rgba(212,175,55,0.2)' }
-                        : undefined
-                  }
-                >
-                  <p className="text-[10px] text-primary font-bold uppercase tracking-widest mb-0.5">{i + 1}</p>
-                  <p className="text-xs font-semibold text-foreground whitespace-nowrap">{step}</p>
+            {['Scan Body', 'See Exact Size', 'Browse Your Products', 'Buy With Confidence', 'Zero Returns'].map((step, i) => {
+              const isFinal = i === 4;
+              return (
+                <div key={step} className="flex items-center gap-2 sm:gap-4">
+                  {i > 0 && (
+                    <ChevronDown className="h-4 w-4 shrink-0 sm:hidden text-muted-foreground/40" />
+                  )}
+                  <div
+                    className={`rounded-xl px-4 py-3 text-center min-w-[120px] border ${
+                      isFinal
+                        ? 'bg-primary/10 border-primary/30'
+                        : 'bg-card border-border'
+                    }`}
+                  >
+                    <p
+                      className={`font-mono text-[10px] font-bold uppercase tracking-widest mb-0.5 ${
+                        isFinal ? 'text-primary' : 'text-muted-foreground/70'
+                      }`}
+                    >
+                      {String(i + 1).padStart(2, '0')}
+                    </p>
+                    <p className="text-xs font-semibold text-foreground whitespace-nowrap">{step}</p>
+                  </div>
+                  {i < 4 && (
+                    <ArrowRight className="h-4 w-4 text-muted-foreground/50 shrink-0 hidden sm:block" />
+                  )}
                 </div>
-                {i < 4 && <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 hidden sm:block" />}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>

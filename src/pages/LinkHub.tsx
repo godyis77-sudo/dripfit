@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 const links = [
   {
-    label: 'Apply: Founding 100 Discord',
+    label: 'Apply: Founding 100',
     href: '/founding-members',
     style: 'primary' as const,
   },
@@ -61,7 +61,7 @@ const socials = [
 ];
 
 const LinkHub = () => {
-  usePageMeta({ title: 'Links', description: 'All DripFit links in one place — waitlist, Discord, Instagram, and more.', path: '/links' });
+  usePageMeta({ title: 'Links', description: 'All DripFit links in one place — waitlist, founding 100, Instagram, and more.', path: '/links' });
 
   const [scanCount, setScanCount] = useState('1,200+');
   useEffect(() => {
