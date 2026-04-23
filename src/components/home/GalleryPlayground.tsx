@@ -242,8 +242,13 @@ const GalleryPlayground = () => {
         {/* Swipe Feed — The Drop (only for scanned users) */}
         {hasScan && <SwipeFeedSection />}
 
-        {/* Weekly Outfits Hero Section — only for non-scanned (scanned users see it at top) */}
-        {!hasScan && <WeeklyOutfitsSection />}
+        {/* Community Drop swipe + Weekly Outfits — for non-scanned users */}
+        {!hasScan && (
+          <>
+            <SwipeFeedSection gender={mappedGender} />
+            <WeeklyOutfitsSection />
+          </>
+        )}
 
         {/* One-Tap Playground — only for unauthenticated users */}
         {!user && <OneTapPlayground />}
