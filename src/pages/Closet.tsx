@@ -406,11 +406,30 @@ export default function Closet() {
         {loading ? (
           <div className="absolute inset-0 rounded-2xl skeleton-gold" />
         ) : isEmpty ? (
-          <div className="absolute inset-0 rounded-2xl border border-border flex flex-col items-center justify-center gap-3 text-center px-6">
-            <Heart className="h-10 w-10 text-muted-foreground" />
-            <p className="text-muted-foreground text-sm">
-              No more items! Change your genre filter or check back later.
-            </p>
+          <div className="absolute inset-0 rounded-2xl border border-border flex flex-col items-center justify-center gap-4 text-center px-6">
+            <Heart className="h-9 w-9 text-muted-foreground" />
+            <div className="space-y-1">
+              <p className="font-display text-base text-foreground">
+                {sessionCops > 0 ? `You copped ${sessionCops} this session.` : 'That\'s the rack.'}
+              </p>
+              <p className="text-muted-foreground text-xs">
+                {sessionCops > 0 ? 'Take it to the next step.' : 'Adjust filters or check back later.'}
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 w-full max-w-[240px] pt-1">
+              <button
+                onClick={() => navigate('/profile?tab=wardrobe')}
+                className="h-11 rounded-full bg-primary text-primary-foreground text-[13px] font-bold tracking-wide flex items-center justify-center gap-2 active:scale-95 transition-transform"
+              >
+                <Flame className="h-4 w-4" /> View Your Closet
+              </button>
+              <button
+                onClick={() => navigate('/outfits')}
+                className="h-11 rounded-full border border-border bg-card text-foreground text-[13px] font-bold tracking-wide flex items-center justify-center gap-2 active:scale-95 transition-transform"
+              >
+                <Layers className="h-4 w-4" /> Build an Outfit
+              </button>
+            </div>
           </div>
         ) : (
           <AnimatePresence mode="popLayout">
