@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ShoppingBag, Flame, Ruler, ArrowRight, ChevronRight } from 'lucide-react';
+import { ArrowRight, ChevronRight } from 'lucide-react';
 
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
@@ -159,11 +159,8 @@ const GalleryPlayground = () => {
                 >
                   YOUR BIOMETRIC SCAN.
                 </h2>
-                <p className="font-sans text-[13px] font-light text-white/70 leading-snug max-w-[280px] mb-2">
+                <p className="font-sans text-[14px] font-light text-white/75 leading-snug max-w-[300px] mb-4">
                   2 photos. 60 seconds. Your exact size across 186 brands — locked.
-                </p>
-                <p className="font-mono text-[10px] tracking-[0.14em] uppercase text-white/40 mb-4">
-                  186 BRANDS · 389 SIZE CHARTS · 9,000+ PIECES
                 </p>
                 <button
                   onClick={(e) => { e.stopPropagation(); navigate('/capture'); }}
@@ -171,8 +168,8 @@ const GalleryPlayground = () => {
                 >
                   Start the Scan <ArrowRight className="h-4 w-4" />
                 </button>
-                <p className="text-xs text-white/50 text-center mt-3 font-sans tracking-wide">
-                  60 seconds. 186 brands. Encrypted.
+                <p className="font-mono text-[10px] tracking-[0.14em] uppercase text-white/40 text-center mt-3">
+                  186 BRANDS · 389 SIZE CHARTS · 9,000+ PIECES
                 </p>
               </div>
             </div>
@@ -253,27 +250,29 @@ const GalleryPlayground = () => {
         {/* One-Tap Playground — only for unauthenticated users */}
         {!user && <OneTapPlayground />}
 
-
-        {/* Hero Scan CTA Strip — conditional on scan status */}
-        {!hasScan ? (
-          <button
-            onClick={() => { trackEvent('home_scan_strip_click'); navigate('/capture'); }}
-            className="w-full mb-4 rounded-2xl bg-primary/[0.08] border border-primary/30 px-4 py-3 flex items-center justify-between active:scale-[0.97] transition-transform"
-          >
-            <div>
-              <p className="font-display text-[16px] font-bold text-foreground">Your Biometric Scan. 60 seconds.</p>
-              <p className="text-[13px] text-primary font-semibold mt-0.5">Start the scan →</p>
-            </div>
-          </button>
-        ) : (
+        {/* Verified confirmation strip — only for returning users */}
+        {hasScan && (
           <div className="w-full mb-4 rounded-2xl bg-primary/[0.04] border border-primary/10 px-4 py-2.5">
-            <p className="text-[13px] font-semibold text-foreground/80">✓ Verified. Shop your fit.</p>
+            <p className="font-sans text-[13px] font-semibold text-foreground/80">✓ Verified. Shop your fit.</p>
           </div>
         )}
 
+        {/* Browse section — unified header (Tier 3 tagline) */}
+        <div className="flex items-center justify-between mb-3 mt-2">
+          <p className="font-sans text-[11px] font-bold tracking-[0.15em] uppercase text-foreground/70">
+            Browse · 9,000+ Pieces
+          </p>
+          <button
+            onClick={() => navigate('/browse/all')}
+            className="text-[11px] text-muted-foreground hover:text-foreground active:scale-95 transition-all px-2 py-1"
+          >
+            See all →
+          </button>
+        </div>
+
         {/* Category pills — glass inactive, glass-gold active */}
         <div
-          className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-hide mb-2"
+          className="flex gap-1.5 overflow-x-auto pb-3 scrollbar-hide mb-3"
           onTouchStart={e => e.stopPropagation()}
           onTouchEnd={e => e.stopPropagation()}
         >
@@ -283,22 +282,14 @@ const GalleryPlayground = () => {
               onClick={() => setActiveCategory(cat.key)}
               className={`shrink-0 px-3.5 py-1.5 rounded-xl text-[11px] font-bold transition-colors min-h-[36px] backdrop-blur-md ${
                 activeCategory === cat.key
-                  ? 'bg-primary/8 border border-primary/20 text-primary'
-                  : 'bg-white/5 border border-white/10 text-white/50'
+                  ? 'bg-primary/10 border border-primary/30 text-primary'
+                  : 'bg-white/5 border border-white/10 text-foreground/70'
               }`}
             >
               {cat.label}
             </button>
           ))}
         </div>
-
-        {/* Browse All — glass-gold pill */}
-        <button
-          onClick={() => navigate('/browse/all')}
-          className="w-full mb-3 h-12 rounded-2xl bg-white/[0.04] backdrop-blur-md border border-primary/30 text-primary font-sans text-xs tracking-widest uppercase font-semibold active:scale-[0.97] transition-transform flex items-center justify-center gap-2"
-        >
-          <ShoppingBag className="h-3.5 w-3.5 text-primary" /> Enter Infinite Drape Studio
-        </button>
 
         {/* Product Grid — category-broken like try-on page */}
         {catalogReady ? (
