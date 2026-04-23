@@ -327,7 +327,23 @@ export default function Closet() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <PageHeader title="The Closet" backTo="/home" />
+      <PageHeader
+        title="The Closet"
+        backTo="/home"
+        action={
+          sessionCops > 0 ? (
+            <button
+              onClick={() => navigate('/profile?tab=wardrobe')}
+              className="flex items-center gap-1.5 px-3 h-8 rounded-full bg-primary/10 border border-primary/25 text-primary text-[11px] font-bold tracking-wide active:scale-95 transition-transform"
+              aria-label={`View ${sessionCops} copped items`}
+            >
+              <Flame className="h-3 w-3" />
+              {sessionCops} COPPED
+              <ArrowRight className="h-3 w-3" />
+            </button>
+          ) : undefined
+        }
+      />
 
       {/* Gender toggle */}
       <div className="px-4 pt-2 flex items-center gap-2">
