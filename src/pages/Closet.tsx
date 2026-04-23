@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'framer-motion';
-import { X, Flame, Heart, ShoppingBag, SlidersHorizontal, Layers, ArrowRight } from 'lucide-react';
+import { X, Flame, Heart, ShoppingBag, SlidersHorizontal, Layers, ArrowRight, Wand2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 import { useUserGender } from '@/hooks/useUserGender';
@@ -17,6 +17,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 import PageHeader from '@/components/layout/PageHeader';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import { cn, decodeHtmlEntities } from '@/lib/utils';
+import NextStepBar from '@/components/flow/NextStepBar';
 
 const SWIPE_THRESHOLD = 100;
 
@@ -501,6 +502,20 @@ export default function Closet() {
           >
             Build Outfit
           </button>
+        </div>
+      )}
+
+      {/* Next-step in the Infinite Closet loop — shown once user has copped */}
+      {!loading && sessionCops > 0 && (
+        <div className="px-4 mt-5">
+          <NextStepBar
+            step={3}
+            title={sessionCops >= 2 ? 'Build an outfit from your cops' : 'Try one on now'}
+            subtitle={sessionCops >= 2 ? `Mix the ${sessionCops} pieces you copped` : 'See it on your body before you buy'}
+            to={sessionCops >= 2 ? '/outfits' : '/tryon'}
+            icon={sessionCops >= 2 ? Layers : Wand2}
+            trackId="closet_to_next_step"
+          />
         </div>
       )}
 
