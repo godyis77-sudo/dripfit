@@ -257,9 +257,22 @@ const GalleryPlayground = () => {
           </div>
         )}
 
+        {/* Browse section — unified header (Tier 3 tagline) */}
+        <div className="flex items-center justify-between mb-3 mt-2">
+          <p className="font-sans text-[11px] font-bold tracking-[0.15em] uppercase text-foreground/70">
+            Browse · 9,000+ Pieces
+          </p>
+          <button
+            onClick={() => navigate('/browse/all')}
+            className="text-[11px] text-muted-foreground hover:text-foreground active:scale-95 transition-all px-2 py-1"
+          >
+            See all →
+          </button>
+        </div>
+
         {/* Category pills — glass inactive, glass-gold active */}
         <div
-          className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-hide mb-2"
+          className="flex gap-1.5 overflow-x-auto pb-3 scrollbar-hide mb-3"
           onTouchStart={e => e.stopPropagation()}
           onTouchEnd={e => e.stopPropagation()}
         >
@@ -269,22 +282,14 @@ const GalleryPlayground = () => {
               onClick={() => setActiveCategory(cat.key)}
               className={`shrink-0 px-3.5 py-1.5 rounded-xl text-[11px] font-bold transition-colors min-h-[36px] backdrop-blur-md ${
                 activeCategory === cat.key
-                  ? 'bg-primary/8 border border-primary/20 text-primary'
-                  : 'bg-white/5 border border-white/10 text-white/50'
+                  ? 'bg-primary/10 border border-primary/30 text-primary'
+                  : 'bg-white/5 border border-white/10 text-foreground/70'
               }`}
             >
               {cat.label}
             </button>
           ))}
         </div>
-
-        {/* Browse All — glass-gold pill */}
-        <button
-          onClick={() => navigate('/browse/all')}
-          className="w-full mb-3 h-12 rounded-2xl bg-white/[0.04] backdrop-blur-md border border-primary/30 text-primary font-sans text-xs tracking-widest uppercase font-semibold active:scale-[0.97] transition-transform flex items-center justify-center gap-2"
-        >
-          <ShoppingBag className="h-3.5 w-3.5 text-primary" /> Enter Infinite Drape Studio
-        </button>
 
         {/* Product Grid — category-broken like try-on page */}
         {catalogReady ? (
