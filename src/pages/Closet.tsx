@@ -485,6 +485,25 @@ export default function Closet() {
         </p>
       )}
 
+      {/* Footer text-link CTAs */}
+      {!loading && (
+        <div className="flex items-center justify-center gap-6 mt-4 px-6">
+          <button
+            onClick={() => navigate('/profile?tab=wardrobe')}
+            className="text-[11px] font-bold tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+          >
+            View Closet{wardrobeCount > 0 ? ` (${wardrobeCount})` : ''}
+          </button>
+          <span className="h-3 w-px bg-border" />
+          <button
+            onClick={() => navigate('/outfits')}
+            className="text-[11px] font-bold tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+          >
+            Build Outfit
+          </button>
+        </div>
+      )}
+
       <BottomTabBar />
     </div>
   );
