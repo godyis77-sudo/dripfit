@@ -22,10 +22,10 @@ export default function LandingHowItWorks() {
             {STEPS.map((s, i) => (
               <FadeIn key={s.n} delay={i * 0.08}>
                 <div className="flex gap-5 items-start">
-                  <div className="shrink-0 w-11 h-11 rounded-full flex items-center justify-center font-mono text-sm font-bold border border-primary/25 text-primary bg-primary/[0.05]">
+                  <div className="shrink-0 pt-1.5 w-9 font-mono text-[10px] tracking-[.18em] uppercase text-primary/70">
                     {s.n}
                   </div>
-                  <div>
+                  <div className="flex-1 border-l border-primary/15 pl-5">
                     <h4 className="type-headline text-base mb-1.5">{s.title}</h4>
                     <p className="type-body leading-relaxed text-muted-foreground/85" style={{ fontSize: 15 }}>{s.desc}</p>
                   </div>
@@ -33,6 +33,19 @@ export default function LandingHowItWorks() {
               </FadeIn>
             ))}
           </div>
+
+          {/* Mobile-only stat — surfaces the 94% proof point on small viewports */}
+          <FadeIn delay={0.4}>
+            <div className="lg:hidden mt-12 pt-8 border-t border-border/30 text-center">
+              <div className="font-display font-bold text-primary leading-none" style={{ fontSize: 'clamp(48px, 14vw, 72px)', letterSpacing: '-0.03em' }}>
+                94<span className="text-primary/60">%</span>
+              </div>
+              <p className="type-data text-muted-foreground/85 mt-3">First-Try Fit Rate</p>
+              <p className="text-xs text-muted-foreground/60 mt-2 leading-relaxed max-w-xs mx-auto">
+                Members who scanned and copped their Body Twin's verified size.
+              </p>
+            </div>
+          </FadeIn>
         </div>
 
         <FadeIn delay={0.15}>

@@ -14,38 +14,15 @@ export default function LandingFinalCTA() {
 
       <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
         <FadeIn>
-          {/* Proof bar — single tight line on mobile */}
-          <div className="flex items-center justify-center flex-nowrap gap-x-2.5 sm:gap-x-4 mb-8 text-[10px] sm:text-[11px] tracking-[.12em] sm:tracking-[.18em] uppercase font-mono text-muted-foreground/70 whitespace-nowrap">
-            <span><span className="text-primary">186</span> Brands</span>
-            <span className="opacity-30">·</span>
-            <span><span className="text-primary">389</span> Charts</span>
-            <span className="opacity-30">·</span>
-            <span><span className="text-primary">9,000+</span> Pieces</span>
-          </div>
-
           {/* Headline — Playfair 500 uppercase + italic gold accent (matches hero & Features) */}
           <h2
-            className="leading-[1.05] mb-6 text-foreground"
-            style={{
-              fontFamily: "'Playfair Display', Georgia, 'Times New Roman', serif",
-              fontWeight: 500,
-              letterSpacing: '0.01em',
-              textTransform: 'uppercase',
-              fontSize: 'clamp(38px, 6vw, 64px)',
-            }}
+            className="type-display-editorial leading-[1.05] mb-6 text-foreground"
+            style={{ fontSize: 'clamp(38px, 6vw, 64px)' }}
           >
             STOP PRAYING.
             <span
-              className="block text-primary mt-1"
-              style={{
-                fontFamily: "'Playfair Display', Georgia, 'Times New Roman', serif",
-                fontStyle: 'italic',
-                fontWeight: 500,
-                letterSpacing: '0.01em',
-                textTransform: 'uppercase',
-                fontSize: 'clamp(38px, 6vw, 64px)',
-                lineHeight: 1.05,
-              }}
+              className="type-display-editorial type-display-editorial--italic block text-primary mt-1"
+              style={{ fontSize: 'clamp(38px, 6vw, 64px)' }}
             >
               IT FITS.
             </span>
