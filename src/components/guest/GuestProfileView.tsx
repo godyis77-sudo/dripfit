@@ -33,27 +33,13 @@ const GuestProfileView = () => {
 
         {/* Headline — refined editorial copy */}
         <h1
-          className="leading-[1.05] text-foreground"
-          style={{
-            fontFamily: "'Playfair Display', Georgia, 'Times New Roman', serif",
-            fontWeight: 500,
-            letterSpacing: '0.01em',
-            textTransform: 'uppercase',
-            fontSize: 'clamp(28px, 7vw, 36px)',
-          }}
+          className="type-display-editorial leading-[1.05] text-foreground"
+          style={{ fontSize: 'clamp(28px, 7vw, 36px)' }}
         >
           LOCK IN.
           <span
-            className="block text-primary mt-1"
-            style={{
-              fontFamily: "'Playfair Display', Georgia, 'Times New Roman', serif",
-              fontStyle: 'italic',
-              fontWeight: 500,
-              letterSpacing: '0.01em',
-              textTransform: 'uppercase',
-              fontSize: 'clamp(28px, 7vw, 36px)',
-              lineHeight: 1.05,
-            }}
+            className="type-display-editorial type-display-editorial--italic block text-primary mt-1"
+            style={{ fontSize: 'clamp(28px, 7vw, 36px)' }}
           >
             YOUR FIT.
           </span>
@@ -68,7 +54,7 @@ const GuestProfileView = () => {
           onClick={() => navigate('/auth?mode=signup&returnTo=/profile')}
           className="w-full max-w-xs bg-primary text-primary-foreground font-bold rounded-full py-4 px-6 text-sm tracking-wide flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all"
         >
-          Sign Up Now <ArrowRight className="h-4 w-4" />
+          Start Your Scan <ArrowRight className="h-4 w-4" />
         </button>
 
         {/* Secondary — quiet text link below primary CTA */}
@@ -80,18 +66,9 @@ const GuestProfileView = () => {
         </button>
       </div>
 
-      {/* Section divider — moved ABOVE proof bar */}
-      <div className="relative z-10 flex justify-center mt-9 mb-5">
+      {/* Section divider — subtle gold rule */}
+      <div className="relative z-10 flex justify-center mt-9 mb-8">
         <div className="h-px w-20" style={{ background: 'rgba(200,169,81,0.2)' }} />
-      </div>
-
-      {/* Proof bar — matches landing's signature stats */}
-      <div className="relative z-10 flex items-center justify-center flex-nowrap gap-x-3 mb-8 text-[10px] tracking-[.16em] uppercase font-mono text-muted-foreground/70 whitespace-nowrap">
-        <span><span className="text-primary">186</span> Brands</span>
-        <span className="opacity-40">·</span>
-        <span><span className="text-primary">389</span> Charts</span>
-        <span className="opacity-40">·</span>
-        <span><span className="text-primary">9,000+</span> Pieces</span>
       </div>
 
       {/* Benefits — upgraded with gold-tinted circular icon containers (Ecosystem-card style) */}
