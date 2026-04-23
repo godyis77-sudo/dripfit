@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, ChevronRight, Flame, Infinity as InfinityIcon } from 'lucide-react';
+import { ArrowRight, ChevronRight, Infinity as InfinityIcon } from 'lucide-react';
 
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
@@ -340,33 +340,27 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
               />
             </motion.button>
 
-            {/* THE INFINITE CLOSET — quiet hub link */}
-            <button
-              onClick={() => navigate('/infinite-closet')}
-              className="w-full mb-3 px-4 py-2.5 rounded-xl border border-dashed border-primary/25 bg-primary/[0.03] flex items-center justify-between active:scale-[0.98] transition-transform"
-            >
-              <div className="flex items-center gap-2">
-                <InfinityIcon className="h-3.5 w-3.5 text-primary" />
-                <span className="text-[11px] font-bold tracking-[0.18em] uppercase text-primary">
-                  The Infinite Closet — How it works
-                </span>
-              </div>
-              <ArrowRight className="h-3.5 w-3.5 text-primary/70" />
-            </button>
-
-            {/* COP or DROP — Tier 2 utility */}
+            {/* THE INFINITE CLOSET — COP or DROP swipe (consolidated) */}
             <motion.button
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              onClick={() => navigate('/closet')}
+              onClick={() => {
+                trackEvent('home_infinite_closet_click');
+                navigate('/closet');
+              }}
               className={`w-full mb-3 ${CARD.glass} px-5 py-4 flex items-center gap-3 active:scale-[0.97] transition-transform`}
             >
-              <Flame className="h-4 w-4 text-primary shrink-0" />
+              <InfinityIcon className="h-4 w-4 text-primary shrink-0" />
               <div className="text-left flex-1 min-w-0">
-                <p className="font-sans text-[15px] font-bold text-foreground leading-tight">
-                  COP or DROP
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="font-sans text-[15px] font-bold text-foreground leading-tight">
+                    The Infinite Closet
+                  </p>
+                  <span className="font-mono text-[9px] tracking-[0.16em] uppercase text-primary/80">
+                    COP or DROP
+                  </span>
+                </div>
                 <p className="font-sans text-[12px] text-muted-foreground mt-0.5">
                   Swipe fresh pieces · new daily
                 </p>
