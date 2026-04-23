@@ -201,7 +201,6 @@ const OutfitBuilder = () => {
             }}
             disabled={wardrobeItems.length < 2}
           >
-            <Plus className="h-3.5 w-3.5" />
             New
           </Button>
         )}
