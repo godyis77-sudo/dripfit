@@ -18,6 +18,7 @@ import PageHeader from '@/components/layout/PageHeader';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import { cn, decodeHtmlEntities } from '@/lib/utils';
 import NextStepBar from '@/components/flow/NextStepBar';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const SWIPE_THRESHOLD = 100;
 

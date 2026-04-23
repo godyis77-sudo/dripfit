@@ -12,6 +12,7 @@ import BottomTabBar from '@/components/BottomTabBar';
 import { PriceWatchButton, PriceDropBadge, PriceDropNotificationsBell } from '@/components/pricing/PriceWatchUI';
 import PriceDropsFeed from '@/components/pricing/PriceDropsFeed';
 import { usePriceWatches } from '@/hooks/usePriceWatches';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 interface SavedItem {
   id: string;
@@ -26,6 +27,7 @@ interface SavedItem {
 }
 
 const SavedItems = () => {
+  usePageMeta({ title: 'Saved Items', description: 'Your bookmarked products with live price drop tracking.', path: '/saved' });
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();

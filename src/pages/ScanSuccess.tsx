@@ -9,8 +9,10 @@ import MeasurementGrid from '@/components/results/MeasurementGrid';
 import type { BodyScanResult } from '@/lib/types';
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from '@/hooks/useAuth';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const ScanSuccess = () => {
+  usePageMeta({ title: 'Scan Complete', description: 'Your DripFit body scan results are ready.', path: '/scan-success' });
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as { result: BodyScanResult } | undefined;

@@ -8,6 +8,7 @@ import { BodyScanResult } from '@/lib/types';
 import BottomTabBar from '@/components/BottomTabBar';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const MEASUREMENT_LABELS: Record<string, string> = {
   chest: 'Chest',
@@ -53,6 +54,7 @@ function toBodyScanResult(s: DbScan): BodyScanResult {
 }
 
 const History = () => {
+  usePageMeta({ title: 'Scan History', description: 'Review your past body scans and measurement results.', path: '/history' });
   const navigate = useNavigate();
   const { user } = useAuth();
   const [scans, setScans] = useState<DbScan[]>([]);

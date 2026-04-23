@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { decodeHtmlEntities } from '@/lib/utils';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 /** Inline product image with graceful fallback when the retailer CDN blocks hotlinks. */
 function ItemImage({ src, alt, onClick }: { src: string; alt: string; onClick?: () => void }) {
@@ -43,6 +44,7 @@ function ItemImage({ src, alt, onClick }: { src: string; alt: string; onClick?: 
 }
 
 const OutfitDetail = () => {
+  usePageMeta({ title: 'Outfit', description: 'Curated weekly outfit with shoppable items in your size.' });
   const { outfitId } = useParams<{ outfitId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();

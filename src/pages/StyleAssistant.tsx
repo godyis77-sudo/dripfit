@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import ReactMarkdown from 'react-markdown';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
@@ -75,6 +76,7 @@ async function streamChat({
 }
 
 const StyleAssistant = () => {
+  usePageMeta({ title: 'Style Assistant', description: 'Chat with the DripFit AI stylist for fit, brand, and outfit recommendations tailored to you.', path: '/style-assistant' });
   const { user, session } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
