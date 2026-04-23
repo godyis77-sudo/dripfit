@@ -12,7 +12,6 @@ const TABS: { key: FilterType; label: string }[] = [
   { key: 'following', label: 'Following' },
   { key: 'trending', label: 'Trending' },
   { key: 'similar', label: 'Twins' },
-  { key: 'shop', label: 'Shop' },
 ];
 
 const CommunityFilterTabs = ({ filter, onFilterChange }: CommunityFilterTabsProps) => {
