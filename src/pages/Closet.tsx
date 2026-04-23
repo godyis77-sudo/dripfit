@@ -18,6 +18,7 @@ import PageHeader from '@/components/layout/PageHeader';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import { cn, decodeHtmlEntities } from '@/lib/utils';
 import NextStepBar from '@/components/flow/NextStepBar';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const SWIPE_THRESHOLD = 100;
 
@@ -175,6 +176,7 @@ const GENDER_OPTIONS = [
 ] as const;
 
 export default function Closet() {
+  usePageMeta({ title: 'Closet', description: 'Swipe through curated drops in your size and build your digital closet.', path: '/closet' });
   const navigate = useNavigate();
   const { user } = useAuth();
   const { gender: profileGender } = useUserGender();

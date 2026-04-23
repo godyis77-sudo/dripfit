@@ -6,8 +6,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { detectBrandFromUrl } from '@/lib/retailerDetect';
 import { trackEvent } from '@/lib/analytics';
 import BottomTabBar from '@/components/BottomTabBar';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const Cart = () => {
+  usePageMeta({ title: 'My Cart', description: 'Your saved shopping items ready to check out across DripFit retailers.', path: '/cart' });
   const navigate = useNavigate();
   const { user } = useAuth();
   const { items, loading, removeFromCart, clearCart } = useCart();

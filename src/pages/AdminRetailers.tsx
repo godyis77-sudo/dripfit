@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { directAffiliateOverrides } from "@/lib/affiliateOverrides";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { RETAILER_KEY_TO_NAME, type RetailerKey, type AffiliateStatus } from "@/lib/affiliateTypes";
 
 const STATUS_META: Record<AffiliateStatus, { label: string; icon: typeof CheckCircle2; color: string }> = {
@@ -19,6 +20,7 @@ const STATUS_META: Record<AffiliateStatus, { label: string; icon: typeof CheckCi
 type FilterStatus = AffiliateStatus | "all" | "no_override";
 
 export default function AdminRetailers() {
+  usePageMeta({ title: "Admin — Retailers" });
   const navigate = useNavigate();
   const { user } = useAuth();
   const [search, setSearch] = useState("");

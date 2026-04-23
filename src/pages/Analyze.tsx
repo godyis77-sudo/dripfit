@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { compressPhoto } from '@/lib/imageUtils';
 import PremiumScanAnimation from '@/components/analyze/PremiumScanAnimation';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const MESSAGES = [
   'Initializing body scan…',
@@ -35,6 +36,7 @@ interface AnalyzeState {
 }
 
 const Analyze = () => {
+  usePageMeta({ title: 'Analyzing Scan', description: 'Mapping your body measurements with AI.' });
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();

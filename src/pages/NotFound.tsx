@@ -4,8 +4,10 @@ import { motion } from "framer-motion";
 import { Home, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import BottomTabBar from "@/components/BottomTabBar";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const NotFound = () => {
+  usePageMeta({ title: 'Page Not Found', description: "The page you're looking for doesn't exist." });
   const location = useLocation();
   const navigate = useNavigate();
 
