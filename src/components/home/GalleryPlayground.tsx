@@ -253,21 +253,10 @@ const GalleryPlayground = () => {
         {/* One-Tap Playground — only for unauthenticated users */}
         {!user && <OneTapPlayground />}
 
-
-        {/* Hero Scan CTA Strip — conditional on scan status */}
-        {!hasScan ? (
-          <button
-            onClick={() => { trackEvent('home_scan_strip_click'); navigate('/capture'); }}
-            className="w-full mb-4 rounded-2xl bg-primary/[0.08] border border-primary/30 px-4 py-3 flex items-center justify-between active:scale-[0.97] transition-transform"
-          >
-            <div>
-              <p className="font-display text-[16px] font-bold text-foreground">Your Biometric Scan. 60 seconds.</p>
-              <p className="text-[13px] text-primary font-semibold mt-0.5">Start the scan →</p>
-            </div>
-          </button>
-        ) : (
+        {/* Verified confirmation strip — only for returning users */}
+        {hasScan && (
           <div className="w-full mb-4 rounded-2xl bg-primary/[0.04] border border-primary/10 px-4 py-2.5">
-            <p className="text-[13px] font-semibold text-foreground/80">✓ Verified. Shop your fit.</p>
+            <p className="font-sans text-[13px] font-semibold text-foreground/80">✓ Verified. Shop your fit.</p>
           </div>
         )}
 
