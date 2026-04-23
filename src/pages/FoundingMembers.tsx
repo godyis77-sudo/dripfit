@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
+// P3 placeholder — swap when real founder portrait is shot
+import editorialFounderImg from '@/assets/editorial-founder.jpg';
 
 const TOTAL_SPOTS = 100;
 const FALLBACK_CLAIMED = 12;
