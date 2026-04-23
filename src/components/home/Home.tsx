@@ -340,6 +340,20 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
               />
             </motion.button>
 
+            {/* THE INFINITE CLOSET — quiet hub link */}
+            <button
+              onClick={() => navigate('/infinite-closet')}
+              className="w-full mb-3 px-4 py-2.5 rounded-xl border border-dashed border-primary/25 bg-primary/[0.03] flex items-center justify-between active:scale-[0.98] transition-transform"
+            >
+              <div className="flex items-center gap-2">
+                <InfinityIcon className="h-3.5 w-3.5 text-primary" />
+                <span className="text-[11px] font-bold tracking-[0.18em] uppercase text-primary">
+                  The Infinite Closet — How it works
+                </span>
+              </div>
+              <ArrowRight className="h-3.5 w-3.5 text-primary/70" />
+            </button>
+
             {/* COP or DROP — Tier 2 utility */}
             <motion.button
               initial={{ opacity: 0, y: 8 }}
