@@ -148,6 +148,18 @@ const StyleCheckDetail = () => {
             <p className="text-[11px] text-muted-foreground mt-1">
               {new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </p>
+
+            {/* Community Verdict — soft signal next to Buy */}
+            {verdict && (
+              <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-primary/30 bg-primary/5">
+                <Flame className="h-3 w-3 text-primary" />
+                <span className="text-[11px] font-bold tracking-wide text-primary">
+                  VERDICT: COP {verdict.pct}%
+                </span>
+                <span className="text-[10px] text-muted-foreground">· {verdict.total} {verdict.total === 1 ? 'vote' : 'votes'}</span>
+              </div>
+            )}
+
             <div className="flex gap-2 mt-2">
               <Button
                 size="sm"
@@ -187,6 +199,17 @@ const StyleCheckDetail = () => {
             </div>
           </div>
         </div>
+
+        {/* Infinite Closet loop — back to discovery */}
+        <NextStepBar
+          step={1}
+          eyebrow="KEEP THE LOOP GOING"
+          title="Discover more drip"
+          subtitle="Swipe new pieces into your closet"
+          to="/closet"
+          icon={ShoppingBag}
+          trackId="post_detail_to_closet"
+        />
       </div>
       <BottomTabBar />
     </div>
