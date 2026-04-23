@@ -155,7 +155,7 @@ function SectionHeader({ navigate }: { navigate: ReturnType<typeof useNavigate> 
       <div className="flex items-center gap-1.5">
         <Flame className="h-3.5 w-3.5 text-primary" />
         <p className={cn(TYPE.label, 'text-[11px] font-bold tracking-[0.15em] text-primary uppercase mb-0')}>
-          Community Drops · Real fits
+          Community Drops · Find Your Twin
         </p>
       </div>
       <button
