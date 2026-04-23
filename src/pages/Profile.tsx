@@ -39,7 +39,20 @@ const Profile = () => {
   const { data: wardrobeItems = [] } = useWardrobe(user?.id);
   const { data: favoriteRetailers = [] } = useFavoriteRetailers(user?.id);
 
-  const [activeTab, setActiveTab] = useState<'tryons' | 'wardrobe' | 'cart'>('tryons');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = (searchParams.get('tab') as 'tryons' | 'wardrobe' | 'cart' | null) ?? 'tryons';
+  const [activeTab, setActiveTab] = useState<'tryons' | 'wardrobe' | 'cart'>(
+    ['tryons', 'wardrobe', 'cart'].includes(initialTab) ? initialTab : 'tryons'
+  );
+
+  // Sync tab to URL when external nav changes ?tab= param
+  useEffect(() => {
+    const t = searchParams.get('tab');
+    if (t && ['tryons', 'wardrobe', 'cart'].includes(t) && t !== activeTab) {
+      setActiveTab(t as 'tryons' | 'wardrobe' | 'cart');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
   const [fit, setFit] = useState<FitPreference>(getFitPreference());
   const [showAvatarSheet, setShowAvatarSheet] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(getPremiumBannerDismissed());
