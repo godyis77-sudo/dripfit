@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Users, MessageSquare, Crown, TrendingUp, Zap, ArrowRight, Quote, Sparkles } from 'lucide-react';
+import { Users, Crown, TrendingUp, Zap, MessageSquare, ArrowRight, Quote, Sparkles } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
@@ -20,9 +20,9 @@ const PERKS = [
 const EARLY_MEMBERS = [
   { initials: 'JT', name: 'Jordan T.', label: 'Sneakerhead', color: 'bg-primary/20 text-primary' },
   { initials: 'AK', name: 'Ava K.', label: 'Capsule wardrobe', color: 'bg-accent/20 text-accent-foreground' },
-  { initials: 'ML', name: 'Marcus L.', label: 'Streetwear', color: 'bg-chart-1/20 text-foreground' },
-  { initials: 'SR', name: 'Sofia R.', label: 'Petite fashion', color: 'bg-chart-2/20 text-foreground' },
-  { initials: 'DW', name: 'Derek W.', label: 'Big & tall', color: 'bg-chart-3/20 text-foreground' },
+  { initials: 'ML', name: 'Marcus L.', label: 'Streetwear', color: 'bg-foreground/10 text-foreground' },
+  { initials: 'SR', name: 'Sofia R.', label: 'Petite fashion', color: 'bg-foreground/10 text-foreground' },
+  { initials: 'DW', name: 'Derek W.', label: 'Big & tall', color: 'bg-foreground/10 text-foreground' },
   { initials: 'NK', name: 'Nina K.', label: 'Thrift queen', color: 'bg-primary/20 text-primary' },
 ];
 
@@ -31,8 +31,6 @@ const TESTIMONIALS = [
   { quote: "The sizing is eerily accurate. Got my Zara size right on the first try — that never happens.", name: 'Sofia R.', detail: 'Beta Member' },
   { quote: "Love that I can actually influence what brands get added next. Feels like I'm building this with the team.", name: 'Marcus L.', detail: 'Day-one beta' },
 ];
-
-const DISCORD_INVITE = 'https://discord.gg/YOUR_INVITE_LINK';
 
 const FoundingMembers = () => {
   usePageMeta({ title: 'Founding Members', description: 'Join the Founding 100 — exclusive early access, direct input on features, and lifetime perks.', path: '/founding-members' });
@@ -115,9 +113,9 @@ const FoundingMembers = () => {
             className="mt-6"
           >
             <Button size="lg" className="w-full text-base gap-2" asChild>
-              <a href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
+              <a href="/waitlist">
                 <Users className="h-5 w-5" />
-                Join the Discord
+                Claim your spot
                 <ArrowRight className="h-4 w-4" />
               </a>
             </Button>
