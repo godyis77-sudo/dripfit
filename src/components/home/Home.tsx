@@ -440,15 +440,12 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
         {/* One-Tap Playground — only for unauthenticated guests */}
         {viewState === 'guest' && <OneTapPlayground />}
 
-        {/* Verified confirmation strip — returning users only */}
+        {/* Brand Size Guide — returning users only */}
         {showReturningStack && (
-          <div className="w-full mb-4 mt-2 rounded-2xl bg-primary/[0.04] border border-primary/10 px-4 py-2.5 flex items-center justify-between gap-3">
-            <p className="font-sans text-[13px] font-semibold text-foreground/80 shrink-0">
-              ✓ Verified. Shop your fit.
-            </p>
+          <div className="w-full mb-4 mt-2 flex justify-end">
             <button
               onClick={() => navigate('/profile/body')}
-              className="flex items-center gap-1 text-[11px] font-bold tracking-[0.12em] uppercase text-primary active:opacity-70 transition-opacity shrink-0"
+              className="flex items-center gap-1 text-[11px] font-bold tracking-[0.12em] uppercase text-primary active:opacity-70 transition-opacity"
             >
               Brand Size Guide
               <ChevronRight className="h-3 w-3" strokeWidth={2} />
