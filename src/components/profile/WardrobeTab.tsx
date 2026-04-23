@@ -86,12 +86,9 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
       {wardrobeItems.length >= 2 && filter === 'all' && (
         <button
           onClick={() => navigate('/outfits')}
-          className="w-full flex items-center gap-3 rounded-xl glass-dark p-3 mb-3 active:scale-[0.98] transition-transform"
+          className="w-full h-11 rounded-full glass-gold text-primary text-[13px] font-bold tracking-wide flex items-center justify-center mb-3 active:scale-[0.97] transition-transform"
         >
-          <div className="text-left">
-            <p className="text-[12px] font-semibold text-white">Outfit Builder</p>
-            <p className="text-[10px] text-white/40">Mix & match your closet pieces</p>
-          </div>
+          Outfit Builder
         </button>
       )}
       
