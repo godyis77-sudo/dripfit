@@ -1,8 +1,6 @@
 import { TrendingDown, Users, ShoppingBag, Scan, Shirt, BarChart3, ArrowRight, ChevronDown, Mail, CheckCircle2, ExternalLink } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
-// P3 placeholder — swap when real photography lands
-import editorialLookbookImg from '@/assets/editorial-lookbook.jpg';
 
 const STATS = [
   { value: '186+', label: 'Brands Indexed' },
@@ -66,28 +64,6 @@ const Partnership = () => {
             </div>
           ))}
         </div>
-      </section>
-
-      {/* ── P3 Editorial lookbook (placeholder, swap when shot delivered) ── */}
-      <section
-        data-placeholder="p3-lookbook-photo"
-        className="relative max-w-3xl mx-auto px-6 pt-12 pb-2"
-      >
-        <figure className="relative overflow-hidden rounded-2xl border border-border/40">
-          <img
-            src={editorialLookbookImg}
-            alt="Model wearing perfectly fitted editorial styling — quiet luxury reference"
-            loading="lazy"
-            width={1280}
-            height={896}
-            className="w-full h-auto object-cover"
-          />
-          <figcaption className="absolute bottom-0 left-0 right-0 px-5 py-3 bg-gradient-to-t from-black/60 to-transparent">
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/80">
-              The right size · the first time
-            </p>
-          </figcaption>
-        </figure>
       </section>
 
       {/* ── The Problem ──────────────────────────────────── */}
