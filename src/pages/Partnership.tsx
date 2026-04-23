@@ -1,8 +1,6 @@
 import { TrendingDown, Users, ShoppingBag, Scan, Shirt, BarChart3, ArrowRight, ChevronDown, Mail, CheckCircle2, ExternalLink } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
-// P3 placeholder — swap when real photography lands
-import editorialLookbookImg from '@/assets/editorial-lookbook.jpg';
 
 const STATS = [
   { value: '186+', label: 'Brands Indexed' },
