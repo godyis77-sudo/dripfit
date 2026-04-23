@@ -159,11 +159,8 @@ const GalleryPlayground = () => {
                 >
                   YOUR BIOMETRIC SCAN.
                 </h2>
-                <p className="font-sans text-[13px] font-light text-white/70 leading-snug max-w-[280px] mb-2">
+                <p className="font-sans text-[14px] font-light text-white/75 leading-snug max-w-[300px] mb-4">
                   2 photos. 60 seconds. Your exact size across 186 brands — locked.
-                </p>
-                <p className="font-mono text-[10px] tracking-[0.14em] uppercase text-white/40 mb-4">
-                  186 BRANDS · 389 SIZE CHARTS · 9,000+ PIECES
                 </p>
                 <button
                   onClick={(e) => { e.stopPropagation(); navigate('/capture'); }}
@@ -171,8 +168,8 @@ const GalleryPlayground = () => {
                 >
                   Start the Scan <ArrowRight className="h-4 w-4" />
                 </button>
-                <p className="text-xs text-white/50 text-center mt-3 font-sans tracking-wide">
-                  60 seconds. 186 brands. Encrypted.
+                <p className="font-mono text-[10px] tracking-[0.14em] uppercase text-white/40 text-center mt-3">
+                  186 BRANDS · 389 SIZE CHARTS · 9,000+ PIECES
                 </p>
               </div>
             </div>
