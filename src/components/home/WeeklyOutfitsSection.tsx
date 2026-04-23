@@ -218,7 +218,7 @@ function HeroCard({ outfit, onTap, size = 'compact' }: { outfit: WeeklyOutfit; o
   return (
     <motion.button
       onClick={onTap}
-      className="snap-start shrink-0 w-[280px] aspect-[3/4] rounded-2xl overflow-hidden text-left active:scale-[0.97] transition-transform glass-dark border border-white/5 flex flex-col justify-end px-3.5 pb-6 relative"
+      className={`snap-start shrink-0 ${sizeClass} rounded-2xl overflow-hidden text-left active:scale-[0.97] transition-transform glass-dark border border-white/5 flex flex-col justify-end px-3.5 pb-6 relative`}
       whileTap={{ scale: 0.97 }}
     >
       {/* COP score pill — top-left */}
