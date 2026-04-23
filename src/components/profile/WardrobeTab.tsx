@@ -2,10 +2,11 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shirt, Sparkles, Store, ExternalLink, Trash2, MoreHorizontal, Heart, Bookmark } from 'lucide-react';
+import { Shirt, Sparkles, Store, ExternalLink, Trash2, MoreHorizontal, Heart, Bookmark, Wand2, Layers } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
 import { detectBrandFromUrl, detectCategoryFromUrl } from '@/lib/retailerDetect';
 import WardrobeDetailSheet from './WardrobeDetailSheet';
+import NextStepBar from '@/components/flow/NextStepBar';
 
 interface WardrobeItem {
   id: string;
@@ -206,6 +207,22 @@ const WardrobeTab = ({ wardrobeItems, onDeleteItem, favoriteRetailers }: Wardrob
               </div>
             </motion.div>
           ))}
+        </div>
+      )}
+
+      {/* Infinite Closet loop continuation */}
+      {wardrobeItems.length > 0 && (
+        <div className="mt-4">
+          <NextStepBar
+            step={wardrobeItems.length >= 2 ? 3 : 4}
+            title={wardrobeItems.length >= 2 ? 'Build an outfit from your closet' : 'Try one of these on'}
+            subtitle={wardrobeItems.length >= 2
+              ? `Mix ${wardrobeItems.length} pieces into a fit`
+              : 'See it on your body — then post for verdict'}
+            to={wardrobeItems.length >= 2 ? '/outfits' : '/tryon'}
+            icon={wardrobeItems.length >= 2 ? Layers : Wand2}
+            trackId="wardrobe_to_next_step"
+          />
         </div>
       )}
 

@@ -1,14 +1,15 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Sparkles, ShoppingCart, Link2, Check, Share2 } from 'lucide-react';
+import { ArrowLeft, Sparkles, ShoppingCart, Link2, Check, Share2, Flame, ShoppingBag } from 'lucide-react';
 import { navigateToTryOn } from '@/lib/tryonNavigate';
 import { useCart } from '@/hooks/useCart';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
 import BottomTabBar from '@/components/BottomTabBar';
+import NextStepBar from '@/components/flow/NextStepBar';
 
 const StyleCheckDetail = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -17,6 +18,7 @@ const StyleCheckDetail = () => {
   const [post, setPost] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [votes, setVotes] = useState<{ key: string; count: number }[]>([]);
   const { addToCart, removeFromCart, isInCart } = useCart();
 
   // Dynamic OG meta — set once post loads
@@ -40,16 +42,36 @@ const StyleCheckDetail = () => {
         .eq('is_public', true)
         .maybeSingle();
       if (data) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('display_name, avatar_url')
-          .eq('user_id', data.user_id)
-          .maybeSingle();
+        const [{ data: profile }, { data: voteRows }] = await Promise.all([
+          supabase
+            .from('profiles')
+            .select('display_name, avatar_url')
+            .eq('user_id', data.user_id)
+            .maybeSingle(),
+          supabase
+            .from('community_votes')
+            .select('vote_key')
+            .eq('post_id', postId),
+        ]);
         setPost({ ...data, profile: profile || { display_name: 'Anonymous' } });
+        // Tally vote keys
+        const tally: Record<string, number> = {};
+        (voteRows || []).forEach(v => { tally[v.vote_key] = (tally[v.vote_key] || 0) + 1; });
+        setVotes(Object.entries(tally).map(([key, count]) => ({ key, count })));
       }
       setLoading(false);
     })();
   }, [postId]);
+
+  // Compute community verdict — % of "buy"/"cop"-leaning votes
+  const verdict = useMemo(() => {
+    const total = votes.reduce((s, v) => s + v.count, 0);
+    if (total === 0) return null;
+    const positive = votes
+      .filter(v => v.key === 'buy_yes' || v.key === 'keep_shopping' || v.key === 'cop')
+      .reduce((s, v) => s + v.count, 0);
+    return { pct: Math.round((positive / total) * 100), total };
+  }, [votes]);
 
   const handleCopyLink = async () => {
     const url = `${window.location.origin}/style-check/${postId}`;
@@ -126,6 +148,18 @@ const StyleCheckDetail = () => {
             <p className="text-[11px] text-muted-foreground mt-1">
               {new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </p>
+
+            {/* Community Verdict — soft signal next to Buy */}
+            {verdict && (
+              <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-primary/30 bg-primary/5">
+                <Flame className="h-3 w-3 text-primary" />
+                <span className="text-[11px] font-bold tracking-wide text-primary">
+                  VERDICT: COP {verdict.pct}%
+                </span>
+                <span className="text-[10px] text-muted-foreground">· {verdict.total} {verdict.total === 1 ? 'vote' : 'votes'}</span>
+              </div>
+            )}
+
             <div className="flex gap-2 mt-2">
               <Button
                 size="sm"
@@ -165,6 +199,17 @@ const StyleCheckDetail = () => {
             </div>
           </div>
         </div>
+
+        {/* Infinite Closet loop — back to discovery */}
+        <NextStepBar
+          step={1}
+          eyebrow="KEEP THE LOOP GOING"
+          title="Discover more drip"
+          subtitle="Swipe new pieces into your closet"
+          to="/closet"
+          icon={ShoppingBag}
+          trackId="post_detail_to_closet"
+        />
       </div>
       <BottomTabBar />
     </div>

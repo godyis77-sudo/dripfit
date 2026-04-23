@@ -221,7 +221,10 @@ type FunnelEvent =
   | 'home_swipe_tap'
   | 'style_check_swipe_cop'
   | 'style_check_swipe_drop'
-  | 'tryon_shop_item_preview';
+  | 'tryon_shop_item_preview'
+  | 'infinite_closet_hero_start'
+  | 'infinite_closet_step_click'
+  | 'next_step_bar_click';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
