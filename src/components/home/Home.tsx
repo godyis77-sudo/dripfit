@@ -351,7 +351,6 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
               }}
               className={`w-full mb-3 ${CARD.glass} px-5 py-4 flex items-center gap-3 active:scale-[0.97] transition-transform`}
             >
-              <InfinityIcon className="h-4 w-4 text-primary shrink-0" />
               <div className="text-left flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <p className="font-sans text-[15px] font-bold text-foreground leading-tight">
