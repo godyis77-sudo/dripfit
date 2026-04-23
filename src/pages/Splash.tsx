@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const SPLASH_DURATION = 2800;
 
 const Splash = () => {
+  usePageMeta({ title: 'Welcome' });
   const navigate = useNavigate();
   const [fading, setFading] = useState(false);
 

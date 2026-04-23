@@ -176,6 +176,7 @@ const GENDER_OPTIONS = [
 ] as const;
 
 export default function Closet() {
+  usePageMeta({ title: 'Closet', description: 'Swipe through curated drops in your size and build your digital closet.', path: '/closet' });
   const navigate = useNavigate();
   const { user } = useAuth();
   const { gender: profileGender } = useUserGender();
