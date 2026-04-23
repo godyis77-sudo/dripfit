@@ -13,6 +13,7 @@ import CategoryProductGrid from '@/components/catalog/CategoryProductGrid';
 import { ALL_PRODUCT_CATEGORIES } from '@/components/tryon/tryon-constants';
 import WeeklyOutfitsSection from '@/components/home/WeeklyOutfitsSection';
 import SwipeFeedSection from '@/components/home/SwipeFeedSection';
+import HomeBrowseErrorBoundary from '@/components/home/HomeBrowseErrorBoundary';
 import { CARD, SPACING } from '@/lib/design-tokens';
 
 const HERO_CATEGORIES = [
